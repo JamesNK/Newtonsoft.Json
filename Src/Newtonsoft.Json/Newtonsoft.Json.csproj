@@ -1,0 +1,84 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Newtonsoft.Json</RootNamespace>
+    <AssemblyName>Newtonsoft.Json</AssemblyName>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\Newtonsoft.Json.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Newtonsoft.Json.XML</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Converters\AspNetAjaxDateTimeConverter.cs" />
+    <Compile Include="Converters\XmlNodeConverter.cs" />
+    <Compile Include="Converters\HtmlColorConverter.cs" />
+    <Compile Include="JavaScriptParameters.cs" />
+    <Compile Include="JavaScriptConstructor.cs" />
+    <Compile Include="JsonPropertyAttribute.cs" />
+    <Compile Include="JsonIgnoreAttribute.cs" />
+    <Compile Include="JsonWriterException.cs" />
+    <Compile Include="JsonReaderException.cs" />
+    <Compile Include="Identifier.cs" />
+    <Compile Include="JavaScriptArray.cs" />
+    <Compile Include="JavaScriptObject.cs" />
+    <Compile Include="JsonConverter.cs" />
+    <Compile Include="JsonConverterCollection.cs" />
+    <Compile Include="JsonReader.cs" />
+    <Compile Include="JavaScriptConvert.cs" />
+    <Compile Include="JsonSerializationException.cs" />
+    <Compile Include="JsonSerializer.cs" />
+    <Compile Include="MemberMapping.cs" />
+    <Compile Include="MemberMappingCollection.cs" />
+    <Compile Include="Utilities\JavaScriptUtils.cs" />
+    <Compile Include="JsonToken.cs" />
+    <Compile Include="JsonWriter.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StringBuffer.cs" />
+    <Compile Include="Utilities\CollectionUtils.cs" />
+    <Compile Include="Utilities\MathUtils.cs" />
+    <Compile Include="Utilities\MiscellaneousUtils.cs" />
+    <Compile Include="Utilities\ReflectionUtils.cs" />
+    <Compile Include="Utilities\StringUtils.cs" />
+    <Compile Include="Utilities\ValidationUtils.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>
