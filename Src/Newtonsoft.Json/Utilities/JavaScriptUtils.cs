@@ -84,9 +84,13 @@ namespace Newtonsoft.Json.Utilities
         //case '\'':
         //  StringUtils.WriteCharAsUnicode(writer, c);
         //  break;
+        case '\'':
+          // only escape if this charater is being used as the delimiter
+          writer.Write((delimiter == '\'') ? @"\'" : @"'");
+          break;
         case '"':
           // only escape if this charater is being used as the delimiter
-          writer.Write((delimiter == '"') ? "\\\"" : null);
+          writer.Write((delimiter == '"') ? "\\\"" : @"""");
           break;
         default:
           if (c > '\u001f')
@@ -131,7 +135,3 @@ namespace Newtonsoft.Json.Utilities
     }
   }
 }
-
-
-
-

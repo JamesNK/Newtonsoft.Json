@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AspNetAjaxDateTimeConverterTest.cs" />
+    <Compile Include="JavaScriptConvertTest.cs" />
     <Compile Include="JsonReaderTest.cs" />
     <Compile Include="JsonSerializerTest.cs" />
     <Compile Include="JsonWriterTest.cs" />
