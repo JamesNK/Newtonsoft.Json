@@ -415,9 +415,6 @@ namespace Newtonsoft.Json.Converters
               DeserializeValue(reader, document, manager, propertyName, currentNode);
             }
             break;
-          //case JsonToken.String:
-          //    DeserializeValue(reader, document, manager, TextName, currentNode);
-          //    break;
           case JsonToken.EndObject:
           case JsonToken.EndArray:
             return;

@@ -29,11 +29,19 @@ using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Text;
 using System.Collections;
+using System.Linq;
 
 namespace Newtonsoft.Json.Utilities
 {
   internal static class CollectionUtils
   {
+    public static IEnumerable<T> CastValid<T>(this IEnumerable enumerable)
+    {
+      ValidationUtils.ArgumentNotNull(enumerable, "enumerable");
+
+      return enumerable.Cast<object>().Where(o => o is T).Cast<T>();
+    }
+
     public static List<T> CreateList<T>(params T[] values)
     {
       return new List<T>(values);

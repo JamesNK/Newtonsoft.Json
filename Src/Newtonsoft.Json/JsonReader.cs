@@ -48,8 +48,8 @@ namespace Newtonsoft.Json
       Array,
       Closed,
       PostValue,
+      ConstructorStart,
       Constructor,
-      ConstructorEnd,
       Error,
       Finished
     }
@@ -142,15 +142,16 @@ namespace Newtonsoft.Json
     private void ParseString(char quote)
     {
       bool stringTerminated = false;
+      bool hexNumber = false;
+      int hexCount = 0;
 
       while (!stringTerminated && MoveNext())
       {
+        if (hexNumber)
+          hexCount++;
+
         switch (_currentChar)
         {
-          //case 0:
-          //case 0x0A:
-          //case 0x0D:
-          //    throw new JsonReaderException("Unterminated string");
           case '\\':
             if (MoveNext())
             {
@@ -172,10 +173,8 @@ namespace Newtonsoft.Json
                   _buffer.Append('\r');
                   break;
                 case 'u':
-                  //_buffer.Append((char) Integer.parseInt(next(4), 16));
-                  break;
-                case 'x':
-                  //_buffer.Append((char) Integer.parseInt(next(2), 16));
+                  // note the start of a hex character
+                  hexNumber = true;
                   break;
                 default:
                   _buffer.Append(_currentChar);
@@ -197,6 +196,19 @@ namespace Newtonsoft.Json
           default:
             _buffer.Append(_currentChar);
             break;
+        }
+
+        if (hexCount == 4)
+        {
+          // remove hex characters from buffer, convert to char and then add
+          string hexString = _buffer.ToString(_buffer.Position - 4, 4);
+          char hexChar = Convert.ToChar(int.Parse(hexString, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo));
+
+          _buffer.Position = _buffer.Position - 4;
+          _buffer.Append(hexChar);
+
+          hexNumber = false;
+          hexCount = 0;
         }
       }
 
@@ -273,6 +285,8 @@ namespace Newtonsoft.Json
           case State.Property:
           case State.Array:
           case State.ArrayStart:
+          case State.Constructor:
+          case State.ConstructorStart:
             return ParseValue();
           case State.Complete:
             break;
@@ -307,6 +321,10 @@ namespace Newtonsoft.Json
             return true;
           case ']':
             SetToken(JsonToken.EndArray);
+            ClearCurrentChar();
+            return true;
+          case ')':
+            SetToken(JsonToken.EndConstructor);
             ClearCurrentChar();
             return true;
           case '/':
@@ -458,6 +476,11 @@ namespace Newtonsoft.Json
           Push(JsonType.Array);
           ClearCurrentChar();
           break;
+        case JsonToken.StartConstructor:
+          _currentState = State.ConstructorStart;
+          Push(JsonType.Constructor);
+          ClearCurrentChar();
+          break;
         case JsonToken.EndObject:
           ValidateEnd(JsonToken.EndObject);
           ClearCurrentChar();
@@ -465,6 +488,11 @@ namespace Newtonsoft.Json
           break;
         case JsonToken.EndArray:
           ValidateEnd(JsonToken.EndArray);
+          ClearCurrentChar();
+          _currentState = State.PostValue;
+          break;
+        case JsonToken.EndConstructor:
+          ValidateEnd(JsonToken.EndConstructor);
           ClearCurrentChar();
           _currentState = State.PostValue;
           break;
@@ -477,7 +505,6 @@ namespace Newtonsoft.Json
         case JsonToken.Float:
         case JsonToken.Boolean:
         case JsonToken.Null:
-        case JsonToken.Constructor:
         case JsonToken.Date:
           _currentState = State.PostValue;
           break;
@@ -551,15 +578,17 @@ namespace Newtonsoft.Json
             //ClearCurrentChar();
             return true;
           case ')':
-            if (_currentState == State.Constructor)
-            {
-              _currentState = State.ConstructorEnd;
-              return false;
-            }
-            else
-            {
-              throw new JsonReaderException("Unexpected character encountered while parsing value: " + _currentChar);
-            }
+            SetToken(JsonToken.EndConstructor);
+            return true;
+          //if (_currentState == State.Constructor)
+            //{
+            //  _currentState = State.ConstructorEnd;
+            //  return false;
+            //}
+            //else
+            //{
+            //  throw new JsonReaderException("Unexpected character encountered while parsing value: " + _currentChar);
+            //}
           default:
             if (char.IsWhiteSpace(_currentChar))
             {
@@ -605,44 +634,69 @@ namespace Newtonsoft.Json
             MoveNext();
           }
 
-          string constructorName = _buffer.ToString();
-          _buffer.Position = 0;
-
-          List<object> parameters = new List<object>();
 
           EatWhitespace(false);
 
-          if (_currentChar == '(' && MoveNext())
-          {
-            _currentState = State.Constructor;
+          if (_currentChar != '(')
+            throw new JsonReaderException("Unexpected character while parsing constructor: " + _currentChar);
 
-            while (ParseValue())
+          string constructorName = _buffer.ToString();
+          _buffer.Position = 0;
+
+          SetToken(JsonToken.StartConstructor);
+
+          _value = constructorName;
+          _valueType = typeof(string);
+
+          if (string.CompareOrdinal(constructorName, "Date") == 0)
+          {
+            IList<object> parameters = new List<object>();
+
+            MoveNext();
+            while (ParseValue() && _token != JsonToken.EndConstructor)
             {
               parameters.Add(_value);
-              _currentState = State.Constructor;
             }
 
-            if (string.CompareOrdinal(constructorName, "Date") == 0)
-            {
-              long javaScriptTicks = Convert.ToInt64(parameters[0]);
+            long javaScriptTicks = Convert.ToInt64(parameters[0]);
 
-              DateTime date = JavaScriptConvert.ConvertJavaScriptTicksToDateTime(javaScriptTicks);
+            DateTime date = JavaScriptConvert.ConvertJavaScriptTicksToDateTime(javaScriptTicks);
 
-              SetToken(JsonToken.Date, date);
-            }
-            else
-            {
-              JavaScriptConstructor constructor = new JavaScriptConstructor(constructorName, new JavaScriptParameters(parameters));
-
-              if (_currentState == State.ConstructorEnd)
-              {
-                SetToken(JsonToken.Constructor, constructor);
-              }
-            }
-
-            // move past ')'
-            MoveNext();
+            SetToken(JsonToken.Date, date);
           }
+
+
+
+          //{
+          //  _currentState = State.Constructor;
+
+          //  while (ParseValue())
+          //  {
+          //    parameters.Add(_value);
+          //    _currentState = State.Constructor;
+          //  }
+
+          //  if (string.CompareOrdinal(constructorName, "Date") == 0)
+          //  {
+          //    long javaScriptTicks = Convert.ToInt64(parameters[0]);
+
+          //    DateTime date = JavaScriptConvert.ConvertJavaScriptTicksToDateTime(javaScriptTicks);
+
+          //    SetToken(JsonToken.Date, date);
+          //  }
+          //  else
+          //  {
+          //    JavaScriptConstructor constructor = new JavaScriptConstructor(constructorName, new JavaScriptParameters(parameters));
+
+          //    if (_currentState == State.ConstructorEnd)
+          //    {
+          //      SetToken(JsonToken.Constructor, constructor);
+          //    }
+          //  }
+
+          //  // move past ')'
+          //  MoveNext();
+          //}
         }
       }
     }
@@ -716,6 +770,8 @@ namespace Newtonsoft.Json
           return JsonType.Object;
         case JsonToken.EndArray:
           return JsonType.Array;
+        case JsonToken.EndConstructor:
+          return JsonType.Constructor;
         default:
           throw new JsonReaderException("Not a valid close JsonToken: " + token);
       }
@@ -803,7 +859,7 @@ namespace Newtonsoft.Json
           // check next character to see if start of a comment
           return (HasNext() && PeekNext() == '*');
         case ')':
-          if (_currentState == State.Constructor)
+          if (_currentState == State.Constructor || _currentState == State.ConstructorStart)
             return true;
           break;
         default:

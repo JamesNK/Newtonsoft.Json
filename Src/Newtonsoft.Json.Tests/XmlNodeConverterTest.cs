@@ -334,7 +334,7 @@ namespace Newtonsoft.Json.Tests
 
       XmlDocument newDoc = (XmlDocument)JavaScriptConvert.DeerializeXmlNode(jsonText);
 
-      string expected = @"<?xml version=""1.0"" standalone=""no""?><root><person id=""1""><Float>2.5</Float><Integer>99</Integer></person><person id=""2""><Boolean>true</Boolean><date>2000-03-30T00:00:00.0000000+12:00</date></person></root>";
+      string expected = @"<?xml version=""1.0"" standalone=""no""?><root><person id=""1""><Float>2.5</Float><Integer>99</Integer></person><person id=""2""><Boolean>true</Boolean><date>2000-03-30T00:00:00.0000000+13:00</date></person></root>";
 
       Assert.AreEqual(expected, newDoc.InnerXml);
     }

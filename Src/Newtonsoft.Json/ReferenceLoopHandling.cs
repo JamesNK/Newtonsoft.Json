@@ -1,4 +1,4 @@
-#region License
+﻿#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -26,50 +26,25 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Reflection;
 
 namespace Newtonsoft.Json
 {
-  internal struct MemberMapping
+  /// <summary>
+  /// Specifies reference loop handling options for the <see cref="JsonWriter"/>.
+  /// </summary>
+  public enum ReferenceLoopHandling
   {
-    private readonly string _mappingName;
-    private readonly MemberInfo _member;
-    private readonly bool _ignored;
-    private readonly bool _readable;
-    private readonly bool _writable;
-
-    public MemberMapping(string mappingName, MemberInfo member, bool ignored, bool readable, bool writable)
-    {
-      _mappingName = mappingName;
-      _member = member;
-      _ignored = ignored;
-      _readable = readable;
-      _writable = writable;
-    }
-
-    public string MappingName
-    {
-      get { return _mappingName; }
-    }
-
-    public MemberInfo Member
-    {
-      get { return _member; }
-    }
-
-    public bool Ignored
-    {
-      get { return _ignored; }
-    }
-
-    public bool Readable
-    {
-      get { return _readable; }
-    }
-
-    public bool Writable
-    {
-      get { return _writable; }
-    }
+    /// <summary>
+    /// Throw a <see cref="JsonSerializationException"/> when a loop is encountered.
+    /// </summary>
+    Error = 0,
+    /// <summary>
+    /// Ignore loop references and do not serialize.
+    /// </summary>
+    Ignore = 1,
+    /// <summary>
+    /// Serialize loop references.
+    /// </summary>
+    Serialize = 2
   }
 }

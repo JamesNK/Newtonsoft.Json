@@ -33,6 +33,8 @@ using System.Collections;
 using System.Xml;
 using System.Xml.Serialization;
 using System.Collections.ObjectModel;
+using System.Runtime.Serialization.Json;
+using System.Net.Mail;
 
 namespace Newtonsoft.Json.Tests
 {
@@ -41,6 +43,31 @@ namespace Newtonsoft.Json.Tests
     public string Name;
     public DateTime Expiry;
     public decimal Price;
+    public string[] Sizes;
+
+    public override bool Equals(object obj)
+    {
+      if (obj is Product)
+        return ((Product)obj).Name == Name;
+
+      return base.Equals(obj);
+    }
+
+    public override int GetHashCode()
+    {
+      return (Name ?? string.Empty).GetHashCode();
+    }
+  }
+
+  public class ProductCollection : List<Product>
+  {
+  }
+
+  public class ProductShort
+  {
+    public string Name;
+    public DateTime Expiry;
+    //public decimal Price;
     public string[] Sizes;
   }
 
@@ -489,7 +516,7 @@ keyword such as type of business.""
     [Test]
     public void ReadOnlyCollectionSerialize()
     {
-      ReadOnlyCollection<int> r1 = new ReadOnlyCollection<int>(new int[] {0, 1, 2, 3, 4});
+      ReadOnlyCollection<int> r1 = new ReadOnlyCollection<int>(new int[] { 0, 1, 2, 3, 4 });
 
       string jsonText = JavaScriptConvert.SerializeObject(r1);
 
@@ -518,32 +545,155 @@ keyword such as type of business.""
       }
     }
 
-    //public abstract class Foo
-    //{
-    //}
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Could not find member 'Price' on object of type 'RuntimeType'")]
+    public void MissingMemberDeserialize()
+    {
+      Product product = new Product();
 
-    //public class Baz : Foo
-    //{
-    //}
+      product.Name = "Apple";
+      product.Expiry = new DateTime(2008, 12, 28);
+      product.Price = 3.99M;
+      product.Sizes = new string[] { "Small", "Medium", "Large" };
 
-    //public class Bar : Foo
-    //{
-    //}
+      string output = JavaScriptConvert.SerializeObject(product);
+      //{
+      //  "Name": "Apple",
+      //  "Expiry": new Date(1230422400000),
+      //  "Price": 3.99,
+      //  "Sizes": [
+      //    "Small",
+      //    "Medium",
+      //    "Large"
+      //  ]
+      //}
 
-    //public class BazJsonConverter : JsonConverter
-    //{
-    //  public override bool CanConvert(Type objectType)
-    //  {
-    //    throw new Exception("The method or operation is not implemented.");
-    //  }
-    //}
+      ProductShort deserializedProductShort = (ProductShort)JavaScriptConvert.DeserializeObject(output, typeof(ProductShort));
+    }
 
-    //public class BarJsonConverter : JsonConverter
-    //{
-    //  public override bool CanConvert(Type objectType)
-    //  {
-    //    throw new Exception("The method or operation is not implemented.");
-    //  }
-    //}
+    [Test]
+    public void MissingMemberDeserializeOkay()
+    {
+      Product product = new Product();
+
+      product.Name = "Apple";
+      product.Expiry = new DateTime(2008, 12, 28);
+      product.Price = 3.99M;
+      product.Sizes = new string[] { "Small", "Medium", "Large" };
+
+      string output = JavaScriptConvert.SerializeObject(product);
+      //{
+      //  "Name": "Apple",
+      //  "Expiry": new Date(1230422400000),
+      //  "Price": 3.99,
+      //  "Sizes": [
+      //    "Small",
+      //    "Medium",
+      //    "Large"
+      //  ]
+      //}
+
+      JsonSerializer jsonSerializer = new JsonSerializer();
+      jsonSerializer.MissingMemberHandling = MissingMemberHandling.Ignore;
+
+      object deserializedValue;
+
+      using (JsonReader jsonReader = new JsonReader(new StringReader(output)))
+      {
+        deserializedValue = jsonSerializer.Deserialize(jsonReader, typeof(ProductShort));
+      }
+
+      ProductShort deserializedProductShort = (ProductShort)deserializedValue;
+
+      Assert.AreEqual("Apple", deserializedProductShort.Name);
+      Assert.AreEqual(new DateTime(2008, 12, 28), deserializedProductShort.Expiry);
+      Assert.AreEqual("Small", deserializedProductShort.Sizes[0]);
+      Assert.AreEqual("Medium", deserializedProductShort.Sizes[1]);
+      Assert.AreEqual("Large", deserializedProductShort.Sizes[2]);
+    }
+
+    [Test]
+    public void Unicode()
+    {
+      string json = @"[""PRE\u003cPOST""]";
+
+      DataContractJsonSerializer s = new DataContractJsonSerializer(typeof(List<string>));
+      List<string> dataContractResult = (List<string>)s.ReadObject(new MemoryStream(Encoding.UTF8.GetBytes(json)));
+
+      List<string> jsonNetResult = JavaScriptConvert.DeserializeObject<List<string>>(json);
+
+      Assert.AreEqual(1, jsonNetResult.Count);
+      Assert.AreEqual(dataContractResult[0], jsonNetResult[0]);
+    }
+
+    [Test]
+    public void NonStringKeyDictionary()
+    {
+      Dictionary<int, int> values = new Dictionary<int, int>();
+      values.Add(-5, 6);
+      values.Add(int.MinValue, int.MaxValue);
+
+      string json = JavaScriptConvert.SerializeObject(values);
+
+      Assert.AreEqual(@"{""-5"":6,""-2147483648"":2147483647}", json);
+
+      Dictionary<int, int> newValues = JavaScriptConvert.DeserializeObject<Dictionary<int, int>>(json);
+
+      CollectionAssert.AreEqual(values, newValues);
+    }
+
+    [Test]
+    public void AnonymousObjectSerialization()
+    {
+      var anonymous = new { StringValue = "I am a string", IntValue = int.MaxValue };
+
+      string json = JavaScriptConvert.SerializeObject(anonymous);
+      Assert.AreEqual(@"{""StringValue"":""I am a string"",""IntValue"":2147483647}", json);
+    }
+
+    [Test]
+    public void CustomCollectionSerialization()
+    {
+      ProductCollection collection = new ProductCollection()
+      {
+        new Product() { Name = "Test1" },
+        new Product() { Name = "Test2" },
+        new Product() { Name = "Test3" }
+      };
+
+      JsonSerializer jsonSerializer = new JsonSerializer();
+      jsonSerializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+
+      StringWriter sw = new StringWriter();
+
+      jsonSerializer.Serialize(sw, collection);
+
+      Assert.AreEqual(@"[{""Name"":""Test1"",""Expiry"":new Date(-59011459200000),""Price"":0,""Sizes"":null},{""Name"":""Test2"",""Expiry"":new Date(-59011459200000),""Price"":0,""Sizes"":null},{""Name"":""Test3"",""Expiry"":new Date(-59011459200000),""Price"":0,""Sizes"":null}]",
+        sw.GetStringBuilder().ToString());
+
+      ProductCollection collectionNew = (ProductCollection)jsonSerializer.Deserialize(new JsonReader(new StringReader(sw.GetStringBuilder().ToString())), typeof(ProductCollection));
+
+      CollectionAssert.AreEqual(collection, collectionNew);
+    }
+
+    [Test]
+    public void NullValueHandlingSerialization()
+    {
+      Store s1 = new Store();
+
+      JsonSerializer jsonSerializer = new JsonSerializer();
+      jsonSerializer.NullValueHandling = NullValueHandling.Ignore;
+
+      StringWriter sw = new StringWriter();
+      jsonSerializer.Serialize(sw, s1);
+
+      Assert.AreEqual(@"{""Color"":2,""Establised"":new Date(1264118400000),""Width"":1.1,""Employees"":999,""RoomsPerFloor"":[1,2,3,4,5,6,7,8,9],""Open"":false,""Symbol"":""@"",""Mottos"":[""Hello World"",""öäüÖÄÜ\\'{new Date(12345);}[222]_µ@²³~"",null,"" ""],""Cost"":100980.1,""Escape"":""\r\n\t\f\b?{\\r\\n\""'"",""product"":[{""Name"":""Rocket"",""Expiry"":new Date(949532490000),""Price"":0},{""Name"":""Alien"",""Expiry"":new Date(-59011459200000),""Price"":0}]}", sw.GetStringBuilder().ToString());
+
+      Store s2 = (Store)jsonSerializer.Deserialize(new JsonReader(new StringReader("{}")), typeof(Store));
+      Assert.AreEqual("\r\n\t\f\b?{\\r\\n\"\'", s2.Escape);
+
+      Store s3 = (Store)jsonSerializer.Deserialize(new JsonReader(new StringReader(@"{""Escape"":null}")), typeof(Store));
+      Assert.AreEqual("\r\n\t\f\b?{\\r\\n\"\'", s3.Escape);
+    }
   }
 }

@@ -1,4 +1,4 @@
-#region License
+﻿#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -25,51 +25,24 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using System.Reflection;
 
-namespace Newtonsoft.Json
+namespace Newtonsoft.Json.Linq
 {
-  internal struct MemberMapping
+  public enum JsonTokenType
   {
-    private readonly string _mappingName;
-    private readonly MemberInfo _member;
-    private readonly bool _ignored;
-    private readonly bool _readable;
-    private readonly bool _writable;
-
-    public MemberMapping(string mappingName, MemberInfo member, bool ignored, bool readable, bool writable)
-    {
-      _mappingName = mappingName;
-      _member = member;
-      _ignored = ignored;
-      _readable = readable;
-      _writable = writable;
-    }
-
-    public string MappingName
-    {
-      get { return _mappingName; }
-    }
-
-    public MemberInfo Member
-    {
-      get { return _member; }
-    }
-
-    public bool Ignored
-    {
-      get { return _ignored; }
-    }
-
-    public bool Readable
-    {
-      get { return _readable; }
-    }
-
-    public bool Writable
-    {
-      get { return _writable; }
-    }
+    Object,
+    Array,
+    Constructor,
+    Property,
+    Comment,
+    Integer,
+    Float,
+    String,
+    Boolean,
+    Null,
+    Undefined,
+    Date
   }
 }

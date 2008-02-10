@@ -1,27 +1,15 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json", "Newtonsoft.Json\Newtonsoft.Json.csproj", "{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
-EndProject
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lib", "Lib", "{620042D9-2753-48F5-BEDE-3905248781D2}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 	ProjectSection(SolutionItems) = preProject
 		Lib\nunit.framework.dll = Lib\nunit.framework.dll
 		Lib\nunit.framework.xml = Lib\nunit.framework.xml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json", "Newtonsoft.Json\Newtonsoft.Json.csproj", "{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.Tests", "Newtonsoft.Json.Tests\Newtonsoft.Json.Tests.csproj", "{3E6E2335-B079-4B5B-A65A-9D586914BCBB}"
-	ProjectSection(WebsiteProperties) = preProject
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.Debug = "False"
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

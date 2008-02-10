@@ -1,4 +1,4 @@
-#region License
+﻿#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -25,72 +25,68 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using Newtonsoft.Json.Utilities;
 
-namespace Newtonsoft.Json
+namespace Newtonsoft.Json.Linq
 {
-  /// <summary>
-  /// Builds a string. Unlike StringBuilder this class lets you reuse it's internal buffer.
-  /// </summary>
-  internal class StringBuffer
+  public class JConstructor : JContainer
   {
-    private char[] _buffer;
-    private int _position;
+    private string _name;
 
-    private static char[] _emptyBuffer = new char[0];
-
-    public int Position
+    public string Name
     {
-      get { return _position; }
-      set { _position = value; }
+      get { return _name; }
+      set { _name = value; }
     }
 
-    public StringBuffer()
+    public override JsonTokenType Type
     {
-      _buffer = _emptyBuffer;
+      get { return JsonTokenType.Constructor; }
     }
 
-    public StringBuffer(int initalSize)
+    public JConstructor()
     {
-      _buffer = new char[initalSize];
     }
 
-    public void Append(char value)
+    public JConstructor(string name, params object[] content)
+      : this(name, (object)content)
     {
-      // test if the buffer array is large enough to take the value
-      if (_position + 1 > _buffer.Length)
+    }
+
+    public JConstructor(string name, object content)
+      : this(name)
+    {
+      Add(content);
+    }
+
+    public JConstructor(string name)
+    {
+      _name = name;
+    }
+
+    internal override void ValidateObject(JToken o, JToken previous)
+    {
+      ValidationUtils.ArgumentNotNull(o, "o");
+
+      switch (o.Type)
       {
-        EnsureSize(1);
+        case JsonTokenType.Property:
+          throw new ArgumentException(string.Format("An item of type {0} cannot be added to content.", o.Type));
+      }
+    }
+
+    public override void WriteTo(JsonWriter writer)
+    {
+      writer.WriteStartConstructor(_name);
+
+      foreach (JToken token in Children())
+      {
+        token.WriteTo(writer);
       }
 
-      // set value and increment poisition
-      _buffer[_position++] = value;
-    }
-
-    public void Clear()
-    {
-      _buffer = _emptyBuffer;
-      _position = 0;
-    }
-
-    private void EnsureSize(int appendLength)
-    {
-      char[] newBuffer = new char[_position + appendLength * 2];
-
-      Array.Copy(_buffer, newBuffer, _position);
-
-      _buffer = newBuffer;
-    }
-
-    public override string ToString()
-    {
-      return ToString(0, _position);
-    }
-
-    public string ToString(int start, int length)
-    {
-      // TODO: validation
-      return new string(_buffer, start, length);
+      writer.WriteEndConstructor();
     }
   }
 }

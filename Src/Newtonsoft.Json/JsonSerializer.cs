@@ -36,31 +36,14 @@ using System.Globalization;
 namespace Newtonsoft.Json
 {
   /// <summary>
-  /// Specifies reference loop handling options for the <see cref="JsonWriter"/>.
-  /// </summary>
-  public enum ReferenceLoopHandling
-  {
-    /// <summary>
-    /// Throw a <see cref="JsonSerializationException"/> when a loop is encountered.
-    /// </summary>
-    Error = 0,
-    /// <summary>
-    /// Ignore loop references and do not serialize.
-    /// </summary>
-    Ignore = 1,
-    /// <summary>
-    /// Serialize loop references.
-    /// </summary>
-    Serialize = 2
-  }
-
-  /// <summary>
   /// Serializes and deserializes objects into and from the Json format.
   /// The <see cref="JsonSerializer"/> enables you to control how objects are encoded into Json.
   /// </summary>
   public class JsonSerializer
   {
     private ReferenceLoopHandling _referenceLoopHandling;
+    private MissingMemberHandling _missingMemberHandling;
+    private NullValueHandling _nullValueHandling;
     private int _level;
     private JsonConverterCollection _converters;
     private Dictionary<Type, MemberMappingCollection> _typeMemberMappings;
@@ -74,10 +57,39 @@ namespace Newtonsoft.Json
       set
       {
         if (value < ReferenceLoopHandling.Error || value > ReferenceLoopHandling.Serialize)
-        {
           throw new ArgumentOutOfRangeException("value");
-        }
+
         _referenceLoopHandling = value;
+      }
+    }
+
+    /// <summary>
+    /// Get or set how missing members are handled during deserialization.
+    /// </summary>
+    public MissingMemberHandling MissingMemberHandling
+    {
+      get { return _missingMemberHandling; }
+      set
+      {
+        if (value < MissingMemberHandling.Error || value > MissingMemberHandling.Ignore)
+          throw new ArgumentOutOfRangeException("value");
+
+        _missingMemberHandling = value;
+      }
+    }
+
+    /// <summary>
+    /// Get or set how null values are handled.
+    /// </summary>
+    public NullValueHandling NullValueHandling
+    {
+      get { return _nullValueHandling; }
+      set
+      {
+        if (value < NullValueHandling.Include || value > NullValueHandling.Ignore)
+          throw new ArgumentOutOfRangeException("value");
+
+        _nullValueHandling = value;
       }
     }
 
@@ -98,6 +110,7 @@ namespace Newtonsoft.Json
     public JsonSerializer()
     {
       _referenceLoopHandling = ReferenceLoopHandling.Error;
+      _missingMemberHandling = MissingMemberHandling.Error;
     }
 
     #region Deserialize
@@ -216,21 +229,47 @@ namespace Newtonsoft.Json
           case JsonToken.Date:
             value = EnsureType(reader.Value, objectType);
             break;
-          case JsonToken.Constructor:
-            value = reader.Value.ToString();
+          case JsonToken.StartConstructor:
+          case JsonToken.EndConstructor:
+            string constructorName = reader.Value.ToString();
+
+            //if (string.CompareOrdinal(constructorName, "Date") == 0)
+            //  value = CreateDate(reader);
+            //else
+              //TODO: use objectType plus constructor arguments to instantiate object
+              value = constructorName;
             break;
           case JsonToken.Null:
           case JsonToken.Undefined:
             value = null;
             break;
           default:
-            throw new JsonSerializationException("Unexpected token whil deserializing object: " + reader.TokenType);
+            throw new JsonSerializationException("Unexpected token while deserializing object: " + reader.TokenType);
         }
       }
 
       _level--;
 
       return value;
+    }
+
+    private DateTime CreateDate(JsonReader reader)
+    {
+      // move to parameter
+      if (!reader.Read())
+        throw new JsonSerializationException("Unexpected end while creating date.");
+
+      //TODO: add support for Date constructor with multiple arguments
+      long ticks = Convert.ToInt64(reader.Value);
+      DateTime date = JavaScriptConvert.ConvertJavaScriptTicksToDateTime(ticks);
+
+      // move to constructor end
+      if (!reader.Read())
+        throw new JsonSerializationException("Unexpected end while creating date.");
+      if (reader.TokenType != JsonToken.EndConstructor)
+        throw new JsonSerializationException("Unexpected token while creating date: " + reader.TokenType);
+
+      return date;
     }
 
     private object EnsureType(object value, Type targetType)
@@ -342,20 +381,26 @@ namespace Newtonsoft.Json
 
         value = GetObject(reader, memberType);
 
+        if (_nullValueHandling == NullValueHandling.Ignore && value == null)
+          return;
+
         ReflectionUtils.SetMemberValue(memberMapping.Member, target, value);
       }
       else if (typeof(IDictionary).IsAssignableFrom(targetType))
       {
         // attempt to get the IDictionary's type
-        memberType = ReflectionUtils.GetDictionaryValueType(target.GetType());
-
+        memberType = ReflectionUtils.GetDictionaryValueType(targetType);
         value = GetObject(reader, memberType);
 
-        ((IDictionary)target).Add(memberName, value);
+        Type keyType = ReflectionUtils.GetDictionaryKeyType(targetType);
+        object keyValue = EnsureType(memberName, keyType);
+
+        ((IDictionary)target).Add(keyValue, value);
       }
       else
       {
-        throw new JsonSerializationException(string.Format("Could not find member '{0}' on object of type '{1}'", memberName, targetType.GetType().Name));
+        if (_missingMemberHandling == MissingMemberHandling.Error)
+          throw new JsonSerializationException(string.Format("Could not find member '{0}' on object of type '{1}'", memberName, targetType.GetType().Name));
       }
     }
 
@@ -556,6 +601,9 @@ namespace Newtonsoft.Json
       if (!ReflectionUtils.IsIndexedProperty(member))
       {
         object memberValue = ReflectionUtils.GetMemberValue(member, value);
+
+        if (_nullValueHandling == NullValueHandling.Ignore && memberValue == null)
+          return;
 
         if (writer.SerializeStack.IndexOf(memberValue) != -1)
         {

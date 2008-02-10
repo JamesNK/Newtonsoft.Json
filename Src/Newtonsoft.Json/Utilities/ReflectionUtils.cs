@@ -209,26 +209,50 @@ namespace Newtonsoft.Json.Utilities
       }
     }
 
-    public static Type GetDictionaryValueType(Type type)
+    private static void GetDictionaryKeyValueTypes(Type dictionaryType, out Type keyType, out Type valueType)
     {
-      ValidationUtils.ArgumentNotNull(type, "type");
+      ValidationUtils.ArgumentNotNull(dictionaryType, "type");
 
       Type genericDictionaryType;
-      if (IsSubClass(type, typeof(IDictionary<,>), out genericDictionaryType))
+      if (IsSubClass(dictionaryType, typeof(IDictionary<,>), out genericDictionaryType))
       {
         if (genericDictionaryType.IsGenericTypeDefinition)
-          throw new Exception(string.Format("Type {0} is not a dictionary.", type));
+          throw new Exception(string.Format("Type {0} is not a dictionary.", dictionaryType));
 
-        return genericDictionaryType.GetGenericArguments()[1];
+        Type[] dictionaryGenericArguments = genericDictionaryType.GetGenericArguments();
+
+        keyType = dictionaryGenericArguments[0];
+        valueType = dictionaryGenericArguments[1];
+        return;
       }
-      else if (typeof(IDictionary).IsAssignableFrom(type))
+      else if (typeof(IDictionary).IsAssignableFrom(dictionaryType))
       {
-        return null;
+        keyType = null;
+        valueType = null;
+        return;
       }
       else
       {
-        throw new Exception(string.Format("Type {0} is not a dictionary.", type));
+        throw new Exception(string.Format("Type {0} is not a dictionary.", dictionaryType));
       }
+    }
+
+    public static Type GetDictionaryValueType(Type dictionaryType)
+    {
+      Type keyType;
+      Type valueType;
+      GetDictionaryKeyValueTypes(dictionaryType, out keyType, out valueType);
+
+      return valueType;
+    }
+
+    public static Type GetDictionaryKeyType(Type dictionaryType)
+    {
+      Type keyType;
+      Type valueType;
+      GetDictionaryKeyValueTypes(dictionaryType, out keyType, out valueType);
+
+      return keyType;
     }
 
     /// <summary>

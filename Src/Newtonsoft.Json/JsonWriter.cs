@@ -36,6 +36,7 @@ namespace Newtonsoft.Json
   {
     Object,
     Array,
+    Constructor,
     None
   }
 
@@ -62,6 +63,10 @@ namespace Newtonsoft.Json
     /// A array is being written.
     /// </summary>
     Array,
+    /// <summary>
+    /// A constructor is being written.
+    /// </summary>
+    Constructor,
     /// <summary>
     /// A property is being written.
     /// </summary>
@@ -100,20 +105,23 @@ namespace Newtonsoft.Json
       Object,
       ArrayStart,
       Array,
+      ConstructorStart,
+      Constructor,
       Closed,
       Error
     }
 
     // array that gives a new state based on the current state an the token being written
     private static readonly State[,] stateArray = {
-		    //                      Start				PropertyName		ObjectStart			Object			ArrayStart			Array				Closed			Error
-		    //						
-		    /* None				*/{ State.Error,		State.Error,		State.Error,		State.Error,	State.Error,		State.Error,		State.Error,	State.Error },
-		    /* StartObject		*/{ State.ObjectStart,	State.ObjectStart,	State.Error,		State.Error,	State.ObjectStart,	State.ObjectStart,  State.Error,	State.Error },
-		    /* StartArray		*/{ State.ArrayStart,	State.ArrayStart,	State.Error,		State.Error,	State.ArrayStart,   State.ArrayStart,   State.Error,	State.Error },
-		    /* StartProperty	*/{ State.Error,		State.Error,		State.Property,		State.Property, State.Error,		State.Error,		State.Error,	State.Error },
-		    /* Comment			*/{ State.Error,		State.Property,		State.ObjectStart,	State.Object,	State.ArrayStart,	State.Array,		State.Error,	State.Error },
-		    /* Value			*/{ State.Error,		State.Object,		State.Error,		State.Error,	State.Array,		State.Array,		State.Error,	State.Error },
+//                      Start                   PropertyName            ObjectStart         Object            ArrayStart              Array                   ConstructorStart        Constructor             Closed          Error
+//                        
+/* None             */{ State.Error,            State.Error,            State.Error,        State.Error,      State.Error,            State.Error,            State.Error,            State.Error,            State.Error,    State.Error },
+/* StartObject      */{ State.ObjectStart,      State.ObjectStart,      State.Error,        State.Error,      State.ObjectStart,      State.ObjectStart,      State.ObjectStart,      State.ObjectStart,      State.Error,    State.Error },
+/* StartArray       */{ State.ArrayStart,       State.ArrayStart,       State.Error,        State.Error,      State.ArrayStart,       State.ArrayStart,       State.ArrayStart,       State.ArrayStart,       State.Error,    State.Error },
+/* StartConstructor */{ State.ConstructorStart, State.ConstructorStart, State.Error,        State.Error,      State.ConstructorStart, State.ConstructorStart, State.ConstructorStart, State.ConstructorStart, State.Error,    State.Error },
+/* StartProperty    */{ State.Property,         State.Error,            State.Property,     State.Property,   State.Error,            State.Error,            State.Error,            State.Error,            State.Error,    State.Error },
+/* Comment          */{ State.Start,            State.Property,         State.ObjectStart,  State.Object,     State.ArrayStart,       State.Array,            State.Constructor,      State.Constructor,      State.Error,    State.Error },
+/* Value            */{ State.Start,            State.Object,           State.Error,        State.Error,      State.Array,            State.Array,            State.Constructor,      State.Constructor,      State.Error,    State.Error },
 		};
 
     private int _top;
@@ -157,6 +165,9 @@ namespace Newtonsoft.Json
           case State.Array:
           case State.ArrayStart:
             return WriteState.Array;
+          case State.Constructor:
+          case State.ConstructorStart:
+            return WriteState.Constructor;
           case State.Property:
             return WriteState.Property;
           case State.Start:
@@ -322,6 +333,20 @@ namespace Newtonsoft.Json
       AutoCompleteClose(JsonToken.EndArray);
     }
 
+    public void WriteStartConstructor(string name)
+    {
+      AutoComplete(JsonToken.StartConstructor);
+      Push(JsonType.Constructor);
+      _writer.Write("new ");
+      _writer.Write(name);
+      _writer.Write("(");
+    }
+
+    public void WriteEndConstructor()
+    {
+      AutoCompleteClose(JsonToken.EndConstructor);
+    }
+
     /// <summary>
     /// Writes the property name of a name/value pair on a Json object.
     /// </summary>
@@ -360,6 +385,9 @@ namespace Newtonsoft.Json
         case JsonType.Array:
           WriteEndArray();
           break;
+        case JsonType.Constructor:
+          WriteEndConstructor();
+          break;
         default:
           throw new JsonWriterException("Unexpected type when writing end: " + type);
       }
@@ -381,6 +409,8 @@ namespace Newtonsoft.Json
           return JsonType.Object;
         case JsonToken.EndArray:
           return JsonType.Array;
+        case JsonToken.EndConstructor:
+          return JsonType.Constructor;
         default:
           throw new JsonWriterException("No type for token: " + token);
       }
@@ -394,6 +424,8 @@ namespace Newtonsoft.Json
           return JsonToken.EndObject;
         case JsonType.Array:
           return JsonToken.EndArray;
+        case JsonType.Constructor:
+          return JsonToken.EndConstructor;
         default:
           throw new JsonWriterException("No close token for type: " + type);
       }
@@ -433,6 +465,9 @@ namespace Newtonsoft.Json
             break;
           case JsonToken.EndArray:
             _writer.Write("]");
+            break;
+          case JsonToken.EndConstructor:
+            _writer.Write(")");
             break;
           default:
             throw new JsonWriterException("Invalid JsonToken: " + token);
@@ -491,7 +526,7 @@ namespace Newtonsoft.Json
         case JsonToken.Undefined:
         case JsonToken.Date:
           // a value is being written
-          token = 5;
+          token = 6;
           break;
       }
 
@@ -501,7 +536,7 @@ namespace Newtonsoft.Json
       if (newState == State.Error)
         throw new JsonWriterException(string.Format("Token {0} in state {1} would result in an invalid JavaScript object.", tokenBeingWritten.ToString(), _currentState.ToString()));
 
-      if ((_currentState == State.Object || _currentState == State.Array) && tokenBeingWritten != JsonToken.Comment)
+      if ((_currentState == State.Object || _currentState == State.Array || _currentState == State.Constructor) && tokenBeingWritten != JsonToken.Comment)
       {
         _writer.Write(',');
       }
@@ -511,8 +546,9 @@ namespace Newtonsoft.Json
           _writer.Write(' ');
       }
 
-      if (tokenBeingWritten == JsonToken.PropertyName ||
-              (WriteState == WriteState.Array))
+      // don't indent a property when it is the first token to be written (i.e. at the start)
+      if ((tokenBeingWritten == JsonToken.PropertyName && WriteState != WriteState.Start) ||
+        WriteState == WriteState.Array || WriteState == WriteState.Constructor)
       {
         WriteIndent();
       }

@@ -1,0 +1,432 @@
+﻿#region License
+// Copyright (c) 2007 James Newton-King
+//
+// Permission is hereby granted, free of charge, to any person
+// obtaining a copy of this software and associated documentation
+// files (the "Software"), to deal in the Software without
+// restriction, including without limitation the rights to use,
+// copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following
+// conditions:
+//
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+// OTHER DEALINGS IN THE SOFTWARE.
+#endregion
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using NUnit.Framework;
+using Newtonsoft.Json.Linq;
+using System.Xml;
+using System.IO;
+
+namespace Newtonsoft.Json.Tests
+{
+  [TestFixture]
+  public class LinqToJsonTest
+  {
+    [Test]
+    public void ObjectParse()
+    {
+      string json = @"{
+  CPU: 'Intel',
+  Drives: [
+    'DVD read/writer',
+    ""500 gigabyte hard drive""
+  ]
+}";
+
+      JObject o = JObject.Parse(json);
+      IList<JProperty> properties = o.Properties().ToList();
+
+      Assert.AreEqual("CPU", properties[0].Name);
+      Assert.AreEqual("Intel", (string)properties[0].Value);
+      Assert.AreEqual("Drives", properties[1].Name);
+
+      JArray list = (JArray)properties[1].Value;
+      Assert.AreEqual(2, list.Children().Count());
+      Assert.AreEqual("DVD read/writer", (string)list.Children().ElementAt(0));
+      Assert.AreEqual("500 gigabyte hard drive", (string)list.Children().ElementAt(1));
+
+      List<object> parameterValues =
+        (from p in o.Properties()
+         where p.Value is JValue
+         select ((JValue)p.Value).Value).ToList();
+
+      Assert.AreEqual(1, parameterValues.Count);
+      Assert.AreEqual("Intel", parameterValues[0]);
+    }
+
+    [Test]
+    public void CreateLongArray()
+    {
+      string json = @"[0,1,2,3,4,5,6,7,8,9]";
+
+      JArray a = JArray.Parse(json);
+      List<int> list = a.Children<int>().ToList();
+
+      List<int> expected = new List<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+      CollectionAssert.AreEqual(expected, list);
+    }
+
+    [Test]
+    public void GoogleSearchAPI()
+    {
+      #region GoogleJson
+      string json = @"{
+    results:
+        [
+            {
+                GsearchResultClass:""GwebSearch"",
+                unescapedUrl : ""http://www.google.com/"",
+                url : ""http://www.google.com/"",
+                visibleUrl : ""www.google.com"",
+                cacheUrl : 
+""http://www.google.com/search?q=cache:zhool8dxBV4J:www.google.com"",
+                title : ""Google"",
+                titleNoFormatting : ""Google"",
+                content : ""Enables users to search the Web, Usenet, and 
+images. Features include PageRank,   caching and translation of 
+results, and an option to find similar pages.""
+            },
+            {
+                GsearchResultClass:""GwebSearch"",
+                unescapedUrl : ""http://news.google.com/"",
+                url : ""http://news.google.com/"",
+                visibleUrl : ""news.google.com"",
+                cacheUrl : 
+""http://www.google.com/search?q=cache:Va_XShOz_twJ:news.google.com"",
+                title : ""Google News"",
+                titleNoFormatting : ""Google News"",
+                content : ""Aggregated headlines and a search engine of many of the world's news sources.""
+            },
+            
+            {
+                GsearchResultClass:""GwebSearch"",
+                unescapedUrl : ""http://groups.google.com/"",
+                url : ""http://groups.google.com/"",
+                visibleUrl : ""groups.google.com"",
+                cacheUrl : 
+""http://www.google.com/search?q=cache:x2uPD3hfkn0J:groups.google.com"",
+                title : ""Google Groups"",
+                titleNoFormatting : ""Google Groups"",
+                content : ""Enables users to search and browse the Usenet 
+archives which consist of over 700   million messages, and post new 
+comments.""
+            },
+            
+            {
+                GsearchResultClass:""GwebSearch"",
+                unescapedUrl : ""http://maps.google.com/"",
+                url : ""http://maps.google.com/"",
+                visibleUrl : ""maps.google.com"",
+                cacheUrl : 
+""http://www.google.com/search?q=cache:dkf5u2twBXIJ:maps.google.com"",
+                title : ""Google Maps"",
+                titleNoFormatting : ""Google Maps"",
+                content : ""Provides directions, interactive maps, and 
+satellite/aerial imagery of the United   States. Can also search by 
+keyword such as type of business.""
+            }
+        ],
+        
+    adResults:
+        [
+            {
+                GsearchResultClass:""GwebSearch.ad"",
+                title : ""Gartner Symposium/ITxpo"",
+                content1 : ""Meet brilliant Gartner IT analysts"",
+                content2 : ""20-23 May 2007- Barcelona, Spain"",
+                url : 
+""http://www.google.com/url?sa=L&ai=BVualExYGRo3hD5ianAPJvejjD8-s6ye7kdTwArbI4gTAlrECEAEYASDXtMMFOAFQubWAjvr_____AWDXw_4EiAEBmAEAyAEBgAIB&num=1&q=http://www.gartner.com/it/sym/2007/spr8/spr8.jsp%3Fsrc%3D_spain_07_%26WT.srch%3D1&usg=__CxRH06E4Xvm9Muq13S4MgMtnziY="", 
+
+                impressionUrl : 
+""http://www.google.com/uds/css/ad-indicator-on.gif?ai=BVualExYGRo3hD5ianAPJvejjD8-s6ye7kdTwArbI4gTAlrECEAEYASDXtMMFOAFQubWAjvr_____AWDXw_4EiAEBmAEAyAEBgAIB"", 
+
+                unescapedUrl : 
+""http://www.google.com/url?sa=L&ai=BVualExYGRo3hD5ianAPJvejjD8-s6ye7kdTwArbI4gTAlrECEAEYASDXtMMFOAFQubWAjvr_____AWDXw_4EiAEBmAEAyAEBgAIB&num=1&q=http://www.gartner.com/it/sym/2007/spr8/spr8.jsp%3Fsrc%3D_spain_07_%26WT.srch%3D1&usg=__CxRH06E4Xvm9Muq13S4MgMtnziY="", 
+
+                visibleUrl : ""www.gartner.com""
+            }
+        ]
+}
+";
+      #endregion
+
+      JObject o = JObject.Parse(json);
+
+      List<JObject> resultObjects = o.PropertyValue<JArray>("results")
+        .Children<JObject>().ToList();
+
+
+      List<string> resultUrls = o.PropertyValue<JArray>("results")
+        .Children<JObject>()
+        .PropertyValues<string>("url")
+        .ToList();
+
+      List<string> expectedUrls = new List<string>() { "http://www.google.com/", "http://news.google.com/", "http://groups.google.com/", "http://maps.google.com/" };
+
+      CollectionAssert.AreEqual(expectedUrls, resultUrls);
+
+      List<JToken> descendants = o.Descendants().ToList();
+      Assert.AreEqual(89, descendants.Count);
+    }
+
+    [Test]
+    public void JTokenToString()
+    {
+      string json = @"{
+  CPU: 'Intel',
+  Drives: [
+    'DVD read/writer',
+    ""500 gigabyte hard drive""
+  ]
+}";
+
+      JObject o = JObject.Parse(json);
+
+      Assert.AreEqual(@"{
+  ""CPU"": ""Intel"",
+  ""Drives"": [
+    ""DVD read/writer"",
+    ""500 gigabyte hard drive""
+  ]
+}", o.ToString());
+
+      JArray list = o.PropertyValue<JArray>("Drives");
+
+      Assert.AreEqual(@"[
+  ""DVD read/writer"",
+  ""500 gigabyte hard drive""
+]", list.ToString());
+
+      JProperty cpuProperty = o.Property("CPU");
+      Assert.AreEqual(@"""CPU"": ""Intel""", cpuProperty.ToString());
+
+      JProperty drivesProperty = o.Property("Drives");
+      Assert.AreEqual(@"""Drives"": [
+  ""DVD read/writer"",
+  ""500 gigabyte hard drive""
+]", drivesProperty.ToString());
+    }
+
+    [Test]
+    public void JTokenToStringTypes()
+    {
+      string json = @"{""Color"":2,""Establised"":new Date(1264118400000),""Width"":1.1,""Employees"":999,""RoomsPerFloor"":[1,2,3,4,5,6,7,8,9],""Open"":false,""Symbol"":""@"",""Mottos"":[""Hello World"",""öäüÖÄÜ\\'{new Date(12345);}[222]_µ@²³~"",null,"" ""],""Cost"":100980.1,""Escape"":""\r\n\t\f\b?{\\r\\n\""'"",""product"":[{""Name"":""Rocket"",""Expiry"":new Date(949532490000),""Price"":0},{""Name"":""Alien"",""Expiry"":new Date(-59011459200000),""Price"":0}]}";
+
+      JObject o = JObject.Parse(json);
+
+      Assert.AreEqual(@"""Establised"": new Date(1264118400000)", o.Property("Establised").ToString());
+      Assert.AreEqual(@"new Date(1264118400000)", o.Property("Establised").Value.ToString());
+      Assert.AreEqual(@"""Width"": 1.1", o.Property("Width").ToString());
+      Assert.AreEqual(@"1.1", o.Property("Width").Value.ToString());
+      Assert.AreEqual(@"""Open"": false", o.Property("Open").ToString());
+      Assert.AreEqual(@"false", o.Property("Open").Value.ToString());
+
+      json = @"[null,undefined]";
+
+      JArray a = JArray.Parse(json);
+      Assert.AreEqual(@"[
+  null,
+  undefined
+]", a.ToString());
+      Assert.AreEqual(@"null", a.Children().ElementAt(0).ToString());
+      Assert.AreEqual(@"undefined", a.Children().ElementAt(1).ToString());
+    }
+
+    [Test]
+    public void CreateJTokenTree()
+    {
+      JObject o =
+        new JObject(
+          new JProperty("Test1", "Test1Value"),
+          new JProperty("Test2", "Test2Value"),
+          new JProperty("Test3", "Test3Value"),
+          new JProperty("Test4", null)
+        );
+
+      Assert.AreEqual(4, o.Properties().Count());
+
+      Assert.AreEqual(@"{
+  ""Test1"": ""Test1Value"",
+  ""Test2"": ""Test2Value"",
+  ""Test3"": ""Test3Value"",
+  ""Test4"": null
+}", o.ToString());
+
+      JArray a =
+        new JArray(
+          o,
+          new DateTime(2000, 10, 10),
+          55,
+          new JArray(
+            "1",
+            2,
+            3.0,
+            new DateTime(4, 5, 6, 7, 8, 9)
+          ),
+          new JConstructor(
+            "ConstructorName",
+            "param1",
+            2,
+            3.0
+          )
+        );
+
+      Assert.AreEqual(5, a.Count());
+      Assert.AreEqual(@"[
+  {
+    ""Test1"": ""Test1Value"",
+    ""Test2"": ""Test2Value"",
+    ""Test3"": ""Test3Value"",
+    ""Test4"": null
+  },
+  new Date(971136000000),
+  55,
+  [
+    ""1"",
+    2,
+    3,
+    new Date(-59011459200000)
+  ],
+  new ConstructorName(
+    ""param1"",
+    2,
+    3
+  )
+]", a.ToString());
+    }
+
+    private class Post
+    {
+      public string Title { get; set; }
+      public string Description { get; set; }
+      public string Link { get; set; }
+      public IList<string> Categories { get; set; }
+    }
+
+    private List<Post> GetPosts()
+    {
+      return new List<Post>()
+      {
+        new Post()
+        {
+          Title = "LINQ to JSON beta",
+          Description = "Annoucing LINQ to JSON",
+          Link = "http://james.newtonking.com/projects/json-net.aspx",
+          Categories = new List<string>() { "Json.NET", "LINQ" }
+        },
+        new Post()
+        {
+          Title = "Json.NET 1.3 + New license + Now on CodePlex",
+          Description = "Annoucing the release of Json.NET 1.3, the MIT license and the source being available on CodePlex",
+          Link = "http://james.newtonking.com/projects/json-net.aspx",
+          Categories = new List<string>() { "Json.NET", "CodePlex" }
+        }
+      };
+    }
+
+    [Test]
+    public void CreateJTokenTreeNested()
+    {
+      List<Post> posts = GetPosts();
+
+      JObject rss = 
+        new JObject(
+          new JProperty("channel",
+            new JObject(
+              new JProperty("title", "James Newton-King"),
+              new JProperty("link", "http://james.newtonking.com"),
+              new JProperty("description", "James Newton-King's blog."),
+              new JProperty("item",
+                new JArray(
+                  from p in posts
+                  orderby p.Title
+                  select new JObject(
+                    new JProperty("title", p.Title),
+                    new JProperty("description", p.Description),
+                    new JProperty("link", p.Link),
+                    new JProperty("category",
+                      new JArray(
+                        from c in p.Categories
+                        select new JValue(c)))))))));
+
+      Console.WriteLine(rss.ToString());
+
+      //{
+      //  "channel": {
+      //    "title": "James Newton-King",
+      //    "link": "http://james.newtonking.com",
+      //    "description": "James Newton-King's blog.",
+      //    "item": [
+      //      {
+      //        "title": "Json.NET 1.3 + New license + Now on CodePlex",
+      //        "description": "Annoucing the release of Json.NET 1.3, the MIT license and the source being available on CodePlex",
+      //        "link": "http://james.newtonking.com/projects/json-net.aspx",
+      //        "category": [
+      //          "Json.NET",
+      //          "CodePlex"
+      //        ]
+      //      },
+      //      {
+      //        "title": "LINQ to JSON beta",
+      //        "description": "Annoucing LINQ to JSON",
+      //        "link": "http://james.newtonking.com/projects/json-net.aspx",
+      //        "category": [
+      //          "Json.NET",
+      //          "LINQ"
+      //        ]
+      //      }
+      //    ]
+      //  }
+      //}
+
+      var postTitles =
+        from p in rss.PropertyValue<JObject>("channel")
+                     .PropertyValue<JArray>("item")
+                     .Children<JObject>()
+        select p.PropertyValue<string>("title");
+
+      foreach (var item in postTitles)
+      {
+        Console.WriteLine(item);
+      }
+
+      //LINQ to JSON beta
+      //Json.NET 1.3 + New license + Now on CodePlex
+
+      var categories =
+        from c in rss.PropertyValue<JObject>("channel")
+                     .PropertyValue<JArray>("item")
+                     .Children<JObject>()
+                     .PropertyValues<JArray>("category")
+                     .Children<string>()
+        group c by c into g
+        orderby g.Count() descending
+        select new { Category = g.Key, Count = g.Count() };
+
+      foreach (var c in categories)
+      {
+        Console.WriteLine(c.Category + " - Count: " + c.Count);
+      }
+
+      //Json.NET - Count: 2
+      //LINQ - Count: 1
+      //CodePlex - Count: 1
+    }
+  }
+}

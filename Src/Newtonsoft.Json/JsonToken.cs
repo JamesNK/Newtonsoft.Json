@@ -49,6 +49,10 @@ namespace Newtonsoft.Json
     /// <summary>
     /// An object property name.
     /// </summary>
+    StartConstructor,
+    /// <summary>
+    /// A constructor end token.
+    /// </summary>
     PropertyName,
     /// <summary>
     /// A comment.
@@ -87,9 +91,9 @@ namespace Newtonsoft.Json
     /// </summary>
     EndArray,
     /// <summary>
-    /// A JavaScript object constructor.
+    /// A constructor start token.
     /// </summary>
-    Constructor,
+    EndConstructor,
     /// <summary>
     /// A Date.
     /// </summary>
