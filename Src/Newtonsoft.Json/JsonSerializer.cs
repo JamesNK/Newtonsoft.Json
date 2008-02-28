@@ -531,9 +531,6 @@ namespace Newtonsoft.Json
       if (jsonWriter == null)
         throw new ArgumentNullException("jsonWriter");
 
-      if (value == null)
-        throw new ArgumentNullException("value");
-
       SerializeValue(jsonWriter, value);
     }
 

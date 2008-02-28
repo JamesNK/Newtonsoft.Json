@@ -761,5 +761,19 @@ keyword such as type of business.""
       Store s4 = (Store)jsonSerializer.Deserialize(new JsonReader(new StringReader(@"{""Color"":2,""Establised"":""\/Date(1264071600000+1300)\/"",""Width"":1.1,""Employees"":999,""RoomsPerFloor"":[1,2,3,4,5,6,7,8,9],""Open"":false,""Symbol"":""@"",""Mottos"":[""Hello World"",""öäüÖÄÜ\\'{new Date(12345);}[222]_µ@²³~"",null,"" ""],""Cost"":100980.1,""Escape"":""\r\n\t\f\b?{\\r\\n\""'"",""product"":[{""Name"":""Rocket"",""Expiry"":""\/Date(949485690000+1300)\/"",""Price"":0},{""Name"":""Alien"",""Expiry"":""\/Date(946638000000)\/"",""Price"":0}]}")), typeof(Store));
       Assert.AreEqual(s1.Establised, s3.Establised);
     }
+
+    [Test]
+    public void SerializeObject()
+    {
+      string json = JavaScriptConvert.SerializeObject(new object());
+      Assert.AreEqual("{}", json);
+    }
+
+    [Test]
+    public void SerializeNull()
+    {
+      string json = JavaScriptConvert.SerializeObject(null);
+      Assert.AreEqual("null", json);
+    }
   }
 }
