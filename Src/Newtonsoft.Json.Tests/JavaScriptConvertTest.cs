@@ -6,8 +6,7 @@ using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests
 {
-  [TestFixture]
-  public class JavaScriptConvertTest
+  public class JavaScriptConvertTest : TestFixtureBase
   {
     [Test]
     public void EscapeJavaScriptString()

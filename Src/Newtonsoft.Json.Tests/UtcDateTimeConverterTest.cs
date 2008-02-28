@@ -23,37 +23,26 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-
 using System;
 using System.Collections.Generic;
 using System.Text;
+using NUnit.Framework;
+using Newtonsoft.Json;
+using System.IO;
+using Newtonsoft.Json.Converters;
+using System.Xml;
 using System.Globalization;
 
-namespace Newtonsoft.Json.Converters
+namespace Newtonsoft.Json.Tests
 {
-  public class AspNetAjaxDateTimeConverter : JsonConverter
+  public class IsoDateTimeConverterTest : TestFixtureBase
   {
-    public override void WriteJson(JsonWriter writer, object value)
+    [Test]
+    public void ShouldBeAbleToConvertDateTimes()
     {
-      DateTime dateTime = (DateTime)value;
-      long javaScriptTicks = JavaScriptConvert.ConvertDateTimeToJavaScriptTicks(dateTime);
-
-      writer.WriteValue("@" + javaScriptTicks.ToString(null, CultureInfo.InvariantCulture) + "@");
-    }
-
-    public override object ReadJson(JsonReader reader, Type objectType)
-    {
-      string dateTimeText = (string)reader.Value;
-      dateTimeText = dateTimeText.Substring(1, dateTimeText.Length - 2);
-
-      long javaScriptTicks = Convert.ToInt64(dateTimeText);
-
-      return JavaScriptConvert.ConvertJavaScriptTicksToDateTime(javaScriptTicks);
-    }
-
-    public override bool CanConvert(Type valueType)
-    {
-      return typeof(DateTime).IsAssignableFrom(valueType);
+      IsoDateTimeConverter conv = new IsoDateTimeConverter();
+      Assert.IsTrue(conv.CanConvert(typeof(DateTime)));
+      Assert.IsTrue(conv.CanConvert(typeof(DateTimeOffset)));
     }
   }
 }

@@ -40,7 +40,7 @@ namespace Newtonsoft.Json
 
     public virtual object ReadJson(JsonReader reader, Type objectType)
     {
-      throw new NotImplementedException(string.Format("{0} has not overriden FromJson method.", GetType().Name));
+      throw new NotImplementedException(string.Format("{0} has not overriden the ReadJson method.", GetType().Name));
     }
 
     public abstract bool CanConvert(Type objectType);

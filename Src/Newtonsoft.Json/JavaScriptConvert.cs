@@ -75,7 +75,7 @@ namespace Newtonsoft.Json
       Null = "null";
       Undefined = "undefined";
 
-      InitialJavaScriptDateTicks = (new DateTime(1970, 1, 1)).Ticks;
+      InitialJavaScriptDateTicks = (new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).Ticks;
       MinimumJavaScriptDate = new DateTime(100, 1, 1);
     }
 
@@ -86,24 +86,53 @@ namespace Newtonsoft.Json
     /// <returns>A Json string representation of the <see cref="DateTime"/>.</returns>
     public static string ToString(DateTime value)
     {
-      long javaScriptTicks = ConvertDateTimeToJavaScriptTicks(value);
-
-      return "new Date(" + javaScriptTicks + ")";
+      return ToStringInternal(new DateTimeOffset(value), value.Kind);
     }
 
-    internal static long ConvertDateTimeToJavaScriptTicks(DateTime dateTime)
+    /// <summary>
+    /// Converts the <see cref="DateTimeOffset"/> to it's JavaScript string representation.
+    /// </summary>
+    /// <param name="value">The value to convert.</param>
+    /// <returns>A Json string representation of the <see cref="DateTimeOffset"/>.</returns>
+    public static string ToString(DateTimeOffset value)
     {
-      if (dateTime < MinimumJavaScriptDate)
-        dateTime = MinimumJavaScriptDate;
+      return ToStringInternal(value, DateTimeKind.Local);
+    }
 
-      long javaScriptTicks = (dateTime.Ticks - InitialJavaScriptDateTicks) / (long)10000;
+    public static string ToStringInternal(DateTimeOffset value, DateTimeKind kind)
+    {
+      long javaScriptTicks = ConvertDateTimeToJavaScriptTicks(value);
+
+      string offset;
+      switch (kind)
+      {
+        case DateTimeKind.Local:
+        case DateTimeKind.Unspecified:
+          TimeSpan utcOffset = value.Offset;
+          offset = utcOffset.Hours.ToString("+00;-00") + utcOffset.Minutes.ToString("00;00");
+          break;
+        default:
+          offset = string.Empty;
+          break;
+      }
+      return @"""\/Date(" + javaScriptTicks.ToString(CultureInfo.InvariantCulture) + offset + @")\/""";
+    }
+
+    internal static long ConvertDateTimeToJavaScriptTicks(DateTimeOffset dateTime)
+    {
+      DateTimeOffset utcDateTime = dateTime.ToUniversalTime();
+
+      //if (utcDateTime < MinimumJavaScriptDate)
+      //  utcDateTime = MinimumJavaScriptDate;
+
+      long javaScriptTicks = (utcDateTime.Ticks - InitialJavaScriptDateTicks) / (long)10000;
 
       return javaScriptTicks;
     }
 
     internal static DateTime ConvertJavaScriptTicksToDateTime(long javaScriptTicks)
     {
-      DateTime dateTime = new DateTime((javaScriptTicks * 10000) + InitialJavaScriptDateTicks);
+      DateTime dateTime = new DateTime((javaScriptTicks * 10000) + InitialJavaScriptDateTicks, DateTimeKind.Utc);
 
       return dateTime;
     }
@@ -328,6 +357,10 @@ namespace Newtonsoft.Json
             return ToString((decimal)convertible);
         }
       }
+      else if (value is DateTimeOffset)
+      {
+        return ToString((DateTimeOffset)value);
+      }
 
       throw new ArgumentException(string.Format("Unsupported type: {0}. Use the JsonSerializer class to get the object's JSON representation.", value.GetType()));
     }
@@ -397,12 +430,28 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
+    /// Deserializes the specified JSON to the given anonymous type.
+    /// </summary>
+    /// <typeparam name="T">
+    /// The anonymous type to deserialize to. This can't be specified
+    /// traditionally and must be infered from the anonymous type passed
+    /// as a parameter.
+    /// </typeparam>
+    /// <param name="value">The object to deserialize.</param>
+    /// <param name="anonymousTypeObject">The anonymous type object.</param>
+    /// <returns>The deserialized anonymous type from the JSON string.</returns>
+    public static T DeserializeAnonymousType<T>(string value, T anonymousTypeObject)
+    {
+      return (T)DeserializeObject(value, typeof(T));
+    }
+
+    /// <summary>
     /// Deserializes the specified object to a Json object.
     /// </summary>
     /// <typeparam name="T">The type of the object to deserialize.</typeparam>
     /// <param name="value">The object to deserialize.</param>
     /// <param name="converters">Converters to use while deserializing.</param>
-    /// <returns>The deserialized object from the Json string.</returns>
+    /// <returns>The deserialized object from the JSON string.</returns>
     public static T DeserializeObject<T>(string value, params JsonConverter[] converters)
     {
       return (T)DeserializeObject(value, typeof(T), converters);
@@ -438,7 +487,7 @@ namespace Newtonsoft.Json
       return SerializeObject(node, converter);
     }
 
-    public static XmlNode DeerializeXmlNode(string value)
+    public static XmlNode DeserializeXmlNode(string value)
     {
       XmlNodeConverter converter = new XmlNodeConverter();
 

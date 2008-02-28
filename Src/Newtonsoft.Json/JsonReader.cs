@@ -217,11 +217,54 @@ namespace Newtonsoft.Json
 
       ClearCurrentChar();
       _currentState = State.PostValue;
-      _token = JsonToken.String;
-      _value = _buffer.ToString();
+      string text = _buffer.ToString();
       _buffer.Position = 0;
-      _valueType = typeof(string);
-      _quoteChar = quote;
+
+      if (text.StartsWith("/Date(", StringComparison.Ordinal) && text.EndsWith(")/", StringComparison.Ordinal))
+      {
+        ParseDate(text);
+      }
+      else
+      {
+        SetToken(JsonToken.String, text);
+        _quoteChar = quote;
+      }
+    }
+
+    private void ParseDate(string text)
+    {
+      string value = text.Substring(6, text.Length - 8);
+      DateTimeKind kind = DateTimeKind.Utc;
+
+      int index = value.IndexOf('+', 1);
+
+      if (index == -1)
+        index = value.IndexOf('-', 1);
+
+      if (index != -1)
+      {
+        kind = DateTimeKind.Local;
+        value = value.Substring(0, index);
+      }
+
+      long javaScriptTicks = long.Parse(value);
+      DateTime utcDateTime = JavaScriptConvert.ConvertJavaScriptTicksToDateTime(javaScriptTicks);
+      DateTime dateTime;
+
+      switch (kind)
+      {
+        case DateTimeKind.Unspecified:
+          dateTime = DateTime.SpecifyKind(utcDateTime.ToLocalTime(), DateTimeKind.Unspecified);
+          break;
+        case DateTimeKind.Local:
+          dateTime = utcDateTime.ToLocalTime();
+          break;
+        default:
+          dateTime = utcDateTime;
+          break;
+      }
+
+      SetToken(JsonToken.Date, dateTime);
     }
 
     private bool MoveNext()
@@ -648,22 +691,22 @@ namespace Newtonsoft.Json
           _value = constructorName;
           _valueType = typeof(string);
 
-          if (string.CompareOrdinal(constructorName, "Date") == 0)
-          {
-            IList<object> parameters = new List<object>();
+          //if (string.CompareOrdinal(constructorName, "Date") == 0)
+          //{
+          //  IList<object> parameters = new List<object>();
 
-            MoveNext();
-            while (ParseValue() && _token != JsonToken.EndConstructor)
-            {
-              parameters.Add(_value);
-            }
+          //  MoveNext();
+          //  while (ParseValue() && _token != JsonToken.EndConstructor)
+          //  {
+          //    parameters.Add(_value);
+          //  }
 
-            long javaScriptTicks = Convert.ToInt64(parameters[0]);
+          //  long javaScriptTicks = Convert.ToInt64(parameters[0]);
 
-            DateTime date = JavaScriptConvert.ConvertJavaScriptTicksToDateTime(javaScriptTicks);
+          //  DateTime date = JavaScriptConvert.ConvertJavaScriptTicksToDateTime(javaScriptTicks);
 
-            SetToken(JsonToken.Date, date);
-          }
+          //  SetToken(JsonToken.Date, date);
+          //}
 
 
 
@@ -753,6 +796,9 @@ namespace Newtonsoft.Json
           break;
         case JsonType.Array:
           _currentState = State.Array;
+          break;
+        case JsonType.Constructor:
+          _currentState = State.Constructor;
           break;
         case JsonType.None:
           _currentState = State.Finished;

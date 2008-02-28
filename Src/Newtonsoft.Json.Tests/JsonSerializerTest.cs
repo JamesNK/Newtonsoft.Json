@@ -35,20 +35,25 @@ using System.Xml.Serialization;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization.Json;
 using System.Net.Mail;
+using System.Web.Script.Serialization;
 
 namespace Newtonsoft.Json.Tests
 {
   public class Product
   {
     public string Name;
-    public DateTime Expiry;
+    public DateTime Expiry = new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     public decimal Price;
     public string[] Sizes;
 
     public override bool Equals(object obj)
     {
       if (obj is Product)
-        return ((Product)obj).Name == Name;
+      {
+        Product p = (Product)obj;
+
+        return (p.Name == Name && p.Expiry == Expiry && p.Price == Price);
+      }
 
       return base.Equals(obj);
     }
@@ -74,7 +79,7 @@ namespace Newtonsoft.Json.Tests
   public class Store
   {
     public StoreColor Color = StoreColor.Yellow;
-    public DateTime Establised = new DateTime(2010, 1, 22);
+    public DateTimeOffset Establised = new DateTimeOffset(2010, 1, 22, 1, 1, 1, TimeSpan.Zero);
     public double Width = 1.1;
     public int Employees = 999;
     public int[] RoomsPerFloor = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -94,7 +99,7 @@ namespace Newtonsoft.Json.Tests
 
       Product rocket = new Product();
       rocket.Name = "Rocket";
-      rocket.Expiry = new DateTime(2000, 2, 2, 23, 1, 30);
+      rocket.Expiry = new DateTime(2000, 2, 2, 23, 1, 30, DateTimeKind.Utc);
       Product alien = new Product();
       alien.Name = "Alien";
 
@@ -111,8 +116,7 @@ namespace Newtonsoft.Json.Tests
     White
   }
 
-  [TestFixture]
-  public class JsonSerializerTest
+  public class JsonSerializerTest : TestFixtureBase
   {
     [Test]
     public void PersonTypedObjectDeserialization()
@@ -627,6 +631,46 @@ keyword such as type of business.""
     }
 
     [Test]
+    public void DateTime()
+    {
+      List<DateTime> testDates = new List<DateTime> {
+        new DateTime(100, 1, 1, 1, 1, 1, DateTimeKind.Local),
+        new DateTime(100, 1, 1, 1, 1, 1, DateTimeKind.Unspecified),
+        new DateTime(100, 1, 1, 1, 1, 1, DateTimeKind.Utc),
+        new DateTime(2000, 1, 1, 1, 1, 1, DateTimeKind.Local),
+        new DateTime(2000, 1, 1, 1, 1, 1, DateTimeKind.Unspecified),
+        new DateTime(2000, 1, 1, 1, 1, 1, DateTimeKind.Utc),
+      };
+      string result;
+
+
+      MemoryStream ms = new MemoryStream();
+      DataContractJsonSerializer s = new DataContractJsonSerializer(typeof(List<DateTime>));
+      s.WriteObject(ms, testDates);
+      ms.Seek(0, SeekOrigin.Begin);
+      StreamReader sr = new StreamReader(ms);
+
+      string expected = sr.ReadToEnd();
+
+      result = JavaScriptConvert.SerializeObject(testDates);
+      Assert.AreEqual(expected, result);
+    }
+
+    [Test]
+    public void DateTimeOffset()
+    {
+      List<DateTimeOffset> testDates = new List<DateTimeOffset> {
+        new DateTimeOffset(new DateTime(100, 1, 1, 1, 1, 1, DateTimeKind.Utc)),
+        new DateTimeOffset(2000, 1, 1, 1, 1, 1, TimeSpan.Zero),
+        new DateTimeOffset(2000, 1, 1, 1, 1, 1, TimeSpan.FromHours(13)),
+        new DateTimeOffset(2000, 1, 1, 1, 1, 1, TimeSpan.FromHours(-3.5)),
+      };
+
+      string result = JavaScriptConvert.SerializeObject(testDates);
+      Assert.AreEqual(@"[""\/Date(-59011455539000+0000)\/"",""\/Date(946688461000+0000)\/"",""\/Date(946641661000+1300)\/"",""\/Date(946701061000-0330)\/""]", result);
+    }
+
+    [Test]
     public void NonStringKeyDictionary()
     {
       Dictionary<int, int> values = new Dictionary<int, int>();
@@ -645,10 +689,27 @@ keyword such as type of business.""
     [Test]
     public void AnonymousObjectSerialization()
     {
-      var anonymous = new { StringValue = "I am a string", IntValue = int.MaxValue };
+      var anonymous =
+        new
+        {
+          StringValue = "I am a string",
+          IntValue = int.MaxValue,
+          NestedAnonymous = new { NestedValue = byte.MaxValue },
+          NestedArray = new[] { 1, 2 },
+          Product = new Product() { Name = "TestProduct" }
+        };
 
       string json = JavaScriptConvert.SerializeObject(anonymous);
-      Assert.AreEqual(@"{""StringValue"":""I am a string"",""IntValue"":2147483647}", json);
+      Assert.AreEqual(@"{""StringValue"":""I am a string"",""IntValue"":2147483647,""NestedAnonymous"":{""NestedValue"":255},""NestedArray"":[1,2],""Product"":{""Name"":""TestProduct"",""Expiry"":""\/Date(946684800000)\/"",""Price"":0,""Sizes"":null}}", json);
+
+      anonymous = JavaScriptConvert.DeserializeAnonymousType(json, anonymous);
+      Assert.AreEqual("I am a string", anonymous.StringValue);
+      Assert.AreEqual(int.MaxValue, anonymous.IntValue);
+      Assert.AreEqual(255, anonymous.NestedAnonymous.NestedValue);
+      Assert.AreEqual(2, anonymous.NestedArray.Length);
+      Assert.AreEqual(1, anonymous.NestedArray[0]);
+      Assert.AreEqual(2, anonymous.NestedArray[1]);
+      Assert.AreEqual("TestProduct", anonymous.Product.Name);
     }
 
     [Test]
@@ -668,7 +729,7 @@ keyword such as type of business.""
 
       jsonSerializer.Serialize(sw, collection);
 
-      Assert.AreEqual(@"[{""Name"":""Test1"",""Expiry"":new Date(-59011459200000),""Price"":0,""Sizes"":null},{""Name"":""Test2"",""Expiry"":new Date(-59011459200000),""Price"":0,""Sizes"":null},{""Name"":""Test3"",""Expiry"":new Date(-59011459200000),""Price"":0,""Sizes"":null}]",
+      Assert.AreEqual(@"[{""Name"":""Test1"",""Expiry"":""\/Date(946684800000)\/"",""Price"":0,""Sizes"":null},{""Name"":""Test2"",""Expiry"":""\/Date(946684800000)\/"",""Price"":0,""Sizes"":null},{""Name"":""Test3"",""Expiry"":""\/Date(946684800000)\/"",""Price"":0,""Sizes"":null}]",
         sw.GetStringBuilder().ToString());
 
       ProductCollection collectionNew = (ProductCollection)jsonSerializer.Deserialize(new JsonReader(new StringReader(sw.GetStringBuilder().ToString())), typeof(ProductCollection));
@@ -687,13 +748,18 @@ keyword such as type of business.""
       StringWriter sw = new StringWriter();
       jsonSerializer.Serialize(sw, s1);
 
-      Assert.AreEqual(@"{""Color"":2,""Establised"":new Date(1264118400000),""Width"":1.1,""Employees"":999,""RoomsPerFloor"":[1,2,3,4,5,6,7,8,9],""Open"":false,""Symbol"":""@"",""Mottos"":[""Hello World"",""öäüÖÄÜ\\'{new Date(12345);}[222]_µ@²³~"",null,"" ""],""Cost"":100980.1,""Escape"":""\r\n\t\f\b?{\\r\\n\""'"",""product"":[{""Name"":""Rocket"",""Expiry"":new Date(949532490000),""Price"":0},{""Name"":""Alien"",""Expiry"":new Date(-59011459200000),""Price"":0}]}", sw.GetStringBuilder().ToString());
+      //JavaScriptConvert.ConvertDateTimeToJavaScriptTicks(s1.Establised.DateTime)
+
+      Assert.AreEqual(@"{""Color"":2,""Establised"":""\/Date(1264122061000+0000)\/"",""Width"":1.1,""Employees"":999,""RoomsPerFloor"":[1,2,3,4,5,6,7,8,9],""Open"":false,""Symbol"":""@"",""Mottos"":[""Hello World"",""öäüÖÄÜ\\'{new Date(12345);}[222]_µ@²³~"",null,"" ""],""Cost"":100980.1,""Escape"":""\r\n\t\f\b?{\\r\\n\""'"",""product"":[{""Name"":""Rocket"",""Expiry"":""\/Date(949532490000)\/"",""Price"":0},{""Name"":""Alien"",""Expiry"":""\/Date(946684800000)\/"",""Price"":0}]}", sw.GetStringBuilder().ToString());
 
       Store s2 = (Store)jsonSerializer.Deserialize(new JsonReader(new StringReader("{}")), typeof(Store));
       Assert.AreEqual("\r\n\t\f\b?{\\r\\n\"\'", s2.Escape);
 
       Store s3 = (Store)jsonSerializer.Deserialize(new JsonReader(new StringReader(@"{""Escape"":null}")), typeof(Store));
       Assert.AreEqual("\r\n\t\f\b?{\\r\\n\"\'", s3.Escape);
+
+      Store s4 = (Store)jsonSerializer.Deserialize(new JsonReader(new StringReader(@"{""Color"":2,""Establised"":""\/Date(1264071600000+1300)\/"",""Width"":1.1,""Employees"":999,""RoomsPerFloor"":[1,2,3,4,5,6,7,8,9],""Open"":false,""Symbol"":""@"",""Mottos"":[""Hello World"",""öäüÖÄÜ\\'{new Date(12345);}[222]_µ@²³~"",null,"" ""],""Cost"":100980.1,""Escape"":""\r\n\t\f\b?{\\r\\n\""'"",""product"":[{""Name"":""Rocket"",""Expiry"":""\/Date(949485690000+1300)\/"",""Price"":0},{""Name"":""Alien"",""Expiry"":""\/Date(946638000000)\/"",""Price"":0}]}")), typeof(Store));
+      Assert.AreEqual(s1.Establised, s3.Establised);
     }
   }
 }

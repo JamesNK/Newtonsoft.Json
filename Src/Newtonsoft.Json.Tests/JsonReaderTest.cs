@@ -32,8 +32,7 @@ using System.IO;
 
 namespace Newtonsoft.Json.Tests
 {
-  [TestFixture]
-  public class JsonReaderTest
+  public class JsonReaderTest : TestFixtureBase
   {
     [Test]
     public void YahooFinance()

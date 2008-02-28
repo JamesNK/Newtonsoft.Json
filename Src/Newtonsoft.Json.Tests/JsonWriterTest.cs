@@ -32,8 +32,7 @@ using System.IO;
 
 namespace Newtonsoft.Json.Tests
 {
-  [TestFixture]
-  public class JsonWriterTest
+  public class JsonWriterTest : TestFixtureBase
   {
     [Test]
     public void ValueFormatting()

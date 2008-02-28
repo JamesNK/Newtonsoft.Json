@@ -29,6 +29,7 @@ using System.Text;
 using System.Drawing;
 using System.Xml;
 using Newtonsoft.Json.Utilities;
+using System.Linq;
 
 namespace Newtonsoft.Json.Converters
 {
@@ -40,6 +41,7 @@ namespace Newtonsoft.Json.Converters
     private const string WhitespaceName = "#whitespace";
     private const string SignificantWhitespaceName = "#significant-whitespace";
     private const string DeclarationName = "?xml";
+    private const string JsonNamespaceUri = "http://james.newtonking.com/projects/json";
 
     #region Writing
     public override void WriteJson(JsonWriter writer, object value)
@@ -106,13 +108,29 @@ namespace Newtonsoft.Json.Converters
       foreach (KeyValuePair<string, List<XmlNode>> nodeNameGroup in nodesGroupedByName)
       {
         List<XmlNode> groupedNodes = nodeNameGroup.Value;
+        bool writeArray;
 
         if (groupedNodes.Count == 1)
+        {
+          XmlNode singleNode = groupedNodes[0];
+          XmlAttribute jsonArrayAttribute = (singleNode.Attributes != null) ? singleNode.Attributes["Array", JsonNamespaceUri] : null;
+          if (jsonArrayAttribute != null)
+            writeArray = XmlConvert.ToBoolean(jsonArrayAttribute.Value);
+          else
+            writeArray = false;
+        }
+        else
+        {
+          writeArray = true;
+        }
+
+        if (!writeArray)
         {
           SerializeNode(writer, groupedNodes[0], true);
         }
         else
         {
+          string elementNames = nodeNameGroup.Key;
           writer.WritePropertyName(nodeNameGroup.Key);
           writer.WriteStartArray();
 
@@ -138,7 +156,7 @@ namespace Newtonsoft.Json.Converters
           if (writePropertyName)
             writer.WritePropertyName(node.Name);
 
-          if (CollectionUtils.IsNullOrEmpty(node.Attributes) && node.ChildNodes.Count == 1
+          if (ValueAttributes(node.Attributes).Count() == 0 && node.ChildNodes.Count == 1
                   && node.ChildNodes[0].NodeType == XmlNodeType.Text)
           {
             // write elements with a single text child as a name value pair
@@ -148,6 +166,20 @@ namespace Newtonsoft.Json.Converters
           {
             // empty element
             writer.WriteNull();
+          }
+          else if (node.ChildNodes.OfType<XmlElement>().Where(x => x.Name.StartsWith("-")).Count() > 1)
+          {
+            XmlElement constructorValueElement = node.ChildNodes.OfType<XmlElement>().Where(x => x.Name.StartsWith("-")).First();
+            string constructorName = constructorValueElement.Name.Substring(1);
+
+            writer.WriteStartConstructor(constructorName);
+
+            for (int i = 0; i < node.ChildNodes.Count; i++)
+            {
+              SerializeNode(writer, node.ChildNodes[i], false);
+            }
+
+            writer.WriteEndConstructor();
           }
           else
           {
@@ -174,6 +206,11 @@ namespace Newtonsoft.Json.Converters
         case XmlNodeType.ProcessingInstruction:
         case XmlNodeType.Whitespace:
         case XmlNodeType.SignificantWhitespace:
+          if (node.Prefix == "xmlns" && node.Value == JsonNamespaceUri)
+            break;
+          else if (node.NamespaceURI == JsonNamespaceUri)
+            break;
+
           if (writePropertyName)
             writer.WritePropertyName(GetPropertyName(node));
           writer.WriteValue(node.Value);
@@ -216,6 +253,10 @@ namespace Newtonsoft.Json.Converters
 
       XmlDocument document = new XmlDocument();
       XmlNamespaceManager manager = new XmlNamespaceManager(document.NameTable);
+
+      if (reader.TokenType != JsonToken.StartObject)
+        throw new JsonSerializationException("XmlNodeConverter can only convert JSON that begins with an object.");
+
       reader.Read();
 
       DeserializeNode(reader, document, manager, document);
@@ -241,7 +282,7 @@ namespace Newtonsoft.Json.Converters
           break;
         default:
           // processing instructions and the xml declaration start with ?
-          if (propertyName[0] == '?')
+          if (!string.IsNullOrEmpty(propertyName) && propertyName[0] == '?')
           {
             if (propertyName == DeclarationName)
             {
@@ -292,7 +333,8 @@ namespace Newtonsoft.Json.Converters
               && reader.TokenType != JsonToken.Boolean
               && reader.TokenType != JsonToken.Integer
               && reader.TokenType != JsonToken.Float
-              && reader.TokenType != JsonToken.Date)
+              && reader.TokenType != JsonToken.Date
+              && reader.TokenType != JsonToken.StartConstructor)
             {
               // read properties until first non-attribute is encountered
               while (!finishedAttributes && !finishedElement && reader.Read())
@@ -370,7 +412,8 @@ namespace Newtonsoft.Json.Converters
             }
             else if (reader.TokenType == JsonToken.Date)
             {
-              element.AppendChild(document.CreateTextNode(XmlConvert.ToString((DateTime)reader.Value)));
+              DateTime d = (DateTime)reader.Value;
+              element.AppendChild(document.CreateTextNode(XmlConvert.ToString(d, DateTimeUtils.ToSerializationMode(d.Kind))));
             }
             else if (reader.TokenType == JsonToken.Null)
             {
@@ -400,6 +443,9 @@ namespace Newtonsoft.Json.Converters
         switch (reader.TokenType)
         {
           case JsonToken.PropertyName:
+            if (currentNode.NodeType == XmlNodeType.Document && document.DocumentElement != null)
+              throw new JsonSerializationException("JSON root object has multiple properties.");
+
             string propertyName = reader.Value.ToString();
             reader.Read();
 
@@ -413,6 +459,14 @@ namespace Newtonsoft.Json.Converters
             else
             {
               DeserializeValue(reader, document, manager, propertyName, currentNode);
+            }
+            break;
+          case JsonToken.StartConstructor:
+            string constructorName = reader.Value.ToString();
+
+            while (reader.Read() && reader.TokenType != JsonToken.EndConstructor)
+            {
+              DeserializeValue(reader, document, manager, "-" + constructorName, currentNode);
             }
             break;
           case JsonToken.EndObject:
@@ -458,6 +512,16 @@ namespace Newtonsoft.Json.Converters
         return string.Empty;
       else
         return qualifiedName.Substring(0, colonPosition);
+    }
+
+    private IEnumerable<XmlAttribute> ValueAttributes(XmlAttributeCollection c)
+    {
+      return c.OfType<XmlAttribute>().Where(a => a.NamespaceURI != JsonNamespaceUri);
+    }
+
+    private IEnumerable<XmlNode> ValueNodes(XmlNodeList c)
+    {
+      return c.OfType<XmlNode>().Where(n => n.NamespaceURI != JsonNamespaceUri);
     }
     #endregion
 

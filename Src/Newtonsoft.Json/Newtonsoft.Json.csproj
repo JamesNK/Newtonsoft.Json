@@ -73,7 +73,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Converters\AspNetAjaxDateTimeConverter.cs" />
+    <Compile Include="Converters\IsoDateTimeConverter.cs" />
+    <Compile Include="Converters\JavaScriptDateTimeConverter.cs" />
+    <Compile Include="Converters\JsonDateTimeSerializationMode.cs" />
     <Compile Include="Converters\XmlNodeConverter.cs" />
     <Compile Include="Converters\HtmlColorConverter.cs" />
     <Compile Include="JavaScriptParameters.cs" />
@@ -105,6 +107,7 @@
     <Compile Include="MissingMemberHandling.cs" />
     <Compile Include="NullValueHandling.cs" />
     <Compile Include="ReferenceLoopHandling.cs" />
+    <Compile Include="Utilities\DateTimeUtils.cs" />
     <Compile Include="Utilities\JavaScriptUtils.cs" />
     <Compile Include="JsonToken.cs" />
     <Compile Include="JsonWriter.cs" />

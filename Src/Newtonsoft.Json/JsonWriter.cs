@@ -724,6 +724,15 @@ namespace Newtonsoft.Json
     {
       WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Date);
     }
+
+    /// <summary>
+    /// Writes a <see cref="DateTimeOffset"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="DateTimeOffset"/> value to write.</param>
+    public void WriteValue(DateTimeOffset value)
+    {
+      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Date);
+    }
     #endregion
 
     /// <summary>

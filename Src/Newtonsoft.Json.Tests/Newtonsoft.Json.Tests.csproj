@@ -60,16 +60,23 @@
     <Reference Include="System.ServiceModel.Web">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Web.Extensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AspNetAjaxDateTimeConverterTest.cs" />
+    <Compile Include="DateTimeTestClass.cs" />
+    <Compile Include="IsoDateTimeConverterTests.cs" />
     <Compile Include="JavaScriptConvertTest.cs" />
+    <Compile Include="JavaScriptDateTimeConverterTests.cs" />
     <Compile Include="JsonReaderTest.cs" />
     <Compile Include="JsonSerializerTest.cs" />
     <Compile Include="JsonWriterTest.cs" />
     <Compile Include="LinqToJsonTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestFixtureBase.cs" />
+    <Compile Include="UtcDateTimeConverterTest.cs" />
     <Compile Include="XmlNodeConverterTest.cs" />
   </ItemGroup>
   <ItemGroup>

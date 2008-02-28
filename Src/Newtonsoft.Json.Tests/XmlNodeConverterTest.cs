@@ -29,11 +29,11 @@ using Newtonsoft.Json;
 using System.IO;
 using System.Xml;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Tests
 {
-  [TestFixture]
-  public class XmlNodeConverterTest
+  public class XmlNodeConverterTest : TestFixtureBase
   {
     [Test]
     public void DocumentSerializeIndented()
@@ -210,7 +210,7 @@ namespace Newtonsoft.Json.Tests
 
       string jsonText = JavaScriptConvert.SerializeXmlNode(doc);
 
-      XmlDocument deserializedDoc = (XmlDocument)JavaScriptConvert.DeerializeXmlNode(jsonText);
+      XmlDocument deserializedDoc = (XmlDocument)JavaScriptConvert.DeserializeXmlNode(jsonText);
 
       Assert.AreEqual(doc.InnerXml, deserializedDoc.InnerXml);
 
@@ -242,7 +242,7 @@ namespace Newtonsoft.Json.Tests
   }
 }";
 
-      XmlDocument doc = (XmlDocument)JavaScriptConvert.DeerializeXmlNode(jsonText);
+      XmlDocument doc = (XmlDocument)JavaScriptConvert.DeserializeXmlNode(jsonText);
 
       string expected = @"<?xml version=""1.0"" standalone=""no""?>
 <span class=""vevent"">
@@ -295,7 +295,7 @@ namespace Newtonsoft.Json.Tests
 
       string jsonText = JavaScriptConvert.SerializeXmlNode(doc);
 
-      XmlDocument newDoc = (XmlDocument)JavaScriptConvert.DeerializeXmlNode(jsonText);
+      XmlDocument newDoc = (XmlDocument)JavaScriptConvert.DeserializeXmlNode(jsonText);
 
       Assert.AreEqual(doc.InnerXml, newDoc.InnerXml);
     }
@@ -322,7 +322,7 @@ namespace Newtonsoft.Json.Tests
 
       Console.WriteLine(jsonText);
 
-      XmlDocument newDoc = (XmlDocument)JavaScriptConvert.DeerializeXmlNode(jsonText);
+      XmlDocument newDoc = (XmlDocument)JavaScriptConvert.DeserializeXmlNode(jsonText);
 
       Assert.AreEqual(doc.InnerXml, newDoc.InnerXml);
     }
@@ -330,13 +330,89 @@ namespace Newtonsoft.Json.Tests
     [Test]
     public void OtherElementDataTypes()
     {
-      string jsonText = @"{""?xml"":{""@version"":""1.0"",""@standalone"":""no""},""root"":{""person"":[{""@id"":""1"",""Float"":2.5,""Integer"":99},{""@id"":""2"",""Boolean"":true,""date"":new Date(954374400000)}]}}";
+      string jsonText = @"{""?xml"":{""@version"":""1.0"",""@standalone"":""no""},""root"":{""person"":[{""@id"":""1"",""Float"":2.5,""Integer"":99},{""@id"":""2"",""Boolean"":true,""date"":""\/Date(954374400000)\/""}]}}";
 
-      XmlDocument newDoc = (XmlDocument)JavaScriptConvert.DeerializeXmlNode(jsonText);
+      XmlDocument newDoc = (XmlDocument)JavaScriptConvert.DeserializeXmlNode(jsonText);
 
-      string expected = @"<?xml version=""1.0"" standalone=""no""?><root><person id=""1""><Float>2.5</Float><Integer>99</Integer></person><person id=""2""><Boolean>true</Boolean><date>2000-03-30T00:00:00.0000000+13:00</date></person></root>";
+      string expected = @"<?xml version=""1.0"" standalone=""no""?><root><person id=""1""><Float>2.5</Float><Integer>99</Integer></person><person id=""2""><Boolean>true</Boolean><date>2000-03-30T00:00:00Z</date></person></root>";
 
       Assert.AreEqual(expected, newDoc.InnerXml);
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "XmlNodeConverter can only convert JSON that begins with an object.")]
+    public void NoRootObject()
+    {
+      XmlDocument newDoc = (XmlDocument)JavaScriptConvert.DeserializeXmlNode(@"[1]");
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "JSON root object has multiple properties.")]
+    public void RootObjectMultipleProperties()
+    {
+      XmlDocument newDoc = (XmlDocument)JavaScriptConvert.DeserializeXmlNode(@"{Prop1:1,Prop2:2}");
+    }
+
+    [Test]
+    public void JavaScriptConstructor()
+    {
+      string jsonText = @"{root:{r:new Date(34343, 55)}}";
+
+      XmlDocument newDoc = (XmlDocument)JavaScriptConvert.DeserializeXmlNode(jsonText);
+
+      string expected = @"<root><r><-Date>34343</-Date><-Date>55</-Date></r></root>";
+
+      Assert.AreEqual(expected, newDoc.InnerXml);
+
+      string json = JavaScriptConvert.SerializeXmlNode(newDoc);
+      Assert.AreEqual(@"{""root"":{""r"":new Date(""34343"",""55"")}}", json);
+    }
+
+    [Test]
+    public void ForceJsonArray()
+    {
+      string arrayXml = @"<root xmlns:json=""http://james.newtonking.com/projects/json"">
+			  <person id=""1"">
+				  <name>Alan</name>
+				  <url>http://www.google.com</url>
+				  <role json:Array=""true"">Admin</role>
+			  </person>
+			</root>";
+
+      XmlDocument arrayDoc = new XmlDocument();
+      arrayDoc.LoadXml(arrayXml);
+
+      string arrayJsonText = JavaScriptConvert.SerializeXmlNode(arrayDoc);
+      Assert.AreEqual(@"{""root"":{""person"":{""@id"":""1"",""name"":""Alan"",""url"":""http://www.google.com"",""role"":[""Admin""]}}}", arrayJsonText);
+
+      arrayXml = @"<root xmlns:json=""http://james.newtonking.com/projects/json"">
+			  <person id=""1"">
+				  <name>Alan</name>
+				  <url>http://www.google.com</url>
+				  <role json:Array=""true"">Admin1</role>
+				  <role json:Array=""true"">Admin2</role>
+			  </person>
+			</root>";
+
+      arrayDoc = new XmlDocument();
+      arrayDoc.LoadXml(arrayXml);
+
+      arrayJsonText = JavaScriptConvert.SerializeXmlNode(arrayDoc);
+      Assert.AreEqual(@"{""root"":{""person"":{""@id"":""1"",""name"":""Alan"",""url"":""http://www.google.com"",""role"":[""Admin1"",""Admin2""]}}}", arrayJsonText);
+
+      arrayXml = @"<root xmlns:json=""http://james.newtonking.com/projects/json"">
+			  <person id=""1"">
+				  <name>Alan</name>
+				  <url>http://www.google.com</url>
+				  <role json:Array=""false"">Admin1</role>
+			  </person>
+			</root>";
+
+      arrayDoc = new XmlDocument();
+      arrayDoc.LoadXml(arrayXml);
+
+      arrayJsonText = JavaScriptConvert.SerializeXmlNode(arrayDoc);
+      Assert.AreEqual(@"{""root"":{""person"":{""@id"":""1"",""name"":""Alan"",""url"":""http://www.google.com"",""role"":""Admin1""}}}", arrayJsonText);
     }
   }
 }
