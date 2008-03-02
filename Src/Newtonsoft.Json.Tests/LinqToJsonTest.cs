@@ -31,6 +31,7 @@ using NUnit.Framework;
 using Newtonsoft.Json.Linq;
 using System.Xml;
 using System.IO;
+using Newtonsoft.Json.Converters;
 
 namespace Newtonsoft.Json.Tests
 {
@@ -167,14 +168,10 @@ keyword such as type of business.""
 
       JObject o = JObject.Parse(json);
 
-      List<JObject> resultObjects = o.PropertyValue<JArray>("results")
-        .Children<JObject>().ToList();
+      List<JObject> resultObjects = o["results"].Children<JObject>().ToList();
 
 
-      List<string> resultUrls = o.PropertyValue<JArray>("results")
-        .Children<JObject>()
-        .PropertyValues<string>("url")
-        .ToList();
+      List<string> resultUrls = o["results"].Children().Values<string>("url").ToList();
 
       List<string> expectedUrls = new List<string>() { "http://www.google.com/", "http://news.google.com/", "http://groups.google.com/", "http://maps.google.com/" };
 
@@ -205,7 +202,7 @@ keyword such as type of business.""
   ]
 }", o.ToString());
 
-      JArray list = o.PropertyValue<JArray>("Drives");
+      JArray list = o.Value<JArray>("Drives");
 
       Assert.AreEqual(@"[
   ""DVD read/writer"",
@@ -399,10 +396,8 @@ keyword such as type of business.""
       //}
 
       var postTitles =
-        from p in rss.PropertyValue<JObject>("channel")
-                     .PropertyValue<JArray>("item")
-                     .Children<JObject>()
-        select p.PropertyValue<string>("title");
+        from p in rss["channel"]["item"].Children()
+        select p.Value<string>("title");
 
       foreach (var item in postTitles)
       {
@@ -413,11 +408,7 @@ keyword such as type of business.""
       //Json.NET 1.3 + New license + Now on CodePlex
 
       var categories =
-        from c in rss.PropertyValue<JObject>("channel")
-                     .PropertyValue<JArray>("item")
-                     .Children<JObject>()
-                     .PropertyValues<JArray>("category")
-                     .Children<string>()
+        from c in rss["channel"]["item"].Children()["category"].Values<string>()
         group c by c into g
         orderby g.Count() descending
         select new { Category = g.Key, Count = g.Count() };
@@ -430,6 +421,161 @@ keyword such as type of business.""
       //Json.NET - Count: 2
       //LINQ - Count: 1
       //CodePlex - Count: 1
+    }
+
+    [Test]
+    public void BasicQuerying()
+    {
+      string json = @"{
+                        ""channel"": {
+                          ""title"": ""James Newton-King"",
+                          ""link"": ""http://james.newtonking.com"",
+                          ""description"": ""James Newton-King's blog."",
+                          ""item"": [
+                            {
+                              ""title"": ""Json.NET 1.3 + New license + Now on CodePlex"",
+                              ""description"": ""Annoucing the release of Json.NET 1.3, the MIT license and the source being available on CodePlex"",
+                              ""link"": ""http://james.newtonking.com/projects/json-net.aspx"",
+                              ""category"": [
+                                ""Json.NET"",
+                                ""CodePlex""
+                              ]
+                            },
+                            {
+                              ""title"": ""LINQ to JSON beta"",
+                              ""description"": ""Annoucing LINQ to JSON"",
+                              ""link"": ""http://james.newtonking.com/projects/json-net.aspx"",
+                              ""category"": [
+                                ""Json.NET"",
+                                ""LINQ""
+                              ]
+                            }
+                          ]
+                        }
+                      }";
+
+      JObject o = JObject.Parse(json);
+
+      Assert.AreEqual(null, o["purple"]);
+      Assert.AreEqual(null, o.Value<string>("purple"));
+
+      Assert.IsInstanceOfType(typeof(JArray), o["channel"]["item"]);
+
+      Assert.AreEqual(2, o["channel"]["item"].Children()["title"].Count());
+      Assert.AreEqual(0, o["channel"]["item"].Children()["monkey"].Count());
+    }
+
+    [Test]
+    [ExpectedException(typeof(ArgumentException), ExpectedMessage = "Accessed JObject values with invalid key value: 0. Object property name expected.")]
+    public void JObjectIntIndex()
+    {
+      JObject o = new JObject();
+      Assert.AreEqual(null, o[0]);
+    }
+
+    [Test]
+    [ExpectedException(typeof(ArgumentException), ExpectedMessage = @"Accessed JArray values with invalid key value: ""purple"". Array position index expected.")]
+    public void JArrayStringIndex()
+    {
+      JArray a = new JArray();
+      Assert.AreEqual(null, a["purple"]);
+    }
+
+    [Test]
+    [ExpectedException(typeof(ArgumentException), ExpectedMessage = @"Accessed JConstructor values with invalid key value: ""purple"". Argument position index expected.")]
+    public void JConstructorStringIndex()
+    {
+      JConstructor c = new JConstructor();
+      Assert.AreEqual(null, c["purple"]);
+    }
+
+    [Test]
+    public void ToStringJsonConverter()
+    {
+      JObject o =
+        new JObject(
+          new JProperty("Test1", new DateTime(2000, 10, 15, 5, 5, 5, DateTimeKind.Utc)),
+          new JProperty("Test2", new DateTimeOffset(2000, 10, 15, 5, 5, 5, new TimeSpan(11, 11, 0))),
+          new JProperty("Test3", "Test3Value"),
+          new JProperty("Test4", null)
+        );
+
+      JsonSerializer serializer = new JsonSerializer();
+      serializer.Converters.Add(new JavaScriptDateTimeConverter());
+      StringWriter sw = new StringWriter();
+      JsonWriter writer = new JsonTextWriter(sw);
+      writer.Formatting = Formatting.Indented;
+      serializer.Serialize(writer, o);
+
+      string json = sw.ToString();
+
+      Assert.AreEqual(@"{
+  ""Test1"": new Date(
+    971586305000
+  ),
+  ""Test2"": new Date(
+    971546045000
+  ),
+  ""Test3"": ""Test3Value"",
+  ""Test4"": null
+}", json);
+    }
+
+    [Test]
+    public void DateTimeOffset()
+    {
+      List<DateTimeOffset> testDates = new List<DateTimeOffset> {
+        new DateTimeOffset(new DateTime(100, 1, 1, 1, 1, 1, DateTimeKind.Utc)),
+        new DateTimeOffset(2000, 1, 1, 1, 1, 1, TimeSpan.Zero),
+        new DateTimeOffset(2000, 1, 1, 1, 1, 1, TimeSpan.FromHours(13)),
+        new DateTimeOffset(2000, 1, 1, 1, 1, 1, TimeSpan.FromHours(-3.5)),
+      };
+
+      JsonSerializer jsonSerializer = new JsonSerializer();
+
+      JsonTokenWriter jsonWriter;
+      using (jsonWriter = new JsonTokenWriter())
+      {
+        jsonSerializer.Serialize(jsonWriter, testDates);
+      }
+
+      Assert.AreEqual(4, jsonWriter.Token.Children().Count());
+    }
+
+    [Test]
+    public void FromObject()
+    {
+      List<Post> posts = GetPosts();
+
+      JObject o = JObject.FromObject(new
+      {
+        channel = new
+        {
+          title = "James Newton-King",
+          link = "http://james.newtonking.com",
+          description = "James Newton-King's blog.",
+          item =
+              from p in posts
+              orderby p.Title
+              select new
+              {
+                title = p.Title,
+                description = p.Description,
+                link = p.Link,
+                category = p.Categories
+              }
+        }
+      });
+
+      Console.WriteLine(o.ToString());
+      Assert.IsInstanceOfType(typeof(JObject), o);
+      Assert.IsInstanceOfType(typeof(JObject), o["channel"]);
+      Assert.AreEqual("James Newton-King", (string)o["channel"]["title"]);
+      Assert.AreEqual(2, o["channel"]["item"].Children().Count());
+
+      JArray a = JArray.FromObject(new List<int>() { 0, 1, 2, 3, 4 });
+      Assert.IsInstanceOfType(typeof(JArray), a);
+      Assert.AreEqual(5, a.Count());
     }
   }
 }

@@ -36,6 +36,8 @@ using System.Collections.ObjectModel;
 using System.Runtime.Serialization.Json;
 using System.Net.Mail;
 using System.Web.Script.Serialization;
+using Newtonsoft.Json.Linq;
+using System.Linq;
 
 namespace Newtonsoft.Json.Tests
 {
@@ -239,11 +241,14 @@ namespace Newtonsoft.Json.Tests
     [Test]
     public void TypedHashtableDeserialization()
     {
-      string value = @"{""Name"":""Orange"", ""Hash"":{""Expiry"":""01/24/2010 12:00:00""}}";
+      string value = @"{""Name"":""Orange"", ""Hash"":{""Expiry"":""01/24/2010 12:00:00"",""UntypedArray"":[""01/24/2010 12:00:00""]}}";
 
       TypedSubHashtable p = JavaScriptConvert.DeserializeObject(value, typeof(TypedSubHashtable)) as TypedSubHashtable;
 
       Assert.AreEqual("01/24/2010 12:00:00", p.Hash["Expiry"].ToString());
+      Assert.AreEqual(@"[
+  ""01/24/2010 12:00:00""
+]", p.Hash["UntypedArray"].ToString());
     }
 
     public class GetOnlyPropertyClass
@@ -421,12 +426,12 @@ keyword such as type of business.""
 ""torrentc"": ""1816000723""
 }";
 
-      JavaScriptObject o = (JavaScriptObject)JavaScriptConvert.DeserializeObject(jsonText);
-      Assert.AreEqual(4, o.Count);
+      JObject o = (JObject)JavaScriptConvert.DeserializeObject(jsonText);
+      Assert.AreEqual(4, o.Children().Count());
 
-      JavaScriptArray torrentsArray = (JavaScriptArray)o["torrents"];
-      JavaScriptArray nestedTorrentsArray = (JavaScriptArray)torrentsArray[0];
-      Assert.AreEqual(nestedTorrentsArray.Count, 19);
+      JToken torrentsArray = (JToken)o["torrents"];
+      JToken nestedTorrentsArray = (JToken)torrentsArray[0];
+      Assert.AreEqual(nestedTorrentsArray.Children().Count(), 19);
     }
 
     public class JsonPropertyClass
@@ -602,7 +607,7 @@ keyword such as type of business.""
 
       object deserializedValue;
 
-      using (JsonReader jsonReader = new JsonReader(new StringReader(output)))
+      using (JsonReader jsonReader = new JsonTextReader(new StringReader(output)))
       {
         deserializedValue = jsonSerializer.Deserialize(jsonReader, typeof(ProductShort));
       }
@@ -732,7 +737,7 @@ keyword such as type of business.""
       Assert.AreEqual(@"[{""Name"":""Test1"",""Expiry"":""\/Date(946684800000)\/"",""Price"":0,""Sizes"":null},{""Name"":""Test2"",""Expiry"":""\/Date(946684800000)\/"",""Price"":0,""Sizes"":null},{""Name"":""Test3"",""Expiry"":""\/Date(946684800000)\/"",""Price"":0,""Sizes"":null}]",
         sw.GetStringBuilder().ToString());
 
-      ProductCollection collectionNew = (ProductCollection)jsonSerializer.Deserialize(new JsonReader(new StringReader(sw.GetStringBuilder().ToString())), typeof(ProductCollection));
+      ProductCollection collectionNew = (ProductCollection)jsonSerializer.Deserialize(new JsonTextReader(new StringReader(sw.GetStringBuilder().ToString())), typeof(ProductCollection));
 
       CollectionAssert.AreEqual(collection, collectionNew);
     }
@@ -752,13 +757,13 @@ keyword such as type of business.""
 
       Assert.AreEqual(@"{""Color"":2,""Establised"":""\/Date(1264122061000+0000)\/"",""Width"":1.1,""Employees"":999,""RoomsPerFloor"":[1,2,3,4,5,6,7,8,9],""Open"":false,""Symbol"":""@"",""Mottos"":[""Hello World"",""öäüÖÄÜ\\'{new Date(12345);}[222]_µ@²³~"",null,"" ""],""Cost"":100980.1,""Escape"":""\r\n\t\f\b?{\\r\\n\""'"",""product"":[{""Name"":""Rocket"",""Expiry"":""\/Date(949532490000)\/"",""Price"":0},{""Name"":""Alien"",""Expiry"":""\/Date(946684800000)\/"",""Price"":0}]}", sw.GetStringBuilder().ToString());
 
-      Store s2 = (Store)jsonSerializer.Deserialize(new JsonReader(new StringReader("{}")), typeof(Store));
+      Store s2 = (Store)jsonSerializer.Deserialize(new JsonTextReader(new StringReader("{}")), typeof(Store));
       Assert.AreEqual("\r\n\t\f\b?{\\r\\n\"\'", s2.Escape);
 
-      Store s3 = (Store)jsonSerializer.Deserialize(new JsonReader(new StringReader(@"{""Escape"":null}")), typeof(Store));
+      Store s3 = (Store)jsonSerializer.Deserialize(new JsonTextReader(new StringReader(@"{""Escape"":null}")), typeof(Store));
       Assert.AreEqual("\r\n\t\f\b?{\\r\\n\"\'", s3.Escape);
 
-      Store s4 = (Store)jsonSerializer.Deserialize(new JsonReader(new StringReader(@"{""Color"":2,""Establised"":""\/Date(1264071600000+1300)\/"",""Width"":1.1,""Employees"":999,""RoomsPerFloor"":[1,2,3,4,5,6,7,8,9],""Open"":false,""Symbol"":""@"",""Mottos"":[""Hello World"",""öäüÖÄÜ\\'{new Date(12345);}[222]_µ@²³~"",null,"" ""],""Cost"":100980.1,""Escape"":""\r\n\t\f\b?{\\r\\n\""'"",""product"":[{""Name"":""Rocket"",""Expiry"":""\/Date(949485690000+1300)\/"",""Price"":0},{""Name"":""Alien"",""Expiry"":""\/Date(946638000000)\/"",""Price"":0}]}")), typeof(Store));
+      Store s4 = (Store)jsonSerializer.Deserialize(new JsonTextReader(new StringReader(@"{""Color"":2,""Establised"":""\/Date(1264071600000+1300)\/"",""Width"":1.1,""Employees"":999,""RoomsPerFloor"":[1,2,3,4,5,6,7,8,9],""Open"":false,""Symbol"":""@"",""Mottos"":[""Hello World"",""öäüÖÄÜ\\'{new Date(12345);}[222]_µ@²³~"",null,"" ""],""Cost"":100980.1,""Escape"":""\r\n\t\f\b?{\\r\\n\""'"",""product"":[{""Name"":""Rocket"",""Expiry"":""\/Date(949485690000+1300)\/"",""Price"":0},{""Name"":""Alien"",""Expiry"":""\/Date(946638000000)\/"",""Price"":0}]}")), typeof(Store));
       Assert.AreEqual(s1.Establised, s3.Establised);
     }
 

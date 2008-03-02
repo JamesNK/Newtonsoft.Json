@@ -53,7 +53,7 @@ namespace Newtonsoft.Json.Tests
 
       StringWriter sw = new StringWriter();
 
-      using (JsonWriter jsonWriter = new JsonWriter(sw))
+      using (JsonWriter jsonWriter = new JsonTextWriter(sw))
       {
         jsonWriter.Formatting = Formatting.Indented;
 
