@@ -107,15 +107,35 @@ namespace Newtonsoft.Json.Linq
         yield return o;
     }
 
-    //public IEnumerable<JObject> ObjectsAfterSelf()
-    //{
-    //  return null;
-    //}
+    public virtual JToken this[object key]
+    {
+      get { return null; }
+    }
 
-    //public IEnumerable<JObject> ObjectsBeforeSelf()
-    //{
-    //  return null;
-    //}
+    public virtual T Value<T>(object key)
+    {
+      return default(T);
+    }
+
+    public virtual JToken First
+    {
+      get { return null; }
+    }
+
+    public virtual JToken Last
+    {
+      get { return null; }
+    }
+
+    public virtual JEnumerable<JToken> Children()
+    {
+      return JEnumerable<JToken>.Empty;
+    }
+
+    public virtual IEnumerable<T> Children<T>()
+    {
+      return Enumerable.Empty<T>();
+    }
 
     public void Remove()
     {
@@ -129,13 +149,18 @@ namespace Newtonsoft.Json.Linq
     {
     }
 
-    public abstract void WriteTo(JsonWriter writer);
+    public abstract void WriteTo(JsonWriter writer, params JsonConverter[] converters);
 
     public override string ToString()
     {
+      return ToString(null);
+    }
+
+    private string ToString(params JsonConverter[] converters)
+    {
       using (StringWriter sw = new StringWriter())
       {
-        JsonWriter jw = new JsonWriter(sw);
+        JsonTextWriter jw = new JsonTextWriter(sw);
         jw.Formatting = Formatting.Indented;
 
         WriteTo(jw);
@@ -410,6 +435,5 @@ namespace Newtonsoft.Json.Linq
       return (ulong)v.Value;
     }
     #endregion
-
   }
 }

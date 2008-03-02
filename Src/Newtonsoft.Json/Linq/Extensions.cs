@@ -71,25 +71,75 @@ namespace Newtonsoft.Json.Linq
       return source.SelectMany(d => d.Properties());
     }
 
-    public static IEnumerable<T> PropertyValues<T>(this IEnumerable<JObject> source, string name)
+    public static IEnumerable<JToken> Values(this IEnumerable<JToken> source, object key)
+    {
+      return Values<JToken, JToken>(source, key);
+    }
+
+    public static IEnumerable<JToken> Values(this IEnumerable<JToken> source)
+    {
+      return Values<JToken, JToken>(source, null);
+    }
+
+    public static IEnumerable<U> Values<U>(this IEnumerable<JToken> source, object key)
+    {
+      return Values<JToken, U>(source, key);
+    }
+
+    public static IEnumerable<U> Values<U>(this IEnumerable<JToken> source)
+    {
+      return Values<JToken, U>(source, null);
+    }
+
+    //public static IEnumerable<U> Values<U>(this IEnumerable<JToken> source, object key)
+    //{
+    //  return Values<JToken, U>(source, null);
+    //}
+
+    internal static IEnumerable<U> Values<T, U>(this IEnumerable<T> source, object key) where T : JToken
     {
       ValidationUtils.ArgumentNotNull(source, "source");
 
-      return source.SelectMany(d => d.Properties())
-        .Where(p => string.Compare(p.Name, name, StringComparison.Ordinal) == 0)
-        .Select(p => p.Value)
-        .Convert<JToken, T>();
+      foreach (JToken token in source)
+      {
+        if (key == null)
+        {
+          foreach (JToken t in token.Children())
+          {
+            yield return t.Convert<JToken, U>(); ;
+          }
+        }
+        else
+        {
+          JToken value = token[key];
+          if (value != null)
+            yield return value.Convert<JToken, U>();
+        }
+      }
+
+      yield break;
+
+      //IEnumerable<JToken> allChildren = source.SelectMany(d => d.Children());
+      //IEnumerable<JToken> childrenValues = (key != null) ? allChildren.Select(p => p[key]) : allChildren.SelectMany(p => p.Children());
+
+      //List<U> s = childrenValues.Convert<JToken, U>().ToList();
+      //return childrenValues.Convert<JToken, U>();
+
+    //  return source.SelectMany(d => d.Properties())
+    //.Where(p => string.Compare(p.Name, name, StringComparison.Ordinal) == 0)
+    //.Select(p => p.Value)
+    //.Convert<JToken, T>();
     }
 
     //TODO
     //public static IEnumerable<T> InDocumentOrder<T>(this IEnumerable<T> source) where T : JObject;
     
-    public static IEnumerable<JToken> Children<T>(this IEnumerable<T> source) where T : JContainer
-    {
-      ValidationUtils.ArgumentNotNull(source, "source");
+    //public static IEnumerable<JToken> Children<T>(this IEnumerable<T> source) where T : JToken
+    //{
+    //  ValidationUtils.ArgumentNotNull(source, "source");
 
-      return source.SelectMany(c => c.Children());
-    }
+    //  return source.SelectMany(c => c.Children());
+    //}
 
     public static IEnumerable<U> Children<U>(this IEnumerable<JArray> source)
     {
@@ -126,6 +176,9 @@ namespace Newtonsoft.Json.Linq
       }
       else
       {
+        if (token == null)
+          return default(U);
+
         JValue value = token as JValue;
         if (value == null)
           throw new InvalidCastException(string.Format("Cannot cast {0} to {1}.", token.GetType(), typeof(T)));

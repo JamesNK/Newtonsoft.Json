@@ -388,7 +388,7 @@ namespace Newtonsoft.Json
         }
       }
 
-      using (JsonWriter jsonWriter = new JsonWriter(sw))
+      using (JsonWriter jsonWriter = new JsonTextWriter(sw))
       {
         //jsonWriter.Formatting = Formatting.Indented;
         jsonSerializer.Serialize(jsonWriter, value);
@@ -472,7 +472,7 @@ namespace Newtonsoft.Json
 
       object deserializedValue;
 
-      using (JsonReader jsonReader = new JsonReader(sr))
+      using (JsonReader jsonReader = new JsonTextReader(sr))
       {
         deserializedValue = jsonSerializer.Deserialize(jsonReader, type);
       }

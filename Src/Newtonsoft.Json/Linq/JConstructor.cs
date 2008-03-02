@@ -77,16 +77,29 @@ namespace Newtonsoft.Json.Linq
       }
     }
 
-    public override void WriteTo(JsonWriter writer)
+    public override void WriteTo(JsonWriter writer, params JsonConverter[] converters)
     {
       writer.WriteStartConstructor(_name);
 
       foreach (JToken token in Children())
       {
-        token.WriteTo(writer);
+        token.WriteTo(writer, converters);
       }
 
       writer.WriteEndConstructor();
+    }
+
+    public override JToken this[object key]
+    {
+      get
+      {
+        ValidationUtils.ArgumentNotNull(key, "o");
+
+        if (!(key is int))
+          throw new ArgumentException(string.Format("Accessed JConstructor values with invalid key value: {0}. Argument position index expected.", MiscellaneousUtils.ToString(key)));
+
+        return GetIndex(this, (int)key);
+      }
     }
   }
 }

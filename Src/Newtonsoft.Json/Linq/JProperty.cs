@@ -56,7 +56,7 @@ namespace Newtonsoft.Json.Linq
 
     public JProperty(string name)
     {
-      ValidationUtils.ArgumentNotNullOrEmpty(name, "name");
+      ValidationUtils.ArgumentNotNull(name, "name");
 
       _name = name;
     }
@@ -77,10 +77,10 @@ namespace Newtonsoft.Json.Linq
         throw new ArgumentException(string.Format("An item of type {0} cannot be added to content.", o.Type));
     }
 
-    public override void WriteTo(JsonWriter writer)
+    public override void WriteTo(JsonWriter writer, params JsonConverter[] converters)
     {
       writer.WritePropertyName(_name);
-      Value.WriteTo(writer);
+      Value.WriteTo(writer, converters);
     }
   }
 }

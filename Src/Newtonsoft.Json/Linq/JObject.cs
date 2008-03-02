@@ -64,24 +64,41 @@ namespace Newtonsoft.Json.Linq
         .SingleOrDefault();
     }
 
-    public IEnumerable<JToken> PropertyValues()
+    public JEnumerable<JToken> PropertyValues()
     {
-      return Properties().Select(p => p.Value);
+      return new JEnumerable<JToken>(Properties().Select(p => p.Value));
     }
 
-    public T PropertyValue<T>(string name)
+    public override void Add(object content)
     {
-      JProperty property = Property(name);
+      ValidationUtils.ArgumentNotNull(content, "content");
 
-      if (property == null)
-        throw new Exception(string.Format("Property '{0}' does not exist in JSON object.", name));
+      if (!(content is JProperty) && !IsMultiContent(content))
+        throw new ArgumentException(string.Format("Error adding {0} to JObject. JObject only supports JProperty content.", content.GetType().Name));
 
-      // HACK
-      return Extensions.Convert<JToken, T>(property.Value);
+      base.Add(content);
+    }
+
+    public override JToken this[object key]
+    {
+      get
+      {
+        ValidationUtils.ArgumentNotNull(key, "o");
+
+        string propertyName = key as string;
+        if (propertyName == null)
+          throw new ArgumentException(string.Format("Accessed JObject values with invalid key value: {0}. Object property name expected.", MiscellaneousUtils.ToString(key)));
+
+        JProperty property = Property(propertyName);
+
+        return (property != null) ? property.Value : null;
+      }
     }
 
     public static JObject Load(JsonReader reader)
     {
+      ValidationUtils.ArgumentNotNull(reader, "reader");
+
       if (reader.TokenType == JsonToken.None)
       {
         if (!reader.Read())
@@ -105,9 +122,19 @@ namespace Newtonsoft.Json.Linq
 
     public static JObject Parse(string json)
     {
-      JsonReader jsonReader = new JsonReader(new StringReader(json));
+      JsonReader jsonReader = new JsonTextReader(new StringReader(json));
 
       return Load(jsonReader);
+    }
+
+    public static JObject FromObject(object o)
+    {
+      JToken token = FromObjectInternal(o);
+
+      if (token.Type != JsonTokenType.Object)
+        throw new ArgumentException(string.Format("Object serialized to {0}. JObject instance expected.", token.Type));
+
+      return (JObject)token;
     }
 
     internal override void ValidateObject(JToken o, JToken previous)
@@ -118,13 +145,13 @@ namespace Newtonsoft.Json.Linq
         throw new ArgumentException(string.Format("An item of type {0} cannot be added to content.", o.Type));
     }
 
-    public override void WriteTo(JsonWriter writer)
+    public override void WriteTo(JsonWriter writer, params JsonConverter[] converters)
     {
       writer.WriteStartObject();
 
       foreach (JProperty property in Properties())
       {
-        property.WriteTo(writer);
+        property.WriteTo(writer, converters);
       }
 
       writer.WriteEndObject();

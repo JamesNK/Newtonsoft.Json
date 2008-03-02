@@ -78,7 +78,10 @@ namespace Newtonsoft.Json.Utilities
 
     public static string ToString(object value)
     {
-      return (value != null) ? value.ToString() : "{null}";
+      if (value == null)
+        return "{null}";
+
+      return (value is string) ? @"""" + value.ToString() + @"""" : value.ToString();
     }
   }
 }

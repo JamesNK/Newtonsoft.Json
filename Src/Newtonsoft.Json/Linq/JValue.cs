@@ -84,12 +84,12 @@ namespace Newtonsoft.Json.Linq
         return JsonTokenType.Null;
       else if (value is string)
         return JsonTokenType.String;
-      else if (value is long || value is int || value is short
-        || value is ulong || value is uint || value is ushort)
+      else if (value is long || value is int || value is short || value is sbyte
+        || value is ulong || value is uint || value is ushort || value is byte)
         return JsonTokenType.Integer;
-      else if (value is double || value is float)
+      else if (value is double || value is float || value is decimal)
         return JsonTokenType.Float;
-      else if (value is DateTime)
+      else if (value is DateTime || value is DateTimeOffset)
         return JsonTokenType.Date;
       else if (value is bool)
         return JsonTokenType.Boolean;
@@ -113,7 +113,18 @@ namespace Newtonsoft.Json.Linq
       return new JValue(value, JsonTokenType.String);
     }
 
-    public override void WriteTo(JsonWriter writer)
+    private static void WriteConvertableValue(JsonWriter writer, IList<JsonConverter> converters, Action<object> _defaultWrite, object value)
+    {
+      JsonConverter matchingConverter;
+
+      JsonSerializer.HasMatchingConverter(converters, value.GetType(), out matchingConverter);
+      if (matchingConverter != null)
+        matchingConverter.WriteJson(writer, value);
+      else
+        _defaultWrite(value);
+    }
+
+    public override void WriteTo(JsonWriter writer, params JsonConverter[] converters)
     {
       switch (_valueType)
       {
@@ -121,25 +132,31 @@ namespace Newtonsoft.Json.Linq
           writer.WriteComment(_value.ToString());
           break;
         case JsonTokenType.Integer:
-          writer.WriteValue(Convert.ToInt64(_value));
+          WriteConvertableValue(writer, converters, v => writer.WriteValue(Convert.ToInt64(v)), _value);
           break;
         case JsonTokenType.Float:
-          writer.WriteValue(Convert.ToDouble(_value));
+          WriteConvertableValue(writer, converters, v => writer.WriteValue(Convert.ToDouble(v)), _value);
           break;
         case JsonTokenType.String:
-          writer.WriteValue(_value.ToString());
+          WriteConvertableValue(writer, converters, v => writer.WriteValue(v.ToString()), _value);
           break;
         case JsonTokenType.Boolean:
-          writer.WriteValue(Convert.ToBoolean(_value));
+          WriteConvertableValue(writer, converters, v => writer.WriteValue(Convert.ToBoolean(v)), _value);
+          break;
+        case JsonTokenType.Date:
+          WriteConvertableValue(writer, converters,  v =>
+          {
+            if (v is DateTimeOffset)
+              writer.WriteValue((DateTimeOffset)v);
+            else
+              writer.WriteValue(Convert.ToDateTime(v));
+          }, _value);
           break;
         case JsonTokenType.Null:
           writer.WriteNull();
           break;
         case JsonTokenType.Undefined:
           writer.WriteUndefined();
-          break;
-        case JsonTokenType.Date:
-          writer.WriteValue(Convert.ToDateTime(_value));
           break;
         default:
           throw new ArgumentOutOfRangeException("TokenType", _valueType, "Unexpected token type.");

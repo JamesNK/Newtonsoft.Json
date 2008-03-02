@@ -42,7 +42,7 @@ namespace Newtonsoft.Json.Linq
       set { _content = value; }
     }
 
-    public JToken First
+    public override JToken First
     {
       get
       {
@@ -53,12 +53,17 @@ namespace Newtonsoft.Json.Linq
       }
     }
 
-    public JToken Last
+    public override JToken Last
     {
       get { return _content; }
     }
 
-    public IEnumerable<JToken> Children()
+    public override JEnumerable<JToken> Children()
+    {
+      return new JEnumerable<JToken>(ChildrenInternal());
+    }
+
+    private IEnumerable<JToken> ChildrenInternal()
     {
       JToken first = First;
       JToken current = first;
@@ -71,9 +76,16 @@ namespace Newtonsoft.Json.Linq
       } while ((current = current.Next) != first);
     }
 
-    public IEnumerable<T> Children<T>()
+    public override IEnumerable<T> Children<T>()
     {
       return Children().Convert<JToken, T>();
+    }
+
+    public override T Value<T>(object key)
+    {
+      JToken token = this[key];
+
+      return Extensions.Convert<JToken, T>(token);
     }
 
     public IEnumerable<JToken> Descendants()
@@ -92,9 +104,35 @@ namespace Newtonsoft.Json.Linq
       }
     }
 
+    internal static JToken FromObjectInternal(object o)
+    {
+      ValidationUtils.ArgumentNotNull(o, "o");
+
+      JsonSerializer jsonSerializer = new JsonSerializer();
+
+      JToken token;
+      using (JsonTokenWriter jsonWriter = new JsonTokenWriter())
+      {
+        jsonSerializer.Serialize(jsonWriter, o);
+        token = jsonWriter.Token;
+      }
+
+      return token;
+    }
+
+    internal static JToken GetIndex(JContainer c, object o)
+    {
+      return c.Children().ElementAt((int)o);
+    }
+
+    internal bool IsMultiContent(object content)
+    {
+      return (content is IEnumerable && !(content is string));
+    }
+
     public virtual void Add(object content)
     {
-      if (content is IEnumerable && !(content is string))
+      if (IsMultiContent(content))
       {
         IEnumerable enumerable = content as IEnumerable;
         foreach (object c in enumerable)

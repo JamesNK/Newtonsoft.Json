@@ -33,6 +33,7 @@ using System.ComponentModel;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json
 {
@@ -140,64 +141,22 @@ namespace Newtonsoft.Json
       if (!reader.Read())
         return null;
 
-      return GetObject(reader, objectType);
+      if (objectType != null)
+        return GetObject(reader, objectType);
+      else
+        return CreateJToken(reader);
     }
 
-    private JavaScriptArray PopulateJavaScriptArray(JsonReader reader)
+    private JToken CreateJToken(JsonReader reader)
     {
-      JavaScriptArray jsArray = new JavaScriptArray();
-
-      while (reader.Read())
+      JToken token;
+      using (JsonTokenWriter writer = new JsonTokenWriter())
       {
-        switch (reader.TokenType)
-        {
-          case JsonToken.EndArray:
-            return jsArray;
-          case JsonToken.Comment:
-            break;
-          default:
-            object value = GetObject(reader, null);
-
-            jsArray.Add(value);
-            break;
-        }
+        writer.WriteToken(reader);
+        token = writer.Token;
       }
 
-      throw new JsonSerializationException("Unexpected end while deserializing array.");
-    }
-
-    private JavaScriptObject PopulateJavaScriptObject(JsonReader reader)
-    {
-      JavaScriptObject jsObject = new JavaScriptObject();
-
-      while (reader.Read())
-      {
-        switch (reader.TokenType)
-        {
-          case JsonToken.PropertyName:
-            string memberName = reader.Value.ToString();
-
-            // move to the value token. skip comments
-            do
-            {
-              if (!reader.Read())
-                throw new JsonSerializationException("Unexpected end while deserializing object.");
-            } while (reader.TokenType == JsonToken.Comment);
-
-            object value = GetObject(reader, null);
-
-            jsObject[memberName] = value;
-            break;
-          case JsonToken.EndObject:
-            return jsObject;
-          case JsonToken.Comment:
-            break;
-          default:
-            throw new JsonSerializationException("Unexpected token while deserializing object: " + reader.TokenType);
-        }
-      }
-
-      throw new JsonSerializationException("Unexpected end while deserializing object.");
+      return token;
     }
 
     private object GetObject(JsonReader reader, Type objectType)
@@ -218,10 +177,10 @@ namespace Newtonsoft.Json
           // populate a typed object or generic dictionary/array
           // depending upon whether an objectType was supplied
           case JsonToken.StartObject:
-            value = (objectType != null) ? PopulateObject(reader, objectType) : PopulateJavaScriptObject(reader);
+            value = (objectType != null) ? PopulateObject(reader, objectType) : CreateJToken(reader);
             break;
           case JsonToken.StartArray:
-            value = (objectType != null) ? PopulateList(reader, objectType) : PopulateJavaScriptArray(reader);
+            value = (objectType != null) ? PopulateList(reader, objectType) : CreateJToken(reader);
             break;
           case JsonToken.Integer:
           case JsonToken.Float:
@@ -517,7 +476,7 @@ namespace Newtonsoft.Json
     /// <param name="value">The <see cref="Object"/> to serialize.</param>
     public void Serialize(TextWriter textWriter, object value)
     {
-      Serialize(new JsonWriter(textWriter), value);
+      Serialize(new JsonTextWriter(textWriter), value);
     }
 
     /// <summary>
@@ -531,7 +490,10 @@ namespace Newtonsoft.Json
       if (jsonWriter == null)
         throw new ArgumentNullException("jsonWriter");
 
-      SerializeValue(jsonWriter, value);
+      if (value is JToken)
+        ((JToken)value).WriteTo(jsonWriter, (_converters != null) ? _converters.ToArray() : null);
+      else
+        SerializeValue(jsonWriter, value);
     }
 
 
@@ -619,6 +581,10 @@ namespace Newtonsoft.Json
       {
         SerializeCollection(writer, (ICollection)value);
       }
+      else if (value is IEnumerable)
+      {
+        SerializeEnumerable(writer, (IEnumerable)value);
+      }
       else if (value is Identifier)
       {
         writer.WriteRaw(value.ToString());
@@ -631,11 +597,16 @@ namespace Newtonsoft.Json
 
     private bool HasMatchingConverter(Type type, out JsonConverter matchingConverter)
     {
-      if (_converters != null)
+      return HasMatchingConverter(_converters, type, out matchingConverter);
+    }
+
+    internal static bool HasMatchingConverter(IList<JsonConverter> converters, Type type, out JsonConverter matchingConverter)
+    {
+      if (converters != null)
       {
-        for (int i = 0; i < _converters.Count; i++)
+        for (int i = 0; i < converters.Count; i++)
         {
-          JsonConverter converter = _converters[i];
+          JsonConverter converter = converters[i];
 
           if (converter.CanConvert(type))
           {
@@ -711,6 +682,11 @@ namespace Newtonsoft.Json
       writer.WriteEndObject();
 
       writer.SerializeStack.Remove(value);
+    }
+
+    private void SerializeEnumerable(JsonWriter writer, IEnumerable values)
+    {
+      SerializeList(writer, values.Cast<object>().ToList());
     }
 
     private void SerializeCollection(JsonWriter writer, ICollection values)

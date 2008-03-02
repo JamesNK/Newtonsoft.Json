@@ -32,6 +32,7 @@ namespace Newtonsoft.Json.Linq
 {
   public enum JsonTokenType
   {
+    None,
     Object,
     Array,
     Constructor,

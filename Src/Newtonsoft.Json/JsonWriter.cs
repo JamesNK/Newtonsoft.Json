@@ -29,17 +29,10 @@ using System.Text;
 using System.IO;
 using System.Xml;
 using Newtonsoft.Json.Utilities;
+using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json
 {
-  internal enum JsonType
-  {
-    Object,
-    Array,
-    Constructor,
-    None
-  }
-
   /// <summary>
   /// Specifies the state of the <see cref="JsonWriter"/>.
   /// </summary>
@@ -95,7 +88,7 @@ namespace Newtonsoft.Json
   /// <summary>
   /// Represents a writer that provides a fast, non-cached, forward-only way of generating Json data.
   /// </summary>
-  public class JsonWriter : IDisposable
+  public abstract class JsonWriter : IDisposable
   {
     private enum State
     {
@@ -125,15 +118,11 @@ namespace Newtonsoft.Json
 		};
 
     private int _top;
-    private List<JsonType> _stack;
+
+    private List<JsonTokenType> _stack;
     private List<object> _serializeStack;
-    private TextWriter _writer;
-    private Formatting _formatting;
-    private char _indentChar;
-    private int _indentation;
-    private char _quoteChar;
-    private bool _quoteName;
     private State _currentState;
+    private Formatting _formatting;
 
     internal List<object> SerializeStack
     {
@@ -146,6 +135,11 @@ namespace Newtonsoft.Json
       }
     }
 
+    protected int Top
+    {
+      get { return _top; }
+    }
+    
     /// <summary>
     /// Gets the state of the writer.
     /// </summary>
@@ -188,74 +182,18 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Gets or sets how many IndentChars to write for each level in the hierarchy when <paramref name="Formatting"/> is set to <c>Formatting.Indented</c>.
-    /// </summary>
-    public int Indentation
-    {
-      get { return _indentation; }
-      set
-      {
-        if (value < 0)
-          throw new ArgumentException("Indentation value must be greater than 0.");
-
-        _indentation = value;
-      }
-    }
-
-    /// <summary>
-    /// Gets or sets which character to use to quote attribute values.
-    /// </summary>
-    public char QuoteChar
-    {
-      get { return _quoteChar; }
-      set
-      {
-        if (value != '"' && value != '\'')
-          throw new ArgumentException(@"Invalid JavaScript string quote character. Valid quote characters are ' and "".");
-
-        _quoteChar = value;
-      }
-    }
-
-    /// <summary>
-    /// Gets or sets which character to use for indenting when <paramref name="Formatting"/> is set to <c>Formatting.Indented</c>.
-    /// </summary>
-    public char IndentChar
-    {
-      get { return _indentChar; }
-      set { _indentChar = value; }
-    }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether object names will be surrounded with quotes.
-    /// </summary>
-    public bool QuoteName
-    {
-      get { return _quoteName; }
-      set { _quoteName = value; }
-    }
-
-    /// <summary>
     /// Creates an instance of the <c>JsonWriter</c> class using the specified <see cref="TextWriter"/>. 
     /// </summary>
     /// <param name="textWriter">The <c>TextWriter</c> to write to.</param>
-    public JsonWriter(TextWriter textWriter)
+    public JsonWriter()
     {
-      if (textWriter == null)
-        throw new ArgumentNullException("textWriter");
-
-      _writer = textWriter;
-      _quoteChar = '"';
-      _quoteName = true;
-      _indentChar = ' ';
-      _indentation = 2;
-      _formatting = Formatting.None;
-      _stack = new List<JsonType>(1);
-      _stack.Add(JsonType.None);
+      _stack = new List<JsonTokenType>(1);
+      _stack.Add(JsonTokenType.None);
       _currentState = State.Start;
+      _formatting = Formatting.None;
     }
 
-    private void Push(JsonType value)
+    private void Push(JsonTokenType value)
     {
       _top++;
       if (_stack.Count <= _top)
@@ -264,15 +202,15 @@ namespace Newtonsoft.Json
         _stack[_top] = value;
     }
 
-    private JsonType Pop()
+    private JsonTokenType Pop()
     {
-      JsonType value = Peek();
+      JsonTokenType value = Peek();
       _top--;
 
       return value;
     }
 
-    private JsonType Peek()
+    private JsonTokenType Peek()
     {
       return _stack[_top];
     }
@@ -280,31 +218,23 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Flushes whatever is in the buffer to the underlying streams and also flushes the underlying stream.
     /// </summary>
-    public void Flush()
-    {
-      _writer.Flush();
-    }
+    public abstract void Flush();
 
     /// <summary>
     /// Closes this stream and the underlying stream.
     /// </summary>
-    public void Close()
+    public virtual void Close()
     {
       AutoCompleteAll();
-
-      _writer.Close();
     }
 
     /// <summary>
     /// Writes the beginning of a Json object.
     /// </summary>
-    public void WriteStartObject()
+    public virtual void WriteStartObject()
     {
       AutoComplete(JsonToken.StartObject);
-
-      Push(JsonType.Object);
-
-      _writer.Write("{");
+      Push(JsonTokenType.Object);
     }
 
     /// <summary>
@@ -318,11 +248,10 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Writes the beginning of a Json array.
     /// </summary>
-    public void WriteStartArray()
+    public virtual void WriteStartArray()
     {
       AutoComplete(JsonToken.StartArray);
-      Push(JsonType.Array);
-      _writer.Write("[");
+      Push(JsonTokenType.Array);
     }
 
     /// <summary>
@@ -333,13 +262,10 @@ namespace Newtonsoft.Json
       AutoCompleteClose(JsonToken.EndArray);
     }
 
-    public void WriteStartConstructor(string name)
+    public virtual void WriteStartConstructor(string name)
     {
       AutoComplete(JsonToken.StartConstructor);
-      Push(JsonType.Constructor);
-      _writer.Write("new ");
-      _writer.Write(name);
-      _writer.Write("(");
+      Push(JsonTokenType.Constructor);
     }
 
     public void WriteEndConstructor()
@@ -351,20 +277,9 @@ namespace Newtonsoft.Json
     /// Writes the property name of a name/value pair on a Json object.
     /// </summary>
     /// <param name="name"></param>
-    public void WritePropertyName(string name)
+    public virtual void WritePropertyName(string name)
     {
-      //_objectStack.Push(new JsonObjectInfo(JsonType.Property));
       AutoComplete(JsonToken.PropertyName);
-
-      if (_quoteName)
-        _writer.Write(_quoteChar);
-
-      _writer.Write(name);
-
-      if (_quoteName)
-        _writer.Write(_quoteChar);
-
-      _writer.Write(':');
     }
 
     /// <summary>
@@ -375,17 +290,95 @@ namespace Newtonsoft.Json
       WriteEnd(Peek());
     }
 
-    private void WriteEnd(JsonType type)
+    public void WriteToken(JsonReader reader)
+    {
+      ValidationUtils.ArgumentNotNull(reader, "reader");
+
+      int currentDepth = (reader.TokenType == JsonToken.None) ? -1 : reader.Depth;
+      bool continue1;
+      do
+      {
+        switch (reader.TokenType)
+        {
+          case JsonToken.None:
+            // read to next
+            break;
+          case JsonToken.StartObject:
+            WriteStartObject();
+            break;
+          case JsonToken.StartArray:
+            WriteStartArray();
+            break;
+          case JsonToken.StartConstructor:
+            WriteStartConstructor(reader.Value.ToString());
+            break;
+          case JsonToken.PropertyName:
+            WritePropertyName(reader.Value.ToString());
+            break;
+          case JsonToken.Comment:
+            WriteComment(reader.Value.ToString());
+            break;
+          case JsonToken.Integer:
+            WriteValue((long)reader.Value);
+            break;
+          case JsonToken.Float:
+            WriteValue((double)reader.Value);
+            break;
+          case JsonToken.String:
+            WriteValue(reader.Value.ToString());
+            break;
+          case JsonToken.Boolean:
+            WriteValue((bool)reader.Value);
+            break;
+          case JsonToken.Null:
+            WriteNull();
+            break;
+          case JsonToken.Undefined:
+            WriteUndefined();
+            break;
+          case JsonToken.EndObject:
+            WriteEndObject();
+            break;
+          case JsonToken.EndArray:
+            WriteEndArray();
+            break;
+          case JsonToken.EndConstructor:
+            WriteEndConstructor();
+            break;
+          case JsonToken.Date:
+            WriteValue((DateTime)reader.Value);
+            break;
+          default:
+            throw new ArgumentOutOfRangeException("TokenType", reader.TokenType, "Unexpected token type.");
+        }
+      }
+      while (reader.Read() && (currentDepth - 1 < reader.Depth || (currentDepth == reader.Depth && !IsEndToken(reader.TokenType))));
+    }
+
+    private bool IsEndToken(JsonToken token)
+    {
+      switch (token)
+      {
+        case JsonToken.EndObject:
+        case JsonToken.EndArray:
+        case JsonToken.EndConstructor:
+          return true;
+        default:
+          return false;
+      }
+    }
+
+    private void WriteEnd(JsonTokenType type)
     {
       switch (type)
       {
-        case JsonType.Object:
+        case JsonTokenType.Object:
           WriteEndObject();
           break;
-        case JsonType.Array:
+        case JsonTokenType.Array:
           WriteEndArray();
           break;
-        case JsonType.Constructor:
+        case JsonTokenType.Constructor:
           WriteEndConstructor();
           break;
         default:
@@ -401,30 +394,30 @@ namespace Newtonsoft.Json
       }
     }
 
-    private JsonType GetTypeForCloseToken(JsonToken token)
+    private JsonTokenType GetTypeForCloseToken(JsonToken token)
     {
       switch (token)
       {
         case JsonToken.EndObject:
-          return JsonType.Object;
+          return JsonTokenType.Object;
         case JsonToken.EndArray:
-          return JsonType.Array;
+          return JsonTokenType.Array;
         case JsonToken.EndConstructor:
-          return JsonType.Constructor;
+          return JsonTokenType.Constructor;
         default:
           throw new JsonWriterException("No type for token: " + token);
       }
     }
 
-    private JsonToken GetCloseTokenForType(JsonType type)
+    private JsonToken GetCloseTokenForType(JsonTokenType type)
     {
       switch (type)
       {
-        case JsonType.Object:
+        case JsonTokenType.Object:
           return JsonToken.EndObject;
-        case JsonType.Array:
+        case JsonTokenType.Array:
           return JsonToken.EndArray;
-        case JsonType.Constructor:
+        case JsonTokenType.Constructor:
           return JsonToken.EndConstructor;
         default:
           throw new JsonWriterException("No close token for type: " + type);
@@ -458,33 +451,20 @@ namespace Newtonsoft.Json
         if (_currentState != State.ObjectStart && _currentState != State.ArrayStart)
           WriteIndent();
 
-        switch (token)
-        {
-          case JsonToken.EndObject:
-            _writer.Write("}");
-            break;
-          case JsonToken.EndArray:
-            _writer.Write("]");
-            break;
-          case JsonToken.EndConstructor:
-            _writer.Write(")");
-            break;
-          default:
-            throw new JsonWriterException("Invalid JsonToken: " + token);
-        }
+        WriteEnd(token);
       }
 
-      JsonType currentLevelType = Peek();
+      JsonTokenType currentLevelType = Peek();
 
       switch (currentLevelType)
       {
-        case JsonType.Object:
+        case JsonTokenType.Object:
           _currentState = State.Object;
           break;
-        case JsonType.Array:
+        case JsonTokenType.Array:
           _currentState = State.Array;
           break;
-        case JsonType.None:
+        case JsonTokenType.None:
           _currentState = State.Start;
           break;
         default:
@@ -492,21 +472,20 @@ namespace Newtonsoft.Json
       }
     }
 
-    private void WriteIndent()
+    protected virtual void WriteEnd(JsonToken token)
     {
-      if (_formatting == Formatting.Indented)
-      {
-        _writer.Write(Environment.NewLine);
-        // for each level of object...
-        for (int i = 0; i < _top; i++)
-        {
-          // ...write the indent char the specified number of times
-          for (int j = 0; j < _indentation; j++)
-          {
-            _writer.Write(_indentChar);
-          }
-        }
-      }
+    }
+
+    protected virtual void WriteIndent()
+    {
+    }
+
+    protected virtual void WriteValueDelimiter()
+    {
+    }
+
+    protected virtual void WriteIndentSpace()
+    {
     }
 
     private void AutoComplete(JsonToken tokenBeingWritten)
@@ -538,12 +517,12 @@ namespace Newtonsoft.Json
 
       if ((_currentState == State.Object || _currentState == State.Array || _currentState == State.Constructor) && tokenBeingWritten != JsonToken.Comment)
       {
-        _writer.Write(',');
+        WriteValueDelimiter();
       }
       else if (_currentState == State.Property)
       {
         if (_formatting == Formatting.Indented)
-          _writer.Write(' ');
+          WriteIndentSpace();
       }
 
       // don't indent a property when it is the first token to be written (i.e. at the start)
@@ -556,182 +535,175 @@ namespace Newtonsoft.Json
       _currentState = newState;
     }
 
-    private void WriteValueInternal(string value, JsonToken token)
-    {
-      AutoComplete(token);
-
-      _writer.Write(value);
-    }
-
     #region WriteValue methods
     /// <summary>
     /// Writes a null value.
     /// </summary>
-    public void WriteNull()
+    public virtual void WriteNull()
     {
-      WriteValueInternal(JavaScriptConvert.Null, JsonToken.Null);
+      AutoComplete(JsonToken.Null);
     }
 
     /// <summary>
     /// Writes an undefined value.
     /// </summary>
-    public void WriteUndefined()
+    public virtual void WriteUndefined()
     {
-      WriteValueInternal(JavaScriptConvert.Undefined, JsonToken.Undefined);
+      AutoComplete(JsonToken.Undefined);
     }
 
     /// <summary>
     /// Writes raw JavaScript manually.
     /// </summary>
     /// <param name="javaScript">The raw JavaScript to write.</param>
-    public void WriteRaw(string javaScript)
+    public virtual void WriteRaw(string javaScript)
     {
       // hack. some 'raw' or 'other' token perhaps?
-      WriteValueInternal(javaScript, JsonToken.Undefined);
+      AutoComplete(JsonToken.Undefined);
     }
 
     /// <summary>
     /// Writes a <see cref="String"/> value.
     /// </summary>
     /// <param name="value">The <see cref="String"/> value to write.</param>
-    public void WriteValue(string value)
+    public virtual void WriteValue(string value)
     {
-      WriteValueInternal(JavaScriptConvert.ToString(value, _quoteChar), JsonToken.String);
+      AutoComplete(JsonToken.String);
     }
 
     /// <summary>
     /// Writes a <see cref="Int32"/> value.
     /// </summary>
     /// <param name="value">The <see cref="Int32"/> value to write.</param>
-    public void WriteValue(int value)
+    public virtual void WriteValue(int value)
     {
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Integer);
+      AutoComplete(JsonToken.Integer);
     }
 
     /// <summary>
     /// Writes a <see cref="UInt32"/> value.
     /// </summary>
     /// <param name="value">The <see cref="UInt32"/> value to write.</param>
-    public void WriteValue(uint value)
+    public virtual void WriteValue(uint value)
     {
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Integer);
+      AutoComplete(JsonToken.Integer);
     }
 
     /// <summary>
     /// Writes a <see cref="Int64"/> value.
     /// </summary>
     /// <param name="value">The <see cref="Int64"/> value to write.</param>
-    public void WriteValue(long value)
+    public virtual void WriteValue(long value)
     {
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Integer);
+      AutoComplete(JsonToken.Integer);
     }
 
     /// <summary>
     /// Writes a <see cref="UInt64"/> value.
     /// </summary>
     /// <param name="value">The <see cref="UInt64"/> value to write.</param>
-    public void WriteValue(ulong value)
+    public virtual void WriteValue(ulong value)
     {
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Integer);
+      AutoComplete(JsonToken.Integer);
     }
 
     /// <summary>
     /// Writes a <see cref="Single"/> value.
     /// </summary>
     /// <param name="value">The <see cref="Single"/> value to write.</param>
-    public void WriteValue(float value)
+    public virtual void WriteValue(float value)
     {
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Float);
+      AutoComplete(JsonToken.Float);
     }
 
     /// <summary>
     /// Writes a <see cref="Double"/> value.
     /// </summary>
     /// <param name="value">The <see cref="Double"/> value to write.</param>
-    public void WriteValue(double value)
+    public virtual void WriteValue(double value)
     {
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Float);
+      AutoComplete(JsonToken.Float);
     }
 
     /// <summary>
     /// Writes a <see cref="Boolean"/> value.
     /// </summary>
     /// <param name="value">The <see cref="Boolean"/> value to write.</param>
-    public void WriteValue(bool value)
+    public virtual void WriteValue(bool value)
     {
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Boolean);
+      AutoComplete(JsonToken.Boolean);
     }
 
     /// <summary>
     /// Writes a <see cref="Int16"/> value.
     /// </summary>
     /// <param name="value">The <see cref="Int16"/> value to write.</param>
-    public void WriteValue(short value)
+    public virtual void WriteValue(short value)
     {
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Integer);
+      AutoComplete(JsonToken.Integer);
     }
 
     /// <summary>
     /// Writes a <see cref="UInt16"/> value.
     /// </summary>
     /// <param name="value">The <see cref="UInt16"/> value to write.</param>
-    public void WriteValue(ushort value)
+    public virtual void WriteValue(ushort value)
     {
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Integer);
+      AutoComplete(JsonToken.Integer);
     }
 
     /// <summary>
     /// Writes a <see cref="Char"/> value.
     /// </summary>
     /// <param name="value">The <see cref="Char"/> value to write.</param>
-    public void WriteValue(char value)
+    public virtual void WriteValue(char value)
     {
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Integer);
+      AutoComplete(JsonToken.String);
     }
 
     /// <summary>
     /// Writes a <see cref="Byte"/> value.
     /// </summary>
     /// <param name="value">The <see cref="Byte"/> value to write.</param>
-    public void WriteValue(byte value)
+    public virtual void WriteValue(byte value)
     {
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Integer);
+      AutoComplete(JsonToken.Integer);
     }
 
     /// <summary>
     /// Writes a <see cref="SByte"/> value.
     /// </summary>
     /// <param name="value">The <see cref="SByte"/> value to write.</param>
-    public void WriteValue(sbyte value)
+    public virtual void WriteValue(sbyte value)
     {
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Integer);
+      AutoComplete(JsonToken.Integer);
     }
 
     /// <summary>
     /// Writes a <see cref="Decimal"/> value.
     /// </summary>
     /// <param name="value">The <see cref="Decimal"/> value to write.</param>
-    public void WriteValue(decimal value)
+    public virtual void WriteValue(decimal value)
     {
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Float);
+      AutoComplete(JsonToken.Float);
     }
 
     /// <summary>
     /// Writes a <see cref="DateTime"/> value.
     /// </summary>
     /// <param name="value">The <see cref="DateTime"/> value to write.</param>
-    public void WriteValue(DateTime value)
+    public virtual void WriteValue(DateTime value)
     {
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Date);
+      AutoComplete(JsonToken.Date);
     }
 
     /// <summary>
     /// Writes a <see cref="DateTimeOffset"/> value.
     /// </summary>
     /// <param name="value">The <see cref="DateTimeOffset"/> value to write.</param>
-    public void WriteValue(DateTimeOffset value)
+    public virtual void WriteValue(DateTimeOffset value)
     {
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Date);
+      AutoComplete(JsonToken.Date);
     }
     #endregion
 
@@ -739,29 +711,24 @@ namespace Newtonsoft.Json
     /// Writes out a comment <code>/*...*/</code> containing the specified text. 
     /// </summary>
     /// <param name="text">Text to place inside the comment.</param>
-    public void WriteComment(string text)
+    public virtual void WriteComment(string text)
     {
       AutoComplete(JsonToken.Comment);
-
-      _writer.Write("/*");
-      _writer.Write(text);
-      _writer.Write("*/");
     }
 
     /// <summary>
     /// Writes out the given white space.
     /// </summary>
     /// <param name="ws">The string of white space characters.</param>
-    public void WriteWhitespace(string ws)
+    public virtual void WriteWhitespace(string ws)
     {
       if (ws != null)
       {
         if (!StringUtils.IsWhiteSpace(ws))
           throw new JsonWriterException("Only white space characters should be used.");
-
-        _writer.Write(ws);
       }
     }
+
 
     void IDisposable.Dispose()
     {
