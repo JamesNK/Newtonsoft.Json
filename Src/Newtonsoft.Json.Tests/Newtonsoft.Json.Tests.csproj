@@ -66,15 +66,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="JsonTokenReaderTest.cs" />
-    <Compile Include="JsonTokenWriterTest.cs" />
     <Compile Include="DateTimeTestClass.cs" />
     <Compile Include="IsoDateTimeConverterTests.cs" />
     <Compile Include="JavaScriptConvertTest.cs" />
     <Compile Include="JavaScriptDateTimeConverterTests.cs" />
-    <Compile Include="JsonTextReaderTest.cs" />
     <Compile Include="JsonSerializerTest.cs" />
+    <Compile Include="JsonTextReaderTest.cs" />
     <Compile Include="JsonTextWriterTest.cs" />
+    <Compile Include="JsonTokenReaderTest.cs" />
+    <Compile Include="JsonTokenWriterTest.cs" />
     <Compile Include="LinqToJsonTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestFixtureBase.cs" />
