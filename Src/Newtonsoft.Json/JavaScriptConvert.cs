@@ -460,7 +460,7 @@ namespace Newtonsoft.Json
     /// <returns>The deserialized anonymous type from the JSON string.</returns>
     public static T DeserializeAnonymousType<T>(string value, T anonymousTypeObject)
     {
-      return (T)DeserializeObject(value, typeof(T));
+      return DeserializeObject<T>(value);
     }
 
     /// <summary>

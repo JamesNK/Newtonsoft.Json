@@ -78,7 +78,6 @@
     <Compile Include="LinqToJsonTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestFixtureBase.cs" />
-    <Compile Include="UtcDateTimeConverterTest.cs" />
     <Compile Include="XmlNodeConverterTest.cs" />
   </ItemGroup>
   <ItemGroup>

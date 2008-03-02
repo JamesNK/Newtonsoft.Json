@@ -549,7 +549,7 @@ keyword such as type of business.""
 
       JObject o = JObject.FromObject(new
       {
-        channel = new
+        channel = new 
         {
           title = "James Newton-King",
           link = "http://james.newtonking.com",
