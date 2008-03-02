@@ -477,6 +477,18 @@ namespace Newtonsoft.Json
               throw new JsonReaderException("Unexpected end");
             }
             return true;
+          case 'N':
+            ParseNumberNaN();
+            return true;
+          case 'I':
+            ParseNumberPositiveInfinity();
+            return true;
+          case '-':
+            if (PeekNext() == 'I')
+              ParseNumberNegativeInfinity();
+            else
+              ParseNumber();
+            return true;
           case '/':
             ParseComment();
             return true;
@@ -735,6 +747,42 @@ namespace Newtonsoft.Json
       else
       {
         throw new JsonReaderException("Error parsing boolean value.");
+      }
+    }
+
+    private void ParseNumberNegativeInfinity()
+    {
+      if (MatchValue(JavaScriptConvert.NegativeInfinity, true))
+      {
+        SetToken(JsonToken.Float, double.NegativeInfinity);
+      }
+      else
+      {
+        throw new JsonReaderException("Error parsing negative infinity value.");
+      }
+    }
+
+    private void ParseNumberPositiveInfinity()
+    {
+      if (MatchValue(JavaScriptConvert.PositiveInfinity, true))
+      {
+        SetToken(JsonToken.Float, double.PositiveInfinity);
+      }
+      else
+      {
+        throw new JsonReaderException("Error parsing positive infinity value.");
+      }
+    }
+
+    private void ParseNumberNaN()
+    {
+      if (MatchValue(JavaScriptConvert.NaN, true))
+      {
+        SetToken(JsonToken.Float, double.NaN);
+      }
+      else
+      {
+        throw new JsonReaderException("Error parsing NaN value.");
       }
     }
 

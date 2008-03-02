@@ -65,6 +65,21 @@ namespace Newtonsoft.Json
     /// </summary>
     public static readonly string Undefined;
 
+    /// <summary>
+    /// Represents JavaScript's positive infinity as a string. This field is read-only.
+    /// </summary>
+    public static readonly string PositiveInfinity;
+
+    /// <summary>
+    /// Represents JavaScript's negative infinity as a string. This field is read-only.
+    /// </summary>
+    public static readonly string NegativeInfinity;
+
+    /// <summary>
+    /// Represents JavaScript's NaN as a string. This field is read-only.
+    /// </summary>
+    public static readonly string NaN;
+
     internal static long InitialJavaScriptDateTicks;
     internal static DateTime MinimumJavaScriptDate;
 
@@ -74,6 +89,9 @@ namespace Newtonsoft.Json
       False = "false";
       Null = "null";
       Undefined = "undefined";
+      PositiveInfinity = "Infinity";
+      NegativeInfinity = "-Infinity";
+      NaN = "NaN";
 
       InitialJavaScriptDateTicks = (new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).Ticks;
       MinimumJavaScriptDate = new DateTime(100, 1, 1);

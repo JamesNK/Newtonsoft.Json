@@ -215,5 +215,38 @@ namespace Newtonsoft.Json.Tests
 
       Assert.AreEqual(json, sb.ToString());
     }
+
+    [Test]
+    public void FloatingPointNonFiniteNumbers()
+    {
+      string input = @"[
+  NaN,
+  Infinity,
+  -Infinity
+]";
+
+      StringReader sr = new StringReader(input);
+
+      using (JsonReader jsonReader = new JsonTextReader(sr))
+      {
+        jsonReader.Read();
+        Assert.AreEqual(jsonReader.TokenType, JsonToken.StartArray);
+
+        jsonReader.Read();
+        Assert.AreEqual(jsonReader.TokenType, JsonToken.Float);
+        Assert.AreEqual(jsonReader.Value, double.NaN);
+
+        jsonReader.Read();
+        Assert.AreEqual(jsonReader.TokenType, JsonToken.Float);
+        Assert.AreEqual(jsonReader.Value, double.PositiveInfinity);
+
+        jsonReader.Read();
+        Assert.AreEqual(jsonReader.TokenType, JsonToken.Float);
+        Assert.AreEqual(jsonReader.Value, double.NegativeInfinity);
+
+        jsonReader.Read();
+        Assert.AreEqual(jsonReader.TokenType, JsonToken.EndArray);
+      }
+    }
   }
 }

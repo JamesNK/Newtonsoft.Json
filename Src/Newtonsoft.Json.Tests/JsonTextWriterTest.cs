@@ -172,5 +172,38 @@ namespace Newtonsoft.Json.Tests
         Assert.AreEqual(WriteState.Start, jsonWriter.WriteState);
       }
     }
+
+    [Test]
+    public void FloatingPointNonFiniteNumbers()
+    {
+      StringBuilder sb = new StringBuilder();
+      StringWriter sw = new StringWriter(sb);
+
+      using (JsonWriter jsonWriter = new JsonTextWriter(sw))
+      {
+        jsonWriter.Formatting = Formatting.Indented;
+
+        jsonWriter.WriteStartArray();
+        jsonWriter.WriteValue(double.NaN);
+        jsonWriter.WriteValue(double.PositiveInfinity);
+        jsonWriter.WriteValue(double.NegativeInfinity);
+        jsonWriter.WriteValue(float.NaN);
+        jsonWriter.WriteValue(float.PositiveInfinity);
+        jsonWriter.WriteValue(float.NegativeInfinity);
+        jsonWriter.WriteEndArray();
+      }
+
+      string expected = @"[
+  NaN,
+  Infinity,
+  -Infinity,
+  NaN,
+  Infinity,
+  -Infinity
+]";
+      string result = sb.ToString();
+
+      Assert.AreEqual(expected, result);
+    }
   }
 }
