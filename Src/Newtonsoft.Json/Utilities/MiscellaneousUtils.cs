@@ -7,11 +7,7 @@ using System.Text;
 
 namespace Newtonsoft.Json.Utilities
 {
-  internal delegate void Action();
   internal delegate T Creator<T>();
-  internal delegate T Func<A0, T>(A0 arg0);
-  internal delegate T Func<A0, A1, T>(A0 arg0, A1 arg1);
-  internal delegate T Func<A0, A1, A2, T>(A0 arg0, A1 arg1, A2 arg2);
 
   internal static class MiscellaneousUtils
   {

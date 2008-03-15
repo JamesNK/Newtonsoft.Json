@@ -121,6 +121,57 @@ namespace Newtonsoft.Json.Tests
     }
 
     [Test]
+    public void Depth()
+    {
+      string input = "{value:'Purple\\r \\n monkey\\'s:\\tdishwasher',array:[1,2]}";
+
+      StringReader sr = new StringReader(input);
+
+      using (JsonReader jsonReader = new JsonTextReader(sr))
+      {
+        Assert.AreEqual(0, jsonReader.Depth);
+
+        jsonReader.Read();
+        Assert.AreEqual(jsonReader.TokenType, JsonToken.StartObject);
+        Assert.AreEqual(0, jsonReader.Depth);
+
+        jsonReader.Read();
+        Assert.AreEqual(jsonReader.TokenType, JsonToken.PropertyName);
+        Assert.AreEqual(1, jsonReader.Depth);
+
+        jsonReader.Read();
+        Assert.AreEqual(jsonReader.TokenType, JsonToken.String);
+        Assert.AreEqual(jsonReader.Value, "Purple\r \n monkey's:\tdishwasher");
+        Assert.AreEqual(jsonReader.QuoteChar, '\'');
+        Assert.AreEqual(1, jsonReader.Depth);
+
+        jsonReader.Read();
+        Assert.AreEqual(jsonReader.TokenType, JsonToken.PropertyName);
+        Assert.AreEqual(1, jsonReader.Depth);
+
+        jsonReader.Read();
+        Assert.AreEqual(jsonReader.TokenType, JsonToken.StartArray);
+        Assert.AreEqual(2, jsonReader.Depth);
+
+        jsonReader.Read();
+        Assert.AreEqual(jsonReader.TokenType, JsonToken.Integer);
+        Assert.AreEqual(3, jsonReader.Depth);
+
+        jsonReader.Read();
+        Assert.AreEqual(jsonReader.TokenType, JsonToken.Integer);
+        Assert.AreEqual(3, jsonReader.Depth);
+
+        jsonReader.Read();
+        Assert.AreEqual(jsonReader.TokenType, JsonToken.EndArray);
+        Assert.AreEqual(1, jsonReader.Depth);
+
+        jsonReader.Read();
+        Assert.AreEqual(jsonReader.TokenType, JsonToken.EndObject);
+        Assert.AreEqual(0, jsonReader.Depth);
+      }
+    }
+
+    [Test]
     public void ReadingEscapedStrings()
     {
       string input = "{value:'Purple\\r \\n monkey\\'s:\\tdishwasher'}";
@@ -129,19 +180,25 @@ namespace Newtonsoft.Json.Tests
 
       using (JsonReader jsonReader = new JsonTextReader(sr))
       {
+        Assert.AreEqual(0, jsonReader.Depth);
+
         jsonReader.Read();
         Assert.AreEqual(jsonReader.TokenType, JsonToken.StartObject);
+        Assert.AreEqual(0, jsonReader.Depth);
 
         jsonReader.Read();
         Assert.AreEqual(jsonReader.TokenType, JsonToken.PropertyName);
+        Assert.AreEqual(1, jsonReader.Depth);
 
         jsonReader.Read();
         Assert.AreEqual(jsonReader.TokenType, JsonToken.String);
         Assert.AreEqual(jsonReader.Value, "Purple\r \n monkey's:\tdishwasher");
         Assert.AreEqual(jsonReader.QuoteChar, '\'');
+        Assert.AreEqual(1, jsonReader.Depth);
 
         jsonReader.Read();
         Assert.AreEqual(jsonReader.TokenType, JsonToken.EndObject);
+        Assert.AreEqual(0, jsonReader.Depth);
       }
     }
 

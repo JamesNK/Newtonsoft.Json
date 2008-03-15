@@ -252,7 +252,7 @@ namespace Newtonsoft.Json
     /// <returns>A Json string representation of the <see cref="Single"/>.</returns>
     public static string ToString(float value)
     {
-      return value.ToString(null, CultureInfo.InvariantCulture);
+      return value.ToString("R", CultureInfo.InvariantCulture);
     }
 
     /// <summary>
@@ -262,7 +262,7 @@ namespace Newtonsoft.Json
     /// <returns>A Json string representation of the <see cref="Double"/>.</returns>
     public static string ToString(double value)
     {
-      return value.ToString(null, CultureInfo.InvariantCulture);
+      return value.ToString("R", CultureInfo.InvariantCulture);
     }
 
     /// <summary>

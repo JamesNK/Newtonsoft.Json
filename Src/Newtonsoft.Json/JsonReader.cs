@@ -107,7 +107,14 @@ namespace Newtonsoft.Json
 
     public int Depth
     {
-      get { return _top - 1; }
+      get
+      {
+        int depth = _top - 1;
+        if (IsStartToken(TokenType))
+          return depth - 1;
+        else
+          return depth;
+      }
     }
 
     /// <summary>
@@ -148,6 +155,18 @@ namespace Newtonsoft.Json
     /// <returns></returns>
     public abstract bool Read();
 
+    public void Skip()
+    {
+      if (IsStartToken(TokenType))
+      {
+        int depth = Depth;
+
+        while (Read() && (depth < Depth))
+        {
+        }
+      }
+    }
+
     protected void SetToken(JsonToken newToken)
     {
       SetToken(newToken, null);
@@ -185,6 +204,7 @@ namespace Newtonsoft.Json
           break;
         case JsonToken.PropertyName:
           _currentState = State.Property;
+          Push(JsonTokenType.Property);
           break;
         case JsonToken.Undefined:
         case JsonToken.Integer:
@@ -196,6 +216,10 @@ namespace Newtonsoft.Json
           _currentState = State.PostValue;
           break;
       }
+
+      JsonTokenType current = Peek();
+      if (current == JsonTokenType.Property && _currentState == State.PostValue)
+        Pop();
 
       if (value != null)
       {
@@ -216,7 +240,7 @@ namespace Newtonsoft.Json
       if (GetTypeForCloseToken(endToken) != currentObject)
         throw new JsonReaderException(string.Format("JsonToken {0} is not valid for closing JsonType {1}.", endToken, currentObject));
     }
-    
+
     protected void SetStateBasedOnCurrent()
     {
       JsonTokenType currentObject = Peek();
@@ -237,6 +261,33 @@ namespace Newtonsoft.Json
           break;
         default:
           throw new JsonReaderException("While setting the reader state back to current object an unexpected JsonType was encountered: " + currentObject);
+      }
+    }
+
+    private bool IsStartToken(JsonToken token)
+    {
+      switch (token)
+      {
+        case JsonToken.StartObject:
+        case JsonToken.StartArray:
+        case JsonToken.StartConstructor:
+        case JsonToken.PropertyName:
+          return true;
+        case JsonToken.None:
+        case JsonToken.Comment:
+        case JsonToken.Integer:
+        case JsonToken.Float:
+        case JsonToken.String:
+        case JsonToken.Boolean:
+        case JsonToken.Null:
+        case JsonToken.Undefined:
+        case JsonToken.EndObject:
+        case JsonToken.EndArray:
+        case JsonToken.EndConstructor:
+        case JsonToken.Date:
+          return false;
+        default:
+          throw new ArgumentOutOfRangeException("token", token, "Unexpected JsonToken value.");
       }
     }
 

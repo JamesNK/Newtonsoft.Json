@@ -34,6 +34,7 @@ using Newtonsoft.Json.Utilities;
 using System.Globalization;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using System.Collections.ObjectModel;
 
 namespace Newtonsoft.Json
 {
@@ -45,6 +46,7 @@ namespace Newtonsoft.Json
   {
     private ReferenceLoopHandling _referenceLoopHandling;
     private MissingMemberHandling _missingMemberHandling;
+    private ObjectCreationHandling _objectCreationHandling;
     private NullValueHandling _nullValueHandling;
     private int _level;
     private JsonConverterCollection _converters;
@@ -95,6 +97,18 @@ namespace Newtonsoft.Json
       }
     }
 
+    public ObjectCreationHandling ObjectCreationHandling
+    {
+      get { return _objectCreationHandling; }
+      set
+      {
+        if (value < ObjectCreationHandling.Auto || value > ObjectCreationHandling.Replace)
+          throw new ArgumentOutOfRangeException("value");
+
+        _objectCreationHandling = value;
+      }
+    }
+
     public JsonConverterCollection Converters
     {
       get
@@ -113,6 +127,8 @@ namespace Newtonsoft.Json
     {
       _referenceLoopHandling = ReferenceLoopHandling.Error;
       _missingMemberHandling = MissingMemberHandling.Error;
+      _nullValueHandling = NullValueHandling.Include;
+      _objectCreationHandling = ObjectCreationHandling.Auto;
     }
 
     #region Deserialize
@@ -142,9 +158,14 @@ namespace Newtonsoft.Json
         return null;
 
       if (objectType != null)
-        return GetObject(reader, objectType);
+        return CreateObject(reader, objectType, null);
       else
         return CreateJToken(reader);
+    }
+
+    public object Deserialize(StringReader reader, Type objectType)
+    {
+      return Deserialize(new JsonTextReader(reader), objectType);
     }
 
     private JToken CreateJToken(JsonReader reader)
@@ -159,7 +180,7 @@ namespace Newtonsoft.Json
       return token;
     }
 
-    private object GetObject(JsonReader reader, Type objectType)
+    private object CreateObject(JsonReader reader, Type objectType, object existingValue)
     {
       _level++;
 
@@ -177,10 +198,37 @@ namespace Newtonsoft.Json
           // populate a typed object or generic dictionary/array
           // depending upon whether an objectType was supplied
           case JsonToken.StartObject:
-            value = (objectType != null) ? PopulateObject(reader, objectType) : CreateJToken(reader);
+            if (objectType == null)
+            {
+              value = CreateJToken(reader);
+            }
+            else if (typeof(IDictionary).IsAssignableFrom(objectType) || ReflectionUtils.IsSubClass(objectType, typeof(IDictionary<,>)))
+            {
+              if (existingValue == null)
+                value = CreateAndPopulateDictionary(reader, objectType);
+              else
+                value = PopulateDictionary(CollectionUtils.CreateDictionaryWrapper(existingValue), reader);
+            }
+            else
+            {
+              if (existingValue == null)
+                value = CreateAndPopulateObject(reader, objectType);
+              else
+                value = PopulateObject(existingValue, reader, objectType);
+            }
             break;
           case JsonToken.StartArray:
-            value = (objectType != null) ? PopulateList(reader, objectType) : CreateJToken(reader);
+            if (objectType != null)
+            {
+              if (existingValue == null)
+                value = CreateAndPopulateList(reader, objectType);
+              else
+                value = PopulateList(CollectionUtils.CreateListWrapper(existingValue), ReflectionUtils.GetListItemType(objectType), reader);
+            }
+            else
+            {
+              value = CreateJToken(reader);
+            }
             break;
           case JsonToken.Integer:
           case JsonToken.Float:
@@ -197,7 +245,10 @@ namespace Newtonsoft.Json
             break;
           case JsonToken.Null:
           case JsonToken.Undefined:
-            value = null;
+            if (objectType == typeof(DBNull))
+              value = DBNull.Value;
+            else
+              value = null;
             break;
           default:
             throw new JsonSerializationException("Unexpected token while deserializing object: " + reader.TokenType);
@@ -207,25 +258,6 @@ namespace Newtonsoft.Json
       _level--;
 
       return value;
-    }
-
-    private DateTime CreateDate(JsonReader reader)
-    {
-      // move to parameter
-      if (!reader.Read())
-        throw new JsonSerializationException("Unexpected end while creating date.");
-
-      //TODO: add support for Date constructor with multiple arguments
-      long ticks = Convert.ToInt64(reader.Value);
-      DateTime date = JavaScriptConvert.ConvertJavaScriptTicksToDateTime(ticks);
-
-      // move to constructor end
-      if (!reader.Read())
-        throw new JsonSerializationException("Unexpected end while creating date.");
-      if (reader.TokenType != JsonToken.EndConstructor)
-        throw new JsonSerializationException("Unexpected token while creating date: " + reader.TokenType);
-
-      return date;
     }
 
     private object EnsureType(object value, Type targetType)
@@ -329,32 +361,33 @@ namespace Newtonsoft.Json
         MemberMapping memberMapping = memberMappings[memberName];
 
         if (memberMapping.Ignored)
+        {
+          reader.Skip();
           return;
-
-        // ignore member if it is readonly
-        if (!memberMapping.Writable)
-          return;
+        }
 
         // get the member's underlying type
         memberType = ReflectionUtils.GetMemberUnderlyingType(memberMapping.Member);
+        object currentValue = ReflectionUtils.GetMemberValue(memberMapping.Member, target);
 
-        value = GetObject(reader, memberType);
+        bool useExistingValue = (currentValue != null
+          && (_objectCreationHandling == ObjectCreationHandling.Auto || _objectCreationHandling == ObjectCreationHandling.Reuse)
+          && (reader.TokenType == JsonToken.StartArray || reader.TokenType == JsonToken.StartObject)
+          && (!memberType.IsArray && !ReflectionUtils.IsSubClass(memberType, typeof(ReadOnlyCollection<>))));
+
+        if (!memberMapping.Writable && !useExistingValue)
+        {
+          reader.Skip();
+          return;
+        }
+
+        value = CreateObject(reader, memberType, (useExistingValue) ? currentValue : null);
 
         if (_nullValueHandling == NullValueHandling.Ignore && value == null)
           return;
 
-        ReflectionUtils.SetMemberValue(memberMapping.Member, target, value);
-      }
-      else if (typeof(IDictionary).IsAssignableFrom(targetType))
-      {
-        // attempt to get the IDictionary's type
-        memberType = ReflectionUtils.GetDictionaryValueType(targetType);
-        value = GetObject(reader, memberType);
-
-        Type keyType = ReflectionUtils.GetDictionaryKeyType(targetType);
-        object keyValue = EnsureType(memberName, keyType);
-
-        ((IDictionary)target).Add(keyValue, value);
+        if (!useExistingValue)
+          ReflectionUtils.SetMemberValue(memberMapping.Member, target, value);
       }
       else
       {
@@ -363,35 +396,67 @@ namespace Newtonsoft.Json
       }
     }
 
-    private object PopulateList(JsonReader reader, Type objectType)
+    private object CreateAndPopulateDictionary(JsonReader reader, Type objectType)
     {
-      Type elementType = ReflectionUtils.GetListItemType(objectType);
+      IWrappedDictionary dictionary = CollectionUtils.CreateDictionaryWrapper(Activator.CreateInstance(objectType));
+      PopulateDictionary(dictionary, reader);
 
-      IList populatedList = CollectionUtils.CreateAndPopulateList(objectType, delegate(IList list)
-      {
-        while (reader.Read())
-        {
-          switch (reader.TokenType)
-          {
-            case JsonToken.EndArray:
-              return;
-            case JsonToken.Comment:
-              break;
-            default:
-              object value = GetObject(reader, elementType);
-
-              list.Add(value);
-              break;
-          }
-        }
-
-        throw new JsonSerializationException("Unexpected end when deserializing array.");
-      });
-
-      return populatedList;
+      return dictionary.UnderlyingDictionary;
     }
 
-    private object PopulateObject(JsonReader reader, Type objectType)
+    private IDictionary PopulateDictionary(IWrappedDictionary dictionary, JsonReader reader)
+    {
+      Type dictionaryType = dictionary.UnderlyingDictionary.GetType();
+      Type dictionaryKeyType = ReflectionUtils.GetDictionaryKeyType(dictionaryType);
+      Type dictionaryValueType = ReflectionUtils.GetDictionaryValueType(dictionaryType);
+
+      while (reader.Read())
+      {
+        switch (reader.TokenType)
+        {
+          case JsonToken.PropertyName:
+            object keyValue = EnsureType(reader.Value, dictionaryKeyType);
+            reader.Read();
+
+            dictionary.Add(keyValue, CreateObject(reader, dictionaryValueType, null));
+            break;
+          case JsonToken.EndObject:
+            return dictionary;
+          default:
+            throw new JsonSerializationException("Unexpected token when deserializing object: " + reader.TokenType);
+        }
+      }
+
+      throw new JsonSerializationException("Unexpected end when deserializing object.");
+    }
+
+    private object CreateAndPopulateList(JsonReader reader, Type objectType)
+    {
+      return CollectionUtils.CreateAndPopulateList(objectType, l => PopulateList(l, ReflectionUtils.GetListItemType(objectType), reader));
+    }
+
+    private IList PopulateList(IList list, Type listItemType, JsonReader reader)
+    {
+      while (reader.Read())
+      {
+        switch (reader.TokenType)
+        {
+          case JsonToken.EndArray:
+            return list;
+          case JsonToken.Comment:
+            break;
+          default:
+            object value = CreateObject(reader, listItemType, null);
+
+            list.Add(value);
+            break;
+        }
+      }
+
+      throw new JsonSerializationException("Unexpected end when deserializing array.");
+    }
+
+    private object CreateAndPopulateObject(JsonReader reader, Type objectType)
     {
       object newObject;
 
@@ -399,23 +464,8 @@ namespace Newtonsoft.Json
       {
         newObject = Activator.CreateInstance(objectType);
 
-        while (reader.Read())
-        {
-          switch (reader.TokenType)
-          {
-            case JsonToken.PropertyName:
-              string memberName = reader.Value.ToString();
-
-              SetObjectMember(reader, newObject, objectType, memberName);
-              break;
-            case JsonToken.EndObject:
-              return newObject;
-            default:
-              throw new JsonSerializationException("Unexpected token when deserializing object: " + reader.TokenType);
-          }
-        }
-
-        throw new JsonSerializationException("Unexpected end when deserializing object.");
+        PopulateObject(newObject, reader, objectType);
+        return newObject;
       }
       else
       {
@@ -442,15 +492,9 @@ namespace Newtonsoft.Json
               if (!reader.Read())
                 throw new JsonSerializationException(string.Format("Unexpected end when setting {0}'s value.", memberName));
 
-
               if (matchingConstructorParameter != null)
-              {
-                constructorParameters[matchingConstructorParameter] = GetObject(reader, matchingConstructorParameter.ParameterType);
-              }
+                constructorParameters[matchingConstructorParameter] = CreateObject(reader, matchingConstructorParameter.ParameterType, null);
 
-
-
-              //SetObjectMember(reader, newObject, objectType, memberName);
               break;
             case JsonToken.EndObject:
               exit = true;
@@ -464,6 +508,27 @@ namespace Newtonsoft.Json
 
         return newObject;
       }
+    }
+
+    private object PopulateObject(object newObject, JsonReader reader, Type objectType)
+    {
+      while (reader.Read())
+      {
+        switch (reader.TokenType)
+        {
+          case JsonToken.PropertyName:
+            string memberName = reader.Value.ToString();
+
+            SetObjectMember(reader, newObject, objectType, memberName);
+            break;
+          case JsonToken.EndObject:
+            return newObject;
+          default:
+            throw new JsonSerializationException("Unexpected token when deserializing object: " + reader.TokenType);
+        }
+      }
+
+      throw new JsonSerializationException("Unexpected end when deserializing object.");
     }
     #endregion
 
@@ -559,6 +624,9 @@ namespace Newtonsoft.Json
             break;
           case TypeCode.Decimal:
             writer.WriteValue((decimal)convertible);
+            break;
+          case TypeCode.DBNull:
+            writer.WriteNull();
             break;
           default:
             SerializeObject(writer, value);
@@ -691,10 +759,7 @@ namespace Newtonsoft.Json
 
     private void SerializeCollection(JsonWriter writer, ICollection values)
     {
-      object[] collectionValues = new object[values.Count];
-      values.CopyTo(collectionValues, 0);
-
-      SerializeList(writer, collectionValues);
+      SerializeList(writer, values.Cast<object>().ToList());
     }
 
     private void SerializeList(JsonWriter writer, IList values)

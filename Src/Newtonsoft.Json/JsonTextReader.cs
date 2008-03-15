@@ -789,7 +789,7 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Changes the <see cref="State"/> to Closed. 
     /// </summary>
-    public void Close()
+    public override void Close()
     {
       base.Close();
 

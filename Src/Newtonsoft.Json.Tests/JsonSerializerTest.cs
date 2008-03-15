@@ -118,6 +118,30 @@ namespace Newtonsoft.Json.Tests
     White
   }
 
+  public class ClassWithArray
+  {
+    private readonly IList<long> bar;
+    private string foo;
+
+    public ClassWithArray()
+    {
+      bar = new List<Int64>() { int.MaxValue };
+    }
+
+    [JsonProperty("foo")]
+    public string Foo
+    {
+      get { return foo; }
+      set { foo = value; }
+    }
+
+    [JsonProperty("bar")]
+    public IList<long> Bar
+    {
+      get { return bar; }
+    }
+  }
+
   public class JsonSerializerTest : TestFixtureBase
   {
     [Test]
@@ -311,6 +335,9 @@ namespace Newtonsoft.Json.Tests
       {
         get { return _ignoredProperty; }
       }
+
+      [JsonIgnore]
+      public Product IgnoredObject = new Product();
     }
 
     [Test]
@@ -320,7 +347,7 @@ namespace Newtonsoft.Json.Tests
 
       Assert.AreEqual(@"{""Field"":0,""Property"":21}", json);
 
-      JsonIgnoreAttributeTestClass c = JavaScriptConvert.DeserializeObject<JsonIgnoreAttributeTestClass>(@"{""Field"":99,""Property"":-1,""IgnoredField"":-1}");
+      JsonIgnoreAttributeTestClass c = JavaScriptConvert.DeserializeObject<JsonIgnoreAttributeTestClass>(@"{""Field"":99,""Property"":-1,""IgnoredField"":-1,""IgnoredObject"":[1,2,3,4,5]}");
 
       Assert.AreEqual(0, c.IgnoredField);
       Assert.AreEqual(99, c.Field);
@@ -779,6 +806,113 @@ keyword such as type of business.""
     {
       string json = JavaScriptConvert.SerializeObject(null);
       Assert.AreEqual("null", json);
+    }
+
+    [Test]
+    public void CanDeserializeIntArrayWhenNotFirstPropertyInJson()
+    {
+      string json = "{foo:'hello',bar:[1,2,3]}";
+      ClassWithArray wibble = JavaScriptConvert.DeserializeObject<ClassWithArray>(json);
+      Assert.AreEqual("hello", wibble.Foo);
+
+      Assert.AreEqual(4, wibble.Bar.Count);
+      Assert.AreEqual(int.MaxValue, wibble.Bar[0]);
+      Assert.AreEqual(1, wibble.Bar[1]);
+      Assert.AreEqual(2, wibble.Bar[2]);
+      Assert.AreEqual(3, wibble.Bar[3]);
+    }
+
+    [Test]
+    public void CanDeserializeIntArray_WhenArrayIsFirstPropertyInJson()
+    {
+      string json = "{bar:[1,2,3], foo:'hello'}";
+      ClassWithArray wibble = JavaScriptConvert.DeserializeObject<ClassWithArray>(json);
+      Assert.AreEqual("hello", wibble.Foo);
+
+      Assert.AreEqual(4, wibble.Bar.Count);
+      Assert.AreEqual(int.MaxValue, wibble.Bar[0]);
+      Assert.AreEqual(1, wibble.Bar[1]);
+      Assert.AreEqual(2, wibble.Bar[2]);
+      Assert.AreEqual(3, wibble.Bar[3]);
+    }
+
+    [Test]
+    public void ObjectCreationHandlingReplace()
+    {
+      string json = "{bar:[1,2,3], foo:'hello'}";
+
+      JsonSerializer s = new JsonSerializer();
+      s.ObjectCreationHandling = ObjectCreationHandling.Replace;
+
+      ClassWithArray wibble = (ClassWithArray)s.Deserialize(new StringReader(json), typeof(ClassWithArray));
+
+      Assert.AreEqual("hello", wibble.Foo);
+
+      Assert.AreEqual(1, wibble.Bar.Count);
+    }
+
+    [Test]
+    public void CanDeserializeSerializedJson()
+    {
+      ClassWithArray wibble = new ClassWithArray();
+      wibble.Foo = "hello";
+      wibble.Bar.Add(1);
+      wibble.Bar.Add(2);
+      wibble.Bar.Add(3);
+      string json = JavaScriptConvert.SerializeObject(wibble);
+
+      ClassWithArray wibbleOut = JavaScriptConvert.DeserializeObject<ClassWithArray>(json);
+      Assert.AreEqual("hello", wibbleOut.Foo);
+
+      Assert.AreEqual(5, wibbleOut.Bar.Count);
+      Assert.AreEqual(int.MaxValue, wibbleOut.Bar[0]);
+      Assert.AreEqual(int.MaxValue, wibbleOut.Bar[1]);
+      Assert.AreEqual(1, wibbleOut.Bar[2]);
+      Assert.AreEqual(2, wibbleOut.Bar[3]);
+      Assert.AreEqual(3, wibbleOut.Bar[4]);
+    }
+
+    public class ConverableMembers
+    {
+      public string String = "string";
+      public int Int32 = int.MaxValue;
+      public uint UInt32 = uint.MaxValue;
+      public byte Byte = byte.MaxValue;
+      public sbyte SByte = sbyte.MaxValue;
+      public short Short = short.MaxValue;
+      public ushort UShort = ushort.MaxValue;
+      public long Long = long.MaxValue;
+      public ulong ULong = long.MaxValue;
+      public double Double = double.MaxValue;
+      public float Float = float.MaxValue;
+      public DBNull DBNull = DBNull.Value;
+      public bool Bool = true;
+      public char Char = '\0';
+    }
+
+    [Test]
+    public void SerializeConverableObjects()
+    {
+      string json = JavaScriptConvert.SerializeObject(new ConverableMembers());
+
+      Assert.AreEqual(@"{""String"":""string"",""Int32"":2147483647,""UInt32"":4294967295,""Byte"":255,""SByte"":127,""Short"":32767,""UShort"":65535,""Long"":9223372036854775807,""ULong"":9223372036854775807,""Double"":1.7976931348623157E+308,""Float"":3.40282347E+38,""DBNull"":null,""Bool"":true,""Char"":""\u0000""}", json);
+
+      ConverableMembers c = JavaScriptConvert.DeserializeObject<ConverableMembers>(json);
+      Assert.AreEqual("string", c.String);
+      Assert.AreEqual(double.MaxValue, c.Double);
+      Assert.AreEqual(DBNull.Value, c.DBNull);
+    }
+
+    [Test]
+    public void SerializeStack()
+    {
+      Stack s = new Stack();
+      s.Push(1);
+      s.Push(2);
+      s.Push(3);
+
+      string json = JavaScriptConvert.SerializeObject(s);
+      Assert.AreEqual("[3,2,1]", json);
     }
   }
 }

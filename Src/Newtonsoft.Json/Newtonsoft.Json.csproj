@@ -73,6 +73,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ObjectCreationHandling.cs" />
     <Compile Include="Converters\IsoDateTimeConverter.cs" />
     <Compile Include="Converters\JavaScriptDateTimeConverter.cs" />
     <Compile Include="Converters\JsonDateTimeSerializationMode.cs" />
@@ -109,6 +110,7 @@
     <Compile Include="NullValueHandling.cs" />
     <Compile Include="ReferenceLoopHandling.cs" />
     <Compile Include="Utilities\DateTimeUtils.cs" />
+    <Compile Include="Utilities\DictionaryWrapper.cs" />
     <Compile Include="Utilities\JavaScriptUtils.cs" />
     <Compile Include="JsonToken.cs" />
     <Compile Include="JsonWriter.cs" />

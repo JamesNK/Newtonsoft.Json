@@ -295,7 +295,7 @@ namespace Newtonsoft.Json
       ValidationUtils.ArgumentNotNull(reader, "reader");
 
       int currentDepth = (reader.TokenType == JsonToken.None) ? -1 : reader.Depth;
-      bool continue1;
+
       do
       {
         switch (reader.TokenType)

@@ -29,6 +29,7 @@ using System.Text;
 using System.Reflection;
 using System.Collections;
 using System.ComponentModel;
+using System.Linq;
 
 namespace Newtonsoft.Json.Utilities
 {
@@ -537,12 +538,18 @@ namespace Newtonsoft.Json.Utilities
 
     public static object CreateGeneric(Type genericTypeDefinition, IList<Type> innerTypes, params object[] args)
     {
+      return CreateGeneric(genericTypeDefinition, innerTypes, (t, a) => Activator.CreateInstance(t, a.ToArray()), args);
+    }
+
+    public static object CreateGeneric(Type genericTypeDefinition, IList<Type> innerTypes, Func<Type, IList<object>, object> instanceCreator, params object[] args)
+    {
       ValidationUtils.ArgumentNotNull(genericTypeDefinition, "genericTypeDefinition");
       ValidationUtils.ArgumentNotNullOrEmpty(innerTypes, "innerTypes");
+      ValidationUtils.ArgumentNotNull(instanceCreator, "createInstance");
 
       Type specificType = MakeGenericType(genericTypeDefinition, CollectionUtils.CreateArray(innerTypes));
 
-      return Activator.CreateInstance(specificType, args);
+      return instanceCreator(specificType, args);
     }
   }
 }

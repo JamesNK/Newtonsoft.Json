@@ -191,7 +191,7 @@ namespace Newtonsoft.Json.Utilities
     /// </summary>
     /// <param name="initial">The list to add to.</param>
     /// <param name="collection">The collection of elements to add.</param>
-    public static void AddRange<T>(IList<T> initial, IEnumerable<T> collection)
+    public static void AddRange<T>(this IList<T> initial, IEnumerable<T> collection)
     {
       if (initial == null)
         throw new ArgumentNullException("initial");
@@ -203,6 +203,14 @@ namespace Newtonsoft.Json.Utilities
       {
         initial.Add(value);
       }
+    }
+
+    public static void AddRange(this IList initial, IEnumerable collection)
+    {
+      ValidationUtils.ArgumentNotNull(initial, "initial");
+
+      ListWrapper<object> wrapper = new ListWrapper<object>(initial);
+      wrapper.AddRange(collection.Cast<object>());
     }
 
     public static List<T> Distinct<T>(List<T> collection)
@@ -336,11 +344,11 @@ namespace Newtonsoft.Json.Utilities
       return tempList.ToArray();
     }
 
-    public static object CreateGenericList(Type listType)
+    public static IList CreateGenericList(Type listType)
     {
       ValidationUtils.ArgumentNotNull(listType, "listType");
 
-      return ReflectionUtils.CreateGeneric(typeof(List<>), listType);
+      return (IList)ReflectionUtils.CreateGeneric(typeof(List<>), listType);
     }
 
     public static bool IsListType(Type type)
@@ -357,13 +365,70 @@ namespace Newtonsoft.Json.Utilities
         return false;
     }
 
+    public static IWrappedList CreateListWrapper(object list)
+    {
+      ValidationUtils.ArgumentNotNull(list, "list");
+
+      Type listDefinition;
+      if (ReflectionUtils.IsSubClass(list.GetType(), typeof(IList<>), out listDefinition))
+      {
+        Type listItemType = ReflectionUtils.GetListItemType(listDefinition);
+
+        // Activator.CreateInstance throws AmbiguousMatchException. Manually invoke constructor
+        Func<Type, IList<object>, object> instanceCreator = (t, a) =>
+        {
+          ConstructorInfo c = t.GetConstructor(new[] {listDefinition});
+          return c.Invoke(new[] { list });
+        };
+
+        return (IWrappedList)ReflectionUtils.CreateGeneric(typeof(ListWrapper<>), new[] { listItemType }, instanceCreator, list);
+      }
+      else if (list is IList)
+      {
+        return new ListWrapper<object>((IList)list);
+      }
+      else
+      {
+        throw new Exception(string.Format("Can not create ListWrapper for type {0}.", list.GetType()));
+      }
+    }
+
+    public static IWrappedDictionary CreateDictionaryWrapper(object dictionary)
+    {
+      ValidationUtils.ArgumentNotNull(dictionary, "dictionary");
+
+      Type dictionaryDefinition;
+      if (ReflectionUtils.IsSubClass(dictionary.GetType(), typeof(IDictionary<,>), out dictionaryDefinition))
+      {
+        Type dictionaryKeyType = ReflectionUtils.GetDictionaryKeyType(dictionaryDefinition);
+        Type dictionaryValueType = ReflectionUtils.GetDictionaryValueType(dictionaryDefinition);
+
+        // Activator.CreateInstance throws AmbiguousMatchException. Manually invoke constructor
+        Func<Type, IList<object>, object> instanceCreator = (t, a) =>
+        {
+          ConstructorInfo c = t.GetConstructor(new[] { dictionaryDefinition });
+          return c.Invoke(new[] { dictionary });
+        };
+
+        return (IWrappedDictionary)ReflectionUtils.CreateGeneric(typeof(DictionaryWrapper<,>), new[] { dictionaryKeyType, dictionaryValueType }, instanceCreator, dictionary);
+      }
+      else if (dictionary is IDictionary)
+      {
+        return new DictionaryWrapper<object, object>((IDictionary)dictionary);
+      }
+      else
+      {
+        throw new Exception(string.Format("Can not create DictionaryWrapper for type {0}.", dictionary.GetType()));
+      }
+    }
+
     public static IList CreateAndPopulateList(Type listType, Action<IList> populateList)
     {
       ValidationUtils.ArgumentNotNull(listType, "listType");
       ValidationUtils.ArgumentNotNull(populateList, "populateList");
 
       IList list;
-      Type readOnlyCollectionType;
+      Type collectionType;
       bool isReadOnlyOrFixedSize = false;
 
       if (listType.IsArray)
@@ -373,9 +438,9 @@ namespace Newtonsoft.Json.Utilities
         list = new ArrayList();
         isReadOnlyOrFixedSize = true;
       }
-      else if (ReflectionUtils.IsSubClass(listType, typeof(ReadOnlyCollection<>), out readOnlyCollectionType))
+      else if (ReflectionUtils.IsSubClass(listType, typeof(ReadOnlyCollection<>), out collectionType))
       {
-        Type readOnlyCollectionContentsType = readOnlyCollectionType.GetGenericArguments()[0];
+        Type readOnlyCollectionContentsType = collectionType.GetGenericArguments()[0];
         Type genericEnumerable = ReflectionUtils.MakeGenericType(typeof(IEnumerable<>), readOnlyCollectionContentsType);
         bool suitableConstructor = false;
 
@@ -394,21 +459,33 @@ namespace Newtonsoft.Json.Utilities
         }
 
         if (!suitableConstructor)
-          throw new Exception(string.Format("Readonly type {0} does not have a public constructor that takes a type that implements {1}.", listType, genericEnumerable));
+          throw new Exception(string.Format("Read-only type {0} does not have a public constructor that takes a type that implements {1}.", listType, genericEnumerable));
 
         // can't add or modify a readonly list
         // use List<T> and convert once populated
         list = (IList)CreateGenericList(readOnlyCollectionContentsType);
         isReadOnlyOrFixedSize = true;
       }
-      else if (typeof(IList).IsAssignableFrom(listType) && ReflectionUtils.IsInstantiatableType(listType))
+      else if (typeof(IList).IsAssignableFrom(listType))
       {
-        list = (IList)Activator.CreateInstance(listType);
+        if (ReflectionUtils.IsInstantiatableType(listType))
+          list = (IList)Activator.CreateInstance(listType);
+        else if (listType == typeof(IList))
+          list = new List<object>();
+        else
+          list = null;
+      }
+      else if (listType.IsGenericType && listType.GetGenericTypeDefinition() == typeof(IList<>))
+      {
+        list = CollectionUtils.CreateGenericList(ReflectionUtils.GetListItemType(listType));
       }
       else
       {
-        throw new Exception(string.Format("Cannot create and populate list type {0}.", listType));
+        list = null;
       }
+
+      if (list == null)
+        throw new Exception(string.Format("Cannot create and populate list type {0}.", listType));
 
       populateList(list);
 
