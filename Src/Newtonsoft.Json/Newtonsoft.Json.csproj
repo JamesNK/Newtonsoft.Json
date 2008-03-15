@@ -117,6 +117,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringBuffer.cs" />
     <Compile Include="Utilities\CollectionUtils.cs" />
+    <Compile Include="Utilities\ListWrapper.cs" />
     <Compile Include="Utilities\MathUtils.cs" />
     <Compile Include="Utilities\MiscellaneousUtils.cs" />
     <Compile Include="Utilities\ReflectionUtils.cs" />
