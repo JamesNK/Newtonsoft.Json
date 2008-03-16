@@ -27,6 +27,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json.Utilities;
+using System.Globalization;
 
 namespace Newtonsoft.Json.Linq
 {
@@ -42,6 +44,11 @@ namespace Newtonsoft.Json.Linq
     {
       _value = value;
       _valueType = type;
+    }
+
+    public JValue(JValue value)
+      : this(value.Value, value.Type)
+    {
     }
 
     public JValue(long value)
@@ -69,8 +76,23 @@ namespace Newtonsoft.Json.Linq
     {
     }
 
-    public JValue(object value) : this(value, GetValueType(value))
+    public JValue(object value)
+      : this(value, GetValueType(value))
     {
+    }
+
+    internal override bool DeepEquals(JToken node)
+    {
+      JValue other = node as JValue;
+      if (other == null)
+        return false;
+
+      return (this == other || (_valueType == other.Type && _value == other.Value));
+    }
+
+    internal override JToken CloneNode()
+    {
+      return new JValue(this);
     }
 
     public static JValue CreateComment(string value)
@@ -94,7 +116,7 @@ namespace Newtonsoft.Json.Linq
       else if (value is bool)
         return JsonTokenType.Boolean;
 
-      throw new ArgumentException(string.Format("Could not determin JSON object type for type {0}.", value.GetType()));
+      throw new ArgumentException("Could not determin JSON object type for type {0}.".FormatWith(value.GetType()));
     }
 
     public override JsonTokenType Type
@@ -132,24 +154,24 @@ namespace Newtonsoft.Json.Linq
           writer.WriteComment(_value.ToString());
           break;
         case JsonTokenType.Integer:
-          WriteConvertableValue(writer, converters, v => writer.WriteValue(Convert.ToInt64(v)), _value);
+          WriteConvertableValue(writer, converters, v => writer.WriteValue(Convert.ToInt64(v, CultureInfo.InvariantCulture)), _value);
           break;
         case JsonTokenType.Float:
-          WriteConvertableValue(writer, converters, v => writer.WriteValue(Convert.ToDouble(v)), _value);
+          WriteConvertableValue(writer, converters, v => writer.WriteValue(Convert.ToDouble(v, CultureInfo.InvariantCulture)), _value);
           break;
         case JsonTokenType.String:
           WriteConvertableValue(writer, converters, v => writer.WriteValue(v.ToString()), _value);
           break;
         case JsonTokenType.Boolean:
-          WriteConvertableValue(writer, converters, v => writer.WriteValue(Convert.ToBoolean(v)), _value);
+          WriteConvertableValue(writer, converters, v => writer.WriteValue(Convert.ToBoolean(v, CultureInfo.InvariantCulture)), _value);
           break;
         case JsonTokenType.Date:
-          WriteConvertableValue(writer, converters,  v =>
+          WriteConvertableValue(writer, converters, v =>
           {
             if (v is DateTimeOffset)
               writer.WriteValue((DateTimeOffset)v);
             else
-              writer.WriteValue(Convert.ToDateTime(v));
+              writer.WriteValue(Convert.ToDateTime(v, CultureInfo.InvariantCulture));
           }, _value);
           break;
         case JsonTokenType.Null:

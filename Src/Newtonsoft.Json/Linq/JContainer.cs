@@ -29,6 +29,7 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Utilities;
 using System.Collections;
+using System.Diagnostics;
 
 namespace Newtonsoft.Json.Linq
 {
@@ -40,6 +41,52 @@ namespace Newtonsoft.Json.Linq
     {
       get { return _content; }
       set { _content = value; }
+    }
+
+    protected JContainer()
+    {
+    }
+
+    protected JContainer(JContainer other)
+    {
+      ValidationUtils.ArgumentNotNull(other, "c");
+
+      JToken content = other.Last;
+      if (content != null)
+      {
+        do
+        {
+          content = content.Next;
+          Add(content.CloneNode());
+        }
+        while (content != other.Last);
+      }
+    }
+
+    internal bool ContentsEqual(JContainer container)
+    {
+      JToken t1 = First;
+      JToken t2 = container.First;
+
+      if (t1 == t2)
+        return true;
+
+      do
+      {
+        if (t1 == null && t2 == null)
+          return true;
+
+        if (t1 != null && t2 != null && t1.DeepEquals(t2))
+        {
+          t1 = (t1 != Last) ? t1.Next : null;
+          t2 = (t2 != container.Last) ? t2.Next : null;
+        }
+        else
+        {
+          return false;
+        }
+      }
+      while (true);
     }
 
     public override JToken First
@@ -55,6 +102,7 @@ namespace Newtonsoft.Json.Linq
 
     public override JToken Last
     {
+      [DebuggerStepThrough]
       get { return _content; }
     }
 
@@ -76,17 +124,17 @@ namespace Newtonsoft.Json.Linq
       } while ((current = current.Next) != first);
     }
 
-    public override IEnumerable<T> Children<T>()
+    public override IEnumerable<T> Values<T>()
     {
       return Children().Convert<JToken, T>();
     }
 
-    public override T Value<T>(object key)
-    {
-      JToken token = this[key];
+    //public override T Value<T>(object key)
+    //{
+    //  JToken token = this[key];
 
-      return Extensions.Convert<JToken, T>(token);
-    }
+    //  return Extensions.Convert<JToken, T>(token);
+    //}
 
     public IEnumerable<JToken> Descendants()
     {
@@ -144,6 +192,25 @@ namespace Newtonsoft.Json.Linq
       {
         JToken o = CreateFromContent(content);
 
+        ValidateToken(o);
+
+        if (o.Parent != null)
+        {
+          o = o.CloneNode();
+        }
+        else
+        {
+          JContainer parent = this;
+          while (parent.Parent != null)
+          {
+            parent = parent.Parent;
+          }
+          if (o == parent)
+          {
+            o = o.CloneNode();
+          }
+        }
+
         JToken last = Last;
         JToken next = First ?? o;
 
@@ -154,6 +221,11 @@ namespace Newtonsoft.Json.Linq
           last.Next = o;
         _content = o;
       }
+    }
+
+    internal virtual void ValidateToken(JToken o)
+    {
+      //throw new NotImplementedException();
     }
 
     public void AddFirst(object content)
@@ -319,7 +391,7 @@ namespace Newtonsoft.Json.Linq
             parent = property;
             break;
           default:
-            throw new InvalidOperationException(string.Format("The JsonReader should not be on a token of type {0}.", r.TokenType));
+            throw new InvalidOperationException("The JsonReader should not be on a token of type {0}.".FormatWith(r.TokenType));
         }
       }
       while (r.Read());

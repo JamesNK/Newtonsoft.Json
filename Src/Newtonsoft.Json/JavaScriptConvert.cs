@@ -127,7 +127,7 @@ namespace Newtonsoft.Json
         case DateTimeKind.Local:
         case DateTimeKind.Unspecified:
           TimeSpan utcOffset = value.Offset;
-          offset = utcOffset.Hours.ToString("+00;-00") + utcOffset.Minutes.ToString("00;00");
+          offset = utcOffset.Hours.ToString("+00;-00", CultureInfo.InvariantCulture) + utcOffset.Minutes.ToString("00;00", CultureInfo.InvariantCulture);
           break;
         default:
           offset = string.Empty;
@@ -182,7 +182,7 @@ namespace Newtonsoft.Json
     /// <returns>A Json string representation of the <see cref="Enum"/>.</returns>
     public static string ToString(Enum value)
     {
-      return value.ToString();
+      return Enum.Format(value.GetType(), value, "D");
     }
 
     /// <summary>
@@ -379,8 +379,12 @@ namespace Newtonsoft.Json
       {
         return ToString((DateTimeOffset)value);
       }
+      else if (value is Guid)
+      {
+        return ToString((Guid)value);
+      }
 
-      throw new ArgumentException(string.Format("Unsupported type: {0}. Use the JsonSerializer class to get the object's JSON representation.", value.GetType()));
+      throw new ArgumentException("Unsupported type: {0}. Use the JsonSerializer class to get the object's JSON representation.".FormatWith(value.GetType()));
     }
 
     /// <summary>

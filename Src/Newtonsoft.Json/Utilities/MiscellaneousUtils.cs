@@ -55,7 +55,7 @@ namespace Newtonsoft.Json.Utilities
       if (descriptionAttribute != null)
         return descriptionAttribute.Description;
       else
-        throw new Exception(string.Format("No DescriptionAttribute on '{0}'.", o.GetType()));
+        throw new Exception("No DescriptionAttribute on '{0}'.".FormatWith(o.GetType()));
     }
 
     public static IList<string> GetDescriptions(IList values)

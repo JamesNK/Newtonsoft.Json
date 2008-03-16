@@ -29,6 +29,7 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Utilities;
 using System.Collections;
+using System.Globalization;
 
 namespace Newtonsoft.Json.Linq
 {
@@ -125,15 +126,15 @@ namespace Newtonsoft.Json.Linq
       //List<U> s = childrenValues.Convert<JToken, U>().ToList();
       //return childrenValues.Convert<JToken, U>();
 
-    //  return source.SelectMany(d => d.Properties())
-    //.Where(p => string.Compare(p.Name, name, StringComparison.Ordinal) == 0)
-    //.Select(p => p.Value)
-    //.Convert<JToken, T>();
+      //  return source.SelectMany(d => d.Properties())
+      //.Where(p => string.Compare(p.Name, name, StringComparison.Ordinal) == 0)
+      //.Select(p => p.Value)
+      //.Convert<JToken, T>();
     }
 
     //TODO
     //public static IEnumerable<T> InDocumentOrder<T>(this IEnumerable<T> source) where T : JObject;
-    
+
     //public static IEnumerable<JToken> Children<T>(this IEnumerable<T> source) where T : JToken
     //{
     //  ValidationUtils.ArgumentNotNull(source, "source");
@@ -181,9 +182,9 @@ namespace Newtonsoft.Json.Linq
 
         JValue value = token as JValue;
         if (value == null)
-          throw new InvalidCastException(string.Format("Cannot cast {0} to {1}.", token.GetType(), typeof(T)));
+          throw new InvalidCastException("Cannot cast {0} to {1}.".FormatWith(token.GetType(), typeof(T)));
 
-        return (U)System.Convert.ChangeType(value.Value, typeof(U));
+        return (U)System.Convert.ChangeType(value.Value, typeof(U), CultureInfo.InvariantCulture);
       }
     }
 

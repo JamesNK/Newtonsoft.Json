@@ -64,6 +64,9 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DateTimeTestClass.cs" />
@@ -75,6 +78,7 @@
     <Compile Include="JsonTextWriterTest.cs" />
     <Compile Include="JsonTokenReaderTest.cs" />
     <Compile Include="JsonTokenWriterTest.cs" />
+    <Compile Include="JTokenTests.cs" />
     <Compile Include="LinqToJsonTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestFixtureBase.cs" />

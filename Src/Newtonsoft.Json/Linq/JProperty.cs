@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Utilities;
+using System.Diagnostics;
 
 namespace Newtonsoft.Json.Linq
 {
@@ -37,11 +38,13 @@ namespace Newtonsoft.Json.Linq
 
     public string Name
     {
+      [DebuggerStepThrough]
       get { return _name; }
-    } 
+    }
 
     public JToken Value
     {
+      [DebuggerStepThrough]
       get { return Last; }
       set
       {
@@ -49,8 +52,26 @@ namespace Newtonsoft.Json.Linq
       }
     }
 
+    public JProperty(JProperty other)
+      : base(other)
+    {
+      _name = other.Name;
+    }
+
+    internal override bool DeepEquals(JToken node)
+    {
+      JProperty t = node as JProperty;
+      return (t != null && _name == t.Name && ContentsEqual(t));
+    }
+
+    internal override JToken CloneNode()
+    {
+      return new JProperty(this);
+    }
+
     public override JsonTokenType Type
     {
+      [DebuggerStepThrough]
       get { return JsonTokenType.Property; }
     }
 
@@ -74,7 +95,7 @@ namespace Newtonsoft.Json.Linq
       ValidationUtils.ArgumentNotNull(o, "o");
 
       if (o.Type == JsonTokenType.Property)
-        throw new ArgumentException(string.Format("An item of type {0} cannot be added to content.", o.Type));
+        throw new ArgumentException("An item of type {0} cannot be added to content.".FormatWith(o.Type));
     }
 
     public override void WriteTo(JsonWriter writer, params JsonConverter[] converters)

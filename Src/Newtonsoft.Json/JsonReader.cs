@@ -30,6 +30,7 @@ using System.IO;
 using System.Xml;
 using System.Globalization;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json
 {
@@ -238,7 +239,7 @@ namespace Newtonsoft.Json
       JsonTokenType currentObject = Pop();
 
       if (GetTypeForCloseToken(endToken) != currentObject)
-        throw new JsonReaderException(string.Format("JsonToken {0} is not valid for closing JsonType {1}.", endToken, currentObject));
+        throw new JsonReaderException("JsonToken {0} is not valid for closing JsonType {1}.".FormatWith(endToken, currentObject));
     }
 
     protected void SetStateBasedOnCurrent()

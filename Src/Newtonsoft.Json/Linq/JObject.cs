@@ -38,13 +38,30 @@ namespace Newtonsoft.Json.Linq
     {
     }
 
-    public JObject(params object[] content) : this((object)content)
+    public JObject(JObject other)
+      : base(other)
+    {
+    }
+
+    public JObject(params object[] content)
+      : this((object)content)
     {
     }
 
     public JObject(object content)
     {
       Add(content);
+    }
+
+    internal override bool DeepEquals(JToken node)
+    {
+      JObject t = node as JObject;
+      return (t != null && ContentsEqual(t));
+    }
+
+    internal override JToken CloneNode()
+    {
+      return new JObject(this);
     }
 
     public override JsonTokenType Type
@@ -74,7 +91,7 @@ namespace Newtonsoft.Json.Linq
       ValidationUtils.ArgumentNotNull(content, "content");
 
       if (!(content is JProperty) && !IsMultiContent(content))
-        throw new ArgumentException(string.Format("Error adding {0} to JObject. JObject only supports JProperty content.", content.GetType().Name));
+        throw new ArgumentException("Error adding {0} to JObject. JObject only supports JProperty content.".FormatWith(content.GetType().Name));
 
       base.Add(content);
     }
@@ -87,7 +104,7 @@ namespace Newtonsoft.Json.Linq
 
         string propertyName = key as string;
         if (propertyName == null)
-          throw new ArgumentException(string.Format("Accessed JObject values with invalid key value: {0}. Object property name expected.", MiscellaneousUtils.ToString(key)));
+          throw new ArgumentException("Accessed JObject values with invalid key value: {0}. Object property name expected.".FormatWith(MiscellaneousUtils.ToString(key)));
 
         JProperty property = Property(propertyName);
 
@@ -132,7 +149,7 @@ namespace Newtonsoft.Json.Linq
       JToken token = FromObjectInternal(o);
 
       if (token.Type != JsonTokenType.Object)
-        throw new ArgumentException(string.Format("Object serialized to {0}. JObject instance expected.", token.Type));
+        throw new ArgumentException("Object serialized to {0}. JObject instance expected.".FormatWith(token.Type));
 
       return (JObject)token;
     }
@@ -142,7 +159,7 @@ namespace Newtonsoft.Json.Linq
       ValidationUtils.ArgumentNotNull(o, "o");
 
       if (o.Type != JsonTokenType.Property)
-        throw new ArgumentException(string.Format("An item of type {0} cannot be added to content.", o.Type));
+        throw new ArgumentException("An item of type {0} cannot be added to content.".FormatWith(o.Type));
     }
 
     public override void WriteTo(JsonWriter writer, params JsonConverter[] converters)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Globalization;
+using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Converters
 {
@@ -11,13 +12,6 @@ namespace Newtonsoft.Json.Converters
     private const string DateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK";
 
     private DateTimeStyles _dateTimeStyles = DateTimeStyles.RoundtripKind;
-    //private bool _forceUniversalTime;
-
-    //public bool ForceUniversalTime
-    //{
-    //  get { return _forceUniversalTime; }
-    //  set { _forceUniversalTime = value; }
-    //}
 
     public DateTimeStyles DateTimeStyles
     {
@@ -55,7 +49,7 @@ namespace Newtonsoft.Json.Converters
     public override object ReadJson(JsonReader reader, Type objectType)
     {
       if (reader.TokenType != JsonToken.String)
-        throw new Exception(string.Format("Unexpected token parsing date. Expected String, got {0}.", reader.TokenType));
+        throw new Exception("Unexpected token parsing date. Expected String, got {0}.".FormatWith(reader.TokenType));
 
       string dateText = reader.Value.ToString();
 

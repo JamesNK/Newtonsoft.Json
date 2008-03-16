@@ -41,5 +41,10 @@ namespace Newtonsoft.Json.Converters
     {
       return typeof(Color).IsAssignableFrom(valueType);
     }
+
+    public override object ReadJson(JsonReader reader, Type objectType)
+    {
+      throw new NotImplementedException();
+    }
   }
 }

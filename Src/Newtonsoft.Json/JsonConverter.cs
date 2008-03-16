@@ -26,23 +26,14 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json
 {
   public abstract class JsonConverter
   {
-    public virtual void WriteJson(JsonWriter writer, object value)
-    {
-      JsonSerializer serializer = new JsonSerializer();
-
-      serializer.Serialize(writer, value);
-    }
-
-    public virtual object ReadJson(JsonReader reader, Type objectType)
-    {
-      throw new NotImplementedException(string.Format("{0} has not overriden the ReadJson method.", GetType().Name));
-    }
-
+    public abstract void WriteJson(JsonWriter writer, object value);
+    public abstract object ReadJson(JsonReader reader, Type objectType);
     public abstract bool CanConvert(Type objectType);
   }
 }

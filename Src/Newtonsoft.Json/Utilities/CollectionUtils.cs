@@ -315,7 +315,7 @@ namespace Newtonsoft.Json.Utilities
       else if (returnDefaultIfEmpty && list.Count == 0)
         return default(T);
       else
-        throw new Exception(string.Format("Expected single {0} in list but got {1}.", typeof(T), list.Count));
+        throw new Exception("Expected single {0} in list but got {1}.".FormatWith(typeof(T), list.Count));
     }
     #endregion
 
@@ -389,7 +389,7 @@ namespace Newtonsoft.Json.Utilities
       }
       else
       {
-        throw new Exception(string.Format("Can not create ListWrapper for type {0}.", list.GetType()));
+        throw new Exception("Can not create ListWrapper for type {0}.".FormatWith(list.GetType()));
       }
     }
 
@@ -418,7 +418,7 @@ namespace Newtonsoft.Json.Utilities
       }
       else
       {
-        throw new Exception(string.Format("Can not create DictionaryWrapper for type {0}.", dictionary.GetType()));
+        throw new Exception("Can not create DictionaryWrapper for type {0}.".FormatWith(dictionary.GetType()));
       }
     }
 
@@ -459,7 +459,7 @@ namespace Newtonsoft.Json.Utilities
         }
 
         if (!suitableConstructor)
-          throw new Exception(string.Format("Read-only type {0} does not have a public constructor that takes a type that implements {1}.", listType, genericEnumerable));
+          throw new Exception("Read-only type {0} does not have a public constructor that takes a type that implements {1}.".FormatWith(listType, genericEnumerable));
 
         // can't add or modify a readonly list
         // use List<T> and convert once populated
@@ -485,7 +485,7 @@ namespace Newtonsoft.Json.Utilities
       }
 
       if (list == null)
-        throw new Exception(string.Format("Cannot create and populate list type {0}.", listType));
+        throw new Exception("Cannot create and populate list type {0}.".FormatWith(listType));
 
       populateList(list);
 

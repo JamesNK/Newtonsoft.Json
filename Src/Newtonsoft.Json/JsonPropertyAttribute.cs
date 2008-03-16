@@ -13,6 +13,10 @@ namespace Newtonsoft.Json
       set { _propertyName = value; }
     }
 
+    public JsonPropertyAttribute()
+    {
+    }
+
     public JsonPropertyAttribute(string propertyName)
     {
       _propertyName = propertyName;

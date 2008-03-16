@@ -261,7 +261,7 @@ namespace Newtonsoft.Json.Utilities
     private static void VerifyValueType(object value)
     {
       if (!IsCompatibleObject(value))
-        throw new ArgumentException(string.Format("The value '{0}' is not of type '{1}' and cannot be used in this generic collection.", value, typeof(T)), "value");
+        throw new ArgumentException("The value '{0}' is not of type '{1}' and cannot be used in this generic collection.".FormatWith(value, typeof(T)), "value");
     }
 
     private static bool IsCompatibleObject(object value)

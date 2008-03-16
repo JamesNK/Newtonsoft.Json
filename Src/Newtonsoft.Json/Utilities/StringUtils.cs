@@ -29,6 +29,8 @@ using System.Data.SqlTypes;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Linq;
+using System.Globalization;
 
 namespace Newtonsoft.Json.Utilities
 {
@@ -39,6 +41,18 @@ namespace Newtonsoft.Json.Utilities
     public const char CarriageReturn = '\r';
     public const char LineFeed = '\n';
     public const char Tab = '\t';
+
+    public static string FormatWith(this string format, params object[] args)
+    {
+      return FormatWith(format, CultureInfo.InvariantCulture, args);
+    }
+
+    public static string FormatWith(this string format, IFormatProvider provider, params object[] args)
+    {
+      ValidationUtils.ArgumentNotNull(format, "format");
+
+      return string.Format(provider, format, args);
+    }
 
     /// <summary>
     /// Determines whether the string contains white space.
@@ -190,7 +204,7 @@ namespace Newtonsoft.Json.Utilities
         throw new ArgumentException("Must be greater than zero.", "indentation");
 
       StringReader sr = new StringReader(s);
-      StringWriter sw = new StringWriter();
+      StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
 
       ActionTextReaderLine(sr, sw, delegate(TextWriter tw, string line)
       {
@@ -229,13 +243,13 @@ namespace Newtonsoft.Json.Utilities
         throw new ArgumentNullException("s");
 
       StringReader sr = new StringReader(s);
-      StringWriter sw = new StringWriter();
+      StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
 
       int lineNumber = 1;
 
       ActionTextReaderLine(sr, sw, delegate(TextWriter tw, string line)
       {
-        tw.Write(lineNumber.ToString().PadLeft(4));
+        tw.Write(lineNumber.ToString(CultureInfo.InvariantCulture).PadLeft(4));
         tw.Write(". ");
         tw.Write(line);
 
@@ -354,7 +368,7 @@ namespace Newtonsoft.Json.Utilities
     public static StringWriter CreateStringWriter(int capacity)
     {
       StringBuilder sb = new StringBuilder(capacity);
-      StringWriter sw = new StringWriter(sb);
+      StringWriter sw = new StringWriter(sb, CultureInfo.InvariantCulture);
 
       return sw;
     }
@@ -369,7 +383,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static string ToCharAsUnicode(char c)
     {
-      using (StringWriter w = new StringWriter())
+      using (StringWriter w = new StringWriter(CultureInfo.InvariantCulture))
       {
         WriteCharAsUnicode(w, c);
         return w.ToString();

@@ -66,5 +66,27 @@ now brown cow?", '"', true);
       result = JavaScriptUtils.ToEscapedJavaScriptString(@"Fred's ""cat"".", '\'', true);
       Assert.AreEqual(result, @"'Fred\'s ""cat"".'");
     }
+
+    [Test]
+    [ExpectedException(typeof(ArgumentException), ExpectedMessage = "Unsupported type: System.Version. Use the JsonSerializer class to get the object's JSON representation.")]
+    public void ToStringInvalid()
+    {
+      JavaScriptConvert.ToString(new Version());
+    }
+
+    [Test]
+    public void GuidToString()
+    {
+      Guid guid = new Guid("BED7F4EA-1A96-11d2-8F08-00A0C9A6186D");
+      string json = JavaScriptConvert.ToString(guid);
+      Assert.AreEqual(@"""bed7f4ea-1a96-11d2-8f08-00a0c9a6186d""", json);
+    }
+
+    [Test]
+    public void EnumToString()
+    {
+      string json = JavaScriptConvert.ToString(StringComparison.CurrentCultureIgnoreCase);
+      Assert.AreEqual("1", json);
+    }
   }
 }

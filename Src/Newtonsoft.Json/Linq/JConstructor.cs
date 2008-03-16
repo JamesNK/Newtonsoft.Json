@@ -50,6 +50,11 @@ namespace Newtonsoft.Json.Linq
     {
     }
 
+    public JConstructor(JConstructor other)
+      : base(other)
+    {
+    }
+
     public JConstructor(string name, params object[] content)
       : this(name, (object)content)
     {
@@ -66,6 +71,17 @@ namespace Newtonsoft.Json.Linq
       _name = name;
     }
 
+    internal override bool DeepEquals(JToken node)
+    {
+      JConstructor c = node as JConstructor;
+      return (c != null && _name == c.Name && ContentsEqual(c));
+    }
+
+    internal override JToken CloneNode()
+    {
+      return new JConstructor(this);
+    }
+
     internal override void ValidateObject(JToken o, JToken previous)
     {
       ValidationUtils.ArgumentNotNull(o, "o");
@@ -73,7 +89,7 @@ namespace Newtonsoft.Json.Linq
       switch (o.Type)
       {
         case JsonTokenType.Property:
-          throw new ArgumentException(string.Format("An item of type {0} cannot be added to content.", o.Type));
+          throw new ArgumentException("An item of type {0} cannot be added to content.".FormatWith(o.Type));
       }
     }
 
@@ -96,7 +112,7 @@ namespace Newtonsoft.Json.Linq
         ValidationUtils.ArgumentNotNull(key, "o");
 
         if (!(key is int))
-          throw new ArgumentException(string.Format("Accessed JConstructor values with invalid key value: {0}. Argument position index expected.", MiscellaneousUtils.ToString(key)));
+          throw new ArgumentException("Accessed JConstructor values with invalid key value: {0}. Argument position index expected.".FormatWith(MiscellaneousUtils.ToString(key)));
 
         return GetIndex(this, (int)key);
       }

@@ -75,7 +75,7 @@ namespace Newtonsoft.Json.Tests
       string json = @"[0,1,2,3,4,5,6,7,8,9]";
 
       JArray a = JArray.Parse(json);
-      List<int> list = a.Children<int>().ToList();
+      List<int> list = a.Values<int>().ToList();
 
       List<int> expected = new List<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -345,7 +345,7 @@ keyword such as type of business.""
     {
       List<Post> posts = GetPosts();
 
-      JObject rss = 
+      JObject rss =
         new JObject(
           new JProperty("channel",
             new JObject(
@@ -549,7 +549,7 @@ keyword such as type of business.""
 
       JObject o = JObject.FromObject(new
       {
-        channel = new 
+        channel = new
         {
           title = "James Newton-King",
           link = "http://james.newtonking.com",

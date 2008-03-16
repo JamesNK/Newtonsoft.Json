@@ -43,6 +43,11 @@ namespace Newtonsoft.Json.Linq
     {
     }
 
+    public JArray(JArray other)
+      : base(other)
+    {
+    }
+
     public JArray(params object[] content)
       : this((object)content)
     {
@@ -51,6 +56,17 @@ namespace Newtonsoft.Json.Linq
     public JArray(object content)
     {
       Add(content);
+    }
+
+    internal override bool DeepEquals(JToken node)
+    {
+      JArray t = node as JArray;
+      return (t != null && ContentsEqual(t));
+    }
+
+    internal override JToken CloneNode()
+    {
+      return new JArray(this);
     }
 
     public int Count()
@@ -93,7 +109,7 @@ namespace Newtonsoft.Json.Linq
       ValidationUtils.ArgumentNotNull(o, "o");
 
       if (o.Type == JsonTokenType.Property)
-        throw new ArgumentException(string.Format("An item of type {0} cannot be added to content.", o.Type));
+        throw new ArgumentException("An item of type {0} cannot be added to content.".FormatWith(o.Type));
     }
 
     public static JArray FromObject(object o)
@@ -101,7 +117,7 @@ namespace Newtonsoft.Json.Linq
       JToken token = FromObjectInternal(o);
 
       if (token.Type != JsonTokenType.Array)
-        throw new ArgumentException(string.Format("Object serialized to {0}. JArray instance expected.", token.Type));
+        throw new ArgumentException("Object serialized to {0}. JArray instance expected.".FormatWith(token.Type));
 
       return (JArray)token;
     }
@@ -125,7 +141,7 @@ namespace Newtonsoft.Json.Linq
         ValidationUtils.ArgumentNotNull(key, "o");
 
         if (!(key is int))
-          throw new ArgumentException(string.Format("Accessed JArray values with invalid key value: {0}. Array position index expected.", MiscellaneousUtils.ToString(key)));
+          throw new ArgumentException("Accessed JArray values with invalid key value: {0}. Array position index expected.".FormatWith(MiscellaneousUtils.ToString(key)));
 
         return GetIndex(this, (int)key);
       }

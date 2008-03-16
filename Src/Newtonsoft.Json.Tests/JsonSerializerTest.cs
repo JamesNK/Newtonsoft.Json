@@ -118,6 +118,11 @@ namespace Newtonsoft.Json.Tests
     White
   }
 
+  public class ClassWithGuid
+  {
+    public Guid GuidField;
+  }
+
   public class ClassWithArray
   {
     private readonly IList<long> bar;
@@ -135,11 +140,29 @@ namespace Newtonsoft.Json.Tests
       set { foo = value; }
     }
 
-    [JsonProperty("bar")]
+    [JsonProperty(PropertyName = "bar")]
     public IList<long> Bar
     {
       get { return bar; }
     }
+  }
+
+  public class ConverableMembers
+  {
+    public string String = "string";
+    public int Int32 = int.MaxValue;
+    public uint UInt32 = uint.MaxValue;
+    public byte Byte = byte.MaxValue;
+    public sbyte SByte = sbyte.MaxValue;
+    public short Short = short.MaxValue;
+    public ushort UShort = ushort.MaxValue;
+    public long Long = long.MaxValue;
+    public ulong ULong = long.MaxValue;
+    public double Double = double.MaxValue;
+    public float Float = float.MaxValue;
+    public DBNull DBNull = DBNull.Value;
+    public bool Bool = true;
+    public char Char = '\0';
   }
 
   public class JsonSerializerTest : TestFixtureBase
@@ -872,24 +895,6 @@ keyword such as type of business.""
       Assert.AreEqual(3, wibbleOut.Bar[4]);
     }
 
-    public class ConverableMembers
-    {
-      public string String = "string";
-      public int Int32 = int.MaxValue;
-      public uint UInt32 = uint.MaxValue;
-      public byte Byte = byte.MaxValue;
-      public sbyte SByte = sbyte.MaxValue;
-      public short Short = short.MaxValue;
-      public ushort UShort = ushort.MaxValue;
-      public long Long = long.MaxValue;
-      public ulong ULong = long.MaxValue;
-      public double Double = double.MaxValue;
-      public float Float = float.MaxValue;
-      public DBNull DBNull = DBNull.Value;
-      public bool Bool = true;
-      public char Char = '\0';
-    }
-
     [Test]
     public void SerializeConverableObjects()
     {
@@ -913,6 +918,28 @@ keyword such as type of business.""
 
       string json = JavaScriptConvert.SerializeObject(s);
       Assert.AreEqual("[3,2,1]", json);
+    }
+
+    [Test]
+    public void GuidTest()
+    {
+      Guid guid = new Guid("BED7F4EA-1A96-11d2-8F08-00A0C9A6186D");
+
+      string json = JavaScriptConvert.SerializeObject(new ClassWithGuid { GuidField = guid });
+      Assert.AreEqual(@"{""GuidField"":""bed7f4ea-1a96-11d2-8f08-00a0c9a6186d""}", json);
+
+      ClassWithGuid c = JavaScriptConvert.DeserializeObject<ClassWithGuid>(json);
+      Assert.AreEqual(guid, c.GuidField);
+    }
+
+    [Test]
+    public void EnumTest()
+    {
+      string json = JavaScriptConvert.SerializeObject(StringComparison.CurrentCultureIgnoreCase);
+      Assert.AreEqual(@"1", json);
+
+      StringComparison s = JavaScriptConvert.DeserializeObject<StringComparison>(json);
+      Assert.AreEqual(StringComparison.CurrentCultureIgnoreCase, s);
     }
   }
 }

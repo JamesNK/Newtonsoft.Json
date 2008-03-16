@@ -139,7 +139,7 @@ namespace Newtonsoft.Json
     {
       get { return _top; }
     }
-    
+
     /// <summary>
     /// Gets the state of the writer.
     /// </summary>
@@ -513,7 +513,7 @@ namespace Newtonsoft.Json
       State newState = stateArray[token, (int)_currentState];
 
       if (newState == State.Error)
-        throw new JsonWriterException(string.Format("Token {0} in state {1} would result in an invalid JavaScript object.", tokenBeingWritten.ToString(), _currentState.ToString()));
+        throw new JsonWriterException("Token {0} in state {1} would result in an invalid JavaScript object.".FormatWith(tokenBeingWritten.ToString(), _currentState.ToString()));
 
       if ((_currentState == State.Object || _currentState == State.Array || _currentState == State.Constructor) && tokenBeingWritten != JsonToken.Comment)
       {

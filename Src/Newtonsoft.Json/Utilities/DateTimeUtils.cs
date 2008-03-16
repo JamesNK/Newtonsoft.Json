@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using System.Globalization;
 
 namespace Newtonsoft.Json.Utilities
 {
@@ -12,7 +13,7 @@ namespace Newtonsoft.Json.Utilities
     {
       TimeSpan utcOffset = TimeZoneInfo.Local.GetUtcOffset(d);
 
-      return utcOffset.Hours.ToString("+00;-00") + ":" + utcOffset.Minutes.ToString("00;00");
+      return utcOffset.Hours.ToString("+00;-00", CultureInfo.InvariantCulture) + ":" + utcOffset.Minutes.ToString("00;00", CultureInfo.InvariantCulture);
     }
 
     public static XmlDateTimeSerializationMode ToSerializationMode(DateTimeKind kind)

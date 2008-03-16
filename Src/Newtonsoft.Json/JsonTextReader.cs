@@ -193,7 +193,7 @@ namespace Newtonsoft.Json
         value = value.Substring(0, index);
       }
 
-      long javaScriptTicks = long.Parse(value);
+      long javaScriptTicks = long.Parse(value, CultureInfo.InvariantCulture);
       DateTime utcDateTime = JavaScriptConvert.ConvertJavaScriptTicksToDateTime(javaScriptTicks);
       DateTime dateTime;
 
