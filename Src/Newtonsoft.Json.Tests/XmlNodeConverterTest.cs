@@ -347,7 +347,7 @@ namespace Newtonsoft.Json.Tests
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "JSON root object has multiple properties.")]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document.")]
     public void RootObjectMultipleProperties()
     {
       XmlDocument newDoc = (XmlDocument)JavaScriptConvert.DeserializeXmlNode(@"{Prop1:1,Prop2:2}");
@@ -413,6 +413,46 @@ namespace Newtonsoft.Json.Tests
 
       arrayJsonText = JavaScriptConvert.SerializeXmlNode(arrayDoc);
       Assert.AreEqual(@"{""root"":{""person"":{""@id"":""1"",""name"":""Alan"",""url"":""http://www.google.com"",""role"":""Admin1""}}}", arrayJsonText);
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document.")]
+    public void MultipleRootProperties()
+    {
+      string strJSON = @"{
+""count"": 773840,""photos"": [
+{
+""photo_id"": 532693,
+""photo_title"": ""Wheatfield in afternoon light"",
+""photo_url"": ""http://www.panoramio.com/photo/532693"",
+""photofileurl"": ""http://static2.bareka.com/photos/medium/532693.jpg"",
+""longitude"": 11.280727,
+""latitude"": 59.643198,
+""width"": 500,
+""height"": 333,
+""upload_date"": ""22 January 2007"",
+""owner_id"": 39160,
+""owner_name"": ""Snemann"",
+""owner_url"": ""http://www.panoramio.com/user/39160"",
+},
+{
+""photo_id"": 505229,
+""photo_title"": ""Etangs près de Dijon"",
+""photo_url"": ""http://www.panoramio.com/photo/505229"",
+""photofileurl"": ""http://static2.bareka.com/photos/medium/505229.jpg"",
+""longitude"": 5.168552,
+""latitude"": 47.312642,
+""width"": 350,
+""height"": 500,
+""upload_date"": ""20 January 2007"",
+""owner_id"": 78506,
+""owner_name"": ""Philippe Stoop"",
+""owner_url"": ""http://www.panoramio.com/user/78506""
+}
+]
+}";
+
+      XmlDocument newDoc = (XmlDocument)JavaScriptConvert.DeserializeXmlNode(strJSON);
     }
   }
 }

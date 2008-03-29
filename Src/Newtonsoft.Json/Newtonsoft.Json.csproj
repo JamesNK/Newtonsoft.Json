@@ -75,6 +75,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="JsonObjectAttribute.cs" />
+    <Compile Include="MemberSerialization.cs" />
     <Compile Include="ObjectCreationHandling.cs" />
     <Compile Include="Converters\IsoDateTimeConverter.cs" />
     <Compile Include="Converters\JavaScriptDateTimeConverter.cs" />

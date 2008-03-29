@@ -321,20 +321,26 @@ namespace Newtonsoft.Json
 
     private MemberMappingCollection CreateMemberMappings(Type objectType)
     {
-      List<MemberInfo> members = ReflectionUtils.GetFieldsAndProperties(objectType, BindingFlags.Public | BindingFlags.Instance);
+      MemberSerialization memberSerialization = GetObjectMemberSerialization(objectType);
+
+      List<MemberInfo> members = GetSerializableMembers(objectType);
+      if (members == null)
+        throw new JsonSerializationException("Null collection of seralizable members returned.");
+
       MemberMappingCollection memberMappings = new MemberMappingCollection();
 
       foreach (MemberInfo member in members)
       {
-        string mappedName;
-
         JsonPropertyAttribute propertyAttribute = ReflectionUtils.GetAttribute<JsonPropertyAttribute>(member, true);
-        if (propertyAttribute != null)
-          mappedName = propertyAttribute.PropertyName;
-        else
-          mappedName = member.Name;
+        bool hasIgnoreAttribute = member.IsDefined(typeof(JsonIgnoreAttribute), true);
 
-        bool ignored = member.IsDefined(typeof(JsonIgnoreAttribute), true);
+        string mappedName = (propertyAttribute != null && propertyAttribute.PropertyName != null)
+         ? propertyAttribute.PropertyName
+         : member.Name;
+
+        bool ignored = (hasIgnoreAttribute
+          || (memberSerialization == MemberSerialization.OptIn && propertyAttribute == null));
+
         bool readable = ReflectionUtils.CanReadMemberValue(member);
         bool writable = ReflectionUtils.CanSetMemberValue(member);
         MemberMapping memberMapping = new MemberMapping(mappedName, member, ignored, readable, writable);
@@ -343,6 +349,21 @@ namespace Newtonsoft.Json
       }
 
       return memberMappings;
+    }
+
+    protected virtual List<MemberInfo> GetSerializableMembers(Type objectType)
+    {
+      return ReflectionUtils.GetFieldsAndProperties(objectType, BindingFlags.Public | BindingFlags.Instance);
+    }
+
+    private static MemberSerialization GetObjectMemberSerialization(Type objectType)
+    {
+      JsonObjectAttribute objectAttribute = ReflectionUtils.GetAttribute<JsonObjectAttribute>(objectType, true);
+
+      if (objectAttribute == null)
+        return MemberSerialization.OptOut;
+      else
+        return objectAttribute.MemberSerialization;
     }
 
     private void SetObjectMember(JsonReader reader, object target, Type targetType, string memberName)

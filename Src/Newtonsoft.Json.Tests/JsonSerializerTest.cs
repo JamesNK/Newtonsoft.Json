@@ -941,5 +941,43 @@ keyword such as type of business.""
       StringComparison s = JavaScriptConvert.DeserializeObject<StringComparison>(json);
       Assert.AreEqual(StringComparison.CurrentCultureIgnoreCase, s);
     }
+
+    [JsonObject(MemberSerialization.OptIn)]
+    public class JsonIgnoreAttributeOnClassTestClass
+    {
+      private int _property = 21;
+      private int _ignoredProperty = 12;
+
+      [JsonProperty("TheField")]
+      public int Field;
+
+      [JsonProperty]
+      public int Property
+      {
+        get { return _property; }
+      }
+
+      public int IgnoredField;
+
+      [JsonProperty]
+      [JsonIgnore] // JsonIgnore should take priority
+      public int IgnoredProperty
+      {
+        get { return _ignoredProperty; }
+      }
+    }
+
+    [Test]
+    public void JsonIgnoreAttributeOnClassTest()
+    {
+      string json = JavaScriptConvert.SerializeObject(new JsonIgnoreAttributeOnClassTestClass());
+
+      Assert.AreEqual(@"{""TheField"":0,""Property"":21}", json);
+
+      JsonIgnoreAttributeOnClassTestClass c = JavaScriptConvert.DeserializeObject<JsonIgnoreAttributeOnClassTestClass>(@"{""TheField"":99,""Property"":-1,""IgnoredField"":-1}");
+
+      Assert.AreEqual(0, c.IgnoredField);
+      Assert.AreEqual(99, c.Field);
+    }
   }
 }
