@@ -30,6 +30,7 @@ using System.Reflection;
 using System.Collections;
 using System.ComponentModel;
 using System.Linq;
+using System.Globalization;
 
 namespace Newtonsoft.Json.Utilities
 {
@@ -106,14 +107,14 @@ namespace Newtonsoft.Json.Utilities
       ValidationUtils.ArgumentNotNull(type, "type");
 
       if (type.IsGenericTypeDefinition)
-        throw new ArgumentException("Type {0} is a generic type definition and cannot be instantiated.".FormatWith(type), "type");
+        throw new ArgumentException("Type {0} is a generic type definition and cannot be instantiated.".FormatWith(CultureInfo.InvariantCulture, type), "type");
 
       if (type.IsClass || type.IsInterface || type == typeof(void))
         return null;
       else if (type.IsValueType)
         return Activator.CreateInstance(type);
       else
-        throw new ArgumentException("Type {0} cannot be instantiated.".FormatWith(type), "type");
+        throw new ArgumentException("Type {0} cannot be instantiated.".FormatWith(CultureInfo.InvariantCulture, type), "type");
     }
 
     public static bool IsPropertyIndexed(PropertyInfo property)
@@ -196,7 +197,7 @@ namespace Newtonsoft.Json.Utilities
       else if (IsSubClass(type, typeof(IList<>), out genericListType))
       {
         if (genericListType.IsGenericTypeDefinition)
-          throw new Exception("Type {0} is not a list.".FormatWith(type));
+          throw new Exception("Type {0} is not a list.".FormatWith(CultureInfo.InvariantCulture, type));
 
         return genericListType.GetGenericArguments()[0];
       }
@@ -206,7 +207,7 @@ namespace Newtonsoft.Json.Utilities
       }
       else
       {
-        throw new Exception("Type {0} is not a list.".FormatWith(type));
+        throw new Exception("Type {0} is not a list.".FormatWith(CultureInfo.InvariantCulture, type));
       }
     }
 
@@ -218,7 +219,7 @@ namespace Newtonsoft.Json.Utilities
       if (IsSubClass(dictionaryType, typeof(IDictionary<,>), out genericDictionaryType))
       {
         if (genericDictionaryType.IsGenericTypeDefinition)
-          throw new Exception("Type {0} is not a dictionary.".FormatWith(dictionaryType));
+          throw new Exception("Type {0} is not a dictionary.".FormatWith(CultureInfo.InvariantCulture, dictionaryType));
 
         Type[] dictionaryGenericArguments = genericDictionaryType.GetGenericArguments();
 
@@ -234,7 +235,7 @@ namespace Newtonsoft.Json.Utilities
       }
       else
       {
-        throw new Exception("Type {0} is not a dictionary.".FormatWith(dictionaryType));
+        throw new Exception("Type {0} is not a dictionary.".FormatWith(CultureInfo.InvariantCulture, dictionaryType));
       }
     }
 
@@ -289,7 +290,7 @@ namespace Newtonsoft.Json.Utilities
       }
       else
       {
-        throw new Exception("Type {0} is neither a ValueType or a Class.".FormatWith(elementType));
+        throw new Exception("Type {0} is neither a ValueType or a Class.".FormatWith(CultureInfo.InvariantCulture, elementType));
       }
 
       return true;
@@ -387,10 +388,10 @@ namespace Newtonsoft.Json.Utilities
           }
           catch (TargetParameterCountException e)
           {
-            throw new ArgumentException("MemberInfo '{0}' has index parameters".FormatWith(member.Name), "member", e);
+            throw new ArgumentException("MemberInfo '{0}' has index parameters".FormatWith(CultureInfo.InvariantCulture, member.Name), "member", e);
           }
         default:
-          throw new ArgumentException("MemberInfo '{0}' is not of type FieldInfo or PropertyInfo".FormatWith(member.Name), "member");
+          throw new ArgumentException("MemberInfo '{0}' is not of type FieldInfo or PropertyInfo".FormatWith(CultureInfo.InvariantCulture, CultureInfo.InvariantCulture, member.Name), "member");
       }
     }
 
@@ -414,7 +415,7 @@ namespace Newtonsoft.Json.Utilities
           ((PropertyInfo)member).SetValue(target, value, null);
           break;
         default:
-          throw new ArgumentException("MemberInfo '{0}' must be of type FieldInfo or PropertyInfo".FormatWith(member.Name), "member");
+          throw new ArgumentException("MemberInfo '{0}' must be of type FieldInfo or PropertyInfo".FormatWith(CultureInfo.InvariantCulture, member.Name), "member");
       }
     }
 
@@ -526,7 +527,7 @@ namespace Newtonsoft.Json.Utilities
     {
       ValidationUtils.ArgumentNotNull(genericTypeDefinition, "genericTypeDefinition");
       ValidationUtils.ArgumentNotNullOrEmpty<Type>(innerTypes, "innerTypes");
-      ValidationUtils.ArgumentConditionTrue(genericTypeDefinition.IsGenericTypeDefinition, "genericTypeDefinition", "Type {0} is not a generic type definition.".FormatWith(genericTypeDefinition));
+      ValidationUtils.ArgumentConditionTrue(genericTypeDefinition.IsGenericTypeDefinition, "genericTypeDefinition", "Type {0} is not a generic type definition.".FormatWith(CultureInfo.InvariantCulture, genericTypeDefinition));
 
       return genericTypeDefinition.MakeGenericType(innerTypes);
     }

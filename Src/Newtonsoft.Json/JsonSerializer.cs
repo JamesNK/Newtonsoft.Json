@@ -290,7 +290,7 @@ namespace Newtonsoft.Json
             return new DateTimeOffset((DateTime)value);
 
           if (!targetType.IsAssignableFrom(valueType))
-            throw new InvalidOperationException("Cannot convert object of type '{0}' to type '{1}'".FormatWith(value.GetType(), targetType));
+            throw new InvalidOperationException("Cannot convert object of type '{0}' to type '{1}'".FormatWith(CultureInfo.InvariantCulture, value.GetType(), targetType));
 
           return value;
         }
@@ -369,7 +369,7 @@ namespace Newtonsoft.Json
     private void SetObjectMember(JsonReader reader, object target, Type targetType, string memberName)
     {
       if (!reader.Read())
-        throw new JsonSerializationException("Unexpected end when setting {0}'s value.".FormatWith(memberName));
+        throw new JsonSerializationException("Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
 
       MemberMappingCollection memberMappings = GetMemberMappings(targetType);
       Type memberType;
@@ -413,7 +413,7 @@ namespace Newtonsoft.Json
       else
       {
         if (_missingMemberHandling == MissingMemberHandling.Error)
-          throw new JsonSerializationException("Could not find member '{0}' on object of type '{1}'".FormatWith(memberName, targetType.GetType().Name));
+          throw new JsonSerializationException("Could not find member '{0}' on object of type '{1}'".FormatWith(CultureInfo.InvariantCulture, memberName, targetType.GetType().Name));
       }
     }
 
@@ -511,7 +511,7 @@ namespace Newtonsoft.Json
                 .SingleOrDefault();
 
               if (!reader.Read())
-                throw new JsonSerializationException("Unexpected end when setting {0}'s value.".FormatWith(memberName));
+                throw new JsonSerializationException("Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
 
               if (matchingConstructorParameter != null)
                 constructorParameters[matchingConstructorParameter] = CreateObject(reader, matchingConstructorParameter.ParameterType, null);
@@ -731,7 +731,7 @@ namespace Newtonsoft.Json
               // continue
               break;
             default:
-              throw new InvalidOperationException("Unexpected ReferenceLoopHandling value: '{0}'".FormatWith(_referenceLoopHandling));
+              throw new InvalidOperationException("Unexpected ReferenceLoopHandling value: '{0}'".FormatWith(CultureInfo.InvariantCulture, _referenceLoopHandling));
           }
         }
 

@@ -56,6 +56,11 @@ namespace Newtonsoft.Json.Linq
     {
     }
 
+    public JValue(ulong value)
+      : this(value, JsonTokenType.Integer)
+    {
+    }
+
     public JValue(double value)
       : this(value, JsonTokenType.Float)
     {
@@ -77,7 +82,7 @@ namespace Newtonsoft.Json.Linq
     }
 
     public JValue(object value)
-      : this(value, GetValueType(value))
+      : this(value, GetValueType(null, value))
     {
     }
 
@@ -87,7 +92,37 @@ namespace Newtonsoft.Json.Linq
       if (other == null)
         return false;
 
-      return (this == other || (_valueType == other.Type && _value == other.Value));
+      return (this == other || (_valueType == other.Type && Compare(_value, other.Value)));
+    }
+
+    public override bool HasValues
+    {
+      get { return false; }
+    }
+
+    public bool Compare(object objA, object objB)
+    {
+      if (objA == null && objB == null)
+        return true;
+
+      switch (_valueType)
+      {
+        case JsonTokenType.Integer:
+          if (objA is ulong || objB is ulong)
+            return Convert.ToDecimal(objA).Equals(Convert.ToDecimal(objB));
+          else
+            return Convert.ToInt64(objA).Equals(Convert.ToInt64(objB));
+        case JsonTokenType.Float:
+          return Convert.ToDouble(objA).Equals(Convert.ToDouble(objB));
+        case JsonTokenType.Comment:
+        case JsonTokenType.String:
+        case JsonTokenType.Boolean:
+          return objA.Equals(objB);
+        case JsonTokenType.Date:
+          return objA.Equals(objB);
+        default:
+          throw new ArgumentOutOfRangeException("valueType", _valueType, "Unexpected value type: {0}".FormatWith(CultureInfo.InvariantCulture, _valueType));
+      }
     }
 
     internal override JToken CloneNode()
@@ -100,12 +135,12 @@ namespace Newtonsoft.Json.Linq
       return new JValue(value, JsonTokenType.Comment);
     }
 
-    private static JsonTokenType GetValueType(object value)
+    private static JsonTokenType GetValueType(JsonTokenType? current, object value)
     {
       if (value == null)
         return JsonTokenType.Null;
       else if (value is string)
-        return JsonTokenType.String;
+        return (current == JsonTokenType.Comment) ? JsonTokenType.Comment : JsonTokenType.String;
       else if (value is long || value is int || value is short || value is sbyte
         || value is ulong || value is uint || value is ushort || value is byte)
         return JsonTokenType.Integer;
@@ -116,7 +151,7 @@ namespace Newtonsoft.Json.Linq
       else if (value is bool)
         return JsonTokenType.Boolean;
 
-      throw new ArgumentException("Could not determin JSON object type for type {0}.".FormatWith(value.GetType()));
+      throw new ArgumentException("Could not determin JSON object type for type {0}.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
     }
 
     public override JsonTokenType Type
@@ -127,10 +162,19 @@ namespace Newtonsoft.Json.Linq
     public object Value
     {
       get { return _value; }
-      set { _value = value; }
+      set
+      {
+        Type currentType = (_value != null) ? _value.GetType() : null;
+        Type newType = (value != null) ? value.GetType() : null;
+
+        if (currentType != newType)
+          _valueType = GetValueType(_valueType, value);
+
+        _value = value;
+      }
     }
 
-    public static JToken CreateString(string value)
+    public static JValue CreateString(string value)
     {
       return new JValue(value, JsonTokenType.String);
     }

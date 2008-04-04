@@ -30,6 +30,7 @@ using System.Reflection;
 using System.Text;
 using System.Collections;
 using System.Linq;
+using System.Globalization;
 
 namespace Newtonsoft.Json.Utilities
 {
@@ -315,7 +316,7 @@ namespace Newtonsoft.Json.Utilities
       else if (returnDefaultIfEmpty && list.Count == 0)
         return default(T);
       else
-        throw new Exception("Expected single {0} in list but got {1}.".FormatWith(typeof(T), list.Count));
+        throw new Exception("Expected single {0} in list but got {1}.".FormatWith(CultureInfo.InvariantCulture, typeof(T), list.Count));
     }
     #endregion
 
@@ -389,7 +390,7 @@ namespace Newtonsoft.Json.Utilities
       }
       else
       {
-        throw new Exception("Can not create ListWrapper for type {0}.".FormatWith(list.GetType()));
+        throw new Exception("Can not create ListWrapper for type {0}.".FormatWith(CultureInfo.InvariantCulture, list.GetType()));
       }
     }
 
@@ -418,7 +419,7 @@ namespace Newtonsoft.Json.Utilities
       }
       else
       {
-        throw new Exception("Can not create DictionaryWrapper for type {0}.".FormatWith(dictionary.GetType()));
+        throw new Exception("Can not create DictionaryWrapper for type {0}.".FormatWith(CultureInfo.InvariantCulture, dictionary.GetType()));
       }
     }
 
@@ -459,7 +460,7 @@ namespace Newtonsoft.Json.Utilities
         }
 
         if (!suitableConstructor)
-          throw new Exception("Read-only type {0} does not have a public constructor that takes a type that implements {1}.".FormatWith(listType, genericEnumerable));
+          throw new Exception("Read-only type {0} does not have a public constructor that takes a type that implements {1}.".FormatWith(CultureInfo.InvariantCulture, listType, genericEnumerable));
 
         // can't add or modify a readonly list
         // use List<T> and convert once populated
@@ -485,7 +486,7 @@ namespace Newtonsoft.Json.Utilities
       }
 
       if (list == null)
-        throw new Exception("Cannot create and populate list type {0}.".FormatWith(listType));
+        throw new Exception("Cannot create and populate list type {0}.".FormatWith(CultureInfo.InvariantCulture, listType));
 
       populateList(list);
 

@@ -30,6 +30,7 @@ using System.IO;
 using System.Xml;
 using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Linq;
+using System.Globalization;
 
 namespace Newtonsoft.Json
 {
@@ -513,7 +514,7 @@ namespace Newtonsoft.Json
       State newState = stateArray[token, (int)_currentState];
 
       if (newState == State.Error)
-        throw new JsonWriterException("Token {0} in state {1} would result in an invalid JavaScript object.".FormatWith(tokenBeingWritten.ToString(), _currentState.ToString()));
+        throw new JsonWriterException("Token {0} in state {1} would result in an invalid JavaScript object.".FormatWith(CultureInfo.InvariantCulture, tokenBeingWritten.ToString(), _currentState.ToString()));
 
       if ((_currentState == State.Object || _currentState == State.Array || _currentState == State.Constructor) && tokenBeingWritten != JsonToken.Comment)
       {

@@ -30,6 +30,7 @@ using System.Text;
 using Newtonsoft.Json.Utilities;
 using System.Collections;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace Newtonsoft.Json.Linq
 {
@@ -56,11 +57,16 @@ namespace Newtonsoft.Json.Linq
       {
         do
         {
-          content = content.Next;
+          content = content._next;
           Add(content.CloneNode());
         }
         while (content != other.Last);
       }
+    }
+
+    public override bool HasValues
+    {
+      get { return (_content != null); }
     }
 
     internal bool ContentsEqual(JContainer container)
@@ -96,7 +102,7 @@ namespace Newtonsoft.Json.Linq
         if (Last == null)
           return null;
 
-        return Last.Next;
+        return Last._next;
       }
     }
 
@@ -121,7 +127,9 @@ namespace Newtonsoft.Json.Linq
       do
       {
         yield return current;
-      } while ((current = current.Next) != first);
+      }
+      while (current != null
+        && ((current = current.Next) != null));
     }
 
     public override IEnumerable<T> Values<T>()
@@ -178,14 +186,17 @@ namespace Newtonsoft.Json.Linq
       return (content is IEnumerable && !(content is string));
     }
 
-    public virtual void Add(object content)
+    internal void AddInternal(bool isLast, JToken previous, object content)
     {
       if (IsMultiContent(content))
       {
         IEnumerable enumerable = content as IEnumerable;
+
+        JToken multiPrevious = previous;
         foreach (object c in enumerable)
         {
-          Add(c);
+          AddInternal(isLast, multiPrevious, c);
+          multiPrevious = (previous != null) ? previous._next : Last;
         }
       }
       else
@@ -211,46 +222,48 @@ namespace Newtonsoft.Json.Linq
           }
         }
 
-        JToken last = Last;
-        JToken next = First ?? o;
+        JToken next = (previous != null) ? previous._next : o;
 
         o.Parent = this;
         o.Next = next;
 
-        if (last != null)
-          last.Next = o;
-        _content = o;
+        if (previous != null)
+          previous.Next = o;
+
+        if (isLast)
+          _content = o;
       }
     }
 
     internal virtual void ValidateToken(JToken o)
     {
-      //throw new NotImplementedException();
+      ValidationUtils.ArgumentNotNull(o, "o");
+
+      if (o.Type == JsonTokenType.Property)
+        throw new Exception("Can not add {0} to {1}".FormatWith(CultureInfo.InvariantCulture, o.GetType(), GetType()));
+    }
+
+    public virtual void Add(object content)
+    {
+      AddInternal(true, Last, content);
     }
 
     public void AddFirst(object content)
     {
-      JToken o = CreateFromContent(content);
-
-      JToken last = Parent.Last;
-
-      o.Parent = Parent;
-      o.Next = last.Next;
-
-      last.Next = o;
+      AddInternal(false, Last, content);
     }
 
     protected JToken CreateFromContent(object content)
     {
       if (content is JToken)
         return (JToken)content;
-
-      return new JValue(content);
+      else
+        return new JValue(content);
     }
 
     public JsonWriter CreateWriter()
     {
-      return null;
+      return new JsonTokenWriter(this);
     }
 
     public void ReplaceAll(object content)
@@ -265,17 +278,17 @@ namespace Newtonsoft.Json.Linq
       {
         JToken o = _content;
 
-        JToken next = o.Next;
-        if (o != _content || next != o.Next)
+        JToken next = o._next;
+        if (o != _content || next != o._next)
           throw new InvalidOperationException("This operation was corrupted by external code.");
 
         if (next != o)
-          o.Next = next.Next;
+          o._next = next._next;
         else
           _content = null;
 
         next.Parent = null;
-        next.Next = null;
+        next._next = null;
       }
     }
 
@@ -286,12 +299,13 @@ namespace Newtonsoft.Json.Linq
 
       JToken content = _content;
 
-      while (_content.Next != o)
+      while (content._next != o)
       {
-        content = content.Next;
+        content = content._next;
       }
       if (content == o)
       {
+        // token is containers last child
         _content = null;
       }
       else
@@ -300,7 +314,7 @@ namespace Newtonsoft.Json.Linq
         {
           _content = content;
         }
-        content.Next = o.Next;
+        content._next = o._next;
       }
       o.Parent = null;
       o.Next = null;
@@ -391,7 +405,7 @@ namespace Newtonsoft.Json.Linq
             parent = property;
             break;
           default:
-            throw new InvalidOperationException("The JsonReader should not be on a token of type {0}.".FormatWith(r.TokenType));
+            throw new InvalidOperationException("The JsonReader should not be on a token of type {0}.".FormatWith(CultureInfo.InvariantCulture, r.TokenType));
         }
       }
       while (r.Read());

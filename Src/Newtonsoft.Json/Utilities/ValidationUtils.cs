@@ -27,6 +27,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Globalization;
 
 namespace Newtonsoft.Json.Utilities
 {
@@ -44,7 +45,7 @@ namespace Newtonsoft.Json.Utilities
         throw new ArgumentNullException(parameterName);
 
       if (value.Length == 0)
-        throw new ArgumentException("'{0}' cannot be empty.".FormatWith(parameterName), parameterName);
+        throw new ArgumentException("'{0}' cannot be empty.".FormatWith(CultureInfo.InvariantCulture, parameterName), parameterName);
     }
 
     public static void ArgumentNotNullOrEmptyOrWhitespace(string value, string parameterName)
@@ -52,7 +53,7 @@ namespace Newtonsoft.Json.Utilities
       ArgumentNotNullOrEmpty(value, parameterName);
 
       if (StringUtils.IsWhiteSpace(value))
-        throw new ArgumentException("'{0}' cannot only be whitespace.".FormatWith(parameterName), parameterName);
+        throw new ArgumentException("'{0}' cannot only be whitespace.".FormatWith(CultureInfo.InvariantCulture, parameterName), parameterName);
     }
 
     public static void ArgumentTypeIsEnum(Type enumType, string parameterName)
@@ -60,12 +61,12 @@ namespace Newtonsoft.Json.Utilities
       ArgumentNotNull(enumType, "enumType");
 
       if (!enumType.IsEnum)
-        throw new ArgumentException("Type {0} is not an Enum.".FormatWith(enumType), parameterName);
+        throw new ArgumentException("Type {0} is not an Enum.".FormatWith(CultureInfo.InvariantCulture, enumType), parameterName);
     }
 
     public static void ArgumentNotNullOrEmpty<T>(ICollection<T> collection, string parameterName)
     {
-      ArgumentNotNullOrEmpty<T>(collection, parameterName, "Collection '{0}' cannot be empty.".FormatWith(parameterName));
+      ArgumentNotNullOrEmpty<T>(collection, parameterName, "Collection '{0}' cannot be empty.".FormatWith(CultureInfo.InvariantCulture, parameterName));
     }
 
     public static void ArgumentNotNullOrEmpty<T>(ICollection<T> collection, string parameterName, string message)
@@ -79,7 +80,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static void ArgumentNotNullOrEmpty(ICollection collection, string parameterName)
     {
-      ArgumentNotNullOrEmpty(collection, parameterName, "Collection '{0}' cannot be empty.".FormatWith(parameterName));
+      ArgumentNotNullOrEmpty(collection, parameterName, "Collection '{0}' cannot be empty.".FormatWith(CultureInfo.InvariantCulture, parameterName));
     }
 
     public static void ArgumentNotNullOrEmpty(ICollection collection, string parameterName, string message)

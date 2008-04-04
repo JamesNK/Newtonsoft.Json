@@ -147,6 +147,7 @@ namespace Newtonsoft.Json.Tests
     }
   }
 
+  [JsonObject]
   public class ConverableMembers
   {
     public string String = "string";
@@ -163,6 +164,31 @@ namespace Newtonsoft.Json.Tests
     public DBNull DBNull = DBNull.Value;
     public bool Bool = true;
     public char Char = '\0';
+  }
+
+  [JsonObject(MemberSerialization.OptIn)]
+  public class JsonIgnoreAttributeOnClassTestClass
+  {
+    private int _property = 21;
+    private int _ignoredProperty = 12;
+
+    [JsonProperty("TheField")]
+    public int Field;
+
+    [JsonProperty]
+    public int Property
+    {
+      get { return _property; }
+    }
+
+    public int IgnoredField;
+
+    [JsonProperty]
+    [JsonIgnore] // JsonIgnore should take priority
+    public int IgnoredProperty
+    {
+      get { return _ignoredProperty; }
+    }
   }
 
   public class JsonSerializerTest : TestFixtureBase
@@ -940,31 +966,6 @@ keyword such as type of business.""
 
       StringComparison s = JavaScriptConvert.DeserializeObject<StringComparison>(json);
       Assert.AreEqual(StringComparison.CurrentCultureIgnoreCase, s);
-    }
-
-    [JsonObject(MemberSerialization.OptIn)]
-    public class JsonIgnoreAttributeOnClassTestClass
-    {
-      private int _property = 21;
-      private int _ignoredProperty = 12;
-
-      [JsonProperty("TheField")]
-      public int Field;
-
-      [JsonProperty]
-      public int Property
-      {
-        get { return _property; }
-      }
-
-      public int IgnoredField;
-
-      [JsonProperty]
-      [JsonIgnore] // JsonIgnore should take priority
-      public int IgnoredProperty
-      {
-        get { return _ignoredProperty; }
-      }
     }
 
     [Test]

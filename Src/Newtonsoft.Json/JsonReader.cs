@@ -239,7 +239,7 @@ namespace Newtonsoft.Json
       JsonTokenType currentObject = Pop();
 
       if (GetTypeForCloseToken(endToken) != currentObject)
-        throw new JsonReaderException("JsonToken {0} is not valid for closing JsonType {1}.".FormatWith(endToken, currentObject));
+        throw new JsonReaderException("JsonToken {0} is not valid for closing JsonType {1}.".FormatWith(CultureInfo.InvariantCulture, endToken, currentObject));
     }
 
     protected void SetStateBasedOnCurrent()

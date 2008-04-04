@@ -142,6 +142,11 @@ namespace Newtonsoft.Json.Linq
     //  return source.SelectMany(c => c.Children());
     //}
 
+    public static IEnumerable<JToken> Children(this IEnumerable<JArray> source)
+    {
+      return Children<JToken>(source);
+    }
+
     public static IEnumerable<U> Children<U>(this IEnumerable<JArray> source)
     {
       ValidationUtils.ArgumentNotNull(source, "source");
@@ -182,7 +187,7 @@ namespace Newtonsoft.Json.Linq
 
         JValue value = token as JValue;
         if (value == null)
-          throw new InvalidCastException("Cannot cast {0} to {1}.".FormatWith(token.GetType(), typeof(T)));
+          throw new InvalidCastException("Cannot cast {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, token.GetType(), typeof(T)));
 
         return (U)System.Convert.ChangeType(value.Value, typeof(U), CultureInfo.InvariantCulture);
       }

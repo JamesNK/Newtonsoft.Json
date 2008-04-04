@@ -207,7 +207,7 @@ namespace Newtonsoft.Json.Tests
     {
       string input = @"{
   CPU: 'Intel',
-  Drives: [
+  Drives: [ /* Com*ment */
     'DVD read/writer',
     ""500 gigabyte hard drive""
   ]

@@ -29,6 +29,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using Newtonsoft.Json.Utilities;
+using System.Globalization;
 
 namespace Newtonsoft.Json.Linq
 {
@@ -59,6 +60,14 @@ namespace Newtonsoft.Json.Linq
       return (t != null && ContentsEqual(t));
     }
 
+    internal override void ValidateToken(JToken o)
+    {
+      ValidationUtils.ArgumentNotNull(o, "o");
+
+      if (o.Type != JsonTokenType.Property)
+        throw new Exception("Can not add {0} to {1}".FormatWith(CultureInfo.InvariantCulture, o.GetType(), GetType()));
+    }
+
     internal override JToken CloneNode()
     {
       return new JObject(this);
@@ -86,15 +95,15 @@ namespace Newtonsoft.Json.Linq
       return new JEnumerable<JToken>(Properties().Select(p => p.Value));
     }
 
-    public override void Add(object content)
-    {
-      ValidationUtils.ArgumentNotNull(content, "content");
+    //public override void Add(object content)
+    //{
+    //  ValidationUtils.ArgumentNotNull(content, "content");
 
-      if (!(content is JProperty) && !IsMultiContent(content))
-        throw new ArgumentException("Error adding {0} to JObject. JObject only supports JProperty content.".FormatWith(content.GetType().Name));
+    //  if (!(content is JProperty) && !IsMultiContent(content))
+    //    throw new ArgumentException("Error adding {0} to JObject. JObject only supports JProperty content.".FormatWith(CultureInfo.InvariantCulture, content.GetType().Name));
 
-      base.Add(content);
-    }
+    //  base.Add(content);
+    //}
 
     public override JToken this[object key]
     {
@@ -104,7 +113,7 @@ namespace Newtonsoft.Json.Linq
 
         string propertyName = key as string;
         if (propertyName == null)
-          throw new ArgumentException("Accessed JObject values with invalid key value: {0}. Object property name expected.".FormatWith(MiscellaneousUtils.ToString(key)));
+          throw new ArgumentException("Accessed JObject values with invalid key value: {0}. Object property name expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
 
         JProperty property = Property(propertyName);
 
@@ -149,7 +158,7 @@ namespace Newtonsoft.Json.Linq
       JToken token = FromObjectInternal(o);
 
       if (token.Type != JsonTokenType.Object)
-        throw new ArgumentException("Object serialized to {0}. JObject instance expected.".FormatWith(token.Type));
+        throw new ArgumentException("Object serialized to {0}. JObject instance expected.".FormatWith(CultureInfo.InvariantCulture, token.Type));
 
       return (JObject)token;
     }
@@ -159,7 +168,7 @@ namespace Newtonsoft.Json.Linq
       ValidationUtils.ArgumentNotNull(o, "o");
 
       if (o.Type != JsonTokenType.Property)
-        throw new ArgumentException("An item of type {0} cannot be added to content.".FormatWith(o.Type));
+        throw new ArgumentException("An item of type {0} cannot be added to content.".FormatWith(CultureInfo.InvariantCulture, o.Type));
     }
 
     public override void WriteTo(JsonWriter writer, params JsonConverter[] converters)

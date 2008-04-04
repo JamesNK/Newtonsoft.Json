@@ -33,7 +33,7 @@ using System.Xml;
 using System.IO;
 using Newtonsoft.Json.Converters;
 
-namespace Newtonsoft.Json.Tests
+namespace Newtonsoft.Json.Tests.Linq
 {
   public class LinqToJsonTest : TestFixtureBase
   {
@@ -170,6 +170,13 @@ keyword such as type of business.""
 
       List<JObject> resultObjects = o["results"].Children<JObject>().ToList();
 
+      Assert.AreEqual(32, resultObjects.Properties().Count());
+
+      Assert.AreEqual(32, resultObjects.Cast<JToken>().Values().Count());
+
+      Assert.AreEqual(4, resultObjects.Cast<JToken>().Values("GsearchResultClass").Count());
+
+      Assert.AreEqual(5, o.PropertyValues().Cast<JArray>().Children().Count());
 
       List<string> resultUrls = o["results"].Children().Values<string>("url").ToList();
 
@@ -564,6 +571,43 @@ keyword such as type of business.""
                 link = p.Link,
                 category = p.Categories
               }
+        }
+      });
+
+      Console.WriteLine(o.ToString());
+      Assert.IsInstanceOfType(typeof(JObject), o);
+      Assert.IsInstanceOfType(typeof(JObject), o["channel"]);
+      Assert.AreEqual("James Newton-King", (string)o["channel"]["title"]);
+      Assert.AreEqual(2, o["channel"]["item"].Children().Count());
+
+      JArray a = JArray.FromObject(new List<int>() { 0, 1, 2, 3, 4 });
+      Assert.IsInstanceOfType(typeof(JArray), a);
+      Assert.AreEqual(5, a.Count());
+    }
+
+    [Test]
+    public void FromAnonDictionary()
+    {
+      List<Post> posts = GetPosts();
+
+      JObject o = JObject.FromObject(new
+      {
+        channel = new Dictionary<string, object>
+        {
+          { "title", "James Newton-King" },
+          { "link", "http://james.newtonking.com" },
+          { "description", "James Newton-King's blog." },
+          { "item", 
+                  (from p in posts
+                  orderby p.Title
+                  select new
+                  {
+                    title = p.Title,
+                    description = p.Description,
+                    link = p.Link,
+                    category = p.Categories
+                  })
+          }
         }
       });
 

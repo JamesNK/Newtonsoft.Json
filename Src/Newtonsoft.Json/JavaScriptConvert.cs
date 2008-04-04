@@ -384,7 +384,7 @@ namespace Newtonsoft.Json
         return ToString((Guid)value);
       }
 
-      throw new ArgumentException("Unsupported type: {0}. Use the JsonSerializer class to get the object's JSON representation.".FormatWith(value.GetType()));
+      throw new ArgumentException("Unsupported type: {0}. Use the JsonSerializer class to get the object's JSON representation.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
     }
 
     /// <summary>

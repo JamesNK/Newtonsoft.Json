@@ -49,7 +49,7 @@ namespace Newtonsoft.Json.Converters
     public override object ReadJson(JsonReader reader, Type objectType)
     {
       if (reader.TokenType != JsonToken.String)
-        throw new Exception("Unexpected token parsing date. Expected String, got {0}.".FormatWith(reader.TokenType));
+        throw new Exception("Unexpected token parsing date. Expected String, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
 
       string dateText = reader.Value.ToString();
 

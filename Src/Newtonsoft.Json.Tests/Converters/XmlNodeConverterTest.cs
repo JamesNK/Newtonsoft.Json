@@ -31,7 +31,7 @@ using System.Xml;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Utilities;
 
-namespace Newtonsoft.Json.Tests
+namespace Newtonsoft.Json.Tests.Converters
 {
   public class XmlNodeConverterTest : TestFixtureBase
   {

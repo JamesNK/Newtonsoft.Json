@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Collections.ObjectModel;
 using Newtonsoft.Json.Utilities;
+using System.Globalization;
 
 namespace Newtonsoft.Json
 {
@@ -51,7 +52,7 @@ namespace Newtonsoft.Json
         if (!existingMemberMapping.Ignored)
         {
           throw new JsonSerializationException(
-            "A member with the name '{0}' already exists on {1}. Use the JsonPropertyAttribute to specify another name.".FormatWith(memberMapping.MappingName, memberMapping.Member.DeclaringType));
+            "A member with the name '{0}' already exists on {1}. Use the JsonPropertyAttribute to specify another name.".FormatWith(CultureInfo.InvariantCulture, memberMapping.MappingName, memberMapping.Member.DeclaringType));
         }
         else
         {

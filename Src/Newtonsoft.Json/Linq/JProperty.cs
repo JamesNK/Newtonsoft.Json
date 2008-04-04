@@ -29,6 +29,7 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Utilities;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace Newtonsoft.Json.Linq
 {
@@ -95,7 +96,7 @@ namespace Newtonsoft.Json.Linq
       ValidationUtils.ArgumentNotNull(o, "o");
 
       if (o.Type == JsonTokenType.Property)
-        throw new ArgumentException("An item of type {0} cannot be added to content.".FormatWith(o.Type));
+        throw new ArgumentException("An item of type {0} cannot be added to content.".FormatWith(CultureInfo.InvariantCulture, o.Type));
     }
 
     public override void WriteTo(JsonWriter writer, params JsonConverter[] converters)
@@ -103,5 +104,20 @@ namespace Newtonsoft.Json.Linq
       writer.WritePropertyName(_name);
       Value.WriteTo(writer, converters);
     }
+
+    //public static explicit operator JValue(JProperty property)
+    //{
+    //  if (property == null)
+    //    return null;
+
+    //  JToken value = property.Value;
+    //  if (value == null)
+    //    return null;
+
+    //  if (!(value is JValue))
+    //    throw new Exception("Could not cast {0} to JValue".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
+
+    //  return (JValue)value;
+    //}
   }
 }

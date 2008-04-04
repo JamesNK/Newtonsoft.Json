@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Newtonsoft.Json.Utilities;
 using System.Linq;
+using System.Globalization;
 
 namespace Newtonsoft.Json.Utilities
 {
@@ -261,7 +262,7 @@ namespace Newtonsoft.Json.Utilities
     private static void VerifyValueType(object value)
     {
       if (!IsCompatibleObject(value))
-        throw new ArgumentException("The value '{0}' is not of type '{1}' and cannot be used in this generic collection.".FormatWith(value, typeof(T)), "value");
+        throw new ArgumentException("The value '{0}' is not of type '{1}' and cannot be used in this generic collection.".FormatWith(CultureInfo.InvariantCulture, value, typeof(T)), "value");
     }
 
     private static bool IsCompatibleObject(object value)

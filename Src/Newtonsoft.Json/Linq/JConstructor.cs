@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Utilities;
+using System.Globalization;
 
 namespace Newtonsoft.Json.Linq
 {
@@ -53,6 +54,7 @@ namespace Newtonsoft.Json.Linq
     public JConstructor(JConstructor other)
       : base(other)
     {
+      _name = other.Name;
     }
 
     public JConstructor(string name, params object[] content)
@@ -89,7 +91,7 @@ namespace Newtonsoft.Json.Linq
       switch (o.Type)
       {
         case JsonTokenType.Property:
-          throw new ArgumentException("An item of type {0} cannot be added to content.".FormatWith(o.Type));
+          throw new ArgumentException("An item of type {0} cannot be added to content.".FormatWith(CultureInfo.InvariantCulture, o.Type));
       }
     }
 
@@ -112,7 +114,7 @@ namespace Newtonsoft.Json.Linq
         ValidationUtils.ArgumentNotNull(key, "o");
 
         if (!(key is int))
-          throw new ArgumentException("Accessed JConstructor values with invalid key value: {0}. Argument position index expected.".FormatWith(MiscellaneousUtils.ToString(key)));
+          throw new ArgumentException("Accessed JConstructor values with invalid key value: {0}. Argument position index expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
 
         return GetIndex(this, (int)key);
       }

@@ -42,10 +42,10 @@ namespace Newtonsoft.Json.Utilities
     public const char LineFeed = '\n';
     public const char Tab = '\t';
 
-    public static string FormatWith(this string format, params object[] args)
-    {
-      return FormatWith(format, CultureInfo.InvariantCulture, args);
-    }
+    //public static string FormatWith(this string format, params object[] args)
+    //{
+    //  return FormatWith(format, null, args);
+    //}
 
     public static string FormatWith(this string format, IFormatProvider provider, params object[] args)
     {

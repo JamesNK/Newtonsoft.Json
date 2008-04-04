@@ -29,6 +29,7 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Utilities;
 using System.IO;
+using System.Globalization;
 
 namespace Newtonsoft.Json.Linq
 {
@@ -109,7 +110,7 @@ namespace Newtonsoft.Json.Linq
       ValidationUtils.ArgumentNotNull(o, "o");
 
       if (o.Type == JsonTokenType.Property)
-        throw new ArgumentException("An item of type {0} cannot be added to content.".FormatWith(o.Type));
+        throw new ArgumentException("An item of type {0} cannot be added to content.".FormatWith(CultureInfo.InvariantCulture, o.Type));
     }
 
     public static JArray FromObject(object o)
@@ -117,7 +118,7 @@ namespace Newtonsoft.Json.Linq
       JToken token = FromObjectInternal(o);
 
       if (token.Type != JsonTokenType.Array)
-        throw new ArgumentException("Object serialized to {0}. JArray instance expected.".FormatWith(token.Type));
+        throw new ArgumentException("Object serialized to {0}. JArray instance expected.".FormatWith(CultureInfo.InvariantCulture, token.Type));
 
       return (JArray)token;
     }
@@ -141,7 +142,7 @@ namespace Newtonsoft.Json.Linq
         ValidationUtils.ArgumentNotNull(key, "o");
 
         if (!(key is int))
-          throw new ArgumentException("Accessed JArray values with invalid key value: {0}. Array position index expected.".FormatWith(MiscellaneousUtils.ToString(key)));
+          throw new ArgumentException("Accessed JArray values with invalid key value: {0}. Array position index expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
 
         return GetIndex(this, (int)key);
       }

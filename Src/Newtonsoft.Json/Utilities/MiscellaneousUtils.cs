@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 using System.Text;
+using System.Globalization;
 
 namespace Newtonsoft.Json.Utilities
 {
@@ -55,7 +56,7 @@ namespace Newtonsoft.Json.Utilities
       if (descriptionAttribute != null)
         return descriptionAttribute.Description;
       else
-        throw new Exception("No DescriptionAttribute on '{0}'.".FormatWith(o.GetType()));
+        throw new Exception("No DescriptionAttribute on '{0}'.".FormatWith(CultureInfo.InvariantCulture, o.GetType()));
     }
 
     public static IList<string> GetDescriptions(IList values)
