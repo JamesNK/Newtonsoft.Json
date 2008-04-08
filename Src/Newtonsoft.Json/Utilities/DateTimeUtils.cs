@@ -7,7 +7,7 @@ using System.Globalization;
 
 namespace Newtonsoft.Json.Utilities
 {
-  public static class DateTimeUtils
+  internal static class DateTimeUtils
   {
     public static string GetLocalOffset(this DateTime d)
     {

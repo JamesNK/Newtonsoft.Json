@@ -109,11 +109,11 @@ namespace Newtonsoft.Json.Linq
       {
         case JsonTokenType.Integer:
           if (objA is ulong || objB is ulong)
-            return Convert.ToDecimal(objA).Equals(Convert.ToDecimal(objB));
+            return Convert.ToDecimal(objA, CultureInfo.InvariantCulture).Equals(Convert.ToDecimal(objB, CultureInfo.InvariantCulture));
           else
-            return Convert.ToInt64(objA).Equals(Convert.ToInt64(objB));
+            return Convert.ToInt64(objA, CultureInfo.InvariantCulture).Equals(Convert.ToInt64(objB, CultureInfo.InvariantCulture));
         case JsonTokenType.Float:
-          return Convert.ToDouble(objA).Equals(Convert.ToDouble(objB));
+          return Convert.ToDouble(objA, CultureInfo.InvariantCulture).Equals(Convert.ToDouble(objB, CultureInfo.InvariantCulture));
         case JsonTokenType.Comment:
         case JsonTokenType.String:
         case JsonTokenType.Boolean:

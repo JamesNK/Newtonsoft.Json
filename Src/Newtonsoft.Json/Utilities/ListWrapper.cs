@@ -33,12 +33,12 @@ using System.Globalization;
 
 namespace Newtonsoft.Json.Utilities
 {
-  public interface IWrappedList : IList
+  internal interface IWrappedList : IList
   {
     object UnderlyingList { get; }
   }
 
-  public class ListWrapper<T> : IList<T>, IWrappedList
+  internal class ListWrapper<T> : IList<T>, IWrappedList
   {
     private readonly IList _list;
     private readonly IList<T> _genericList;

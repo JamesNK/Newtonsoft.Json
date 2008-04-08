@@ -48,6 +48,10 @@ namespace Newtonsoft.Json.Linq
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JContainer"/> class from another <see cref="JContainer"/> object.
+    /// </summary>
+    /// <param name="other">A <see cref="JContainer"/> object to copy from.</param>
     protected JContainer(JContainer other)
     {
       ValidationUtils.ArgumentNotNull(other, "c");
@@ -64,6 +68,12 @@ namespace Newtonsoft.Json.Linq
       }
     }
 
+    /// <summary>
+    /// Gets a value indicating whether this token has childen tokens.
+    /// </summary>
+    /// <value>
+    /// 	<c>true</c> if this token has child values; otherwise, <c>false</c>.
+    /// </value>
     public override bool HasValues
     {
       get { return (_content != null); }
@@ -112,6 +122,12 @@ namespace Newtonsoft.Json.Linq
       get { return _content; }
     }
 
+    /// <summary>
+    /// Returns a collection of the child tokens of this token, in document order.
+    /// </summary>
+    /// <returns>
+    /// An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> containing the child tokens of this <see cref="JToken"/>, in document order.
+    /// </returns>
     public override JEnumerable<JToken> Children()
     {
       return new JEnumerable<JToken>(ChildrenInternal());
@@ -132,6 +148,13 @@ namespace Newtonsoft.Json.Linq
         && ((current = current.Next) != null));
     }
 
+    /// <summary>
+    /// Returns a collection of the child values of this token, in document order.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns>
+    /// A <see cref="IEnumerable{T}"/> containing the child values of this <see cref="JToken"/>, in document order.
+    /// </returns>
     public override IEnumerable<T> Values<T>()
     {
       return Children().Convert<JToken, T>();

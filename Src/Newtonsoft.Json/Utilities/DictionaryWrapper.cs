@@ -7,12 +7,12 @@ using System.Threading;
 
 namespace Newtonsoft.Json.Utilities
 {
-  public interface IWrappedDictionary : IDictionary
+  internal interface IWrappedDictionary : IDictionary
   {
     object UnderlyingDictionary { get; }
   }
 
-  public class DictionaryWrapper<TKey, TValue> : IDictionary<TKey, TValue>, IWrappedDictionary
+  internal class DictionaryWrapper<TKey, TValue> : IDictionary<TKey, TValue>, IWrappedDictionary
   {
     private readonly IDictionary _dictionary;
     private readonly IDictionary<TKey, TValue> _genericDictionary;

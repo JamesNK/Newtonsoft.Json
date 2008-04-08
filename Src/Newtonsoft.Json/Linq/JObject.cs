@@ -33,12 +33,22 @@ using System.Globalization;
 
 namespace Newtonsoft.Json.Linq
 {
+  /// <summary>
+  /// Represents a JSON object.
+  /// </summary>
   public class JObject : JContainer
   {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JObject"/> class.
+    /// </summary>
     public JObject()
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JObject"/> class from another <see cref="JObject"/> object.
+    /// </summary>
+    /// <param name="other">A <see cref="JObject"/> object to copy from.</param>
     public JObject(JObject other)
       : base(other)
     {

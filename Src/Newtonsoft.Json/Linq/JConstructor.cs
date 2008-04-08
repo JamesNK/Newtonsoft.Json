@@ -42,6 +42,10 @@ namespace Newtonsoft.Json.Linq
       set { _name = value; }
     }
 
+    /// <summary>
+    /// Gets the node type for this <see cref="JToken"/>.
+    /// </summary>
+    /// <value>The type.</value>
     public override JsonTokenType Type
     {
       get { return JsonTokenType.Constructor; }
@@ -95,6 +99,11 @@ namespace Newtonsoft.Json.Linq
       }
     }
 
+    /// <summary>
+    /// Writes this token to a <see cref="JsonWriter"/>.
+    /// </summary>
+    /// <param name="writer">A <see cref="JsonWriter"/> into which this method will write.</param>
+    /// <param name="converters">A collection of <see cref="JsonConverter"/> which will be used when writing the token.</param>
     public override void WriteTo(JsonWriter writer, params JsonConverter[] converters)
     {
       writer.WriteStartConstructor(_name);

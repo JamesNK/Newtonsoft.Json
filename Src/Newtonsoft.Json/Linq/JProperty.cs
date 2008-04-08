@@ -33,26 +33,38 @@ using System.Globalization;
 
 namespace Newtonsoft.Json.Linq
 {
+  /// <summary>
+  /// Represents a JSON property.
+  /// </summary>
   public class JProperty : JContainer
   {
     private readonly string _name;
 
+    /// <summary>
+    /// Gets the property name.
+    /// </summary>
+    /// <value>The property name.</value>
     public string Name
     {
       [DebuggerStepThrough]
       get { return _name; }
     }
 
+    /// <summary>
+    /// Gets or sets the property value.
+    /// </summary>
+    /// <value>The property value.</value>
     public JToken Value
     {
       [DebuggerStepThrough]
       get { return Last; }
-      set
-      {
-        ReplaceAll(value);
-      }
+      set { ReplaceAll(value); }
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JProperty"/> class from another <see cref="JProperty"/> object.
+    /// </summary>
+    /// <param name="other">A <see cref="JProperty"/> object to copy from.</param>
     public JProperty(JProperty other)
       : base(other)
     {
@@ -70,12 +82,20 @@ namespace Newtonsoft.Json.Linq
       return new JProperty(this);
     }
 
+    /// <summary>
+    /// Gets the node type for this <see cref="JToken"/>.
+    /// </summary>
+    /// <value>The type.</value>
     public override JsonTokenType Type
     {
       [DebuggerStepThrough]
       get { return JsonTokenType.Property; }
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JProperty"/> class.
+    /// </summary>
+    /// <param name="name">The property name.</param>
     public JProperty(string name)
     {
       ValidationUtils.ArgumentNotNull(name, "name");
@@ -83,6 +103,11 @@ namespace Newtonsoft.Json.Linq
       _name = name;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JProperty"/> class.
+    /// </summary>
+    /// <param name="name">The property name.</param>
+    /// <param name="value">The property value.</param>
     public JProperty(string name, object value)
     {
       ValidationUtils.ArgumentNotNullOrEmpty(name, "name");
@@ -99,6 +124,11 @@ namespace Newtonsoft.Json.Linq
         throw new ArgumentException("An item of type {0} cannot be added to content.".FormatWith(CultureInfo.InvariantCulture, o.Type));
     }
 
+    /// <summary>
+    /// Writes this token to a <see cref="JsonWriter"/>.
+    /// </summary>
+    /// <param name="writer">A <see cref="JsonWriter"/> into which this method will write.</param>
+    /// <param name="converters">A collection of <see cref="JsonConverter"/> which will be used when writing the token.</param>
     public override void WriteTo(JsonWriter writer, params JsonConverter[] converters)
     {
       writer.WritePropertyName(_name);

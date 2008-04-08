@@ -34,11 +34,18 @@ using System.Globalization;
 
 namespace Newtonsoft.Json.Linq
 {
+  /// <summary>
+  /// Represents an abstract JSON token.
+  /// </summary>
   public abstract class JToken
   {
     private JContainer _parent;
     internal JToken _next;
 
+    /// <summary>
+    /// Gets or sets the parent.
+    /// </summary>
+    /// <value>The parent.</value>
     public JContainer Parent
     {
       [DebuggerStepThrough]
@@ -46,6 +53,10 @@ namespace Newtonsoft.Json.Linq
       internal set { _parent = value; }
     }
 
+    /// <summary>
+    /// Gets the root <see cref="JToken"/> of this <see cref="JToken"/>.
+    /// </summary>
+    /// <value>The root <see cref="JToken"/> of this <see cref="JToken"/>.</value>
     public JToken Root
     {
       get
@@ -66,14 +77,35 @@ namespace Newtonsoft.Json.Linq
     internal abstract JToken CloneNode();
     internal abstract bool DeepEquals(JToken node);
 
+    /// <summary>
+    /// Gets the node type for this <see cref="JToken"/>.
+    /// </summary>
+    /// <value>The type.</value>
     public abstract JsonTokenType Type { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether this token has childen tokens.
+    /// </summary>
+    /// <value>
+    /// 	<c>true</c> if this token has child values; otherwise, <c>false</c>.
+    /// </value>
     public abstract bool HasValues { get; }
 
+    /// <summary>
+    /// Compares the values of two tokens, including the values of all descendant tokens.
+    /// </summary>
+    /// <param name="t1">The first <see cref="JToken"/> to compare.</param>
+    /// <param name="t2">The second <see cref="JToken"/> to compare.</param>
+    /// <returns>true if the tokens are equal; otherwise false.</returns>
     public static bool DeepEquals(JToken t1, JToken t2)
     {
       return (t1 == t2 || (t1 != null && t2 != null && t1.DeepEquals(t2)));
     }
 
+    /// <summary>
+    /// Gets the next sibling token of this node.
+    /// </summary>
+    /// <value>The <see cref="JToken"/> that contains the next sibling token.</value>
     public JToken Next
     {
       get
@@ -86,6 +118,10 @@ namespace Newtonsoft.Json.Linq
       internal set { _next = value; }
     }
 
+    /// <summary>
+    /// Gets the previous sibling token of this node.
+    /// </summary>
+    /// <value>The <see cref="JToken"/> that contains the previous sibling token.</value>
     public JToken Previous
     {
       get
@@ -104,6 +140,10 @@ namespace Newtonsoft.Json.Linq
       }
     }
 
+    /// <summary>
+    /// Returns a collection of the ancestor tokens of this token.
+    /// </summary>
+    /// <returns>A collection of the ancestor tokens of this token.</returns>
     public IEnumerable<JToken> Ancestors()
     {
       for (JToken parent = Parent; parent != null; parent = parent.Parent)
@@ -112,6 +152,10 @@ namespace Newtonsoft.Json.Linq
       }
     }
 
+    /// <summary>
+    /// Returns a collection of the sibling tokens after this token, in document order.
+    /// </summary>
+    /// <returns>A collection of the sibling tokens after this tokens, in document order.</returns>
     public IEnumerable<JToken> AfterSelf()
     {
       if (Parent == null)
@@ -121,17 +165,31 @@ namespace Newtonsoft.Json.Linq
         yield return o;
     }
 
+    /// <summary>
+    /// Returns a collection of the sibling tokens before this token, in document order.
+    /// </summary>
+    /// <returns>A collection of the sibling tokens before this token, in document order.</returns>
     public IEnumerable<JToken> BeforeSelf()
     {
       for (JToken o = Parent.First; o != this; o = o.Next)
         yield return o;
     }
 
+    /// <summary>
+    /// Gets the <see cref="JToken"/> with the specified key.
+    /// </summary>
+    /// <value>The <see cref="JToken"/> with the specified key.</value>
     public virtual JToken this[object key]
     {
       get { throw new InvalidOperationException("Cannot access child value on {0}.".FormatWith(CultureInfo.InvariantCulture, GetType())); }
     }
 
+    /// <summary>
+    /// Gets the <see cref="JToken"/> with the specified key converted to the specified type.
+    /// </summary>
+    /// <typeparam name="T">The type to convert the token to.</typeparam>
+    /// <param name="key">The token key.</param>
+    /// <returns>The converted token value.</returns>
     public virtual T Value<T>(object key)
     {
       JToken token = this[key];
@@ -139,40 +197,54 @@ namespace Newtonsoft.Json.Linq
       return Extensions.Convert<JToken, T>(token);
     }
 
+    /// <summary>
+    /// Get the first child token of this token.
+    /// </summary>
+    /// <value>A <see cref="JToken"/> containing the first child token of the <see cref="JToken"/>.</value>
     public virtual JToken First
     {
       get { throw new InvalidOperationException("Cannot access child value on {0}.".FormatWith(CultureInfo.InvariantCulture, GetType())); }
-      //get { return null; }
     }
 
+    /// <summary>
+    /// Get the last child token of this token.
+    /// </summary>
+    /// <value>A <see cref="JToken"/> containing the last child token of the <see cref="JToken"/>.</value>
     public virtual JToken Last
     {
       get { throw new InvalidOperationException("Cannot access child value on {0}.".FormatWith(CultureInfo.InvariantCulture, GetType())); }
-      //get { return null; }
     }
 
+    /// <summary>
+    /// Returns a collection of the child tokens of this token, in document order.
+    /// </summary>
+    /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> containing the child tokens of this <see cref="JToken"/>, in document order.</returns>
     public virtual JEnumerable<JToken> Children()
     {
       throw new InvalidOperationException("Cannot access child value on {0}.".FormatWith(CultureInfo.InvariantCulture, GetType()));
-      //return JEnumerable<JToken>.Empty;
     }
 
+    /// <summary>
+    /// Returns a collection of the child tokens of this token, in document order.
+    /// </summary>
+    /// <returns>A <see cref="JEnumerable{T}"/> containing the child tokens of this <see cref="JToken"/>, in document order.</returns>
     public JEnumerable<T> Children<T>() where T : JToken
     {
       return new JEnumerable<T>(Children().OfType<T>());
     }
 
+    /// <summary>
+    /// Returns a collection of the child values of this token, in document order.
+    /// </summary>
+    /// <returns>A <see cref="IEnumerable{T}"/> containing the child values of this <see cref="JToken"/>, in document order.</returns>
     public virtual IEnumerable<T> Values<T>()
     {
       throw new InvalidOperationException("Cannot access child value on {0}.".FormatWith(CultureInfo.InvariantCulture, GetType()));
     }
 
-    //public virtual IEnumerable<T> Children<T>()
-    // {
-    //   throw new InvalidOperationException("Cannot access child value on {0}.".FormatWith(CultureInfo.InvariantCulture, GetType()));
-    //   //return Enumerable.Empty<T>();
-    // }
-
+    /// <summary>
+    /// Removes this token from its parent.
+    /// </summary>
     public void Remove()
     {
       if (_parent == null)
@@ -181,6 +253,10 @@ namespace Newtonsoft.Json.Linq
       _parent.Remove(this);
     }
 
+    /// <summary>
+    /// Replaces this token with the specified token.
+    /// </summary>
+    /// <param name="value">The value.</param>
     public void Replace(JToken value)
     {
       if (_parent == null)
@@ -202,13 +278,29 @@ namespace Newtonsoft.Json.Linq
       parent.AddInternal(isLast, previous, value);
     }
 
+    /// <summary>
+    /// Writes this token to a <see cref="JsonWriter"/>.
+    /// </summary>
+    /// <param name="writer">A <see cref="JsonWriter"/> into which this method will write.</param>
+    /// <param name="converters">A collection of <see cref="JsonConverter"/> which will be used when writing the token.</param>
     public abstract void WriteTo(JsonWriter writer, params JsonConverter[] converters);
 
+    /// <summary>
+    /// Returns the indented JSON for this token.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="T:System.String"/> containing the indented JSON.
+    /// </returns>
     public override string ToString()
     {
       return ToString(null);
     }
 
+    /// <summary>
+    /// Returns the indented JSON for this token using any given converters.
+    /// </summary>
+    /// <param name="converters">A collection of <see cref="JsonConverter"/> which will be used when writing the token.</param>
+    /// <returns></returns>
     private string ToString(params JsonConverter[] converters)
     {
       using (StringWriter sw = new StringWriter(CultureInfo.InvariantCulture))
@@ -271,6 +363,11 @@ namespace Newtonsoft.Json.Linq
     }
 
     #region Cast operators
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="System.Boolean"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
     public static explicit operator bool(JToken value)
     {
       JValue v = EnsureValue(value);
@@ -280,6 +377,11 @@ namespace Newtonsoft.Json.Linq
       return (bool)v.Value;
     }
 
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="System.DateTimeOffset"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
     public static explicit operator DateTimeOffset(JToken value)
     {
       JValue v = EnsureValue(value);
@@ -289,6 +391,11 @@ namespace Newtonsoft.Json.Linq
       return (DateTimeOffset)v.Value;
     }
 
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="Nullable{Boolean}"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
     public static explicit operator bool?(JToken value)
     {
       if (value == null)
@@ -301,6 +408,11 @@ namespace Newtonsoft.Json.Linq
       return (bool?)v.Value;
     }
 
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="System.Int64"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
     public static explicit operator long(JToken value)
     {
       JValue v = EnsureValue(value);
@@ -310,6 +422,11 @@ namespace Newtonsoft.Json.Linq
       return (long)v.Value;
     }
 
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="Nullable{DateTime}"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
     public static explicit operator DateTime?(JToken value)
     {
       if (value == null)
@@ -322,6 +439,11 @@ namespace Newtonsoft.Json.Linq
       return (DateTime?)v.Value;
     }
 
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="Nullable{DateTimeOffset}"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
     public static explicit operator DateTimeOffset?(JToken value)
     {
       if (value == null)
@@ -334,6 +456,11 @@ namespace Newtonsoft.Json.Linq
       return (DateTimeOffset?)v.Value;
     }
 
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="Nullable{Decimal}"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
     public static explicit operator decimal?(JToken value)
     {
       if (value == null)
@@ -346,6 +473,11 @@ namespace Newtonsoft.Json.Linq
       return (decimal?)v.Value;
     }
 
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="Nullable{Double}"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
     public static explicit operator double?(JToken value)
     {
       if (value == null)
@@ -358,6 +490,11 @@ namespace Newtonsoft.Json.Linq
       return (double?)v.Value;
     }
 
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="System.Int32"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
     public static explicit operator int(JToken value)
     {
       JValue v = EnsureValue(value);
@@ -367,6 +504,11 @@ namespace Newtonsoft.Json.Linq
       return Convert.ToInt32(v.Value, CultureInfo.InvariantCulture);
     }
 
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="Nullable{Int32}"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
     public static explicit operator int?(JToken value)
     {
       if (value == null)
@@ -379,6 +521,11 @@ namespace Newtonsoft.Json.Linq
       return (v.Value != null) ? (int?)Convert.ToInt32(v.Value, CultureInfo.InvariantCulture) : null;
     }
 
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="System.DateTime"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
     public static explicit operator DateTime(JToken value)
     {
       JValue v = EnsureValue(value);
@@ -388,6 +535,11 @@ namespace Newtonsoft.Json.Linq
       return (DateTime)v.Value;
     }
 
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="Nullable{Int64}"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
     public static explicit operator long?(JToken value)
     {
       if (value == null)
@@ -400,6 +552,11 @@ namespace Newtonsoft.Json.Linq
       return (long?)v.Value;
     }
 
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="Nullable{Single}"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
     public static explicit operator float?(JToken value)
     {
       if (value == null)
@@ -412,6 +569,11 @@ namespace Newtonsoft.Json.Linq
       return (float?)v.Value;
     }
 
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="System.Decimal"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
     public static explicit operator decimal(JToken value)
     {
       JValue v = EnsureValue(value);
@@ -421,6 +583,11 @@ namespace Newtonsoft.Json.Linq
       return (decimal)v.Value;
     }
 
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="Nullable{UInt32}"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
     public static explicit operator uint?(JToken value)
     {
       if (value == null)
@@ -433,6 +600,11 @@ namespace Newtonsoft.Json.Linq
       return (uint?)v.Value;
     }
 
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="Nullable{UInt64}"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
     public static explicit operator ulong?(JToken value)
     {
       if (value == null)
@@ -445,6 +617,11 @@ namespace Newtonsoft.Json.Linq
       return (ulong?)v.Value;
     }
 
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="System.Double"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
     public static explicit operator double(JToken value)
     {
       JValue v = EnsureValue(value);
@@ -454,6 +631,11 @@ namespace Newtonsoft.Json.Linq
       return (double)v.Value;
     }
 
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="System.Single"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
     public static explicit operator float(JToken value)
     {
       JValue v = EnsureValue(value);
@@ -463,6 +645,11 @@ namespace Newtonsoft.Json.Linq
       return Convert.ToSingle(v.Value, CultureInfo.InvariantCulture);
     }
 
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="System.String"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
     public static explicit operator string(JToken value)
     {
       if (value == null)
@@ -475,6 +662,11 @@ namespace Newtonsoft.Json.Linq
       return (string)v.Value;
     }
 
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="System.UInt32"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
     public static explicit operator uint(JToken value)
     {
       JValue v = EnsureValue(value);
@@ -484,6 +676,11 @@ namespace Newtonsoft.Json.Linq
       return Convert.ToUInt32(v.Value, CultureInfo.InvariantCulture);
     }
 
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="System.UInt64"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
     public static explicit operator ulong(JToken value)
     {
       JValue v = EnsureValue(value);

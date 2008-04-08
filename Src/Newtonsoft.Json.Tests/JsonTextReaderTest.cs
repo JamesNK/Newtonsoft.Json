@@ -305,5 +305,28 @@ namespace Newtonsoft.Json.Tests
         Assert.AreEqual(jsonReader.TokenType, JsonToken.EndArray);
       }
     }
+
+    [Test]
+    public void LongStringTest()
+    {
+      int length = 20000;
+      string json = @"[""" + new string(' ', length) + @"""]";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+      reader.Read();
+      Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+      reader.Read();
+      Assert.AreEqual(JsonToken.String, reader.TokenType);
+      Assert.AreEqual(typeof(string), reader.ValueType);
+      Assert.AreEqual(20000, reader.Value.ToString().Length);
+
+      reader.Read();
+      Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+
+      reader.Read();
+      Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+    }
   }
 }
