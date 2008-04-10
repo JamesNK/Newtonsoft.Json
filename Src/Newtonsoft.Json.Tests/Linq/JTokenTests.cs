@@ -167,8 +167,7 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(true, (bool)new JValue(true));
       Assert.AreEqual(true, (bool?)new JValue(true));
       Assert.AreEqual(null, (bool?)((JValue)null));
-      Assert.AreEqual(null, (bool?)JValue.Null);
-      Assert.AreEqual(null, (bool?)JValue.Undefined);
+      Assert.AreEqual(null, (bool?)new JValue((object)null));
       Assert.AreEqual(10, (long)new JValue(10));
       Assert.AreEqual(null, (long?)new JValue((long?)null));
       Assert.AreEqual(null, (long?)(JValue)null);

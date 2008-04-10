@@ -7,18 +7,30 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Converters
 {
+  /// <summary>
+  /// Converts text in the ISO 8601 date format to and from JSON.
+  /// </summary>
   public class IsoDateTimeConverter : JsonConverter
   {
     private const string DateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK";
 
     private DateTimeStyles _dateTimeStyles = DateTimeStyles.RoundtripKind;
 
+    /// <summary>
+    /// Gets or sets the date time styles used when converting a date to and from JSON.
+    /// </summary>
+    /// <value>The date time styles used when converting a date to and from JSON.</value>
     public DateTimeStyles DateTimeStyles
     {
       get { return _dateTimeStyles; }
       set { _dateTimeStyles = value; }
     }
 
+    /// <summary>
+    /// Writes the JSON representation of the object.
+    /// </summary>
+    /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
+    /// <param name="value">The value.</param>
     public override void WriteJson(JsonWriter writer, object value)
     {
       string text;
@@ -46,6 +58,12 @@ namespace Newtonsoft.Json.Converters
       writer.WriteValue(text);
     }
 
+    /// <summary>
+    /// Reads the JSON representation of the object.
+    /// </summary>
+    /// <param name="reader">The <see cref="JsonReader"/> to read from.</param>
+    /// <param name="objectType">Type of the object.</param>
+    /// <returns>The object value.</returns>
     public override object ReadJson(JsonReader reader, Type objectType)
     {
       if (reader.TokenType != JsonToken.String)
@@ -59,6 +77,13 @@ namespace Newtonsoft.Json.Converters
       return DateTime.Parse(dateText, CultureInfo.InvariantCulture, _dateTimeStyles);
     }
 
+    /// <summary>
+    /// Determines whether this instance can convert the specified object type.
+    /// </summary>
+    /// <param name="objectType">Type of the object.</param>
+    /// <returns>
+    /// 	<c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
+    /// </returns>
     public override bool CanConvert(Type objectType)
     {
       return (typeof(DateTime).IsAssignableFrom(objectType)

@@ -30,9 +30,18 @@ using System.Text;
 
 namespace Newtonsoft.Json
 {
+  /// <summary>
+  /// Specifies the member serialization options for the <see cref="JsonSerializer"/>.
+  /// </summary>
   public enum MemberSerialization
   {
+    /// <summary>
+    /// All members are serialized by default. Members can be excluded using the <see cref="JsonIgnoreAttribute"/>.
+    /// </summary>
     OptOut,
+    /// <summary>
+    /// Only members must be marked with the <see cref="JsonPropertyAttribute"/> are serialized.
+    /// </summary>
     OptIn
   }
 }

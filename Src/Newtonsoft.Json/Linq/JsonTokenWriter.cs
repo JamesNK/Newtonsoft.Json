@@ -6,16 +6,27 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Linq
 {
+  /// <summary>
+  /// Represents a writer that provides a fast, non-cached, forward-only way of generating Json data.
+  /// </summary>
   public class JsonTokenWriter : JsonWriter
   {
     private JContainer _token;
     private JContainer _parent;
 
+    /// <summary>
+    /// Gets the token being writen.
+    /// </summary>
+    /// <value>The token being writen.</value>
     public JContainer Token
     {
       get { return _token; }
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonTokenWriter"/> class writing to the given <see cref="JContainer"/>.
+    /// </summary>
+    /// <param name="container">The container being written to.</param>
     public JsonTokenWriter(JContainer container)
     {
       ValidationUtils.ArgumentNotNull(container, "container");
@@ -24,6 +35,9 @@ namespace Newtonsoft.Json.Linq
       _parent = container;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonTokenWriter"/> class.
+    /// </summary>
     public JsonTokenWriter()
     {
     }
@@ -81,6 +95,10 @@ namespace Newtonsoft.Json.Linq
       AddParent(new JArray());
     }
 
+    /// <summary>
+    /// Writes the start of a constructor with the given name.
+    /// </summary>
+    /// <param name="name">The name of the constructor.</param>
     public override void WriteStartConstructor(string name)
     {
       base.WriteStartConstructor(name);
@@ -88,6 +106,10 @@ namespace Newtonsoft.Json.Linq
       AddParent(new JConstructor());
     }
 
+    /// <summary>
+    /// Writes the end.
+    /// </summary>
+    /// <param name="token">The token.</param>
     protected override void WriteEnd(JsonToken token)
     {
       RemoveParent();

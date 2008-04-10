@@ -140,6 +140,10 @@ namespace Newtonsoft.Json.Linq
       }
     }
 
+    internal JToken()
+    {
+    }
+
     /// <summary>
     /// Returns a collection of the ancestor tokens of this token.
     /// </summary>

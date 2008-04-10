@@ -29,6 +29,9 @@ using System.Text;
 
 namespace Newtonsoft.Json
 {
+  /// <summary>
+  /// Specifies missing member handling options for the <see cref="JsonSerializer"/>.
+  /// </summary>
   public enum MissingMemberHandling
   {
     /// <summary>

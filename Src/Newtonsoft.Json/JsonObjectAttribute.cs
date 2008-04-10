@@ -30,21 +30,35 @@ using System.Text;
 
 namespace Newtonsoft.Json
 {
+  /// <summary>
+  /// Instructs the <see cref="JsonSerializer"/> how to serialize the object.
+  /// </summary>
   [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = false)]
   public sealed class JsonObjectAttribute : Attribute
   {
     private MemberSerialization _memberSerialization = MemberSerialization.OptOut;
 
+    /// <summary>
+    /// Gets or sets the member serialization.
+    /// </summary>
+    /// <value>The member serialization.</value>
     public MemberSerialization MemberSerialization
     {
       get { return _memberSerialization; }
       set { _memberSerialization = value; }
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonObjectAttribute"/> class.
+    /// </summary>
     public JsonObjectAttribute()
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonObjectAttribute"/> class with the specified member serialization.
+    /// </summary>
+    /// <param name="memberSerialization">The member serialization.</param>
     public JsonObjectAttribute(MemberSerialization memberSerialization)
     {
       MemberSerialization = memberSerialization;

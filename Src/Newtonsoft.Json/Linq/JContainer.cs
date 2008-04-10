@@ -34,6 +34,9 @@ using System.Globalization;
 
 namespace Newtonsoft.Json.Linq
 {
+  /// <summary>
+  /// Represents a token that can contain other tokens.
+  /// </summary>
   public abstract class JContainer : JToken
   {
     private JToken _content;
@@ -44,15 +47,11 @@ namespace Newtonsoft.Json.Linq
       set { _content = value; }
     }
 
-    protected JContainer()
+    internal JContainer()
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="JContainer"/> class from another <see cref="JContainer"/> object.
-    /// </summary>
-    /// <param name="other">A <see cref="JContainer"/> object to copy from.</param>
-    protected JContainer(JContainer other)
+    internal JContainer(JContainer other)
     {
       ValidationUtils.ArgumentNotNull(other, "c");
 
@@ -105,6 +104,12 @@ namespace Newtonsoft.Json.Linq
       while (true);
     }
 
+    /// <summary>
+    /// Get the first child token of this token.
+    /// </summary>
+    /// <value>
+    /// A <see cref="JToken"/> containing the first child token of the <see cref="JToken"/>.
+    /// </value>
     public override JToken First
     {
       get
@@ -116,6 +121,12 @@ namespace Newtonsoft.Json.Linq
       }
     }
 
+    /// <summary>
+    /// Get the last child token of this token.
+    /// </summary>
+    /// <value>
+    /// A <see cref="JToken"/> containing the last child token of the <see cref="JToken"/>.
+    /// </value>
     public override JToken Last
     {
       [DebuggerStepThrough]
@@ -160,13 +171,10 @@ namespace Newtonsoft.Json.Linq
       return Children().Convert<JToken, T>();
     }
 
-    //public override T Value<T>(object key)
-    //{
-    //  JToken token = this[key];
-
-    //  return Extensions.Convert<JToken, T>(token);
-    //}
-
+    /// <summary>
+    /// Returns a collection of the descendant tokens for this token in document order.
+    /// </summary>
+    /// <returns>An <see cref="IEnumerable{JToken}"/> containing the descendant tokens of the <see cref="JToken"/>.</returns>
     public IEnumerable<JToken> Descendants()
     {
       foreach (JToken o in Children())
@@ -266,17 +274,25 @@ namespace Newtonsoft.Json.Linq
         throw new Exception("Can not add {0} to {1}".FormatWith(CultureInfo.InvariantCulture, o.GetType(), GetType()));
     }
 
+    /// <summary>
+    /// Adds the specified content as children of this <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="content">The content to be added.</param>
     public virtual void Add(object content)
     {
       AddInternal(true, Last, content);
     }
 
+    /// <summary>
+    /// Adds the specified content as the first children of this <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="content">The content to be added.</param>
     public void AddFirst(object content)
     {
       AddInternal(false, Last, content);
     }
 
-    protected JToken CreateFromContent(object content)
+    internal JToken CreateFromContent(object content)
     {
       if (content is JToken)
         return (JToken)content;
@@ -284,17 +300,28 @@ namespace Newtonsoft.Json.Linq
         return new JValue(content);
     }
 
+    /// <summary>
+    /// Creates an <see cref="JsonWriter"/> that can be used to add tokens to the <see cref="JToken"/>.
+    /// </summary>
+    /// <returns>An <see cref="JsonWriter"/> that is ready to have content written to it.</returns>
     public JsonWriter CreateWriter()
     {
       return new JsonTokenWriter(this);
     }
 
+    /// <summary>
+    /// Replaces the children nodes of this token with the specified content.
+    /// </summary>
+    /// <param name="content">The content.</param>
     public void ReplaceAll(object content)
     {
       RemoveAll();
       Add(content);
     }
 
+    /// <summary>
+    /// Removes the child nodes from this token.
+    /// </summary>
     public void RemoveAll()
     {
       while (_content != null)
@@ -417,10 +444,10 @@ namespace Newtonsoft.Json.Linq
             parent.AddObjectSkipNotify(JValue.CreateComment(r.Value.ToString()));
             break;
           case JsonToken.Null:
-            parent.AddObjectSkipNotify(JValue.Null);
+            parent.AddObjectSkipNotify(new JValue(null, JsonTokenType.Null));
             break;
           case JsonToken.Undefined:
-            parent.AddObjectSkipNotify(JValue.Undefined);
+            parent.AddObjectSkipNotify(new JValue(null, JsonTokenType.Undefined));
             break;
           case JsonToken.PropertyName:
             JProperty property = new JProperty(r.Value.ToString());

@@ -147,6 +147,11 @@ namespace Newtonsoft.Json
       }
     }
 
+    /// <summary>
+    /// Sets the current token and value.
+    /// </summary>
+    /// <param name="newToken">The new token.</param>
+    /// <param name="value">The value.</param>
     protected override void SetToken(JsonToken newToken, object value)
     {
       base.SetToken(newToken, value);
@@ -787,7 +792,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Changes the <see cref="State"/> to Closed. 
+    /// Changes the <see cref="P:State"/> to Closed. 
     /// </summary>
     public override void Close()
     {

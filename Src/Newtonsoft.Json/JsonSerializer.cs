@@ -97,6 +97,10 @@ namespace Newtonsoft.Json
       }
     }
 
+    /// <summary>
+    /// Gets or sets how objects are created.
+    /// </summary>
+    /// <value>The object creation handling.</value>
     public ObjectCreationHandling ObjectCreationHandling
     {
       get { return _objectCreationHandling; }
@@ -109,6 +113,10 @@ namespace Newtonsoft.Json
       }
     }
 
+    /// <summary>
+    /// Gets a collection <see cref="JsonConverter"/> that will be used during serialization.
+    /// </summary>
+    /// <value>Collection <see cref="JsonConverter"/> that will be used during serialization.</value>
     public JsonConverterCollection Converters
     {
       get
@@ -146,7 +154,7 @@ namespace Newtonsoft.Json
     /// Deserializes the Json structure contained by the specified <see cref="JsonReader"/>
     /// into an instance of the specified type.
     /// </summary>
-    /// <param name="reader">The type of object to create.</param>
+    /// <param name="reader">The <see cref="JsonReader"/> containing the object.</param>
     /// <param name="objectType">The <see cref="Type"/> of object being deserialized.</param>
     /// <returns>The instance of <paramref name="objectType"/> being deserialized.</returns>
     public object Deserialize(JsonReader reader, Type objectType)
@@ -163,6 +171,13 @@ namespace Newtonsoft.Json
         return CreateJToken(reader);
     }
 
+    /// <summary>
+    /// Deserializes the Json structure contained by the specified <see cref="StringReader"/>
+    /// into an instance of the specified type.
+    /// </summary>
+    /// <param name="reader">The <see cref="JsonReader"/> containing the object.</param>
+    /// <param name="objectType">The <see cref="Type"/> of object being deserialized.</param>
+    /// <returns>The instance of <paramref name="objectType"/> being deserialized.</returns>
     public object Deserialize(StringReader reader, Type objectType)
     {
       return Deserialize(new JsonTextReader(reader), objectType);
@@ -351,6 +366,11 @@ namespace Newtonsoft.Json
       return memberMappings;
     }
 
+    /// <summary>
+    /// Gets the serializable members for the given <see cref="Type"/>.
+    /// </summary>
+    /// <param name="objectType">The object <see cref="Type"/> to get seralizable members for.</param>
+    /// <returns>Seralizable members for the given type.</returns>
     protected virtual List<MemberInfo> GetSerializableMembers(Type objectType)
     {
       return ReflectionUtils.GetFieldsAndProperties(objectType, BindingFlags.Public | BindingFlags.Instance);

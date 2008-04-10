@@ -31,7 +31,7 @@ using System.Text;
 namespace Newtonsoft.Json
 {
   /// <summary>
-  /// Specifies null value handling options for the <see cref="JsonWriter"/>.
+  /// Specifies null value handling options for the <see cref="JsonSerializer"/>.
   /// </summary>
   public enum NullValueHandling
   {

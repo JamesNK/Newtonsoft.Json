@@ -33,6 +33,9 @@ using System.Linq;
 
 namespace Newtonsoft.Json.Converters
 {
+  /// <summary>
+  /// Converts an XmlNode to and from JSON.
+  /// </summary>
   public class XmlNodeConverter : JsonConverter
   {
     private const string TextName = "#text";
@@ -44,6 +47,11 @@ namespace Newtonsoft.Json.Converters
     private const string JsonNamespaceUri = "http://james.newtonking.com/projects/json";
 
     #region Writing
+    /// <summary>
+    /// Writes the JSON representation of the object.
+    /// </summary>
+    /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
+    /// <param name="value">The value.</param>
     public override void WriteJson(JsonWriter writer, object value)
     {
       XmlNode node = value as XmlNode;
@@ -245,6 +253,12 @@ namespace Newtonsoft.Json.Converters
     #endregion
 
     #region Reading
+    /// <summary>
+    /// Reads the JSON representation of the object.
+    /// </summary>
+    /// <param name="reader">The <see cref="JsonReader"/> to read from.</param>
+    /// <param name="objectType">Type of the object.</param>
+    /// <returns>The object value.</returns>
     public override object ReadJson(JsonReader reader, Type objectType)
     {
       // maybe have CanReader and a CanWrite methods so this sort of test wouldn't be necessary
@@ -525,6 +539,13 @@ namespace Newtonsoft.Json.Converters
     }
     #endregion
 
+    /// <summary>
+    /// Determines whether this instance can convert the specified value type.
+    /// </summary>
+    /// <param name="valueType">Type of the value.</param>
+    /// <returns>
+    /// 	<c>true</c> if this instance can convert the specified value type; otherwise, <c>false</c>.
+    /// </returns>
     public override bool CanConvert(Type valueType)
     {
       return typeof(XmlNode).IsAssignableFrom(valueType);

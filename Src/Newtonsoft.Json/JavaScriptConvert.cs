@@ -117,7 +117,7 @@ namespace Newtonsoft.Json
       return ToStringInternal(value, DateTimeKind.Local);
     }
 
-    public static string ToStringInternal(DateTimeOffset value, DateTimeKind kind)
+    internal static string ToStringInternal(DateTimeOffset value, DateTimeKind kind)
     {
       long javaScriptTicks = ConvertDateTimeToJavaScriptTicks(value);
 
@@ -388,15 +388,21 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Serializes the specified object to a Json object.
+    /// Serializes the specified object to a JSON string.
     /// </summary>
     /// <param name="value">The object to serialize.</param>
-    /// <returns>A Json string representation of the object.</returns>
+    /// <returns>A JSON string representation of the object.</returns>
     public static string SerializeObject(object value)
     {
       return SerializeObject(value, null);
     }
 
+    /// <summary>
+    /// Serializes the specified object to a JSON string using a collection of <see cref="JsonConverter"/>.
+    /// </summary>
+    /// <param name="value">The object to serialize.</param>
+    /// <param name="converters">A collection converters used while serializing.</param>
+    /// <returns>A JSON string representation of the object.</returns>
     public static string SerializeObject(object value, params JsonConverter[] converters)
     {
       StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
@@ -468,7 +474,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the specified object to a Json object.
+    /// Deserializes the JSON string to the specified type.
     /// </summary>
     /// <typeparam name="T">The type of the object to deserialize.</typeparam>
     /// <param name="value">The object to deserialize.</param>
@@ -479,6 +485,13 @@ namespace Newtonsoft.Json
       return (T)DeserializeObject(value, typeof(T), converters);
     }
 
+    /// <summary>
+    /// Deserializes the JSON string to the specified type.
+    /// </summary>
+    /// <param name="value">The object to deserialize.</param>
+    /// <param name="type">The type of the object to deserialize.</param>
+    /// <param name="converters">Converters to use while deserializing.</param>
+    /// <returns>The deserialized object from the JSON string.</returns>
     public static object DeserializeObject(string value, Type type, params JsonConverter[] converters)
     {
       StringReader sr = new StringReader(value);
@@ -502,6 +515,11 @@ namespace Newtonsoft.Json
       return deserializedValue;
     }
 
+    /// <summary>
+    /// Serializes the XML node to a JSON string.
+    /// </summary>
+    /// <param name="node">The node to serialize.</param>
+    /// <returns>A JSON string of the XmlNode.</returns>
     public static string SerializeXmlNode(XmlNode node)
     {
       XmlNodeConverter converter = new XmlNodeConverter();
@@ -509,6 +527,11 @@ namespace Newtonsoft.Json
       return SerializeObject(node, converter);
     }
 
+    /// <summary>
+    /// Deserializes the XmlNode from a JSON string.
+    /// </summary>
+    /// <param name="value">The JSON string.</param>
+    /// <returns>The deserialized XmlNode</returns>
     public static XmlNode DeserializeXmlNode(string value)
     {
       XmlNodeConverter converter = new XmlNodeConverter();

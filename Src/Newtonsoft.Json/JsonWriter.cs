@@ -81,7 +81,7 @@ namespace Newtonsoft.Json
     /// </summary>
     None,
     /// <summary>
-    /// Causes child objects to be indented according to the <see cref="JsonWriter.Indentation"/> and <see cref="JsonWriter.IndentChar"/> settings.
+    /// Causes child objects to be indented according to the <see cref="P:JsonWriter.Indentation"/> and <see cref="P:JsonWriter.IndentChar"/> settings.
     /// </summary>
     Indented
   }
@@ -136,6 +136,10 @@ namespace Newtonsoft.Json
       }
     }
 
+    /// <summary>
+    /// Gets the top.
+    /// </summary>
+    /// <value>The top.</value>
     protected int Top
     {
       get { return _top; }
@@ -183,9 +187,8 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Creates an instance of the <c>JsonWriter</c> class using the specified <see cref="TextWriter"/>. 
+    /// Creates an instance of the <c>JsonWriter</c> class. 
     /// </summary>
-    /// <param name="textWriter">The <c>TextWriter</c> to write to.</param>
     public JsonWriter()
     {
       _stack = new List<JsonTokenType>(1);
@@ -263,12 +266,19 @@ namespace Newtonsoft.Json
       AutoCompleteClose(JsonToken.EndArray);
     }
 
+    /// <summary>
+    /// Writes the start of a constructor with the given name.
+    /// </summary>
+    /// <param name="name">The name of the constructor.</param>
     public virtual void WriteStartConstructor(string name)
     {
       AutoComplete(JsonToken.StartConstructor);
       Push(JsonTokenType.Constructor);
     }
 
+    /// <summary>
+    /// Writes the end constructor.
+    /// </summary>
     public void WriteEndConstructor()
     {
       AutoCompleteClose(JsonToken.EndConstructor);
@@ -291,6 +301,10 @@ namespace Newtonsoft.Json
       WriteEnd(Peek());
     }
 
+    /// <summary>
+    /// Writes the current <see cref="JsonReader"/> token.
+    /// </summary>
+    /// <param name="reader">The <see cref="JsonReader"/> to read the token from.</param>
     public void WriteToken(JsonReader reader)
     {
       ValidationUtils.ArgumentNotNull(reader, "reader");
@@ -473,18 +487,31 @@ namespace Newtonsoft.Json
       }
     }
 
+    /// <summary>
+    /// Writes the specified end token.
+    /// </summary>
+    /// <param name="token">The end token to write.</param>
     protected virtual void WriteEnd(JsonToken token)
     {
     }
 
+    /// <summary>
+    /// Writes indent characters.
+    /// </summary>
     protected virtual void WriteIndent()
     {
     }
 
+    /// <summary>
+    /// Writes the JSON value delimiter.
+    /// </summary>
     protected virtual void WriteValueDelimiter()
     {
     }
 
+    /// <summary>
+    /// Writes an indent space.
+    /// </summary>
     protected virtual void WriteIndentSpace()
     {
     }

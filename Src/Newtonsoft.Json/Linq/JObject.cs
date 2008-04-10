@@ -54,11 +54,19 @@ namespace Newtonsoft.Json.Linq
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JObject"/> class with the specified content.
+    /// </summary>
+    /// <param name="content">The contents of the object.</param>
     public JObject(params object[] content)
       : this((object)content)
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JObject"/> class with the specified content.
+    /// </summary>
+    /// <param name="content">The contents of the object.</param>
     public JObject(object content)
     {
       Add(content);
@@ -83,16 +91,29 @@ namespace Newtonsoft.Json.Linq
       return new JObject(this);
     }
 
+    /// <summary>
+    /// Gets the node type for this <see cref="JToken"/>.
+    /// </summary>
+    /// <value>The type.</value>
     public override JsonTokenType Type
     {
       get { return JsonTokenType.Object; }
     }
 
+    /// <summary>
+    /// Gets an <see cref="IEnumerable{JProperty}"/> of this object's properties.
+    /// </summary>
+    /// <returns>An <see cref="IEnumerable{JProperty}"/> of this object's properties.</returns>
     public IEnumerable<JProperty> Properties()
     {
       return Children().Cast<JProperty>();
     }
 
+    /// <summary>
+    /// Gets a <see cref="JProperty"/> the specified name.
+    /// </summary>
+    /// <param name="name">The property name.</param>
+    /// <returns>A <see cref="JProperty"/> with the specified name or null.</returns>
     public JProperty Property(string name)
     {
       return Properties()
@@ -100,21 +121,19 @@ namespace Newtonsoft.Json.Linq
         .SingleOrDefault();
     }
 
+    /// <summary>
+    /// Gets an <see cref="JEnumerable{JToken}"/> of this object's property values.
+    /// </summary>
+    /// <returns>An <see cref="JEnumerable{JToken}"/> of this object's property values.</returns>
     public JEnumerable<JToken> PropertyValues()
     {
       return new JEnumerable<JToken>(Properties().Select(p => p.Value));
     }
 
-    //public override void Add(object content)
-    //{
-    //  ValidationUtils.ArgumentNotNull(content, "content");
-
-    //  if (!(content is JProperty) && !IsMultiContent(content))
-    //    throw new ArgumentException("Error adding {0} to JObject. JObject only supports JProperty content.".FormatWith(CultureInfo.InvariantCulture, content.GetType().Name));
-
-    //  base.Add(content);
-    //}
-
+    /// <summary>
+    /// Gets the <see cref="JToken"/> with the specified key.
+    /// </summary>
+    /// <value>The <see cref="JToken"/> with the specified key.</value>
     public override JToken this[object key]
     {
       get
@@ -131,6 +150,11 @@ namespace Newtonsoft.Json.Linq
       }
     }
 
+    /// <summary>
+    /// Loads an <see cref="JObject"/> from a <see cref="JsonReader"/>. 
+    /// </summary>
+    /// <param name="reader">A <see cref="JsonReader"/> that will be read for the content of the <see cref="JObject"/>.</param>
+    /// <returns>A <see cref="JObject"/> that contains the XML that was read from the specified <see cref="JsonReader"/>.</returns>
     public static JObject Load(JsonReader reader)
     {
       ValidationUtils.ArgumentNotNull(reader, "reader");
@@ -156,6 +180,11 @@ namespace Newtonsoft.Json.Linq
       return o;
     }
 
+    /// <summary>
+    /// Load a <see cref="JObject"/> from a string that contains JSON.
+    /// </summary>
+    /// <param name="json">A <see cref="String"/> that contains JSON.</param>
+    /// <returns>A <see cref="JObject"/> populated from the string that contains JSON.</returns>
     public static JObject Parse(string json)
     {
       JsonReader jsonReader = new JsonTextReader(new StringReader(json));
@@ -163,6 +192,11 @@ namespace Newtonsoft.Json.Linq
       return Load(jsonReader);
     }
 
+    /// <summary>
+    /// Creates a <see cref="JObject"/> from an object.
+    /// </summary>
+    /// <param name="o">The object that will be used to create <see cref="JObject"/>.</param>
+    /// <returns>A <see cref="JObject"/> with the values of the specified object</returns>
     public static JObject FromObject(object o)
     {
       JToken token = FromObjectInternal(o);
@@ -181,6 +215,11 @@ namespace Newtonsoft.Json.Linq
         throw new ArgumentException("An item of type {0} cannot be added to content.".FormatWith(CultureInfo.InvariantCulture, o.Type));
     }
 
+    /// <summary>
+    /// Writes this token to a <see cref="JsonWriter"/>.
+    /// </summary>
+    /// <param name="writer">A <see cref="JsonWriter"/> into which this method will write.</param>
+    /// <param name="converters">A collection of <see cref="JsonConverter"/> which will be used when writing the token.</param>
     public override void WriteTo(JsonWriter writer, params JsonConverter[] converters)
     {
       writer.WriteStartObject();

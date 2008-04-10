@@ -39,20 +39,62 @@ namespace Newtonsoft.Json
   /// </summary>
   public abstract class JsonReader : IDisposable
   {
+    /// <summary>
+    /// Specifies the state of the reader.
+    /// </summary>
     protected enum State
     {
+      /// <summary>
+      /// The Read method has not been called.
+      /// </summary>
       Start,
+      /// <summary>
+      /// The end of the file has been reached successfully.
+      /// </summary>
       Complete,
+      /// <summary>
+      /// Reader is at a property.
+      /// </summary>
       Property,
+      /// <summary>
+      /// Reader is at the start of an object.
+      /// </summary>
       ObjectStart,
+      /// <summary>
+      /// Reader is in an object.
+      /// </summary>
       Object,
+      /// <summary>
+      /// Reader is at the start of an array.
+      /// </summary>
       ArrayStart,
+      /// <summary>
+      /// Reader is in an array.
+      /// </summary>
       Array,
+      /// <summary>
+      /// The Close method has been called.
+      /// </summary>
       Closed,
+      /// <summary>
+      /// Reader has just read a value.
+      /// </summary>
       PostValue,
+      /// <summary>
+      /// Reader is at the start of a constructor.
+      /// </summary>
       ConstructorStart,
+      /// <summary>
+      /// Reader in a constructor.
+      /// </summary>
       Constructor,
+      /// <summary>
+      /// An error occurred that prevents the read operation from continuing.
+      /// </summary>
       Error,
+      /// <summary>
+      /// The end of the file has been reached successfully.
+      /// </summary>
       Finished
     }
 
@@ -63,6 +105,10 @@ namespace Newtonsoft.Json
     private char _quoteChar;
     private State _currentState;
 
+    /// <summary>
+    /// Gets the current reader state.
+    /// </summary>
+    /// <value>The current reader state.</value>
     protected State CurrentState
     {
       get { return _currentState; }
@@ -106,6 +152,10 @@ namespace Newtonsoft.Json
       get { return _valueType; }
     }
 
+    /// <summary>
+    /// Gets the depth of the current token in the JSON document.
+    /// </summary>
+    /// <value>The depth of the current token in the JSON document.</value>
     public int Depth
     {
       get
@@ -156,6 +206,9 @@ namespace Newtonsoft.Json
     /// <returns></returns>
     public abstract bool Read();
 
+    /// <summary>
+    /// Skips the children of the current token.
+    /// </summary>
     public void Skip()
     {
       if (IsStartToken(TokenType))
@@ -168,11 +221,20 @@ namespace Newtonsoft.Json
       }
     }
 
+    /// <summary>
+    /// Sets the current token.
+    /// </summary>
+    /// <param name="newToken">The new token.</param>
     protected void SetToken(JsonToken newToken)
     {
       SetToken(newToken, null);
     }
 
+    /// <summary>
+    /// Sets the current token and value.
+    /// </summary>
+    /// <param name="newToken">The new token.</param>
+    /// <param name="value">The value.</param>
     protected virtual void SetToken(JsonToken newToken, object value)
     {
       _token = newToken;
@@ -242,6 +304,9 @@ namespace Newtonsoft.Json
         throw new JsonReaderException("JsonToken {0} is not valid for closing JsonType {1}.".FormatWith(CultureInfo.InvariantCulture, endToken, currentObject));
     }
 
+    /// <summary>
+    /// Sets the state based on current token type.
+    /// </summary>
     protected void SetStateBasedOnCurrent()
     {
       JsonTokenType currentObject = Peek();
@@ -315,6 +380,10 @@ namespace Newtonsoft.Json
       Dispose(true);
     }
 
+    /// <summary>
+    /// Releases unmanaged and - optionally - managed resources
+    /// </summary>
+    /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
     protected virtual void Dispose(bool disposing)
     {
       if (_currentState != State.Closed && disposing)

@@ -32,10 +32,17 @@ using System.Globalization;
 
 namespace Newtonsoft.Json.Linq
 {
+  /// <summary>
+  /// Represents a JSON constructor.
+  /// </summary>
   public class JConstructor : JContainer
   {
     private string _name;
 
+    /// <summary>
+    /// Gets or sets the name of this constructor.
+    /// </summary>
+    /// <value>The constructor name.</value>
     public string Name
     {
       get { return _name; }
@@ -51,27 +58,48 @@ namespace Newtonsoft.Json.Linq
       get { return JsonTokenType.Constructor; }
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JConstructor"/> class.
+    /// </summary>
     public JConstructor()
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JConstructor"/> class from another <see cref="JConstructor"/> object.
+    /// </summary>
+    /// <param name="other">A <see cref="JConstructor"/> object to copy from.</param>
     public JConstructor(JConstructor other)
       : base(other)
     {
       _name = other.Name;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JConstructor"/> class with the specified name and content.
+    /// </summary>
+    /// <param name="name">The constructor name.</param>
+    /// <param name="content">The contents of the constructor.</param>
     public JConstructor(string name, params object[] content)
       : this(name, (object)content)
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JConstructor"/> class with the specified name and content.
+    /// </summary>
+    /// <param name="name">The constructor name.</param>
+    /// <param name="content">The contents of the constructor.</param>
     public JConstructor(string name, object content)
       : this(name)
     {
       Add(content);
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JConstructor"/> class with the specified name.
+    /// </summary>
+    /// <param name="name">The constructor name.</param>
     public JConstructor(string name)
     {
       _name = name;
@@ -116,6 +144,10 @@ namespace Newtonsoft.Json.Linq
       writer.WriteEndConstructor();
     }
 
+    /// <summary>
+    /// Gets the <see cref="JToken"/> with the specified key.
+    /// </summary>
+    /// <value>The <see cref="JToken"/> with the specified key.</value>
     public override JToken this[object key]
     {
       get

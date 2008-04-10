@@ -6,12 +6,19 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Linq
 {
+  /// <summary>
+  /// Represents a reader that provides fast, non-cached, forward-only access to serialized Json data.
+  /// </summary>
   public class JsonTokenReader : JsonReader
   {
     private JToken _root;
     private JToken _parent;
     private JToken _current;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonTokenReader"/> class.
+    /// </summary>
+    /// <param name="token">The token to read from.</param>
     public JsonTokenReader(JToken token)
     {
       ValidationUtils.ArgumentNotNull(token, "token");
@@ -20,6 +27,10 @@ namespace Newtonsoft.Json.Linq
       _current = token;
     }
 
+    /// <summary>
+    /// Reads the next Json token from the stream.
+    /// </summary>
+    /// <returns></returns>
     public override bool Read()
     {
       if (CurrentState != State.Start)

@@ -145,6 +145,10 @@ namespace Newtonsoft.Json
       _writer.Write("[");
     }
 
+    /// <summary>
+    /// Writes the start of a constructor with the given name.
+    /// </summary>
+    /// <param name="name">The name of the constructor.</param>
     public override void WriteStartConstructor(string name)
     {
       base.WriteStartConstructor(name);
@@ -154,6 +158,10 @@ namespace Newtonsoft.Json
       _writer.Write("(");
     }
 
+    /// <summary>
+    /// Writes the specified end token.
+    /// </summary>
+    /// <param name="token">The end token to write.</param>
     protected override void WriteEnd(JsonToken token)
     {
       switch (token)
@@ -191,6 +199,9 @@ namespace Newtonsoft.Json
       _writer.Write(':');
     }
 
+    /// <summary>
+    /// Writes indent characters.
+    /// </summary>
     protected override void WriteIndent()
     {
       if (Formatting == Formatting.Indented)
@@ -208,11 +219,17 @@ namespace Newtonsoft.Json
       }
     }
 
+    /// <summary>
+    /// Writes the JSON value delimiter.
+    /// </summary>
     protected override void WriteValueDelimiter()
     {
       _writer.Write(',');
     }
 
+    /// <summary>
+    /// Writes an indent space.
+    /// </summary>
     protected override void WriteIndentSpace()
     {
       _writer.Write(' ');

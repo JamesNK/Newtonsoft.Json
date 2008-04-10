@@ -32,55 +32,87 @@ using System.Globalization;
 
 namespace Newtonsoft.Json.Linq
 {
+  /// <summary>
+  /// Represents a value in JSON (string, integer, date, etc).
+  /// </summary>
   public class JValue : JToken
   {
     private JsonTokenType _valueType;
     private object _value;
 
-    public static readonly JValue Null = new JValue(null, JsonTokenType.Null);
-    public static readonly JValue Undefined = new JValue(null, JsonTokenType.Undefined);
-
-    private JValue(object value, JsonTokenType type)
+    internal JValue(object value, JsonTokenType type)
     {
       _value = value;
       _valueType = type;
     }
 
-    public JValue(JValue value)
-      : this(value.Value, value.Type)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JValue"/> class from another <see cref="JValue"/> object.
+    /// </summary>
+    /// <param name="other">A <see cref="JValue"/> object to copy from.</param>
+    public JValue(JValue other)
+      : this(other.Value, other.Type)
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JValue"/> class with the given value.
+    /// </summary>
+    /// <param name="value">The value.</param>
     public JValue(long value)
       : this(value, JsonTokenType.Integer)
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JValue"/> class with the given value.
+    /// </summary>
+    /// <param name="value">The value.</param>
     public JValue(ulong value)
       : this(value, JsonTokenType.Integer)
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JValue"/> class with the given value.
+    /// </summary>
+    /// <param name="value">The value.</param>
     public JValue(double value)
       : this(value, JsonTokenType.Float)
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JValue"/> class with the given value.
+    /// </summary>
+    /// <param name="value">The value.</param>
     public JValue(DateTime value)
       : this(value, JsonTokenType.Date)
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JValue"/> class with the given value.
+    /// </summary>
+    /// <param name="value">The value.</param>
     public JValue(bool value)
       : this(value, JsonTokenType.Boolean)
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JValue"/> class with the given value.
+    /// </summary>
+    /// <param name="value">The value.</param>
     public JValue(string value)
       : this(value, JsonTokenType.String)
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JValue"/> class with the given value.
+    /// </summary>
+    /// <param name="value">The value.</param>
     public JValue(object value)
       : this(value, GetValueType(null, value))
     {
@@ -95,12 +127,18 @@ namespace Newtonsoft.Json.Linq
       return (this == other || (_valueType == other.Type && Compare(_value, other.Value)));
     }
 
+    /// <summary>
+    /// Gets a value indicating whether this token has childen tokens.
+    /// </summary>
+    /// <value>
+    /// 	<c>true</c> if this token has child values; otherwise, <c>false</c>.
+    /// </value>
     public override bool HasValues
     {
       get { return false; }
     }
 
-    public bool Compare(object objA, object objB)
+    private bool Compare(object objA, object objB)
     {
       if (objA == null && objB == null)
         return true;
@@ -130,9 +168,24 @@ namespace Newtonsoft.Json.Linq
       return new JValue(this);
     }
 
+    /// <summary>
+    /// Creates a <see cref="JValue"/> comment with the given value.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns></returns>
     public static JValue CreateComment(string value)
     {
       return new JValue(value, JsonTokenType.Comment);
+    }
+
+    /// <summary>
+    /// Creates a <see cref="JValue"/> string with the given value.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns></returns>
+    public static JValue CreateString(string value)
+    {
+      return new JValue(value, JsonTokenType.String);
     }
 
     private static JsonTokenType GetValueType(JsonTokenType? current, object value)
@@ -154,11 +207,19 @@ namespace Newtonsoft.Json.Linq
       throw new ArgumentException("Could not determin JSON object type for type {0}.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
     }
 
+    /// <summary>
+    /// Gets the node type for this <see cref="JToken"/>.
+    /// </summary>
+    /// <value>The type.</value>
     public override JsonTokenType Type
     {
       get { return _valueType; }
     }
 
+    /// <summary>
+    /// Gets or sets the underlying token value.
+    /// </summary>
+    /// <value>The underlying token value.</value>
     public object Value
     {
       get { return _value; }
@@ -174,11 +235,6 @@ namespace Newtonsoft.Json.Linq
       }
     }
 
-    public static JValue CreateString(string value)
-    {
-      return new JValue(value, JsonTokenType.String);
-    }
-
     private static void WriteConvertableValue(JsonWriter writer, IList<JsonConverter> converters, Action<object> _defaultWrite, object value)
     {
       JsonConverter matchingConverter;
@@ -190,6 +246,11 @@ namespace Newtonsoft.Json.Linq
         _defaultWrite(value);
     }
 
+    /// <summary>
+    /// Writes this token to a <see cref="JsonWriter"/>.
+    /// </summary>
+    /// <param name="writer">A <see cref="JsonWriter"/> into which this method will write.</param>
+    /// <param name="converters">A collection of <see cref="JsonConverter"/> which will be used when writing the token.</param>
     public override void WriteTo(JsonWriter writer, params JsonConverter[] converters)
     {
       switch (_valueType)

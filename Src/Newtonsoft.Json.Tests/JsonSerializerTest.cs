@@ -191,6 +191,19 @@ namespace Newtonsoft.Json.Tests
     }
   }
 
+  [JsonObject(MemberSerialization.OptIn)]
+  public class Person
+  {
+    [JsonProperty]
+    public string Name { get; set; }
+
+    [JsonProperty]
+    public DateTime BirthDate { get; set; }
+
+    // not serialized
+    public string Department { get; set; }
+  }
+
   public class JsonSerializerTest : TestFixtureBase
   {
     [Test]

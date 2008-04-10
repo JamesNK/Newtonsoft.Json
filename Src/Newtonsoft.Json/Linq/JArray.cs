@@ -33,27 +33,49 @@ using System.Globalization;
 
 namespace Newtonsoft.Json.Linq
 {
+  /// <summary>
+  /// Represents a JSON array.
+  /// </summary>
   public class JArray : JContainer
   {
+    /// <summary>
+    /// Gets the node type for this <see cref="JToken"/>.
+    /// </summary>
+    /// <value>The type.</value>
     public override JsonTokenType Type
     {
       get { return JsonTokenType.Array; }
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JArray"/> class.
+    /// </summary>
     public JArray()
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JArray"/> class from another <see cref="JArray"/> object.
+    /// </summary>
+    /// <param name="other">A <see cref="JArray"/> object to copy from.</param>
     public JArray(JArray other)
       : base(other)
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JArray"/> class with the specified content.
+    /// </summary>
+    /// <param name="content">The contents of the array.</param>
     public JArray(params object[] content)
       : this((object)content)
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JArray"/> class with the specified content.
+    /// </summary>
+    /// <param name="content">The contents of the array.</param>
     public JArray(object content)
     {
       Add(content);
@@ -70,11 +92,20 @@ namespace Newtonsoft.Json.Linq
       return new JArray(this);
     }
 
+    /// <summary>
+    /// Returns a count of this token's child tokens.
+    /// </summary>
+    /// <returns></returns>
     public int Count()
     {
       return Children().Count();
     }
 
+    /// <summary>
+    /// Loads an <see cref="JArray"/> from a <see cref="JsonReader"/>. 
+    /// </summary>
+    /// <param name="reader">A <see cref="JsonReader"/> that will be read for the content of the <see cref="JArray"/>.</param>
+    /// <returns>A <see cref="JArray"/> that contains the XML that was read from the specified <see cref="JsonReader"/>.</returns>
     public static JArray Load(JsonReader reader)
     {
       if (reader.TokenType == JsonToken.None)
@@ -98,6 +129,11 @@ namespace Newtonsoft.Json.Linq
       return a;
     }
 
+    /// <summary>
+    /// Load a <see cref="JArray"/> from a string that contains JSON.
+    /// </summary>
+    /// <param name="json">A <see cref="String"/> that contains JSON.</param>
+    /// <returns>A <see cref="JArray"/> populated from the string that contains JSON.</returns>
     public static JArray Parse(string json)
     {
       JsonReader jsonReader = new JsonTextReader(new StringReader(json));
@@ -113,6 +149,11 @@ namespace Newtonsoft.Json.Linq
         throw new ArgumentException("An item of type {0} cannot be added to content.".FormatWith(CultureInfo.InvariantCulture, o.Type));
     }
 
+    /// <summary>
+    /// Creates a <see cref="JArray"/> from an object.
+    /// </summary>
+    /// <param name="o">The object that will be used to create <see cref="JArray"/>.</param>
+    /// <returns>A <see cref="JArray"/> with the values of the specified object</returns>
     public static JArray FromObject(object o)
     {
       JToken token = FromObjectInternal(o);
@@ -123,6 +164,11 @@ namespace Newtonsoft.Json.Linq
       return (JArray)token;
     }
 
+    /// <summary>
+    /// Writes this token to a <see cref="JsonWriter"/>.
+    /// </summary>
+    /// <param name="writer">A <see cref="JsonWriter"/> into which this method will write.</param>
+    /// <param name="converters">A collection of <see cref="JsonConverter"/> which will be used when writing the token.</param>
     public override void WriteTo(JsonWriter writer, params JsonConverter[] converters)
     {
       writer.WriteStartArray();
@@ -135,6 +181,10 @@ namespace Newtonsoft.Json.Linq
       writer.WriteEndArray();
     }
 
+    /// <summary>
+    /// Gets the <see cref="JToken"/> with the specified key.
+    /// </summary>
+    /// <value>The <see cref="JToken"/> with the specified key.</value>
     public override JToken this[object key]
     {
       get

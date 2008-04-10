@@ -37,15 +37,26 @@ using System.ComponentModel;
 
 namespace Newtonsoft.Json
 {
+  /// <summary>
+  /// 
+  /// </summary>
   public class Identifier
   {
     private string _name;
 
+    /// <summary>
+    /// Gets the name.
+    /// </summary>
+    /// <value>The name.</value>
     public string Name
     {
       get { return _name; }
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Identifier"/> class.
+    /// </summary>
+    /// <param name="name">The name.</param>
     public Identifier(string name)
     {
       _name = name;
@@ -56,6 +67,14 @@ namespace Newtonsoft.Json
       return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
     }
 
+    /// <summary>
+    /// Determines whether the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>.
+    /// </summary>
+    /// <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:System.Object"/>.</param>
+    /// <returns>
+    /// true if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>; otherwise, false.
+    /// </returns>
+    /// <exception cref="T:System.NullReferenceException">The <paramref name="obj"/> parameter is null.</exception>
     public override bool Equals(object obj)
     {
       Identifier function = obj as Identifier;
@@ -63,11 +82,22 @@ namespace Newtonsoft.Json
       return Equals(function);
     }
 
+    /// <summary>
+    /// Equalses the specified function.
+    /// </summary>
+    /// <param name="function">The function.</param>
+    /// <returns></returns>
     public bool Equals(Identifier function)
     {
       return (_name == function.Name);
     }
 
+    /// <summary>
+    /// Equalses the specified a.
+    /// </summary>
+    /// <param name="a">A.</param>
+    /// <param name="b">The b.</param>
+    /// <returns></returns>
     public static bool Equals(Identifier a, Identifier b)
     {
       if (a == b)
@@ -79,21 +109,45 @@ namespace Newtonsoft.Json
       return false;
     }
 
+    /// <summary>
+    /// Serves as a hash function for a particular type.
+    /// </summary>
+    /// <returns>
+    /// A hash code for the current <see cref="T:System.Object"/>.
+    /// </returns>
     public override int GetHashCode()
     {
       return _name.GetHashCode();
     }
 
+    /// <summary>
+    /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+    /// </returns>
     public override string ToString()
     {
       return _name;
     }
 
+    /// <summary>
+    /// Implements the operator ==.
+    /// </summary>
+    /// <param name="a">A.</param>
+    /// <param name="b">The b.</param>
+    /// <returns>The result of the operator.</returns>
     public static bool operator ==(Identifier a, Identifier b)
     {
       return Identifier.Equals(a, b);
     }
 
+    /// <summary>
+    /// Implements the operator !=.
+    /// </summary>
+    /// <param name="a">A.</param>
+    /// <param name="b">The b.</param>
+    /// <returns>The result of the operator.</returns>
     public static bool operator !=(Identifier a, Identifier b)
     {
       return !Identifier.Equals(a, b);
