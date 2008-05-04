@@ -11,6 +11,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json", "Newtonso
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.Tests", "Newtonsoft.Json.Tests\Newtonsoft.Json.Tests.csproj", "{3E6E2335-B079-4B5B-A65A-9D586914BCBB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Doc", "Doc", "{8F9E13D9-4181-4BA6-8802-EB5B3EB9445A}"
+	ProjectSection(SolutionItems) = preProject
+		Doc\custom.css = Doc\custom.css
+		Doc\doc.shfb = Doc\doc.shfb
+		Doc\doc.sitemap = Doc\doc.sitemap
+		Doc\LINQtoJSON.html = Doc\LINQtoJSON.html
+		Doc\ReadingWritingJSON.html = Doc\ReadingWritingJSON.html
+		Doc\SerializingJSON.html = Doc\SerializingJSON.html
+		Doc\styles.css = Doc\styles.css
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

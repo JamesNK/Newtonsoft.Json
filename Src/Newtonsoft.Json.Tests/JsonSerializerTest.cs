@@ -38,6 +38,7 @@ using System.Net.Mail;
 using System.Web.Script.Serialization;
 using Newtonsoft.Json.Linq;
 using System.Linq;
+using Newtonsoft.Json.Converters;
 
 namespace Newtonsoft.Json.Tests
 {
@@ -231,7 +232,7 @@ namespace Newtonsoft.Json.Tests
       string output = JavaScriptConvert.SerializeObject(product);
       //{
       //  "Name": "Apple",
-      //  "Expiry": new Date(1230422400000),
+      //  "Expiry": "\/Date(1230375600000+1300)\/",
       //  "Price": 3.99,
       //  "Sizes": [
       //    "Small",
@@ -249,6 +250,24 @@ namespace Newtonsoft.Json.Tests
       Assert.AreEqual("Medium", deserializedProduct.Sizes[1]);
       Assert.AreEqual("Large", deserializedProduct.Sizes[2]);
     }
+
+    //[Test]
+    //public void Advanced()
+    //{
+    //  Product product = new Product();
+    //  product.Expiry = new DateTime(2008, 12, 28);
+
+    //  JsonSerializer serializer = new JsonSerializer();
+    //  serializer.Converters.Add(new JavaScriptDateTimeConverter());
+    //  serializer.NullValueHandling = NullValueHandling.Ignore;
+
+    //  using (StreamWriter sw = new StreamWriter(@"c:\json.txt"))
+    //  using (JsonWriter writer = new JsonTextWriter(sw))
+    //  {
+    //    serializer.Serialize(writer, product);
+    //    // {"Expiry":new Date(1230375600000),"Price":0}
+    //  }
+    //}
 
     [Test]
     public void JavaScriptConvertSerializer()

@@ -1,0 +1,87 @@
+<html>
+  
+  <head>
+    <title>LINQ to JSON</title>
+    <link href="styles.css" rel="stylesheet" type="text/css" />
+    <link href="custom.css" rel="stylesheet" type="text/css" />
+  </head>
+  
+  <body>
+    
+    <div id="control">
+      <span class="productTitle">Json.NET - Quick Starts & API Documentation</span><br />
+        <span class="topicTitle">LINQ to JSON</span></div>
+
+    <div id="content">
+      <span style="color: DarkGray"> </span>
+    
+	<p>To manually read and write JSON Json.NET provides the <a href="./html/T_Newtonsoft_Json_JsonReader.htm>JsonReader</a> and <a href="./html/T_Newtonsoft_Json_JsonWriter.htm">JsonWriter</a> classes.</p>
+
+<h3>JsonTextReader and JsonTextWriter</h3>
+<p><a href="./html/T_Newtonsoft_Json_JsonTextReader.htm">JsonTextReader</a> and <a href="./html/T_Newtonsoft_Json_JsonTextWriter.htm">JsonTextWriter</a> are used to read and write JSON text. The JsonTextWriter has a number of settings on it to control how JSON is formatted when it is written. These options include formatting, indention character, indent count and quote character.</p>
+
+<div class="overflowpanel"> <div class="code">
+
+<div style="font-family: Courier New; font-size: 10pt; color: black;">
+<pre style="margin: 0px;"><span style="color: #2b91af;">StringBuilder</span> sb = <span style="color: blue;">new</span> <span style="color: #2b91af;">StringBuilder</span>();</pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">StringWriter</span> sw = <span style="color: blue;">new</span> <span style="color: #2b91af;">StringWriter</span>(sb);</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: blue;">using</span> (<span style="color: #2b91af;">JsonWriter</span> jsonWriter = <span style="color: blue;">new</span> <span style="color: #2b91af;">JsonTextWriter</span>(sw))</pre>
+<pre style="margin: 0px;">{</pre>
+<pre style="margin: 0px;">&nbsp; jsonWriter.Formatting = <span style="color: #2b91af;">Formatting</span>.Indented;</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;">&nbsp; jsonWriter.WriteStartObject();</pre>
+<pre style="margin: 0px;">&nbsp; jsonWriter.WritePropertyName(<span style="color: #a31515;">"CPU"</span>);</pre>
+<pre style="margin: 0px;">&nbsp; jsonWriter.WriteValue(<span style="color: #a31515;">"Intel"</span>);</pre>
+<pre style="margin: 0px;">&nbsp; jsonWriter.WritePropertyName(<span style="color: #a31515;">"PSU"</span>);</pre>
+<pre style="margin: 0px;">&nbsp; jsonWriter.WriteValue(<span style="color: #a31515;">"500W"</span>);</pre>
+<pre style="margin: 0px;">&nbsp; jsonWriter.WritePropertyName(<span style="color: #a31515;">"Drives"</span>);</pre>
+<pre style="margin: 0px;">&nbsp; jsonWriter.WriteStartArray();</pre>
+<pre style="margin: 0px;">&nbsp; jsonWriter.WriteValue(<span style="color: #a31515;">"DVD read/writer"</span>);</pre>
+<pre style="margin: 0px;">&nbsp; jsonWriter.WriteComment(<span style="color: #a31515;">"(broken)"</span>);</pre>
+<pre style="margin: 0px;">&nbsp; jsonWriter.WriteValue(<span style="color: #a31515;">"500 gigabyte hard drive"</span>);</pre>
+<pre style="margin: 0px;">&nbsp; jsonWriter.WriteValue(<span style="color: #a31515;">"200 gigabype hard drive"</span>);</pre>
+<pre style="margin: 0px;">&nbsp; jsonWriter.WriteEnd();</pre>
+<pre style="margin: 0px;">&nbsp; jsonWriter.WriteEndObject();</pre>
+<pre style="margin: 0px;">}</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: green;">// {</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp;  "CPU": "Intel",</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp;  "PSU": "500W",</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp;  "Drives": [</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp;  "DVD read/writer"</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp;  /*(broken)*/,</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp;  "500 gigabyte hard drive",</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp;  "200 gigabype hard drive"</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp;  ]</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">// }</span></pre>
+</div>
+
+</div></div>
+
+<h3>JsonTokenReader and JsonTokenWriter</h3>
+<p><a href="./html/T_Newtonsoft_Json_JsonTokenReader.htm">JsonTokenReader</a> and <a href="./html/T_Newtonsoft_Json_JsonTokenWriter.htm">JsonTokenWriter</a> read and write LINQ to JSON objects. They are located in the <a href="./html/N_Newtonsoft_Json_Linq.htm">Newtonsoft.Json.Linq</a> namespace. These objects allow you to use LINQ to JSON objects with objects that read and write JSON such as the JsonSerializer. For example you can deserialize from a LINQ to JSON object into a regular .NET object and vice versa.</p>
+
+<div class="overflowpanel"> <div class="code">
+
+<div style="font-family: Courier New; font-size: 10pt; color: black;">
+<pre style="margin: 0px;"><span style="color: #2b91af;">JObject</span> o = <span style="color: blue;">new</span> <span style="color: #2b91af;">JObject</span>(</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">new</span> <span style="color: #2b91af;">JProperty</span>(<span style="color: #a31515;">"Name"</span>, <span style="color: #a31515;">"John Smith"</span>),</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">new</span> <span style="color: #2b91af;">JProperty</span>(<span style="color: #a31515;">"BirthDate"</span>, <span style="color: blue;">new</span> <span style="color: #2b91af;">DateTime</span>(1983, 3, 20))</pre>
+<pre style="margin: 0px;">&nbsp; );</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">JsonSerializer</span> serializer = <span style="color: blue;">new</span> <span style="color: #2b91af;">JsonSerializer</span>();</pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">Person</span> p = (<span style="color: #2b91af;">Person</span>)serializer.Deserialize(<span style="color: blue;">new</span> <span style="color: #2b91af;">JsonTokenReader</span>(o), <span style="color: blue;">typeof</span>(<span style="color: #2b91af;">Person</span>));</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: green;">// John Smith</span></pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">Console</span>.WriteLine(p.Name);</pre>
+</div>
+
+</div></div>
+
+      <div id="footer"></div>      
+    </div>
+
+  </body>
+
+</html>

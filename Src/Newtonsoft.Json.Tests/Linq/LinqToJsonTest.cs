@@ -38,15 +38,47 @@ namespace Newtonsoft.Json.Tests.Linq
   public class LinqToJsonTest : TestFixtureBase
   {
     [Test]
+    public void Manual()
+    {
+      JArray array = new JArray();
+      JValue text = new JValue("Manual text");
+      JValue date = new JValue(new DateTime(2000, 5, 23));
+
+      array.Add(text);
+      array.Add(date);
+
+      string json = array.ToString();
+      // [
+      //   "Manual text",
+      //   "\/Date(958996800000+1200)\/"
+      // ]
+    }
+
+    [Test]
+    public void LinqToJsonDeserialize()
+    {
+      JObject o = new JObject(
+        new JProperty("Name", "John Smith"),
+        new JProperty("BirthDate", new DateTime(1983, 3, 20))
+        );
+
+      JsonSerializer serializer = new JsonSerializer();
+      Person p = (Person)serializer.Deserialize(new JsonTokenReader(o), typeof(Person));
+
+      // John Smith
+      Console.WriteLine(p.Name);
+    }
+
+    [Test]
     public void ObjectParse()
     {
       string json = @"{
-  CPU: 'Intel',
-  Drives: [
-    'DVD read/writer',
-    ""500 gigabyte hard drive""
-  ]
-}";
+        CPU: 'Intel',
+        Drives: [
+          'DVD read/writer',
+          ""500 gigabyte hard drive""
+        ]
+      }";
 
       JObject o = JObject.Parse(json);
       IList<JProperty> properties = o.Properties().ToList();

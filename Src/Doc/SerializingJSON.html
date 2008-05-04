@@ -1,0 +1,144 @@
+<html>
+  
+  <head>
+    <title>Serializing and deserializing JSON</title>
+    <link href="styles.css" rel="stylesheet" type="text/css" />
+    <link href="custom.css" rel="stylesheet" type="text/css" />
+  </head>
+  
+  <body>
+    
+    <div id="control">
+      <span class="productTitle">Json.NET - Quick Starts & API Documentation</span><br />
+        <span class="topicTitle">Serializing and deserializing JSON</span></div>
+
+    <div id="content">
+      <span style="color: DarkGray"> </span>
+    
+	<p>The quickest method of converting between JSON text and a .NET object is using 
+        the <a href="./html/T_Newtonsoft_Json_JsonSerializer.htm">JsonSerializer</a>. The JsonSerializer converts .NET objects into their JSON 
+        equivalent and back again.</p>
+
+
+	<p>For simple scenarios the <a href="./html/Overload_Newtonsoft_Json_JavaScriptConvert_SerializeObject.htm">SerializeObject</a> and <a href="./html/Overload_Newtonsoft_Json_JavaScriptConvert_DeserializeObject.htm">DeserializeObject</a> methods on <a href="./html/T_Newtonsoft_Json_JavaScriptConvert.htm">JavaScriptConvert</a> provide an easy to use wrapper over 
+        JsonSerializer.</p>
+
+
+<div class="overflowpanel"> <div class="code">
+
+<div style="font-family: Courier New; font-size: 10pt; color: black;">
+<pre style="margin: 0px;"><span style="color: #2b91af;">Product</span> product = <span style="color: blue;">new</span> <span style="color: #2b91af;">Product</span>();</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;">product.Name = <span style="color: #a31515;">"Apple"</span>;</pre>
+<pre style="margin: 0px;">product.Expiry = <span style="color: blue;">new</span> <span style="color: #2b91af;">DateTime</span>(2008, 12, 28);</pre>
+<pre style="margin: 0px;">product.Price = 3.99M;</pre>
+<pre style="margin: 0px;">product.Sizes = <span style="color: blue;">new</span> <span style="color: blue;">string</span>[] { <span style="color: #a31515;">"Small"</span>, <span style="color: #a31515;">"Medium"</span>, <span style="color: #a31515;">"Large"</span> };</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: blue;">string</span> output = <span style="color: #2b91af;">JavaScriptConvert</span>.SerializeObject(product);</pre>
+<pre style="margin: 0px;"><span style="color: green;">//{</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; "Name": "Apple",</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; "Expiry": &quot;\/Date(1230375600000+1300)\/&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; "Price": 3.99,</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; "Sizes": [</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; "Small",</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; "Medium",</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; "Large"</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; ]</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//}</span></pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">Product</span> deserializedProduct = (<span style="color: #2b91af;">Product</span>)<span style="color: #2b91af;">JavaScriptConvert</span>.DeserializeObject(output, <span style="color: blue;">typeof</span>(<span style="color: #2b91af;">Product</span>));</pre>
+</div>
+
+</div></div>
+
+	<h3>JsonSerializer</h3>
+
+
+	<p>For more control over how an object is serialized the JsonSerializer can be used 
+        directly. The JsonSerializer has a number of properties to control its behaviour 
+        when serializing and deserializing.</p>
+
+<div class="overflowpanel"> <div class="code">
+
+<div style="font-family: Courier New; font-size: 10pt; color: black;">
+<pre style="margin: 0px;"><span style="color: #2b91af;">Product</span> product = <span style="color: blue;">new</span> <span style="color: #2b91af;">Product</span>();</pre>
+<pre style="margin: 0px;">product.Expiry = <span style="color: blue;">new</span> <span style="color: #2b91af;">DateTime</span>(2008, 12, 28);</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">JsonSerializer</span> serializer = <span style="color: blue;">new</span> <span style="color: #2b91af;">JsonSerializer</span>();</pre>
+<pre style="margin: 0px;">serializer.Converters.Add(<span style="color: blue;">new</span> <span style="color: #2b91af;">JavaScriptDateTimeConverter</span>());</pre>
+<pre style="margin: 0px;">serializer.NullValueHandling = <span style="color: #2b91af;">NullValueHandling</span>.Ignore;</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: blue;">using</span> (<span style="color: #2b91af;">StreamWriter</span> sw = <span style="color: blue;">new</span> <span style="color: #2b91af;">StreamWriter</span>(<span style="color: #a31515;">@"c:\json.txt"</span>))</pre>
+<pre style="margin: 0px;"><span style="color: blue;">using</span> (<span style="color: #2b91af;">JsonWriter</span> writer = <span style="color: blue;">new</span> <span style="color: #2b91af;">JsonTextWriter</span>(sw))</pre>
+<pre style="margin: 0px;">{</pre>
+<pre style="margin: 0px;">&nbsp; serializer.Serialize(writer, product);</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: green;">// {"Expiry":new Date(1230375600000),"Price":0}</span></pre>
+<pre style="margin: 0px;">}</pre>
+</div>
+
+</div></div>
+
+<h5>ReferenceLoopHandling</h5>
+<p>Controls how circular referencing objects are serialized. Error, ignore or 
+    serialize.</p>
+    <h5>MissingMemberHandling</h5>
+<p>Controls how missing members (e.g. JSON contains a property that isn&#39;t a member 
+    on the object) are handled during deserialization. Error or ignore.</p>
+    <h5>NullValueHandling</h5>
+<p>Controls how null values are handled during serialization and deserialization. 
+    Include or ignore.</p>
+    <h5>ObjectCreationHandling</h5>
+<p>Controls how objects are created during deserialization. Auto, reuse, replace.</p>
+    <h5>Converters</h5>
+<p>A collection of JsonConverters that will be used during serialization and 
+    deserialization.</p>
+          <h3>Serialization Attributes</h3>
+          <p>There are a number of optional attributes that can be placed on a class to control how it is serialized.</p>
+          
+<div class="overflowpanel"> <div class="code">
+
+<div style="font-family: Courier New; font-size: 10pt; color: black;">
+<pre style="margin: 0px;">[<span style="color: #2b91af;">JsonObject</span>(<span style="color: #2b91af;">MemberSerialization</span>.OptIn)]</pre>
+<pre style="margin: 0px;"><span style="color: blue;">public</span> <span style="color: blue;">class</span> <span style="color: #2b91af;">Person</span></pre>
+<pre style="margin: 0px;">{</pre>
+<pre style="margin: 0px;">&nbsp; [<span style="color: #2b91af;">JsonProperty</span>]</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: blue;">string</span> Name { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;">&nbsp; [<span style="color: #2b91af;">JsonProperty</span>]</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: #2b91af;">DateTime</span> BirthDate { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: green;">// not serialized</span></pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: blue;">string</span> Department { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
+<pre style="margin: 0px;">}</pre>
+</div>
+
+</div></div>
+
+    <h5>JsonObjectAttribute</h5>
+<p>The MemberSerialization flag on this attribute specifies whether member serialization is opt-in (a member must have the JsonPropertyAttribute to be serialized) or opt-out (everything is serialized by default but can be ignored with the JsonIgnoreAttribute).</p>
+    <h5>JsonPropertyAttribute</h5>
+<p>Allows the name of the serialized member to be customized. The attribute also indicates that a member should be serialized when member serialization is set to opt-in.</p>
+    <h5>JsonIgnoreAttribute</h5>
+<p>Excludes a field or property from serialization.</p>
+    <h3>JsonConverters</h3>
+<p>JsonConverters allows JSON to be manually be written during serialization and read during deserialization. This is useful for particularly complex JSON structures or for when you want to change how a type is serialized.</p>
+<p>To create your own custom converter inherit from the JsonConverter class. Json.NET also comes with a number of JsonConverters:</p>
+
+
+
+	<h5>IsoDateTimeConverter</h5>
+	<p>Converts a DateTime to and from the ISO 8601 date format (e.g. 2008-04-12T12:53Z).</p>
+
+	<h5>JavaScriptDateTimeConverter</h5>
+	<p>Converts a DateTime to and from a JavaScript date constructor (e.g. new Date(52231943)).</p>
+
+	<h5>XmlNodeConverter</h5>
+	<p>Converts an XmlNode to and from JSON. Note that to convert a JSON object it must have only a single property. This is required because properties are converted into nodes and XML can only have one root node.</p>
+
+    
+      <div id="footer"></div>      
+    </div>
+
+  </body>
+
+</html>

@@ -119,6 +119,17 @@ namespace Newtonsoft.Json.Tests
         jsonWriter.WriteEndObject();
       }
 
+      // {
+      //   "CPU": "Intel",
+      //   "PSU": "500W",
+      //   "Drives": [
+      //     "DVD read/writer"
+      //     /*(broken)*/,
+      //     "500 gigabyte hard drive",
+      //     "200 gigabype hard drive"
+      //   ]
+      // }
+
       string expected = @"{
   ""CPU"": ""Intel"",
   ""PSU"": ""500W"",

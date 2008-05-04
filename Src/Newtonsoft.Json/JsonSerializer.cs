@@ -68,7 +68,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Get or set how missing members are handled during deserialization.
+    /// Get or set how missing members (e.g. JSON contains a property that isn't a member on the object) are handled during deserialization.
     /// </summary>
     public MissingMemberHandling MissingMemberHandling
     {
@@ -83,7 +83,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Get or set how null values are handled.
+    /// Get or set how null values are handled during serialization and deserialization.
     /// </summary>
     public NullValueHandling NullValueHandling
     {
@@ -98,7 +98,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Gets or sets how objects are created.
+    /// Gets or sets how objects are created during deserialization.
     /// </summary>
     /// <value>The object creation handling.</value>
     public ObjectCreationHandling ObjectCreationHandling
@@ -513,10 +513,9 @@ namespace Newtonsoft.Json
         ConstructorInfo c = objectType.GetConstructors(BindingFlags.Public | BindingFlags.Instance).SingleOrDefault();
 
         if (c == null)
-          throw new Exception("sdsdf");
+          throw new JsonSerializationException("Could not find a public constructor for type {0}.".FormatWith(CultureInfo.InvariantCulture, objectType));
 
         IDictionary<ParameterInfo, object> constructorParameters = c.GetParameters().ToDictionary(p => p, p => (object)null);
-        //IList<object> constructorValues 
 
         bool exit = false;
         while (!exit && reader.Read())

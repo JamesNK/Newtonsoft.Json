@@ -34,7 +34,7 @@ using System.Linq;
 namespace Newtonsoft.Json.Converters
 {
   /// <summary>
-  /// Converts an XmlNode to and from JSON.
+  /// Converts an <see cref="XmlNode"/> to and from JSON.
   /// </summary>
   public class XmlNodeConverter : JsonConverter
   {

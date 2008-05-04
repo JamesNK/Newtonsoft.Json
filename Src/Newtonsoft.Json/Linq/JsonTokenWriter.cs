@@ -118,7 +118,7 @@ namespace Newtonsoft.Json.Linq
     /// <summary>
     /// Writes the property name of a name/value pair on a Json object.
     /// </summary>
-    /// <param name="name"></param>
+    /// <param name="name">The name of the property.</param>
     public override void WritePropertyName(string name)
     {
       base.WritePropertyName(name);

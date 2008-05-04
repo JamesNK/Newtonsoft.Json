@@ -172,7 +172,7 @@ namespace Newtonsoft.Json.Linq
     /// Creates a <see cref="JValue"/> comment with the given value.
     /// </summary>
     /// <param name="value">The value.</param>
-    /// <returns></returns>
+    /// <returns>A <see cref="JValue"/> comment with the given value.</returns>
     public static JValue CreateComment(string value)
     {
       return new JValue(value, JsonTokenType.Comment);
@@ -182,7 +182,7 @@ namespace Newtonsoft.Json.Linq
     /// Creates a <see cref="JValue"/> string with the given value.
     /// </summary>
     /// <param name="value">The value.</param>
-    /// <returns></returns>
+    /// <returns>A <see cref="JValue"/> string with the given value.</returns>
     public static JValue CreateString(string value)
     {
       return new JValue(value, JsonTokenType.String);

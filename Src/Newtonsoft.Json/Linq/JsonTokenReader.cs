@@ -30,7 +30,9 @@ namespace Newtonsoft.Json.Linq
     /// <summary>
     /// Reads the next Json token from the stream.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>
+    /// true if the next token was read successfully; false if there are no more tokens to read.
+    /// </returns>
     public override bool Read()
     {
       if (CurrentState != State.Start)

@@ -8,7 +8,7 @@ using Newtonsoft.Json.Utilities;
 namespace Newtonsoft.Json.Converters
 {
   /// <summary>
-  /// Converts text in the ISO 8601 date format to and from JSON.
+  /// Converts a <see cref="DateTime"/> to and from the ISO 8601 date format (e.g. 2008-04-12T12:53Z).
   /// </summary>
   public class IsoDateTimeConverter : JsonConverter
   {

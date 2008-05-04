@@ -95,7 +95,7 @@ namespace Newtonsoft.Json.Linq
     /// <summary>
     /// Returns a count of this token's child tokens.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>A count of this token's child tokens.</returns>
     public int Count()
     {
       return Children().Count();

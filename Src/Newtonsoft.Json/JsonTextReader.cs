@@ -262,7 +262,9 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Reads the next Json token from the stream.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>
+    /// true if the next token was read successfully; false if there are no more tokens to read.
+    /// </returns>
     public override bool Read()
     {
       while (true)
@@ -792,7 +794,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Changes the <see cref="P:State"/> to Closed. 
+    /// Changes the <see cref="P:CurrentState"/> to Closed. 
     /// </summary>
     public override void Close()
     {

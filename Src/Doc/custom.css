@@ -1,0 +1,19 @@
+div#content {
+	padding: 0 10px 10px 10px;
+}
+
+.overflowpanel
+{
+	width: 98%;
+	border: solid 1px #ccc;
+	overflow: auto;
+	overflow-y: hidden;
+	background-color: #fcfcfc;
+	margin-bottom: 1em;
+}
+
+.overflowpanel .code
+{
+	padding: 10px 4px 20px 10px;
+	display: block;
+}

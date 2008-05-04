@@ -1,0 +1,56 @@
+﻿<project schemaVersion="1.6.0.2">
+    <assemblies>
+        <assembly assemblyPath="D:\Newtonsoft\Projects\Json\trunk\Src\Newtonsoft.Json\bin\Release\Newtonsoft.Json.dll" xmlCommentsPath="D:\Newtonsoft\Projects\Json\trunk\Src\Newtonsoft.Json\bin\Release\Newtonsoft.Json.xml" commentsOnly="False" />
+    </assemblies>
+    <namespaceSummaries>
+        <namespaceSummaryItem name="" isDocumented="False" />
+        <namespaceSummaryItem name="Newtonsoft.Json" isDocumented="True">The &lt;b&gt;Newtonsoft.Json&lt;/b&gt; namespace provides classes that are used to implement the core services of the framework.</namespaceSummaryItem>
+        <namespaceSummaryItem name="Newtonsoft.Json.Converters" isDocumented="True">The &lt;b&gt;Newtonsoft.Json.Converters&lt;/b&gt; namespace provides classes that inherit from &lt;a href="T_Newtonsoft_Json_JsonConverter.htm"&gt;JsonConverter&lt;/a&gt;.</namespaceSummaryItem>
+        <namespaceSummaryItem name="Newtonsoft.Json.Linq" isDocumented="True">The &lt;b&gt;Newtonsoft.Json.Linq&lt;/b&gt; namespace provides classes that are used to implement LINQ to JSON.</namespaceSummaryItem>
+        <namespaceSummaryItem name="Newtonsoft.Json.Utilities" isDocumented="True" />
+    </namespaceSummaries>
+    <additionalContent>
+        <contentItem sourcePath=".\SerializingJSON.html" destPath="" excludeItems="False" />
+        <contentItem sourcePath=".\styles.css" destPath="" excludeItems="False" />
+        <contentItem sourcePath=".\custom.css" destPath="" excludeItems="False" />
+        <contentItem sourcePath=".\LINQtoJSON.html" destPath="" excludeItems="False" />
+        <contentItem sourcePath=".\ReadingWritingJSON.html" destPath="" excludeItems="False" />
+    </additionalContent>
+    <ProjectSummary />
+    <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, Namespace</MissingTags>
+    <VisibleItems>InheritedMembers, InheritedFrameworkMembers, Protected, SealedProtected</VisibleItems>
+    <HtmlHelp1xCompilerPath path="" />
+    <HtmlHelp2xCompilerPath path="" />
+    <OutputPath>.\Output\</OutputPath>
+    <SandcastlePath path="" />
+    <WorkingPath path="" />
+    <CleanIntermediates>True</CleanIntermediates>
+    <KeepLogFile>True</KeepLogFile>
+    <HelpFileFormat>Help1xAndWebsite</HelpFileFormat>
+    <PurgeDuplicateTopics>True</PurgeDuplicateTopics>
+    <CppCommentsFixup>False</CppCommentsFixup>
+    <FrameworkVersion>3.5</FrameworkVersion>
+    <BinaryTOC>True</BinaryTOC>
+    <IncludeFavorites>False</IncludeFavorites>
+    <Preliminary>False</Preliminary>
+    <RootNamespaceContainer>False</RootNamespaceContainer>
+    <RootNamespaceTitle />
+    <HelpTitle>Json.NET - Quick Starts &amp; API Documentation</HelpTitle>
+    <HtmlHelpName>Documentation</HtmlHelpName>
+    <Language>en-US</Language>
+    <CopyrightHref />
+    <CopyrightText />
+    <FeedbackEMailAddress />
+    <HeaderText />
+    <FooterText />
+    <ProjectLinkType>Local</ProjectLinkType>
+    <SdkLinkType>Msdn</SdkLinkType>
+    <SdkLinkTarget>Blank</SdkLinkTarget>
+    <PresentationStyle>Prototype</PresentationStyle>
+    <NamingMethod>MemberName</NamingMethod>
+    <SyntaxFilters>Standard</SyntaxFilters>
+    <ShowFeedbackControl>False</ShowFeedbackControl>
+    <ContentPlacement>AboveNamespaces</ContentPlacement>
+    <ContentSiteMap path=".\doc.sitemap" />
+    <TopicFileTransform path="" />
+</project>
