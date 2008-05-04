@@ -596,7 +596,8 @@ namespace Newtonsoft.Json
       object numberValue;
       JsonToken numberType;
 
-      if (number.IndexOf('.') == -1)
+      if (number.IndexOf(".", StringComparison.OrdinalIgnoreCase) == -1
+        && number.IndexOf("e", StringComparison.OrdinalIgnoreCase) == -1)
       {
         numberValue = Convert.ToInt64(_buffer.ToString(), CultureInfo.InvariantCulture);
         numberType = JsonToken.Integer;

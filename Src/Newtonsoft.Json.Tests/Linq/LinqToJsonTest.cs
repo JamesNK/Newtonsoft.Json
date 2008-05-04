@@ -38,6 +38,18 @@ namespace Newtonsoft.Json.Tests.Linq
   public class LinqToJsonTest : TestFixtureBase
   {
     [Test]
+    public void DoubleValue()
+    {
+      JArray j = JArray.Parse("[-1E+4,100.0e-2]");
+
+      double value = (double)j[0];
+      Assert.AreEqual(-10000d, value);
+
+      value = (double)j[1];
+      Assert.AreEqual(1d, value);
+    }
+
+    [Test]
     public void Manual()
     {
       JArray array = new JArray();
