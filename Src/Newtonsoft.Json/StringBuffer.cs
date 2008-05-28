@@ -75,7 +75,7 @@ namespace Newtonsoft.Json
 
     private void EnsureSize(int appendLength)
     {
-      char[] newBuffer = new char[_position + appendLength * 2];
+      char[] newBuffer = new char[(_position + appendLength) * 2];
 
       Array.Copy(_buffer, newBuffer, _position);
 
