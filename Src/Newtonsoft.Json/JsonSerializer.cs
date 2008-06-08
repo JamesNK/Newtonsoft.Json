@@ -290,27 +290,7 @@ namespace Newtonsoft.Json
       // attempt to convert value's type to target's type
       if (valueType != targetType)
       {
-        TypeConverter targetConverter = TypeDescriptor.GetConverter(targetType);
-
-        if (!targetConverter.CanConvertFrom(valueType))
-        {
-          if (targetConverter.CanConvertFrom(typeof(string)))
-          {
-            string valueString = TypeDescriptor.GetConverter(value).ConvertToInvariantString(value);
-
-            return targetConverter.ConvertFromInvariantString(valueString);
-          }
-
-          if (targetType == typeof(DateTimeOffset) && value is DateTime)
-            return new DateTimeOffset((DateTime)value);
-
-          if (!targetType.IsAssignableFrom(valueType))
-            throw new InvalidOperationException("Cannot convert object of type '{0}' to type '{1}'".FormatWith(CultureInfo.InvariantCulture, value.GetType(), targetType));
-
-          return value;
-        }
-
-        return targetConverter.ConvertFrom(null, CultureInfo.InvariantCulture, value);
+        return ConvertUtils.ConvertOrCast(value, CultureInfo.InvariantCulture, targetType);
       }
       else
       {
@@ -763,6 +743,7 @@ namespace Newtonsoft.Json
     {
       Type objectType = value.GetType();
 
+#if !SILVERLIGHT
       TypeConverter converter = TypeDescriptor.GetConverter(objectType);
 
       // use the objectType's TypeConverter if it has one and can convert to a string
@@ -774,6 +755,13 @@ namespace Newtonsoft.Json
           return;
         }
       }
+#else
+      if (value is Guid)
+      {
+        writer.WriteValue(value.ToString());
+        return;
+      }
+#endif
 
       writer.SerializeStack.Add(value);
 

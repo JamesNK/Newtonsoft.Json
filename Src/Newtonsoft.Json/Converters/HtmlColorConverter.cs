@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if !SILVERLIGHT
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -69,3 +70,4 @@ namespace Newtonsoft.Json.Converters
     }
   }
 }
+#endif

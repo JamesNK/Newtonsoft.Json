@@ -1,0 +1,225 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{DC3C6F3D-2CA1-4278-9B79-63770FB3EA2D}</ProjectGuid>
+    <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Newtonsoft.Json.Silverlight</RootNamespace>
+    <AssemblyName>Newtonsoft.Json.Silverlight</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <SilverlightApplication>false</SilverlightApplication>
+    <ValidateXaml>true</ValidateXaml>
+    <ThrowErrorsInValidation>false</ThrowErrorsInValidation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>Bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>Bin\Release</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Windows" />
+    <Reference Include="mscorlib" />
+    <Reference Include="system" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Windows.Browser" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Newtonsoft.Json\Converters\HtmlColorConverter.cs">
+      <Link>Converters\HtmlColorConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\Converters\IsoDateTimeConverter.cs">
+      <Link>Converters\IsoDateTimeConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\Converters\JavaScriptDateTimeConverter.cs">
+      <Link>Converters\JavaScriptDateTimeConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\Converters\JsonDateTimeSerializationMode.cs">
+      <Link>Converters\JsonDateTimeSerializationMode.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\Converters\XmlNodeConverter.cs">
+      <Link>Converters\XmlNodeConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\Identifier.cs">
+      <Link>Identifier.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\JavaScriptConvert.cs">
+      <Link>JavaScriptConvert.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\JsonConverter.cs">
+      <Link>JsonConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\JsonConverterCollection.cs">
+      <Link>JsonConverterCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\JsonHandler.cs">
+      <Link>JsonHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\JsonIgnoreAttribute.cs">
+      <Link>JsonIgnoreAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\JsonObjectAttribute.cs">
+      <Link>JsonObjectAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\JsonPropertyAttribute.cs">
+      <Link>JsonPropertyAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\JsonReader.cs">
+      <Link>JsonReader.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\JsonReaderException.cs">
+      <Link>JsonReaderException.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\JsonSerializationException.cs">
+      <Link>JsonSerializationException.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\JsonSerializer.cs">
+      <Link>JsonSerializer.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\JsonTextReader.cs">
+      <Link>JsonTextReader.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\JsonTextWriter.cs">
+      <Link>JsonTextWriter.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\JsonToken.cs">
+      <Link>JsonToken.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\JsonWriter.cs">
+      <Link>JsonWriter.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\JsonWriterException.cs">
+      <Link>JsonWriterException.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\Linq\Extensions.cs">
+      <Link>Linq\Extensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\Linq\JArray.cs">
+      <Link>Linq\JArray.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\Linq\JConstructor.cs">
+      <Link>Linq\JConstructor.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\Linq\JContainer.cs">
+      <Link>Linq\JContainer.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\Linq\JEnumerable.cs">
+      <Link>Linq\JEnumerable.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\Linq\JObject.cs">
+      <Link>Linq\JObject.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\Linq\JProperty.cs">
+      <Link>Linq\JProperty.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\Linq\JsonTokenReader.cs">
+      <Link>Linq\JsonTokenReader.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\Linq\JsonTokenType.cs">
+      <Link>Linq\JsonTokenType.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\Linq\JsonTokenWriter.cs">
+      <Link>Linq\JsonTokenWriter.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\Linq\JToken.cs">
+      <Link>Linq\JToken.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\Linq\JValue.cs">
+      <Link>Linq\JValue.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\MemberMapping.cs">
+      <Link>MemberMapping.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\MemberMappingCollection.cs">
+      <Link>MemberMappingCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\MemberSerialization.cs">
+      <Link>MemberSerialization.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\MissingMemberHandling.cs">
+      <Link>MissingMemberHandling.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\NullValueHandling.cs">
+      <Link>NullValueHandling.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\ObjectCreationHandling.cs">
+      <Link>ObjectCreationHandling.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\ReferenceLoopHandling.cs">
+      <Link>ReferenceLoopHandling.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\StringBuffer.cs">
+      <Link>StringBuffer.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\Utilities\CollectionUtils.cs">
+      <Link>Utilities\CollectionUtils.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\Utilities\ConvertUtils.cs">
+      <Link>Utilities\ConvertUtils.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\Utilities\DateTimeUtils.cs">
+      <Link>Utilities\DateTimeUtils.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\Utilities\DictionaryWrapper.cs">
+      <Link>Utilities\DictionaryWrapper.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\Utilities\JavaScriptUtils.cs">
+      <Link>Utilities\JavaScriptUtils.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\Utilities\ListWrapper.cs">
+      <Link>Utilities\ListWrapper.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\Utilities\MathUtils.cs">
+      <Link>Utilities\MathUtils.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\Utilities\MiscellaneousUtils.cs">
+      <Link>Utilities\MiscellaneousUtils.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\Utilities\ReflectionUtils.cs">
+      <Link>Utilities\ReflectionUtils.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\Utilities\StringUtils.cs">
+      <Link>Utilities\StringUtils.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json\Utilities\ValidationUtils.cs">
+      <Link>Utilities\ValidationUtils.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{A1591282-1198-4647-A2B1-27E5FF5F6F3B}">
+        <SilverlightProjectProperties />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

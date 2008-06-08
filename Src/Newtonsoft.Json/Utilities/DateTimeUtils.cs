@@ -27,7 +27,7 @@ namespace Newtonsoft.Json.Utilities
         case DateTimeKind.Utc:
           return XmlDateTimeSerializationMode.Utc;
         default:
-          throw new ArgumentOutOfRangeException("kind", kind, "Unexpected DateTimeKind value.");
+          throw MiscellaneousUtils.CreateArgumentOutOfRangeException("kind", kind, "Unexpected DateTimeKind value.");
       }
     }
   }

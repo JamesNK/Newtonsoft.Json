@@ -88,7 +88,7 @@ namespace Newtonsoft.Json.Linq
         case JsonTokenType.Property:
           return null;
         default:
-          throw new ArgumentOutOfRangeException("Type", c.Type, "Unexpected JContainer type.");
+          throw MiscellaneousUtils.CreateArgumentOutOfRangeException("Type", c.Type, "Unexpected JContainer type.");
       }
     }
 
@@ -165,7 +165,7 @@ namespace Newtonsoft.Json.Linq
           SetToken(JsonToken.Date, ((JValue)token).Value);
           break;
         default:
-          throw new ArgumentOutOfRangeException("Type", token.Type, "Unexpected JsonTokenType.");
+          throw MiscellaneousUtils.CreateArgumentOutOfRangeException("Type", token.Type, "Unexpected JsonTokenType.");
       }
     }
   }

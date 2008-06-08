@@ -36,7 +36,7 @@ namespace Newtonsoft.Json.Linq
   /// <summary>
   /// Represents a JSON object.
   /// </summary>
-  public class JObject : JContainer
+  public class JObject : JContainer, IDictionary<string, JToken>
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="JObject"/> class.
@@ -144,9 +144,27 @@ namespace Newtonsoft.Json.Linq
         if (propertyName == null)
           throw new ArgumentException("Accessed JObject values with invalid key value: {0}. Object property name expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
 
+        return this[propertyName];
+      }
+    }
+
+    public JToken this[string propertyName]
+    {
+      get
+      {
+        ValidationUtils.ArgumentNotNull(propertyName, "propertyName");
+
         JProperty property = Property(propertyName);
 
         return (property != null) ? property.Value : null;
+      }
+      set
+      {
+        JProperty property = Property(propertyName);
+        if (property != null)
+          property.Value = value;
+        else
+          Add(new JProperty(propertyName, value));
       }
     }
 
@@ -231,5 +249,114 @@ namespace Newtonsoft.Json.Linq
 
       writer.WriteEndObject();
     }
+
+    #region IDictionary<string,JToken> Members
+    public void Add(string propertyName, JToken value)
+    {
+      Add(new JProperty(propertyName, value));
+    }
+
+    bool IDictionary<string, JToken>.ContainsKey(string key)
+    {
+      return (Property(key) != null);
+    }
+
+    ICollection<string> IDictionary<string, JToken>.Keys
+    {
+      get { throw new NotImplementedException(); }
+    }
+
+    public bool Remove(string propertyName)
+    {
+      JProperty property = Property(propertyName);
+      if (property == null)
+        return false;
+
+      property.Remove();
+      return true;
+    }
+
+    public bool TryGetValue(string propertyName, out JToken value)
+    {
+      JProperty property = Property(propertyName);
+      if (property == null)
+      {
+        value = null;
+        return false;
+      }
+
+      value = property.Value;
+      return true;
+    }
+
+    ICollection<JToken> IDictionary<string, JToken>.Values
+    {
+      get { throw new NotImplementedException(); }
+    }
+
+    #endregion
+
+    #region ICollection<KeyValuePair<string,JToken>> Members
+
+    void ICollection<KeyValuePair<string,JToken>>.Add(KeyValuePair<string, JToken> item)
+    {
+      Add(new JProperty(item.Key, item.Value));
+    }
+
+    void ICollection<KeyValuePair<string, JToken>>.Clear()
+    {
+      RemoveAll();
+    }
+
+    bool ICollection<KeyValuePair<string,JToken>>.Contains(KeyValuePair<string, JToken> item)
+    {
+      JProperty property = Property(item.Key);
+      if (property == null)
+        return false;
+
+      return (property.Value == item.Value);
+    }
+
+    void ICollection<KeyValuePair<string,JToken>>.CopyTo(KeyValuePair<string, JToken>[] array, int arrayIndex)
+    {
+      int index = 0;
+      foreach (JProperty property in Properties())
+      {
+        array[arrayIndex + index] = new KeyValuePair<string, JToken>(property.Name, property.Value);
+      }
+    }
+
+    public int Count
+    {
+      get { return Children().Count(); }
+    }
+
+    bool ICollection<KeyValuePair<string,JToken>>.IsReadOnly
+    {
+      get { return false; }
+    }
+
+    bool ICollection<KeyValuePair<string,JToken>>.Remove(KeyValuePair<string, JToken> item)
+    {
+      if (!((ICollection<KeyValuePair<string,JToken>>)this).Contains(item))
+        return false;
+
+      ((IDictionary<string, JToken>)this).Remove(item.Key);
+      return true;
+    }
+
+    #endregion
+
+    #region IEnumerable<KeyValuePair<string,JToken>> Members
+
+    IEnumerator<KeyValuePair<string, JToken>> IEnumerable<KeyValuePair<string,JToken>>.GetEnumerator()
+    {
+      foreach (JProperty property in Properties())
+      {
+        yield return new KeyValuePair<string, JToken>(property.Name, property.Value);
+      }
+    }
+
+    #endregion
   }
 }

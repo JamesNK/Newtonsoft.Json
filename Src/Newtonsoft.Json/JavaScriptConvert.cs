@@ -26,14 +26,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Drawing;
-using System.Web.UI.WebControls;
 using System.Collections;
 using System.IO;
 using System.Globalization;
 using System.Runtime.Serialization;
 using System.Reflection;
-using System.Data.SqlTypes;
 using Newtonsoft.Json.Utilities;
 using System.Xml;
 using Newtonsoft.Json.Converters;
@@ -182,7 +179,7 @@ namespace Newtonsoft.Json
     /// <returns>A Json string representation of the <see cref="Enum"/>.</returns>
     public static string ToString(Enum value)
     {
-      return Enum.Format(value.GetType(), value, "D");
+      return value.ToString("D");
     }
 
     /// <summary>
@@ -515,6 +512,7 @@ namespace Newtonsoft.Json
       return deserializedValue;
     }
 
+#if !SILVERLIGHT
     /// <summary>
     /// Serializes the XML node to a JSON string.
     /// </summary>
@@ -538,5 +536,6 @@ namespace Newtonsoft.Json
 
       return (XmlDocument)DeserializeObject(value, typeof(XmlDocument), converter);
     }
+#endif
   }
 }

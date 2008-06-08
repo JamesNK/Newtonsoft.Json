@@ -34,11 +34,11 @@ namespace Newtonsoft.Json.Tests
   [TestFixture]
   public abstract class TestFixtureBase
   {
-    public string GetOffset(DateTime value)
-    {
-      TimeSpan utcOffset = TimeZone.CurrentTimeZone.GetUtcOffset(value.ToLocalTime());
+    //public string GetOffset(DateTime value)
+    //{
+    //  TimeSpan utcOffset = TimeZone.CurrentTimeZone.GetUtcOffset(value.ToLocalTime());
 
-      return utcOffset.Hours.ToString("+00;-00") + utcOffset.Minutes.ToString("00;00");
-    }
+    //  return utcOffset.Hours.ToString("+00;-00") + utcOffset.Minutes.ToString("00;00");
+    //}
   }
 }

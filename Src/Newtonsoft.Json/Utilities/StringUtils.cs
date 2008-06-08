@@ -25,7 +25,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -126,21 +125,6 @@ namespace Newtonsoft.Json.Utilities
       }
 
       return target + value;
-    }
-
-    /// <summary>
-    /// Determines whether the SqlString is null or empty.
-    /// </summary>
-    /// <param name="s">The string.</param>
-    /// <returns>
-    /// 	<c>true</c> if the SqlString is null or empty; otherwise, <c>false</c>.
-    /// </returns>
-    public static bool IsNullOrEmpty(SqlString s)
-    {
-      if (s.IsNull)
-        return true;
-      else
-        return string.IsNullOrEmpty(s.Value);
     }
 
     public static bool IsNullOrEmptyOrWhiteSpace(string s)
@@ -288,48 +272,6 @@ namespace Newtonsoft.Json.Utilities
       }
 
       return sb.ToString();
-    }
-
-    public static string RemoveHtml(string s)
-    {
-      return RemoveHtmlInternal(s, null);
-    }
-
-    public static string RemoveHtml(string s, IList<string> removeTags)
-    {
-      if (removeTags == null)
-        throw new ArgumentNullException("removeTags");
-
-      return RemoveHtmlInternal(s, removeTags);
-    }
-
-    private static string RemoveHtmlInternal(string s, IList<string> removeTags)
-    {
-      List<string> removeTagsUpper = null;
-
-      if (removeTags != null)
-      {
-        removeTagsUpper = new List<string>(removeTags.Count);
-
-        foreach (string tag in removeTags)
-        {
-          removeTagsUpper.Add(tag.ToUpperInvariant());
-        }
-      }
-
-      Regex anyTag = new Regex(@"<[/]{0,1}\s*(?<tag>\w*)\s*(?<attr>.*?=['""].*?[""'])*?\s*[/]{0,1}>", RegexOptions.Compiled);
-
-      return anyTag.Replace(s, delegate(Match match)
-      {
-        string tag = match.Groups["tag"].Value.ToUpperInvariant();
-
-        if (removeTagsUpper == null)
-          return string.Empty;
-        else if (removeTagsUpper.Contains(tag))
-          return string.Empty;
-        else
-          return match.Value;
-      });
     }
 
     public static string Truncate(string s, int maximumLength)

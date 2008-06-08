@@ -29,7 +29,6 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using Newtonsoft.Json.Linq;
-using System.Xml.Linq;
 
 namespace Newtonsoft.Json.Tests.Linq
 {
@@ -63,9 +62,6 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual((DateTime)((JValue)p.Value[1]).Value, (DateTime)((JValue)v[1]).Value);
 
       Assert.AreEqual(v, o["Test1"]);
-
-      XText t = new XText("XText");
-      Assert.AreEqual(null, t.Parent);
 
       Assert.AreEqual(null, o.Parent);
       JProperty o1 = new JProperty("O1", o);

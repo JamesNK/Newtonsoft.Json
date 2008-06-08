@@ -436,7 +436,7 @@ namespace Newtonsoft.Json.Utilities
       {
         // have to use an arraylist when creating array
         // there is no way to know the size until it is finised
-        list = new ArrayList();
+        list = new List<object>();
         isReadOnlyOrFixedSize = true;
       }
       else if (ReflectionUtils.IsSubClass(listType, typeof(ReadOnlyCollection<>), out collectionType))
@@ -494,12 +494,22 @@ namespace Newtonsoft.Json.Utilities
       if (isReadOnlyOrFixedSize)
       {
         if (listType.IsArray)
-          list = ((ArrayList)list).ToArray(ReflectionUtils.GetListItemType(listType));
+          list = ToArray(((List<object>)list).ToArray(), ReflectionUtils.GetListItemType(listType));
         else if (ReflectionUtils.IsSubClass(listType, typeof(ReadOnlyCollection<>)))
           list = (IList)Activator.CreateInstance(listType, list);
       }
 
       return list;
+    }
+
+    public static Array ToArray(Array initial, Type type)
+    {
+      if (type == null)
+        throw new ArgumentNullException("type");
+
+      Array destinationArray = Array.CreateInstance(type, initial.Length);
+      Array.Copy(initial, 0, destinationArray, 0, initial.Length);
+      return destinationArray;
     }
   }
 }

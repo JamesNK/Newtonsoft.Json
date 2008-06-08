@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if !SILVERLIGHT
 using System;
 using NUnit.Framework;
 using Newtonsoft.Json;
@@ -456,3 +457,4 @@ namespace Newtonsoft.Json.Tests.Converters
     }
   }
 }
+#endif

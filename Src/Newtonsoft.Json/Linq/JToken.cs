@@ -31,13 +31,14 @@ using System.IO;
 using Newtonsoft.Json.Utilities;
 using System.Diagnostics;
 using System.Globalization;
+using System.Collections;
 
 namespace Newtonsoft.Json.Linq
 {
   /// <summary>
   /// Represents an abstract JSON token.
   /// </summary>
-  public abstract class JToken
+  public abstract class JToken : IEnumerable<JToken>
   {
     private JContainer _parent;
     internal JToken _next;
@@ -694,5 +695,15 @@ namespace Newtonsoft.Json.Linq
       return Convert.ToUInt64(v.Value, CultureInfo.InvariantCulture);
     }
     #endregion
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+      return ((IEnumerable<JToken>)this).GetEnumerator();
+    }
+
+    IEnumerator<JToken> IEnumerable<JToken>.GetEnumerator()
+    {
+      return Children().GetEnumerator();
+    }
   }
 }

@@ -96,7 +96,7 @@ now brown cow?", '"', true);
     [ExpectedException(typeof(ArgumentException), ExpectedMessage = "Unsupported type: System.Version. Use the JsonSerializer class to get the object's JSON representation.")]
     public void ToStringInvalid()
     {
-      JavaScriptConvert.ToString(new Version());
+      JavaScriptConvert.ToString(new Version(1, 0));
     }
 
     [Test]

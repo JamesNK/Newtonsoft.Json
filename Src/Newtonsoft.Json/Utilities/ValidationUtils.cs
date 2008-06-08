@@ -101,37 +101,37 @@ namespace Newtonsoft.Json.Utilities
     public static void ArgumentNotNegative(int value, string parameterName)
     {
       if (value <= 0)
-        throw new ArgumentOutOfRangeException(parameterName, value, "Argument cannot be negative.");
+        throw MiscellaneousUtils.CreateArgumentOutOfRangeException(parameterName, value, "Argument cannot be negative.");
     }
 
     public static void ArgumentNotNegative(int value, string parameterName, string message)
     {
       if (value <= 0)
-        throw new ArgumentOutOfRangeException(parameterName, value, message);
+        throw MiscellaneousUtils.CreateArgumentOutOfRangeException(parameterName, value, message);
     }
 
     public static void ArgumentNotZero(int value, string parameterName)
     {
       if (value == 0)
-        throw new ArgumentOutOfRangeException(parameterName, value, "Argument cannot be zero.");
+        throw MiscellaneousUtils.CreateArgumentOutOfRangeException(parameterName, value, "Argument cannot be zero.");
     }
 
     public static void ArgumentNotZero(int value, string parameterName, string message)
     {
       if (value == 0)
-        throw new ArgumentOutOfRangeException(parameterName, value, message);
+        throw MiscellaneousUtils.CreateArgumentOutOfRangeException(parameterName, value, message);
     }
 
     public static void ArgumentIsPositive<T>(T value, string parameterName) where T : struct, IComparable<T>
     {
       if (value.CompareTo(default(T)) != 1)
-        throw new ArgumentOutOfRangeException(parameterName, value, "Positive number required.");
+        throw MiscellaneousUtils.CreateArgumentOutOfRangeException(parameterName, value, "Positive number required.");
     }
 
     public static void ArgumentIsPositive(int value, string parameterName, string message)
     {
       if (value > 0)
-        throw new ArgumentOutOfRangeException(parameterName, value, message);
+        throw MiscellaneousUtils.CreateArgumentOutOfRangeException(parameterName, value, message);
     }
 
     public static void ObjectNotDisposed(bool disposed, Type objectType)

@@ -12,6 +12,13 @@ namespace Newtonsoft.Json.Utilities
 
   internal static class MiscellaneousUtils
   {
+    public static ArgumentOutOfRangeException CreateArgumentOutOfRangeException(string paramName, object actualValue, string message)
+    {
+      string newMessage = message + Environment.NewLine + @"Actual value was {0}.".FormatWith(CultureInfo.InvariantCulture, actualValue);
+
+      return new ArgumentOutOfRangeException(paramName, newMessage);
+    }
+
     public static bool TryAction<T>(Creator<T> creator, out T output)
     {
       ValidationUtils.ArgumentNotNull(creator, "creator");

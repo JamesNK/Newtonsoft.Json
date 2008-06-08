@@ -364,7 +364,7 @@ namespace Newtonsoft.Json
             WriteValue((DateTime)reader.Value);
             break;
           default:
-            throw new ArgumentOutOfRangeException("TokenType", reader.TokenType, "Unexpected token type.");
+            throw MiscellaneousUtils.CreateArgumentOutOfRangeException("TokenType", reader.TokenType, "Unexpected token type.");
         }
       }
       while (reader.Read() && (currentDepth - 1 < reader.Depth || (currentDepth == reader.Depth && !IsEndToken(reader.TokenType))));

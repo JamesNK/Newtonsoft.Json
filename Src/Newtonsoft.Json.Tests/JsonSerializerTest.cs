@@ -33,12 +33,10 @@ using System.Collections;
 using System.Xml;
 using System.Xml.Serialization;
 using System.Collections.ObjectModel;
-using System.Runtime.Serialization.Json;
-using System.Net.Mail;
-using System.Web.Script.Serialization;
 using Newtonsoft.Json.Linq;
 using System.Linq;
 using Newtonsoft.Json.Converters;
+using System.Runtime.Serialization.Json;
 
 namespace Newtonsoft.Json.Tests
 {
@@ -216,6 +214,8 @@ namespace Newtonsoft.Json.Tests
 
       Store deserializedStore = (Store)JavaScriptConvert.DeserializeObject(jsonText, typeof(Store));
 
+      Assert.AreEqual(store.Establised, deserializedStore.Establised);
+
       Console.WriteLine(jsonText);
     }
 
@@ -327,6 +327,7 @@ namespace Newtonsoft.Json.Tests
       Assert.AreEqual(executorObject2.clientGetResultFunction, "ClientBanSubsCB");
     }
 
+#if !SILVERLIGHT
     [Test]
     public void HashtableDeserialization()
     {
@@ -355,6 +356,7 @@ namespace Newtonsoft.Json.Tests
   ""01/24/2010 12:00:00""
 ]", p.Hash["UntypedArray"].ToString());
     }
+#endif
 
     public class GetOnlyPropertyClass
     {
@@ -969,7 +971,7 @@ keyword such as type of business.""
     [Test]
     public void SerializeStack()
     {
-      Stack s = new Stack();
+      Stack<object> s = new Stack<object>();
       s.Push(1);
       s.Push(2);
       s.Push(3);

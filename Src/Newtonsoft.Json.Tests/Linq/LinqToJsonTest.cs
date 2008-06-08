@@ -447,7 +447,7 @@ keyword such as type of business.""
       //}
 
       var postTitles =
-        from p in rss["channel"]["item"].Children()
+        from p in rss["channel"]["item"]
         select p.Value<string>("title");
 
       foreach (var item in postTitles)

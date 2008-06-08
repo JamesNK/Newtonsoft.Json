@@ -29,7 +29,6 @@ using System.Text;
 using NUnit.Framework;
 using Newtonsoft.Json;
 using System.IO;
-using System.Runtime.Serialization.Json;
 
 namespace Newtonsoft.Json.Tests
 {

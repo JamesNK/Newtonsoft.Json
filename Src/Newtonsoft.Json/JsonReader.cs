@@ -353,7 +353,7 @@ namespace Newtonsoft.Json
         case JsonToken.Date:
           return false;
         default:
-          throw new ArgumentOutOfRangeException("token", token, "Unexpected JsonToken value.");
+          throw MiscellaneousUtils.CreateArgumentOutOfRangeException("token", token, "Unexpected JsonToken value.");
       }
     }
 

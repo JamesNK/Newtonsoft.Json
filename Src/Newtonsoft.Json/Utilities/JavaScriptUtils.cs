@@ -29,34 +29,12 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Web;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Web.UI;
-using System.Web.UI.WebControls;
 
 namespace Newtonsoft.Json.Utilities
 {
   internal static class JavaScriptUtils
   {
-    public static string GetCallbackEventFunction(Page page, Control control)
-    {
-      string script = page.ClientScript.GetCallbackEventReference(control, "eventArgument", "eventCallback", "context", "errorCallback", true);
-
-      script = "function(eventArgument,eventCallback,context,errorCallback){" + script + "}";
-
-      return script;
-    }
-
-    public static string GetCallbackEventFunction(Page page, Control control, string argument)
-    {
-      string script = page.ClientScript.GetCallbackEventReference(control, "'" + argument + "'", "eventCallback", "context", "errorCallback", true);
-
-      script = "function(eventCallback,context,errorCallback){" + script + "}";
-
-      return script;
-    }
-
     public static void WriteEscapedJavaScriptChar(TextWriter writer, char c, char delimiter)
     {
       switch (c)

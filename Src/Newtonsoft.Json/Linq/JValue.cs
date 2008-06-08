@@ -159,7 +159,7 @@ namespace Newtonsoft.Json.Linq
         case JsonTokenType.Date:
           return objA.Equals(objB);
         default:
-          throw new ArgumentOutOfRangeException("valueType", _valueType, "Unexpected value type: {0}".FormatWith(CultureInfo.InvariantCulture, _valueType));
+          throw MiscellaneousUtils.CreateArgumentOutOfRangeException("valueType", _valueType, "Unexpected value type: {0}".FormatWith(CultureInfo.InvariantCulture, _valueType));
       }
     }
 
@@ -286,7 +286,7 @@ namespace Newtonsoft.Json.Linq
           writer.WriteUndefined();
           break;
         default:
-          throw new ArgumentOutOfRangeException("TokenType", _valueType, "Unexpected token type.");
+          throw MiscellaneousUtils.CreateArgumentOutOfRangeException("TokenType", _valueType, "Unexpected token type.");
       }
     }
   }

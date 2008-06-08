@@ -36,7 +36,7 @@ namespace Newtonsoft.Json.Linq
   /// <summary>
   /// Represents a JSON array.
   /// </summary>
-  public class JArray : JContainer
+  public class JArray : JContainer, IList<JToken>
   {
     /// <summary>
     /// Gets the node type for this <see cref="JToken"/>.
@@ -90,15 +90,6 @@ namespace Newtonsoft.Json.Linq
     internal override JToken CloneNode()
     {
       return new JArray(this);
-    }
-
-    /// <summary>
-    /// Returns a count of this token's child tokens.
-    /// </summary>
-    /// <returns>A count of this token's child tokens.</returns>
-    public int Count()
-    {
-      return Children().Count();
     }
 
     /// <summary>
@@ -194,8 +185,108 @@ namespace Newtonsoft.Json.Linq
         if (!(key is int))
           throw new ArgumentException("Accessed JArray values with invalid key value: {0}. Array position index expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
 
-        return GetIndex(this, (int)key);
+        return this[(int)key];
       }
     }
+
+    public JToken this[int index]
+    {
+      get
+      {
+        return GetIndex(this, index);
+      }
+      set
+      {
+        JToken token = this[(object)index];
+        token.Replace(value);
+      }
+    }
+
+    #region IList<JToken> Members
+
+    public int IndexOf(JToken item)
+    {
+      int index = 0;
+      foreach (JToken token in Children())
+      {
+        if (token == item)
+          return index;
+
+        index++;
+      }
+
+      return -1;
+    }
+
+    public void Insert(int index, JToken item)
+    {
+      JToken token = GetIndex(this, index);
+      AddInternal(false, token.Previous, item);
+    }
+
+    public void RemoveAt(int index)
+    {
+      int currentIndex = 0;
+      foreach (JToken token in Children())
+      {
+        if (index == currentIndex)
+        {
+          token.Remove();
+          return;
+        }
+
+        currentIndex++;
+      }
+    }
+
+    #endregion
+
+    #region ICollection<JToken> Members
+
+    void ICollection<JToken>.Add(JToken item)
+    {
+      Add((object)item);
+    }
+
+    void ICollection<JToken>.Clear()
+    {
+      RemoveAll();
+    }
+
+    public bool Contains(JToken item)
+    {
+      return Children().Contains(item);
+    }
+
+    void ICollection<JToken>.CopyTo(JToken[] array, int arrayIndex)
+    {
+      int index = 0;
+      foreach (JToken token in Children())
+      {
+        array[arrayIndex + index] = token;
+        index++;
+      }
+    }
+
+    public int Count
+    {
+      get { return Children().Count(); }
+    }
+
+    bool ICollection<JToken>.IsReadOnly
+    {
+      get { return false; }
+    }
+
+    bool ICollection<JToken>.Remove(JToken item)
+    {
+      if (!((ICollection<JToken>)this).Contains(item))
+        return false;
+
+      item.Remove();
+      return true;
+    }
+
+    #endregion
   }
 }
