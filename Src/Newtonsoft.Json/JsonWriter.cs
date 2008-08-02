@@ -367,7 +367,10 @@ namespace Newtonsoft.Json
             throw MiscellaneousUtils.CreateArgumentOutOfRangeException("TokenType", reader.TokenType, "Unexpected token type.");
         }
       }
-      while (reader.Read() && (currentDepth - 1 < reader.Depth || (currentDepth == reader.Depth && !IsEndToken(reader.TokenType))));
+      while (
+        // stop if we have reached the end of the token being read
+        currentDepth - 1 < reader.Depth - (IsEndToken(reader.TokenType) ? 1 : 0)
+        && reader.Read());
     }
 
     private bool IsEndToken(JsonToken token)

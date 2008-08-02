@@ -495,6 +495,7 @@ namespace Newtonsoft.Json
         if (c == null)
           throw new JsonSerializationException("Could not find a public constructor for type {0}.".FormatWith(CultureInfo.InvariantCulture, objectType));
 
+        // create a dictionary to put retrieved values into
         IDictionary<ParameterInfo, object> constructorParameters = c.GetParameters().ToDictionary(p => p, p => (object)null);
 
         bool exit = false;
@@ -504,16 +505,15 @@ namespace Newtonsoft.Json
           {
             case JsonToken.PropertyName:
               string memberName = reader.Value.ToString();
-              ParameterInfo matchingConstructorParameter = constructorParameters
-                .Where(kv => kv.Key.Name == memberName)
-                .Select(kv => kv.Key)
-                .SingleOrDefault();
+              ParameterInfo matchingConstructorParameter = constructorParameters.ForgivingCaseSensitiveFind(kv => kv.Key.Name, memberName).Key;
 
               if (!reader.Read())
                 throw new JsonSerializationException("Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
 
               if (matchingConstructorParameter != null)
                 constructorParameters[matchingConstructorParameter] = CreateObject(reader, matchingConstructorParameter.ParameterType, null);
+              else
+                reader.Skip();
 
               break;
             case JsonToken.EndObject:

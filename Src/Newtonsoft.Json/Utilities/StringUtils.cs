@@ -348,5 +348,25 @@ namespace Newtonsoft.Json.Utilities
       writer.Write(h3);
       writer.Write(h4);
     }
+
+    public static TSource ForgivingCaseSensitiveFind<TSource>(this IEnumerable<TSource> source, Func<TSource, string> valueSelector, string testValue)
+    {
+      if (source == null)
+        throw new ArgumentNullException("source");
+      if (valueSelector == null)
+        throw new ArgumentNullException("valueSelector");
+
+      var caseInsensitiveResults = source.Where(s => string.Compare(valueSelector(s), testValue, StringComparison.OrdinalIgnoreCase) == 0);
+      if (caseInsensitiveResults.Count() <= 1)
+      {
+        return caseInsensitiveResults.SingleOrDefault();
+      }
+      else
+      {
+        // multiple results returned. now filter using case sensitivity
+        var caseSensitiveResults = source.Where(s => string.Compare(valueSelector(s), testValue, StringComparison.Ordinal) == 0);
+        return caseSensitiveResults.SingleOrDefault();
+      }
+    }
   }
 }

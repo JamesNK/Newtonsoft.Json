@@ -1014,5 +1014,88 @@ keyword such as type of business.""
       Assert.AreEqual(0, c.IgnoredField);
       Assert.AreEqual(99, c.Field);
     }
+
+#if !SILVERLIGHT
+    [Test]
+    public void SerializeArrayAsArrayList()
+    {
+      string jsonText = @"[3, ""somestring"",[1,2,3]]";
+      ArrayList o = JavaScriptConvert.DeserializeObject<ArrayList>(jsonText);
+
+      Assert.AreEqual(3, o.Count);
+      Assert.AreEqual(3, ((JArray)o[2]).Count);
+    }
+#endif
+
+    public class Name
+    {
+      public string personsName;
+
+      public List<PhoneNumber> pNumbers = new List<PhoneNumber>();
+
+      public Name(string personsName)
+      {
+        this.personsName = personsName;
+      }
+    }
+
+    public class PhoneNumber
+    {
+      public string phoneNumber;
+
+      public PhoneNumber(string phoneNumber)
+      {
+        this.phoneNumber = phoneNumber;
+      }
+    }
+    
+    [Test]
+    public void SerializeMemberGenericList()
+    {
+      Name name = new Name("The Idiot in Next To Me");
+
+      PhoneNumber p1 = new PhoneNumber("555-1212");
+      PhoneNumber p2 = new PhoneNumber("444-1212");
+
+      name.pNumbers.Add(p1);
+      name.pNumbers.Add(p2);
+
+      string json = JavaScriptConvert.SerializeObject(name);
+
+      Name newName = JavaScriptConvert.DeserializeObject<Name>(json);
+
+      Assert.AreEqual("The Idiot in Next To Me", newName.personsName);
+
+      // not passed in as part of the constructor, values not deserialized
+      Assert.AreEqual(0, newName.pNumbers.Count);
+    }
+
+    public class ConstructorCaseSensitivityClass
+    {
+      public string param1 { get; set; }
+      public string Param1 { get; set; }
+      public string Param2 { get; set; }
+
+      public ConstructorCaseSensitivityClass(string param1, string Param1, string param2)
+      {
+        this.param1 = param1;
+        this.Param1 = Param1;
+        this.Param2 = param2;
+      }
+    }
+
+    [Test]
+    public void ConstructorCaseSensitivity()
+    {
+      ConstructorCaseSensitivityClass c = new ConstructorCaseSensitivityClass("param1", "Param1", "Param2");
+
+      string json = JavaScriptConvert.SerializeObject(c);
+
+      ConstructorCaseSensitivityClass deserialized = JavaScriptConvert.DeserializeObject<ConstructorCaseSensitivityClass>(json);
+
+      Assert.AreEqual("param1", deserialized.param1);
+      Assert.AreEqual("Param1", deserialized.Param1);
+      Assert.AreEqual("Param2", deserialized.Param2);
+    }
   }
 }

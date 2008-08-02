@@ -1,0 +1,133 @@
+﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0D8C3C2E-62C6-4C93-9377-6F74DD6BFD93}</ProjectGuid>
+    <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Newtonsoft.Json.Tests.Silverlight</RootNamespace>
+    <AssemblyName>Newtonsoft.Json.Tests.Silverlight</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <SilverlightApplication>false</SilverlightApplication>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>ClientBin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>ClientBin\</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="nunit.framework, Version=2.4.7.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL" />
+    <Reference Include="System.Runtime.Serialization">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.ServiceModel.Web">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Windows">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="system">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Core">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Windows.Browser">
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Newtonsoft.Json.Tests\Converters\IsoDateTimeConverterTests.cs">
+      <Link>Converters\IsoDateTimeConverterTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json.Tests\Converters\JavaScriptDateTimeConverterTests.cs">
+      <Link>Converters\JavaScriptDateTimeConverterTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json.Tests\Converters\XmlNodeConverterTest.cs">
+      <Link>Converters\XmlNodeConverterTest.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json.Tests\DateTimeTestClass.cs">
+      <Link>DateTimeTestClass.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json.Tests\JavaScriptConvertTest.cs">
+      <Link>JavaScriptConvertTest.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json.Tests\JsonSerializerTest.cs">
+      <Link>JsonSerializerTest.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json.Tests\JsonTextReaderTest.cs">
+      <Link>JsonTextReaderTest.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json.Tests\JsonTextWriterTest.cs">
+      <Link>JsonTextWriterTest.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json.Tests\JsonTokenReaderTest.cs">
+      <Link>JsonTokenReaderTest.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json.Tests\JsonTokenWriterTest.cs">
+      <Link>JsonTokenWriterTest.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json.Tests\Linq\JTokenTests.cs">
+      <Link>Linq\JTokenTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json.Tests\Linq\JValueTests.cs">
+      <Link>Linq\JValueTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json.Tests\Linq\LinqToJsonTest.cs">
+      <Link>Linq\LinqToJsonTest.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json.Tests\TestFixtureBase.cs">
+      <Link>TestFixtureBase.cs</Link>
+    </Compile>
+    <Compile Include="SilverlightTests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="lib\nunit.framework.dll" />
+    <Content Include="readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Newtonsoft.Json.Silverlight\Newtonsoft.Json.Silverlight.csproj">
+      <Project>{DC3C6F3D-2CA1-4278-9B79-63770FB3EA2D}</Project>
+      <Name>Newtonsoft.Json.Silverlight</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{A1591282-1198-4647-A2B1-27E5FF5F6F3B}">
+        <SilverlightProjectProperties />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
