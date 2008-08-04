@@ -74,6 +74,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="JsonConverterAttribute.cs" />
     <Compile Include="JsonObjectAttribute.cs" />
     <Compile Include="MemberSerialization.cs" />
     <Compile Include="ObjectCreationHandling.cs" />

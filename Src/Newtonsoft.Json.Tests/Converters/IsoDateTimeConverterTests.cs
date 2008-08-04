@@ -55,6 +55,24 @@ namespace Newtonsoft.Json.Tests.Converters
     }
 
     [Test]
+    public void SerializeFormattedDateTime()
+    {
+      IsoDateTimeConverter converter = new IsoDateTimeConverter() { DateTimeFormat = "F" };
+
+      DateTime d = new DateTime(2000, 12, 15, 22, 11, 3, 0, DateTimeKind.Utc);
+      string result;
+
+      result = JavaScriptConvert.SerializeObject(d, converter);
+      Assert.AreEqual(@"""Friday, 15 December 2000 22:11:03""", result);
+
+      Assert.AreEqual(d, JavaScriptConvert.DeserializeObject<DateTime>(result, converter));
+
+      d = new DateTime(2000, 12, 15, 22, 11, 3, 0, DateTimeKind.Local);
+      result = JavaScriptConvert.SerializeObject(d, converter);
+      Assert.AreEqual(@"""Friday, 15 December 2000 22:11:03""", result);
+    }
+
+    [Test]
     public void SerializeDateTimeOffset()
     {
       IsoDateTimeConverter converter = new IsoDateTimeConverter();

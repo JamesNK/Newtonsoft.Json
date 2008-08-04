@@ -37,14 +37,16 @@ namespace Newtonsoft.Json
     private readonly bool _ignored;
     private readonly bool _readable;
     private readonly bool _writable;
+    private readonly JsonConverter _memberConverter;
 
-    public MemberMapping(string mappingName, MemberInfo member, bool ignored, bool readable, bool writable)
+    public MemberMapping(string mappingName, MemberInfo member, bool ignored, bool readable, bool writable, JsonConverter memberConverter)
     {
       _mappingName = mappingName;
       _member = member;
       _ignored = ignored;
       _readable = readable;
       _writable = writable;
+      _memberConverter = memberConverter;
     }
 
     public string MappingName
@@ -71,5 +73,10 @@ namespace Newtonsoft.Json
     {
       get { return _writable; }
     }
+
+    public JsonConverter MemberConverter
+    {
+      get { return _memberConverter; }
+    } 
   }
 }

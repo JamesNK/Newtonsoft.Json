@@ -63,5 +63,19 @@ namespace Newtonsoft.Json
 
       Add(memberMapping);
     }
+
+    public bool TryGetMapping(string mappingName, out MemberMapping memberMapping)
+    {
+      if (Contains(mappingName))
+      {
+        memberMapping = this[mappingName];
+        return true;
+      }
+      else
+      {
+        memberMapping = default(MemberMapping);
+        return false;
+      }
+    }
   }
 }

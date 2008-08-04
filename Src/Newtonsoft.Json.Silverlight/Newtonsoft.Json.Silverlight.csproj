@@ -70,6 +70,9 @@
     <Compile Include="..\Newtonsoft.Json\JsonConverter.cs">
       <Link>JsonConverter.cs</Link>
     </Compile>
+    <Compile Include="..\Newtonsoft.Json\JsonConverterAttribute.cs">
+      <Link>JsonConverterAttribute.cs</Link>
+    </Compile>
     <Compile Include="..\Newtonsoft.Json\JsonConverterCollection.cs">
       <Link>JsonConverterCollection.cs</Link>
     </Compile>

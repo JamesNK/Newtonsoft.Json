@@ -37,6 +37,8 @@ using Newtonsoft.Json.Linq;
 using System.Linq;
 using Newtonsoft.Json.Converters;
 using System.Runtime.Serialization.Json;
+using Newtonsoft.Json.Utilities;
+using System.Globalization;
 
 namespace Newtonsoft.Json.Tests
 {
@@ -1096,6 +1098,171 @@ keyword such as type of business.""
       Assert.AreEqual("param1", deserialized.param1);
       Assert.AreEqual("Param1", deserialized.Param1);
       Assert.AreEqual("Param2", deserialized.Param2);
+    }
+
+    public class MemberConverterPrecedenceClassConverter : ConverterPrecedenceClassConverter
+    {
+      public override string ConverterType
+      {
+        get { return "Member"; }
+      }
+    }
+
+    public class ClassConverterPrecedenceClassConverter : ConverterPrecedenceClassConverter
+    {
+      public override string ConverterType
+      {
+        get { return "Class"; }
+      }
+    }
+
+    public class ArgumentConverterPrecedenceClassConverter : ConverterPrecedenceClassConverter
+    {
+      public override string ConverterType
+      {
+        get { return "Argument"; }
+      }
+    }
+
+    public abstract class ConverterPrecedenceClassConverter : JsonConverter
+    {
+      public abstract string ConverterType { get; }
+
+      public override void WriteJson(JsonWriter writer, object value)
+      {
+        ConverterPrecedenceClass c = (ConverterPrecedenceClass)value;
+
+        JToken j = new JArray(ConverterType, c.TestValue);
+
+        j.WriteTo(writer);
+      }
+
+      public override object ReadJson(JsonReader reader, Type objectType)
+      {
+        JToken j = JArray.Load(reader);
+
+        string converter = (string)j[0];
+        if (converter != ConverterType)
+          throw new Exception("Serialize converter {0} and deserialize converter {1} do not match.".FormatWith(CultureInfo.InvariantCulture, converter, ConverterType));
+
+        string testValue = (string)j[1];
+        return new ConverterPrecedenceClass(testValue);
+      }
+
+      public override bool CanConvert(Type objectType)
+      {
+        return (objectType == typeof(ConverterPrecedenceClass));
+      }
+    }
+
+    [JsonConverter(typeof(ClassConverterPrecedenceClassConverter))]
+    public class ConverterPrecedenceClass
+    {
+      public string TestValue { get; set; }
+
+      public ConverterPrecedenceClass(string testValue)
+      {
+        TestValue = testValue;
+      }
+    }
+
+    [Test]
+    public void SerializerShouldUseClassConverter()
+    {
+      ConverterPrecedenceClass c1 = new ConverterPrecedenceClass("!Test!");
+
+      string json = JavaScriptConvert.SerializeObject(c1);
+      Assert.AreEqual(@"[""Class"",""!Test!""]", json);
+
+      ConverterPrecedenceClass c2 = JavaScriptConvert.DeserializeObject<ConverterPrecedenceClass>(json);
+
+      Assert.AreEqual("!Test!", c2.TestValue);
+    }
+
+    [Test]
+    public void SerializerShouldUseClassConverterOverArgumentConverter()
+    {
+      ConverterPrecedenceClass c1 = new ConverterPrecedenceClass("!Test!");
+
+      string json = JavaScriptConvert.SerializeObject(c1, new ArgumentConverterPrecedenceClassConverter());
+      Assert.AreEqual(@"[""Class"",""!Test!""]", json);
+
+      ConverterPrecedenceClass c2 = JavaScriptConvert.DeserializeObject<ConverterPrecedenceClass>(json, new ArgumentConverterPrecedenceClassConverter());
+
+      Assert.AreEqual("!Test!", c2.TestValue);
+    }
+
+    public class MemberConverterClass
+    {
+      public DateTime DefaultConverter { get; set; }
+      [JsonConverter(typeof(IsoDateTimeConverter))]
+      public DateTime MemberConverter { get; set; }
+    }
+
+    [Test]
+    public void SerializerShouldUseMemberConverter()
+    {
+      DateTime testDate = new DateTime(JavaScriptConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc);
+      MemberConverterClass m1 = new MemberConverterClass { DefaultConverter = testDate, MemberConverter = testDate };
+
+      string json = JavaScriptConvert.SerializeObject(m1);
+      Assert.AreEqual(@"{""DefaultConverter"":""\/Date(0)\/"",""MemberConverter"":""1970-01-01T00:00:00.0000000Z""}", json);
+
+      MemberConverterClass m2 = JavaScriptConvert.DeserializeObject<MemberConverterClass>(json);
+
+      Assert.AreEqual(testDate, m2.DefaultConverter);
+      Assert.AreEqual(testDate, m2.MemberConverter);
+    }
+
+    [Test]
+    public void SerializerShouldUseMemberConverterOverArgumentConverter()
+    {
+      DateTime testDate = new DateTime(JavaScriptConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc);
+      MemberConverterClass m1 = new MemberConverterClass { DefaultConverter = testDate, MemberConverter = testDate };
+
+      string json = JavaScriptConvert.SerializeObject(m1, new JavaScriptDateTimeConverter());
+      Assert.AreEqual(@"{""DefaultConverter"":new Date(0),""MemberConverter"":""1970-01-01T00:00:00.0000000Z""}", json);
+
+      MemberConverterClass m2 = JavaScriptConvert.DeserializeObject<MemberConverterClass>(json, new JavaScriptDateTimeConverter());
+
+      Assert.AreEqual(testDate, m2.DefaultConverter);
+      Assert.AreEqual(testDate, m2.MemberConverter);
+    }
+
+    public class ClassAndMemberConverterClass
+    {
+      public ConverterPrecedenceClass DefaultConverter { get; set; }
+      [JsonConverter(typeof(MemberConverterPrecedenceClassConverter))]
+      public ConverterPrecedenceClass MemberConverter { get; set; }
+    }
+
+    [Test]
+    public void SerializerShouldUseMemberConverterOverClassAndArgumentConverter()
+    {
+      ClassAndMemberConverterClass c1 = new ClassAndMemberConverterClass();
+      c1.DefaultConverter = new ConverterPrecedenceClass("DefaultConverterValue");
+      c1.MemberConverter = new ConverterPrecedenceClass("MemberConverterValue");
+
+      string json = JavaScriptConvert.SerializeObject(c1, new ArgumentConverterPrecedenceClassConverter());
+      Assert.AreEqual(@"{""DefaultConverter"":[""Class"",""DefaultConverterValue""],""MemberConverter"":[""Member"",""MemberConverterValue""]}", json);
+
+      ClassAndMemberConverterClass c2 = JavaScriptConvert.DeserializeObject<ClassAndMemberConverterClass>(json, new ArgumentConverterPrecedenceClassConverter());
+
+      Assert.AreEqual("DefaultConverterValue", c2.DefaultConverter.TestValue);
+      Assert.AreEqual("MemberConverterValue", c2.MemberConverter.TestValue);
+    }
+
+    [JsonConverter(typeof(IsoDateTimeConverter))]
+    public class IncompatibleJsonAttributeClass
+    {
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "JsonConverter IsoDateTimeConverter on Newtonsoft.Json.Tests.JsonSerializerTest+IncompatibleJsonAttributeClass is not compatible with member type IncompatibleJsonAttributeClass.")]
+    public void IncompatibleJsonAttributeShouldThrow()
+    {
+      IncompatibleJsonAttributeClass c = new IncompatibleJsonAttributeClass();
+      JavaScriptConvert.SerializeObject(c);
     }
   }
 }

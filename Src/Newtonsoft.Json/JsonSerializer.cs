@@ -166,7 +166,7 @@ namespace Newtonsoft.Json
         return null;
 
       if (objectType != null)
-        return CreateObject(reader, objectType, null);
+        return CreateObject(reader, objectType, null, null);
       else
         return CreateJToken(reader);
     }
@@ -195,14 +195,31 @@ namespace Newtonsoft.Json
       return token;
     }
 
-    private object CreateObject(JsonReader reader, Type objectType, object existingValue)
+    private bool HasClassConverter(Type objectType, out JsonConverter converter)
+    {
+      if (objectType == null)
+        throw new ArgumentNullException("objectType");
+
+      converter = GetConverter(objectType, objectType);
+      return (converter != null);
+    }
+
+    private object CreateObject(JsonReader reader, Type objectType, object existingValue, JsonConverter memberConverter)
     {
       _level++;
 
       object value;
       JsonConverter converter;
 
-      if (HasMatchingConverter(objectType, out converter))
+      if (memberConverter != null)
+      {
+        return memberConverter.ReadJson(reader, objectType);
+      }
+      else if (objectType != null && HasClassConverter(objectType, out converter))
+      {
+        return converter.ReadJson(reader, objectType);
+      }
+      else if (objectType != null && HasMatchingConverter(objectType, out converter))
       {
         return converter.ReadJson(reader, objectType);
       }
@@ -338,7 +355,10 @@ namespace Newtonsoft.Json
 
         bool readable = ReflectionUtils.CanReadMemberValue(member);
         bool writable = ReflectionUtils.CanSetMemberValue(member);
-        MemberMapping memberMapping = new MemberMapping(mappedName, member, ignored, readable, writable);
+
+        JsonConverter memberConverter = GetConverter(member, ReflectionUtils.GetMemberUnderlyingType(member));
+
+        MemberMapping memberMapping = new MemberMapping(mappedName, member, ignored, readable, writable, memberConverter);
 
         memberMappings.AddMapping(memberMapping);
       }
@@ -364,6 +384,23 @@ namespace Newtonsoft.Json
         return MemberSerialization.OptOut;
       else
         return objectAttribute.MemberSerialization;
+    }
+
+    private JsonConverter GetConverter(ICustomAttributeProvider attributeProvider, Type targetConvertedType)
+    {
+      JsonConverterAttribute converterAttribute = ReflectionUtils.GetAttribute<JsonConverterAttribute>(attributeProvider, true);
+
+      if (converterAttribute != null)
+      {
+        JsonConverter memberConverter = converterAttribute.CreateJsonConverterInstance();
+
+        if (!memberConverter.CanConvert(targetConvertedType))
+          throw new JsonSerializationException("JsonConverter {0} on {1} is not compatible with member type {2}.".FormatWith(CultureInfo.InvariantCulture, memberConverter.GetType().Name, attributeProvider, targetConvertedType.Name));
+
+        return memberConverter;
+      }
+
+      return null;
     }
 
     private void SetObjectMember(JsonReader reader, object target, Type targetType, string memberName)
@@ -402,7 +439,7 @@ namespace Newtonsoft.Json
           return;
         }
 
-        value = CreateObject(reader, memberType, (useExistingValue) ? currentValue : null);
+        value = CreateObject(reader, memberType, (useExistingValue) ? currentValue : null, GetConverter(memberMapping.Member, memberType));
 
         if (_nullValueHandling == NullValueHandling.Ignore && value == null)
           return;
@@ -439,7 +476,7 @@ namespace Newtonsoft.Json
             object keyValue = EnsureType(reader.Value, dictionaryKeyType);
             reader.Read();
 
-            dictionary.Add(keyValue, CreateObject(reader, dictionaryValueType, null));
+            dictionary.Add(keyValue, CreateObject(reader, dictionaryValueType, null, null));
             break;
           case JsonToken.EndObject:
             return dictionary;
@@ -467,7 +504,7 @@ namespace Newtonsoft.Json
           case JsonToken.Comment:
             break;
           default:
-            object value = CreateObject(reader, listItemType, null);
+            object value = CreateObject(reader, listItemType, null, null);
 
             list.Add(value);
             break;
@@ -497,6 +534,7 @@ namespace Newtonsoft.Json
 
         // create a dictionary to put retrieved values into
         IDictionary<ParameterInfo, object> constructorParameters = c.GetParameters().ToDictionary(p => p, p => (object)null);
+        MemberMappingCollection mappings = GetMemberMappings(objectType);
 
         bool exit = false;
         while (!exit && reader.Read())
@@ -505,16 +543,21 @@ namespace Newtonsoft.Json
           {
             case JsonToken.PropertyName:
               string memberName = reader.Value.ToString();
-              ParameterInfo matchingConstructorParameter = constructorParameters.ForgivingCaseSensitiveFind(kv => kv.Key.Name, memberName).Key;
-
               if (!reader.Read())
                 throw new JsonSerializationException("Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
 
-              if (matchingConstructorParameter != null)
-                constructorParameters[matchingConstructorParameter] = CreateObject(reader, matchingConstructorParameter.ParameterType, null);
-              else
-                reader.Skip();
+              ParameterInfo matchingConstructorParameter = constructorParameters.ForgivingCaseSensitiveFind(kv => kv.Key.Name, memberName).Key;
+              MemberMapping mapping;
 
+              if (matchingConstructorParameter != null && mappings.TryGetMapping(memberName, out mapping) && !mapping.Ignored)
+              {
+                constructorParameters[matchingConstructorParameter] = CreateObject(reader, matchingConstructorParameter.ParameterType, null, mapping.MemberConverter);
+              }
+              else
+              {
+                // skip token and all child tokens
+                reader.Skip();
+              }
               break;
             case JsonToken.EndObject:
               exit = true;
@@ -578,17 +621,25 @@ namespace Newtonsoft.Json
       if (value is JToken)
         ((JToken)value).WriteTo(jsonWriter, (_converters != null) ? _converters.ToArray() : null);
       else
-        SerializeValue(jsonWriter, value);
+        SerializeValue(jsonWriter, value, null);
     }
 
 
-    private void SerializeValue(JsonWriter writer, object value)
+    private void SerializeValue(JsonWriter writer, object value, JsonConverter memberConverter)
     {
       JsonConverter converter;
 
       if (value == null)
       {
         writer.WriteNull();
+      }
+      else if (memberConverter != null)
+      {
+        memberConverter.WriteJson(writer, value);
+      }
+      else if (HasClassConverter(value.GetType(), out converter))
+      {
+        converter.WriteJson(writer, value);
       }
       else if (HasMatchingConverter(value.GetType(), out converter))
       {
@@ -601,49 +652,49 @@ namespace Newtonsoft.Json
         switch (convertible.GetTypeCode())
         {
           case TypeCode.String:
-            writer.WriteValue((string)convertible);
+            writer.WriteValue(convertible.ToString(CultureInfo.InvariantCulture));
             break;
           case TypeCode.Char:
-            writer.WriteValue((char)convertible);
+            writer.WriteValue(convertible.ToChar(CultureInfo.InvariantCulture));
             break;
           case TypeCode.Boolean:
-            writer.WriteValue((bool)convertible);
+            writer.WriteValue(convertible.ToBoolean(CultureInfo.InvariantCulture));
             break;
           case TypeCode.SByte:
-            writer.WriteValue((sbyte)convertible);
+            writer.WriteValue(convertible.ToSByte(CultureInfo.InvariantCulture));
             break;
           case TypeCode.Int16:
-            writer.WriteValue((short)convertible);
+            writer.WriteValue(convertible.ToInt16(CultureInfo.InvariantCulture));
             break;
           case TypeCode.UInt16:
-            writer.WriteValue((ushort)convertible);
+            writer.WriteValue(convertible.ToUInt16(CultureInfo.InvariantCulture));
             break;
           case TypeCode.Int32:
-            writer.WriteValue((int)convertible);
+            writer.WriteValue(convertible.ToInt32(CultureInfo.InvariantCulture));
             break;
           case TypeCode.Byte:
-            writer.WriteValue((byte)convertible);
+            writer.WriteValue(convertible.ToByte(CultureInfo.InvariantCulture));
             break;
           case TypeCode.UInt32:
-            writer.WriteValue((uint)convertible);
+            writer.WriteValue(convertible.ToUInt32(CultureInfo.InvariantCulture));
             break;
           case TypeCode.Int64:
-            writer.WriteValue((long)convertible);
+            writer.WriteValue(convertible.ToInt64(CultureInfo.InvariantCulture));
             break;
           case TypeCode.UInt64:
-            writer.WriteValue((ulong)convertible);
+            writer.WriteValue(convertible.ToUInt64(CultureInfo.InvariantCulture));
             break;
           case TypeCode.Single:
-            writer.WriteValue((float)convertible);
+            writer.WriteValue(convertible.ToSingle(CultureInfo.InvariantCulture));
             break;
           case TypeCode.Double:
-            writer.WriteValue((double)convertible);
+            writer.WriteValue(convertible.ToDouble(CultureInfo.InvariantCulture));
             break;
           case TypeCode.DateTime:
-            writer.WriteValue((DateTime)convertible);
+            writer.WriteValue(convertible.ToDateTime(CultureInfo.InvariantCulture));
             break;
           case TypeCode.Decimal:
-            writer.WriteValue((decimal)convertible);
+            writer.WriteValue(convertible.ToDecimal(CultureInfo.InvariantCulture));
             break;
           case TypeCode.DBNull:
             writer.WriteNull();
@@ -688,15 +739,18 @@ namespace Newtonsoft.Json
       return HasMatchingConverter(_converters, type, out matchingConverter);
     }
 
-    internal static bool HasMatchingConverter(IList<JsonConverter> converters, Type type, out JsonConverter matchingConverter)
+    internal static bool HasMatchingConverter(IList<JsonConverter> converters, Type objectType, out JsonConverter matchingConverter)
     {
+      if (objectType == null)
+        throw new ArgumentNullException("objectType");
+
       if (converters != null)
       {
         for (int i = 0; i < converters.Count; i++)
         {
           JsonConverter converter = converters[i];
 
-          if (converter.CanConvert(type))
+          if (converter.CanConvert(objectType))
           {
             matchingConverter = converter;
             return true;
@@ -708,7 +762,7 @@ namespace Newtonsoft.Json
       return false;
     }
 
-    private void WriteMemberInfoProperty(JsonWriter writer, object value, MemberInfo member, string propertyName)
+    private void WriteMemberInfoProperty(JsonWriter writer, object value, MemberInfo member, string propertyName, JsonConverter memberConverter)
     {
       if (!ReflectionUtils.IsIndexedProperty(member))
       {
@@ -735,7 +789,7 @@ namespace Newtonsoft.Json
         }
 
         writer.WritePropertyName(propertyName ?? member.Name);
-        SerializeValue(writer, memberValue);
+        SerializeValue(writer, memberValue, memberConverter);
       }
     }
 
@@ -772,7 +826,7 @@ namespace Newtonsoft.Json
       foreach (MemberMapping memberMapping in memberMappings)
       {
         if (!memberMapping.Ignored && memberMapping.Readable)
-          WriteMemberInfoProperty(writer, value, memberMapping.Member, memberMapping.MappingName);
+          WriteMemberInfoProperty(writer, value, memberMapping.Member, memberMapping.MappingName, memberMapping.MemberConverter);
       }
 
       writer.WriteEndObject();
@@ -796,7 +850,7 @@ namespace Newtonsoft.Json
 
       for (int i = 0; i < values.Count; i++)
       {
-        SerializeValue(writer, values[i]);
+        SerializeValue(writer, values[i], null);
       }
 
       writer.WriteEndArray();
@@ -809,7 +863,7 @@ namespace Newtonsoft.Json
       foreach (DictionaryEntry entry in values)
       {
         writer.WritePropertyName(entry.Key.ToString());
-        SerializeValue(writer, entry.Value);
+        SerializeValue(writer, entry.Value, null);
       }
 
       writer.WriteEndObject();
