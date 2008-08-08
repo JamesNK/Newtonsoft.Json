@@ -15,7 +15,8 @@ namespace Newtonsoft.Json.Converters
     private const string DefaultDateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK";
 
     private DateTimeStyles _dateTimeStyles = DateTimeStyles.RoundtripKind;
-    private string _dateTimeFormat = DefaultDateTimeFormat;
+    private string _dateTimeFormat;
+    private CultureInfo _culture;
 
     /// <summary>
     /// Gets or sets the date time styles used when converting a date to and from JSON.
@@ -28,13 +29,23 @@ namespace Newtonsoft.Json.Converters
     }
 
     /// <summary>
-    /// Gets or sets the date time format used when converting a date to and fromm JSON.
+    /// Gets or sets the date time format used when converting a date to and from JSON.
     /// </summary>
     /// <value>The date time format used when converting a date to and from JSON.</value>
     public string DateTimeFormat
     {
-      get { return _dateTimeFormat; }
-      set { _dateTimeFormat = value; }
+      get { return _dateTimeFormat ?? string.Empty; }
+      set { _dateTimeFormat = StringUtils.NullEmptyString(value); }
+    }
+
+    /// <summary>
+    /// Gets or sets the culture used when converting a date to and from JSON.
+    /// </summary>
+    /// <value>The culture used when converting a date to and from JSON.</value>
+    public CultureInfo Culture
+    {
+      get { return _culture ?? CultureInfo.CurrentCulture; }
+      set { _culture = value; }
     }
 
     /// <summary>
@@ -54,16 +65,20 @@ namespace Newtonsoft.Json.Converters
           || (_dateTimeStyles & DateTimeStyles.AssumeUniversal) == DateTimeStyles.AssumeUniversal)
           dateTime = dateTime.ToUniversalTime();
 
-        text = dateTime.ToString(_dateTimeFormat, CultureInfo.InvariantCulture);
+        text = dateTime.ToString(_dateTimeFormat ?? DefaultDateTimeFormat, Culture);
       }
-      else
+      else if (value is DateTimeOffset)
       {
         DateTimeOffset dateTimeOffset = (DateTimeOffset)value;
         if ((_dateTimeStyles & DateTimeStyles.AdjustToUniversal) == DateTimeStyles.AdjustToUniversal
           || (_dateTimeStyles & DateTimeStyles.AssumeUniversal) == DateTimeStyles.AssumeUniversal)
           dateTimeOffset = dateTimeOffset.ToUniversalTime();
 
-        text = dateTimeOffset.ToString(_dateTimeFormat, CultureInfo.InvariantCulture);
+        text = dateTimeOffset.ToString(_dateTimeFormat ?? DefaultDateTimeFormat, Culture);
+      }
+      else
+      {
+        throw new Exception("Unexpected value when converting date. Expected DateTime or DateTimeOffset, got {0}.".FormatWith(CultureInfo.InvariantCulture, ReflectionUtils.GetObjectType(value)));
       }
 
       writer.WriteValue(text);
@@ -83,9 +98,17 @@ namespace Newtonsoft.Json.Converters
       string dateText = reader.Value.ToString();
 
       if (objectType == typeof(DateTimeOffset))
-        return DateTimeOffset.Parse(dateText, CultureInfo.InvariantCulture, _dateTimeStyles);
+      {
+        if (!string.IsNullOrEmpty(_dateTimeFormat))
+          return DateTimeOffset.ParseExact(dateText, _dateTimeFormat, Culture, _dateTimeStyles);
+        else
+          return DateTimeOffset.Parse(dateText, Culture, _dateTimeStyles);
+      }
 
-      return DateTime.Parse(dateText, CultureInfo.InvariantCulture, _dateTimeStyles);
+      if (!string.IsNullOrEmpty(_dateTimeFormat))
+        return DateTime.ParseExact(dateText, _dateTimeFormat, Culture, _dateTimeStyles);
+      else
+        return DateTime.Parse(dateText, Culture, _dateTimeStyles);
     }
 
     /// <summary>

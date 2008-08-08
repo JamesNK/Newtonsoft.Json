@@ -34,6 +34,7 @@ namespace Newtonsoft.Json.Tests
   {
     public string PreField { get; set; }
     public DateTime DateTimeField { get; set; }
+    public DateTimeOffset DateTimeOffsetField { get; set; }
     public string PostField { get; set; }
   }
 }
