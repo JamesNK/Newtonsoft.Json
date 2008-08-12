@@ -90,6 +90,15 @@
     <Compile Include="..\Newtonsoft.Json.Tests\JsonTokenWriterTest.cs">
       <Link>JsonTokenWriterTest.cs</Link>
     </Compile>
+    <Compile Include="..\Newtonsoft.Json.Tests\Linq\JArrayTests.cs">
+      <Link>Linq\JArrayTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json.Tests\Linq\JObjectTests.cs">
+      <Link>Linq\JObjectTests.cs</Link>
+    </Compile>
+    <Compile Include="..\Newtonsoft.Json.Tests\Linq\JTokenEqualityComparerTests.cs">
+      <Link>Linq\JTokenEqualityComparerTests.cs</Link>
+    </Compile>
     <Compile Include="..\Newtonsoft.Json.Tests\Linq\JTokenTests.cs">
       <Link>Linq\JTokenTests.cs</Link>
     </Compile>

@@ -110,7 +110,7 @@ namespace Newtonsoft.Json.Linq
     /// <param name="value">The property value.</param>
     public JProperty(string name, object value)
     {
-      ValidationUtils.ArgumentNotNullOrEmpty(name, "name");
+      ValidationUtils.ArgumentNotNull(name, "name");
 
       _name = name;
       Value = CreateFromContent(value);
@@ -149,5 +149,10 @@ namespace Newtonsoft.Json.Linq
 
     //  return (JValue)value;
     //}
+
+    internal override int GetDeepHashCode()
+    {
+      return _name.GetHashCode() ^ ((Value != null) ? Value.GetDeepHashCode() : 0);
+    }
   }
 }

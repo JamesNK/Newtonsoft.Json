@@ -736,6 +736,82 @@ namespace Newtonsoft.Json
     {
       AutoComplete(JsonToken.Date);
     }
+
+    /// <summary>
+    /// Writes a <see cref="Object"/> value.
+    /// An error will raised if the value cannot be written as a single JSON token.
+    /// </summary>
+    /// <param name="value">The <see cref="Object"/> value to write.</param>
+    public virtual void WriteValue(object value)
+    {
+      if (value == null)
+      {
+        WriteNull();
+      }
+      else if (value is IConvertible)
+      {
+        IConvertible convertible = value as IConvertible;
+
+        switch (convertible.GetTypeCode())
+        {
+          case TypeCode.String:
+            WriteValue(convertible.ToString(CultureInfo.InvariantCulture));
+            return;
+          case TypeCode.Char:
+            WriteValue(convertible.ToChar(CultureInfo.InvariantCulture));
+            return;
+          case TypeCode.Boolean:
+            WriteValue(convertible.ToBoolean(CultureInfo.InvariantCulture));
+            return;
+          case TypeCode.SByte:
+            WriteValue(convertible.ToSByte(CultureInfo.InvariantCulture));
+            return;
+          case TypeCode.Int16:
+            WriteValue(convertible.ToInt16(CultureInfo.InvariantCulture));
+            return;
+          case TypeCode.UInt16:
+            WriteValue(convertible.ToUInt16(CultureInfo.InvariantCulture));
+            return;
+          case TypeCode.Int32:
+            WriteValue(convertible.ToInt32(CultureInfo.InvariantCulture));
+            return;
+          case TypeCode.Byte:
+            WriteValue(convertible.ToByte(CultureInfo.InvariantCulture));
+            return;
+          case TypeCode.UInt32:
+            WriteValue(convertible.ToUInt32(CultureInfo.InvariantCulture));
+            return;
+          case TypeCode.Int64:
+            WriteValue(convertible.ToInt64(CultureInfo.InvariantCulture));
+            return;
+          case TypeCode.UInt64:
+            WriteValue(convertible.ToUInt64(CultureInfo.InvariantCulture));
+            return;
+          case TypeCode.Single:
+            WriteValue(convertible.ToSingle(CultureInfo.InvariantCulture));
+            return;
+          case TypeCode.Double:
+            WriteValue(convertible.ToDouble(CultureInfo.InvariantCulture));
+            return;
+          case TypeCode.DateTime:
+            WriteValue(convertible.ToDateTime(CultureInfo.InvariantCulture));
+            return;
+          case TypeCode.Decimal:
+            WriteValue(convertible.ToDecimal(CultureInfo.InvariantCulture));
+            return;
+          case TypeCode.DBNull:
+            WriteNull();
+            return;
+        }
+      }
+      else if (value is DateTimeOffset)
+      {
+        WriteValue((DateTimeOffset)value);
+        return;
+      }
+
+      throw new ArgumentException("Unsupported type: {0}. Use the JsonSerializer class to get the object's JSON representation.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
+    }
     #endregion
 
     /// <summary>

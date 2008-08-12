@@ -78,6 +78,9 @@
     <Compile Include="JsonTextWriterTest.cs" />
     <Compile Include="JsonTokenReaderTest.cs" />
     <Compile Include="JsonTokenWriterTest.cs" />
+    <Compile Include="Linq\JArrayTests.cs" />
+    <Compile Include="Linq\JObjectTests.cs" />
+    <Compile Include="Linq\JTokenEqualityComparerTests.cs" />
     <Compile Include="Linq\JTokenTests.cs" />
     <Compile Include="Linq\JValueTests.cs" />
     <Compile Include="Linq\LinqToJsonTest.cs" />

@@ -148,6 +148,9 @@
     <Compile Include="..\Newtonsoft.Json\Linq\JToken.cs">
       <Link>Linq\JToken.cs</Link>
     </Compile>
+    <Compile Include="..\Newtonsoft.Json\Linq\JTokenEqualityComparer.cs">
+      <Link>Linq\JTokenEqualityComparer.cs</Link>
+    </Compile>
     <Compile Include="..\Newtonsoft.Json\Linq\JValue.cs">
       <Link>Linq\JValue.cs</Link>
     </Compile>

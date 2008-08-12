@@ -341,47 +341,86 @@ namespace Newtonsoft.Json
         switch (convertible.GetTypeCode())
         {
           case TypeCode.String:
-            return ToString((string)convertible);
+            return ToString(convertible.ToString(CultureInfo.InvariantCulture));
           case TypeCode.Char:
-            return ToString((char)convertible);
+            return ToString(convertible.ToChar(CultureInfo.InvariantCulture));
           case TypeCode.Boolean:
-            return ToString((bool)convertible);
+            return ToString(convertible.ToBoolean(CultureInfo.InvariantCulture));
           case TypeCode.SByte:
-            return ToString((sbyte)convertible);
+            return ToString(convertible.ToSByte(CultureInfo.InvariantCulture));
           case TypeCode.Int16:
-            return ToString((short)convertible);
+            return ToString(convertible.ToInt16(CultureInfo.InvariantCulture));
           case TypeCode.UInt16:
-            return ToString((ushort)convertible);
+            return ToString(convertible.ToUInt16(CultureInfo.InvariantCulture));
           case TypeCode.Int32:
-            return ToString((int)convertible);
+            return ToString(convertible.ToInt32(CultureInfo.InvariantCulture));
           case TypeCode.Byte:
-            return ToString((byte)convertible);
+            return ToString(convertible.ToByte(CultureInfo.InvariantCulture));
           case TypeCode.UInt32:
-            return ToString((uint)convertible);
+            return ToString(convertible.ToUInt32(CultureInfo.InvariantCulture));
           case TypeCode.Int64:
-            return ToString((long)convertible);
+            return ToString(convertible.ToInt64(CultureInfo.InvariantCulture));
           case TypeCode.UInt64:
-            return ToString((ulong)convertible);
+            return ToString(convertible.ToUInt64(CultureInfo.InvariantCulture));
           case TypeCode.Single:
-            return ToString((float)convertible);
+            return ToString(convertible.ToSingle(CultureInfo.InvariantCulture));
           case TypeCode.Double:
-            return ToString((double)convertible);
+            return ToString(convertible.ToDouble(CultureInfo.InvariantCulture));
           case TypeCode.DateTime:
-            return ToString((DateTime)convertible);
+            return ToString(convertible.ToDateTime(CultureInfo.InvariantCulture));
           case TypeCode.Decimal:
-            return ToString((decimal)convertible);
+            return ToString(convertible.ToDecimal(CultureInfo.InvariantCulture));
+          case TypeCode.DBNull:
+            return Null;
         }
       }
       else if (value is DateTimeOffset)
       {
         return ToString((DateTimeOffset)value);
       }
-      else if (value is Guid)
-      {
-        return ToString((Guid)value);
-      }
 
       throw new ArgumentException("Unsupported type: {0}. Use the JsonSerializer class to get the object's JSON representation.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
+    }
+
+    internal static bool IsJsonPrimitive(object value)
+    {
+      if (value == null)
+      {
+        return true;
+      }
+      else if (value is IConvertible)
+      {
+        IConvertible convertible = value as IConvertible;
+
+        switch (convertible.GetTypeCode())
+        {
+          case TypeCode.String:
+          case TypeCode.Char:
+          case TypeCode.Boolean:
+          case TypeCode.SByte:
+          case TypeCode.Int16:
+          case TypeCode.UInt16:
+          case TypeCode.Int32:
+          case TypeCode.Byte:
+          case TypeCode.UInt32:
+          case TypeCode.Int64:
+          case TypeCode.UInt64:
+          case TypeCode.Single:
+          case TypeCode.Double:
+          case TypeCode.DateTime:
+          case TypeCode.Decimal:
+          case TypeCode.DBNull:
+            return true;
+          default:
+            return false;
+        }
+      }
+      else if (value is DateTimeOffset)
+      {
+        return true;
+      }
+
+      return false;
     }
 
     /// <summary>

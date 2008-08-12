@@ -536,7 +536,7 @@ keyword such as type of business.""
     [ExpectedException(typeof(ArgumentException), ExpectedMessage = @"Accessed JConstructor values with invalid key value: ""purple"". Argument position index expected.")]
     public void JConstructorStringIndex()
     {
-      JConstructor c = new JConstructor();
+      JConstructor c = new JConstructor("ConstructorValue");
       Assert.AreEqual(null, c["purple"]);
     }
 

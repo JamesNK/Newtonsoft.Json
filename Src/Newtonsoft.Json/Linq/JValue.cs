@@ -289,5 +289,12 @@ namespace Newtonsoft.Json.Linq
           throw MiscellaneousUtils.CreateArgumentOutOfRangeException("TokenType", _valueType, "Unexpected token type.");
       }
     }
+
+    internal override int GetDeepHashCode()
+    {
+      int valueHashCode = (_value != null) ? _value.GetHashCode() : 0;
+      
+      return _valueType.GetHashCode() ^ valueHashCode;
+    }
   }
 }

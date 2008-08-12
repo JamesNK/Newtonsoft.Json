@@ -103,7 +103,7 @@ namespace Newtonsoft.Json.Linq
     {
       base.WriteStartConstructor(name);
 
-      AddParent(new JConstructor());
+      AddParent(new JConstructor(name));
     }
 
     /// <summary>

@@ -220,12 +220,22 @@ namespace Newtonsoft.Json.Linq
 
     public void Insert(int index, JToken item)
     {
-      JToken token = GetIndex(this, index);
-      AddInternal(false, token.Previous, item);
+      if (index == 0)
+      {
+        AddFirst(item);
+      }
+      else
+      {
+        JToken token = GetIndex(this, index);
+        AddInternal(false, token.Previous, item);
+      }
     }
 
     public void RemoveAt(int index)
     {
+      if (index < 0)
+        throw new ArgumentOutOfRangeException("index", "index is less than 0.");
+
       int currentIndex = 0;
       foreach (JToken token in Children())
       {
@@ -237,18 +247,20 @@ namespace Newtonsoft.Json.Linq
 
         currentIndex++;
       }
+
+      throw new ArgumentOutOfRangeException("index", "index is equal to or greater than Count.");
     }
 
     #endregion
 
     #region ICollection<JToken> Members
 
-    void ICollection<JToken>.Add(JToken item)
+    public void Add(JToken item)
     {
       Add((object)item);
     }
 
-    void ICollection<JToken>.Clear()
+    public void Clear()
     {
       RemoveAll();
     }
@@ -260,6 +272,15 @@ namespace Newtonsoft.Json.Linq
 
     void ICollection<JToken>.CopyTo(JToken[] array, int arrayIndex)
     {
+      if (array == null)
+        throw new ArgumentNullException("array");
+      if (arrayIndex < 0)
+        throw new ArgumentOutOfRangeException("arrayIndex", "arrayIndex is less than 0.");
+      if (arrayIndex >= array.Length)
+        throw new ArgumentException("arrayIndex is equal to or greater than the length of array.");
+      if (Count > array.Length - arrayIndex)
+        throw new ArgumentException("The number of elements in the source JObject is greater than the available space from arrayIndex to the end of the destination array.");
+
       int index = 0;
       foreach (JToken token in Children())
       {
@@ -278,7 +299,7 @@ namespace Newtonsoft.Json.Linq
       get { return false; }
     }
 
-    bool ICollection<JToken>.Remove(JToken item)
+    public bool Remove(JToken item)
     {
       if (!((ICollection<JToken>)this).Contains(item))
         return false;
@@ -288,5 +309,10 @@ namespace Newtonsoft.Json.Linq
     }
 
     #endregion
+
+    internal override int GetDeepHashCode()
+    {
+      return ContentsHashCode();
+    }
   }
 }

@@ -645,68 +645,9 @@ namespace Newtonsoft.Json
       {
         converter.WriteJson(writer, value);
       }
-      else if (value is IConvertible)
+      else if (JavaScriptConvert.IsJsonPrimitive(value))
       {
-        IConvertible convertible = value as IConvertible;
-
-        switch (convertible.GetTypeCode())
-        {
-          case TypeCode.String:
-            writer.WriteValue(convertible.ToString(CultureInfo.InvariantCulture));
-            break;
-          case TypeCode.Char:
-            writer.WriteValue(convertible.ToChar(CultureInfo.InvariantCulture));
-            break;
-          case TypeCode.Boolean:
-            writer.WriteValue(convertible.ToBoolean(CultureInfo.InvariantCulture));
-            break;
-          case TypeCode.SByte:
-            writer.WriteValue(convertible.ToSByte(CultureInfo.InvariantCulture));
-            break;
-          case TypeCode.Int16:
-            writer.WriteValue(convertible.ToInt16(CultureInfo.InvariantCulture));
-            break;
-          case TypeCode.UInt16:
-            writer.WriteValue(convertible.ToUInt16(CultureInfo.InvariantCulture));
-            break;
-          case TypeCode.Int32:
-            writer.WriteValue(convertible.ToInt32(CultureInfo.InvariantCulture));
-            break;
-          case TypeCode.Byte:
-            writer.WriteValue(convertible.ToByte(CultureInfo.InvariantCulture));
-            break;
-          case TypeCode.UInt32:
-            writer.WriteValue(convertible.ToUInt32(CultureInfo.InvariantCulture));
-            break;
-          case TypeCode.Int64:
-            writer.WriteValue(convertible.ToInt64(CultureInfo.InvariantCulture));
-            break;
-          case TypeCode.UInt64:
-            writer.WriteValue(convertible.ToUInt64(CultureInfo.InvariantCulture));
-            break;
-          case TypeCode.Single:
-            writer.WriteValue(convertible.ToSingle(CultureInfo.InvariantCulture));
-            break;
-          case TypeCode.Double:
-            writer.WriteValue(convertible.ToDouble(CultureInfo.InvariantCulture));
-            break;
-          case TypeCode.DateTime:
-            writer.WriteValue(convertible.ToDateTime(CultureInfo.InvariantCulture));
-            break;
-          case TypeCode.Decimal:
-            writer.WriteValue(convertible.ToDecimal(CultureInfo.InvariantCulture));
-            break;
-          case TypeCode.DBNull:
-            writer.WriteNull();
-            break;
-          default:
-            SerializeObject(writer, value);
-            break;
-        }
-      }
-      else if (value is DateTimeOffset)
-      {
-        writer.WriteValue((DateTimeOffset)value);
+        writer.WriteValue(value);
       }
       else if (value is IList)
       {

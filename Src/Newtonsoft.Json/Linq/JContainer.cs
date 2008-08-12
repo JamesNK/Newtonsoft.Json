@@ -261,7 +261,7 @@ namespace Newtonsoft.Json.Linq
         if (previous != null)
           previous.Next = o;
 
-        if (isLast)
+        if (isLast || previous == null)
           _content = o;
       }
     }
@@ -271,7 +271,7 @@ namespace Newtonsoft.Json.Linq
       ValidationUtils.ArgumentNotNull(o, "o");
 
       if (o.Type == JsonTokenType.Property)
-        throw new Exception("Can not add {0} to {1}".FormatWith(CultureInfo.InvariantCulture, o.GetType(), GetType()));
+        throw new Exception("Can not add {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, o.GetType(), GetType()));
     }
 
     /// <summary>
@@ -422,8 +422,7 @@ namespace Newtonsoft.Json.Linq
             parent = parent.Parent;
             break;
           case JsonToken.StartConstructor:
-            JConstructor constructor = new JConstructor();
-            constructor.Name = r.Value.ToString();
+            JConstructor constructor = new JConstructor(r.Value.ToString());
             parent.AddObjectSkipNotify(constructor);
             parent = constructor;
             break;
@@ -459,6 +458,16 @@ namespace Newtonsoft.Json.Linq
         }
       }
       while (r.Read());
+    }
+
+    internal int ContentsHashCode()
+    {
+      int hashCode = 0;
+      foreach (JToken item in Children())
+      {
+        hashCode ^= item.GetDeepHashCode();
+      }
+      return hashCode;
     }
   }
 }

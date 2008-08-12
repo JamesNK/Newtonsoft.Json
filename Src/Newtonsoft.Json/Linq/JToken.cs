@@ -42,6 +42,18 @@ namespace Newtonsoft.Json.Linq
   {
     private JContainer _parent;
     internal JToken _next;
+    private static JTokenEqualityComparer _equalityComparer;
+
+    public static JTokenEqualityComparer EqualityComparer
+    {
+      get
+      {
+        if (_equalityComparer == null)
+          _equalityComparer = new JTokenEqualityComparer();
+
+        return _equalityComparer;
+      }
+    }
 
     /// <summary>
     /// Gets or sets the parent.
@@ -705,5 +717,7 @@ namespace Newtonsoft.Json.Linq
     {
       return Children().GetEnumerator();
     }
+
+    internal abstract int GetDeepHashCode();
   }
 }

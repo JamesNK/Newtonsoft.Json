@@ -83,7 +83,12 @@ namespace Newtonsoft.Json.Linq
       ValidationUtils.ArgumentNotNull(o, "o");
 
       if (o.Type != JsonTokenType.Property)
-        throw new Exception("Can not add {0} to {1}".FormatWith(CultureInfo.InvariantCulture, o.GetType(), GetType()));
+        throw new Exception("Can not add {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, o.GetType(), GetType()));
+
+      JProperty property = (JProperty)o;
+      bool matchingProperty = (Properties().Where(p => string.Compare(p.Name, property.Name, StringComparison.Ordinal) == 0).Count() > 0);
+      if (matchingProperty)
+        throw new Exception("Can not add property {0} to {1}. Property with the same name already exists on object.".FormatWith(CultureInfo.InvariantCulture, property.Name, GetType()));
     }
 
     internal override JToken CloneNode()
@@ -319,10 +324,20 @@ namespace Newtonsoft.Json.Linq
 
     void ICollection<KeyValuePair<string,JToken>>.CopyTo(KeyValuePair<string, JToken>[] array, int arrayIndex)
     {
+      if (array == null)
+        throw new ArgumentNullException("array");
+      if (arrayIndex < 0)
+        throw new ArgumentOutOfRangeException("arrayIndex", "arrayIndex is less than 0.");
+      if (arrayIndex >= array.Length)
+        throw new ArgumentException("arrayIndex is equal to or greater than the length of array.");
+      if (Count > array.Length - arrayIndex)
+        throw new ArgumentException("The number of elements in the source JObject is greater than the available space from arrayIndex to the end of the destination array.");
+
       int index = 0;
       foreach (JProperty property in Properties())
       {
         array[arrayIndex + index] = new KeyValuePair<string, JToken>(property.Name, property.Value);
+        index++;
       }
     }
 
@@ -358,5 +373,10 @@ namespace Newtonsoft.Json.Linq
     }
 
     #endregion
+
+    internal override int GetDeepHashCode()
+    {
+      return ContentsHashCode();
+    }
   }
 }

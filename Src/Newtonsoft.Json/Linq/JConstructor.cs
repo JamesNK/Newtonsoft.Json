@@ -59,13 +59,6 @@ namespace Newtonsoft.Json.Linq
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="JConstructor"/> class.
-    /// </summary>
-    public JConstructor()
-    {
-    }
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="JConstructor"/> class from another <see cref="JConstructor"/> object.
     /// </summary>
     /// <param name="other">A <see cref="JConstructor"/> object to copy from.</param>
@@ -102,6 +95,8 @@ namespace Newtonsoft.Json.Linq
     /// <param name="name">The constructor name.</param>
     public JConstructor(string name)
     {
+      ValidationUtils.ArgumentNotNullOrEmpty(name, "name");
+
       _name = name;
     }
 
@@ -159,6 +154,11 @@ namespace Newtonsoft.Json.Linq
 
         return GetIndex(this, (int)key);
       }
+    }
+
+    internal override int GetDeepHashCode()
+    {
+      return _name.GetHashCode() ^ ContentsHashCode();
     }
   }
 }

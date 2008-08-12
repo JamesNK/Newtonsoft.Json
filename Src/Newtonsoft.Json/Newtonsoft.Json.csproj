@@ -76,6 +76,7 @@
   <ItemGroup>
     <Compile Include="JsonConverterAttribute.cs" />
     <Compile Include="JsonObjectAttribute.cs" />
+    <Compile Include="Linq\JTokenEqualityComparer.cs" />
     <Compile Include="MemberSerialization.cs" />
     <Compile Include="ObjectCreationHandling.cs" />
     <Compile Include="Converters\IsoDateTimeConverter.cs" />

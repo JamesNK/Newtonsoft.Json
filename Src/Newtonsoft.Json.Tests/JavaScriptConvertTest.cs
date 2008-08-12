@@ -113,5 +113,65 @@ now brown cow?", '"', true);
       string json = JavaScriptConvert.ToString(StringComparison.CurrentCultureIgnoreCase);
       Assert.AreEqual("1", json);
     }
+
+    [Test]
+    public void ObjectToString()
+    {
+      object value;
+
+      value = 1;
+      Assert.AreEqual("1", JavaScriptConvert.ToString(value));
+
+      value = 1.1;
+      Assert.AreEqual("1.1", JavaScriptConvert.ToString(value));
+
+      value = 1.1m;
+      Assert.AreEqual("1.1", JavaScriptConvert.ToString(value));
+
+      value = (float)1.1;
+      Assert.AreEqual("1.1", JavaScriptConvert.ToString(value));
+
+      value = (short)1;
+      Assert.AreEqual("1", JavaScriptConvert.ToString(value));
+
+      value = (long)1;
+      Assert.AreEqual("1", JavaScriptConvert.ToString(value));
+
+      value = (byte)1;
+      Assert.AreEqual("1", JavaScriptConvert.ToString(value));
+
+      value = (uint)1;
+      Assert.AreEqual("1", JavaScriptConvert.ToString(value));
+
+      value = (ushort)1;
+      Assert.AreEqual("1", JavaScriptConvert.ToString(value));
+
+      value = (sbyte)1;
+      Assert.AreEqual("1", JavaScriptConvert.ToString(value));
+
+      value = (ulong)1;
+      Assert.AreEqual("1", JavaScriptConvert.ToString(value));
+
+      value = new DateTime(JavaScriptConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc);
+      Assert.AreEqual(@"""\/Date(0)\/""", JavaScriptConvert.ToString(value));
+
+      value = new DateTimeOffset(JavaScriptConvert.InitialJavaScriptDateTicks, TimeSpan.Zero);
+      Assert.AreEqual(@"""\/Date(0+0000)\/""", JavaScriptConvert.ToString(value));
+
+      value = null;
+      Assert.AreEqual("null", JavaScriptConvert.ToString(value));
+
+      value = DBNull.Value;
+      Assert.AreEqual("null", JavaScriptConvert.ToString(value));
+
+      value = "I am a string";
+      Assert.AreEqual(@"""I am a string""", JavaScriptConvert.ToString(value));
+
+      value = true;
+      Assert.AreEqual("true", JavaScriptConvert.ToString(value));
+
+      value = 'c';
+      Assert.AreEqual(@"""c""", JavaScriptConvert.ToString(value));
+    }
   }
 }
