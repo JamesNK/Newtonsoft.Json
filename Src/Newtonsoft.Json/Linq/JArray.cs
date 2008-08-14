@@ -189,6 +189,10 @@ namespace Newtonsoft.Json.Linq
       }
     }
 
+    /// <summary>
+    /// Gets or sets the <see cref="Newtonsoft.Json.Linq.JToken"/> at the specified index.
+    /// </summary>
+    /// <value></value>
     public JToken this[int index]
     {
       get
@@ -204,6 +208,13 @@ namespace Newtonsoft.Json.Linq
 
     #region IList<JToken> Members
 
+    /// <summary>
+    /// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"/>.
+    /// </summary>
+    /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1"/>.</param>
+    /// <returns>
+    /// The index of <paramref name="item"/> if found in the list; otherwise, -1.
+    /// </returns>
     public int IndexOf(JToken item)
     {
       int index = 0;
@@ -218,6 +229,14 @@ namespace Newtonsoft.Json.Linq
       return -1;
     }
 
+    /// <summary>
+    /// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1"/> at the specified index.
+    /// </summary>
+    /// <param name="index">The zero-based index at which <paramref name="item"/> should be inserted.</param>
+    /// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1"/>.</param>
+    /// <exception cref="T:System.ArgumentOutOfRangeException">
+    /// 	<paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.</exception>
+    /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.</exception>
     public void Insert(int index, JToken item)
     {
       if (index == 0)
@@ -231,6 +250,13 @@ namespace Newtonsoft.Json.Linq
       }
     }
 
+    /// <summary>
+    /// Removes the <see cref="T:System.Collections.Generic.IList`1"/> item at the specified index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the item to remove.</param>
+    /// <exception cref="T:System.ArgumentOutOfRangeException">
+    /// 	<paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.</exception>
+    /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.</exception>
     public void RemoveAt(int index)
     {
       if (index < 0)
@@ -255,16 +281,32 @@ namespace Newtonsoft.Json.Linq
 
     #region ICollection<JToken> Members
 
+    /// <summary>
+    /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+    /// </summary>
+    /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
+    /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.</exception>
     public void Add(JToken item)
     {
       Add((object)item);
     }
 
+    /// <summary>
+    /// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+    /// </summary>
+    /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only. </exception>
     public void Clear()
     {
       RemoveAll();
     }
 
+    /// <summary>
+    /// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1"/> contains a specific value.
+    /// </summary>
+    /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
+    /// <returns>
+    /// true if <paramref name="item"/> is found in the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false.
+    /// </returns>
     public bool Contains(JToken item)
     {
       return Children().Contains(item);
@@ -289,6 +331,11 @@ namespace Newtonsoft.Json.Linq
       }
     }
 
+    /// <summary>
+    /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+    /// </summary>
+    /// <value></value>
+    /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.</returns>
     public int Count
     {
       get { return Children().Count(); }
@@ -299,7 +346,15 @@ namespace Newtonsoft.Json.Linq
       get { return false; }
     }
 
-    public bool Remove(JToken item)
+    /// <summary>
+    /// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+    /// </summary>
+    /// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
+    /// <returns>
+    /// true if <paramref name="item"/> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false. This method also returns false if <paramref name="item"/> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"/>.
+    /// </returns>
+    /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.</exception>
+    public new bool Remove(JToken item)
     {
       if (!((ICollection<JToken>)this).Contains(item))
         return false;

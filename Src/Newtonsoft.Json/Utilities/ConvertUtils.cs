@@ -79,7 +79,7 @@ namespace Newtonsoft.Json.Utilities
         return initialValue;
 
       if (targetType.IsInterface || targetType.IsGenericTypeDefinition || targetType.IsAbstract)
-        throw new ArgumentException(string.Format("Target type {0} is not a value type or a non-abstract class.", targetType), "targetType");
+        throw new ArgumentException("Target type {0} is not a value type or a non-abstract class.".FormatWith(CultureInfo.InvariantCulture, targetType), "targetType");
 
 
       // use Convert.ChangeType if both types are IConvertible
@@ -131,7 +131,7 @@ namespace Newtonsoft.Json.Utilities
         if (ReflectionUtils.IsNullable(targetType))
           return EnsureTypeAssignable(null, initialType, targetType);
         else
-          throw new Exception(string.Format("Can not convert null {0} into non-nullable {1}.", initialType, targetType));
+          throw new Exception("Can not convert null {0} into non-nullable {1}.".FormatWith(CultureInfo.InvariantCulture, initialType, targetType));
       }
 #if !SILVERLIGHT
       else if (initialValue is INullable)
@@ -140,7 +140,7 @@ namespace Newtonsoft.Json.Utilities
       }
 #endif
 
-      throw new Exception(string.Format("Can not convert from {0} to {1}.", initialType, targetType));
+      throw new Exception("Can not convert from {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, initialType, targetType));
     }
     #endregion
 
@@ -287,7 +287,7 @@ namespace Newtonsoft.Json.Utilities
     /// </summary>
     /// <param name="initialValue">The value to convert.</param>
     /// <param name="culture">The culture to use when converting.</param>
-    /// <param name="targetType">The type to convert the value to.</typeparam>
+    /// <param name="targetType">The type to convert the value to.</param>
     /// <param name="convertedValue">The converted value if the conversion was successful or the default value of <c>T</c> if it failed.</param>
     /// <returns>
     /// 	<c>true</c> if <c>initialValue</c> was converted successfully or is assignable; otherwise, <c>false</c>.
@@ -307,8 +307,7 @@ namespace Newtonsoft.Json.Utilities
       else if (value == null && ReflectionUtils.IsNullable(targetType))
         return null;
       else
-        throw new Exception(string.Format("Could not cast or convert from {0} to {1}.",
-          (initialType != null) ? initialType.ToString() : "{null}", targetType));
+        throw new Exception("Could not cast or convert from {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, (initialType != null) ? initialType.ToString() : "{null}", targetType));
     }
 
 #if !SILVERLIGHT
@@ -327,7 +326,7 @@ namespace Newtonsoft.Json.Utilities
       else if (nullableValue is SqlDateTime)
         return ToValue((SqlDateTime)nullableValue);
 
-      throw new Exception(string.Format("Unsupported INullable type: {0}", nullableValue.GetType()));
+      throw new Exception("Unsupported INullable type: {0}".FormatWith(CultureInfo.InvariantCulture, nullableValue.GetType()));
     }
 #endif
 

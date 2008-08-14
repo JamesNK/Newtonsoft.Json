@@ -153,6 +153,10 @@ namespace Newtonsoft.Json.Linq
       }
     }
 
+    /// <summary>
+    /// Gets or sets the <see cref="Newtonsoft.Json.Linq.JToken"/> with the specified property name.
+    /// </summary>
+    /// <value></value>
     public JToken this[string propertyName]
     {
       get
@@ -256,6 +260,11 @@ namespace Newtonsoft.Json.Linq
     }
 
     #region IDictionary<string,JToken> Members
+    /// <summary>
+    /// Adds the specified property name.
+    /// </summary>
+    /// <param name="propertyName">Name of the property.</param>
+    /// <param name="value">The value.</param>
     public void Add(string propertyName, JToken value)
     {
       Add(new JProperty(propertyName, value));
@@ -271,6 +280,11 @@ namespace Newtonsoft.Json.Linq
       get { throw new NotImplementedException(); }
     }
 
+    /// <summary>
+    /// Removes the specified property name.
+    /// </summary>
+    /// <param name="propertyName">Name of the property.</param>
+    /// <returns></returns>
     public bool Remove(string propertyName)
     {
       JProperty property = Property(propertyName);
@@ -281,6 +295,12 @@ namespace Newtonsoft.Json.Linq
       return true;
     }
 
+    /// <summary>
+    /// Tries the get value.
+    /// </summary>
+    /// <param name="propertyName">Name of the property.</param>
+    /// <param name="value">The value.</param>
+    /// <returns></returns>
     public bool TryGetValue(string propertyName, out JToken value)
     {
       JProperty property = Property(propertyName);
@@ -341,6 +361,11 @@ namespace Newtonsoft.Json.Linq
       }
     }
 
+    /// <summary>
+    /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+    /// </summary>
+    /// <value></value>
+    /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.</returns>
     public int Count
     {
       get { return Children().Count(); }

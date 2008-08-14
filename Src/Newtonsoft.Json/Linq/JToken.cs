@@ -44,6 +44,10 @@ namespace Newtonsoft.Json.Linq
     internal JToken _next;
     private static JTokenEqualityComparer _equalityComparer;
 
+    /// <summary>
+    /// Gets a comparer that can compare two tokens for value equality.
+    /// </summary>
+    /// <value>A <see cref="JTokenEqualityComparer"/> that can compare two nodes for value equality.</value>
     public static JTokenEqualityComparer EqualityComparer
     {
       get
