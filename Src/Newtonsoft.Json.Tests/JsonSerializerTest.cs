@@ -1264,5 +1264,22 @@ keyword such as type of business.""
       IncompatibleJsonAttributeClass c = new IncompatibleJsonAttributeClass();
       JavaScriptConvert.SerializeObject(c);
     }
+
+    public abstract class AbstractGenericBase<TKey>
+    {
+      public abstract TKey Id { get; set; }
+    }
+
+    public class GenericImpl : AbstractGenericBase<int>
+    {
+      public override int Id { get; set; }
+    }
+
+    [Test]
+    public void GenericAbstractProperty()
+    {
+      string json = JavaScriptConvert.SerializeObject(new GenericImpl());
+      Assert.AreEqual(@"{""Id"":0}", json);
+    }
   }
 }
