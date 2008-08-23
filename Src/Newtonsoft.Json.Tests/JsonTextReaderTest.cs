@@ -328,5 +328,22 @@ namespace Newtonsoft.Json.Tests
       reader.Read();
       Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
     }
+
+    [Test]
+    public void EscapedUnicodeText()
+    {
+      string json = @"[""\u003c""]";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+  
+      reader.Read();
+      Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+      
+      reader.Read();
+      Assert.AreEqual("<", reader.Value);
+
+      reader.Read();
+      Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+    }
   }
 }

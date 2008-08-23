@@ -473,7 +473,7 @@ namespace Newtonsoft.Json.Utilities
 
       // for some reason .NET returns multiple members when overriding a generic member on a base class
       // http://forums.msdn.microsoft.com/en-US/netfxbcl/thread/b5abbfee-e292-4a64-8907-4e3f0fb90cd9/
-      // filter members to only return the overriden member on the topmost class
+      // filter members to only return the override on the topmost class
       List<MemberInfo> distinctMembers = new List<MemberInfo>(targetMembers.Count);
 
       var groupedMembers = targetMembers.GroupBy(m => m.Name).Select(g => new { Count = g.Count(), Members = g.Cast<MemberInfo>() });
