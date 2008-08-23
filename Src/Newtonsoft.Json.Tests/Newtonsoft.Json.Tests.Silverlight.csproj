@@ -134,7 +134,7 @@
     <Compile Include="TestFixtureBase.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Newtonsoft.Json.Silverlight\Newtonsoft.Json.Silverlight.csproj">
+    <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.Silverlight.csproj">
       <Project>{DC3C6F3D-2CA1-4278-9B79-63770FB3EA2D}</Project>
       <Name>Newtonsoft.Json.Silverlight</Name>
     </ProjectReference>
