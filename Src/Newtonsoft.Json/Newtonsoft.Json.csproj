@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -76,6 +76,7 @@
   <ItemGroup>
     <Compile Include="JsonConverterAttribute.cs" />
     <Compile Include="JsonObjectAttribute.cs" />
+    <Compile Include="Linq\IJEnumerable.cs" />
     <Compile Include="Linq\JTokenEqualityComparer.cs" />
     <Compile Include="MemberSerialization.cs" />
     <Compile Include="ObjectCreationHandling.cs" />

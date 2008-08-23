@@ -38,7 +38,7 @@ namespace Newtonsoft.Json.Linq
   /// <summary>
   /// Represents an abstract JSON token.
   /// </summary>
-  public abstract class JToken : IEnumerable<JToken>
+  public abstract class JToken : IJEnumerable<JToken>
   {
     private JContainer _parent;
     internal JToken _next;
@@ -723,5 +723,10 @@ namespace Newtonsoft.Json.Linq
     }
 
     internal abstract int GetDeepHashCode();
+
+    IJEnumerable<JToken> IJEnumerable<JToken>.this[object key]
+    {
+      get { return Children()[key]; }
+    }
   }
 }

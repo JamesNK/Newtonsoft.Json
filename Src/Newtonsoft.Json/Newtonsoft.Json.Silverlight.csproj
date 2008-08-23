@@ -211,6 +211,11 @@
     <Compile Include="..\Newtonsoft.Json\Utilities\ValidationUtils.cs">
       <Link>Utilities\ValidationUtils.cs</Link>
     </Compile>
+    <Compile Include="Converters\HtmlColorConverter.cs" />
+    <Compile Include="Converters\IsoDateTimeConverter.cs" />
+    <Compile Include="Converters\JavaScriptDateTimeConverter.cs" />
+    <Compile Include="Converters\JsonDateTimeSerializationMode.cs" />
+    <Compile Include="Converters\XmlNodeConverter.cs" />
     <Compile Include="Identifier.cs" />
     <Compile Include="JavaScriptConvert.cs" />
     <Compile Include="JsonConverter.cs" />
@@ -230,6 +235,7 @@
     <Compile Include="JsonWriter.cs" />
     <Compile Include="JsonWriterException.cs" />
     <Compile Include="Linq\Extensions.cs" />
+    <Compile Include="Linq\IJEnumerable.cs" />
     <Compile Include="Linq\JArray.cs" />
     <Compile Include="Linq\JConstructor.cs" />
     <Compile Include="Linq\JContainer.cs" />
@@ -262,9 +268,6 @@
     <Compile Include="Utilities\ReflectionUtils.cs" />
     <Compile Include="Utilities\StringUtils.cs" />
     <Compile Include="Utilities\ValidationUtils.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Converters\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

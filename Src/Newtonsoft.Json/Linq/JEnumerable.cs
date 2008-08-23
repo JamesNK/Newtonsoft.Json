@@ -11,7 +11,7 @@ namespace Newtonsoft.Json.Linq
   /// Represents a collection of <see cref="JToken"/> objects.
   /// </summary>
   /// <typeparam name="T">The type of token</typeparam>
-  public struct JEnumerable<T> : IEnumerable<T> where T : JToken
+  public struct JEnumerable<T> : IJEnumerable<T> where T : JToken
   {
     /// <summary>
     /// An empty collection of <see cref="JToken"/> objects.
@@ -54,12 +54,12 @@ namespace Newtonsoft.Json.Linq
     }
 
     /// <summary>
-    /// Gets the <see cref="IEnumerable{JToken}"/> with the specified key.
+    /// Gets the <see cref="IJEnumerable{JToken}"/> with the specified key.
     /// </summary>
     /// <value></value>
-    public IEnumerable<JToken> this[object key]
+    public IJEnumerable<JToken> this[object key]
     {
-      get { return Extensions.Values<T, JToken>(_enumerable, key); }
+      get { return new JEnumerable<JToken>(Extensions.Values<T, JToken>(_enumerable, key)); }
     }
   }
 }
