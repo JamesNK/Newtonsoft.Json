@@ -281,10 +281,10 @@ namespace Newtonsoft.Json.Linq
     }
 
     /// <summary>
-    /// Removes the specified property name.
+    /// Removes the property with the specified name.
     /// </summary>
     /// <param name="propertyName">Name of the property.</param>
-    /// <returns></returns>
+    /// <returns>true if item was successfully removed; otherwise, false.</returns>
     public bool Remove(string propertyName)
     {
       JProperty property = Property(propertyName);
@@ -300,7 +300,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="propertyName">Name of the property.</param>
     /// <param name="value">The value.</param>
-    /// <returns></returns>
+    /// <returns>true if a value was successfully retrieved; otherwise, false.</returns>
     public bool TryGetValue(string propertyName, out JToken value)
     {
       JProperty property = Property(propertyName);

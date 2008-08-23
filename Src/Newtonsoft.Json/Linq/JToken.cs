@@ -246,8 +246,9 @@ namespace Newtonsoft.Json.Linq
     }
 
     /// <summary>
-    /// Returns a collection of the child tokens of this token, in document order.
+    /// Returns a collection of the child tokens of this token, in document order, filtered by the specified type.
     /// </summary>
+    /// <typeparam name="T">The type to filter the child tokens on.</typeparam>
     /// <returns>A <see cref="JEnumerable{T}"/> containing the child tokens of this <see cref="JToken"/>, in document order.</returns>
     public JEnumerable<T> Children<T>() where T : JToken
     {
@@ -257,6 +258,7 @@ namespace Newtonsoft.Json.Linq
     /// <summary>
     /// Returns a collection of the child values of this token, in document order.
     /// </summary>
+    /// <typeparam name="T">The type to convert the values to.</typeparam>
     /// <returns>A <see cref="IEnumerable{T}"/> containing the child values of this <see cref="JToken"/>, in document order.</returns>
     public virtual IEnumerable<T> Values<T>()
     {
@@ -712,7 +714,13 @@ namespace Newtonsoft.Json.Linq
     }
     #endregion
 
-    IEnumerator IEnumerable.GetEnumerator()
+    /// <summary>
+    /// Returns an enumerator that iterates through a collection.
+    /// </summary>
+    /// <returns>
+    /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+    /// </returns>
+    public IEnumerator GetEnumerator()
     {
       return ((IEnumerable<JToken>)this).GetEnumerator();
     }
@@ -726,7 +734,7 @@ namespace Newtonsoft.Json.Linq
 
     IJEnumerable<JToken> IJEnumerable<JToken>.this[object key]
     {
-      get { return Children()[key]; }
+      get { return this[key]; }
     }
   }
 }

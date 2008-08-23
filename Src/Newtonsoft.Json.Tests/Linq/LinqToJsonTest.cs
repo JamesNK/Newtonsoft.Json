@@ -514,6 +514,10 @@ keyword such as type of business.""
 
       Assert.AreEqual(2, o["channel"]["item"].Children()["title"].Count());
       Assert.AreEqual(0, o["channel"]["item"].Children()["monkey"].Count());
+
+      Assert.AreEqual("Json.NET 1.3 + New license + Now on CodePlex", (string)o["channel"]["item"][0]["title"]);
+
+      CollectionAssert.AreEqual(new string[] { "Json.NET 1.3 + New license + Now on CodePlex", "LINQ to JSON beta" }, o["channel"]["item"].Children().Values<string>("title").ToArray());
     }
 
     [Test]
@@ -665,5 +669,101 @@ keyword such as type of business.""
       Assert.IsInstanceOfType(typeof(JArray), a);
       Assert.AreEqual(5, a.Count());
     }
+
+    [Test]
+    public void AsJEnumerable()
+    {
+      JObject o = null;
+      IJEnumerable<JToken> enumerable = null;
+
+      enumerable = o.AsJEnumerable();
+      Assert.IsNull(enumerable);
+    
+      o =
+        new JObject(
+          new JProperty("Test1", new DateTime(2000, 10, 15, 5, 5, 5, DateTimeKind.Utc)),
+          new JProperty("Test2", new DateTimeOffset(2000, 10, 15, 5, 5, 5, new TimeSpan(11, 11, 0))),
+          new JProperty("Test3", "Test3Value"),
+          new JProperty("Test4", null)
+        );
+
+      enumerable = o.AsJEnumerable();
+      Assert.IsNotNull(enumerable);
+      Assert.AreEqual(o, enumerable);
+
+      DateTime d = enumerable["Test1"].Value<DateTime>();
+
+      Assert.AreEqual(new DateTime(2000, 10, 15, 5, 5, 5, DateTimeKind.Utc), d);
+    }
+
+    [Test]
+    public void ChildrenExtension()
+    {
+      string json = @"[
+                        {
+                          ""title"": ""James Newton-King"",
+                          ""link"": ""http://james.newtonking.com"",
+                          ""description"": ""James Newton-King's blog."",
+                          ""item"": [
+                            {
+                              ""title"": ""Json.NET 1.3 + New license + Now on CodePlex"",
+                              ""description"": ""Annoucing the release of Json.NET 1.3, the MIT license and the source being available on CodePlex"",
+                              ""link"": ""http://james.newtonking.com/projects/json-net.aspx"",
+                              ""category"": [
+                                ""Json.NET"",
+                                ""CodePlex""
+                              ]
+                            },
+                            {
+                              ""title"": ""LINQ to JSON beta"",
+                              ""description"": ""Annoucing LINQ to JSON"",
+                              ""link"": ""http://james.newtonking.com/projects/json-net.aspx"",
+                              ""category"": [
+                                ""Json.NET"",
+                                ""LINQ""
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          ""title"": ""James Newton-King"",
+                          ""link"": ""http://james.newtonking.com"",
+                          ""description"": ""James Newton-King's blog."",
+                          ""item"": [
+                            {
+                              ""title"": ""Json.NET 1.3 + New license + Now on CodePlex"",
+                              ""description"": ""Annoucing the release of Json.NET 1.3, the MIT license and the source being available on CodePlex"",
+                              ""link"": ""http://james.newtonking.com/projects/json-net.aspx"",
+                              ""category"": [
+                                ""Json.NET"",
+                                ""CodePlex""
+                              ]
+                            },
+                            {
+                              ""title"": ""LINQ to JSON beta"",
+                              ""description"": ""Annoucing LINQ to JSON"",
+                              ""link"": ""http://james.newtonking.com/projects/json-net.aspx"",
+                              ""category"": [
+                                ""Json.NET"",
+                                ""LINQ""
+                              ]
+                            }
+                          ]
+                        }
+                      ]";
+
+      JArray o = JArray.Parse(json);
+
+      Assert.AreEqual(4, o.Children()["item"].Children()["title"].Count());
+      CollectionAssert.AreEqual(new string[]
+        {
+          "Json.NET 1.3 + New license + Now on CodePlex",
+          "LINQ to JSON beta",
+          "Json.NET 1.3 + New license + Now on CodePlex",
+          "LINQ to JSON beta"
+        },
+        o.Children()["item"].Children()["title"].Values<string>().ToArray());
+    }
+
   }
 }

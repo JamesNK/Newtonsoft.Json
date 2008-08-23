@@ -162,7 +162,7 @@ namespace Newtonsoft.Json.Linq
     /// <summary>
     /// Returns a collection of the child values of this token, in document order.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">The type to convert the values to.</typeparam>
     /// <returns>
     /// A <see cref="IEnumerable{T}"/> containing the child values of this <see cref="JToken"/>, in document order.
     /// </returns>

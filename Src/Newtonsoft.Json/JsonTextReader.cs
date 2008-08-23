@@ -795,7 +795,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Changes the <see cref="P:CurrentState"/> to Closed. 
+    /// Changes the state to closed. 
     /// </summary>
     public override void Close()
     {

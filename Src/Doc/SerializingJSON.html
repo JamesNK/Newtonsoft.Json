@@ -93,7 +93,7 @@
 <p>A collection of JsonConverters that will be used during serialization and 
     deserialization.</p>
           <h3>Serialization Attributes</h3>
-          <p>There are a number of optional attributes that can be placed on a class to control how it is serialized.</p>
+          <p>There are a number of attributes that can be placed on a class to control how it is serialized.</p>
           
 <div class="overflowpanel"> <div class="code">
 
@@ -101,11 +101,19 @@
 <pre style="margin: 0px;">[<span style="color: #2b91af;">JsonObject</span>(<span style="color: #2b91af;">MemberSerialization</span>.OptIn)]</pre>
 <pre style="margin: 0px;"><span style="color: blue;">public</span> <span style="color: blue;">class</span> <span style="color: #2b91af;">Person</span></pre>
 <pre style="margin: 0px;">{</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: green;">// "John Smith"</span></pre>
 <pre style="margin: 0px;">&nbsp; [<span style="color: #2b91af;">JsonProperty</span>]</pre>
 <pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: blue;">string</span> Name { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
 <pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: green;">// "2000-12-15T22:11:03"</span></pre>
 <pre style="margin: 0px;">&nbsp; [<span style="color: #2b91af;">JsonProperty</span>]</pre>
+<pre style="margin: 0px;">&nbsp; [<span style="color: #2b91af;">JsonConverter</span>(<span style="color: blue;">typeof</span>(<span style="color: #2b91af;">IsoDateTimeConverter</span>))]</pre>
 <pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: #2b91af;">DateTime</span> BirthDate { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: green;">// new Date(976918263055)</span></pre>
+<pre style="margin: 0px;">&nbsp; [<span style="color: #2b91af;">JsonProperty</span>]</pre>
+<pre style="margin: 0px;">&nbsp; [<span style="color: #2b91af;">JsonConverter</span>(<span style="color: blue;">typeof</span>(<span style="color: #2b91af;">JavaScriptDateTimeConverter</span>))]</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: #2b91af;">DateTime</span> LastModified { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
 <pre style="margin: 0px;">&nbsp;</pre>
 <pre style="margin: 0px;">&nbsp; <span style="color: green;">// not serialized</span></pre>
 <pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: blue;">string</span> Department { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
@@ -120,6 +128,13 @@
 <p>Allows the name of the serialized member to be customized. The attribute also indicates that a member should be serialized when member serialization is set to opt-in.</p>
     <h5>JsonIgnoreAttribute</h5>
 <p>Excludes a field or property from serialization.</p>
+    <h5>JsonConverterAttribute</h5>
+<p>The JsonConverterAttribute specifies which JsonSerializer is used to convert an object.</p>
+<p>The attribute can be placed on a class or a member. When placed on a class the JsonConverter 
+    specified by the attribute will be the default way of serializing that class. When the attribute is on a field
+or property then the specified JsonConverter will always be used to serialize that value.</p>
+<p>The priority of which JsonConverter is used is member attribute then class attribute and
+finally any converters passed to the JsonSerializer.</p>
     <h3>JsonConverters</h3>
 <p>JsonConverters allows JSON to be manually be written during serialization and read during deserialization. This is useful for particularly complex JSON structures or for when you want to change how a type is serialized.</p>
 <p>To create your own custom converter inherit from the JsonConverter class. Json.NET also comes with a number of JsonConverters:</p>
