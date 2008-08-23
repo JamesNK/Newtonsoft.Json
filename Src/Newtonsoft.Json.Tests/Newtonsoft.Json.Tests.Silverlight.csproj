@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{0D8C3C2E-62C6-4C93-9377-6F74DD6BFD93}</ProjectGuid>
     <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
@@ -35,7 +35,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework, Version=2.4.7.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL" />
+    <Reference Include="nunit.framework.silverlight, Version=2.4.7.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\nunit.framework.silverlight.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Serialization">
       <Private>True</Private>
     </Reference>
@@ -111,12 +114,24 @@
     <Compile Include="..\Newtonsoft.Json.Tests\TestFixtureBase.cs">
       <Link>TestFixtureBase.cs</Link>
     </Compile>
-    <Compile Include="SilverlightTests.cs" />
+    <Compile Include="Converters\IsoDateTimeConverterTests.cs" />
+    <Compile Include="Converters\JavaScriptDateTimeConverterTests.cs" />
+    <Compile Include="Converters\XmlNodeConverterTest.cs" />
+    <Compile Include="DateTimeTestClass.cs" />
+    <Compile Include="JavaScriptConvertTest.cs" />
+    <Compile Include="JsonSerializerTest.cs" />
+    <Compile Include="JsonTextReaderTest.cs" />
+    <Compile Include="JsonTextWriterTest.cs" />
+    <Compile Include="JsonTokenReaderTest.cs" />
+    <Compile Include="JsonTokenWriterTest.cs" />
+    <Compile Include="Linq\JArrayTests.cs" />
+    <Compile Include="Linq\JObjectTests.cs" />
+    <Compile Include="Linq\JTokenEqualityComparerTests.cs" />
+    <Compile Include="Linq\JTokenTests.cs" />
+    <Compile Include="Linq\JValueTests.cs" />
+    <Compile Include="Linq\LinqToJsonTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="lib\nunit.framework.dll" />
-    <Content Include="readme.txt" />
+    <Compile Include="TestFixtureBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Newtonsoft.Json.Silverlight\Newtonsoft.Json.Silverlight.csproj">

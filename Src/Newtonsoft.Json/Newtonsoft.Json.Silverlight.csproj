@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{DC3C6F3D-2CA1-4278-9B79-63770FB3EA2D}</ProjectGuid>
     <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
@@ -211,7 +211,60 @@
     <Compile Include="..\Newtonsoft.Json\Utilities\ValidationUtils.cs">
       <Link>Utilities\ValidationUtils.cs</Link>
     </Compile>
+    <Compile Include="Identifier.cs" />
+    <Compile Include="JavaScriptConvert.cs" />
+    <Compile Include="JsonConverter.cs" />
+    <Compile Include="JsonConverterAttribute.cs" />
+    <Compile Include="JsonConverterCollection.cs" />
+    <Compile Include="JsonHandler.cs" />
+    <Compile Include="JsonIgnoreAttribute.cs" />
+    <Compile Include="JsonObjectAttribute.cs" />
+    <Compile Include="JsonPropertyAttribute.cs" />
+    <Compile Include="JsonReader.cs" />
+    <Compile Include="JsonReaderException.cs" />
+    <Compile Include="JsonSerializationException.cs" />
+    <Compile Include="JsonSerializer.cs" />
+    <Compile Include="JsonTextReader.cs" />
+    <Compile Include="JsonTextWriter.cs" />
+    <Compile Include="JsonToken.cs" />
+    <Compile Include="JsonWriter.cs" />
+    <Compile Include="JsonWriterException.cs" />
+    <Compile Include="Linq\Extensions.cs" />
+    <Compile Include="Linq\JArray.cs" />
+    <Compile Include="Linq\JConstructor.cs" />
+    <Compile Include="Linq\JContainer.cs" />
+    <Compile Include="Linq\JEnumerable.cs" />
+    <Compile Include="Linq\JObject.cs" />
+    <Compile Include="Linq\JProperty.cs" />
+    <Compile Include="Linq\JsonTokenReader.cs" />
+    <Compile Include="Linq\JsonTokenType.cs" />
+    <Compile Include="Linq\JsonTokenWriter.cs" />
+    <Compile Include="Linq\JToken.cs" />
+    <Compile Include="Linq\JTokenEqualityComparer.cs" />
+    <Compile Include="Linq\JValue.cs" />
+    <Compile Include="MemberMapping.cs" />
+    <Compile Include="MemberMappingCollection.cs" />
+    <Compile Include="MemberSerialization.cs" />
+    <Compile Include="MissingMemberHandling.cs" />
+    <Compile Include="NullValueHandling.cs" />
+    <Compile Include="ObjectCreationHandling.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReferenceLoopHandling.cs" />
+    <Compile Include="StringBuffer.cs" />
+    <Compile Include="Utilities\CollectionUtils.cs" />
+    <Compile Include="Utilities\ConvertUtils.cs" />
+    <Compile Include="Utilities\DateTimeUtils.cs" />
+    <Compile Include="Utilities\DictionaryWrapper.cs" />
+    <Compile Include="Utilities\JavaScriptUtils.cs" />
+    <Compile Include="Utilities\ListWrapper.cs" />
+    <Compile Include="Utilities\MathUtils.cs" />
+    <Compile Include="Utilities\MiscellaneousUtils.cs" />
+    <Compile Include="Utilities\ReflectionUtils.cs" />
+    <Compile Include="Utilities\StringUtils.cs" />
+    <Compile Include="Utilities\ValidationUtils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Converters\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -25,17 +25,24 @@ using System.Security;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
+#if !SILVERLIGHT
 [assembly: AssemblyTitle("Newtonsoft Json.NET")]
+[assembly: InternalsVisibleTo("Newtonsoft.Json.Tests")]
+[assembly: AllowPartiallyTrustedCallers]
+#else
+[assembly: AssemblyTitle("Newtonsoft Json.NET Silverlight")]
+[assembly: InternalsVisibleTo("Newtonsoft.Json.Tests.Silverlight")]
+#endif
+
+
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Newtonsoft")]
 [assembly: AssemblyProduct("Newtonsoft Json.NET")]
-[assembly: AssemblyCopyright("Copyright © Newtonsoft 2006")]
+[assembly: AssemblyCopyright("Copyright © Newtonsoft 2008")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-[assembly: InternalsVisibleTo("Newtonsoft.Json.Tests")]
-[assembly: AllowPartiallyTrustedCallers]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM componenets.  If you need to access a type in this assembly from 
@@ -54,5 +61,5 @@ using System.Security;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("2.0.0.0")]
-[assembly: AssemblyFileVersion("2.0.0.0")]
+[assembly: AssemblyVersion("3.0.0.0")]
+[assembly: AssemblyFileVersion("3.0.0.0")]
