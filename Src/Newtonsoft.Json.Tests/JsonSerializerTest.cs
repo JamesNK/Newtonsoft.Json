@@ -201,12 +201,12 @@ namespace Newtonsoft.Json.Tests
 
     // "2000-12-15T22:11:03"
     [JsonProperty]
-    [JsonConverter(typeof(IsoDateTimeConverter))]
+    //[JsonConverter(typeof(IsoDateTimeConverter))]
     public DateTime BirthDate { get; set; }
 
     // new Date(976918263055)
     [JsonProperty]
-    [JsonConverter(typeof(JavaScriptDateTimeConverter))]
+    //[JsonConverter(typeof(JavaScriptDateTimeConverter))]
     public DateTime LastModified { get; set; }
 
     // not serialized
