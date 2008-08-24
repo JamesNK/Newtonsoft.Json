@@ -1,4 +1,4 @@
-﻿<project schemaVersion="1.6.0.2">
+﻿<project schemaVersion="1.6.0.7">
     <assemblies>
         <assembly assemblyPath="D:\Newtonsoft\Projects\Json\trunk\Src\Newtonsoft.Json\bin\Release\Newtonsoft.Json.dll" xmlCommentsPath="D:\Newtonsoft\Projects\Json\trunk\Src\Newtonsoft.Json\bin\Release\Newtonsoft.Json.xml" commentsOnly="False" />
     </assemblies>
@@ -9,15 +9,16 @@
         <namespaceSummaryItem name="Newtonsoft.Json.Linq" isDocumented="True">The &lt;b&gt;Newtonsoft.Json.Linq&lt;/b&gt; namespace provides classes that are used to implement LINQ to JSON.</namespaceSummaryItem>
         <namespaceSummaryItem name="Newtonsoft.Json.Utilities" isDocumented="True" />
     </namespaceSummaries>
-    <additionalContent>
+    <additionalContent contentSiteMap=".\doc.sitemap" topicFileTransform="">
         <contentItem sourcePath=".\SerializingJSON.html" destPath="" excludeItems="False" />
         <contentItem sourcePath=".\styles.css" destPath="" excludeItems="False" />
         <contentItem sourcePath=".\custom.css" destPath="" excludeItems="False" />
         <contentItem sourcePath=".\LINQtoJSON.html" destPath="" excludeItems="False" />
         <contentItem sourcePath=".\ReadingWritingJSON.html" destPath="" excludeItems="False" />
+        <contentItem sourcePath=".\donate.gif" destPath="" excludeItems="False" />
     </additionalContent>
     <ProjectSummary />
-    <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, Namespace</MissingTags>
+    <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, Namespace, TypeParameter</MissingTags>
     <VisibleItems>InheritedMembers, InheritedFrameworkMembers, Protected, SealedProtected</VisibleItems>
     <HtmlHelp1xCompilerPath path="" />
     <HtmlHelp2xCompilerPath path="" />
@@ -26,12 +27,11 @@
     <WorkingPath path="" />
     <CleanIntermediates>True</CleanIntermediates>
     <KeepLogFile>True</KeepLogFile>
+    <BuildLogFile path="" />
     <HelpFileFormat>Help1xAndWebsite</HelpFileFormat>
-    <PurgeDuplicateTopics>True</PurgeDuplicateTopics>
     <CppCommentsFixup>False</CppCommentsFixup>
     <FrameworkVersion>3.5</FrameworkVersion>
-    <BinaryTOC>True</BinaryTOC>
-    <IncludeFavorites>False</IncludeFavorites>
+    <IndentHtml>False</IndentHtml>
     <Preliminary>False</Preliminary>
     <RootNamespaceContainer>False</RootNamespaceContainer>
     <RootNamespaceTitle />
@@ -41,6 +41,7 @@
     <CopyrightHref />
     <CopyrightText />
     <FeedbackEMailAddress />
+    <FeedbackEMailLinkText />
     <HeaderText />
     <FooterText />
     <ProjectLinkType>Local</ProjectLinkType>
@@ -50,7 +51,11 @@
     <NamingMethod>MemberName</NamingMethod>
     <SyntaxFilters>Standard</SyntaxFilters>
     <ShowFeedbackControl>False</ShowFeedbackControl>
+    <BinaryTOC>True</BinaryTOC>
+    <IncludeFavorites>False</IncludeFavorites>
+    <CollectionTocStyle>Hierarchical</CollectionTocStyle>
+    <IncludeStopWordList>True</IncludeStopWordList>
+    <PlugInNamespaces>ms.vsipcc+, ms.vsexpresscc+</PlugInNamespaces>
+    <HelpFileVersion>1.0.0.0</HelpFileVersion>
     <ContentPlacement>AboveNamespaces</ContentPlacement>
-    <ContentSiteMap path=".\doc.sitemap" />
-    <TopicFileTransform path="" />
 </project>
