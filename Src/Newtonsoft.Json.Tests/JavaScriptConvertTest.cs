@@ -173,5 +173,38 @@ now brown cow?", '"', true);
       value = 'c';
       Assert.AreEqual(@"""c""", JavaScriptConvert.ToString(value));
     }
+
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "After parsing a value an unexpected character was encoutered: t")]
+    public void TestInvalidStrings()
+    {
+      string orig = @"this is a string ""that has quotes"" ";
+
+      string serialized = JavaScriptConvert.SerializeObject(orig);
+
+      // *** Make string invalid by stripping \" \"
+      serialized = serialized.Replace(@"\""", "\"");
+
+      string result = JavaScriptConvert.DeserializeObject<string>(serialized);
+    }
+
+    [Test]
+    public void DeserializeValueObjects()
+    {
+      int i = JavaScriptConvert.DeserializeObject<int>("1");
+      Assert.AreEqual(1, i);
+
+      DateTimeOffset d = JavaScriptConvert.DeserializeObject<DateTimeOffset>(@"""\/Date(-59011455539000+0000)\/""");
+      Assert.AreEqual(new DateTimeOffset(new DateTime(100, 1, 1, 1, 1, 1, DateTimeKind.Utc)), d);
+
+      bool b = JavaScriptConvert.DeserializeObject<bool>("true");
+      Assert.AreEqual(true, b);
+
+      object n = JavaScriptConvert.DeserializeObject<object>("null");
+      Assert.AreEqual(null, n);
+
+      object u = JavaScriptConvert.DeserializeObject<object>("undefined");
+      Assert.AreEqual(null, u);
+    }
   }
 }

@@ -592,6 +592,10 @@ namespace Newtonsoft.Json
 
       } while (!end && MoveNext());
 
+      // hit the end of the reader before the number ended. clear the last number value
+      if (!end)
+        ClearCurrentChar();
+
       string number = _buffer.ToString();
       object numberValue;
       JsonToken numberType;
@@ -678,9 +682,17 @@ namespace Newtonsoft.Json
       bool match = MatchValue(value);
 
       if (!noTrailingNonSeperatorCharacters)
+      {
         return match;
+      }
       else
-        return (match && (!MoveNext() || CurrentIsSeperator()));
+      {
+        bool matchAndNoTrainingNonSeperatorCharacters = (match && (!MoveNext() || CurrentIsSeperator()));
+        if (!CurrentIsSeperator())
+          ClearCurrentChar();
+
+        return matchAndNoTrainingNonSeperatorCharacters;
+      }
     }
 
     private bool CurrentIsSeperator()

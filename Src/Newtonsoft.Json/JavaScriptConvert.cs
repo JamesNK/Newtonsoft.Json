@@ -546,6 +546,9 @@ namespace Newtonsoft.Json
       using (JsonReader jsonReader = new JsonTextReader(sr))
       {
         deserializedValue = jsonSerializer.Deserialize(jsonReader, type);
+
+        if (jsonReader.Read())
+          throw new JsonSerializationException("Additional text found in JSON string after finishing deserializing object.");
       }
 
       return deserializedValue;
