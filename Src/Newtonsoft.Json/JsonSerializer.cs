@@ -177,10 +177,10 @@ namespace Newtonsoft.Json
     /// Deserializes the Json structure contained by the specified <see cref="StringReader"/>
     /// into an instance of the specified type.
     /// </summary>
-    /// <param name="reader">The <see cref="JsonReader"/> containing the object.</param>
+    /// <param name="reader">The <see cref="TextReader"/> containing the object.</param>
     /// <param name="objectType">The <see cref="Type"/> of object being deserialized.</param>
     /// <returns>The instance of <paramref name="objectType"/> being deserialized.</returns>
-    public object Deserialize(StringReader reader, Type objectType)
+    public object Deserialize(TextReader reader, Type objectType)
     {
       return Deserialize(new JsonTextReader(reader), objectType);
     }

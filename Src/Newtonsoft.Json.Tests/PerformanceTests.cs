@@ -36,7 +36,7 @@ namespace Newtonsoft.Json.Tests
       StringWriter sw = new StringWriter();
       Newtonsoft.Json.JsonTextWriter writer = new JsonTextWriter(sw);
 
-      if (false)
+      if (true)
         writer.Formatting = Formatting.Indented;
       else
         writer.Formatting = Formatting.None;
@@ -61,9 +61,8 @@ namespace Newtonsoft.Json.Tests
 
 
     [Test]
-    public void PerformanceTest2()
+    public void Serialize()
     {
-
       TestClass test = new TestClass();
 
       test.Address1.Address = "fff Street";
@@ -97,6 +96,57 @@ namespace Newtonsoft.Json.Tests
 
       Console.WriteLine("{0}", timed.ElapsedMilliseconds + " ms");
       Console.WriteLine("{0}", json);
+    }
+
+    [Test]
+    public void Deserialize()
+    {
+      string json = @"{
+  ""strings"": [
+    ""Rick"",
+    ""Markus egger ][, (2nd)"",
+    ""Kevin McNeish""
+  ],
+  ""dictionary"": {
+    ""Val asd1"": 1,
+    ""Val2"": 3,
+    ""Val3"": 4
+  },
+  ""Name"": ""Rick"",
+  ""Now"": ""\/Date(1220867547892+1200)\/"",
+  ""BigNumber"": 34123123123.121,
+  ""Address1"": {
+    ""Address"": ""fff Street"",
+    ""Phone"": ""(503) 814-6335"",
+    ""Entered"": ""\/Date(1222588347892+1300)\/""
+  },
+  ""Addresses"": [
+    {
+      ""Address"": ""array address"",
+      ""Phone"": ""(503) 814-6335"",
+      ""Entered"": ""\/Date(1220777547892+1200)\/""
+    },
+    {
+      ""Address"": ""array 2 address"",
+      ""Phone"": ""(503) 814-6335"",
+      ""Entered"": ""\/Date(1220691147893+1200)\/""
+    }
+  ]
+}";
+
+      for (int x = 0; x < 10000; x++)
+      {
+        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
+        serializer.NullValueHandling = NullValueHandling.Ignore;
+
+        serializer.ObjectCreationHandling = Newtonsoft.Json.ObjectCreationHandling.Replace;
+        serializer.MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore;
+        serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+
+        TestClass test = (TestClass)serializer.Deserialize(new StringReader(json), typeof(TestClass));
+      }
+
     }
   }
 
