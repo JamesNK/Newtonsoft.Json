@@ -389,7 +389,7 @@ namespace Newtonsoft.Json
     {
       Type converterType;
 
-      if (!ConverterTypeCache.ContainsKey(attributeProvider))
+      if (!ConverterTypeCache.TryGetValue(attributeProvider, out converterType))
       {
         JsonConverterAttribute converterAttribute = ReflectionUtils.GetAttribute<JsonConverterAttribute>(attributeProvider, true);
         converterType = (converterAttribute != null)
@@ -397,10 +397,6 @@ namespace Newtonsoft.Json
           : null;
 
         ConverterTypeCache[attributeProvider] = converterType;
-      }
-      else
-      {
-        converterType = ConverterTypeCache[attributeProvider];
       }
 
       if (converterType != null)
