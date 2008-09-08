@@ -44,13 +44,15 @@ namespace Newtonsoft.Json
   /// </summary>
   public class JsonSerializer
   {
+    private static readonly Dictionary<ICustomAttributeProvider, Type> ConverterTypeCache = new Dictionary<ICustomAttributeProvider, Type>();
+    private static Dictionary<Type, MemberMappingCollection> TypeMemberMappings = new Dictionary<Type,MemberMappingCollection>();
+
     private ReferenceLoopHandling _referenceLoopHandling;
     private MissingMemberHandling _missingMemberHandling;
     private ObjectCreationHandling _objectCreationHandling;
     private NullValueHandling _nullValueHandling;
     private int _level;
     private JsonConverterCollection _converters;
-    private Dictionary<Type, MemberMappingCollection> _typeMemberMappings;
 
     /// <summary>
     /// Get or set how reference loops (e.g. a class referencing itself) is handled.
@@ -255,7 +257,7 @@ namespace Newtonsoft.Json
               if (existingValue == null)
                 value = CreateAndPopulateList(reader, objectType);
               else
-                value = PopulateList(CollectionUtils.CreateListWrapper(existingValue), ReflectionUtils.GetListItemType(objectType), reader);
+                value = PopulateList(CollectionUtils.CreateCollectionWrapper(existingValue), ReflectionUtils.GetCollectionItemType(objectType), reader);
             }
             else
             {
@@ -317,16 +319,13 @@ namespace Newtonsoft.Json
 
     private MemberMappingCollection GetMemberMappings(Type objectType)
     {
-      if (_typeMemberMappings == null)
-        _typeMemberMappings = new Dictionary<Type, MemberMappingCollection>();
-
       MemberMappingCollection memberMappings;
 
-      if (_typeMemberMappings.TryGetValue(objectType, out memberMappings))
+      if (TypeMemberMappings.TryGetValue(objectType, out memberMappings))
         return memberMappings;
 
       memberMappings = CreateMemberMappings(objectType);
-      _typeMemberMappings[objectType] = memberMappings;
+      TypeMemberMappings[objectType] = memberMappings;
 
       return memberMappings;
     }
@@ -388,11 +387,25 @@ namespace Newtonsoft.Json
 
     private JsonConverter GetConverter(ICustomAttributeProvider attributeProvider, Type targetConvertedType)
     {
-      JsonConverterAttribute converterAttribute = ReflectionUtils.GetAttribute<JsonConverterAttribute>(attributeProvider, true);
+      Type converterType;
 
-      if (converterAttribute != null)
+      if (!ConverterTypeCache.ContainsKey(attributeProvider))
       {
-        JsonConverter memberConverter = converterAttribute.CreateJsonConverterInstance();
+        JsonConverterAttribute converterAttribute = ReflectionUtils.GetAttribute<JsonConverterAttribute>(attributeProvider, true);
+        converterType = (converterAttribute != null)
+          ? converterAttribute.ConverterType
+          : null;
+
+        ConverterTypeCache[attributeProvider] = converterType;
+      }
+      else
+      {
+        converterType = ConverterTypeCache[attributeProvider];
+      }
+
+      if (converterType != null)
+      {
+        JsonConverter memberConverter = JsonConverterAttribute.CreateJsonConverterInstance(converterType);
 
         if (!memberConverter.CanConvert(targetConvertedType))
           throw new JsonSerializationException("JsonConverter {0} on {1} is not compatible with member type {2}.".FormatWith(CultureInfo.InvariantCulture, memberConverter.GetType().Name, attributeProvider, targetConvertedType.Name));
@@ -490,7 +503,7 @@ namespace Newtonsoft.Json
 
     private object CreateAndPopulateList(JsonReader reader, Type objectType)
     {
-      return CollectionUtils.CreateAndPopulateList(objectType, l => PopulateList(l, ReflectionUtils.GetListItemType(objectType), reader));
+      return CollectionUtils.CreateAndPopulateList(objectType, l => PopulateList(l, ReflectionUtils.GetCollectionItemType(objectType), reader));
     }
 
     private IList PopulateList(IList list, Type listItemType, JsonReader reader)

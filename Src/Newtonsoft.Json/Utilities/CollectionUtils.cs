@@ -366,6 +366,33 @@ namespace Newtonsoft.Json.Utilities
         return false;
     }
 
+    public static IWrappedCollection CreateCollectionWrapper(object list)
+    {
+      ValidationUtils.ArgumentNotNull(list, "list");
+
+      Type collectionDefinition;
+      if (ReflectionUtils.IsSubClass(list.GetType(), typeof(ICollection<>), out collectionDefinition))
+      {
+        Type collectionItemType = ReflectionUtils.GetCollectionItemType(collectionDefinition);
+
+        // Activator.CreateInstance throws AmbiguousMatchException. Manually invoke constructor
+        Func<Type, IList<object>, object> instanceCreator = (t, a) =>
+        {
+          ConstructorInfo c = t.GetConstructor(new[] { collectionDefinition });
+          return c.Invoke(new[] { list });
+        };
+
+        return (IWrappedCollection)ReflectionUtils.CreateGeneric(typeof(CollectionWrapper<>), new[] { collectionItemType }, instanceCreator, list);
+      }
+      else if (list is IList)
+      {
+        return new CollectionWrapper<object>((IList)list);
+      }
+      else
+      {
+        throw new Exception("Can not create ListWrapper for type {0}.".FormatWith(CultureInfo.InvariantCulture, list.GetType()));
+      }
+    }
     public static IWrappedList CreateListWrapper(object list)
     {
       ValidationUtils.ArgumentNotNull(list, "list");
@@ -373,7 +400,7 @@ namespace Newtonsoft.Json.Utilities
       Type listDefinition;
       if (ReflectionUtils.IsSubClass(list.GetType(), typeof(IList<>), out listDefinition))
       {
-        Type listItemType = ReflectionUtils.GetListItemType(listDefinition);
+        Type collectionItemType = ReflectionUtils.GetCollectionItemType(listDefinition);
 
         // Activator.CreateInstance throws AmbiguousMatchException. Manually invoke constructor
         Func<Type, IList<object>, object> instanceCreator = (t, a) =>
@@ -382,7 +409,7 @@ namespace Newtonsoft.Json.Utilities
           return c.Invoke(new[] { list });
         };
 
-        return (IWrappedList)ReflectionUtils.CreateGeneric(typeof(ListWrapper<>), new[] { listItemType }, instanceCreator, list);
+        return (IWrappedList)ReflectionUtils.CreateGeneric(typeof(ListWrapper<>), new[] { collectionItemType }, instanceCreator, list);
       }
       else if (list is IList)
       {
@@ -478,7 +505,7 @@ namespace Newtonsoft.Json.Utilities
       }
       else if (listType.IsGenericType && listType.GetGenericTypeDefinition() == typeof(IList<>))
       {
-        list = CollectionUtils.CreateGenericList(ReflectionUtils.GetListItemType(listType));
+        list = CollectionUtils.CreateGenericList(ReflectionUtils.GetCollectionItemType(listType));
       }
       else
       {
@@ -494,7 +521,7 @@ namespace Newtonsoft.Json.Utilities
       if (isReadOnlyOrFixedSize)
       {
         if (listType.IsArray)
-          list = ToArray(((List<object>)list).ToArray(), ReflectionUtils.GetListItemType(listType));
+          list = ToArray(((List<object>)list).ToArray(), ReflectionUtils.GetCollectionItemType(listType));
         else if (ReflectionUtils.IsSubClass(listType, typeof(ReadOnlyCollection<>)))
           list = (IList)Activator.CreateInstance(listType, list);
       }

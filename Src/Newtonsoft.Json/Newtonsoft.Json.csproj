@@ -116,6 +116,7 @@
     <Compile Include="NullValueHandling.cs" />
     <Compile Include="ReferenceLoopHandling.cs" />
     <Compile Include="Utilities\ConvertUtils.cs" />
+    <Compile Include="Utilities\CollectionWrapper.cs" />
     <Compile Include="Utilities\DateTimeUtils.cs" />
     <Compile Include="Utilities\DictionaryWrapper.cs" />
     <Compile Include="Utilities\JavaScriptUtils.cs" />

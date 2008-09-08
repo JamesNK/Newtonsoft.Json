@@ -181,11 +181,11 @@ namespace Newtonsoft.Json.Utilities
     }
 
     /// <summary>
-    /// Gets the type of the typed list's items.
+    /// Gets the type of the typed collection's items.
     /// </summary>
     /// <param name="type">The type.</param>
-    /// <returns>The type of the typed list's items.</returns>
-    public static Type GetListItemType(Type type)
+    /// <returns>The type of the typed collection's items.</returns>
+    public static Type GetCollectionItemType(Type type)
     {
       ValidationUtils.ArgumentNotNull(type, "type");
       Type genericListType;
@@ -194,10 +194,10 @@ namespace Newtonsoft.Json.Utilities
       {
         return type.GetElementType();
       }
-      else if (IsSubClass(type, typeof(IList<>), out genericListType))
+      else if (IsSubClass(type, typeof(ICollection<>), out genericListType))
       {
         if (genericListType.IsGenericTypeDefinition)
-          throw new Exception("Type {0} is not a list.".FormatWith(CultureInfo.InvariantCulture, type));
+          throw new Exception("Type {0} is not a collection.".FormatWith(CultureInfo.InvariantCulture, type));
 
         return genericListType.GetGenericArguments()[0];
       }
@@ -207,7 +207,7 @@ namespace Newtonsoft.Json.Utilities
       }
       else
       {
-        throw new Exception("Type {0} is not a list.".FormatWith(CultureInfo.InvariantCulture, type));
+        throw new Exception("Type {0} is not a collection.".FormatWith(CultureInfo.InvariantCulture, type));
       }
     }
 
@@ -266,7 +266,7 @@ namespace Newtonsoft.Json.Utilities
     {
       ValidationUtils.ArgumentNotNull(list, "list");
 
-      Type elementType = GetListItemType(list.GetType());
+      Type elementType = GetCollectionItemType(list.GetType());
 
       if (elementType.IsValueType)
       {

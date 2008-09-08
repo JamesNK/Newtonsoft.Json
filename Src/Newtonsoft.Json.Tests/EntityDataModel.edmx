@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema xmlns="http://schemas.microsoft.com/ado/2006/04/edm/ssdl" Namespace="EntityDataModel.Target" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2005">
+        <EntityContainer Name="EntityDataModelTargetContainer" >
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema xmlns="http://schemas.microsoft.com/ado/2006/04/edm" Namespace="EntityDataModel" Alias="Self">
+        <EntityContainer Name="EntityDataModelContainer" >
+          <EntitySet Name="PurchaseSet" EntityType="EntityDataModel.Purchase" />
+          <EntitySet Name="PurchaseLineSet" EntityType="EntityDataModel.PurchaseLine" />
+          <AssociationSet Name="PurchasePurchaseLine" Association="EntityDataModel.PurchasePurchaseLine">
+            <End Role="Purchase" EntitySet="PurchaseSet" />
+            <End Role="PurchaseLine" EntitySet="PurchaseLineSet" /></AssociationSet></EntityContainer>
+        <EntityType Name="Purchase">
+          <Key>
+            <PropertyRef Name="Id" /></Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="PurchaseLine" Relationship="EntityDataModel.PurchasePurchaseLine" FromRole="Purchase" ToRole="PurchaseLine" /></EntityType>
+        <EntityType Name="PurchaseLine">
+          <Key>
+            <PropertyRef Name="Id" /></Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Purchase" Relationship="EntityDataModel.PurchasePurchaseLine" FromRole="PurchaseLine" ToRole="Purchase" /></EntityType>
+        <Association Name="PurchasePurchaseLine">
+          <End Type="EntityDataModel.Purchase" Role="Purchase" Multiplicity="1" />
+          <End Type="EntityDataModel.PurchaseLine" Role="PurchaseLine" Multiplicity="*" /></Association></Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping xmlns="urn:schemas-microsoft-com:windows:storage:mapping:CS" Space="C-S">
+        <Alias Key="Model" Value="EntityDataModel" />
+        <Alias Key="Target" Value="EntityDataModel.Target" />
+        <EntityContainerMapping CdmEntityContainer="EntityDataModelContainer" StorageEntityContainer="EntityDataModelTargetContainer">
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2007/06/edmx">
+    <edmx:Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </edmx:Connection>
+    <edmx:Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+      </DesignerInfoPropertySet>
+    </edmx:Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram Name="EntityDataModel" >
+        <EntityTypeShape EntityType="EntityDataModel.Purchase" Width="1.5" PointX="2.125" PointY="0.875" Height="1.211080729166667" />
+        <EntityTypeShape EntityType="EntityDataModel.PurchaseLine" Width="1.5" PointX="3.625" PointY="3" Height="1.0187792968749996" />
+        <AssociationConnector Association="EntityDataModel.PurchasePurchaseLine">
+          <ConnectorPoint PointX="2.84375" PointY="2.086080729166667" />
+          <ConnectorPoint PointX="2.84375" PointY="3.6055403645833333" />
+          <ConnectorPoint PointX="3.625" PointY="3.6055403645833333" /></AssociationConnector></Diagram></edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

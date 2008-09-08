@@ -28,11 +28,77 @@ using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json.Utilities;
 using NUnit.Framework;
+using System.IO;
+using System.Linq;
 
 namespace Newtonsoft.Json.Tests
 {
   public class JavaScriptConvertTest : TestFixtureBase
   {
+#if Entities
+    [Test]
+    public void EntitiesTest()
+    {
+      Purchase purchase = new Purchase() { Id = 1 };
+      purchase.PurchaseLine.Add(new PurchaseLine() { Id = 1, Purchase = purchase });
+      purchase.PurchaseLine.Add(new PurchaseLine() { Id = 2, Purchase = purchase });
+
+      StringWriter sw = new StringWriter();
+      JsonSerializer serializer = new JsonSerializer();
+      serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+
+      using (JsonWriter jw = new JsonTextWriter(sw))
+      {
+        jw.Formatting = Formatting.Indented;
+
+        serializer.Serialize(jw, purchase);
+      }
+
+      string json = sw.ToString();
+
+      Assert.AreEqual(@"{
+  ""Id"": 1,
+  ""PurchaseLine"": [
+    {
+      ""Id"": 1,
+      ""PurchaseReference"": {
+        ""EntityKey"": null,
+        ""RelationshipName"": ""EntityDataModel.PurchasePurchaseLine"",
+        ""SourceRoleName"": ""PurchaseLine"",
+        ""TargetRoleName"": ""Purchase"",
+        ""RelationshipSet"": null,
+        ""IsLoaded"": false
+      },
+      ""EntityState"": 1,
+      ""EntityKey"": null
+    },
+    {
+      ""Id"": 2,
+      ""PurchaseReference"": {
+        ""EntityKey"": null,
+        ""RelationshipName"": ""EntityDataModel.PurchasePurchaseLine"",
+        ""SourceRoleName"": ""PurchaseLine"",
+        ""TargetRoleName"": ""Purchase"",
+        ""RelationshipSet"": null,
+        ""IsLoaded"": false
+      },
+      ""EntityState"": 1,
+      ""EntityKey"": null
+    }
+  ],
+  ""EntityState"": 1,
+  ""EntityKey"": null
+}", json);
+
+      Purchase newPurchase = JavaScriptConvert.DeserializeObject<Purchase>(json);
+      Assert.AreEqual(1, newPurchase.Id);
+
+      Assert.AreEqual(2, newPurchase.PurchaseLine.Count);
+      Assert.AreEqual(1, newPurchase.PurchaseLine.ElementAt(0).Id);
+      Assert.AreEqual(2, newPurchase.PurchaseLine.ElementAt(1).Id);
+    }
+#endif
+
     [Test]
     public void EscapeJavaScriptString()
     {

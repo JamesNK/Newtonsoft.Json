@@ -36,15 +36,15 @@ namespace Newtonsoft.Json
       _converterType = converterType;
     }
 
-    internal JsonConverter CreateJsonConverterInstance()
+    internal static JsonConverter CreateJsonConverterInstance(Type converterType)
     {
       try
       {
-        return (JsonConverter)Activator.CreateInstance(_converterType);
+        return (JsonConverter)Activator.CreateInstance(converterType);
       }
       catch (Exception ex)
       {
-        throw new Exception("Error creating {0}".FormatWith(CultureInfo.InvariantCulture, _converterType), ex);
+        throw new Exception("Error creating {0}".FormatWith(CultureInfo.InvariantCulture, converterType), ex);
       }
     }
   }
