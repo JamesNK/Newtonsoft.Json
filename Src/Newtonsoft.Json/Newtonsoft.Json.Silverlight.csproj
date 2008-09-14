@@ -218,6 +218,7 @@
     <Compile Include="Converters\JavaScriptDateTimeConverter.cs" />
     <Compile Include="Converters\JsonDateTimeSerializationMode.cs" />
     <Compile Include="Converters\XmlNodeConverter.cs" />
+    <Compile Include="DefaultValueHandling.cs" />
     <Compile Include="Identifier.cs" />
     <Compile Include="JavaScriptConvert.cs" />
     <Compile Include="JsonConverter.cs" />
@@ -231,6 +232,7 @@
     <Compile Include="JsonReaderException.cs" />
     <Compile Include="JsonSerializationException.cs" />
     <Compile Include="JsonSerializer.cs" />
+    <Compile Include="JsonSerializerSettings.cs" />
     <Compile Include="JsonTextReader.cs" />
     <Compile Include="JsonTextWriter.cs" />
     <Compile Include="JsonToken.cs" />
@@ -260,6 +262,7 @@
     <Compile Include="ReferenceLoopHandling.cs" />
     <Compile Include="StringBuffer.cs" />
     <Compile Include="Utilities\CollectionUtils.cs" />
+    <Compile Include="Utilities\CollectionWrapper.cs" />
     <Compile Include="Utilities\ConvertUtils.cs" />
     <Compile Include="Utilities\DateTimeUtils.cs" />
     <Compile Include="Utilities\DictionaryWrapper.cs" />

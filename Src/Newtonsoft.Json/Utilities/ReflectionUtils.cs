@@ -124,47 +124,77 @@ namespace Newtonsoft.Json.Utilities
       return !CollectionUtils.IsNullOrEmpty<ParameterInfo>(property.GetIndexParameters());
     }
 
-    public static bool IsSubClass(Type type, Type check)
+    public static bool ImplementsGenericInterfaceDefinition(Type type, Type genericInterfaceDefinition)
     {
       Type implementingType;
-      return IsSubClass(type, check, out implementingType);
+      return ImplementsGenericInterfaceDefinition(type, genericInterfaceDefinition, out implementingType);
     }
 
-    public static bool IsSubClass(Type type, Type check, out Type implementingType)
+    public static bool ImplementsGenericInterfaceDefinition(Type type, Type genericInterfaceDefinition, out Type implementingType)
     {
       ValidationUtils.ArgumentNotNull(type, "type");
-      ValidationUtils.ArgumentNotNull(check, "check");
+      ValidationUtils.ArgumentNotNull(genericInterfaceDefinition, "genericInterfaceDefinition");
 
-      return IsSubClassInternal(type, type, check, out implementingType);
-    }
+      if (!genericInterfaceDefinition.IsInterface || !genericInterfaceDefinition.IsGenericTypeDefinition)
+        throw new ArgumentNullException("'{0}' is not a generic interface definition.".FormatWith(CultureInfo.InvariantCulture, genericInterfaceDefinition));
 
-    private static bool IsSubClassInternal(Type initialType, Type currentType, Type check, out Type implementingType)
-    {
-      if (currentType == check)
+      if (type.IsInterface)
       {
-        implementingType = currentType;
-        return true;
-      }
-
-      // don't get interfaces for an interface unless the initial type is an interface
-      if (check.IsInterface && (initialType.IsInterface || currentType == initialType))
-      {
-        foreach (Type t in currentType.GetInterfaces())
+        if (type.IsGenericType)
         {
-          if (IsSubClassInternal(initialType, t, check, out implementingType))
-          {
-            // don't return the interface itself, return it's implementor
-            if (check == implementingType)
-              implementingType = currentType;
+          Type interfaceDefinition = type.GetGenericTypeDefinition();
 
+          if (genericInterfaceDefinition == interfaceDefinition)
+          {
+            implementingType = type;
             return true;
           }
         }
       }
 
-      if (currentType.IsGenericType && !currentType.IsGenericTypeDefinition)
+      foreach (Type i in type.GetInterfaces())
       {
-        if (IsSubClassInternal(initialType, currentType.GetGenericTypeDefinition(), check, out implementingType))
+        if (i.IsGenericType)
+        {
+          Type interfaceDefinition = i.GetGenericTypeDefinition();
+
+          if (genericInterfaceDefinition == interfaceDefinition)
+          {
+            implementingType = i;
+            return true;
+          }
+        }
+      }
+
+      implementingType = null;
+      return false;
+    }
+
+    
+    public static bool InheritsGenericClassDefinition(Type type, Type genericClassDefinition)
+    {
+      Type implementingType;
+      return InheritsGenericClassDefinition(type, genericClassDefinition, out implementingType);
+    }
+
+    public static bool InheritsGenericClassDefinition(Type type, Type genericClassDefinition, out Type implementingType)
+    {
+      ValidationUtils.ArgumentNotNull(type, "type");
+      ValidationUtils.ArgumentNotNull(genericClassDefinition, "genericClassDefinition");
+
+      if (!genericClassDefinition.IsClass || !genericClassDefinition.IsGenericTypeDefinition)
+        throw new ArgumentNullException("'{0}' is not a generic class definition.".FormatWith(CultureInfo.InvariantCulture, genericClassDefinition));
+
+      return InheritsGenericClassDefinitionInternal(type, type, genericClassDefinition, out implementingType);
+    }
+
+    private static bool InheritsGenericClassDefinitionInternal(Type initialType, Type currentType, Type genericClassDefinition, out Type implementingType)
+    {
+      if (currentType.IsGenericType)
+      {
+        Type currentGenericClassDefinition = currentType.GetGenericTypeDefinition();
+
+        if (genericClassDefinition == currentGenericClassDefinition)
         {
           implementingType = currentType;
           return true;
@@ -177,7 +207,7 @@ namespace Newtonsoft.Json.Utilities
         return false;
       }
 
-      return IsSubClassInternal(initialType, currentType.BaseType, check, out implementingType);
+      return InheritsGenericClassDefinitionInternal(initialType, currentType.BaseType, genericClassDefinition, out implementingType);
     }
 
     /// <summary>
@@ -194,7 +224,7 @@ namespace Newtonsoft.Json.Utilities
       {
         return type.GetElementType();
       }
-      else if (IsSubClass(type, typeof(ICollection<>), out genericListType))
+      else if (ImplementsGenericInterfaceDefinition(type, typeof(ICollection<>), out genericListType))
       {
         if (genericListType.IsGenericTypeDefinition)
           throw new Exception("Type {0} is not a collection.".FormatWith(CultureInfo.InvariantCulture, type));
@@ -216,7 +246,7 @@ namespace Newtonsoft.Json.Utilities
       ValidationUtils.ArgumentNotNull(dictionaryType, "type");
 
       Type genericDictionaryType;
-      if (IsSubClass(dictionaryType, typeof(IDictionary<,>), out genericDictionaryType))
+      if (ImplementsGenericInterfaceDefinition(dictionaryType, typeof(IDictionary<,>), out genericDictionaryType))
       {
         if (genericDictionaryType.IsGenericTypeDefinition)
           throw new Exception("Type {0} is not a dictionary.".FormatWith(CultureInfo.InvariantCulture, dictionaryType));

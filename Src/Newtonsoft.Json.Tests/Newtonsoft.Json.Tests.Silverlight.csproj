@@ -130,6 +130,7 @@
     <Compile Include="Linq\JTokenTests.cs" />
     <Compile Include="Linq\JValueTests.cs" />
     <Compile Include="Linq\LinqToJsonTest.cs" />
+    <Compile Include="PerformanceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SilverlightTests.cs" />
     <Compile Include="TestFixtureBase.cs" />

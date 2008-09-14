@@ -1,13 +1,17 @@
-﻿using System;
+﻿#if !SILVERLIGHT
+using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Data;
 using System.Diagnostics;
 
 using Newtonsoft.Json;
 using System.IO;
+
 using System.Web.Script.Serialization;
+
 using NUnit.Framework;
+using System.Runtime.Serialization.Json;
+using System.Text;
 
 namespace Newtonsoft.Json.Tests
 {
@@ -16,9 +20,16 @@ namespace Newtonsoft.Json.Tests
   /// </summary>
   public class PerformanceTests : TestFixtureBase
   {
-    private DateTime BaseDate = DateTime.Parse("01/01/2000");
+    private int Iterations = 100;
 
-    //JSONSerializer ser = null;
+    public enum SerializeMethod
+    {
+      JsonNet,
+      JavaScriptSerializer,
+      DataContractJsonSerializer
+    }
+
+    private DateTime BaseDate = DateTime.Parse("01/01/2000");
 
     public string SerializeJsonNet(object value)
     {
@@ -36,10 +47,7 @@ namespace Newtonsoft.Json.Tests
       StringWriter sw = new StringWriter();
       Newtonsoft.Json.JsonTextWriter writer = new JsonTextWriter(sw);
 
-      if (true)
-        writer.Formatting = Formatting.Indented;
-      else
-        writer.Formatting = Formatting.None;
+      writer.Formatting = Formatting.None;
 
       writer.QuoteChar = '"';
       json.Serialize(writer, value);
@@ -50,15 +58,120 @@ namespace Newtonsoft.Json.Tests
       return output;
     }
 
+    public object DeserializeJsonNet<T>(string json)
+    {
+      Type type = typeof(T);
+
+      JsonSerializer serializer = new JsonSerializer();
+
+      serializer.NullValueHandling = NullValueHandling.Ignore;
+
+      serializer.ObjectCreationHandling = Newtonsoft.Json.ObjectCreationHandling.Replace;
+      serializer.MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore;
+      serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+
+      return serializer.Deserialize(new StringReader(json), type);
+    }
+
     public string SerializeWebExtensions(object value)
     {
       JavaScriptSerializer ser = new JavaScriptSerializer();
 
-      List<JavaScriptConverter> converters = new List<JavaScriptConverter>();
-
       return ser.Serialize(value);
     }
 
+    public object DeserializeWebExtensions<T>(string json)
+    {
+      JavaScriptSerializer ser = new JavaScriptSerializer();
+
+      return ser.Deserialize<T>(json);
+    }
+
+    public string SerializeDataContract(object value)
+    {
+      DataContractJsonSerializer dataContractSerializer
+        = new DataContractJsonSerializer(value.GetType());
+      
+      MemoryStream ms = new MemoryStream();
+      dataContractSerializer.WriteObject(ms, value);
+
+      ms.Seek(0, SeekOrigin.Begin);
+
+      using (StreamReader sr = new StreamReader(ms))
+      {
+        return sr.ReadToEnd();
+      }
+    }
+
+    public object DeserializeDataContract<T>(string json)
+    {
+      DataContractJsonSerializer dataContractSerializer
+        = new DataContractJsonSerializer(typeof(T));
+
+      MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
+
+      return dataContractSerializer.ReadObject(ms);
+    }
+
+    public void BenchmarkSerializeMethod(SerializeMethod method, object value)
+    {
+      Stopwatch timed = new Stopwatch();
+      timed.Start();
+
+      string json = null;
+      for (int x = 0; x < Iterations; x++)
+      {
+        switch (method)
+        {
+          case SerializeMethod.JsonNet:
+            json = JavaScriptConvert.SerializeObject(value);
+            break;
+          case SerializeMethod.JavaScriptSerializer:
+            json = SerializeWebExtensions(value);
+            break;
+          case SerializeMethod.DataContractJsonSerializer:
+            json = SerializeDataContract(value);
+            break;
+        }
+      }
+
+      timed.Stop();
+
+      Console.WriteLine("Serialize method: {0}", method);
+      Console.WriteLine("{0} ms", timed.ElapsedMilliseconds);
+      Console.WriteLine(json);
+      Console.WriteLine();
+    }
+
+    public void BenchmarkDeserializeMethod<T>(SerializeMethod method, string json)
+    {
+      Stopwatch timed = new Stopwatch();
+      timed.Start();
+
+      object value = null;
+      for (int x = 0; x < Iterations; x++)
+      {
+        switch (method)
+        {
+          case SerializeMethod.JsonNet:
+            value = DeserializeJsonNet<T>(json);
+            break;
+          case SerializeMethod.JavaScriptSerializer:
+            value = DeserializeWebExtensions<T>(json);
+            break;
+          case SerializeMethod.DataContractJsonSerializer:
+            value = DeserializeDataContract<T>(json);
+            break;
+        }
+      }
+
+      timed.Stop();
+
+      Console.WriteLine("Serialize method: {0}", method);
+      Console.WriteLine("{0} ms", timed.ElapsedMilliseconds);
+      Console.WriteLine(value);
+      Console.WriteLine();
+    }
 
     [Test]
     public void Serialize()
@@ -83,19 +196,9 @@ namespace Newtonsoft.Json.Tests
       address.Address = "array 2 address";
       test.Addresses.Add(address);
 
-      Stopwatch timed = new Stopwatch();
-      timed.Start();
-
-      string json = null;
-      for (int x = 0; x < 10000; x++)
-      {
-        json = this.SerializeJsonNet(test);
-        //json = this.SerializeWebExtensions(test);
-      }
-      timed.Stop();
-
-      Console.WriteLine("{0}", timed.ElapsedMilliseconds + " ms");
-      Console.WriteLine("{0}", json);
+      BenchmarkSerializeMethod(SerializeMethod.JsonNet, test);
+      BenchmarkSerializeMethod(SerializeMethod.JavaScriptSerializer, test);
+      BenchmarkSerializeMethod(SerializeMethod.DataContractJsonSerializer, test);
     }
 
     [Test]
@@ -134,19 +237,9 @@ namespace Newtonsoft.Json.Tests
   ]
 }";
 
-      for (int x = 0; x < 10000; x++)
-      {
-        Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
-
-        serializer.NullValueHandling = NullValueHandling.Ignore;
-
-        serializer.ObjectCreationHandling = Newtonsoft.Json.ObjectCreationHandling.Replace;
-        serializer.MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore;
-        serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-
-        TestClass test = (TestClass)serializer.Deserialize(new StringReader(json), typeof(TestClass));
-      }
-
+      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JsonNet, json);
+      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JavaScriptSerializer, json);
+      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.DataContractJsonSerializer, json);
     }
   }
 
@@ -230,3 +323,4 @@ namespace Newtonsoft.Json.Tests
 
   }
 }
+#endif

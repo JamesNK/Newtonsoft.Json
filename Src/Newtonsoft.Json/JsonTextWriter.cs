@@ -207,14 +207,13 @@ namespace Newtonsoft.Json
       if (Formatting == Formatting.Indented)
       {
         _writer.Write(Environment.NewLine);
-        // for each level of object...
-        for (int i = 0; i < Top; i++)
+
+        // levels of indentation multiplied by the indent count
+        int currentIndentCount = Top * _indentation;
+
+        for (int i = 0; i < currentIndentCount; i++)
         {
-          // ...write the indent char the specified number of times
-          for (int j = 0; j < _indentation; j++)
-          {
-            _writer.Write(_indentChar);
-          }
+          _writer.Write(_indentChar);
         }
       }
     }

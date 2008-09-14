@@ -45,12 +45,13 @@ namespace Newtonsoft.Json
   public class JsonSerializer
   {
     private static readonly Dictionary<ICustomAttributeProvider, Type> ConverterTypeCache = new Dictionary<ICustomAttributeProvider, Type>();
-    private static Dictionary<Type, MemberMappingCollection> TypeMemberMappings = new Dictionary<Type,MemberMappingCollection>();
+    private static readonly Dictionary<Type, MemberMappingCollection> TypeMemberMappingsCache = new Dictionary<Type,MemberMappingCollection>();
 
     private ReferenceLoopHandling _referenceLoopHandling;
     private MissingMemberHandling _missingMemberHandling;
     private ObjectCreationHandling _objectCreationHandling;
     private NullValueHandling _nullValueHandling;
+    private DefaultValueHandling _defaultValueHandling;
     private int _level;
     private JsonConverterCollection _converters;
 
@@ -100,6 +101,21 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
+    /// Get or set how null default are handled during serialization and deserialization.
+    /// </summary>
+    public DefaultValueHandling DefaultValueHandling
+    {
+      get { return _defaultValueHandling; }
+      set
+      {
+        if (value < DefaultValueHandling.Include || value > DefaultValueHandling.Ignore)
+          throw new ArgumentOutOfRangeException("value");
+
+        _defaultValueHandling = value;
+      }
+    }
+
+    /// <summary>
     /// Gets or sets how objects are created during deserialization.
     /// </summary>
     /// <value>The object creation handling.</value>
@@ -135,10 +151,31 @@ namespace Newtonsoft.Json
     /// </summary>
     public JsonSerializer()
     {
-      _referenceLoopHandling = ReferenceLoopHandling.Error;
-      _missingMemberHandling = MissingMemberHandling.Error;
-      _nullValueHandling = NullValueHandling.Include;
-      _objectCreationHandling = ObjectCreationHandling.Auto;
+      _referenceLoopHandling = JsonSerializerSettings.DefaultReferenceLoopHandling;
+      _missingMemberHandling = JsonSerializerSettings.DefaultMissingMemberHandling;
+      _nullValueHandling = JsonSerializerSettings.DefaultNullValueHandling;
+      _defaultValueHandling = JsonSerializerSettings.DefaultDefaultValueHandling;
+      _objectCreationHandling = JsonSerializerSettings.DefaultObjectCreationHandling;
+    }
+
+
+    public static JsonSerializer Create(JsonSerializerSettings settings)
+    {
+      JsonSerializer jsonSerializer = new JsonSerializer();
+
+      if (settings != null)
+      {
+        if (!CollectionUtils.IsNullOrEmpty<JsonConverter>(settings.Converters))
+          jsonSerializer.Converters.AddRange(settings.Converters);
+
+        jsonSerializer.ReferenceLoopHandling = settings.ReferenceLoopHandling;
+        jsonSerializer.MissingMemberHandling = settings.MissingMemberHandling;
+        jsonSerializer.ObjectCreationHandling = settings.ObjectCreationHandling;
+        jsonSerializer.NullValueHandling = settings.NullValueHandling;
+        jsonSerializer.DefaultValueHandling = settings.DefaultValueHandling;
+      }
+
+      return jsonSerializer;
     }
 
     #region Deserialize
@@ -236,7 +273,7 @@ namespace Newtonsoft.Json
             {
               value = CreateJToken(reader);
             }
-            else if (typeof(IDictionary).IsAssignableFrom(objectType) || ReflectionUtils.IsSubClass(objectType, typeof(IDictionary<,>)))
+            else if (typeof(IDictionary).IsAssignableFrom(objectType) || ReflectionUtils.ImplementsGenericInterfaceDefinition(objectType, typeof(IDictionary<,>)))
             {
               if (existingValue == null)
                 value = CreateAndPopulateDictionary(reader, objectType);
@@ -321,11 +358,11 @@ namespace Newtonsoft.Json
     {
       MemberMappingCollection memberMappings;
 
-      if (TypeMemberMappings.TryGetValue(objectType, out memberMappings))
+      if (TypeMemberMappingsCache.TryGetValue(objectType, out memberMappings))
         return memberMappings;
 
       memberMappings = CreateMemberMappings(objectType);
-      TypeMemberMappings[objectType] = memberMappings;
+      TypeMemberMappingsCache[objectType] = memberMappings;
 
       return memberMappings;
     }
@@ -357,7 +394,10 @@ namespace Newtonsoft.Json
 
         JsonConverter memberConverter = GetConverter(member, ReflectionUtils.GetMemberUnderlyingType(member));
 
-        MemberMapping memberMapping = new MemberMapping(mappedName, member, ignored, readable, writable, memberConverter);
+        DefaultValueAttribute defaultValueAttribute = ReflectionUtils.GetAttribute<DefaultValueAttribute>(member, true);
+        object defaultValue = (defaultValueAttribute != null) ? defaultValueAttribute.Value : null;
+
+        MemberMapping memberMapping = new MemberMapping(mappedName, member, ignored, readable, writable, memberConverter, defaultValue);
 
         memberMappings.AddMapping(memberMapping);
       }
@@ -435,12 +475,18 @@ namespace Newtonsoft.Json
 
         // get the member's underlying type
         memberType = ReflectionUtils.GetMemberUnderlyingType(memberMapping.Member);
-        object currentValue = ReflectionUtils.GetMemberValue(memberMapping.Member, target);
 
-        bool useExistingValue = (currentValue != null
-          && (_objectCreationHandling == ObjectCreationHandling.Auto || _objectCreationHandling == ObjectCreationHandling.Reuse)
-          && (reader.TokenType == JsonToken.StartArray || reader.TokenType == JsonToken.StartObject)
-          && (!memberType.IsArray && !ReflectionUtils.IsSubClass(memberType, typeof(ReadOnlyCollection<>))));
+        object currentValue = null;
+        bool useExistingValue = false;
+
+        if ((_objectCreationHandling == ObjectCreationHandling.Auto || _objectCreationHandling == ObjectCreationHandling.Reuse)
+          && (reader.TokenType == JsonToken.StartArray || reader.TokenType == JsonToken.StartObject))
+        {
+          currentValue = ReflectionUtils.GetMemberValue(memberMapping.Member, target);
+
+          useExistingValue = (currentValue != null && !memberType.IsArray && !ReflectionUtils.InheritsGenericClassDefinition(memberType, typeof(ReadOnlyCollection<>)));
+        }
+
 
         if (!memberMapping.Writable && !useExistingValue)
         {
@@ -451,6 +497,9 @@ namespace Newtonsoft.Json
         value = CreateObject(reader, memberType, (useExistingValue) ? currentValue : null, GetConverter(memberMapping.Member, memberType));
 
         if (_nullValueHandling == NullValueHandling.Ignore && value == null)
+          return;
+
+        if (_defaultValueHandling == DefaultValueHandling.Ignore && object.Equals(value, memberMapping.DefaultValue))
           return;
 
         if (!useExistingValue)
@@ -712,13 +761,21 @@ namespace Newtonsoft.Json
       return false;
     }
 
-    private void WriteMemberInfoProperty(JsonWriter writer, object value, MemberInfo member, string propertyName, JsonConverter memberConverter)
+    private void WriteMemberInfoProperty(JsonWriter writer, object value, MemberMapping memberMapping)
     {
+      MemberInfo member = memberMapping.Member;
+      string propertyName = memberMapping.MappingName;
+      JsonConverter memberConverter = memberMapping.MemberConverter;
+      object defaultValue = memberMapping.DefaultValue;
+
       if (!ReflectionUtils.IsIndexedProperty(member))
       {
         object memberValue = ReflectionUtils.GetMemberValue(member, value);
 
         if (_nullValueHandling == NullValueHandling.Ignore && memberValue == null)
+          return;
+
+        if (_defaultValueHandling == DefaultValueHandling.Ignore && object.Equals(memberValue, defaultValue))
           return;
 
         if (writer.SerializeStack.IndexOf(memberValue) != -1)
@@ -776,7 +833,7 @@ namespace Newtonsoft.Json
       foreach (MemberMapping memberMapping in memberMappings)
       {
         if (!memberMapping.Ignored && memberMapping.Readable)
-          WriteMemberInfoProperty(writer, value, memberMapping.Member, memberMapping.MappingName, memberMapping.MemberConverter);
+          WriteMemberInfoProperty(writer, value, memberMapping);
       }
 
       writer.WriteEndObject();

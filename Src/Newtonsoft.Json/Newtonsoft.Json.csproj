@@ -74,8 +74,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DefaultValueHandling.cs" />
     <Compile Include="JsonConverterAttribute.cs" />
     <Compile Include="JsonObjectAttribute.cs" />
+    <Compile Include="JsonSerializerSettings.cs" />
     <Compile Include="Linq\IJEnumerable.cs" />
     <Compile Include="Linq\JTokenEqualityComparer.cs" />
     <Compile Include="MemberSerialization.cs" />

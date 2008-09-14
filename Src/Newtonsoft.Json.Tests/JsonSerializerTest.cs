@@ -39,6 +39,7 @@ using Newtonsoft.Json.Converters;
 using System.Runtime.Serialization.Json;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
+using System.ComponentModel;
 
 namespace Newtonsoft.Json.Tests
 {
@@ -1288,6 +1289,35 @@ keyword such as type of business.""
     {
       string json = JavaScriptConvert.SerializeObject(new GenericImpl());
       Assert.AreEqual(@"{""Id"":0}", json);
+    }
+
+    public class DefaultValueAttributeTestClass
+    {
+      [DefaultValue("TestProperty1Value")]
+      public string TestProperty1 { get; set; }
+
+      [DefaultValue(21)]
+      public int TestField1;
+    }
+
+    [Test]
+    public void DefaultValueAttributeTest()
+    {
+      string json = JavaScriptConvert.SerializeObject(new DefaultValueAttributeTestClass(),
+        new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
+      Assert.AreEqual(@"{""TestField1"":0,""TestProperty1"":null}", json);
+
+      json = JavaScriptConvert.SerializeObject(new DefaultValueAttributeTestClass { TestField1 = int.MinValue, TestProperty1 = "NotDefault" },
+        new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
+      Assert.AreEqual(@"{""TestField1"":-2147483648,""TestProperty1"":""NotDefault""}", json);
+
+      json = JavaScriptConvert.SerializeObject(new DefaultValueAttributeTestClass { TestField1 = 21, TestProperty1 = "NotDefault" },
+        new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
+      Assert.AreEqual(@"{""TestProperty1"":""NotDefault""}", json);
+
+      json = JavaScriptConvert.SerializeObject(new DefaultValueAttributeTestClass { TestField1 = 21, TestProperty1 = "TestProperty1Value" },
+        new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
+      Assert.AreEqual(@"{}", json);
     }
   }
 }

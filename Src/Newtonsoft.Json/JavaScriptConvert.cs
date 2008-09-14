@@ -430,7 +430,7 @@ namespace Newtonsoft.Json
     /// <returns>A JSON string representation of the object.</returns>
     public static string SerializeObject(object value)
     {
-      return SerializeObject(value, null);
+      return SerializeObject(value, (JsonSerializerSettings)null);
     }
 
     /// <summary>
@@ -441,17 +441,27 @@ namespace Newtonsoft.Json
     /// <returns>A JSON string representation of the object.</returns>
     public static string SerializeObject(object value, params JsonConverter[] converters)
     {
+      JsonSerializerSettings settings = (converters != null && converters.Length > 0)
+        ? new JsonSerializerSettings { Converters = converters }
+        : null;
+
+      return SerializeObject(value, settings);
+    }
+
+    /// <summary>
+    /// Serializes the specified object to a JSON string using a collection of <see cref="JsonConverter"/>.
+    /// </summary>
+    /// <param name="value">The object to serialize.</param>
+    /// <param name="settings">
+    /// The <see cref="JsonSerializerSettings"/> used to serialize the object.
+    /// If this is null, default serialization settings will be is used.
+    /// </param>
+    /// <returns>A JSON string representation of the object.</returns>
+    public static string SerializeObject(object value, JsonSerializerSettings settings)
+    {
+      JsonSerializer jsonSerializer = JsonSerializer.Create(settings);
+
       StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
-      JsonSerializer jsonSerializer = new JsonSerializer();
-
-      if (!CollectionUtils.IsNullOrEmpty<JsonConverter>(converters))
-      {
-        for (int i = 0; i < converters.Length; i++)
-        {
-          jsonSerializer.Converters.Add(converters[i]);
-        }
-      }
-
       using (JsonWriter jsonWriter = new JsonTextWriter(sw))
       {
         //jsonWriter.Formatting = Formatting.Indented;
@@ -468,7 +478,7 @@ namespace Newtonsoft.Json
     /// <returns>The deserialized object from the Json string.</returns>
     public static object DeserializeObject(string value)
     {
-      return DeserializeObject(value, null, null);
+      return DeserializeObject(value, null, (JsonSerializerSettings)null);
     }
 
     /// <summary>
@@ -479,7 +489,7 @@ namespace Newtonsoft.Json
     /// <returns>The deserialized object from the Json string.</returns>
     public static object DeserializeObject(string value, Type type)
     {
-      return DeserializeObject(value, type, null);
+      return DeserializeObject(value, type, (JsonSerializerSettings)null);
     }
 
     /// <summary>
@@ -530,16 +540,27 @@ namespace Newtonsoft.Json
     /// <returns>The deserialized object from the JSON string.</returns>
     public static object DeserializeObject(string value, Type type, params JsonConverter[] converters)
     {
-      StringReader sr = new StringReader(value);
-      JsonSerializer jsonSerializer = new JsonSerializer();
+      JsonSerializerSettings settings = (converters != null && converters.Length > 0)
+        ? new JsonSerializerSettings { Converters = converters }
+        : null;
 
-      if (!CollectionUtils.IsNullOrEmpty<JsonConverter>(converters))
-      {
-        for (int i = 0; i < converters.Length; i++)
-        {
-          jsonSerializer.Converters.Add(converters[i]);
-        }
-      }
+      return DeserializeObject(value, type, settings);
+    }
+
+    /// <summary>
+    /// Deserializes the JSON string to the specified type.
+    /// </summary>
+    /// <param name="value">The object to deserialize.</param>
+    /// <param name="type">The type of the object to deserialize.</param>
+    /// <param name="settings">
+    /// The <see cref="JsonSerializerSettings"/> used to deserialize the object.
+    /// If this is null, default serialization settings will be is used.
+    /// </param>
+    /// <returns>The deserialized object from the JSON string.</returns>
+    public static object DeserializeObject(string value, Type type, JsonSerializerSettings settings)
+    {
+      StringReader sr = new StringReader(value);
+      JsonSerializer jsonSerializer = JsonSerializer.Create(settings);
 
       object deserializedValue;
 
