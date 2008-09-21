@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.Compact", "Newtonsoft.Json\Newtonsoft.Json.Compact.csproj", "{256AA604-F61B-4B6D-8D51-C8E6AB11E435}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lib", "Lib", "{9ACB12BA-F27A-4BC4-A8C7-9A5B0DD02DF2}"
+	ProjectSection(SolutionItems) = preProject
+		Lib\NUnitLite.dll = Lib\NUnitLite.dll
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.Tests.Compact", "Newtonsoft.Json.Tests\Newtonsoft.Json.Tests.Compact.csproj", "{32EA9694-4FB3-43E9-A6AD-050F1D35EA0A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{256AA604-F61B-4B6D-8D51-C8E6AB11E435}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{256AA604-F61B-4B6D-8D51-C8E6AB11E435}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{256AA604-F61B-4B6D-8D51-C8E6AB11E435}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{256AA604-F61B-4B6D-8D51-C8E6AB11E435}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32EA9694-4FB3-43E9-A6AD-050F1D35EA0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32EA9694-4FB3-43E9-A6AD-050F1D35EA0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32EA9694-4FB3-43E9-A6AD-050F1D35EA0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32EA9694-4FB3-43E9-A6AD-050F1D35EA0A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

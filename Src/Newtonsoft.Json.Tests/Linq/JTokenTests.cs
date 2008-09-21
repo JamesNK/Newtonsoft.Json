@@ -159,7 +159,11 @@ namespace Newtonsoft.Json.Tests.Linq
     public void Casting()
     {
       Assert.AreEqual(new DateTime(2000, 12, 20), (DateTime)new JValue(new DateTime(2000, 12, 20)));
+#if !PocketPC
       Assert.AreEqual(new DateTimeOffset(2000, 12, 20, 23, 50, 10, TimeSpan.Zero), (DateTimeOffset)new JValue(new DateTimeOffset(2000, 12, 20, 23, 50, 10, TimeSpan.Zero)));
+      Assert.AreEqual(null, (DateTimeOffset?)new JValue((DateTimeOffset?)null));
+      Assert.AreEqual(null, (DateTimeOffset?)(JValue)null);
+#endif
       Assert.AreEqual(true, (bool)new JValue(true));
       Assert.AreEqual(true, (bool?)new JValue(true));
       Assert.AreEqual(null, (bool?)((JValue)null));
@@ -170,9 +174,7 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(null, (int?)new JValue((int?)null));
       Assert.AreEqual(null, (int?)(JValue)null);
       Assert.AreEqual(null, (DateTime?)new JValue((DateTime?)null));
-      Assert.AreEqual(null, (DateTimeOffset?)new JValue((DateTimeOffset?)null));
       Assert.AreEqual(null, (DateTime?)(JValue)null);
-      Assert.AreEqual(null, (DateTimeOffset?)(JValue)null);
       Assert.AreEqual(null, (short?)new JValue((short?)null));
       Assert.AreEqual(null, (short?)(JValue)null);
       Assert.AreEqual(null, (float?)new JValue((float?)null));

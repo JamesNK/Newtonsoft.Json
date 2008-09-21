@@ -260,8 +260,10 @@ now brown cow?", '"', true);
       int i = JavaScriptConvert.DeserializeObject<int>("1");
       Assert.AreEqual(1, i);
 
+#if !PocketPC
       DateTimeOffset d = JavaScriptConvert.DeserializeObject<DateTimeOffset>(@"""\/Date(-59011455539000+0000)\/""");
       Assert.AreEqual(new DateTimeOffset(new DateTime(100, 1, 1, 1, 1, 1, DateTimeKind.Utc)), d);
+#endif
 
       bool b = JavaScriptConvert.DeserializeObject<bool>("true");
       Assert.AreEqual(true, b);

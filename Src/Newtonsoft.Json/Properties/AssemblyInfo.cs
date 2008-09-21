@@ -25,13 +25,16 @@ using System.Security;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-#if !SILVERLIGHT
+#if SILVERLIGHT
+[assembly: AssemblyTitle("Newtonsoft Json.NET Silverlight")]
+[assembly: InternalsVisibleTo("Newtonsoft.Json.Tests.Silverlight")]
+#elif PocketPC
+[assembly: AssemblyTitle("Newtonsoft Json.NET Compact")]
+[assembly: InternalsVisibleTo("Newtonsoft.Json.Tests.Compact")]
+#else
 [assembly: AssemblyTitle("Newtonsoft Json.NET")]
 [assembly: InternalsVisibleTo("Newtonsoft.Json.Tests")]
 [assembly: AllowPartiallyTrustedCallers]
-#else
-[assembly: AssemblyTitle("Newtonsoft Json.NET Silverlight")]
-[assembly: InternalsVisibleTo("Newtonsoft.Json.Tests.Silverlight")]
 #endif
 
 
@@ -62,4 +65,6 @@ using System.Security;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 [assembly: AssemblyVersion("3.0.0.0")]
+#if !PocketPC
 [assembly: AssemblyFileVersion("3.0.0.0")]
+#endif

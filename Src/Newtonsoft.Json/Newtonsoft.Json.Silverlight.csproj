@@ -78,9 +78,6 @@
     <Compile Include="..\Newtonsoft.Json\JsonConverterCollection.cs">
       <Link>JsonConverterCollection.cs</Link>
     </Compile>
-    <Compile Include="..\Newtonsoft.Json\JsonHandler.cs">
-      <Link>JsonHandler.cs</Link>
-    </Compile>
     <Compile Include="..\Newtonsoft.Json\JsonIgnoreAttribute.cs">
       <Link>JsonIgnoreAttribute.cs</Link>
     </Compile>
@@ -224,7 +221,6 @@
     <Compile Include="JsonConverter.cs" />
     <Compile Include="JsonConverterAttribute.cs" />
     <Compile Include="JsonConverterCollection.cs" />
-    <Compile Include="JsonHandler.cs" />
     <Compile Include="JsonIgnoreAttribute.cs" />
     <Compile Include="JsonObjectAttribute.cs" />
     <Compile Include="JsonPropertyAttribute.cs" />

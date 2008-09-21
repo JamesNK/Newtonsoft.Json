@@ -199,7 +199,9 @@ namespace Newtonsoft.Json.Linq
         return JsonTokenType.Integer;
       else if (value is double || value is float || value is decimal)
         return JsonTokenType.Float;
-      else if (value is DateTime || value is DateTimeOffset)
+      else if (value is DateTime)
+        return JsonTokenType.Date;
+      else if (value is DateTimeOffset)
         return JsonTokenType.Date;
       else if (value is bool)
         return JsonTokenType.Boolean;

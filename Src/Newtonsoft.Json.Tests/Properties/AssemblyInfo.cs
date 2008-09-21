@@ -6,10 +6,12 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-#if !SILVERLIGHT
-[assembly: AssemblyTitle("Newtonsoft Json.NET Tests")]
-#else
+#if SILVERLIGHT
 [assembly: AssemblyTitle("Newtonsoft Json.NET Tests Silverlight")]
+#elif PocketPC
+[assembly: AssemblyTitle("Newtonsoft Json.NET Tests Compact")]
+#else
+[assembly: AssemblyTitle("Newtonsoft Json.NET Tests")]
 #endif
 
 [assembly: AssemblyDescription("")]
@@ -38,4 +40,6 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 [assembly: AssemblyVersion("3.0.0.0")]
+#if !PocketPC
 [assembly: AssemblyFileVersion("3.0.0.0")]
+#endif

@@ -381,21 +381,6 @@ namespace Newtonsoft.Json.Utilities
       return (property.GetIndexParameters().Length > 0);
     }
 
-    public static MemberInfo GetMember(Type type, string name, MemberTypes memberTypes)
-    {
-      return GetMember(type, name, memberTypes, BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
-    }
-
-    public static MemberInfo GetMember(Type type, string name, MemberTypes memberTypes, BindingFlags bindingAttr)
-    {
-      ValidationUtils.ArgumentNotNull(type, "type");
-      ValidationUtils.ArgumentNotNull(name, "name");
-
-      MemberInfo[] result = type.GetMember(name, memberTypes, bindingAttr);
-
-      return CollectionUtils.GetSingleItem<MemberInfo>(result);
-    }
-
     /// <summary>
     /// Gets the member's value on the object.
     /// </summary>
@@ -565,29 +550,6 @@ namespace Newtonsoft.Json.Utilities
       return t.FullName + ", " + t.Assembly.GetName().Name;
     }
 
-    public static List<MemberInfo> FindMembers(Type targetType, MemberTypes memberType, BindingFlags bindingAttr, MemberFilter filter, object filterCriteria)
-    {
-      ValidationUtils.ArgumentNotNull(targetType, "targetType");
-
-      List<MemberInfo> memberInfos = new List<MemberInfo>(targetType.FindMembers(memberType, bindingAttr, filter, filterCriteria));
-
-      // fix weirdness with FieldInfos only being returned for the current Type
-      // find base type fields and add them to result
-      if ((memberType & MemberTypes.Field) != 0
-        && (bindingAttr & BindingFlags.NonPublic) != 0)
-      {
-        // modify flags to not search for public fields
-        BindingFlags nonPublicBindingAttr = bindingAttr ^ BindingFlags.Public;
-
-        while ((targetType = targetType.BaseType) != null)
-        {
-          memberInfos.AddRange(targetType.FindMembers(MemberTypes.Field, nonPublicBindingAttr, filter, filterCriteria));
-        }
-      }
-
-      return memberInfos;
-    }
-
     public static Type MakeGenericType(Type genericTypeDefinition, params Type[] innerTypes)
     {
       ValidationUtils.ArgumentNotNull(genericTypeDefinition, "genericTypeDefinition");
@@ -604,7 +566,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static object CreateGeneric(Type genericTypeDefinition, IList<Type> innerTypes, params object[] args)
     {
-      return CreateGeneric(genericTypeDefinition, innerTypes, (t, a) => Activator.CreateInstance(t, a.ToArray()), args);
+      return CreateGeneric(genericTypeDefinition, innerTypes, (t, a) => ReflectionUtils.CreateInstance(t, a.ToArray()), args);
     }
 
     public static object CreateGeneric(Type genericTypeDefinition, IList<Type> innerTypes, Func<Type, IList<object>, object> instanceCreator, params object[] args)
@@ -617,5 +579,58 @@ namespace Newtonsoft.Json.Utilities
 
       return instanceCreator(specificType, args);
     }
+
+     static object CreateInstance(this Assembly a, string typeName, params object[] pars)
+     {
+       var t = a.GetType(typeName);
+       var c = t.GetConstructor(pars.Select(p => p.GetType()).ToArray());
+       if (c == null)
+         return null; 
+       return c.Invoke(pars); 
+     }
+
+     public static bool IsCompatibleValue(object value, Type type)
+     {
+       if (value == null && IsNullable(type))
+         return true;
+
+       if (type.IsAssignableFrom(value.GetType()))
+         return true;
+
+       return false;
+     }
+
+     public static object CreateInstance(Type type, params object[] args)
+     {
+       ValidationUtils.ArgumentNotNull(type, "type");
+
+#if !PocketPC
+       return Activator.CreateInstance(type, args);
+#else
+       ConstructorInfo[] constructors = type.GetConstructors();
+       ConstructorInfo match = constructors.Where(c =>
+         {
+           ParameterInfo[] parameters = c.GetParameters();
+           if (parameters.Length != args.Length)
+             return false;
+
+           for (int i = 0; i < parameters.Length; i++)
+           {
+             ParameterInfo parameter = parameters[i];
+             object value = args[i];
+
+             if (!IsCompatibleValue(value, parameter.ParameterType))
+               return false;
+           }
+
+           return true;
+         }).FirstOrDefault();
+
+       if (match == null)
+         throw new Exception("Could not create '{0}' with given parameters.".FormatWith(CultureInfo.InvariantCulture, args));
+
+       return match.Invoke(args);
+#endif
+     }
   }
 }

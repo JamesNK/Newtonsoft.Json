@@ -36,7 +36,9 @@ using System.Collections.ObjectModel;
 using Newtonsoft.Json.Linq;
 using System.Linq;
 using Newtonsoft.Json.Converters;
+#if !PocketPC
 using System.Runtime.Serialization.Json;
+#endif
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
 using System.ComponentModel;
@@ -742,6 +744,7 @@ keyword such as type of business.""
       Assert.AreEqual("Large", deserializedProductShort.Sizes[2]);
     }
 
+#if !PocketPC
     [Test]
     public void Unicode()
     {
@@ -781,6 +784,7 @@ keyword such as type of business.""
       result = JavaScriptConvert.SerializeObject(testDates);
       Assert.AreEqual(expected, result);
     }
+#endif
 
     [Test]
     public void DateTimeOffset()
@@ -1318,6 +1322,14 @@ keyword such as type of business.""
       json = JavaScriptConvert.SerializeObject(new DefaultValueAttributeTestClass { TestField1 = 21, TestProperty1 = "TestProperty1Value" },
         new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
       Assert.AreEqual(@"{}", json);
+    }
+
+    [Test]
+    public void DeserializeStringDate()
+    {
+      string dateText = @"""\/Date(1221644506800-0700)\/""";
+
+
     }
   }
 }

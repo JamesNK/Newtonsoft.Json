@@ -120,8 +120,12 @@ namespace Newtonsoft.Json.Converters
     /// </returns>
     public override bool CanConvert(Type objectType)
     {
-      return (typeof(DateTime).IsAssignableFrom(objectType)
-        || typeof(DateTimeOffset).IsAssignableFrom(objectType));
+      if (typeof(DateTime).IsAssignableFrom(objectType))
+        return true;
+      if (typeof(DateTimeOffset).IsAssignableFrom(objectType))
+        return true;
+
+      return false;
     }
   }
 }

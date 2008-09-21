@@ -625,7 +625,7 @@ namespace Newtonsoft.Json
           }
         }
 
-        newObject = Activator.CreateInstance(objectType, constructorParameters.Values.ToArray());
+        newObject = ReflectionUtils.CreateInstance(objectType, constructorParameters.Values.ToArray());
 
         return newObject;
       }
@@ -804,7 +804,7 @@ namespace Newtonsoft.Json
     {
       Type objectType = value.GetType();
 
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !PocketPC
       TypeConverter converter = TypeDescriptor.GetConverter(objectType);
 
       // use the objectType's TypeConverter if it has one and can convert to a string

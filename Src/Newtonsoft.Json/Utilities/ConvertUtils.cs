@@ -102,6 +102,7 @@ namespace Newtonsoft.Json.Utilities
       if (initialValue is string && targetType == typeof(Guid))
         return new Guid((string)initialValue);
 
+#if !PocketPC
       // see if source or target types have a TypeConverter that converts between the two
       TypeConverter toConverter = GetConverter(initialType);
 
@@ -124,6 +125,7 @@ namespace Newtonsoft.Json.Utilities
         return fromConverter.ConvertFrom(initialValue);
 #endif
       }
+#endif
 
       // handle DBNull and INullable
       if (initialValue == DBNull.Value)
@@ -330,6 +332,7 @@ namespace Newtonsoft.Json.Utilities
     }
 #endif
 
+#if !PocketPC
     private static TypeConverter GetConverter(Type t)
     {
       ValidationUtils.ArgumentNotNull(t, "t");
@@ -345,6 +348,7 @@ namespace Newtonsoft.Json.Utilities
       return (Activator.CreateInstance(Type.GetType(typeConverterAttribute.ConverterTypeName)) as TypeConverter);
 #endif
     }
+#endif
 
     public static bool IsInteger(object value)
     {

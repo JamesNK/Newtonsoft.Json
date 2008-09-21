@@ -101,7 +101,14 @@ namespace Newtonsoft.Json
     /// <returns>A Json string representation of the <see cref="DateTime"/>.</returns>
     public static string ToString(DateTime value)
     {
-      return ToStringInternal(new DateTimeOffset(value), value.Kind);
+      TimeSpan utcOffset;
+#if PocketPC
+      utcOffset = TimeZone.CurrentTimeZone.GetUtcOffset(value);
+#else
+      utcOffset = TimeZoneInfo.Local.GetUtcOffset(value);
+#endif
+
+      return ToStringInternal(value, utcOffset, value.Kind);
     }
 
     /// <summary>
@@ -111,31 +118,30 @@ namespace Newtonsoft.Json
     /// <returns>A Json string representation of the <see cref="DateTimeOffset"/>.</returns>
     public static string ToString(DateTimeOffset value)
     {
-      return ToStringInternal(value, DateTimeKind.Local);
+      return ToStringInternal(value.UtcDateTime, value.Offset, DateTimeKind.Local);
     }
 
-    internal static string ToStringInternal(DateTimeOffset value, DateTimeKind kind)
+    internal static string ToStringInternal(DateTime value, TimeSpan offset, DateTimeKind kind)
     {
       long javaScriptTicks = ConvertDateTimeToJavaScriptTicks(value);
 
-      string offset;
+      string timezoneOffset;
       switch (kind)
       {
         case DateTimeKind.Local:
         case DateTimeKind.Unspecified:
-          TimeSpan utcOffset = value.Offset;
-          offset = utcOffset.Hours.ToString("+00;-00", CultureInfo.InvariantCulture) + utcOffset.Minutes.ToString("00;00", CultureInfo.InvariantCulture);
+          timezoneOffset = offset.Hours.ToString("+00;-00", CultureInfo.InvariantCulture) + offset.Minutes.ToString("00;00", CultureInfo.InvariantCulture);
           break;
         default:
-          offset = string.Empty;
+          timezoneOffset = string.Empty;
           break;
       }
-      return @"""\/Date(" + javaScriptTicks.ToString(CultureInfo.InvariantCulture) + offset + @")\/""";
+      return @"""\/Date(" + javaScriptTicks.ToString(CultureInfo.InvariantCulture) + timezoneOffset + @")\/""";
     }
 
-    internal static long ConvertDateTimeToJavaScriptTicks(DateTimeOffset dateTime)
+    internal static long ConvertDateTimeToJavaScriptTicks(DateTime dateTime)
     {
-      DateTimeOffset utcDateTime = dateTime.ToUniversalTime();
+      DateTime utcDateTime = dateTime.ToUniversalTime();
 
       //if (utcDateTime < MinimumJavaScriptDate)
       //  utcDateTime = MinimumJavaScriptDate;

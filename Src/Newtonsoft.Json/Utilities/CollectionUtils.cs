@@ -523,7 +523,7 @@ namespace Newtonsoft.Json.Utilities
         if (listType.IsArray)
           list = ToArray(((List<object>)list).ToArray(), ReflectionUtils.GetCollectionItemType(listType));
         else if (ReflectionUtils.InheritsGenericClassDefinition(listType, typeof(ReadOnlyCollection<>)))
-          list = (IList)Activator.CreateInstance(listType, list);
+          list = (IList)ReflectionUtils.CreateInstance(listType, list);
       }
 
       return list;

@@ -1,0 +1,133 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{256AA604-F61B-4B6D-8D51-C8E6AB11E435}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Newtonsoft.Json.Compact</RootNamespace>
+    <AssemblyName>Newtonsoft.Json.Compact</AssemblyName>
+    <ProjectTypeGuids>{4D628B5B-2FBC-4AA6-8C16-197242AEB884};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <PlatformFamilyName>PocketPC</PlatformFamilyName>
+    <PlatformID>b2c48bd2-963d-4549-9169-1fa021dce484</PlatformID>
+    <OSVersion>5.2</OSVersion>
+    <DeployDirSuffix>Newtonsoft.Json.Compact</DeployDirSuffix>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <NativePlatformName>Windows Mobile 6 Professional SDK</NativePlatformName>
+    <FormFactorID>
+    </FormFactorID>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;$(PlatformFamilyName)</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;$(PlatformFamilyName)</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Converters\HtmlColorConverter.cs" />
+    <Compile Include="Converters\IsoDateTimeConverter.cs" />
+    <Compile Include="Converters\JavaScriptDateTimeConverter.cs" />
+    <Compile Include="Converters\JsonDateTimeSerializationMode.cs" />
+    <Compile Include="Converters\XmlNodeConverter.cs" />
+    <Compile Include="DateTimeOffset.cs" />
+    <Compile Include="DefaultValueHandling.cs" />
+    <Compile Include="Identifier.cs" />
+    <Compile Include="JavaScriptConvert.cs" />
+    <Compile Include="JsonConverter.cs" />
+    <Compile Include="JsonConverterAttribute.cs" />
+    <Compile Include="JsonConverterCollection.cs" />
+    <Compile Include="JsonIgnoreAttribute.cs" />
+    <Compile Include="JsonObjectAttribute.cs" />
+    <Compile Include="JsonPropertyAttribute.cs" />
+    <Compile Include="JsonReader.cs" />
+    <Compile Include="JsonReaderException.cs" />
+    <Compile Include="JsonSerializationException.cs" />
+    <Compile Include="JsonSerializer.cs" />
+    <Compile Include="JsonSerializerSettings.cs" />
+    <Compile Include="JsonTextReader.cs" />
+    <Compile Include="JsonTextWriter.cs" />
+    <Compile Include="JsonToken.cs" />
+    <Compile Include="JsonWriter.cs" />
+    <Compile Include="JsonWriterException.cs" />
+    <Compile Include="Linq\Extensions.cs" />
+    <Compile Include="Linq\IJEnumerable.cs" />
+    <Compile Include="Linq\JArray.cs" />
+    <Compile Include="Linq\JConstructor.cs" />
+    <Compile Include="Linq\JContainer.cs" />
+    <Compile Include="Linq\JEnumerable.cs" />
+    <Compile Include="Linq\JObject.cs" />
+    <Compile Include="Linq\JProperty.cs" />
+    <Compile Include="Linq\JsonTokenReader.cs" />
+    <Compile Include="Linq\JsonTokenType.cs" />
+    <Compile Include="Linq\JsonTokenWriter.cs" />
+    <Compile Include="Linq\JToken.cs" />
+    <Compile Include="Linq\JTokenEqualityComparer.cs" />
+    <Compile Include="Linq\JValue.cs" />
+    <Compile Include="MemberMapping.cs" />
+    <Compile Include="MemberMappingCollection.cs" />
+    <Compile Include="MemberSerialization.cs" />
+    <Compile Include="MissingMemberHandling.cs" />
+    <Compile Include="NullValueHandling.cs" />
+    <Compile Include="ObjectCreationHandling.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReferenceLoopHandling.cs" />
+    <Compile Include="StringBuffer.cs" />
+    <Compile Include="Utilities\CollectionUtils.cs" />
+    <Compile Include="Utilities\CollectionWrapper.cs" />
+    <Compile Include="Utilities\ConvertUtils.cs" />
+    <Compile Include="Utilities\DateTimeUtils.cs" />
+    <Compile Include="Utilities\DictionaryWrapper.cs" />
+    <Compile Include="Utilities\JavaScriptUtils.cs" />
+    <Compile Include="Utilities\ListWrapper.cs" />
+    <Compile Include="Utilities\MathUtils.cs" />
+    <Compile Include="Utilities\MiscellaneousUtils.cs" />
+    <Compile Include="Utilities\ReflectionUtils.cs" />
+    <Compile Include="Utilities\StringUtils.cs" />
+    <Compile Include="Utilities\ValidationUtils.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}">
+        <HostingProcess disable="1" />
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

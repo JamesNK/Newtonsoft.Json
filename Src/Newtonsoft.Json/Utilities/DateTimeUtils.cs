@@ -11,7 +11,12 @@ namespace Newtonsoft.Json.Utilities
   {
     public static string GetLocalOffset(this DateTime d)
     {
-      TimeSpan utcOffset = TimeZoneInfo.Local.GetUtcOffset(d);
+      TimeSpan utcOffset;
+#if PocketPC
+      utcOffset = TimeZone.CurrentTimeZone.GetUtcOffset(d);
+#else
+      utcOffset = TimeZoneInfo.Local.GetUtcOffset(d);
+#endif
 
       return utcOffset.Hours.ToString("+00;-00", CultureInfo.InvariantCulture) + ":" + utcOffset.Minutes.ToString("00;00", CultureInfo.InvariantCulture);
     }
