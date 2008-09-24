@@ -175,6 +175,26 @@ namespace Newtonsoft.Json.Tests.Converters
     }
 
     [Test]
+    public void NullableSerializeUTC()
+    {
+      NullableDateTimeTestClass c = new NullableDateTimeTestClass();
+      c.DateTimeField = new DateTime(2008, 12, 12, 12, 12, 12, 0, DateTimeKind.Utc).ToLocalTime();
+      c.DateTimeOffsetField = new DateTime(2008, 12, 12, 12, 12, 12, 0, DateTimeKind.Utc).ToLocalTime();
+      c.PreField = "Pre";
+      c.PostField = "Post";
+      string json = JavaScriptConvert.SerializeObject(c, new IsoDateTimeConverter() { DateTimeStyles = DateTimeStyles.AssumeUniversal });
+      Assert.AreEqual(@"{""PreField"":""Pre"",""DateTimeField"":""2008-12-12T12:12:12.0000000Z"",""DateTimeOffsetField"":""2008-12-12T12:12:12.0000000+00:00"",""PostField"":""Post""}", json);
+
+      //test the other edge case too
+      c.DateTimeField = null;
+      c.DateTimeOffsetField = null;
+      c.PreField = "Pre";
+      c.PostField = "Post";
+      json = JavaScriptConvert.SerializeObject(c, new IsoDateTimeConverter() { DateTimeStyles = DateTimeStyles.AssumeUniversal });
+      Assert.AreEqual(@"{""PreField"":""Pre"",""DateTimeField"":null,""DateTimeOffsetField"":null,""PostField"":""Post""}", json);
+    }
+
+    [Test]
     public void DeserializeUTC()
     {
       DateTimeTestClass c =
@@ -192,6 +212,34 @@ namespace Newtonsoft.Json.Tests.Converters
       Assert.AreEqual(new DateTimeOffset(2008, 1, 1, 1, 1, 1, 0, TimeSpan.Zero), c2.DateTimeOffsetField);
       Assert.AreEqual("Pre", c2.PreField);
       Assert.AreEqual("Post", c2.PostField);
+    }
+
+    [Test]
+    public void NullableDeserializeUTC()
+    {
+      NullableDateTimeTestClass c =
+        JavaScriptConvert.DeserializeObject<NullableDateTimeTestClass>(@"{""PreField"":""Pre"",""DateTimeField"":""2008-12-12T12:12:12Z"",""DateTimeOffsetField"":""2008-12-12T12:12:12Z"",""PostField"":""Post""}", new IsoDateTimeConverter() { DateTimeStyles = DateTimeStyles.AssumeUniversal });
+
+      Assert.AreEqual(new DateTime(2008, 12, 12, 12, 12, 12, 0, DateTimeKind.Utc).ToLocalTime(), c.DateTimeField);
+      Assert.AreEqual(new DateTimeOffset(2008, 12, 12, 12, 12, 12, 0, TimeSpan.Zero), c.DateTimeOffsetField);
+      Assert.AreEqual("Pre", c.PreField);
+      Assert.AreEqual("Post", c.PostField);
+
+      NullableDateTimeTestClass c2 =
+       JavaScriptConvert.DeserializeObject<NullableDateTimeTestClass>(@"{""PreField"":""Pre"",""DateTimeField"":null,""DateTimeOffsetField"":null,""PostField"":""Post""}", new IsoDateTimeConverter() { DateTimeStyles = DateTimeStyles.AssumeUniversal });
+
+      Assert.AreEqual(null, c2.DateTimeField);
+      Assert.AreEqual(null, c2.DateTimeOffsetField);
+      Assert.AreEqual("Pre", c2.PreField);
+      Assert.AreEqual("Post", c2.PostField);
+    }
+
+    [Test]
+    [ExpectedException(typeof(Exception), ExpectedMessage = "Cannot convert null value to System.DateTime.")]
+    public void DeserializeNullToNonNullable()
+    {
+      DateTimeTestClass c2 =
+       JavaScriptConvert.DeserializeObject<DateTimeTestClass>(@"{""PreField"":""Pre"",""DateTimeField"":null,""DateTimeOffsetField"":null,""PostField"":""Post""}", new IsoDateTimeConverter() { DateTimeStyles = DateTimeStyles.AssumeUniversal });
     }
 
     [Test]

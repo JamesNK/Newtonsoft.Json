@@ -1325,11 +1325,15 @@ keyword such as type of business.""
     }
 
     [Test]
-    public void DeserializeStringDate()
+    public void DeserializeNullable()
     {
-      string dateText = @"""\/Date(1221644506800-0700)\/""";
+      string json;
 
+      json = JavaScriptConvert.SerializeObject((int?)null);
+      Assert.AreEqual("null", json);
 
+      json = JavaScriptConvert.SerializeObject((int?)1);
+      Assert.AreEqual("1", json);
     }
   }
 }

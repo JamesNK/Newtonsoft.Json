@@ -738,6 +738,186 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
+    /// Writes a <see cref="Nullable{Int32}"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Nullable{Int32}"/> value to write.</param>
+    public virtual void WriteValue(int? value)
+    {
+      if (value == null)
+        WriteNull();
+      else
+        WriteValue(value.Value);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Nullable{UInt32}"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Nullable{UInt32}"/> value to write.</param>
+    public virtual void WriteValue(uint? value)
+    {
+      if (value == null)
+        WriteNull();
+      else
+        WriteValue(value.Value);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Nullable{Int64}"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Nullable{Int64}"/> value to write.</param>
+    public virtual void WriteValue(long? value)
+    {
+      if (value == null)
+        WriteNull();
+      else
+        WriteValue(value.Value);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Nullable{UInt64}"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Nullable{UInt64}"/> value to write.</param>
+    public virtual void WriteValue(ulong? value)
+    {
+      if (value == null)
+        WriteNull();
+      else
+        WriteValue(value.Value);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Nullable{Single}"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Nullable{Single}"/> value to write.</param>
+    public virtual void WriteValue(float? value)
+    {
+      if (value == null)
+        WriteNull();
+      else
+        WriteValue(value.Value);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Nullable{Double}"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Nullable{Double}"/> value to write.</param>
+    public virtual void WriteValue(double? value)
+    {
+      if (value == null)
+        WriteNull();
+      else
+        WriteValue(value.Value);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Nullable{Boolean}"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Nullable{Boolean}"/> value to write.</param>
+    public virtual void WriteValue(bool? value)
+    {
+      if (value == null)
+        WriteNull();
+      else
+        WriteValue(value.Value);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Nullable{Int16}"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Nullable{Int16}"/> value to write.</param>
+    public virtual void WriteValue(short? value)
+    {
+      if (value == null)
+        WriteNull();
+      else
+        WriteValue(value.Value);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Nullable{UInt16}"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Nullable{UInt16}"/> value to write.</param>
+    public virtual void WriteValue(ushort? value)
+    {
+      if (value == null)
+        WriteNull();
+      else
+        WriteValue(value.Value);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Nullable{Char}"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Nullable{Char}"/> value to write.</param>
+    public virtual void WriteValue(char? value)
+    {
+      if (value == null)
+        WriteNull();
+      else
+        WriteValue(value.Value);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Nullable{Byte}"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Nullable{Byte}"/> value to write.</param>
+    public virtual void WriteValue(byte? value)
+    {
+      if (value == null)
+        WriteNull();
+      else
+        WriteValue(value.Value);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Nullable{SByte}"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Nullable{SByte}"/> value to write.</param>
+    public virtual void WriteValue(sbyte? value)
+    {
+      if (value == null)
+        WriteNull();
+      else
+        WriteValue(value.Value);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Nullable{Decimal}"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Nullable{Decimal}"/> value to write.</param>
+    public virtual void WriteValue(decimal? value)
+    {
+      if (value == null)
+        WriteNull();
+      else
+        WriteValue(value.Value);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Nullable{DateTime}"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Nullable{DateTime}"/> value to write.</param>
+    public virtual void WriteValue(DateTime? value)
+    {
+      if (value == null)
+        WriteNull();
+      else
+        WriteValue(value.Value);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Nullable{DateTimeOffset}"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Nullable{DateTimeOffset}"/> value to write.</param>
+    public virtual void WriteValue(DateTimeOffset? value)
+    {
+      if (value == null)
+        WriteNull();
+      else
+        WriteValue(value.Value);
+    }
+
+    /// <summary>
     /// Writes a <see cref="Object"/> value.
     /// An error will raised if the value cannot be written as a single JSON token.
     /// </summary>
@@ -747,6 +927,7 @@ namespace Newtonsoft.Json
       if (value == null)
       {
         WriteNull();
+        return;
       }
       else if (value is IConvertible)
       {

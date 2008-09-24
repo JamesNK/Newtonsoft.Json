@@ -51,7 +51,7 @@ namespace Newtonsoft.Json.Tests
         jsonWriter.WriteValue(0.99);
         jsonWriter.WriteValue(0.000000000000000001d);
         jsonWriter.WriteValue(0.000000000000000001m);
-        jsonWriter.WriteValue(null);
+        jsonWriter.WriteValue((string)null);
         jsonWriter.WriteValue("This is a string.");
         jsonWriter.WriteNull();
         jsonWriter.WriteUndefined();

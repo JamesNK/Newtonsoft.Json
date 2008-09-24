@@ -92,12 +92,24 @@ namespace Newtonsoft.Json.Converters
     /// <returns>The object value.</returns>
     public override object ReadJson(JsonReader reader, Type objectType)
     {
+      Type t = (ReflectionUtils.IsNullableType(objectType))
+        ? Nullable.GetUnderlyingType(objectType)
+        : objectType;
+
+      if (reader.TokenType == JsonToken.Null)
+      {
+        if (!ReflectionUtils.IsNullableType(objectType))
+          throw new Exception("Cannot convert null value to {0}.".FormatWith(CultureInfo.InvariantCulture, objectType));
+ 
+        return null;
+      }
+
       if (reader.TokenType != JsonToken.String)
         throw new Exception("Unexpected token parsing date. Expected String, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
 
       string dateText = reader.Value.ToString();
 
-      if (objectType == typeof(DateTimeOffset))
+      if (t == typeof(DateTimeOffset))
       {
         if (!string.IsNullOrEmpty(_dateTimeFormat))
           return DateTimeOffset.ParseExact(dateText, _dateTimeFormat, Culture, _dateTimeStyles);
@@ -120,9 +132,13 @@ namespace Newtonsoft.Json.Converters
     /// </returns>
     public override bool CanConvert(Type objectType)
     {
-      if (typeof(DateTime).IsAssignableFrom(objectType))
+      Type t = (ReflectionUtils.IsNullableType(objectType))
+        ? Nullable.GetUnderlyingType(objectType)
+        : objectType;
+
+      if (typeof(DateTime).IsAssignableFrom(t))
         return true;
-      if (typeof(DateTimeOffset).IsAssignableFrom(objectType))
+      if (typeof(DateTimeOffset).IsAssignableFrom(t))
         return true;
 
       return false;

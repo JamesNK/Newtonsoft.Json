@@ -51,20 +51,99 @@ namespace Newtonsoft.Json.Tests
         jsonWriter.WriteValue(0.99);
         jsonWriter.WriteValue(0.000000000000000001d);
         jsonWriter.WriteValue(0.000000000000000001m);
-        jsonWriter.WriteValue(null);
+        jsonWriter.WriteValue((string)null);
+        jsonWriter.WriteValue((object)null);
         jsonWriter.WriteValue("This is a string.");
         jsonWriter.WriteNull();
         jsonWriter.WriteUndefined();
         jsonWriter.WriteEndArray();
       }
 
-      string expected = @"[""@"",""\r\n\t\f\b?{\\r\\n\""'"",true,10,10.99,0.99,1E-18,0.000000000000000001,"""",""This is a string."",null,undefined]";
+      string expected = @"[""@"",""\r\n\t\f\b?{\\r\\n\""'"",true,10,10.99,0.99,1E-18,0.000000000000000001,null,null,""This is a string."",null,undefined]";
       string result = sb.ToString();
 
       Console.WriteLine("ValueFormatting");
       Console.WriteLine(result);
 
       Assert.AreEqual(expected, result);
+    }
+
+    [Test]
+    public void NullableValueFormatting()
+    {
+      StringWriter sw = new StringWriter();
+      using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
+      {
+        jsonWriter.WriteStartArray();
+        jsonWriter.WriteValue((char?)null);
+        jsonWriter.WriteValue((char?)'c');
+        jsonWriter.WriteValue((bool?)null);
+        jsonWriter.WriteValue((bool?)true);
+        jsonWriter.WriteValue((byte?)null);
+        jsonWriter.WriteValue((byte?)1);
+        jsonWriter.WriteValue((sbyte?)null);
+        jsonWriter.WriteValue((sbyte?)1);
+        jsonWriter.WriteValue((short?)null);
+        jsonWriter.WriteValue((short?)1);
+        jsonWriter.WriteValue((ushort?)null);
+        jsonWriter.WriteValue((ushort?)1);
+        jsonWriter.WriteValue((int?)null);
+        jsonWriter.WriteValue((int?)1);
+        jsonWriter.WriteValue((uint?)null);
+        jsonWriter.WriteValue((uint?)1);
+        jsonWriter.WriteValue((long?)null);
+        jsonWriter.WriteValue((long?)1);
+        jsonWriter.WriteValue((ulong?)null);
+        jsonWriter.WriteValue((ulong?)1);
+        jsonWriter.WriteValue((double?)null);
+        jsonWriter.WriteValue((double?)1.1);
+        jsonWriter.WriteValue((float?)null);
+        jsonWriter.WriteValue((float?)1.1);
+        jsonWriter.WriteValue((decimal?)null);
+        jsonWriter.WriteValue((decimal?)1.1m);
+        jsonWriter.WriteValue((DateTime?)null);
+        jsonWriter.WriteValue((DateTime?)new DateTime(JavaScriptConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc));
+        jsonWriter.WriteValue((DateTimeOffset?)null);
+        jsonWriter.WriteValue((DateTimeOffset?)new DateTimeOffset(JavaScriptConvert.InitialJavaScriptDateTicks, TimeSpan.Zero));
+        jsonWriter.WriteEndArray();
+      }
+
+      string json = sw.ToString();
+      string expected = @"[null,""c"",null,true,null,1,null,1,null,1,null,1,null,1,null,1,null,1,null,1,null,1.1,null,1.1,null,1.1,null,""\/Date(0)\/"",null,""\/Date(0+0000)\/""]";
+
+      Assert.AreEqual(expected, json);
+    }
+
+    [Test]
+    public void WriteValueObjectWithNullable()
+    {
+      StringWriter sw = new StringWriter();
+      using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
+      {
+        char? value = 'c';
+
+        jsonWriter.WriteStartArray();
+        jsonWriter.WriteValue((object)value);
+        jsonWriter.WriteEndArray();
+      }
+
+      string json = sw.ToString();
+      string expected = @"[""c""]";
+
+      Assert.AreEqual(expected, json);
+    }
+
+    [Test]
+    [ExpectedException(typeof(ArgumentException), ExpectedMessage = @"Unsupported type: System.Version. Use the JsonSerializer class to get the object's JSON representation.")]
+    public void WriteValueObjectWithUnsupportedValue()
+    {
+      StringWriter sw = new StringWriter();
+      using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
+      {
+        jsonWriter.WriteStartArray();
+        jsonWriter.WriteValue(new Version(1, 1, 1, 1));
+        jsonWriter.WriteEndArray();
+      }
     }
 
     [Test]

@@ -59,12 +59,46 @@ namespace Newtonsoft.Json.Tests.Converters
     }
 
     [Test]
+    public void SerializeNullableDateTimeClass()
+    {
+      NullableDateTimeTestClass t = new NullableDateTimeTestClass()
+      {
+        DateTimeField = null,
+        DateTimeOffsetField = null
+      };
+
+      JavaScriptDateTimeConverter converter = new JavaScriptDateTimeConverter();
+
+      string result;
+
+      result = JavaScriptConvert.SerializeObject(t, converter);
+      Assert.AreEqual(@"{""PreField"":null,""DateTimeField"":null,""DateTimeOffsetField"":null,""PostField"":null}", result);
+
+      t = new NullableDateTimeTestClass()
+      {
+        DateTimeField = new DateTime(2000, 12, 15, 22, 11, 3, 55, DateTimeKind.Utc),
+        DateTimeOffsetField = new DateTimeOffset(2000, 12, 15, 22, 11, 3, 55, TimeSpan.Zero)
+      };
+
+      result = JavaScriptConvert.SerializeObject(t, converter);
+      Assert.AreEqual(@"{""PreField"":null,""DateTimeField"":new Date(976918263055),""DateTimeOffsetField"":new Date(976918263055),""PostField"":null}", result);
+    }
+
+    [Test]
     public void DeserializeDateTime()
     {
       JavaScriptDateTimeConverter converter = new JavaScriptDateTimeConverter();
 
       DateTime result = JavaScriptConvert.DeserializeObject<DateTime>("new Date(976918263055)", converter);
       Assert.AreEqual(new DateTime(2000, 12, 15, 22, 11, 3, 55, DateTimeKind.Utc), result);
+    }
+
+    [Test]
+    [ExpectedException(typeof(Exception), ExpectedMessage = "Cannot convert null value to System.DateTime.")]
+    public void DeserializeNullToNonNullable()
+    {
+      DateTimeTestClass c2 =
+       JavaScriptConvert.DeserializeObject<DateTimeTestClass>(@"{""PreField"":""Pre"",""DateTimeField"":null,""DateTimeOffsetField"":null,""PostField"":""Post""}", new JavaScriptDateTimeConverter());
     }
 
     [Test]

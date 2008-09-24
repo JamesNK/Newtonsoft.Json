@@ -276,7 +276,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(string value)
     {
       base.WriteValue(value);
-      WriteValueInternal(JavaScriptConvert.ToString(value, _quoteChar), JsonToken.String);
+      WriteValueInternal((value != null) ? JavaScriptConvert.ToString(value, _quoteChar) : JavaScriptConvert.Null, JsonToken.String);
     }
 
     /// <summary>
