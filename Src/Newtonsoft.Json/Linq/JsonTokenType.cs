@@ -86,6 +86,10 @@ namespace Newtonsoft.Json.Linq
     /// <summary>
     /// A date value.
     /// </summary>
-    Date
+    Date,
+    /// <summary>
+    /// A raw JSON value.
+    /// </summary>
+    Raw
   }
 }

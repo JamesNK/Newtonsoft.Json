@@ -115,6 +115,7 @@ namespace Newtonsoft.Json
 /* StartConstructor */{ State.ConstructorStart, State.ConstructorStart, State.Error,        State.Error,      State.ConstructorStart, State.ConstructorStart, State.ConstructorStart, State.ConstructorStart, State.Error,    State.Error },
 /* StartProperty    */{ State.Property,         State.Error,            State.Property,     State.Property,   State.Error,            State.Error,            State.Error,            State.Error,            State.Error,    State.Error },
 /* Comment          */{ State.Start,            State.Property,         State.ObjectStart,  State.Object,     State.ArrayStart,       State.Array,            State.Constructor,      State.Constructor,      State.Error,    State.Error },
+/* Raw              */{ State.Start,            State.Property,         State.ObjectStart,  State.Object,     State.ArrayStart,       State.Array,            State.Constructor,      State.Constructor,      State.Error,    State.Error },
 /* Value            */{ State.Start,            State.Object,           State.Error,        State.Error,      State.Array,            State.Array,            State.Constructor,      State.Constructor,      State.Error,    State.Error },
 		};
 
@@ -309,7 +310,14 @@ namespace Newtonsoft.Json
     {
       ValidationUtils.ArgumentNotNull(reader, "reader");
 
-      int currentDepth = (reader.TokenType == JsonToken.None) ? -1 : reader.Depth;
+      int currentDepth;
+
+      if (reader.TokenType == JsonToken.None)
+        currentDepth = -1;
+      else if (!IsStartToken(reader.TokenType))
+        currentDepth = reader.Depth + 1;
+      else
+        currentDepth = reader.Depth;
 
       do
       {
@@ -363,6 +371,9 @@ namespace Newtonsoft.Json
           case JsonToken.Date:
             WriteValue((DateTime)reader.Value);
             break;
+          case JsonToken.Raw:
+            WriteRaw((string)reader.Value, true);
+            break;
           default:
             throw MiscellaneousUtils.CreateArgumentOutOfRangeException("TokenType", reader.TokenType, "Unexpected token type.");
         }
@@ -380,6 +391,19 @@ namespace Newtonsoft.Json
         case JsonToken.EndObject:
         case JsonToken.EndArray:
         case JsonToken.EndConstructor:
+          return true;
+        default:
+          return false;
+      }
+    }
+
+    private bool IsStartToken(JsonToken token)
+    {
+      switch (token)
+      {
+        case JsonToken.StartObject:
+        case JsonToken.StartArray:
+        case JsonToken.StartConstructor:
           return true;
         default:
           return false;
@@ -536,7 +560,7 @@ namespace Newtonsoft.Json
         case JsonToken.Undefined:
         case JsonToken.Date:
           // a value is being written
-          token = 6;
+          token = 7;
           break;
       }
 
@@ -584,13 +608,19 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Writes raw JavaScript manually.
+    /// Writes raw JSON.
     /// </summary>
-    /// <param name="javaScript">The raw JavaScript to write.</param>
-    public virtual void WriteRaw(string javaScript)
+    /// <param name="json">The raw JSON to write.</param>
+    public virtual void WriteRaw(string json)
     {
-      // hack. some 'raw' or 'other' token perhaps?
-      AutoComplete(JsonToken.Undefined);
+    }
+
+    internal void WriteRaw(string json, bool autoCompleteValue)
+    {
+      WriteRaw(json);
+      // hack
+      if (autoCompleteValue)
+        AutoComplete(JsonToken.Undefined);
     }
 
     /// <summary>

@@ -93,7 +93,7 @@
     <Compile Include="JsonTextWriter.cs" />
     <Compile Include="JsonWriterException.cs" />
     <Compile Include="JsonReaderException.cs" />
-    <Compile Include="Identifier.cs" />
+    <Compile Include="JsonRaw.cs" />
     <Compile Include="JsonConverter.cs" />
     <Compile Include="JsonConverterCollection.cs" />
     <Compile Include="JsonReader.cs" />

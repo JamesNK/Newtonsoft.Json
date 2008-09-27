@@ -164,6 +164,9 @@ namespace Newtonsoft.Json.Linq
         case JsonTokenType.Date:
           SetToken(JsonToken.Date, ((JValue)token).Value);
           break;
+        case JsonTokenType.Raw:
+          SetToken(JsonToken.Raw, ((JValue)token).Value);
+          break;
         default:
           throw MiscellaneousUtils.CreateArgumentOutOfRangeException("Type", token.Type, "Unexpected JsonTokenType.");
       }

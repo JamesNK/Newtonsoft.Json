@@ -59,6 +59,10 @@ namespace Newtonsoft.Json
     /// </summary>
     Comment,
     /// <summary>
+    /// Raw JSON.
+    /// </summary>
+    Raw,
+    /// <summary>
     /// An interger.
     /// </summary>
     Integer,

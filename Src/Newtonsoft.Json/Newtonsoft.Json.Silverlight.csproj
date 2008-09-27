@@ -63,9 +63,6 @@
     <Compile Include="..\Newtonsoft.Json\Converters\XmlNodeConverter.cs">
       <Link>Converters\XmlNodeConverter.cs</Link>
     </Compile>
-    <Compile Include="..\Newtonsoft.Json\Identifier.cs">
-      <Link>Identifier.cs</Link>
-    </Compile>
     <Compile Include="..\Newtonsoft.Json\JavaScriptConvert.cs">
       <Link>JavaScriptConvert.cs</Link>
     </Compile>
@@ -216,7 +213,6 @@
     <Compile Include="Converters\JsonDateTimeSerializationMode.cs" />
     <Compile Include="Converters\XmlNodeConverter.cs" />
     <Compile Include="DefaultValueHandling.cs" />
-    <Compile Include="Identifier.cs" />
     <Compile Include="JavaScriptConvert.cs" />
     <Compile Include="JsonConverter.cs" />
     <Compile Include="JsonConverterAttribute.cs" />
@@ -224,6 +220,7 @@
     <Compile Include="JsonIgnoreAttribute.cs" />
     <Compile Include="JsonObjectAttribute.cs" />
     <Compile Include="JsonPropertyAttribute.cs" />
+    <Compile Include="JsonRaw.cs" />
     <Compile Include="JsonReader.cs" />
     <Compile Include="JsonReaderException.cs" />
     <Compile Include="JsonSerializationException.cs" />

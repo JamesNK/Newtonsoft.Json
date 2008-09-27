@@ -229,5 +229,85 @@ Parameter name: arrayIndex")]
 
       ((ICollection<KeyValuePair<string, JToken>>)o).CopyTo(new KeyValuePair<string, JToken>[3], 1);
     }
+
+    [Test]
+    public void FromObjectRaw()
+    {
+      JsonSerializerTest.PersonRaw raw = new JsonSerializerTest.PersonRaw
+      {
+        FirstName = "FirstNameValue",
+        RawContent = new JsonRaw("[1,2,3,4,5]"),
+        LastName = "LastNameValue"
+      };
+
+      JObject o = JObject.FromObject(raw);
+
+      Assert.AreEqual("FirstNameValue", (string)o["first_name"]);
+      Assert.AreEqual(JsonTokenType.Raw, ((JValue)o["RawContent"]).Type);
+      Assert.AreEqual("[1,2,3,4,5]", (string)o["RawContent"]);
+      Assert.AreEqual("LastNameValue", (string)o["last_name"]);
+    }
+
+    [Test]
+    public void JsonTokenReader()
+    {
+      JsonSerializerTest.PersonRaw raw = new JsonSerializerTest.PersonRaw
+      {
+        FirstName = "FirstNameValue",
+        RawContent = new JsonRaw("[1,2,3,4,5]"),
+        LastName = "LastNameValue"
+      };
+
+      JObject o = JObject.FromObject(raw);
+
+      JsonReader reader = new JsonTokenReader(o);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.String, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Raw, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.String, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
+
+      Assert.IsFalse(reader.Read());
+    }
+
+    [Test]
+    public void DeserializeFromRaw()
+    {
+      JsonSerializerTest.PersonRaw raw = new JsonSerializerTest.PersonRaw
+      {
+        FirstName = "FirstNameValue",
+        RawContent = new JsonRaw("[1,2,3,4,5]"),
+        LastName = "LastNameValue"
+      };
+
+      JObject o = JObject.FromObject(raw);
+
+      JsonReader reader = new JsonTokenReader(o);
+      JsonSerializer serializer = new JsonSerializer();
+      raw = (JsonSerializerTest.PersonRaw)serializer.Deserialize(reader, typeof(JsonSerializerTest.PersonRaw));
+
+      Assert.AreEqual("FirstNameValue", raw.FirstName);
+      Assert.AreEqual("LastNameValue", raw.LastName);
+      Assert.AreEqual("[1,2,3,4,5]", raw.RawContent.Content);
+    }
   }
 }

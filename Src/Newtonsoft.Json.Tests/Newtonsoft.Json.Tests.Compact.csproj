@@ -63,6 +63,7 @@
     <Compile Include="Converters\XmlNodeConverterTest.cs" />
     <Compile Include="DateTimeTestClass.cs" />
     <Compile Include="JavaScriptConvertTest.cs" />
+    <Compile Include="JsonRawTests.cs" />
     <Compile Include="JsonSerializerTest.cs" />
     <Compile Include="JsonTextReaderTest.cs" />
     <Compile Include="JsonTextWriterTest.cs" />

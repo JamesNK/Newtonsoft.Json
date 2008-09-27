@@ -276,6 +276,7 @@ namespace Newtonsoft.Json
         case JsonToken.Null:
         case JsonToken.Date:
         case JsonToken.String:
+        case JsonToken.Raw:
           _currentState = State.PostValue;
           break;
       }
@@ -351,6 +352,7 @@ namespace Newtonsoft.Json
         case JsonToken.EndArray:
         case JsonToken.EndConstructor:
         case JsonToken.Date:
+        case JsonToken.Raw:
           return false;
         default:
           throw MiscellaneousUtils.CreateArgumentOutOfRangeException("token", token, "Unexpected JsonToken value.");

@@ -259,14 +259,14 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Writes raw JavaScript manually.
+    /// Writes raw JSON.
     /// </summary>
-    /// <param name="javaScript">The raw JavaScript to write.</param>
-    public override void WriteRaw(string javaScript)
+    /// <param name="json">The raw JSON to write.</param>
+    public override void WriteRaw(string json)
     {
-      base.WriteRaw(javaScript);
-      // hack. some 'raw' or 'other' token perhaps?
-      WriteValueInternal(javaScript, JsonToken.Undefined);
+      base.WriteRaw(json);
+
+      _writer.Write(json);
     }
 
     /// <summary>

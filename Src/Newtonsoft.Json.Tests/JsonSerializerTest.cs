@@ -1335,5 +1335,68 @@ keyword such as type of business.""
       json = JavaScriptConvert.SerializeObject((int?)1);
       Assert.AreEqual("1", json);
     }
+
+    public class PersonRaw
+    {
+      private Guid _internalId;
+      private string _firstName;
+      private string _lastName;
+      private JsonRaw _rawContent;
+
+      [JsonIgnore]
+      public Guid InternalId
+      {
+        get { return _internalId; }
+        set { _internalId = value; }
+      }
+
+      [JsonProperty("first_name")]
+      public string FirstName
+      {
+        get { return _firstName; }
+        set { _firstName = value; }
+      }
+
+      public JsonRaw RawContent
+      {
+        get { return _rawContent; }
+        set { _rawContent = value; }
+      }
+
+      [JsonProperty("last_name")]
+      public string LastName
+      {
+        get { return _lastName; }
+        set { _lastName = value; }
+      }
+    }
+
+    [Test]
+    public void SerializeJsonRaw()
+    {
+      PersonRaw personRaw = new PersonRaw
+      {
+        FirstName = "FirstNameValue",
+        RawContent = new JsonRaw("[1,2,3,4,5]"),
+        LastName = "LastNameValue"
+      };
+
+      string json;
+
+      json = JavaScriptConvert.SerializeObject(personRaw);
+      Assert.AreEqual(@"{""first_name"":""FirstNameValue"",""RawContent"":[1,2,3,4,5],""last_name"":""LastNameValue""}", json);
+    }
+
+    [Test]
+    public void DeserializeJsonRaw()
+    {
+      string json = @"{""first_name"":""FirstNameValue"",""RawContent"":[1,2,3,4,5],""last_name"":""LastNameValue""}";
+
+      PersonRaw personRaw = JavaScriptConvert.DeserializeObject<PersonRaw>(json);
+
+      Assert.AreEqual("FirstNameValue", personRaw.FirstName);
+      Assert.AreEqual("[1,2,3,4,5]", personRaw.RawContent.Content);
+      Assert.AreEqual("LastNameValue", personRaw.LastName);
+    }
   }
 }

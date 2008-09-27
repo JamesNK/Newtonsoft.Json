@@ -377,7 +377,7 @@ namespace Newtonsoft.Json.Linq
 
     private static bool ValidateString(JToken o)
     {
-      return (o.Type == JsonTokenType.String || IsNullable(o));
+      return (o.Type == JsonTokenType.String || o.Type == JsonTokenType.Comment || o.Type == JsonTokenType.Raw || IsNullable(o));
     }
 
     private static string GetType(JToken t)

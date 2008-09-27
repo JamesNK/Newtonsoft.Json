@@ -128,7 +128,12 @@ namespace Newtonsoft.Json.Linq
 
     private void AddValue(object value, JsonToken token)
     {
-      _parent.Add(new JValue(value));
+      AddValue(new JValue(value), token);
+    }
+
+    private void AddValue(JValue value, JsonToken token)
+    {
+      _parent.Add(value);
 
       if (_parent.Type == JsonTokenType.Property)
         _parent = _parent.Parent;
@@ -154,14 +159,14 @@ namespace Newtonsoft.Json.Linq
     }
 
     /// <summary>
-    /// Writes raw JavaScript manually.
+    /// Writes raw JSON.
     /// </summary>
-    /// <param name="javaScript">The raw JavaScript to write.</param>
-    public override void WriteRaw(string javaScript)
+    /// <param name="json">The raw JSON to write.</param>
+    public override void WriteRaw(string json)
     {
-      base.WriteRaw(javaScript);
-      // hack. some 'raw' or 'other' token perhaps?
-      AddValue(javaScript, JsonToken.Undefined);
+      base.WriteRaw(json);
+      // hack
+      AddValue(JValue.CreateRaw(json), JsonToken.Raw);
     }
 
     /// <summary>

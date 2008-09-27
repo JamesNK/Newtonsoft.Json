@@ -31,37 +31,36 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json
 {
   /// <summary>
-  /// 
+  /// Raw JSON content.
   /// </summary>
-  public class Identifier
+  public class JsonRaw
   {
-    private string _name;
+    private string _content;
 
     /// <summary>
-    /// Gets the name.
+    /// Gets the raw JSON string.
     /// </summary>
-    /// <value>The name.</value>
-    public string Name
+    /// <value>The raw JSON string.</value>
+    public string Content
     {
-      get { return _name; }
+      get { return _content; }
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Identifier"/> class.
+    /// Initializes a new instance of the <see cref="JsonRaw"/> class.
     /// </summary>
-    /// <param name="name">The name.</param>
-    public Identifier(string name)
+    /// <param name="content">The content.</param>
+    public JsonRaw(string content)
     {
-      _name = name;
-    }
+      ValidationUtils.ArgumentNotNull(content, "content");
 
-    private static bool IsAsciiLetter(char c)
-    {
-      return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+      _content = content;
     }
 
     /// <summary>
@@ -74,36 +73,11 @@ namespace Newtonsoft.Json
     /// <exception cref="T:System.NullReferenceException">The <paramref name="obj"/> parameter is null.</exception>
     public override bool Equals(object obj)
     {
-      Identifier function = obj as Identifier;
+      JsonRaw raw = obj as JsonRaw;
+      if (raw == null)
+        return false;
 
-      return Equals(function);
-    }
-
-    /// <summary>
-    /// Equalses the specified function.
-    /// </summary>
-    /// <param name="function">The function.</param>
-    /// <returns></returns>
-    public bool Equals(Identifier function)
-    {
-      return (_name == function.Name);
-    }
-
-    /// <summary>
-    /// Equalses the specified a.
-    /// </summary>
-    /// <param name="a">A.</param>
-    /// <param name="b">The b.</param>
-    /// <returns></returns>
-    public static bool Equals(Identifier a, Identifier b)
-    {
-      if (a == b)
-        return true;
-
-      if (a != null && b != null)
-        return a.Equals(b);
-
-      return false;
+      return (string.Compare(_content, raw.Content, StringComparison.OrdinalIgnoreCase) == 0);
     }
 
     /// <summary>
@@ -114,7 +88,7 @@ namespace Newtonsoft.Json
     /// </returns>
     public override int GetHashCode()
     {
-      return _name.GetHashCode();
+      return _content.GetHashCode();
     }
 
     /// <summary>
@@ -125,29 +99,23 @@ namespace Newtonsoft.Json
     /// </returns>
     public override string ToString()
     {
-      return _name;
+      return _content;
     }
 
     /// <summary>
-    /// Implements the operator ==.
+    /// Creates an instance of <see cref="JsonRaw"/> with the content of the reader's current token.
     /// </summary>
-    /// <param name="a">A.</param>
-    /// <param name="b">The b.</param>
-    /// <returns>The result of the operator.</returns>
-    public static bool operator ==(Identifier a, Identifier b)
+    /// <param name="reader">The reader.</param>
+    /// <returns>An instance of <see cref="JsonRaw"/> with the content of the reader's current token.</returns>
+    public static JsonRaw Create(JsonReader reader)
     {
-      return Identifier.Equals(a, b);
-    }
+      using (StringWriter sw = new StringWriter(CultureInfo.InvariantCulture))
+      using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
+      {
+        jsonWriter.WriteToken(reader);
 
-    /// <summary>
-    /// Implements the operator !=.
-    /// </summary>
-    /// <param name="a">A.</param>
-    /// <param name="b">The b.</param>
-    /// <returns>The result of the operator.</returns>
-    public static bool operator !=(Identifier a, Identifier b)
-    {
-      return !Identifier.Equals(a, b);
+        return new JsonRaw(sw.ToString());
+      }
     }
   }
 }

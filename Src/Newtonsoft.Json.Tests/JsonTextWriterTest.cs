@@ -280,6 +280,8 @@ namespace Newtonsoft.Json.Tests
         jsonWriter.WriteValue(float.PositiveInfinity);
         jsonWriter.WriteValue(float.NegativeInfinity);
         jsonWriter.WriteEndArray();
+
+        jsonWriter.Flush();
       }
 
       string expected = @"[
@@ -293,6 +295,93 @@ namespace Newtonsoft.Json.Tests
       string result = sb.ToString();
 
       Assert.AreEqual(expected, result);
+    }
+
+    [Test]
+    public void WriteRawInStart()
+    {
+      StringBuilder sb = new StringBuilder();
+      StringWriter sw = new StringWriter(sb);
+
+      using (JsonWriter jsonWriter = new JsonTextWriter(sw))
+      {
+        jsonWriter.Formatting = Formatting.Indented;
+
+        jsonWriter.WriteRaw("[1,2,3,4,5]");
+        jsonWriter.WriteWhitespace("  ");
+        jsonWriter.WriteStartArray();
+        jsonWriter.WriteValue(double.NaN);
+        jsonWriter.WriteEndArray();
+      }
+
+      string expected = @"[1,2,3,4,5]  [
+  NaN
+]";
+      string result = sb.ToString();
+
+      Assert.AreEqual(expected, result);
+    }
+
+    [Test]
+    public void WriteRawInArray()
+    {
+      StringBuilder sb = new StringBuilder();
+      StringWriter sw = new StringWriter(sb);
+
+      using (JsonWriter jsonWriter = new JsonTextWriter(sw))
+      {
+        jsonWriter.Formatting = Formatting.Indented;
+
+        jsonWriter.WriteStartArray();
+        jsonWriter.WriteValue(double.NaN);
+        jsonWriter.WriteRaw(",[1,2,3,4,5]");
+        jsonWriter.WriteRaw(",[1,2,3,4,5]");
+        jsonWriter.WriteValue(float.NaN);
+        jsonWriter.WriteEndArray();
+      }
+
+      string expected = @"[
+  NaN,[1,2,3,4,5],[1,2,3,4,5],
+  NaN
+]";
+      string result = sb.ToString();
+
+      Assert.AreEqual(expected, result);
+    }
+
+    [Test]
+    public void WriteRawInObject()
+    {
+      StringBuilder sb = new StringBuilder();
+      StringWriter sw = new StringWriter(sb);
+
+      using (JsonWriter jsonWriter = new JsonTextWriter(sw))
+      {
+        jsonWriter.Formatting = Formatting.Indented;
+
+        jsonWriter.WriteStartObject();
+        jsonWriter.WriteRaw(@"""PropertyName"":[1,2,3,4,5]");
+        jsonWriter.WriteEnd();
+      }
+
+      string expected = @"{""PropertyName"":[1,2,3,4,5]}";
+      string result = sb.ToString();
+
+      Assert.AreEqual(expected, result);
+    }
+
+    [Test]
+    public void WriteToken()
+    {
+      JsonTextReader reader = new JsonTextReader(new StringReader("[1,2,3,4,5]"));
+      reader.Read();
+      reader.Read();
+
+      StringWriter sw = new StringWriter();
+      JsonTextWriter writer = new JsonTextWriter(sw);
+      writer.WriteToken(reader);
+
+      Assert.AreEqual("1", sw.ToString());
     }
   }
 }

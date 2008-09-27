@@ -262,6 +262,10 @@ namespace Newtonsoft.Json
       {
         return converter.ReadJson(reader, objectType);
       }
+      else if (objectType == typeof(JsonRaw))
+      {
+        return JsonRaw.Create(reader);
+      }
       else
       {
         switch (reader.TokenType)
@@ -723,9 +727,9 @@ namespace Newtonsoft.Json
       {
         SerializeEnumerable(writer, (IEnumerable)value);
       }
-      else if (value is Identifier)
+      else if (value is JsonRaw)
       {
-        writer.WriteRaw(value.ToString());
+        writer.WriteRaw(((JsonRaw)value).Content, true);
       }
       else
       {

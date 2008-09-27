@@ -188,12 +188,23 @@ namespace Newtonsoft.Json.Linq
       return new JValue(value, JsonTokenType.String);
     }
 
+
+    /// <summary>
+    /// Creates a <see cref="JValue"/> of raw JSON with the given value.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>A <see cref="JValue"/> of raw JSON with the given value.</returns>
+    public static JValue CreateRaw(string value)
+    {
+      return new JValue(value, JsonTokenType.Raw);
+    }
+
     private static JsonTokenType GetValueType(JsonTokenType? current, object value)
     {
       if (value == null)
         return JsonTokenType.Null;
       else if (value is string)
-        return (current == JsonTokenType.Comment) ? JsonTokenType.Comment : JsonTokenType.String;
+        return GetStringValueType(current);
       else if (value is long || value is int || value is short || value is sbyte
         || value is ulong || value is uint || value is ushort || value is byte)
         return JsonTokenType.Integer;
@@ -207,6 +218,22 @@ namespace Newtonsoft.Json.Linq
         return JsonTokenType.Boolean;
 
       throw new ArgumentException("Could not determin JSON object type for type {0}.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
+    }
+
+    private static JsonTokenType GetStringValueType(JsonTokenType? current)
+    {
+      if (current == null)
+        return JsonTokenType.String;
+
+      switch (current.Value)
+      {
+        case JsonTokenType.Comment:
+        case JsonTokenType.String:
+        case JsonTokenType.Raw:
+          return current.Value;
+        default:
+          return JsonTokenType.String;
+      }
     }
 
     /// <summary>
@@ -280,6 +307,9 @@ namespace Newtonsoft.Json.Linq
             else
               writer.WriteValue(Convert.ToDateTime(v, CultureInfo.InvariantCulture));
           }, _value);
+          break;
+        case JsonTokenType.Raw:
+          writer.WriteRaw(_value.ToString());
           break;
         case JsonTokenType.Null:
           writer.WriteNull();

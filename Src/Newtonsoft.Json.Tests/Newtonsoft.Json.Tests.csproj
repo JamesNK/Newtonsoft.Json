@@ -73,6 +73,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="JsonRawTests.cs" />
     <Compile Include="NullableDateTimeTestClass.cs" />
     <Compile Include="DateTimeTestClass.cs" />
     <Compile Include="Converters\IsoDateTimeConverterTests.cs" />
