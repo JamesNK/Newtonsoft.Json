@@ -290,5 +290,13 @@ Parameter name: index")]
       Assert.AreEqual(j, v4.Parent);
       Assert.AreEqual(1, j.IndexOf(v4));
     }
+
+    [Test]
+    [ExpectedException(typeof(Exception), ExpectedMessage = "Error reading JArray from JsonReader. Current JsonReader item is not an array: StartObject")]
+    public void Parse_ShouldThrowOnUnexpectedToken()
+    {
+      string json = @"{""prop"":""value""}";
+      JArray.Parse(json);
+    }
   }
 }

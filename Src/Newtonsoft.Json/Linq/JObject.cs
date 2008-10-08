@@ -193,7 +193,7 @@ namespace Newtonsoft.Json.Linq
       }
       if (reader.TokenType != JsonToken.StartObject)
       {
-        throw new Exception("Current JsonReader item is not an object.");
+        throw new Exception("Error reading JObject from JsonReader. Current JsonReader item is not an object: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
       }
       else
       {

@@ -1,11 +1,17 @@
 ﻿#if PocketPC
+#pragma warning disable 1591
+
+// This class is... borrowed from .NET and Microsoft for a short time.
+// Hopefully Microsoft will add DateTimeOffset to the compact framework
+// or I will rewrite a striped down version of this file myself
+
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 using System;
 
-namespace Newtonsoft.Json
+namespace System
 {
   public struct DateTimeOffset : IComparable, IFormattable, IComparable<DateTimeOffset>, IEquatable<DateTimeOffset>
   {
@@ -311,26 +317,6 @@ namespace Newtonsoft.Json
       System.DateTime time = this._dateTime + offset;
       return new DateTimeOffset(time.Ticks, offset);
     }
-
-    //public override string ToString()
-    //{
-    //  return DateTimeFormat.Format(this.ClockDateTime, null, DateTimeFormatInfo.CurrentInfo, this.Offset);
-    //}
-
-    //public string ToString(IFormatProvider formatProvider)
-    //{
-    //  return DateTimeFormat.Format(this.ClockDateTime, null, DateTimeFormatInfo.GetInstance(formatProvider), this.Offset);
-    //}
-
-    //public string ToString(string format)
-    //{
-    //  return DateTimeFormat.Format(this.ClockDateTime, format, DateTimeFormatInfo.CurrentInfo, this.Offset);
-    //}
-
-    //public string ToString(string format, IFormatProvider formatProvider)
-    //{
-    //  return DateTimeFormat.Format(this.ClockDateTime, format, DateTimeFormatInfo.GetInstance(formatProvider), this.Offset);
-    //}
 
     public string ToString(string format, IFormatProvider formatProvider)
     {

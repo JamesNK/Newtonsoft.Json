@@ -309,5 +309,13 @@ Parameter name: arrayIndex")]
       Assert.AreEqual("LastNameValue", raw.LastName);
       Assert.AreEqual("[1,2,3,4,5]", raw.RawContent.Content);
     }
+
+    [Test]
+    [ExpectedException(typeof(Exception), ExpectedMessage = "Error reading JObject from JsonReader. Current JsonReader item is not an object: StartArray")]
+    public void Parse_ShouldThrowOnUnexpectedToken()
+    {
+      string json = @"[""prop""]";
+      JObject.Parse(json);
+    }
   }
 }

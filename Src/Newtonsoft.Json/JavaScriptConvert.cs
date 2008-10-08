@@ -436,7 +436,20 @@ namespace Newtonsoft.Json
     /// <returns>A JSON string representation of the object.</returns>
     public static string SerializeObject(object value)
     {
-      return SerializeObject(value, (JsonSerializerSettings)null);
+      return SerializeObject(value, Formatting.None, (JsonSerializerSettings)null);
+    }
+
+    /// <summary>
+    /// Serializes the specified object to a JSON string.
+    /// </summary>
+    /// <param name="value">The object to serialize.</param>
+    /// <param name="formatting">Indicates how the output is formatted.</param>
+    /// <returns>
+    /// A JSON string representation of the object.
+    /// </returns>
+    public static string SerializeObject(object value, Formatting formatting)
+    {
+      return SerializeObject(value, formatting, (JsonSerializerSettings)null);
     }
 
     /// <summary>
@@ -451,26 +464,28 @@ namespace Newtonsoft.Json
         ? new JsonSerializerSettings { Converters = converters }
         : null;
 
-      return SerializeObject(value, settings);
+      return SerializeObject(value, Formatting.None, settings);
     }
 
     /// <summary>
     /// Serializes the specified object to a JSON string using a collection of <see cref="JsonConverter"/>.
     /// </summary>
     /// <param name="value">The object to serialize.</param>
-    /// <param name="settings">
-    /// The <see cref="JsonSerializerSettings"/> used to serialize the object.
-    /// If this is null, default serialization settings will be is used.
-    /// </param>
-    /// <returns>A JSON string representation of the object.</returns>
-    public static string SerializeObject(object value, JsonSerializerSettings settings)
+    /// <param name="formatting">Indicates how the output is formatted.</param>
+    /// <param name="settings">The <see cref="JsonSerializerSettings"/> used to serialize the object.
+    /// If this is null, default serialization settings will be is used.</param>
+    /// <returns>
+    /// A JSON string representation of the object.
+    /// </returns>
+    public static string SerializeObject(object value, Formatting formatting, JsonSerializerSettings settings)
     {
       JsonSerializer jsonSerializer = JsonSerializer.Create(settings);
 
       StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
-      using (JsonWriter jsonWriter = new JsonTextWriter(sw))
+      using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
       {
-        //jsonWriter.Formatting = Formatting.Indented;
+        jsonWriter.Formatting = formatting;
+
         jsonSerializer.Serialize(jsonWriter, value);
       }
 

@@ -1308,19 +1308,19 @@ keyword such as type of business.""
     public void DefaultValueAttributeTest()
     {
       string json = JavaScriptConvert.SerializeObject(new DefaultValueAttributeTestClass(),
-        new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
+        Formatting.None, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
       Assert.AreEqual(@"{""TestField1"":0,""TestProperty1"":null}", json);
 
       json = JavaScriptConvert.SerializeObject(new DefaultValueAttributeTestClass { TestField1 = int.MinValue, TestProperty1 = "NotDefault" },
-        new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
+        Formatting.None, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
       Assert.AreEqual(@"{""TestField1"":-2147483648,""TestProperty1"":""NotDefault""}", json);
 
       json = JavaScriptConvert.SerializeObject(new DefaultValueAttributeTestClass { TestField1 = 21, TestProperty1 = "NotDefault" },
-        new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
+        Formatting.None, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
       Assert.AreEqual(@"{""TestProperty1"":""NotDefault""}", json);
 
       json = JavaScriptConvert.SerializeObject(new DefaultValueAttributeTestClass { TestField1 = 21, TestProperty1 = "TestProperty1Value" },
-        new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
+        Formatting.None, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
       Assert.AreEqual(@"{}", json);
     }
 

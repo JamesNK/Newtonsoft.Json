@@ -27,15 +27,25 @@ using System.Security;
 // associated with an assembly.
 #if SILVERLIGHT
 [assembly: AssemblyTitle("Newtonsoft Json.NET Silverlight")]
-[assembly: InternalsVisibleTo("Newtonsoft.Json.Tests.Silverlight")]
 #elif PocketPC
 [assembly: AssemblyTitle("Newtonsoft Json.NET Compact")]
-[assembly: InternalsVisibleTo("Newtonsoft.Json.Tests.Compact")]
 #else
 [assembly: AssemblyTitle("Newtonsoft Json.NET")]
-[assembly: InternalsVisibleTo("Newtonsoft.Json.Tests")]
 [assembly: AllowPartiallyTrustedCallers]
 #endif
+
+#if !SIGNED
+
+#if SILVERLIGHT
+[assembly: InternalsVisibleTo("Newtonsoft.Json.Tests.Silverlight")]
+#elif PocketPC
+[assembly: InternalsVisibleTo("Newtonsoft.Json.Tests.Compact")]
+#else
+[assembly: InternalsVisibleTo("Newtonsoft.Json.Tests")]
+#endif
+
+#endif
+
 
 
 [assembly: AssemblyDescription("")]

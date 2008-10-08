@@ -372,7 +372,7 @@ namespace Newtonsoft.Json
             WriteValue((DateTime)reader.Value);
             break;
           case JsonToken.Raw:
-            WriteRaw((string)reader.Value, true);
+            WriteRawValue((string)reader.Value);
             break;
           default:
             throw MiscellaneousUtils.CreateArgumentOutOfRangeException("TokenType", reader.TokenType, "Unexpected token type.");
@@ -608,19 +608,22 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Writes raw JSON.
+    /// Writes raw JSON without changing the writer's state.
     /// </summary>
     /// <param name="json">The raw JSON to write.</param>
     public virtual void WriteRaw(string json)
     {
     }
 
-    internal void WriteRaw(string json, bool autoCompleteValue)
+    /// <summary>
+    /// Writes raw JSON where a value is expected and updates the writer's state.
+    /// </summary>
+    /// <param name="json">The raw JSON to write.</param>
+    public virtual void WriteRawValue(string json)
     {
       WriteRaw(json);
-      // hack
-      if (autoCompleteValue)
-        AutoComplete(JsonToken.Undefined);
+      // hack. want writer to change state as if a value had been written
+      AutoComplete(JsonToken.Undefined);
     }
 
     /// <summary>

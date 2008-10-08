@@ -159,6 +159,11 @@ namespace Newtonsoft.Json
     }
 
 
+    /// <summary>
+    /// Creates a new <see cref="JsonSerializer"/> instance using the specified <see cref="JsonSerializerSettings"/> objects.
+    /// </summary>
+    /// <param name="settings">The settings.</param>
+    /// <returns></returns>
     public static JsonSerializer Create(JsonSerializerSettings settings)
     {
       JsonSerializer jsonSerializer = new JsonSerializer();
@@ -729,7 +734,7 @@ namespace Newtonsoft.Json
       }
       else if (value is JsonRaw)
       {
-        writer.WriteRaw(((JsonRaw)value).Content, true);
+        writer.WriteRawValue(((JsonRaw)value).Content);
       }
       else
       {

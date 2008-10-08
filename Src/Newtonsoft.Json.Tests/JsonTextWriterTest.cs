@@ -383,5 +383,32 @@ namespace Newtonsoft.Json.Tests
 
       Assert.AreEqual("1", sw.ToString());
     }
+
+    [Test]
+    public void WriteRawValue()
+    {
+      StringBuilder sb = new StringBuilder();
+      StringWriter sw = new StringWriter(sb);
+
+      using (JsonWriter jsonWriter = new JsonTextWriter(sw))
+      {
+        int i = 0;
+        string rawJson = "[1,2]";
+
+        jsonWriter.WriteStartObject();
+
+        while (i < 3)
+        {
+          jsonWriter.WritePropertyName("d" + i);
+          jsonWriter.WriteRawValue(rawJson);
+
+          i++;
+        }
+
+        jsonWriter.WriteEndObject();
+      }
+
+      Assert.AreEqual(@"{""d0"":[1,2],""d1"":[1,2],""d2"":[1,2]}", sb.ToString());
+    }
   }
 }
