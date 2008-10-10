@@ -227,7 +227,7 @@ namespace Newtonsoft.Json.Linq
         foreach (object c in enumerable)
         {
           AddInternal(isLast, multiPrevious, c);
-          multiPrevious = (previous != null) ? previous._next : Last;
+          multiPrevious = (multiPrevious != null) ? multiPrevious._next : Last;
         }
       }
       else

@@ -298,5 +298,60 @@ Parameter name: index")]
       string json = @"{""prop"":""value""}";
       JArray.Parse(json);
     }
+
+    public class ListItemFields
+    {
+      public string ListItemText { get; set; }
+      public object ListItemValue { get; set; }
+    }
+
+    [Test]
+    public void ArrayOrder()
+    {
+      string itemZeroText = "Zero text";
+
+      IEnumerable<ListItemFields> t = new List<ListItemFields>
+      {
+        new ListItemFields { ListItemText = "First", ListItemValue = 1 },
+        new ListItemFields { ListItemText = "Second", ListItemValue = 2 },
+        new ListItemFields { ListItemText = "Third", ListItemValue = 3 }
+      };
+
+      JObject optionValues =
+          new JObject(
+              new JProperty("options",
+                  new JArray(
+                      new JObject(
+                          new JProperty("text", itemZeroText),
+                          new JProperty("value", "0")),
+                          from r in t
+                          orderby r.ListItemValue
+                          select new JObject(
+                              new JProperty("text", r.ListItemText),
+                              new JProperty("value", r.ListItemValue.ToString())))));
+
+      string result = "myOptions = " + optionValues.ToString();
+
+      Assert.AreEqual(@"myOptions = {
+  ""options"": [
+    {
+      ""text"": ""Zero text"",
+      ""value"": ""0""
+    },
+    {
+      ""text"": ""First"",
+      ""value"": ""1""
+    },
+    {
+      ""text"": ""Second"",
+      ""value"": ""2""
+    },
+    {
+      ""text"": ""Third"",
+      ""value"": ""3""
+    }
+  ]
+}", result);
+    }
   }
 }
