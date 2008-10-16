@@ -282,7 +282,7 @@ namespace Newtonsoft.Json
             {
               value = CreateJToken(reader);
             }
-            else if (typeof(IDictionary).IsAssignableFrom(objectType) || ReflectionUtils.ImplementsGenericInterfaceDefinition(objectType, typeof(IDictionary<,>)))
+            else if (typeof(IDictionary).IsAssignableFrom(objectType) || ReflectionUtils.ImplementsGenericDefinition(objectType, typeof(IDictionary<,>)))
             {
               if (existingValue == null)
                 value = CreateAndPopulateDictionary(reader, objectType);
@@ -493,7 +493,7 @@ namespace Newtonsoft.Json
         {
           currentValue = ReflectionUtils.GetMemberValue(memberMapping.Member, target);
 
-          useExistingValue = (currentValue != null && !memberType.IsArray && !ReflectionUtils.InheritsGenericClassDefinition(memberType, typeof(ReadOnlyCollection<>)));
+          useExistingValue = (currentValue != null && !memberType.IsArray && !ReflectionUtils.InheritsGenericDefinition(memberType, typeof(ReadOnlyCollection<>)));
         }
 
 

@@ -124,13 +124,13 @@ namespace Newtonsoft.Json.Utilities
       return !CollectionUtils.IsNullOrEmpty<ParameterInfo>(property.GetIndexParameters());
     }
 
-    public static bool ImplementsGenericInterfaceDefinition(Type type, Type genericInterfaceDefinition)
+    public static bool ImplementsGenericDefinition(Type type, Type genericInterfaceDefinition)
     {
       Type implementingType;
-      return ImplementsGenericInterfaceDefinition(type, genericInterfaceDefinition, out implementingType);
+      return ImplementsGenericDefinition(type, genericInterfaceDefinition, out implementingType);
     }
 
-    public static bool ImplementsGenericInterfaceDefinition(Type type, Type genericInterfaceDefinition, out Type implementingType)
+    public static bool ImplementsGenericDefinition(Type type, Type genericInterfaceDefinition, out Type implementingType)
     {
       ValidationUtils.ArgumentNotNull(type, "type");
       ValidationUtils.ArgumentNotNull(genericInterfaceDefinition, "genericInterfaceDefinition");
@@ -171,13 +171,13 @@ namespace Newtonsoft.Json.Utilities
     }
 
     
-    public static bool InheritsGenericClassDefinition(Type type, Type genericClassDefinition)
+    public static bool InheritsGenericDefinition(Type type, Type genericClassDefinition)
     {
       Type implementingType;
-      return InheritsGenericClassDefinition(type, genericClassDefinition, out implementingType);
+      return InheritsGenericDefinition(type, genericClassDefinition, out implementingType);
     }
 
-    public static bool InheritsGenericClassDefinition(Type type, Type genericClassDefinition, out Type implementingType)
+    public static bool InheritsGenericDefinition(Type type, Type genericClassDefinition, out Type implementingType)
     {
       ValidationUtils.ArgumentNotNull(type, "type");
       ValidationUtils.ArgumentNotNull(genericClassDefinition, "genericClassDefinition");
@@ -185,10 +185,10 @@ namespace Newtonsoft.Json.Utilities
       if (!genericClassDefinition.IsClass || !genericClassDefinition.IsGenericTypeDefinition)
         throw new ArgumentNullException("'{0}' is not a generic class definition.".FormatWith(CultureInfo.InvariantCulture, genericClassDefinition));
 
-      return InheritsGenericClassDefinitionInternal(type, type, genericClassDefinition, out implementingType);
+      return InheritsGenericDefinitionInternal(type, type, genericClassDefinition, out implementingType);
     }
 
-    private static bool InheritsGenericClassDefinitionInternal(Type initialType, Type currentType, Type genericClassDefinition, out Type implementingType)
+    private static bool InheritsGenericDefinitionInternal(Type initialType, Type currentType, Type genericClassDefinition, out Type implementingType)
     {
       if (currentType.IsGenericType)
       {
@@ -207,7 +207,7 @@ namespace Newtonsoft.Json.Utilities
         return false;
       }
 
-      return InheritsGenericClassDefinitionInternal(initialType, currentType.BaseType, genericClassDefinition, out implementingType);
+      return InheritsGenericDefinitionInternal(initialType, currentType.BaseType, genericClassDefinition, out implementingType);
     }
 
     /// <summary>
@@ -224,7 +224,7 @@ namespace Newtonsoft.Json.Utilities
       {
         return type.GetElementType();
       }
-      else if (ImplementsGenericInterfaceDefinition(type, typeof(ICollection<>), out genericListType))
+      else if (ImplementsGenericDefinition(type, typeof(ICollection<>), out genericListType))
       {
         if (genericListType.IsGenericTypeDefinition)
           throw new Exception("Type {0} is not a collection.".FormatWith(CultureInfo.InvariantCulture, type));
@@ -246,7 +246,7 @@ namespace Newtonsoft.Json.Utilities
       ValidationUtils.ArgumentNotNull(dictionaryType, "type");
 
       Type genericDictionaryType;
-      if (ImplementsGenericInterfaceDefinition(dictionaryType, typeof(IDictionary<,>), out genericDictionaryType))
+      if (ImplementsGenericDefinition(dictionaryType, typeof(IDictionary<,>), out genericDictionaryType))
       {
         if (genericDictionaryType.IsGenericTypeDefinition)
           throw new Exception("Type {0} is not a dictionary.".FormatWith(CultureInfo.InvariantCulture, dictionaryType));

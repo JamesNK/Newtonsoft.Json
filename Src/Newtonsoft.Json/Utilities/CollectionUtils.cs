@@ -360,7 +360,7 @@ namespace Newtonsoft.Json.Utilities
         return true;
       else if (typeof(IList).IsAssignableFrom(type))
         return true;
-      else if (ReflectionUtils.ImplementsGenericInterfaceDefinition(type, typeof(IList<>)))
+      else if (ReflectionUtils.ImplementsGenericDefinition(type, typeof(IList<>)))
         return true;
       else
         return false;
@@ -371,7 +371,7 @@ namespace Newtonsoft.Json.Utilities
       ValidationUtils.ArgumentNotNull(list, "list");
 
       Type collectionDefinition;
-      if (ReflectionUtils.ImplementsGenericInterfaceDefinition(list.GetType(), typeof(ICollection<>), out collectionDefinition))
+      if (ReflectionUtils.ImplementsGenericDefinition(list.GetType(), typeof(ICollection<>), out collectionDefinition))
       {
         Type collectionItemType = ReflectionUtils.GetCollectionItemType(collectionDefinition);
 
@@ -398,7 +398,7 @@ namespace Newtonsoft.Json.Utilities
       ValidationUtils.ArgumentNotNull(list, "list");
 
       Type listDefinition;
-      if (ReflectionUtils.ImplementsGenericInterfaceDefinition(list.GetType(), typeof(IList<>), out listDefinition))
+      if (ReflectionUtils.ImplementsGenericDefinition(list.GetType(), typeof(IList<>), out listDefinition))
       {
         Type collectionItemType = ReflectionUtils.GetCollectionItemType(listDefinition);
 
@@ -426,7 +426,7 @@ namespace Newtonsoft.Json.Utilities
       ValidationUtils.ArgumentNotNull(dictionary, "dictionary");
 
       Type dictionaryDefinition;
-      if (ReflectionUtils.ImplementsGenericInterfaceDefinition(dictionary.GetType(), typeof(IDictionary<,>), out dictionaryDefinition))
+      if (ReflectionUtils.ImplementsGenericDefinition(dictionary.GetType(), typeof(IDictionary<,>), out dictionaryDefinition))
       {
         Type dictionaryKeyType = ReflectionUtils.GetDictionaryKeyType(dictionaryDefinition);
         Type dictionaryValueType = ReflectionUtils.GetDictionaryValueType(dictionaryDefinition);
@@ -466,7 +466,7 @@ namespace Newtonsoft.Json.Utilities
         list = new List<object>();
         isReadOnlyOrFixedSize = true;
       }
-      else if (ReflectionUtils.InheritsGenericClassDefinition(listType, typeof(ReadOnlyCollection<>), out collectionType))
+      else if (ReflectionUtils.InheritsGenericDefinition(listType, typeof(ReadOnlyCollection<>), out collectionType))
       {
         Type readOnlyCollectionContentsType = collectionType.GetGenericArguments()[0];
         Type genericEnumerable = ReflectionUtils.MakeGenericType(typeof(IEnumerable<>), readOnlyCollectionContentsType);
@@ -522,7 +522,7 @@ namespace Newtonsoft.Json.Utilities
       {
         if (listType.IsArray)
           list = ToArray(((List<object>)list).ToArray(), ReflectionUtils.GetCollectionItemType(listType));
-        else if (ReflectionUtils.InheritsGenericClassDefinition(listType, typeof(ReadOnlyCollection<>)))
+        else if (ReflectionUtils.InheritsGenericDefinition(listType, typeof(ReadOnlyCollection<>)))
           list = (IList)ReflectionUtils.CreateInstance(listType, list);
       }
 
