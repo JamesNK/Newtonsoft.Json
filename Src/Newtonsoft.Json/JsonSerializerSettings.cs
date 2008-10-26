@@ -58,7 +58,7 @@ namespace Newtonsoft.Json
       ObjectCreationHandling = DefaultObjectCreationHandling;
       NullValueHandling = DefaultNullValueHandling;
       DefaultValueHandling = DefaultDefaultValueHandling;
-      Converters = null;
+      Converters = new List<JsonConverter>();
     }
   }
 }
