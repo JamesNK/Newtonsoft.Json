@@ -333,7 +333,12 @@ namespace Newtonsoft.Json
             WriteStartArray();
             break;
           case JsonToken.StartConstructor:
-            WriteStartConstructor(reader.Value.ToString());
+            string constructorName = reader.Value.ToString();
+            // write a JValue date when the constructor is for a date
+            if (string.Compare(constructorName, "Date", StringComparison.Ordinal) == 0)
+              WriteConstructorDate(reader);
+            else
+              WriteStartConstructor(reader.Value.ToString());
             break;
           case JsonToken.PropertyName:
             WritePropertyName(reader.Value.ToString());
@@ -382,6 +387,24 @@ namespace Newtonsoft.Json
         // stop if we have reached the end of the token being read
         currentDepth - 1 < reader.Depth - (IsEndToken(reader.TokenType) ? 1 : 0)
         && reader.Read());
+    }
+
+    private void WriteConstructorDate(JsonReader reader)
+    {
+      if (!reader.Read())
+        throw new Exception("Unexpected end while reading date constructor.");
+      if (reader.TokenType != JsonToken.Integer)
+        throw new Exception("Unexpected token while reading date constructor. Expected Integer, got " + reader.TokenType);
+
+      long ticks = (long)reader.Value;
+      DateTime date = JavaScriptConvert.ConvertJavaScriptTicksToDateTime(ticks);
+
+      if (!reader.Read())
+        throw new Exception("Unexpected end while reading date constructor.");
+      if (reader.TokenType != JsonToken.EndConstructor)
+        throw new Exception("Unexpected token while reading date constructor. Expected EndConstructor, got " + reader.TokenType);
+
+      WriteValue(date);
     }
 
     private bool IsEndToken(JsonToken token)

@@ -1324,6 +1324,39 @@ keyword such as type of business.""
       Assert.AreEqual(@"{}", json);
     }
 
+    public class Invoice
+    {
+      public string Company { get; set; }
+      public decimal Amount { get; set; }
+      [DefaultValue(false)]
+      public bool Paid { get; set; }
+      [DefaultValue(null)]
+      public DateTime? PaidDate { get; set; }
+    }
+
+    [Test]
+    public void SerializeInvoice()
+    {
+      Invoice invoice = new Invoice
+                        {
+                          Company = "Acme Ltd.",
+                          Amount = 50.0m,
+                          Paid = false
+                        };
+
+      string json = JavaScriptConvert.SerializeObject(invoice);
+
+      Console.WriteLine(json);
+      // {"Company":"Acme Ltd.","Amount":50.0,"Paid":false,"PaidDate":null}
+
+      json = JavaScriptConvert.SerializeObject(invoice,
+        Formatting.None,
+        new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
+
+      Console.WriteLine(json);
+      // {"Company":"Acme Ltd.","Amount":50.0}
+    }
+
     [Test]
     public void DeserializeNullable()
     {

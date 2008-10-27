@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Converters;
+using System.IO;
 
 namespace Newtonsoft.Json.Tests.Linq
 {
@@ -316,6 +318,17 @@ Parameter name: arrayIndex")]
     {
       string json = @"[""prop""]";
       JObject.Parse(json);
+    }
+
+    [Test]
+    public void ParseJavaScriptDate()
+    {
+      string json = @"[new Date(1207285200000)]";
+
+      JArray a = (JArray)JavaScriptConvert.DeserializeObject(json, null);
+      JValue v = (JValue)a[0];
+
+      Assert.AreEqual(JavaScriptConvert.ConvertJavaScriptTicksToDateTime(1207285200000), (DateTime)v);
     }
   }
 }
