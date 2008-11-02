@@ -73,6 +73,9 @@ namespace Newtonsoft.Json.Utilities
       if (initialValue == null)
         throw new ArgumentNullException("initialValue");
 
+      if (ReflectionUtils.IsNullableType(targetType))
+        targetType = Nullable.GetUnderlyingType(targetType);
+
       Type initialType = initialValue.GetType();
 
       if (targetType == initialType)

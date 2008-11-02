@@ -1431,5 +1431,45 @@ keyword such as type of business.""
       Assert.AreEqual("[1,2,3,4,5]", personRaw.RawContent.Content);
       Assert.AreEqual("LastNameValue", personRaw.LastName);
     }
+
+    public class UserNullablle
+    {
+      public Guid Id;
+      public string FName;
+      public string LName;
+      public int RoleId;
+      public int? NullableRoleId;
+      public int? NullRoleId;
+      public bool? Active;
+    }
+
+    [Test]
+    public void DeserializeNullableMember()
+    {
+      UserNullablle userNullablle = new UserNullablle
+                                    {
+                                      Id = new Guid("AD6205E8-0DF4-465d-AEA6-8BA18E93A7E7"),
+                                      FName = "FirstValue",
+                                      LName = "LastValue",
+                                      RoleId = 5,
+                                      NullableRoleId = 6,
+                                      NullRoleId = null,
+                                      Active = true
+                                    };
+
+      string json = JavaScriptConvert.SerializeObject(userNullablle);
+
+      Assert.AreEqual(@"{""Id"":""ad6205e8-0df4-465d-aea6-8ba18e93a7e7"",""FName"":""FirstValue"",""LName"":""LastValue"",""RoleId"":5,""NullableRoleId"":6,""NullRoleId"":null,""Active"":true}", json);
+
+      UserNullablle userNullablleDeserialized = JavaScriptConvert.DeserializeObject<UserNullablle>(json);
+
+      Assert.AreEqual(new Guid("AD6205E8-0DF4-465d-AEA6-8BA18E93A7E7"), userNullablleDeserialized.Id);
+      Assert.AreEqual("FirstValue", userNullablleDeserialized.FName);
+      Assert.AreEqual("LastValue", userNullablleDeserialized.LName);
+      Assert.AreEqual(5, userNullablleDeserialized.RoleId);
+      Assert.AreEqual(6, userNullablleDeserialized.NullableRoleId);
+      Assert.AreEqual(null, userNullablleDeserialized.NullRoleId);
+      Assert.AreEqual(true, userNullablleDeserialized.Active);
+    }
   }
 }
