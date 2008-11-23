@@ -518,6 +518,8 @@ namespace Newtonsoft.Json
       {
         if (_missingMemberHandling == MissingMemberHandling.Error)
           throw new JsonSerializationException("Could not find member '{0}' on object of type '{1}'".FormatWith(CultureInfo.InvariantCulture, memberName, targetType.GetType().Name));
+
+        reader.Skip();
       }
     }
 

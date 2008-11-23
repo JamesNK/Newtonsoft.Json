@@ -330,5 +330,19 @@ Parameter name: arrayIndex")]
 
       Assert.AreEqual(JavaScriptConvert.ConvertJavaScriptTicksToDateTime(1207285200000), (DateTime)v);
     }
+
+    [Test]
+    public void GenericValueCast()
+    {
+      string json = @"{""foo"":true}";
+      JObject o = (JObject)JavaScriptConvert.DeserializeObject(json);
+      bool? value = o.Value<bool?>("foo");
+      Assert.AreEqual(true, value);
+
+      json = @"{""foo"":null}"; 
+      o = (JObject)JavaScriptConvert.DeserializeObject(json);
+      value = o.Value<bool?>("foo");
+      Assert.AreEqual(null, value);
+    }
   }
 }

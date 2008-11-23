@@ -1063,7 +1063,7 @@ keyword such as type of business.""
         this.phoneNumber = phoneNumber;
       }
     }
-    
+
     [Test]
     public void SerializeMemberGenericList()
     {
@@ -1470,6 +1470,27 @@ keyword such as type of business.""
       Assert.AreEqual(6, userNullablleDeserialized.NullableRoleId);
       Assert.AreEqual(null, userNullablleDeserialized.NullRoleId);
       Assert.AreEqual(true, userNullablleDeserialized.Active);
+    }
+
+    public class MyClass
+    {
+      public int PreProperty { get; set; }
+      //public DateTime DateProperty { get; set; }
+      public int PostProperty { get; set; }
+    }
+
+    [Test]
+    public void MissingMemberIgnoreComplexValue()
+    {
+      JsonSerializer serializer = new JsonSerializer { MissingMemberHandling = MissingMemberHandling.Ignore };
+      serializer.Converters.Add(new JavaScriptDateTimeConverter());
+
+      string response = @"{""PreProperty"":1,""DateProperty"":new Date(1225962698973),""PostProperty"":2}";
+
+      MyClass myClass = (MyClass)serializer.Deserialize(new StringReader(response), typeof(MyClass));
+
+      Assert.AreEqual(1, myClass.PreProperty);
+      Assert.AreEqual(2, myClass.PostProperty);
     }
   }
 }
