@@ -332,7 +332,7 @@ namespace Newtonsoft.Json.Tests
     [Test]
     public void EscapedUnicodeText()
     {
-      string json = @"[""\u003c""]";
+      string json = @"[""\u003c"",""\u5f20""]";
 
       JsonTextReader reader = new JsonTextReader(new StringReader(json));
   
@@ -341,6 +341,9 @@ namespace Newtonsoft.Json.Tests
       
       reader.Read();
       Assert.AreEqual("<", reader.Value);
+
+      reader.Read();
+      Assert.AreEqual(24352, Convert.ToInt32(Convert.ToChar((string)reader.Value)));
 
       reader.Read();
       Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
