@@ -20,7 +20,7 @@
         equivalent and back again.</p>
 
 
-	<p>For simple scenarios the <a href="./html/Overload_Newtonsoft_Json_JavaScriptConvert_SerializeObject.htm">SerializeObject</a> and <a href="./html/Overload_Newtonsoft_Json_JavaScriptConvert_DeserializeObject.htm">DeserializeObject</a> methods on <a href="./html/T_Newtonsoft_Json_JavaScriptConvert.htm">JavaScriptConvert</a> provide an easy to use wrapper over 
+	<p>For simple scenarios the <a href="./html/Overload_Newtonsoft_Json_JsonConvert_SerializeObject.htm">SerializeObject</a> and <a href="./html/Overload_Newtonsoft_Json_JavaScriptConvert_DeserializeObject.htm">DeserializeObject</a> methods on <a href="./html/T_Newtonsoft_Json_JavaScriptConvert.htm">JavaScriptConvert</a> provide an easy to use wrapper over 
         JsonSerializer.</p>
 
 
@@ -34,7 +34,7 @@
 <pre style="margin: 0px;">product.Price = 3.99M;</pre>
 <pre style="margin: 0px;">product.Sizes = <span style="color: blue;">new</span> <span style="color: blue;">string</span>[] { <span style="color: #a31515;">"Small"</span>, <span style="color: #a31515;">"Medium"</span>, <span style="color: #a31515;">"Large"</span> };</pre>
 <pre style="margin: 0px;">&nbsp;</pre>
-<pre style="margin: 0px;"><span style="color: blue;">string</span> output = <span style="color: #2b91af;">JavaScriptConvert</span>.SerializeObject(product);</pre>
+<pre style="margin: 0px;"><span style="color: blue;">string</span> output = <span style="color: #2b91af;">JsonConvert</span>.SerializeObject(product);</pre>
 <pre style="margin: 0px;"><span style="color: green;">//{</span></pre>
 <pre style="margin: 0px;"><span style="color: green;">//&nbsp; "Name": "Apple",</span></pre>
 <pre style="margin: 0px;"><span style="color: green;">//&nbsp; "Expiry": &quot;\/Date(1230375600000+1300)\/&quot;,</span></pre>
@@ -46,7 +46,7 @@
 <pre style="margin: 0px;"><span style="color: green;">//&nbsp; ]</span></pre>
 <pre style="margin: 0px;"><span style="color: green;">//}</span></pre>
 <pre style="margin: 0px;">&nbsp;</pre>
-<pre style="margin: 0px;"><span style="color: #2b91af;">Product</span> deserializedProduct = (<span style="color: #2b91af;">Product</span>)<span style="color: #2b91af;">JavaScriptConvert</span>.DeserializeObject(output, <span style="color: blue;">typeof</span>(<span style="color: #2b91af;">Product</span>));</pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">Product</span> deserializedProduct = (<span style="color: #2b91af;">Product</span>)<span style="color: #2b91af;">JsonConvert</span>.DeserializeObject(output, <span style="color: blue;">typeof</span>(<span style="color: #2b91af;">Product</span>));</pre>
 </div>
 
 </div></div>

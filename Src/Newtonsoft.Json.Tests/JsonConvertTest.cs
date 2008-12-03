@@ -33,7 +33,7 @@ using System.Linq;
 
 namespace Newtonsoft.Json.Tests
 {
-  public class JavaScriptConvertTest : TestFixtureBase
+  public class JsonConvertTest : TestFixtureBase
   {
 #if Entities
     [Test]
@@ -90,7 +90,7 @@ namespace Newtonsoft.Json.Tests
   ""EntityKey"": null
 }", json);
 
-      Purchase newPurchase = JavaScriptConvert.DeserializeObject<Purchase>(json);
+      Purchase newPurchase = JsonConvert.DeserializeObject<Purchase>(json);
       Assert.AreEqual(1, newPurchase.Id);
 
       Assert.AreEqual(2, newPurchase.PurchaseLine.Count);
@@ -162,21 +162,21 @@ now brown cow?", '"', true);
     [ExpectedException(typeof(ArgumentException), ExpectedMessage = "Unsupported type: System.Version. Use the JsonSerializer class to get the object's JSON representation.")]
     public void ToStringInvalid()
     {
-      JavaScriptConvert.ToString(new Version(1, 0));
+      JsonConvert.ToString(new Version(1, 0));
     }
 
     [Test]
     public void GuidToString()
     {
       Guid guid = new Guid("BED7F4EA-1A96-11d2-8F08-00A0C9A6186D");
-      string json = JavaScriptConvert.ToString(guid);
+      string json = JsonConvert.ToString(guid);
       Assert.AreEqual(@"""bed7f4ea-1a96-11d2-8f08-00a0c9a6186d""", json);
     }
 
     [Test]
     public void EnumToString()
     {
-      string json = JavaScriptConvert.ToString(StringComparison.CurrentCultureIgnoreCase);
+      string json = JsonConvert.ToString(StringComparison.CurrentCultureIgnoreCase);
       Assert.AreEqual("1", json);
     }
 
@@ -186,58 +186,58 @@ now brown cow?", '"', true);
       object value;
 
       value = 1;
-      Assert.AreEqual("1", JavaScriptConvert.ToString(value));
+      Assert.AreEqual("1", JsonConvert.ToString(value));
 
       value = 1.1;
-      Assert.AreEqual("1.1", JavaScriptConvert.ToString(value));
+      Assert.AreEqual("1.1", JsonConvert.ToString(value));
 
       value = 1.1m;
-      Assert.AreEqual("1.1", JavaScriptConvert.ToString(value));
+      Assert.AreEqual("1.1", JsonConvert.ToString(value));
 
       value = (float)1.1;
-      Assert.AreEqual("1.1", JavaScriptConvert.ToString(value));
+      Assert.AreEqual("1.1", JsonConvert.ToString(value));
 
       value = (short)1;
-      Assert.AreEqual("1", JavaScriptConvert.ToString(value));
+      Assert.AreEqual("1", JsonConvert.ToString(value));
 
       value = (long)1;
-      Assert.AreEqual("1", JavaScriptConvert.ToString(value));
+      Assert.AreEqual("1", JsonConvert.ToString(value));
 
       value = (byte)1;
-      Assert.AreEqual("1", JavaScriptConvert.ToString(value));
+      Assert.AreEqual("1", JsonConvert.ToString(value));
 
       value = (uint)1;
-      Assert.AreEqual("1", JavaScriptConvert.ToString(value));
+      Assert.AreEqual("1", JsonConvert.ToString(value));
 
       value = (ushort)1;
-      Assert.AreEqual("1", JavaScriptConvert.ToString(value));
+      Assert.AreEqual("1", JsonConvert.ToString(value));
 
       value = (sbyte)1;
-      Assert.AreEqual("1", JavaScriptConvert.ToString(value));
+      Assert.AreEqual("1", JsonConvert.ToString(value));
 
       value = (ulong)1;
-      Assert.AreEqual("1", JavaScriptConvert.ToString(value));
+      Assert.AreEqual("1", JsonConvert.ToString(value));
 
-      value = new DateTime(JavaScriptConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc);
-      Assert.AreEqual(@"""\/Date(0)\/""", JavaScriptConvert.ToString(value));
+      value = new DateTime(JsonConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc);
+      Assert.AreEqual(@"""\/Date(0)\/""", JsonConvert.ToString(value));
 
-      value = new DateTimeOffset(JavaScriptConvert.InitialJavaScriptDateTicks, TimeSpan.Zero);
-      Assert.AreEqual(@"""\/Date(0+0000)\/""", JavaScriptConvert.ToString(value));
+      value = new DateTimeOffset(JsonConvert.InitialJavaScriptDateTicks, TimeSpan.Zero);
+      Assert.AreEqual(@"""\/Date(0+0000)\/""", JsonConvert.ToString(value));
 
       value = null;
-      Assert.AreEqual("null", JavaScriptConvert.ToString(value));
+      Assert.AreEqual("null", JsonConvert.ToString(value));
 
       value = DBNull.Value;
-      Assert.AreEqual("null", JavaScriptConvert.ToString(value));
+      Assert.AreEqual("null", JsonConvert.ToString(value));
 
       value = "I am a string";
-      Assert.AreEqual(@"""I am a string""", JavaScriptConvert.ToString(value));
+      Assert.AreEqual(@"""I am a string""", JsonConvert.ToString(value));
 
       value = true;
-      Assert.AreEqual("true", JavaScriptConvert.ToString(value));
+      Assert.AreEqual("true", JsonConvert.ToString(value));
 
       value = 'c';
-      Assert.AreEqual(@"""c""", JavaScriptConvert.ToString(value));
+      Assert.AreEqual(@"""c""", JsonConvert.ToString(value));
     }
 
     [Test]
@@ -246,32 +246,32 @@ now brown cow?", '"', true);
     {
       string orig = @"this is a string ""that has quotes"" ";
 
-      string serialized = JavaScriptConvert.SerializeObject(orig);
+      string serialized = JsonConvert.SerializeObject(orig);
 
       // *** Make string invalid by stripping \" \"
       serialized = serialized.Replace(@"\""", "\"");
 
-      string result = JavaScriptConvert.DeserializeObject<string>(serialized);
+      string result = JsonConvert.DeserializeObject<string>(serialized);
     }
 
     [Test]
     public void DeserializeValueObjects()
     {
-      int i = JavaScriptConvert.DeserializeObject<int>("1");
+      int i = JsonConvert.DeserializeObject<int>("1");
       Assert.AreEqual(1, i);
 
 #if !PocketPC
-      DateTimeOffset d = JavaScriptConvert.DeserializeObject<DateTimeOffset>(@"""\/Date(-59011455539000+0000)\/""");
+      DateTimeOffset d = JsonConvert.DeserializeObject<DateTimeOffset>(@"""\/Date(-59011455539000+0000)\/""");
       Assert.AreEqual(new DateTimeOffset(new DateTime(100, 1, 1, 1, 1, 1, DateTimeKind.Utc)), d);
 #endif
 
-      bool b = JavaScriptConvert.DeserializeObject<bool>("true");
+      bool b = JsonConvert.DeserializeObject<bool>("true");
       Assert.AreEqual(true, b);
 
-      object n = JavaScriptConvert.DeserializeObject<object>("null");
+      object n = JsonConvert.DeserializeObject<object>("null");
       Assert.AreEqual(null, n);
 
-      object u = JavaScriptConvert.DeserializeObject<object>("undefined");
+      object u = JsonConvert.DeserializeObject<object>("undefined");
       Assert.AreEqual(null, u);
     }
   }

@@ -213,7 +213,7 @@ namespace Newtonsoft.Json.Tests
   ]
 }" + '\n';
 
-      object o = JavaScriptConvert.DeserializeObject(input);
+      object o = JsonConvert.DeserializeObject(input);
     }
 
     [Test]

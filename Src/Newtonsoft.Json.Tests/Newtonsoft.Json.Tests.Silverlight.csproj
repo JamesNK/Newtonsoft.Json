@@ -63,62 +63,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Newtonsoft.Json.Tests\Converters\IsoDateTimeConverterTests.cs">
-      <Link>Converters\IsoDateTimeConverterTests.cs</Link>
-    </Compile>
-    <Compile Include="..\Newtonsoft.Json.Tests\Converters\JavaScriptDateTimeConverterTests.cs">
-      <Link>Converters\JavaScriptDateTimeConverterTests.cs</Link>
-    </Compile>
-    <Compile Include="..\Newtonsoft.Json.Tests\Converters\XmlNodeConverterTest.cs">
-      <Link>Converters\XmlNodeConverterTest.cs</Link>
-    </Compile>
-    <Compile Include="..\Newtonsoft.Json.Tests\DateTimeTestClass.cs">
-      <Link>DateTimeTestClass.cs</Link>
-    </Compile>
-    <Compile Include="..\Newtonsoft.Json.Tests\JavaScriptConvertTest.cs">
-      <Link>JavaScriptConvertTest.cs</Link>
-    </Compile>
-    <Compile Include="..\Newtonsoft.Json.Tests\JsonSerializerTest.cs">
-      <Link>JsonSerializerTest.cs</Link>
-    </Compile>
-    <Compile Include="..\Newtonsoft.Json.Tests\JsonTextReaderTest.cs">
-      <Link>JsonTextReaderTest.cs</Link>
-    </Compile>
-    <Compile Include="..\Newtonsoft.Json.Tests\JsonTextWriterTest.cs">
-      <Link>JsonTextWriterTest.cs</Link>
-    </Compile>
-    <Compile Include="..\Newtonsoft.Json.Tests\JsonTokenReaderTest.cs">
-      <Link>JsonTokenReaderTest.cs</Link>
-    </Compile>
-    <Compile Include="..\Newtonsoft.Json.Tests\JsonTokenWriterTest.cs">
-      <Link>JsonTokenWriterTest.cs</Link>
-    </Compile>
-    <Compile Include="..\Newtonsoft.Json.Tests\Linq\JArrayTests.cs">
-      <Link>Linq\JArrayTests.cs</Link>
-    </Compile>
-    <Compile Include="..\Newtonsoft.Json.Tests\Linq\JObjectTests.cs">
-      <Link>Linq\JObjectTests.cs</Link>
-    </Compile>
-    <Compile Include="..\Newtonsoft.Json.Tests\Linq\JTokenEqualityComparerTests.cs">
-      <Link>Linq\JTokenEqualityComparerTests.cs</Link>
-    </Compile>
-    <Compile Include="..\Newtonsoft.Json.Tests\Linq\JTokenTests.cs">
-      <Link>Linq\JTokenTests.cs</Link>
-    </Compile>
-    <Compile Include="..\Newtonsoft.Json.Tests\Linq\JValueTests.cs">
-      <Link>Linq\JValueTests.cs</Link>
-    </Compile>
-    <Compile Include="..\Newtonsoft.Json.Tests\Linq\LinqToJsonTest.cs">
-      <Link>Linq\LinqToJsonTest.cs</Link>
-    </Compile>
-    <Compile Include="..\Newtonsoft.Json.Tests\TestFixtureBase.cs">
-      <Link>TestFixtureBase.cs</Link>
-    </Compile>
     <Compile Include="Converters\IsoDateTimeConverterTests.cs" />
     <Compile Include="Converters\JavaScriptDateTimeConverterTests.cs" />
     <Compile Include="Converters\XmlNodeConverterTest.cs" />
     <Compile Include="DateTimeTestClass.cs" />
-    <Compile Include="JavaScriptConvertTest.cs" />
+    <Compile Include="JsonConvertTest.cs" />
     <Compile Include="JsonRawTests.cs" />
     <Compile Include="JsonSerializerTest.cs" />
     <Compile Include="JsonTextReaderTest.cs" />

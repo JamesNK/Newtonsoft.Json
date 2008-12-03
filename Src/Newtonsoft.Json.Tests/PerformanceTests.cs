@@ -124,7 +124,7 @@ namespace Newtonsoft.Json.Tests
         switch (method)
         {
           case SerializeMethod.JsonNet:
-            json = JavaScriptConvert.SerializeObject(value);
+            json = JsonConvert.SerializeObject(value);
             break;
           case SerializeMethod.JavaScriptSerializer:
             json = SerializeWebExtensions(value);

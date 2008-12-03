@@ -97,7 +97,7 @@
     <Compile Include="JsonConverter.cs" />
     <Compile Include="JsonConverterCollection.cs" />
     <Compile Include="JsonReader.cs" />
-    <Compile Include="JavaScriptConvert.cs" />
+    <Compile Include="JsonConvert.cs" />
     <Compile Include="JsonSerializationException.cs" />
     <Compile Include="JsonSerializer.cs" />
     <Compile Include="Linq\Extensions.cs" />

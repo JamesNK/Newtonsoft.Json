@@ -42,7 +42,7 @@ namespace Newtonsoft.Json.Tests.Converters
       DateTime d = new DateTime(2000, 12, 15, 22, 11, 3, 55, DateTimeKind.Utc);
       string result;
 
-      result = JavaScriptConvert.SerializeObject(d, converter);
+      result = JsonConvert.SerializeObject(d, converter);
       Assert.AreEqual("new Date(976918263055)", result);
     }
 
@@ -54,7 +54,7 @@ namespace Newtonsoft.Json.Tests.Converters
       DateTimeOffset now = new DateTimeOffset(2000, 12, 15, 22, 11, 3, 55, TimeSpan.Zero);
       string result;
 
-      result = JavaScriptConvert.SerializeObject(now, converter);
+      result = JsonConvert.SerializeObject(now, converter);
       Assert.AreEqual("new Date(976918263055)", result);
     }
 
@@ -71,7 +71,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
       string result;
 
-      result = JavaScriptConvert.SerializeObject(t, converter);
+      result = JsonConvert.SerializeObject(t, converter);
       Assert.AreEqual(@"{""PreField"":null,""DateTimeField"":null,""DateTimeOffsetField"":null,""PostField"":null}", result);
 
       t = new NullableDateTimeTestClass()
@@ -80,7 +80,7 @@ namespace Newtonsoft.Json.Tests.Converters
         DateTimeOffsetField = new DateTimeOffset(2000, 12, 15, 22, 11, 3, 55, TimeSpan.Zero)
       };
 
-      result = JavaScriptConvert.SerializeObject(t, converter);
+      result = JsonConvert.SerializeObject(t, converter);
       Assert.AreEqual(@"{""PreField"":null,""DateTimeField"":new Date(976918263055),""DateTimeOffsetField"":new Date(976918263055),""PostField"":null}", result);
     }
 
@@ -89,7 +89,7 @@ namespace Newtonsoft.Json.Tests.Converters
     {
       JavaScriptDateTimeConverter converter = new JavaScriptDateTimeConverter();
 
-      DateTime result = JavaScriptConvert.DeserializeObject<DateTime>("new Date(976918263055)", converter);
+      DateTime result = JsonConvert.DeserializeObject<DateTime>("new Date(976918263055)", converter);
       Assert.AreEqual(new DateTime(2000, 12, 15, 22, 11, 3, 55, DateTimeKind.Utc), result);
     }
 
@@ -98,7 +98,7 @@ namespace Newtonsoft.Json.Tests.Converters
     public void DeserializeNullToNonNullable()
     {
       DateTimeTestClass c2 =
-       JavaScriptConvert.DeserializeObject<DateTimeTestClass>(@"{""PreField"":""Pre"",""DateTimeField"":null,""DateTimeOffsetField"":null,""PostField"":""Post""}", new JavaScriptDateTimeConverter());
+       JsonConvert.DeserializeObject<DateTimeTestClass>(@"{""PreField"":""Pre"",""DateTimeField"":null,""DateTimeOffsetField"":null,""PostField"":""Post""}", new JavaScriptDateTimeConverter());
     }
 
     [Test]
@@ -107,9 +107,9 @@ namespace Newtonsoft.Json.Tests.Converters
       JavaScriptDateTimeConverter converter = new JavaScriptDateTimeConverter();
       DateTimeOffset start = new DateTimeOffset(2000, 12, 15, 22, 11, 3, 55, TimeSpan.Zero);
 
-      string json = JavaScriptConvert.SerializeObject(start, converter);
+      string json = JsonConvert.SerializeObject(start, converter);
 
-      DateTimeOffset result = JavaScriptConvert.DeserializeObject<DateTimeOffset>(json, converter);
+      DateTimeOffset result = JsonConvert.DeserializeObject<DateTimeOffset>(json, converter);
       Assert.AreEqual(new DateTimeOffset(2000, 12, 15, 22, 11, 3, 55, TimeSpan.Zero), result);
     }
   }

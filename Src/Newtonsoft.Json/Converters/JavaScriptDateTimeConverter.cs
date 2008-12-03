@@ -25,13 +25,13 @@ namespace Newtonsoft.Json.Converters
       {
         DateTime dateTime = (DateTime)value;
         DateTime utcDateTime = dateTime.ToUniversalTime();
-        ticks = JavaScriptConvert.ConvertDateTimeToJavaScriptTicks(utcDateTime);
+        ticks = JsonConvert.ConvertDateTimeToJavaScriptTicks(utcDateTime);
       }
       else
       {
         DateTimeOffset dateTimeOffset = (DateTimeOffset)value;
         DateTimeOffset utcDateTimeOffset = dateTimeOffset.ToUniversalTime();
-        ticks = JavaScriptConvert.ConvertDateTimeToJavaScriptTicks(utcDateTimeOffset.UtcDateTime);
+        ticks = JsonConvert.ConvertDateTimeToJavaScriptTicks(utcDateTimeOffset.UtcDateTime);
       }
 
       writer.WriteStartConstructor("Date");
@@ -69,7 +69,7 @@ namespace Newtonsoft.Json.Converters
 
       long ticks = (long)reader.Value;
 
-      DateTime d = JavaScriptConvert.ConvertJavaScriptTicksToDateTime(ticks);
+      DateTime d = JsonConvert.ConvertJavaScriptTicksToDateTime(ticks);
 
       reader.Read();
 

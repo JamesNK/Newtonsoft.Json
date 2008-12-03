@@ -102,9 +102,9 @@ namespace Newtonsoft.Json.Tests
         jsonWriter.WriteValue((decimal?)null);
         jsonWriter.WriteValue((decimal?)1.1m);
         jsonWriter.WriteValue((DateTime?)null);
-        jsonWriter.WriteValue((DateTime?)new DateTime(JavaScriptConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc));
+        jsonWriter.WriteValue((DateTime?)new DateTime(JsonConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc));
         jsonWriter.WriteValue((DateTimeOffset?)null);
-        jsonWriter.WriteValue((DateTimeOffset?)new DateTimeOffset(JavaScriptConvert.InitialJavaScriptDateTicks, TimeSpan.Zero));
+        jsonWriter.WriteValue((DateTimeOffset?)new DateTimeOffset(JsonConvert.InitialJavaScriptDateTicks, TimeSpan.Zero));
         jsonWriter.WriteEndArray();
       }
 

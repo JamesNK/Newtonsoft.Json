@@ -40,7 +40,7 @@ namespace Newtonsoft.Json
   /// <summary>
   /// Provides methods for converting between common language runtime types and JavaScript types.
   /// </summary>
-  public static class JavaScriptConvert
+  public static class JsonConvert
   {
     /// <summary>
     /// Represents JavaScript's boolean value true as a string. This field is read-only.
@@ -80,7 +80,7 @@ namespace Newtonsoft.Json
     internal static long InitialJavaScriptDateTicks;
     internal static DateTime MinimumJavaScriptDate;
 
-    static JavaScriptConvert()
+    static JsonConvert()
     {
       True = "true";
       False = "false";

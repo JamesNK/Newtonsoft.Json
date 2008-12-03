@@ -199,7 +199,7 @@ namespace Newtonsoft.Json
       }
 
       long javaScriptTicks = long.Parse(value, NumberStyles.Integer, CultureInfo.InvariantCulture);
-      DateTime utcDateTime = JavaScriptConvert.ConvertJavaScriptTicksToDateTime(javaScriptTicks);
+      DateTime utcDateTime = JsonConvert.ConvertJavaScriptTicksToDateTime(javaScriptTicks);
       DateTime dateTime;
 
       switch (kind)
@@ -724,7 +724,7 @@ namespace Newtonsoft.Json
       // check characters equal 'true'
       // and that it is followed by either a seperator character
       // or the text ends
-      if (MatchValue(JavaScriptConvert.True, true))
+      if (MatchValue(JsonConvert.True, true))
       {
         SetToken(JsonToken.Boolean, true);
       }
@@ -736,7 +736,7 @@ namespace Newtonsoft.Json
 
     private void ParseNull()
     {
-      if (MatchValue(JavaScriptConvert.Null, true))
+      if (MatchValue(JsonConvert.Null, true))
       {
         SetToken(JsonToken.Null);
       }
@@ -748,7 +748,7 @@ namespace Newtonsoft.Json
 
     private void ParseUndefined()
     {
-      if (MatchValue(JavaScriptConvert.Undefined, true))
+      if (MatchValue(JsonConvert.Undefined, true))
       {
         SetToken(JsonToken.Undefined);
       }
@@ -760,7 +760,7 @@ namespace Newtonsoft.Json
 
     private void ParseFalse()
     {
-      if (MatchValue(JavaScriptConvert.False, true))
+      if (MatchValue(JsonConvert.False, true))
       {
         SetToken(JsonToken.Boolean, false);
       }
@@ -772,7 +772,7 @@ namespace Newtonsoft.Json
 
     private void ParseNumberNegativeInfinity()
     {
-      if (MatchValue(JavaScriptConvert.NegativeInfinity, true))
+      if (MatchValue(JsonConvert.NegativeInfinity, true))
       {
         SetToken(JsonToken.Float, double.NegativeInfinity);
       }
@@ -784,7 +784,7 @@ namespace Newtonsoft.Json
 
     private void ParseNumberPositiveInfinity()
     {
-      if (MatchValue(JavaScriptConvert.PositiveInfinity, true))
+      if (MatchValue(JsonConvert.PositiveInfinity, true))
       {
         SetToken(JsonToken.Float, double.PositiveInfinity);
       }
@@ -796,7 +796,7 @@ namespace Newtonsoft.Json
 
     private void ParseNumberNaN()
     {
-      if (MatchValue(JavaScriptConvert.NaN, true))
+      if (MatchValue(JsonConvert.NaN, true))
       {
         SetToken(JsonToken.Float, double.NaN);
       }

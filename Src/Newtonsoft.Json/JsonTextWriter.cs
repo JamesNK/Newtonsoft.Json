@@ -246,7 +246,7 @@ namespace Newtonsoft.Json
     public override void WriteNull()
     {
       base.WriteNull();
-      WriteValueInternal(JavaScriptConvert.Null, JsonToken.Null);
+      WriteValueInternal(JsonConvert.Null, JsonToken.Null);
     }
 
     /// <summary>
@@ -255,7 +255,7 @@ namespace Newtonsoft.Json
     public override void WriteUndefined()
     {
       base.WriteUndefined();
-      WriteValueInternal(JavaScriptConvert.Undefined, JsonToken.Undefined);
+      WriteValueInternal(JsonConvert.Undefined, JsonToken.Undefined);
     }
 
     /// <summary>
@@ -276,7 +276,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(string value)
     {
       base.WriteValue(value);
-      WriteValueInternal((value != null) ? JavaScriptConvert.ToString(value, _quoteChar) : JavaScriptConvert.Null, JsonToken.String);
+      WriteValueInternal((value != null) ? JsonConvert.ToString(value, _quoteChar) : JsonConvert.Null, JsonToken.String);
     }
 
     /// <summary>
@@ -286,7 +286,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(int value)
     {
       base.WriteValue(value);
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Integer);
+      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Integer);
     }
 
     /// <summary>
@@ -296,7 +296,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(uint value)
     {
       base.WriteValue(value);
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Integer);
+      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Integer);
     }
 
     /// <summary>
@@ -306,7 +306,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(long value)
     {
       base.WriteValue(value);
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Integer);
+      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Integer);
     }
 
     /// <summary>
@@ -316,7 +316,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(ulong value)
     {
       base.WriteValue(value);
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Integer);
+      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Integer);
     }
 
     /// <summary>
@@ -326,7 +326,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(float value)
     {
       base.WriteValue(value);
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Float);
+      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Float);
     }
 
     /// <summary>
@@ -336,7 +336,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(double value)
     {
       base.WriteValue(value);
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Float);
+      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Float);
     }
 
     /// <summary>
@@ -346,7 +346,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(bool value)
     {
       base.WriteValue(value);
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Boolean);
+      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Boolean);
     }
 
     /// <summary>
@@ -356,7 +356,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(short value)
     {
       base.WriteValue(value);
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Integer);
+      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Integer);
     }
 
     /// <summary>
@@ -366,7 +366,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(ushort value)
     {
       base.WriteValue(value);
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Integer);
+      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Integer);
     }
 
     /// <summary>
@@ -376,7 +376,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(char value)
     {
       base.WriteValue(value);
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Integer);
+      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Integer);
     }
 
     /// <summary>
@@ -386,7 +386,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(byte value)
     {
       base.WriteValue(value);
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Integer);
+      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Integer);
     }
 
     /// <summary>
@@ -396,7 +396,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(sbyte value)
     {
       base.WriteValue(value);
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Integer);
+      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Integer);
     }
 
     /// <summary>
@@ -406,7 +406,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(decimal value)
     {
       base.WriteValue(value);
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Float);
+      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Float);
     }
 
     /// <summary>
@@ -416,7 +416,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(DateTime value)
     {
       base.WriteValue(value);
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Date);
+      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Date);
     }
 
     /// <summary>
@@ -426,7 +426,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(DateTimeOffset value)
     {
       base.WriteValue(value);
-      WriteValueInternal(JavaScriptConvert.ToString(value), JsonToken.Date);
+      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Date);
     }
     #endregion
 

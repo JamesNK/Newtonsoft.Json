@@ -223,9 +223,9 @@ namespace Newtonsoft.Json.Tests
     {
       Store store = new Store();
 
-      string jsonText = JavaScriptConvert.SerializeObject(store);
+      string jsonText = JsonConvert.SerializeObject(store);
 
-      Store deserializedStore = (Store)JavaScriptConvert.DeserializeObject(jsonText, typeof(Store));
+      Store deserializedStore = (Store)JsonConvert.DeserializeObject(jsonText, typeof(Store));
 
       Assert.AreEqual(store.Establised, deserializedStore.Establised);
 
@@ -242,7 +242,7 @@ namespace Newtonsoft.Json.Tests
       product.Price = 3.99M;
       product.Sizes = new string[] { "Small", "Medium", "Large" };
 
-      string output = JavaScriptConvert.SerializeObject(product);
+      string output = JsonConvert.SerializeObject(product);
       //{
       //  "Name": "Apple",
       //  "Expiry": "\/Date(1230375600000+1300)\/",
@@ -254,7 +254,7 @@ namespace Newtonsoft.Json.Tests
       //  ]
       //}
 
-      Product deserializedProduct = (Product)JavaScriptConvert.DeserializeObject(output, typeof(Product));
+      Product deserializedProduct = (Product)JsonConvert.DeserializeObject(output, typeof(Product));
 
       Assert.AreEqual("Apple", deserializedProduct.Name);
       Assert.AreEqual(new DateTime(2008, 12, 28), deserializedProduct.Expiry);
@@ -283,11 +283,11 @@ namespace Newtonsoft.Json.Tests
     //}
 
     [Test]
-    public void JavaScriptConvertSerializer()
+    public void JsonConvertSerializer()
     {
       string value = @"{""Name"":""Orange"", ""Price"":3.99, ""Expiry"":""01/24/2010 12:00:00""}";
 
-      Product p = JavaScriptConvert.DeserializeObject(value, typeof(Product)) as Product;
+      Product p = JsonConvert.DeserializeObject(value, typeof(Product)) as Product;
 
       Assert.AreEqual("Orange", p.Name);
       Assert.AreEqual(new DateTime(2010, 1, 24, 12, 0, 0), p.Expiry);
@@ -301,9 +301,9 @@ namespace Newtonsoft.Json.Tests
       Dictionary<string, object> testDictionary = new Dictionary<string, object>();
       testDictionary["date"] = dateValue;
 
-      string jsonText = JavaScriptConvert.SerializeObject(testDictionary);
+      string jsonText = JsonConvert.SerializeObject(testDictionary);
 
-      Dictionary<string, object> deserializedDictionary = (Dictionary<string, object>)JavaScriptConvert.DeserializeObject(jsonText, typeof(Dictionary<string, object>));
+      Dictionary<string, object> deserializedDictionary = (Dictionary<string, object>)JsonConvert.DeserializeObject(jsonText, typeof(Dictionary<string, object>));
       DateTime deserializedDate = (DateTime)deserializedDictionary["date"];
 
       Assert.AreEqual(dateValue, deserializedDate);
@@ -329,9 +329,9 @@ namespace Newtonsoft.Json.Tests
       executorObject.serverMethodParams = new object[] { "21321546", "101", "1236", "D:\\1.txt" };
       executorObject.clientGetResultFunction = "ClientBanSubsCB";
 
-      string output = JavaScriptConvert.SerializeObject(executorObject);
+      string output = JsonConvert.SerializeObject(executorObject);
 
-      MethodExecutorObject executorObject2 = JavaScriptConvert.DeserializeObject(output, typeof(MethodExecutorObject)) as MethodExecutorObject;
+      MethodExecutorObject executorObject2 = JsonConvert.DeserializeObject(output, typeof(MethodExecutorObject)) as MethodExecutorObject;
 
       Assert.AreNotSame(executorObject, executorObject2);
       Assert.AreEqual(executorObject2.serverClassName, "BanSubs");
@@ -346,7 +346,7 @@ namespace Newtonsoft.Json.Tests
     {
       string value = @"{""Name"":""Orange"", ""Price"":3.99, ""Expiry"":""01/24/2010 12:00:00""}";
 
-      Hashtable p = JavaScriptConvert.DeserializeObject(value, typeof(Hashtable)) as Hashtable;
+      Hashtable p = JsonConvert.DeserializeObject(value, typeof(Hashtable)) as Hashtable;
 
       Assert.AreEqual("Orange", p["Name"].ToString());
     }
@@ -362,7 +362,7 @@ namespace Newtonsoft.Json.Tests
     {
       string value = @"{""Name"":""Orange"", ""Hash"":{""Expiry"":""01/24/2010 12:00:00"",""UntypedArray"":[""01/24/2010 12:00:00""]}}";
 
-      TypedSubHashtable p = JavaScriptConvert.DeserializeObject(value, typeof(TypedSubHashtable)) as TypedSubHashtable;
+      TypedSubHashtable p = JsonConvert.DeserializeObject(value, typeof(TypedSubHashtable)) as TypedSubHashtable;
 
       Assert.AreEqual("01/24/2010 12:00:00", p.Hash["Expiry"].ToString());
       Assert.AreEqual(@"[
@@ -384,9 +384,9 @@ namespace Newtonsoft.Json.Tests
     [Test]
     public void SerializeDeserializeGetOnlyProperty()
     {
-      string value = JavaScriptConvert.SerializeObject(new GetOnlyPropertyClass());
+      string value = JsonConvert.SerializeObject(new GetOnlyPropertyClass());
 
-      GetOnlyPropertyClass c = JavaScriptConvert.DeserializeObject<GetOnlyPropertyClass>(value);
+      GetOnlyPropertyClass c = JsonConvert.DeserializeObject<GetOnlyPropertyClass>(value);
 
       Assert.AreEqual(c.Field, "Field");
       Assert.AreEqual(c.GetOnlyProperty, "GetOnlyProperty");
@@ -405,9 +405,9 @@ namespace Newtonsoft.Json.Tests
     [Test]
     public void SerializeDeserializeSetOnlyProperty()
     {
-      string value = JavaScriptConvert.SerializeObject(new SetOnlyPropertyClass());
+      string value = JsonConvert.SerializeObject(new SetOnlyPropertyClass());
 
-      SetOnlyPropertyClass c = JavaScriptConvert.DeserializeObject<SetOnlyPropertyClass>(value);
+      SetOnlyPropertyClass c = JsonConvert.DeserializeObject<SetOnlyPropertyClass>(value);
 
       Assert.AreEqual(c.Field, "Field");
     }
@@ -439,11 +439,11 @@ namespace Newtonsoft.Json.Tests
     [Test]
     public void JsonIgnoreAttributeTest()
     {
-      string json = JavaScriptConvert.SerializeObject(new JsonIgnoreAttributeTestClass());
+      string json = JsonConvert.SerializeObject(new JsonIgnoreAttributeTestClass());
 
       Assert.AreEqual(@"{""Field"":0,""Property"":21}", json);
 
-      JsonIgnoreAttributeTestClass c = JavaScriptConvert.DeserializeObject<JsonIgnoreAttributeTestClass>(@"{""Field"":99,""Property"":-1,""IgnoredField"":-1,""IgnoredObject"":[1,2,3,4,5]}");
+      JsonIgnoreAttributeTestClass c = JsonConvert.DeserializeObject<JsonIgnoreAttributeTestClass>(@"{""Field"":99,""Property"":-1,""IgnoredField"":-1,""IgnoredObject"":[1,2,3,4,5]}");
 
       Assert.AreEqual(0, c.IgnoredField);
       Assert.AreEqual(99, c.Field);
@@ -530,7 +530,7 @@ keyword such as type of business.""
         ]
 }
 ";
-      object o = JavaScriptConvert.DeserializeObject(json);
+      object o = JsonConvert.DeserializeObject(json);
       string s = string.Empty;
       s += s;
     }
@@ -549,7 +549,7 @@ keyword such as type of business.""
 ""torrentc"": ""1816000723""
 }";
 
-      JObject o = (JObject)JavaScriptConvert.DeserializeObject(jsonText);
+      JObject o = (JObject)JsonConvert.DeserializeObject(jsonText);
       Assert.AreEqual(4, o.Children().Count());
 
       JToken torrentsArray = (JToken)o["torrents"];
@@ -584,11 +584,11 @@ keyword such as type of business.""
       test.Pie = "Delicious";
       test.SweetCakesCount = int.MaxValue;
 
-      string jsonText = JavaScriptConvert.SerializeObject(test);
+      string jsonText = JsonConvert.SerializeObject(test);
 
       Assert.AreEqual(@"{""pie"":""Delicious"",""pie1"":""PieChart!"",""sweet_cakes_count"":2147483647}", jsonText);
 
-      JsonPropertyClass test2 = JavaScriptConvert.DeserializeObject<JsonPropertyClass>(jsonText);
+      JsonPropertyClass test2 = JsonConvert.DeserializeObject<JsonPropertyClass>(jsonText);
 
       Assert.AreEqual(test.Pie, test2.Pie);
       Assert.AreEqual(test.SweetCakesCount, test2.SweetCakesCount);
@@ -606,7 +606,7 @@ keyword such as type of business.""
     [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"A member with the name 'pie' already exists on Newtonsoft.Json.Tests.JsonSerializerTest+BadJsonPropertyClass. Use the JsonPropertyAttribute to specify another name.")]
     public void BadJsonPropertyClassSerialize()
     {
-      JavaScriptConvert.SerializeObject(new BadJsonPropertyClass());
+      JsonConvert.SerializeObject(new BadJsonPropertyClass());
     }
 
     public class Article
@@ -637,9 +637,9 @@ keyword such as type of business.""
       articles1.Add(a1);
       articles1.Add(a2);
 
-      string jsonText = JavaScriptConvert.SerializeObject(articles1);
+      string jsonText = JsonConvert.SerializeObject(articles1);
 
-      ArticleCollection articles2 = JavaScriptConvert.DeserializeObject<ArticleCollection>(jsonText);
+      ArticleCollection articles2 = JsonConvert.DeserializeObject<ArticleCollection>(jsonText);
 
       Assert.AreEqual(articles1.Count, articles2.Count);
       Assert.AreEqual(articles1[0].Name, articles2[0].Name);
@@ -650,9 +650,9 @@ keyword such as type of business.""
     {
       ReadOnlyCollection<int> r1 = new ReadOnlyCollection<int>(new int[] { 0, 1, 2, 3, 4 });
 
-      string jsonText = JavaScriptConvert.SerializeObject(r1);
+      string jsonText = JsonConvert.SerializeObject(r1);
 
-      ReadOnlyCollection<int> r2 = JavaScriptConvert.DeserializeObject<ReadOnlyCollection<int>>(jsonText);
+      ReadOnlyCollection<int> r2 = JsonConvert.DeserializeObject<ReadOnlyCollection<int>>(jsonText);
 
       CollectionAssert.AreEqual(r1, r2);
     }
@@ -688,7 +688,7 @@ keyword such as type of business.""
       product.Price = 3.99M;
       product.Sizes = new string[] { "Small", "Medium", "Large" };
 
-      string output = JavaScriptConvert.SerializeObject(product);
+      string output = JsonConvert.SerializeObject(product);
       //{
       //  "Name": "Apple",
       //  "Expiry": new Date(1230422400000),
@@ -700,7 +700,7 @@ keyword such as type of business.""
       //  ]
       //}
 
-      ProductShort deserializedProductShort = (ProductShort)JavaScriptConvert.DeserializeObject(output, typeof(ProductShort));
+      ProductShort deserializedProductShort = (ProductShort)JsonConvert.DeserializeObject(output, typeof(ProductShort));
     }
 
     [Test]
@@ -713,7 +713,7 @@ keyword such as type of business.""
       product.Price = 3.99M;
       product.Sizes = new string[] { "Small", "Medium", "Large" };
 
-      string output = JavaScriptConvert.SerializeObject(product);
+      string output = JsonConvert.SerializeObject(product);
       //{
       //  "Name": "Apple",
       //  "Expiry": new Date(1230422400000),
@@ -753,7 +753,7 @@ keyword such as type of business.""
       DataContractJsonSerializer s = new DataContractJsonSerializer(typeof(List<string>));
       List<string> dataContractResult = (List<string>)s.ReadObject(new MemoryStream(Encoding.UTF8.GetBytes(json)));
 
-      List<string> jsonNetResult = JavaScriptConvert.DeserializeObject<List<string>>(json);
+      List<string> jsonNetResult = JsonConvert.DeserializeObject<List<string>>(json);
 
       Assert.AreEqual(1, jsonNetResult.Count);
       Assert.AreEqual(dataContractResult[0], jsonNetResult[0]);
@@ -781,7 +781,7 @@ keyword such as type of business.""
 
       string expected = sr.ReadToEnd();
 
-      result = JavaScriptConvert.SerializeObject(testDates);
+      result = JsonConvert.SerializeObject(testDates);
       Assert.AreEqual(expected, result);
     }
 #endif
@@ -796,7 +796,7 @@ keyword such as type of business.""
         new DateTimeOffset(2000, 1, 1, 1, 1, 1, TimeSpan.FromHours(-3.5)),
       };
 
-      string result = JavaScriptConvert.SerializeObject(testDates);
+      string result = JsonConvert.SerializeObject(testDates);
       Assert.AreEqual(@"[""\/Date(-59011455539000+0000)\/"",""\/Date(946688461000+0000)\/"",""\/Date(946641661000+1300)\/"",""\/Date(946701061000-0330)\/""]", result);
     }
 
@@ -807,11 +807,11 @@ keyword such as type of business.""
       values.Add(-5, 6);
       values.Add(int.MinValue, int.MaxValue);
 
-      string json = JavaScriptConvert.SerializeObject(values);
+      string json = JsonConvert.SerializeObject(values);
 
       Assert.AreEqual(@"{""-5"":6,""-2147483648"":2147483647}", json);
 
-      Dictionary<int, int> newValues = JavaScriptConvert.DeserializeObject<Dictionary<int, int>>(json);
+      Dictionary<int, int> newValues = JsonConvert.DeserializeObject<Dictionary<int, int>>(json);
 
       CollectionAssert.AreEqual(values, newValues);
     }
@@ -829,10 +829,10 @@ keyword such as type of business.""
           Product = new Product() { Name = "TestProduct" }
         };
 
-      string json = JavaScriptConvert.SerializeObject(anonymous);
+      string json = JsonConvert.SerializeObject(anonymous);
       Assert.AreEqual(@"{""StringValue"":""I am a string"",""IntValue"":2147483647,""NestedAnonymous"":{""NestedValue"":255},""NestedArray"":[1,2],""Product"":{""Name"":""TestProduct"",""Expiry"":""\/Date(946684800000)\/"",""Price"":0,""Sizes"":null}}", json);
 
-      anonymous = JavaScriptConvert.DeserializeAnonymousType(json, anonymous);
+      anonymous = JsonConvert.DeserializeAnonymousType(json, anonymous);
       Assert.AreEqual("I am a string", anonymous.StringValue);
       Assert.AreEqual(int.MaxValue, anonymous.IntValue);
       Assert.AreEqual(255, anonymous.NestedAnonymous.NestedValue);
@@ -878,7 +878,7 @@ keyword such as type of business.""
       StringWriter sw = new StringWriter();
       jsonSerializer.Serialize(sw, s1);
 
-      //JavaScriptConvert.ConvertDateTimeToJavaScriptTicks(s1.Establised.DateTime)
+      //JsonConvert.ConvertDateTimeToJavaScriptTicks(s1.Establised.DateTime)
 
       Assert.AreEqual(@"{""Color"":2,""Establised"":""\/Date(1264122061000+0000)\/"",""Width"":1.1,""Employees"":999,""RoomsPerFloor"":[1,2,3,4,5,6,7,8,9],""Open"":false,""Symbol"":""@"",""Mottos"":[""Hello World"",""öäüÖÄÜ\\'{new Date(12345);}[222]_µ@²³~"",null,"" ""],""Cost"":100980.1,""Escape"":""\r\n\t\f\b?{\\r\\n\""'"",""product"":[{""Name"":""Rocket"",""Expiry"":""\/Date(949532490000)\/"",""Price"":0},{""Name"":""Alien"",""Expiry"":""\/Date(946684800000)\/"",""Price"":0}]}", sw.GetStringBuilder().ToString());
 
@@ -895,14 +895,14 @@ keyword such as type of business.""
     [Test]
     public void SerializeObject()
     {
-      string json = JavaScriptConvert.SerializeObject(new object());
+      string json = JsonConvert.SerializeObject(new object());
       Assert.AreEqual("{}", json);
     }
 
     [Test]
     public void SerializeNull()
     {
-      string json = JavaScriptConvert.SerializeObject(null);
+      string json = JsonConvert.SerializeObject(null);
       Assert.AreEqual("null", json);
     }
 
@@ -910,7 +910,7 @@ keyword such as type of business.""
     public void CanDeserializeIntArrayWhenNotFirstPropertyInJson()
     {
       string json = "{foo:'hello',bar:[1,2,3]}";
-      ClassWithArray wibble = JavaScriptConvert.DeserializeObject<ClassWithArray>(json);
+      ClassWithArray wibble = JsonConvert.DeserializeObject<ClassWithArray>(json);
       Assert.AreEqual("hello", wibble.Foo);
 
       Assert.AreEqual(4, wibble.Bar.Count);
@@ -924,7 +924,7 @@ keyword such as type of business.""
     public void CanDeserializeIntArray_WhenArrayIsFirstPropertyInJson()
     {
       string json = "{bar:[1,2,3], foo:'hello'}";
-      ClassWithArray wibble = JavaScriptConvert.DeserializeObject<ClassWithArray>(json);
+      ClassWithArray wibble = JsonConvert.DeserializeObject<ClassWithArray>(json);
       Assert.AreEqual("hello", wibble.Foo);
 
       Assert.AreEqual(4, wibble.Bar.Count);
@@ -957,9 +957,9 @@ keyword such as type of business.""
       wibble.Bar.Add(1);
       wibble.Bar.Add(2);
       wibble.Bar.Add(3);
-      string json = JavaScriptConvert.SerializeObject(wibble);
+      string json = JsonConvert.SerializeObject(wibble);
 
-      ClassWithArray wibbleOut = JavaScriptConvert.DeserializeObject<ClassWithArray>(json);
+      ClassWithArray wibbleOut = JsonConvert.DeserializeObject<ClassWithArray>(json);
       Assert.AreEqual("hello", wibbleOut.Foo);
 
       Assert.AreEqual(5, wibbleOut.Bar.Count);
@@ -973,11 +973,11 @@ keyword such as type of business.""
     [Test]
     public void SerializeConverableObjects()
     {
-      string json = JavaScriptConvert.SerializeObject(new ConverableMembers());
+      string json = JsonConvert.SerializeObject(new ConverableMembers());
 
       Assert.AreEqual(@"{""String"":""string"",""Int32"":2147483647,""UInt32"":4294967295,""Byte"":255,""SByte"":127,""Short"":32767,""UShort"":65535,""Long"":9223372036854775807,""ULong"":9223372036854775807,""Double"":1.7976931348623157E+308,""Float"":3.40282347E+38,""DBNull"":null,""Bool"":true,""Char"":""\u0000""}", json);
 
-      ConverableMembers c = JavaScriptConvert.DeserializeObject<ConverableMembers>(json);
+      ConverableMembers c = JsonConvert.DeserializeObject<ConverableMembers>(json);
       Assert.AreEqual("string", c.String);
       Assert.AreEqual(double.MaxValue, c.Double);
       Assert.AreEqual(DBNull.Value, c.DBNull);
@@ -991,7 +991,7 @@ keyword such as type of business.""
       s.Push(2);
       s.Push(3);
 
-      string json = JavaScriptConvert.SerializeObject(s);
+      string json = JsonConvert.SerializeObject(s);
       Assert.AreEqual("[3,2,1]", json);
     }
 
@@ -1000,31 +1000,31 @@ keyword such as type of business.""
     {
       Guid guid = new Guid("BED7F4EA-1A96-11d2-8F08-00A0C9A6186D");
 
-      string json = JavaScriptConvert.SerializeObject(new ClassWithGuid { GuidField = guid });
+      string json = JsonConvert.SerializeObject(new ClassWithGuid { GuidField = guid });
       Assert.AreEqual(@"{""GuidField"":""bed7f4ea-1a96-11d2-8f08-00a0c9a6186d""}", json);
 
-      ClassWithGuid c = JavaScriptConvert.DeserializeObject<ClassWithGuid>(json);
+      ClassWithGuid c = JsonConvert.DeserializeObject<ClassWithGuid>(json);
       Assert.AreEqual(guid, c.GuidField);
     }
 
     [Test]
     public void EnumTest()
     {
-      string json = JavaScriptConvert.SerializeObject(StringComparison.CurrentCultureIgnoreCase);
+      string json = JsonConvert.SerializeObject(StringComparison.CurrentCultureIgnoreCase);
       Assert.AreEqual(@"1", json);
 
-      StringComparison s = JavaScriptConvert.DeserializeObject<StringComparison>(json);
+      StringComparison s = JsonConvert.DeserializeObject<StringComparison>(json);
       Assert.AreEqual(StringComparison.CurrentCultureIgnoreCase, s);
     }
 
     [Test]
     public void JsonIgnoreAttributeOnClassTest()
     {
-      string json = JavaScriptConvert.SerializeObject(new JsonIgnoreAttributeOnClassTestClass());
+      string json = JsonConvert.SerializeObject(new JsonIgnoreAttributeOnClassTestClass());
 
       Assert.AreEqual(@"{""TheField"":0,""Property"":21}", json);
 
-      JsonIgnoreAttributeOnClassTestClass c = JavaScriptConvert.DeserializeObject<JsonIgnoreAttributeOnClassTestClass>(@"{""TheField"":99,""Property"":-1,""IgnoredField"":-1}");
+      JsonIgnoreAttributeOnClassTestClass c = JsonConvert.DeserializeObject<JsonIgnoreAttributeOnClassTestClass>(@"{""TheField"":99,""Property"":-1,""IgnoredField"":-1}");
 
       Assert.AreEqual(0, c.IgnoredField);
       Assert.AreEqual(99, c.Field);
@@ -1035,7 +1035,7 @@ keyword such as type of business.""
     public void SerializeArrayAsArrayList()
     {
       string jsonText = @"[3, ""somestring"",[1,2,3]]";
-      ArrayList o = JavaScriptConvert.DeserializeObject<ArrayList>(jsonText);
+      ArrayList o = JsonConvert.DeserializeObject<ArrayList>(jsonText);
 
       Assert.AreEqual(3, o.Count);
       Assert.AreEqual(3, ((JArray)o[2]).Count);
@@ -1075,9 +1075,9 @@ keyword such as type of business.""
       name.pNumbers.Add(p1);
       name.pNumbers.Add(p2);
 
-      string json = JavaScriptConvert.SerializeObject(name);
+      string json = JsonConvert.SerializeObject(name);
 
-      Name newName = JavaScriptConvert.DeserializeObject<Name>(json);
+      Name newName = JsonConvert.DeserializeObject<Name>(json);
 
       Assert.AreEqual("The Idiot in Next To Me", newName.personsName);
 
@@ -1104,9 +1104,9 @@ keyword such as type of business.""
     {
       ConstructorCaseSensitivityClass c = new ConstructorCaseSensitivityClass("param1", "Param1", "Param2");
 
-      string json = JavaScriptConvert.SerializeObject(c);
+      string json = JsonConvert.SerializeObject(c);
 
-      ConstructorCaseSensitivityClass deserialized = JavaScriptConvert.DeserializeObject<ConstructorCaseSensitivityClass>(json);
+      ConstructorCaseSensitivityClass deserialized = JsonConvert.DeserializeObject<ConstructorCaseSensitivityClass>(json);
 
       Assert.AreEqual("param1", deserialized.param1);
       Assert.AreEqual("Param1", deserialized.Param1);
@@ -1184,10 +1184,10 @@ keyword such as type of business.""
     {
       ConverterPrecedenceClass c1 = new ConverterPrecedenceClass("!Test!");
 
-      string json = JavaScriptConvert.SerializeObject(c1);
+      string json = JsonConvert.SerializeObject(c1);
       Assert.AreEqual(@"[""Class"",""!Test!""]", json);
 
-      ConverterPrecedenceClass c2 = JavaScriptConvert.DeserializeObject<ConverterPrecedenceClass>(json);
+      ConverterPrecedenceClass c2 = JsonConvert.DeserializeObject<ConverterPrecedenceClass>(json);
 
       Assert.AreEqual("!Test!", c2.TestValue);
     }
@@ -1197,10 +1197,10 @@ keyword such as type of business.""
     {
       ConverterPrecedenceClass c1 = new ConverterPrecedenceClass("!Test!");
 
-      string json = JavaScriptConvert.SerializeObject(c1, new ArgumentConverterPrecedenceClassConverter());
+      string json = JsonConvert.SerializeObject(c1, new ArgumentConverterPrecedenceClassConverter());
       Assert.AreEqual(@"[""Class"",""!Test!""]", json);
 
-      ConverterPrecedenceClass c2 = JavaScriptConvert.DeserializeObject<ConverterPrecedenceClass>(json, new ArgumentConverterPrecedenceClassConverter());
+      ConverterPrecedenceClass c2 = JsonConvert.DeserializeObject<ConverterPrecedenceClass>(json, new ArgumentConverterPrecedenceClassConverter());
 
       Assert.AreEqual("!Test!", c2.TestValue);
     }
@@ -1215,13 +1215,13 @@ keyword such as type of business.""
     [Test]
     public void SerializerShouldUseMemberConverter()
     {
-      DateTime testDate = new DateTime(JavaScriptConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc);
+      DateTime testDate = new DateTime(JsonConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc);
       MemberConverterClass m1 = new MemberConverterClass { DefaultConverter = testDate, MemberConverter = testDate };
 
-      string json = JavaScriptConvert.SerializeObject(m1);
+      string json = JsonConvert.SerializeObject(m1);
       Assert.AreEqual(@"{""DefaultConverter"":""\/Date(0)\/"",""MemberConverter"":""1970-01-01T00:00:00.0000000Z""}", json);
 
-      MemberConverterClass m2 = JavaScriptConvert.DeserializeObject<MemberConverterClass>(json);
+      MemberConverterClass m2 = JsonConvert.DeserializeObject<MemberConverterClass>(json);
 
       Assert.AreEqual(testDate, m2.DefaultConverter);
       Assert.AreEqual(testDate, m2.MemberConverter);
@@ -1230,13 +1230,13 @@ keyword such as type of business.""
     [Test]
     public void SerializerShouldUseMemberConverterOverArgumentConverter()
     {
-      DateTime testDate = new DateTime(JavaScriptConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc);
+      DateTime testDate = new DateTime(JsonConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc);
       MemberConverterClass m1 = new MemberConverterClass { DefaultConverter = testDate, MemberConverter = testDate };
 
-      string json = JavaScriptConvert.SerializeObject(m1, new JavaScriptDateTimeConverter());
+      string json = JsonConvert.SerializeObject(m1, new JavaScriptDateTimeConverter());
       Assert.AreEqual(@"{""DefaultConverter"":new Date(0),""MemberConverter"":""1970-01-01T00:00:00.0000000Z""}", json);
 
-      MemberConverterClass m2 = JavaScriptConvert.DeserializeObject<MemberConverterClass>(json, new JavaScriptDateTimeConverter());
+      MemberConverterClass m2 = JsonConvert.DeserializeObject<MemberConverterClass>(json, new JavaScriptDateTimeConverter());
 
       Assert.AreEqual(testDate, m2.DefaultConverter);
       Assert.AreEqual(testDate, m2.MemberConverter);
@@ -1256,10 +1256,10 @@ keyword such as type of business.""
       c1.DefaultConverter = new ConverterPrecedenceClass("DefaultConverterValue");
       c1.MemberConverter = new ConverterPrecedenceClass("MemberConverterValue");
 
-      string json = JavaScriptConvert.SerializeObject(c1, new ArgumentConverterPrecedenceClassConverter());
+      string json = JsonConvert.SerializeObject(c1, new ArgumentConverterPrecedenceClassConverter());
       Assert.AreEqual(@"{""DefaultConverter"":[""Class"",""DefaultConverterValue""],""MemberConverter"":[""Member"",""MemberConverterValue""]}", json);
 
-      ClassAndMemberConverterClass c2 = JavaScriptConvert.DeserializeObject<ClassAndMemberConverterClass>(json, new ArgumentConverterPrecedenceClassConverter());
+      ClassAndMemberConverterClass c2 = JsonConvert.DeserializeObject<ClassAndMemberConverterClass>(json, new ArgumentConverterPrecedenceClassConverter());
 
       Assert.AreEqual("DefaultConverterValue", c2.DefaultConverter.TestValue);
       Assert.AreEqual("MemberConverterValue", c2.MemberConverter.TestValue);
@@ -1275,7 +1275,7 @@ keyword such as type of business.""
     public void IncompatibleJsonAttributeShouldThrow()
     {
       IncompatibleJsonAttributeClass c = new IncompatibleJsonAttributeClass();
-      JavaScriptConvert.SerializeObject(c);
+      JsonConvert.SerializeObject(c);
     }
 
     public abstract class AbstractGenericBase<TKey>
@@ -1291,7 +1291,7 @@ keyword such as type of business.""
     [Test]
     public void GenericAbstractProperty()
     {
-      string json = JavaScriptConvert.SerializeObject(new GenericImpl());
+      string json = JsonConvert.SerializeObject(new GenericImpl());
       Assert.AreEqual(@"{""Id"":0}", json);
     }
 
@@ -1307,19 +1307,19 @@ keyword such as type of business.""
     [Test]
     public void DefaultValueAttributeTest()
     {
-      string json = JavaScriptConvert.SerializeObject(new DefaultValueAttributeTestClass(),
+      string json = JsonConvert.SerializeObject(new DefaultValueAttributeTestClass(),
         Formatting.None, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
       Assert.AreEqual(@"{""TestField1"":0,""TestProperty1"":null}", json);
 
-      json = JavaScriptConvert.SerializeObject(new DefaultValueAttributeTestClass { TestField1 = int.MinValue, TestProperty1 = "NotDefault" },
+      json = JsonConvert.SerializeObject(new DefaultValueAttributeTestClass { TestField1 = int.MinValue, TestProperty1 = "NotDefault" },
         Formatting.None, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
       Assert.AreEqual(@"{""TestField1"":-2147483648,""TestProperty1"":""NotDefault""}", json);
 
-      json = JavaScriptConvert.SerializeObject(new DefaultValueAttributeTestClass { TestField1 = 21, TestProperty1 = "NotDefault" },
+      json = JsonConvert.SerializeObject(new DefaultValueAttributeTestClass { TestField1 = 21, TestProperty1 = "NotDefault" },
         Formatting.None, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
       Assert.AreEqual(@"{""TestProperty1"":""NotDefault""}", json);
 
-      json = JavaScriptConvert.SerializeObject(new DefaultValueAttributeTestClass { TestField1 = 21, TestProperty1 = "TestProperty1Value" },
+      json = JsonConvert.SerializeObject(new DefaultValueAttributeTestClass { TestField1 = 21, TestProperty1 = "TestProperty1Value" },
         Formatting.None, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
       Assert.AreEqual(@"{}", json);
     }
@@ -1344,12 +1344,12 @@ keyword such as type of business.""
                           Paid = false
                         };
 
-      string json = JavaScriptConvert.SerializeObject(invoice);
+      string json = JsonConvert.SerializeObject(invoice);
 
       Console.WriteLine(json);
       // {"Company":"Acme Ltd.","Amount":50.0,"Paid":false,"PaidDate":null}
 
-      json = JavaScriptConvert.SerializeObject(invoice,
+      json = JsonConvert.SerializeObject(invoice,
         Formatting.None,
         new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
 
@@ -1362,10 +1362,10 @@ keyword such as type of business.""
     {
       string json;
 
-      json = JavaScriptConvert.SerializeObject((int?)null);
+      json = JsonConvert.SerializeObject((int?)null);
       Assert.AreEqual("null", json);
 
-      json = JavaScriptConvert.SerializeObject((int?)1);
+      json = JsonConvert.SerializeObject((int?)1);
       Assert.AreEqual("1", json);
     }
 
@@ -1416,7 +1416,7 @@ keyword such as type of business.""
 
       string json;
 
-      json = JavaScriptConvert.SerializeObject(personRaw);
+      json = JsonConvert.SerializeObject(personRaw);
       Assert.AreEqual(@"{""first_name"":""FirstNameValue"",""RawContent"":[1,2,3,4,5],""last_name"":""LastNameValue""}", json);
     }
 
@@ -1425,7 +1425,7 @@ keyword such as type of business.""
     {
       string json = @"{""first_name"":""FirstNameValue"",""RawContent"":[1,2,3,4,5],""last_name"":""LastNameValue""}";
 
-      PersonRaw personRaw = JavaScriptConvert.DeserializeObject<PersonRaw>(json);
+      PersonRaw personRaw = JsonConvert.DeserializeObject<PersonRaw>(json);
 
       Assert.AreEqual("FirstNameValue", personRaw.FirstName);
       Assert.AreEqual("[1,2,3,4,5]", personRaw.RawContent.Content);
@@ -1457,11 +1457,11 @@ keyword such as type of business.""
                                       Active = true
                                     };
 
-      string json = JavaScriptConvert.SerializeObject(userNullablle);
+      string json = JsonConvert.SerializeObject(userNullablle);
 
       Assert.AreEqual(@"{""Id"":""ad6205e8-0df4-465d-aea6-8ba18e93a7e7"",""FName"":""FirstValue"",""LName"":""LastValue"",""RoleId"":5,""NullableRoleId"":6,""NullRoleId"":null,""Active"":true}", json);
 
-      UserNullablle userNullablleDeserialized = JavaScriptConvert.DeserializeObject<UserNullablle>(json);
+      UserNullablle userNullablleDeserialized = JsonConvert.DeserializeObject<UserNullablle>(json);
 
       Assert.AreEqual(new Guid("AD6205E8-0DF4-465d-AEA6-8BA18E93A7E7"), userNullablleDeserialized.Id);
       Assert.AreEqual("FirstValue", userNullablleDeserialized.FName);

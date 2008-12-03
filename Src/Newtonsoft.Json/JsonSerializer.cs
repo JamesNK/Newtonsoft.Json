@@ -714,7 +714,7 @@ namespace Newtonsoft.Json
       {
         converter.WriteJson(writer, value);
       }
-      else if (JavaScriptConvert.IsJsonPrimitive(value))
+      else if (JsonConvert.IsJsonPrimitive(value))
       {
         writer.WriteValue(value);
       }

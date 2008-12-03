@@ -62,7 +62,7 @@
     <Compile Include="Converters\XmlNodeConverter.cs" />
     <Compile Include="DateTimeOffset.cs" />
     <Compile Include="DefaultValueHandling.cs" />
-    <Compile Include="JavaScriptConvert.cs" />
+    <Compile Include="JsonConvert.cs" />
     <Compile Include="JsonConverter.cs" />
     <Compile Include="JsonConverterAttribute.cs" />
     <Compile Include="JsonConverterCollection.cs" />

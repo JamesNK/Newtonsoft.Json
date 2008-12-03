@@ -325,22 +325,22 @@ Parameter name: arrayIndex")]
     {
       string json = @"[new Date(1207285200000)]";
 
-      JArray a = (JArray)JavaScriptConvert.DeserializeObject(json, null);
+      JArray a = (JArray)JsonConvert.DeserializeObject(json, null);
       JValue v = (JValue)a[0];
 
-      Assert.AreEqual(JavaScriptConvert.ConvertJavaScriptTicksToDateTime(1207285200000), (DateTime)v);
+      Assert.AreEqual(JsonConvert.ConvertJavaScriptTicksToDateTime(1207285200000), (DateTime)v);
     }
 
     [Test]
     public void GenericValueCast()
     {
       string json = @"{""foo"":true}";
-      JObject o = (JObject)JavaScriptConvert.DeserializeObject(json);
+      JObject o = (JObject)JsonConvert.DeserializeObject(json);
       bool? value = o.Value<bool?>("foo");
       Assert.AreEqual(true, value);
 
       json = @"{""foo"":null}"; 
-      o = (JObject)JavaScriptConvert.DeserializeObject(json);
+      o = (JObject)JsonConvert.DeserializeObject(json);
       value = o.Value<bool?>("foo");
       Assert.AreEqual(null, value);
     }
