@@ -28,13 +28,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Newtonsoft.Json.Tests
+namespace Newtonsoft.Json.Utilities
 {
-  public class DateTimeTestClass
+  internal class EnumValue<T> where T : struct
   {
-    public string PreField { get; set; }
-    public DateTime DateTimeField { get; set; }
-    public DateTimeOffset DateTimeOffsetField { get; set; }
-    public string PostField { get; set; }
+    private string _name;
+    private T _value;
+
+    public string Name
+    {
+      get { return _name; }
+    }
+    public T Value
+    {
+      get { return _value; }
+    }
+
+    public EnumValue(string name, T value)
+    {
+      _name = name;
+      _value = value;
+    }
   }
 }

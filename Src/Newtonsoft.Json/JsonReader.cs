@@ -25,9 +25,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
-using System.Xml;
 using System.Globalization;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities;
@@ -117,21 +115,21 @@ namespace Newtonsoft.Json
 
     private int _top;
 
-    private List<JsonTokenType> _stack;
+    private readonly List<JsonTokenType> _stack;
 
     /// <summary>
     /// Gets the quotation mark character used to enclose the value of a string.
     /// </summary>
-    public char QuoteChar
+    public virtual char QuoteChar
     {
       get { return _quoteChar; }
-      protected set { _quoteChar = value; }
+      protected internal set { _quoteChar = value; }
     }
 
     /// <summary>
     /// Gets the type of the current Json token. 
     /// </summary>
-    public JsonToken TokenType
+    public virtual JsonToken TokenType
     {
       get { return _token; }
     }
@@ -139,7 +137,7 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Gets the text value of the current Json token.
     /// </summary>
-    public object Value
+    public virtual object Value
     {
       get { return _value; }
     }
@@ -147,7 +145,7 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Gets The Common Language Runtime (CLR) type for the current Json token.
     /// </summary>
-    public Type ValueType
+    public virtual Type ValueType
     {
       get { return _valueType; }
     }
@@ -156,7 +154,7 @@ namespace Newtonsoft.Json
     /// Gets the depth of the current token in the JSON document.
     /// </summary>
     /// <value>The depth of the current token in the JSON document.</value>
-    public int Depth
+    public virtual int Depth
     {
       get
       {
@@ -331,7 +329,7 @@ namespace Newtonsoft.Json
       }
     }
 
-    private bool IsStartToken(JsonToken token)
+    internal static bool IsStartToken(JsonToken token)
     {
       switch (token)
       {

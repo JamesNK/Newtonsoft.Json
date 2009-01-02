@@ -1,4 +1,4 @@
-#region License
+﻿#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -25,65 +25,48 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using System.Reflection;
 
 namespace Newtonsoft.Json
 {
-  internal struct MemberMapping
+  /// <summary>
+  /// Instructs the <see cref="JsonSerializer"/> how to serialize the object.
+  /// </summary>
+  [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = false)]
+  public sealed class JsonArrayAttribute : JsonContainerAttribute
   {
-    private readonly string _mappingName;
-    private readonly MemberInfo _member;
-    private readonly bool _ignored;
-    private readonly bool _readable;
-    private readonly bool _writable;
-    private readonly JsonConverter _memberConverter;
-    private readonly object _defaultValue;
+    private bool _allowNullItems;
 
-    public MemberMapping(string mappingName, MemberInfo member, bool ignored, bool readable, bool writable, JsonConverter memberConverter, object defaultValue)
+    public bool AllowNullItems
     {
-      _mappingName = mappingName;
-      _member = member;
-      _ignored = ignored;
-      _readable = readable;
-      _writable = writable;
-      _memberConverter = memberConverter;
-      _defaultValue = defaultValue;
+      get { return _allowNullItems; }
+      set { _allowNullItems = value; }
     }
 
-    public string MappingName
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonArrayAttribute"/> class.
+    /// </summary>
+    public JsonArrayAttribute()
     {
-      get { return _mappingName; }
     }
 
-    public MemberInfo Member
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonObjectAttribute"/> class with a flag indicating whether the array can contain null items
+    /// </summary>
+    /// <param name="allowNullItems">A flag indicating whether the array can contain null items.</param>
+    public JsonArrayAttribute(bool allowNullItems)
     {
-      get { return _member; }
+      _allowNullItems = allowNullItems;
     }
 
-    public bool Ignored
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonArrayAttribute"/> class with the specified container Id.
+    /// </summary>
+    /// <param name="id">The container Id.</param>
+    public JsonArrayAttribute(string id)
+      : base(id)
     {
-      get { return _ignored; }
     }
-
-    public bool Readable
-    {
-      get { return _readable; }
-    }
-
-    public bool Writable
-    {
-      get { return _writable; }
-    }
-
-    public JsonConverter MemberConverter
-    {
-      get { return _memberConverter; }
-    }
-
-    public object DefaultValue
-    {
-      get { return _defaultValue; }
-    } 
   }
 }

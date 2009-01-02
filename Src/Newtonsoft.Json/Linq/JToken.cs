@@ -146,7 +146,7 @@ namespace Newtonsoft.Json.Linq
         if (_parent == null)
           return null;
 
-        JToken parentNext = ((JToken)_parent.Content)._next;
+        JToken parentNext = _parent.Content._next;
         JToken parentNextBefore = null;
         while (parentNext != this)
         {
@@ -735,6 +735,67 @@ namespace Newtonsoft.Json.Linq
     IJEnumerable<JToken> IJEnumerable<JToken>.this[object key]
     {
       get { return this[key]; }
+    }
+
+    public JsonReader CreateReader()
+    {
+      return new JsonTokenReader(this);
+    }
+
+    internal static JToken FromObjectInternal(object o)
+    {
+      ValidationUtils.ArgumentNotNull(o, "o");
+
+      JsonSerializer jsonSerializer = new JsonSerializer();
+
+      JToken token;
+      using (JsonTokenWriter jsonWriter = new JsonTokenWriter())
+      {
+        jsonSerializer.Serialize(jsonWriter, o);
+        token = jsonWriter.Token;
+      }
+
+      return token;
+    }
+
+    /// <summary>
+    /// Creates a <see cref="JToken"/> from an object.
+    /// </summary>
+    /// <param name="o">The object that will be used to create <see cref="JToken"/>.</param>
+    /// <returns>A <see cref="JToken"/> with the value of the specified object</returns>
+    public static JToken FromObject(object o)
+    {
+      return FromObjectInternal(o);
+    }
+
+    public static JToken ReadFrom(JsonReader reader)
+    {
+      ValidationUtils.ArgumentNotNull(reader, "reader");
+
+      if (reader.TokenType == JsonToken.None)
+      {
+        if (!reader.Read())
+          throw new Exception("Error reading JToken from JsonReader.");
+      }
+
+      if (reader.TokenType == JsonToken.StartObject)
+        return JObject.Load(reader);
+
+      if (reader.TokenType == JsonToken.StartArray)
+        return JArray.Load(reader);
+
+      if (reader.TokenType == JsonToken.PropertyName)
+        return JProperty.Load(reader);
+
+      if (reader.TokenType == JsonToken.StartConstructor)
+        return JConstructor.Load(reader);
+
+      // hack. change to look at TokenType rather than using value
+      if (!JsonReader.IsStartToken(reader.TokenType))
+        return new JValue(reader.Value);
+
+      // TODO: loading constructor and parameters?
+      throw new Exception("Error reading JToken from JsonReader. Unexpected token: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
     }
   }
 }

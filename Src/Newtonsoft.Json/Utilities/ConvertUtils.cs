@@ -37,6 +37,54 @@ namespace Newtonsoft.Json.Utilities
 {
   internal static class ConvertUtils
   {
+    public static bool CanConvertType(Type initialType, Type targetType, bool allowTypeNameToString)
+    {
+      ValidationUtils.ArgumentNotNull(initialType, "initialType");
+      ValidationUtils.ArgumentNotNull(targetType, "targetType");
+
+      if (ReflectionUtils.IsNullableType(targetType))
+        targetType = Nullable.GetUnderlyingType(targetType);
+
+      if (targetType == initialType)
+        return true;
+
+      if (typeof(IConvertible).IsAssignableFrom(initialType) && typeof(IConvertible).IsAssignableFrom(targetType))
+      {
+        return true;
+      }
+
+      if (initialType == typeof(DateTime) && targetType == typeof(DateTimeOffset))
+        return true;
+
+      if (initialType == typeof(Guid) && (targetType == typeof(Guid) || targetType == typeof(string)))
+        return true;
+
+#if !PocketPC
+      // see if source or target types have a TypeConverter that converts between the two
+      TypeConverter toConverter = GetConverter(initialType);
+
+      if (toConverter != null && toConverter.CanConvertTo(targetType))
+      {
+        if (allowTypeNameToString || toConverter.GetType() != typeof(TypeConverter))
+          return true;
+      }
+
+      TypeConverter fromConverter = GetConverter(targetType);
+
+      if (fromConverter != null && fromConverter.CanConvertFrom(initialType))
+        return true;
+#endif
+
+      // handle DBNull and INullable
+      if (initialType == typeof(DBNull))
+      {
+        if (ReflectionUtils.IsNullable(targetType))
+          return true;
+      }
+
+      return false;
+    }
+
     #region Convert
     /// <summary>
     /// Converts the value to the specified type.
@@ -81,9 +129,11 @@ namespace Newtonsoft.Json.Utilities
       if (targetType == initialType)
         return initialValue;
 
+      if (initialValue is string && typeof(Type).IsAssignableFrom(targetType))
+        return Type.GetType((string) initialValue, true);
+
       if (targetType.IsInterface || targetType.IsGenericTypeDefinition || targetType.IsAbstract)
         throw new ArgumentException("Target type {0} is not a value type or a non-abstract class.".FormatWith(CultureInfo.InvariantCulture, targetType), "targetType");
-
 
       // use Convert.ChangeType if both types are IConvertible
       if (initialValue is IConvertible && typeof(IConvertible).IsAssignableFrom(targetType))
@@ -135,14 +185,12 @@ namespace Newtonsoft.Json.Utilities
       {
         if (ReflectionUtils.IsNullable(targetType))
           return EnsureTypeAssignable(null, initialType, targetType);
-        else
-          throw new Exception("Can not convert null {0} into non-nullable {1}.".FormatWith(CultureInfo.InvariantCulture, initialType, targetType));
+        
+        throw new Exception("Can not convert null {0} into non-nullable {1}.".FormatWith(CultureInfo.InvariantCulture, initialType, targetType));
       }
 #if !SILVERLIGHT
-      else if (initialValue is INullable)
-      {
+      if (initialValue is INullable)
         return EnsureTypeAssignable(ToValue((INullable)initialValue), initialType, targetType);
-      }
 #endif
 
       throw new Exception("Can not convert from {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, initialType, targetType));

@@ -160,5 +160,33 @@ namespace Newtonsoft.Json.Linq
     {
       return _name.GetHashCode() ^ ContentsHashCode();
     }
+
+    /// <summary>
+    /// Loads an <see cref="JConstructor"/> from a <see cref="JsonReader"/>. 
+    /// </summary>
+    /// <param name="reader">A <see cref="JsonReader"/> that will be read for the content of the <see cref="JConstructor"/>.</param>
+    /// <returns>A <see cref="JConstructor"/> that contains the JSON that was read from the specified <see cref="JsonReader"/>.</returns>
+    public static JConstructor Load(JsonReader reader)
+    {
+      if (reader.TokenType == JsonToken.None)
+      {
+        if (!reader.Read())
+          throw new Exception("Error reading JConstructor from JsonReader.");
+      }
+
+      if (reader.TokenType != JsonToken.StartConstructor)
+        throw new Exception(
+          "Error reading JConstructor from JsonReader. Current JsonReader item is not a constructor: {0}".FormatWith(
+            CultureInfo.InvariantCulture, reader.TokenType));
+
+      JConstructor c = new JConstructor((string)reader.Value);
+
+      if (!reader.Read())
+        throw new Exception("Error reading JConstructor from JsonReader.");
+
+      c.ReadContentFrom(reader);
+
+      return c;
+    }
   }
 }

@@ -32,6 +32,7 @@ using Newtonsoft.Json.Linq;
 using System.Xml;
 using System.IO;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Tests.TestObjects;
 
 namespace Newtonsoft.Json.Tests.Linq
 {
@@ -351,13 +352,13 @@ keyword such as type of business.""
   [
     ""1"",
     2,
-    3,
+    3.0,
     ""\/Date(-62030076711000)\/""
   ],
   new ConstructorName(
     ""param1"",
     2,
-    3
+    3.0
   )
 ]", a.ToString());
     }

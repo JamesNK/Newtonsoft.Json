@@ -26,7 +26,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Newtonsoft.Json.Utilities;
 using System.Collections;
 using System.Diagnostics;
@@ -189,22 +188,6 @@ namespace Newtonsoft.Json.Linq
           }
         }
       }
-    }
-
-    internal static JToken FromObjectInternal(object o)
-    {
-      ValidationUtils.ArgumentNotNull(o, "o");
-
-      JsonSerializer jsonSerializer = new JsonSerializer();
-
-      JToken token;
-      using (JsonTokenWriter jsonWriter = new JsonTokenWriter())
-      {
-        jsonSerializer.Serialize(jsonWriter, o);
-        token = jsonWriter.Token;
-      }
-
-      return token;
     }
 
     internal static JToken GetIndex(JContainer c, object o)
@@ -387,10 +370,12 @@ namespace Newtonsoft.Json.Linq
 
       do
       {
-        if (parent is JProperty)
+        if (parent is JProperty && ((JProperty)parent).Value != null)
         {
-          if (((JProperty)parent).Value != null)
-            parent = parent.Parent;
+          if (parent == this)
+            return;
+
+          parent = parent.Parent;
         }
 
         switch (r.TokenType)

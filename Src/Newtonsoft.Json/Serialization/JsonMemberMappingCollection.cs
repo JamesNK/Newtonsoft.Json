@@ -30,16 +30,16 @@ using System.Collections.ObjectModel;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
 
-namespace Newtonsoft.Json
+namespace Newtonsoft.Json.Serialization
 {
-  internal class MemberMappingCollection : KeyedCollection<string, MemberMapping>
+  public class JsonMemberMappingCollection : KeyedCollection<string, JsonMemberMapping>
   {
-    protected override string GetKeyForItem(MemberMapping item)
+    protected override string GetKeyForItem(JsonMemberMapping item)
     {
       return item.MappingName;
     }
 
-    public void AddMapping(MemberMapping memberMapping)
+    public void AddMapping(JsonMemberMapping memberMapping)
     {
       if (Contains(memberMapping.MappingName))
       {
@@ -47,7 +47,7 @@ namespace Newtonsoft.Json
         if (memberMapping.Ignored)
           return;
 
-        MemberMapping existingMemberMapping = this[memberMapping.MappingName];
+        JsonMemberMapping existingMemberMapping = this[memberMapping.MappingName];
 
         if (!existingMemberMapping.Ignored)
         {
@@ -64,7 +64,7 @@ namespace Newtonsoft.Json
       Add(memberMapping);
     }
 
-    public bool TryGetMapping(string mappingName, out MemberMapping memberMapping)
+    public bool TryGetMapping(string mappingName, out JsonMemberMapping memberMapping)
     {
       if (Contains(mappingName))
       {
@@ -73,7 +73,7 @@ namespace Newtonsoft.Json
       }
       else
       {
-        memberMapping = default(MemberMapping);
+        memberMapping = default(JsonMemberMapping);
         return false;
       }
     }

@@ -354,16 +354,42 @@ namespace Newtonsoft.Json.Utilities
 
     public static bool IsListType(Type type)
     {
-      ValidationUtils.ArgumentNotNull(type, "listType");
+      ValidationUtils.ArgumentNotNull(type, "type");
 
       if (type.IsArray)
         return true;
-      else if (typeof(IList).IsAssignableFrom(type))
+      if (typeof(IList).IsAssignableFrom(type))
         return true;
-      else if (ReflectionUtils.ImplementsGenericDefinition(type, typeof(IList<>)))
+      if (ReflectionUtils.ImplementsGenericDefinition(type, typeof(IList<>)))
         return true;
-      else
-        return false;
+
+      return false;
+    }
+
+    public static bool IsCollectionType(Type type)
+    {
+      ValidationUtils.ArgumentNotNull(type, "type");
+
+      if (type.IsArray)
+        return true;
+      if (typeof(ICollection).IsAssignableFrom(type))
+        return true;
+      if (ReflectionUtils.ImplementsGenericDefinition(type, typeof(ICollection<>)))
+        return true;
+
+      return false;
+    }
+
+    public static bool IsDictionaryType(Type type)
+    {
+      ValidationUtils.ArgumentNotNull(type, "type");
+
+      if (typeof(IDictionary).IsAssignableFrom(type))
+        return true;
+      if (ReflectionUtils.ImplementsGenericDefinition(type, typeof (IDictionary<,>)))
+        return true;
+
+      return false;
     }
 
     public static IWrappedCollection CreateCollectionWrapper(object list)
@@ -537,6 +563,37 @@ namespace Newtonsoft.Json.Utilities
       Array destinationArray = Array.CreateInstance(type, initial.Length);
       Array.Copy(initial, 0, destinationArray, 0, initial.Length);
       return destinationArray;
+    }
+
+    public static bool AddDistinct<T>(this IList<T> list, T value)
+    {
+      return list.AddDistinct(value, EqualityComparer<T>.Default);
+    }
+
+    public static bool AddDistinct<T>(this IList<T> list, T value, IEqualityComparer<T> comparer)
+    {
+      if (list.Contains(value, comparer))
+        return false;
+
+      list.Add(value);
+      return true;
+    }
+
+    public static bool AddRangeDistinct<T>(this IList<T> list, IEnumerable<T> values)
+    {
+      return list.AddRangeDistinct(values, EqualityComparer<T>.Default);
+    }
+
+    public static bool AddRangeDistinct<T>(this IList<T> list, IEnumerable<T> values, IEqualityComparer<T> comparer)
+    {
+      bool allAdded = true;
+      foreach (T value in values)
+      {
+        if (!list.AddDistinct(value, comparer))
+          allAdded = false;
+      }
+
+      return allAdded;
     }
   }
 }

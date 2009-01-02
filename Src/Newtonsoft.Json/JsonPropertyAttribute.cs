@@ -9,6 +9,7 @@ namespace Newtonsoft.Json
   public sealed class JsonPropertyAttribute : Attribute
   {
     private string _propertyName;
+    private bool _isRequired;
 
     /// <summary>
     /// Gets or sets the name of the property.
@@ -18,6 +19,12 @@ namespace Newtonsoft.Json
     {
       get { return _propertyName; }
       set { _propertyName = value; }
+    }
+
+    public bool IsRequired
+    {
+      get { return _isRequired; }
+      set { _isRequired = value; }
     }
 
     /// <summary>

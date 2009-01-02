@@ -181,7 +181,7 @@ namespace Newtonsoft.Json.Linq
     /// Loads an <see cref="JObject"/> from a <see cref="JsonReader"/>. 
     /// </summary>
     /// <param name="reader">A <see cref="JsonReader"/> that will be read for the content of the <see cref="JObject"/>.</param>
-    /// <returns>A <see cref="JObject"/> that contains the XML that was read from the specified <see cref="JsonReader"/>.</returns>
+    /// <returns>A <see cref="JObject"/> that contains the JSON that was read from the specified <see cref="JsonReader"/>.</returns>
     public static JObject Load(JsonReader reader)
     {
       ValidationUtils.ArgumentNotNull(reader, "reader");
@@ -192,14 +192,12 @@ namespace Newtonsoft.Json.Linq
           throw new Exception("Error reading JObject from JsonReader.");
       }
       if (reader.TokenType != JsonToken.StartObject)
-      {
-        throw new Exception("Error reading JObject from JsonReader. Current JsonReader item is not an object: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
-      }
-      else
-      {
-        if (!reader.Read())
-          throw new Exception("Error reading JObject from JsonReader.");
-      }
+        throw new Exception(
+          "Error reading JObject from JsonReader. Current JsonReader item is not an object: {0}".FormatWith(
+            CultureInfo.InvariantCulture, reader.TokenType));
+
+      if (!reader.Read())
+        throw new Exception("Error reading JObject from JsonReader.");
 
       JObject o = new JObject();
       o.ReadContentFrom(reader);
@@ -224,7 +222,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="o">The object that will be used to create <see cref="JObject"/>.</param>
     /// <returns>A <see cref="JObject"/> with the values of the specified object</returns>
-    public static JObject FromObject(object o)
+    public static new JObject FromObject(object o)
     {
       JToken token = FromObjectInternal(o);
 

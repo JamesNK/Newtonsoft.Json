@@ -410,5 +410,61 @@ namespace Newtonsoft.Json.Tests
 
       Assert.AreEqual(@"{""d0"":[1,2],""d1"":[1,2],""d2"":[1,2]}", sb.ToString());
     }
+
+    [Test]
+    public void WriteObjectNestedInConstructor()
+    {
+      StringBuilder sb = new StringBuilder();
+      StringWriter sw = new StringWriter(sb);
+
+      using (JsonWriter jsonWriter = new JsonTextWriter(sw))
+      {
+        jsonWriter.WriteStartObject();
+        jsonWriter.WritePropertyName("con");
+
+        jsonWriter.WriteStartConstructor("Ext.data.JsonStore");
+        jsonWriter.WriteStartObject();
+        jsonWriter.WritePropertyName("aa");
+        jsonWriter.WriteValue("aa");
+        jsonWriter.WriteEndObject();
+        jsonWriter.WriteEndConstructor();
+
+        jsonWriter.WriteEndObject();
+      }
+
+      Assert.AreEqual(@"{""con"":new Ext.data.JsonStore({""aa"":""aa""})}", sb.ToString());
+    }
+
+    [Test]
+    public void WriteFloatingPointNumber()
+    {
+      StringBuilder sb = new StringBuilder();
+      StringWriter sw = new StringWriter(sb);
+
+      using (JsonWriter jsonWriter = new JsonTextWriter(sw))
+      {
+        jsonWriter.WriteStartArray();
+
+        jsonWriter.WriteValue(0.0);
+        jsonWriter.WriteValue(0f);
+        jsonWriter.WriteValue(0.1);
+        jsonWriter.WriteValue(1.0);
+        jsonWriter.WriteValue(1.000001);
+        jsonWriter.WriteValue(0.000001);
+        jsonWriter.WriteValue(double.Epsilon);
+        jsonWriter.WriteValue(double.PositiveInfinity);
+        jsonWriter.WriteValue(double.NegativeInfinity);
+        jsonWriter.WriteValue(double.NaN);
+        jsonWriter.WriteValue(double.MaxValue);
+        jsonWriter.WriteValue(double.MinValue);
+        jsonWriter.WriteValue(float.PositiveInfinity);
+        jsonWriter.WriteValue(float.NegativeInfinity);
+        jsonWriter.WriteValue(float.NaN);
+
+        jsonWriter.WriteEndArray();
+      }
+
+      Assert.AreEqual(@"[0.0,0.0,0.1,1.0,1.000001,1E-06,4.94065645841247E-324,Infinity,-Infinity,NaN,1.7976931348623157E+308,-1.7976931348623157E+308,Infinity,-Infinity,NaN]", sb.ToString());
+    }
   }
 }

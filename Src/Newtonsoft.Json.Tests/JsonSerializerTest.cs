@@ -39,183 +39,10 @@ using Newtonsoft.Json.Converters;
 #if !PocketPC
 using System.Runtime.Serialization.Json;
 #endif
-using Newtonsoft.Json.Utilities;
-using System.Globalization;
-using System.ComponentModel;
+using Newtonsoft.Json.Tests.TestObjects;
 
 namespace Newtonsoft.Json.Tests
 {
-  public class Product
-  {
-    public string Name;
-    public DateTime Expiry = new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-    public decimal Price;
-    public string[] Sizes;
-
-    public override bool Equals(object obj)
-    {
-      if (obj is Product)
-      {
-        Product p = (Product)obj;
-
-        return (p.Name == Name && p.Expiry == Expiry && p.Price == Price);
-      }
-
-      return base.Equals(obj);
-    }
-
-    public override int GetHashCode()
-    {
-      return (Name ?? string.Empty).GetHashCode();
-    }
-  }
-
-  public class ProductCollection : List<Product>
-  {
-  }
-
-  public class ProductShort
-  {
-    public string Name;
-    public DateTime Expiry;
-    //public decimal Price;
-    public string[] Sizes;
-  }
-
-  public class Store
-  {
-    public StoreColor Color = StoreColor.Yellow;
-    public DateTimeOffset Establised = new DateTimeOffset(2010, 1, 22, 1, 1, 1, TimeSpan.Zero);
-    public double Width = 1.1;
-    public int Employees = 999;
-    public int[] RoomsPerFloor = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-    public bool Open = false;
-    public char Symbol = '@';
-    public List<string> Mottos = new List<string>();
-    public decimal Cost = 100980.1M;
-    public string Escape = "\r\n\t\f\b?{\\r\\n\"\'";
-    public List<Product> product = new List<Product>();
-
-    public Store()
-    {
-      Mottos.Add("Hello World");
-      Mottos.Add("öäüÖÄÜ\\'{new Date(12345);}[222]_µ@²³~");
-      Mottos.Add(null);
-      Mottos.Add(" ");
-
-      Product rocket = new Product();
-      rocket.Name = "Rocket";
-      rocket.Expiry = new DateTime(2000, 2, 2, 23, 1, 30, DateTimeKind.Utc);
-      Product alien = new Product();
-      alien.Name = "Alien";
-
-      product.Add(rocket);
-      product.Add(alien);
-    }
-  }
-
-  public enum StoreColor
-  {
-    Black,
-    Red,
-    Yellow,
-    White
-  }
-
-  public class ClassWithGuid
-  {
-    public Guid GuidField;
-  }
-
-  public class ClassWithArray
-  {
-    private readonly IList<long> bar;
-    private string foo;
-
-    public ClassWithArray()
-    {
-      bar = new List<Int64>() { int.MaxValue };
-    }
-
-    [JsonProperty("foo")]
-    public string Foo
-    {
-      get { return foo; }
-      set { foo = value; }
-    }
-
-    [JsonProperty(PropertyName = "bar")]
-    public IList<long> Bar
-    {
-      get { return bar; }
-    }
-  }
-
-  [JsonObject]
-  public class ConverableMembers
-  {
-    public string String = "string";
-    public int Int32 = int.MaxValue;
-    public uint UInt32 = uint.MaxValue;
-    public byte Byte = byte.MaxValue;
-    public sbyte SByte = sbyte.MaxValue;
-    public short Short = short.MaxValue;
-    public ushort UShort = ushort.MaxValue;
-    public long Long = long.MaxValue;
-    public ulong ULong = long.MaxValue;
-    public double Double = double.MaxValue;
-    public float Float = float.MaxValue;
-    public DBNull DBNull = DBNull.Value;
-    public bool Bool = true;
-    public char Char = '\0';
-  }
-
-  [JsonObject(MemberSerialization.OptIn)]
-  public class JsonIgnoreAttributeOnClassTestClass
-  {
-    private int _property = 21;
-    private int _ignoredProperty = 12;
-
-    [JsonProperty("TheField")]
-    public int Field;
-
-    [JsonProperty]
-    public int Property
-    {
-      get { return _property; }
-    }
-
-    public int IgnoredField;
-
-    [JsonProperty]
-    [JsonIgnore] // JsonIgnore should take priority
-    public int IgnoredProperty
-    {
-      get { return _ignoredProperty; }
-    }
-  }
-
-  [JsonObject(MemberSerialization.OptIn)]
-  public class Person
-  {
-    // "John Smith"
-    [JsonProperty]
-    public string Name { get; set; }
-
-    // "2000-12-15T22:11:03"
-    [JsonProperty]
-    //[JsonConverter(typeof(IsoDateTimeConverter))]
-    public DateTime BirthDate { get; set; }
-
-    // new Date(976918263055)
-    [JsonProperty]
-    //[JsonConverter(typeof(JavaScriptDateTimeConverter))]
-    public DateTime LastModified { get; set; }
-
-    // not serialized
-    public string Department { get; set; }
-  }
-
   public class JsonSerializerTest : TestFixtureBase
   {
     [Test]
@@ -314,13 +141,6 @@ namespace Newtonsoft.Json.Tests
       Console.WriteLine(jsonText);
     }
 
-    public class MethodExecutorObject
-    {
-      public string serverClassName;
-      public object[] serverMethodParams;
-      public string clientGetResultFunction;
-    }
-
     [Test]
     public void TestMethodExecutorObject()
     {
@@ -351,12 +171,6 @@ namespace Newtonsoft.Json.Tests
       Assert.AreEqual("Orange", p["Name"].ToString());
     }
 
-    public class TypedSubHashtable
-    {
-      public string Name;
-      public Hashtable Hash;
-    }
-
     [Test]
     public void TypedHashtableDeserialization()
     {
@@ -371,16 +185,6 @@ namespace Newtonsoft.Json.Tests
     }
 #endif
 
-    public class GetOnlyPropertyClass
-    {
-      public string Field = "Field";
-
-      public string GetOnlyProperty
-      {
-        get { return "GetOnlyProperty"; }
-      }
-    }
-
     [Test]
     public void SerializeDeserializeGetOnlyProperty()
     {
@@ -392,16 +196,6 @@ namespace Newtonsoft.Json.Tests
       Assert.AreEqual(c.GetOnlyProperty, "GetOnlyProperty");
     }
 
-    public class SetOnlyPropertyClass
-    {
-      public string Field = "Field";
-
-      public string SetOnlyProperty
-      {
-        set { }
-      }
-    }
-
     [Test]
     public void SerializeDeserializeSetOnlyProperty()
     {
@@ -410,30 +204,6 @@ namespace Newtonsoft.Json.Tests
       SetOnlyPropertyClass c = JsonConvert.DeserializeObject<SetOnlyPropertyClass>(value);
 
       Assert.AreEqual(c.Field, "Field");
-    }
-
-    public class JsonIgnoreAttributeTestClass
-    {
-      private int _property = 21;
-      private int _ignoredProperty = 12;
-
-      public int Field;
-      public int Property
-      {
-        get { return _property; }
-      }
-
-      [JsonIgnore]
-      public int IgnoredField;
-
-      [JsonIgnore]
-      public int IgnoredProperty
-      {
-        get { return _ignoredProperty; }
-      }
-
-      [JsonIgnore]
-      public Product IgnoredObject = new Product();
     }
 
     [Test]
@@ -594,37 +364,11 @@ keyword such as type of business.""
       Assert.AreEqual(test.SweetCakesCount, test2.SweetCakesCount);
     }
 
-    public class BadJsonPropertyClass
-    {
-      [JsonProperty("pie")]
-      public string Pie = "Yum";
-
-      public string pie = "PieChart!";
-    }
-
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"A member with the name 'pie' already exists on Newtonsoft.Json.Tests.JsonSerializerTest+BadJsonPropertyClass. Use the JsonPropertyAttribute to specify another name.")]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"A member with the name 'pie' already exists on Newtonsoft.Json.Tests.TestObjects.BadJsonPropertyClass. Use the JsonPropertyAttribute to specify another name.")]
     public void BadJsonPropertyClassSerialize()
     {
       JsonConvert.SerializeObject(new BadJsonPropertyClass());
-    }
-
-    public class Article
-    {
-      public string Name;
-
-      public Article()
-      {
-      }
-
-      public Article(string name)
-      {
-        Name = name;
-      }
-    }
-
-    public class ArticleCollection : List<Article>
-    {
     }
 
     [Test]
@@ -655,26 +399,6 @@ keyword such as type of business.""
       ReadOnlyCollection<int> r2 = JsonConvert.DeserializeObject<ReadOnlyCollection<int>>(jsonText);
 
       CollectionAssert.AreEqual(r1, r2);
-    }
-
-    public class Person
-    {
-      private Guid _internalId;
-      private string _firstName;
-
-      [JsonIgnore]
-      public Guid InternalId
-      {
-        get { return _internalId; }
-        set { _internalId = value; }
-      }
-
-      [JsonProperty("first_name")]
-      public string FirstName
-      {
-        get { return _firstName; }
-        set { _firstName = value; }
-      }
     }
 
     [Test]
@@ -1042,28 +766,6 @@ keyword such as type of business.""
     }
 #endif
 
-    public class Name
-    {
-      public string personsName;
-
-      public List<PhoneNumber> pNumbers = new List<PhoneNumber>();
-
-      public Name(string personsName)
-      {
-        this.personsName = personsName;
-      }
-    }
-
-    public class PhoneNumber
-    {
-      public string phoneNumber;
-
-      public PhoneNumber(string phoneNumber)
-      {
-        this.phoneNumber = phoneNumber;
-      }
-    }
-
     [Test]
     public void SerializeMemberGenericList()
     {
@@ -1085,20 +787,6 @@ keyword such as type of business.""
       Assert.AreEqual(0, newName.pNumbers.Count);
     }
 
-    public class ConstructorCaseSensitivityClass
-    {
-      public string param1 { get; set; }
-      public string Param1 { get; set; }
-      public string Param2 { get; set; }
-
-      public ConstructorCaseSensitivityClass(string param1, string Param1, string param2)
-      {
-        this.param1 = param1;
-        this.Param1 = Param1;
-        this.Param2 = param2;
-      }
-    }
-
     [Test]
     public void ConstructorCaseSensitivity()
     {
@@ -1111,72 +799,6 @@ keyword such as type of business.""
       Assert.AreEqual("param1", deserialized.param1);
       Assert.AreEqual("Param1", deserialized.Param1);
       Assert.AreEqual("Param2", deserialized.Param2);
-    }
-
-    public class MemberConverterPrecedenceClassConverter : ConverterPrecedenceClassConverter
-    {
-      public override string ConverterType
-      {
-        get { return "Member"; }
-      }
-    }
-
-    public class ClassConverterPrecedenceClassConverter : ConverterPrecedenceClassConverter
-    {
-      public override string ConverterType
-      {
-        get { return "Class"; }
-      }
-    }
-
-    public class ArgumentConverterPrecedenceClassConverter : ConverterPrecedenceClassConverter
-    {
-      public override string ConverterType
-      {
-        get { return "Argument"; }
-      }
-    }
-
-    public abstract class ConverterPrecedenceClassConverter : JsonConverter
-    {
-      public abstract string ConverterType { get; }
-
-      public override void WriteJson(JsonWriter writer, object value)
-      {
-        ConverterPrecedenceClass c = (ConverterPrecedenceClass)value;
-
-        JToken j = new JArray(ConverterType, c.TestValue);
-
-        j.WriteTo(writer);
-      }
-
-      public override object ReadJson(JsonReader reader, Type objectType)
-      {
-        JToken j = JArray.Load(reader);
-
-        string converter = (string)j[0];
-        if (converter != ConverterType)
-          throw new Exception("Serialize converter {0} and deserialize converter {1} do not match.".FormatWith(CultureInfo.InvariantCulture, converter, ConverterType));
-
-        string testValue = (string)j[1];
-        return new ConverterPrecedenceClass(testValue);
-      }
-
-      public override bool CanConvert(Type objectType)
-      {
-        return (objectType == typeof(ConverterPrecedenceClass));
-      }
-    }
-
-    [JsonConverter(typeof(ClassConverterPrecedenceClassConverter))]
-    public class ConverterPrecedenceClass
-    {
-      public string TestValue { get; set; }
-
-      public ConverterPrecedenceClass(string testValue)
-      {
-        TestValue = testValue;
-      }
     }
 
     [Test]
@@ -1203,13 +825,6 @@ keyword such as type of business.""
       ConverterPrecedenceClass c2 = JsonConvert.DeserializeObject<ConverterPrecedenceClass>(json, new ArgumentConverterPrecedenceClassConverter());
 
       Assert.AreEqual("!Test!", c2.TestValue);
-    }
-
-    public class MemberConverterClass
-    {
-      public DateTime DefaultConverter { get; set; }
-      [JsonConverter(typeof(IsoDateTimeConverter))]
-      public DateTime MemberConverter { get; set; }
     }
 
     [Test]
@@ -1242,13 +857,6 @@ keyword such as type of business.""
       Assert.AreEqual(testDate, m2.MemberConverter);
     }
 
-    public class ClassAndMemberConverterClass
-    {
-      public ConverterPrecedenceClass DefaultConverter { get; set; }
-      [JsonConverter(typeof(MemberConverterPrecedenceClassConverter))]
-      public ConverterPrecedenceClass MemberConverter { get; set; }
-    }
-
     [Test]
     public void SerializerShouldUseMemberConverterOverClassAndArgumentConverter()
     {
@@ -1265,27 +873,12 @@ keyword such as type of business.""
       Assert.AreEqual("MemberConverterValue", c2.MemberConverter.TestValue);
     }
 
-    [JsonConverter(typeof(IsoDateTimeConverter))]
-    public class IncompatibleJsonAttributeClass
-    {
-    }
-
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "JsonConverter IsoDateTimeConverter on Newtonsoft.Json.Tests.JsonSerializerTest+IncompatibleJsonAttributeClass is not compatible with member type IncompatibleJsonAttributeClass.")]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "JsonConverter IsoDateTimeConverter on Newtonsoft.Json.Tests.TestObjects.IncompatibleJsonAttributeClass is not compatible with member type IncompatibleJsonAttributeClass.")]
     public void IncompatibleJsonAttributeShouldThrow()
     {
       IncompatibleJsonAttributeClass c = new IncompatibleJsonAttributeClass();
       JsonConvert.SerializeObject(c);
-    }
-
-    public abstract class AbstractGenericBase<TKey>
-    {
-      public abstract TKey Id { get; set; }
-    }
-
-    public class GenericImpl : AbstractGenericBase<int>
-    {
-      public override int Id { get; set; }
     }
 
     [Test]
@@ -1293,15 +886,6 @@ keyword such as type of business.""
     {
       string json = JsonConvert.SerializeObject(new GenericImpl());
       Assert.AreEqual(@"{""Id"":0}", json);
-    }
-
-    public class DefaultValueAttributeTestClass
-    {
-      [DefaultValue("TestProperty1Value")]
-      public string TestProperty1 { get; set; }
-
-      [DefaultValue(21)]
-      public int TestField1;
     }
 
     [Test]
@@ -1322,16 +906,6 @@ keyword such as type of business.""
       json = JsonConvert.SerializeObject(new DefaultValueAttributeTestClass { TestField1 = 21, TestProperty1 = "TestProperty1Value" },
         Formatting.None, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
       Assert.AreEqual(@"{}", json);
-    }
-
-    public class Invoice
-    {
-      public string Company { get; set; }
-      public decimal Amount { get; set; }
-      [DefaultValue(false)]
-      public bool Paid { get; set; }
-      [DefaultValue(null)]
-      public DateTime? PaidDate { get; set; }
     }
 
     [Test]
@@ -1369,41 +943,6 @@ keyword such as type of business.""
       Assert.AreEqual("1", json);
     }
 
-    public class PersonRaw
-    {
-      private Guid _internalId;
-      private string _firstName;
-      private string _lastName;
-      private JsonRaw _rawContent;
-
-      [JsonIgnore]
-      public Guid InternalId
-      {
-        get { return _internalId; }
-        set { _internalId = value; }
-      }
-
-      [JsonProperty("first_name")]
-      public string FirstName
-      {
-        get { return _firstName; }
-        set { _firstName = value; }
-      }
-
-      public JsonRaw RawContent
-      {
-        get { return _rawContent; }
-        set { _rawContent = value; }
-      }
-
-      [JsonProperty("last_name")]
-      public string LastName
-      {
-        get { return _lastName; }
-        set { _lastName = value; }
-      }
-    }
-
     [Test]
     public void SerializeJsonRaw()
     {
@@ -1432,21 +971,11 @@ keyword such as type of business.""
       Assert.AreEqual("LastNameValue", personRaw.LastName);
     }
 
-    public class UserNullablle
-    {
-      public Guid Id;
-      public string FName;
-      public string LName;
-      public int RoleId;
-      public int? NullableRoleId;
-      public int? NullRoleId;
-      public bool? Active;
-    }
 
     [Test]
     public void DeserializeNullableMember()
     {
-      UserNullablle userNullablle = new UserNullablle
+      UserNullable userNullablle = new UserNullable
                                     {
                                       Id = new Guid("AD6205E8-0DF4-465d-AEA6-8BA18E93A7E7"),
                                       FName = "FirstValue",
@@ -1461,7 +990,7 @@ keyword such as type of business.""
 
       Assert.AreEqual(@"{""Id"":""ad6205e8-0df4-465d-aea6-8ba18e93a7e7"",""FName"":""FirstValue"",""LName"":""LastValue"",""RoleId"":5,""NullableRoleId"":6,""NullRoleId"":null,""Active"":true}", json);
 
-      UserNullablle userNullablleDeserialized = JsonConvert.DeserializeObject<UserNullablle>(json);
+      UserNullable userNullablleDeserialized = JsonConvert.DeserializeObject<UserNullable>(json);
 
       Assert.AreEqual(new Guid("AD6205E8-0DF4-465d-AEA6-8BA18E93A7E7"), userNullablleDeserialized.Id);
       Assert.AreEqual("FirstValue", userNullablleDeserialized.FName);
@@ -1470,13 +999,6 @@ keyword such as type of business.""
       Assert.AreEqual(6, userNullablleDeserialized.NullableRoleId);
       Assert.AreEqual(null, userNullablleDeserialized.NullRoleId);
       Assert.AreEqual(true, userNullablleDeserialized.Active);
-    }
-
-    public class MyClass
-    {
-      public int PreProperty { get; set; }
-      //public DateTime DateProperty { get; set; }
-      public int PostProperty { get; set; }
     }
 
     [Test]
@@ -1491,6 +1013,64 @@ keyword such as type of business.""
 
       Assert.AreEqual(1, myClass.PreProperty);
       Assert.AreEqual(2, myClass.PostProperty);
+    }
+
+    [Test]
+    public void DeserializeInt64ToNullableDouble()
+    {
+      string json = @"{""Height"":1}";
+
+      DoubleClass c = JsonConvert.DeserializeObject<DoubleClass>(json);
+      Assert.AreEqual(1, c.Height);
+    }
+
+    [Test]
+    public void SerializeTypeProperty()
+    {
+      TypeClass typeClass = new TypeClass {TypeProperty = typeof (bool)};
+
+      string json = JsonConvert.SerializeObject(typeClass);
+      Assert.AreEqual(@"{""TypeProperty"":""System.Boolean""}", json);
+
+      TypeClass typeClass2 = JsonConvert.DeserializeObject<TypeClass>(json);
+      Assert.AreEqual(typeof(bool), typeClass2.TypeProperty);
+    }
+
+    [Test]
+    public void RequiredMembersClass()
+    {
+      RequiredMembersClass c = new RequiredMembersClass()
+                                 {
+                                   BirthDate = new DateTime(2000, 12, 20, 10, 55, 55, DateTimeKind.Utc),
+                                   FirstName = "Bob",
+                                   LastName = "Smith",
+                                   MiddleName = "Cosmo"
+                                 };
+
+      string json = JsonConvert.SerializeObject(c, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""FirstName"": ""Bob"",
+  ""MiddleName"": ""Cosmo"",
+  ""LastName"": ""Smith"",
+  ""BirthDate"": ""\/Date(977309755000)\/""
+}", json);
+
+      RequiredMembersClass c2 = JsonConvert.DeserializeObject<RequiredMembersClass>(json);
+
+      Assert.AreEqual("Bob", c2.FirstName);
+      Assert.AreEqual(new DateTime(2000, 12, 20, 10, 55, 55, DateTimeKind.Utc), c2.BirthDate);
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Required property 'LastName' not found in JSON.")]
+    public void RequiredMembersClassMissingRequiredProperty()
+    {
+      string json = @"{
+  ""FirstName"": ""Bob""
+}";
+
+      JsonConvert.DeserializeObject<RequiredMembersClass>(json);
     }
   }
 }

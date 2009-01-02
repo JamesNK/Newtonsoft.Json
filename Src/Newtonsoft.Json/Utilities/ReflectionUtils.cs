@@ -241,7 +241,7 @@ namespace Newtonsoft.Json.Utilities
       }
     }
 
-    private static void GetDictionaryKeyValueTypes(Type dictionaryType, out Type keyType, out Type valueType)
+    public static void GetDictionaryKeyValueTypes(Type dictionaryType, out Type keyType, out Type valueType)
     {
       ValidationUtils.ArgumentNotNull(dictionaryType, "type");
 

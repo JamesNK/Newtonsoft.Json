@@ -122,9 +122,9 @@ namespace Newtonsoft.Json
     private int _top;
 
     private List<JsonTokenType> _stack;
-    private List<object> _serializeStack;
     private State _currentState;
     private Formatting _formatting;
+    private List<object> _serializeStack;
 
     internal List<object> SerializeStack
     {
@@ -192,7 +192,7 @@ namespace Newtonsoft.Json
     /// </summary>
     public JsonWriter()
     {
-      _stack = new List<JsonTokenType>(1);
+      _stack = new List<JsonTokenType>(8);
       _stack.Add(JsonTokenType.None);
       _currentState = State.Start;
       _formatting = Formatting.None;
@@ -527,6 +527,9 @@ namespace Newtonsoft.Json
           _currentState = State.Object;
           break;
         case JsonTokenType.Array:
+          _currentState = State.Array;
+          break;
+        case JsonTokenType.Constructor:
           _currentState = State.Array;
           break;
         case JsonTokenType.None:

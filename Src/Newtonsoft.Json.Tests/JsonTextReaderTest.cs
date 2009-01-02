@@ -348,5 +348,81 @@ namespace Newtonsoft.Json.Tests
       reader.Read();
       Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
     }
+
+    [Test]
+    public void ReadFloatingPointNumber()
+    {
+      string json =
+        @"[0.0,0.0,0.1,1.0,1.000001,1E-06,4.94065645841247E-324,Infinity,-Infinity,NaN,1.7976931348623157E+308,-1.7976931348623157E+308,Infinity,-Infinity,NaN]";
+
+      using (JsonReader jsonReader = new JsonTextReader(new StringReader(json)))
+      {
+        jsonReader.Read();
+        Assert.AreEqual(JsonToken.StartArray, jsonReader.TokenType);
+
+        jsonReader.Read();
+        Assert.AreEqual(JsonToken.Float, jsonReader.TokenType);
+        Assert.AreEqual(0.0, jsonReader.Value);
+
+        jsonReader.Read();
+        Assert.AreEqual(JsonToken.Float, jsonReader.TokenType);
+        Assert.AreEqual(0.0, jsonReader.Value);
+
+        jsonReader.Read();
+        Assert.AreEqual(JsonToken.Float, jsonReader.TokenType);
+        Assert.AreEqual(0.1, jsonReader.Value);
+
+        jsonReader.Read();
+        Assert.AreEqual(JsonToken.Float, jsonReader.TokenType);
+        Assert.AreEqual(1.0, jsonReader.Value);
+
+        jsonReader.Read();
+        Assert.AreEqual(JsonToken.Float, jsonReader.TokenType);
+        Assert.AreEqual(1.000001, jsonReader.Value);
+
+        jsonReader.Read();
+        Assert.AreEqual(JsonToken.Float, jsonReader.TokenType);
+        Assert.AreEqual(1E-06, jsonReader.Value);
+
+        jsonReader.Read();
+        Assert.AreEqual(JsonToken.Float, jsonReader.TokenType);
+        Assert.AreEqual(4.94065645841247E-324, jsonReader.Value);
+
+        jsonReader.Read();
+        Assert.AreEqual(JsonToken.Float, jsonReader.TokenType);
+        Assert.AreEqual(double.PositiveInfinity, jsonReader.Value);
+
+        jsonReader.Read();
+        Assert.AreEqual(JsonToken.Float, jsonReader.TokenType);
+        Assert.AreEqual(double.NegativeInfinity, jsonReader.Value);
+
+        jsonReader.Read();
+        Assert.AreEqual(JsonToken.Float, jsonReader.TokenType);
+        Assert.AreEqual(double.NaN, jsonReader.Value);
+
+        jsonReader.Read();
+        Assert.AreEqual(JsonToken.Float, jsonReader.TokenType);
+        Assert.AreEqual(double.MaxValue, jsonReader.Value);
+
+        jsonReader.Read();
+        Assert.AreEqual(JsonToken.Float, jsonReader.TokenType);
+        Assert.AreEqual(double.MinValue, jsonReader.Value);
+
+        jsonReader.Read();
+        Assert.AreEqual(JsonToken.Float, jsonReader.TokenType);
+        Assert.AreEqual(double.PositiveInfinity, jsonReader.Value);
+
+        jsonReader.Read();
+        Assert.AreEqual(JsonToken.Float, jsonReader.TokenType);
+        Assert.AreEqual(double.NegativeInfinity, jsonReader.Value);
+
+        jsonReader.Read();
+        Assert.AreEqual(JsonToken.Float, jsonReader.TokenType);
+        Assert.AreEqual(double.NaN, jsonReader.Value);
+
+        jsonReader.Read();
+        Assert.AreEqual(JsonToken.EndArray, jsonReader.TokenType);
+      }
+    }
   }
 }

@@ -34,7 +34,7 @@ namespace Newtonsoft.Json
   /// Instructs the <see cref="JsonSerializer"/> how to serialize the object.
   /// </summary>
   [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = false)]
-  public sealed class JsonObjectAttribute : Attribute
+  public sealed class JsonObjectAttribute : JsonContainerAttribute
   {
     private MemberSerialization _memberSerialization = MemberSerialization.OptOut;
 
@@ -62,6 +62,15 @@ namespace Newtonsoft.Json
     public JsonObjectAttribute(MemberSerialization memberSerialization)
     {
       MemberSerialization = memberSerialization;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonObjectAttribute"/> class with the specified container Id.
+    /// </summary>
+    /// <param name="id">The container Id.</param>
+    public JsonObjectAttribute(string id)
+      : base(id)
+    {
     }
   }
 }

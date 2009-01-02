@@ -54,7 +54,7 @@ namespace Newtonsoft.Json.Linq
     /// Gets or sets the property value.
     /// </summary>
     /// <value>The property value.</value>
-    public JToken Value
+    public new JToken Value
     {
       [DebuggerStepThrough]
       get { return Last; }
@@ -107,13 +107,26 @@ namespace Newtonsoft.Json.Linq
     /// Initializes a new instance of the <see cref="JProperty"/> class.
     /// </summary>
     /// <param name="name">The property name.</param>
-    /// <param name="value">The property value.</param>
-    public JProperty(string name, object value)
+    /// <param name="content">The property content.</param>
+    public JProperty(string name, params object[] content)
+      : this(name, (object)content)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JProperty"/> class.
+    /// </summary>
+    /// <param name="name">The property name.</param>
+    /// <param name="content">The property content.</param>
+    public JProperty(string name, object content)
     {
       ValidationUtils.ArgumentNotNull(name, "name");
 
       _name = name;
-      Value = CreateFromContent(value);
+
+      Value = IsMultiContent(content)
+        ? new JArray(content)
+        : CreateFromContent(content);
     }
 
     internal override void ValidateObject(JToken o, JToken previous)
@@ -153,6 +166,33 @@ namespace Newtonsoft.Json.Linq
     internal override int GetDeepHashCode()
     {
       return _name.GetHashCode() ^ ((Value != null) ? Value.GetDeepHashCode() : 0);
+    }
+
+    /// <summary>
+    /// Loads an <see cref="JProperty"/> from a <see cref="JsonReader"/>. 
+    /// </summary>
+    /// <param name="reader">A <see cref="JsonReader"/> that will be read for the content of the <see cref="JProperty"/>.</param>
+    /// <returns>A <see cref="JProperty"/> that contains the JSON that was read from the specified <see cref="JsonReader"/>.</returns>
+    public static JProperty Load(JsonReader reader)
+    {
+      if (reader.TokenType == JsonToken.None)
+      {
+        if (!reader.Read())
+          throw new Exception("Error reading JProperty from JsonReader.");
+      }
+      if (reader.TokenType != JsonToken.PropertyName)
+        throw new Exception(
+          "Error reading JProperty from JsonReader. Current JsonReader item is not a property: {0}".FormatWith(
+            CultureInfo.InvariantCulture, reader.TokenType));
+
+      JProperty p = new JProperty((string)reader.Value);
+
+      if (!reader.Read())
+        throw new Exception("Error reading JProperty from JsonReader.");
+
+      p.ReadContentFrom(reader);
+
+      return p;
     }
   }
 }

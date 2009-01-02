@@ -38,7 +38,7 @@ using Newtonsoft.Json.Converters;
 namespace Newtonsoft.Json
 {
   /// <summary>
-  /// Provides methods for converting between common language runtime types and JavaScript types.
+  /// Provides methods for converting between common language runtime types and JSON types.
   /// </summary>
   public static class JsonConvert
   {
@@ -255,7 +255,7 @@ namespace Newtonsoft.Json
     /// <returns>A Json string representation of the <see cref="Single"/>.</returns>
     public static string ToString(float value)
     {
-      return value.ToString("R", CultureInfo.InvariantCulture);
+      return EnsureDecimalPlace(value, value.ToString("R", CultureInfo.InvariantCulture));
     }
 
     /// <summary>
@@ -265,7 +265,15 @@ namespace Newtonsoft.Json
     /// <returns>A Json string representation of the <see cref="Double"/>.</returns>
     public static string ToString(double value)
     {
-      return value.ToString("R", CultureInfo.InvariantCulture);
+      return EnsureDecimalPlace(value, value.ToString("R", CultureInfo.InvariantCulture));
+    }
+
+    private static string EnsureDecimalPlace(double value, string text)
+    {
+      if (double.IsNaN(value) || double.IsInfinity(value) || text.IndexOf('.') != -1 || text.IndexOf('E') != -1)
+        return text;
+
+      return text + ".0";
     }
 
     /// <summary>

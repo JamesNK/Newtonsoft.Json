@@ -13,14 +13,22 @@ namespace Newtonsoft.Json.Linq
   {
     private JContainer _token;
     private JContainer _parent;
+    // used when writer is writing single value and the value has no containing parent
+    private JValue _value;
 
     /// <summary>
     /// Gets the token being writen.
     /// </summary>
     /// <value>The token being writen.</value>
-    public JContainer Token
+    public JToken Token
     {
-      get { return _token; }
+      get
+      {
+        if (_token != null)
+          return _token;
+
+        return _value;
+      }
     }
 
     /// <summary>
@@ -133,10 +141,17 @@ namespace Newtonsoft.Json.Linq
 
     private void AddValue(JValue value, JsonToken token)
     {
-      _parent.Add(value);
+      if (_parent != null)
+      {
+        _parent.Add(value);
 
-      if (_parent.Type == JsonTokenType.Property)
-        _parent = _parent.Parent;
+        if (_parent.Type == JsonTokenType.Property)
+          _parent = _parent.Parent;
+      }
+      else
+      {
+        _value = value;
+      }
     }
 
     #region WriteValue methods

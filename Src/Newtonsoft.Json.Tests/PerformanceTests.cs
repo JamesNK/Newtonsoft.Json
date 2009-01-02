@@ -20,7 +20,7 @@ namespace Newtonsoft.Json.Tests
   /// </summary>
   public class PerformanceTests : TestFixtureBase
   {
-    private int Iterations = 5000;
+    private int Iterations = 100;
 
     public enum SerializeMethod
     {

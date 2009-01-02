@@ -53,7 +53,10 @@
     <Compile Include="Converters\JsonDateTimeSerializationMode.cs" />
     <Compile Include="Converters\XmlNodeConverter.cs" />
     <Compile Include="Converters\HtmlColorConverter.cs" />
+    <Compile Include="DateTimeOffset.cs" />
     <Compile Include="DefaultValueHandling.cs" />
+    <Compile Include="JsonArrayAttribute.cs" />
+    <Compile Include="JsonContainerAttribute.cs" />
     <Compile Include="JsonConvert.cs" />
     <Compile Include="JsonConverter.cs" />
     <Compile Include="JsonConverterAttribute.cs" />
@@ -70,6 +73,7 @@
     <Compile Include="JsonTextReader.cs" />
     <Compile Include="JsonTextWriter.cs" />
     <Compile Include="JsonToken.cs" />
+    <Compile Include="JsonValidatingReader.cs" />
     <Compile Include="JsonWriter.cs" />
     <Compile Include="JsonWriterException.cs" />
     <Compile Include="Linq\Extensions.cs" />
@@ -86,8 +90,6 @@
     <Compile Include="Linq\JToken.cs" />
     <Compile Include="Linq\JTokenEqualityComparer.cs" />
     <Compile Include="Linq\JValue.cs" />
-    <Compile Include="MemberMapping.cs" />
-    <Compile Include="MemberMappingCollection.cs" />
     <Compile Include="MemberSerialization.cs" />
     <Compile Include="MissingMemberHandling.cs" />
     <Compile Include="NullValueHandling.cs" />
@@ -100,6 +102,9 @@
     <Compile Include="Utilities\ConvertUtils.cs" />
     <Compile Include="Utilities\DateTimeUtils.cs" />
     <Compile Include="Utilities\DictionaryWrapper.cs" />
+    <Compile Include="Utilities\EnumUtils.cs" />
+    <Compile Include="Utilities\EnumValue.cs" />
+    <Compile Include="Utilities\EnumValues.cs" />
     <Compile Include="Utilities\JavaScriptUtils.cs" />
     <Compile Include="Utilities\ListWrapper.cs" />
     <Compile Include="Utilities\MathUtils.cs" />
@@ -107,6 +112,25 @@
     <Compile Include="Utilities\ReflectionUtils.cs" />
     <Compile Include="Utilities\StringUtils.cs" />
     <Compile Include="Utilities\ValidationUtils.cs" />
+    <Compile Include="Schema\Extensions.cs" />
+    <Compile Include="Schema\JsonSchemaException.cs" />
+    <Compile Include="Schema\JsonSchemaModel.cs" />
+    <Compile Include="Schema\JsonSchemaModelBuilder.cs" />
+    <Compile Include="Schema\JsonSchemaNodeCollection.cs" />
+    <Compile Include="Schema\JsonSchemaNode.cs" />
+    <Compile Include="Schema\JsonSchemaWriter.cs" />
+    <Compile Include="Schema\UndefinedSchemaIdHandling.cs" />
+    <Compile Include="Schema\ValidationEventArgs.cs" />
+    <Compile Include="Schema\ValidationEventHandler.cs" />
+    <Compile Include="Schema\JsonSchema.cs" />
+    <Compile Include="Schema\JsonSchemaBuilder.cs" />
+    <Compile Include="Schema\JsonSchemaConstants.cs" />
+    <Compile Include="Schema\JsonSchemaGenerator.cs" />
+    <Compile Include="Schema\JsonSchemaResolver.cs" />
+    <Compile Include="Schema\JsonSchemaType.cs" />
+    <Compile Include="Serialization\JsonTypeReflector.cs" />
+    <Compile Include="Serialization\JsonMemberMapping.cs" />
+    <Compile Include="Serialization\JsonMemberMappingCollection.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

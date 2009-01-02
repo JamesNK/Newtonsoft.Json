@@ -30,6 +30,7 @@ using System.IO;
 using System.Collections;
 using System.Reflection;
 using System.ComponentModel;
+using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
 using System.Linq;
@@ -44,9 +45,7 @@ namespace Newtonsoft.Json
   /// </summary>
   public class JsonSerializer
   {
-    private static readonly Dictionary<ICustomAttributeProvider, Type> ConverterTypeCache = new Dictionary<ICustomAttributeProvider, Type>();
-    private static readonly Dictionary<Type, MemberMappingCollection> TypeMemberMappingsCache = new Dictionary<Type,MemberMappingCollection>();
-
+    #region Properties
     private ReferenceLoopHandling _referenceLoopHandling;
     private MissingMemberHandling _missingMemberHandling;
     private ObjectCreationHandling _objectCreationHandling;
@@ -145,6 +144,7 @@ namespace Newtonsoft.Json
         return _converters;
       }
     }
+    #endregion
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonSerializer"/> class.
@@ -244,7 +244,7 @@ namespace Newtonsoft.Json
       if (objectType == null)
         throw new ArgumentNullException("objectType");
 
-      converter = GetConverter(objectType, objectType);
+      converter = JsonTypeReflector.GetConverter(objectType, objectType);
       return (converter != null);
     }
 
@@ -282,7 +282,7 @@ namespace Newtonsoft.Json
             {
               value = CreateJToken(reader);
             }
-            else if (typeof(IDictionary).IsAssignableFrom(objectType) || ReflectionUtils.ImplementsGenericDefinition(objectType, typeof(IDictionary<,>)))
+            else if (CollectionUtils.IsDictionaryType(objectType))
             {
               if (existingValue == null)
                 value = CreateAndPopulateDictionary(reader, objectType);
@@ -363,110 +363,16 @@ namespace Newtonsoft.Json
       }
     }
 
-    private MemberMappingCollection GetMemberMappings(Type objectType)
+    protected virtual JsonMemberMappingCollection GetMemberMappings(Type objectType)
     {
-      MemberMappingCollection memberMappings;
+      ValidationUtils.ArgumentNotNull(objectType, "objectType");
 
-      if (TypeMemberMappingsCache.TryGetValue(objectType, out memberMappings))
-        return memberMappings;
-
-      memberMappings = CreateMemberMappings(objectType);
-      TypeMemberMappingsCache[objectType] = memberMappings;
-
-      return memberMappings;
-    }
-
-    private MemberMappingCollection CreateMemberMappings(Type objectType)
-    {
-      MemberSerialization memberSerialization = GetObjectMemberSerialization(objectType);
-
-      List<MemberInfo> members = GetSerializableMembers(objectType);
-      if (members == null)
-        throw new JsonSerializationException("Null collection of seralizable members returned.");
-
-      MemberMappingCollection memberMappings = new MemberMappingCollection();
-
-      foreach (MemberInfo member in members)
-      {
-        JsonPropertyAttribute propertyAttribute = ReflectionUtils.GetAttribute<JsonPropertyAttribute>(member, true);
-        bool hasIgnoreAttribute = member.IsDefined(typeof(JsonIgnoreAttribute), true);
-
-        string mappedName = (propertyAttribute != null && propertyAttribute.PropertyName != null)
-         ? propertyAttribute.PropertyName
-         : member.Name;
-
-        bool ignored = (hasIgnoreAttribute
-          || (memberSerialization == MemberSerialization.OptIn && propertyAttribute == null));
-
-        bool readable = ReflectionUtils.CanReadMemberValue(member);
-        bool writable = ReflectionUtils.CanSetMemberValue(member);
-
-        JsonConverter memberConverter = GetConverter(member, ReflectionUtils.GetMemberUnderlyingType(member));
-
-        DefaultValueAttribute defaultValueAttribute = ReflectionUtils.GetAttribute<DefaultValueAttribute>(member, true);
-        object defaultValue = (defaultValueAttribute != null) ? defaultValueAttribute.Value : null;
-
-        MemberMapping memberMapping = new MemberMapping(mappedName, member, ignored, readable, writable, memberConverter, defaultValue);
-
-        memberMappings.AddMapping(memberMapping);
-      }
-
-      return memberMappings;
-    }
-
-    /// <summary>
-    /// Gets the serializable members for the given <see cref="Type"/>.
-    /// </summary>
-    /// <param name="objectType">The object <see cref="Type"/> to get seralizable members for.</param>
-    /// <returns>Seralizable members for the given type.</returns>
-    protected virtual List<MemberInfo> GetSerializableMembers(Type objectType)
-    {
-      return ReflectionUtils.GetFieldsAndProperties(objectType, BindingFlags.Public | BindingFlags.Instance);
-    }
-
-    private static MemberSerialization GetObjectMemberSerialization(Type objectType)
-    {
-      JsonObjectAttribute objectAttribute = ReflectionUtils.GetAttribute<JsonObjectAttribute>(objectType, true);
-
-      if (objectAttribute == null)
-        return MemberSerialization.OptOut;
-      else
-        return objectAttribute.MemberSerialization;
-    }
-
-    private JsonConverter GetConverter(ICustomAttributeProvider attributeProvider, Type targetConvertedType)
-    {
-      Type converterType;
-
-      if (!ConverterTypeCache.TryGetValue(attributeProvider, out converterType))
-      {
-        JsonConverterAttribute converterAttribute = ReflectionUtils.GetAttribute<JsonConverterAttribute>(attributeProvider, true);
-        converterType = (converterAttribute != null)
-          ? converterAttribute.ConverterType
-          : null;
-
-        ConverterTypeCache[attributeProvider] = converterType;
-      }
-
-      if (converterType != null)
-      {
-        JsonConverter memberConverter = JsonConverterAttribute.CreateJsonConverterInstance(converterType);
-
-        if (!memberConverter.CanConvert(targetConvertedType))
-          throw new JsonSerializationException("JsonConverter {0} on {1} is not compatible with member type {2}.".FormatWith(CultureInfo.InvariantCulture, memberConverter.GetType().Name, attributeProvider, targetConvertedType.Name));
-
-        return memberConverter;
-      }
-
-      return null;
+      return JsonTypeReflector.GetMemberMappings(objectType);
     }
 
     private void SetObjectMember(JsonReader reader, object target, Type targetType, string memberName)
     {
-      if (!reader.Read())
-        throw new JsonSerializationException("Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
-
-      MemberMappingCollection memberMappings = GetMemberMappings(targetType);
+      JsonMemberMappingCollection memberMappings = GetMemberMappings(targetType);
       Type memberType;
       object value;
 
@@ -474,7 +380,7 @@ namespace Newtonsoft.Json
       // otherwise test if target is a dictionary and assign value with the key if it is
       if (memberMappings.Contains(memberName))
       {
-        MemberMapping memberMapping = memberMappings[memberName];
+        JsonMemberMapping memberMapping = memberMappings[memberName];
 
         if (memberMapping.Ignored)
         {
@@ -503,7 +409,7 @@ namespace Newtonsoft.Json
           return;
         }
 
-        value = CreateObject(reader, memberType, (useExistingValue) ? currentValue : null, GetConverter(memberMapping.Member, memberType));
+        value = CreateObject(reader, memberType, (useExistingValue) ? currentValue : null, JsonTypeReflector.GetConverter(memberMapping.Member, memberType));
 
         if (_nullValueHandling == NullValueHandling.Ignore && value == null)
           return;
@@ -603,7 +509,7 @@ namespace Newtonsoft.Json
 
         // create a dictionary to put retrieved values into
         IDictionary<ParameterInfo, object> constructorParameters = c.GetParameters().ToDictionary(p => p, p => (object)null);
-        MemberMappingCollection mappings = GetMemberMappings(objectType);
+        JsonMemberMappingCollection mappings = GetMemberMappings(objectType);
 
         bool exit = false;
         while (!exit && reader.Read())
@@ -616,7 +522,7 @@ namespace Newtonsoft.Json
                 throw new JsonSerializationException("Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
 
               ParameterInfo matchingConstructorParameter = constructorParameters.ForgivingCaseSensitiveFind(kv => kv.Key.Name, memberName).Key;
-              MemberMapping mapping;
+              JsonMemberMapping mapping;
 
               if (matchingConstructorParameter != null && mappings.TryGetMapping(memberName, out mapping) && !mapping.Ignored)
               {
@@ -644,6 +550,15 @@ namespace Newtonsoft.Json
 
     private object PopulateObject(object newObject, JsonReader reader, Type objectType)
     {
+      JsonMemberMappingCollection memberMappings = GetMemberMappings(objectType);
+      Dictionary<string, bool> requiredMappings =
+        memberMappings.Where(m => m.Required).ToDictionary(m => m.MappingName, m => false);
+      //List<RequiredMemberContext> requiredMappingContexts =
+      //  memberMappings.Where(m => m.Required).Select(m => new RequiredMemberContext(m.MappingName, false)).ToList();
+
+      //ObjectContext context = new ObjectContext(newObject, requiredMappingContexts);
+      //DeserializeStack.Add(context);
+
       while (reader.Read())
       {
         switch (reader.TokenType)
@@ -651,9 +566,25 @@ namespace Newtonsoft.Json
           case JsonToken.PropertyName:
             string memberName = reader.Value.ToString();
 
+            if (!reader.Read())
+              throw new JsonSerializationException("Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
+
+            if (reader.TokenType != JsonToken.Null)
+            {
+              if (requiredMappings.ContainsKey(memberName))
+                requiredMappings[memberName] = true;
+            }
+
             SetObjectMember(reader, newObject, objectType, memberName);
             break;
           case JsonToken.EndObject:
+            foreach (KeyValuePair<string, bool> requiredMapping in requiredMappings)
+            {
+              if (!requiredMapping.Value)
+                throw new JsonSerializationException("Required property '{0}' not found in JSON.".FormatWith(CultureInfo.InvariantCulture, requiredMapping.Key));
+            }
+            // TODO: move below, change to RemoveAt
+            //DeserializeStack.Remove(context);
             return newObject;
           default:
             throw new JsonSerializationException("Unexpected token when deserializing object: " + reader.TokenType);
@@ -772,7 +703,7 @@ namespace Newtonsoft.Json
       return false;
     }
 
-    private void WriteMemberInfoProperty(JsonWriter writer, object value, MemberMapping memberMapping)
+    private void WriteMemberInfoProperty(JsonWriter writer, object value, JsonMemberMapping memberMapping)
     {
       MemberInfo member = memberMapping.Member;
       string propertyName = memberMapping.MappingName;
@@ -819,7 +750,7 @@ namespace Newtonsoft.Json
       TypeConverter converter = TypeDescriptor.GetConverter(objectType);
 
       // use the objectType's TypeConverter if it has one and can convert to a string
-      if (converter != null && !(converter is ComponentConverter) && converter.GetType() != typeof(TypeConverter))
+      if (converter != null && !(converter is ComponentConverter) && (converter.GetType() != typeof(TypeConverter) || value is Type))
       {
         if (converter.CanConvertTo(typeof(string)))
         {
@@ -828,7 +759,7 @@ namespace Newtonsoft.Json
         }
       }
 #else
-      if (value is Guid)
+      if (value is Guid || value is Type)
       {
         writer.WriteValue(value.ToString());
         return;
@@ -839,9 +770,9 @@ namespace Newtonsoft.Json
 
       writer.WriteStartObject();
 
-      MemberMappingCollection memberMappings = GetMemberMappings(objectType);
+      JsonMemberMappingCollection memberMappings = GetMemberMappings(objectType);
 
-      foreach (MemberMapping memberMapping in memberMappings)
+      foreach (JsonMemberMapping memberMapping in memberMappings)
       {
         if (!memberMapping.Ignored && memberMapping.Readable)
           WriteMemberInfoProperty(writer, value, memberMapping);
@@ -849,7 +780,7 @@ namespace Newtonsoft.Json
 
       writer.WriteEndObject();
 
-      writer.SerializeStack.Remove(value);
+      writer.SerializeStack.RemoveAt(writer.SerializeStack.Count - 1);
     }
 
     private void SerializeEnumerable(JsonWriter writer, IEnumerable values)

@@ -11,7 +11,7 @@ namespace Newtonsoft.Json.Linq
   /// </summary>
   public class JsonTokenReader : JsonReader
   {
-    private JToken _root;
+    private readonly JToken _root;
     private JToken _parent;
     private JToken _current;
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json.Tests.TestObjects;
 using NUnit.Framework;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Converters;
@@ -235,7 +236,7 @@ Parameter name: arrayIndex")]
     [Test]
     public void FromObjectRaw()
     {
-      JsonSerializerTest.PersonRaw raw = new JsonSerializerTest.PersonRaw
+      PersonRaw raw = new PersonRaw
       {
         FirstName = "FirstNameValue",
         RawContent = new JsonRaw("[1,2,3,4,5]"),
@@ -253,7 +254,7 @@ Parameter name: arrayIndex")]
     [Test]
     public void JsonTokenReader()
     {
-      JsonSerializerTest.PersonRaw raw = new JsonSerializerTest.PersonRaw
+      PersonRaw raw = new PersonRaw
       {
         FirstName = "FirstNameValue",
         RawContent = new JsonRaw("[1,2,3,4,5]"),
@@ -294,7 +295,7 @@ Parameter name: arrayIndex")]
     [Test]
     public void DeserializeFromRaw()
     {
-      JsonSerializerTest.PersonRaw raw = new JsonSerializerTest.PersonRaw
+      PersonRaw raw = new PersonRaw
       {
         FirstName = "FirstNameValue",
         RawContent = new JsonRaw("[1,2,3,4,5]"),
@@ -305,7 +306,7 @@ Parameter name: arrayIndex")]
 
       JsonReader reader = new JsonTokenReader(o);
       JsonSerializer serializer = new JsonSerializer();
-      raw = (JsonSerializerTest.PersonRaw)serializer.Deserialize(reader, typeof(JsonSerializerTest.PersonRaw));
+      raw = (PersonRaw)serializer.Deserialize(reader, typeof(PersonRaw));
 
       Assert.AreEqual("FirstNameValue", raw.FirstName);
       Assert.AreEqual("LastNameValue", raw.LastName);

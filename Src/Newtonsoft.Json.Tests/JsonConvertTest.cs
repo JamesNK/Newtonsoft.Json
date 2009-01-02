@@ -274,5 +274,22 @@ now brown cow?", '"', true);
       object u = JsonConvert.DeserializeObject<object>("undefined");
       Assert.AreEqual(null, u);
     }
+
+    [Test]
+    public void FloatToString()
+    {
+      Assert.AreEqual("1.1", JsonConvert.ToString(1.1));
+      Assert.AreEqual("1.11", JsonConvert.ToString(1.11));
+      Assert.AreEqual("1.111", JsonConvert.ToString(1.111));
+      Assert.AreEqual("1.1111", JsonConvert.ToString(1.1111));
+      Assert.AreEqual("1.11111", JsonConvert.ToString(1.11111));
+      Assert.AreEqual("1.111111", JsonConvert.ToString(1.111111));
+      Assert.AreEqual("1.0", JsonConvert.ToString(1.0));
+      Assert.AreEqual("1.01", JsonConvert.ToString(1.01));
+      Assert.AreEqual("1.001", JsonConvert.ToString(1.001));
+      Assert.AreEqual(JsonConvert.PositiveInfinity, JsonConvert.ToString(double.PositiveInfinity));
+      Assert.AreEqual(JsonConvert.NegativeInfinity, JsonConvert.ToString(double.NegativeInfinity));
+      Assert.AreEqual(JsonConvert.NaN, JsonConvert.ToString(double.NaN));
+    }
   }
 }

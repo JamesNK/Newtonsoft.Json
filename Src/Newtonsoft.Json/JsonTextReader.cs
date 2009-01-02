@@ -381,12 +381,16 @@ namespace Newtonsoft.Json
 
     private bool ParseProperty()
     {
+      char quoteChar;
+
       if (ValidIdentifierChar(_currentChar))
       {
+        quoteChar = '\0';
         ParseUnquotedProperty();
       }
       else if (_currentChar == '"' || _currentChar == '\'')
       {
+        quoteChar = _currentChar;
         ParseQuotedProperty(_currentChar);
       }
       else
@@ -401,6 +405,7 @@ namespace Newtonsoft.Json
       }
 
       SetToken(JsonToken.PropertyName, _buffer.ToString());
+      QuoteChar = quoteChar;
       _buffer.Position = 0;
 
       return true;

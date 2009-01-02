@@ -39,7 +39,7 @@ namespace Newtonsoft.Json.Tests
     [Test]
     public void ValueFormatting()
     {
-      JContainer root;
+      JToken root;
       using (JsonTokenWriter jsonWriter = new JsonTokenWriter())
       {
         jsonWriter.WriteStartArray();

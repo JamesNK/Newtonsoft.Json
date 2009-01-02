@@ -29,11 +29,47 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using Newtonsoft.Json.Linq;
+using System.IO;
 
 namespace Newtonsoft.Json.Tests.Linq
 {
   public class JTokenTests : TestFixtureBase
   {
+    [Test]
+    public void ReadFrom()
+    {
+      JObject o = (JObject)JToken.ReadFrom(new JsonTextReader(new StringReader("{'pie':true}")));
+      Assert.AreEqual(true, (bool)o["pie"]);
+
+      JArray a = (JArray)JToken.ReadFrom(new JsonTextReader(new StringReader("[1,2,3]")));
+      Assert.AreEqual(1, (int)a[0]);
+      Assert.AreEqual(2, (int)a[1]);
+      Assert.AreEqual(3, (int)a[2]);
+
+      JsonReader reader = new JsonTextReader(new StringReader("{'pie':true}"));
+      reader.Read();
+      reader.Read();
+
+      JProperty p = (JProperty)JToken.ReadFrom(reader);
+      Assert.AreEqual("pie", p.Name);
+      Assert.AreEqual(true, (bool)p.Value);
+
+      JConstructor c = (JConstructor)JToken.ReadFrom(new JsonTextReader(new StringReader("new Date(1)")));
+      Assert.AreEqual("Date", c.Name);
+      Assert.IsTrue(JToken.DeepEquals(new JValue(1), c.Values().ElementAt(0)));
+
+      JValue v;
+      
+      v = (JValue)JToken.ReadFrom(new JsonTextReader(new StringReader(@"""stringvalue""")));
+      Assert.AreEqual("stringvalue", (string)v);
+
+      v = (JValue)JToken.ReadFrom(new JsonTextReader(new StringReader(@"1")));
+      Assert.AreEqual(1, (int)v);
+
+      v = (JValue)JToken.ReadFrom(new JsonTextReader(new StringReader(@"1.1")));
+      Assert.AreEqual(1.1, (double)v);
+    }
+
     [Test]
     public void Parent()
     {

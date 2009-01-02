@@ -96,7 +96,7 @@ namespace Newtonsoft.Json.Linq
     /// Loads an <see cref="JArray"/> from a <see cref="JsonReader"/>. 
     /// </summary>
     /// <param name="reader">A <see cref="JsonReader"/> that will be read for the content of the <see cref="JArray"/>.</param>
-    /// <returns>A <see cref="JArray"/> that contains the XML that was read from the specified <see cref="JsonReader"/>.</returns>
+    /// <returns>A <see cref="JArray"/> that contains the JSON that was read from the specified <see cref="JsonReader"/>.</returns>
     public static JArray Load(JsonReader reader)
     {
       if (reader.TokenType == JsonToken.None)
@@ -105,14 +105,13 @@ namespace Newtonsoft.Json.Linq
           throw new Exception("Error reading JArray from JsonReader.");
       }
       if (reader.TokenType != JsonToken.StartArray)
-      {
-        throw new Exception("Error reading JArray from JsonReader. Current JsonReader item is not an array: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
-      }
-      else
-      {
-        if (!reader.Read())
-          throw new Exception("Error reading JArray from JsonReader.");
-      }
+        throw new Exception(
+          "Error reading JArray from JsonReader. Current JsonReader item is not an array: {0}".FormatWith(
+            CultureInfo.InvariantCulture, reader.TokenType));
+
+      if (!reader.Read())
+        throw new Exception("Error reading JArray from JsonReader.");
+
 
       JArray a = new JArray();
       a.ReadContentFrom(reader);
@@ -145,7 +144,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="o">The object that will be used to create <see cref="JArray"/>.</param>
     /// <returns>A <see cref="JArray"/> with the values of the specified object</returns>
-    public static JArray FromObject(object o)
+    public static new JArray FromObject(object o)
     {
       JToken token = FromObjectInternal(o);
 
