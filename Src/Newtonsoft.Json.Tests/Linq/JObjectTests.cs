@@ -345,5 +345,20 @@ Parameter name: arrayIndex")]
       value = o.Value<bool?>("foo");
       Assert.AreEqual(null, value);
     }
+
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Invalid property identifier character: ]. Line 3, position 9.")]
+    public void Blog()
+    {
+      JObject person = JObject.Parse(@"{
+        ""name"": ""James"",
+        ]!#$THIS IS: BAD JSON![{}}}}]
+      }");
+
+      // Invalid property identifier character: ]. Line 3, position 9.
+
+      person = person;
+    }
+
   }
 }

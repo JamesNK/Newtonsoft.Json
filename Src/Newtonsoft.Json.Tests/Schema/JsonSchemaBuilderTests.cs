@@ -39,19 +39,20 @@ namespace Newtonsoft.Json.Tests.Schema
     [Test]
     public void Simple()
     {
-      string json = @"{
-  ""description"":""A person"",
-  ""type"":""object"",
+      string json = @"
+{
+  ""description"": ""A person"",
+  ""type"": ""object"",
   ""properties"":
   {
-    ""name"":{""type"":""string""},
-    ""hobbies"":
-    {
-      ""type"":""array"",
+    ""name"": {""type"":""string""},
+    ""hobbies"": {
+      ""type"": ""array"",
       ""items"": {""type"":""string""}
     }
   }
-}";
+}
+";
 
       JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
       JsonSchema schema = builder.Parse(new JsonTextReader(new StringReader(json)));

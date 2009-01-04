@@ -106,5 +106,37 @@ namespace Newtonsoft.Json.Tests.Schema
       Assert.AreEqual("Invalid type. Expected String but got Integer. Line 1, position 9.", errors[0]);
       Assert.AreEqual(1, errors.Count);
     }
+
+    [Test]
+    public void Blog()
+    {
+      string schemaJson = @"
+{
+  ""description"": ""A person schema"",
+  ""type"": ""object"",
+  ""properties"":
+  {
+    ""name"": {""type"":""string""},
+    ""hobbies"": {
+      ""type"": ""array"",
+      ""items"": {""type"":""string""}
+    }
+  }
+}
+";
+
+      JsonSchema schema = JsonSchema.Parse(schemaJson);
+
+      JObject person = JObject.Parse(@"{
+        ""name"": ""James"",
+        ""hobbies"": ["".NET"", ""Blogging"", ""Reading"", ""Xbox"", ""LOLCATS""]
+      }");
+
+      bool valid = person.IsValid(schema);
+      // true
+
+      valid = valid;
+    }
+
   }
 }
