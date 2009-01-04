@@ -9,7 +9,7 @@ namespace Newtonsoft.Json.Linq
   /// <summary>
   /// Represents a reader that provides fast, non-cached, forward-only access to serialized Json data.
   /// </summary>
-  public class JsonTokenReader : JsonReader
+  public class JsonTokenReader : JsonReader, IJsonLineInfo
   {
     private readonly JToken _root;
     private JToken _parent;
@@ -73,6 +73,11 @@ namespace Newtonsoft.Json.Linq
     {
       //CurrentState = State.Finished;
       return false;
+    }
+
+    private bool IsEndElement
+    {
+      get { return (_current == _parent); }
     }
 
     private JsonToken? GetEndToken(JContainer c)
@@ -169,6 +174,45 @@ namespace Newtonsoft.Json.Linq
           break;
         default:
           throw MiscellaneousUtils.CreateArgumentOutOfRangeException("Type", token.Type, "Unexpected JsonTokenType.");
+      }
+    }
+
+    bool IJsonLineInfo.HasLineInfo()
+    {
+      if (CurrentState == State.Start)
+        return false;
+
+      IJsonLineInfo info = IsEndElement ? null : _current;
+      return (info != null && info.HasLineInfo());
+    }
+
+    int IJsonLineInfo.LineNumber
+    {
+      get
+      {
+        if (CurrentState == State.Start)
+          return 0;
+
+        IJsonLineInfo info = IsEndElement ? null : _current;
+        if (info != null)
+          return info.LineNumber;
+        
+        return 0;
+      }
+    }
+
+    int IJsonLineInfo.LinePosition
+    {
+      get
+      {
+        if (CurrentState == State.Start)
+          return 0;
+
+        IJsonLineInfo info = IsEndElement ? null : _current;
+        if (info != null)
+          return info.LinePosition;
+
+        return 0;
       }
     }
   }

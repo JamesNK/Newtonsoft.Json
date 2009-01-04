@@ -184,7 +184,7 @@ namespace Newtonsoft.Json.Tests
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.String, reader.TokenType);
-      Assert.AreEqual("String 'pie' is less than minimum length of 5.", validationEventArgs.Message);
+      Assert.AreEqual("String 'pie' is less than minimum length of 5. Line 1, position 5.", validationEventArgs.Message);
 
       Assert.IsNotNull(validationEventArgs);
     }
@@ -208,7 +208,7 @@ namespace Newtonsoft.Json.Tests
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.String, reader.TokenType);
-      Assert.AreEqual("String 'The quick brown fox jumps over the lazy dog.' exceeds maximum length of 10.", validationEventArgs.Message);
+      Assert.AreEqual("String 'The quick brown fox jumps over the lazy dog.' exceeds maximum length of 10. Line 1, position 46.", validationEventArgs.Message);
 
       Assert.IsNotNull(validationEventArgs);
     }
@@ -245,7 +245,7 @@ namespace Newtonsoft.Json.Tests
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.String, reader.TokenType);
-      Assert.AreEqual(@"Value ""THREE"" is not defined in enum.", validationEventArgs.Message);
+      Assert.AreEqual(@"Value ""THREE"" is not defined in enum. Line 1, position 20.", validationEventArgs.Message);
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
@@ -271,7 +271,7 @@ namespace Newtonsoft.Json.Tests
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.String, reader.TokenType);
-      Assert.AreEqual("String 'The quick brown fox jumps over the lazy dog.' does not match regex pattern 'foo'.", validationEventArgs.Message);
+      Assert.AreEqual("String 'The quick brown fox jumps over the lazy dog.' does not match regex pattern 'foo'. Line 1, position 46.", validationEventArgs.Message);
 
       Assert.IsNotNull(validationEventArgs);
     }
@@ -294,13 +294,13 @@ namespace Newtonsoft.Json.Tests
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Integer, reader.TokenType);
-      Assert.AreEqual("Integer 10 exceeds maximum value of 5.", validationEventArgs.Message);
+      Assert.AreEqual("Integer 10 exceeds maximum value of 5. Line 1, position 2.", validationEventArgs.Message);
 
       Assert.IsNotNull(validationEventArgs);
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSchemaException), ExpectedMessage = "Integer 10 exceeds maximum value of 5.")]
+    [ExpectedException(typeof(JsonSchemaException), ExpectedMessage = "Integer 10 exceeds maximum value of 5. Line 1, position 2.")]
     public void ThrowExceptionWhenNoValidationEventHandler()
     {
       string schemaJson = @"{
@@ -332,7 +332,7 @@ namespace Newtonsoft.Json.Tests
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Integer, reader.TokenType);
-      Assert.AreEqual("Integer 1 is less than minimum value of 5.", validationEventArgs.Message);
+      Assert.AreEqual("Integer 1 is less than minimum value of 5. Line 1, position 1.", validationEventArgs.Message);
 
       Assert.IsNotNull(validationEventArgs);
     }
@@ -369,7 +369,7 @@ namespace Newtonsoft.Json.Tests
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Integer, reader.TokenType);
-      Assert.AreEqual(@"Value 3 is not defined in enum.", validationEventArgs.Message);
+      Assert.AreEqual(@"Value 3 is not defined in enum. Line 1, position 7.", validationEventArgs.Message);
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
@@ -395,7 +395,7 @@ namespace Newtonsoft.Json.Tests
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Float, reader.TokenType);
-      Assert.AreEqual("Float 10.0 exceeds maximum value of 5.", validationEventArgs.Message);
+      Assert.AreEqual("Float 10.0 exceeds maximum value of 5. Line 1, position 4.", validationEventArgs.Message);
 
       Assert.IsNotNull(validationEventArgs);
     }
@@ -418,7 +418,7 @@ namespace Newtonsoft.Json.Tests
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Float, reader.TokenType);
-      Assert.AreEqual("Float 1.1 is less than minimum value of 5.", validationEventArgs.Message);
+      Assert.AreEqual("Float 1.1 is less than minimum value of 5. Line 1, position 3.", validationEventArgs.Message);
 
       Assert.IsNotNull(validationEventArgs);
     }
@@ -455,7 +455,7 @@ namespace Newtonsoft.Json.Tests
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Float, reader.TokenType);
-      Assert.AreEqual(@"Value 3.0 is not defined in enum.", validationEventArgs.Message);
+      Assert.AreEqual(@"Value 3.0 is not defined in enum. Line 1, position 13.", validationEventArgs.Message);
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
@@ -494,7 +494,7 @@ namespace Newtonsoft.Json.Tests
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Float, reader.TokenType);
-      Assert.AreEqual(@"Float 4.001 exceeds the maximum allowed number decimal places of 2.", validationEventArgs.Message);
+      Assert.AreEqual(@"Float 4.001 exceeds the maximum allowed number decimal places of 2. Line 1, position 15.", validationEventArgs.Message);
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
@@ -527,7 +527,7 @@ namespace Newtonsoft.Json.Tests
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Null, reader.TokenType);
-      Assert.AreEqual(@"Value null is not defined in enum.", validationEventArgs.Message);
+      Assert.AreEqual(@"Value null is not defined in enum. Line 1, position 6.", validationEventArgs.Message);
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
@@ -564,7 +564,7 @@ namespace Newtonsoft.Json.Tests
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Boolean, reader.TokenType);
-      Assert.AreEqual(@"Value false is not defined in enum.", validationEventArgs.Message);
+      Assert.AreEqual(@"Value false is not defined in enum. Line 1, position 12.", validationEventArgs.Message);
       
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
@@ -603,7 +603,7 @@ namespace Newtonsoft.Json.Tests
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
-      Assert.AreEqual("Array item count 4 exceeds maximum count of 3.", validationEventArgs.Message);
+      Assert.AreEqual("Array item count 4 exceeds maximum count of 3. Line 1, position 21.", validationEventArgs.Message);
 
       Assert.IsNotNull(validationEventArgs);
     }
@@ -633,7 +633,7 @@ namespace Newtonsoft.Json.Tests
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
-      Assert.AreEqual("Array item count 1 is less than minimum count of 2.", validationEventArgs.Message);
+      Assert.AreEqual("Array item count 1 is less than minimum count of 2. Line 1, position 6.", validationEventArgs.Message);
 
       Assert.IsNotNull(validationEventArgs);
     }
@@ -658,7 +658,7 @@ namespace Newtonsoft.Json.Tests
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
-      Assert.AreEqual(@"Invalid type. Expected String but got Array.", validationEventArgs.Message);
+      Assert.AreEqual(@"Invalid type. Expected String but got Array. Line 1, position 1.", validationEventArgs.Message);
 
       Assert.IsNotNull(validationEventArgs);
     }
@@ -691,7 +691,7 @@ namespace Newtonsoft.Json.Tests
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Float, reader.TokenType);
-      Assert.AreEqual(@"Type Float is disallowed.", validationEventArgs.Message);
+      Assert.AreEqual(@"Type Float is disallowed. Line 1, position 11.", validationEventArgs.Message);
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
@@ -735,7 +735,7 @@ namespace Newtonsoft.Json.Tests
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
-      Assert.AreEqual("Non-optional properties are missing from object: hobbies, age", validationEventArgs.Message);
+      Assert.AreEqual("Non-optional properties are missing from object: hobbies, age. Line 1, position 16.", validationEventArgs.Message);
 
       Assert.IsNotNull(validationEventArgs);
     }
@@ -820,7 +820,7 @@ namespace Newtonsoft.Json.Tests
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Null, reader.TokenType);
       Assert.AreEqual(null, reader.Value);
-      Assert.AreEqual("Property 'additionalProperty1' has not been defined and schema does not allow additional properties.", validationEventArgs.Message);
+      Assert.AreEqual("Property 'additionalProperty1' has not been defined and the schema does not allow additional properties. Line 1, position 38.", validationEventArgs.Message);
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
@@ -829,7 +829,7 @@ namespace Newtonsoft.Json.Tests
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Null, reader.TokenType);
       Assert.AreEqual(null, reader.Value);
-      Assert.AreEqual("Property 'additionalProperty2' has not been defined and schema does not allow additional properties.", validationEventArgs.Message);
+      Assert.AreEqual("Property 'additionalProperty2' has not been defined and the schema does not allow additional properties. Line 1, position 65.", validationEventArgs.Message);
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
@@ -861,7 +861,7 @@ namespace Newtonsoft.Json.Tests
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.String, reader.TokenType);
       Assert.AreEqual(1, errors.Count);
-      Assert.AreEqual("String 'The quick brown fox jumps over the lazy dog.' exceeds maximum length of 9.", errors[0]);
+      Assert.AreEqual("String 'The quick brown fox jumps over the lazy dog.' exceeds maximum length of 9. Line 1, position 46.", errors[0]);
 
       Assert.IsNotNull(validationEventArgs);
     }
@@ -933,7 +933,7 @@ namespace Newtonsoft.Json.Tests
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
       Assert.AreEqual("additional", reader.Value.ToString());
-      Assert.AreEqual("Property 'additional' has not been defined and schema does not allow additional properties.", validationEventArgs.Message);
+      Assert.AreEqual("Property 'additional' has not been defined and the schema does not allow additional properties. Line 1, position 62.", validationEventArgs.Message);
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.String, reader.TokenType);
@@ -942,7 +942,7 @@ namespace Newtonsoft.Json.Tests
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
       Assert.AreEqual("additional2", reader.Value.ToString());
-      Assert.AreEqual("Property 'additional2' has not been defined and schema does not allow additional properties.", validationEventArgs.Message);
+      Assert.AreEqual("Property 'additional2' has not been defined and the schema does not allow additional properties. Line 1, position 84.", validationEventArgs.Message);
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.String, reader.TokenType);
@@ -972,7 +972,7 @@ namespace Newtonsoft.Json.Tests
       Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
 
       Assert.AreEqual(1, errors.Count);
-      Assert.AreEqual("Non-optional properties are missing from object: secondproperty, firstproperty", errors[0]);
+      Assert.AreEqual("Non-optional properties are missing from object: secondproperty, firstproperty. Line 1, position 2.", errors[0]);
     }
 
     [Test]
@@ -997,15 +997,15 @@ namespace Newtonsoft.Json.Tests
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Integer, reader.TokenType);
-      Assert.AreEqual("Invalid type. Expected String but got Integer.", validationEventArgs.Message);
+      Assert.AreEqual("Invalid type. Expected String but got Integer. Line 1, position 3.", validationEventArgs.Message);
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.String, reader.TokenType);
-      Assert.AreEqual("Invalid type. Expected Integer but got String.", validationEventArgs.Message);
+      Assert.AreEqual("Invalid type. Expected Integer but got String. Line 1, position 7.", validationEventArgs.Message);
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Null, reader.TokenType);
-      Assert.AreEqual("Index 3 has not been defined and schema does not allow additional items.", validationEventArgs.Message);
+      Assert.AreEqual("Index 3 has not been defined and the schema does not allow additional items. Line 1, position 14.", validationEventArgs.Message);
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
@@ -1103,7 +1103,7 @@ namespace Newtonsoft.Json.Tests
       Assert.AreEqual(JsonToken.String, reader.TokenType);
       Assert.AreEqual("secasecasecasecaseca", reader.Value.ToString());
       Assert.AreEqual(1, errors.Count);
-      Assert.AreEqual("String 'secasecasecasecaseca' exceeds maximum length of 10.", errors[0]);
+      Assert.AreEqual("String 'secasecasecasecaseca' exceeds maximum length of 10. Line 3, position 41.", errors[0]);
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
@@ -1123,9 +1123,9 @@ namespace Newtonsoft.Json.Tests
       Assert.AreEqual(JsonToken.String, reader.TokenType);
       Assert.AreEqual("aaa", reader.Value.ToString());
       Assert.AreEqual(4, errors.Count);
-      Assert.AreEqual("String 'aaa' is less than minimum length of 7.", errors[1]);
-      Assert.AreEqual("String 'aaa' does not match regex pattern 'hi'.", errors[2]);
-      Assert.AreEqual("String 'aaa' does not match regex pattern 'hi2u'.", errors[3]);
+      Assert.AreEqual("String 'aaa' is less than minimum length of 7. Line 5, position 39.", errors[1]);
+      Assert.AreEqual("String 'aaa' does not match regex pattern 'hi'. Line 5, position 39.", errors[2]);
+      Assert.AreEqual("String 'aaa' does not match regex pattern 'hi2u'. Line 5, position 39.", errors[3]);
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
@@ -1136,7 +1136,7 @@ namespace Newtonsoft.Json.Tests
       Assert.AreEqual(JsonToken.String, reader.TokenType);
       Assert.AreEqual("three", reader.Value.ToString());
       Assert.AreEqual(5, errors.Count);
-      Assert.AreEqual("String 'three' is less than minimum length of 6.", errors[4]);
+      Assert.AreEqual("String 'three' is less than minimum length of 6. Line 6, position 24.", errors[4]);
       
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.EndObject, reader.TokenType);

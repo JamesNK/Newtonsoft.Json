@@ -29,6 +29,7 @@ using System.Text;
 using NUnit.Framework;
 using Newtonsoft.Json;
 using System.IO;
+using System.Xml;
 
 namespace Newtonsoft.Json.Tests
 {
@@ -80,43 +81,63 @@ namespace Newtonsoft.Json.Tests
 
       StringReader sr = new StringReader(input);
 
-      using (JsonReader jsonReader = new JsonTextReader(sr))
+      using (JsonTextReader jsonReader = new JsonTextReader(sr))
       {
         Assert.AreEqual(jsonReader.TokenType, JsonToken.None);
+        Assert.AreEqual(0, jsonReader.LineNumber);
+        Assert.AreEqual(0, jsonReader.LinePosition);
 
         jsonReader.Read();
         Assert.AreEqual(jsonReader.TokenType, JsonToken.StartObject);
+        Assert.AreEqual(1, jsonReader.LineNumber);
+        Assert.AreEqual(1, jsonReader.LinePosition);
 
         jsonReader.Read();
         Assert.AreEqual(jsonReader.TokenType, JsonToken.PropertyName);
         Assert.AreEqual(jsonReader.Value, "CPU");
+        Assert.AreEqual(2, jsonReader.LineNumber);
+        Assert.AreEqual(6, jsonReader.LinePosition);
 
         jsonReader.Read();
         Assert.AreEqual(jsonReader.TokenType, JsonToken.String);
         Assert.AreEqual(jsonReader.Value, "Intel");
+        Assert.AreEqual(2, jsonReader.LineNumber);
+        Assert.AreEqual(14, jsonReader.LinePosition);
 
         jsonReader.Read();
         Assert.AreEqual(jsonReader.TokenType, JsonToken.PropertyName);
         Assert.AreEqual(jsonReader.Value, "Drives");
+        Assert.AreEqual(3, jsonReader.LineNumber);
+        Assert.AreEqual(9, jsonReader.LinePosition);
 
         jsonReader.Read();
         Assert.AreEqual(jsonReader.TokenType, JsonToken.StartArray);
+        Assert.AreEqual(3, jsonReader.LineNumber);
+        Assert.AreEqual(11, jsonReader.LinePosition);
 
         jsonReader.Read();
         Assert.AreEqual(jsonReader.TokenType, JsonToken.String);
         Assert.AreEqual(jsonReader.Value, "DVD read/writer");
         Assert.AreEqual(jsonReader.QuoteChar, '\'');
+        Assert.AreEqual(4, jsonReader.LineNumber);
+        Assert.AreEqual(21, jsonReader.LinePosition);
 
         jsonReader.Read();
         Assert.AreEqual(jsonReader.TokenType, JsonToken.String);
         Assert.AreEqual(jsonReader.Value, "500 gigabyte hard drive");
         Assert.AreEqual(jsonReader.QuoteChar, '"');
+        Assert.AreEqual(5, jsonReader.LineNumber);
+        Assert.AreEqual(29, jsonReader.LinePosition);
 
         jsonReader.Read();
         Assert.AreEqual(jsonReader.TokenType, JsonToken.EndArray);
+        Assert.AreEqual(6, jsonReader.LineNumber);
+        Assert.AreEqual(3, jsonReader.LinePosition);
 
         jsonReader.Read();
         Assert.AreEqual(jsonReader.TokenType, JsonToken.EndObject);
+        Assert.AreEqual(7, jsonReader.LineNumber);
+        Assert.AreEqual(1, jsonReader.LinePosition);
       }
     }
 

@@ -231,7 +231,7 @@ namespace Newtonsoft.Json.Utilities
 
         return genericListType.GetGenericArguments()[0];
       }
-      else if (typeof(IList).IsAssignableFrom(type))
+      else if (typeof(ICollection).IsAssignableFrom(type))
       {
         return null;
       }

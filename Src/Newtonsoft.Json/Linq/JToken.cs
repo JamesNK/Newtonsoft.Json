@@ -38,11 +38,14 @@ namespace Newtonsoft.Json.Linq
   /// <summary>
   /// Represents an abstract JSON token.
   /// </summary>
-  public abstract class JToken : IJEnumerable<JToken>
+  public abstract class JToken : IJEnumerable<JToken>, IJsonLineInfo
   {
     private JContainer _parent;
     internal JToken _next;
     private static JTokenEqualityComparer _equalityComparer;
+
+    private int? _lineNumber;
+    private int? _linePosition;
 
     /// <summary>
     /// Gets a comparer that can compare two tokens for value equality.
@@ -796,6 +799,35 @@ namespace Newtonsoft.Json.Linq
 
       // TODO: loading constructor and parameters?
       throw new Exception("Error reading JToken from JsonReader. Unexpected token: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
+    }
+
+    internal void SetLineInfo(IJsonLineInfo lineInfo)
+    {
+      if (lineInfo == null || !lineInfo.HasLineInfo())
+        return;
+
+      SetLineInfo(lineInfo.LineNumber, lineInfo.LinePosition);
+    }
+
+    internal void SetLineInfo(int lineNumber, int linePosition)
+    {
+      _lineNumber = lineNumber;
+      _linePosition = linePosition;
+    }
+
+    bool IJsonLineInfo.HasLineInfo()
+    {
+      return (_lineNumber != null && _linePosition != null);
+    }
+
+    int IJsonLineInfo.LineNumber
+    {
+      get { return _lineNumber ?? 0; }
+    }
+
+    int IJsonLineInfo.LinePosition
+    {
+      get { return _linePosition ?? 0; }
     }
   }
 }

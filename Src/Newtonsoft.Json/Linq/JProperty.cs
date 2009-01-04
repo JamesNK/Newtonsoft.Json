@@ -186,6 +186,7 @@ namespace Newtonsoft.Json.Linq
             CultureInfo.InvariantCulture, reader.TokenType));
 
       JProperty p = new JProperty((string)reader.Value);
+      p.SetLineInfo(reader as IJsonLineInfo);
 
       if (!reader.Read())
         throw new Exception("Error reading JProperty from JsonReader.");

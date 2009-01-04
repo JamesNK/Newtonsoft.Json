@@ -253,8 +253,11 @@ namespace Newtonsoft.Json.Schema
               CurrentSchema.Properties.Add(mapping.MappingName, propertySchema);
             }
           }
+
+          if (type.IsSealed)
+            CurrentSchema.AllowAdditionalProperties = false;
         }
-        else if (CurrentSchema.Type == JsonSchemaType.Integer && type.IsEnum)
+        else if (CurrentSchema.Type == JsonSchemaType.Integer && type.IsEnum && !type.IsDefined(typeof(FlagsAttribute), true))
         {
           CurrentSchema.Enum = new List<JToken>();
           CurrentSchema.Options = new Dictionary<JToken, string>();

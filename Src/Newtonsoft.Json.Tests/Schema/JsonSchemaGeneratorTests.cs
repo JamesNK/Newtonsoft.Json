@@ -24,11 +24,18 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
+using Newtonsoft.Json.Utilities;
 using NUnit.Framework;
 using Newtonsoft.Json.Schema;
+using System.IO;
+using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Tests.Schema
 {
@@ -65,6 +72,7 @@ namespace Newtonsoft.Json.Tests.Schema
       Assert.AreEqual(@"{
   ""description"": ""DefaultValueAttributeTestClass description!"",
   ""type"": ""object"",
+  ""additionalProperties"": false,
   ""properties"": {
     ""TestField1"": {
       ""type"": ""integer"",
@@ -260,6 +268,114 @@ namespace Newtonsoft.Json.Tests.Schema
       Assert.AreEqual("MyExplicitId", schema.Id);
       Assert.AreEqual(JsonSchemaType.Object, schema.Properties["Child"].Type);
       Assert.AreEqual(schema, schema.Properties["Child"]);
+    }
+
+    [Test]
+    public void GenerateSchemaForType()
+    {
+      JsonSchemaGenerator generator = new JsonSchemaGenerator();
+      generator.UndefinedSchemaIdHandling = UndefinedSchemaIdHandling.UseTypeName;
+
+      JsonSchema schema = generator.Generate(typeof(Type));
+
+      Assert.AreEqual(JsonSchemaType.String, schema.Type);
+    }
+
+    public class CustomDirectoryInfoSerializer : JsonSerializer
+    {
+      protected override Newtonsoft.Json.Serialization.JsonMemberMappingCollection GetMemberMappings(Type objectType)
+      {
+        JsonMemberMappingCollection mappings = base.GetMemberMappings(objectType);
+
+        JsonMemberMappingCollection c = new JsonMemberMappingCollection();
+        CollectionUtils.AddRange(c, (IEnumerable) mappings.Where(m => m.MappingName != "Root"));
+
+        return c;
+      }
+    }
+
+    [Test]
+    public void GenerateSchemaForDirectoryInfo()
+    {
+      JsonSchemaGenerator generator = new JsonSchemaGenerator();
+      generator.UndefinedSchemaIdHandling = UndefinedSchemaIdHandling.UseTypeName;
+
+      JsonSchema schema = generator.Generate(typeof(DirectoryInfo), true);
+
+      string json = schema.ToString();
+      
+      Assert.AreEqual(@"{
+  ""id"": ""System.IO.DirectoryInfo"",
+  ""type"": [
+    ""object"",
+    ""null""
+  ],
+  ""additionalProperties"": false,
+  ""properties"": {
+    ""Name"": {
+      ""type"": [
+        ""string"",
+        ""null""
+      ]
+    },
+    ""Parent"": {
+      ""$ref"": ""System.IO.DirectoryInfo""
+    },
+    ""Exists"": {
+      ""type"": ""boolean""
+    },
+    ""Root"": {
+      ""$ref"": ""System.IO.DirectoryInfo""
+    },
+    ""FullName"": {
+      ""type"": [
+        ""string"",
+        ""null""
+      ]
+    },
+    ""Extension"": {
+      ""type"": [
+        ""string"",
+        ""null""
+      ]
+    },
+    ""CreationTime"": {
+      ""type"": ""string""
+    },
+    ""CreationTimeUtc"": {
+      ""type"": ""string""
+    },
+    ""LastAccessTime"": {
+      ""type"": ""string""
+    },
+    ""LastAccessTimeUtc"": {
+      ""type"": ""string""
+    },
+    ""LastWriteTime"": {
+      ""type"": ""string""
+    },
+    ""LastWriteTimeUtc"": {
+      ""type"": ""string""
+    },
+    ""Attributes"": {
+      ""type"": ""integer""
+    }
+  }
+}", json);
+
+      DirectoryInfo temp = new DirectoryInfo(@"c:\temp");
+
+      JsonTokenWriter jsonWriter = new JsonTokenWriter();
+      CustomDirectoryInfoSerializer customSerializer = new CustomDirectoryInfoSerializer();
+      customSerializer.Converters.Add(new IsoDateTimeConverter());
+      customSerializer.Serialize(jsonWriter, temp);
+
+      List<string> errors = new List<string>();
+      jsonWriter.Token.Validate(schema, (sender, args) => errors.Add(args.Message));
+
+      Assert.AreEqual(2, errors.Count);
+      Assert.AreEqual("Non-optional properties are missing from object: Root.", errors[0]);
+      Assert.AreEqual("Non-optional properties are missing from object: Root.", errors[1]);
     }
   }
 }

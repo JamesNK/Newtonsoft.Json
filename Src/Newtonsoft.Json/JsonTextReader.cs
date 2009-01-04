@@ -29,19 +29,21 @@ using System.Text;
 using System.IO;
 using System.Xml;
 using System.Globalization;
+using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json
 {
   /// <summary>
   /// Represents a reader that provides fast, non-cached, forward-only access to serialized Json data.
   /// </summary>
-  public class JsonTextReader : JsonReader
+  public class JsonTextReader : JsonReader, IJsonLineInfo
   {
-    private TextReader _reader;
+    private readonly TextReader _reader;
+    private readonly StringBuffer _buffer;
     private char _currentChar;
-
-    // current Token data
-    private StringBuffer _buffer;
+    private int _currentLinePosition;
+    private int _currentLineNumber;
+    private bool _currentCharCarriageReturn;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonReader"/> class with the specified <see cref="TextReader"/>.
@@ -54,6 +56,7 @@ namespace Newtonsoft.Json
 
       _reader = reader;
       _buffer = new StringBuffer(4096);
+      _currentLineNumber = 1;
     }
 
     private void ParseString(char quote)
@@ -100,7 +103,7 @@ namespace Newtonsoft.Json
             }
             else
             {
-              throw new JsonReaderException("Unterminated string. Expected delimiter: " + quote);
+              throw CreateJsonReaderException("Unterminated string. Expected delimiter: {0}. Line {1}, position {2}.", quote, _currentLineNumber, _currentLinePosition);
             }
             break;
           case '"':
@@ -130,7 +133,7 @@ namespace Newtonsoft.Json
       }
 
       if (!stringTerminated)
-        throw new JsonReaderException("Unterminated string. Expected delimiter: " + quote);
+        throw CreateJsonReaderException("Unterminated string. Expected delimiter: {0}. Line {1}, position {2}.", quote, _currentLineNumber, _currentLinePosition);
 
       ClearCurrentChar();
       string text = _buffer.ToString();
@@ -145,6 +148,12 @@ namespace Newtonsoft.Json
         SetToken(JsonToken.String, text);
         QuoteChar = quote;
       }
+    }
+
+    private JsonReaderException CreateJsonReaderException(string format, params object[] args)
+    {
+      string message = format.FormatWith(CultureInfo.InvariantCulture, args);
+      return new JsonReaderException(message, null, _currentLineNumber, _currentLinePosition);
     }
 
     /// <summary>
@@ -218,20 +227,37 @@ namespace Newtonsoft.Json
       SetToken(JsonToken.Date, dateTime);
     }
 
+    private const int LineFeedValue = StringUtils.LineFeed;
+    private const int CarriageReturnValue = StringUtils.CarriageReturn;
+
     private bool MoveNext()
     {
       int value = _reader.Read();
 
-      if (value != -1)
+      switch (value)
       {
-        _currentChar = (char)value;
-        //_testBuffer.Append(_currentChar);
-        return true;
+        case -1:
+          return false;
+        case CarriageReturnValue:
+          _currentLineNumber++;
+          _currentLinePosition = 0;
+          _currentCharCarriageReturn = true;
+          break;
+        case LineFeedValue:
+          if (!_currentCharCarriageReturn)
+            _currentLineNumber++;
+
+          _currentLinePosition = 0;
+          _currentCharCarriageReturn = false;
+          break;
+        default:
+          _currentLinePosition++;
+          _currentCharCarriageReturn = false;
+          break;
       }
-      else
-      {
-        return false;
-      }
+
+      _currentChar = (char)value;
+      return true;
     }
 
     private bool HasNext()
@@ -300,7 +326,7 @@ namespace Newtonsoft.Json
           case State.Error:
             break;
           default:
-            throw new JsonReaderException("Unexpected state: " + CurrentState);
+            throw CreateJsonReaderException("Unexpected state: {0}. Line {1}, position {2}.", CurrentState, _currentLineNumber, _currentLinePosition);
         }
       }
     }
@@ -339,7 +365,7 @@ namespace Newtonsoft.Json
             }
             else
             {
-              throw new JsonReaderException("After parsing a value an unexpected character was encoutered: " + _currentChar);
+              throw CreateJsonReaderException("After parsing a value an unexpected character was encoutered: {0}. Line {1}, position {2}.", _currentChar, _currentLineNumber, _currentLinePosition);
             }
             break;
         }
@@ -395,7 +421,7 @@ namespace Newtonsoft.Json
       }
       else
       {
-        throw new JsonReaderException("Invalid property identifier character: " + _currentChar);
+        throw CreateJsonReaderException("Invalid property identifier character: {0}. Line {1}, position {2}.", _currentChar, _currentLineNumber, _currentLinePosition);
       }
 
       // finished property. move to colon
@@ -426,7 +452,7 @@ namespace Newtonsoft.Json
         }
       }
 
-      throw new JsonReaderException("Unclosed quoted property. Expected: " + quoteChar);
+      throw CreateJsonReaderException("Unclosed quoted property. Expected: {0}. Line {1}, position {2}.", quoteChar, _currentLineNumber, _currentLinePosition);
     }
 
     private bool ValidIdentifierChar(char value)
@@ -451,7 +477,7 @@ namespace Newtonsoft.Json
         }
         else
         {
-          throw new JsonReaderException("Invalid JavaScript property identifier character: " + _currentChar);
+          throw CreateJsonReaderException("Invalid JavaScript property identifier character: {0}. Line {1}, position {2}.", _currentChar, _currentLineNumber, _currentLinePosition);
         }
       }
     }
@@ -482,11 +508,11 @@ namespace Newtonsoft.Json
               else if (next == 'e')
                 ParseConstructor();
               else
-                throw new JsonReaderException("Unexpected character encountered while parsing value: " + _currentChar);
+                throw CreateJsonReaderException("Unexpected character encountered while parsing value: {0}. Line {1}, position {2}.", _currentChar, _currentLineNumber, _currentLinePosition);
             }
             else
             {
-              throw new JsonReaderException("Unexpected end");
+              throw CreateJsonReaderException("Unexpected end. Line {0}, position {1}.", _currentLineNumber, _currentLinePosition);
             }
             return true;
           case 'N':
@@ -538,7 +564,7 @@ namespace Newtonsoft.Json
             }
             else
             {
-              throw new JsonReaderException("Unexpected character encountered while parsing value: " + _currentChar);
+              throw CreateJsonReaderException("Unexpected character encountered while parsing value: {0}. Line {1}, position {2}.", _currentChar, _currentLineNumber, _currentLinePosition);
             }
             break;
         }
@@ -574,7 +600,7 @@ namespace Newtonsoft.Json
           EatWhitespace(false);
 
           if (_currentChar != '(')
-            throw new JsonReaderException("Unexpected character while parsing constructor: " + _currentChar);
+            throw CreateJsonReaderException("Unexpected character while parsing constructor: {0}. Line {1}, position {2}.", _currentChar, _currentLineNumber, _currentLinePosition);
 
           string constructorName = _buffer.ToString();
           _buffer.Position = 0;
@@ -655,7 +681,7 @@ namespace Newtonsoft.Json
       }
       else
       {
-        throw new JsonReaderException("Error parsing comment. Expected: *");
+        throw CreateJsonReaderException("Error parsing comment. Expected: *. Line {0}, position {1}.", _currentLineNumber, _currentLinePosition);
       }
 
       SetToken(JsonToken.Comment, _buffer.ToString());
@@ -735,7 +761,7 @@ namespace Newtonsoft.Json
       }
       else
       {
-        throw new JsonReaderException("Error parsing boolean value.");
+        throw CreateJsonReaderException("Error parsing boolean value. Line {0}, position {1}.", _currentLineNumber, _currentLinePosition);
       }
     }
 
@@ -747,7 +773,7 @@ namespace Newtonsoft.Json
       }
       else
       {
-        throw new JsonReaderException("Error parsing null value.");
+        throw CreateJsonReaderException("Error parsing null value. Line {0}, position {1}.", _currentLineNumber, _currentLinePosition);
       }
     }
 
@@ -759,7 +785,7 @@ namespace Newtonsoft.Json
       }
       else
       {
-        throw new JsonReaderException("Error parsing undefined value.");
+        throw CreateJsonReaderException("Error parsing undefined value. Line {0}, position {1}.", _currentLineNumber, _currentLinePosition);
       }
     }
 
@@ -771,7 +797,7 @@ namespace Newtonsoft.Json
       }
       else
       {
-        throw new JsonReaderException("Error parsing boolean value.");
+        throw CreateJsonReaderException("Error parsing boolean value. Line {0}, position {1}.", _currentLineNumber, _currentLinePosition);
       }
     }
 
@@ -783,7 +809,7 @@ namespace Newtonsoft.Json
       }
       else
       {
-        throw new JsonReaderException("Error parsing negative infinity value.");
+        throw CreateJsonReaderException("Error parsing negative infinity value. Line {0}, position {1}.", _currentLineNumber, _currentLinePosition);
       }
     }
 
@@ -795,7 +821,7 @@ namespace Newtonsoft.Json
       }
       else
       {
-        throw new JsonReaderException("Error parsing positive infinity value.");
+        throw CreateJsonReaderException("Error parsing positive infinity value. Line {0}, position {1}.", _currentLineNumber, _currentLinePosition);
       }
     }
 
@@ -807,7 +833,7 @@ namespace Newtonsoft.Json
       }
       else
       {
-        throw new JsonReaderException("Error parsing NaN value.");
+        throw CreateJsonReaderException("Error parsing NaN value. Line {0}, position {1}.", _currentLineNumber, _currentLinePosition);
       }
     }
 
@@ -823,6 +849,27 @@ namespace Newtonsoft.Json
 
       if (_buffer != null)
         _buffer.Clear();
+    }
+
+    public bool HasLineInfo()
+    {
+      return true;
+    }
+
+    public int LineNumber
+    {
+      get
+      {
+        if (CurrentState == State.Start)
+          return 0;
+
+        return _currentLineNumber;
+      }
+    }
+
+    public int LinePosition
+    {
+      get { return _currentLinePosition; }
     }
   }
 }

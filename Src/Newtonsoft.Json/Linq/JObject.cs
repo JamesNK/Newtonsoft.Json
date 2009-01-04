@@ -196,10 +196,12 @@ namespace Newtonsoft.Json.Linq
           "Error reading JObject from JsonReader. Current JsonReader item is not an object: {0}".FormatWith(
             CultureInfo.InvariantCulture, reader.TokenType));
 
+      JObject o = new JObject();
+      o.SetLineInfo(reader as IJsonLineInfo);
+      
       if (!reader.Read())
         throw new Exception("Error reading JObject from JsonReader.");
 
-      JObject o = new JObject();
       o.ReadContentFrom(reader);
 
       return o;

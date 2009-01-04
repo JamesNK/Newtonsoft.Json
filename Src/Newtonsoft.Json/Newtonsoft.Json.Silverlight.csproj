@@ -55,6 +55,7 @@
     <Compile Include="Converters\HtmlColorConverter.cs" />
     <Compile Include="DateTimeOffset.cs" />
     <Compile Include="DefaultValueHandling.cs" />
+    <Compile Include="IJsonLineInfo.cs" />
     <Compile Include="JsonArrayAttribute.cs" />
     <Compile Include="JsonContainerAttribute.cs" />
     <Compile Include="JsonConvert.cs" />

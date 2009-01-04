@@ -175,11 +175,10 @@ namespace Newtonsoft.Json.Linq
       }
 
       if (reader.TokenType != JsonToken.StartConstructor)
-        throw new Exception(
-          "Error reading JConstructor from JsonReader. Current JsonReader item is not a constructor: {0}".FormatWith(
-            CultureInfo.InvariantCulture, reader.TokenType));
+        throw new Exception("Error reading JConstructor from JsonReader. Current JsonReader item is not a constructor: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
 
       JConstructor c = new JConstructor((string)reader.Value);
+      c.SetLineInfo(reader as IJsonLineInfo);
 
       if (!reader.Read())
         throw new Exception("Error reading JConstructor from JsonReader.");

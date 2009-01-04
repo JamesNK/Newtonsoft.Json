@@ -59,11 +59,14 @@ namespace Newtonsoft.Json.Utilities
       if (initialType == typeof(Guid) && (targetType == typeof(Guid) || targetType == typeof(string)))
         return true;
 
+      if (initialType == typeof(Type) && targetType == typeof(string))
+        return true;
+
 #if !PocketPC
       // see if source or target types have a TypeConverter that converts between the two
       TypeConverter toConverter = GetConverter(initialType);
 
-      if (toConverter != null && toConverter.CanConvertTo(targetType))
+      if (toConverter != null && !IsComponentConverter(toConverter) && toConverter.CanConvertTo(targetType))
       {
         if (allowTypeNameToString || toConverter.GetType() != typeof(TypeConverter))
           return true;
@@ -71,7 +74,7 @@ namespace Newtonsoft.Json.Utilities
 
       TypeConverter fromConverter = GetConverter(targetType);
 
-      if (fromConverter != null && fromConverter.CanConvertFrom(initialType))
+      if (fromConverter != null && !IsComponentConverter(fromConverter) && fromConverter.CanConvertFrom(initialType))
         return true;
 #endif
 
@@ -83,6 +86,15 @@ namespace Newtonsoft.Json.Utilities
       }
 
       return false;
+    }
+
+    private static bool IsComponentConverter(TypeConverter converter)
+    {
+#if !SILVERLIGHT && !PocketPC
+      return (converter is ComponentConverter);
+#else
+      return false;
+#endif
     }
 
     #region Convert

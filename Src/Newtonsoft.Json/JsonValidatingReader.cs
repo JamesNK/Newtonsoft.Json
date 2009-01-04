@@ -35,7 +35,7 @@ using System.Text.RegularExpressions;
 
 namespace Newtonsoft.Json
 {
-  public class JsonValidatingReader : JsonReader
+  public class JsonValidatingReader : JsonReader, IJsonLineInfo
   {
     private class SchemaScope
     {
@@ -186,7 +186,13 @@ namespace Newtonsoft.Json
 
     private void RaiseError(string message, JsonSchemaModel schema)
     {
-      OnValidationEvent(new JsonSchemaException(message));
+      IJsonLineInfo lineInfo = this;
+
+      string exceptionMessage = (lineInfo.HasLineInfo())
+                                  ? message + " Line {0}, position {1}.".FormatWith(CultureInfo.InvariantCulture, lineInfo.LineNumber, lineInfo.LinePosition)
+                                  : message;
+
+      OnValidationEvent(new JsonSchemaException(exceptionMessage, null, lineInfo.LineNumber, lineInfo.LinePosition));
     }
 
     private void OnValidationEvent(JsonSchemaException exception)
@@ -362,7 +368,7 @@ namespace Newtonsoft.Json
           requiredProperties.Where(kv => !kv.Value).Select(kv => kv.Key).ToList();
 
         if (unmatchedRequiredProperties.Count > 0)
-          RaiseError("Non-optional properties are missing from object: {0}".FormatWith(CultureInfo.InvariantCulture, string.Join(", ", unmatchedRequiredProperties.ToArray())), schema);
+          RaiseError("Non-optional properties are missing from object: {0}.".FormatWith(CultureInfo.InvariantCulture, string.Join(", ", unmatchedRequiredProperties.ToArray())), schema);
       }
     }
 
@@ -456,7 +462,7 @@ namespace Newtonsoft.Json
         _currentScope.ArrayItemCount++;
 
         if (CurrentSchema != null && CurrentSchema.Items != null && CurrentSchema.Items.Count > 1 && _currentScope.ArrayItemCount >= CurrentSchema.Items.Count)
-          RaiseError("Index {0} has not been defined and schema does not allow additional items.".FormatWith(CultureInfo.InvariantCulture, _currentScope.ArrayItemCount), CurrentSchema);
+          RaiseError("Index {0} has not been defined and the schema does not allow additional items.".FormatWith(CultureInfo.InvariantCulture, _currentScope.ArrayItemCount), CurrentSchema);
       }
     }
 
@@ -498,7 +504,7 @@ namespace Newtonsoft.Json
 
         if (!schema.AllowAdditionalProperties && !definedProperties.Contains(propertyName))
         {
-          RaiseError("Property '{0}' has not been defined and schema does not allow additional properties.".FormatWith(CultureInfo.InvariantCulture, propertyName), schema);
+          RaiseError("Property '{0}' has not been defined and the schema does not allow additional properties.".FormatWith(CultureInfo.InvariantCulture, propertyName), schema);
         }
       }
 
@@ -530,6 +536,30 @@ namespace Newtonsoft.Json
       }
 
       return true;
+    }
+
+    bool IJsonLineInfo.HasLineInfo()
+    {
+      IJsonLineInfo lineInfo = _reader as IJsonLineInfo;
+      return (lineInfo != null) ? lineInfo.HasLineInfo() : false;
+    }
+
+    int IJsonLineInfo.LineNumber
+    {
+      get
+      {
+        IJsonLineInfo lineInfo = _reader as IJsonLineInfo;
+        return (lineInfo != null) ? lineInfo.LineNumber : 0;
+      }
+    }
+
+    int IJsonLineInfo.LinePosition
+    {
+      get
+      {
+        IJsonLineInfo lineInfo = _reader as IJsonLineInfo;
+        return (lineInfo != null) ? lineInfo.LinePosition : 0;
+      }
     }
   }
 }

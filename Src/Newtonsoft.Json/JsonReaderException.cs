@@ -34,6 +34,9 @@ namespace Newtonsoft.Json
   /// </summary>
   public class JsonReaderException : Exception
   {
+    public int LineNumber { get; private set; }
+    public int LinePosition { get; private set; }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonReaderException"/> class.
     /// </summary>
@@ -60,6 +63,13 @@ namespace Newtonsoft.Json
     public JsonReaderException(string message, Exception innerException)
       : base(message, innerException)
     {
+    }
+
+    internal JsonReaderException(string message, Exception innerException, int lineNumber, int linePosition)
+      : base(message, innerException)
+    {
+      LineNumber = lineNumber;
+      LinePosition = linePosition;
     }
   }
 }

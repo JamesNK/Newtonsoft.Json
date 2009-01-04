@@ -46,18 +46,25 @@ namespace Newtonsoft.Json.Tests
           new JProperty("Test4", null)
         );
 
-      using (JsonReader jsonReader = new JsonTokenReader(o))
+      using (JsonTokenReader jsonReader = new JsonTokenReader(o))
       {
+        IJsonLineInfo lineInfo = jsonReader;
+
         jsonReader.Read();
         Assert.AreEqual(JsonToken.StartObject, jsonReader.TokenType);
+        Assert.AreEqual(false, lineInfo.HasLineInfo());
 
         jsonReader.Read();
         Assert.AreEqual(JsonToken.PropertyName, jsonReader.TokenType);
         Assert.AreEqual("Test1", jsonReader.Value);
+        Assert.AreEqual(false, lineInfo.HasLineInfo());
 
         jsonReader.Read();
         Assert.AreEqual(JsonToken.Date, jsonReader.TokenType);
         Assert.AreEqual(new DateTime(2000, 10, 15, 5, 5, 5, DateTimeKind.Utc), jsonReader.Value);
+        Assert.AreEqual(false, lineInfo.HasLineInfo());
+        Assert.AreEqual(0, lineInfo.LinePosition);
+        Assert.AreEqual(0, lineInfo.LineNumber);
 
         jsonReader.Read();
         Assert.AreEqual(JsonToken.PropertyName, jsonReader.TokenType);
@@ -104,7 +111,7 @@ namespace Newtonsoft.Json.Tests
     }
 
     [Test]
-    public void ReadingIndented()
+    public void ReadLineInfo()
     {
       string input = @"{
   CPU: 'Intel',
@@ -116,140 +123,76 @@ namespace Newtonsoft.Json.Tests
 
       StringReader sr = new StringReader(input);
 
-      using (JsonReader jsonReader = new JsonTextReader(sr))
+      JObject o = JObject.Parse(input);
+
+      using (JsonTokenReader jsonReader = new JsonTokenReader(o))
       {
+        IJsonLineInfo lineInfo = jsonReader;
+
         Assert.AreEqual(jsonReader.TokenType, JsonToken.None);
+        Assert.AreEqual(0, lineInfo.LineNumber);
+        Assert.AreEqual(0, lineInfo.LinePosition);
+        Assert.AreEqual(false, lineInfo.HasLineInfo());
 
         jsonReader.Read();
         Assert.AreEqual(jsonReader.TokenType, JsonToken.StartObject);
+        Assert.AreEqual(1, lineInfo.LineNumber);
+        Assert.AreEqual(1, lineInfo.LinePosition);
+        Assert.AreEqual(true, lineInfo.HasLineInfo());
 
         jsonReader.Read();
         Assert.AreEqual(jsonReader.TokenType, JsonToken.PropertyName);
         Assert.AreEqual(jsonReader.Value, "CPU");
+        Assert.AreEqual(2, lineInfo.LineNumber);
+        Assert.AreEqual(6, lineInfo.LinePosition);
+        Assert.AreEqual(true, lineInfo.HasLineInfo());
 
         jsonReader.Read();
         Assert.AreEqual(jsonReader.TokenType, JsonToken.String);
         Assert.AreEqual(jsonReader.Value, "Intel");
+        Assert.AreEqual(2, lineInfo.LineNumber);
+        Assert.AreEqual(14, lineInfo.LinePosition);
+        Assert.AreEqual(true, lineInfo.HasLineInfo());
 
         jsonReader.Read();
         Assert.AreEqual(jsonReader.TokenType, JsonToken.PropertyName);
         Assert.AreEqual(jsonReader.Value, "Drives");
+        Assert.AreEqual(3, lineInfo.LineNumber);
+        Assert.AreEqual(9, lineInfo.LinePosition);
+        Assert.AreEqual(true, lineInfo.HasLineInfo());
 
         jsonReader.Read();
         Assert.AreEqual(jsonReader.TokenType, JsonToken.StartArray);
+        Assert.AreEqual(3, lineInfo.LineNumber);
+        Assert.AreEqual(11, lineInfo.LinePosition);
+        Assert.AreEqual(true, lineInfo.HasLineInfo());
 
         jsonReader.Read();
         Assert.AreEqual(jsonReader.TokenType, JsonToken.String);
         Assert.AreEqual(jsonReader.Value, "DVD read/writer");
-        Assert.AreEqual(jsonReader.QuoteChar, '\'');
+        Assert.AreEqual(4, lineInfo.LineNumber);
+        Assert.AreEqual(21, lineInfo.LinePosition);
+        Assert.AreEqual(true, lineInfo.HasLineInfo());
 
         jsonReader.Read();
         Assert.AreEqual(jsonReader.TokenType, JsonToken.String);
         Assert.AreEqual(jsonReader.Value, "500 gigabyte hard drive");
-        Assert.AreEqual(jsonReader.QuoteChar, '"');
+        Assert.AreEqual(5, lineInfo.LineNumber);
+        Assert.AreEqual(29, lineInfo.LinePosition);
+        Assert.AreEqual(true, lineInfo.HasLineInfo());
 
         jsonReader.Read();
         Assert.AreEqual(jsonReader.TokenType, JsonToken.EndArray);
+        Assert.AreEqual(0, lineInfo.LineNumber);
+        Assert.AreEqual(0, lineInfo.LinePosition);
+        Assert.AreEqual(false, lineInfo.HasLineInfo());
 
         jsonReader.Read();
         Assert.AreEqual(jsonReader.TokenType, JsonToken.EndObject);
+        Assert.AreEqual(0, lineInfo.LineNumber);
+        Assert.AreEqual(0, lineInfo.LinePosition);
+        Assert.AreEqual(false, lineInfo.HasLineInfo());
       }
-    }
-
-    [Test]
-    public void ReadingEscapedStrings()
-    {
-      string input = "{value:'Purple\\r \\n monkey\\'s:\\tdishwasher'}";
-
-      StringReader sr = new StringReader(input);
-
-      using (JsonReader jsonReader = new JsonTextReader(sr))
-      {
-        jsonReader.Read();
-        Assert.AreEqual(jsonReader.TokenType, JsonToken.StartObject);
-
-        jsonReader.Read();
-        Assert.AreEqual(jsonReader.TokenType, JsonToken.PropertyName);
-
-        jsonReader.Read();
-        Assert.AreEqual(jsonReader.TokenType, JsonToken.String);
-        Assert.AreEqual(jsonReader.Value, "Purple\r \n monkey's:\tdishwasher");
-        Assert.AreEqual(jsonReader.QuoteChar, '\'');
-
-        jsonReader.Read();
-        Assert.AreEqual(jsonReader.TokenType, JsonToken.EndObject);
-      }
-    }
-
-    [Test]
-    public void ReadNewlineLastCharacter()
-    {
-      string input = @"{
-  CPU: 'Intel',
-  Drives: [
-    'DVD read/writer',
-    ""500 gigabyte hard drive""
-  ]
-}" + '\n';
-
-      object o = JsonConvert.DeserializeObject(input);
-    }
-
-    [Test]
-    public void WriteReadWrite()
-    {
-      StringBuilder sb = new StringBuilder();
-      StringWriter sw = new StringWriter(sb);
-
-      using (JsonWriter jsonWriter = new JsonTextWriter(sw))
-      {
-        jsonWriter.WriteStartArray();
-        jsonWriter.WriteValue(true);
-
-        jsonWriter.WriteStartObject();
-        jsonWriter.WritePropertyName("integer");
-        jsonWriter.WriteValue(99);
-        jsonWriter.WritePropertyName("string");
-        jsonWriter.WriteValue("how now brown cow?");
-        jsonWriter.WritePropertyName("array");
-
-        jsonWriter.WriteStartArray();
-        for (int i = 0; i < 5; i++)
-        {
-          jsonWriter.WriteValue(i);
-        }
-
-        jsonWriter.WriteStartObject();
-        jsonWriter.WritePropertyName("decimal");
-        jsonWriter.WriteValue(990.00990099m);
-        jsonWriter.WriteEndObject();
-
-        jsonWriter.WriteValue(5);
-        jsonWriter.WriteEndArray();
-
-        jsonWriter.WriteEndObject();
-
-        jsonWriter.WriteValue("This is a string.");
-        jsonWriter.WriteNull();
-        jsonWriter.WriteNull();
-        jsonWriter.WriteEndArray();
-      }
-
-      string json = sb.ToString();
-
-      JsonSerializer serializer = new JsonSerializer();
-
-      object jsonObject = serializer.Deserialize(new JsonTextReader(new StringReader(json)));
-
-      sb = new StringBuilder();
-      sw = new StringWriter(sb);
-
-      using (JsonWriter jsonWriter = new JsonTextWriter(sw))
-      {
-        serializer.Serialize(sw, jsonObject);
-      }
-
-      Assert.AreEqual(json, sb.ToString());
     }
   }
 }

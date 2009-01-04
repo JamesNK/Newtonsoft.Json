@@ -365,6 +365,7 @@ namespace Newtonsoft.Json.Linq
     internal void ReadContentFrom(JsonReader r)
     {
       ValidationUtils.ArgumentNotNull(r, "r");
+      IJsonLineInfo lineInfo = r as IJsonLineInfo;
 
       JContainer parent = this;
 
@@ -385,6 +386,7 @@ namespace Newtonsoft.Json.Linq
             break;
           case JsonToken.StartArray:
             JArray a = new JArray();
+            a.SetLineInfo(lineInfo);
             parent.AddObjectSkipNotify(a);
             parent = a;
             break;
@@ -397,6 +399,7 @@ namespace Newtonsoft.Json.Linq
             break;
           case JsonToken.StartObject:
             JObject o = new JObject();
+            o.SetLineInfo(lineInfo);
             parent.AddObjectSkipNotify(o);
             parent = o;
             break;
@@ -408,6 +411,7 @@ namespace Newtonsoft.Json.Linq
             break;
           case JsonToken.StartConstructor:
             JConstructor constructor = new JConstructor(r.Value.ToString());
+            constructor.SetLineInfo(constructor);
             parent.AddObjectSkipNotify(constructor);
             parent = constructor;
             break;
@@ -422,19 +426,28 @@ namespace Newtonsoft.Json.Linq
           case JsonToken.Float:
           case JsonToken.Date:
           case JsonToken.Boolean:
-            parent.AddObjectSkipNotify(new JValue(r.Value));
+            JValue v = new JValue(r.Value);
+            v.SetLineInfo(lineInfo);
+            parent.AddObjectSkipNotify(v);
             break;
           case JsonToken.Comment:
-            parent.AddObjectSkipNotify(JValue.CreateComment(r.Value.ToString()));
+            v = JValue.CreateComment(r.Value.ToString());
+            v.SetLineInfo(lineInfo);
+            parent.AddObjectSkipNotify(v);
             break;
           case JsonToken.Null:
-            parent.AddObjectSkipNotify(new JValue(null, JsonTokenType.Null));
+            v = new JValue(null, JsonTokenType.Null);
+            v.SetLineInfo(lineInfo);
+            parent.AddObjectSkipNotify(v);
             break;
           case JsonToken.Undefined:
-            parent.AddObjectSkipNotify(new JValue(null, JsonTokenType.Undefined));
+            v = new JValue(null, JsonTokenType.Undefined);
+            v.SetLineInfo(lineInfo);
+            parent.AddObjectSkipNotify(v);
             break;
           case JsonToken.PropertyName:
             JProperty property = new JProperty(r.Value.ToString());
+            property.SetLineInfo(lineInfo);
             parent.AddObjectSkipNotify(property);
             parent = property;
             break;

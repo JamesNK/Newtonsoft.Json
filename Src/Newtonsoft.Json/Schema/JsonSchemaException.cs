@@ -32,6 +32,9 @@ namespace Newtonsoft.Json.Schema
   /// </summary>
   public class JsonSchemaException : Exception
   {
+    public int LineNumber { get; private set; }
+    public int LinePosition { get; private set; }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonSchemaException"/> class.
     /// </summary>
@@ -58,6 +61,13 @@ namespace Newtonsoft.Json.Schema
     public JsonSchemaException(string message, Exception innerException)
       : base(message, innerException)
     {
+    }
+
+    internal JsonSchemaException(string message, Exception innerException, int lineNumber, int linePosition)
+      : base(message, innerException)
+    {
+      LineNumber = lineNumber;
+      LinePosition = linePosition;
     }
   }
 }

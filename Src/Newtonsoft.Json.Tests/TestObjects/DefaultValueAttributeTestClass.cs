@@ -30,7 +30,7 @@ namespace Newtonsoft.Json.Tests.TestObjects
 #if !PocketPC
   [Description("DefaultValueAttributeTestClass description!")]
 #endif
-  public class DefaultValueAttributeTestClass
+  public sealed class DefaultValueAttributeTestClass
   {
     [DefaultValue("TestProperty1Value")]
     public string TestProperty1 { get; set; }
