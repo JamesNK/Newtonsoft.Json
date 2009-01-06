@@ -275,16 +275,6 @@ namespace Newtonsoft.Json
       _currentChar = '\0';
     }
 
-    private bool MoveTo(char value)
-    {
-      while (MoveNext())
-      {
-        if (_currentChar == value)
-          return true;
-      }
-      return false;
-    }
-
     /// <summary>
     /// Reads the next Json token from the stream.
     /// </summary>
@@ -424,10 +414,15 @@ namespace Newtonsoft.Json
         throw CreateJsonReaderException("Invalid property identifier character: {0}. Line {1}, position {2}.", _currentChar, _currentLineNumber, _currentLinePosition);
       }
 
-      // finished property. move to colon
       if (_currentChar != ':')
       {
-        MoveTo(':');
+        MoveNext();
+
+        // finished property. skip any whitespace and move to colon
+        EatWhitespace(false);
+
+        if (_currentChar != ':')
+          throw CreateJsonReaderException("Invalid character after parsing property name. Expected ':' but got: {0}. Line {1}, position {2}.", _currentChar, _currentLineNumber, _currentLinePosition);
       }
 
       SetToken(JsonToken.PropertyName, _buffer.ToString());

@@ -445,5 +445,29 @@ namespace Newtonsoft.Json.Tests
         Assert.AreEqual(JsonToken.EndArray, jsonReader.TokenType);
       }
     }
+
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = @"Invalid character after parsing property name. Expected ':' but got: "". Line 3, position 9.")]
+    public void MissingColon()
+    {
+      string json = @"{
+    ""A"" : true,
+    ""B"" ""hello"", // Notice the colon is missing
+    ""C"" : ""bye""
+}";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+      reader.Read();
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      reader.Read();
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      reader.Read();
+      Assert.AreEqual(JsonToken.Boolean, reader.TokenType);
+
+      reader.Read();
+    }
   }
 }

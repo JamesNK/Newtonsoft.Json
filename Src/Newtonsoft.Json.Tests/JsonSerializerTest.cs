@@ -1025,6 +1025,15 @@ keyword such as type of business.""
     }
 
     [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Could not find member 'Missing' on object of type 'DoubleClass'")]
+    public void MissingMemeber()
+    {
+      string json = @"{""Missing"":1}";
+
+      JsonConvert.DeserializeObject<DoubleClass>(json);
+    }
+
+    [Test]
     public void SerializeTypeProperty()
     {
       TypeClass typeClass = new TypeClass {TypeProperty = typeof (bool)};
