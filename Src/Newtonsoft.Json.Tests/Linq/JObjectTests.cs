@@ -359,6 +359,5 @@ Parameter name: arrayIndex")]
 
       person = person;
     }
-
   }
 }

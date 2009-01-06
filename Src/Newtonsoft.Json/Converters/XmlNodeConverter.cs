@@ -46,6 +46,8 @@ namespace Newtonsoft.Json.Converters
     private const string DeclarationName = "?xml";
     private const string JsonNamespaceUri = "http://james.newtonking.com/projects/json";
 
+    public string DeserializeRootElementName { get; set; }
+
     #region Writing
     /// <summary>
     /// Writes the JSON representation of the object.
@@ -268,12 +270,24 @@ namespace Newtonsoft.Json.Converters
       XmlDocument document = new XmlDocument();
       XmlNamespaceManager manager = new XmlNamespaceManager(document.NameTable);
 
+      XmlNode rootNode;
+      
+      if (!string.IsNullOrEmpty(DeserializeRootElementName))
+      {
+        rootNode = document.CreateElement(DeserializeRootElementName);
+        document.AppendChild(rootNode);
+      }
+      else
+      {
+        rootNode = document;
+      }
+
       if (reader.TokenType != JsonToken.StartObject)
         throw new JsonSerializationException("XmlNodeConverter can only convert JSON that begins with an object.");
 
       reader.Read();
 
-      DeserializeNode(reader, document, manager, document);
+      DeserializeNode(reader, document, manager, rootNode);
 
       return document;
     }

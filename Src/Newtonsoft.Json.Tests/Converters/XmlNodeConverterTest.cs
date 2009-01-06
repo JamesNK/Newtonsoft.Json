@@ -455,6 +455,16 @@ namespace Newtonsoft.Json.Tests.Converters
 
       XmlDocument newDoc = (XmlDocument)JsonConvert.DeserializeXmlNode(strJSON);
     }
+
+    [Test]
+    public void MultipleRootPropertiesAddRootElement()
+    {
+      string strJSON = @"{""count"": 773840,""photos"": 773840}";
+
+      XmlDocument newDoc = (XmlDocument)JsonConvert.DeserializeXmlNode(strJSON, "myRoot");
+
+      Assert.AreEqual(@"<myRoot><count>773840</count><photos>773840</photos></myRoot>", newDoc.InnerXml);
+    }
   }
 }
 #endif
