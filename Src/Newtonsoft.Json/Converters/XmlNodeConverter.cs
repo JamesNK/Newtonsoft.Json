@@ -355,6 +355,20 @@ namespace Newtonsoft.Json.Converters
             string elementPrefix = GetPrefix(propertyName);
             Dictionary<string, string> attributeNameValues = new Dictionary<string, string>();
 
+            if (reader.TokenType == JsonToken.StartArray)
+            {
+              XmlElement nestedArrayElement = CreateElement(propertyName, document, elementPrefix, manager);
+
+              currentNode.AppendChild(nestedArrayElement);
+
+              while (reader.Read() && reader.TokenType != JsonToken.EndArray)
+              {
+                DeserializeValue(reader, document, manager, propertyName, nestedArrayElement);
+              }
+
+              return;
+            }
+
             // a string token means the element only has a single text child
             if (reader.TokenType != JsonToken.String
               && reader.TokenType != JsonToken.Null
@@ -402,9 +416,7 @@ namespace Newtonsoft.Json.Converters
 
             // have to wait until attributes have been parsed before creating element
             // attributes may contain namespace info used by the element
-            XmlElement element = (!string.IsNullOrEmpty(elementPrefix))
-                    ? document.CreateElement(propertyName, manager.LookupNamespace(elementPrefix))
-                    : document.CreateElement(propertyName);
+            XmlElement element = CreateElement(propertyName, document, elementPrefix, manager);
 
             currentNode.AppendChild(element);
 
@@ -462,6 +474,13 @@ namespace Newtonsoft.Json.Converters
           }
           break;
       }
+    }
+
+    private XmlElement CreateElement(string elementName, XmlDocument document, string elementPrefix, XmlNamespaceManager manager)
+    {
+      return (!string.IsNullOrEmpty(elementPrefix))
+               ? document.CreateElement(elementName, manager.LookupNamespace(elementPrefix))
+               : document.CreateElement(elementName);
     }
 
     private void DeserializeNode(JsonReader reader, XmlDocument document, XmlNamespaceManager manager, XmlNode currentNode)

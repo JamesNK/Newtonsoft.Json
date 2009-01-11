@@ -465,6 +465,52 @@ namespace Newtonsoft.Json.Tests.Converters
 
       Assert.AreEqual(@"<myRoot><count>773840</count><photos>773840</photos></myRoot>", newDoc.InnerXml);
     }
+
+    [Test]
+    public void NestedArrays()
+    {
+      string json = @"{
+  ""available_sizes"": [
+    [
+      ""assets/images/resized/0001/1070/11070v1-max-150x150.jpg"",
+      ""assets/images/resized/0001/1070/11070v1-max-150x150.jpg""
+    ],
+    [
+      ""assets/images/resized/0001/1070/11070v1-max-250x250.jpg"",
+      ""assets/images/resized/0001/1070/11070v1-max-250x250.jpg""
+    ]
+  ]
+}";
+
+      XmlDocument newDoc = (XmlDocument)JsonConvert.DeserializeXmlNode(json, "myRoot");
+
+      Assert.AreEqual(@"<myRoot><available_sizes><available_sizes>assets/images/resized/0001/1070/11070v1-max-150x150.jpg</available_sizes><available_sizes>assets/images/resized/0001/1070/11070v1-max-150x150.jpg</available_sizes></available_sizes><available_sizes><available_sizes>assets/images/resized/0001/1070/11070v1-max-250x250.jpg</available_sizes><available_sizes>assets/images/resized/0001/1070/11070v1-max-250x250.jpg</available_sizes></available_sizes></myRoot>", newDoc.InnerXml);
+    }
+
+    [Test]
+    public void MultipleNestedArraysToXml()
+    {
+      string json = @"{
+  ""available_sizes"": [
+    [
+      [113, 150],
+      ""assets/images/resized/0001/1070/11070v1-max-150x150.jpg""
+    ],
+    [
+      [189, 250],
+      ""assets/images/resized/0001/1070/11070v1-max-250x250.jpg""
+    ],
+    [
+      [341, 450],
+      ""assets/images/resized/0001/1070/11070v1-max-450x450.jpg""
+    ]
+  ]
+}";
+
+      XmlDocument newDoc = (XmlDocument)JsonConvert.DeserializeXmlNode(json, "myRoot");
+
+      Assert.AreEqual(@"<myRoot><available_sizes><available_sizes><available_sizes>113</available_sizes><available_sizes>150</available_sizes></available_sizes><available_sizes>assets/images/resized/0001/1070/11070v1-max-150x150.jpg</available_sizes></available_sizes><available_sizes><available_sizes><available_sizes>189</available_sizes><available_sizes>250</available_sizes></available_sizes><available_sizes>assets/images/resized/0001/1070/11070v1-max-250x250.jpg</available_sizes></available_sizes><available_sizes><available_sizes><available_sizes>341</available_sizes><available_sizes>450</available_sizes></available_sizes><available_sizes>assets/images/resized/0001/1070/11070v1-max-450x450.jpg</available_sizes></available_sizes></myRoot>", newDoc.InnerXml);
+    }
   }
 }
 #endif
