@@ -12,7 +12,7 @@ namespace Newtonsoft.Json
   public class JsonSerializerSettings
   {
     internal const ReferenceLoopHandling DefaultReferenceLoopHandling = ReferenceLoopHandling.Error;
-    internal const MissingMemberHandling DefaultMissingMemberHandling = MissingMemberHandling.Error;
+    internal const MissingMemberHandling DefaultMissingMemberHandling = MissingMemberHandling.Ignore;
     internal const NullValueHandling DefaultNullValueHandling = NullValueHandling.Include;
     internal const DefaultValueHandling DefaultDefaultValueHandling = DefaultValueHandling.Include;
     internal const ObjectCreationHandling DefaultObjectCreationHandling = ObjectCreationHandling.Auto;

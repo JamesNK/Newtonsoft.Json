@@ -77,7 +77,7 @@ namespace Newtonsoft.Json
       get { return _missingMemberHandling; }
       set
       {
-        if (value < MissingMemberHandling.Error || value > MissingMemberHandling.Ignore)
+        if (value < MissingMemberHandling.Ignore || value > MissingMemberHandling.Error)
           throw new ArgumentOutOfRangeException("value");
 
         _missingMemberHandling = value;

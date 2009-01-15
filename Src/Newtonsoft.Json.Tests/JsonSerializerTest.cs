@@ -424,7 +424,7 @@ keyword such as type of business.""
       //  ]
       //}
 
-      ProductShort deserializedProductShort = (ProductShort)JsonConvert.DeserializeObject(output, typeof(ProductShort));
+      ProductShort deserializedProductShort = (ProductShort)JsonConvert.DeserializeObject(output, typeof(ProductShort), new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error });
     }
 
     [Test]
@@ -1030,7 +1030,7 @@ keyword such as type of business.""
     {
       string json = @"{""Missing"":1}";
 
-      JsonConvert.DeserializeObject<DoubleClass>(json);
+      JsonConvert.DeserializeObject<DoubleClass>(json, new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error });
     }
 
     [Test]
@@ -1080,6 +1080,150 @@ keyword such as type of business.""
 }";
 
       JsonConvert.DeserializeObject<RequiredMembersClass>(json);
+    }
+
+    [Test]
+    public void SerializeJaggedArray()
+    {
+      JaggedArray aa = new JaggedArray();
+      aa.Before = "Before!";
+      aa.After = "After!";
+      aa.Coordinates = new[] { new[] { 1, 1 }, new[] { 1, 2 }, new[] { 2, 1 }, new[] { 2, 2 } };
+
+      string json = JsonConvert.SerializeObject(aa);
+
+      Assert.AreEqual(@"{""Before"":""Before!"",""Coordinates"":[[1,1],[1,2],[2,1],[2,2]],""After"":""After!""}", json);
+    }
+
+    [Test]
+    public void DeserializeJaggedArray()
+    {
+      string json = @"{""Before"":""Before!"",""Coordinates"":[[1,1],[1,2],[2,1],[2,2]],""After"":""After!""}";
+
+      JaggedArray aa = JsonConvert.DeserializeObject<JaggedArray>(json);
+
+      Assert.AreEqual("Before!", aa.Before);
+      Assert.AreEqual("After!", aa.After);
+      Assert.AreEqual(4, aa.Coordinates.Length);
+      Assert.AreEqual(2, aa.Coordinates[0].Length);
+      Assert.AreEqual(1, aa.Coordinates[0][0]);
+      Assert.AreEqual(2, aa.Coordinates[1][1]);
+
+      string after = JsonConvert.SerializeObject(aa);
+
+      Assert.AreEqual(json, after);
+    }
+
+    public class GoogleMapGeocoderStructure
+    {
+      public string Name;
+      public Status Status;
+      public List<Placemark> Placemark;
+    }
+
+    public class Status
+    {
+      public string Request;
+      public string Code;
+    }
+
+    public class Placemark
+    {
+      public string Address;
+      public AddressDetails AddressDetails;
+      public Point Point;
+    }
+
+    public class AddressDetails
+    {
+      public int Accuracy;
+      public Country Country;
+    }
+
+    public class Country
+    {
+      public string CountryNameCode;
+      public AdministrativeArea AdministrativeArea;
+    }
+
+    public class AdministrativeArea
+    {
+      public string AdministrativeAreaName;
+      public SubAdministrativeArea SubAdministrativeArea;
+    }
+
+    public class SubAdministrativeArea
+    {
+      public string SubAdministrativeAreaName;
+      public Locality Locality;
+    }
+
+    public class Locality
+    {
+      public string LocalityName;
+      public Thoroughfare Thoroughfare;
+      public PostalCode PostalCode;
+    }
+
+    public class Thoroughfare
+    {
+      public string ThoroughfareName;
+    }
+
+    public class PostalCode
+    {
+      public string PostalCodeNumber;
+    }
+
+    public class Point
+    {
+      public List<decimal> Coordinates;
+    }
+
+    [Test]
+    public  void DeserializeGoogleGeoCode()
+    {
+      string json = @"{
+  ""name"": ""1600 Amphitheatre Parkway, Mountain View, CA, USA"",
+  ""Status"": {
+    ""code"": 200,
+    ""request"": ""geocode""
+  },
+  ""Placemark"": [
+    {
+      ""address"": ""1600 Amphitheatre Pkwy, Mountain View, CA 94043, USA"",
+      ""AddressDetails"": {
+        ""Country"": {
+          ""CountryNameCode"": ""US"",
+          ""AdministrativeArea"": {
+            ""AdministrativeAreaName"": ""CA"",
+            ""SubAdministrativeArea"": {
+              ""SubAdministrativeAreaName"": ""Santa Clara"",
+              ""Locality"": {
+                ""LocalityName"": ""Mountain View"",
+                ""Thoroughfare"": {
+                  ""ThoroughfareName"": ""1600 Amphitheatre Pkwy""
+                },
+                ""PostalCode"": {
+                  ""PostalCodeNumber"": ""94043""
+                }
+              }
+            }
+          }
+        },
+        ""Accuracy"": 8
+      },
+      ""Point"": {
+        ""coordinates"": [-122.083739, 37.423021, 0]
+      }
+    }
+  ]
+}";
+
+      //JavaScriptSerializer serializer = new JavaScriptSerializer();
+      //GoogleMapGeocoderStructure jsonGoogleMapGeocoder = serializer.Deserialize<GoogleMapGeocoderStructure>(json);
+
+      GoogleMapGeocoderStructure jsonGoogleMapGeocoder = JsonConvert.DeserializeObject<GoogleMapGeocoderStructure>(json);
     }
   }
 }

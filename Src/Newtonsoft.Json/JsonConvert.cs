@@ -529,7 +529,7 @@ namespace Newtonsoft.Json
     /// <returns>The deserialized object from the Json string.</returns>
     public static T DeserializeObject<T>(string value)
     {
-      return DeserializeObject<T>(value, null);
+      return DeserializeObject<T>(value, (JsonSerializerSettings)null);
     }
 
     /// <summary>
@@ -558,6 +558,21 @@ namespace Newtonsoft.Json
     public static T DeserializeObject<T>(string value, params JsonConverter[] converters)
     {
       return (T)DeserializeObject(value, typeof(T), converters);
+    }
+
+    /// <summary>
+    /// Deserializes the JSON string to the specified type.
+    /// </summary>
+    /// <typeparam name="T">The type of the object to deserialize.</typeparam>
+    /// <param name="value">The object to deserialize.</param>
+    /// <param name="settings">
+    /// The <see cref="JsonSerializerSettings"/> used to deserialize the object.
+    /// If this is null, default serialization settings will be is used.
+    /// </param>
+    /// <returns>The deserialized object from the JSON string.</returns>
+    public static T DeserializeObject<T>(string value, JsonSerializerSettings settings)
+    {
+      return (T)DeserializeObject(value, typeof(T), settings);
     }
 
     /// <summary>
