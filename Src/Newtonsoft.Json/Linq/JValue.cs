@@ -309,7 +309,7 @@ namespace Newtonsoft.Json.Linq
           }, _value);
           break;
         case JsonTokenType.Raw:
-          writer.WriteRaw(_value.ToString());
+          writer.WriteRawValue(_value.ToString());
           break;
         case JsonTokenType.Null:
           writer.WriteNull();

@@ -359,5 +359,20 @@ Parameter name: arrayIndex")]
 
       person = person;
     }
+
+    [Test]
+    public void RawChildValues()
+    {
+      JObject o = new JObject();
+      o["val1"] = JValue.CreateRaw("1");
+      o["val2"] = JValue.CreateRaw("1");
+
+      string json = o.ToString();
+
+      Assert.AreEqual(@"{
+  ""val1"": 1,
+  ""val2"": 1
+}", json);
+    }
   }
 }

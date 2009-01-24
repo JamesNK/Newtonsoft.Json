@@ -647,9 +647,9 @@ namespace Newtonsoft.Json
     /// <param name="json">The raw JSON to write.</param>
     public virtual void WriteRawValue(string json)
     {
-      WriteRaw(json);
       // hack. want writer to change state as if a value had been written
       AutoComplete(JsonToken.Undefined);
+      WriteRaw(json);
     }
 
     /// <summary>
