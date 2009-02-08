@@ -493,7 +493,11 @@ namespace Newtonsoft.Json
     {
       object newObject;
 
-      if (ReflectionUtils.HasDefaultConstructor(objectType))
+      if (objectType.IsInterface || objectType.IsAbstract)
+      {
+        throw new JsonSerializationException("Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantated.".FormatWith(CultureInfo.InvariantCulture, objectType));
+      }
+      else if (ReflectionUtils.HasDefaultConstructor(objectType))
       {
         newObject = Activator.CreateInstance(objectType);
 
