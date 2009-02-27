@@ -47,10 +47,17 @@ namespace Newtonsoft.Json.Serialization
       if (TypeContainerAttributeCache.TryGetValue(type, out containerAttribute))
         return containerAttribute;
 
-      containerAttribute = ReflectionUtils.GetAttribute<JsonContainerAttribute>(type);
-      TypeContainerAttributeCache[type] = containerAttribute;
+      // double check locking to avoid threading issues
+      lock (TypeContainerAttributeCache)
+      {
+        if (TypeContainerAttributeCache.TryGetValue(type, out containerAttribute))
+          return containerAttribute;
 
-      return containerAttribute;
+        containerAttribute = ReflectionUtils.GetAttribute<JsonContainerAttribute>(type);
+        TypeContainerAttributeCache[type] = containerAttribute;
+
+        return containerAttribute;
+      }
     }
 
     public static MemberSerialization GetObjectMemberSerialization(Type objectType)
@@ -70,10 +77,17 @@ namespace Newtonsoft.Json.Serialization
       if (TypeMemberMappingsCache.TryGetValue(objectType, out memberMappings))
         return memberMappings;
 
-      memberMappings = CreateMemberMappings(objectType);
-      TypeMemberMappingsCache[objectType] = memberMappings;
+      // double check locking to avoid threading issues
+      lock (TypeMemberMappingsCache)
+      {
+        if (TypeMemberMappingsCache.TryGetValue(objectType, out memberMappings))
+          return memberMappings;
 
-      return memberMappings;
+        memberMappings = CreateMemberMappings(objectType);
+        TypeMemberMappingsCache[objectType] = memberMappings;
+
+        return memberMappings;
+      }
     }
 
     public static JsonMemberMappingCollection CreateMemberMappings(Type objectType)
@@ -116,19 +130,33 @@ namespace Newtonsoft.Json.Serialization
       return memberMappings;
     }
 
-    public static JsonConverter GetConverter(ICustomAttributeProvider attributeProvider, Type targetConvertedType)
+    private static Type GetConverterType(ICustomAttributeProvider attributeProvider)
     {
       Type converterType;
 
-      if (!ConverterTypeCache.TryGetValue(attributeProvider, out converterType))
+      if (ConverterTypeCache.TryGetValue(attributeProvider, out converterType))
+        return converterType;
+
+      // double check locking to avoid threading issues
+      lock (ConverterTypeCache)
       {
+        if (ConverterTypeCache.TryGetValue(attributeProvider, out converterType))
+          return converterType;
+
         JsonConverterAttribute converterAttribute = ReflectionUtils.GetAttribute<JsonConverterAttribute>(attributeProvider, true);
         converterType = (converterAttribute != null)
           ? converterAttribute.ConverterType
           : null;
 
         ConverterTypeCache[attributeProvider] = converterType;
+
+        return converterType;
       }
+    }
+
+    public static JsonConverter GetConverter(ICustomAttributeProvider attributeProvider, Type targetConvertedType)
+    {
+      Type converterType = GetConverterType(attributeProvider);
 
       if (converterType != null)
       {
@@ -142,8 +170,6 @@ namespace Newtonsoft.Json.Serialization
 
       return null;
     }
-
-
 
     public static List<MemberInfo> GetSerializableMembers(Type objectType)
     {

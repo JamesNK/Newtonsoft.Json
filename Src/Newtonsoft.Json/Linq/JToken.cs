@@ -327,14 +327,14 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="converters">A collection of <see cref="JsonConverter"/> which will be used when writing the token.</param>
     /// <returns></returns>
-    private string ToString(params JsonConverter[] converters)
+    public string ToString(params JsonConverter[] converters)
     {
       using (StringWriter sw = new StringWriter(CultureInfo.InvariantCulture))
       {
         JsonTextWriter jw = new JsonTextWriter(sw);
         jw.Formatting = Formatting.Indented;
 
-        WriteTo(jw);
+        WriteTo(jw, converters);
 
         return sw.ToString();
       }

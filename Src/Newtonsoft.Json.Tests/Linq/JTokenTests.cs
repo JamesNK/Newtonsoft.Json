@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json.Converters;
 using NUnit.Framework;
 using Newtonsoft.Json.Linq;
 using System.IO;
@@ -495,6 +496,25 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(4, a.Count());
 
       Assert.IsTrue(JToken.DeepEquals(new JArray(int.MaxValue, new JArray("Test"), int.MaxValue, new JArray(1, 2, 3)), a));
+    }
+
+    [Test]
+    public void ToStringWithConverters()
+    {
+      JArray a =
+        new JArray(
+          new JValue(new DateTime(2009, 2, 15, 0, 0, 0, DateTimeKind.Utc))
+        );
+
+      string json = a.ToString(new IsoDateTimeConverter());
+
+      Assert.AreEqual(@"[
+  ""2009-02-15T00:00:00.0000000Z""
+]", json);
+
+      json = JsonConvert.SerializeObject(a, new IsoDateTimeConverter());
+
+      Assert.AreEqual(@"[""2009-02-15T00:00:00.0000000Z""]", json);
     }
   }
 }

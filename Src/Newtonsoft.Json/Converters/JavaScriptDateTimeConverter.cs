@@ -95,9 +95,9 @@ namespace Newtonsoft.Json.Converters
         ? Nullable.GetUnderlyingType(objectType)
         : objectType;
 
-      if (typeof(DateTime).IsAssignableFrom(objectType))
+      if (typeof(DateTime).IsAssignableFrom(t))
         return true;
-      if (typeof(DateTimeOffset).IsAssignableFrom(objectType))
+      if (typeof(DateTimeOffset).IsAssignableFrom(t))
         return true;
 
       return false;

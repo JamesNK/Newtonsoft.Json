@@ -1259,5 +1259,79 @@ keyword such as type of business.""
       String strFromTest = JsonConvert.SerializeObject(testClass);
       Test testFromDe = (Test)JsonConvert.DeserializeObject(strFromTest, typeof(Test));
     }
+
+    private Person GetPerson()
+    {
+      Person person = new Person
+                        {
+                          Name = "Mike Manager",
+                          BirthDate = new DateTime(1983, 8, 3, 0, 0, 0, DateTimeKind.Utc),
+                          Department = "IT",
+                          LastModified = new DateTime(2009, 2, 15, 0, 0, 0, DateTimeKind.Utc)
+                        };
+      return person;
+    }
+
+    //[Test]
+    public void WriteJsonToFile()
+    {
+      //Person person = GetPerson();
+
+      //string json = JsonConvert.SerializeObject(person, Formatting.Indented);
+
+      //File.WriteAllText(@"c:\person.json", json);
+
+      Person person = GetPerson();
+
+      using (FileStream fs = File.Open(@"c:\person.json", FileMode.CreateNew))
+      using (StreamWriter sw = new StreamWriter(fs))
+      using (JsonWriter jw = new JsonTextWriter(sw))
+      {
+        jw.Formatting = Formatting.Indented;
+
+        JsonSerializer serializer = new JsonSerializer();
+        serializer.Serialize(jw, person);
+      }
+    }
+
+    public class LogEntry
+    {
+      public string Details { get; set; }
+      public DateTime LogDate { get; set; }
+    }
+
+    [Test]
+    public void WriteJsonDates()
+    {
+      LogEntry entry = new LogEntry
+                         {
+                           LogDate = new DateTime(2009, 2, 15, 0, 0, 0, DateTimeKind.Utc),
+                           Details = "Application started."
+                         };
+
+      string defaultJson = JsonConvert.SerializeObject(entry);
+      // {"Details":"Application started.","LogDate":"\/Date(1234656000000)\/"}
+
+      string isoJson = JsonConvert.SerializeObject(entry, new IsoDateTimeConverter());
+      // {"Details":"Application started.","LogDate":"2009-02-15T00:00:00.0000000Z"}
+
+      string javascriptJson = JsonConvert.SerializeObject(entry, new JavaScriptDateTimeConverter());
+      // {"Details":"Application started.","LogDate":new Date(1234656000000)}
+
+      Console.WriteLine(defaultJson);
+      Console.WriteLine(isoJson);
+      Console.WriteLine(javascriptJson);
+    }
+
+    public class SomeClass
+    {
+      public int? SomeProp { get; set; }
+    }
+
+    [Test]
+    public void Main()
+    {
+      var pokes = JsonConvert.DeserializeObject<SomeClass>(@"{""SomeProp"":1}");
+    }
   }
 }
