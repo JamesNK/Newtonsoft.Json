@@ -164,6 +164,26 @@ namespace Newtonsoft.Json.Linq
     {
     }
 
+    public void AddAfterSelf(object content)
+    {
+      if (_parent == null)
+        throw new InvalidOperationException("The parent is missing.");
+
+      _parent.AddInternal((Next == null), this, content);
+    }
+
+    public void AddBeforeSelf(object content)
+    {
+      if (_parent == null)
+        throw new InvalidOperationException("The parent is missing.");
+
+      JToken previous = Previous;
+      if (previous == null)
+        previous = _parent.Last;
+
+      _parent.AddInternal(false, previous, content);
+    }
+
     /// <summary>
     /// Returns a collection of the ancestor tokens of this token.
     /// </summary>

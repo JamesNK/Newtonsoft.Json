@@ -516,5 +516,63 @@ namespace Newtonsoft.Json.Tests.Linq
 
       Assert.AreEqual(@"[""2009-02-15T00:00:00.0000000Z""]", json);
     }
+
+    [Test]
+    public void AddAfterSelf()
+    {
+      JArray a =
+        new JArray(
+          5,
+          new JArray(1),
+          new JArray(1, 2),
+          new JArray(1, 2, 3)
+        );
+
+      a[1].AddAfterSelf("pie");
+
+      Assert.AreEqual(5, (int)a[0]);
+      Assert.AreEqual(1, a[1].Count());
+      Assert.AreEqual("pie", (string)a[2]);
+      Assert.AreEqual(5, a.Count());
+
+      a[4].AddAfterSelf("lastpie");
+
+      Assert.AreEqual("lastpie", (string)a[5]);
+      Assert.AreEqual("lastpie", (string)a.Last);
+    }
+
+    [Test]
+    public void AddBeforeSelf()
+    {
+      JArray a =
+        new JArray(
+          5,
+          new JArray(1),
+          new JArray(1, 2),
+          new JArray(1, 2, 3)
+        );
+
+      a[1].AddBeforeSelf("pie");
+
+      Assert.AreEqual(5, (int)a[0]);
+      Assert.AreEqual("pie", (string)a[1]);
+      Assert.AreEqual(a, a[1].Parent);
+      Assert.AreEqual(a[2], a[1].Next);
+      Assert.AreEqual(5, a.Count());
+
+      a[0].AddBeforeSelf("firstpie");
+
+      Assert.AreEqual("firstpie", (string)a[0]);
+      Assert.AreEqual(5, (int)a[1]);
+      Assert.AreEqual("pie", (string)a[2]);
+      Assert.AreEqual(a, a[0].Parent);
+      Assert.AreEqual(a[1], a[0].Next);
+      Assert.AreEqual(6, a.Count());
+
+      a.Last.AddBeforeSelf("secondlastpie");
+
+      Assert.AreEqual("secondlastpie", (string)a[5]);
+      Assert.AreEqual(7, a.Count());
+    }
   }
 }
