@@ -339,20 +339,21 @@ namespace Newtonsoft.Json.Linq
     /// </returns>
     public override string ToString()
     {
-      return ToString(null);
+      return ToString(Formatting.Indented);
     }
 
     /// <summary>
-    /// Returns the indented JSON for this token using any given converters.
+    /// Returns the JSON for this token using the given formatting and converters.
     /// </summary>
+    /// <param name="formatting">Indicates how the output is formatted.</param>
     /// <param name="converters">A collection of <see cref="JsonConverter"/> which will be used when writing the token.</param>
     /// <returns></returns>
-    public string ToString(params JsonConverter[] converters)
+    public string ToString(Formatting formatting, params JsonConverter[] converters)
     {
       using (StringWriter sw = new StringWriter(CultureInfo.InvariantCulture))
       {
         JsonTextWriter jw = new JsonTextWriter(sw);
-        jw.Formatting = Formatting.Indented;
+        jw.Formatting = formatting;
 
         WriteTo(jw, converters);
 

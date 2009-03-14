@@ -25,11 +25,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Serialization
@@ -37,7 +34,6 @@ namespace Newtonsoft.Json.Serialization
   internal static class JsonTypeReflector
   {
     private static readonly Dictionary<ICustomAttributeProvider, Type> ConverterTypeCache = new Dictionary<ICustomAttributeProvider, Type>();
-    private static readonly Dictionary<Type, JsonMemberMappingCollection> TypeMemberMappingsCache = new Dictionary<Type, JsonMemberMappingCollection>();
     private static readonly Dictionary<Type, JsonContainerAttribute> TypeContainerAttributeCache = new Dictionary<Type, JsonContainerAttribute>();
 
     public static JsonContainerAttribute GetJsonContainerAttribute(Type type)
@@ -68,66 +64,6 @@ namespace Newtonsoft.Json.Serialization
         return MemberSerialization.OptOut;
       
       return objectAttribute.MemberSerialization;
-    }
-
-    public static JsonMemberMappingCollection GetMemberMappings(Type objectType)
-    {
-      JsonMemberMappingCollection memberMappings;
-
-      if (TypeMemberMappingsCache.TryGetValue(objectType, out memberMappings))
-        return memberMappings;
-
-      // double check locking to avoid threading issues
-      lock (TypeMemberMappingsCache)
-      {
-        if (TypeMemberMappingsCache.TryGetValue(objectType, out memberMappings))
-          return memberMappings;
-
-        memberMappings = CreateMemberMappings(objectType);
-        TypeMemberMappingsCache[objectType] = memberMappings;
-
-        return memberMappings;
-      }
-    }
-
-    public static JsonMemberMappingCollection CreateMemberMappings(Type objectType)
-    {
-      MemberSerialization memberSerialization = GetObjectMemberSerialization(objectType);
-
-      List<MemberInfo> members = GetSerializableMembers(objectType);
-      if (members == null)
-        throw new JsonSerializationException("Null collection of seralizable members returned.");
-
-      JsonMemberMappingCollection memberMappings = new JsonMemberMappingCollection();
-
-      foreach (MemberInfo member in members)
-      {
-        JsonPropertyAttribute propertyAttribute = ReflectionUtils.GetAttribute<JsonPropertyAttribute>(member, true);
-        bool hasIgnoreAttribute = member.IsDefined(typeof(JsonIgnoreAttribute), true);
-
-        string mappedName = (propertyAttribute != null && propertyAttribute.PropertyName != null)
-         ? propertyAttribute.PropertyName
-         : member.Name;
-
-        bool required = (propertyAttribute != null) ? propertyAttribute.IsRequired : false;
-
-        bool ignored = (hasIgnoreAttribute
-          || (memberSerialization == MemberSerialization.OptIn && propertyAttribute == null));
-
-        bool readable = ReflectionUtils.CanReadMemberValue(member);
-        bool writable = ReflectionUtils.CanSetMemberValue(member);
-
-        JsonConverter memberConverter = GetConverter(member, ReflectionUtils.GetMemberUnderlyingType(member));
-
-        DefaultValueAttribute defaultValueAttribute = ReflectionUtils.GetAttribute<DefaultValueAttribute>(member, true);
-        object defaultValue = (defaultValueAttribute != null) ? defaultValueAttribute.Value : null;
-
-        JsonMemberMapping memberMapping = new JsonMemberMapping(mappedName, member, ignored, readable, writable, memberConverter, defaultValue, required);
-
-        memberMappings.AddMapping(memberMapping);
-      }
-
-      return memberMappings;
     }
 
     private static Type GetConverterType(ICustomAttributeProvider attributeProvider)
@@ -169,11 +105,6 @@ namespace Newtonsoft.Json.Serialization
       }
 
       return null;
-    }
-
-    public static List<MemberInfo> GetSerializableMembers(Type objectType)
-    {
-      return ReflectionUtils.GetFieldsAndProperties(objectType, BindingFlags.Public | BindingFlags.Instance);
     }
   }
 }

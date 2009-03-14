@@ -108,6 +108,9 @@
     <Compile Include="Schema\UndefinedSchemaIdHandling.cs" />
     <Compile Include="Schema\ValidationEventArgs.cs" />
     <Compile Include="Schema\ValidationEventHandler.cs" />
+    <Compile Include="Serialization\CamelCaseMappingResolver.cs" />
+    <Compile Include="Serialization\DefaultMappingResolver.cs" />
+    <Compile Include="Serialization\IMappingResolver.cs" />
     <Compile Include="Serialization\JsonMemberMapping.cs" />
     <Compile Include="Serialization\JsonMemberMappingCollection.cs" />
     <Compile Include="MissingMemberHandling.cs" />

@@ -506,13 +506,26 @@ namespace Newtonsoft.Json.Tests.Linq
           new JValue(new DateTime(2009, 2, 15, 0, 0, 0, DateTimeKind.Utc))
         );
 
-      string json = a.ToString(new IsoDateTimeConverter());
+      string json = a.ToString(Formatting.Indented, new IsoDateTimeConverter());
 
       Assert.AreEqual(@"[
   ""2009-02-15T00:00:00.0000000Z""
 ]", json);
 
       json = JsonConvert.SerializeObject(a, new IsoDateTimeConverter());
+
+      Assert.AreEqual(@"[""2009-02-15T00:00:00.0000000Z""]", json);
+    }
+
+    [Test]
+    public void ToStringWithNoIndenting()
+    {
+      JArray a =
+        new JArray(
+          new JValue(new DateTime(2009, 2, 15, 0, 0, 0, DateTimeKind.Utc))
+        );
+
+      string json = a.ToString(Formatting.None, new IsoDateTimeConverter());
 
       Assert.AreEqual(@"[""2009-02-15T00:00:00.0000000Z""]", json);
     }

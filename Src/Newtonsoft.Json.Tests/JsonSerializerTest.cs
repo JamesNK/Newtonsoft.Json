@@ -777,14 +777,28 @@ keyword such as type of business.""
       name.pNumbers.Add(p1);
       name.pNumbers.Add(p2);
 
-      string json = JsonConvert.SerializeObject(name);
+      string json = JsonConvert.SerializeObject(name, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""personsName"": ""The Idiot in Next To Me"",
+  ""pNumbers"": [
+    {
+      ""phoneNumber"": ""555-1212""
+    },
+    {
+      ""phoneNumber"": ""444-1212""
+    }
+  ]
+}", json);
 
       Name newName = JsonConvert.DeserializeObject<Name>(json);
 
       Assert.AreEqual("The Idiot in Next To Me", newName.personsName);
 
-      // not passed in as part of the constructor, values not deserialized
-      Assert.AreEqual(0, newName.pNumbers.Count);
+      // not passed in as part of the constructor but assigned to pNumbers property
+      Assert.AreEqual(2, newName.pNumbers.Count);
+      Assert.AreEqual("555-1212", newName.pNumbers[0].phoneNumber);
+      Assert.AreEqual("444-1212", newName.pNumbers[1].phoneNumber);
     }
 
     [Test]
@@ -1323,15 +1337,103 @@ keyword such as type of business.""
       Console.WriteLine(javascriptJson);
     }
 
-    public class SomeClass
+    public void GenericListAndDictionaryInterfaceProperties()
     {
-      public int? SomeProp { get; set; }
+      GenericListAndDictionaryInterfaceProperties o = new GenericListAndDictionaryInterfaceProperties();
+      o.IDictionaryProperty = new Dictionary<string, int>
+                                {
+                                  {"one", 1},
+                                  {"two", 2},
+                                  {"three", 3}
+                                };
+      o.IListProperty = new List<int>
+                          {
+                            1, 2, 3
+                          };
+      o.IEnumerableProperty = new List<int>
+                                {
+                                  4, 5, 6
+                                };
+
+      string json = JsonConvert.SerializeObject(o, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""IEnumerableProperty"": [
+    4,
+    5,
+    6
+  ],
+  ""IListProperty"": [
+    1,
+    2,
+    3
+  ],
+  ""IDictionaryProperty"": {
+    ""one"": 1,
+    ""two"": 2,
+    ""three"": 3
+  }
+}", json);
+
+      GenericListAndDictionaryInterfaceProperties deserializedObject = JsonConvert.DeserializeObject<GenericListAndDictionaryInterfaceProperties>(json);
+      Assert.IsNotNull(deserializedObject);
+
+      CollectionAssert.AreEqual(o.IListProperty.ToArray(), deserializedObject.IListProperty.ToArray());
+      CollectionAssert.AreEqual(o.IEnumerableProperty.ToArray(), deserializedObject.IEnumerableProperty.ToArray());
+      CollectionAssert.AreEqual(o.IDictionaryProperty.ToArray(), deserializedObject.IDictionaryProperty.ToArray());
+    }
+
+    public class PropertyCase
+    {
+      public string firstName { get; set; }
+      public string FirstName { get; set; }
+      public string LastName { get; set; }
+      public string lastName { get; set; }
     }
 
     [Test]
-    public void Main()
+    public void DeserializeBestMatchPropertyCase()
     {
-      var pokes = JsonConvert.DeserializeObject<SomeClass>(@"{""SomeProp"":1}");
+      string json = @"{
+  ""firstName"": ""firstName"",
+  ""FirstName"": ""FirstName"",
+  ""LastName"": ""LastName"",
+  ""lastName"": ""lastName"",
+}";
+
+      PropertyCase o = JsonConvert.DeserializeObject<PropertyCase>(json);
+      Assert.IsNotNull(o);
+
+      Assert.AreEqual("firstName", o.firstName);
+      Assert.AreEqual("FirstName", o.FirstName);
+      Assert.AreEqual("LastName", o.LastName);
+      Assert.AreEqual("lastName", o.lastName);
+    }
+
+    public class SuperKlass
+    {
+      public string SuperProp { get; set; }
+      public SuperKlass() { SuperProp = "default superprop"; }
+    }
+
+    public class SubKlass : SuperKlass
+    {
+      public string SubProp { get; set; }
+      public SubKlass(string subprop) { SubProp = subprop; }
+    }
+
+    public void DeserializePropertiesOnToNonDefaultConstructor()
+    {
+      SubKlass i = new SubKlass("my subprop");
+      i.SuperProp = "overrided superprop";
+
+      string json = JsonConvert.SerializeObject(i);
+      Assert.AreEqual(@"{""SubProp"":""my subprop"",""SuperProp"":""overrided superprop""}", json);
+
+      SubKlass ii = JsonConvert.DeserializeObject<SubKlass>(json);
+
+      string newJson = JsonConvert.SerializeObject(ii);
+      Assert.AreEqual(@"{""SubProp"":""my subprop"",""SuperProp"":""overrided superprop""}", newJson);
     }
   }
 }

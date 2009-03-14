@@ -97,6 +97,9 @@
     <Compile Include="ObjectCreationHandling.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReferenceLoopHandling.cs" />
+    <Compile Include="Serialization\CamelCaseMappingResolver.cs" />
+    <Compile Include="Serialization\DefaultMappingResolver.cs" />
+    <Compile Include="Serialization\IMappingResolver.cs" />
     <Compile Include="StringBuffer.cs" />
     <Compile Include="Utilities\CollectionUtils.cs" />
     <Compile Include="Utilities\CollectionWrapper.cs" />

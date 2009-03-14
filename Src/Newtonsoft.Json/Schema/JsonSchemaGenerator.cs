@@ -24,20 +24,20 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Newtonsoft.Json.Utilities;
 using System.Globalization;
-using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json.Linq;
 using System.ComponentModel;
+using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Utilities;
+using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Schema
 {
   public class JsonSchemaGenerator
   {
     public UndefinedSchemaIdHandling UndefinedSchemaIdHandling { get; set; }
+    public IMappingResolver MappingResolver { get; set; }
 
     private class TypeSchema
     {
@@ -237,7 +237,12 @@ namespace Newtonsoft.Json.Schema
         {
           CurrentSchema.Id = GetTypeId(type, false);
 
-          JsonMemberMappingCollection mappings = JsonTypeReflector.GetMemberMappings(type);
+          JsonMemberMappingCollection mappings;
+
+          if (MappingResolver != null)
+            mappings = MappingResolver.ResolveMappings(type);
+          else
+            mappings = DefaultMappingResolver.Instance.ResolveMappings(type);
 
           CurrentSchema.Properties = new Dictionary<string, JsonSchema>();
           foreach (JsonMemberMapping mapping in mappings)

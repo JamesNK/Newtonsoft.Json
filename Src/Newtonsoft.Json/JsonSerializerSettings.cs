@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json
@@ -47,6 +48,7 @@ namespace Newtonsoft.Json
     /// </summary>
     /// <value>The converters.</value>
     public IList<JsonConverter> Converters { get; set; }
+    public IMappingResolver MappingResolver { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonSerializerSettings"/> class.

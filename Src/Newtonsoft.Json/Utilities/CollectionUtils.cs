@@ -352,6 +352,14 @@ namespace Newtonsoft.Json.Utilities
       return (IList)ReflectionUtils.CreateGeneric(typeof(List<>), listType);
     }
 
+    public static IDictionary CreateGenericDictionary(Type keyType, Type valueType)
+    {
+      ValidationUtils.ArgumentNotNull(keyType, "keyType");
+      ValidationUtils.ArgumentNotNull(valueType, "valueType");
+
+      return (IDictionary)ReflectionUtils.CreateGeneric(typeof(Dictionary<,>), keyType, valueType);
+    }
+
     public static bool IsListType(Type type)
     {
       ValidationUtils.ArgumentNotNull(type, "type");

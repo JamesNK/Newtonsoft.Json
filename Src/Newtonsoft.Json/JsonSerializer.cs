@@ -53,6 +53,7 @@ namespace Newtonsoft.Json
     private DefaultValueHandling _defaultValueHandling;
     private int _level;
     private JsonConverterCollection _converters;
+    private IMappingResolver _mappingResolver;
 
     /// <summary>
     /// Get or set how reference loops (e.g. a class referencing itself) is handled.
@@ -144,6 +145,12 @@ namespace Newtonsoft.Json
         return _converters;
       }
     }
+
+    public IMappingResolver MappingResolver
+    {
+      get { return _mappingResolver; }
+      set { _mappingResolver = value; }
+    }
     #endregion
 
     /// <summary>
@@ -170,7 +177,7 @@ namespace Newtonsoft.Json
 
       if (settings != null)
       {
-        if (!CollectionUtils.IsNullOrEmpty<JsonConverter>(settings.Converters))
+        if (!CollectionUtils.IsNullOrEmpty(settings.Converters))
           jsonSerializer.Converters.AddRange(settings.Converters);
 
         jsonSerializer.ReferenceLoopHandling = settings.ReferenceLoopHandling;
@@ -178,6 +185,7 @@ namespace Newtonsoft.Json
         jsonSerializer.ObjectCreationHandling = settings.ObjectCreationHandling;
         jsonSerializer.NullValueHandling = settings.NullValueHandling;
         jsonSerializer.DefaultValueHandling = settings.DefaultValueHandling;
+        jsonSerializer.MappingResolver = settings.MappingResolver;
       }
 
       return jsonSerializer;
@@ -363,62 +371,26 @@ namespace Newtonsoft.Json
       }
     }
 
-    protected virtual JsonMemberMappingCollection GetMemberMappings(Type objectType)
+    private JsonMemberMappingCollection GetMemberMappings(Type objectType)
     {
       ValidationUtils.ArgumentNotNull(objectType, "objectType");
 
-      return JsonTypeReflector.GetMemberMappings(objectType);
+      if (_mappingResolver != null)
+        return _mappingResolver.ResolveMappings(objectType);
+      
+      return DefaultMappingResolver.Instance.ResolveMappings(objectType);
     }
 
     private void SetObjectMember(JsonReader reader, object target, Type targetType, string memberName)
     {
       JsonMemberMappingCollection memberMappings = GetMemberMappings(targetType);
-      Type memberType;
-      object value;
 
-      // test if a member with memberName exists on the type
-      // otherwise test if target is a dictionary and assign value with the key if it is
-      if (memberMappings.Contains(memberName))
+      JsonMemberMapping memberMapping;
+      // attempt exact case match first
+      // then try match ignoring case
+      if (memberMappings.TryGetClosestMatchMapping(memberName, out memberMapping))
       {
-        JsonMemberMapping memberMapping = memberMappings[memberName];
-
-        if (memberMapping.Ignored)
-        {
-          reader.Skip();
-          return;
-        }
-
-        // get the member's underlying type
-        memberType = ReflectionUtils.GetMemberUnderlyingType(memberMapping.Member);
-
-        object currentValue = null;
-        bool useExistingValue = false;
-
-        if ((_objectCreationHandling == ObjectCreationHandling.Auto || _objectCreationHandling == ObjectCreationHandling.Reuse)
-          && (reader.TokenType == JsonToken.StartArray || reader.TokenType == JsonToken.StartObject))
-        {
-          currentValue = ReflectionUtils.GetMemberValue(memberMapping.Member, target);
-
-          useExistingValue = (currentValue != null && !memberType.IsArray && !ReflectionUtils.InheritsGenericDefinition(memberType, typeof(ReadOnlyCollection<>)));
-        }
-
-
-        if (!memberMapping.Writable && !useExistingValue)
-        {
-          reader.Skip();
-          return;
-        }
-
-        value = CreateObject(reader, memberType, (useExistingValue) ? currentValue : null, JsonTypeReflector.GetConverter(memberMapping.Member, memberType));
-
-        if (_nullValueHandling == NullValueHandling.Ignore && value == null)
-          return;
-
-        if (_defaultValueHandling == DefaultValueHandling.Ignore && object.Equals(value, memberMapping.DefaultValue))
-          return;
-
-        if (!useExistingValue)
-          ReflectionUtils.SetMemberValue(memberMapping.Member, target, value);
+        SetMappingValue(memberMapping, reader, target);
       }
       else
       {
@@ -429,8 +401,64 @@ namespace Newtonsoft.Json
       }
     }
 
+    private void SetMappingValue(JsonMemberMapping memberMapping, JsonReader reader, object target)
+    {
+      if (memberMapping.Ignored)
+      {
+        reader.Skip();
+        return;
+      }
+
+      // get the member's underlying type
+      Type memberType = ReflectionUtils.GetMemberUnderlyingType(memberMapping.Member);
+
+      object currentValue = null;
+      bool useExistingValue = false;
+
+      if ((_objectCreationHandling == ObjectCreationHandling.Auto || _objectCreationHandling == ObjectCreationHandling.Reuse)
+          && (reader.TokenType == JsonToken.StartArray || reader.TokenType == JsonToken.StartObject))
+      {
+        currentValue = ReflectionUtils.GetMemberValue(memberMapping.Member, target);
+
+        useExistingValue = (currentValue != null && !memberType.IsArray && !ReflectionUtils.InheritsGenericDefinition(memberType, typeof(ReadOnlyCollection<>)));
+      }
+
+      if (!memberMapping.Writable && !useExistingValue)
+      {
+        reader.Skip();
+        return;
+      }
+
+      object value = CreateObject(reader, memberType, (useExistingValue) ? currentValue : null, JsonTypeReflector.GetConverter(memberMapping.Member, memberType));
+
+      if (!useExistingValue && ShouldSetMappingValue(memberMapping, value))
+        ReflectionUtils.SetMemberValue(memberMapping.Member, target, value);
+    }
+
+    private bool ShouldSetMappingValue(JsonMemberMapping memberMapping, object value)
+    {
+      if (_nullValueHandling == NullValueHandling.Ignore && value == null)
+        return false;
+
+      if (_defaultValueHandling == DefaultValueHandling.Ignore && Equals(value, memberMapping.DefaultValue))
+        return false;
+
+      if (!memberMapping.Writable)
+        return false;
+
+      return true;
+    }
+
     private object CreateAndPopulateDictionary(JsonReader reader, Type objectType)
     {
+      if (IsTypeGenericDictionaryInterface(objectType))
+      {
+        Type keyType;
+        Type valueType;
+        ReflectionUtils.GetDictionaryKeyValueTypes(objectType, out keyType, out valueType);
+        objectType = ReflectionUtils.MakeGenericType(typeof(Dictionary<,>), keyType, valueType);
+      }
+
       IWrappedDictionary dictionary = CollectionUtils.CreateDictionaryWrapper(Activator.CreateInstance(objectType));
       PopulateDictionary(dictionary, reader);
 
@@ -465,6 +493,12 @@ namespace Newtonsoft.Json
 
     private object CreateAndPopulateList(JsonReader reader, Type objectType)
     {
+      if (IsTypeGenericCollectionInterface(objectType))
+      {
+        Type itemType = ReflectionUtils.GetCollectionItemType(objectType);
+        objectType = ReflectionUtils.MakeGenericType(typeof(List<>), itemType);
+      }
+
       return CollectionUtils.CreateAndPopulateList(objectType, l => PopulateList(l, ReflectionUtils.GetCollectionItemType(objectType), reader));
     }
 
@@ -489,67 +523,117 @@ namespace Newtonsoft.Json
       throw new JsonSerializationException("Unexpected end when deserializing array.");
     }
 
+    private bool IsTypeGenericDictionaryInterface(Type type)
+    {
+      if (!type.IsGenericType)
+        return false;
+
+      Type genericDefinition = type.GetGenericTypeDefinition();
+
+      return (genericDefinition == typeof (IDictionary<,>));
+    }
+
+    private bool IsTypeGenericCollectionInterface(Type type)
+    {
+      if (!type.IsGenericType)
+        return false;
+
+      Type genericDefinition = type.GetGenericTypeDefinition();
+
+      return (genericDefinition == typeof (IList<>)
+              || genericDefinition == typeof (ICollection<>)
+              || genericDefinition == typeof (IEnumerable<>));
+    }
+
     private object CreateAndPopulateObject(JsonReader reader, Type objectType)
     {
       object newObject;
 
       if (objectType.IsInterface || objectType.IsAbstract)
-      {
         throw new JsonSerializationException("Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantated.".FormatWith(CultureInfo.InvariantCulture, objectType));
-      }
-      else if (ReflectionUtils.HasDefaultConstructor(objectType))
+      
+      if (ReflectionUtils.HasDefaultConstructor(objectType))
       {
         newObject = Activator.CreateInstance(objectType);
 
         PopulateObject(newObject, reader, objectType);
         return newObject;
       }
-      else
+      
+      return CreateObjectFromNonDefaultConstructor(objectType, reader);
+    }
+
+    private object CreateObjectFromNonDefaultConstructor(Type objectType, JsonReader reader)
+    {
+      // object should have a single constructor
+      ConstructorInfo c = objectType.GetConstructors(BindingFlags.Public | BindingFlags.Instance).SingleOrDefault();
+
+      if (c == null)
+        throw new JsonSerializationException("Could not find a public constructor for type {0}.".FormatWith(CultureInfo.InvariantCulture, objectType));
+
+      // create a dictionary to put retrieved values into
+      JsonMemberMappingCollection memberMappings = GetMemberMappings(objectType);
+      IDictionary<JsonMemberMapping, object> mappingValues = memberMappings.ToDictionary(kv => kv, kv => (object)null);
+
+      bool exit = false;
+      while (!exit && reader.Read())
       {
-        ConstructorInfo c = objectType.GetConstructors(BindingFlags.Public | BindingFlags.Instance).SingleOrDefault();
-
-        if (c == null)
-          throw new JsonSerializationException("Could not find a public constructor for type {0}.".FormatWith(CultureInfo.InvariantCulture, objectType));
-
-        // create a dictionary to put retrieved values into
-        IDictionary<ParameterInfo, object> constructorParameters = c.GetParameters().ToDictionary(p => p, p => (object)null);
-        JsonMemberMappingCollection mappings = GetMemberMappings(objectType);
-
-        bool exit = false;
-        while (!exit && reader.Read())
+        switch (reader.TokenType)
         {
-          switch (reader.TokenType)
-          {
-            case JsonToken.PropertyName:
-              string memberName = reader.Value.ToString();
-              if (!reader.Read())
-                throw new JsonSerializationException("Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
+          case JsonToken.PropertyName:
+            string memberName = reader.Value.ToString();
+            if (!reader.Read())
+              throw new JsonSerializationException("Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
 
-              ParameterInfo matchingConstructorParameter = constructorParameters.ForgivingCaseSensitiveFind(kv => kv.Key.Name, memberName).Key;
-              JsonMemberMapping mapping;
+            JsonMemberMapping memberMapping;
+            // attempt exact case match first
+            // then try match ignoring case
+            if (memberMappings.TryGetClosestMatchMapping(memberName, out memberMapping))
+            {
+              if (!memberMapping.Ignored)
+              {
+                Type memberType = ReflectionUtils.GetMemberUnderlyingType(memberMapping.Member);
+                mappingValues[memberMapping] = CreateObject(reader, memberType, null, memberMapping.MemberConverter);
+              }
+            }
+            else
+            {
+              if (_missingMemberHandling == MissingMemberHandling.Error)
+                throw new JsonSerializationException("Could not find member '{0}' on object of type '{1}'".FormatWith(CultureInfo.InvariantCulture, memberName, objectType.Name));
 
-              if (matchingConstructorParameter != null && mappings.TryGetMapping(memberName, out mapping) && !mapping.Ignored)
-              {
-                constructorParameters[matchingConstructorParameter] = CreateObject(reader, matchingConstructorParameter.ParameterType, null, mapping.MemberConverter);
-              }
-              else
-              {
-                // skip token and all child tokens
-                reader.Skip();
-              }
-              break;
-            case JsonToken.EndObject:
-              exit = true;
-              break;
-            default:
-              throw new JsonSerializationException("Unexpected token when deserializing object: " + reader.TokenType);
-          }
+              reader.Skip();
+            }
+            break;
+          case JsonToken.EndObject:
+            exit = true;
+            break;
+          default:
+            throw new JsonSerializationException("Unexpected token when deserializing object: " + reader.TokenType);
         }
-
-        newObject = ReflectionUtils.CreateInstance(objectType, constructorParameters.Values.ToArray());
-
-        return newObject;
       }
+
+      IDictionary<ParameterInfo, object> constructorParameters = c.GetParameters().ToDictionary(p => p, p => (object)null);
+      IDictionary<JsonMemberMapping, object> remainingMappingValues = new Dictionary<JsonMemberMapping, object>();
+
+      foreach (KeyValuePair<JsonMemberMapping, object> mappingValue in mappingValues)
+      {
+        ParameterInfo matchingConstructorParameter = constructorParameters.ForgivingCaseSensitiveFind(kv => kv.Key.Name, mappingValue.Key.MappingName).Key;
+        if (matchingConstructorParameter != null)
+          constructorParameters[matchingConstructorParameter] = mappingValue.Value;
+        else
+          remainingMappingValues.Add(mappingValue);
+      }
+
+      object createdObject = ReflectionUtils.CreateInstance(objectType, constructorParameters.Values.ToArray());
+
+      // go through unused values and set the newly created object's properties
+      foreach (KeyValuePair<JsonMemberMapping, object> remainingMappingValue in remainingMappingValues)
+      {
+        if (ShouldSetMappingValue(remainingMappingValue.Key, remainingMappingValue.Value))
+          ReflectionUtils.SetMemberValue(remainingMappingValue.Key.Member, createdObject, remainingMappingValue.Value);
+      }
+
+      return createdObject;
     }
 
     private object PopulateObject(object newObject, JsonReader reader, Type objectType)
@@ -557,11 +641,6 @@ namespace Newtonsoft.Json
       JsonMemberMappingCollection memberMappings = GetMemberMappings(objectType);
       Dictionary<string, bool> requiredMappings =
         memberMappings.Where(m => m.Required).ToDictionary(m => m.MappingName, m => false);
-      //List<RequiredMemberContext> requiredMappingContexts =
-      //  memberMappings.Where(m => m.Required).Select(m => new RequiredMemberContext(m.MappingName, false)).ToList();
-
-      //ObjectContext context = new ObjectContext(newObject, requiredMappingContexts);
-      //DeserializeStack.Add(context);
 
       while (reader.Read())
       {
@@ -574,10 +653,7 @@ namespace Newtonsoft.Json
               throw new JsonSerializationException("Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
 
             if (reader.TokenType != JsonToken.Null)
-            {
-              if (requiredMappings.ContainsKey(memberName))
-                requiredMappings[memberName] = true;
-            }
+              SetRequiredMapping(memberName, requiredMappings);
 
             SetObjectMember(reader, newObject, objectType, memberName);
             break;
@@ -587,8 +663,6 @@ namespace Newtonsoft.Json
               if (!requiredMapping.Value)
                 throw new JsonSerializationException("Required property '{0}' not found in JSON.".FormatWith(CultureInfo.InvariantCulture, requiredMapping.Key));
             }
-            // TODO: move below, change to RemoveAt
-            //DeserializeStack.Remove(context);
             return newObject;
           default:
             throw new JsonSerializationException("Unexpected token when deserializing object: " + reader.TokenType);
@@ -597,6 +671,28 @@ namespace Newtonsoft.Json
 
       throw new JsonSerializationException("Unexpected end when deserializing object.");
     }
+
+    private void SetRequiredMapping(string memberName, Dictionary<string, bool> requiredMappings)
+    {
+      // first attempt to find exact case match
+      // then attempt case insensitive match
+      if (requiredMappings.ContainsKey(memberName))
+      {
+        requiredMappings[memberName] = true;
+      }
+      else
+      {
+        foreach (KeyValuePair<string, bool> requiredMapping in requiredMappings)
+        {
+          if (string.Compare(requiredMapping.Key, requiredMapping.Key, StringComparison.OrdinalIgnoreCase) == 0)
+          {
+            requiredMappings[requiredMapping.Key] = true;
+            break;
+          }
+        }                
+      }
+    }
+
     #endregion
 
     #region Serialize

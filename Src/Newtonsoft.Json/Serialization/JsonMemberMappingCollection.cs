@@ -64,18 +64,29 @@ namespace Newtonsoft.Json.Serialization
       Add(memberMapping);
     }
 
-    public bool TryGetMapping(string mappingName, out JsonMemberMapping memberMapping)
+    public bool TryGetClosestMatchMapping(string mappingName, out JsonMemberMapping memberMapping)
     {
-      if (Contains(mappingName))
-      {
-        memberMapping = this[mappingName];
+      if (TryGetMapping(mappingName, StringComparison.Ordinal, out memberMapping))
         return true;
-      }
-      else
+      if (TryGetMapping(mappingName, StringComparison.OrdinalIgnoreCase, out memberMapping))
+        return true;
+
+      return false;
+    }
+
+    public bool TryGetMapping(string mappingName, StringComparison comparisonType, out JsonMemberMapping memberMapping)
+    {
+      foreach (JsonMemberMapping mapping in this)
       {
-        memberMapping = default(JsonMemberMapping);
-        return false;
+        if (string.Compare(mappingName, mapping.MappingName, comparisonType) == 0)
+        {
+          memberMapping = mapping;
+          return true;
+        }
       }
+
+      memberMapping = default(JsonMemberMapping);
+      return false;
     }
   }
 }

@@ -281,14 +281,27 @@ namespace Newtonsoft.Json.Tests.Schema
       Assert.AreEqual(JsonSchemaType.String, schema.Type);
     }
 
-    public class CustomDirectoryInfoSerializer : JsonSerializer
+    //public class CustomDirectoryInfoSerializer : JsonSerializer
+    //{
+    //  protected override Newtonsoft.Json.Serialization.JsonMemberMappingCollection GetMemberMappings(Type objectType)
+    //  {
+    //    JsonMemberMappingCollection mappings = base.GetMemberMappings(objectType);
+
+    //    JsonMemberMappingCollection c = new JsonMemberMappingCollection();
+    //    CollectionUtils.AddRange(c, (IEnumerable) mappings.Where(m => m.MappingName != "Root"));
+
+    //    return c;
+    //  }
+    //}
+
+    public class CustomDirectoryInfoMapper : DefaultMappingResolver
     {
-      protected override Newtonsoft.Json.Serialization.JsonMemberMappingCollection GetMemberMappings(Type objectType)
+      public override JsonMemberMappingCollection ResolveMappings(Type type)
       {
-        JsonMemberMappingCollection mappings = base.GetMemberMappings(objectType);
+        JsonMemberMappingCollection mappings = base.ResolveMappings(type);
 
         JsonMemberMappingCollection c = new JsonMemberMappingCollection();
-        CollectionUtils.AddRange(c, (IEnumerable) mappings.Where(m => m.MappingName != "Root"));
+        CollectionUtils.AddRange(c, (IEnumerable)mappings.Where(m => m.MappingName != "Root"));
 
         return c;
       }
@@ -366,9 +379,10 @@ namespace Newtonsoft.Json.Tests.Schema
       DirectoryInfo temp = new DirectoryInfo(@"c:\temp");
 
       JsonTokenWriter jsonWriter = new JsonTokenWriter();
-      CustomDirectoryInfoSerializer customSerializer = new CustomDirectoryInfoSerializer();
-      customSerializer.Converters.Add(new IsoDateTimeConverter());
-      customSerializer.Serialize(jsonWriter, temp);
+      JsonSerializer serializer = new JsonSerializer();
+      serializer.Converters.Add(new IsoDateTimeConverter());
+      serializer.MappingResolver = new CustomDirectoryInfoMapper();
+      serializer.Serialize(jsonWriter, temp);
 
       List<string> errors = new List<string>();
       jsonWriter.Token.Validate(schema, (sender, args) => errors.Add(args.Message));
@@ -376,6 +390,77 @@ namespace Newtonsoft.Json.Tests.Schema
       Assert.AreEqual(2, errors.Count);
       Assert.AreEqual("Non-optional properties are missing from object: Root.", errors[0]);
       Assert.AreEqual("Non-optional properties are missing from object: Root.", errors[1]);
+    }
+
+    [Test]
+    public void GenerateSchemaCamelCase()
+    {
+      JsonSchemaGenerator generator = new JsonSchemaGenerator();
+      generator.UndefinedSchemaIdHandling = UndefinedSchemaIdHandling.UseTypeName;
+      generator.MappingResolver = new CamelCaseMappingResolver();
+
+      JsonSchema schema = generator.Generate(typeof (DirectoryInfo), true);
+
+      string json = schema.ToString();
+
+      Assert.AreEqual(@"{
+  ""id"": ""System.IO.DirectoryInfo"",
+  ""type"": [
+    ""object"",
+    ""null""
+  ],
+  ""additionalProperties"": false,
+  ""properties"": {
+    ""name"": {
+      ""type"": [
+        ""string"",
+        ""null""
+      ]
+    },
+    ""parent"": {
+      ""$ref"": ""System.IO.DirectoryInfo""
+    },
+    ""exists"": {
+      ""type"": ""boolean""
+    },
+    ""root"": {
+      ""$ref"": ""System.IO.DirectoryInfo""
+    },
+    ""fullName"": {
+      ""type"": [
+        ""string"",
+        ""null""
+      ]
+    },
+    ""extension"": {
+      ""type"": [
+        ""string"",
+        ""null""
+      ]
+    },
+    ""creationTime"": {
+      ""type"": ""string""
+    },
+    ""creationTimeUtc"": {
+      ""type"": ""string""
+    },
+    ""lastAccessTime"": {
+      ""type"": ""string""
+    },
+    ""lastAccessTimeUtc"": {
+      ""type"": ""string""
+    },
+    ""lastWriteTime"": {
+      ""type"": ""string""
+    },
+    ""lastWriteTimeUtc"": {
+      ""type"": ""string""
+    },
+    ""attributes"": {
+      ""type"": ""integer""
+    }
+  }
+}", json);
     }
   }
 }

@@ -224,7 +224,7 @@ namespace Newtonsoft.Json.Utilities
       {
         return type.GetElementType();
       }
-      else if (ImplementsGenericDefinition(type, typeof(ICollection<>), out genericListType))
+      else if (ImplementsGenericDefinition(type, typeof(IEnumerable<>), out genericListType))
       {
         if (genericListType.IsGenericTypeDefinition)
           throw new Exception("Type {0} is not a collection.".FormatWith(CultureInfo.InvariantCulture, type));
