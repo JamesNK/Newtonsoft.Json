@@ -118,5 +118,46 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual("Internal!", ReflectionUtils.GetMemberValue(typeof(PrivateMembersClass).GetField("_internalString", BindingFlags.Instance | BindingFlags.NonPublic), deserializedPrivateMembersClass));
       Assert.AreEqual(-2, ReflectionUtils.GetMemberValue(typeof(PrivateMembersClass).GetField("i", BindingFlags.Instance | BindingFlags.NonPublic), deserializedPrivateMembersClass));
     }
+
+    [Test]
+    public void BlogPostExample()
+    {
+      Product product = new Product
+                          {
+                            ExpiryDate = new DateTime(2010, 12, 20, 18, 1, 0, DateTimeKind.Utc),
+                            Name = "Widget",
+                            Price = 9.99m,
+                            Sizes = new[] {"Small", "Medium", "Large"}
+                          };
+
+      string json = 
+        JsonConvert.SerializeObject(
+          product,
+          Formatting.Indented,
+          new JsonSerializerSettings { MappingResolver = new CamelCaseMappingResolver() }
+        );
+
+      //{
+      //  "name": "Widget",
+      //  "expiryDate": "\/Date(1292868060000)\/",
+      //  "price": 9.99,
+      //  "sizes": [
+      //    "Small",
+      //    "Medium",
+      //    "Large"
+      //  ]
+      //}
+
+      Assert.AreEqual(@"{
+  ""name"": ""Widget"",
+  ""expiryDate"": ""\/Date(1292868060000)\/"",
+  ""price"": 9.99,
+  ""sizes"": [
+    ""Small"",
+    ""Medium"",
+    ""Large""
+  ]
+}", json);
+    }
   }
 }

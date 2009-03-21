@@ -51,7 +51,7 @@ namespace Newtonsoft.Json.Tests.TestObjects
 
       Product rocket = new Product();
       rocket.Name = "Rocket";
-      rocket.Expiry = new DateTime(2000, 2, 2, 23, 1, 30, DateTimeKind.Utc);
+      rocket.ExpiryDate = new DateTime(2000, 2, 2, 23, 1, 30, DateTimeKind.Utc);
       Product alien = new Product();
       alien.Name = "Alien";
 

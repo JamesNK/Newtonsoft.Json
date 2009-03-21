@@ -65,14 +65,14 @@ namespace Newtonsoft.Json.Tests
       Product product = new Product();
 
       product.Name = "Apple";
-      product.Expiry = new DateTime(2008, 12, 28);
+      product.ExpiryDate = new DateTime(2008, 12, 28);
       product.Price = 3.99M;
       product.Sizes = new string[] { "Small", "Medium", "Large" };
 
       string output = JsonConvert.SerializeObject(product);
       //{
       //  "Name": "Apple",
-      //  "Expiry": "\/Date(1230375600000+1300)\/",
+      //  "ExpiryDate": "\/Date(1230375600000+1300)\/",
       //  "Price": 3.99,
       //  "Sizes": [
       //    "Small",
@@ -84,7 +84,7 @@ namespace Newtonsoft.Json.Tests
       Product deserializedProduct = (Product)JsonConvert.DeserializeObject(output, typeof(Product));
 
       Assert.AreEqual("Apple", deserializedProduct.Name);
-      Assert.AreEqual(new DateTime(2008, 12, 28), deserializedProduct.Expiry);
+      Assert.AreEqual(new DateTime(2008, 12, 28), deserializedProduct.ExpiryDate);
       Assert.AreEqual(3.99, deserializedProduct.Price);
       Assert.AreEqual("Small", deserializedProduct.Sizes[0]);
       Assert.AreEqual("Medium", deserializedProduct.Sizes[1]);
@@ -95,7 +95,7 @@ namespace Newtonsoft.Json.Tests
     //public void Advanced()
     //{
     //  Product product = new Product();
-    //  product.Expiry = new DateTime(2008, 12, 28);
+    //  product.ExpiryDate = new DateTime(2008, 12, 28);
 
     //  JsonSerializer serializer = new JsonSerializer();
     //  serializer.Converters.Add(new JavaScriptDateTimeConverter());
@@ -105,19 +105,19 @@ namespace Newtonsoft.Json.Tests
     //  using (JsonWriter writer = new JsonTextWriter(sw))
     //  {
     //    serializer.Serialize(writer, product);
-    //    // {"Expiry":new Date(1230375600000),"Price":0}
+    //    // {"ExpiryDate":new Date(1230375600000),"Price":0}
     //  }
     //}
 
     [Test]
     public void JsonConvertSerializer()
     {
-      string value = @"{""Name"":""Orange"", ""Price"":3.99, ""Expiry"":""01/24/2010 12:00:00""}";
+      string value = @"{""Name"":""Orange"", ""Price"":3.99, ""ExpiryDate"":""01/24/2010 12:00:00""}";
 
       Product p = JsonConvert.DeserializeObject(value, typeof(Product)) as Product;
 
       Assert.AreEqual("Orange", p.Name);
-      Assert.AreEqual(new DateTime(2010, 1, 24, 12, 0, 0), p.Expiry);
+      Assert.AreEqual(new DateTime(2010, 1, 24, 12, 0, 0), p.ExpiryDate);
       Assert.AreEqual(3.99, p.Price);
     }
 
@@ -164,7 +164,7 @@ namespace Newtonsoft.Json.Tests
     [Test]
     public void HashtableDeserialization()
     {
-      string value = @"{""Name"":""Orange"", ""Price"":3.99, ""Expiry"":""01/24/2010 12:00:00""}";
+      string value = @"{""Name"":""Orange"", ""Price"":3.99, ""ExpiryDate"":""01/24/2010 12:00:00""}";
 
       Hashtable p = JsonConvert.DeserializeObject(value, typeof(Hashtable)) as Hashtable;
 
@@ -174,11 +174,11 @@ namespace Newtonsoft.Json.Tests
     [Test]
     public void TypedHashtableDeserialization()
     {
-      string value = @"{""Name"":""Orange"", ""Hash"":{""Expiry"":""01/24/2010 12:00:00"",""UntypedArray"":[""01/24/2010 12:00:00""]}}";
+      string value = @"{""Name"":""Orange"", ""Hash"":{""ExpiryDate"":""01/24/2010 12:00:00"",""UntypedArray"":[""01/24/2010 12:00:00""]}}";
 
       TypedSubHashtable p = JsonConvert.DeserializeObject(value, typeof(TypedSubHashtable)) as TypedSubHashtable;
 
-      Assert.AreEqual("01/24/2010 12:00:00", p.Hash["Expiry"].ToString());
+      Assert.AreEqual("01/24/2010 12:00:00", p.Hash["ExpiryDate"].ToString());
       Assert.AreEqual(@"[
   ""01/24/2010 12:00:00""
 ]", p.Hash["UntypedArray"].ToString());
@@ -408,14 +408,14 @@ keyword such as type of business.""
       Product product = new Product();
 
       product.Name = "Apple";
-      product.Expiry = new DateTime(2008, 12, 28);
+      product.ExpiryDate = new DateTime(2008, 12, 28);
       product.Price = 3.99M;
       product.Sizes = new string[] { "Small", "Medium", "Large" };
 
       string output = JsonConvert.SerializeObject(product);
       //{
       //  "Name": "Apple",
-      //  "Expiry": new Date(1230422400000),
+      //  "ExpiryDate": new Date(1230422400000),
       //  "Price": 3.99,
       //  "Sizes": [
       //    "Small",
@@ -433,14 +433,14 @@ keyword such as type of business.""
       Product product = new Product();
 
       product.Name = "Apple";
-      product.Expiry = new DateTime(2008, 12, 28);
+      product.ExpiryDate = new DateTime(2008, 12, 28);
       product.Price = 3.99M;
       product.Sizes = new string[] { "Small", "Medium", "Large" };
 
       string output = JsonConvert.SerializeObject(product);
       //{
       //  "Name": "Apple",
-      //  "Expiry": new Date(1230422400000),
+      //  "ExpiryDate": new Date(1230422400000),
       //  "Price": 3.99,
       //  "Sizes": [
       //    "Small",
@@ -462,7 +462,7 @@ keyword such as type of business.""
       ProductShort deserializedProductShort = (ProductShort)deserializedValue;
 
       Assert.AreEqual("Apple", deserializedProductShort.Name);
-      Assert.AreEqual(new DateTime(2008, 12, 28), deserializedProductShort.Expiry);
+      Assert.AreEqual(new DateTime(2008, 12, 28), deserializedProductShort.ExpiryDate);
       Assert.AreEqual("Small", deserializedProductShort.Sizes[0]);
       Assert.AreEqual("Medium", deserializedProductShort.Sizes[1]);
       Assert.AreEqual("Large", deserializedProductShort.Sizes[2]);
@@ -554,7 +554,7 @@ keyword such as type of business.""
         };
 
       string json = JsonConvert.SerializeObject(anonymous);
-      Assert.AreEqual(@"{""StringValue"":""I am a string"",""IntValue"":2147483647,""NestedAnonymous"":{""NestedValue"":255},""NestedArray"":[1,2],""Product"":{""Name"":""TestProduct"",""Expiry"":""\/Date(946684800000)\/"",""Price"":0,""Sizes"":null}}", json);
+      Assert.AreEqual(@"{""StringValue"":""I am a string"",""IntValue"":2147483647,""NestedAnonymous"":{""NestedValue"":255},""NestedArray"":[1,2],""Product"":{""Name"":""TestProduct"",""ExpiryDate"":""\/Date(946684800000)\/"",""Price"":0,""Sizes"":null}}", json);
 
       anonymous = JsonConvert.DeserializeAnonymousType(json, anonymous);
       Assert.AreEqual("I am a string", anonymous.StringValue);
@@ -583,7 +583,7 @@ keyword such as type of business.""
 
       jsonSerializer.Serialize(sw, collection);
 
-      Assert.AreEqual(@"[{""Name"":""Test1"",""Expiry"":""\/Date(946684800000)\/"",""Price"":0,""Sizes"":null},{""Name"":""Test2"",""Expiry"":""\/Date(946684800000)\/"",""Price"":0,""Sizes"":null},{""Name"":""Test3"",""Expiry"":""\/Date(946684800000)\/"",""Price"":0,""Sizes"":null}]",
+      Assert.AreEqual(@"[{""Name"":""Test1"",""ExpiryDate"":""\/Date(946684800000)\/"",""Price"":0,""Sizes"":null},{""Name"":""Test2"",""ExpiryDate"":""\/Date(946684800000)\/"",""Price"":0,""Sizes"":null},{""Name"":""Test3"",""ExpiryDate"":""\/Date(946684800000)\/"",""Price"":0,""Sizes"":null}]",
         sw.GetStringBuilder().ToString());
 
       ProductCollection collectionNew = (ProductCollection)jsonSerializer.Deserialize(new JsonTextReader(new StringReader(sw.GetStringBuilder().ToString())), typeof(ProductCollection));
@@ -604,7 +604,7 @@ keyword such as type of business.""
 
       //JsonConvert.ConvertDateTimeToJavaScriptTicks(s1.Establised.DateTime)
 
-      Assert.AreEqual(@"{""Color"":2,""Establised"":""\/Date(1264122061000+0000)\/"",""Width"":1.1,""Employees"":999,""RoomsPerFloor"":[1,2,3,4,5,6,7,8,9],""Open"":false,""Symbol"":""@"",""Mottos"":[""Hello World"",""öäüÖÄÜ\\'{new Date(12345);}[222]_µ@²³~"",null,"" ""],""Cost"":100980.1,""Escape"":""\r\n\t\f\b?{\\r\\n\""'"",""product"":[{""Name"":""Rocket"",""Expiry"":""\/Date(949532490000)\/"",""Price"":0},{""Name"":""Alien"",""Expiry"":""\/Date(946684800000)\/"",""Price"":0}]}", sw.GetStringBuilder().ToString());
+      Assert.AreEqual(@"{""Color"":2,""Establised"":""\/Date(1264122061000+0000)\/"",""Width"":1.1,""Employees"":999,""RoomsPerFloor"":[1,2,3,4,5,6,7,8,9],""Open"":false,""Symbol"":""@"",""Mottos"":[""Hello World"",""öäüÖÄÜ\\'{new Date(12345);}[222]_µ@²³~"",null,"" ""],""Cost"":100980.1,""Escape"":""\r\n\t\f\b?{\\r\\n\""'"",""product"":[{""Name"":""Rocket"",""ExpiryDate"":""\/Date(949532490000)\/"",""Price"":0},{""Name"":""Alien"",""ExpiryDate"":""\/Date(946684800000)\/"",""Price"":0}]}", sw.GetStringBuilder().ToString());
 
       Store s2 = (Store)jsonSerializer.Deserialize(new JsonTextReader(new StringReader("{}")), typeof(Store));
       Assert.AreEqual("\r\n\t\f\b?{\\r\\n\"\'", s2.Escape);
@@ -612,7 +612,7 @@ keyword such as type of business.""
       Store s3 = (Store)jsonSerializer.Deserialize(new JsonTextReader(new StringReader(@"{""Escape"":null}")), typeof(Store));
       Assert.AreEqual("\r\n\t\f\b?{\\r\\n\"\'", s3.Escape);
 
-      Store s4 = (Store)jsonSerializer.Deserialize(new JsonTextReader(new StringReader(@"{""Color"":2,""Establised"":""\/Date(1264071600000+1300)\/"",""Width"":1.1,""Employees"":999,""RoomsPerFloor"":[1,2,3,4,5,6,7,8,9],""Open"":false,""Symbol"":""@"",""Mottos"":[""Hello World"",""öäüÖÄÜ\\'{new Date(12345);}[222]_µ@²³~"",null,"" ""],""Cost"":100980.1,""Escape"":""\r\n\t\f\b?{\\r\\n\""'"",""product"":[{""Name"":""Rocket"",""Expiry"":""\/Date(949485690000+1300)\/"",""Price"":0},{""Name"":""Alien"",""Expiry"":""\/Date(946638000000)\/"",""Price"":0}]}")), typeof(Store));
+      Store s4 = (Store)jsonSerializer.Deserialize(new JsonTextReader(new StringReader(@"{""Color"":2,""Establised"":""\/Date(1264071600000+1300)\/"",""Width"":1.1,""Employees"":999,""RoomsPerFloor"":[1,2,3,4,5,6,7,8,9],""Open"":false,""Symbol"":""@"",""Mottos"":[""Hello World"",""öäüÖÄÜ\\'{new Date(12345);}[222]_µ@²³~"",null,"" ""],""Cost"":100980.1,""Escape"":""\r\n\t\f\b?{\\r\\n\""'"",""product"":[{""Name"":""Rocket"",""ExpiryDate"":""\/Date(949485690000+1300)\/"",""Price"":0},{""Name"":""Alien"",""ExpiryDate"":""\/Date(946638000000)\/"",""Price"":0}]}")), typeof(Store));
       Assert.AreEqual(s1.Establised, s3.Establised);
     }
 
