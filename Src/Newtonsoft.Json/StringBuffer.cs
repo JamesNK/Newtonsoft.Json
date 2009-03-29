@@ -24,8 +24,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Newtonsoft.Json
 {
@@ -37,7 +35,7 @@ namespace Newtonsoft.Json
     private char[] _buffer;
     private int _position;
 
-    private static char[] _emptyBuffer = new char[0];
+    private static readonly char[] _emptyBuffer = new char[0];
 
     public int Position
     {

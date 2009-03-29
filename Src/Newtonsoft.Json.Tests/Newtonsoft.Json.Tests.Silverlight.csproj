@@ -63,6 +63,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Converters\BinaryConverterTests.cs" />
+    <Compile Include="Converters\StringEnumConverterTests.cs" />
     <Compile Include="Serialization\CamelCaseMappingResolverTests.cs" />
     <Compile Include="JsonValidatingReaderTests.cs" />
     <Compile Include="Schema\ExtensionsTests.cs" />

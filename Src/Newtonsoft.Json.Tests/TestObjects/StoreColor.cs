@@ -23,13 +23,16 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+using System;
+
 namespace Newtonsoft.Json.Tests.TestObjects
 {
+  [Flags]
   public enum StoreColor
   {
-    Black,
-    Red,
-    Yellow,
-    White
+    Black = 1,
+    Red = 2,
+    Yellow = 4,
+    White = 8
   }
 }

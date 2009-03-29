@@ -55,6 +55,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Converters\BinaryConverter.cs" />
+    <Compile Include="Converters\StringEnumConverter.cs" />
     <Compile Include="DateTimeOffset.cs" />
     <Compile Include="IJsonLineInfo.cs" />
     <Compile Include="JsonArrayAttribute.cs" />
