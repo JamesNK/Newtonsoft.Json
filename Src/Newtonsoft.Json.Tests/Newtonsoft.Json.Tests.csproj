@@ -142,8 +142,8 @@
     <Compile Include="JsonSerializerTest.cs" />
     <Compile Include="JsonTextReaderTest.cs" />
     <Compile Include="JsonTextWriterTest.cs" />
-    <Compile Include="JTokenReaderTest.cs" />
-    <Compile Include="JTokenWriterTest.cs" />
+    <Compile Include="Linq\JTokenReaderTest.cs" />
+    <Compile Include="Linq\JTokenWriterTest.cs" />
     <Compile Include="Linq\JArrayTests.cs" />
     <Compile Include="Linq\JObjectTests.cs" />
     <Compile Include="Linq\JTokenEqualityComparerTests.cs" />

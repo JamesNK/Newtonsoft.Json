@@ -32,7 +32,7 @@ using System.IO;
 using Newtonsoft.Json.Linq;
 using System.Linq;
 
-namespace Newtonsoft.Json.Tests
+namespace Newtonsoft.Json.Tests.Linq
 {
   public class JTokenWriterTest : TestFixtureBase
   {

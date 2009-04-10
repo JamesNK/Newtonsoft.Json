@@ -31,7 +31,7 @@ using Newtonsoft.Json;
 using System.IO;
 using Newtonsoft.Json.Linq;
 
-namespace Newtonsoft.Json.Tests
+namespace Newtonsoft.Json.Tests.Linq
 {
   public class JTokenReaderTest : TestFixtureBase
   {
