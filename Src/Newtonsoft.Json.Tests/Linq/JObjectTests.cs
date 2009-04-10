@@ -246,13 +246,13 @@ Parameter name: arrayIndex")]
       JObject o = JObject.FromObject(raw);
 
       Assert.AreEqual("FirstNameValue", (string)o["first_name"]);
-      Assert.AreEqual(JsonTokenType.Raw, ((JValue)o["RawContent"]).Type);
+      Assert.AreEqual(JTokenType.Raw, ((JValue)o["RawContent"]).Type);
       Assert.AreEqual("[1,2,3,4,5]", (string)o["RawContent"]);
       Assert.AreEqual("LastNameValue", (string)o["last_name"]);
     }
 
     [Test]
-    public void JsonTokenReader()
+    public void JTokenReader()
     {
       PersonRaw raw = new PersonRaw
       {
@@ -263,7 +263,7 @@ Parameter name: arrayIndex")]
 
       JObject o = JObject.FromObject(raw);
 
-      JsonReader reader = new JsonTokenReader(o);
+      JsonReader reader = new JTokenReader(o);
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
@@ -304,7 +304,7 @@ Parameter name: arrayIndex")]
 
       JObject o = JObject.FromObject(raw);
 
-      JsonReader reader = new JsonTokenReader(o);
+      JsonReader reader = new JTokenReader(o);
       JsonSerializer serializer = new JsonSerializer();
       raw = (PersonRaw)serializer.Deserialize(reader, typeof(PersonRaw));
 

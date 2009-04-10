@@ -238,7 +238,7 @@ namespace Newtonsoft.Json
     private JToken CreateJToken(JsonReader reader)
     {
       JToken token;
-      using (JsonTokenWriter writer = new JsonTokenWriter())
+      using (JTokenWriter writer = new JTokenWriter())
       {
         writer.WriteToken(reader);
         token = writer.Token;

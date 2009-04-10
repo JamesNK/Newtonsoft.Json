@@ -33,7 +33,7 @@ namespace Newtonsoft.Json.Linq
   /// <summary>
   /// Specifies the type of token.
   /// </summary>
-  public enum JsonTokenType
+  public enum JTokenType
   {
     /// <summary>
     /// No token type has been set.

@@ -121,7 +121,7 @@ namespace Newtonsoft.Json
 
     private int _top;
 
-    private List<JsonTokenType> _stack;
+    private List<JTokenType> _stack;
     private State _currentState;
     private Formatting _formatting;
     private List<object> _serializeStack;
@@ -192,13 +192,13 @@ namespace Newtonsoft.Json
     /// </summary>
     public JsonWriter()
     {
-      _stack = new List<JsonTokenType>(8);
-      _stack.Add(JsonTokenType.None);
+      _stack = new List<JTokenType>(8);
+      _stack.Add(JTokenType.None);
       _currentState = State.Start;
       _formatting = Formatting.None;
     }
 
-    private void Push(JsonTokenType value)
+    private void Push(JTokenType value)
     {
       _top++;
       if (_stack.Count <= _top)
@@ -207,15 +207,15 @@ namespace Newtonsoft.Json
         _stack[_top] = value;
     }
 
-    private JsonTokenType Pop()
+    private JTokenType Pop()
     {
-      JsonTokenType value = Peek();
+      JTokenType value = Peek();
       _top--;
 
       return value;
     }
 
-    private JsonTokenType Peek()
+    private JTokenType Peek()
     {
       return _stack[_top];
     }
@@ -239,7 +239,7 @@ namespace Newtonsoft.Json
     public virtual void WriteStartObject()
     {
       AutoComplete(JsonToken.StartObject);
-      Push(JsonTokenType.Object);
+      Push(JTokenType.Object);
     }
 
     /// <summary>
@@ -256,7 +256,7 @@ namespace Newtonsoft.Json
     public virtual void WriteStartArray()
     {
       AutoComplete(JsonToken.StartArray);
-      Push(JsonTokenType.Array);
+      Push(JTokenType.Array);
     }
 
     /// <summary>
@@ -274,7 +274,7 @@ namespace Newtonsoft.Json
     public virtual void WriteStartConstructor(string name)
     {
       AutoComplete(JsonToken.StartConstructor);
-      Push(JsonTokenType.Constructor);
+      Push(JTokenType.Constructor);
     }
 
     /// <summary>
@@ -433,17 +433,17 @@ namespace Newtonsoft.Json
       }
     }
 
-    private void WriteEnd(JsonTokenType type)
+    private void WriteEnd(JTokenType type)
     {
       switch (type)
       {
-        case JsonTokenType.Object:
+        case JTokenType.Object:
           WriteEndObject();
           break;
-        case JsonTokenType.Array:
+        case JTokenType.Array:
           WriteEndArray();
           break;
-        case JsonTokenType.Constructor:
+        case JTokenType.Constructor:
           WriteEndConstructor();
           break;
         default:
@@ -459,30 +459,30 @@ namespace Newtonsoft.Json
       }
     }
 
-    private JsonTokenType GetTypeForCloseToken(JsonToken token)
+    private JTokenType GetTypeForCloseToken(JsonToken token)
     {
       switch (token)
       {
         case JsonToken.EndObject:
-          return JsonTokenType.Object;
+          return JTokenType.Object;
         case JsonToken.EndArray:
-          return JsonTokenType.Array;
+          return JTokenType.Array;
         case JsonToken.EndConstructor:
-          return JsonTokenType.Constructor;
+          return JTokenType.Constructor;
         default:
           throw new JsonWriterException("No type for token: " + token);
       }
     }
 
-    private JsonToken GetCloseTokenForType(JsonTokenType type)
+    private JsonToken GetCloseTokenForType(JTokenType type)
     {
       switch (type)
       {
-        case JsonTokenType.Object:
+        case JTokenType.Object:
           return JsonToken.EndObject;
-        case JsonTokenType.Array:
+        case JTokenType.Array:
           return JsonToken.EndArray;
-        case JsonTokenType.Constructor:
+        case JTokenType.Constructor:
           return JsonToken.EndConstructor;
         default:
           throw new JsonWriterException("No close token for type: " + type);
@@ -519,20 +519,20 @@ namespace Newtonsoft.Json
         WriteEnd(token);
       }
 
-      JsonTokenType currentLevelType = Peek();
+      JTokenType currentLevelType = Peek();
 
       switch (currentLevelType)
       {
-        case JsonTokenType.Object:
+        case JTokenType.Object:
           _currentState = State.Object;
           break;
-        case JsonTokenType.Array:
+        case JTokenType.Array:
           _currentState = State.Array;
           break;
-        case JsonTokenType.Constructor:
+        case JTokenType.Constructor:
           _currentState = State.Array;
           break;
-        case JsonTokenType.None:
+        case JTokenType.None:
           _currentState = State.Start;
           break;
         default:

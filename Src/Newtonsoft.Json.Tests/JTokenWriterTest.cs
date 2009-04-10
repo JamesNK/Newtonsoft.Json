@@ -34,13 +34,13 @@ using System.Linq;
 
 namespace Newtonsoft.Json.Tests
 {
-  public class JsonTokenWriterTest : TestFixtureBase
+  public class JTokenWriterTest : TestFixtureBase
   {
     [Test]
     public void ValueFormatting()
     {
       JToken root;
-      using (JsonTokenWriter jsonWriter = new JsonTokenWriter())
+      using (JTokenWriter jsonWriter = new JTokenWriter())
       {
         jsonWriter.WriteStartArray();
         jsonWriter.WriteValue('@');
@@ -78,7 +78,7 @@ namespace Newtonsoft.Json.Tests
     [Test]
     public void State()
     {
-      using (JsonWriter jsonWriter = new JsonTokenWriter())
+      using (JsonWriter jsonWriter = new JTokenWriter())
       {
         Assert.AreEqual(WriteState.Start, jsonWriter.WriteState);
 

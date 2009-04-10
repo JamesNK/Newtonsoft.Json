@@ -33,7 +33,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Tests
 {
-  public class JsonTokenReaderTest : TestFixtureBase
+  public class JTokenReaderTest : TestFixtureBase
   {
     [Test]
     public void YahooFinance()
@@ -46,7 +46,7 @@ namespace Newtonsoft.Json.Tests
           new JProperty("Test4", null)
         );
 
-      using (JsonTokenReader jsonReader = new JsonTokenReader(o))
+      using (JTokenReader jsonReader = new JTokenReader(o))
       {
         IJsonLineInfo lineInfo = jsonReader;
 
@@ -96,7 +96,7 @@ namespace Newtonsoft.Json.Tests
         Assert.IsFalse(jsonReader.Read());
       }
 
-      using (JsonReader jsonReader = new JsonTokenReader(o.Property("Test2")))
+      using (JsonReader jsonReader = new JTokenReader(o.Property("Test2")))
       {
         Assert.IsTrue(jsonReader.Read());
         Assert.AreEqual(JsonToken.PropertyName, jsonReader.TokenType);
@@ -125,7 +125,7 @@ namespace Newtonsoft.Json.Tests
 
       JObject o = JObject.Parse(input);
 
-      using (JsonTokenReader jsonReader = new JsonTokenReader(o))
+      using (JTokenReader jsonReader = new JTokenReader(o))
       {
         IJsonLineInfo lineInfo = jsonReader;
 

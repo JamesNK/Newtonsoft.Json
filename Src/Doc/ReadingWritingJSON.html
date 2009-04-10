@@ -59,8 +59,8 @@
 
 </div></div>
 
-<h3>JsonTokenReader and JsonTokenWriter</h3>
-<p><a href="./html/T_Newtonsoft_Json_JsonTokenReader.htm">JsonTokenReader</a> and <a href="./html/T_Newtonsoft_Json_JsonTokenWriter.htm">JsonTokenWriter</a> read and write LINQ to JSON objects. They are located in the <a href="./html/N_Newtonsoft_Json_Linq.htm">Newtonsoft.Json.Linq</a> namespace. These objects allow you to use LINQ to JSON objects with objects that read and write JSON such as the JsonSerializer. For example you can deserialize from a LINQ to JSON object into a regular .NET object and vice versa.</p>
+<h3>JTokenReader and JTokenWriter</h3>
+<p><a href="./html/T_Newtonsoft_Json_JTokenReader.htm">JTokenReader</a> and <a href="./html/T_Newtonsoft_Json_JTokenWriter.htm">JTokenWriter</a> read and write LINQ to JSON objects. They are located in the <a href="./html/N_Newtonsoft_Json_Linq.htm">Newtonsoft.Json.Linq</a> namespace. These objects allow you to use LINQ to JSON objects with objects that read and write JSON such as the JsonSerializer. For example you can deserialize from a LINQ to JSON object into a regular .NET object and vice versa.</p>
 
 <div class="overflowpanel"> <div class="code">
 
@@ -71,7 +71,7 @@
 <pre style="margin: 0px;">&nbsp; );</pre>
 <pre style="margin: 0px;">&nbsp;</pre>
 <pre style="margin: 0px;"><span style="color: #2b91af;">JsonSerializer</span> serializer = <span style="color: blue;">new</span> <span style="color: #2b91af;">JsonSerializer</span>();</pre>
-<pre style="margin: 0px;"><span style="color: #2b91af;">Person</span> p = (<span style="color: #2b91af;">Person</span>)serializer.Deserialize(<span style="color: blue;">new</span> <span style="color: #2b91af;">JsonTokenReader</span>(o), <span style="color: blue;">typeof</span>(<span style="color: #2b91af;">Person</span>));</pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">Person</span> p = (<span style="color: #2b91af;">Person</span>)serializer.Deserialize(<span style="color: blue;">new</span> <span style="color: #2b91af;">JTokenReader</span>(o), <span style="color: blue;">typeof</span>(<span style="color: #2b91af;">Person</span>));</pre>
 <pre style="margin: 0px;">&nbsp;</pre>
 <pre style="margin: 0px;"><span style="color: green;">// John Smith</span></pre>
 <pre style="margin: 0px;"><span style="color: #2b91af;">Console</span>.WriteLine(p.Name);</pre>

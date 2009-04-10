@@ -115,7 +115,7 @@ namespace Newtonsoft.Json
 
     private int _top;
 
-    private readonly List<JsonTokenType> _stack;
+    private readonly List<JTokenType> _stack;
 
     /// <summary>
     /// Gets the quotation mark character used to enclose the value of a string.
@@ -173,27 +173,27 @@ namespace Newtonsoft.Json
     {
       //_testBuffer = new StringBuilder();
       _currentState = State.Start;
-      _stack = new List<JsonTokenType>();
+      _stack = new List<JTokenType>();
       _top = 0;
-      Push(JsonTokenType.None);
+      Push(JTokenType.None);
     }
 
-    private void Push(JsonTokenType value)
+    private void Push(JTokenType value)
     {
       _stack.Add(value);
       _top++;
     }
 
-    private JsonTokenType Pop()
+    private JTokenType Pop()
     {
-      JsonTokenType value = Peek();
+      JTokenType value = Peek();
       _stack.RemoveAt(_stack.Count - 1);
       _top--;
 
       return value;
     }
 
-    private JsonTokenType Peek()
+    private JTokenType Peek()
     {
       return _stack[_top - 1];
     }
@@ -241,15 +241,15 @@ namespace Newtonsoft.Json
       {
         case JsonToken.StartObject:
           _currentState = State.ObjectStart;
-          Push(JsonTokenType.Object);
+          Push(JTokenType.Object);
           break;
         case JsonToken.StartArray:
           _currentState = State.ArrayStart;
-          Push(JsonTokenType.Array);
+          Push(JTokenType.Array);
           break;
         case JsonToken.StartConstructor:
           _currentState = State.ConstructorStart;
-          Push(JsonTokenType.Constructor);
+          Push(JTokenType.Constructor);
           break;
         case JsonToken.EndObject:
           ValidateEnd(JsonToken.EndObject);
@@ -265,7 +265,7 @@ namespace Newtonsoft.Json
           break;
         case JsonToken.PropertyName:
           _currentState = State.Property;
-          Push(JsonTokenType.Property);
+          Push(JTokenType.Property);
           break;
         case JsonToken.Undefined:
         case JsonToken.Integer:
@@ -279,8 +279,8 @@ namespace Newtonsoft.Json
           break;
       }
 
-      JsonTokenType current = Peek();
-      if (current == JsonTokenType.Property && _currentState == State.PostValue)
+      JTokenType current = Peek();
+      if (current == JTokenType.Property && _currentState == State.PostValue)
         Pop();
 
       if (value != null)
@@ -297,7 +297,7 @@ namespace Newtonsoft.Json
 
     private void ValidateEnd(JsonToken endToken)
     {
-      JsonTokenType currentObject = Pop();
+      JTokenType currentObject = Pop();
 
       if (GetTypeForCloseToken(endToken) != currentObject)
         throw new JsonReaderException("JsonToken {0} is not valid for closing JsonType {1}.".FormatWith(CultureInfo.InvariantCulture, endToken, currentObject));
@@ -308,20 +308,20 @@ namespace Newtonsoft.Json
     /// </summary>
     protected void SetStateBasedOnCurrent()
     {
-      JsonTokenType currentObject = Peek();
+      JTokenType currentObject = Peek();
 
       switch (currentObject)
       {
-        case JsonTokenType.Object:
+        case JTokenType.Object:
           _currentState = State.Object;
           break;
-        case JsonTokenType.Array:
+        case JTokenType.Array:
           _currentState = State.Array;
           break;
-        case JsonTokenType.Constructor:
+        case JTokenType.Constructor:
           _currentState = State.Constructor;
           break;
-        case JsonTokenType.None:
+        case JTokenType.None:
           _currentState = State.Finished;
           break;
         default:
@@ -357,16 +357,16 @@ namespace Newtonsoft.Json
       }
     }
 
-    private JsonTokenType GetTypeForCloseToken(JsonToken token)
+    private JTokenType GetTypeForCloseToken(JsonToken token)
     {
       switch (token)
       {
         case JsonToken.EndObject:
-          return JsonTokenType.Object;
+          return JTokenType.Object;
         case JsonToken.EndArray:
-          return JsonTokenType.Array;
+          return JTokenType.Array;
         case JsonToken.EndConstructor:
-          return JsonTokenType.Constructor;
+          return JTokenType.Constructor;
         default:
           throw new JsonReaderException("Not a valid close JsonToken: " + token);
       }

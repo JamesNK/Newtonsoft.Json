@@ -76,7 +76,7 @@ namespace Newtonsoft.Json.Tests.Linq
         );
 
       JsonSerializer serializer = new JsonSerializer();
-      Person p = (Person)serializer.Deserialize(new JsonTokenReader(o), typeof(Person));
+      Person p = (Person)serializer.Deserialize(new JTokenReader(o), typeof(Person));
 
       // John Smith
       Console.WriteLine(p.Name);
@@ -589,8 +589,8 @@ keyword such as type of business.""
 
       JsonSerializer jsonSerializer = new JsonSerializer();
 
-      JsonTokenWriter jsonWriter;
-      using (jsonWriter = new JsonTokenWriter())
+      JTokenWriter jsonWriter;
+      using (jsonWriter = new JTokenWriter())
       {
         jsonSerializer.Serialize(jsonWriter, testDates);
       }

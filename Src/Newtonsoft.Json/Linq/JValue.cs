@@ -37,10 +37,10 @@ namespace Newtonsoft.Json.Linq
   /// </summary>
   public class JValue : JToken
   {
-    private JsonTokenType _valueType;
+    private JTokenType _valueType;
     private object _value;
 
-    internal JValue(object value, JsonTokenType type)
+    internal JValue(object value, JTokenType type)
     {
       _value = value;
       _valueType = type;
@@ -60,7 +60,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="value">The value.</param>
     public JValue(long value)
-      : this(value, JsonTokenType.Integer)
+      : this(value, JTokenType.Integer)
     {
     }
 
@@ -69,7 +69,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="value">The value.</param>
     public JValue(ulong value)
-      : this(value, JsonTokenType.Integer)
+      : this(value, JTokenType.Integer)
     {
     }
 
@@ -78,7 +78,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="value">The value.</param>
     public JValue(double value)
-      : this(value, JsonTokenType.Float)
+      : this(value, JTokenType.Float)
     {
     }
 
@@ -87,7 +87,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="value">The value.</param>
     public JValue(DateTime value)
-      : this(value, JsonTokenType.Date)
+      : this(value, JTokenType.Date)
     {
     }
 
@@ -96,7 +96,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="value">The value.</param>
     public JValue(bool value)
-      : this(value, JsonTokenType.Boolean)
+      : this(value, JTokenType.Boolean)
     {
     }
 
@@ -105,7 +105,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="value">The value.</param>
     public JValue(string value)
-      : this(value, JsonTokenType.String)
+      : this(value, JTokenType.String)
     {
     }
 
@@ -145,18 +145,18 @@ namespace Newtonsoft.Json.Linq
 
       switch (_valueType)
       {
-        case JsonTokenType.Integer:
+        case JTokenType.Integer:
           if (objA is ulong || objB is ulong)
             return Convert.ToDecimal(objA, CultureInfo.InvariantCulture).Equals(Convert.ToDecimal(objB, CultureInfo.InvariantCulture));
           else
             return Convert.ToInt64(objA, CultureInfo.InvariantCulture).Equals(Convert.ToInt64(objB, CultureInfo.InvariantCulture));
-        case JsonTokenType.Float:
+        case JTokenType.Float:
           return Convert.ToDouble(objA, CultureInfo.InvariantCulture).Equals(Convert.ToDouble(objB, CultureInfo.InvariantCulture));
-        case JsonTokenType.Comment:
-        case JsonTokenType.String:
-        case JsonTokenType.Boolean:
+        case JTokenType.Comment:
+        case JTokenType.String:
+        case JTokenType.Boolean:
           return objA.Equals(objB);
-        case JsonTokenType.Date:
+        case JTokenType.Date:
           return objA.Equals(objB);
         default:
           throw MiscellaneousUtils.CreateArgumentOutOfRangeException("valueType", _valueType, "Unexpected value type: {0}".FormatWith(CultureInfo.InvariantCulture, _valueType));
@@ -175,7 +175,7 @@ namespace Newtonsoft.Json.Linq
     /// <returns>A <see cref="JValue"/> comment with the given value.</returns>
     public static JValue CreateComment(string value)
     {
-      return new JValue(value, JsonTokenType.Comment);
+      return new JValue(value, JTokenType.Comment);
     }
 
     /// <summary>
@@ -185,7 +185,7 @@ namespace Newtonsoft.Json.Linq
     /// <returns>A <see cref="JValue"/> string with the given value.</returns>
     public static JValue CreateString(string value)
     {
-      return new JValue(value, JsonTokenType.String);
+      return new JValue(value, JTokenType.String);
     }
 
 
@@ -196,43 +196,43 @@ namespace Newtonsoft.Json.Linq
     /// <returns>A <see cref="JValue"/> of raw JSON with the given value.</returns>
     public static JValue CreateRaw(string value)
     {
-      return new JValue(value, JsonTokenType.Raw);
+      return new JValue(value, JTokenType.Raw);
     }
 
-    private static JsonTokenType GetValueType(JsonTokenType? current, object value)
+    private static JTokenType GetValueType(JTokenType? current, object value)
     {
       if (value == null)
-        return JsonTokenType.Null;
+        return JTokenType.Null;
       else if (value is string)
         return GetStringValueType(current);
       else if (value is long || value is int || value is short || value is sbyte
         || value is ulong || value is uint || value is ushort || value is byte)
-        return JsonTokenType.Integer;
+        return JTokenType.Integer;
       else if (value is double || value is float || value is decimal)
-        return JsonTokenType.Float;
+        return JTokenType.Float;
       else if (value is DateTime)
-        return JsonTokenType.Date;
+        return JTokenType.Date;
       else if (value is DateTimeOffset)
-        return JsonTokenType.Date;
+        return JTokenType.Date;
       else if (value is bool)
-        return JsonTokenType.Boolean;
+        return JTokenType.Boolean;
 
       throw new ArgumentException("Could not determin JSON object type for type {0}.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
     }
 
-    private static JsonTokenType GetStringValueType(JsonTokenType? current)
+    private static JTokenType GetStringValueType(JTokenType? current)
     {
       if (current == null)
-        return JsonTokenType.String;
+        return JTokenType.String;
 
       switch (current.Value)
       {
-        case JsonTokenType.Comment:
-        case JsonTokenType.String:
-        case JsonTokenType.Raw:
+        case JTokenType.Comment:
+        case JTokenType.String:
+        case JTokenType.Raw:
           return current.Value;
         default:
-          return JsonTokenType.String;
+          return JTokenType.String;
       }
     }
 
@@ -240,7 +240,7 @@ namespace Newtonsoft.Json.Linq
     /// Gets the node type for this <see cref="JToken"/>.
     /// </summary>
     /// <value>The type.</value>
-    public override JsonTokenType Type
+    public override JTokenType Type
     {
       get { return _valueType; }
     }
@@ -284,22 +284,22 @@ namespace Newtonsoft.Json.Linq
     {
       switch (_valueType)
       {
-        case JsonTokenType.Comment:
+        case JTokenType.Comment:
           writer.WriteComment(_value.ToString());
           break;
-        case JsonTokenType.Integer:
+        case JTokenType.Integer:
           WriteConvertableValue(writer, converters, v => writer.WriteValue(Convert.ToInt64(v, CultureInfo.InvariantCulture)), _value);
           break;
-        case JsonTokenType.Float:
+        case JTokenType.Float:
           WriteConvertableValue(writer, converters, v => writer.WriteValue(Convert.ToDouble(v, CultureInfo.InvariantCulture)), _value);
           break;
-        case JsonTokenType.String:
+        case JTokenType.String:
           WriteConvertableValue(writer, converters, v => writer.WriteValue(v.ToString()), _value);
           break;
-        case JsonTokenType.Boolean:
+        case JTokenType.Boolean:
           WriteConvertableValue(writer, converters, v => writer.WriteValue(Convert.ToBoolean(v, CultureInfo.InvariantCulture)), _value);
           break;
-        case JsonTokenType.Date:
+        case JTokenType.Date:
           WriteConvertableValue(writer, converters, v =>
           {
             if (v is DateTimeOffset)
@@ -308,13 +308,13 @@ namespace Newtonsoft.Json.Linq
               writer.WriteValue(Convert.ToDateTime(v, CultureInfo.InvariantCulture));
           }, _value);
           break;
-        case JsonTokenType.Raw:
+        case JTokenType.Raw:
           writer.WriteRawValue(_value.ToString());
           break;
-        case JsonTokenType.Null:
+        case JTokenType.Null:
           writer.WriteNull();
           break;
-        case JsonTokenType.Undefined:
+        case JTokenType.Undefined:
           writer.WriteUndefined();
           break;
         default:

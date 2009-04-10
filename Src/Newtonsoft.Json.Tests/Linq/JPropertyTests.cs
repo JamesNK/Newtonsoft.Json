@@ -33,7 +33,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
       property = JProperty.Load(reader);
       Assert.AreEqual("propertyname", property.Name);
-      Assert.IsTrue(JToken.DeepEquals(new JValue(null, JsonTokenType.Null), property.Value));
+      Assert.IsTrue(JToken.DeepEquals(new JValue(null, JTokenType.Null), property.Value));
 
       Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
     }

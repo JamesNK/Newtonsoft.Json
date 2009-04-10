@@ -68,7 +68,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 
     [Test]
-    public void JsonTokenWriter()
+    public void JTokenWriter()
     {
       JsonIgnoreAttributeOnClassTestClass ignoreAttributeOnClassTestClass = new JsonIgnoreAttributeOnClassTestClass();
       ignoreAttributeOnClassTestClass.Field = int.MinValue;
@@ -76,7 +76,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       JsonSerializer serializer = new JsonSerializer();
       serializer.MappingResolver = new CamelCaseMappingResolver();
 
-      JsonTokenWriter writer = new JsonTokenWriter();
+      JTokenWriter writer = new JTokenWriter();
 
       serializer.Serialize(writer, ignoreAttributeOnClassTestClass);
 

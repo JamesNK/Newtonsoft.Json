@@ -9,17 +9,17 @@ namespace Newtonsoft.Json.Linq
   /// <summary>
   /// Represents a reader that provides fast, non-cached, forward-only access to serialized Json data.
   /// </summary>
-  public class JsonTokenReader : JsonReader, IJsonLineInfo
+  public class JTokenReader : JsonReader, IJsonLineInfo
   {
     private readonly JToken _root;
     private JToken _parent;
     private JToken _current;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="JsonTokenReader"/> class.
+    /// Initializes a new instance of the <see cref="JTokenReader"/> class.
     /// </summary>
     /// <param name="token">The token to read from.</param>
-    public JsonTokenReader(JToken token)
+    public JTokenReader(JToken token)
     {
       ValidationUtils.ArgumentNotNull(token, "token");
 
@@ -84,13 +84,13 @@ namespace Newtonsoft.Json.Linq
     {
       switch (c.Type)
       {
-        case JsonTokenType.Object:
+        case JTokenType.Object:
           return JsonToken.EndObject;
-        case JsonTokenType.Array:
+        case JTokenType.Array:
           return JsonToken.EndArray;
-        case JsonTokenType.Constructor:
+        case JTokenType.Constructor:
           return JsonToken.EndConstructor;
-        case JsonTokenType.Property:
+        case JTokenType.Property:
           return null;
         default:
           throw MiscellaneousUtils.CreateArgumentOutOfRangeException("Type", c.Type, "Unexpected JContainer type.");
@@ -133,47 +133,47 @@ namespace Newtonsoft.Json.Linq
     {
       switch (token.Type)
       {
-        case JsonTokenType.Object:
+        case JTokenType.Object:
           SetToken(JsonToken.StartObject);
           break;
-        case JsonTokenType.Array:
+        case JTokenType.Array:
           SetToken(JsonToken.StartArray);
           break;
-        case JsonTokenType.Constructor:
+        case JTokenType.Constructor:
           SetToken(JsonToken.StartConstructor);
           break;
-        case JsonTokenType.Property:
+        case JTokenType.Property:
           SetToken(JsonToken.PropertyName, ((JProperty)token).Name);
           break;
-        case JsonTokenType.Comment:
+        case JTokenType.Comment:
           SetToken(JsonToken.Comment, ((JValue)token).Value);
           break;
-        case JsonTokenType.Integer:
+        case JTokenType.Integer:
           SetToken(JsonToken.Integer, ((JValue)token).Value);
           break;
-        case JsonTokenType.Float:
+        case JTokenType.Float:
           SetToken(JsonToken.Float, ((JValue)token).Value);
           break;
-        case JsonTokenType.String:
+        case JTokenType.String:
           SetToken(JsonToken.String, ((JValue)token).Value);
           break;
-        case JsonTokenType.Boolean:
+        case JTokenType.Boolean:
           SetToken(JsonToken.Boolean, ((JValue)token).Value);
           break;
-        case JsonTokenType.Null:
+        case JTokenType.Null:
           SetToken(JsonToken.Null, ((JValue)token).Value);
           break;
-        case JsonTokenType.Undefined:
+        case JTokenType.Undefined:
           SetToken(JsonToken.Undefined, ((JValue)token).Value);
           break;
-        case JsonTokenType.Date:
+        case JTokenType.Date:
           SetToken(JsonToken.Date, ((JValue)token).Value);
           break;
-        case JsonTokenType.Raw:
+        case JTokenType.Raw:
           SetToken(JsonToken.Raw, ((JValue)token).Value);
           break;
         default:
-          throw MiscellaneousUtils.CreateArgumentOutOfRangeException("Type", token.Type, "Unexpected JsonTokenType.");
+          throw MiscellaneousUtils.CreateArgumentOutOfRangeException("Type", token.Type, "Unexpected JTokenType.");
       }
     }
 

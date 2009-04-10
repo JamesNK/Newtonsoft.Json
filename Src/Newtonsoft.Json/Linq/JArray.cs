@@ -42,9 +42,9 @@ namespace Newtonsoft.Json.Linq
     /// Gets the node type for this <see cref="JToken"/>.
     /// </summary>
     /// <value>The type.</value>
-    public override JsonTokenType Type
+    public override JTokenType Type
     {
-      get { return JsonTokenType.Array; }
+      get { return JTokenType.Array; }
     }
 
     /// <summary>
@@ -134,7 +134,7 @@ namespace Newtonsoft.Json.Linq
     {
       ValidationUtils.ArgumentNotNull(o, "o");
 
-      if (o.Type == JsonTokenType.Property)
+      if (o.Type == JTokenType.Property)
         throw new ArgumentException("An item of type {0} cannot be added to content.".FormatWith(CultureInfo.InvariantCulture, o.Type));
     }
 
@@ -147,7 +147,7 @@ namespace Newtonsoft.Json.Linq
     {
       JToken token = FromObjectInternal(o);
 
-      if (token.Type != JsonTokenType.Array)
+      if (token.Type != JTokenType.Array)
         throw new ArgumentException("Object serialized to {0}. JArray instance expected.".FormatWith(CultureInfo.InvariantCulture, token.Type));
 
       return (JArray)token;

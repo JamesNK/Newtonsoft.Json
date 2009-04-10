@@ -378,7 +378,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
       DirectoryInfo temp = new DirectoryInfo(@"c:\temp");
 
-      JsonTokenWriter jsonWriter = new JsonTokenWriter();
+      JTokenWriter jsonWriter = new JTokenWriter();
       JsonSerializer serializer = new JsonSerializer();
       serializer.Converters.Add(new IsoDateTimeConverter());
       serializer.MappingResolver = new CustomDirectoryInfoMapper();

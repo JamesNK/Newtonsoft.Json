@@ -39,23 +39,23 @@ namespace Newtonsoft.Json.Tests.Linq
     {
       JValue v = new JValue(true);
       Assert.AreEqual(true, v.Value);
-      Assert.AreEqual(JsonTokenType.Boolean, v.Type);
+      Assert.AreEqual(JTokenType.Boolean, v.Type);
 
       v.Value = "Pie";
       Assert.AreEqual("Pie", v.Value);
-      Assert.AreEqual(JsonTokenType.String, v.Type);
+      Assert.AreEqual(JTokenType.String, v.Type);
 
       v.Value = null;
       Assert.AreEqual(null, v.Value);
-      Assert.AreEqual(JsonTokenType.Null, v.Type);
+      Assert.AreEqual(JTokenType.Null, v.Type);
 
       v.Value = (int?)null;
       Assert.AreEqual(null, v.Value);
-      Assert.AreEqual(JsonTokenType.Null, v.Type);
+      Assert.AreEqual(JTokenType.Null, v.Type);
 
       v.Value = "Pie";
       Assert.AreEqual("Pie", v.Value);
-      Assert.AreEqual(JsonTokenType.String, v.Type);
+      Assert.AreEqual(JTokenType.String, v.Type);
     }
 
     [Test]
@@ -63,11 +63,11 @@ namespace Newtonsoft.Json.Tests.Linq
     {
       JValue commentValue = JValue.CreateComment(null);
       Assert.AreEqual(null, commentValue.Value);
-      Assert.AreEqual(JsonTokenType.Comment, commentValue.Type);
+      Assert.AreEqual(JTokenType.Comment, commentValue.Type);
 
       commentValue.Value = "Comment";
       Assert.AreEqual("Comment", commentValue.Value);
-      Assert.AreEqual(JsonTokenType.Comment, commentValue.Type);
+      Assert.AreEqual(JTokenType.Comment, commentValue.Type);
     }
 
     [Test]
@@ -75,7 +75,7 @@ namespace Newtonsoft.Json.Tests.Linq
     {
       JValue stringValue = JValue.CreateString(null);
       Assert.AreEqual(null, stringValue.Value);
-      Assert.AreEqual(JsonTokenType.String, stringValue.Type);
+      Assert.AreEqual(JTokenType.String, stringValue.Type);
     }
 
     [Test]

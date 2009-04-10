@@ -39,7 +39,7 @@ namespace Newtonsoft.Json
   {
     private class SchemaScope
     {
-      private readonly JsonTokenType _tokenType;
+      private readonly JTokenType _tokenType;
       private readonly JsonSchemaModel _schema;
       private readonly Dictionary<string, bool> _requiredProperties;
 
@@ -56,12 +56,12 @@ namespace Newtonsoft.Json
         get { return _requiredProperties; }
       }
 
-      public JsonTokenType TokenType
+      public JTokenType TokenType
       {
         get { return _tokenType; }
       }
 
-      public SchemaScope(JsonTokenType tokenType, JsonSchemaModel schema)
+      public SchemaScope(JTokenType tokenType, JsonSchemaModel schema)
       {
         _tokenType = tokenType;
         _schema = schema;
@@ -154,9 +154,9 @@ namespace Newtonsoft.Json
 
         switch (_currentScope.TokenType)
         {
-          case JsonTokenType.None:
+          case JTokenType.None:
             return _currentScope.Schema;
-          case JsonTokenType.Object:
+          case JTokenType.Object:
             if (_currentScope.CurrentPropertyName == null)
               throw new Exception("CurrentPropertyName has not been set on scope.");
 
@@ -165,7 +165,7 @@ namespace Newtonsoft.Json
               return propertySchema;
 
             return (CurrentSchema.AllowAdditionalProperties) ? CurrentSchema.AdditionalProperties : null;
-          case JsonTokenType.Array:
+          case JTokenType.Array:
             if (!CollectionUtils.IsNullOrEmpty(CurrentSchema.Items))
             {
               if (CurrentSchema.Items.Count == 1)
@@ -176,7 +176,7 @@ namespace Newtonsoft.Json
             }
 
             return (CurrentSchema.AllowAdditionalProperties) ? CurrentSchema.AdditionalProperties : null;
-          case JsonTokenType.Constructor:
+          case JTokenType.Constructor:
             return null;
           default:
             throw new ArgumentOutOfRangeException("TokenType", "Unexpected token type: {0}".FormatWith(CultureInfo.InvariantCulture, _currentScope.TokenType));
@@ -296,17 +296,17 @@ namespace Newtonsoft.Json
           JsonSchemaModel objectSchema = (ValidateObject(CurrentMemberSchema))
             ? CurrentMemberSchema 
             : null;
-          Push(new SchemaScope(JsonTokenType.Object, objectSchema));
+          Push(new SchemaScope(JTokenType.Object, objectSchema));
           break;
         case JsonToken.StartArray:
           ProcessValue();
           JsonSchemaModel arraySchema = (ValidateArray(CurrentMemberSchema))
             ? CurrentMemberSchema
             : null;
-          Push(new SchemaScope(JsonTokenType.Array, arraySchema));
+          Push(new SchemaScope(JTokenType.Array, arraySchema));
           break;
         case JsonToken.StartConstructor:
-          Push(new SchemaScope(JsonTokenType.Constructor, null));
+          Push(new SchemaScope(JTokenType.Constructor, null));
           break;
         case JsonToken.PropertyName:
           ValidatePropertyName(CurrentSchema);
@@ -457,7 +457,7 @@ namespace Newtonsoft.Json
 
     private void ProcessValue()
     {
-      if (_currentScope != null && _currentScope.TokenType == JsonTokenType.Array)
+      if (_currentScope != null && _currentScope.TokenType == JTokenType.Array)
       {
         _currentScope.ArrayItemCount++;
 

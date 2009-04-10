@@ -253,7 +253,7 @@ namespace Newtonsoft.Json.Linq
     {
       ValidationUtils.ArgumentNotNull(o, "o");
 
-      if (o.Type == JsonTokenType.Property)
+      if (o.Type == JTokenType.Property)
         throw new Exception("Can not add {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, o.GetType(), GetType()));
     }
 
@@ -289,7 +289,7 @@ namespace Newtonsoft.Json.Linq
     /// <returns>An <see cref="JsonWriter"/> that is ready to have content written to it.</returns>
     public JsonWriter CreateWriter()
     {
-      return new JsonTokenWriter(this);
+      return new JTokenWriter(this);
     }
 
     /// <summary>
@@ -436,12 +436,12 @@ namespace Newtonsoft.Json.Linq
             parent.AddObjectSkipNotify(v);
             break;
           case JsonToken.Null:
-            v = new JValue(null, JsonTokenType.Null);
+            v = new JValue(null, JTokenType.Null);
             v.SetLineInfo(lineInfo);
             parent.AddObjectSkipNotify(v);
             break;
           case JsonToken.Undefined:
-            v = new JValue(null, JsonTokenType.Undefined);
+            v = new JValue(null, JTokenType.Undefined);
             v.SetLineInfo(lineInfo);
             parent.AddObjectSkipNotify(v);
             break;

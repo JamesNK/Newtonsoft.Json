@@ -9,7 +9,7 @@ namespace Newtonsoft.Json.Linq
   /// <summary>
   /// Represents a writer that provides a fast, non-cached, forward-only way of generating Json data.
   /// </summary>
-  public class JsonTokenWriter : JsonWriter
+  public class JTokenWriter : JsonWriter
   {
     private JContainer _token;
     private JContainer _parent;
@@ -32,10 +32,10 @@ namespace Newtonsoft.Json.Linq
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="JsonTokenWriter"/> class writing to the given <see cref="JContainer"/>.
+    /// Initializes a new instance of the <see cref="JTokenWriter"/> class writing to the given <see cref="JContainer"/>.
     /// </summary>
     /// <param name="container">The container being written to.</param>
-    public JsonTokenWriter(JContainer container)
+    public JTokenWriter(JContainer container)
     {
       ValidationUtils.ArgumentNotNull(container, "container");
 
@@ -44,9 +44,9 @@ namespace Newtonsoft.Json.Linq
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="JsonTokenWriter"/> class.
+    /// Initializes a new instance of the <see cref="JTokenWriter"/> class.
     /// </summary>
-    public JsonTokenWriter()
+    public JTokenWriter()
     {
     }
 
@@ -89,7 +89,7 @@ namespace Newtonsoft.Json.Linq
     {
       _parent = _parent.Parent;
 
-      if (_parent != null && _parent.Type == JsonTokenType.Property)
+      if (_parent != null && _parent.Type == JTokenType.Property)
         _parent = _parent.Parent;
     }
 
@@ -145,7 +145,7 @@ namespace Newtonsoft.Json.Linq
       {
         _parent.Add(value);
 
-        if (_parent.Type == JsonTokenType.Property)
+        if (_parent.Type == JTokenType.Property)
           _parent = _parent.Parent;
       }
       else

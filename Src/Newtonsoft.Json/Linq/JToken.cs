@@ -101,7 +101,7 @@ namespace Newtonsoft.Json.Linq
     /// Gets the node type for this <see cref="JToken"/>.
     /// </summary>
     /// <value>The type.</value>
-    public abstract JsonTokenType Type { get; }
+    public abstract JTokenType Type { get; }
 
     /// <summary>
     /// Gets a value indicating whether this token has childen tokens.
@@ -376,32 +376,32 @@ namespace Newtonsoft.Json.Linq
 
     private static bool IsNullable(JToken o)
     {
-      return (o.Type == JsonTokenType.Undefined || o.Type == JsonTokenType.Null);
+      return (o.Type == JTokenType.Undefined || o.Type == JTokenType.Null);
     }
 
     private static bool ValidateFloat(JToken o, bool nullable)
     {
-      return (o.Type == JsonTokenType.Float || o.Type == JsonTokenType.Integer || (nullable && IsNullable(o)));
+      return (o.Type == JTokenType.Float || o.Type == JTokenType.Integer || (nullable && IsNullable(o)));
     }
 
     private static bool ValidateInteger(JToken o, bool nullable)
     {
-      return (o.Type == JsonTokenType.Integer || (nullable && IsNullable(o)));
+      return (o.Type == JTokenType.Integer || (nullable && IsNullable(o)));
     }
 
     private static bool ValidateDate(JToken o, bool nullable)
     {
-      return (o.Type == JsonTokenType.Date || (nullable && IsNullable(o)));
+      return (o.Type == JTokenType.Date || (nullable && IsNullable(o)));
     }
 
     private static bool ValidateBoolean(JToken o, bool nullable)
     {
-      return (o.Type == JsonTokenType.Boolean || (nullable && IsNullable(o)));
+      return (o.Type == JTokenType.Boolean || (nullable && IsNullable(o)));
     }
 
     private static bool ValidateString(JToken o)
     {
-      return (o.Type == JsonTokenType.String || o.Type == JsonTokenType.Comment || o.Type == JsonTokenType.Raw || IsNullable(o));
+      return (o.Type == JTokenType.String || o.Type == JTokenType.Comment || o.Type == JTokenType.Raw || IsNullable(o));
     }
 
     private static string GetType(JToken t)
@@ -763,7 +763,7 @@ namespace Newtonsoft.Json.Linq
 
     public JsonReader CreateReader()
     {
-      return new JsonTokenReader(this);
+      return new JTokenReader(this);
     }
 
     internal static JToken FromObjectInternal(object o)
@@ -773,7 +773,7 @@ namespace Newtonsoft.Json.Linq
       JsonSerializer jsonSerializer = new JsonSerializer();
 
       JToken token;
-      using (JsonTokenWriter jsonWriter = new JsonTokenWriter())
+      using (JTokenWriter jsonWriter = new JTokenWriter())
       {
         jsonSerializer.Serialize(jsonWriter, o);
         token = jsonWriter.Token;

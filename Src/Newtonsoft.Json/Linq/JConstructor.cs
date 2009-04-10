@@ -53,9 +53,9 @@ namespace Newtonsoft.Json.Linq
     /// Gets the node type for this <see cref="JToken"/>.
     /// </summary>
     /// <value>The type.</value>
-    public override JsonTokenType Type
+    public override JTokenType Type
     {
-      get { return JsonTokenType.Constructor; }
+      get { return JTokenType.Constructor; }
     }
 
     /// <summary>
@@ -117,7 +117,7 @@ namespace Newtonsoft.Json.Linq
 
       switch (o.Type)
       {
-        case JsonTokenType.Property:
+        case JTokenType.Property:
           throw new ArgumentException("An item of type {0} cannot be added to content.".FormatWith(CultureInfo.InvariantCulture, o.Type));
       }
     }
