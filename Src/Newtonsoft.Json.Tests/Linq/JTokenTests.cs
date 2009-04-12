@@ -509,12 +509,12 @@ namespace Newtonsoft.Json.Tests.Linq
       string json = a.ToString(Formatting.Indented, new IsoDateTimeConverter());
 
       Assert.AreEqual(@"[
-  ""2009-02-15T00:00:00.0000000Z""
+  ""2009-02-15T00:00:00Z""
 ]", json);
 
       json = JsonConvert.SerializeObject(a, new IsoDateTimeConverter());
 
-      Assert.AreEqual(@"[""2009-02-15T00:00:00.0000000Z""]", json);
+      Assert.AreEqual(@"[""2009-02-15T00:00:00Z""]", json);
     }
 
     [Test]
@@ -527,7 +527,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
       string json = a.ToString(Formatting.None, new IsoDateTimeConverter());
 
-      Assert.AreEqual(@"[""2009-02-15T00:00:00.0000000Z""]", json);
+      Assert.AreEqual(@"[""2009-02-15T00:00:00Z""]", json);
     }
 
     [Test]

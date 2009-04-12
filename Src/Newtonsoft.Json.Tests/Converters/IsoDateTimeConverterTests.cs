@@ -66,13 +66,13 @@ namespace Newtonsoft.Json.Tests.Converters
       string result;
 
       result = JsonConvert.SerializeObject(d, converter);
-      Assert.AreEqual(@"""2000-12-15T22:11:03.0550000Z""", result);
+      Assert.AreEqual(@"""2000-12-15T22:11:03.055Z""", result);
 
       Assert.AreEqual(d, JsonConvert.DeserializeObject<DateTime>(result, converter));
 
       d = new DateTime(2000, 12, 15, 22, 11, 3, 55, DateTimeKind.Local);
       result = JsonConvert.SerializeObject(d, converter);
-      Assert.AreEqual(@"""2000-12-15T22:11:03.0550000" + d.GetLocalOffset() + @"""", result);
+      Assert.AreEqual(@"""2000-12-15T22:11:03.055" + d.GetLocalOffset() + @"""", result);
     }
 
     [Test]
@@ -150,7 +150,7 @@ namespace Newtonsoft.Json.Tests.Converters
       string result;
 
       result = JsonConvert.SerializeObject(d, converter);
-      Assert.AreEqual(@"""2000-12-15T22:11:03.0550000+00:00""", result);
+      Assert.AreEqual(@"""2000-12-15T22:11:03.055+00:00""", result);
 
       Assert.AreEqual(d, JsonConvert.DeserializeObject<DateTimeOffset>(result, converter));
     }
@@ -164,7 +164,7 @@ namespace Newtonsoft.Json.Tests.Converters
       c.PreField = "Pre";
       c.PostField = "Post";
       string json = JsonConvert.SerializeObject(c, new IsoDateTimeConverter() { DateTimeStyles = DateTimeStyles.AssumeUniversal });
-      Assert.AreEqual(@"{""PreField"":""Pre"",""DateTimeField"":""2008-12-12T12:12:12.0000000Z"",""DateTimeOffsetField"":""2008-12-12T12:12:12.0000000+00:00"",""PostField"":""Post""}", json);
+      Assert.AreEqual(@"{""PreField"":""Pre"",""DateTimeField"":""2008-12-12T12:12:12Z"",""DateTimeOffsetField"":""2008-12-12T12:12:12+00:00"",""PostField"":""Post""}", json);
 
       //test the other edge case too
       c.DateTimeField = new DateTime(2008, 1, 1, 1, 1, 1, 0, DateTimeKind.Utc).ToLocalTime();
@@ -172,7 +172,7 @@ namespace Newtonsoft.Json.Tests.Converters
       c.PreField = "Pre";
       c.PostField = "Post";
       json = JsonConvert.SerializeObject(c, new IsoDateTimeConverter() { DateTimeStyles = DateTimeStyles.AssumeUniversal });
-      Assert.AreEqual(@"{""PreField"":""Pre"",""DateTimeField"":""2008-01-01T01:01:01.0000000Z"",""DateTimeOffsetField"":""2008-01-01T01:01:01.0000000+00:00"",""PostField"":""Post""}", json);
+      Assert.AreEqual(@"{""PreField"":""Pre"",""DateTimeField"":""2008-01-01T01:01:01Z"",""DateTimeOffsetField"":""2008-01-01T01:01:01+00:00"",""PostField"":""Post""}", json);
     }
 
     [Test]
@@ -184,7 +184,7 @@ namespace Newtonsoft.Json.Tests.Converters
       c.PreField = "Pre";
       c.PostField = "Post";
       string json = JsonConvert.SerializeObject(c, new IsoDateTimeConverter() { DateTimeStyles = DateTimeStyles.AssumeUniversal });
-      Assert.AreEqual(@"{""PreField"":""Pre"",""DateTimeField"":""2008-12-12T12:12:12.0000000Z"",""DateTimeOffsetField"":""2008-12-12T12:12:12.0000000+00:00"",""PostField"":""Post""}", json);
+      Assert.AreEqual(@"{""PreField"":""Pre"",""DateTimeField"":""2008-12-12T12:12:12Z"",""DateTimeOffsetField"":""2008-12-12T12:12:12+00:00"",""PostField"":""Post""}", json);
 
       //test the other edge case too
       c.DateTimeField = null;

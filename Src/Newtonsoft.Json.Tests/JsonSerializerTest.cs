@@ -484,7 +484,7 @@ keyword such as type of business.""
     }
 
     [Test]
-    public void DateTime()
+    public void DateTimeTest()
     {
       List<DateTime> testDates = new List<DateTime> {
         new DateTime(100, 1, 1, 1, 1, 1, DateTimeKind.Local),
@@ -848,7 +848,7 @@ keyword such as type of business.""
       MemberConverterClass m1 = new MemberConverterClass { DefaultConverter = testDate, MemberConverter = testDate };
 
       string json = JsonConvert.SerializeObject(m1);
-      Assert.AreEqual(@"{""DefaultConverter"":""\/Date(0)\/"",""MemberConverter"":""1970-01-01T00:00:00.0000000Z""}", json);
+      Assert.AreEqual(@"{""DefaultConverter"":""\/Date(0)\/"",""MemberConverter"":""1970-01-01T00:00:00Z""}", json);
 
       MemberConverterClass m2 = JsonConvert.DeserializeObject<MemberConverterClass>(json);
 
@@ -863,7 +863,7 @@ keyword such as type of business.""
       MemberConverterClass m1 = new MemberConverterClass { DefaultConverter = testDate, MemberConverter = testDate };
 
       string json = JsonConvert.SerializeObject(m1, new JavaScriptDateTimeConverter());
-      Assert.AreEqual(@"{""DefaultConverter"":new Date(0),""MemberConverter"":""1970-01-01T00:00:00.0000000Z""}", json);
+      Assert.AreEqual(@"{""DefaultConverter"":new Date(0),""MemberConverter"":""1970-01-01T00:00:00Z""}", json);
 
       MemberConverterClass m2 = JsonConvert.DeserializeObject<MemberConverterClass>(json, new JavaScriptDateTimeConverter());
 
@@ -1434,6 +1434,22 @@ keyword such as type of business.""
 
       string newJson = JsonConvert.SerializeObject(ii);
       Assert.AreEqual(@"{""SubProp"":""my subprop"",""SuperProp"":""overrided superprop""}", newJson);
+    }
+
+    public class BrowserDateTimeTestClass
+    {
+      public DateTime utc { get; set; }
+      public DateTime local { get; set; }
+    }
+
+    public void BrowserNativeJsonDeserialization()
+    {
+      DateTime dt = DateTime.Now;
+      string browserJson = @"{""utc"":""2009-04-11T05:58:39Z"",""local"":""2009-04-11T05:58:39Z""}";
+
+      BrowserDateTimeTestClass c = JsonConvert.DeserializeObject<BrowserDateTimeTestClass>(browserJson);
+
+      Console.WriteLine(c.utc);
     }
   }
 }

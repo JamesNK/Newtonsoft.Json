@@ -60,8 +60,8 @@
   <ItemGroup>
     <Compile Include="Converters\BinaryConverterTests.cs" />
     <Compile Include="Converters\StringEnumConverterTests.cs" />
-    <Compile Include="JTokenReaderTest.cs" />
-    <Compile Include="JTokenWriterTest.cs" />
+    <Compile Include="Linq\JTokenReaderTest.cs" />
+    <Compile Include="Linq\JTokenWriterTest.cs" />
     <Compile Include="Serialization\CamelCaseMappingResolverTests.cs" />
     <Compile Include="JsonValidatingReaderTests.cs" />
     <Compile Include="Schema\ExtensionsTests.cs" />

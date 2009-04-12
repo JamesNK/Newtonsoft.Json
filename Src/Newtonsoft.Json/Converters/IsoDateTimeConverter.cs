@@ -12,7 +12,7 @@ namespace Newtonsoft.Json.Converters
   /// </summary>
   public class IsoDateTimeConverter : JsonConverter
   {
-    private const string DefaultDateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK";
+    private const string DefaultDateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK";
 
     private DateTimeStyles _dateTimeStyles = DateTimeStyles.RoundtripKind;
     private string _dateTimeFormat;
