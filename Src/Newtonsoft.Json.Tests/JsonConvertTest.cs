@@ -26,7 +26,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Runtime.Serialization.Json;
 using System.Text;
 using Newtonsoft.Json.Utilities;
 using NUnit.Framework;
@@ -292,43 +291,6 @@ now brown cow?", '"', true);
       Assert.AreEqual(JsonConvert.PositiveInfinity, JsonConvert.ToString(double.PositiveInfinity));
       Assert.AreEqual(JsonConvert.NegativeInfinity, JsonConvert.ToString(double.NegativeInfinity));
       Assert.AreEqual(JsonConvert.NaN, JsonConvert.ToString(double.NaN));
-    }
-
-    [Test]
-    public void DateTimeOffsetToString()
-    {
-      DateTimeOffset dt = new DateTimeOffset(2000, 12, 20, 0, 0, 0, TimeSpan.Zero);
-      dt = DateTimeOffset.Now;
-      Console.WriteLine(JsonConvert.ToString(dt));
-      Console.WriteLine(JsonConvert.ToString(new DateTimeOffset(2000, 12, 20, 0, 0, 0, TimeSpan.FromHours(13))));
-      Console.WriteLine(JsonConvert.ToString(DateTime.Now));
-      Console.WriteLine(JsonConvert.ToString(DateTime.Now.ToUniversalTime()));
-
-      MemoryStream ms = new MemoryStream();
-      DataContractJsonSerializer s = new DataContractJsonSerializer(typeof(DateTime));
-      s.WriteObject(ms, DateTime.Now);
-
-      string json = Encoding.UTF8.GetString(ms.ToArray());
-      Console.WriteLine(AreEqual(DateTime.Now));
-      Console.WriteLine(AreEqual(DateTime.UtcNow));
-      Console.WriteLine(AreEqual(DateTimeOffset.Now));
-      Console.WriteLine(AreEqual(DateTimeOffset.UtcNow));
-    }
-
-    private bool AreEqual(object value)
-    {
-      MemoryStream ms = new MemoryStream();
-      DataContractJsonSerializer s = new DataContractJsonSerializer(value.GetType());
-      s.WriteObject(ms, value);
-
-      string dataContractJson = Encoding.UTF8.GetString(ms.ToArray());
-
-      string jsonNetJson = JsonConvert.SerializeObject(value);
-
-      bool result = (dataContractJson == jsonNetJson);
-      Console.WriteLine(StringUtils.FormatWith("DataContract: {0}, Json.NET: {1}, Equal: {2}", CultureInfo.InvariantCulture, dataContractJson, jsonNetJson, result));
-
-      return result;
     }
   }
 }

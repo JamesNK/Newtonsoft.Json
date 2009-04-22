@@ -115,7 +115,11 @@ namespace Newtonsoft.Json.Serialization
       DefaultValueAttribute defaultValueAttribute = ReflectionUtils.GetAttribute<DefaultValueAttribute>(member, true);
       object defaultValue = (defaultValueAttribute != null) ? defaultValueAttribute.Value : null;
 
-      return new JsonMemberMapping(resolvedMappedName, member, ignored, readable, writable, memberConverter, defaultValue, required);
+      NullValueHandling? nullValueHandling = (propertyAttribute != null) ? propertyAttribute._nullValueHandling : null;
+      DefaultValueHandling? defaultValueHandling = (propertyAttribute != null) ? propertyAttribute._defaultValueHandling : null;
+      ReferenceLoopHandling? referenceLoopHandling = (propertyAttribute != null) ? propertyAttribute._referenceLoopHandling : null;
+
+      return new JsonMemberMapping(resolvedMappedName, member, ignored, readable, writable, memberConverter, defaultValue, required, nullValueHandling, defaultValueHandling, referenceLoopHandling);
     }
 
     protected virtual string ResolveMappingName(string mappedName)

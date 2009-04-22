@@ -31,6 +31,7 @@ using System.IO;
 using System.Xml;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Utilities;
+using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Tests.Converters
 {
@@ -348,7 +349,7 @@ namespace Newtonsoft.Json.Tests.Converters
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document.")]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifing a DeserializeRootElementName.")]
     public void RootObjectMultipleProperties()
     {
       XmlDocument newDoc = (XmlDocument)JsonConvert.DeserializeXmlNode(@"{Prop1:1,Prop2:2}");
@@ -417,7 +418,7 @@ namespace Newtonsoft.Json.Tests.Converters
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document.")]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifing a DeserializeRootElementName.")]
     public void MultipleRootProperties()
     {
       string strJSON = @"{

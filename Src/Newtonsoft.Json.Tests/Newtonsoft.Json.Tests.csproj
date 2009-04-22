@@ -97,6 +97,7 @@
     <Compile Include="TestObjects\ConverterPrecedenceClass.cs" />
     <Compile Include="TestObjects\ConverterPrecedenceClassConverter.cs" />
     <Compile Include="TestObjects\CircularReferenceWithIdClass.cs" />
+    <Compile Include="TestObjects\JsonPropertyWithHandlingValues.cs" />
     <Compile Include="TestObjects\DefaultValueAttributeTestClass.cs" />
     <Compile Include="TestObjects\DoubleClass.cs" />
     <Compile Include="TestObjects\GenericImpl.cs" />

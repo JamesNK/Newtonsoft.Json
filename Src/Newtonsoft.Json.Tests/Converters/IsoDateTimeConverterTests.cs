@@ -32,6 +32,7 @@ using NUnit.Framework;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
+using System.Xml;
 
 namespace Newtonsoft.Json.Tests.Converters
 {
@@ -254,6 +255,27 @@ namespace Newtonsoft.Json.Tests.Converters
       c.DateTimeField = new DateTime(2008, 1, 1, 1, 1, 1, 0, DateTimeKind.Utc);
       string json2 = JsonConvert.SerializeObject(c, new IsoDateTimeConverter() { DateTimeStyles = DateTimeStyles.AssumeUniversal });
       Assert.AreNotEqual(json, json2);
+    }
+
+    [Test]
+    public void BlogCodeSample()
+    {
+      Person p = new Person
+                   {
+                     Name = "Keith",
+                     BirthDate = new DateTime(1980, 3, 8),
+                     LastModified = new DateTime(2009, 4, 12, 20, 44, 55),
+                   };
+
+      string jsonText = JsonConvert.SerializeObject(p, new IsoDateTimeConverter());
+      // {
+      //   "Name": "Keith",
+      //   "BirthDate": "1980-03-08T00:00:00",
+      //   "LastModified": "2009-04-12T20:44:55"
+      // }
+
+      Console.WriteLine(jsonText);
+
     }
   }
 }

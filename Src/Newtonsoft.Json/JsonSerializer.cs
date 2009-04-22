@@ -437,10 +437,10 @@ namespace Newtonsoft.Json
 
     private bool ShouldSetMappingValue(JsonMemberMapping memberMapping, object value)
     {
-      if (_nullValueHandling == NullValueHandling.Ignore && value == null)
+      if (memberMapping.NullValueHandling.GetValueOrDefault(_nullValueHandling) == NullValueHandling.Ignore && value == null)
         return false;
 
-      if (_defaultValueHandling == DefaultValueHandling.Ignore && Equals(value, memberMapping.DefaultValue))
+      if (memberMapping.DefaultValueHandling.GetValueOrDefault(_defaultValueHandling) == DefaultValueHandling.Ignore && Equals(value, memberMapping.DefaultValue))
         return false;
 
       if (!memberMapping.Writable)
@@ -814,15 +814,15 @@ namespace Newtonsoft.Json
       {
         object memberValue = ReflectionUtils.GetMemberValue(member, value);
 
-        if (_nullValueHandling == NullValueHandling.Ignore && memberValue == null)
+        if (memberMapping.NullValueHandling.GetValueOrDefault(_nullValueHandling) == NullValueHandling.Ignore && memberValue == null)
           return;
 
-        if (_defaultValueHandling == DefaultValueHandling.Ignore && object.Equals(memberValue, defaultValue))
+        if (memberMapping.DefaultValueHandling.GetValueOrDefault(_defaultValueHandling) == DefaultValueHandling.Ignore && object.Equals(memberValue, defaultValue))
           return;
 
         if (writer.SerializeStack.IndexOf(memberValue) != -1)
         {
-          switch (_referenceLoopHandling)
+          switch (memberMapping.ReferenceLoopHandling.GetValueOrDefault(_referenceLoopHandling))
           {
             case ReferenceLoopHandling.Error:
               throw new JsonSerializationException("Self referencing loop");

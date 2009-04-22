@@ -125,6 +125,14 @@ namespace Newtonsoft.Json.Tests.Schema
 }
 ";
 
+      //JsonSchema schema;
+
+      //using (JsonTextReader reader = new JsonTextReader(new StringReader(schemaJson)))
+      //{
+      //  JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
+      //  schema = builder.Parse(reader);
+      //}
+
       JsonSchema schema = JsonSchema.Parse(schemaJson);
 
       JObject person = JObject.Parse(@"{

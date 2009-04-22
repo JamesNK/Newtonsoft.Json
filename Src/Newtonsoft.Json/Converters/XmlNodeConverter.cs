@@ -491,7 +491,7 @@ namespace Newtonsoft.Json.Converters
         {
           case JsonToken.PropertyName:
             if (currentNode.NodeType == XmlNodeType.Document && document.DocumentElement != null)
-              throw new JsonSerializationException("JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document.");
+              throw new JsonSerializationException("JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifing a DeserializeRootElementName.");
 
             string propertyName = reader.Value.ToString();
             reader.Read();

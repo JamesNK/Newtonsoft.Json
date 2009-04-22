@@ -658,12 +658,12 @@ namespace Newtonsoft.Json
     /// Deserializes the XmlNode from a JSON string nested in a root elment.
     /// </summary>
     /// <param name="value">The JSON string.</param>
-    /// <param name="rootElementName">The root element name.</param>
+    /// <param name="deserializeRootElementName">The name of the root element to append when deserializing.</param>
     /// <returns>The deserialized XmlNode</returns>
-    public static XmlNode DeserializeXmlNode(string value, string rootElementName)
+    public static XmlNode DeserializeXmlNode(string value, string deserializeRootElementName)
     {
       XmlNodeConverter converter = new XmlNodeConverter();
-      converter.DeserializeRootElementName = rootElementName;
+      converter.DeserializeRootElementName = deserializeRootElementName;
 
       return (XmlDocument)DeserializeObject(value, typeof(XmlDocument), converter);
     }

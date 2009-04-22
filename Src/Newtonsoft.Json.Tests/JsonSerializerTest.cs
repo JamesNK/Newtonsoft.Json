@@ -1422,6 +1422,7 @@ keyword such as type of business.""
       public SubKlass(string subprop) { SubProp = subprop; }
     }
 
+    [Test]
     public void DeserializePropertiesOnToNonDefaultConstructor()
     {
       SubKlass i = new SubKlass("my subprop");
@@ -1436,20 +1437,39 @@ keyword such as type of business.""
       Assert.AreEqual(@"{""SubProp"":""my subprop"",""SuperProp"":""overrided superprop""}", newJson);
     }
 
-    public class BrowserDateTimeTestClass
+    [Test]
+    public void JsonPropertyWithHandlingValues()
     {
-      public DateTime utc { get; set; }
-      public DateTime local { get; set; }
+      JsonPropertyWithHandlingValues o = new JsonPropertyWithHandlingValues();
+      o.DefaultValueHandlingIgnoreProperty = "Default!";
+      o.DefaultValueHandlingIncludeProperty = "Default!";
+
+      string json = JsonConvert.SerializeObject(o, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""DefaultValueHandlingIncludeProperty"": ""Default!"",
+  ""NullValueHandlingIncludeProperty"": null,
+  ""ReferenceLoopHandlingErrorProperty"": null,
+  ""ReferenceLoopHandlingIgnoreProperty"": null,
+  ""ReferenceLoopHandlingSerializeProperty"": null
+}", json);
+
+      json = JsonConvert.SerializeObject(o, Formatting.Indented, new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
+
+      Assert.AreEqual(@"{
+  ""DefaultValueHandlingIncludeProperty"": ""Default!"",
+  ""NullValueHandlingIncludeProperty"": null
+}", json);
     }
 
-    public void BrowserNativeJsonDeserialization()
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Self referencing loop")]
+    public void JsonPropertyWithHandlingValues_ReferenceLoopError()
     {
-      DateTime dt = DateTime.Now;
-      string browserJson = @"{""utc"":""2009-04-11T05:58:39Z"",""local"":""2009-04-11T05:58:39Z""}";
+      JsonPropertyWithHandlingValues o = new JsonPropertyWithHandlingValues();
+      o.ReferenceLoopHandlingErrorProperty = o;
 
-      BrowserDateTimeTestClass c = JsonConvert.DeserializeObject<BrowserDateTimeTestClass>(browserJson);
-
-      Console.WriteLine(c.utc);
+      JsonConvert.SerializeObject(o, Formatting.Indented, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
     }
   }
 }

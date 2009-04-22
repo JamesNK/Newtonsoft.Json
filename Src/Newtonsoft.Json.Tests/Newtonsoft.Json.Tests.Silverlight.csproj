@@ -91,6 +91,7 @@
     <Compile Include="TestObjects\Invoice.cs" />
     <Compile Include="TestObjects\JaggedArray.cs" />
     <Compile Include="TestObjects\JsonIgnoreAttributeTestClass.cs" />
+    <Compile Include="TestObjects\JsonPropertyWithHandlingValues.cs" />
     <Compile Include="TestObjects\MemberConverterPrecedenceClassConverter.cs" />
     <Compile Include="TestObjects\MethodExecutorObject.cs" />
     <Compile Include="TestObjects\MyClass.cs" />
