@@ -50,6 +50,9 @@
       <HintPath>..\Lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -83,6 +86,17 @@
     <Compile Include="Converters\BinaryConverterTests.cs" />
     <Compile Include="Converters\StringEnumConverterTests.cs" />
     <Compile Include="JsonValidatingReaderTests.cs" />
+    <Compile Include="LinqToSql\Department.cs" />
+    <Compile Include="LinqToSql\DepartmentConverter.cs" />
+    <Compile Include="LinqToSql\GuidByteArrayConverter.cs" />
+    <Compile Include="LinqToSql\Role.cs" />
+    <Compile Include="LinqToSql\LinqToSqlClasses.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LinqToSqlClasses.dbml</DependentUpon>
+    </Compile>
+    <Compile Include="LinqToSql\LinqToSqlClassesSerializationTests.cs" />
+    <Compile Include="LinqToSql\Person.cs" />
     <Compile Include="Schema\ExtensionsTests.cs" />
     <Compile Include="Schema\JsonSchemaModelBuilderTests.cs" />
     <Compile Include="Schema\JsonSchemaNodeTests.cs" />
@@ -165,6 +179,21 @@
       <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
       <Name>Newtonsoft.Json</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="LinqToSql\LinqToSqlClasses.dbml">
+      <Generator>MSLinqToSQLGenerator</Generator>
+      <LastGenOutput>LinqToSqlClasses.designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="LinqToSql\LinqToSqlClasses.dbml.layout">
+      <DependentUpon>LinqToSqlClasses.dbml</DependentUpon>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

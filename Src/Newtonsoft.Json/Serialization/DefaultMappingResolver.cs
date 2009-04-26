@@ -93,8 +93,8 @@ namespace Newtonsoft.Json.Serialization
 
     protected virtual JsonMemberMapping CreateMemberMapping(MemberSerialization memberSerialization, MemberInfo member)
     {
-      JsonPropertyAttribute propertyAttribute = ReflectionUtils.GetAttribute<JsonPropertyAttribute>(member, true);
-      bool hasIgnoreAttribute = member.IsDefined(typeof(JsonIgnoreAttribute), true);
+      JsonPropertyAttribute propertyAttribute = JsonTypeReflector.GetAttribute<JsonPropertyAttribute>(member);
+      bool hasIgnoreAttribute = (JsonTypeReflector.GetAttribute<JsonIgnoreAttribute>(member) != null);
 
       string mappedName = (propertyAttribute != null && propertyAttribute.PropertyName != null)
                             ? propertyAttribute.PropertyName
@@ -112,7 +112,7 @@ namespace Newtonsoft.Json.Serialization
 
       JsonConverter memberConverter = JsonTypeReflector.GetConverter(member, ReflectionUtils.GetMemberUnderlyingType(member));
 
-      DefaultValueAttribute defaultValueAttribute = ReflectionUtils.GetAttribute<DefaultValueAttribute>(member, true);
+      DefaultValueAttribute defaultValueAttribute = JsonTypeReflector.GetAttribute<DefaultValueAttribute>(member);
       object defaultValue = (defaultValueAttribute != null) ? defaultValueAttribute.Value : null;
 
       NullValueHandling? nullValueHandling = (propertyAttribute != null) ? propertyAttribute._nullValueHandling : null;

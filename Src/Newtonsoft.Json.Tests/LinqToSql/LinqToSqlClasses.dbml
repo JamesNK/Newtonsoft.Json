@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Database Class="LinqToSqlClassesDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Table Name="" Member="Persons">
+    <Type Name="Person">
+      <Column Name="FirstName" Type="System.String" CanBeNull="false" />
+      <Column Name="LastName" Type="System.String" CanBeNull="false" />
+      <Column Name="PersonId" Type="System.Guid" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Member="DepartmentId" Type="System.Guid" CanBeNull="false" />
+      <Association Name="Person_PersonRole" Member="PersonRoles" ThisKey="PersonId" OtherKey="PersonId" Type="PersonRole" />
+      <Association Name="Department_Person" Member="Department" ThisKey="DepartmentId" OtherKey="DepartmentId" Type="Department" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="" Member="Roles">
+    <Type Name="Role">
+      <Column Name="Name" Type="System.String" CanBeNull="false" />
+      <Column Name="RoleId" Type="System.Guid" IsPrimaryKey="true" CanBeNull="false" />
+      <Association Name="Role_PersonRole" Member="PersonRoles" ThisKey="RoleId" OtherKey="RoleId" Type="PersonRole" />
+    </Type>
+  </Table>
+  <Table Name="" Member="PersonRoles">
+    <Type Name="PersonRole">
+      <Column Name="PersonId" Type="System.Guid" CanBeNull="false" />
+      <Column Name="RoleId" Type="System.Guid" CanBeNull="false" />
+      <Column Name="PersonRoleId" Type="System.Guid" IsPrimaryKey="true" CanBeNull="false" />
+      <Association Name="Person_PersonRole" Member="Person" ThisKey="PersonId" OtherKey="PersonId" Type="Person" IsForeignKey="true" />
+      <Association Name="Role_PersonRole" Member="Role" ThisKey="RoleId" OtherKey="RoleId" Type="Role" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="" Member="Departments">
+    <Type Name="Department">
+      <Column Name="DepartmentId" Type="System.Guid" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Member="Name" Type="System.String" CanBeNull="false" />
+      <Association Name="Department_Person" Member="Persons" ThisKey="DepartmentId" OtherKey="DepartmentId" Type="Person" />
+    </Type>
+  </Table>
+</Database>

@@ -25,7 +25,11 @@
 
 using System;
 using System.Collections.Generic;
+#if !SILVERLIGHT && !PocketPC
+using System.ComponentModel.DataAnnotations;
+#endif
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json.Utilities;
 
@@ -35,6 +39,7 @@ namespace Newtonsoft.Json.Serialization
   {
     private static readonly Dictionary<ICustomAttributeProvider, Type> ConverterTypeCache = new Dictionary<ICustomAttributeProvider, Type>();
     private static readonly Dictionary<Type, JsonContainerAttribute> TypeContainerAttributeCache = new Dictionary<Type, JsonContainerAttribute>();
+    private static readonly Dictionary<Type, Type> AssociatedMetadataTypesCache = new Dictionary<Type, Type>();
 
     public static JsonContainerAttribute GetJsonContainerAttribute(Type type)
     {
@@ -79,7 +84,7 @@ namespace Newtonsoft.Json.Serialization
         if (ConverterTypeCache.TryGetValue(attributeProvider, out converterType))
           return converterType;
 
-        JsonConverterAttribute converterAttribute = ReflectionUtils.GetAttribute<JsonConverterAttribute>(attributeProvider, true);
+        JsonConverterAttribute converterAttribute = GetAttribute<JsonConverterAttribute>(attributeProvider);
         converterType = (converterAttribute != null)
           ? converterAttribute.ConverterType
           : null;
@@ -106,5 +111,75 @@ namespace Newtonsoft.Json.Serialization
 
       return null;
     }
+
+#if !SILVERLIGHT && !PocketPC
+    private static Type GetAssociatedMetadataType(Type type)
+    {
+      Type associatedMetadataType;
+
+      if (AssociatedMetadataTypesCache.TryGetValue(type, out associatedMetadataType))
+        return associatedMetadataType;
+
+      // double check locking to avoid threading issues
+      lock (AssociatedMetadataTypesCache)
+      {
+        if (AssociatedMetadataTypesCache.TryGetValue(type, out associatedMetadataType))
+          return associatedMetadataType;
+
+        MetadataTypeAttribute metadataTypeAttribute = ReflectionUtils.GetAttribute<MetadataTypeAttribute>(type, true);
+        if (metadataTypeAttribute != null)
+          associatedMetadataType = metadataTypeAttribute.MetadataClassType;
+
+        AssociatedMetadataTypesCache[type] = associatedMetadataType;
+
+        return associatedMetadataType;
+      }
+    }
+
+    private static T GetAttribute<T>(Type type) where T : Attribute
+    {
+      Type metadataType = GetAssociatedMetadataType(type);
+      if (metadataType != null)
+        return ReflectionUtils.GetAttribute<T>(metadataType, true);
+
+      return ReflectionUtils.GetAttribute<T>(type, true);
+    }
+
+    private static T GetAttribute<T>(MemberInfo memberInfo) where T : Attribute
+    {
+      Type metadataType = GetAssociatedMetadataType(memberInfo.DeclaringType);
+      if (metadataType != null)
+      {
+        MemberInfo metadataTypeMemberInfo = metadataType.GetMember(memberInfo.Name,
+          memberInfo.MemberType,
+          BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance).SingleOrDefault();
+
+        if (metadataTypeMemberInfo != null)
+          return ReflectionUtils.GetAttribute<T>(metadataTypeMemberInfo, true);
+      }
+
+      return ReflectionUtils.GetAttribute<T>(memberInfo, true);
+    }
+
+    public static T GetAttribute<T>(ICustomAttributeProvider attributeProvider) where T : Attribute
+    {
+      Type type = attributeProvider as Type;
+      if (type != null)
+        return GetAttribute<T>(type);
+
+      MemberInfo memberInfo = attributeProvider as MemberInfo;
+      if (memberInfo != null)
+        return GetAttribute<T>(memberInfo);
+
+      return ReflectionUtils.GetAttribute<T>(attributeProvider, true);
+    }
+#else
+    public static T GetAttribute<T>(ICustomAttributeProvider attributeProvider) where T : Attribute
+    {
+      return ReflectionUtils.GetAttribute<T>(attributeProvider, true);
+    }
+#endif
+
+
   }
 }
