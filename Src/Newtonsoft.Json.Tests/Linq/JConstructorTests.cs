@@ -31,5 +31,18 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(2, (int)constructor.Children().ElementAt(1));
       Assert.AreEqual(3, (int)constructor.Children().ElementAt(2));
     }
+
+    [Test]
+    public void Iterate()
+    {
+      JConstructor c = new JConstructor("MrConstructor", 1, 2, 3, 4, 5);
+
+      int i = 1;
+      foreach (JToken token in c)
+      {
+        Assert.AreEqual(i, (int)token);
+        i++;
+      }
+    }
   }
 }

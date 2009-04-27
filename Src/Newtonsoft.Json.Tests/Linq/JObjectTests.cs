@@ -374,5 +374,41 @@ Parameter name: arrayIndex")]
   ""val2"": 1
 }", json);
     }
+
+    [Test]
+    public void Iterate()
+    {
+      JObject o = new JObject();
+      o.Add("PropertyNameValue1", new JValue(1));
+      o.Add("PropertyNameValue2", new JValue(2));
+
+      JToken t = o;
+
+      int i = 1;
+      foreach (JProperty property in t)
+      {
+        Assert.AreEqual("PropertyNameValue" + i, property.Name);
+        Assert.AreEqual(i, (int)property.Value);
+
+        i++;
+      }
+    }
+
+    [Test]
+    public void KeyValuePairIterate()
+    {
+      JObject o = new JObject();
+      o.Add("PropertyNameValue1", new JValue(1));
+      o.Add("PropertyNameValue2", new JValue(2));
+
+      int i = 1;
+      foreach (KeyValuePair<string, JToken> pair in o)
+      {
+        Assert.AreEqual("PropertyNameValue" + i, pair.Key);
+        Assert.AreEqual(i, (int)pair.Value);
+
+        i++;
+      }
+    }
   }
 }

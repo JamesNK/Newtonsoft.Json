@@ -353,5 +353,18 @@ Parameter name: index")]
   ]
 }", result);
     }
+
+    [Test]
+    public void Iterate()
+    {
+      JArray a = new JArray(1, 2, 3, 4, 5);
+
+      int i = 1;
+      foreach (JToken token in a)
+      {
+        Assert.AreEqual(i, (int)token);
+        i++;
+      }
+    }
   }
 }

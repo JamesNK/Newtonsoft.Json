@@ -387,21 +387,17 @@ namespace Newtonsoft.Json.Linq
 
     #endregion
 
-    #region IEnumerable<KeyValuePair<string,JToken>> Members
+    internal override int GetDeepHashCode()
+    {
+      return ContentsHashCode();
+    }
 
-    IEnumerator<KeyValuePair<string, JToken>> IEnumerable<KeyValuePair<string,JToken>>.GetEnumerator()
+    public IEnumerator<KeyValuePair<string, JToken>> GetEnumerator()
     {
       foreach (JProperty property in Properties())
       {
         yield return new KeyValuePair<string, JToken>(property.Name, property.Value);
       }
-    }
-
-    #endregion
-
-    internal override int GetDeepHashCode()
-    {
-      return ContentsHashCode();
     }
   }
 }
