@@ -264,15 +264,14 @@ namespace Newtonsoft.Json.Linq
       }
     }
 
-    private static void WriteConvertableValue(JsonWriter writer, IList<JsonConverter> converters, Action<object> _defaultWrite, object value)
+    private static void WriteConvertableValue(JsonWriter writer, IList<JsonConverter> converters, Action<object> defaultWrite, object value)
     {
       JsonConverter matchingConverter;
 
-      JsonSerializer.HasMatchingConverter(converters, value.GetType(), out matchingConverter);
-      if (matchingConverter != null)
+      if (value != null && JsonSerializer.HasMatchingConverter(converters, value.GetType(), out matchingConverter))
         matchingConverter.WriteJson(writer, value);
       else
-        _defaultWrite(value);
+        defaultWrite(value);
     }
 
     /// <summary>
@@ -294,7 +293,7 @@ namespace Newtonsoft.Json.Linq
           WriteConvertableValue(writer, converters, v => writer.WriteValue(Convert.ToDouble(v, CultureInfo.InvariantCulture)), _value);
           break;
         case JTokenType.String:
-          WriteConvertableValue(writer, converters, v => writer.WriteValue(v.ToString()), _value);
+          WriteConvertableValue(writer, converters, v => writer.WriteValue((v != null) ? v.ToString() : null), _value);
           break;
         case JTokenType.Boolean:
           WriteConvertableValue(writer, converters, v => writer.WriteValue(Convert.ToBoolean(v, CultureInfo.InvariantCulture)), _value);

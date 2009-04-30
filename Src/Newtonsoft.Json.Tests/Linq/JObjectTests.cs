@@ -410,5 +410,23 @@ Parameter name: arrayIndex")]
         i++;
       }
     }
+
+    [Test]
+    public void WriteObjectNullStringValue()
+    {
+      string s = null;
+      JValue v = new JValue(s);
+      Assert.AreEqual(null, v.Value);
+      Assert.AreEqual(JTokenType.String, v.Type);
+
+      JObject o = new JObject();
+      o["title"] = v;
+
+      string output = o.ToString();
+      
+      Assert.AreEqual(@"{
+  ""title"": null
+}", output);
+    }
   }
 }

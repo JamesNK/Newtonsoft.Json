@@ -517,7 +517,7 @@ namespace Newtonsoft.Json.Linq
       if (v == null || !ValidateFloat(v, true))
         throw new ArgumentException("Can not convert {0} to Decimal.".FormatWith(CultureInfo.InvariantCulture, GetType(v)));
 
-      return (decimal?)v.Value;
+      return (v.Value != null) ? (decimal?)Convert.ToDecimal(v.Value) : null;
     }
 
     /// <summary>
@@ -613,7 +613,7 @@ namespace Newtonsoft.Json.Linq
       if (v == null || !ValidateFloat(v, true))
         throw new ArgumentException("Can not convert {0} to Single.".FormatWith(CultureInfo.InvariantCulture, GetType(v)));
 
-      return (float?)v.Value;
+      return (v.Value != null) ? (float?)Convert.ToSingle(v.Value) : null;
     }
 
     /// <summary>
@@ -627,7 +627,7 @@ namespace Newtonsoft.Json.Linq
       if (v == null || !ValidateFloat(v, false))
         throw new ArgumentException("Can not convert {0} to Decimal.".FormatWith(CultureInfo.InvariantCulture, GetType(v)));
 
-      return (decimal)v.Value;
+      return Convert.ToDecimal(v.Value);
     }
 
     /// <summary>

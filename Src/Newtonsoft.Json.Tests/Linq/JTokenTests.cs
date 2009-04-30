@@ -235,6 +235,11 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(ulong.MaxValue, (ulong)new JValue(ulong.MaxValue));
       Assert.AreEqual(ulong.MaxValue, (ulong)new JProperty("Test", new JValue(ulong.MaxValue)));
       Assert.AreEqual(null, (string)new JValue((string)null));
+      Assert.AreEqual(5m, (decimal)(new JValue(5L)));
+      Assert.AreEqual(5m, (decimal?)(new JValue(5L)));
+      Assert.AreEqual(5f, (float)(new JValue(5L)));
+      Assert.AreEqual(5f, (float)(new JValue(5m)));
+      Assert.AreEqual(5f, (float?)(new JValue(5m)));
     }
 
     [Test]
