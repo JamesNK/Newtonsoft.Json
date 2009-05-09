@@ -96,7 +96,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       string json = JsonConvert.SerializeObject(privateMembersClass, Formatting.Indented, new JsonSerializerSettings
       {
-        MappingResolver = new CamelCaseMappingResolver { MemberSearchFlags = BindingFlags.NonPublic | BindingFlags.Instance }
+        MappingResolver = new CamelCaseMappingResolver { DefaultMembersSearchFlags = BindingFlags.NonPublic | BindingFlags.Instance }
       });
 
       Assert.AreEqual(@"{
@@ -111,7 +111,7 @@ namespace Newtonsoft.Json.Tests.Serialization
   ""_internalString"": ""Internal!""
 }", new JsonSerializerSettings
       {
-        MappingResolver = new CamelCaseMappingResolver { MemberSearchFlags = BindingFlags.NonPublic | BindingFlags.Instance }
+        MappingResolver = new CamelCaseMappingResolver { DefaultMembersSearchFlags = BindingFlags.NonPublic | BindingFlags.Instance }
       });
 
       Assert.AreEqual("Private!", ReflectionUtils.GetMemberValue(typeof(PrivateMembersClass).GetField("_privateString", BindingFlags.Instance | BindingFlags.NonPublic), deserializedPrivateMembersClass));

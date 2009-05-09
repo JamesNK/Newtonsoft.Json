@@ -51,7 +51,6 @@ namespace Newtonsoft.Json
     private ObjectCreationHandling _objectCreationHandling;
     private NullValueHandling _nullValueHandling;
     private DefaultValueHandling _defaultValueHandling;
-    private int _level;
     private JsonConverterCollection _converters;
     private IMappingResolver _mappingResolver;
 
@@ -258,8 +257,6 @@ namespace Newtonsoft.Json
 
     private object CreateObject(JsonReader reader, Type objectType, object existingValue, JsonConverter memberConverter)
     {
-      _level++;
-
       object value;
       JsonConverter converter;
 
@@ -342,8 +339,6 @@ namespace Newtonsoft.Json
             throw new JsonSerializationException("Unexpected token while deserializing object: " + reader.TokenType);
         }
       }
-
-      _level--;
 
       return value;
     }

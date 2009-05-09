@@ -39,6 +39,7 @@
     <DocumentationFile>Bin\Release\Newtonsoft.Json.Silverlight.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows" />
     <Reference Include="mscorlib" />
     <Reference Include="system" />
@@ -99,6 +100,7 @@
     <Compile Include="ObjectCreationHandling.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReferenceLoopHandling.cs" />
+    <Compile Include="Serialization\CachedAttributeGetter.cs" />
     <Compile Include="Serialization\CamelCaseMappingResolver.cs" />
     <Compile Include="Serialization\DefaultMappingResolver.cs" />
     <Compile Include="Serialization\IMappingResolver.cs" />

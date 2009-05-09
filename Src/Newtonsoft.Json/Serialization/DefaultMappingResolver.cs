@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Text;
 using Newtonsoft.Json.Utilities;
 
@@ -39,11 +40,11 @@ namespace Newtonsoft.Json.Serialization
 
     private readonly Dictionary<Type, JsonMemberMappingCollection> TypeMemberMappingsCache = new Dictionary<Type, JsonMemberMappingCollection>();
 
-    public BindingFlags MemberSearchFlags { get; set; }
+    public BindingFlags DefaultMembersSearchFlags { get; set; }
 
     public DefaultMappingResolver()
     {
-      MemberSearchFlags = BindingFlags.Public | BindingFlags.Instance;
+      DefaultMembersSearchFlags = BindingFlags.Public | BindingFlags.Instance;
     }
     
     public virtual JsonMemberMappingCollection ResolveMappings(Type type)
@@ -68,7 +69,32 @@ namespace Newtonsoft.Json.Serialization
 
     protected virtual List<MemberInfo> GetSerializableMembers(Type objectType)
     {
-      return ReflectionUtils.GetFieldsAndProperties(objectType, MemberSearchFlags);
+#if !PocketPC
+      DataContractAttribute dataContractAttribute = JsonTypeReflector.GetDataContractAttribute(objectType);
+#endif
+      
+      List<MemberInfo> defaultMembers = ReflectionUtils.GetFieldsAndProperties(objectType, DefaultMembersSearchFlags);
+      List<MemberInfo> allMembers = ReflectionUtils.GetFieldsAndProperties(objectType, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+
+      List<MemberInfo> serializableMembers = new List<MemberInfo>();
+      foreach (MemberInfo member in allMembers)
+      {
+        if (defaultMembers.Contains(member))
+        {
+          serializableMembers.Add(member);
+        }
+        else
+        {
+          if (JsonTypeReflector.GetAttribute<JsonPropertyAttribute>(member) != null)
+            serializableMembers.Add(member);
+#if !PocketPC
+          else if (dataContractAttribute != null && JsonTypeReflector.GetAttribute<DataMemberAttribute>(member) != null)
+            serializableMembers.Add(member);
+#endif
+        }
+      }
+
+      return serializableMembers;
     }
 
     private JsonMemberMappingCollection CreateMemberMappings(Type objectType)
@@ -85,7 +111,8 @@ namespace Newtonsoft.Json.Serialization
       {
         JsonMemberMapping memberMapping = CreateMemberMapping(memberSerialization, member);
 
-        memberMappings.AddMapping(memberMapping);
+        if (memberMapping != null)
+          memberMappings.AddMapping(memberMapping);
       }
 
       return memberMappings;
@@ -93,19 +120,48 @@ namespace Newtonsoft.Json.Serialization
 
     protected virtual JsonMemberMapping CreateMemberMapping(MemberSerialization memberSerialization, MemberInfo member)
     {
+#if !PocketPC
+      DataContractAttribute dataContractAttribute = JsonTypeReflector.GetDataContractAttribute(member.DeclaringType);
+
+      DataMemberAttribute dataMemberAttribute;
+      if (dataContractAttribute != null)
+        dataMemberAttribute = JsonTypeReflector.GetAttribute<DataMemberAttribute>(member);
+      else
+        dataMemberAttribute = null;
+#endif
+
       JsonPropertyAttribute propertyAttribute = JsonTypeReflector.GetAttribute<JsonPropertyAttribute>(member);
       bool hasIgnoreAttribute = (JsonTypeReflector.GetAttribute<JsonIgnoreAttribute>(member) != null);
 
-      string mappedName = (propertyAttribute != null && propertyAttribute.PropertyName != null)
-                            ? propertyAttribute.PropertyName
-                            : member.Name;
+      string mappedName;
+      if (propertyAttribute != null && propertyAttribute.PropertyName != null)
+        mappedName = propertyAttribute.PropertyName;
+#if !PocketPC
+      else if (dataMemberAttribute != null && dataMemberAttribute.Name != null)
+        mappedName = dataMemberAttribute.Name;
+#endif
+      else
+        mappedName = member.Name;
 
       string resolvedMappedName = ResolveMappingName(mappedName);
 
-      bool required = (propertyAttribute != null) ? propertyAttribute.IsRequired : false;
+      bool required;
+      if (propertyAttribute != null)
+        required = propertyAttribute.IsRequired;
+#if !PocketPC
+      else if (dataMemberAttribute != null)
+        required = dataMemberAttribute.IsRequired;
+#endif
+      else
+        required = false;
 
-      bool ignored = (hasIgnoreAttribute
-                      || (memberSerialization == MemberSerialization.OptIn && propertyAttribute == null));
+      bool ignored = (hasIgnoreAttribute ||
+                      (memberSerialization == MemberSerialization.OptIn
+                       && propertyAttribute == null
+#if !PocketPC
+                       && dataMemberAttribute == null
+#endif
+                       ));
 
       bool readable = ReflectionUtils.CanReadMemberValue(member);
       bool writable = ReflectionUtils.CanSetMemberValue(member);

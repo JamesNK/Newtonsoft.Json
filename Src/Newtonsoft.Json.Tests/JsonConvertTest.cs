@@ -292,5 +292,15 @@ now brown cow?", '"', true);
       Assert.AreEqual(JsonConvert.NegativeInfinity, JsonConvert.ToString(double.NegativeInfinity));
       Assert.AreEqual(JsonConvert.NaN, JsonConvert.ToString(double.NaN));
     }
+
+    [Test]
+    public void StringEscaping()
+    {
+      string v = @"It's a good day
+""sunshine""";
+
+      string json = JsonConvert.ToString(v);
+      Assert.AreEqual(@"""It's a good day\r\n\""sunshine\""""", json);
+    }
   }
 }

@@ -25,6 +25,9 @@
 
 using System;
 using System.Collections.Generic;
+#if !SILVERLIGHT && !PocketPC
+using System.ComponentModel.DataAnnotations;
+#endif
 using System.Text;
 using NUnit.Framework;
 using Newtonsoft.Json;
@@ -40,6 +43,7 @@ using Newtonsoft.Json.Converters;
 using System.Runtime.Serialization.Json;
 #endif
 using Newtonsoft.Json.Tests.TestObjects;
+using System.Runtime.Serialization;
 
 namespace Newtonsoft.Json.Tests
 {
@@ -1471,5 +1475,147 @@ keyword such as type of business.""
 
       JsonConvert.SerializeObject(o, Formatting.Indented, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
     }
+
+    public class RequestOnly
+    {
+      public string Request { get; set; }
+    }
+
+    public class NonRequest
+    {
+      public Guid Sid { get; set; }
+      public Guid Uid { get; set; }
+      public IList<string> FidOrder { get; set; }
+    }
+
+    [Test]
+    public void PartialClassDeserialize()
+    {
+      string json = @"{
+    ""request"": ""ux.settings.update"",
+    ""sid"": ""14c561bd-32a8-457e-b4e5-4bba0832897f"",
+    ""uid"": ""30c39065-0f31-de11-9442-001e3786a8ec"",
+    ""fidOrder"": [
+        ""id"",
+        ""andytest_name"",
+        ""andytest_age"",
+        ""andytest_address"",
+        ""andytest_phone"",
+        ""date"",
+        ""title"",
+        ""titleId""
+    ],
+    ""entityName"": ""Andy Test"",
+    ""setting"": ""entity.field.order""
+}";
+
+      RequestOnly r = JsonConvert.DeserializeObject<RequestOnly>(json);
+      Assert.AreEqual("ux.settings.update", r.Request);
+
+      NonRequest n = JsonConvert.DeserializeObject<NonRequest>(json);
+      Assert.AreEqual(new Guid("14c561bd-32a8-457e-b4e5-4bba0832897f"), n.Sid);
+      Assert.AreEqual(new Guid("30c39065-0f31-de11-9442-001e3786a8ec"), n.Uid);
+      Assert.AreEqual(8, n.FidOrder.Count);
+      Assert.AreEqual("id", n.FidOrder[0]);
+      Assert.AreEqual("titleId", n.FidOrder[n.FidOrder.Count - 1]);
+    }
+
+#if !SILVERLIGHT && !PocketPC
+    [MetadataType(typeof(OptInClassMetadata))]
+    public class OptInClass
+    {
+      [DataContract]
+      public class OptInClassMetadata
+      {
+        [DataMember]
+        public string Name { get; set; }
+        [DataMember]
+        public int Age { get; set; }
+        public string NotIncluded { get; set; }
+      }
+
+      public string Name { get; set; }
+      public int Age { get; set; }
+      public string NotIncluded { get; set; }
+    }
+
+    [Test]
+    public void OptInClassMetadataSerialization()
+    {
+      OptInClass optInClass = new OptInClass();
+      optInClass.Age = 26;
+      optInClass.Name = "James NK";
+      optInClass.NotIncluded = "Poor me :(";
+
+      string json = JsonConvert.SerializeObject(optInClass, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""Name"": ""James NK"",
+  ""Age"": 26
+}", json);
+
+      OptInClass newOptInClass = JsonConvert.DeserializeObject<OptInClass>(@"{
+  ""Name"": ""James NK"",
+  ""NotIncluded"": ""Ignore me!"",
+  ""Age"": 26
+}");
+      Assert.AreEqual(26, newOptInClass.Age);
+      Assert.AreEqual("James NK", newOptInClass.Name);
+      Assert.AreEqual(null, newOptInClass.NotIncluded);
+    }
+#endif
+
+#if !PocketPC
+    [DataContract]
+    public class DataContractPrivateMembers
+    {
+      public DataContractPrivateMembers()
+      {
+      }
+
+      public DataContractPrivateMembers(string name, int age, int rank, string title)
+      {
+        _name = name;
+        Age = age;
+        Rank = rank;
+        Title = title;
+      }
+
+      [DataMember]
+      private string _name;
+      [DataMember(Name = "_age")]
+      private int Age { get; set; }
+      [JsonProperty]
+      private int Rank { get; set; }
+      [JsonProperty(PropertyName = "JsonTitle")]
+      [DataMember(Name = "DataTitle")]
+      private string Title { get; set; }
+
+      public string NotIncluded { get; set; }
+
+      public override string ToString()
+      {
+        return "_name: " + _name + ", _age: " + Age + ", Rank: " + Rank + ", JsonTitle: " + Title;
+      }
+    }
+
+    [Test]
+    public void SerializeDataContractPrivateMembers()
+    {
+      DataContractPrivateMembers c = new DataContractPrivateMembers("Jeff", 26, 10, "Dr");
+      c.NotIncluded = "Hi";
+      string json = JsonConvert.SerializeObject(c, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""_name"": ""Jeff"",
+  ""_age"": 26,
+  ""Rank"": 10,
+  ""JsonTitle"": ""Dr""
+}", json);
+
+      DataContractPrivateMembers cc = JsonConvert.DeserializeObject<DataContractPrivateMembers>(json);
+      Assert.AreEqual("_name: Jeff, _age: 26, Rank: 10, JsonTitle: Dr", cc.ToString());
+    }
+#endif
   }
 }

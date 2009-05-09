@@ -31,6 +31,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
 using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Serialization
@@ -38,36 +39,36 @@ namespace Newtonsoft.Json.Serialization
   internal static class JsonTypeReflector
   {
     private static readonly Dictionary<ICustomAttributeProvider, Type> ConverterTypeCache = new Dictionary<ICustomAttributeProvider, Type>();
-    private static readonly Dictionary<Type, JsonContainerAttribute> TypeContainerAttributeCache = new Dictionary<Type, JsonContainerAttribute>();
     private static readonly Dictionary<Type, Type> AssociatedMetadataTypesCache = new Dictionary<Type, Type>();
 
     public static JsonContainerAttribute GetJsonContainerAttribute(Type type)
     {
-      JsonContainerAttribute containerAttribute;
-
-      if (TypeContainerAttributeCache.TryGetValue(type, out containerAttribute))
-        return containerAttribute;
-
-      // double check locking to avoid threading issues
-      lock (TypeContainerAttributeCache)
-      {
-        if (TypeContainerAttributeCache.TryGetValue(type, out containerAttribute))
-          return containerAttribute;
-
-        containerAttribute = ReflectionUtils.GetAttribute<JsonContainerAttribute>(type);
-        TypeContainerAttributeCache[type] = containerAttribute;
-
-        return containerAttribute;
-      }
+      return CachedAttributeGetter<JsonContainerAttribute>.GetAttribute(type);
     }
+
+#if !PocketPC
+    public static DataContractAttribute GetDataContractAttribute(Type type)
+    {
+      return CachedAttributeGetter<DataContractAttribute>.GetAttribute(type);
+    }
+#endif
 
     public static MemberSerialization GetObjectMemberSerialization(Type objectType)
     {
       JsonObjectAttribute objectAttribute = GetJsonContainerAttribute(objectType) as JsonObjectAttribute;
 
       if (objectAttribute == null)
+      {
+#if !PocketPC
+        DataContractAttribute dataContractAttribute = GetDataContractAttribute(objectType);
+
+        if (dataContractAttribute != null)
+          return MemberSerialization.OptIn;
+#endif
+        
         return MemberSerialization.OptOut;
-      
+      }
+
       return objectAttribute.MemberSerialization;
     }
 
