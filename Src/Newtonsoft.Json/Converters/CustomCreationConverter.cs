@@ -26,34 +26,32 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
-using Newtonsoft.Json.Utilities;
 
-namespace Newtonsoft.Json.Serialization
+namespace Newtonsoft.Json.Converters
 {
-  internal static class CachedAttributeGetter<T> where T : Attribute
+  public abstract class CustomCreationConverter<T> : JsonConverter
   {
-    private static readonly Dictionary<ICustomAttributeProvider, T> TypeAttributeCache = new Dictionary<ICustomAttributeProvider, T>();
-
-    public static T GetAttribute(ICustomAttributeProvider type)
+    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {
-      T attribute;
+      serializer.Serialize(writer, value);
+    }
 
-      if (TypeAttributeCache.TryGetValue(type, out attribute))
-        return attribute;
+    public override object ReadJson(JsonReader reader, Type objectType, JsonSerializer serializer)
+    {
+      T value = Create();
+      if (value == null)
+        throw new JsonSerializationException("No object created.");
 
-      // double check locking to avoid threading issues
-      lock (TypeAttributeCache)
-      {
-        if (TypeAttributeCache.TryGetValue(type, out attribute))
-          return attribute;
+      serializer.Populate(reader, value);
+      return value;
+    }
 
-        attribute = JsonTypeReflector.GetAttribute<T>(type);
-        TypeAttributeCache[type] = attribute;
+    public abstract T Create();
 
-        return attribute;
-      }
+    public override bool CanConvert(Type objectType)
+    {
+      return typeof (T).IsAssignableFrom(objectType);
     }
   }
 }

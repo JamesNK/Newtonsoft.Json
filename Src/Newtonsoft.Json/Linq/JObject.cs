@@ -219,6 +219,7 @@ namespace Newtonsoft.Json.Linq
       return Load(jsonReader);
     }
 
+
     /// <summary>
     /// Creates a <see cref="JObject"/> from an object.
     /// </summary>
@@ -226,13 +227,19 @@ namespace Newtonsoft.Json.Linq
     /// <returns>A <see cref="JObject"/> with the values of the specified object</returns>
     public static new JObject FromObject(object o)
     {
-      JToken token = FromObjectInternal(o);
+      return FromObject(o, new JsonSerializer());
+    }
 
-      if (token.Type != JTokenType.Object)
+    public static new JObject FromObject(object o, JsonSerializer jsonSerializer)
+    {
+      JToken token = FromObjectInternal(o, jsonSerializer);
+
+      if (token != null && token.Type != JTokenType.Object)
         throw new ArgumentException("Object serialized to {0}. JObject instance expected.".FormatWith(CultureInfo.InvariantCulture, token.Type));
 
       return (JObject)token;
     }
+
 
     internal override void ValidateObject(JToken o, JToken previous)
     {

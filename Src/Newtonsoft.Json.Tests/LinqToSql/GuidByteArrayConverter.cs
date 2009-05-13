@@ -7,13 +7,13 @@ namespace Newtonsoft.Json.Tests.LinqToSql
 {
   public class GuidByteArrayConverter : JsonConverter
   {
-    public override void WriteJson(JsonWriter writer, object value)
+    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {
       Guid guid = (Guid) value;
       writer.WriteValue(Convert.ToBase64String(guid.ToByteArray()));
     }
 
-    public override object ReadJson(JsonReader reader, Type objectType)
+    public override object ReadJson(JsonReader reader, Type objectType, JsonSerializer serializer)
     {
       string encodedData = (string) reader.Value;
       byte[] data = Convert.FromBase64String(encodedData);

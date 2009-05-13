@@ -40,15 +40,17 @@ namespace Newtonsoft.Json
     /// </summary>
     /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
     /// <param name="value">The value.</param>
-    public abstract void WriteJson(JsonWriter writer, object value);
+    /// <param name="serializer">The calling serializer.</param>
+    public abstract void WriteJson(JsonWriter writer, object value, JsonSerializer serializer);
 
     /// <summary>
     /// Reads the JSON representation of the object.
     /// </summary>
     /// <param name="reader">The <see cref="JsonReader"/> to read from.</param>
     /// <param name="objectType">Type of the object.</param>
+    /// <param name="serializer">The calling serializer.</param>
     /// <returns>The object value.</returns>
-    public abstract object ReadJson(JsonReader reader, Type objectType);
+    public abstract object ReadJson(JsonReader reader, Type objectType, JsonSerializer serializer);
 
     /// <summary>
     /// Determines whether this instance can convert the specified object type.

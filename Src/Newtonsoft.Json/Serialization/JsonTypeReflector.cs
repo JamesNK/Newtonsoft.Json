@@ -38,6 +38,9 @@ namespace Newtonsoft.Json.Serialization
 {
   internal static class JsonTypeReflector
   {
+    public const string IdPropertyName = "$id";
+    public const string RefPropertyName = "$ref";
+
     private static readonly Dictionary<ICustomAttributeProvider, Type> ConverterTypeCache = new Dictionary<ICustomAttributeProvider, Type>();
     private static readonly Dictionary<Type, Type> AssociatedMetadataTypesCache = new Dictionary<Type, Type>();
 

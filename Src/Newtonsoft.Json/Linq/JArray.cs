@@ -138,6 +138,7 @@ namespace Newtonsoft.Json.Linq
         throw new ArgumentException("An item of type {0} cannot be added to content.".FormatWith(CultureInfo.InvariantCulture, o.Type));
     }
 
+
     /// <summary>
     /// Creates a <see cref="JArray"/> from an object.
     /// </summary>
@@ -145,7 +146,12 @@ namespace Newtonsoft.Json.Linq
     /// <returns>A <see cref="JArray"/> with the values of the specified object</returns>
     public static new JArray FromObject(object o)
     {
-      JToken token = FromObjectInternal(o);
+      return FromObject(o, new JsonSerializer());
+    }
+
+    public static new JArray FromObject(object o, JsonSerializer jsonSerializer)
+    {
+      JToken token = FromObjectInternal(o, jsonSerializer);
 
       if (token.Type != JTokenType.Array)
         throw new ArgumentException("Object serialized to {0}. JArray instance expected.".FormatWith(CultureInfo.InvariantCulture, token.Type));

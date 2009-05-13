@@ -41,7 +41,12 @@ namespace Newtonsoft.Json.Tests
     //  return utcOffset.Hours.ToString("+00;-00") + utcOffset.Minutes.ToString("00;00");
     //}
 
-    protected string EscapedJson(string json)
+    protected void WriteEscapedJson(string json)
+    {
+      Console.WriteLine(EscapeJson(json));
+    }
+
+    protected string EscapeJson(string json)
     {
       return @"@""" + json.Replace(@"""", @"""""") + @"""";
     }

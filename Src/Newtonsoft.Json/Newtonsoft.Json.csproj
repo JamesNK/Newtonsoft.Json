@@ -84,7 +84,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Converters\BinaryConverter.cs" />
+    <Compile Include="Converters\CustomCreationConverter.cs" />
     <Compile Include="Converters\StringEnumConverter.cs" />
+    <Compile Include="Serialization\DefaultReferenceResolver.cs" />
+    <Compile Include="PreserveReferencesHandling.cs" />
     <Compile Include="IJsonLineInfo.cs" />
     <Compile Include="JsonArrayAttribute.cs" />
     <Compile Include="JsonContainerAttribute.cs" />
@@ -133,6 +136,7 @@
     <Compile Include="Schema\JsonSchemaModelBuilder.cs" />
     <Compile Include="Schema\JsonSchemaNodeCollection.cs" />
     <Compile Include="Schema\JsonSchemaNode.cs" />
+    <Compile Include="Schema\JsonSchemaResolver.cs" />
     <Compile Include="Schema\JsonSchemaWriter.cs" />
     <Compile Include="Schema\UndefinedSchemaIdHandling.cs" />
     <Compile Include="Schema\ValidationEventArgs.cs" />
@@ -149,10 +153,14 @@
     <Compile Include="Schema\JsonSchemaBuilder.cs" />
     <Compile Include="Schema\JsonSchemaConstants.cs" />
     <Compile Include="Schema\JsonSchemaGenerator.cs" />
-    <Compile Include="Schema\JsonSchemaResolver.cs" />
+    <Compile Include="Serialization\IReferenceResolver.cs" />
     <Compile Include="Schema\JsonSchemaType.cs" />
+    <Compile Include="Serialization\JsonSerializerProxy.cs" />
+    <Compile Include="Serialization\JsonSerializerReader.cs" />
+    <Compile Include="Serialization\JsonSerializerWriter.cs" />
     <Compile Include="Serialization\JsonTypeReflector.cs" />
     <Compile Include="Serialization\CachedAttributeGetter.cs" />
+    <Compile Include="Utilities\BidirectionalDictionary.cs" />
     <Compile Include="Utilities\ConvertUtils.cs" />
     <Compile Include="Utilities\CollectionWrapper.cs" />
     <Compile Include="Utilities\DateTimeUtils.cs" />
@@ -164,7 +172,7 @@
     <Compile Include="JsonToken.cs" />
     <Compile Include="JsonWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StringBuffer.cs" />
+    <Compile Include="Utilities\StringBuffer.cs" />
     <Compile Include="Utilities\CollectionUtils.cs" />
     <Compile Include="Utilities\ListWrapper.cs" />
     <Compile Include="Utilities\MathUtils.cs" />

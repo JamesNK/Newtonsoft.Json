@@ -760,11 +760,10 @@ namespace Newtonsoft.Json.Linq
       return new JTokenReader(this);
     }
 
-    internal static JToken FromObjectInternal(object o)
+    internal static JToken FromObjectInternal(object o, JsonSerializer jsonSerializer)
     {
       ValidationUtils.ArgumentNotNull(o, "o");
-
-      JsonSerializer jsonSerializer = new JsonSerializer();
+      ValidationUtils.ArgumentNotNull(jsonSerializer, "jsonSerializer");
 
       JToken token;
       using (JTokenWriter jsonWriter = new JTokenWriter())
@@ -783,7 +782,12 @@ namespace Newtonsoft.Json.Linq
     /// <returns>A <see cref="JToken"/> with the value of the specified object</returns>
     public static JToken FromObject(object o)
     {
-      return FromObjectInternal(o);
+      return FromObjectInternal(o, new JsonSerializer());
+    }
+
+    public static JToken FromObject(object o, JsonSerializer jsonSerializer)
+    {
+      return FromObjectInternal(o, jsonSerializer);
     }
 
     public static JToken ReadFrom(JsonReader reader)

@@ -1,0 +1,375 @@
+﻿#region License
+// Copyright (c) 2007 James Newton-King
+//
+// Permission is hereby granted, free of charge, to any person
+// obtaining a copy of this software and associated documentation
+// files (the "Software"), to deal in the Software without
+// restriction, including without limitation the rights to use,
+// copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following
+// conditions:
+//
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+// OTHER DEALINGS IN THE SOFTWARE.
+#endregion
+
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Globalization;
+using System.Linq;
+using System.Reflection;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Utilities;
+
+namespace Newtonsoft.Json.Serialization
+{
+  internal class JsonSerializerWriter
+  {
+    internal readonly JsonSerializer _serializer;
+    private JsonSerializerProxy _internalSerializer;
+    private List<object> _serializeStack;
+    
+    private List<object> SerializeStack
+    {
+      get
+      {
+        if (_serializeStack == null)
+          _serializeStack = new List<object>();
+
+        return _serializeStack;
+      }
+    }
+
+    public JsonSerializerWriter(JsonSerializer serializer)
+    {
+      ValidationUtils.ArgumentNotNull(serializer, "serializer");
+
+      _serializer = serializer;
+    }
+
+    public void Serialize(JsonWriter jsonWriter, object value)
+    {
+      if (jsonWriter == null)
+        throw new ArgumentNullException("jsonWriter");
+
+      if (value is JToken)
+        ((JToken)value).WriteTo(jsonWriter, (_serializer.Converters != null) ? _serializer.Converters.ToArray() : null);
+      else
+        SerializeValue(jsonWriter, value, null);
+    }
+
+    private JsonSerializerProxy GetInternalSerializer()
+    {
+      if (_internalSerializer == null)
+        _internalSerializer = new JsonSerializerProxy(this);
+
+      return _internalSerializer;
+    }
+
+    private void SerializeValue(JsonWriter writer, object value, JsonConverter memberConverter)
+    {
+      JsonConverter converter = memberConverter;
+
+      if (value == null)
+      {
+        writer.WriteNull();
+      }
+      else if (converter != null
+        || _serializer.HasClassConverter(value.GetType(), out converter)
+        || _serializer.HasMatchingConverter(value.GetType(), out converter))
+      {
+        SerializeConvertable(writer, converter, value);
+      }
+      else if (JsonConvert.IsJsonPrimitive(value))
+      {
+        writer.WriteValue(value);
+      }
+      else if (value is IList)
+      {
+        SerializeList(writer, (IList)value);
+      }
+      else if (value is IDictionary)
+      {
+        SerializeDictionary(writer, (IDictionary)value);
+      }
+      else if (value is IEnumerable)
+      {
+        SerializeEnumerable(writer, (IEnumerable)value);
+      }
+      else if (value is JsonRaw)
+      {
+        writer.WriteRawValue(((JsonRaw)value).Content);
+      }
+      else
+      {
+        SerializeObject(writer, value);
+      }
+    }
+
+    private bool ShouldWriteReference(object value)
+    {
+      if (value == null)
+        return false;
+      if (JsonConvert.IsJsonPrimitive(value))
+        return false;
+
+      Type t = value.GetType();
+
+      bool? isReference = IsReference(t);
+
+      if (isReference == null)
+      {
+        if (value is IList)
+          isReference = HasFlag(_serializer.PreserveReferencesHandling, PreserveReferencesHandling.Arrays);
+        else if (value is IDictionary)
+          isReference = HasFlag(_serializer.PreserveReferencesHandling, PreserveReferencesHandling.Objects);
+        else if (value is IEnumerable)
+          isReference = HasFlag(_serializer.PreserveReferencesHandling, PreserveReferencesHandling.Arrays);
+        else
+          isReference = HasFlag(_serializer.PreserveReferencesHandling, PreserveReferencesHandling.Objects);
+      }
+
+      if (!isReference.Value)
+        return false;
+
+      return _serializer.ReferenceResolver.HasObjectReference(value);
+    }
+
+    private void WriteMemberInfoProperty(JsonWriter writer, object value, JsonMemberMapping memberMapping)
+    {
+      MemberInfo member = memberMapping.Member;
+      string propertyName = memberMapping.MappingName;
+      JsonConverter memberConverter = memberMapping.MemberConverter;
+      object defaultValue = memberMapping.DefaultValue;
+
+      if (!ReflectionUtils.IsIndexedProperty(member))
+      {
+        object memberValue = ReflectionUtils.GetMemberValue(member, value);
+
+        if (memberMapping.NullValueHandling.GetValueOrDefault(_serializer.NullValueHandling) == NullValueHandling.Ignore && memberValue == null)
+          return;
+
+        if (memberMapping.DefaultValueHandling.GetValueOrDefault(_serializer.DefaultValueHandling) == DefaultValueHandling.Ignore && Equals(memberValue, defaultValue))
+          return;
+
+        if (ShouldWriteReference(memberValue))
+        {
+          writer.WritePropertyName(propertyName ?? member.Name);
+          WriteReference(writer, memberValue);
+          return;
+        }
+
+        if (!CheckForCircularReference(memberValue, memberMapping.ReferenceLoopHandling))
+          return;
+
+        writer.WritePropertyName(propertyName ?? member.Name);
+        SerializeValue(writer, memberValue, memberConverter);
+      }
+    }
+
+    private bool CheckForCircularReference(object value, ReferenceLoopHandling? referenceLoopHandling)
+    {
+      if (SerializeStack.IndexOf(value) != -1)
+      {
+        switch (referenceLoopHandling.GetValueOrDefault(_serializer.ReferenceLoopHandling))
+        {
+          case ReferenceLoopHandling.Error:
+            throw new JsonSerializationException("Self referencing loop");
+          case ReferenceLoopHandling.Ignore:
+            return false;
+          case ReferenceLoopHandling.Serialize:
+            return true;
+          default:
+            throw new InvalidOperationException("Unexpected ReferenceLoopHandling value: '{0}'".FormatWith(CultureInfo.InvariantCulture, _serializer.ReferenceLoopHandling));
+        }
+      }
+
+      return true;
+    }
+
+    private void WriteReference(JsonWriter writer, object value)
+    {
+      writer.WriteStartObject();
+      writer.WritePropertyName(JsonTypeReflector.RefPropertyName);
+      writer.WriteValue(_serializer.ReferenceResolver.ResolveReference(value));
+      writer.WriteEndObject();
+    }
+
+    private void SerializeObject(JsonWriter writer, object value)
+    {
+      Type objectType = value.GetType();
+
+#if !SILVERLIGHT && !PocketPC
+      TypeConverter converter = TypeDescriptor.GetConverter(objectType);
+
+      // use the objectType's TypeConverter if it has one and can convert to a string
+      if (converter != null && !(converter is ComponentConverter) && (converter.GetType() != typeof (TypeConverter) || value is Type))
+      {
+        if (converter.CanConvertTo(typeof (string)))
+        {
+          writer.WriteValue(converter.ConvertToInvariantString(value));
+          return;
+        }
+      }
+#else
+      if (value is Guid || value is Type)
+      {
+        writer.WriteValue(value.ToString());
+        return;
+      }
+#endif
+
+
+
+      SerializeStack.Add(value);
+      writer.WriteStartObject();
+
+      bool isReference = IsReference(objectType) ?? HasFlag(_serializer.PreserveReferencesHandling, PreserveReferencesHandling.Objects);
+      if (isReference)
+      {
+        writer.WritePropertyName(JsonTypeReflector.IdPropertyName);
+        writer.WriteValue(_serializer.ReferenceResolver.ResolveReference(value));
+      }
+
+      JsonMemberMappingCollection memberMappings = _serializer.GetMemberMappings(objectType);
+
+      foreach (JsonMemberMapping memberMapping in memberMappings)
+      {
+        if (!memberMapping.Ignored && memberMapping.Readable)
+          WriteMemberInfoProperty(writer, value, memberMapping);
+      }
+
+      writer.WriteEndObject();
+      SerializeStack.RemoveAt(SerializeStack.Count - 1);
+    }
+
+    private bool HasFlag(PreserveReferencesHandling value, PreserveReferencesHandling flag)
+    {
+      return ((value & flag) == flag);
+    }
+
+    private bool? IsReference(Type t)
+    {
+      JsonContainerAttribute containerAttribute = JsonTypeReflector.GetJsonContainerAttribute(t);
+      if (containerAttribute == null)
+        return null;
+
+      return containerAttribute._isReference;
+    }
+
+    private void SerializeConvertable(JsonWriter writer, JsonConverter converter, object value)
+    {
+      if (ShouldWriteReference(value))
+      {
+        WriteReference(writer, value);
+      }
+      else
+      {
+        if (!CheckForCircularReference(value, null))
+          return;
+
+        SerializeStack.Add(value);
+
+        converter.WriteJson(writer, value, GetInternalSerializer());
+
+        SerializeStack.RemoveAt(SerializeStack.Count - 1);
+      }
+    }
+
+    private void SerializeEnumerable(JsonWriter writer, IEnumerable values)
+    {
+      SerializeList(writer, values.Cast<object>().ToList());
+    }
+
+    private void SerializeList(JsonWriter writer, IList values)
+    {
+      SerializeStack.Add(values);
+
+      bool isReference = IsReference(values.GetType()) ?? HasFlag(_serializer.PreserveReferencesHandling, PreserveReferencesHandling.Arrays);
+      if (isReference)
+      {
+        writer.WriteStartObject();
+        writer.WritePropertyName(JsonTypeReflector.IdPropertyName);
+        writer.WriteValue(_serializer.ReferenceResolver.ResolveReference(values));
+
+        writer.WritePropertyName("value");
+      }
+
+      writer.WriteStartArray();
+
+      for (int i = 0; i < values.Count; i++)
+      {
+        object value = values[i];
+
+        if (ShouldWriteReference(value))
+        {
+          WriteReference(writer, value);
+        }
+        else
+        {
+          if (!CheckForCircularReference(value, null))
+            continue;
+
+          SerializeValue(writer, value, null);
+        }
+      }
+
+      writer.WriteEndArray();
+
+      if (isReference)
+      {
+        writer.WriteEndObject();
+      }
+
+      SerializeStack.RemoveAt(SerializeStack.Count - 1);
+    }
+
+    private void SerializeDictionary(JsonWriter writer, IDictionary values)
+    {
+      SerializeStack.Add(values);
+      writer.WriteStartObject();
+
+      bool isReference = IsReference(values.GetType()) ?? HasFlag(_serializer.PreserveReferencesHandling, PreserveReferencesHandling.Objects);
+      if (isReference)
+      {
+        writer.WritePropertyName(JsonTypeReflector.IdPropertyName);
+        writer.WriteValue(_serializer.ReferenceResolver.ResolveReference(values));
+      }
+
+      foreach (DictionaryEntry entry in values)
+      {
+        string propertyName = entry.Key.ToString();
+        object value = entry.Value;
+
+        if (ShouldWriteReference(value))
+        {
+          writer.WritePropertyName(propertyName);
+          WriteReference(writer, value);
+        }
+        else
+        {
+          if (!CheckForCircularReference(value, null))
+            continue;
+
+          writer.WritePropertyName(propertyName);
+          SerializeValue(writer, value, null);
+        }
+      }
+
+      writer.WriteEndObject();
+      SerializeStack.RemoveAt(SerializeStack.Count - 1);
+    }
+  }
+}

@@ -120,6 +120,8 @@ namespace Newtonsoft.Json.Serialization
 
     protected virtual JsonMemberMapping CreateMemberMapping(MemberSerialization memberSerialization, MemberInfo member)
     {
+      JsonObjectAttribute jsonObjectAttribute = JsonTypeReflector.GetJsonContainerAttribute(member.DeclaringType) as JsonObjectAttribute;
+
 #if !PocketPC
       DataContractAttribute dataContractAttribute = JsonTypeReflector.GetDataContractAttribute(member.DeclaringType);
 
@@ -174,8 +176,14 @@ namespace Newtonsoft.Json.Serialization
       NullValueHandling? nullValueHandling = (propertyAttribute != null) ? propertyAttribute._nullValueHandling : null;
       DefaultValueHandling? defaultValueHandling = (propertyAttribute != null) ? propertyAttribute._defaultValueHandling : null;
       ReferenceLoopHandling? referenceLoopHandling = (propertyAttribute != null) ? propertyAttribute._referenceLoopHandling : null;
+      
+      bool isReference;
+      if (jsonObjectAttribute != null)
+        isReference = jsonObjectAttribute.IsReference;
+      else
+        isReference = false;
 
-      return new JsonMemberMapping(resolvedMappedName, member, ignored, readable, writable, memberConverter, defaultValue, required, nullValueHandling, defaultValueHandling, referenceLoopHandling);
+      return new JsonMemberMapping(resolvedMappedName, member, ignored, readable, writable, memberConverter, defaultValue, required, isReference, nullValueHandling, defaultValueHandling, referenceLoopHandling);
     }
 
     protected virtual string ResolveMappingName(string mappedName)

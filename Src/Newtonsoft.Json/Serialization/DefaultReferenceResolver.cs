@@ -26,34 +26,57 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using Newtonsoft.Json.Utilities;
+using System.Globalization;
 
 namespace Newtonsoft.Json.Serialization
 {
-  internal static class CachedAttributeGetter<T> where T : Attribute
+  internal class DefaultReferenceResolver : IReferenceResolver
   {
-    private static readonly Dictionary<ICustomAttributeProvider, T> TypeAttributeCache = new Dictionary<ICustomAttributeProvider, T>();
+    private int _referenceCount;
+    private BidirectionalDictionary<string, object> _mappings;
 
-    public static T GetAttribute(ICustomAttributeProvider type)
+    private BidirectionalDictionary<string, object> Mappings
     {
-      T attribute;
-
-      if (TypeAttributeCache.TryGetValue(type, out attribute))
-        return attribute;
-
-      // double check locking to avoid threading issues
-      lock (TypeAttributeCache)
+      get
       {
-        if (TypeAttributeCache.TryGetValue(type, out attribute))
-          return attribute;
+        if (_mappings == null)
+          _mappings = new BidirectionalDictionary<string, object>();
 
-        attribute = JsonTypeReflector.GetAttribute<T>(type);
-        TypeAttributeCache[type] = attribute;
-
-        return attribute;
+        return _mappings;
       }
+    }
+
+    public object ResolveObject(string reference)
+    {
+      object value;
+      Mappings.TryGetByFirst(reference, out value);
+      return value;
+    }
+
+    public string ResolveReference(object value)
+    {
+      string reference;
+      if (!Mappings.TryGetBySecond(value, out reference))
+      {
+        _referenceCount++;
+        reference = _referenceCount.ToString(CultureInfo.InvariantCulture);
+        Mappings.Add(reference, value);
+      }
+
+      return reference;
+    }
+
+    public void AddObjectReference(string reference, object value)
+    {
+      Mappings.Add(reference, value);
+    }
+
+    public bool HasObjectReference(object value)
+    {
+      string reference;
+      return Mappings.TryGetBySecond(value, out reference);
     }
   }
 }

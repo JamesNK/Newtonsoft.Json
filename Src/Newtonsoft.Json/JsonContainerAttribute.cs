@@ -40,6 +40,16 @@ namespace Newtonsoft.Json
     public string Title { get; set; }
     public string Description { get; set; }
 
+    // yuck. can't set nullable properties on an attribute in C#
+    // have to use this approach to get an unset default state
+    internal bool? _isReference;
+
+    public bool IsReference
+    {
+      get { return _isReference ?? default(bool); }
+      set { _isReference = value; }
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonContainerAttribute"/> class.
     /// </summary>

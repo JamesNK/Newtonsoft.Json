@@ -41,7 +41,7 @@ namespace Newtonsoft.Json.Converters
     /// </summary>
     /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
     /// <param name="value">The value.</param>
-    public override void WriteJson(JsonWriter writer, object value)
+    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {
       writer.WriteValue(ColorTranslator.ToHtml((Color)value));
     }
@@ -64,7 +64,7 @@ namespace Newtonsoft.Json.Converters
     /// <param name="reader">The <see cref="JsonReader"/> to read from.</param>
     /// <param name="objectType">Type of the object.</param>
     /// <returns>The object value.</returns>
-    public override object ReadJson(JsonReader reader, Type objectType)
+    public override object ReadJson(JsonReader reader, Type objectType, JsonSerializer serializer)
     {
       throw new NotImplementedException();
     }

@@ -8,7 +8,7 @@ namespace Newtonsoft.Json.Tests.LinqToSql
 {
   public class DepartmentConverter : JsonConverter
   {
-    public override void WriteJson(JsonWriter writer, object value)
+    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {
       Department department = (Department)value;
 
@@ -19,7 +19,7 @@ namespace Newtonsoft.Json.Tests.LinqToSql
       o.WriteTo(writer);
     }
 
-    public override object ReadJson(JsonReader reader, Type objectType)
+    public override object ReadJson(JsonReader reader, Type objectType, JsonSerializer serializer)
     {
       JObject o = JObject.Load(reader);
 

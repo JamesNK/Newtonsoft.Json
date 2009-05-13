@@ -34,7 +34,7 @@ namespace Newtonsoft.Json.Tests.TestObjects
   {
     public abstract string ConverterType { get; }
 
-    public override void WriteJson(JsonWriter writer, object value)
+    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {
       ConverterPrecedenceClass c = (ConverterPrecedenceClass)value;
 
@@ -43,7 +43,7 @@ namespace Newtonsoft.Json.Tests.TestObjects
       j.WriteTo(writer);
     }
 
-    public override object ReadJson(JsonReader reader, Type objectType)
+    public override object ReadJson(JsonReader reader, Type objectType, JsonSerializer serializer)
     {
       JToken j = JArray.Load(reader);
 

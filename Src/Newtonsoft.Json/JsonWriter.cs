@@ -121,21 +121,9 @@ namespace Newtonsoft.Json
 
     private int _top;
 
-    private List<JTokenType> _stack;
+    private readonly List<JTokenType> _stack;
     private State _currentState;
     private Formatting _formatting;
-    private List<object> _serializeStack;
-
-    internal List<object> SerializeStack
-    {
-      get
-      {
-        if (_serializeStack == null)
-          _serializeStack = new List<object>();
-
-        return _serializeStack;
-      }
-    }
 
     /// <summary>
     /// Gets the top.

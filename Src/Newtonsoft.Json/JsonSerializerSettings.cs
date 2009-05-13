@@ -17,6 +17,7 @@ namespace Newtonsoft.Json
     internal const NullValueHandling DefaultNullValueHandling = NullValueHandling.Include;
     internal const DefaultValueHandling DefaultDefaultValueHandling = DefaultValueHandling.Include;
     internal const ObjectCreationHandling DefaultObjectCreationHandling = ObjectCreationHandling.Auto;
+    internal const PreserveReferencesHandling DefaultPreserveReferencesHandling = PreserveReferencesHandling.None;
 
     /// <summary>
     /// Gets or sets how reference loops (e.g. a class referencing itself) is handled.
@@ -49,6 +50,7 @@ namespace Newtonsoft.Json
     /// <value>The converters.</value>
     public IList<JsonConverter> Converters { get; set; }
     public IMappingResolver MappingResolver { get; set; }
+    public PreserveReferencesHandling PreserveReferencesHandling { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonSerializerSettings"/> class.
@@ -60,6 +62,7 @@ namespace Newtonsoft.Json
       ObjectCreationHandling = DefaultObjectCreationHandling;
       NullValueHandling = DefaultNullValueHandling;
       DefaultValueHandling = DefaultDefaultValueHandling;
+      PreserveReferencesHandling = DefaultPreserveReferencesHandling;
       Converters = new List<JsonConverter>();
     }
   }

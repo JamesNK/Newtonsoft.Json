@@ -54,7 +54,7 @@ namespace Newtonsoft.Json.Converters
     /// </summary>
     /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
     /// <param name="value">The value.</param>
-    public override void WriteJson(JsonWriter writer, object value)
+    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {
       XmlNode node = value as XmlNode;
 
@@ -261,7 +261,7 @@ namespace Newtonsoft.Json.Converters
     /// <param name="reader">The <see cref="JsonReader"/> to read from.</param>
     /// <param name="objectType">Type of the object.</param>
     /// <returns>The object value.</returns>
-    public override object ReadJson(JsonReader reader, Type objectType)
+    public override object ReadJson(JsonReader reader, Type objectType, JsonSerializer serializer)
     {
       // maybe have CanReader and a CanWrite methods so this sort of test wouldn't be necessary
       if (objectType != typeof(XmlDocument))

@@ -40,11 +40,12 @@ namespace Newtonsoft.Json.Serialization
     private readonly JsonConverter _memberConverter;
     private readonly object _defaultValue;
     private readonly bool _required;
+    private readonly bool _isReference;
     private readonly NullValueHandling? _nullValueHandling;
     private readonly DefaultValueHandling? _defaultValueHandling;
     private readonly ReferenceLoopHandling? _referenceLoopHandling;
 
-    public JsonMemberMapping(string mappingName, MemberInfo member, bool ignored, bool readable, bool writable, JsonConverter memberConverter, object defaultValue, bool required, NullValueHandling? nullValueHandling, DefaultValueHandling? defaultValueHandling, ReferenceLoopHandling? referenceLoopHandling)
+    public JsonMemberMapping(string mappingName, MemberInfo member, bool ignored, bool readable, bool writable, JsonConverter memberConverter, object defaultValue, bool required, bool isReference, NullValueHandling? nullValueHandling, DefaultValueHandling? defaultValueHandling, ReferenceLoopHandling? referenceLoopHandling)
     {
       _mappingName = mappingName;
       _member = member;
@@ -54,6 +55,7 @@ namespace Newtonsoft.Json.Serialization
       _memberConverter = memberConverter;
       _defaultValue = defaultValue;
       _required = required;
+      _isReference = isReference;
       _nullValueHandling = nullValueHandling;
       _defaultValueHandling = defaultValueHandling;
       _referenceLoopHandling = referenceLoopHandling;
@@ -92,11 +94,16 @@ namespace Newtonsoft.Json.Serialization
     public object DefaultValue
     {
       get { return _defaultValue; }
-    } 
+    }
 
     public bool Required
     {
-      get { return _required;  }
+      get { return _required; }
+    }
+
+    public bool IsReference
+    {
+      get { return _isReference; }
     }
 
     public NullValueHandling? NullValueHandling

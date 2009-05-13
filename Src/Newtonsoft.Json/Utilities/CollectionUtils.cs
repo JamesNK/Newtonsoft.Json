@@ -484,7 +484,7 @@ namespace Newtonsoft.Json.Utilities
       }
     }
 
-    public static IList CreateAndPopulateList(Type listType, Action<IList> populateList)
+    public static IList CreateAndPopulateList(Type listType, Action<IList, bool> populateList)
     {
       ValidationUtils.ArgumentNotNull(listType, "listType");
       ValidationUtils.ArgumentNotNull(populateList, "populateList");
@@ -549,7 +549,7 @@ namespace Newtonsoft.Json.Utilities
       if (list == null)
         throw new Exception("Cannot create and populate list type {0}.".FormatWith(CultureInfo.InvariantCulture, listType));
 
-      populateList(list);
+      populateList(list, isReadOnlyOrFixedSize);
 
       // create readonly and fixed sized collections using the temporary list
       if (isReadOnlyOrFixedSize)

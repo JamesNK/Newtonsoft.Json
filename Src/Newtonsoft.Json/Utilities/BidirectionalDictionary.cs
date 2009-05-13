@@ -26,34 +26,33 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
-using Newtonsoft.Json.Utilities;
 
-namespace Newtonsoft.Json.Serialization
+namespace Newtonsoft.Json.Utilities
 {
-  internal static class CachedAttributeGetter<T> where T : Attribute
+  internal class BidirectionalDictionary<TFirst, TSecond>
   {
-    private static readonly Dictionary<ICustomAttributeProvider, T> TypeAttributeCache = new Dictionary<ICustomAttributeProvider, T>();
+    private readonly IDictionary<TFirst, TSecond> _firstToSecond = new Dictionary<TFirst, TSecond>();
+    private readonly IDictionary<TSecond, TFirst> _secondToFirst = new Dictionary<TSecond, TFirst>();
 
-    public static T GetAttribute(ICustomAttributeProvider type)
+    public void Add(TFirst first, TSecond second)
     {
-      T attribute;
-
-      if (TypeAttributeCache.TryGetValue(type, out attribute))
-        return attribute;
-
-      // double check locking to avoid threading issues
-      lock (TypeAttributeCache)
+      if (_firstToSecond.ContainsKey(first) || _secondToFirst.ContainsKey(second))
       {
-        if (TypeAttributeCache.TryGetValue(type, out attribute))
-          return attribute;
-
-        attribute = JsonTypeReflector.GetAttribute<T>(type);
-        TypeAttributeCache[type] = attribute;
-
-        return attribute;
+        throw new ArgumentException("Duplicate first or second");
       }
+      _firstToSecond.Add(first, second);
+      _secondToFirst.Add(second, first);
+    }
+
+    public bool TryGetByFirst(TFirst first, out TSecond second)
+    {
+      return _firstToSecond.TryGetValue(first, out second);
+    }
+
+    public bool TryGetBySecond(TSecond second, out TFirst first)
+    {
+      return _secondToFirst.TryGetValue(second, out first);
     }
   }
 }

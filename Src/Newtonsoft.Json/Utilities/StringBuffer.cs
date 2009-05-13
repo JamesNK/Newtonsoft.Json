@@ -25,7 +25,7 @@
 
 using System;
 
-namespace Newtonsoft.Json
+namespace Newtonsoft.Json.Utilities
 {
   /// <summary>
   /// Builds a string. Unlike StringBuilder this class lets you reuse it's internal buffer.
