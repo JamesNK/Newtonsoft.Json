@@ -44,6 +44,7 @@ using System.Runtime.Serialization.Json;
 #endif
 using Newtonsoft.Json.Tests.TestObjects;
 using System.Runtime.Serialization;
+using System.Globalization;
 
 namespace Newtonsoft.Json.Tests
 {
@@ -2048,20 +2049,20 @@ keyword such as type of business.""
       WriteEscapedJson(json);
       Assert.AreEqual(@"{
   ""$id"": ""1"",
-  ""value"": [
+  ""$values"": [
     null,
     {
       ""$id"": ""2"",
-      ""value"": [
+      ""$values"": [
         null
       ]
     },
     {
       ""$id"": ""3"",
-      ""value"": [
+      ""$values"": [
         {
           ""$id"": ""4"",
-          ""value"": [
+          ""$values"": [
             {
               ""$ref"": ""1""
             }
@@ -2078,20 +2079,20 @@ keyword such as type of business.""
     {
       string json = @"{
   ""$id"": ""1"",
-  ""value"": [
+  ""$values"": [
     null,
     {
       ""$id"": ""2"",
-      ""value"": [
+      ""$values"": [
         null
       ]
     },
     {
       ""$id"": ""3"",
-      ""value"": [
+      ""$values"": [
         {
           ""$id"": ""4"",
-          ""value"": [
+          ""$values"": [
             {
               ""$ref"": ""1""
             }
@@ -2119,20 +2120,20 @@ keyword such as type of business.""
     {
       string json = @"{
   ""$id"": ""1"",
-  ""value"": [
+  ""$values"": [
     null,
     {
       ""$id"": ""2"",
-      ""value"": [
+      ""$values"": [
         null
       ]
     },
     {
       ""$id"": ""3"",
-      ""value"": [
+      ""$values"": [
         {
           ""$id"": ""4"",
-          ""value"": [
+          ""$values"": [
             {
               ""$ref"": ""1""
             }
@@ -2245,7 +2246,7 @@ keyword such as type of business.""
       {
         CircularReferenceClass circularReferenceClass = (CircularReferenceClass) value;
 
-        string reference = serializer.ReferenceResolver.ResolveReference(circularReferenceClass);
+        string reference = serializer.ReferenceResolver.GetReference(circularReferenceClass);
 
         JObject me = new JObject();
         me["$id"] = new JValue(reference);
@@ -2271,7 +2272,7 @@ keyword such as type of business.""
         else
         {
           string reference = (string)o["$ref"];
-          return serializer.ReferenceResolver.ResolveObject(reference);          
+          return serializer.ReferenceResolver.ResolveReference(reference);          
         }
       }
 
@@ -2350,6 +2351,203 @@ keyword such as type of business.""
       Assert.AreEqual("c2", c1.Child.Name);
       Assert.AreEqual("c3", c1.Child.Child.Name);
       Assert.AreEqual("c1", c1.Child.Child.Child.Name);
+    }
+
+    [Test]
+    public void WriteTypeNameForObjects()
+    {
+      string employeeRef = typeof(Employee).AssemblyQualifiedName;
+
+      Employee employee = new Employee();
+
+      string json = JsonConvert.SerializeObject(employee, Formatting.Indented, new JsonSerializerSettings
+        {
+          TypeNameHandling = TypeNameHandling.Objects
+        });
+
+      Assert.AreEqual(@"{
+  ""$id"": ""1"",
+  ""$type"": """ + employeeRef + @""",
+  ""Name"": null,
+  ""Manager"": null
+}", json);
+    }
+
+    [Test]
+    public void DeserializeTypeName()
+    {
+      string employeeRef = typeof(Employee).AssemblyQualifiedName;
+
+      string json = @"{
+  ""$id"": ""1"",
+  ""$type"": """ + employeeRef + @""",
+  ""Name"": ""Name!"",
+  ""Manager"": null
+}";
+
+      object employee = JsonConvert.DeserializeObject(json, null, new JsonSerializerSettings
+        {
+          TypeNameHandling = TypeNameHandling.Objects
+        });
+
+      Assert.IsInstanceOfType(typeof(Employee), employee);
+      Assert.AreEqual("Name!", ((Employee)employee).Name);
+    }
+
+    [Test]
+    public void SerializeGenericObjectListWithTypeName()
+    {
+      string employeeRef = typeof(Employee).AssemblyQualifiedName;
+      string personRef = typeof(Person).AssemblyQualifiedName;
+
+      List<object> values = new List<object>
+        {
+          new Employee
+            {
+              Name = "Bob",
+              Manager = new Employee {Name = "Frank"}
+            },
+          new Person
+            {
+              Department = "Department",
+              BirthDate = new DateTime(2000, 12, 30, 0, 0, 0, DateTimeKind.Utc),
+              LastModified = new DateTime(2000, 12, 30, 0, 0, 0, DateTimeKind.Utc)
+            },
+          "String!",
+          int.MinValue
+        };
+
+      string json = JsonConvert.SerializeObject(values, Formatting.Indented, new JsonSerializerSettings
+        {
+          TypeNameHandling = TypeNameHandling.Objects
+        });
+
+      Assert.AreEqual(@"[
+  {
+    ""$id"": ""1"",
+    ""$type"": """ + employeeRef + @""",
+    ""Name"": ""Bob"",
+    ""Manager"": {
+      ""$id"": ""2"",
+      ""$type"": """ + employeeRef + @""",
+      ""Name"": ""Frank"",
+      ""Manager"": null
+    }
+  },
+  {
+    ""$type"": """ + personRef + @""",
+    ""Name"": null,
+    ""BirthDate"": ""\/Date(978134400000)\/"",
+    ""LastModified"": ""\/Date(978134400000)\/""
+  },
+  ""String!"",
+  -2147483648
+]", json);
+    }
+
+    [Test]
+    public void DeserializeGenericObjectListWithTypeName()
+    {
+      string employeeRef = typeof (Employee).AssemblyQualifiedName;
+      string personRef = typeof (Person).AssemblyQualifiedName;
+
+      string json = @"[
+  {
+    ""$id"": ""1"",
+    ""$type"": """ + employeeRef + @""",
+    ""Name"": ""Bob"",
+    ""Manager"": {
+      ""$id"": ""2"",
+      ""$type"": """ + employeeRef + @""",
+      ""Name"": ""Frank"",
+      ""Manager"": null
+    }
+  },
+  {
+    ""$type"": """ + personRef + @""",
+    ""Name"": null,
+    ""BirthDate"": ""\/Date(978134400000)\/"",
+    ""LastModified"": ""\/Date(978134400000)\/""
+  },
+  ""String!"",
+  -2147483648
+]";
+
+      List<object> values = (List<object>)JsonConvert.DeserializeObject(json, typeof(List<object>), new JsonSerializerSettings
+      {
+        TypeNameHandling = TypeNameHandling.Objects
+      });
+
+      Assert.AreEqual(4, values.Count);
+
+      Employee e = (Employee) values[0];
+      Person p = (Person) values[1];
+
+      Assert.AreEqual("Bob", e.Name);
+      Assert.AreEqual("Frank", e.Manager.Name);
+
+      Assert.AreEqual(null, p.Name);
+      Assert.AreEqual(new DateTime(2000, 12, 30, 0, 0, 0, DateTimeKind.Utc), p.BirthDate);
+      Assert.AreEqual(new DateTime(2000, 12, 30, 0, 0, 0, DateTimeKind.Utc), p.LastModified);
+
+      Assert.AreEqual("String!", values[2]);
+      Assert.AreEqual(int.MinValue, values[3]);
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException))]
+    public void DeserializeWithBadTypeName()
+    {
+      string employeeRef = typeof(Employee).AssemblyQualifiedName;
+
+      string json = @"{
+  ""$id"": ""1"",
+  ""$type"": """ + employeeRef + @""",
+  ""Name"": ""Name!"",
+  ""Manager"": null
+}";
+
+      JsonConvert.DeserializeObject(json, typeof(Person), new JsonSerializerSettings
+      {
+        TypeNameHandling = TypeNameHandling.Objects
+      });
+    }
+
+    [Test]
+    public void DeserializeTypeNameWithNoTypeNameHandling()
+    {
+      string employeeRef = typeof(Employee).AssemblyQualifiedName;
+
+      string json = @"{
+  ""$id"": ""1"",
+  ""$type"": """ + employeeRef + @""",
+  ""Name"": ""Name!"",
+  ""Manager"": null
+}";
+
+      JObject o = (JObject)JsonConvert.DeserializeObject(json);
+
+      Assert.AreEqual(@"{
+  ""Name"": ""Name!"",
+  ""Manager"": null
+}", o.ToString());
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Type specified in JSON 'Newtonsoft.Json.Tests.TestObjects.Employee' was not resolved.")]
+    public void DeserializeTypeNameOnly()
+    {
+      string json = @"{
+  ""$id"": ""1"",
+  ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Employee"",
+  ""Name"": ""Name!"",
+  ""Manager"": null
+}";
+
+      JsonConvert.DeserializeObject(json, null, new JsonSerializerSettings
+      {
+        TypeNameHandling = TypeNameHandling.Objects
+      });
     }
   }
 }

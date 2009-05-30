@@ -62,13 +62,20 @@ namespace Newtonsoft.Json.Serialization
       }
       else if (reader.TokenType == JsonToken.StartObject)
       {
-        if (!reader.Read())
-          throw new JsonSerializationException("Unexpected end when deserializing object.");
+        CheckedRead(reader);
+
+        string id = null;
+        if (reader.TokenType == JsonToken.PropertyName && string.Equals(reader.Value.ToString(), JsonTypeReflector.IdPropertyName, StringComparison.Ordinal))
+        {
+          CheckedRead(reader);
+          id = reader.Value.ToString();
+          CheckedRead(reader);
+        }
 
         if (CollectionUtils.IsDictionaryType(objectType))
-          PopulateDictionary(CollectionUtils.CreateDictionaryWrapper(target), reader);
+          PopulateDictionary(CollectionUtils.CreateDictionaryWrapper(target), reader, id);
         else
-          PopulateObject(target, reader, objectType);
+          PopulateObject(target, reader, objectType, id);
       }
     }
 
@@ -80,10 +87,7 @@ namespace Newtonsoft.Json.Serialization
       if (!reader.Read())
         return null;
 
-      if (objectType != null)
-        return CreateValue(reader, objectType, null, null);
-      else
-        return CreateJToken(reader);
+      return CreateValue(reader, objectType, null, null);
     }
 
     private JsonSerializerProxy GetInternalSerializer()
@@ -96,10 +100,34 @@ namespace Newtonsoft.Json.Serialization
 
     private JToken CreateJToken(JsonReader reader)
     {
+      ValidationUtils.ArgumentNotNull(reader, "reader");
+
       JToken token;
       using (JTokenWriter writer = new JTokenWriter())
       {
         writer.WriteToken(reader);
+        token = writer.Token;
+      }
+
+      return token;
+    }
+
+    private JToken CreateJObject(JsonReader reader)
+    {
+      ValidationUtils.ArgumentNotNull(reader, "reader");
+
+//          throw new Exception("Expected current token of type {0}, got {1}.".FormatWith(CultureInfo.InvariantCulture, JsonToken.PropertyName, reader.TokenType));
+
+      JToken token;
+      using (JTokenWriter writer = new JTokenWriter())
+      {
+        writer.WriteStartObject();
+
+        if (reader.TokenType == JsonToken.PropertyName)
+          writer.WriteToken(reader, reader.Depth - 1);
+        else
+          writer.WriteEndObject();
+
         token = writer.Token;
       }
 
@@ -134,47 +162,111 @@ namespace Newtonsoft.Json.Serialization
           // populate a typed object or generic dictionary/array
           // depending upon whether an objectType was supplied
           case JsonToken.StartObject:
-            if (objectType == null)
-            {
-              value = CreateJToken(reader);
-            }
-            else
-            {
-              CheckedRead(reader);
+            CheckedRead(reader);
 
-              if (reader.TokenType == JsonToken.PropertyName)
+            string id = null;
+
+            if (reader.TokenType == JsonToken.PropertyName)
+            {
+              bool specialProperty;
+
+              do
               {
                 string propertyName = reader.Value.ToString();
 
                 if (string.Equals(propertyName, JsonTypeReflector.RefPropertyName, StringComparison.Ordinal))
                 {
                   CheckedRead(reader);
-                  string id = reader.Value.ToString();
+                  string reference = reader.Value.ToString();
 
                   CheckedRead(reader);
-                  return _serializer.ReferenceResolver.ResolveObject(id);
+                  return _serializer.ReferenceResolver.ResolveReference(reference);
                 }
-                else if (string.Equals(propertyName, JsonTypeReflector.IdPropertyName, StringComparison.Ordinal)
-                  && !CollectionUtils.IsDictionaryType(objectType)
-                  && CollectionUtils.IsListType(objectType))
+                else if (string.Equals(propertyName, JsonTypeReflector.TypePropertyName, StringComparison.Ordinal))
                 {
-                  return CreateReferencedList(reader, objectType, existingValue);
-                }
-              }
+                  CheckedRead(reader);
+                  string qualifiedTypeName = reader.Value.ToString();
 
+                  CheckedRead(reader);
+
+                  if (_serializer.TypeNameHandling != TypeNameHandling.None)
+                  {
+                    int delimiterIndex = qualifiedTypeName.IndexOf(',');
+                    string typeName;
+                    string assemblyName;
+                    if (delimiterIndex != -1)
+                    {
+                      typeName = qualifiedTypeName.Substring(0, delimiterIndex).Trim();
+                      assemblyName = qualifiedTypeName.Substring(delimiterIndex + 1, qualifiedTypeName.Length - delimiterIndex - 1).Trim();
+                    }
+                    else
+                    {
+                      typeName = qualifiedTypeName;
+                      assemblyName = null;
+                    }
+
+                    Type specifiedType;
+                    try
+                    {
+                      specifiedType = _serializer.Binder.BindToType(assemblyName, typeName);
+                    }
+                    catch (Exception ex)
+                    {
+                      throw new JsonSerializationException("Error resolving type specified in JSON '{0}'.".FormatWith(CultureInfo.InvariantCulture, qualifiedTypeName), ex);
+                    }
+
+                    if (specifiedType == null)
+                      throw new JsonSerializationException("Type specified in JSON '{0}' was not resolved.".FormatWith(CultureInfo.InvariantCulture, qualifiedTypeName));
+
+                    if (objectType != null && !objectType.IsAssignableFrom(specifiedType))
+                      throw new JsonSerializationException("Type specified in JSON '{0}' is not compatible with '{1}'.".FormatWith(CultureInfo.InvariantCulture, specifiedType.AssemblyQualifiedName, objectType.AssemblyQualifiedName));
+
+                    objectType = specifiedType;
+                  }
+                  specialProperty = true;
+                }
+                else if (string.Equals(propertyName, JsonTypeReflector.IdPropertyName, StringComparison.Ordinal))
+                {
+                  CheckedRead(reader);
+
+                  id = reader.Value.ToString();
+                  CheckedRead(reader);
+                  specialProperty = true;
+                }
+                else if (string.Equals(propertyName, JsonTypeReflector.ArrayValuesPropertyName, StringComparison.Ordinal))
+                {
+                  CheckedRead(reader);
+                  object list = CreateList(reader, objectType, existingValue, id);
+                  CheckedRead(reader);
+                  return list;
+                }
+                else
+                {
+                  specialProperty = false;
+                }
+              } while (specialProperty
+                       && reader.TokenType == JsonToken.PropertyName);
+            }
+
+            if (objectType == null)
+            {
+              value = CreateJObject(reader);
+            }
+            else
+            {
               if (CollectionUtils.IsDictionaryType(objectType))
               {
                 if (existingValue == null)
-                  value = CreateAndPopulateDictionary(reader, objectType);
+                  value = CreateAndPopulateDictionary(reader, objectType, id);
                 else
-                  value = PopulateDictionary(CollectionUtils.CreateDictionaryWrapper(existingValue), reader);
+                  value = PopulateDictionary(CollectionUtils.CreateDictionaryWrapper(existingValue), reader, id);
               }
               else
               {
                 if (existingValue == null)
-                  value = CreateAndPopulateObject(reader, objectType);
+                  value = CreateAndPopulateObject(reader, objectType, id);
                 else
-                  value = PopulateObject(existingValue, reader, objectType);
+                  value = PopulateObject(existingValue, reader, objectType, id);
               }
             }
             break;
@@ -213,27 +305,6 @@ namespace Newtonsoft.Json.Serialization
     {
       if (!reader.Read())
         throw new JsonSerializationException("Unexpected end when deserializing object.");
-    }
-
-    private object CreateReferencedList(JsonReader reader, Type objectType, object existingValue)
-    {
-      object value;
-
-      CheckedRead(reader);
-      string id = reader.Value.ToString();
-
-      CheckedRead(reader);
-      if (reader.TokenType != JsonToken.PropertyName && reader.Value.ToString() != "value")
-        throw new JsonSerializationException("Error reading referenced list.");
-
-      CheckedRead(reader);
-      if (reader.TokenType != JsonToken.StartArray)
-        throw new JsonSerializationException("Error reading referenced list.");
-
-      value = CreateList(reader, objectType, existingValue, id);
-
-      CheckedRead(reader);
-      return value;
     }
 
     private object CreateList(JsonReader reader, Type objectType, object existingValue, string reference)
@@ -344,7 +415,7 @@ namespace Newtonsoft.Json.Serialization
       return true;
     }
 
-    private object CreateAndPopulateDictionary(JsonReader reader, Type objectType)
+    private object CreateAndPopulateDictionary(JsonReader reader, Type objectType, string id)
     {
       if (IsTypeGenericDictionaryInterface(objectType))
       {
@@ -355,34 +426,30 @@ namespace Newtonsoft.Json.Serialization
       }
 
       IWrappedDictionary dictionary = CollectionUtils.CreateDictionaryWrapper(Activator.CreateInstance(objectType));
-      PopulateDictionary(dictionary, reader);
+
+      PopulateDictionary(dictionary, reader, id);
 
       return dictionary.UnderlyingDictionary;
     }
 
-    private IDictionary PopulateDictionary(IWrappedDictionary dictionary, JsonReader reader)
+    private IDictionary PopulateDictionary(IWrappedDictionary dictionary, JsonReader reader, string id)
     {
       Type dictionaryType = dictionary.UnderlyingDictionary.GetType();
       Type dictionaryKeyType = ReflectionUtils.GetDictionaryKeyType(dictionaryType);
       Type dictionaryValueType = ReflectionUtils.GetDictionaryValueType(dictionaryType);
+
+      if (id != null)
+        _serializer.ReferenceResolver.AddReference(id, dictionary.UnderlyingDictionary);
 
       do
       {
         switch (reader.TokenType)
         {
           case JsonToken.PropertyName:
-            if (reader.Value is string && string.Equals(reader.Value.ToString(), JsonTypeReflector.IdPropertyName, StringComparison.Ordinal))
-            {
-              reader.Read();
-              _serializer.ReferenceResolver.AddObjectReference(reader.Value.ToString(), dictionary.UnderlyingDictionary);
-            }
-            else
-            {
-              object keyValue = EnsureType(reader.Value, dictionaryKeyType);
-              reader.Read();
+            object keyValue = EnsureType(reader.Value, dictionaryKeyType);
+            CheckedRead(reader);
 
-              dictionary.Add(keyValue, CreateValue(reader, dictionaryValueType, null, null));
-            }
+            dictionary.Add(keyValue, CreateValue(reader, dictionaryValueType, null, null));
             break;
           case JsonToken.EndObject:
             return dictionary;
@@ -414,7 +481,7 @@ namespace Newtonsoft.Json.Serialization
     private IList PopulateList(IList list, Type listItemType, JsonReader reader, string reference)
     {
       if (reference != null)
-        _serializer.ReferenceResolver.AddObjectReference(reference, list);
+        _serializer.ReferenceResolver.AddReference(reference, list);
 
       while (reader.Read())
       {
@@ -457,7 +524,7 @@ namespace Newtonsoft.Json.Serialization
               || genericDefinition == typeof(IEnumerable<>));
     }
 
-    private object CreateAndPopulateObject(JsonReader reader, Type objectType)
+    private object CreateAndPopulateObject(JsonReader reader, Type objectType, string id)
     {
       object newObject;
 
@@ -468,7 +535,7 @@ namespace Newtonsoft.Json.Serialization
       {
         newObject = Activator.CreateInstance(objectType);
 
-        PopulateObject(newObject, reader, objectType);
+        PopulateObject(newObject, reader, objectType, id);
         return newObject;
       }
 
@@ -529,7 +596,7 @@ namespace Newtonsoft.Json.Serialization
 
       foreach (KeyValuePair<JsonMemberMapping, object> mappingValue in mappingValues)
       {
-        ParameterInfo matchingConstructorParameter = constructorParameters.ForgivingCaseSensitiveFind(kv => kv.Key.Name, mappingValue.Key.MappingName).Key;
+        ParameterInfo matchingConstructorParameter = constructorParameters.ForgivingCaseSensitiveFind(kv => kv.Key.Name, mappingValue.Key.PropertyName).Key;
         if (matchingConstructorParameter != null)
           constructorParameters[matchingConstructorParameter] = mappingValue.Value;
         else
@@ -548,11 +615,14 @@ namespace Newtonsoft.Json.Serialization
       return createdObject;
     }
 
-    private object PopulateObject(object newObject, JsonReader reader, Type objectType)
+    private object PopulateObject(object newObject, JsonReader reader, Type objectType, string id)
     {
       JsonMemberMappingCollection memberMappings = _serializer.GetMemberMappings(objectType);
       Dictionary<string, bool> requiredMappings =
-        memberMappings.Where(m => m.Required).ToDictionary(m => m.MappingName, m => false);
+        memberMappings.Where(m => m.Required).ToDictionary(m => m.PropertyName, m => false);
+
+      if (id != null)
+        _serializer.ReferenceResolver.AddReference(id, newObject);
 
       do
       {
@@ -564,17 +634,10 @@ namespace Newtonsoft.Json.Serialization
             if (!reader.Read())
               throw new JsonSerializationException("Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
 
-            if (string.Equals(memberName, JsonTypeReflector.IdPropertyName, StringComparison.Ordinal))
-            {
-              _serializer.ReferenceResolver.AddObjectReference(reader.Value.ToString(), newObject);
-            }
-            else
-            {
-              if (reader.TokenType != JsonToken.Null)
-                SetRequiredMapping(memberName, requiredMappings);
-
-              SetObjectMember(reader, newObject, objectType, memberName);
-            }
+            if (reader.TokenType != JsonToken.Null)
+              SetRequiredMapping(memberName, requiredMappings);
+            
+            SetObjectMember(reader, newObject, objectType, memberName);
             break;
           case JsonToken.EndObject:
             foreach (KeyValuePair<string, bool> requiredMapping in requiredMappings)

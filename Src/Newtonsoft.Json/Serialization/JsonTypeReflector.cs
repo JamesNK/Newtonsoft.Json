@@ -40,6 +40,8 @@ namespace Newtonsoft.Json.Serialization
   {
     public const string IdPropertyName = "$id";
     public const string RefPropertyName = "$ref";
+    public const string TypePropertyName = "$type";
+    public const string ArrayValuesPropertyName = "$values";
 
     private static readonly Dictionary<ICustomAttributeProvider, Type> ConverterTypeCache = new Dictionary<ICustomAttributeProvider, Type>();
     private static readonly Dictionary<Type, Type> AssociatedMetadataTypesCache = new Dictionary<Type, Type>();

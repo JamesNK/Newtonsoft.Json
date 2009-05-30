@@ -72,7 +72,7 @@ namespace Newtonsoft.Json.Utilities
 
       Type underlyingType = Enum.GetUnderlyingType(value.GetType());
 
-      ulong num = Convert.ToUInt64(value);
+      ulong num = Convert.ToUInt64(value, CultureInfo.InvariantCulture);
       EnumValues<ulong> enumNameValues = GetNamesAndValues<T>();
       IList<T> selectedFlagsValues = new List<T>();
 
@@ -134,8 +134,8 @@ namespace Newtonsoft.Json.Utilities
         catch (OverflowException e)
         {
           throw new Exception(
-            string.Format("Value from enum with the underlying type of {0} cannot be added to dictionary with a value type of {1}. Value was too large: {2}",
-              Enum.GetUnderlyingType(enumType), typeof(TUnderlyingType), Convert.ToUInt64(enumValues[i])), e);
+            string.Format(CultureInfo.InvariantCulture, "Value from enum with the underlying type of {0} cannot be added to dictionary with a value type of {1}. Value was too large: {2}",
+              Enum.GetUnderlyingType(enumType), typeof(TUnderlyingType), Convert.ToUInt64(enumValues[i], CultureInfo.InvariantCulture)), e);
         }
       }
 
@@ -206,7 +206,7 @@ namespace Newtonsoft.Json.Utilities
       Type enumUnderlyingType = Enum.GetUnderlyingType(enumType);
 
       if (!typeof(TEnumType).IsAssignableFrom(enumUnderlyingType))
-        throw new ArgumentException(string.Format("TEnumType is not assignable from the enum's underlying type of {0}.", enumUnderlyingType.Name));
+        throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, "TEnumType is not assignable from the enum's underlying type of {0}.", enumUnderlyingType.Name));
 
       ulong maximumValue = 0;
       IList<object> enumValues = GetValues(enumType);

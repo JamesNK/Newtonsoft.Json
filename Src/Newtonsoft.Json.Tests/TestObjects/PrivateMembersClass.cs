@@ -15,6 +15,7 @@ namespace Newtonsoft.Json.Tests.TestObjects
 
     public PrivateMembersClass()
     {
+      i = default(int);
     }
 
     private string _privateString;

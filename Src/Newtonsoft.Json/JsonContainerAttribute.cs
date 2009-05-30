@@ -36,14 +36,32 @@ namespace Newtonsoft.Json
   [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = false)]
   public abstract class JsonContainerAttribute : Attribute
   {
+    /// <summary>
+    /// Gets or sets the id.
+    /// </summary>
+    /// <value>The id.</value>
     public string Id { get; set; }
+    /// <summary>
+    /// Gets or sets the title.
+    /// </summary>
+    /// <value>The title.</value>
     public string Title { get; set; }
+    /// <summary>
+    /// Gets or sets the description.
+    /// </summary>
+    /// <value>The description.</value>
     public string Description { get; set; }
 
     // yuck. can't set nullable properties on an attribute in C#
     // have to use this approach to get an unset default state
     internal bool? _isReference;
 
+    /// <summary>
+    /// Gets or sets a value that indicates whether to preserve object reference data.
+    /// </summary>
+    /// <value>
+    /// 	<c>true</c> to keep object reference; otherwise, <c>false</c>. The default is <c>false</c>.
+    /// </value>
     public bool IsReference
     {
       get { return _isReference ?? default(bool); }
@@ -53,7 +71,7 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonContainerAttribute"/> class.
     /// </summary>
-    public JsonContainerAttribute()
+    protected JsonContainerAttribute()
     {
     }
 
@@ -61,7 +79,7 @@ namespace Newtonsoft.Json
     /// Initializes a new instance of the <see cref="JsonContainerAttribute"/> class with the specified container Id.
     /// </summary>
     /// <param name="id">The container Id.</param>
-    public JsonContainerAttribute(string id)
+    protected JsonContainerAttribute(string id)
     {
       Id = id;
     }

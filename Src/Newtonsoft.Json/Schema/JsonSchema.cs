@@ -35,35 +35,145 @@ using System.Globalization;
 
 namespace Newtonsoft.Json.Schema
 {
+  /// <summary>
+  /// An in-memory representation of a JSON Schema.
+  /// </summary>
   public class JsonSchema
   {
+    /// <summary>
+    /// Gets or sets the id.
+    /// </summary>
     public string Id { get; set; }
+    /// <summary>
+    /// Gets or sets the title.
+    /// </summary>
     public string Title { get; set; }
+    /// <summary>
+    /// Gets or sets whether the object is optional.
+    /// </summary>
     public bool? Optional { get; set; }
+    /// <summary>
+    /// Gets or sets whether the object is read only.
+    /// </summary>
     public bool? ReadOnly { get; set; }
+    /// <summary>
+    /// Gets or sets whether the object is visible to users.
+    /// </summary>
     public bool? Hidden { get; set; }
+    /// <summary>
+    /// Gets or sets whether the object is transient.
+    /// </summary>
     public bool? Transient { get; set; }
+    /// <summary>
+    /// Gets or sets the description of the object.
+    /// </summary>
     public string Description { get; set; }
+    /// <summary>
+    /// Gets or sets the types of values allowed by the object.
+    /// </summary>
+    /// <value>The type.</value>
     public JsonSchemaType? Type { get; set; }
+    /// <summary>
+    /// Gets or sets the pattern.
+    /// </summary>
+    /// <value>The pattern.</value>
     public string Pattern { get; set; }
+    /// <summary>
+    /// Gets or sets the minimum length.
+    /// </summary>
+    /// <value>The minimum length.</value>
     public int? MinimumLength { get; set; }
+    /// <summary>
+    /// Gets or sets the maximum length.
+    /// </summary>
+    /// <value>The maximum length.</value>
     public int? MaximumLength { get; set; }
+    /// <summary>
+    /// Gets or sets the maximum decimals.
+    /// </summary>
+    /// <value>The maximum decimals.</value>
     public int? MaximumDecimals { get; set; }
+    /// <summary>
+    /// Gets or sets the minimum.
+    /// </summary>
+    /// <value>The minimum.</value>
     public double? Minimum { get; set; }
+    /// <summary>
+    /// Gets or sets the maximum.
+    /// </summary>
+    /// <value>The maximum.</value>
     public double? Maximum { get; set; }
+    /// <summary>
+    /// Gets or sets the minimum number of items.
+    /// </summary>
+    /// <value>The minimum number of items.</value>
     public int? MinimumItems { get; set; }
+    /// <summary>
+    /// Gets or sets the maximum number of items.
+    /// </summary>
+    /// <value>The maximum number of items.</value>
     public int? MaximumItems { get; set; }
+    /// <summary>
+    /// Gets or sets the <see cref="JsonSchema"/> of items.
+    /// </summary>
+    /// <value>The <see cref="JsonSchema"/> of items.</value>
     public IList<JsonSchema> Items { get; set; }
+    /// <summary>
+    /// Gets or sets the <see cref="JsonSchema"/> of properties.
+    /// </summary>
+    /// <value>The <see cref="JsonSchema"/> of properties.</value>
     public IDictionary<string, JsonSchema> Properties { get; set; }
+    /// <summary>
+    /// Gets or sets the <see cref="JsonSchema"/> of additional properties.
+    /// </summary>
+    /// <value>The <see cref="JsonSchema"/> of additional properties.</value>
     public JsonSchema AdditionalProperties { get; set; }
+    /// <summary>
+    /// Gets or sets a value indicating whether additional properties are allowed.
+    /// </summary>
+    /// <value>
+    /// 	<c>true</c> if additional properties are allowed; otherwise, <c>false</c>.
+    /// </value>
     public bool AllowAdditionalProperties { get; set; }
+    /// <summary>
+    /// Gets or sets the required property if this property is present.
+    /// </summary>
+    /// <value>The required property if this property is present.</value>
     public string Requires { get; set; }
+    /// <summary>
+    /// Gets or sets the identity.
+    /// </summary>
+    /// <value>The identity.</value>
     public IList<string> Identity { get; set; }
+    /// <summary>
+    /// Gets or sets the a collection of valid enum values allowed.
+    /// </summary>
+    /// <value>A collection of valid enum values allowed.</value>
     public IList<JToken> Enum { get; set; }
+    /// <summary>
+    /// Gets or sets a collection of options.
+    /// </summary>
+    /// <value>A collection of options.</value>
     public IDictionary<JToken, string> Options { get; set; }
+    /// <summary>
+    /// Gets or sets disallowed types.
+    /// </summary>
+    /// <value>The disallow types.</value>
     public JsonSchemaType? Disallow { get; set; }
+    /// <summary>
+    /// Gets or sets the default value.
+    /// </summary>
+    /// <value>The default value.</value>
     public JToken Default { get; set; }
+    /// <summary>
+    /// Gets or sets the extend <see cref="JsonSchema"/>.
+    /// </summary>
+    /// <value>The extended <see cref="JsonSchema"/>.</value>
     public JsonSchema Extends { get; set; }
+    /// <summary>
+    /// Gets or sets the format.
+    /// </summary>
+    /// <value>The format.</value>
     public string Format { get; set; }
 
     private readonly string _internalId = Guid.NewGuid().ToString("N");
@@ -73,16 +183,30 @@ namespace Newtonsoft.Json.Schema
       get { return _internalId; }
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonSchema"/> class.
+    /// </summary>
     public JsonSchema()
     {
       AllowAdditionalProperties = true;
     }
 
+    /// <summary>
+    /// Reads a <see cref="JsonSchema"/> from the specified <see cref="JsonReader"/>.
+    /// </summary>
+    /// <param name="reader">The <see cref="JsonReader"/> containing the JSON Schema to read.</param>
+    /// <returns>The <see cref="JsonSchema"/> object representing the JSON Schema.</returns>
     public static JsonSchema Read(JsonReader reader)
     {
       return Read(reader, new JsonSchemaResolver());
     }
 
+    /// <summary>
+    /// Reads a <see cref="JsonSchema"/> from the specified <see cref="JsonReader"/>.
+    /// </summary>
+    /// <param name="reader">The <see cref="JsonReader"/> containing the JSON Schema to read.</param>
+    /// <param name="resolver">The <see cref="JsonSchemaResolver"/> to use when resolving schema references.</param>
+    /// <returns>The <see cref="JsonSchema"/> object representing the JSON Schema.</returns>
     public static JsonSchema Read(JsonReader reader, JsonSchemaResolver resolver)
     {
       ValidationUtils.ArgumentNotNull(reader, "reader");
@@ -92,11 +216,22 @@ namespace Newtonsoft.Json.Schema
       return builder.Parse(reader);
     }
 
+    /// <summary>
+    /// Load a <see cref="JsonSchema"/> from a string that contains schema JSON.
+    /// </summary>
+    /// <param name="json">A <see cref="String"/> that contains JSON.</param>
+    /// <returns>A <see cref="JsonSchema"/> populated from the string that contains JSON.</returns>
     public static JsonSchema Parse(string json)
     {
       return Parse(json, new JsonSchemaResolver());
     }
 
+    /// <summary>
+    /// Parses the specified json.
+    /// </summary>
+    /// <param name="json">The json.</param>
+    /// <param name="resolver">The resolver.</param>
+    /// <returns></returns>
     public static JsonSchema Parse(string json, JsonSchemaResolver resolver)
     {
       ValidationUtils.ArgumentNotNull(json, "json");
@@ -106,11 +241,20 @@ namespace Newtonsoft.Json.Schema
       return Read(reader, resolver);
     }
 
+    /// <summary>
+    /// Writes this schema to a <see cref="JsonWriter"/>.
+    /// </summary>
+    /// <param name="writer">A <see cref="JsonWriter"/> into which this method will write.</param>
     public void WriteTo(JsonWriter writer)
     {
       WriteTo(writer, new JsonSchemaResolver());
     }
 
+    /// <summary>
+    /// Writes this schema to a <see cref="JsonWriter"/> using the specified <see cref="JsonSchemaResolver"/>.
+    /// </summary>
+    /// <param name="writer">A <see cref="JsonWriter"/> into which this method will write.</param>
+    /// <param name="resolver">The resolver used.</param>
     public void WriteTo(JsonWriter writer, JsonSchemaResolver resolver)
     {
       ValidationUtils.ArgumentNotNull(writer, "writer");
@@ -120,6 +264,12 @@ namespace Newtonsoft.Json.Schema
       schemaWriter.WriteSchema(this);
     }
 
+    /// <summary>
+    /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+    /// </returns>
     public override string ToString()
     {
       StringWriter writer = new StringWriter(CultureInfo.InvariantCulture);

@@ -24,8 +24,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Newtonsoft.Json
 {
@@ -34,7 +32,17 @@ namespace Newtonsoft.Json
   /// </summary>
   public class JsonReaderException : Exception
   {
+    /// <summary>
+    /// Gets the line number indicating where the error occurred.
+    /// </summary>
+    /// <value>The line number indicating where the error occurred.</value>
     public int LineNumber { get; private set; }
+
+
+    /// <summary>
+    /// Gets the line position indicating where the error occurred.
+    /// </summary>
+    /// <value>The line position indicating where the error occurred.</value>
     public int LinePosition { get; private set; }
 
     /// <summary>

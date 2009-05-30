@@ -35,6 +35,9 @@ using System.Text.RegularExpressions;
 
 namespace Newtonsoft.Json
 {
+  /// <summary>
+  /// Represents a reader that provides <see cref="JsonSchema"/> validation.
+  /// </summary>
   public class JsonValidatingReader : JsonReader, IJsonLineInfo
   {
     private class SchemaScope
@@ -75,15 +78,6 @@ namespace Newtonsoft.Json
       private IEnumerable<string> GetRequiredProperties(JsonSchemaModel schema)
       {
         return schema.Properties.Where(p => !p.Value.Optional).Select(p => p.Key);
-        //if (schema == null)
-        //  return Enumerable.Empty<string>();
-
-        //IEnumerable<string> extendedRequiredProperties = GetRequiredProperties(schema.Extends);
-
-        //if (_schema.Properties == null)
-        //  return extendedRequiredProperties;
-
-        //return extendedRequiredProperties.Union(schema.Properties.Where(p => !(p.Value.Optional ?? false)).Select(p => p.Key));
       }
     }
 
@@ -93,29 +87,52 @@ namespace Newtonsoft.Json
     private JsonSchemaModel _model;
     private SchemaScope _currentScope;
 
+    /// <summary>
+    /// Sets an event handler for receiving schema validation errors.
+    /// </summary>
     public event ValidationEventHandler ValidationEventHandler;
 
+    /// <summary>
+    /// Gets the text value of the current Json token.
+    /// </summary>
+    /// <value></value>
     public override object Value
     {
       get { return _reader.Value; }
     }
 
+    /// <summary>
+    /// Gets the depth of the current token in the JSON document.
+    /// </summary>
+    /// <value>The depth of the current token in the JSON document.</value>
     public override int Depth
     {
       get { return _reader.Depth; }
     }
 
+    /// <summary>
+    /// Gets the quotation mark character used to enclose the value of a string.
+    /// </summary>
+    /// <value></value>
     public override char QuoteChar
     {
       get { return _reader.QuoteChar; }
       protected internal set { }
     }
 
+    /// <summary>
+    /// Gets the type of the current Json token.
+    /// </summary>
+    /// <value></value>
     public override JsonToken TokenType
     {
       get { return _reader.TokenType; }
     }
 
+    /// <summary>
+    /// Gets The Common Language Runtime (CLR) type for the current Json token.
+    /// </summary>
+    /// <value></value>
     public override Type ValueType
     {
       get { return _reader.ValueType; }
@@ -204,6 +221,11 @@ namespace Newtonsoft.Json
         throw exception;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonValidatingReader"/> class that
+    /// validates the content returned from the given <see cref="JsonReader"/>.
+    /// </summary>
+    /// <param name="reader">The <see cref="JsonReader"/> to read from while validating.</param>
     public JsonValidatingReader(JsonReader reader)
     {
       ValidationUtils.ArgumentNotNull(reader, "reader");
@@ -211,6 +233,10 @@ namespace Newtonsoft.Json
       _stack = new Stack<SchemaScope>();
     }
 
+    /// <summary>
+    /// Gets or sets the schema.
+    /// </summary>
+    /// <value>The schema.</value>
     public JsonSchema Schema
     {
       get { return _schema; }
@@ -224,6 +250,10 @@ namespace Newtonsoft.Json
       }
     }
 
+    /// <summary>
+    /// Gets the <see cref="JsonReader"/> used to construct this <see cref="JsonValidatingReader"/>.
+    /// </summary>
+    /// <value>The <see cref="JsonReader"/> specified in the constructor.</value>
     public JsonReader Reader
     {
       get { return _reader; }
@@ -274,6 +304,12 @@ namespace Newtonsoft.Json
       }
     }
 
+    /// <summary>
+    /// Reads the next JSON token from the stream.
+    /// </summary>
+    /// <returns>
+    /// true if the next token was read successfully; false if there are no more tokens to read.
+    /// </returns>
     public override bool Read()
     {
       if (!_reader.Read())
@@ -476,7 +512,7 @@ namespace Newtonsoft.Json
 
       ValidateInEnumAndNotDisallowed(schema);
       
-      double value = Convert.ToDouble(_reader.Value);
+      double value = Convert.ToDouble(_reader.Value, CultureInfo.InvariantCulture);
 
       if (schema.Maximum != null && value > schema.Maximum)
         RaiseError("Float {0} exceeds maximum value of {1}.".FormatWith(CultureInfo.InvariantCulture, JsonConvert.ToString(value), schema.Maximum), schema);

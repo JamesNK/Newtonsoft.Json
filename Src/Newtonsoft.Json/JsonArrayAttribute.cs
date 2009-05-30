@@ -31,13 +31,17 @@ using System.Text;
 namespace Newtonsoft.Json
 {
   /// <summary>
-  /// Instructs the <see cref="JsonSerializer"/> how to serialize the object.
+  /// Instructs the <see cref="JsonSerializer"/> how to serialize the collection.
   /// </summary>
   [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = false)]
   public sealed class JsonArrayAttribute : JsonContainerAttribute
   {
     private bool _allowNullItems;
 
+    /// <summary>
+    /// Gets or sets a value indicating whether null items are allowed in the collection.
+    /// </summary>
+    /// <value><c>true</c> if null items are allowed in the collection; otherwise, <c>false</c>.</value>
     public bool AllowNullItems
     {
       get { return _allowNullItems; }

@@ -32,8 +32,19 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Schema
 {
+  /// <summary>
+  /// Contains the JSON schema extension methods.
+  /// </summary>
   public static class Extensions
   {
+    /// <summary>
+    /// Determines whether the <see cref="JToken"/> is valid.
+    /// </summary>
+    /// <param name="source">The source <see cref="JToken"/> to test.</param>
+    /// <param name="schema">The schema to test with.</param>
+    /// <returns>
+    /// 	<c>true</c> if the specified <see cref="JToken"/> is valid; otherwise, <c>false</c>.
+    /// </returns>
     public static bool IsValid(this JToken source, JsonSchema schema)
     {
       bool valid = true;
@@ -41,11 +52,22 @@ namespace Newtonsoft.Json.Schema
       return valid;
     }
 
+    /// <summary>
+    /// Validates the specified <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="source">The source <see cref="JToken"/> to test.</param>
+    /// <param name="schema">The schema to test with.</param>
     public static void Validate(this JToken source, JsonSchema schema)
     {
       source.Validate(schema, null);
     }
 
+    /// <summary>
+    /// Validates the specified <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="source">The source <see cref="JToken"/> to test.</param>
+    /// <param name="schema">The schema to test with.</param>
+    /// <param name="validationEventHandler">The validation event handler.</param>
     public static void Validate(this JToken source, JsonSchema schema, ValidationEventHandler validationEventHandler)
     {
       ValidationUtils.ArgumentNotNull(source, "source");

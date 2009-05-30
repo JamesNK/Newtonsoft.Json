@@ -230,6 +230,12 @@ namespace Newtonsoft.Json.Linq
       return FromObject(o, new JsonSerializer());
     }
 
+    /// <summary>
+    /// Creates a <see cref="JArray"/> from an object.
+    /// </summary>
+    /// <param name="o">The object that will be used to create <see cref="JArray"/>.</param>
+    /// <param name="jsonSerializer">The <see cref="JsonSerializer"/> that will be used to read the object.</param>
+    /// <returns>A <see cref="JArray"/> with the values of the specified object</returns>
     public static new JObject FromObject(object o, JsonSerializer jsonSerializer)
     {
       JToken token = FromObjectInternal(o, jsonSerializer);
@@ -399,6 +405,12 @@ namespace Newtonsoft.Json.Linq
       return ContentsHashCode();
     }
 
+    /// <summary>
+    /// Returns an enumerator that iterates through the collection.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
+    /// </returns>
     public IEnumerator<KeyValuePair<string, JToken>> GetEnumerator()
     {
       foreach (JProperty property in Properties())

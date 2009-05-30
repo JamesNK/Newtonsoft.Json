@@ -34,9 +34,19 @@ using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Schema
 {
+  /// <summary>
+  /// Generates a <see cref="JsonSchema"/> from a specified <see cref="Type"/>.
+  /// </summary>
   public class JsonSchemaGenerator
   {
+    /// <summary>
+    /// Gets or sets how undefined schemas are handled by the serializer.
+    /// </summary>
     public UndefinedSchemaIdHandling UndefinedSchemaIdHandling { get; set; }
+    /// <summary>
+    /// Gets or sets the mapping resolver used by the generator when
+    /// mapping JSON properties to .NET objet members.
+    /// </summary>
     public IMappingResolver MappingResolver { get; set; }
 
     private class TypeSchema
@@ -96,21 +106,45 @@ namespace Newtonsoft.Json.Schema
       return popped;
     }
 
+    /// <summary>
+    /// Generate a <see cref="JsonSchema"/> from the specified type.
+    /// </summary>
+    /// <param name="type">The type to generate a <see cref="JsonSchema"/> from.</param>
+    /// <returns>A <see cref="JsonSchema"/> generated from the specified type.</returns>
     public JsonSchema Generate(Type type)
     {
       return Generate(type, new JsonSchemaResolver(), false);
     }
 
+    /// <summary>
+    /// Generate a <see cref="JsonSchema"/> from the specified type.
+    /// </summary>
+    /// <param name="type">The type to generate a <see cref="JsonSchema"/> from.</param>
+    /// <param name="resolver">The <see cref="JsonSchemaResolver"/> used to resolve schema references.</param>
+    /// <returns>A <see cref="JsonSchema"/> generated from the specified type.</returns>
     public JsonSchema Generate(Type type, JsonSchemaResolver resolver)
     {
       return Generate(type, resolver, false);
     }
 
+    /// <summary>
+    /// Generate a <see cref="JsonSchema"/> from the specified type.
+    /// </summary>
+    /// <param name="type">The type to generate a <see cref="JsonSchema"/> from.</param>
+    /// <param name="rootSchemaNullable">Specify whether the generated root <see cref="JsonSchema"/> will be nullable.</param>
+    /// <returns>A <see cref="JsonSchema"/> generated from the specified type.</returns>
     public JsonSchema Generate(Type type, bool rootSchemaNullable)
     {
       return Generate(type, new JsonSchemaResolver(), rootSchemaNullable);
     }
 
+    /// <summary>
+    /// Generate a <see cref="JsonSchema"/> from the specified type.
+    /// </summary>
+    /// <param name="type">The type to generate a <see cref="JsonSchema"/> from.</param>
+    /// <param name="resolver">The <see cref="JsonSchemaResolver"/> used to resolve schema references.</param>
+    /// <param name="rootSchemaNullable">Specify whether the generated root <see cref="JsonSchema"/> will be nullable.</param>
+    /// <returns>A <see cref="JsonSchema"/> generated from the specified type.</returns>
     public JsonSchema Generate(Type type, JsonSchemaResolver resolver, bool rootSchemaNullable)
     {
       ValidationUtils.ArgumentNotNull(type, "type");
@@ -121,7 +155,7 @@ namespace Newtonsoft.Json.Schema
       return GenerateInternal(type, !rootSchemaNullable);
     }
 
-    public string GetTitle(Type type)
+    private string GetTitle(Type type)
     {
       JsonContainerAttribute containerAttribute = JsonTypeReflector.GetJsonContainerAttribute(type);
 
@@ -131,7 +165,7 @@ namespace Newtonsoft.Json.Schema
       return null;
     }
 
-    public string GetDescription(Type type)
+    private string GetDescription(Type type)
     {
       JsonContainerAttribute containerAttribute = JsonTypeReflector.GetJsonContainerAttribute(type);
 
@@ -255,7 +289,7 @@ namespace Newtonsoft.Json.Schema
               if (mapping.DefaultValue != null)
                 propertySchema.Default = JToken.FromObject(mapping.DefaultValue);
 
-              CurrentSchema.Properties.Add(mapping.MappingName, propertySchema);
+              CurrentSchema.Properties.Add(mapping.PropertyName, propertySchema);
             }
           }
 

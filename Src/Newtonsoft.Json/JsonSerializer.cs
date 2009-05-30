@@ -28,16 +28,18 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
+using System.Runtime.Serialization;
 
 namespace Newtonsoft.Json
 {
   /// <summary>
-  /// Serializes and deserializes objects into and from the Json format.
-  /// The <see cref="JsonSerializer"/> enables you to control how objects are encoded into Json.
+  /// Serializes and deserializes objects into and from the JSON format.
+  /// The <see cref="JsonSerializer"/> enables you to control how objects are encoded into JSON.
   /// </summary>
   public class JsonSerializer
   {
     #region Properties
+    private TypeNameHandling _typeNameHandling;
     private PreserveReferencesHandling _preserveReferencesHandling;
     private ReferenceLoopHandling _referenceLoopHandling;
     private MissingMemberHandling _missingMemberHandling;
@@ -47,7 +49,11 @@ namespace Newtonsoft.Json
     private JsonConverterCollection _converters;
     private IMappingResolver _mappingResolver;
     private IReferenceResolver _referenceResolver;
+    private SerializationBinder _binder;
 
+    /// <summary>
+    /// Gets or sets the <see cref="IReferenceResolver"/> used by the serializer when resolving references.
+    /// </summary>
     public virtual IReferenceResolver ReferenceResolver
     {
       get
@@ -66,6 +72,42 @@ namespace Newtonsoft.Json
       }
     }
 
+    /// <summary>
+    /// Gets or sets the <see cref="SerializationBinder"/> used by the serializer when resolving type names.
+    /// </summary>
+    public virtual SerializationBinder Binder
+    {
+      get
+      {
+        return _binder;
+      }
+      set
+      {
+        if (value == null)
+          throw new ArgumentNullException("value", "Serialization binder cannot be null.");
+
+        _binder = value;
+      }
+    }
+
+    /// <summary>
+    /// Gets or sets how type name writing and reading is handled by the serializer.
+    /// </summary>
+    public virtual TypeNameHandling TypeNameHandling
+    {
+      get { return _typeNameHandling; }
+      set
+      {
+        if (value < TypeNameHandling.None || value > TypeNameHandling.All)
+          throw new ArgumentOutOfRangeException("value");
+
+        _typeNameHandling = value;
+      }
+    }
+
+    /// <summary>
+    /// Gets or sets how object references are preserved by the serializer.
+    /// </summary>
     public virtual PreserveReferencesHandling PreserveReferencesHandling
     {
       get { return _preserveReferencesHandling; }
@@ -169,6 +211,10 @@ namespace Newtonsoft.Json
       }
     }
 
+    /// <summary>
+    /// Gets or sets the mapping resolver used by the serializer when
+    /// mapping JSON properties to .NET objet members.
+    /// </summary>
     public virtual IMappingResolver MappingResolver
     {
       get { return _mappingResolver; }
@@ -186,6 +232,9 @@ namespace Newtonsoft.Json
       _nullValueHandling = JsonSerializerSettings.DefaultNullValueHandling;
       _defaultValueHandling = JsonSerializerSettings.DefaultDefaultValueHandling;
       _objectCreationHandling = JsonSerializerSettings.DefaultObjectCreationHandling;
+      _preserveReferencesHandling = JsonSerializerSettings.DefaultPreserveReferencesHandling;
+      _typeNameHandling = JsonSerializerSettings.DefaultTypeNameHandling;
+      _binder = DefaultSerializationBinder.Instance;
     }
 
     /// <summary>
@@ -202,23 +251,40 @@ namespace Newtonsoft.Json
         if (!CollectionUtils.IsNullOrEmpty(settings.Converters))
           jsonSerializer.Converters.AddRange(settings.Converters);
 
+        jsonSerializer.TypeNameHandling = settings.TypeNameHandling;
         jsonSerializer.PreserveReferencesHandling = settings.PreserveReferencesHandling;
         jsonSerializer.ReferenceLoopHandling = settings.ReferenceLoopHandling;
         jsonSerializer.MissingMemberHandling = settings.MissingMemberHandling;
         jsonSerializer.ObjectCreationHandling = settings.ObjectCreationHandling;
         jsonSerializer.NullValueHandling = settings.NullValueHandling;
         jsonSerializer.DefaultValueHandling = settings.DefaultValueHandling;
-        jsonSerializer.MappingResolver = settings.MappingResolver;
+
+        if (settings.MappingResolver != null)
+          jsonSerializer.MappingResolver = settings.MappingResolver;
+        if (settings.ReferenceResolver != null)
+          jsonSerializer.ReferenceResolver = settings.ReferenceResolver;
+        if (settings.Binder != null)
+          jsonSerializer.Binder = settings.Binder;
       }
 
       return jsonSerializer;
     }
 
+    /// <summary>
+    /// Populates the JSON values onto the target object.
+    /// </summary>
+    /// <param name="reader">The <see cref="TextReader"/> that contains the JSON structure to reader values from.</param>
+    /// <param name="target">The target object to populate values onto.</param>
     public void Populate(TextReader reader, object target)
     {
       Populate(new JsonTextReader(reader), target);
     }
 
+    /// <summary>
+    /// Populates the JSON values onto the target object.
+    /// </summary>
+    /// <param name="reader">The <see cref="JsonReader"/> that contains the JSON structure to reader values from.</param>
+    /// <param name="target">The target object to populate values onto.</param>
     public void Populate(JsonReader reader, object target)
     {
       PopulateInternal(reader, target);
@@ -236,7 +302,7 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Deserializes the Json structure contained by the specified <see cref="JsonReader"/>.
     /// </summary>
-    /// <param name="reader">The <see cref="JsonReader"/> that contains the Json structure to deserialize.</param>
+    /// <param name="reader">The <see cref="JsonReader"/> that contains the JSON structure to deserialize.</param>
     /// <returns>The <see cref="Object"/> being deserialized.</returns>
     public object Deserialize(JsonReader reader)
     {

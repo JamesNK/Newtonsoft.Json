@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
+using System.Runtime.Serialization;
 
 namespace Newtonsoft.Json
 {
@@ -18,6 +19,7 @@ namespace Newtonsoft.Json
     internal const DefaultValueHandling DefaultDefaultValueHandling = DefaultValueHandling.Include;
     internal const ObjectCreationHandling DefaultObjectCreationHandling = ObjectCreationHandling.Auto;
     internal const PreserveReferencesHandling DefaultPreserveReferencesHandling = PreserveReferencesHandling.None;
+    internal const TypeNameHandling DefaultTypeNameHandling = TypeNameHandling.None;
 
     /// <summary>
     /// Gets or sets how reference loops (e.g. a class referencing itself) is handled.
@@ -49,8 +51,33 @@ namespace Newtonsoft.Json
     /// </summary>
     /// <value>The converters.</value>
     public IList<JsonConverter> Converters { get; set; }
-    public IMappingResolver MappingResolver { get; set; }
+    /// <summary>
+    /// Gets or sets how object references are preserved by the serializer.
+    /// </summary>
+    /// <value>The preserve references handling.</value>
     public PreserveReferencesHandling PreserveReferencesHandling { get; set; }
+    /// <summary>
+    /// Gets or sets how type name writing and reading is handled by the serializer.
+    /// </summary>
+    /// <value>The type name handling.</value>
+    public TypeNameHandling TypeNameHandling { get; set; }
+
+    /// <summary>
+    /// Gets or sets the mapping resolver used by the serializer when
+    /// mapping JSON properties to .NET objet members.
+    /// </summary>
+    /// <value>The mapping resolver.</value>
+    public IMappingResolver MappingResolver { get; set; }
+    /// <summary>
+    /// Gets or sets the <see cref="IReferenceResolver"/> used by the serializer when resolving references.
+    /// </summary>
+    /// <value>The reference resolver.</value>
+    public IReferenceResolver ReferenceResolver { get; set; }
+    /// <summary>
+    /// Gets or sets the <see cref="SerializationBinder"/> used by the serializer when resolving type names.
+    /// </summary>
+    /// <value>The binder.</value>
+    public SerializationBinder Binder { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonSerializerSettings"/> class.
@@ -63,6 +90,7 @@ namespace Newtonsoft.Json
       NullValueHandling = DefaultNullValueHandling;
       DefaultValueHandling = DefaultDefaultValueHandling;
       PreserveReferencesHandling = DefaultPreserveReferencesHandling;
+      TypeNameHandling = DefaultTypeNameHandling;
       Converters = new List<JsonConverter>();
     }
   }

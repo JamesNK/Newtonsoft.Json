@@ -144,13 +144,13 @@ namespace Newtonsoft.Json.Serialization
       if (!isReference.Value)
         return false;
 
-      return _serializer.ReferenceResolver.HasObjectReference(value);
+      return _serializer.ReferenceResolver.IsReferenced(value);
     }
 
     private void WriteMemberInfoProperty(JsonWriter writer, object value, JsonMemberMapping memberMapping)
     {
       MemberInfo member = memberMapping.Member;
-      string propertyName = memberMapping.MappingName;
+      string propertyName = memberMapping.PropertyName;
       JsonConverter memberConverter = memberMapping.MemberConverter;
       object defaultValue = memberMapping.DefaultValue;
 
@@ -203,7 +203,7 @@ namespace Newtonsoft.Json.Serialization
     {
       writer.WriteStartObject();
       writer.WritePropertyName(JsonTypeReflector.RefPropertyName);
-      writer.WriteValue(_serializer.ReferenceResolver.ResolveReference(value));
+      writer.WriteValue(_serializer.ReferenceResolver.GetReference(value));
       writer.WriteEndObject();
     }
 
@@ -240,7 +240,11 @@ namespace Newtonsoft.Json.Serialization
       if (isReference)
       {
         writer.WritePropertyName(JsonTypeReflector.IdPropertyName);
-        writer.WriteValue(_serializer.ReferenceResolver.ResolveReference(value));
+        writer.WriteValue(_serializer.ReferenceResolver.GetReference(value));
+      }
+      if (HasFlag(_serializer.TypeNameHandling, TypeNameHandling.Objects))
+      {
+        WriteTypeProperty(writer, objectType);
       }
 
       JsonMemberMappingCollection memberMappings = _serializer.GetMemberMappings(objectType);
@@ -255,7 +259,18 @@ namespace Newtonsoft.Json.Serialization
       SerializeStack.RemoveAt(SerializeStack.Count - 1);
     }
 
+    private void WriteTypeProperty(JsonWriter writer, Type type)
+    {
+      writer.WritePropertyName(JsonTypeReflector.TypePropertyName);
+      writer.WriteValue(type.AssemblyQualifiedName);
+    }
+
     private bool HasFlag(PreserveReferencesHandling value, PreserveReferencesHandling flag)
+    {
+      return ((value & flag) == flag);
+    }
+
+    private bool HasFlag(TypeNameHandling value, TypeNameHandling flag)
     {
       return ((value & flag) == flag);
     }
@@ -298,13 +313,22 @@ namespace Newtonsoft.Json.Serialization
       SerializeStack.Add(values);
 
       bool isReference = IsReference(values.GetType()) ?? HasFlag(_serializer.PreserveReferencesHandling, PreserveReferencesHandling.Arrays);
-      if (isReference)
+      bool includeTypeDetails = HasFlag(_serializer.TypeNameHandling, TypeNameHandling.Arrays);
+
+      if (isReference || includeTypeDetails)
       {
         writer.WriteStartObject();
-        writer.WritePropertyName(JsonTypeReflector.IdPropertyName);
-        writer.WriteValue(_serializer.ReferenceResolver.ResolveReference(values));
 
-        writer.WritePropertyName("value");
+        if (isReference)
+        {
+          writer.WritePropertyName(JsonTypeReflector.IdPropertyName);
+          writer.WriteValue(_serializer.ReferenceResolver.GetReference(values));
+        }
+        if (includeTypeDetails)
+        {
+          WriteTypeProperty(writer, values.GetType());
+        }
+        writer.WritePropertyName(JsonTypeReflector.ArrayValuesPropertyName);
       }
 
       writer.WriteStartArray();
@@ -345,7 +369,11 @@ namespace Newtonsoft.Json.Serialization
       if (isReference)
       {
         writer.WritePropertyName(JsonTypeReflector.IdPropertyName);
-        writer.WriteValue(_serializer.ReferenceResolver.ResolveReference(values));
+        writer.WriteValue(_serializer.ReferenceResolver.GetReference(values));
+      }
+      if (HasFlag(_serializer.TypeNameHandling, TypeNameHandling.Objects))
+      {
+        WriteTypeProperty(writer, values.GetType());
       }
 
       foreach (DictionaryEntry entry in values)

@@ -32,27 +32,39 @@ using System.Globalization;
 
 namespace Newtonsoft.Json.Serialization
 {
+  /// <summary>
+  /// A collection of <see cref="JsonMemberMapping"/> objects.
+  /// </summary>
   public class JsonMemberMappingCollection : KeyedCollection<string, JsonMemberMapping>
   {
+    /// <summary>
+    /// When implemented in a derived class, extracts the key from the specified element.
+    /// </summary>
+    /// <param name="item">The element from which to extract the key.</param>
+    /// <returns>The key for the specified element.</returns>
     protected override string GetKeyForItem(JsonMemberMapping item)
     {
-      return item.MappingName;
+      return item.PropertyName;
     }
 
+    /// <summary>
+    /// Adds a <see cref="JsonMemberMapping"/> object.
+    /// </summary>
+    /// <param name="memberMapping">The member mapping to add to the collection.</param>
     public void AddMapping(JsonMemberMapping memberMapping)
     {
-      if (Contains(memberMapping.MappingName))
+      if (Contains(memberMapping.PropertyName))
       {
         // don't overwrite existing mapping with ignored mapping
         if (memberMapping.Ignored)
           return;
 
-        JsonMemberMapping existingMemberMapping = this[memberMapping.MappingName];
+        JsonMemberMapping existingMemberMapping = this[memberMapping.PropertyName];
 
         if (!existingMemberMapping.Ignored)
         {
           throw new JsonSerializationException(
-            "A member with the name '{0}' already exists on {1}. Use the JsonPropertyAttribute to specify another name.".FormatWith(CultureInfo.InvariantCulture, memberMapping.MappingName, memberMapping.Member.DeclaringType));
+            "A member with the name '{0}' already exists on {1}. Use the JsonPropertyAttribute to specify another name.".FormatWith(CultureInfo.InvariantCulture, memberMapping.PropertyName, memberMapping.Member.DeclaringType));
         }
         else
         {
@@ -64,21 +76,36 @@ namespace Newtonsoft.Json.Serialization
       Add(memberMapping);
     }
 
-    public bool TryGetClosestMatchMapping(string mappingName, out JsonMemberMapping memberMapping)
+    /// <summary>
+    /// Tries to get the closest matching <see cref="JsonMemberMapping"/> object.
+    /// First attempts to get an exact case match of propertyName and then
+    /// a case insensitive match.
+    /// </summary>
+    /// <param name="propertyName">Name of the mapping.</param>
+    /// <param name="memberMapping">The member mapping.</param>
+    /// <returns></returns>
+    public bool TryGetClosestMatchMapping(string propertyName, out JsonMemberMapping memberMapping)
     {
-      if (TryGetMapping(mappingName, StringComparison.Ordinal, out memberMapping))
+      if (TryGetMapping(propertyName, StringComparison.Ordinal, out memberMapping))
         return true;
-      if (TryGetMapping(mappingName, StringComparison.OrdinalIgnoreCase, out memberMapping))
+      if (TryGetMapping(propertyName, StringComparison.OrdinalIgnoreCase, out memberMapping))
         return true;
 
       return false;
     }
 
-    public bool TryGetMapping(string mappingName, StringComparison comparisonType, out JsonMemberMapping memberMapping)
+    /// <summary>
+    /// Tries to get a member mapping by property name.
+    /// </summary>
+    /// <param name="propertyName">The property name of the member mapping to get.</param>
+    /// <param name="comparisonType">Type property name compare string comparison.</param>
+    /// <param name="memberMapping">The member mapping.</param>
+    /// <returns></returns>
+    public bool TryGetMapping(string propertyName, StringComparison comparisonType, out JsonMemberMapping memberMapping)
     {
       foreach (JsonMemberMapping mapping in this)
       {
-        if (string.Compare(mappingName, mapping.MappingName, comparisonType) == 0)
+        if (string.Compare(propertyName, mapping.PropertyName, comparisonType) == 0)
         {
           memberMapping = mapping;
           return true;

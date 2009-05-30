@@ -27,23 +27,32 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Globalization;
 
 namespace Newtonsoft.Json.Serialization
 {
+  /// <summary>
+  /// Resolves member mappings for a type, camel casing property names.
+  /// </summary>
   public class CamelCaseMappingResolver : DefaultMappingResolver
   {
-    protected override string ResolveMappingName(string mappedName)
+    /// <summary>
+    /// Resolves the name of the property.
+    /// </summary>
+    /// <param name="propertyName">Name of the property.</param>
+    /// <returns></returns>
+    protected override string ResolvePropertyName(string propertyName)
     {
       // lower case the first letter of the passed in name
-      if (string.IsNullOrEmpty(mappedName))
-        return mappedName;
+      if (string.IsNullOrEmpty(propertyName))
+        return propertyName;
 
-      if (!char.IsUpper(mappedName[0]))
-        return mappedName;
+      if (!char.IsUpper(propertyName[0]))
+        return propertyName;
 
-      string camelCaseName = char.ToLower(mappedName[0]).ToString();
-      if (mappedName.Length > 1)
-        camelCaseName += mappedName.Substring(1);
+      string camelCaseName = char.ToLower(propertyName[0], CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture);
+      if (propertyName.Length > 1)
+        camelCaseName += propertyName.Substring(1);
 
       return camelCaseName;
     }

@@ -142,8 +142,6 @@ namespace Newtonsoft.Json.Tests.Schema
 
       bool valid = person.IsValid(schema);
       // true
-
-      valid = valid;
     }
 
   }

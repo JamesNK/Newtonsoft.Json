@@ -25,6 +25,7 @@
 
 using System;
 using Newtonsoft.Json.Utilities;
+using System.Runtime.Serialization;
 
 namespace Newtonsoft.Json.Serialization
 {
@@ -85,6 +86,18 @@ namespace Newtonsoft.Json.Serialization
     {
       get { return _serializer.PreserveReferencesHandling; }
       set { _serializer.PreserveReferencesHandling = value; }
+    }
+
+    public override TypeNameHandling TypeNameHandling
+    {
+      get { return _serializer.TypeNameHandling; }
+      set { _serializer.TypeNameHandling = value; }
+    }
+
+    public override SerializationBinder Binder
+    {
+      get { return _serializer.Binder; }
+      set { _serializer.Binder = value; }
     }
 
     public JsonSerializerProxy(JsonSerializerReader serializerReader)

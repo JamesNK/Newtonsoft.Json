@@ -26,47 +26,66 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
-using System.Text;
 using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Serialization
 {
+  /// <summary>
+  /// Resolves member mappings for a type.
+  /// </summary>
   public class DefaultMappingResolver : IMappingResolver
   {
     internal static readonly IMappingResolver Instance = new DefaultMappingResolver();
 
-    private readonly Dictionary<Type, JsonMemberMappingCollection> TypeMemberMappingsCache = new Dictionary<Type, JsonMemberMappingCollection>();
+    private readonly Dictionary<Type, JsonMemberMappingCollection> _typeMemberMappingsCache = new Dictionary<Type, JsonMemberMappingCollection>();
 
+    /// <summary>
+    /// Gets or sets the default members search flags.
+    /// </summary>
+    /// <value>The default members search flags.</value>
     public BindingFlags DefaultMembersSearchFlags { get; set; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DefaultMappingResolver"/> class.
+    /// </summary>
     public DefaultMappingResolver()
     {
       DefaultMembersSearchFlags = BindingFlags.Public | BindingFlags.Instance;
     }
-    
+
+    /// <summary>
+    /// Returns a collection of <see cref="JsonMemberMapping"/> for the specified <see cref="Type"/>
+    /// to be used during serialization.
+    /// </summary>
+    /// <param name="type">The type to be resolved.</param>
+    /// <returns>A collection of <see cref="JsonMemberMapping"/> to be used during serialization.</returns>
     public virtual JsonMemberMappingCollection ResolveMappings(Type type)
     {
       JsonMemberMappingCollection memberMappings;
 
-      if (TypeMemberMappingsCache.TryGetValue(type, out memberMappings))
+      if (_typeMemberMappingsCache.TryGetValue(type, out memberMappings))
         return memberMappings;
 
       // double check locking to avoid threading issues
-      lock (TypeMemberMappingsCache)
+      lock (_typeMemberMappingsCache)
       {
-        if (TypeMemberMappingsCache.TryGetValue(type, out memberMappings))
+        if (_typeMemberMappingsCache.TryGetValue(type, out memberMappings))
           return memberMappings;
 
         memberMappings = CreateMemberMappings(type);
-        TypeMemberMappingsCache[type] = memberMappings;
+        _typeMemberMappingsCache[type] = memberMappings;
 
         return memberMappings;
       }
     }
 
+    /// <summary>
+    /// Gets the serializable members for the type.
+    /// </summary>
+    /// <param name="objectType">The type to get serializable members for.</param>
+    /// <returns>The serializable members for the type.</returns>
     protected virtual List<MemberInfo> GetSerializableMembers(Type objectType)
     {
 #if !PocketPC
@@ -118,6 +137,12 @@ namespace Newtonsoft.Json.Serialization
       return memberMappings;
     }
 
+    /// <summary>
+    /// Creates a <see cref="JsonMemberMapping"/> for the given <see cref="MemberInfo"/>.
+    /// </summary>
+    /// <param name="memberSerialization">The member's declaring type member serialization mode.</param>
+    /// <param name="member">The member to create a <see cref="JsonMemberMapping"/> for.</param>
+    /// <returns>A created <see cref="JsonMemberMapping"/> for the given <see cref="MemberInfo"/>.</returns>
     protected virtual JsonMemberMapping CreateMemberMapping(MemberSerialization memberSerialization, MemberInfo member)
     {
       JsonObjectAttribute jsonObjectAttribute = JsonTypeReflector.GetJsonContainerAttribute(member.DeclaringType) as JsonObjectAttribute;
@@ -145,7 +170,7 @@ namespace Newtonsoft.Json.Serialization
       else
         mappedName = member.Name;
 
-      string resolvedMappedName = ResolveMappingName(mappedName);
+      string resolvedMappedName = ResolvePropertyName(mappedName);
 
       bool required;
       if (propertyAttribute != null)
@@ -186,9 +211,14 @@ namespace Newtonsoft.Json.Serialization
       return new JsonMemberMapping(resolvedMappedName, member, ignored, readable, writable, memberConverter, defaultValue, required, isReference, nullValueHandling, defaultValueHandling, referenceLoopHandling);
     }
 
-    protected virtual string ResolveMappingName(string mappedName)
+    /// <summary>
+    /// Resolves the name of the property.
+    /// </summary>
+    /// <param name="propertyName">Name of the property.</param>
+    /// <returns></returns>
+    protected virtual string ResolvePropertyName(string propertyName)
     {
-      return mappedName;
+      return propertyName;
     }
   }
 }

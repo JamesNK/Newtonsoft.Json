@@ -112,10 +112,12 @@
     <Compile Include="Schema\UndefinedSchemaIdHandling.cs" />
     <Compile Include="Schema\ValidationEventArgs.cs" />
     <Compile Include="Schema\ValidationEventHandler.cs" />
+    <Compile Include="SerializationBinder.cs" />
     <Compile Include="Serialization\CachedAttributeGetter.cs" />
     <Compile Include="Serialization\CamelCaseMappingResolver.cs" />
     <Compile Include="Serialization\DefaultMappingResolver.cs" />
     <Compile Include="Serialization\DefaultReferenceResolver.cs" />
+    <Compile Include="Serialization\DefaultSerializationBinder.cs" />
     <Compile Include="Serialization\IMappingResolver.cs" />
     <Compile Include="Serialization\IReferenceResolver.cs" />
     <Compile Include="Serialization\JsonMemberMapping.cs" />
@@ -133,6 +135,7 @@
     <Compile Include="Serialization\JsonSerializerReader.cs" />
     <Compile Include="Serialization\JsonSerializerWriter.cs" />
     <Compile Include="Serialization\JsonTypeReflector.cs" />
+    <Compile Include="TypeNameHandling.cs" />
     <Compile Include="Utilities\BidirectionalDictionary.cs" />
     <Compile Include="Utilities\ConvertUtils.cs" />
     <Compile Include="Utilities\CollectionWrapper.cs" />

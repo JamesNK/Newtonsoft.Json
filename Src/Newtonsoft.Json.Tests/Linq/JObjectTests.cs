@@ -356,8 +356,6 @@ Parameter name: arrayIndex")]
       }");
 
       // Invalid property identifier character: ]. Line 3, position 9.
-
-      person = person;
     }
 
     [Test]

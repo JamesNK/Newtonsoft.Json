@@ -28,6 +28,9 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Schema
 {
+  /// <summary>
+  /// Returns detailed information related to the <see cref="ValidationEventHandler"/>.
+  /// </summary>
   public class ValidationEventArgs : EventArgs
   {
     private readonly JsonSchemaException _ex;
@@ -38,11 +41,19 @@ namespace Newtonsoft.Json.Schema
       _ex = ex;
     }
 
+    /// <summary>
+    /// Gets the <see cref="JsonSchemaException"/> associated with the validation event.
+    /// </summary>
+    /// <value>The JsonSchemaException associated with the validation event.</value>
     public JsonSchemaException Exception
     {
       get { return _ex; }
     }
 
+    /// <summary>
+    /// Gets the text description corresponding to the validation event.
+    /// </summary>
+    /// <value>The text description.</value>
     public string Message
     {
       get { return _ex.Message; }

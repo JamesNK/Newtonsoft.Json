@@ -30,7 +30,7 @@ using System.Text;
 namespace Newtonsoft.Json
 {
   /// <summary>
-  /// Specifies reference loop handling options for the <see cref="JsonWriter"/>.
+  /// Specifies reference loop handling options for the <see cref="JsonSerializer"/>.
   /// </summary>
   public enum ReferenceLoopHandling
   {

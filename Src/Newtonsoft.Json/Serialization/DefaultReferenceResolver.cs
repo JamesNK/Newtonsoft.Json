@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -48,14 +48,14 @@ namespace Newtonsoft.Json.Serialization
       }
     }
 
-    public object ResolveObject(string reference)
+    public object ResolveReference(string reference)
     {
       object value;
       Mappings.TryGetByFirst(reference, out value);
       return value;
     }
 
-    public string ResolveReference(object value)
+    public string GetReference(object value)
     {
       string reference;
       if (!Mappings.TryGetBySecond(value, out reference))
@@ -68,12 +68,12 @@ namespace Newtonsoft.Json.Serialization
       return reference;
     }
 
-    public void AddObjectReference(string reference, object value)
+    public void AddReference(string reference, object value)
     {
       Mappings.Add(reference, value);
     }
 
-    public bool HasObjectReference(object value)
+    public bool IsReferenced(object value)
     {
       string reference;
       return Mappings.TryGetBySecond(value, out reference);

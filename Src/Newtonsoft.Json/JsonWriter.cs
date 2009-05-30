@@ -298,15 +298,20 @@ namespace Newtonsoft.Json
     {
       ValidationUtils.ArgumentNotNull(reader, "reader");
 
-      int currentDepth;
+      int initialDepth;
 
       if (reader.TokenType == JsonToken.None)
-        currentDepth = -1;
+        initialDepth = -1;
       else if (!IsStartToken(reader.TokenType))
-        currentDepth = reader.Depth + 1;
+        initialDepth = reader.Depth + 1;
       else
-        currentDepth = reader.Depth;
+        initialDepth = reader.Depth;
 
+      WriteToken(reader, initialDepth);
+    }
+
+    internal void WriteToken(JsonReader reader, int initialDepth)
+    {
       do
       {
         switch (reader.TokenType)
@@ -373,7 +378,7 @@ namespace Newtonsoft.Json
       }
       while (
         // stop if we have reached the end of the token being read
-        currentDepth - 1 < reader.Depth - (IsEndToken(reader.TokenType) ? 1 : 0)
+        initialDepth - 1 < reader.Depth - (IsEndToken(reader.TokenType) ? 1 : 0)
         && reader.Read());
     }
 

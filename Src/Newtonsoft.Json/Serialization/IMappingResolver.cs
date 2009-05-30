@@ -37,7 +37,7 @@ namespace Newtonsoft.Json.Serialization
   {
     /// <summary>
     /// Returns a collection of <see cref="JsonMemberMapping"/> for the specified <see cref="Type"/>
-    /// to be used during serialization.</see>
+    /// to be used during serialization.
     /// </summary>
     /// <param name="type">The type to be resolved.</param>
     /// <returns>A collection of <see cref="JsonMemberMapping"/> to be used during serialization.</returns>

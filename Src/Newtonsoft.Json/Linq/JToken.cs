@@ -26,7 +26,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.IO;
 using Newtonsoft.Json.Utilities;
 using System.Diagnostics;
@@ -164,6 +163,10 @@ namespace Newtonsoft.Json.Linq
     {
     }
 
+    /// <summary>
+    /// Adds the specified content immediately after this token.
+    /// </summary>
+    /// <param name="content">A content object that contains simple content or a collection of content objects to be added after this token.</param>
     public void AddAfterSelf(object content)
     {
       if (_parent == null)
@@ -172,6 +175,10 @@ namespace Newtonsoft.Json.Linq
       _parent.AddInternal((Next == null), this, content);
     }
 
+    /// <summary>
+    /// Adds the specified content immediately before this token.
+    /// </summary>
+    /// <param name="content">A content object that contains simple content or a collection of content objects to be added before this token.</param>
     public void AddBeforeSelf(object content)
     {
       if (_parent == null)
@@ -517,7 +524,7 @@ namespace Newtonsoft.Json.Linq
       if (v == null || !ValidateFloat(v, true))
         throw new ArgumentException("Can not convert {0} to Decimal.".FormatWith(CultureInfo.InvariantCulture, GetType(v)));
 
-      return (v.Value != null) ? (decimal?)Convert.ToDecimal(v.Value) : null;
+      return (v.Value != null) ? (decimal?)Convert.ToDecimal(v.Value, CultureInfo.InvariantCulture) : null;
     }
 
     /// <summary>
@@ -613,7 +620,7 @@ namespace Newtonsoft.Json.Linq
       if (v == null || !ValidateFloat(v, true))
         throw new ArgumentException("Can not convert {0} to Single.".FormatWith(CultureInfo.InvariantCulture, GetType(v)));
 
-      return (v.Value != null) ? (float?)Convert.ToSingle(v.Value) : null;
+      return (v.Value != null) ? (float?)Convert.ToSingle(v.Value, CultureInfo.InvariantCulture) : null;
     }
 
     /// <summary>
@@ -627,7 +634,7 @@ namespace Newtonsoft.Json.Linq
       if (v == null || !ValidateFloat(v, false))
         throw new ArgumentException("Can not convert {0} to Decimal.".FormatWith(CultureInfo.InvariantCulture, GetType(v)));
 
-      return Convert.ToDecimal(v.Value);
+      return Convert.ToDecimal(v.Value, CultureInfo.InvariantCulture);
     }
 
     /// <summary>
@@ -755,6 +762,10 @@ namespace Newtonsoft.Json.Linq
       get { return this[key]; }
     }
 
+    /// <summary>
+    /// Creates an <see cref="JsonReader"/> for this token.
+    /// </summary>
+    /// <returns>An <see cref="JsonReader"/> that can be used to read this token and its descendants.</returns>
     public JsonReader CreateReader()
     {
       return new JTokenReader(this);
@@ -785,11 +796,26 @@ namespace Newtonsoft.Json.Linq
       return FromObjectInternal(o, new JsonSerializer());
     }
 
+    /// <summary>
+    /// Creates a <see cref="JToken"/> from an object using the specified <see cref="JsonSerializer"/>.
+    /// </summary>
+    /// <param name="o">The object that will be used to create <see cref="JToken"/>.</param>
+    /// <param name="jsonSerializer">The <see cref="JsonSerializer"/> that will be used when reading the object.</param>
+    /// <returns>A <see cref="JToken"/> with the value of the specified object</returns>
     public static JToken FromObject(object o, JsonSerializer jsonSerializer)
     {
       return FromObjectInternal(o, jsonSerializer);
     }
 
+    /// <summary>
+    /// Creates a <see cref="JToken"/> from a <see cref="JsonReader"/>.
+    /// </summary>
+    /// <param name="reader">An <see cref="JsonReader"/> positioned at the token to read into this <see cref="JToken"/>.</param>
+    /// <returns>
+    /// An <see cref="JToken"/> that contains the token and its descendant tokens
+    /// that were read from the reader. The runtime type of the token is determined
+    /// by the token type of the first token encountered in the reader.
+    /// </returns>
     public static JToken ReadFrom(JsonReader reader)
     {
       ValidationUtils.ArgumentNotNull(reader, "reader");

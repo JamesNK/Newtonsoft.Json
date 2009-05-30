@@ -46,6 +46,10 @@ namespace Newtonsoft.Json.Converters
     private const string DeclarationName = "?xml";
     private const string JsonNamespaceUri = "http://james.newtonking.com/projects/json";
 
+    /// <summary>
+    /// Gets or sets the name of the root element to insert when deserializing to XML if the JSON structure has produces multiple root elements.
+    /// </summary>
+    /// <value>The name of the deserialize root element.</value>
     public string DeserializeRootElementName { get; set; }
 
     #region Writing
@@ -53,6 +57,7 @@ namespace Newtonsoft.Json.Converters
     /// Writes the JSON representation of the object.
     /// </summary>
     /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
+    /// <param name="serializer">The calling serializer.</param>
     /// <param name="value">The value.</param>
     public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {
@@ -260,6 +265,7 @@ namespace Newtonsoft.Json.Converters
     /// </summary>
     /// <param name="reader">The <see cref="JsonReader"/> to read from.</param>
     /// <param name="objectType">Type of the object.</param>
+    /// <param name="serializer">The calling serializer.</param>
     /// <returns>The object value.</returns>
     public override object ReadJson(JsonReader reader, Type objectType, JsonSerializer serializer)
     {

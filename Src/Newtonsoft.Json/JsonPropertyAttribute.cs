@@ -14,18 +14,30 @@ namespace Newtonsoft.Json
     internal DefaultValueHandling? _defaultValueHandling;
     internal ReferenceLoopHandling? _referenceLoopHandling;
 
+    /// <summary>
+    /// Gets or sets the null value handling used when serializing this property.
+    /// </summary>
+    /// <value>The null value handling.</value>
     public NullValueHandling NullValueHandling
     {
       get { return _nullValueHandling ?? default(NullValueHandling); }
       set { _nullValueHandling = value; }
     }
 
+    /// <summary>
+    /// Gets or sets the default value handling used when serializing this property.
+    /// </summary>
+    /// <value>The default value handling.</value>
     public DefaultValueHandling DefaultValueHandling
     {
       get { return _defaultValueHandling ?? default(DefaultValueHandling); }
       set { _defaultValueHandling = value; }
     }
 
+    /// <summary>
+    /// Gets or sets the reference loop handling used when serializing this property.
+    /// </summary>
+    /// <value>The reference loop handling.</value>
     public ReferenceLoopHandling ReferenceLoopHandling
     {
       get { return _referenceLoopHandling ?? default(ReferenceLoopHandling); }
@@ -38,6 +50,12 @@ namespace Newtonsoft.Json
     /// <value>The name of the property.</value>
     public string PropertyName { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether this property is required.
+    /// </summary>
+    /// <value>
+    /// 	<c>true</c> if this property is required; otherwise, <c>false</c>.
+    /// </value>
     public bool IsRequired { get; set; }
 
     /// <summary>

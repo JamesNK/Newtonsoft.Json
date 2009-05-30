@@ -276,7 +276,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Reads the next Json token from the stream.
+    /// Reads the next JSON token from the stream.
     /// </summary>
     /// <returns>
     /// true if the next token was read successfully; false if there are no more tokens to read.
@@ -846,11 +846,23 @@ namespace Newtonsoft.Json
         _buffer.Clear();
     }
 
+    /// <summary>
+    /// Gets a value indicating whether the class can return line information.
+    /// </summary>
+    /// <returns>
+    /// 	<c>true</c> if LineNumber and LinePosition can be provided; otherwise, <c>false</c>.
+    /// </returns>
     public bool HasLineInfo()
     {
       return true;
     }
 
+    /// <summary>
+    /// Gets the current line number.
+    /// </summary>
+    /// <value>
+    /// The current line number or 0 if no line information is available (for example, HasLineInfo returns false).
+    /// </value>
     public int LineNumber
     {
       get
@@ -862,6 +874,12 @@ namespace Newtonsoft.Json
       }
     }
 
+    /// <summary>
+    /// Gets the current line position.
+    /// </summary>
+    /// <value>
+    /// The current line position or 0 if no line information is available (for example, HasLineInfo returns false).
+    /// </value>
     public int LinePosition
     {
       get { return _currentLinePosition; }
