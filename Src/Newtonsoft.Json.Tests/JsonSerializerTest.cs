@@ -2549,5 +2549,29 @@ keyword such as type of business.""
         TypeNameHandling = TypeNameHandling.Objects
       });
     }
+
+    [Test]
+    public void TypedObjectDeserializationWithComments()
+    {
+      string json = @"/*comment*/ { /*comment*/
+        ""Name"": /*comment*/ ""Apple"" /*comment*/, /*comment*/
+        ""ExpiryDate"": ""\/Date(1230375600000+1300)\/"",
+        ""Price"": 3.99,
+        ""Sizes"": /*comment*/ [ /*comment*/
+          ""Small"", /*comment*/
+          ""Medium"" /*comment*/,
+          /*comment*/ ""Large""
+        /*comment*/ ] /*comment*/
+      } /*comment*/";
+
+      Product deserializedProduct = (Product)JsonConvert.DeserializeObject(json, typeof(Product));
+
+      Assert.AreEqual("Apple", deserializedProduct.Name);
+      Assert.AreEqual(new DateTime(2008, 12, 28), deserializedProduct.ExpiryDate);
+      Assert.AreEqual(3.99, deserializedProduct.Price);
+      Assert.AreEqual("Small", deserializedProduct.Sizes[0]);
+      Assert.AreEqual("Medium", deserializedProduct.Sizes[1]);
+      Assert.AreEqual("Large", deserializedProduct.Sizes[2]);
+    }
   }
 }

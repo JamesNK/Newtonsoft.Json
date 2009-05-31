@@ -426,5 +426,33 @@ Parameter name: arrayIndex")]
   ""title"": null
 }", output);
     }
+
+    [Test]
+    public void Example()
+    {
+      string json = @"{
+        ""Name"": ""Apple"",
+        ""Expiry"": new Date(1230422400000),
+        ""Price"": 3.99,
+        ""Sizes"": [
+          ""Small"",
+          ""Medium"",
+          ""Large""
+        ]
+      }";
+
+      JObject o = JObject.Parse(json);
+
+      string name = (string)o["Name"];
+      // Apple
+
+      JArray sizes = (JArray)o["Sizes"];
+
+      string smallest = (string)sizes[0];
+      // Small
+
+      Console.WriteLine(name);
+      Console.WriteLine(smallest);
+    }
   }
 }
