@@ -164,8 +164,13 @@ namespace Newtonsoft.Json.Utilities
       if (initialValue is DateTime && targetType == typeof(DateTimeOffset))
         return new DateTimeOffset((DateTime)initialValue);
 
-      if (initialValue is string && targetType == typeof(Guid))
-        return new Guid((string)initialValue);
+      if (initialValue is string)
+      {
+        if (targetType == typeof(Guid))
+          return new Guid((string)initialValue);
+        if (targetType == typeof(Uri))
+          return new Uri((string) initialValue);
+      }
 
 #if !PocketPC
       // see if source or target types have a TypeConverter that converts between the two

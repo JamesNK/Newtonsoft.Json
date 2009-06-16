@@ -454,5 +454,37 @@ Parameter name: arrayIndex")]
       Console.WriteLine(name);
       Console.WriteLine(smallest);
     }
+
+    [Test]
+    public void sdfs()
+    {
+      string jsonText = @"{
+	      ""short"":{
+		      ""original"":""http://www.foo.com/"",
+		      ""short"":""krehqk"",
+		      ""error"":{
+			      ""code"":0,
+			      ""msg"":""No action taken""}
+		  }";
+
+      JObject json = JObject.Parse(jsonText);
+
+      Shortie shortie = new Shortie
+                        {
+                          Original = (string)json["short"]["original"],
+                          Short = (string)json["short"]["short"],
+                          Error = new ShortieException
+                                  {
+                                    Code = (int)json["short"]["error"]["code"],
+                                    ErrorMessage = (string)json["short"]["error"]["msg"]
+                                  }
+                        };
+
+      Assert.AreEqual("http://www.foo.com/", shortie.Original);
+      Assert.AreEqual("krehqk", shortie.Short);
+      Assert.AreEqual(null, shortie.Shortened);
+      Assert.AreEqual(0, shortie.Error.Code);
+      Assert.AreEqual("No action taken", shortie.Error.ErrorMessage);
+    }
   }
 }

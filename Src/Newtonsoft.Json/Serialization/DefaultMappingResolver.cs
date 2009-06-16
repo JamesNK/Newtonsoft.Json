@@ -39,7 +39,7 @@ namespace Newtonsoft.Json.Serialization
   {
     internal static readonly IMappingResolver Instance = new DefaultMappingResolver();
 
-    private readonly Dictionary<Type, JsonMemberMappingCollection> _typeMemberMappingsCache = new Dictionary<Type, JsonMemberMappingCollection>();
+    private readonly ThreadSafeDictionaryWrapper<Type, JsonMemberMappingCollection> _typeMemberMappingsCache;
 
     /// <summary>
     /// Gets or sets the default members search flags.
@@ -53,6 +53,8 @@ namespace Newtonsoft.Json.Serialization
     public DefaultMappingResolver()
     {
       DefaultMembersSearchFlags = BindingFlags.Public | BindingFlags.Instance;
+
+      _typeMemberMappingsCache = new ThreadSafeDictionaryWrapper<Type, JsonMemberMappingCollection>(CreateMemberMappings);
     }
 
     /// <summary>
@@ -63,22 +65,7 @@ namespace Newtonsoft.Json.Serialization
     /// <returns>A collection of <see cref="JsonMemberMapping"/> to be used during serialization.</returns>
     public virtual JsonMemberMappingCollection ResolveMappings(Type type)
     {
-      JsonMemberMappingCollection memberMappings;
-
-      if (_typeMemberMappingsCache.TryGetValue(type, out memberMappings))
-        return memberMappings;
-
-      // double check locking to avoid threading issues
-      lock (_typeMemberMappingsCache)
-      {
-        if (_typeMemberMappingsCache.TryGetValue(type, out memberMappings))
-          return memberMappings;
-
-        memberMappings = CreateMemberMappings(type);
-        _typeMemberMappingsCache[type] = memberMappings;
-
-        return memberMappings;
-      }
+      return _typeMemberMappingsCache.Get(type);
     }
 
     /// <summary>

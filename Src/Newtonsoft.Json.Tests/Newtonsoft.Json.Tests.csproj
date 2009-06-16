@@ -143,6 +143,7 @@
     <Compile Include="TestObjects\Product.cs" />
     <Compile Include="TestObjects\ProductCollection.cs" />
     <Compile Include="TestObjects\ProductShort.cs" />
+    <Compile Include="TestObjects\Shortie.cs" />
     <Compile Include="TestObjects\Store.cs" />
     <Compile Include="TestObjects\StoreColor.cs" />
     <Compile Include="TestObjects\Person.cs" />

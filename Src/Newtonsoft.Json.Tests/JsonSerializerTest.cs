@@ -2573,5 +2573,55 @@ keyword such as type of business.""
       Assert.AreEqual("Medium", deserializedProduct.Sizes[1]);
       Assert.AreEqual("Large", deserializedProduct.Sizes[2]);
     }
+
+    [Test]
+    public void NestedInsideOuterObject()
+    {
+      string json = @"{
+  ""short"": {
+    ""original"": ""http://www.contrast.ie/blog/online&#45;marketing&#45;2009/"",
+    ""short"": ""m2sqc6"",
+    ""shortened"": ""http://short.ie/m2sqc6"",
+    ""error"": {
+      ""code"": 0,
+      ""msg"": ""No action taken""
+    }
+  }
+}";
+
+      JObject o = JObject.Parse(json);
+
+      Shortie s = JsonConvert.DeserializeObject<Shortie>(o["short"].ToString());
+      Assert.IsNotNull(s);
+
+      Assert.AreEqual(s.Original, "http://www.contrast.ie/blog/online&#45;marketing&#45;2009/");
+      Assert.AreEqual(s.Short, "m2sqc6");
+      Assert.AreEqual(s.Shortened, "http://short.ie/m2sqc6");
+    }
+
+    [Test]
+    public void UriSerialization()
+    {
+      Uri uri = new Uri("http://codeplex.com");
+      string json = JsonConvert.SerializeObject(uri);
+
+      Assert.AreEqual("http://codeplex.com/", uri.ToString());
+
+      Uri newUri = JsonConvert.DeserializeObject<Uri>(json);
+      Assert.AreEqual(uri, newUri);
+    }
+
+    [Test]
+    public void AnonymousPlusLinqToSql()
+    {
+      var value = new
+        {
+          bar = new JObject(new JProperty("baz", 13))
+        };
+
+      string json = JsonConvert.SerializeObject(value);
+
+      Assert.AreEqual(@"{""bar"":{""baz"":13}}", json);
+    }
   }
 }

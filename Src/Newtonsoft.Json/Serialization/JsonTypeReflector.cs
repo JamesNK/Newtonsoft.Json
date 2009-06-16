@@ -43,8 +43,10 @@ namespace Newtonsoft.Json.Serialization
     public const string TypePropertyName = "$type";
     public const string ArrayValuesPropertyName = "$values";
 
-    private static readonly Dictionary<ICustomAttributeProvider, Type> ConverterTypeCache = new Dictionary<ICustomAttributeProvider, Type>();
-    private static readonly Dictionary<Type, Type> AssociatedMetadataTypesCache = new Dictionary<Type, Type>();
+    private static readonly ThreadSafeDictionaryWrapper<ICustomAttributeProvider, Type> ConverterTypeCache = new ThreadSafeDictionaryWrapper<ICustomAttributeProvider, Type>(GetConverterTypeFromAttribute);
+#if !SILVERLIGHT && !PocketPC
+    private static readonly ThreadSafeDictionaryWrapper<Type, Type> AssociatedMetadataTypesCache = new ThreadSafeDictionaryWrapper<Type, Type>(GetAssociateMetadataTypeFromAttribute);
+#endif
 
     public static JsonContainerAttribute GetJsonContainerAttribute(Type type)
     {
@@ -79,26 +81,15 @@ namespace Newtonsoft.Json.Serialization
 
     private static Type GetConverterType(ICustomAttributeProvider attributeProvider)
     {
-      Type converterType;
+      return ConverterTypeCache.Get(attributeProvider);
+    }
 
-      if (ConverterTypeCache.TryGetValue(attributeProvider, out converterType))
-        return converterType;
-
-      // double check locking to avoid threading issues
-      lock (ConverterTypeCache)
-      {
-        if (ConverterTypeCache.TryGetValue(attributeProvider, out converterType))
-          return converterType;
-
-        JsonConverterAttribute converterAttribute = GetAttribute<JsonConverterAttribute>(attributeProvider);
-        converterType = (converterAttribute != null)
-          ? converterAttribute.ConverterType
-          : null;
-
-        ConverterTypeCache[attributeProvider] = converterType;
-
-        return converterType;
-      }
+    private static Type GetConverterTypeFromAttribute(ICustomAttributeProvider attributeProvider)
+    {
+      JsonConverterAttribute converterAttribute = GetAttribute<JsonConverterAttribute>(attributeProvider);
+      return (converterAttribute != null)
+        ? converterAttribute.ConverterType
+        : null;
     }
 
     public static JsonConverter GetConverter(ICustomAttributeProvider attributeProvider, Type targetConvertedType)
@@ -121,25 +112,14 @@ namespace Newtonsoft.Json.Serialization
 #if !SILVERLIGHT && !PocketPC
     private static Type GetAssociatedMetadataType(Type type)
     {
-      Type associatedMetadataType;
+      return AssociatedMetadataTypesCache.Get(type);
+    }
 
-      if (AssociatedMetadataTypesCache.TryGetValue(type, out associatedMetadataType))
-        return associatedMetadataType;
+    private static Type GetAssociateMetadataTypeFromAttribute(Type type)
+    {
+      MetadataTypeAttribute metadataTypeAttribute = ReflectionUtils.GetAttribute<MetadataTypeAttribute>(type, true);
 
-      // double check locking to avoid threading issues
-      lock (AssociatedMetadataTypesCache)
-      {
-        if (AssociatedMetadataTypesCache.TryGetValue(type, out associatedMetadataType))
-          return associatedMetadataType;
-
-        MetadataTypeAttribute metadataTypeAttribute = ReflectionUtils.GetAttribute<MetadataTypeAttribute>(type, true);
-        if (metadataTypeAttribute != null)
-          associatedMetadataType = metadataTypeAttribute.MetadataClassType;
-
-        AssociatedMetadataTypesCache[type] = associatedMetadataType;
-
-        return associatedMetadataType;
-      }
+      return (metadataTypeAttribute != null) ? metadataTypeAttribute.MetadataClassType : null;
     }
 
     private static T GetAttribute<T>(Type type) where T : Attribute

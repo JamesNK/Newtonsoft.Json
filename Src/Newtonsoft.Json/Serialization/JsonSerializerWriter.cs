@@ -64,10 +64,7 @@ namespace Newtonsoft.Json.Serialization
       if (jsonWriter == null)
         throw new ArgumentNullException("jsonWriter");
 
-      if (value is JToken)
-        ((JToken)value).WriteTo(jsonWriter, (_serializer.Converters != null) ? _serializer.Converters.ToArray() : null);
-      else
-        SerializeValue(jsonWriter, value, null);
+      SerializeValue(jsonWriter, value, null);
     }
 
     private JsonSerializerProxy GetInternalSerializer()
@@ -95,6 +92,10 @@ namespace Newtonsoft.Json.Serialization
       else if (JsonConvert.IsJsonPrimitive(value))
       {
         writer.WriteValue(value);
+      }
+      else if (value is JToken)
+      {
+        ((JToken)value).WriteTo(writer, (_serializer.Converters != null) ? _serializer.Converters.ToArray() : null);
       }
       else if (value is IList)
       {
@@ -224,7 +225,7 @@ namespace Newtonsoft.Json.Serialization
         }
       }
 #else
-      if (value is Guid || value is Type)
+      if (value is Guid || value is Type || value is Uri)
       {
         writer.WriteValue(value.ToString());
         return;

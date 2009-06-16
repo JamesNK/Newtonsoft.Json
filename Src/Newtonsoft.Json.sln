@@ -13,7 +13,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.Tests", "Ne
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Doc", "Doc", "{8F9E13D9-4181-4BA6-8802-EB5B3EB9445A}"
 	ProjectSection(SolutionItems) = preProject
+		Doc\AdvanceSerializingJSON.html = Doc\AdvanceSerializingJSON.html
 		Doc\custom.css = Doc\custom.css
+		Doc\DatesInJSON.html = Doc\DatesInJSON.html
 		Doc\doc.shfb = Doc\doc.shfb
 		Doc\doc.sitemap = Doc\doc.sitemap
 		Doc\donate.gif = Doc\donate.gif

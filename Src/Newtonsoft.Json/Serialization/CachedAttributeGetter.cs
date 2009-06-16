@@ -34,26 +34,11 @@ namespace Newtonsoft.Json.Serialization
 {
   internal static class CachedAttributeGetter<T> where T : Attribute
   {
-    private static readonly Dictionary<ICustomAttributeProvider, T> TypeAttributeCache = new Dictionary<ICustomAttributeProvider, T>();
+    private static readonly ThreadSafeDictionaryWrapper<ICustomAttributeProvider, T> TypeAttributeCache = new ThreadSafeDictionaryWrapper<ICustomAttributeProvider, T>(JsonTypeReflector.GetAttribute<T>);
 
     public static T GetAttribute(ICustomAttributeProvider type)
     {
-      T attribute;
-
-      if (TypeAttributeCache.TryGetValue(type, out attribute))
-        return attribute;
-
-      // double check locking to avoid threading issues
-      lock (TypeAttributeCache)
-      {
-        if (TypeAttributeCache.TryGetValue(type, out attribute))
-          return attribute;
-
-        attribute = JsonTypeReflector.GetAttribute<T>(type);
-        TypeAttributeCache[type] = attribute;
-
-        return attribute;
-      }
+      return TypeAttributeCache.Get(type);
     }
   }
 }

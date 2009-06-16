@@ -46,7 +46,7 @@
 <pre style="margin: 0px;"><span style="color: green;">//&nbsp; ]</span></pre>
 <pre style="margin: 0px;"><span style="color: green;">//}</span></pre>
 <pre style="margin: 0px;">&nbsp;</pre>
-<pre style="margin: 0px;"><span style="color: #2b91af;">Product</span> deserializedProduct = (<span style="color: #2b91af;">Product</span>)<span style="color: #2b91af;">JsonConvert</span>.DeserializeObject(output, <span style="color: blue;">typeof</span>(<span style="color: #2b91af;">Product</span>));</pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">Product</span> deserializedProduct = <span style="color: #2b91af;">JsonConvert</span>.DeserializeObject&lt;<span style="color: #2b91af;">Product</span>&gt;(output);</pre>
 </div>
 
 </div></div>
@@ -95,8 +95,14 @@ the member's DefaultValueAttribute. Include or ignore.</p>
     <h5>Converters</h5>
 <p>A collection of JsonConverters that will be used during serialization and 
     deserialization.</p>
+    <h5>TypeNameHandling</h5>
+<p>Controls how .NET type names are used when serializing and deserializing JSON. If 
+    type names are SDFSDFSDF</p>
           <h3>Serialization Attributes</h3>
           <p>There are a number of attributes that can be placed on a class to control how it is serialized.</p>
+          <p>Note that as well as using the built-in Json.NET attributes, Json.NET also looks for the 
+              <a href="http://msdn.microsoft.com/en-us/library/system.runtime.serialization.datacontractattribute.aspx" target="_blank">DataContract</a> and 
+              <a href="http://msdn.microsoft.com/en-us/library/system.runtime.serialization.datacontractattribute.aspx" target="_blank">DataMember</a> attributes when determining how JSON is to be serialized and deserialized. If both are present the Json.NET serialization attributes take precedence.</p>
           
 <div class="overflowpanel"> <div class="code">
 
@@ -144,17 +150,31 @@ finally any converters passed to the JsonSerializer.</p>
 
 
 
-	<h5>IsoDateTimeConverter</h5>
-	<p>Converts a DateTime to and from the ISO 8601 date format (e.g. 2008-04-12T12:53Z).</p>
-
-	<h5>JavaScriptDateTimeConverter</h5>
-	<p>Converts a DateTime to and from a JavaScript date constructor (e.g. new Date(52231943)).</p>
+	<h5>DateTime JSON Converters</h5>
+	<p>Json.NET comes with a number of JsonConverters for serializing and deserializing DateTimes. Read 
+        more about dates and Json.NET <a href="DatesInJSON.html">here</a>.</p>
 
 	<h5>XmlNodeConverter</h5>
-	<p>Converts an XmlNode to and from JSON. Note that to convert a JSON object it must have only a single property. This is required because properties are converted into nodes and XML can only have one root node.</p>
+	<p>Converts an XmlNode to and from JSON. Note that to convert a JSON object it must have only a single property 
+        or you must define a root node name to be inserted when using this converter. This is required because properties are converted into nodes and 
+        well formed XML can only have one root node.</p>
 
     
-      <div id="footer"></div>      
+	<h5>BinaryConverter</h5>
+	<p>Converts binary data like a byte array or SqlBinary object to JSON. The binary 
+        data is encoded in Base64.</p>
+
+	<h5>CustomCreationConverter</h5>
+	<p>An abstract JsonConverter for customizing how an object is create during deserialization.
+	 Inherit from this class and implement the Create method with your own code to create and return an object.
+	 The object will then be populated with JSON values by the serializer.</p>
+	 <p>A possible example of using this converter would be to call out to a dependency injection framework to resolve what object should be created</p>
+    
+      <div id="footer">
+
+
+    
+        </div>      
     </div>
 
   </body>
