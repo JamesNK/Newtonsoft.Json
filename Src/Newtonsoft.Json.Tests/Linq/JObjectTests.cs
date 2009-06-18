@@ -456,7 +456,7 @@ Parameter name: arrayIndex")]
     }
 
     [Test]
-    public void sdfs()
+    public void DeserializeClassManually()
     {
       string jsonText = @"{
 	      ""short"":{
@@ -485,6 +485,33 @@ Parameter name: arrayIndex")]
       Assert.AreEqual(null, shortie.Shortened);
       Assert.AreEqual(0, shortie.Error.Code);
       Assert.AreEqual("No action taken", shortie.Error.ErrorMessage);
+    }
+
+    [Test]
+    public void JObjectContainingHtml()
+    {
+      JObject o = new JObject();
+      o["rc"] = new JValue(200);
+      o["m"] = new JValue("");
+      o["o"] = new JValue(@"<div class='s1'>
+    <div class='avatar'>                    
+        <a href='asdf'>asdf</a><br />
+        <strong>0</strong>
+    </div>
+    <div class='sl'>
+        <p>
+            444444444
+        </p>
+    </div>
+    <div class='clear'>
+    </div>                        
+</div>");
+
+      Assert.AreEqual(@"{
+  ""rc"": 200,
+  ""m"": """",
+  ""o"": ""<div class='s1'>\r\n    <div class='avatar'>                    \r\n        <a href='asdf'>asdf</a><br />\r\n        <strong>0</strong>\r\n    </div>\r\n    <div class='sl'>\r\n        <p>\r\n            444444444\r\n        </p>\r\n    </div>\r\n    <div class='clear'>\r\n    </div>                        \r\n</div>""
+}", o.ToString());
     }
   }
 }

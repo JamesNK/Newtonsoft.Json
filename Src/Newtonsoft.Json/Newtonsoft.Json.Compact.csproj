@@ -135,7 +135,6 @@
     <Compile Include="Serialization\JsonSerializerReader.cs" />
     <Compile Include="Serialization\JsonSerializerWriter.cs" />
     <Compile Include="Serialization\JsonTypeReflector.cs" />
-    <Compile Include="Serialization\ThreadSafeDictionaryWrapper.cs" />
     <Compile Include="TypeNameHandling.cs" />
     <Compile Include="Utilities\BidirectionalDictionary.cs" />
     <Compile Include="Utilities\ConvertUtils.cs" />
@@ -156,6 +155,7 @@
     <Compile Include="Utilities\ReflectionUtils.cs" />
     <Compile Include="Utilities\StringBuffer.cs" />
     <Compile Include="Utilities\StringUtils.cs" />
+    <Compile Include="Utilities\ThreadSafeStore.cs" />
     <Compile Include="Utilities\ValidationUtils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />

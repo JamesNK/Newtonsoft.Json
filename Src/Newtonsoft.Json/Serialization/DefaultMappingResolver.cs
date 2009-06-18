@@ -39,7 +39,7 @@ namespace Newtonsoft.Json.Serialization
   {
     internal static readonly IMappingResolver Instance = new DefaultMappingResolver();
 
-    private readonly ThreadSafeDictionaryWrapper<Type, JsonMemberMappingCollection> _typeMemberMappingsCache;
+    private readonly ThreadSafeStore<Type, JsonMemberMappingCollection> _typeMemberMappingsCache;
 
     /// <summary>
     /// Gets or sets the default members search flags.
@@ -54,7 +54,7 @@ namespace Newtonsoft.Json.Serialization
     {
       DefaultMembersSearchFlags = BindingFlags.Public | BindingFlags.Instance;
 
-      _typeMemberMappingsCache = new ThreadSafeDictionaryWrapper<Type, JsonMemberMappingCollection>(CreateMemberMappings);
+      _typeMemberMappingsCache = new ThreadSafeStore<Type, JsonMemberMappingCollection>(CreateMemberMappings);
     }
 
     /// <summary>
@@ -132,7 +132,7 @@ namespace Newtonsoft.Json.Serialization
     /// <returns>A created <see cref="JsonMemberMapping"/> for the given <see cref="MemberInfo"/>.</returns>
     protected virtual JsonMemberMapping CreateMemberMapping(MemberSerialization memberSerialization, MemberInfo member)
     {
-      JsonObjectAttribute jsonObjectAttribute = JsonTypeReflector.GetJsonContainerAttribute(member.DeclaringType) as JsonObjectAttribute;
+      JsonObjectAttribute jsonObjectAttribute = JsonTypeReflector.GetJsonObjectAttribute(member.DeclaringType);
 
 #if !PocketPC
       DataContractAttribute dataContractAttribute = JsonTypeReflector.GetDataContractAttribute(member.DeclaringType);
@@ -188,12 +188,8 @@ namespace Newtonsoft.Json.Serialization
       NullValueHandling? nullValueHandling = (propertyAttribute != null) ? propertyAttribute._nullValueHandling : null;
       DefaultValueHandling? defaultValueHandling = (propertyAttribute != null) ? propertyAttribute._defaultValueHandling : null;
       ReferenceLoopHandling? referenceLoopHandling = (propertyAttribute != null) ? propertyAttribute._referenceLoopHandling : null;
-      
-      bool isReference;
-      if (jsonObjectAttribute != null)
-        isReference = jsonObjectAttribute.IsReference;
-      else
-        isReference = false;
+
+      bool? isReference = (jsonObjectAttribute != null) ? jsonObjectAttribute._isReference : null;
 
       return new JsonMemberMapping(resolvedMappedName, member, ignored, readable, writable, memberConverter, defaultValue, required, isReference, nullValueHandling, defaultValueHandling, referenceLoopHandling);
     }

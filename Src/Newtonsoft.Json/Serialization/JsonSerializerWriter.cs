@@ -97,6 +97,11 @@ namespace Newtonsoft.Json.Serialization
       {
         ((JToken)value).WriteTo(writer, (_serializer.Converters != null) ? _serializer.Converters.ToArray() : null);
       }
+      else if (JsonTypeReflector.GetJsonObjectAttribute(value.GetType()) != null)
+      {
+        // for collection objects that have a JsonObject attribute
+        SerializeObject(writer, value);
+      }
       else if (value is IList)
       {
         SerializeList(writer, (IList)value);
@@ -119,7 +124,7 @@ namespace Newtonsoft.Json.Serialization
       }
     }
 
-    private bool ShouldWriteReference(object value)
+    private bool ShouldWriteReference(object value, JsonMemberMapping mapping)
     {
       if (value == null)
         return false;
@@ -128,7 +133,12 @@ namespace Newtonsoft.Json.Serialization
 
       Type t = value.GetType();
 
-      bool? isReference = IsReference(t);
+      // value could be coming from a dictionary or array and not have a mapping
+      bool? isReference;
+      if (mapping != null)
+        isReference = mapping.IsReference;
+      else
+        isReference = IsReference(t);
 
       if (isReference == null)
       {
@@ -165,7 +175,7 @@ namespace Newtonsoft.Json.Serialization
         if (memberMapping.DefaultValueHandling.GetValueOrDefault(_serializer.DefaultValueHandling) == DefaultValueHandling.Ignore && Equals(memberValue, defaultValue))
           return;
 
-        if (ShouldWriteReference(memberValue))
+        if (ShouldWriteReference(memberValue, memberMapping))
         {
           writer.WritePropertyName(propertyName ?? member.Name);
           WriteReference(writer, memberValue);
@@ -287,7 +297,7 @@ namespace Newtonsoft.Json.Serialization
 
     private void SerializeConvertable(JsonWriter writer, JsonConverter converter, object value)
     {
-      if (ShouldWriteReference(value))
+      if (ShouldWriteReference(value, null))
       {
         WriteReference(writer, value);
       }
@@ -338,7 +348,7 @@ namespace Newtonsoft.Json.Serialization
       {
         object value = values[i];
 
-        if (ShouldWriteReference(value))
+        if (ShouldWriteReference(value, null))
         {
           WriteReference(writer, value);
         }
@@ -382,7 +392,7 @@ namespace Newtonsoft.Json.Serialization
         string propertyName = entry.Key.ToString();
         object value = entry.Value;
 
-        if (ShouldWriteReference(value))
+        if (ShouldWriteReference(value, null))
         {
           writer.WritePropertyName(propertyName);
           WriteReference(writer, value);

@@ -40,7 +40,7 @@ namespace Newtonsoft.Json.Serialization
     private readonly JsonConverter _memberConverter;
     private readonly object _defaultValue;
     private readonly bool _required;
-    private readonly bool _isReference;
+    private readonly bool? _isReference;
     private readonly NullValueHandling? _nullValueHandling;
     private readonly DefaultValueHandling? _defaultValueHandling;
     private readonly ReferenceLoopHandling? _referenceLoopHandling;
@@ -60,7 +60,7 @@ namespace Newtonsoft.Json.Serialization
     /// <param name="nullValueHandling">Mapping null value handling.</param>
     /// <param name="defaultValueHandling">Mapping default value handling.</param>
     /// <param name="referenceLoopHandling">Mapping reference loop handling.</param>
-    public JsonMemberMapping(string propertyName, MemberInfo member, bool ignored, bool readable, bool writable, JsonConverter memberConverter, object defaultValue, bool required, bool isReference, NullValueHandling? nullValueHandling, DefaultValueHandling? defaultValueHandling, ReferenceLoopHandling? referenceLoopHandling)
+    public JsonMemberMapping(string propertyName, MemberInfo member, bool ignored, bool readable, bool writable, JsonConverter memberConverter, object defaultValue, bool required, bool? isReference, NullValueHandling? nullValueHandling, DefaultValueHandling? defaultValueHandling, ReferenceLoopHandling? referenceLoopHandling)
     {
       _propertyName = propertyName;
       _member = member;
@@ -154,7 +154,7 @@ namespace Newtonsoft.Json.Serialization
     /// <value>
     /// 	<c>true</c> if this instance is reference; otherwise, <c>false</c>.
     /// </value>
-    public bool IsReference
+    public bool? IsReference
     {
       get { return _isReference; }
     }

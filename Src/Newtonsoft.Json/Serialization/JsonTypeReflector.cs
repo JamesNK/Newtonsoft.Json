@@ -43,14 +43,19 @@ namespace Newtonsoft.Json.Serialization
     public const string TypePropertyName = "$type";
     public const string ArrayValuesPropertyName = "$values";
 
-    private static readonly ThreadSafeDictionaryWrapper<ICustomAttributeProvider, Type> ConverterTypeCache = new ThreadSafeDictionaryWrapper<ICustomAttributeProvider, Type>(GetConverterTypeFromAttribute);
+    private static readonly ThreadSafeStore<ICustomAttributeProvider, Type> ConverterTypeCache = new ThreadSafeStore<ICustomAttributeProvider, Type>(GetConverterTypeFromAttribute);
 #if !SILVERLIGHT && !PocketPC
-    private static readonly ThreadSafeDictionaryWrapper<Type, Type> AssociatedMetadataTypesCache = new ThreadSafeDictionaryWrapper<Type, Type>(GetAssociateMetadataTypeFromAttribute);
+    private static readonly ThreadSafeStore<Type, Type> AssociatedMetadataTypesCache = new ThreadSafeStore<Type, Type>(GetAssociateMetadataTypeFromAttribute);
 #endif
 
     public static JsonContainerAttribute GetJsonContainerAttribute(Type type)
     {
       return CachedAttributeGetter<JsonContainerAttribute>.GetAttribute(type);
+    }
+
+    public static JsonObjectAttribute GetJsonObjectAttribute(Type type)
+    {
+      return GetJsonContainerAttribute(type) as JsonObjectAttribute;
     }
 
 #if !PocketPC
@@ -62,7 +67,7 @@ namespace Newtonsoft.Json.Serialization
 
     public static MemberSerialization GetObjectMemberSerialization(Type objectType)
     {
-      JsonObjectAttribute objectAttribute = GetJsonContainerAttribute(objectType) as JsonObjectAttribute;
+      JsonObjectAttribute objectAttribute = GetJsonObjectAttribute(objectType);
 
       if (objectAttribute == null)
       {

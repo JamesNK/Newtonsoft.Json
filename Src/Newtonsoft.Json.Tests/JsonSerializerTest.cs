@@ -2623,5 +2623,79 @@ keyword such as type of business.""
 
       Assert.AreEqual(@"{""bar"":{""baz"":13}}", json);
     }
+
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
+    public class Content : IEnumerable<Content>
+    {
+      [JsonProperty]
+      public List<Content> Children;
+      [JsonProperty]
+      public string Text;
+
+      public IEnumerator GetEnumerator()
+      {
+        return Children.GetEnumerator();
+      }
+
+      IEnumerator<Content> IEnumerable<Content>.GetEnumerator()
+      {
+        return Children.GetEnumerator();
+      }
+    }
+
+    [Test]
+    public void SerializeEnumerableAsObject()
+    {
+      Content content = new Content
+        {
+          Text = "Blah, blah, blah",
+          Children = new List<Content>
+            {
+              new Content { Text = "First" },
+              new Content { Text = "Second" }
+            }
+        };
+
+      string json = JsonConvert.SerializeObject(content, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""Children"": [
+    {
+      ""Children"": null,
+      ""Text"": ""First""
+    },
+    {
+      ""Children"": null,
+      ""Text"": ""Second""
+    }
+  ],
+  ""Text"": ""Blah, blah, blah""
+}", json);
+    }
+
+    [Test]
+    public void DeserializeEnumerableAsObject()
+    {
+      string json = @"{
+  ""Children"": [
+    {
+      ""Children"": null,
+      ""Text"": ""First""
+    },
+    {
+      ""Children"": null,
+      ""Text"": ""Second""
+    }
+  ],
+  ""Text"": ""Blah, blah, blah""
+}";
+
+      Content content = JsonConvert.DeserializeObject<Content>(json);
+
+      Assert.AreEqual("Blah, blah, blah", content.Text);
+      Assert.AreEqual(2, content.Children.Count);
+      Assert.AreEqual("First", content.Children[0].Text);
+      Assert.AreEqual("Second", content.Children[1].Text);
+    }
   }
 }
