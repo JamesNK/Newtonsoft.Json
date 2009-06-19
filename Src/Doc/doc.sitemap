@@ -4,6 +4,7 @@
   <siteMapNode title="Serializing and deserializing JSON" url=".\SerializingJSON.html">
     <siteMapNode title="Advanced JSON serialization" url=".\AdvanceSerializingJSON.html" />
     <siteMapNode title="Serializing dates in JSON" url=".\DatesInJSON.html" />
+    <siteMapNode title="CustomCreationConverter" url=".\CustomCreationConverter.html" />
   </siteMapNode>
   <siteMapNode title="LINQ to JSON" url=".\LINQtoJSON.html" />
   <siteMapNode title="Reading and writing JSON" url=".\ReadingWritingJSON.html" />

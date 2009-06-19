@@ -480,6 +480,12 @@ Parameter name: arrayIndex")]
                                   }
                         };
 
+      Console.WriteLine(shortie.Original);
+      // http://www.foo.com/
+
+      Console.WriteLine(shortie.Error.ErrorMessage);
+      // No action taken
+
       Assert.AreEqual("http://www.foo.com/", shortie.Original);
       Assert.AreEqual("krehqk", shortie.Short);
       Assert.AreEqual(null, shortie.Shortened);

@@ -6,33 +6,17 @@ using System.Xml.Serialization;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  [XmlRoot("short")]
-  [JsonObject(MemberSerialization.OptIn)]
   public class Shortie
   {
-    [JsonProperty("original")]
-    [XmlElement("original")]
-    public String Original { get; set; }
-
-    [JsonProperty("shortened")]
-    [XmlElement("shortened")]
-    public String Shortened { get; set; }
-
-    [JsonProperty("short")]
-    [XmlElement("short")]
-    public String Short { get; set; }
-
+    public string Original { get; set; }
+    public string Shortened { get; set; }
+    public string Short { get; set; }
     public ShortieException Error { get; set; }
   }
 
   public class ShortieException
   {
-    [JsonProperty("code")]
-    [XmlElement("code")]
     public int Code { get; set; }
-
-    [JsonProperty("msg")]
-    [XmlElement("msg")]
-    public String ErrorMessage { get; set; }
+    public string ErrorMessage { get; set; }
   }
 }

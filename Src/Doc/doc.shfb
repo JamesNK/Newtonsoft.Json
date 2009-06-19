@@ -18,6 +18,7 @@
         <contentItem sourcePath=".\donate.gif" destPath="" excludeItems="False" />
         <contentItem sourcePath=".\AdvanceSerializingJSON.html" destPath="" excludeItems="False" />
         <contentItem sourcePath=".\DatesInJSON.html" destPath="" excludeItems="False" />
+        <contentItem sourcePath=".\CustomCreationConverter.html" destPath="" excludeItems="False" />
     </additionalContent>
     <ProjectSummary />
     <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, Namespace, TypeParameter</MissingTags>

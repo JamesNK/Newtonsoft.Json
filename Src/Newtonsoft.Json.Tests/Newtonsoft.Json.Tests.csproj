@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Converters\BinaryConverterTests.cs" />
+    <Compile Include="Converters\CustomCreationConverterTests.cs" />
     <Compile Include="Converters\StringEnumConverterTests.cs" />
     <Compile Include="JsonValidatingReaderTests.cs" />
     <Compile Include="LinqToSql\Department.cs" />

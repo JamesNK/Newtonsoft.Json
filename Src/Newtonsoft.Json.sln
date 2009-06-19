@@ -15,6 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Doc", "Doc", "{8F9E13D9-418
 	ProjectSection(SolutionItems) = preProject
 		Doc\AdvanceSerializingJSON.html = Doc\AdvanceSerializingJSON.html
 		Doc\custom.css = Doc\custom.css
+		Doc\CustomCreationConverter.html = Doc\CustomCreationConverter.html
 		Doc\DatesInJSON.html = Doc\DatesInJSON.html
 		Doc\doc.shfb = Doc\doc.shfb
 		Doc\doc.sitemap = Doc\doc.sitemap

@@ -44,7 +44,7 @@ namespace Newtonsoft.Json.Converters
     /// <param name="serializer">The calling serializer.</param>
     public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {
-      serializer.Serialize(writer, value);
+      throw new NotSupportedException("CustomCreationConverter should only be used while deserializing.");
     }
 
     /// <summary>

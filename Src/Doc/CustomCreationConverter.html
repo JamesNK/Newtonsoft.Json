@@ -1,0 +1,99 @@
+<html>
+  
+  <head>
+    <title>CustomCreationConverter</title>
+    <link href="styles.css" rel="stylesheet" type="text/css" />
+    <link href="custom.css" rel="stylesheet" type="text/css" />
+  </head>
+  
+  <body>
+    
+    <div id="control">
+      <span class="productTitle">Json.NET - Quick Starts & API Documentation</span><br />
+        <span class="topicTitle">CustomCreationConverter</span></div>
+
+    <div id="content">
+      <span style="color: DarkGray"> </span>
+    
+	<p>
+	The CustomCreationConverter is a JsonConverter that provides a way to customize how an object is created 
+        during JSON deserialization.
+	Once the object has been created it will then have values populated onto it by the serializer.
+	</p>
+
+<div class="overflowpanel"> <div class="code">
+<div style="font-family: Courier New; font-size: 10pt; color: black;">
+<pre style="margin: 0px;"><span style="color: blue;">public</span> <span style="color: blue;">interface</span> <span style="color: #2b91af;">IPerson</span></pre>
+<pre style="margin: 0px;">{</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">string</span> FirstName { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">string</span> LastName { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: #2b91af;">DateTime</span> BirthDate { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
+<pre style="margin: 0px;">}</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: blue;">public</span> <span style="color: blue;">class</span> <span style="color: #2b91af;">Employee</span> : <span style="color: #2b91af;">IPerson</span></pre>
+<pre style="margin: 0px;">{</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: blue;">string</span> FirstName { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: blue;">string</span> LastName { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: #2b91af;">DateTime</span> BirthDate { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: blue;">string</span> Department { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: blue;">string</span> JobTitle { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
+<pre style="margin: 0px;">}</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: blue;">public</span> <span style="color: blue;">class</span> <span style="color: #2b91af;">PersonConverter</span> : <span style="color: #2b91af;">CustomCreationConverter</span>&lt;<span style="color: #2b91af;">IPerson</span>&gt;</pre>
+<pre style="margin: 0px;">{</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: blue;">override</span> <span style="color: #2b91af;">IPerson</span> Create(<span style="color: #2b91af;">Type</span> objectType)</pre>
+<pre style="margin: 0px;">&nbsp; {</pre>
+<pre style="margin: 0px;">&nbsp; &nbsp; <span style="color: blue;">return</span> <span style="color: blue;">new</span> <span style="color: #2b91af;">Employee</span>();</pre>
+<pre style="margin: 0px;">&nbsp; }</pre>
+<pre style="margin: 0px;">}</pre>
+</div>
+</div></div>
+
+<p>
+This is an extremely simple example. A more complicated scenario could involve an object factory or service locator 
+    which resolves the object at runtime.
+</p>
+
+<div class="overflowpanel"> <div class="code">
+<div style="font-family: Courier New; font-size: 10pt; color: black;">
+<pre style="margin: 0px;"><span style="color: green;">//[</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; {</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; "FirstName": "Maurice",</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; "LastName": "Moss",</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; "BirthDate": "\/Date(252291661000)\/",</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; "Department": "IT",</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; "JobTitle": "Support"</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; },</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; {</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; "FirstName": "Jen",</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; "LastName": "Barber",</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; "BirthDate": "\/Date(258771661000)\/",</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; "Department": "IT",</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; "JobTitle": "Manager"</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; }</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//]</span></pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">List</span>&lt;<span style="color: #2b91af;">IPerson</span>&gt; people = <span style="color: #2b91af;">JsonConvert</span>.DeserializeObject&lt;<span style="color: #2b91af;">List</span>&lt;<span style="color: #2b91af;">IPerson</span>&gt;&gt;(json, <span style="color: blue;">new</span> <span style="color: #2b91af;">PersonConverter</span>());</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">IPerson</span> person = people[0];</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">Console</span>.WriteLine(person.GetType());</pre>
+<pre style="margin: 0px;"><span style="color: green;">// Newtonsoft.Json.Tests.Employee</span></pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">Console</span>.WriteLine(person.FirstName);</pre>
+<pre style="margin: 0px;"><span style="color: green;">// Maurice</span></pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">Employee</span> employee = (<span style="color: #2b91af;">Employee</span>)person;</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">Console</span>.WriteLine(employee.JobTitle);</pre>
+<pre style="margin: 0px;"><span style="color: green;">// Support</span></pre>
+</div>
+</div></div>
+
+      <div id="footer"></div>      
+    </div>
+
+  </body>
+
+</html>
