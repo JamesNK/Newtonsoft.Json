@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -52,10 +52,10 @@ namespace Newtonsoft.Json.Serialization
       set { _serializer.DefaultValueHandling = value; }
     }
 
-    public override IMappingResolver MappingResolver
+    public override IContractResolver ContractResolver
     {
-      get { return _serializer.MappingResolver; }
-      set { _serializer.MappingResolver = value; }
+      get { return _serializer.ContractResolver; }
+      set { _serializer.ContractResolver = value; }
     }
 
     public override MissingMemberHandling MissingMemberHandling

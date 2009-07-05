@@ -24,7 +24,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 #if !SILVERLIGHT && !PocketPC
 using System.ComponentModel.DataAnnotations;
 #endif

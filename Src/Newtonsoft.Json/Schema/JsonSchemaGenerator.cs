@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -43,11 +43,23 @@ namespace Newtonsoft.Json.Schema
     /// Gets or sets how undefined schemas are handled by the serializer.
     /// </summary>
     public UndefinedSchemaIdHandling UndefinedSchemaIdHandling { get; set; }
+
+    private IContractResolver _contractResolver;
     /// <summary>
-    /// Gets or sets the mapping resolver used by the generator when
-    /// mapping JSON properties to .NET objet members.
+    /// Gets or sets the contract resolver.
     /// </summary>
-    public IMappingResolver MappingResolver { get; set; }
+    /// <value>The contract resolver.</value>
+    public IContractResolver ContractResolver
+    {
+      get
+      {
+        if (_contractResolver == null)
+          return DefaultContractResolver.Instance;
+
+        return _contractResolver;
+      }
+      set { _contractResolver = value; }
+    }
 
     private class TypeSchema
     {
@@ -271,25 +283,23 @@ namespace Newtonsoft.Json.Schema
         {
           CurrentSchema.Id = GetTypeId(type, false);
 
-          JsonMemberMappingCollection mappings;
+          JsonObjectContract contract = ContractResolver.ResolveContract(type) as JsonObjectContract;
 
-          if (MappingResolver != null)
-            mappings = MappingResolver.ResolveMappings(type);
-          else
-            mappings = DefaultMappingResolver.Instance.ResolveMappings(type);
+          if (contract == null)
+            throw new Exception("Could not resolve contract for '{0}'.".FormatWith(CultureInfo.InvariantCulture, type));
 
           CurrentSchema.Properties = new Dictionary<string, JsonSchema>();
-          foreach (JsonMemberMapping mapping in mappings)
+          foreach (JsonProperty property in contract.Properties)
           {
-            if (!mapping.Ignored)
+            if (!property.Ignored)
             {
-              Type propertyMemberType = ReflectionUtils.GetMemberUnderlyingType(mapping.Member);
-              JsonSchema propertySchema = GenerateInternal(propertyMemberType, mapping.Required);
+              Type propertyMemberType = ReflectionUtils.GetMemberUnderlyingType(property.Member);
+              JsonSchema propertySchema = GenerateInternal(propertyMemberType, property.Required);
 
-              if (mapping.DefaultValue != null)
-                propertySchema.Default = JToken.FromObject(mapping.DefaultValue);
+              if (property.DefaultValue != null)
+                propertySchema.Default = JToken.FromObject(property.DefaultValue);
 
-              CurrentSchema.Properties.Add(mapping.PropertyName, propertySchema);
+              CurrentSchema.Properties.Add(property.PropertyName, propertySchema);
             }
           }
 

@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -36,7 +36,7 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
-  public class CamelCaseMappingResolverTests : TestFixtureBase
+  public class CamelCasePropertyNamesContractResolverTests : TestFixtureBase
   {
     [Test]
     public void JsonConvertSerializerSettings()
@@ -48,7 +48,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       string json = JsonConvert.SerializeObject(person, Formatting.Indented, new JsonSerializerSettings
                                                                {
-                                                                 MappingResolver = new CamelCaseMappingResolver()
+                                                                 ContractResolver = new CamelCasePropertyNamesContractResolver()
                                                                });
 
       Assert.AreEqual(@"{
@@ -59,7 +59,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       Person deserializedPerson = JsonConvert.DeserializeObject<Person>(json, new JsonSerializerSettings
                                                                         {
-                                                                          MappingResolver = new CamelCaseMappingResolver()
+                                                                          ContractResolver = new CamelCasePropertyNamesContractResolver()
                                                                         });
 
       Assert.AreEqual(person.BirthDate, deserializedPerson.BirthDate);
@@ -74,7 +74,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       ignoreAttributeOnClassTestClass.Field = int.MinValue;
 
       JsonSerializer serializer = new JsonSerializer();
-      serializer.MappingResolver = new CamelCaseMappingResolver();
+      serializer.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
       JTokenWriter writer = new JTokenWriter();
 
@@ -96,7 +96,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       string json = JsonConvert.SerializeObject(privateMembersClass, Formatting.Indented, new JsonSerializerSettings
       {
-        MappingResolver = new CamelCaseMappingResolver { DefaultMembersSearchFlags = BindingFlags.NonPublic | BindingFlags.Instance }
+        ContractResolver = new CamelCasePropertyNamesContractResolver { DefaultMembersSearchFlags = BindingFlags.NonPublic | BindingFlags.Instance }
       });
 
       Assert.AreEqual(@"{
@@ -111,7 +111,7 @@ namespace Newtonsoft.Json.Tests.Serialization
   ""_internalString"": ""Internal!""
 }", new JsonSerializerSettings
       {
-        MappingResolver = new CamelCaseMappingResolver { DefaultMembersSearchFlags = BindingFlags.NonPublic | BindingFlags.Instance }
+        ContractResolver = new CamelCasePropertyNamesContractResolver { DefaultMembersSearchFlags = BindingFlags.NonPublic | BindingFlags.Instance }
       });
 
       Assert.AreEqual("Private!", ReflectionUtils.GetMemberValue(typeof(PrivateMembersClass).GetField("_privateString", BindingFlags.Instance | BindingFlags.NonPublic), deserializedPrivateMembersClass));
@@ -134,7 +134,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         JsonConvert.SerializeObject(
           product,
           Formatting.Indented,
-          new JsonSerializerSettings { MappingResolver = new CamelCaseMappingResolver() }
+          new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }
         );
 
       //{

@@ -24,13 +24,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
 using Newtonsoft.Json.Utilities;
 using NUnit.Framework;
-using System.IO;
-using System.Linq;
 
 namespace Newtonsoft.Json.Tests
 {
@@ -252,7 +247,7 @@ now brown cow?", '"', true);
       // *** Make string invalid by stripping \" \"
       serialized = serialized.Replace(@"\""", "\"");
 
-      string result = JsonConvert.DeserializeObject<string>(serialized);
+      JsonConvert.DeserializeObject<string>(serialized);
     }
 
     [Test]
@@ -286,11 +281,32 @@ now brown cow?", '"', true);
       Assert.AreEqual("1.11111", JsonConvert.ToString(1.11111));
       Assert.AreEqual("1.111111", JsonConvert.ToString(1.111111));
       Assert.AreEqual("1.0", JsonConvert.ToString(1.0));
+      Assert.AreEqual("1.0", JsonConvert.ToString(1d));
+      Assert.AreEqual("-1.0", JsonConvert.ToString(-1d)); 
       Assert.AreEqual("1.01", JsonConvert.ToString(1.01));
       Assert.AreEqual("1.001", JsonConvert.ToString(1.001));
       Assert.AreEqual(JsonConvert.PositiveInfinity, JsonConvert.ToString(double.PositiveInfinity));
       Assert.AreEqual(JsonConvert.NegativeInfinity, JsonConvert.ToString(double.NegativeInfinity));
       Assert.AreEqual(JsonConvert.NaN, JsonConvert.ToString(double.NaN));
+    }
+
+    [Test]
+    public void DecimalToString()
+    {
+      Assert.AreEqual("1.1", JsonConvert.ToString(1.1m));
+      Assert.AreEqual("1.11", JsonConvert.ToString(1.11m));
+      Assert.AreEqual("1.111", JsonConvert.ToString(1.111m));
+      Assert.AreEqual("1.1111", JsonConvert.ToString(1.1111m));
+      Assert.AreEqual("1.11111", JsonConvert.ToString(1.11111m));
+      Assert.AreEqual("1.111111", JsonConvert.ToString(1.111111m));
+      Assert.AreEqual("1.0", JsonConvert.ToString(1.0m));
+      Assert.AreEqual("-1.0", JsonConvert.ToString(-1.0m));
+      Assert.AreEqual("-1.0", JsonConvert.ToString(-1m));
+      Assert.AreEqual("1.0", JsonConvert.ToString(1m));
+      Assert.AreEqual("1.01", JsonConvert.ToString(1.01m));
+      Assert.AreEqual("1.001", JsonConvert.ToString(1.001m));
+      Assert.AreEqual("79228162514264337593543950335.0", JsonConvert.ToString(decimal.MaxValue));
+      Assert.AreEqual("-79228162514264337593543950335.0", JsonConvert.ToString(decimal.MinValue));
     }
 
     [Test]

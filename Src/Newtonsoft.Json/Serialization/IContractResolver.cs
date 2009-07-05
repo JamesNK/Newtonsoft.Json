@@ -27,34 +27,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Globalization;
 
 namespace Newtonsoft.Json.Serialization
 {
   /// <summary>
-  /// Resolves member mappings for a type, camel casing property names.
+  /// Used by <see cref="JsonSerializer"/> to resolves a <see cref="JsonContract"/> for a given <see cref="Type"/>.
   /// </summary>
-  public class CamelCaseMappingResolver : DefaultMappingResolver
+  public interface IContractResolver
   {
     /// <summary>
-    /// Resolves the name of the property.
+    /// Resolves the contract for a given type.
     /// </summary>
-    /// <param name="propertyName">Name of the property.</param>
-    /// <returns></returns>
-    protected override string ResolvePropertyName(string propertyName)
-    {
-      // lower case the first letter of the passed in name
-      if (string.IsNullOrEmpty(propertyName))
-        return propertyName;
-
-      if (!char.IsUpper(propertyName[0]))
-        return propertyName;
-
-      string camelCaseName = char.ToLower(propertyName[0], CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture);
-      if (propertyName.Length > 1)
-        camelCaseName += propertyName.Substring(1);
-
-      return camelCaseName;
-    }
+    /// <param name="type">The type to resolve a contract for.</param>
+    /// <returns>The contract for a given type.</returns>
+    JsonContract ResolveContract(Type type);
   }
 }

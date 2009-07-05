@@ -22,6 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Doc", "Doc", "{8F9E13D9-418
 		Doc\donate.gif = Doc\donate.gif
 		Doc\Introduction.html = Doc\Introduction.html
 		Doc\LINQtoJSON.html = Doc\LINQtoJSON.html
+		Doc\PreserveObjectReferences.html = Doc\PreserveObjectReferences.html
 		Doc\ReadingWritingJSON.html = Doc\ReadingWritingJSON.html
 		Doc\SerializingJSON.html = Doc\SerializingJSON.html
 		Doc\styles.css = Doc\styles.css

@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Utilities
 {
   internal class ThreadSafeStore<TKey, TValue>
   {
+    private readonly object _lock = new object();
     private Dictionary<TKey, TValue> _store;
     private readonly Func<TKey, TValue> _creator;
 
@@ -33,24 +31,23 @@ namespace Newtonsoft.Json.Utilities
 
     private TValue AddValue(TKey key)
     {
-      lock (this)
-      {
-        TValue value;
+      TValue value = _creator(key);
 
+      lock (_lock)
+      {
         if (_store == null)
         {
           _store = new Dictionary<TKey, TValue>();
-          value = _creator(key);
           _store[key] = value;
         }
         else
         {
           // double check locking
-          if (_store.TryGetValue(key, out value))
-            return value;
+          TValue checkValue;
+          if (_store.TryGetValue(key, out checkValue))
+            return checkValue;
 
           Dictionary<TKey, TValue> newStore = new Dictionary<TKey, TValue>(_store);
-          value = _creator(key);
           newStore[key] = value;
 
           _store = newStore;

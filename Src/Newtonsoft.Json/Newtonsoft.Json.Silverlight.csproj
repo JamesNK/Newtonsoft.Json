@@ -104,12 +104,18 @@
     <Compile Include="ReferenceLoopHandling.cs" />
     <Compile Include="SerializationBinder.cs" />
     <Compile Include="Serialization\CachedAttributeGetter.cs" />
-    <Compile Include="Serialization\CamelCaseMappingResolver.cs" />
-    <Compile Include="Serialization\DefaultMappingResolver.cs" />
+    <Compile Include="Serialization\CamelCasePropertyNamesContractResolver.cs" />
+    <Compile Include="Serialization\DefaultContractResolver.cs" />
     <Compile Include="Serialization\DefaultReferenceResolver.cs" />
     <Compile Include="Serialization\DefaultSerializationBinder.cs" />
-    <Compile Include="Serialization\IMappingResolver.cs" />
+    <Compile Include="Serialization\IContractResolver.cs" />
     <Compile Include="Serialization\IReferenceResolver.cs" />
+    <Compile Include="Serialization\JsonArrayContract.cs" />
+    <Compile Include="Serialization\JsonContract.cs" />
+    <Compile Include="Serialization\JsonDictionaryContract.cs" />
+    <Compile Include="Serialization\JsonObjectContract.cs" />
+    <Compile Include="Serialization\JsonProperty.cs" />
+    <Compile Include="Serialization\JsonPropertyCollection.cs" />
     <Compile Include="Serialization\JsonSerializerProxy.cs" />
     <Compile Include="Serialization\JsonSerializerReader.cs" />
     <Compile Include="Serialization\JsonSerializerWriter.cs" />
@@ -149,8 +155,6 @@
     <Compile Include="Schema\JsonSchemaResolver.cs" />
     <Compile Include="Schema\JsonSchemaType.cs" />
     <Compile Include="Serialization\JsonTypeReflector.cs" />
-    <Compile Include="Serialization\JsonMemberMapping.cs" />
-    <Compile Include="Serialization\JsonMemberMappingCollection.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -47,7 +47,7 @@ namespace Newtonsoft.Json
     private NullValueHandling _nullValueHandling;
     private DefaultValueHandling _defaultValueHandling;
     private JsonConverterCollection _converters;
-    private IMappingResolver _mappingResolver;
+    private IContractResolver _contractResolver;
     private IReferenceResolver _referenceResolver;
     private SerializationBinder _binder;
 
@@ -212,13 +212,19 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Gets or sets the mapping resolver used by the serializer when
-    /// mapping JSON properties to .NET objet members.
+    /// Gets or sets the contract resolver used by the serializer when
+    /// serializing .NET objects to JSON and vice versa.
     /// </summary>
-    public virtual IMappingResolver MappingResolver
+    public virtual IContractResolver ContractResolver
     {
-      get { return _mappingResolver; }
-      set { _mappingResolver = value; }
+      get
+      {
+        if (_contractResolver == null)
+          _contractResolver = DefaultContractResolver.Instance;
+
+        return _contractResolver;
+      }
+      set { _contractResolver = value; }
     }
     #endregion
 
@@ -238,10 +244,10 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Creates a new <see cref="JsonSerializer"/> instance using the specified <see cref="JsonSerializerSettings"/> objects.
+    /// Creates a new <see cref="JsonSerializer"/> instance using the specified <see cref="JsonSerializerSettings"/>.
     /// </summary>
-    /// <param name="settings">The settings.</param>
-    /// <returns></returns>
+    /// <param name="settings">The settings to be applied to the <see cref="JsonSerializer"/>.</param>
+    /// <returns>A new <see cref="JsonSerializer"/> instance using the specified <see cref="JsonSerializerSettings"/>.</returns>
     public static JsonSerializer Create(JsonSerializerSettings settings)
     {
       JsonSerializer jsonSerializer = new JsonSerializer();
@@ -259,8 +265,8 @@ namespace Newtonsoft.Json
         jsonSerializer.NullValueHandling = settings.NullValueHandling;
         jsonSerializer.DefaultValueHandling = settings.DefaultValueHandling;
 
-        if (settings.MappingResolver != null)
-          jsonSerializer.MappingResolver = settings.MappingResolver;
+        if (settings.ContractResolver != null)
+          jsonSerializer.ContractResolver = settings.ContractResolver;
         if (settings.ReferenceResolver != null)
           jsonSerializer.ReferenceResolver = settings.ReferenceResolver;
         if (settings.Binder != null)
@@ -378,16 +384,6 @@ namespace Newtonsoft.Json
 
       converter = JsonTypeReflector.GetConverter(objectType, objectType);
       return (converter != null);
-    }
-
-    internal JsonMemberMappingCollection GetMemberMappings(Type objectType)
-    {
-      ValidationUtils.ArgumentNotNull(objectType, "objectType");
-
-      if (_mappingResolver != null)
-        return _mappingResolver.ResolveMappings(objectType);
-      
-      return DefaultMappingResolver.Instance.ResolveMappings(objectType);
     }
 
     internal bool HasMatchingConverter(Type type, out JsonConverter matchingConverter)

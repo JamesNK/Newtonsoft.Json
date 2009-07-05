@@ -54,7 +54,7 @@ namespace Newtonsoft.Json.Linq
     /// Gets or sets the property value.
     /// </summary>
     /// <value>The property value.</value>
-    public new JToken Value
+    public JToken Value
     {
       [DebuggerStepThrough]
       get { return Last; }

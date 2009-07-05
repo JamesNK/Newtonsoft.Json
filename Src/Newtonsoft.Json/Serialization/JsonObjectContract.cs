@@ -24,23 +24,34 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Newtonsoft.Json.Serialization
 {
   /// <summary>
-  /// Resolves member mappings for a type.
+  /// Contract details for a <see cref="Type"/> used by the <see cref="JsonSerializer"/>.
   /// </summary>
-  public interface IMappingResolver
+  public class JsonObjectContract : JsonContract
   {
     /// <summary>
-    /// Returns a collection of <see cref="JsonMemberMapping"/> for the specified <see cref="Type"/>
-    /// to be used during serialization.
+    /// Gets or sets the object member serialization.
     /// </summary>
-    /// <param name="type">The type to be resolved.</param>
-    /// <returns>A collection of <see cref="JsonMemberMapping"/> to be used during serialization.</returns>
-    JsonMemberMappingCollection ResolveMappings(Type type);
+    /// <value>The member object serialization.</value>
+    public MemberSerialization MemberSerialization { get; set; }
+
+    /// <summary>
+    /// Gets the object's properties.
+    /// </summary>
+    /// <value>The object's properties.</value>
+    public JsonPropertyCollection Properties { get; private set; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonObjectContract"/> class.
+    /// </summary>
+    /// <param name="underlyingType">The underlying type for the contract.</param>
+    public JsonObjectContract(Type underlyingType)
+      : base(underlyingType)
+    {
+      Properties = new JsonPropertyCollection();
+    }
   }
 }

@@ -370,7 +370,7 @@ keyword such as type of business.""
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"A member with the name 'pie' already exists on Newtonsoft.Json.Tests.TestObjects.BadJsonPropertyClass. Use the JsonPropertyAttribute to specify another name.")]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"A member with the name 'pie' already exists on 'Newtonsoft.Json.Tests.TestObjects.BadJsonPropertyClass'. Use the JsonPropertyAttribute to specify another name.")]
     public void BadJsonPropertyClassSerialize()
     {
       JsonConvert.SerializeObject(new BadJsonPropertyClass());
@@ -559,7 +559,7 @@ keyword such as type of business.""
         };
 
       string json = JsonConvert.SerializeObject(anonymous);
-      Assert.AreEqual(@"{""StringValue"":""I am a string"",""IntValue"":2147483647,""NestedAnonymous"":{""NestedValue"":255},""NestedArray"":[1,2],""Product"":{""Name"":""TestProduct"",""ExpiryDate"":""\/Date(946684800000)\/"",""Price"":0,""Sizes"":null}}", json);
+      Assert.AreEqual(@"{""StringValue"":""I am a string"",""IntValue"":2147483647,""NestedAnonymous"":{""NestedValue"":255},""NestedArray"":[1,2],""Product"":{""Name"":""TestProduct"",""ExpiryDate"":""\/Date(946684800000)\/"",""Price"":0.0,""Sizes"":null}}", json);
 
       anonymous = JsonConvert.DeserializeAnonymousType(json, anonymous);
       Assert.AreEqual("I am a string", anonymous.StringValue);
@@ -588,7 +588,7 @@ keyword such as type of business.""
 
       jsonSerializer.Serialize(sw, collection);
 
-      Assert.AreEqual(@"[{""Name"":""Test1"",""ExpiryDate"":""\/Date(946684800000)\/"",""Price"":0,""Sizes"":null},{""Name"":""Test2"",""ExpiryDate"":""\/Date(946684800000)\/"",""Price"":0,""Sizes"":null},{""Name"":""Test3"",""ExpiryDate"":""\/Date(946684800000)\/"",""Price"":0,""Sizes"":null}]",
+      Assert.AreEqual(@"[{""Name"":""Test1"",""ExpiryDate"":""\/Date(946684800000)\/"",""Price"":0.0,""Sizes"":null},{""Name"":""Test2"",""ExpiryDate"":""\/Date(946684800000)\/"",""Price"":0.0,""Sizes"":null},{""Name"":""Test3"",""ExpiryDate"":""\/Date(946684800000)\/"",""Price"":0.0,""Sizes"":null}]",
         sw.GetStringBuilder().ToString());
 
       ProductCollection collectionNew = (ProductCollection)jsonSerializer.Deserialize(new JsonTextReader(new StringReader(sw.GetStringBuilder().ToString())), typeof(ProductCollection));
@@ -609,7 +609,7 @@ keyword such as type of business.""
 
       //JsonConvert.ConvertDateTimeToJavaScriptTicks(s1.Establised.DateTime)
 
-      Assert.AreEqual(@"{""Color"":4,""Establised"":""\/Date(1264122061000+0000)\/"",""Width"":1.1,""Employees"":999,""RoomsPerFloor"":[1,2,3,4,5,6,7,8,9],""Open"":false,""Symbol"":""@"",""Mottos"":[""Hello World"",""öäüÖÄÜ\\'{new Date(12345);}[222]_µ@²³~"",null,"" ""],""Cost"":100980.1,""Escape"":""\r\n\t\f\b?{\\r\\n\""'"",""product"":[{""Name"":""Rocket"",""ExpiryDate"":""\/Date(949532490000)\/"",""Price"":0},{""Name"":""Alien"",""ExpiryDate"":""\/Date(946684800000)\/"",""Price"":0}]}", sw.GetStringBuilder().ToString());
+      Assert.AreEqual(@"{""Color"":4,""Establised"":""\/Date(1264122061000+0000)\/"",""Width"":1.1,""Employees"":999,""RoomsPerFloor"":[1,2,3,4,5,6,7,8,9],""Open"":false,""Symbol"":""@"",""Mottos"":[""Hello World"",""öäüÖÄÜ\\'{new Date(12345);}[222]_µ@²³~"",null,"" ""],""Cost"":100980.1,""Escape"":""\r\n\t\f\b?{\\r\\n\""'"",""product"":[{""Name"":""Rocket"",""ExpiryDate"":""\/Date(949532490000)\/"",""Price"":0.0},{""Name"":""Alien"",""ExpiryDate"":""\/Date(946684800000)\/"",""Price"":0.0}]}", sw.GetStringBuilder().ToString());
 
       Store s2 = (Store)jsonSerializer.Deserialize(new JsonTextReader(new StringReader("{}")), typeof(Store));
       Assert.AreEqual("\r\n\t\f\b?{\\r\\n\"\'", s2.Escape);
@@ -617,7 +617,7 @@ keyword such as type of business.""
       Store s3 = (Store)jsonSerializer.Deserialize(new JsonTextReader(new StringReader(@"{""Escape"":null}")), typeof(Store));
       Assert.AreEqual("\r\n\t\f\b?{\\r\\n\"\'", s3.Escape);
 
-      Store s4 = (Store)jsonSerializer.Deserialize(new JsonTextReader(new StringReader(@"{""Color"":2,""Establised"":""\/Date(1264071600000+1300)\/"",""Width"":1.1,""Employees"":999,""RoomsPerFloor"":[1,2,3,4,5,6,7,8,9],""Open"":false,""Symbol"":""@"",""Mottos"":[""Hello World"",""öäüÖÄÜ\\'{new Date(12345);}[222]_µ@²³~"",null,"" ""],""Cost"":100980.1,""Escape"":""\r\n\t\f\b?{\\r\\n\""'"",""product"":[{""Name"":""Rocket"",""ExpiryDate"":""\/Date(949485690000+1300)\/"",""Price"":0},{""Name"":""Alien"",""ExpiryDate"":""\/Date(946638000000)\/"",""Price"":0}]}")), typeof(Store));
+      Store s4 = (Store)jsonSerializer.Deserialize(new JsonTextReader(new StringReader(@"{""Color"":2,""Establised"":""\/Date(1264071600000+1300)\/"",""Width"":1.1,""Employees"":999,""RoomsPerFloor"":[1,2,3,4,5,6,7,8,9],""Open"":false,""Symbol"":""@"",""Mottos"":[""Hello World"",""öäüÖÄÜ\\'{new Date(12345);}[222]_µ@²³~"",null,"" ""],""Cost"":100980.1,""Escape"":""\r\n\t\f\b?{\\r\\n\""'"",""product"":[{""Name"":""Rocket"",""ExpiryDate"":""\/Date(949485690000+1300)\/"",""Price"":0},{""Name"":""Alien"",""ExpiryDate"":""\/Date(946638000000)\/"",""Price"":0.0}]}")), typeof(Store));
       Assert.AreEqual(s1.Establised, s3.Establised);
     }
 
@@ -875,6 +875,26 @@ keyword such as type of business.""
 
       Assert.AreEqual(testDate, m2.DefaultConverter);
       Assert.AreEqual(testDate, m2.MemberConverter);
+    }
+
+    [Test]
+    public void ConverterAttributeExample()
+    {
+      DateTime date = Convert.ToDateTime("1970-01-01T00:00:00Z").ToUniversalTime();
+
+      MemberConverterClass c = new MemberConverterClass
+        {
+          DefaultConverter = date,
+          MemberConverter = date
+        };
+
+      string json = JsonConvert.SerializeObject(c, Formatting.Indented);
+
+      Console.WriteLine(json);
+      //{
+      //  "DefaultConverter": "\/Date(0)\/",
+      //  "MemberConverter": "1970-01-01T00:00:00Z"
+      //}
     }
 
     [Test]
@@ -1656,515 +1676,12 @@ keyword such as type of business.""
       Assert.AreEqual("James", p["Name"]);
     }
 
-    [Test]
-    public void SerializeEmployeeReference()
-    {
-      Employee mikeManager = new Employee
-        {
-          Name = "Mike Manager"
-        };
-      Employee joeUser = new Employee
-        {
-          Name = "Joe User",
-          Manager = mikeManager
-        };
-
-      List<Employee> employees = new List<Employee>
-        {
-          mikeManager,
-          joeUser
-        };
-      
-      string json = JsonConvert.SerializeObject(employees, Formatting.Indented);
-      Assert.AreEqual(@"[
-  {
-    ""$id"": ""1"",
-    ""Name"": ""Mike Manager"",
-    ""Manager"": null
-  },
-  {
-    ""$id"": ""2"",
-    ""Name"": ""Joe User"",
-    ""Manager"": {
-      ""$ref"": ""1""
-    }
-  }
-]", json);
-    }
-
-    [Test]
-    public void DeserializeEmployeeReference()
-    {
-      string json = @"[
-  {
-    ""$id"": ""1"",
-    ""Name"": ""Mike Manager"",
-    ""Manager"": null
-  },
-  {
-    ""$id"": ""2"",
-    ""Name"": ""Joe User"",
-    ""Manager"": {
-      ""$ref"": ""1""
-    }
-  }
-]";
-
-      List<Employee> employees = JsonConvert.DeserializeObject<List<Employee>>(json);
-
-      Assert.AreEqual(2, employees.Count);
-      Assert.AreEqual("Mike Manager", employees[0].Name);
-      Assert.AreEqual("Joe User", employees[1].Name);
-      Assert.AreEqual(employees[0], employees[1].Manager);
-    }
-
-    [Test]
-    public void SerializeCircularReference()
-    {
-      CircularReferenceClass c1 = new CircularReferenceClass {Name = "c1"};
-      CircularReferenceClass c2 = new CircularReferenceClass {Name = "c2"};
-      CircularReferenceClass c3 = new CircularReferenceClass {Name = "c3"};
-
-      c1.Child = c2;
-      c2.Child = c3;
-      c3.Child = c1;
-
-      string json = JsonConvert.SerializeObject(c1, Formatting.Indented, new JsonSerializerSettings
-        {
-          PreserveReferencesHandling = PreserveReferencesHandling.Objects
-        });
-
-      Assert.AreEqual(@"{
-  ""$id"": ""1"",
-  ""Name"": ""c1"",
-  ""Child"": {
-    ""$id"": ""2"",
-    ""Name"": ""c2"",
-    ""Child"": {
-      ""$id"": ""3"",
-      ""Name"": ""c3"",
-      ""Child"": {
-        ""$ref"": ""1""
-      }
-    }
-  }
-}", json);
-    }
-
-    [Test]
-    public void DeserializeCircularReference()
-    {
-      string json = @"{
-  ""$id"": ""1"",
-  ""Name"": ""c1"",
-  ""Child"": {
-    ""$id"": ""2"",
-    ""Name"": ""c2"",
-    ""Child"": {
-      ""$id"": ""3"",
-      ""Name"": ""c3"",
-      ""Child"": {
-        ""$ref"": ""1""
-      }
-    }
-  }
-}";
-
-      CircularReferenceClass c1 =
-        JsonConvert.DeserializeObject<CircularReferenceClass>(json, new JsonSerializerSettings
-                                                                                          {
-                                                                                            PreserveReferencesHandling = PreserveReferencesHandling.Objects
-                                                                                          });
-
-      Assert.AreEqual("c1", c1.Name);
-      Assert.AreEqual("c2", c1.Child.Name);
-      Assert.AreEqual("c3", c1.Child.Child.Name);
-      Assert.AreEqual("c1", c1.Child.Child.Child.Name);
-    }
-
-    [Test]
-    public void SerializeReferenceInList()
-    {
-      Employee e1 = new Employee { Name = "e1" };
-      Employee e2 = new Employee { Name = "e2" };
-
-      List<Employee> employees = new List<Employee> { e1, e2, e1, e2 };
-
-      string json = JsonConvert.SerializeObject(employees, Formatting.Indented);
-
-      Assert.AreEqual(@"[
-  {
-    ""$id"": ""1"",
-    ""Name"": ""e1"",
-    ""Manager"": null
-  },
-  {
-    ""$id"": ""2"",
-    ""Name"": ""e2"",
-    ""Manager"": null
-  },
-  {
-    ""$ref"": ""1""
-  },
-  {
-    ""$ref"": ""2""
-  }
-]", json);
-    }
-
-    [Test]
-    public void DeserializeReferenceInList()
-    {
-      string json = @"[
-  {
-    ""$id"": ""1"",
-    ""Name"": ""e1"",
-    ""Manager"": null
-  },
-  {
-    ""$id"": ""2"",
-    ""Name"": ""e2"",
-    ""Manager"": null
-  },
-  {
-    ""$ref"": ""1""
-  },
-  {
-    ""$ref"": ""2""
-  }
-]";
-
-      List<Employee> employees = JsonConvert.DeserializeObject<List<Employee>>(json);
-      Assert.AreEqual(4, employees.Count);
-
-      Assert.AreEqual("e1", employees[0].Name);
-      Assert.AreEqual("e2", employees[1].Name);
-      Assert.AreEqual("e1", employees[2].Name);
-      Assert.AreEqual("e2", employees[3].Name);
-
-      Assert.AreEqual(employees[0], employees[2]);
-      Assert.AreEqual(employees[1], employees[3]);
-    }
-
-    [Test]
-    public void SerializeReferenceInDictionary()
-    {
-      Employee e1 = new Employee {Name = "e1"};
-      Employee e2 = new Employee {Name = "e2"};
-
-      Dictionary<string, Employee> employees = new Dictionary<string, Employee>
-        {
-          {"One", e1},
-          {"Two", e2},
-          {"Three", e1},
-          {"Four", e2}
-        };
-
-      string json = JsonConvert.SerializeObject(employees, Formatting.Indented);
-
-      Assert.AreEqual(@"{
-  ""One"": {
-    ""$id"": ""1"",
-    ""Name"": ""e1"",
-    ""Manager"": null
-  },
-  ""Two"": {
-    ""$id"": ""2"",
-    ""Name"": ""e2"",
-    ""Manager"": null
-  },
-  ""Three"": {
-    ""$ref"": ""1""
-  },
-  ""Four"": {
-    ""$ref"": ""2""
-  }
-}", json);
-    }
-
-    [Test]
-    public void DeserializeReferenceInDictionary()
-    {
-      string json = @"{
-  ""One"": {
-    ""$id"": ""1"",
-    ""Name"": ""e1"",
-    ""Manager"": null
-  },
-  ""Two"": {
-    ""$id"": ""2"",
-    ""Name"": ""e2"",
-    ""Manager"": null
-  },
-  ""Three"": {
-    ""$ref"": ""1""
-  },
-  ""Four"": {
-    ""$ref"": ""2""
-  }
-}";
-
-      Dictionary<string, Employee> employees = JsonConvert.DeserializeObject<Dictionary<string, Employee>>(json);
-      Assert.AreEqual(4, employees.Count);
-
-      Employee e1 = employees["One"];
-      Employee e2 = employees["Two"];
-
-      Assert.AreEqual("e1", e1.Name);
-      Assert.AreEqual("e2", e2.Name);
-
-      Assert.AreEqual(e1, employees["Three"]);
-      Assert.AreEqual(e2, employees["Four"]);
-    }
-
-    public class CircularDictionary : Dictionary<string, CircularDictionary>
-    {
-    }
-
-    [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Self referencing loop")]
-    public void SerializeCircularDictionarysError()
-    {
-      CircularDictionary circularDictionary = new CircularDictionary();
-      circularDictionary.Add("other", new CircularDictionary { { "blah", null } });
-      circularDictionary.Add("self", circularDictionary);
-
-      JsonConvert.SerializeObject(circularDictionary, Formatting.Indented);
-    }
-
-    [Test]
-    public void SerializeCircularDictionarysIgnore()
-    {
-      CircularDictionary circularDictionary = new CircularDictionary();
-      circularDictionary.Add("other", new CircularDictionary { { "blah", null } });
-      circularDictionary.Add("self", circularDictionary);
-
-      string json = JsonConvert.SerializeObject(circularDictionary, Formatting.Indented,
-        new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
-
-      Assert.AreEqual(@"{
-  ""other"": {
-    ""blah"": null
-  }
-}", json);
-    }
-
-    [Test]
-    public void SerializeDictionarysWithPreserveObjectReferences()
-    {
-      CircularDictionary circularDictionary = new CircularDictionary();
-      circularDictionary.Add("other", new CircularDictionary { {"blah", null }});
-      circularDictionary.Add("self", circularDictionary);
-
-      string json = JsonConvert.SerializeObject(circularDictionary, Formatting.Indented,
-        new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.All });
-
-      Assert.AreEqual(@"{
-  ""$id"": ""1"",
-  ""other"": {
-    ""$id"": ""2"",
-    ""blah"": null
-  },
-  ""self"": {
-    ""$ref"": ""1""
-  }
-}", json);
-    }
-
-    [Test]
-    public void DeserializeDictionarysWithPreserveObjectReferences()
-    {
-      string json = @"{
-  ""$id"": ""1"",
-  ""other"": {
-    ""$id"": ""2"",
-    ""blah"": null
-  },
-  ""self"": {
-    ""$ref"": ""1""
-  }
-}";
-
-      CircularDictionary circularDictionary = JsonConvert.DeserializeObject<CircularDictionary>(json,
-        new JsonSerializerSettings
-          {
-            PreserveReferencesHandling = PreserveReferencesHandling.All
-          });
-
-      Assert.AreEqual(2, circularDictionary.Count);
-      Assert.AreEqual(1, circularDictionary["other"].Count);
-      Assert.AreEqual(circularDictionary, circularDictionary["self"]);
-    }
-
-    public class CircularList : List<CircularList>
-    {
-    }
-
-    [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Self referencing loop")]
-    public void SerializeCircularListsError()
-    {
-      CircularList circularList = new CircularList();
-      circularList.Add(null);
-      circularList.Add(new CircularList { null });
-      circularList.Add(new CircularList { new CircularList { circularList } });
-
-      JsonConvert.SerializeObject(circularList, Formatting.Indented);
-    }
-
-    [Test]
-    public void SerializeCircularListsIgnore()
-    {
-      CircularList circularList = new CircularList();
-      circularList.Add(null);
-      circularList.Add(new CircularList { null });
-      circularList.Add(new CircularList { new CircularList { circularList } });
-
-      string json = JsonConvert.SerializeObject(circularList,
-                                                Formatting.Indented,
-                                                new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
-
-      Assert.AreEqual(@"[
-  null,
-  [
-    null
-  ],
-  [
-    []
-  ]
-]", json);
-    }
-
-    [Test]
-    public void SerializeListsWithPreserveObjectReferences()
-    {
-      CircularList circularList = new CircularList();
-      circularList.Add(null);
-      circularList.Add(new CircularList { null });
-      circularList.Add(new CircularList { new CircularList { circularList }});
-
-      string json = JsonConvert.SerializeObject(circularList, Formatting.Indented,
-        new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.All });
-
-      WriteEscapedJson(json);
-      Assert.AreEqual(@"{
-  ""$id"": ""1"",
-  ""$values"": [
-    null,
-    {
-      ""$id"": ""2"",
-      ""$values"": [
-        null
-      ]
-    },
-    {
-      ""$id"": ""3"",
-      ""$values"": [
-        {
-          ""$id"": ""4"",
-          ""$values"": [
-            {
-              ""$ref"": ""1""
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}", json);
-    }
-
-    [Test]
-    public void DeserializeListsWithPreserveObjectReferences()
-    {
-      string json = @"{
-  ""$id"": ""1"",
-  ""$values"": [
-    null,
-    {
-      ""$id"": ""2"",
-      ""$values"": [
-        null
-      ]
-    },
-    {
-      ""$id"": ""3"",
-      ""$values"": [
-        {
-          ""$id"": ""4"",
-          ""$values"": [
-            {
-              ""$ref"": ""1""
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}";
-
-      CircularList circularList = JsonConvert.DeserializeObject<CircularList>(json,
-        new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.All });
-
-      Assert.AreEqual(3, circularList.Count);
-      Assert.AreEqual(null, circularList[0]);
-      Assert.AreEqual(1, circularList[1].Count);
-      Assert.AreEqual(1, circularList[2].Count);
-      Assert.AreEqual(1, circularList[2][0].Count);
-      Assert.IsTrue(ReferenceEquals(circularList, circularList[2][0][0]));
-    }
-
-    [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Cannot preserve reference to array or readonly list: System.String[][]")]
-    public void DeserializeArraysWithPreserveObjectReferences()
-    {
-      string json = @"{
-  ""$id"": ""1"",
-  ""$values"": [
-    null,
-    {
-      ""$id"": ""2"",
-      ""$values"": [
-        null
-      ]
-    },
-    {
-      ""$id"": ""3"",
-      ""$values"": [
-        {
-          ""$id"": ""4"",
-          ""$values"": [
-            {
-              ""$ref"": ""1""
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}";
-
-      JsonConvert.DeserializeObject<string[][]>(json,
-        new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.All });
-    }
-
-    [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Unexpected end when deserializing object.")]
-    public void UnexpectedEnd()
-    {
-      string json = @"{
-  ""$id"":";
-
-      JsonConvert.DeserializeObject<string[][]>(json,
-        new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.All });
-    }
-
     public class DictionaryInterfaceClass
     {
       public string Name { get; set; }
       public IDictionary<string, int> Dictionary { get; set; }
       public ICollection<int> Collection { get; set; }
-      public Employee Employee { get; set; }
+      public EmployeeReference Employee { get; set; }
       public object Random { get; set; }
 
       public DictionaryInterfaceClass()
@@ -2179,7 +1696,7 @@ keyword such as type of business.""
             2,
             3
           };
-        Employee = new Employee
+        Employee = new EmployeeReference
           {
             Name = "EmployeeName!"
           };
@@ -2238,316 +1755,6 @@ keyword such as type of business.""
       Assert.AreEqual("EmployeeName!", c.Employee.Name);
       Assert.AreEqual("ManagerName!", c.Employee.Manager.Name);
       Assert.IsNotNull(c.Random);
-    }
-
-    public class CircularReferenceClassConverter : JsonConverter
-    {
-      public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-      {
-        CircularReferenceClass circularReferenceClass = (CircularReferenceClass) value;
-
-        string reference = serializer.ReferenceResolver.GetReference(circularReferenceClass);
-
-        JObject me = new JObject();
-        me["$id"] = new JValue(reference);
-        me["$type"] = new JValue(value.GetType().Name);
-        me["Name"] = new JValue(circularReferenceClass.Name);
-
-        JObject o = JObject.FromObject(circularReferenceClass.Child, serializer);
-        me["Child"] = o;
-
-        me.WriteTo(writer);
-      }
-
-      public override object ReadJson(JsonReader reader, Type objectType, JsonSerializer serializer)
-      {
-        JObject o = JObject.Load(reader);
-        string id = (string)o["$id"];
-        if (id != null)
-        {
-          CircularReferenceClass circularReferenceClass = new CircularReferenceClass();
-          serializer.Populate(o.CreateReader(), circularReferenceClass);
-          return circularReferenceClass;
-        }
-        else
-        {
-          string reference = (string)o["$ref"];
-          return serializer.ReferenceResolver.ResolveReference(reference);          
-        }
-      }
-
-      public override bool CanConvert(Type objectType)
-      {
-        return (objectType == typeof(CircularReferenceClass));
-      }
-    }
-
-    [Test]
-    public void SerializeCircularReferencesWithConverter()
-    {
-      CircularReferenceClass c1 = new CircularReferenceClass { Name = "c1" };
-      CircularReferenceClass c2 = new CircularReferenceClass { Name = "c2" };
-      CircularReferenceClass c3 = new CircularReferenceClass { Name = "c3" };
-
-      c1.Child = c2;
-      c2.Child = c3;
-      c3.Child = c1;
-
-      string json = JsonConvert.SerializeObject(c1, Formatting.Indented, new JsonSerializerSettings
-      {
-        PreserveReferencesHandling = PreserveReferencesHandling.Objects,
-        Converters = new List<JsonConverter> { new CircularReferenceClassConverter() }
-      });
-
-      Assert.AreEqual(@"{
-  ""$id"": ""1"",
-  ""$type"": ""CircularReferenceClass"",
-  ""Name"": ""c1"",
-  ""Child"": {
-    ""$id"": ""2"",
-    ""$type"": ""CircularReferenceClass"",
-    ""Name"": ""c2"",
-    ""Child"": {
-      ""$id"": ""3"",
-      ""$type"": ""CircularReferenceClass"",
-      ""Name"": ""c3"",
-      ""Child"": {
-        ""$ref"": ""1""
-      }
-    }
-  }
-}", json);
-    }
-
-    [Test]
-    public void DeserializeCircularReferencesWithConverter()
-    {
-      string json = @"{
-  ""$id"": ""1"",
-  ""$type"": ""CircularReferenceClass"",
-  ""Name"": ""c1"",
-  ""Child"": {
-    ""$id"": ""2"",
-    ""$type"": ""CircularReferenceClass"",
-    ""Name"": ""c2"",
-    ""Child"": {
-      ""$id"": ""3"",
-      ""$type"": ""CircularReferenceClass"",
-      ""Name"": ""c3"",
-      ""Child"": {
-        ""$ref"": ""1""
-      }
-    }
-  }
-}";
-
-      CircularReferenceClass c1 = JsonConvert.DeserializeObject<CircularReferenceClass>(json, new JsonSerializerSettings
-      {
-        PreserveReferencesHandling = PreserveReferencesHandling.Objects,
-        Converters = new List<JsonConverter> { new CircularReferenceClassConverter() }
-      });
-
-      Assert.AreEqual("c1", c1.Name);
-      Assert.AreEqual("c2", c1.Child.Name);
-      Assert.AreEqual("c3", c1.Child.Child.Name);
-      Assert.AreEqual("c1", c1.Child.Child.Child.Name);
-    }
-
-    [Test]
-    public void WriteTypeNameForObjects()
-    {
-      string employeeRef = typeof(Employee).AssemblyQualifiedName;
-
-      Employee employee = new Employee();
-
-      string json = JsonConvert.SerializeObject(employee, Formatting.Indented, new JsonSerializerSettings
-        {
-          TypeNameHandling = TypeNameHandling.Objects
-        });
-
-      Assert.AreEqual(@"{
-  ""$id"": ""1"",
-  ""$type"": """ + employeeRef + @""",
-  ""Name"": null,
-  ""Manager"": null
-}", json);
-    }
-
-    [Test]
-    public void DeserializeTypeName()
-    {
-      string employeeRef = typeof(Employee).AssemblyQualifiedName;
-
-      string json = @"{
-  ""$id"": ""1"",
-  ""$type"": """ + employeeRef + @""",
-  ""Name"": ""Name!"",
-  ""Manager"": null
-}";
-
-      object employee = JsonConvert.DeserializeObject(json, null, new JsonSerializerSettings
-        {
-          TypeNameHandling = TypeNameHandling.Objects
-        });
-
-      Assert.IsInstanceOfType(typeof(Employee), employee);
-      Assert.AreEqual("Name!", ((Employee)employee).Name);
-    }
-
-    [Test]
-    public void SerializeGenericObjectListWithTypeName()
-    {
-      string employeeRef = typeof(Employee).AssemblyQualifiedName;
-      string personRef = typeof(Person).AssemblyQualifiedName;
-
-      List<object> values = new List<object>
-        {
-          new Employee
-            {
-              Name = "Bob",
-              Manager = new Employee {Name = "Frank"}
-            },
-          new Person
-            {
-              Department = "Department",
-              BirthDate = new DateTime(2000, 12, 30, 0, 0, 0, DateTimeKind.Utc),
-              LastModified = new DateTime(2000, 12, 30, 0, 0, 0, DateTimeKind.Utc)
-            },
-          "String!",
-          int.MinValue
-        };
-
-      string json = JsonConvert.SerializeObject(values, Formatting.Indented, new JsonSerializerSettings
-        {
-          TypeNameHandling = TypeNameHandling.Objects
-        });
-
-      Assert.AreEqual(@"[
-  {
-    ""$id"": ""1"",
-    ""$type"": """ + employeeRef + @""",
-    ""Name"": ""Bob"",
-    ""Manager"": {
-      ""$id"": ""2"",
-      ""$type"": """ + employeeRef + @""",
-      ""Name"": ""Frank"",
-      ""Manager"": null
-    }
-  },
-  {
-    ""$type"": """ + personRef + @""",
-    ""Name"": null,
-    ""BirthDate"": ""\/Date(978134400000)\/"",
-    ""LastModified"": ""\/Date(978134400000)\/""
-  },
-  ""String!"",
-  -2147483648
-]", json);
-    }
-
-    [Test]
-    public void DeserializeGenericObjectListWithTypeName()
-    {
-      string employeeRef = typeof (Employee).AssemblyQualifiedName;
-      string personRef = typeof (Person).AssemblyQualifiedName;
-
-      string json = @"[
-  {
-    ""$id"": ""1"",
-    ""$type"": """ + employeeRef + @""",
-    ""Name"": ""Bob"",
-    ""Manager"": {
-      ""$id"": ""2"",
-      ""$type"": """ + employeeRef + @""",
-      ""Name"": ""Frank"",
-      ""Manager"": null
-    }
-  },
-  {
-    ""$type"": """ + personRef + @""",
-    ""Name"": null,
-    ""BirthDate"": ""\/Date(978134400000)\/"",
-    ""LastModified"": ""\/Date(978134400000)\/""
-  },
-  ""String!"",
-  -2147483648
-]";
-
-      List<object> values = (List<object>)JsonConvert.DeserializeObject(json, typeof(List<object>), new JsonSerializerSettings
-      {
-        TypeNameHandling = TypeNameHandling.Objects
-      });
-
-      Assert.AreEqual(4, values.Count);
-
-      Employee e = (Employee) values[0];
-      Person p = (Person) values[1];
-
-      Assert.AreEqual("Bob", e.Name);
-      Assert.AreEqual("Frank", e.Manager.Name);
-
-      Assert.AreEqual(null, p.Name);
-      Assert.AreEqual(new DateTime(2000, 12, 30, 0, 0, 0, DateTimeKind.Utc), p.BirthDate);
-      Assert.AreEqual(new DateTime(2000, 12, 30, 0, 0, 0, DateTimeKind.Utc), p.LastModified);
-
-      Assert.AreEqual("String!", values[2]);
-      Assert.AreEqual(int.MinValue, values[3]);
-    }
-
-    [Test]
-    [ExpectedException(typeof(JsonSerializationException))]
-    public void DeserializeWithBadTypeName()
-    {
-      string employeeRef = typeof(Employee).AssemblyQualifiedName;
-
-      string json = @"{
-  ""$id"": ""1"",
-  ""$type"": """ + employeeRef + @""",
-  ""Name"": ""Name!"",
-  ""Manager"": null
-}";
-
-      JsonConvert.DeserializeObject(json, typeof(Person), new JsonSerializerSettings
-      {
-        TypeNameHandling = TypeNameHandling.Objects
-      });
-    }
-
-    [Test]
-    public void DeserializeTypeNameWithNoTypeNameHandling()
-    {
-      string employeeRef = typeof(Employee).AssemblyQualifiedName;
-
-      string json = @"{
-  ""$id"": ""1"",
-  ""$type"": """ + employeeRef + @""",
-  ""Name"": ""Name!"",
-  ""Manager"": null
-}";
-
-      JObject o = (JObject)JsonConvert.DeserializeObject(json);
-
-      Assert.AreEqual(@"{
-  ""Name"": ""Name!"",
-  ""Manager"": null
-}", o.ToString());
-    }
-
-    [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Type specified in JSON 'Newtonsoft.Json.Tests.TestObjects.Employee' was not resolved.")]
-    public void DeserializeTypeNameOnly()
-    {
-      string json = @"{
-  ""$id"": ""1"",
-  ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Employee"",
-  ""Name"": ""Name!"",
-  ""Manager"": null
-}";
-
-      JsonConvert.DeserializeObject(json, null, new JsonSerializerSettings
-      {
-        TypeNameHandling = TypeNameHandling.Objects
-      });
     }
 
     [Test]
@@ -2696,6 +1903,37 @@ keyword such as type of business.""
       Assert.AreEqual(2, content.Children.Count);
       Assert.AreEqual("First", content.Children[0].Text);
       Assert.AreEqual("Second", content.Children[1].Text);
+    }
+
+    public enum RoleTransferOperation
+    {
+      First,
+      Second
+    }
+
+    public enum RoleTransferDirection
+    {
+      First,
+      Second
+    }
+
+    public class RoleTransfer
+    {
+      public RoleTransferOperation Operation { get; set; }   //This is enum type
+      public string RoleName { get; set; }
+      public RoleTransferDirection Direction { get; set; }   //This is enum type
+    }
+
+    [Test]
+    public void RoleTransferTest()
+    {
+      string json = @"{""Operation"":""1"",""RoleName"":""Admin"",""Direction"":""0""}";
+
+      RoleTransfer r = JsonConvert.DeserializeObject<RoleTransfer>(json);
+
+      Assert.AreEqual(RoleTransferOperation.Second, r.Operation);
+      Assert.AreEqual("Admin", r.RoleName);
+      Assert.AreEqual(RoleTransferDirection.First, r.Direction);
     }
   }
 }

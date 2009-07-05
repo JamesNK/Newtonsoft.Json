@@ -7,7 +7,9 @@
         <namespaceSummaryItem name="Newtonsoft.Json" isDocumented="True">The &lt;b&gt;Newtonsoft.Json&lt;/b&gt; namespace provides classes that are used to implement the core services of the framework.</namespaceSummaryItem>
         <namespaceSummaryItem name="Newtonsoft.Json.Converters" isDocumented="True">The &lt;b&gt;Newtonsoft.Json.Converters&lt;/b&gt; namespace provides classes that inherit from &lt;a href="T_Newtonsoft_Json_JsonConverter.htm"&gt;JsonConverter&lt;/a&gt;.</namespaceSummaryItem>
         <namespaceSummaryItem name="Newtonsoft.Json.Linq" isDocumented="True">The &lt;b&gt;Newtonsoft.Json.Linq&lt;/b&gt; namespace provides classes that are used to implement LINQ to JSON.</namespaceSummaryItem>
-        <namespaceSummaryItem name="Newtonsoft.Json.Utilities" isDocumented="True" />
+        <namespaceSummaryItem name="Newtonsoft.Json.Schema" isDocumented="True">The &lt;b&gt;Newtonsoft.Json.Schema&lt;/b&gt; namespace provides classes that are used to implement JSON schema.</namespaceSummaryItem>
+        <namespaceSummaryItem name="Newtonsoft.Json.Serialization" isDocumented="True">The &lt;b&gt;Newtonsoft.Json.Linq&lt;/b&gt; namespace provides classes that are used when serializing and deserializing JSON.</namespaceSummaryItem>
+        <namespaceSummaryItem name="Newtonsoft.Json.Utilities" isDocumented="False" />
     </namespaceSummaries>
     <additionalContent contentSiteMap=".\doc.sitemap" topicFileTransform="">
         <contentItem sourcePath=".\SerializingJSON.html" destPath="" excludeItems="False" />

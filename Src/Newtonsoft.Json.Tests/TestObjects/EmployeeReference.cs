@@ -31,9 +31,9 @@ using System.Text;
 namespace Newtonsoft.Json.Tests.TestObjects
 {
   [JsonObject(IsReference = true)]
-  public class Employee
+  public class EmployeeReference
   {
     public string Name { get; set; }
-    public Employee Manager { get; set; }
+    public EmployeeReference Manager { get; set; }
   }
 }

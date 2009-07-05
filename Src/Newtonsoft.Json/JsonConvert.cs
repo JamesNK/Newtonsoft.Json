@@ -276,6 +276,14 @@ namespace Newtonsoft.Json
       return text + ".0";
     }
 
+    private static string EnsureDecimalPlace(string text)
+    {
+      if (text.IndexOf('.') != -1)
+        return text;
+
+      return text + ".0";
+    }
+
     /// <summary>
     /// Converts the <see cref="Byte"/> to it's JavaScript string representation.
     /// </summary>
@@ -303,7 +311,7 @@ namespace Newtonsoft.Json
     /// <returns>A Json string representation of the <see cref="SByte"/>.</returns>
     public static string ToString(decimal value)
     {
-      return value.ToString(null, CultureInfo.InvariantCulture);
+      return EnsureDecimalPlace(value.ToString(null, CultureInfo.InvariantCulture));
     }
 
     /// <summary>

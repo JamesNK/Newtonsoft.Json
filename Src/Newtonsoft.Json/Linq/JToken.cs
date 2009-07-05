@@ -342,7 +342,7 @@ namespace Newtonsoft.Json.Linq
     /// Returns the indented JSON for this token.
     /// </summary>
     /// <returns>
-    /// A <see cref="T:System.String"/> containing the indented JSON.
+    /// The indented JSON for this token.
     /// </returns>
     public override string ToString()
     {
@@ -354,7 +354,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="formatting">Indicates how the output is formatted.</param>
     /// <param name="converters">A collection of <see cref="JsonConverter"/> which will be used when writing the token.</param>
-    /// <returns></returns>
+    /// <returns>The JSON for this token using the given formatting and converters.</returns>
     public string ToString(Formatting formatting, params JsonConverter[] converters)
     {
       using (StringWriter sw = new StringWriter(CultureInfo.InvariantCulture))

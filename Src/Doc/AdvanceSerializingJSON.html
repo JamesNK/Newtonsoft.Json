@@ -17,16 +17,135 @@
     
 	<p>The Json.NET serializer has a number of advanced options to alter how JSON is serialized and deserialized.</p>
 
-	<h3>IMappingResolver</h3>
+	<h3>Serialization Callbacks</h3>
 
-	<p>The <a href="./html/T_Newtonsoft_Json_Serialization_IMappingResolver.htm">IMappingResolver</a> interface provides a way to globally customize how the JsonSerializer maps JSON properties to .NET object members.</p>
-	<p>Implementing the IMappingResolver interface and then assigning an instance to a JsonSerializer lets you control what object members should be serialized, how they are serialized and what they are called.</p>
+	<p>Json.NET supports serialization callback methods. A callback can be used to 
+        manipulate an object before and after its serialization and deserialization by 
+        the JsonSerializer.</p>
+	<ul>
+	    <li><b>OnSerializing</b></li>
+	    <li><b>OnSerialized</b></li>
+	    <li><b>OnDeserializing</b></li>
+	    <li><b>OnDeserialized</b></li>
+	</ul>
+	<p>To tell the serializer which methods should be called during the object&#39;s serialization 
+        lifecycle, decorate a method with the appropraite attribute (<a 
+            href="http://msdn.microsoft.com/en-us/library/system.runtime.serialization.onserializingattribute.aspx" target="_blank">OnSerializingAttribute</a>, 
+        <a href="http://msdn.microsoft.com/en-us/library/system.runtime.serialization.onserializedattribute.aspx" target="_blank">OnSerializedAttribute</a>, 
+        <a href="http://msdn.microsoft.com/en-us/library/system.runtime.serialization.ondeserializingattribute.aspx" target="_blank">OnDeserializingAttribute</a>, 
+        <a href="http://msdn.microsoft.com/en-us/library/system.runtime.serialization.ondeserializedattribute.aspx" target="_blank">OnDeserializedAttribute</a>).</p>
+<p>Example object with serialization callback methods:</p>
+
+<div class="overflowpanel"> <div class="code">
+<div style="font-family: Courier New; font-size: 10pt; color: black;">
+<pre style="margin: 0px;"><span style="color: blue;">public</span> <span style="color: blue;">class</span> <span style="color: #2b91af;">SerializationEventTestObject</span></pre>
+<pre style="margin: 0px;">{</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: green;">// This member is serialized and deserialized with no change.</span></pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: blue;">int</span> Member1 { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: green;">// The value of this field is set and reset during and </span></pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: green;">// after serialization.</span></pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: blue;">string</span> Member2 { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: green;">// This field is not serialized. The OnDeserializedAttribute </span></pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: green;">// is used to set the member value after serialization.</span></pre>
+<pre style="margin: 0px;">&nbsp; [<span style="color: #2b91af;">JsonIgnore</span>]</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: blue;">string</span> Member3 { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: green;">// This field is set to null, but populated after deserialization.</span></pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: blue;">string</span> Member4 { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> SerializationEventTestObject()</pre>
+<pre style="margin: 0px;">&nbsp; {</pre>
+<pre style="margin: 0px;">&nbsp; &nbsp; Member1 = 11;</pre>
+<pre style="margin: 0px;">&nbsp; &nbsp; Member2 = <span style="color: #a31515;">"Hello World!"</span>;</pre>
+<pre style="margin: 0px;">&nbsp; &nbsp; Member3 = <span style="color: #a31515;">"This is a nonserialized value"</span>;</pre>
+<pre style="margin: 0px;">&nbsp; &nbsp; Member4 = <span style="color: blue;">null</span>;</pre>
+<pre style="margin: 0px;">&nbsp; }</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;">&nbsp; [<span style="color: #2b91af;">OnSerializing</span>]</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">internal</span> <span style="color: blue;">void</span> OnSerializingMethod(<span style="color: #2b91af;">StreamingContext</span> context)</pre>
+<pre style="margin: 0px;">&nbsp; {</pre>
+<pre style="margin: 0px;">&nbsp; &nbsp; Member2 = <span style="color: #a31515;">"This value went into the data file during serialization."</span>;</pre>
+<pre style="margin: 0px;">&nbsp; }</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;">&nbsp; [<span style="color: #2b91af;">OnSerialized</span>]</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">internal</span> <span style="color: blue;">void</span> OnSerializedMethod(<span style="color: #2b91af;">StreamingContext</span> context)</pre>
+<pre style="margin: 0px;">&nbsp; {</pre>
+<pre style="margin: 0px;">&nbsp; &nbsp; Member2 = <span style="color: #a31515;">"This value was reset after serialization."</span>;</pre>
+<pre style="margin: 0px;">&nbsp; }</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;">&nbsp; [<span style="color: #2b91af;">OnDeserializing</span>]</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">internal</span> <span style="color: blue;">void</span> OnDeserializingMethod(<span style="color: #2b91af;">StreamingContext</span> context)</pre>
+<pre style="margin: 0px;">&nbsp; {</pre>
+<pre style="margin: 0px;">&nbsp; &nbsp; Member3 = <span style="color: #a31515;">"This value was set during deserialization"</span>;</pre>
+<pre style="margin: 0px;">&nbsp; }</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;">&nbsp; [<span style="color: #2b91af;">OnDeserialized</span>]</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">internal</span> <span style="color: blue;">void</span> OnDeserializedMethod(<span style="color: #2b91af;">StreamingContext</span> context)</pre>
+<pre style="margin: 0px;">&nbsp; {</pre>
+<pre style="margin: 0px;">&nbsp; &nbsp; Member4 = <span style="color: #a31515;">"This value was set after deserialization."</span>;</pre>
+<pre style="margin: 0px;">&nbsp; }</pre>
+<pre style="margin: 0px;">}</pre>
+</div>
+</div></div>
+
+<p>The example object being serialized and deserialized by Json.NET:</p>
+
+<div class="overflowpanel"> <div class="code">
+<div style="font-family: Courier New; font-size: 10pt; color: black;">
+<pre style="margin: 0px;"><span style="color: #2b91af;">SerializationEventTestObject</span> obj = <span style="color: blue;">new</span> <span style="color: #2b91af;">SerializationEventTestObject</span>();</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">Console</span>.WriteLine(obj.Member1);</pre>
+<pre style="margin: 0px;"><span style="color: green;">// 11</span></pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">Console</span>.WriteLine(obj.Member2);</pre>
+<pre style="margin: 0px;"><span style="color: green;">// Hello World!</span></pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">Console</span>.WriteLine(obj.Member3);</pre>
+<pre style="margin: 0px;"><span style="color: green;">// This is a nonserialized value</span></pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">Console</span>.WriteLine(obj.Member4);</pre>
+<pre style="margin: 0px;"><span style="color: green;">// null</span></pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: blue;">string</span> json = <span style="color: #2b91af;">JsonConvert</span>.SerializeObject(obj, <span style="color: #2b91af;">Formatting</span>.Indented);</pre>
+<pre style="margin: 0px;"><span style="color: green;">// {</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp;  "Member1": 11,</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp;  "Member2": "This value went into the data file during serialization.",</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp;  "Member4": null</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">// }</span></pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">Console</span>.WriteLine(obj.Member1);</pre>
+<pre style="margin: 0px;"><span style="color: green;">// 11</span></pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">Console</span>.WriteLine(obj.Member2);</pre>
+<pre style="margin: 0px;"><span style="color: green;">// This value was reset after serialization.</span></pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">Console</span>.WriteLine(obj.Member3);</pre>
+<pre style="margin: 0px;"><span style="color: green;">// This is a nonserialized value</span></pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">Console</span>.WriteLine(obj.Member4);</pre>
+<pre style="margin: 0px;"><span style="color: green;">// null</span></pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;">obj = <span style="color: #2b91af;">JsonConvert</span>.DeserializeObject&lt;<span style="color: #2b91af;">SerializationEventTestObject</span>&gt;(json);</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">Console</span>.WriteLine(obj.Member1);</pre>
+<pre style="margin: 0px;"><span style="color: green;">// 11</span></pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">Console</span>.WriteLine(obj.Member2);</pre>
+<pre style="margin: 0px;"><span style="color: green;">// This value went into the data file during serialization.</span></pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">Console</span>.WriteLine(obj.Member3);</pre>
+<pre style="margin: 0px;"><span style="color: green;">// This value was set during deserialization</span></pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">Console</span>.WriteLine(obj.Member4);</pre>
+<pre style="margin: 0px;"><span style="color: green;">// This value was set after deserialization.</span></pre>
+</div>
+</div></div>
+
+
+	<h3>IContractResolver</h3>
+
+	<p>The <a href="./html/T_Newtonsoft_Json_Serialization_IContractResolver.htm">IContractResolver</a> interface provides a way to customize how the JsonSerializer serializes and deserializes .NET objects to JSON.</p>
+	<p>Implementing the IContractResolver interface and then assigning an instance to a JsonSerializer lets you control 
+        whether the object is serialized as a JSON object or JSON array, what object members should be serialized, how they are serialized and what they are called.</p>
 	
-	<h4>DefaultMappingResolver</h4>
-	<p>The <a href="./html/T_Newtonsoft_Json_Serialization_DefaultMappingResolver.htm">DefaultMappingResolver</a> is the default resolver used by the serializer. It provides many avenues of extensibility in the form of virtual methods that can be overriden.</p>
+	<h4>DefaultContractResolver</h4>
+	<p>The <a href="./html/T_Newtonsoft_Json_Serialization_DefaultContractResolver.htm">DefaultContractResolver</a> is the default resolver used by the serializer. It provides many avenues of extensibility in the form of virtual methods that can be overriden.</p>
 	
-	<h4>CamelCaseMappingResolver</h4>
-	<p><a href="./html/T_Newtonsoft_Json_Serialization_CamelCaseMappingResolver.htm">CamelCaseMappingResolver</a> inherits from DefaultMappingResolver and simply overrides the JSON property name to be written in <a href="http://en.wikipedia.org/wiki/CamelCase" target="_blank">camelcase</a>.</p>
+	<h4>CamelCasePropertyNamesContractResolver</h4>
+	<p><a href="./html/T_Newtonsoft_Json_Serialization_CamelCasePropertyNamesContractResolver.htm">CamelCasePropertyNamesContractResolver</a> inherits from DefaultContractResolver and simply overrides the JSON property name to be written in <a href="http://en.wikipedia.org/wiki/CamelCase" target="_blank">camelcase</a>.</p>
 
  <div class="overflowpanel">   <div class="code">     <div style="font-family: courier new; color: black; font-size: 10pt;">       <pre style="margin: 0px;"><span style="color: rgb(43, 145, 175);">Product</span> product = <span style="color: blue;">new</span> <span style="color: rgb(43, 145, 175);">Product</span></pre>
 

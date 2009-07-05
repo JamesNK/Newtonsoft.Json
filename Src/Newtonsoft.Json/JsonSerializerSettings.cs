@@ -63,11 +63,11 @@ namespace Newtonsoft.Json
     public TypeNameHandling TypeNameHandling { get; set; }
 
     /// <summary>
-    /// Gets or sets the mapping resolver used by the serializer when
-    /// mapping JSON properties to .NET objet members.
+    /// Gets or sets the contract resolver used by the serializer when
+    /// serializing .NET objects to JSON and vice versa.
     /// </summary>
-    /// <value>The mapping resolver.</value>
-    public IMappingResolver MappingResolver { get; set; }
+    /// <value>The contract resolver.</value>
+    public IContractResolver ContractResolver { get; set; }
     /// <summary>
     /// Gets or sets the <see cref="IReferenceResolver"/> used by the serializer when resolving references.
     /// </summary>

@@ -63,11 +63,14 @@
     <Compile Include="Converters\StringEnumConverterTests.cs" />
     <Compile Include="Linq\JTokenReaderTest.cs" />
     <Compile Include="Linq\JTokenWriterTest.cs" />
-    <Compile Include="Serialization\CamelCaseMappingResolverTests.cs" />
     <Compile Include="JsonValidatingReaderTests.cs" />
     <Compile Include="Schema\ExtensionsTests.cs" />
     <Compile Include="Schema\JsonSchemaModelBuilderTests.cs" />
     <Compile Include="Schema\JsonSchemaNodeTests.cs" />
+    <Compile Include="Serialization\CamelCasePropertyNamesContractResolverTests.cs" />
+    <Compile Include="Serialization\PreserveReferencesHandlingTests.cs" />
+    <Compile Include="Serialization\SerializationEventAttributeTests.cs" />
+    <Compile Include="Serialization\TypeNameHandlingTests.cs" />
     <Compile Include="TestObjects\AbstractGenericBase.cs" />
     <Compile Include="TestObjects\ArgumentConverterPrecedenceClassConverter.cs" />
     <Compile Include="TestObjects\BadJsonPropertyClass.cs" />
@@ -80,7 +83,7 @@
     <Compile Include="TestObjects\CircularReferenceWithIdClass.cs" />
     <Compile Include="TestObjects\DefaultValueAttributeTestClass.cs" />
     <Compile Include="TestObjects\DoubleClass.cs" />
-    <Compile Include="TestObjects\Employee.cs" />
+    <Compile Include="TestObjects\EmployeeReference.cs" />
     <Compile Include="TestObjects\GenericImpl.cs" />
     <Compile Include="TestObjects\GenericListAndDictionaryInterfaceProperties.cs" />
     <Compile Include="TestObjects\GetOnlyPropertyClass.cs" />
@@ -97,6 +100,10 @@
     <Compile Include="TestObjects\PhoneNumber.cs" />
     <Compile Include="TestObjects\PrivateMembersClass.cs" />
     <Compile Include="TestObjects\RequiredMembersClass.cs" />
+    <Compile Include="TestObjects\SerializationEventTestDictionary.cs" />
+    <Compile Include="TestObjects\SerializationEventTestList.cs" />
+    <Compile Include="TestObjects\SerializationEventTestObject.cs" />
+    <Compile Include="TestObjects\SerializationEventTestObjectWithConstructor.cs" />
     <Compile Include="TestObjects\SetOnlyPropertyClass.cs" />
     <Compile Include="TestObjects\Article.cs" />
     <Compile Include="TestObjects\ArticleCollection.cs" />

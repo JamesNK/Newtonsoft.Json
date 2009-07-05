@@ -281,27 +281,14 @@ namespace Newtonsoft.Json.Tests.Schema
       Assert.AreEqual(JsonSchemaType.String, schema.Type);
     }
 
-    //public class CustomDirectoryInfoSerializer : JsonSerializer
-    //{
-    //  protected override Newtonsoft.Json.Serialization.JsonMemberMappingCollection GetMemberMappings(Type objectType)
-    //  {
-    //    JsonMemberMappingCollection mappings = base.GetMemberMappings(objectType);
-
-    //    JsonMemberMappingCollection c = new JsonMemberMappingCollection();
-    //    CollectionUtils.AddRange(c, (IEnumerable) mappings.Where(m => m.MappingName != "Root"));
-
-    //    return c;
-    //  }
-    //}
-
-    public class CustomDirectoryInfoMapper : DefaultMappingResolver
+    public class CustomDirectoryInfoMapper : DefaultContractResolver
     {
-      public override JsonMemberMappingCollection ResolveMappings(Type type)
+      protected override IList<JsonProperty> CreateProperties(JsonObjectContract contract)
       {
-        JsonMemberMappingCollection mappings = base.ResolveMappings(type);
+        IList<JsonProperty> properties = base.CreateProperties(contract);
 
-        JsonMemberMappingCollection c = new JsonMemberMappingCollection();
-        CollectionUtils.AddRange(c, (IEnumerable)mappings.Where(m => m.PropertyName != "Root"));
+        JsonPropertyCollection c = new JsonPropertyCollection();
+        CollectionUtils.AddRange(c, (IEnumerable)properties.Where(m => m.PropertyName != "Root"));
 
         return c;
       }
@@ -381,7 +368,7 @@ namespace Newtonsoft.Json.Tests.Schema
       JTokenWriter jsonWriter = new JTokenWriter();
       JsonSerializer serializer = new JsonSerializer();
       serializer.Converters.Add(new IsoDateTimeConverter());
-      serializer.MappingResolver = new CustomDirectoryInfoMapper();
+      serializer.ContractResolver = new CustomDirectoryInfoMapper();
       serializer.Serialize(jsonWriter, temp);
 
       List<string> errors = new List<string>();
@@ -397,7 +384,7 @@ namespace Newtonsoft.Json.Tests.Schema
     {
       JsonSchemaGenerator generator = new JsonSchemaGenerator();
       generator.UndefinedSchemaIdHandling = UndefinedSchemaIdHandling.UseTypeName;
-      generator.MappingResolver = new CamelCaseMappingResolver();
+      generator.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
       JsonSchema schema = generator.Generate(typeof (DirectoryInfo), true);
 

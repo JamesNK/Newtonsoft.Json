@@ -231,7 +231,7 @@ namespace Newtonsoft.Json.Schema
     /// </summary>
     /// <param name="json">The json.</param>
     /// <param name="resolver">The resolver.</param>
-    /// <returns></returns>
+    /// <returns>A <see cref="JsonSchema"/> populated from the string that contains JSON.</returns>
     public static JsonSchema Parse(string json, JsonSchemaResolver resolver)
     {
       ValidationUtils.ArgumentNotNull(json, "json");
