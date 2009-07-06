@@ -1,7 +1,7 @@
 <html>
   
   <head>
-    <title>Advanced JSON Serialization</title>
+    <title>Serialization Callbacks</title>
     <link href="styles.css" rel="stylesheet" type="text/css" />
     <link href="custom.css" rel="stylesheet" type="text/css" />
   </head>
@@ -10,15 +10,11 @@
     
     <div id="control">
       <span class="productTitle">Json.NET - Quick Starts & API Documentation</span><br />
-        <span class="topicTitle">Advanced JSON Serialization</span></div>
+        <span class="topicTitle">Serialization Callbacks</span></div>
 
     <div id="content">
       <span style="color: DarkGray"> </span>
     
-	<p>The Json.NET serializer has a number of advanced options to alter how JSON is serialized and deserialized.</p>
-
-	<h3>Serialization Callbacks</h3>
-
 	<p>Json.NET supports serialization callback methods. A callback can be used to 
         manipulate an object before and after its serialization and deserialization by 
         the JsonSerializer.</p>
@@ -133,72 +129,6 @@
 <pre style="margin: 0px;"><span style="color: green;">// This value was set after deserialization.</span></pre>
 </div>
 </div></div>
-
-
-	<h3>IContractResolver</h3>
-
-	<p>The <a href="./html/T_Newtonsoft_Json_Serialization_IContractResolver.htm">IContractResolver</a> interface provides a way to customize how the JsonSerializer serializes and deserializes .NET objects to JSON.</p>
-	<p>Implementing the IContractResolver interface and then assigning an instance to a JsonSerializer lets you control 
-        whether the object is serialized as a JSON object or JSON array, what object members should be serialized, how they are serialized and what they are called.</p>
-	
-	<h4>DefaultContractResolver</h4>
-	<p>The <a href="./html/T_Newtonsoft_Json_Serialization_DefaultContractResolver.htm">DefaultContractResolver</a> is the default resolver used by the serializer. It provides many avenues of extensibility in the form of virtual methods that can be overriden.</p>
-	
-	<h4>CamelCasePropertyNamesContractResolver</h4>
-	<p><a href="./html/T_Newtonsoft_Json_Serialization_CamelCasePropertyNamesContractResolver.htm">CamelCasePropertyNamesContractResolver</a> inherits from DefaultContractResolver and simply overrides the JSON property name to be written in <a href="http://en.wikipedia.org/wiki/CamelCase" target="_blank">camelcase</a>.</p>
-
- <div class="overflowpanel">   <div class="code">     <div style="font-family: courier new; color: black; font-size: 10pt;">       <pre style="margin: 0px;"><span style="color: rgb(43, 145, 175);">Product</span> product = <span style="color: blue;">new</span> <span style="color: rgb(43, 145, 175);">Product</span></pre>
-
-      <pre style="margin: 0px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {</pre>
-
-      <pre style="margin: 0px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ExpiryDate = <span style="color: blue;">new</span> <span style="color: rgb(43, 145, 175);">DateTime</span>(2010, 12, 20, 18, 1, 0, <span style="color: rgb(43, 145, 175);">DateTimeKind</span>.Utc),</pre>
-
-      <pre style="margin: 0px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Name = <span style="color: rgb(163, 21, 21);">"Widget"</span>,</pre>
-
-      <pre style="margin: 0px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Price = 9.99m,</pre>
-
-      <pre style="margin: 0px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Sizes = <span style="color: blue;">new</span>[] {<span style="color: rgb(163, 21, 21);">"Small"</span>, <span style="color: rgb(163, 21, 21);">"Medium"</span>, <span style="color: rgb(163, 21, 21);">"Large"</span>}</pre>
-
-      <pre style="margin: 0px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; };</pre>
-
-      <pre style="margin: 0px;">&nbsp;</pre>
-
-      <pre style="margin: 0px;"><span style="color: blue;">string</span> json = </pre>
-
-      <pre style="margin: 0px;">&nbsp; <span style="color: rgb(43, 145, 175);">JsonConvert</span>.SerializeObject(</pre>
-
-      <pre style="margin: 0px;">&nbsp;&nbsp;&nbsp; product,</pre>
-
-      <pre style="margin: 0px;">&nbsp;&nbsp;&nbsp; <span style="color: rgb(43, 145, 175);">Formatting</span>.Indented,</pre>
-
-      <pre style="margin: 0px;">&nbsp;&nbsp;&nbsp; <span style="color: blue;">new</span> <span style="color: rgb(43, 145, 175);">JsonSerializerSettings</span> { MappingResolver = <span style="color: blue;">new</span> <span style="color: rgb(43, 145, 175);">CamelCaseMappingResolver</span>() }</pre>
-
-      <pre style="margin: 0px;">&nbsp; );</pre>
-
-      <pre style="margin: 0px;">&nbsp;</pre>
-
-      <pre style="margin: 0px;"><span style="color: green;">//{</span></pre>
-
-      <pre style="margin: 0px;"><span style="color: green;">//&nbsp; "name": "Widget",</span></pre>
-
-      <pre style="margin: 0px;"><span style="color: green;">//&nbsp; "expiryDate": "\/Date(1292868060000)\/",</span></pre>
-
-      <pre style="margin: 0px;"><span style="color: green;">//&nbsp; "price": 9.99,</span></pre>
-
-      <pre style="margin: 0px;"><span style="color: green;">//&nbsp; "sizes": [</span></pre>
-
-      <pre style="margin: 0px;"><span style="color: green;">//&nbsp;&nbsp;&nbsp; "Small",</span></pre>
-
-      <pre style="margin: 0px;"><span style="color: green;">//&nbsp;&nbsp;&nbsp; "Medium",</span></pre>
-
-      <pre style="margin: 0px;"><span style="color: green;">//&nbsp;&nbsp;&nbsp; "Large"</span></pre>
-
-      <pre style="margin: 0px;"><span style="color: green;">//&nbsp; ]</span></pre>
-
-      <pre style="margin: 0px;"><span style="color: green;">//}</span></pre>
-    </div>
-  </div>
-</div>
 
 
       <div id="footer">

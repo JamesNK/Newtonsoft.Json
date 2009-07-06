@@ -1,7 +1,7 @@
 <html>
   
   <head>
-    <title>Serializing and deserializing JSON</title>
+    <title>Serialization and Preserving Object References</title>
     <link href="styles.css" rel="stylesheet" type="text/css" />
     <link href="custom.css" rel="stylesheet" type="text/css" />
   </head>
@@ -10,202 +10,118 @@
     
     <div id="control">
       <span class="productTitle">Json.NET - Quick Starts & API Documentation</span><br />
-        <span class="topicTitle">Serialization and PreserveObjectRefences</span></div>
+        <span class="topicTitle">Serialization and Preserving Object References</span></div>
 
     <div id="content">
       <span style="color: DarkGray"> </span>
     
-	<p>The quickest method of converting between JSON text and a .NET object is using 
-        the <a href="./html/T_Newtonsoft_Json_JsonSerializer.htm">JsonSerializer</a>. The JsonSerializer converts .NET objects into their JSON 
-        equivalent and back again.</p>
-
-
-	<p>For simple scenarios the <a href="./html/Overload_Newtonsoft_Json_JsonConvert_SerializeObject.htm">SerializeObject</a> and <a href="./html/Overload_Newtonsoft_Json_JsonConvert_DeserializeObject.htm">DeserializeObject</a> methods on <a href="./html/T_Newtonsoft_Json_JsonConvert.htm">JsonConvert</a> provide an easy to use wrapper over 
-        JsonSerializer.</p>
-
+	<p>By default Json.NET will serialize all objects it encounters by value. If a list 
+        contains two Person references, and both references point to the same object 
+        then the JsonSerializer will write out all the names and values for each 
+        reference.</p>
 
 <div class="overflowpanel"> <div class="code">
 
 <div style="font-family: Courier New; font-size: 10pt; color: black;">
-<pre style="margin: 0px;"><span style="color: #2b91af;">Product</span> product = <span style="color: blue;">new</span> <span style="color: #2b91af;">Product</span>();</pre>
-<pre style="margin: 0px;">&nbsp;</pre>
-<pre style="margin: 0px;">product.Name = <span style="color: #a31515;">"Apple"</span>;</pre>
-<pre style="margin: 0px;">product.Expiry = <span style="color: blue;">new</span> <span style="color: #2b91af;">DateTime</span>(2008, 12, 28);</pre>
-<pre style="margin: 0px;">product.Price = 3.99M;</pre>
-<pre style="margin: 0px;">product.Sizes = <span style="color: blue;">new</span> <span style="color: blue;">string</span>[] { <span style="color: #a31515;">"Small"</span>, <span style="color: #a31515;">"Medium"</span>, <span style="color: #a31515;">"Large"</span> };</pre>
-<pre style="margin: 0px;">&nbsp;</pre>
-<pre style="margin: 0px;"><span style="color: blue;">string</span> output = <span style="color: #2b91af;">JsonConvert</span>.SerializeObject(product);</pre>
-<pre style="margin: 0px;"><span style="color: green;">//{</span></pre>
-<pre style="margin: 0px;"><span style="color: green;">//&nbsp; "Name": "Apple",</span></pre>
-<pre style="margin: 0px;"><span style="color: green;">//&nbsp; "Expiry": &quot;\/Date(1230375600000+1300)\/&quot;,</span></pre>
-<pre style="margin: 0px;"><span style="color: green;">//&nbsp; "Price": 3.99,</span></pre>
-<pre style="margin: 0px;"><span style="color: green;">//&nbsp; "Sizes": [</span></pre>
-<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; "Small",</span></pre>
-<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; "Medium",</span></pre>
-<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; "Large"</span></pre>
-<pre style="margin: 0px;"><span style="color: green;">//&nbsp; ]</span></pre>
-<pre style="margin: 0px;"><span style="color: green;">//}</span></pre>
-<pre style="margin: 0px;">&nbsp;</pre>
-<pre style="margin: 0px;"><span style="color: #2b91af;">Product</span> deserializedProduct = <span style="color: #2b91af;">JsonConvert</span>.DeserializeObject&lt;<span style="color: #2b91af;">Product</span>&gt;(output);</pre>
-</div>
-
-</div></div>
-
-	<h3>JsonSerializer</h3>
-
-
-	<p>For more control over how an object is serialized the JsonSerializer can be used 
-        directly. The JsonSerializer has a number of properties to control its behaviour 
-        when serializing and deserializing.</p>
-
-<div class="overflowpanel"> <div class="code">
-
-<div style="font-family: Courier New; font-size: 10pt; color: black;">
-<pre style="margin: 0px;"><span style="color: #2b91af;">Product</span> product = <span style="color: blue;">new</span> <span style="color: #2b91af;">Product</span>();</pre>
-<pre style="margin: 0px;">product.Expiry = <span style="color: blue;">new</span> <span style="color: #2b91af;">DateTime</span>(2008, 12, 28);</pre>
-<pre style="margin: 0px;">&nbsp;</pre>
-<pre style="margin: 0px;"><span style="color: #2b91af;">JsonSerializer</span> serializer = <span style="color: blue;">new</span> <span style="color: #2b91af;">JsonSerializer</span>();</pre>
-<pre style="margin: 0px;">serializer.Converters.Add(<span style="color: blue;">new</span> <span style="color: #2b91af;">JavaScriptDateTimeConverter</span>());</pre>
-<pre style="margin: 0px;">serializer.NullValueHandling = <span style="color: #2b91af;">NullValueHandling</span>.Ignore;</pre>
-<pre style="margin: 0px;">&nbsp;</pre>
-<pre style="margin: 0px;"><span style="color: blue;">using</span> (<span style="color: #2b91af;">StreamWriter</span> sw = <span style="color: blue;">new</span> <span style="color: #2b91af;">StreamWriter</span>(<span style="color: #a31515;">@"c:\json.txt"</span>))</pre>
-<pre style="margin: 0px;"><span style="color: blue;">using</span> (<span style="color: #2b91af;">JsonWriter</span> writer = <span style="color: blue;">new</span> <span style="color: #2b91af;">JsonTextWriter</span>(sw))</pre>
-<pre style="margin: 0px;">{</pre>
-<pre style="margin: 0px;">&nbsp; serializer.Serialize(writer, product);</pre>
-<pre style="margin: 0px;">&nbsp; <span style="color: green;">// {"Expiry":new Date(1230375600000),"Price":0}</span></pre>
-<pre style="margin: 0px;">}</pre>
-</div>
-
-</div></div>
-
-<h5>ReferenceLoopHandling</h5>
-<p>Controls how circular referencing objects are serialized. Error, ignore or 
-    serialize.</p>
-    <h5>MissingMemberHandling</h5>
-<p>Controls how missing members (e.g. JSON contains a property that isn&#39;t a member 
-    on the object) are handled during deserialization. Ignore or error.</p>
-    <h5>NullValueHandling</h5>
-<p>Controls how null values are handled during serialization and deserialization. 
-    Include or ignore.</p>
-<h5>DefaultValueHandling</h5>
-<p>Controls whether a value will be written to JSON or not if it matches the value specified in
-the member's DefaultValueAttribute. Include or ignore.</p>
-    <h5>ObjectCreationHandling</h5>
-<p>Controls how objects are created during deserialization. Auto, reuse, replace.</p>
-    <h5>Converters</h5>
-<p>A collection of JsonConverters that will be used during serialization and 
-    deserialization.</p>
-    <h5>TypeNameHandling</h5>
-<p>Controls how .NET type names are used when serializing and deserializing JSON. If 
-    type names are SDFSDFSDF</p>
-          <h3>Serialization Attributes</h3>
-          <p>There are a number of attributes that can be placed on a class to control how it is serialized.</p>
-          <p>Note that as well as using the built-in Json.NET attributes, Json.NET also looks for the 
-              <a href="http://msdn.microsoft.com/en-us/library/system.runtime.serialization.datacontractattribute.aspx" target="_blank">DataContract</a> and 
-              <a href="http://msdn.microsoft.com/en-us/library/system.runtime.serialization.datacontractattribute.aspx" target="_blank">DataMember</a> attributes when determining how JSON is to be serialized and deserialized. If both are present the Json.NET serialization attributes take precedence.</p>
-          
-<div class="overflowpanel"> <div class="code">
-
-<div style="font-family: Courier New; font-size: 10pt; color: black;">
-<pre style="margin: 0px;">[<span style="color: #2b91af;">JsonObject</span>(<span style="color: #2b91af;">MemberSerialization</span>.OptIn)]</pre>
-<pre style="margin: 0px;"><span style="color: blue;">public</span> <span style="color: blue;">class</span> <span style="color: #2b91af;">Person</span></pre>
-<pre style="margin: 0px;">{</pre>
-<pre style="margin: 0px;">&nbsp; <span style="color: green;">// "John Smith"</span></pre>
-<pre style="margin: 0px;">&nbsp; [<span style="color: #2b91af;">JsonProperty</span>]</pre>
-<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: blue;">string</span> Name { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
-<pre style="margin: 0px;">&nbsp;</pre>
-<pre style="margin: 0px;">&nbsp; <span style="color: green;">// "2000-12-15T22:11:03"</span></pre>
-<pre style="margin: 0px;">&nbsp; [<span style="color: #2b91af;">JsonProperty</span>]</pre>
-<pre style="margin: 0px;">&nbsp; [<span style="color: #2b91af;">JsonConverter</span>(<span style="color: blue;">typeof</span>(<span style="color: #2b91af;">IsoDateTimeConverter</span>))]</pre>
-<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: #2b91af;">DateTime</span> BirthDate { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
-<pre style="margin: 0px;">&nbsp;</pre>
-<pre style="margin: 0px;">&nbsp; <span style="color: green;">// new Date(976918263055)</span></pre>
-<pre style="margin: 0px;">&nbsp; [<span style="color: #2b91af;">JsonProperty</span>]</pre>
-<pre style="margin: 0px;">&nbsp; [<span style="color: #2b91af;">JsonConverter</span>(<span style="color: blue;">typeof</span>(<span style="color: #2b91af;">JavaScriptDateTimeConverter</span>))]</pre>
-<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: #2b91af;">DateTime</span> LastModified { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
-<pre style="margin: 0px;">&nbsp;</pre>
-<pre style="margin: 0px;">&nbsp; <span style="color: green;">// not serialized</span></pre>
-<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: blue;">string</span> Department { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
-<pre style="margin: 0px;">}</pre>
-</div>
-
-</div></div>
-
-    <h5>JsonObjectAttribute</h5>
-<p>The MemberSerialization flag on this attribute specifies whether member serialization is opt-in (a member must have the JsonProperty or DataMember attribute to be serialized) or opt-out (everything is serialized by default but can be ignored with the JsonIgnoreAttribute).</p>
-<p>.NET classes that implement IEnumerable are automatically serialized as an array, populated with the IEnumerable values. Placing the JsonPropertyAttribute will override this and force the serializer to serialize the class's fields and properties.</p>
-    <h5>JsonPropertyAttribute</h5>
-<p>Allows the name of the serialized member to be customized. The attribute also indicates that a member should be serialized when member serialization is set to opt-in.</p>
-    <h5>JsonIgnoreAttribute</h5>
-<p>Excludes a field or property from serialization.</p>
-    <h5>JsonConverterAttribute</h5>
-<p>The JsonConverterAttribute specifies which JsonSerializer is used to convert an object.</p>
-<p>The attribute can be placed on a class or a member. When placed on a class the JsonConverter 
-    specified by the attribute will be the default way of serializing that class. When the attribute is on a field
-or property then the specified JsonConverter will always be used to serialize that value.</p>
-<p>The priority of which JsonConverter is used is member attribute then class attribute and
-finally any converters passed to the JsonSerializer.</p>
-
-<div class="overflowpanel"> <div class="code">
-<div style="font-family: Courier New; font-size: 10pt; color: black;">
-<pre style="margin: 0px;"><span style="color: blue;">public</span> <span style="color: blue;">class</span> <span style="color: #2b91af;">MemberConverterClass</span></pre>
-<pre style="margin: 0px;">{</pre>
-<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: #2b91af;">DateTime</span> DefaultConverter { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
-<pre style="margin: 0px;">&nbsp; [<span style="color: #2b91af;">JsonConverter</span>(<span style="color: blue;">typeof</span>(<span style="color: #2b91af;">IsoDateTimeConverter</span>))]</pre>
-<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: #2b91af;">DateTime</span> MemberConverter { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
-<pre style="margin: 0px;">}</pre>
-</div>
-</div></div>
-<p>This example shows the JsonConverterAttribute being applied to a property.</p>
-
-
-<div class="overflowpanel"> <div class="code">
-<div style="font-family: Courier New; font-size: 10pt; color: black;">
-<pre style="margin: 0px;"><span style="color: #2b91af;">DateTime</span> date = <span style="color: #2b91af;">Convert</span>.ToDateTime(<span style="color: #a31515;">"1970-01-01T00:00:00Z"</span>).ToUniversalTime();</pre>
-<pre style="margin: 0px;">&nbsp;</pre>
-<pre style="margin: 0px;"><span style="color: #2b91af;">MemberConverterClass</span> c = <span style="color: blue;">new</span> <span style="color: #2b91af;">MemberConverterClass</span></pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">Person</span> p = <span style="color: blue;">new</span> <span style="color: #2b91af;">Person</span></pre>
 <pre style="margin: 0px;">&nbsp; {</pre>
-<pre style="margin: 0px;">&nbsp; &nbsp; DefaultConverter = date,</pre>
-<pre style="margin: 0px;">&nbsp; &nbsp; MemberConverter = date</pre>
+<pre style="margin: 0px;">&nbsp; &nbsp; BirthDate = <span style="color: blue;">new</span> <span style="color: #2b91af;">DateTime</span>(1980, 12, 23, 0, 0, 0, <span style="color: #2b91af;">DateTimeKind</span>.Utc),</pre>
+<pre style="margin: 0px;">&nbsp; &nbsp; LastModified = <span style="color: blue;">new</span> <span style="color: #2b91af;">DateTime</span>(2009, 2, 20, 12, 59, 21, <span style="color: #2b91af;">DateTimeKind</span>.Utc),</pre>
+<pre style="margin: 0px;">&nbsp; &nbsp; Name = <span style="color: #a31515;">"James"</span></pre>
 <pre style="margin: 0px;">&nbsp; };</pre>
 <pre style="margin: 0px;">&nbsp;</pre>
-<pre style="margin: 0px;"><span style="color: blue;">string</span> json = <span style="color: #2b91af;">JsonConvert</span>.SerializeObject(c, <span style="color: #2b91af;">Formatting</span>.Indented);</pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">List</span>&lt;<span style="color: #2b91af;">Person</span>&gt; people = <span style="color: blue;">new</span> <span style="color: #2b91af;">List</span>&lt;<span style="color: #2b91af;">Person</span>&gt;();</pre>
+<pre style="margin: 0px;">people.Add(p);</pre>
+<pre style="margin: 0px;">people.Add(p);</pre>
 <pre style="margin: 0px;">&nbsp;</pre>
-<pre style="margin: 0px;"><span style="color: #2b91af;">Console</span>.WriteLine(json);</pre>
-<pre style="margin: 0px;"><span style="color: green;">//{</span></pre>
-<pre style="margin: 0px;"><span style="color: green;">//&nbsp; "DefaultConverter": "\/Date(0)\/",</span></pre>
-<pre style="margin: 0px;"><span style="color: green;">//&nbsp; "MemberConverter": "1970-01-01T00:00:00Z"</span></pre>
-<pre style="margin: 0px;"><span style="color: green;">//}</span></pre>
+<pre style="margin: 0px;"><span style="color: blue;">string</span> json = <span style="color: #2b91af;">JsonConvert</span>.SerializeObject(people, <span style="color: #2b91af;">Formatting</span>.Indented);</pre>
+<pre style="margin: 0px;"><span style="color: green;">//[</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; {</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; "Name": "James",</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; "BirthDate": "\/Date(346377600000)\/",</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; "LastModified": "\/Date(1235134761000)\/"</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; },</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; {</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; "Name": "James",</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; "BirthDate": "\/Date(346377600000)\/",</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; "LastModified": "\/Date(1235134761000)\/"</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; }</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//]</span></pre>
+</div>
+</div></div>
+<p>In most cases this is the desired result but in certain scenarios writing the second item in the list as a reference to the first is a better solution. 
+    If the above JSON was deserialized now then returned list would contain two 
+    completely seperate Person objects with the same values. Writing references by value will also cause problems on objects where a 
+    circular reference occurs.</p>
+    
+    <h3>PreserveReferencesHandling</h3>
+        <p>Settings PreserveReferencesHandling will track object references when serializing 
+            and deserializing JSON.</p>
+
+<div class="overflowpanel"> <div class="code">
+<div style="font-family: Courier New; font-size: 10pt; color: black;">
+<pre style="margin: 0px;"><span style="color: blue;">string</span> json = <span style="color: #2b91af;">JsonConvert</span>.SerializeObject(people, <span style="color: #2b91af;">Formatting</span>.Indented,</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">new</span> <span style="color: #2b91af;">JsonSerializerSettings</span> { PreserveReferencesHandling = <span style="color: #2b91af;">PreserveReferencesHandling</span>.Objects });</pre>
+<pre style="margin: 0px;"><span style="color: green;">//[</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; {</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; "$id": "1",</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; "Name": "James",</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; "BirthDate": "\/Date(346377600000)\/",</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; "LastModified": "\/Date(1235134761000)\/"</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; },</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; {</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; "$ref": "1"</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; }</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//]</span></pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">List</span>&lt;<span style="color: #2b91af;">Person</span>&gt; deserializedPeople = <span style="color: #2b91af;">JsonConvert</span>.DeserializeObject&lt;<span style="color: #2b91af;">List</span>&lt;<span style="color: #2b91af;">Person</span>&gt;&gt;(json,</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">new</span> <span style="color: #2b91af;">JsonSerializerSettings</span> { PreserveReferencesHandling = <span style="color: #2b91af;">PreserveReferencesHandling</span>.Objects });</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">Console</span>.WriteLine(deserializedPeople.Count);</pre>
+<pre style="margin: 0px;"><span style="color: green;">// 2</span></pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">Person</span> p1 = deserializedPeople[0];</pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">Person</span> p2 = deserializedPeople[1];</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">Console</span>.WriteLine(p1.Name);</pre>
+<pre style="margin: 0px;"><span style="color: green;">// James</span></pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">Console</span>.WriteLine(p2.Name);</pre>
+<pre style="margin: 0px;"><span style="color: green;">// James</span></pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: blue;">bool</span> equal = <span style="color: #2b91af;">Object</span>.ReferenceEquals(p1, p2);</pre>
+<pre style="margin: 0px;"><span style="color: green;">// true</span></pre>
+</div>
+</div></div>
+
+<p>Now only one Person object is created and the deserialized list contains two references to it, mirroring what serialized.</p>
+
+	<h3>IsReference on JsonObjectAttribute, JsonArrayAttribute and JsonPropertyAttribute</h3>
+
+
+	<p>The PreserveReferencesHandling setting on the JsonSerializer will change
+	how all objects are serialized and deserialized. For fine grain control over which 
+        objects and members should be serialized there is the IsReference property on 
+        the JsonObjectAttribute, JsonArrayAttribute and JsonPropertyAttribute.</p>
+        <p>Setting IsReference on JsonObjectAttribute or JsonArrayAttribute to true will 
+            mean the JsonSerializer will always serialize the type the attribute is against 
+            as a reference. Setting IsReference on the JsonPropertyAttribute to true will 
+            serialize only that property as a reference.</p>
+
+<div class="overflowpanel"> <div class="code">
+
+<div style="font-family: Courier New; font-size: 10pt; color: black;">
+<pre style="margin: 0px;">[<span style="color: #2b91af;">JsonObject</span>(IsReference = <span style="color: blue;">true</span>)]</pre>
+<pre style="margin: 0px;"><span style="color: blue;">public</span> <span style="color: blue;">class</span> <span style="color: #2b91af;">EmployeeReference</span></pre>
+<pre style="margin: 0px;">{</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: blue;">string</span> Name { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: #2b91af;">EmployeeReference</span> Manager { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
+<pre style="margin: 0px;">}</pre>
 </div>
 
 </div></div>
+    <h3>IReferenceResolver</h3>
+        <p>To customize how references are generated and resolved the <a href="./html/T_Newtonsoft_Json_Serialization_IReferenceResolver.htm">IReferenceResolver</a> interface is available to inherit from and use with the JsonSerializer.</p>
 
-    <h3>JsonConverters</h3>
-<p>JsonConverters allows JSON to be manually written during serialization and read during deserialization. This is useful for particularly complex JSON structures or for when you want to change how a type is serialized.</p>
-<p>To create your own custom converter inherit from the JsonConverter class. Json.NET also comes with a number of JsonConverters:</p>
-
-
-
-	<h5>DateTime JSON Converters</h5>
-	<p>Json.NET comes with a number of JsonConverters for serializing and deserializing DateTimes. Read 
-        more about dates and Json.NET <a href="DatesInJSON.html">here</a>.</p>
-
-	<h5>XmlNodeConverter</h5>
-	<p>Converts an XmlNode to and from JSON. Note that to convert a JSON object it must have only a single property 
-        or you must define a root node name to be inserted when using this converter. This is required because properties are converted into nodes and 
-        well formed XML can only have one root node.</p>
-
-    
-	<h5>BinaryConverter</h5>
-	<p>Converts binary data like a byte array or SqlBinary object to JSON. The binary 
-        data is written as a string in JSON and is encoded in Base64.</p>
-
-	<h5>CustomCreationConverter</h5>
-	<p>An abstract JsonConverter for customizing how an object is create during deserialization.
-	 Inherit from this class and implement the Create method with your own code to create and return an object.
-	 The object will then be populated with JSON values by the serializer.</p>
-	 <p>A possible example of using this converter would be to call out to a dependency injection framework to resolve what object should be created.</p>
-    
       <div id="footer">
 
 

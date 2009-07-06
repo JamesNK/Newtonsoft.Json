@@ -13,6 +13,7 @@ namespace Newtonsoft.Json
     internal NullValueHandling? _nullValueHandling;
     internal DefaultValueHandling? _defaultValueHandling;
     internal ReferenceLoopHandling? _referenceLoopHandling;
+    internal bool? _isReference;
 
     /// <summary>
     /// Gets or sets the null value handling used when serializing this property.
@@ -42,6 +43,16 @@ namespace Newtonsoft.Json
     {
       get { return _referenceLoopHandling ?? default(ReferenceLoopHandling); }
       set { _referenceLoopHandling = value; }
+    }
+
+    /// <summary>
+    /// Gets or sets whether this property's value is serialized as a reference.
+    /// </summary>
+    /// <value>Whether this property's value is serialized as a reference.</value>
+    public bool IsReference
+    {
+      get { return _isReference ?? default(bool); }
+      set { _isReference = value; }
     }
 
     /// <summary>

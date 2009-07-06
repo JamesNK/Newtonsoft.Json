@@ -650,5 +650,83 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual(e1, employees["Three"]);
       Assert.AreEqual(e2, employees["Four"]);
     }
+
+    [Test]
+    public void ExampleWithout()
+    {
+      Person p = new Person
+        {
+          BirthDate = new DateTime(1980, 12, 23, 0, 0, 0, DateTimeKind.Utc),
+          LastModified = new DateTime(2009, 2, 20, 12, 59, 21, DateTimeKind.Utc),
+          Department = "IT",
+          Name = "James"
+        };
+
+      List<Person> people = new List<Person>();
+      people.Add(p);
+      people.Add(p);
+
+      string json = JsonConvert.SerializeObject(people, Formatting.Indented);
+      //[
+      //  {
+      //    "Name": "James",
+      //    "BirthDate": "\/Date(346377600000)\/",
+      //    "LastModified": "\/Date(1235134761000)\/"
+      //  },
+      //  {
+      //    "Name": "James",
+      //    "BirthDate": "\/Date(346377600000)\/",
+      //    "LastModified": "\/Date(1235134761000)\/"
+      //  }
+      //]
+    }
+
+    [Test]
+    public void ExampleWith()
+    {
+      Person p = new Person
+      {
+        BirthDate = new DateTime(1980, 12, 23, 0, 0, 0, DateTimeKind.Utc),
+        LastModified = new DateTime(2009, 2, 20, 12, 59, 21, DateTimeKind.Utc),
+        Department = "IT",
+        Name = "James"
+      };
+
+      List<Person> people = new List<Person>();
+      people.Add(p);
+      people.Add(p);
+
+      string json = JsonConvert.SerializeObject(people, Formatting.Indented,
+        new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects });
+      //[
+      //  {
+      //    "$id": "1",
+      //    "Name": "James",
+      //    "BirthDate": "\/Date(346377600000)\/",
+      //    "LastModified": "\/Date(1235134761000)\/"
+      //  },
+      //  {
+      //    "$ref": "1"
+      //  }
+      //]
+
+      List<Person> deserializedPeople = JsonConvert.DeserializeObject<List<Person>>(json,
+        new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects });
+
+      Console.WriteLine(deserializedPeople.Count);
+      // 2
+
+      Person p1 = deserializedPeople[0];
+      Person p2 = deserializedPeople[1];
+
+      Console.WriteLine(p1.Name);
+      // James
+      Console.WriteLine(p2.Name);
+      // James
+
+      bool equal = Object.ReferenceEquals(p1, p2);
+      // true
+    }
+
   }
 }

@@ -266,8 +266,6 @@ namespace Newtonsoft.Json.Serialization
       JsonProperty property = new JsonProperty();
       property.Member = member;
 
-      JsonObjectAttribute jsonObjectAttribute = JsonTypeReflector.GetJsonObjectAttribute(member.DeclaringType);
-
 #if !PocketPC
       DataContractAttribute dataContractAttribute = JsonTypeReflector.GetDataContractAttribute(member.DeclaringType);
 
@@ -321,8 +319,7 @@ namespace Newtonsoft.Json.Serialization
       property.NullValueHandling = (propertyAttribute != null) ? propertyAttribute._nullValueHandling : null;
       property.DefaultValueHandling = (propertyAttribute != null) ? propertyAttribute._defaultValueHandling : null;
       property.ReferenceLoopHandling = (propertyAttribute != null) ? propertyAttribute._referenceLoopHandling : null;
-
-      property.IsReference = (jsonObjectAttribute != null) ? jsonObjectAttribute._isReference : null;
+      property.IsReference = (propertyAttribute != null) ? propertyAttribute._isReference : null;
 
       return property;
     }

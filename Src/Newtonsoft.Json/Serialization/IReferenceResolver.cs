@@ -31,7 +31,7 @@ namespace Newtonsoft.Json.Serialization
   public interface IReferenceResolver
   {
     /// <summary>
-    /// Resolves the reference to its object.
+    /// Resolves a reference to its object.
     /// </summary>
     /// <param name="reference">The reference to resolve.</param>
     /// <returns>The object that</returns>

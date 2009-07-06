@@ -139,19 +139,17 @@ namespace Newtonsoft.Json.Serialization
       if (JsonConvert.IsJsonPrimitive(value))
         return false;
 
+      bool? isReference = null;
+
       // value could be coming from a dictionary or array and not have a property
-      bool? isReference;
       if (property != null)
-      {
         isReference = property.IsReference;
-      }
-      else
+
+      if (isReference == null)
       {
         JsonContract memberTypeContract = _serializer.ContractResolver.ResolveContract(value.GetType());
         if (memberTypeContract != null)
           isReference = memberTypeContract.IsReference;
-        else
-          isReference = null;
       }
 
       if (isReference == null)
