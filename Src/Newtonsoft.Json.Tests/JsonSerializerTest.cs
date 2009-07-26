@@ -1323,7 +1323,7 @@ keyword such as type of business.""
 
       Person person = GetPerson();
 
-      using (FileStream fs = File.Open(@"c:\person.json", FileMode.CreateNew))
+      using (FileStream fs = System.IO.File.Open(@"c:\person.json", FileMode.CreateNew))
       using (StreamWriter sw = new StreamWriter(fs))
       using (JsonWriter jw = new JsonTextWriter(sw))
       {

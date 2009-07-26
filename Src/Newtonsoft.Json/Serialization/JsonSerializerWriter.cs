@@ -230,31 +230,46 @@ namespace Newtonsoft.Json.Serialization
       writer.WriteEndObject();
     }
 
-    private void SerializeObject(JsonWriter writer, object value, JsonObjectContract contract)
+    internal static bool TryConvertToString(object value, Type type, out string s)
     {
-      contract.InvokeOnSerializing(value);
-
 #if !SILVERLIGHT && !PocketPC
-      TypeConverter converter = TypeDescriptor.GetConverter(contract.UnderlyingType);
+      TypeConverter converter = TypeDescriptor.GetConverter(type);
 
       // use the objectType's TypeConverter if it has one and can convert to a string
-      if (converter != null && !(converter is ComponentConverter) && (converter.GetType() != typeof (TypeConverter) || value is Type))
+      if (converter != null && !(converter is ComponentConverter) && (converter.GetType() != typeof(TypeConverter) || value is Type))
       {
-        if (converter.CanConvertTo(typeof (string)))
+        if (converter.CanConvertTo(typeof(string)))
         {
-          writer.WriteValue(converter.ConvertToInvariantString(value));
-
-          contract.InvokeOnSerialized(value);
-          return;
+          s = converter.ConvertToInvariantString(value);
+          return true;
         }
       }
 #else
       if (value is Guid || value is Type || value is Uri)
       {
-        writer.WriteValue(value.ToString());
-        return;
+        s = value.ToString();
+        return true;
       }
 #endif
+
+      s = null;
+      return false;
+    }
+
+    private void SerializeObject(JsonWriter writer, object value, JsonObjectContract contract)
+    {
+      contract.InvokeOnSerializing(value);
+
+      string s;
+      if (TryConvertToString(value, contract.UnderlyingType, out s))
+      {
+        writer.WriteValue(s);
+
+#if !SILVERLIGHT && !PocketPC
+        contract.InvokeOnSerialized(value);
+#endif
+        return;
+      }
 
       SerializeStack.Add(value);
       writer.WriteStartObject();

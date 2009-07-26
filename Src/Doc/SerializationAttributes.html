@@ -1,0 +1,118 @@
+<html>
+  
+  <head>
+    <title>Customizing JSON serialization with attributes</title>
+    <link href="styles.css" rel="stylesheet" type="text/css" />
+    <link href="custom.css" rel="stylesheet" type="text/css" />
+  </head>
+  
+  <body>
+    
+    <div id="control">
+      <span class="productTitle">Json.NET - Quick Starts & API Documentation</span><br />
+        <span class="topicTitle">Customizing JSON serialization with attributes</span></div>
+
+    <div id="content">
+      <span style="color: DarkGray"> </span>
+    
+          <p>Attributes can be used to control how Json.NET serializes and deserializes .NET objects.</p>
+          <ul>
+            <li><a href="./html/T_Newtonsoft_Json_JsonObjectAttribute.htm">JsonObjectAttribute</a> - Placed on classes to control how it should be serialized as a JSON object.</li>
+            <li><a href="./html/T_Newtonsoft_Json_JsonArrayAttribute.htm">JsonArrayAttribute</a> - Placed on collections to control how it should be serialized as a JSON array.</li>
+            <li><a href="./html/T_Newtonsoft_Json_JsonPropertyAttribute.htm">JsonPropertyAttribute</a> - Placed on fields and properties to control how it should be serialized as a property in a JSON object.</li>
+            <li><a href="./html/T_Newtonsoft_Json_JsonConverterAttribute.htm">JsonConverterAttribute</a> - Placed on either classes or fields and properties to specify which JsonConverter should be used during serialization.</li>
+          </ul>
+          <p>As well as using the built-in Json.NET attributes, Json.NET also looks for the 
+              <a href="http://msdn.microsoft.com/en-us/library/system.runtime.serialization.datacontractattribute.aspx" target="_blank">DataContract</a> and 
+              <a href="http://msdn.microsoft.com/en-us/library/system.runtime.serialization.datacontractattribute.aspx" target="_blank">DataMember</a> attributes when determining how JSON is to be serialized and deserialized. If both are present the Json.NET serialization attributes take precedence.</p>
+          
+<div class="overflowpanel"> <div class="code">
+
+<div style="font-family: Courier New; font-size: 10pt; color: black;">
+<pre style="margin: 0px;">[<span style="color: #2b91af;">JsonObject</span>(<span style="color: #2b91af;">MemberSerialization</span>.OptIn)]</pre>
+<pre style="margin: 0px;"><span style="color: blue;">public</span> <span style="color: blue;">class</span> <span style="color: #2b91af;">Person</span></pre>
+<pre style="margin: 0px;">{</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: green;">// "John Smith"</span></pre>
+<pre style="margin: 0px;">&nbsp; [<span style="color: #2b91af;">JsonProperty</span>]</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: blue;">string</span> Name { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: green;">// "2000-12-15T22:11:03"</span></pre>
+<pre style="margin: 0px;">&nbsp; [<span style="color: #2b91af;">JsonProperty</span>]</pre>
+<pre style="margin: 0px;">&nbsp; [<span style="color: #2b91af;">JsonConverter</span>(<span style="color: blue;">typeof</span>(<span style="color: #2b91af;">IsoDateTimeConverter</span>))]</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: #2b91af;">DateTime</span> BirthDate { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: green;">// new Date(976918263055)</span></pre>
+<pre style="margin: 0px;">&nbsp; [<span style="color: #2b91af;">JsonProperty</span>]</pre>
+<pre style="margin: 0px;">&nbsp; [<span style="color: #2b91af;">JsonConverter</span>(<span style="color: blue;">typeof</span>(<span style="color: #2b91af;">JavaScriptDateTimeConverter</span>))]</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: #2b91af;">DateTime</span> LastModified { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: green;">// not serialized</span></pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: blue;">string</span> Department { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
+<pre style="margin: 0px;">}</pre>
+</div>
+
+</div></div>
+
+    <h5>JsonObjectAttribute</h5>
+<p>The MemberSerialization flag on this attribute specifies whether member serialization is opt-in (a member must have the JsonProperty or DataMember attribute to be serialized) or opt-out (everything is serialized by default but can be ignored with the JsonIgnoreAttribute, 
+    Json.NET&#39;s default behavor).</p>
+<p>Json.NET serializes .NET classes that implement IEnumerable as an 
+    JSON array populated with the IEnumerable values. Placing the JsonPropertyAttribute overrides this 
+    behavor and forces the serializer to serialize the class's fields and properties.</p>
+    <h5>JsonPropertyAttribute</h5>
+<p>Allows the name of the serialized member to be customized. The attribute also indicates that a member should be serialized when member serialization is set to opt-in.</p>
+    <h5>JsonIgnoreAttribute</h5>
+<p>Excludes a field or property from serialization.</p>
+    <h5>JsonConverterAttribute</h5>
+<p>The JsonConverterAttribute specifies which JsonSerializer is used to convert an object.</p>
+<p>The attribute can be placed on a class or a member. When placed on a class the JsonConverter 
+    specified by the attribute will be the default way of serializing that class. When the attribute is on a field
+or property then the specified JsonConverter will always be used to serialize that value.</p>
+<p>The priority of which JsonConverter is used is member attribute then class attribute and
+finally any converters passed to the JsonSerializer.</p>
+
+<div class="overflowpanel"> <div class="code">
+<div style="font-family: Courier New; font-size: 10pt; color: black;">
+<pre style="margin: 0px;"><span style="color: blue;">public</span> <span style="color: blue;">class</span> <span style="color: #2b91af;">MemberConverterClass</span></pre>
+<pre style="margin: 0px;">{</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: #2b91af;">DateTime</span> DefaultConverter { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
+<pre style="margin: 0px;">&nbsp; [<span style="color: #2b91af;">JsonConverter</span>(<span style="color: blue;">typeof</span>(<span style="color: #2b91af;">IsoDateTimeConverter</span>))]</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: #2b91af;">DateTime</span> MemberConverter { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
+<pre style="margin: 0px;">}</pre>
+</div>
+</div></div>
+<p>This example shows the JsonConverterAttribute being applied to a property.</p>
+
+
+<div class="overflowpanel"> <div class="code">
+<div style="font-family: Courier New; font-size: 10pt; color: black;">
+<pre style="margin: 0px;"><span style="color: #2b91af;">DateTime</span> date = <span style="color: #2b91af;">Convert</span>.ToDateTime(<span style="color: #a31515;">"1970-01-01T00:00:00Z"</span>).ToUniversalTime();</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">MemberConverterClass</span> c = <span style="color: blue;">new</span> <span style="color: #2b91af;">MemberConverterClass</span></pre>
+<pre style="margin: 0px;">&nbsp; {</pre>
+<pre style="margin: 0px;">&nbsp; &nbsp; DefaultConverter = date,</pre>
+<pre style="margin: 0px;">&nbsp; &nbsp; MemberConverter = date</pre>
+<pre style="margin: 0px;">&nbsp; };</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: blue;">string</span> json = <span style="color: #2b91af;">JsonConvert</span>.SerializeObject(c, <span style="color: #2b91af;">Formatting</span>.Indented);</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">Console</span>.WriteLine(json);</pre>
+<pre style="margin: 0px;"><span style="color: green;">//{</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; "DefaultConverter": "\/Date(0)\/",</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; "MemberConverter": "1970-01-01T00:00:00Z"</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//}</span></pre>
+</div>
+
+</div></div>
+
+
+      <div id="footer">
+
+
+    
+        </div>      
+    </div>
+
+  </body>
+
+</html>

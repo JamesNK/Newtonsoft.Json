@@ -28,9 +28,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using Newtonsoft.Json.Utilities;
+#if !PocketPC && !SILVERLIGHT
+using System.Data.Objects.DataClasses;
+#endif
 
 namespace Newtonsoft.Json.Serialization
 {
@@ -101,8 +105,28 @@ namespace Newtonsoft.Json.Serialization
         }
       }
 
+#if !PocketPC && !SILVERLIGHT
+      // don't include EntityKey on entities objects... this is a bit hacky
+      if (typeof(EntityObject).IsAssignableFrom(objectType))
+        serializableMembers = serializableMembers.Where(ShouldSerializeEntityMember).ToList();
+#endif
+
       return serializableMembers;
     }
+
+#if !PocketPC && !SILVERLIGHT
+    private bool ShouldSerializeEntityMember(MemberInfo memberInfo)
+    {
+      PropertyInfo propertyInfo = memberInfo as PropertyInfo;
+      if (propertyInfo != null)
+      {
+        if (propertyInfo.PropertyType.IsGenericType && propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(EntityReference<>))
+          return false;
+      }
+
+      return true;
+    }
+#endif
 
     /// <summary>
     /// Creates a <see cref="JsonObjectContract"/> for the given type.
@@ -124,7 +148,18 @@ namespace Newtonsoft.Json.Serialization
     {
       JsonContainerAttribute containerAttribute = JsonTypeReflector.GetJsonContainerAttribute(contract.UnderlyingType);
       if (containerAttribute != null)
+      {
         contract.IsReference = containerAttribute._isReference;
+      }
+#if !PocketPC
+      else
+      {
+        DataContractAttribute dataContractAttribute = JsonTypeReflector.GetDataContractAttribute(contract.UnderlyingType);
+        // doesn't have a null value
+        if (dataContractAttribute != null && dataContractAttribute.IsReference)
+          contract.IsReference = true;
+      }
+#endif
 
 #if !PocketPC && !SILVERLIGHT
       foreach (MethodInfo method in contract.UnderlyingType.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))

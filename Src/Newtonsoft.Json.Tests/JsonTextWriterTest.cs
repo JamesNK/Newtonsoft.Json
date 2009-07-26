@@ -466,5 +466,71 @@ namespace Newtonsoft.Json.Tests
 
       Assert.AreEqual(@"[0.0,0.0,0.1,1.0,1.000001,1E-06,4.94065645841247E-324,Infinity,-Infinity,NaN,1.7976931348623157E+308,-1.7976931348623157E+308,Infinity,-Infinity,NaN]", sb.ToString());
     }
+
+    [Test]
+    [ExpectedException(typeof(JsonWriterException), ExpectedMessage = "No token to close.")]
+    public void BadWriteEndArray()
+    {
+      StringBuilder sb = new StringBuilder();
+      StringWriter sw = new StringWriter(sb);
+
+      using (JsonWriter jsonWriter = new JsonTextWriter(sw))
+      {
+        jsonWriter.WriteStartArray();
+
+        jsonWriter.WriteValue(0.0);
+
+        jsonWriter.WriteEndArray();
+        jsonWriter.WriteEndArray();
+      }
+    }
+
+    [Test]
+    [ExpectedException(typeof(ArgumentException), ExpectedMessage = @"Invalid JavaScript string quote character. Valid quote characters are ' and "".")]
+    public void InvalidQuoteChar()
+    {
+      StringBuilder sb = new StringBuilder();
+      StringWriter sw = new StringWriter(sb);
+
+      using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
+      {
+        jsonWriter.Formatting = Formatting.Indented;
+        jsonWriter.QuoteChar = '*';
+      }
+    }
+
+    [Test]
+    public void Indentation()
+    {
+      StringBuilder sb = new StringBuilder();
+      StringWriter sw = new StringWriter(sb);
+
+      using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
+      {
+        jsonWriter.Formatting = Formatting.Indented;
+        Assert.AreEqual(Formatting.Indented, jsonWriter.Formatting);
+
+        jsonWriter.Indentation = 5;
+        Assert.AreEqual(5, jsonWriter.Indentation);
+        jsonWriter.IndentChar = '_';
+        Assert.AreEqual('_', jsonWriter.IndentChar);
+        jsonWriter.QuoteName = true;
+        Assert.AreEqual(true, jsonWriter.QuoteName);
+        jsonWriter.QuoteChar = '\'';
+        Assert.AreEqual('\'', jsonWriter.QuoteChar);
+
+        jsonWriter.WriteStartObject();
+        jsonWriter.WritePropertyName("propertyName");
+        jsonWriter.WriteValue(double.NaN);
+        jsonWriter.WriteEndObject();
+      }
+
+      string expected = @"{
+_____'propertyName': NaN
+}";
+      string result = sb.ToString();
+
+      Assert.AreEqual(expected, result);
+    }
   }
 }

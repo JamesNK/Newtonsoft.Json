@@ -2,9 +2,10 @@
 <siteMap xmlns="http://schemas.microsoft.com/AspNet/SiteMap-File-1.0">
   <siteMapNode title="Introduction" url=".\Introduction.html" isDefault="true" />
   <siteMapNode title="Serializing and deserializing JSON" url=".\SerializingJSON.html">
+    <siteMapNode title="Customizing JSON serialization with attributes" url=".\SerializationAttributes.html" />
     <siteMapNode title="Serializing dates in JSON" url=".\DatesInJSON.html" />
     <siteMapNode title="Serialization Callbacks" url=".\SerializationCallbacks.html" />
-    <siteMapNode title="Preserve Object References" url=".\PreserveObjectReferences.html" />
+    <siteMapNode title="Serialization and Preserving Object References" url=".\PreserveObjectReferences.html" />
     <siteMapNode title="CustomCreationConverter" url=".\CustomCreationConverter.html" />
     <siteMapNode title="Contract Resolvers" url=".\ContractResolver.html" />
   </siteMapNode>

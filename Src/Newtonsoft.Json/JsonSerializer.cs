@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
 using System.Runtime.Serialization;
@@ -50,6 +51,13 @@ namespace Newtonsoft.Json
     private IContractResolver _contractResolver;
     private IReferenceResolver _referenceResolver;
     private SerializationBinder _binder;
+
+    private static readonly IList<JsonConverter> BuiltInConverters = new List<JsonConverter>
+      {
+#if !PocketPC && !SILVERLIGHT
+        new EntityKeyMemberConverter()
+#endif
+      };
 
     /// <summary>
     /// Gets or sets the <see cref="IReferenceResolver"/> used by the serializer when resolving references.
@@ -388,7 +396,12 @@ namespace Newtonsoft.Json
 
     internal bool HasMatchingConverter(Type type, out JsonConverter matchingConverter)
     {
-      return HasMatchingConverter(_converters, type, out matchingConverter);
+      if (HasMatchingConverter(_converters, type, out matchingConverter))
+        return true;
+      if (HasMatchingConverter(BuiltInConverters, type, out matchingConverter))
+        return true;
+
+      return false;
     }
 
     internal static bool HasMatchingConverter(IList<JsonConverter> converters, Type objectType, out JsonConverter matchingConverter)

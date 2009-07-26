@@ -50,8 +50,8 @@
 </div>
 </div></div>
 <p>In most cases this is the desired result but in certain scenarios writing the second item in the list as a reference to the first is a better solution. 
-    If the above JSON was deserialized now then returned list would contain two 
-    completely seperate Person objects with the same values. Writing references by value will also cause problems on objects where a 
+    If the above JSON was deserialized now then the returned list would contain two 
+    completely separate Person objects with the same values. Writing references by value will also cause problems on objects where a 
     circular reference occurs.</p>
     
     <h3>PreserveReferencesHandling</h3>
@@ -93,14 +93,18 @@
 </div>
 </div></div>
 
-<p>Now only one Person object is created and the deserialized list contains two references to it, mirroring what serialized.</p>
+<p>The first Person in the list is serizlied with the addition of an object Id. The 
+    second Person in JSON is now only a reference to the first.</p>
+        <p>With PreserveReferencesHandling on now only one Person object is created on 
+            deserialization and the list contains two references to it, mirroring what we 
+            started with.</p>
 
 	<h3>IsReference on JsonObjectAttribute, JsonArrayAttribute and JsonPropertyAttribute</h3>
 
 
 	<p>The PreserveReferencesHandling setting on the JsonSerializer will change
 	how all objects are serialized and deserialized. For fine grain control over which 
-        objects and members should be serialized there is the IsReference property on 
+        objects and members should be serialized as a reference there is the IsReference property on 
         the JsonObjectAttribute, JsonArrayAttribute and JsonPropertyAttribute.</p>
         <p>Setting IsReference on JsonObjectAttribute or JsonArrayAttribute to true will 
             mean the JsonSerializer will always serialize the type the attribute is against 

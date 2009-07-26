@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="Converters\BinaryConverter.cs" />
     <Compile Include="Converters\CustomCreationConverter.cs" />
+    <Compile Include="Converters\EntityKeyMemberConverter.cs" />
     <Compile Include="Converters\IsoDateTimeConverter.cs" />
     <Compile Include="Converters\JavaScriptDateTimeConverter.cs" />
     <Compile Include="Converters\JsonDateTimeSerializationMode.cs" />

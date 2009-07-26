@@ -86,6 +86,13 @@
     <Compile Include="Converters\BinaryConverterTests.cs" />
     <Compile Include="Converters\CustomCreationConverterTests.cs" />
     <Compile Include="Converters\StringEnumConverterTests.cs" />
+    <Compile Include="FileSystemEntityModel.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FileSystemEntityModel.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="JsonArrayAttributeTests.cs" />
+    <Compile Include="ExceptionTests.cs" />
     <Compile Include="JsonValidatingReaderTests.cs" />
     <Compile Include="LinqToSql\Department.cs" />
     <Compile Include="LinqToSql\DepartmentConverter.cs" />
@@ -98,6 +105,7 @@
     </Compile>
     <Compile Include="LinqToSql\LinqToSqlClassesSerializationTests.cs" />
     <Compile Include="LinqToSql\Person.cs" />
+    <Compile Include="Serialization\EntitiesSerializationTests.cs" />
     <Compile Include="Serialization\SerializationEventAttributeTests.cs" />
     <Compile Include="Schema\ExtensionsTests.cs" />
     <Compile Include="Schema\JsonSchemaModelBuilderTests.cs" />
@@ -201,6 +209,10 @@
     <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
   </ItemGroup>
   <ItemGroup>
+    <EntityDeploy Include="FileSystemEntityModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>FileSystemEntityModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
     <None Include="LinqToSql\LinqToSqlClasses.dbml.layout">
       <DependentUpon>LinqToSqlClasses.dbml</DependentUpon>
     </None>

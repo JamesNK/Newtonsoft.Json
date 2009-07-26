@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="Converters\BinaryConverter.cs" />
     <Compile Include="Converters\CustomCreationConverter.cs" />
+    <Compile Include="Converters\EntityKeyMemberConverter.cs" />
     <Compile Include="Converters\StringEnumConverter.cs" />
     <Compile Include="DateTimeOffset.cs" />
     <Compile Include="IJsonLineInfo.cs" />

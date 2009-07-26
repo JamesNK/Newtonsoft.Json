@@ -72,6 +72,9 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.Entity">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Data.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -85,6 +88,7 @@
   <ItemGroup>
     <Compile Include="Converters\BinaryConverter.cs" />
     <Compile Include="Converters\CustomCreationConverter.cs" />
+    <Compile Include="Converters\EntityKeyMemberConverter.cs" />
     <Compile Include="Converters\StringEnumConverter.cs" />
     <Compile Include="Serialization\DefaultReferenceResolver.cs" />
     <Compile Include="PreserveReferencesHandling.cs" />
@@ -204,6 +208,9 @@
       <ProductName>.NET Framework 3.5</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Serialization\Entities\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -88,7 +88,7 @@ namespace Newtonsoft.Json.Serialization
       if (reader == null)
         throw new ArgumentNullException("reader");
 
-      if (!reader.Read())
+      if (reader.TokenType == JsonToken.None && !reader.Read())
         return null;
 
       return CreateValue(reader, objectType, null, null);

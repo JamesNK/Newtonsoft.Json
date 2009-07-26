@@ -1,0 +1,184 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="DataServicesTestDatabaseModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2005" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2006/04/edm/ssdl">
+        <EntityContainer Name="DataServicesTestDatabaseModelStoreContainer">
+          <EntitySet Name="File" EntityType="DataServicesTestDatabaseModel.Store.File" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Folder" EntityType="DataServicesTestDatabaseModel.Store.Folder" store:Type="Tables" Schema="dbo" />
+          <AssociationSet Name="FK_File_Folder" Association="DataServicesTestDatabaseModel.Store.FK_File_Folder">
+            <End Role="Folder" EntitySet="Folder" />
+            <End Role="File" EntitySet="File" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Folder_Folder" Association="DataServicesTestDatabaseModel.Store.FK_Folder_Folder">
+            <End Role="Folder" EntitySet="Folder" />
+            <End Role="Folder1" EntitySet="Folder" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="File">
+          <Key>
+            <PropertyRef Name="FileId" />
+          </Key>
+          <Property Name="FileId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="200" />
+          <Property Name="Description" Type="nvarchar" Nullable="false" MaxLength="200" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="FolderId" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Folder">
+          <Key>
+            <PropertyRef Name="FolderId" />
+          </Key>
+          <Property Name="FolderId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="200" />
+          <Property Name="Description" Type="nvarchar" Nullable="false" MaxLength="200" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="ParentFolderId" Type="uniqueidentifier" />
+        </EntityType>
+        <Association Name="FK_File_Folder">
+          <End Role="Folder" Type="DataServicesTestDatabaseModel.Store.Folder" Multiplicity="1" />
+          <End Role="File" Type="DataServicesTestDatabaseModel.Store.File" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Folder">
+              <PropertyRef Name="FolderId" />
+            </Principal>
+            <Dependent Role="File">
+              <PropertyRef Name="FolderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Folder_Folder">
+          <End Role="Folder" Type="DataServicesTestDatabaseModel.Store.Folder" Multiplicity="0..1" />
+          <End Role="Folder1" Type="DataServicesTestDatabaseModel.Store.Folder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Folder">
+              <PropertyRef Name="FolderId" />
+            </Principal>
+            <Dependent Role="Folder1">
+              <PropertyRef Name="ParentFolderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="DataServicesTestDatabaseModel" Alias="Self" xmlns="http://schemas.microsoft.com/ado/2006/04/edm">
+        <EntityContainer Name="DataServicesTestDatabaseEntities">
+          <EntitySet Name="File" EntityType="DataServicesTestDatabaseModel.File" />
+          <EntitySet Name="Folder" EntityType="DataServicesTestDatabaseModel.Folder" />
+          <AssociationSet Name="FK_File_Folder" Association="DataServicesTestDatabaseModel.FK_File_Folder">
+            <End Role="Folder" EntitySet="Folder" />
+            <End Role="File" EntitySet="File" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Folder_Folder" Association="DataServicesTestDatabaseModel.FK_Folder_Folder">
+            <End Role="Folder" EntitySet="Folder" />
+            <End Role="Folder1" EntitySet="Folder" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="File">
+          <Key>
+            <PropertyRef Name="FileId" />
+          </Key>
+          <Property Name="FileId" Type="Guid" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="200" Unicode="true" FixedLength="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="200" Unicode="true" FixedLength="false" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" />
+          <NavigationProperty Name="Folder" Relationship="DataServicesTestDatabaseModel.FK_File_Folder" FromRole="File" ToRole="Folder" />
+        </EntityType>
+        <EntityType Name="Folder">
+          <Key>
+            <PropertyRef Name="FolderId" />
+          </Key>
+          <Property Name="FolderId" Type="Guid" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="200" Unicode="true" FixedLength="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="200" Unicode="true" FixedLength="false" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" />
+          <NavigationProperty Name="Files" Relationship="DataServicesTestDatabaseModel.FK_File_Folder" FromRole="Folder" ToRole="File" />
+          <NavigationProperty Name="ChildFolders" Relationship="DataServicesTestDatabaseModel.FK_Folder_Folder" FromRole="Folder" ToRole="Folder1" />
+          <NavigationProperty Name="ParentFolder" Relationship="DataServicesTestDatabaseModel.FK_Folder_Folder" FromRole="Folder1" ToRole="Folder" />
+        </EntityType>
+        <Association Name="FK_File_Folder">
+          <End Role="Folder" Type="DataServicesTestDatabaseModel.Folder" Multiplicity="1" />
+          <End Role="File" Type="DataServicesTestDatabaseModel.File" Multiplicity="*" />
+        </Association>
+        <Association Name="FK_Folder_Folder">
+          <End Role="Folder" Type="DataServicesTestDatabaseModel.Folder" Multiplicity="0..1" />
+          <End Role="Folder1" Type="DataServicesTestDatabaseModel.Folder" Multiplicity="*" />
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="urn:schemas-microsoft-com:windows:storage:mapping:CS">
+        <EntityContainerMapping StorageEntityContainer="DataServicesTestDatabaseModelStoreContainer" CdmEntityContainer="DataServicesTestDatabaseEntities">
+          <EntitySetMapping Name="File">
+            <EntityTypeMapping TypeName="IsTypeOf(DataServicesTestDatabaseModel.File)">
+              <MappingFragment StoreEntitySet="File">
+                <ScalarProperty Name="FileId" ColumnName="FileId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Folder">
+            <EntityTypeMapping TypeName="IsTypeOf(DataServicesTestDatabaseModel.Folder)">
+              <MappingFragment StoreEntitySet="Folder">
+                <ScalarProperty Name="FolderId" ColumnName="FolderId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="FK_File_Folder" TypeName="DataServicesTestDatabaseModel.FK_File_Folder" StoreEntitySet="File">
+            <EndProperty Name="Folder">
+              <ScalarProperty Name="FolderId" ColumnName="FolderId" />
+            </EndProperty>
+            <EndProperty Name="File">
+              <ScalarProperty Name="FileId" ColumnName="FileId" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="FK_Folder_Folder" TypeName="DataServicesTestDatabaseModel.FK_Folder_Folder" StoreEntitySet="Folder">
+            <EndProperty Name="Folder">
+              <ScalarProperty Name="FolderId" ColumnName="ParentFolderId" />
+            </EndProperty>
+            <EndProperty Name="Folder1">
+              <ScalarProperty Name="FolderId" ColumnName="FolderId" />
+            </EndProperty>
+            <Condition ColumnName="ParentFolderId" IsNull="false" />
+          </AssociationSetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2007/06/edmx">
+    <edmx:Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </edmx:Connection>
+    <edmx:Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+      </DesignerInfoPropertySet>
+    </edmx:Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram Name="FileSystemEntityModel">
+        <EntityTypeShape EntityType="DataServicesTestDatabaseModel.File" Width="1.5" PointX="3" PointY="1.125" Height="1.9802864583333335" IsExpanded="true" />
+        <EntityTypeShape EntityType="DataServicesTestDatabaseModel.Folder" Width="1.5" PointX="0.75" PointY="1" Height="2.3648893229166665" IsExpanded="true" />
+        <AssociationConnector Association="DataServicesTestDatabaseModel.FK_File_Folder" ManuallyRouted="false">
+          <ConnectorPoint PointX="2.25" PointY="2.1151432291666667" />
+          <ConnectorPoint PointX="3" PointY="2.1151432291666667" /></AssociationConnector>
+        <AssociationConnector Association="DataServicesTestDatabaseModel.FK_Folder_Folder" ManuallyRouted="false">
+          <ConnectorPoint PointX="1.2819230769230767" PointY="3.3648893229166665" />
+          <ConnectorPoint PointX="1.2819230769230767" PointY="3.6148893229166665" />
+          <ConnectorPoint PointX="1.7284615384615383" PointY="3.6148893229166665" />
+          <ConnectorPoint PointX="1.7284615384615383" PointY="3.3648893229166665" /></AssociationConnector></Diagram></edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
