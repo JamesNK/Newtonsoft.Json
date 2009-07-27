@@ -765,6 +765,5 @@ keyword such as type of business.""
         },
         o.Children()["item"].Children()["title"].Values<string>().ToArray());
     }
-
   }
 }

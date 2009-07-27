@@ -243,6 +243,46 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
+    public void ImplicitCastingTo()
+    {
+      Assert.IsTrue(JToken.DeepEquals(new JValue(new DateTime(2000, 12, 20)), (JValue)new DateTime(2000, 12, 20)));
+#if !PocketPC
+      Assert.IsTrue(JToken.DeepEquals(new JValue(new DateTimeOffset(2000, 12, 20, 23, 50, 10, TimeSpan.Zero)), (JValue)new DateTimeOffset(2000, 12, 20, 23, 50, 10, TimeSpan.Zero)));
+      Assert.IsTrue(JToken.DeepEquals(new JValue((DateTimeOffset?)null), (JValue)(DateTimeOffset?)null));
+#endif
+
+      Assert.IsTrue(JToken.DeepEquals(new JValue(true), (JValue)true));
+      Assert.IsTrue(JToken.DeepEquals(new JValue(true), (JValue)(bool?)true));
+      Assert.IsTrue(JToken.DeepEquals(new JValue((bool?)null), (JValue)(bool?)null));
+      Assert.IsTrue(JToken.DeepEquals(new JValue(10), (JValue)10));
+      Assert.IsTrue(JToken.DeepEquals(new JValue((long?)null), (JValue)(long?)null));
+      Assert.IsTrue(JToken.DeepEquals(new JValue((DateTime?)null), (JValue)(DateTime?)null));
+      Assert.IsTrue(JToken.DeepEquals(new JValue(long.MaxValue), (JValue)long.MaxValue));
+      Assert.IsTrue(JToken.DeepEquals(new JValue((int?)null), (JValue)(int?)null));
+      Assert.IsTrue(JToken.DeepEquals(new JValue((short?)null), (JValue)(short?)null));
+      Assert.IsTrue(JToken.DeepEquals(new JValue((double?)null), (JValue)(double?)null));
+      Assert.IsTrue(JToken.DeepEquals(new JValue((uint?)null), (JValue)(uint?)null));
+      Assert.IsTrue(JToken.DeepEquals(new JValue((decimal?)null), (JValue)(decimal?)null));
+      Assert.IsTrue(JToken.DeepEquals(new JValue((ulong?)null), (JValue)(ulong?)null));
+      Assert.IsTrue(JToken.DeepEquals(new JValue((sbyte?)null), (JValue)(sbyte?)null));
+      Assert.IsTrue(JToken.DeepEquals(new JValue((ushort?)null), (JValue)(ushort?)null));
+      Assert.IsTrue(JToken.DeepEquals(new JValue(ushort.MaxValue), (JValue)ushort.MaxValue));
+      Assert.IsTrue(JToken.DeepEquals(new JValue(11.1f), (JValue)11.1f));
+      Assert.IsTrue(JToken.DeepEquals(new JValue(float.MinValue), (JValue)float.MinValue));
+      Assert.IsTrue(JToken.DeepEquals(new JValue(uint.MaxValue), (JValue)uint.MaxValue));
+      Assert.IsTrue(JToken.DeepEquals(new JValue(ulong.MaxValue), (JValue)ulong.MaxValue));
+      Assert.IsTrue(JToken.DeepEquals(new JValue(ulong.MinValue), (JValue)ulong.MinValue));
+      Assert.IsTrue(JToken.DeepEquals(new JValue((string)null), (JValue)(string)null));
+      Assert.IsTrue(JToken.DeepEquals(new JValue((DateTime?)null), (JValue)(DateTime?)null));
+      Assert.IsTrue(JToken.DeepEquals(new JValue(decimal.MaxValue), (JValue)decimal.MaxValue));
+      Assert.IsTrue(JToken.DeepEquals(new JValue(decimal.MaxValue), (JValue)(decimal?)decimal.MaxValue));
+      Assert.IsTrue(JToken.DeepEquals(new JValue(decimal.MinValue), (JValue)decimal.MinValue));
+      Assert.IsTrue(JToken.DeepEquals(new JValue(float.MaxValue), (JValue)(float?)float.MaxValue));
+      Assert.IsTrue(JToken.DeepEquals(new JValue(double.MaxValue), (JValue)(double?)double.MaxValue));
+      Assert.IsTrue(JToken.DeepEquals(new JValue((object)null), (JValue)(double?)null));
+    }
+
+    [Test]
     public void Root()
     {
       JArray a =

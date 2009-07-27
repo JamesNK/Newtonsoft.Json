@@ -416,7 +416,7 @@ namespace Newtonsoft.Json.Linq
       return (t != null) ? t.Type.ToString() : "{null}";
     }
 
-    #region Cast operators
+    #region Cast from operators
     /// <summary>
     /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="System.Boolean"/>.
     /// </summary>
@@ -742,6 +742,238 @@ namespace Newtonsoft.Json.Linq
         throw new ArgumentException("Can not convert {0} to UInt64.".FormatWith(CultureInfo.InvariantCulture, GetType(v)));
 
       return Convert.ToUInt64(v.Value, CultureInfo.InvariantCulture);
+    }
+    #endregion
+
+    #region Cast to operators
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="Boolean"/> to <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
+    /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    public static implicit operator JToken(bool value)
+    {
+      return new JValue(value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="DateTimeOffset"/> to <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
+    /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    public static implicit operator JToken(DateTimeOffset value)
+    {
+      return new JValue(value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="Nullable{Boolean}"/> to <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
+    /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    public static implicit operator JToken(bool? value)
+    {
+      return new JValue(value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="Nullable{Int64}"/> to <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
+    /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    public static implicit operator JToken(long value)
+    {
+      return new JValue(value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="Nullable{DateTime}"/> to <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
+    /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    public static implicit operator JToken(DateTime? value)
+    {
+      return new JValue(value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="Nullable{DateTimeOffset}"/> to <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
+    /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    public static implicit operator JToken(DateTimeOffset? value)
+    {
+      return new JValue(value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="Nullable{Decimal}"/> to <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
+    /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    public static implicit operator JToken(decimal? value)
+    {
+      return new JValue(value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="Nullable{Double}"/> to <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
+    /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    public static implicit operator JToken(double? value)
+    {
+      return new JValue(value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="UInt16"/> to <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
+    /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    public static implicit operator JToken(ushort value)
+    {
+      return new JValue(value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="Int32"/> to <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
+    /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    public static implicit operator JToken(int value)
+    {
+      return new JValue(value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="Nullable{Int32}"/> to <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
+    /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    public static implicit operator JToken(int? value)
+    {
+      return new JValue(value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="DateTime"/> to <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
+    /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    public static implicit operator JToken(DateTime value)
+    {
+      return new JValue(value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="Nullable{Int64}"/> to <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
+    /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    public static implicit operator JToken(long? value)
+    {
+      return new JValue(value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="Nullable{Single}"/> to <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
+    /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    public static implicit operator JToken(float? value)
+    {
+      return new JValue(value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="Decimal"/> to <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
+    /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    public static implicit operator JToken(decimal value)
+    {
+      return new JValue(value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="Nullable{UInt16}"/> to <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
+    /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    public static implicit operator JToken(ushort? value)
+    {
+      return new JValue(value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="Nullable{UInt32}"/> to <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
+    /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    public static implicit operator JToken(uint? value)
+    {
+      return new JValue(value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="Nullable{UInt64}"/> to <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
+    /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    public static implicit operator JToken(ulong? value)
+    {
+      return new JValue(value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="Double"/> to <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
+    /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    public static implicit operator JToken(double value)
+    {
+      return new JValue(value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="Single"/> to <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
+    /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    public static implicit operator JToken(float value)
+    {
+      return new JValue(value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="String"/> to <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
+    /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    public static implicit operator JToken(string value)
+    {
+      return new JValue(value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="UInt32"/> to <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
+    /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    public static implicit operator JToken(uint value)
+    {
+      return new JValue(value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="UInt64"/> to <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
+    /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    public static implicit operator JToken(ulong value)
+    {
+      return new JValue(value);
     }
     #endregion
 
