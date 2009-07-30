@@ -223,19 +223,9 @@ namespace Newtonsoft.Json.Serialization
 
             if (_serializer.TypeNameHandling != TypeNameHandling.None)
             {
-              int delimiterIndex = qualifiedTypeName.IndexOf(',');
               string typeName;
               string assemblyName;
-              if (delimiterIndex != -1)
-              {
-                typeName = qualifiedTypeName.Substring(0, delimiterIndex).Trim();
-                assemblyName = qualifiedTypeName.Substring(delimiterIndex + 1, qualifiedTypeName.Length - delimiterIndex - 1).Trim();
-              }
-              else
-              {
-                typeName = qualifiedTypeName;
-                assemblyName = null;
-              }
+              ReflectionUtils.SplitFullyQualifiedTypeName(qualifiedTypeName, out typeName, out assemblyName);
 
               Type specifiedType;
               try

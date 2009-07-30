@@ -231,5 +231,59 @@ namespace Newtonsoft.Json.Tests.Serialization
         TypeNameHandling = TypeNameHandling.Objects
       });
     }
+
+    public interface ICorrelatedMessage
+    {
+      string CorrelationId { get; set; }
+    }
+
+    public class SendHttpRequest : ICorrelatedMessage
+    {
+      public SendHttpRequest()
+      {
+        RequestEncoding = "UTF-8";
+        Method = "GET";
+      }
+      public string Method { get; set; }
+      public Dictionary<string, string> Headers { get; set; }
+      public string Url { get; set; }
+      public Dictionary<string, string> RequestData;
+      public string RequestBodyText { get; set; }
+      public string User { get; set; }
+      public string Passwd { get; set; }
+      public string RequestEncoding { get; set; }
+      public string CorrelationId { get; set; }
+    }
+
+    [Test]
+    public void DeserializeGenericTypeName()
+    {
+      string typeName = typeof(SendHttpRequest).AssemblyQualifiedName;
+
+      string json = @"{
+""$type"": """ + typeName + @""",
+""RequestData"": {
+""$type"": ""System.Collections.Generic.Dictionary`2[[System.String, mscorlib,Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"",
+""Id"": ""siedemnaście"",
+""X"": ""323""
+},
+""Method"": ""GET"",
+""Url"": ""http://www.onet.pl"",
+""RequestEncoding"": ""UTF-8"",
+""CorrelationId"": ""xyz""
+}";
+
+      ICorrelatedMessage message = JsonConvert.DeserializeObject<ICorrelatedMessage>(json, new JsonSerializerSettings
+        {
+          TypeNameHandling = TypeNameHandling.Objects
+        });
+
+      Assert.IsInstanceOfType(typeof(SendHttpRequest), message);
+
+      SendHttpRequest request = (SendHttpRequest) message;
+      Assert.AreEqual("xyz", request.CorrelationId);
+      Assert.AreEqual(2, request.RequestData.Count);
+      Assert.AreEqual("siedemnaście", request.RequestData["Id"]);
+    }
   }
 }

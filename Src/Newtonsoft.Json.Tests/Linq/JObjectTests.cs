@@ -519,5 +519,42 @@ Parameter name: arrayIndex")]
   ""o"": ""<div class='s1'>\r\n    <div class='avatar'>                    \r\n        <a href='asdf'>asdf</a><br />\r\n        <strong>0</strong>\r\n    </div>\r\n    <div class='sl'>\r\n        <p>\r\n            444444444\r\n        </p>\r\n    </div>\r\n    <div class='clear'>\r\n    </div>                        \r\n</div>""
 }", o.ToString());
     }
+
+    [Test]
+    public void ImplicitValueConversions()
+    {
+      JObject moss = new JObject();
+      moss["FirstName"] = new JValue("Maurice");
+      moss["LastName"] = new JValue("Moss");
+      moss["BirthDate"] = new JValue(new DateTime(1977, 12, 30));
+      moss["Department"] = new JValue("IT");
+      moss["JobTitle"] = new JValue("Support");
+
+      Console.WriteLine(moss.ToString());
+      //{
+      //  "FirstName": "Maurice",
+      //  "LastName": "Moss",
+      //  "BirthDate": "\/Date(252241200000+1300)\/",
+      //  "Department": "IT",
+      //  "JobTitle": "Support"
+      //}
+
+
+      JObject jen = new JObject();
+      jen["FirstName"] = "Jen";
+      jen["LastName"] = "Barber";
+      jen["BirthDate"] = new DateTime(1978, 3, 15);
+      jen["Department"] = "IT";
+      jen["JobTitle"] = "Manager";
+
+      Console.WriteLine(jen.ToString());
+      //{
+      //  "FirstName": "Jen",
+      //  "LastName": "Barber",
+      //  "BirthDate": "\/Date(258721200000+1300)\/",
+      //  "Department": "IT",
+      //  "JobTitle": "Manager"
+      //}
+    }
   }
 }

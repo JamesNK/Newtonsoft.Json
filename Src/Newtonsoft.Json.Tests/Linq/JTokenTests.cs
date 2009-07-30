@@ -280,6 +280,8 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.IsTrue(JToken.DeepEquals(new JValue(float.MaxValue), (JValue)(float?)float.MaxValue));
       Assert.IsTrue(JToken.DeepEquals(new JValue(double.MaxValue), (JValue)(double?)double.MaxValue));
       Assert.IsTrue(JToken.DeepEquals(new JValue((object)null), (JValue)(double?)null));
+
+      Assert.IsFalse(JToken.DeepEquals(new JValue((object)null), (JValue)(object)null));
     }
 
     [Test]
