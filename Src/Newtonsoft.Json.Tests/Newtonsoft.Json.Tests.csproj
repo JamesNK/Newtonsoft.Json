@@ -106,6 +106,7 @@
     <Compile Include="LinqToSql\LinqToSqlClassesSerializationTests.cs" />
     <Compile Include="LinqToSql\Person.cs" />
     <Compile Include="Serialization\EntitiesSerializationTests.cs" />
+    <Compile Include="Serialization\PopulateTests.cs" />
     <Compile Include="Serialization\SerializationEventAttributeTests.cs" />
     <Compile Include="Schema\ExtensionsTests.cs" />
     <Compile Include="Schema\JsonSchemaModelBuilderTests.cs" />

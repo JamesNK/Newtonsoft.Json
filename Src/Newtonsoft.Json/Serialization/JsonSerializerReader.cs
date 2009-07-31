@@ -270,7 +270,7 @@ namespace Newtonsoft.Json.Serialization
                  && reader.TokenType == JsonToken.PropertyName);
       }
 
-      if (objectType == null)
+      if (!HasDefinedType(objectType))
         return CreateJObject(reader);
 
       JsonContract contract = _serializer.ContractResolver.ResolveContract(objectType);
@@ -306,7 +306,7 @@ namespace Newtonsoft.Json.Serialization
 
       JsonArrayContract arrayContract = contract as JsonArrayContract;
       if (arrayContract == null)
-        throw new JsonSerializationException("Expected a JsonObjectContract or JsonDictionaryContract for type '{0}', got '{1}'.".FormatWith(CultureInfo.InvariantCulture, objectType, contract.GetType()));
+        throw new JsonSerializationException("Expected a JsonArrayContract for type '{0}', got '{1}'.".FormatWith(CultureInfo.InvariantCulture, objectType, contract.GetType()));
 
       return arrayContract;
     }
@@ -320,7 +320,7 @@ namespace Newtonsoft.Json.Serialization
     private object CreateList(JsonReader reader, Type objectType, object existingValue, string reference)
     {
       object value;
-      if (objectType != null)
+      if (HasDefinedType(objectType))
       {
         JsonArrayContract contract = GetArrayContract(objectType);
 
@@ -334,6 +334,11 @@ namespace Newtonsoft.Json.Serialization
         value = CreateJToken(reader);
       }
       return value;
+    }
+
+    private bool HasDefinedType(Type type)
+    {
+      return (type != null && type != typeof (object));
     }
 
     private object EnsureType(object value, Type targetType)

@@ -1640,42 +1640,6 @@ keyword such as type of business.""
     }
 #endif
 
-    [Test]
-    public void PopulatePerson()
-    {
-      Person p = new Person();
-
-      JsonSerializer serializer = new JsonSerializer();
-      serializer.Populate(new StringReader(@"{""Name"":""James""}"), p);
-
-      Assert.AreEqual("James", p.Name);
-    }
-
-    [Test]
-    public void PopulateListOfPeople()
-    {
-      List<Person> p = new List<Person>();
-
-      JsonSerializer serializer = new JsonSerializer();
-      serializer.Populate(new StringReader(@"[{""Name"":""James""},{""Name"":""Jim""}]"), p);
-
-      Assert.AreEqual(2, p.Count);
-      Assert.AreEqual("James", p[0].Name);
-      Assert.AreEqual("Jim", p[1].Name);
-    }
-
-    [Test]
-    public void PopulateDictionary()
-    {
-      Dictionary<string, string> p = new Dictionary<string, string>();
-
-      JsonSerializer serializer = new JsonSerializer();
-      serializer.Populate(new StringReader(@"{""Name"":""James""}"), p);
-
-      Assert.AreEqual(1, p.Count);
-      Assert.AreEqual("James", p["Name"]);
-    }
-
     public class DictionaryInterfaceClass
     {
       public string Name { get; set; }
@@ -1762,7 +1726,7 @@ keyword such as type of business.""
     {
       string json = @"/*comment*/ { /*comment*/
         ""Name"": /*comment*/ ""Apple"" /*comment*/, /*comment*/
-        ""ExpiryDate"": ""\/Date(1230375600000+1300)\/"",
+        ""ExpiryDate"": ""\/Date(1230422400000)\/"",
         ""Price"": 3.99,
         ""Sizes"": /*comment*/ [ /*comment*/
           ""Small"", /*comment*/
@@ -1774,7 +1738,7 @@ keyword such as type of business.""
       Product deserializedProduct = (Product)JsonConvert.DeserializeObject(json, typeof(Product));
 
       Assert.AreEqual("Apple", deserializedProduct.Name);
-      Assert.AreEqual(new DateTime(2008, 12, 28), deserializedProduct.ExpiryDate);
+      Assert.AreEqual(new DateTime(2008, 12, 28, 0, 0, 0, DateTimeKind.Utc), deserializedProduct.ExpiryDate);
       Assert.AreEqual(3.99, deserializedProduct.Price);
       Assert.AreEqual("Small", deserializedProduct.Sizes[0]);
       Assert.AreEqual("Medium", deserializedProduct.Sizes[1]);
@@ -1934,6 +1898,45 @@ keyword such as type of business.""
       Assert.AreEqual(RoleTransferOperation.Second, r.Operation);
       Assert.AreEqual("Admin", r.RoleName);
       Assert.AreEqual(RoleTransferDirection.First, r.Direction);
+    }
+
+    public class ObjectArrayPropertyTest
+    {
+      public string Action { get; set; }
+      public string Method { get; set; }
+      public object[] Data { get; set; }
+    }
+
+    [Test]
+    public void PrimitiveValuesInObjectArray()
+    {
+      string json = @"{""action"":""Router"",""method"":""Navigate"",""data"":[""dashboard"",null],""type"":""rpc"",""tid"":2}";
+
+      ObjectArrayPropertyTest o = JsonConvert.DeserializeObject<ObjectArrayPropertyTest>(json);
+
+      Assert.AreEqual("Router", o.Action);
+      Assert.AreEqual("Navigate", o.Method);
+      Assert.AreEqual(2, o.Data.Length);
+      Assert.AreEqual("dashboard", o.Data[0]);
+      Assert.AreEqual(null, o.Data[1]);
+    }
+
+    [Test]
+    public void ComplexValuesInObjectArray()
+    {
+      string json = @"{""action"":""Router"",""method"":""Navigate"",""data"":[""dashboard"",[""id"", 1, ""teststring"", ""test""],{""one"":1}],""type"":""rpc"",""tid"":2}";
+
+      ObjectArrayPropertyTest o = JsonConvert.DeserializeObject<ObjectArrayPropertyTest>(json);
+
+      Assert.AreEqual("Router", o.Action);
+      Assert.AreEqual("Navigate", o.Method);
+      Assert.AreEqual(3, o.Data.Length);
+      Assert.AreEqual("dashboard", o.Data[0]);
+      Assert.IsInstanceOfType(typeof(JArray), o.Data[1]);
+      Assert.AreEqual(4, ((JArray)o.Data[1]).Count);
+      Assert.IsInstanceOfType(typeof(JObject), o.Data[2]);
+      Assert.AreEqual(1, ((JObject)o.Data[2]).Count);
+      Assert.AreEqual(1, (int)((JObject)o.Data[2])["one"]);
     }
   }
 }
