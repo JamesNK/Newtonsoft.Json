@@ -25,7 +25,7 @@
 
 using System;
 using System.Collections.Generic;
-#if !SILVERLIGHT && !PocketPC
+#if !SILVERLIGHT && !PocketPC && !NET20
 using System.Data.Linq;
 #endif
 #if !SILVERLIGHT
@@ -67,7 +67,7 @@ namespace Newtonsoft.Json.Converters
 
     private byte[] GetByteArray(object value)
     {
-#if !SILVERLIGHT && !PocketPC
+#if !SILVERLIGHT && !PocketPC && !NET20
       if (value is Binary)
         return ((Binary)value).ToArray();
 #endif
@@ -109,11 +109,11 @@ namespace Newtonsoft.Json.Converters
       if (t == typeof(byte[]))
         return data;
 
-#if !SILVERLIGHT && !PocketPC
+#if !SILVERLIGHT && !PocketPC && !NET20
       if (typeof(Binary).IsAssignableFrom(t))
         return new Binary(data);
 #endif
-#if !SILVERLIGHT 
+#if !SILVERLIGHT
       if (typeof(SqlBinary).IsAssignableFrom(t))
         return new SqlBinary(data);
 #endif
@@ -136,7 +136,7 @@ namespace Newtonsoft.Json.Converters
       if (t == typeof(byte[]))
         return true;
 
-#if !SILVERLIGHT && !PocketPC
+#if !SILVERLIGHT && !PocketPC && !NET20
       if (typeof(Binary).IsAssignableFrom(t))
         return true;
 #endif

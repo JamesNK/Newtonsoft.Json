@@ -24,6 +24,7 @@
         <contentItem sourcePath=".\ContractResolver.html" destPath="" excludeItems="False" />
         <contentItem sourcePath=".\SerializationCallbacks.html" destPath="" excludeItems="False" />
         <contentItem sourcePath=".\SerializationAttributes.html" destPath="" excludeItems="False" />
+        <contentItem sourcePath=".\SerializingCollections.html" destPath="" excludeItems="False" />
     </additionalContent>
     <ProjectSummary />
     <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, Namespace, TypeParameter</MissingTags>

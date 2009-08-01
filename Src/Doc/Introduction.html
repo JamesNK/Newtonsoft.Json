@@ -17,13 +17,20 @@
         <h3>
             Features</h3>
         <ul>
-            <li>LINQ to JSON</li>
-            <li>The JsonSerializer for quickly converting your .NET objects to JSON and back again</li>
-            <li>Json.NET can optionally produce well formatted, indented JSON for debugging or display</li>
-            <li>Attributes like JsonIgnore and JsonProperty can be added to a class to customize
-                how a class is serialized</li>
+            <li>Flexible JSON serializer to convert .NET objects to JSON and back again</li>
+            <li>LINQ to JSON for reading and writing JSON</li>
+            <li>Writes indented, easy to read JSON</li>
             <li>Convert JSON to and from XML</li>
+            <li>Supports Silverlight and the Compact Framework</li>
         </ul>
+        <p>The JSON serializer is a good choice when the JSON you are reading or writing maps closely
+        to a .NET class. The serializer automatically reads and writes JSON for the class.</p>
+        <p class="MsoNormal">
+            For situations where you are only interested in getting values from JSON, don&#39;t 
+            have a class to serialize or deserialize to, or the JSON is radically different 
+            from your class and you need to manually read and write from your objects then 
+            LINQ to JSON is what you should use. LINQ to JSON allows you to easily read, 
+            create and modify JSON in .NET.</p>
         <h3>
             History</h3>
         <p>

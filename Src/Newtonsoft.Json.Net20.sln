@@ -3,33 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lib", "Lib", "{620042D9-2753-48F5-BEDE-3905248781D2}"
 	ProjectSection(SolutionItems) = preProject
+		Lib\LinqBridge.dll = Lib\LinqBridge.dll
 		Lib\nunit.framework.dll = Lib\nunit.framework.dll
 		Lib\nunit.framework.xml = Lib\nunit.framework.xml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json", "Newtonsoft.Json\Newtonsoft.Json.csproj", "{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.Net20", "Newtonsoft.Json\Newtonsoft.Json.Net20.csproj", "{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.Tests", "Newtonsoft.Json.Tests\Newtonsoft.Json.Tests.csproj", "{3E6E2335-B079-4B5B-A65A-9D586914BCBB}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Doc", "Doc", "{8F9E13D9-4181-4BA6-8802-EB5B3EB9445A}"
-	ProjectSection(SolutionItems) = preProject
-		Doc\ContractResolver.html = Doc\ContractResolver.html
-		Doc\custom.css = Doc\custom.css
-		Doc\CustomCreationConverter.html = Doc\CustomCreationConverter.html
-		Doc\DatesInJSON.html = Doc\DatesInJSON.html
-		Doc\doc.shfb = Doc\doc.shfb
-		Doc\doc.sitemap = Doc\doc.sitemap
-		Doc\donate.gif = Doc\donate.gif
-		Doc\Introduction.html = Doc\Introduction.html
-		Doc\LINQtoJSON.html = Doc\LINQtoJSON.html
-		Doc\PreserveObjectReferences.html = Doc\PreserveObjectReferences.html
-		Doc\ReadingWritingJSON.html = Doc\ReadingWritingJSON.html
-		Doc\SerializationAttributes.html = Doc\SerializationAttributes.html
-		Doc\SerializationCallbacks.html = Doc\SerializationCallbacks.html
-		Doc\SerializingCollections.html = Doc\SerializingCollections.html
-		Doc\SerializingJSON.html = Doc\SerializingJSON.html
-		Doc\styles.css = Doc\styles.css
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.Tests.Net20", "Newtonsoft.Json.Tests\Newtonsoft.Json.Tests.Net20.csproj", "{3E6E2335-B079-4B5B-A65A-9D586914BCBB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

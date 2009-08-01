@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-#if !SILVERLIGHT && !PocketPC
+#if !SILVERLIGHT && !PocketPC && !NET20
 using System.Data.Linq;
 #endif
 #if !SILVERLIGHT
@@ -24,7 +24,7 @@ namespace Newtonsoft.Json.Tests.Converters
       public byte[] NullByteArray { get; set; }
     }
 
-#if !SILVERLIGHT && !PocketPC
+#if !SILVERLIGHT && !PocketPC && !NET20
     [Test]
     public void DeserializeBinaryClass()
     {

@@ -65,6 +65,8 @@
   <ItemGroup>
     <Compile Include="Converters\BinaryConverterTests.cs" />
     <Compile Include="Converters\StringEnumConverterTests.cs" />
+    <Compile Include="ExceptionTests.cs" />
+    <Compile Include="JsonArrayAttributeTests.cs" />
     <Compile Include="Linq\JTokenReaderTest.cs" />
     <Compile Include="Linq\JTokenWriterTest.cs" />
     <Compile Include="JsonValidatingReaderTests.cs" />

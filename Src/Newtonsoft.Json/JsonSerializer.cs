@@ -54,7 +54,7 @@ namespace Newtonsoft.Json
 
     private static readonly IList<JsonConverter> BuiltInConverters = new List<JsonConverter>
       {
-#if !PocketPC && !SILVERLIGHT
+#if !PocketPC && !SILVERLIGHT && !NET20
         new EntityKeyMemberConverter()
 #endif
       };

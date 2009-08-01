@@ -1,4 +1,4 @@
-﻿#if !SILVERLIGHT && !PocketPC
+﻿#if !SILVERLIGHT && !PocketPC && !NET20
 using System;
 using System.Collections.Generic;
 using System.Globalization;

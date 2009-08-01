@@ -24,7 +24,7 @@
 #endregion
 
 using System;
-#if !SILVERLIGHT && !PocketPC
+#if !SILVERLIGHT && !PocketPC && !NET20
 using System.ComponentModel.DataAnnotations;
 #endif
 using System.Globalization;
@@ -43,7 +43,7 @@ namespace Newtonsoft.Json.Serialization
     public const string ArrayValuesPropertyName = "$values";
 
     private static readonly ThreadSafeStore<ICustomAttributeProvider, Type> ConverterTypeCache = new ThreadSafeStore<ICustomAttributeProvider, Type>(GetConverterTypeFromAttribute);
-#if !SILVERLIGHT && !PocketPC
+#if !SILVERLIGHT && !PocketPC && !NET20
     private static readonly ThreadSafeStore<Type, Type> AssociatedMetadataTypesCache = new ThreadSafeStore<Type, Type>(GetAssociateMetadataTypeFromAttribute);
 #endif
 
@@ -57,7 +57,7 @@ namespace Newtonsoft.Json.Serialization
       return GetJsonContainerAttribute(type) as JsonObjectAttribute;
     }
 
-#if !PocketPC
+#if !PocketPC && !NET20
     public static DataContractAttribute GetDataContractAttribute(Type type)
     {
       return CachedAttributeGetter<DataContractAttribute>.GetAttribute(type);
@@ -70,13 +70,13 @@ namespace Newtonsoft.Json.Serialization
 
       if (objectAttribute == null)
       {
-#if !PocketPC
+#if !PocketPC && !NET20
         DataContractAttribute dataContractAttribute = GetDataContractAttribute(objectType);
 
         if (dataContractAttribute != null)
           return MemberSerialization.OptIn;
 #endif
-        
+
         return MemberSerialization.OptOut;
       }
 
@@ -113,7 +113,7 @@ namespace Newtonsoft.Json.Serialization
       return null;
     }
 
-#if !SILVERLIGHT && !PocketPC
+#if !SILVERLIGHT && !PocketPC && !NET20
     private static Type GetAssociatedMetadataType(Type type)
     {
       return AssociatedMetadataTypesCache.Get(type);

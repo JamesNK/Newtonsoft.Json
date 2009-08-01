@@ -24,13 +24,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Collections;
 using System.IO;
 using System.Globalization;
-using System.Runtime.Serialization;
-using System.Reflection;
 using Newtonsoft.Json.Utilities;
 using System.Xml;
 using Newtonsoft.Json.Converters;
@@ -95,27 +90,27 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Converts the <see cref="DateTime"/> to it's JavaScript string representation.
+    /// Converts the <see cref="DateTime"/> to its JSON string representation.
     /// </summary>
     /// <param name="value">The value to convert.</param>
-    /// <returns>A Json string representation of the <see cref="DateTime"/>.</returns>
+    /// <returns>A JSON string representation of the <see cref="DateTime"/>.</returns>
     public static string ToString(DateTime value)
     {
       TimeSpan utcOffset;
-#if PocketPC
-      utcOffset = TimeZone.CurrentTimeZone.GetUtcOffset(value);
-#else
+#if !PocketPC && !NET20
       utcOffset = TimeZoneInfo.Local.GetUtcOffset(value);
+#else
+      utcOffset = TimeZone.CurrentTimeZone.GetUtcOffset(value);
 #endif
 
       return ToStringInternal(value, utcOffset, value.Kind);
     }
 
     /// <summary>
-    /// Converts the <see cref="DateTimeOffset"/> to it's JavaScript string representation.
+    /// Converts the <see cref="DateTimeOffset"/> to its JSON string representation.
     /// </summary>
     /// <param name="value">The value to convert.</param>
-    /// <returns>A Json string representation of the <see cref="DateTimeOffset"/>.</returns>
+    /// <returns>A JSON string representation of the <see cref="DateTimeOffset"/>.</returns>
     public static string ToString(DateTimeOffset value)
     {
       return ToStringInternal(value.UtcDateTime, value.Offset, DateTimeKind.Local);
@@ -143,10 +138,7 @@ namespace Newtonsoft.Json
     {
       DateTime utcDateTime = dateTime.ToUniversalTime();
 
-      //if (utcDateTime < MinimumJavaScriptDate)
-      //  utcDateTime = MinimumJavaScriptDate;
-
-      long javaScriptTicks = (utcDateTime.Ticks - InitialJavaScriptDateTicks) / (long)10000;
+      long javaScriptTicks = (utcDateTime.Ticks - InitialJavaScriptDateTicks) / 10000;
 
       return javaScriptTicks;
     }
@@ -159,110 +151,110 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Converts the <see cref="Boolean"/> to it's JavaScript string representation.
+    /// Converts the <see cref="Boolean"/> to its JSON string representation.
     /// </summary>
     /// <param name="value">The value to convert.</param>
-    /// <returns>A Json string representation of the <see cref="Boolean"/>.</returns>
+    /// <returns>A JSON string representation of the <see cref="Boolean"/>.</returns>
     public static string ToString(bool value)
     {
       return (value) ? True : False;
     }
 
     /// <summary>
-    /// Converts the <see cref="Char"/> to it's JavaScript string representation.
+    /// Converts the <see cref="Char"/> to its JSON string representation.
     /// </summary>
     /// <param name="value">The value to convert.</param>
-    /// <returns>A Json string representation of the <see cref="Char"/>.</returns>
+    /// <returns>A JSON string representation of the <see cref="Char"/>.</returns>
     public static string ToString(char value)
     {
       return ToString(char.ToString(value));
     }
 
     /// <summary>
-    /// Converts the <see cref="Enum"/> to it's JavaScript string representation.
+    /// Converts the <see cref="Enum"/> to its JSON string representation.
     /// </summary>
     /// <param name="value">The value to convert.</param>
-    /// <returns>A Json string representation of the <see cref="Enum"/>.</returns>
+    /// <returns>A JSON string representation of the <see cref="Enum"/>.</returns>
     public static string ToString(Enum value)
     {
       return value.ToString("D");
     }
 
     /// <summary>
-    /// Converts the <see cref="Int32"/> to it's JavaScript string representation.
+    /// Converts the <see cref="Int32"/> to its JSON string representation.
     /// </summary>
     /// <param name="value">The value to convert.</param>
-    /// <returns>A Json string representation of the <see cref="Int32"/>.</returns>
+    /// <returns>A JSON string representation of the <see cref="Int32"/>.</returns>
     public static string ToString(int value)
     {
       return value.ToString(null, CultureInfo.InvariantCulture);
     }
 
     /// <summary>
-    /// Converts the <see cref="Int16"/> to it's JavaScript string representation.
+    /// Converts the <see cref="Int16"/> to its JSON string representation.
     /// </summary>
     /// <param name="value">The value to convert.</param>
-    /// <returns>A Json string representation of the <see cref="Int16"/>.</returns>
+    /// <returns>A JSON string representation of the <see cref="Int16"/>.</returns>
     public static string ToString(short value)
     {
       return value.ToString(null, CultureInfo.InvariantCulture);
     }
 
     /// <summary>
-    /// Converts the <see cref="UInt16"/> to it's JavaScript string representation.
+    /// Converts the <see cref="UInt16"/> to its JSON string representation.
     /// </summary>
     /// <param name="value">The value to convert.</param>
-    /// <returns>A Json string representation of the <see cref="UInt16"/>.</returns>
+    /// <returns>A JSON string representation of the <see cref="UInt16"/>.</returns>
     public static string ToString(ushort value)
     {
       return value.ToString(null, CultureInfo.InvariantCulture);
     }
 
     /// <summary>
-    /// Converts the <see cref="UInt32"/> to it's JavaScript string representation.
+    /// Converts the <see cref="UInt32"/> to its JSON string representation.
     /// </summary>
     /// <param name="value">The value to convert.</param>
-    /// <returns>A Json string representation of the <see cref="UInt32"/>.</returns>
+    /// <returns>A JSON string representation of the <see cref="UInt32"/>.</returns>
     public static string ToString(uint value)
     {
       return value.ToString(null, CultureInfo.InvariantCulture);
     }
 
     /// <summary>
-    /// Converts the <see cref="Int64"/>  to it's JavaScript string representation.
+    /// Converts the <see cref="Int64"/>  to its JSON string representation.
     /// </summary>
     /// <param name="value">The value to convert.</param>
-    /// <returns>A Json string representation of the <see cref="Int64"/>.</returns>
+    /// <returns>A JSON string representation of the <see cref="Int64"/>.</returns>
     public static string ToString(long value)
     {
       return value.ToString(null, CultureInfo.InvariantCulture);
     }
 
     /// <summary>
-    /// Converts the <see cref="UInt64"/> to it's JavaScript string representation.
+    /// Converts the <see cref="UInt64"/> to its JSON string representation.
     /// </summary>
     /// <param name="value">The value to convert.</param>
-    /// <returns>A Json string representation of the <see cref="UInt64"/>.</returns>
+    /// <returns>A JSON string representation of the <see cref="UInt64"/>.</returns>
     public static string ToString(ulong value)
     {
       return value.ToString(null, CultureInfo.InvariantCulture);
     }
 
     /// <summary>
-    /// Converts the <see cref="Single"/> to it's JavaScript string representation.
+    /// Converts the <see cref="Single"/> to its JSON string representation.
     /// </summary>
     /// <param name="value">The value to convert.</param>
-    /// <returns>A Json string representation of the <see cref="Single"/>.</returns>
+    /// <returns>A JSON string representation of the <see cref="Single"/>.</returns>
     public static string ToString(float value)
     {
       return EnsureDecimalPlace(value, value.ToString("R", CultureInfo.InvariantCulture));
     }
 
     /// <summary>
-    /// Converts the <see cref="Double"/> to it's JavaScript string representation.
+    /// Converts the <see cref="Double"/> to its JSON string representation.
     /// </summary>
     /// <param name="value">The value to convert.</param>
-    /// <returns>A Json string representation of the <see cref="Double"/>.</returns>
+    /// <returns>A JSON string representation of the <see cref="Double"/>.</returns>
     public static string ToString(double value)
     {
       return EnsureDecimalPlace(value, value.ToString("R", CultureInfo.InvariantCulture));
@@ -285,80 +277,79 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Converts the <see cref="Byte"/> to it's JavaScript string representation.
+    /// Converts the <see cref="Byte"/> to its JSON string representation.
     /// </summary>
     /// <param name="value">The value to convert.</param>
-    /// <returns>A Json string representation of the <see cref="Byte"/>.</returns>
+    /// <returns>A JSON string representation of the <see cref="Byte"/>.</returns>
     public static string ToString(byte value)
     {
       return value.ToString(null, CultureInfo.InvariantCulture);
     }
 
     /// <summary>
-    /// Converts the <see cref="SByte"/> to it's JavaScript string representation.
+    /// Converts the <see cref="SByte"/> to its JSON string representation.
     /// </summary>
     /// <param name="value">The value to convert.</param>
-    /// <returns>A Json string representation of the <see cref="SByte"/>.</returns>
+    /// <returns>A JSON string representation of the <see cref="SByte"/>.</returns>
     public static string ToString(sbyte value)
     {
       return value.ToString(null, CultureInfo.InvariantCulture);
     }
 
     /// <summary>
-    /// Converts the <see cref="Decimal"/> to it's JavaScript string representation.
+    /// Converts the <see cref="Decimal"/> to its JSON string representation.
     /// </summary>
     /// <param name="value">The value to convert.</param>
-    /// <returns>A Json string representation of the <see cref="SByte"/>.</returns>
+    /// <returns>A JSON string representation of the <see cref="SByte"/>.</returns>
     public static string ToString(decimal value)
     {
       return EnsureDecimalPlace(value.ToString(null, CultureInfo.InvariantCulture));
     }
 
     /// <summary>
-    /// Converts the <see cref="Guid"/> to it's JavaScript string representation.
+    /// Converts the <see cref="Guid"/> to its JSON string representation.
     /// </summary>
     /// <param name="value">The value to convert.</param>
-    /// <returns>A Json string representation of the <see cref="Guid"/>.</returns>
+    /// <returns>A JSON string representation of the <see cref="Guid"/>.</returns>
     public static string ToString(Guid value)
     {
       return '"' + value.ToString("D", CultureInfo.InvariantCulture) + '"';
     }
 
     /// <summary>
-    /// Converts the <see cref="String"/> to it's JavaScript string representation.
+    /// Converts the <see cref="String"/> to its JSON string representation.
     /// </summary>
     /// <param name="value">The value to convert.</param>
-    /// <returns>A Json string representation of the <see cref="String"/>.</returns>
+    /// <returns>A JSON string representation of the <see cref="String"/>.</returns>
     public static string ToString(string value)
     {
       return ToString(value, '"');
     }
 
     /// <summary>
-    /// Converts the <see cref="String"/> to it's JavaScript string representation.
+    /// Converts the <see cref="String"/> to its JSON string representation.
     /// </summary>
     /// <param name="value">The value to convert.</param>
     /// <param name="delimter">The string delimiter character.</param>
-    /// <returns>A Json string representation of the <see cref="String"/>.</returns>
+    /// <returns>A JSON string representation of the <see cref="String"/>.</returns>
     public static string ToString(string value, char delimter)
     {
       return JavaScriptUtils.ToEscapedJavaScriptString(value, delimter, true);
     }
 
     /// <summary>
-    /// Converts the <see cref="Object"/> to it's JavaScript string representation.
+    /// Converts the <see cref="Object"/> to its JSON string representation.
     /// </summary>
     /// <param name="value">The value to convert.</param>
-    /// <returns>A Json string representation of the <see cref="Object"/>.</returns>
+    /// <returns>A JSON string representation of the <see cref="Object"/>.</returns>
     public static string ToString(object value)
     {
       if (value == null)
-      {
         return Null;
-      }
-      else if (value is IConvertible)
+
+      if (value is IConvertible)
       {
-        IConvertible convertible = value as IConvertible;
+        IConvertible convertible = (IConvertible)value;
 
         switch (convertible.GetTypeCode())
         {
@@ -407,12 +398,11 @@ namespace Newtonsoft.Json
     internal static bool IsJsonPrimitive(object value)
     {
       if (value == null)
-      {
         return true;
-      }
-      else if (value is IConvertible)
+
+      if (value is IConvertible)
       {
-        IConvertible convertible = value as IConvertible;
+        IConvertible convertible = (IConvertible)value;
 
         switch (convertible.GetTypeCode())
         {
@@ -437,10 +427,9 @@ namespace Newtonsoft.Json
             return false;
         }
       }
-      else if (value is DateTimeOffset)
-      {
+      
+      if (value is DateTimeOffset)
         return true;
-      }
 
       return false;
     }

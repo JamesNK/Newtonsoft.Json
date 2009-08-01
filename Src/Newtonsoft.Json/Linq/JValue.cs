@@ -217,7 +217,7 @@ namespace Newtonsoft.Json.Linq
       else if (value is bool)
         return JTokenType.Boolean;
 
-      throw new ArgumentException("Could not determin JSON object type for type {0}.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
+      throw new ArgumentException("Could not determine JSON object type for type {0}.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
     }
 
     private static JTokenType GetStringValueType(JTokenType? current)

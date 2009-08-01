@@ -268,7 +268,7 @@ namespace Newtonsoft.Json
 
       if (schema.Enum != null)
       {
-        if (!schema.Enum.Contains(value, new JTokenEqualityComparer()))
+        if (!schema.Enum.ContainsValue(value, new JTokenEqualityComparer()))
           RaiseError("Value {0} is not defined in enum.".FormatWith(CultureInfo.InvariantCulture, value),
                      schema);
       }

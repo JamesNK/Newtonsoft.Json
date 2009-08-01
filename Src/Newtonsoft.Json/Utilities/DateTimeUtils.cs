@@ -12,7 +12,7 @@ namespace Newtonsoft.Json.Utilities
     public static string GetLocalOffset(this DateTime d)
     {
       TimeSpan utcOffset;
-#if PocketPC
+#if PocketPC || NET20
       utcOffset = TimeZone.CurrentTimeZone.GetUtcOffset(d);
 #else
       utcOffset = TimeZoneInfo.Local.GetUtcOffset(d);

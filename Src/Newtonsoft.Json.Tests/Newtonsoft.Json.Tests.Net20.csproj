@@ -4,74 +4,78 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{32EA9694-4FB3-43E9-A6AD-050F1D35EA0A}</ProjectGuid>
+    <ProjectGuid>{3E6E2335-B079-4B5B-A65A-9D586914BCBB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Newtonsoft.Json.Tests</RootNamespace>
-    <AssemblyName>Newtonsoft.Json.Tests.Compact</AssemblyName>
-    <ProjectTypeGuids>{4D628B5B-2FBC-4AA6-8C16-197242AEB884};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <PlatformFamilyName>PocketPC</PlatformFamilyName>
-    <PlatformID>b2c48bd2-963d-4549-9169-1fa021dce484</PlatformID>
-    <OSVersion>5.2</OSVersion>
-    <DeployDirSuffix>Newtonsoft.Json.Tests.Compact</DeployDirSuffix>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <NativePlatformName>Windows Mobile 6 Professional SDK</NativePlatformName>
-    <FormFactorID>
-    </FormFactorID>
+    <AssemblyName>Newtonsoft.Json.Tests.Net20</AssemblyName>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <TargetFrameworkSubset>
+    </TargetFrameworkSubset>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;PocketPC</DefineConstants>
-    <NoStdLib>true</NoStdLib>
-    <NoConfig>true</NoConfig>
+    <DefineConstants>TRACE;DEBUG;NET20</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <FileAlignment>512</FileAlignment>
     <WarningLevel>4</WarningLevel>
-    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;$(PlatformFamilyName)</DefineConstants>
-    <NoStdLib>true</NoStdLib>
-    <NoConfig>true</NoConfig>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <FileAlignment>512</FileAlignment>
     <WarningLevel>4</WarningLevel>
-    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="mscorlib" />
-    <Reference Include="NUnitLite, Version=2.4.7.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="LinqBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c2b14eb747628076, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\NUnitLite.dll</HintPath>
+      <HintPath>..\Lib\LinqBridge.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=2.4.3.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Converters\BinaryConverterTests.cs" />
+    <Compile Include="Converters\CustomCreationConverterTests.cs" />
     <Compile Include="Converters\StringEnumConverterTests.cs" />
-    <Compile Include="Linq\JTokenReaderTest.cs" />
-    <Compile Include="Linq\JTokenWriterTest.cs" />
+    <Compile Include="JsonArrayAttributeTests.cs" />
+    <Compile Include="ExceptionTests.cs" />
     <Compile Include="JsonValidatingReaderTests.cs" />
+    <Compile Include="Serialization\EntitiesSerializationTests.cs" />
+    <Compile Include="Serialization\PopulateTests.cs" />
+    <Compile Include="Serialization\SerializationEventAttributeTests.cs" />
     <Compile Include="Schema\ExtensionsTests.cs" />
     <Compile Include="Schema\JsonSchemaModelBuilderTests.cs" />
     <Compile Include="Schema\JsonSchemaNodeTests.cs" />
     <Compile Include="Serialization\CamelCasePropertyNamesContractResolverTests.cs" />
-    <Compile Include="Serialization\EntitiesSerializationTests.cs" />
-    <Compile Include="Serialization\PopulateTests.cs" />
     <Compile Include="Serialization\PreserveReferencesHandlingTests.cs" />
-    <Compile Include="Serialization\SerializationEventAttributeTests.cs" />
     <Compile Include="Serialization\TypeNameHandlingTests.cs" />
     <Compile Include="TestObjects\AbstractGenericBase.cs" />
     <Compile Include="TestObjects\ArgumentConverterPrecedenceClassConverter.cs" />
@@ -83,19 +87,19 @@
     <Compile Include="TestObjects\ConverterPrecedenceClass.cs" />
     <Compile Include="TestObjects\ConverterPrecedenceClassConverter.cs" />
     <Compile Include="TestObjects\CircularReferenceWithIdClass.cs" />
+    <Compile Include="TestObjects\EmployeeReference.cs" />
+    <Compile Include="TestObjects\JsonPropertyWithHandlingValues.cs" />
     <Compile Include="TestObjects\DefaultValueAttributeTestClass.cs" />
     <Compile Include="TestObjects\DoubleClass.cs" />
-    <Compile Include="TestObjects\EmployeeReference.cs" />
     <Compile Include="TestObjects\GenericImpl.cs" />
     <Compile Include="TestObjects\GenericListAndDictionaryInterfaceProperties.cs" />
     <Compile Include="TestObjects\GetOnlyPropertyClass.cs" />
     <Compile Include="TestObjects\IncompatibleJsonAttributeClass.cs" />
     <Compile Include="TestObjects\Invoice.cs" />
-    <Compile Include="TestObjects\JaggedArray.cs" />
     <Compile Include="TestObjects\JsonIgnoreAttributeTestClass.cs" />
-    <Compile Include="TestObjects\JsonPropertyWithHandlingValues.cs" />
     <Compile Include="TestObjects\MemberConverterPrecedenceClassConverter.cs" />
     <Compile Include="TestObjects\MethodExecutorObject.cs" />
+    <Compile Include="TestObjects\JaggedArray.cs" />
     <Compile Include="TestObjects\MyClass.cs" />
     <Compile Include="TestObjects\Name.cs" />
     <Compile Include="TestObjects\PersonRaw.cs" />
@@ -135,6 +139,8 @@
     <Compile Include="JsonSerializerTest.cs" />
     <Compile Include="JsonTextReaderTest.cs" />
     <Compile Include="JsonTextWriterTest.cs" />
+    <Compile Include="Linq\JTokenReaderTest.cs" />
+    <Compile Include="Linq\JTokenWriterTest.cs" />
     <Compile Include="Linq\JArrayTests.cs" />
     <Compile Include="Linq\JObjectTests.cs" />
     <Compile Include="Linq\JTokenEqualityComparerTests.cs" />
@@ -151,19 +157,15 @@
     <Compile Include="TestObjects\UserNullable.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.Compact.csproj">
-      <Project>{256AA604-F61B-4B6D-8D51-C8E6AB11E435}</Project>
-      <Name>Newtonsoft.Json.Compact</Name>
+    <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.Net20.csproj">
+      <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
+      <Name>Newtonsoft.Json.Net20</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
-  <ProjectExtensions>
-    <VisualStudio>
-      <FlavorProperties GUID="{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}">
-        <HostingProcess disable="1" />
-      </FlavorProperties>
-    </VisualStudio>
-  </ProjectExtensions>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

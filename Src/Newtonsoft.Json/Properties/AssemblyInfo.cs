@@ -29,6 +29,9 @@ using System.Security;
 [assembly: AssemblyTitle("Newtonsoft Json.NET Silverlight")]
 #elif PocketPC
 [assembly: AssemblyTitle("Newtonsoft Json.NET Compact")]
+#elif NET20
+[assembly: AssemblyTitle("Newtonsoft Json.NET .NET 2.0")]
+[assembly: AllowPartiallyTrustedCallers]
 #else
 [assembly: AssemblyTitle("Newtonsoft Json.NET")]
 [assembly: AllowPartiallyTrustedCallers]
@@ -40,6 +43,8 @@ using System.Security;
 [assembly: InternalsVisibleTo("Newtonsoft.Json.Tests.Silverlight")]
 #elif PocketPC
 [assembly: InternalsVisibleTo("Newtonsoft.Json.Tests.Compact")]
+#elif NET20
+[assembly: InternalsVisibleTo("Newtonsoft.Json.Tests.Net20")]
 #else
 [assembly: InternalsVisibleTo("Newtonsoft.Json.Tests")]
 #endif

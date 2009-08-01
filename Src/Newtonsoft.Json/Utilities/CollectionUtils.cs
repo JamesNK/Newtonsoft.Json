@@ -580,11 +580,29 @@ namespace Newtonsoft.Json.Utilities
 
     public static bool AddDistinct<T>(this IList<T> list, T value, IEqualityComparer<T> comparer)
     {
-      if (list.Contains(value, comparer))
+      if (list.ContainsValue(value, comparer))
         return false;
 
       list.Add(value);
       return true;
+    }
+
+    // this is here because LINQ Bridge doesn't support Contains with IEqualityComparer<T>
+    public static bool ContainsValue<TSource>(this IEnumerable<TSource> source, TSource value, IEqualityComparer<TSource> comparer)
+    {
+      if (comparer == null)
+        comparer = EqualityComparer<TSource>.Default;
+
+      if (source == null)
+        throw new ArgumentNullException("source");
+
+      foreach (TSource local in source)
+      {
+        if (comparer.Equals(local, value))
+          return true;
+      }
+
+      return false;
     }
 
     public static bool AddRangeDistinct<T>(this IList<T> list, IEnumerable<T> values)

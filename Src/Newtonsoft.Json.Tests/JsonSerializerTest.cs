@@ -25,7 +25,7 @@
 
 using System;
 using System.Collections.Generic;
-#if !SILVERLIGHT && !PocketPC
+#if !SILVERLIGHT && !PocketPC && !NET20
 using System.ComponentModel.DataAnnotations;
 #endif
 using System.Text;
@@ -39,7 +39,7 @@ using System.Collections.ObjectModel;
 using Newtonsoft.Json.Linq;
 using System.Linq;
 using Newtonsoft.Json.Converters;
-#if !PocketPC
+#if !PocketPC && !NET20
 using System.Runtime.Serialization.Json;
 #endif
 using Newtonsoft.Json.Tests.TestObjects;
@@ -473,7 +473,7 @@ keyword such as type of business.""
       Assert.AreEqual("Large", deserializedProductShort.Sizes[2]);
     }
 
-#if !PocketPC
+#if !PocketPC && !NET20
     [Test]
     public void Unicode()
     {
@@ -1542,7 +1542,7 @@ keyword such as type of business.""
       Assert.AreEqual("titleId", n.FidOrder[n.FidOrder.Count - 1]);
     }
 
-#if !SILVERLIGHT && !PocketPC
+#if !SILVERLIGHT && !PocketPC && !NET20
     [MetadataType(typeof(OptInClassMetadata))]
     public class OptInClass
     {
@@ -1587,7 +1587,7 @@ keyword such as type of business.""
     }
 #endif
 
-#if !PocketPC
+#if !PocketPC && !NET20
     [DataContract]
     public class DataContractPrivateMembers
     {
@@ -1937,6 +1937,108 @@ keyword such as type of business.""
       Assert.IsInstanceOfType(typeof(JObject), o.Data[2]);
       Assert.AreEqual(1, ((JObject)o.Data[2]).Count);
       Assert.AreEqual(1, (int)((JObject)o.Data[2])["one"]);
+    }
+
+    [Test]
+    public void DeserializeGenericDictionary()
+    {
+      string json = @"{""key1"":""value1"",""key2"":""value2""}";
+
+      Dictionary<string, string> values = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+
+      Console.WriteLine(values.Count);
+      // 2
+
+      Console.WriteLine(values["key1"]);
+      // value1
+
+      Assert.AreEqual(2, values.Count);
+      Assert.AreEqual("value1", values["key1"]);
+      Assert.AreEqual("value2", values["key2"]);
+    }
+
+    [Test]
+    public void SerializeGenericList()
+    {
+      Product p1 = new Product
+        {
+          Name = "Product 1",
+          Price = 99.95m,
+          ExpiryDate = new DateTime(2000, 12, 29, 0, 0, 0, DateTimeKind.Utc),
+        };
+      Product p2 = new Product
+      {
+        Name = "Product 2",
+        Price = 12.50m,
+        ExpiryDate = new DateTime(2009, 7, 31, 0, 0, 0, DateTimeKind.Utc),
+      };
+
+      List<Product> products = new List<Product>();
+      products.Add(p1);
+      products.Add(p2);
+
+      string json = JsonConvert.SerializeObject(products, Formatting.Indented);
+      //[
+      //  {
+      //    "Name": "Product 1",
+      //    "ExpiryDate": "\/Date(978048000000)\/",
+      //    "Price": 99.95,
+      //    "Sizes": null
+      //  },
+      //  {
+      //    "Name": "Product 2",
+      //    "ExpiryDate": "\/Date(1248998400000)\/",
+      //    "Price": 12.50,
+      //    "Sizes": null
+      //  }
+      //]
+
+      Assert.AreEqual(@"[
+  {
+    ""Name"": ""Product 1"",
+    ""ExpiryDate"": ""\/Date(978048000000)\/"",
+    ""Price"": 99.95,
+    ""Sizes"": null
+  },
+  {
+    ""Name"": ""Product 2"",
+    ""ExpiryDate"": ""\/Date(1248998400000)\/"",
+    ""Price"": 12.50,
+    ""Sizes"": null
+  }
+]", json);
+    }
+
+    [Test]
+    public void DeserializeGenericList()
+    {
+      string json = @"[
+        {
+          ""Name"": ""Product 1"",
+          ""ExpiryDate"": ""\/Date(978048000000)\/"",
+          ""Price"": 99.95,
+          ""Sizes"": null
+        },
+        {
+          ""Name"": ""Product 2"",
+          ""ExpiryDate"": ""\/Date(1248998400000)\/"",
+          ""Price"": 12.50,
+          ""Sizes"": null
+        }
+      ]";
+      
+      List<Product> products = JsonConvert.DeserializeObject<List<Product>>(json);
+
+      Console.WriteLine(products.Count);
+      // 2
+
+      Product p1 = products[0];
+
+      Console.WriteLine(p1.Name);
+      // Product 1
+
+      Assert.AreEqual(2, products.Count);
+      Assert.AreEqual("Product 1", products[0].Name);
     }
   }
 }
