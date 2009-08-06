@@ -94,7 +94,8 @@ namespace Newtonsoft.Json.Converters
     /// <returns>The object value.</returns>
     public override object ReadJson(JsonReader reader, Type objectType, JsonSerializer serializer)
     {
-      Type t = (ReflectionUtils.IsNullableType(objectType))
+      bool nullable = ReflectionUtils.IsNullableType(objectType);
+      Type t = (nullable)
         ? Nullable.GetUnderlyingType(objectType)
         : objectType;
 
@@ -110,6 +111,9 @@ namespace Newtonsoft.Json.Converters
         throw new Exception("Unexpected token parsing date. Expected String, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
 
       string dateText = reader.Value.ToString();
+
+      if (string.IsNullOrEmpty(dateText) && nullable)
+        return null;
 
       if (t == typeof(DateTimeOffset))
       {

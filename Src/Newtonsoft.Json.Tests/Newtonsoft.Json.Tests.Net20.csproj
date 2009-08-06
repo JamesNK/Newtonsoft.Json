@@ -102,6 +102,7 @@
     <Compile Include="TestObjects\JaggedArray.cs" />
     <Compile Include="TestObjects\MyClass.cs" />
     <Compile Include="TestObjects\Name.cs" />
+    <Compile Include="TestObjects\NullableDateTimeTestClass.cs" />
     <Compile Include="TestObjects\PersonRaw.cs" />
     <Compile Include="TestObjects\PhoneNumber.cs" />
     <Compile Include="TestObjects\PrivateMembersClass.cs" />
@@ -131,7 +132,6 @@
     <Compile Include="Schema\JsonSchemaGeneratorTests.cs" />
     <Compile Include="Schema\JsonSchemaTests.cs" />
     <Compile Include="JsonRawTests.cs" />
-    <Compile Include="NullableDateTimeTestClass.cs" />
     <Compile Include="TestObjects\DateTimeTestClass.cs" />
     <Compile Include="Converters\IsoDateTimeConverterTests.cs" />
     <Compile Include="JsonConvertTest.cs" />

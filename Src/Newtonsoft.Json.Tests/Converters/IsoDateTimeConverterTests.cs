@@ -237,6 +237,16 @@ namespace Newtonsoft.Json.Tests.Converters
     }
 
     [Test]
+    public void NullableDeserializeEmptyString()
+    {
+      string json = @"{""DateTimeField"":""""}";
+
+      NullableDateTimeTestClass c = JsonConvert.DeserializeObject<NullableDateTimeTestClass>(json,
+        new JsonSerializerSettings { Converters = new [] {new IsoDateTimeConverter()}});
+      Assert.AreEqual(null, c.DateTimeField);
+    }
+
+    [Test]
     [ExpectedException(typeof(Exception), ExpectedMessage = "Cannot convert null value to System.DateTime.")]
     public void DeserializeNullToNonNullable()
     {

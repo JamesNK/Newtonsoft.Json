@@ -2040,5 +2040,14 @@ keyword such as type of business.""
       Assert.AreEqual(2, products.Count);
       Assert.AreEqual("Product 1", products[0].Name);
     }
+
+    [Test]
+    public void DeserializeEmptyStringToNullableDateTime()
+    {
+      string json = @"{""DateTimeField"":""""}";
+
+      NullableDateTimeTestClass c = JsonConvert.DeserializeObject<NullableDateTimeTestClass>(json);
+      Assert.AreEqual(null, c.DateTimeField);
+    }
   }
 }

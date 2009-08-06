@@ -168,7 +168,7 @@
     <Compile Include="Schema\JsonSchemaGeneratorTests.cs" />
     <Compile Include="Schema\JsonSchemaTests.cs" />
     <Compile Include="JsonRawTests.cs" />
-    <Compile Include="NullableDateTimeTestClass.cs" />
+    <Compile Include="TestObjects\NullableDateTimeTestClass.cs" />
     <Compile Include="TestObjects\DateTimeTestClass.cs" />
     <Compile Include="Converters\IsoDateTimeConverterTests.cs" />
     <Compile Include="JsonConvertTest.cs" />

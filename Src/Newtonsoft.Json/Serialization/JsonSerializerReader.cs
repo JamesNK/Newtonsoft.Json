@@ -169,6 +169,13 @@ namespace Newtonsoft.Json.Serialization
           case JsonToken.String:
           case JsonToken.Boolean:
           case JsonToken.Date:
+            // convert empty string to null automatically
+            if (reader.Value is string &&
+              string.IsNullOrEmpty((string)reader.Value) &&
+              objectType != null &&
+              ReflectionUtils.IsNullable(objectType))
+              return null;
+
             return EnsureType(reader.Value, objectType);
           case JsonToken.StartConstructor:
           case JsonToken.EndConstructor:
