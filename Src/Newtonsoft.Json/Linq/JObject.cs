@@ -25,19 +25,39 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.IO;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
+#if !PocketPC && !SILVERLIGHT
+using Newtonsoft.Json.Linq.ComponentModel;
+#endif
 
 namespace Newtonsoft.Json.Linq
 {
   /// <summary>
   /// Represents a JSON object.
   /// </summary>
-  public class JObject : JContainer, IDictionary<string, JToken>
+#if !PocketPC && !SILVERLIGHT
+  [TypeDescriptionProvider(typeof(JTypeDescriptionProvider))]
+#endif
+  public class JObject : JContainer, IDictionary<string, JToken>, INotifyPropertyChanged
+#if !PocketPC && !SILVERLIGHT
+    , INotifyPropertyChanging
+#endif
   {
+    /// <summary>
+    /// Occurs when a property value changes.
+    /// </summary>
+    public event PropertyChangedEventHandler PropertyChanged;
+#if !PocketPC && !SILVERLIGHT
+    /// <summary>
+    /// Occurs when a property value is changing.
+    /// </summary>
+    public event PropertyChangingEventHandler PropertyChanging;
+#endif
+
     /// <summary>
     /// Initializes a new instance of the <see cref="JObject"/> class.
     /// </summary>
@@ -171,10 +191,40 @@ namespace Newtonsoft.Json.Linq
       {
         JProperty property = Property(propertyName);
         if (property != null)
-          property.Value = value;
+        {
+          if (!IsTokenUnchanged(property.Value, value))
+          {
+#if !PocketPC && !SILVERLIGHT
+            OnPropertyChanging(property.Name);
+#endif
+            property.Value = value;
+            OnPropertyChanged(property.Name);
+          }
+        }
         else
+        {
+#if !PocketPC && !SILVERLIGHT
+          OnPropertyChanging(propertyName);
+#endif
           Add(new JProperty(propertyName, value));
+          OnPropertyChanged(propertyName);
+        }
       }
+    }
+
+    private static bool IsTokenUnchanged(JToken currentValue, JToken newValue)
+    {
+      JValue v1 = currentValue as JValue;
+      if (v1 != null)
+      {
+        // null will get turned into a JValue of type null
+        if (v1.Type == JTokenType.Null && newValue == null)
+          return true;
+
+        return v1.Equals(newValue);
+      }
+
+      return false;
     }
 
     /// <summary>
@@ -219,7 +269,6 @@ namespace Newtonsoft.Json.Linq
       return Load(jsonReader);
     }
 
-
     /// <summary>
     /// Creates a <see cref="JObject"/> from an object.
     /// </summary>
@@ -245,7 +294,6 @@ namespace Newtonsoft.Json.Linq
 
       return (JObject)token;
     }
-
 
     internal override void ValidateObject(JToken o, JToken previous)
     {
@@ -418,5 +466,19 @@ namespace Newtonsoft.Json.Linq
         yield return new KeyValuePair<string, JToken>(property.Name, property.Value);
       }
     }
+
+    protected virtual void OnPropertyChanged(string propertyName)
+    {
+      if (PropertyChanged != null)
+        PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+#if !PocketPC && !SILVERLIGHT
+    protected virtual void OnPropertyChanging(string propertyName)
+    {
+      if (PropertyChanging != null)
+        PropertyChanging(this, new PropertyChangingEventArgs(propertyName));
+    }
+#endif
   }
 }

@@ -628,6 +628,26 @@ namespace Newtonsoft.Json
       return deserializedValue;
     }
 
+    public static void PopulateObject(string value, object target)
+    {
+      PopulateObject(value, target, null);
+    }
+
+
+    public static void PopulateObject(string value, object target, JsonSerializerSettings settings)
+    {
+      StringReader sr = new StringReader(value);
+      JsonSerializer jsonSerializer = JsonSerializer.Create(settings);
+
+      using (JsonReader jsonReader = new JsonTextReader(sr))
+      {
+        jsonSerializer.Populate(jsonReader, target);
+
+        if (jsonReader.Read() && jsonReader.TokenType != JsonToken.Comment)
+          throw new JsonSerializationException("Additional text found in JSON string after finishing deserializing object.");
+      }
+    }
+
 #if !SILVERLIGHT
     /// <summary>
     /// Serializes the XML node to a JSON string.

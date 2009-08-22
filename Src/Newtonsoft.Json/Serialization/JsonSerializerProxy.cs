@@ -31,8 +31,8 @@ namespace Newtonsoft.Json.Serialization
 {
   internal class JsonSerializerProxy : JsonSerializer
   {
-    private readonly JsonSerializerReader _serializerReader;
-    private readonly JsonSerializerWriter _serializerWriter;
+    private readonly JsonSerializerInternalReader _serializerReader;
+    private readonly JsonSerializerInternalWriter _serializerWriter;
     private readonly JsonSerializer _serializer;
 
     public override IReferenceResolver ReferenceResolver
@@ -100,7 +100,7 @@ namespace Newtonsoft.Json.Serialization
       set { _serializer.Binder = value; }
     }
 
-    public JsonSerializerProxy(JsonSerializerReader serializerReader)
+    public JsonSerializerProxy(JsonSerializerInternalReader serializerReader)
     {
       ValidationUtils.ArgumentNotNull(serializerReader, "serializerReader");
 
@@ -108,7 +108,7 @@ namespace Newtonsoft.Json.Serialization
       _serializer = serializerReader._serializer;
     }
 
-    public JsonSerializerProxy(JsonSerializerWriter serializerWriter)
+    public JsonSerializerProxy(JsonSerializerInternalWriter serializerWriter)
     {
       ValidationUtils.ArgumentNotNull(serializerWriter, "serializerWriter");
 

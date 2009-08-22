@@ -183,6 +183,10 @@ namespace Newtonsoft.Json.Serialization
         {
           contract.OnDeserialized = method;
         }
+        if (IsValidCallback(method, parameters, typeof(OnErrorAttribute), contract.OnError, ref prevAttributeType))
+        {
+          contract.OnError = method;
+        }
       }
 #endif
     }
@@ -249,8 +253,16 @@ namespace Newtonsoft.Json.Serialization
       if (method.ReturnType != typeof(void))
         throw new Exception("Serialization Callback '{1}' in type '{0}' must return void.".FormatWith(CultureInfo.InvariantCulture, GetClrTypeFullName(method.DeclaringType), method));
 
-      if (parameters == null || parameters.Length != 1 || parameters[0].ParameterType != typeof(StreamingContext))
-        throw new Exception("Serialization Callback '{1}' in type '{0}' must have a single parameter of type '{2}'.".FormatWith(CultureInfo.InvariantCulture, GetClrTypeFullName(method.DeclaringType), method, typeof(StreamingContext)));
+      if (attributeType == typeof(OnErrorAttribute))
+      {
+        if (parameters == null || parameters.Length != 2 || parameters[0].ParameterType != typeof(StreamingContext) || parameters[1].ParameterType != typeof(ErrorContext))
+          throw new Exception("Serialization Error Callback '{1}' in type '{0}' must have two parameters of type '{2}' and '{3}'.".FormatWith(CultureInfo.InvariantCulture, GetClrTypeFullName(method.DeclaringType), method, typeof (StreamingContext), typeof(ErrorContext)));
+      }
+      else
+      {
+        if (parameters == null || parameters.Length != 1 || parameters[0].ParameterType != typeof(StreamingContext))
+          throw new Exception("Serialization Callback '{1}' in type '{0}' must have a single parameter of type '{2}'.".FormatWith(CultureInfo.InvariantCulture, GetClrTypeFullName(method.DeclaringType), method, typeof(StreamingContext)));
+      }
 
       prevAttributeType = attributeType;
 

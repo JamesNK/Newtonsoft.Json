@@ -36,12 +36,12 @@ using System.Runtime.Serialization;
 
 namespace Newtonsoft.Json.Serialization
 {
-  internal class JsonSerializerWriter
+  internal class JsonSerializerInternalWriter : JsonSerializerInternalBase
   {
     internal readonly JsonSerializer _serializer;
     private JsonSerializerProxy _internalSerializer;
     private List<object> _serializeStack;
-    
+
     private List<object> SerializeStack
     {
       get
@@ -53,7 +53,7 @@ namespace Newtonsoft.Json.Serialization
       }
     }
 
-    public JsonSerializerWriter(JsonSerializer serializer)
+    public JsonSerializerInternalWriter(JsonSerializer serializer)
     {
       ValidationUtils.ArgumentNotNull(serializer, "serializer");
 
@@ -287,8 +287,23 @@ namespace Newtonsoft.Json.Serialization
 
       foreach (JsonProperty property in contract.Properties)
       {
-        if (!property.Ignored && property.Readable)
-          WriteMemberInfoProperty(writer, value, property);
+        try
+        {
+          if (!property.Ignored && property.Readable)
+            WriteMemberInfoProperty(writer, value, property);
+        }
+        catch (Exception ex)
+        {
+#if !PocketPC && !SILVERLIGHT && !NET20
+          ErrorContext errorContext = GetErrorContext(value, property.Member.Name, ex);
+          contract.InvokeOnError(value, errorContext);
+
+          if (errorContext.Handled)
+            ClearErrorContext();
+          else
+#endif
+            throw;
+        }
       }
 
       writer.WriteEndObject();
@@ -366,18 +381,33 @@ namespace Newtonsoft.Json.Serialization
 
       for (int i = 0; i < values.Count; i++)
       {
-        object value = values[i];
-
-        if (ShouldWriteReference(value, null))
+        try
         {
-          WriteReference(writer, value);
+          object value = values[i];
+
+          if (ShouldWriteReference(value, null))
+          {
+            WriteReference(writer, value);
+          }
+          else
+          {
+            if (!CheckForCircularReference(value, null))
+              continue;
+
+            SerializeValue(writer, value, null);
+          }
         }
-        else
+        catch (Exception ex)
         {
-          if (!CheckForCircularReference(value, null))
-            continue;
+#if !PocketPC && !SILVERLIGHT && !NET20
+          ErrorContext errorContext = GetErrorContext(values, i, ex);
+          contract.InvokeOnError(values, errorContext);
 
-          SerializeValue(writer, value, null);
+          if (errorContext.Handled)
+            ClearErrorContext();
+          else
+#endif
+          throw;
         }
       }
 
@@ -414,20 +444,37 @@ namespace Newtonsoft.Json.Serialization
       foreach (DictionaryEntry entry in values)
       {
         string propertyName = entry.Key.ToString();
-        object value = entry.Value;
 
-        if (ShouldWriteReference(value, null))
+        try
         {
-          writer.WritePropertyName(propertyName);
-          WriteReference(writer, value);
+          object value = entry.Value;
+
+          if (ShouldWriteReference(value, null))
+          {
+            writer.WritePropertyName(propertyName);
+            WriteReference(writer, value);
+          }
+          else
+          {
+            if (!CheckForCircularReference(value, null))
+              continue;
+
+            writer.WritePropertyName(propertyName);
+
+            SerializeValue(writer, value, null);
+          }
         }
-        else
+        catch (Exception ex)
         {
-          if (!CheckForCircularReference(value, null))
-            continue;
+#if !PocketPC && !SILVERLIGHT && !NET20
+          ErrorContext errorContext = GetErrorContext(values, propertyName, ex);
+          contract.InvokeOnError(values, errorContext);
 
-          writer.WritePropertyName(propertyName);
-          SerializeValue(writer, value, null);
+          if (errorContext.Handled)
+            ClearErrorContext();
+          else
+#endif
+          throw;
         }
       }
 

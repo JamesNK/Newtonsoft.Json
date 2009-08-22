@@ -26,13 +26,18 @@
 #if !PocketPC && !SILVERLIGHT && !NET20
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
+using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Tests;
 using Newtonsoft.Json.Tests.TestObjects;
 using NUnit.Framework;
+using Newtonsoft.Json.Linq;
+using System.Collections;
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
@@ -47,6 +52,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual("Hello World!", obj.Member2);
       Assert.AreEqual("This is a nonserialized value", obj.Member3);
       Assert.AreEqual(null, obj.Member4);
+      Assert.AreEqual(null, obj.Member5);
 
       string json = JsonConvert.SerializeObject(obj, Formatting.Indented);
       Assert.AreEqual(@"{
@@ -59,13 +65,22 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual("This value was reset after serialization.", obj.Member2);
       Assert.AreEqual("This is a nonserialized value", obj.Member3);
       Assert.AreEqual(null, obj.Member4);
+      Assert.AreEqual("Error message for member Member6 = Exception has been thrown by the target of an invocation.", obj.Member5);
 
-      obj = JsonConvert.DeserializeObject<SerializationEventTestObject>(json);
+      JObject o = JObject.Parse(@"{
+  ""Member1"": 11,
+  ""Member2"": ""This value went into the data file during serialization."",
+  ""Member4"": null
+}");
+      o["Member6"] = "Dummy text for error";
+
+      obj = JsonConvert.DeserializeObject<SerializationEventTestObject>(o.ToString());
 
       Assert.AreEqual(11, obj.Member1);
       Assert.AreEqual("This value went into the data file during serialization.", obj.Member2);
       Assert.AreEqual("This value was set during deserialization", obj.Member3);
       Assert.AreEqual("This value was set after deserialization.", obj.Member4);
+      Assert.AreEqual("Error message for member Member6 = Exception has been thrown by the target of an invocation.", obj.Member5);
     }
 
     [Test]
@@ -96,6 +111,136 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual("This value went into the data file during serialization.", obj.Member2);
       Assert.AreEqual("This value was set during deserialization", obj.Member3);
       Assert.AreEqual("This value was set after deserialization.", obj.Member4);
+    }
+
+    public class ListErrorObject
+    {
+      public string Member
+      {
+        get { throw new Exception("ListErrorObject.Member get error!"); }
+        set { throw new Exception("ListErrorObject.Member set error!"); }
+      }
+    }
+
+    public class ListErrorObjectCollection : Collection<ListErrorObject>
+    {
+      [OnError]
+      internal void OnErrorMethod(StreamingContext context, ErrorContext errorContext)
+      {
+        errorContext.Handled = true;
+      }
+    }
+
+    public class VersionKeyedCollection : KeyedCollection<string, Person>, IList
+    {
+      public List<string> Messages { get; set; }
+
+      public VersionKeyedCollection()
+      {
+        Messages = new List<string>();
+      }
+
+      protected override string GetKeyForItem(Person item)
+      {
+        return item.Name;
+      }
+
+      [OnError]
+      internal void OnErrorMethod(StreamingContext context, ErrorContext errorContext)
+      {
+        Messages.Add("Error message for member " + errorContext.Member + " = " + errorContext.Error.Message);
+        errorContext.Handled = true;
+      }
+
+      object IList.this[int index]
+      {
+        get
+        {
+          if (index % 2 == 0)
+            throw new Exception("Index even: " + index);
+
+          return this[index];
+        }
+        set { this[index] = (Person)value; }
+      }
+    }
+
+    [Test]
+    public void ErrorDeserializingListHandled()
+    {
+      string json = @"[
+  {
+    ""Name"": ""Jim"",
+    ""BirthDate"": ""\/Date(978048000000)\/"",
+    ""LastModified"": ""\/Date(978048000000)\/""
+  },
+  {
+    ""Name"": ""Jim"",
+    ""BirthDate"": ""\/Date(978048000000)\/"",
+    ""LastModified"": ""\/Date(978048000000)\/""
+  }
+]";
+
+      VersionKeyedCollection c = JsonConvert.DeserializeObject<VersionKeyedCollection>(json);
+      Assert.AreEqual(1, c.Count);
+      Assert.AreEqual(1, c.Messages.Count);
+      Assert.AreEqual("Error message for member 1 = An item with the same key has already been added.", c.Messages[0]);
+    }
+
+    [Test]
+    public void ErrorSerializingListHandled()
+    {
+      VersionKeyedCollection c = new VersionKeyedCollection();
+      c.Add(new Person
+      {
+        Name = "Jim",
+        BirthDate = new DateTime(2000, 12, 29, 0, 0, 0, DateTimeKind.Utc),
+        LastModified = new DateTime(2000, 12, 29, 0, 0, 0, DateTimeKind.Utc)
+      });
+      c.Add(new Person
+      {
+        Name = "Jimbo",
+        BirthDate = new DateTime(2000, 12, 29, 0, 0, 0, DateTimeKind.Utc),
+        LastModified = new DateTime(2000, 12, 29, 0, 0, 0, DateTimeKind.Utc)
+      });
+      c.Add(new Person
+      {
+        Name = "Jimmy",
+        BirthDate = new DateTime(2000, 12, 29, 0, 0, 0, DateTimeKind.Utc),
+        LastModified = new DateTime(2000, 12, 29, 0, 0, 0, DateTimeKind.Utc)
+      });
+      c.Add(new Person
+      {
+        Name = "Jim Bean",
+        BirthDate = new DateTime(2000, 12, 29, 0, 0, 0, DateTimeKind.Utc),
+        LastModified = new DateTime(2000, 12, 29, 0, 0, 0, DateTimeKind.Utc)
+      });
+
+      string json = JsonConvert.SerializeObject(c, Formatting.Indented);
+
+      Assert.AreEqual(@"[
+  {
+    ""Name"": ""Jimbo"",
+    ""BirthDate"": ""\/Date(978048000000)\/"",
+    ""LastModified"": ""\/Date(978048000000)\/""
+  },
+  {
+    ""Name"": ""Jim Bean"",
+    ""BirthDate"": ""\/Date(978048000000)\/"",
+    ""LastModified"": ""\/Date(978048000000)\/""
+  }
+]", json);
+
+      Assert.AreEqual(2, c.Messages.Count);
+      Assert.AreEqual("Error message for member 0 = Index even: 0", c.Messages[0]);
+      Assert.AreEqual("Error message for member 2 = Index even: 2", c.Messages[1]);
+    }
+
+    [Test]
+    [ExpectedException(typeof(TargetInvocationException))]
+    public void ErrorInChild()
+    {
+      JsonConvert.DeserializeObject<ListErrorObjectCollection>(@"[{""Member"":""Value""}]");
     }
 
     [Test]
@@ -187,6 +332,8 @@ namespace Newtonsoft.Json.Tests.Serialization
       // This is a nonserialized value
       Console.WriteLine(obj.Member4);
       // null
+      Console.WriteLine(obj.Member5);
+      // null
 
       string json = JsonConvert.SerializeObject(obj, Formatting.Indented);
       // {
@@ -203,6 +350,8 @@ namespace Newtonsoft.Json.Tests.Serialization
       // This is a nonserialized value
       Console.WriteLine(obj.Member4);
       // null
+      Console.WriteLine(obj.Member5);
+      // Error message for member Member6 = Exception has been thrown by the target of an invocation.
 
       obj = JsonConvert.DeserializeObject<SerializationEventTestObject>(json);
 

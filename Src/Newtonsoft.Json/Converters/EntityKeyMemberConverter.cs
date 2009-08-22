@@ -25,9 +25,6 @@
 
 #if !PocketPC && !SILVERLIGHT && !NET20
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Data;
 using Newtonsoft.Json.Serialization;
 using System.Globalization;
@@ -53,7 +50,7 @@ namespace Newtonsoft.Json.Converters
       if (keyType != null)
       {
         string valueJson;
-        if (JsonSerializerWriter.TryConvertToString(entityKeyMember.Value, keyType, out valueJson))
+        if (JsonSerializerInternalWriter.TryConvertToString(entityKeyMember.Value, keyType, out valueJson))
           writer.WriteValue(valueJson);
         else
           writer.WriteValue(entityKeyMember.Value);

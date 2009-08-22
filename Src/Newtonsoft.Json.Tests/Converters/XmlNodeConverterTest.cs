@@ -512,6 +512,17 @@ namespace Newtonsoft.Json.Tests.Converters
 
       Assert.AreEqual(@"<myRoot><available_sizes><available_sizes><available_sizes>113</available_sizes><available_sizes>150</available_sizes></available_sizes><available_sizes>assets/images/resized/0001/1070/11070v1-max-150x150.jpg</available_sizes></available_sizes><available_sizes><available_sizes><available_sizes>189</available_sizes><available_sizes>250</available_sizes></available_sizes><available_sizes>assets/images/resized/0001/1070/11070v1-max-250x250.jpg</available_sizes></available_sizes><available_sizes><available_sizes><available_sizes>341</available_sizes><available_sizes>450</available_sizes></available_sizes><available_sizes>assets/images/resized/0001/1070/11070v1-max-450x450.jpg</available_sizes></available_sizes></myRoot>", newDoc.InnerXml);
     }
+
+    [Test]
+    public void Encoding()
+    {
+      XmlDocument doc = new XmlDocument();
+
+      doc.LoadXml(@"<name>O""Connor</name>"); // i use "" so it will be easier to see the  problem
+
+      string json = JsonConvert.SerializeXmlNode(doc);
+      Assert.AreEqual(@"{""name"":""O\""Connor""}", json);
+    }
   }
 }
 #endif

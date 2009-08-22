@@ -204,7 +204,7 @@ namespace Newtonsoft.Json.Linq
     {
       if (IsMultiContent(content))
       {
-        IEnumerable enumerable = content as IEnumerable;
+        IEnumerable enumerable = (IEnumerable)content;
 
         JToken multiPrevious = previous;
         foreach (object c in enumerable)

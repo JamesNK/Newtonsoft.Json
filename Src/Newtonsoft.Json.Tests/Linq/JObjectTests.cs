@@ -7,6 +7,9 @@ using NUnit.Framework;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Converters;
 using System.IO;
+#if !PocketPC && !SILVERLIGHT
+using System.Web.UI;
+#endif
 
 namespace Newtonsoft.Json.Tests.Linq
 {
@@ -555,6 +558,108 @@ Parameter name: arrayIndex")]
       //  "Department": "IT",
       //  "JobTitle": "Manager"
       //}
+    }
+
+#if !PocketPC && !SILVERLIGHT
+    [Test]
+    public void PropertyChanging()
+    {
+      object changing = null;
+      object changed = null;
+      int changingCount = 0;
+      int changedCount = 0;
+
+      JObject o = new JObject();
+      o.PropertyChanging += (sender, args) =>
+        {
+          JObject s = (JObject) sender;
+          changing = (s[args.PropertyName] != null) ? ((JValue)s[args.PropertyName]).Value : null;
+          changingCount++;
+        };
+      o.PropertyChanged += (sender, args) =>
+      {
+        JObject s = (JObject)sender;
+        changed = (s[args.PropertyName] != null) ? ((JValue)s[args.PropertyName]).Value : null;
+        changedCount++;
+      };
+
+      o["StringValue"] = "value1";
+      Assert.AreEqual(null, changing);
+      Assert.AreEqual("value1", changed);
+      Assert.AreEqual("value1", (string)o["StringValue"]);
+      Assert.AreEqual(1, changingCount);
+      Assert.AreEqual(1, changedCount);
+
+      o["StringValue"] = "value1";
+      Assert.AreEqual(1, changingCount);
+      Assert.AreEqual(1, changedCount);
+
+      o["StringValue"] = "value2";
+      Assert.AreEqual("value1", changing);
+      Assert.AreEqual("value2", changed);
+      Assert.AreEqual("value2", (string)o["StringValue"]);
+      Assert.AreEqual(2, changingCount);
+      Assert.AreEqual(2, changedCount);
+
+      o["StringValue"] = null;
+      Assert.AreEqual("value2", changing);
+      Assert.AreEqual(null, changed);
+      Assert.AreEqual(null, (string)o["StringValue"]);
+      Assert.AreEqual(3, changingCount);
+      Assert.AreEqual(3, changedCount);
+
+      o["NullValue"] = null;
+      Assert.AreEqual(null, changing);
+      Assert.AreEqual(null, changed);
+      Assert.AreEqual(new JValue((object)null), o["NullValue"]);
+      Assert.AreEqual(4, changingCount);
+      Assert.AreEqual(4, changedCount);
+
+      o["NullValue"] = null;
+      Assert.AreEqual(4, changingCount);
+      Assert.AreEqual(4, changedCount);
+    }
+#endif
+
+    [Test]
+    public void PropertyChanged()
+    {
+      object changed = null;
+      int changedCount = 0;
+
+      JObject o = new JObject();
+      o.PropertyChanged += (sender, args) =>
+      {
+        JObject s = (JObject)sender;
+        changed = (s[args.PropertyName] != null) ? ((JValue)s[args.PropertyName]).Value : null;
+        changedCount++;
+      };
+
+      o["StringValue"] = "value1";
+      Assert.AreEqual("value1", changed);
+      Assert.AreEqual("value1", (string)o["StringValue"]);
+      Assert.AreEqual(1, changedCount);
+
+      o["StringValue"] = "value1";
+      Assert.AreEqual(1, changedCount);
+
+      o["StringValue"] = "value2";
+      Assert.AreEqual("value2", changed);
+      Assert.AreEqual("value2", (string)o["StringValue"]);
+      Assert.AreEqual(2, changedCount);
+
+      o["StringValue"] = null;
+      Assert.AreEqual(null, changed);
+      Assert.AreEqual(null, (string)o["StringValue"]);
+      Assert.AreEqual(3, changedCount);
+
+      o["NullValue"] = null;
+      Assert.AreEqual(null, changed);
+      Assert.AreEqual(new JValue((object)null), o["NullValue"]);
+      Assert.AreEqual(4, changedCount);
+
+      o["NullValue"] = null;
+      Assert.AreEqual(4, changedCount);
     }
   }
 }

@@ -82,6 +82,9 @@
     <Compile Include="JsonValidatingReader.cs" />
     <Compile Include="JsonWriter.cs" />
     <Compile Include="JsonWriterException.cs" />
+    <Compile Include="Linq\ComponentModel\JPropertyDescriptor.cs" />
+    <Compile Include="Linq\ComponentModel\JTypeDescriptionProvider.cs" />
+    <Compile Include="Linq\ComponentModel\JTypeDescriptor.cs" />
     <Compile Include="Linq\Extensions.cs" />
     <Compile Include="Linq\IJEnumerable.cs" />
     <Compile Include="Linq\JArray.cs" />
@@ -117,9 +120,10 @@
     <Compile Include="Serialization\JsonObjectContract.cs" />
     <Compile Include="Serialization\JsonProperty.cs" />
     <Compile Include="Serialization\JsonPropertyCollection.cs" />
+    <Compile Include="Serialization\JsonSerializerInternalBase.cs" />
     <Compile Include="Serialization\JsonSerializerProxy.cs" />
-    <Compile Include="Serialization\JsonSerializerReader.cs" />
-    <Compile Include="Serialization\JsonSerializerWriter.cs" />
+    <Compile Include="Serialization\JsonSerializerInternalReader.cs" />
+    <Compile Include="Serialization\JsonSerializerInternalWriter.cs" />
     <Compile Include="TypeNameHandling.cs" />
     <Compile Include="Utilities\BidirectionalDictionary.cs" />
     <Compile Include="Utilities\CollectionUtils.cs" />

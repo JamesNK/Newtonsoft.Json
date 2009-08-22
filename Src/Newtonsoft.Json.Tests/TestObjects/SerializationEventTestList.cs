@@ -26,6 +26,7 @@
 #if !PocketPC && !SILVERLIGHT
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
+using Newtonsoft.Json.Tests.Serialization;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {

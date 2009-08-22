@@ -35,12 +35,12 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Serialization
 {
-  internal class JsonSerializerReader
+  internal class JsonSerializerInternalReader : JsonSerializerInternalBase
   {
     internal readonly JsonSerializer _serializer;
     private JsonSerializerProxy _internalSerializer;
 
-    public JsonSerializerReader(JsonSerializer serializer)
+    public JsonSerializerInternalReader(JsonSerializer serializer)
     {
       ValidationUtils.ArgumentNotNull(serializer, "serializer");
 
@@ -79,7 +79,7 @@ namespace Newtonsoft.Json.Serialization
         else if (contract is JsonObjectContract)
           PopulateObject(target, reader, (JsonObjectContract) contract, id);
         else
-          throw new Exception("dfsdfsdf");
+          throw new JsonSerializationException("Expected a JsonObjectContract or JsonDictionaryContract for type '{0}', got '{1}'.".FormatWith(CultureInfo.InvariantCulture, objectType, contract.GetType()));
       }
     }
 
@@ -292,17 +292,16 @@ namespace Newtonsoft.Json.Serialization
 
         return PopulateDictionary(CollectionUtils.CreateDictionaryWrapper(existingValue), reader, (JsonDictionaryContract) contract, id);
       }
-      else if (contract is JsonObjectContract)
+      
+      if (contract is JsonObjectContract)
       {
         if (existingValue == null)
           return CreateAndPopulateObject(reader, (JsonObjectContract) contract, id);
         
         return PopulateObject(existingValue, reader, (JsonObjectContract) contract, id);
       }
-      else
-      {
-        throw new JsonSerializationException("Expected a JsonObjectContract or JsonDictionaryContract for type '{0}', got '{1}'.".FormatWith(CultureInfo.InvariantCulture, objectType, contract.GetType()));
-      }
+      
+      throw new JsonSerializationException("Expected a JsonObjectContract or JsonDictionaryContract for type '{0}', got '{1}'.".FormatWith(CultureInfo.InvariantCulture, objectType, contract.GetType()));
     }
 
     private JsonArrayContract GetArrayContract(Type objectType)
@@ -400,7 +399,8 @@ namespace Newtonsoft.Json.Serialization
       bool useExistingValue = false;
 
       if ((_serializer.ObjectCreationHandling == ObjectCreationHandling.Auto || _serializer.ObjectCreationHandling == ObjectCreationHandling.Reuse)
-          && (reader.TokenType == JsonToken.StartArray || reader.TokenType == JsonToken.StartObject))
+        && (reader.TokenType == JsonToken.StartArray || reader.TokenType == JsonToken.StartObject)
+        && property.Readable)
       {
         currentValue = ReflectionUtils.GetMemberValue(property.Member, target);
 
@@ -457,7 +457,22 @@ namespace Newtonsoft.Json.Serialization
             object keyValue = EnsureType(reader.Value, contract.DictionaryKeyType);
             CheckedRead(reader);
 
-            dictionary.Add(keyValue, CreateValue(reader, contract.DictionaryValueType, null, null));
+            try
+            {
+              dictionary.Add(keyValue, CreateValue(reader, contract.DictionaryValueType, null, null));
+            }
+            catch (Exception ex)
+            {
+#if !PocketPC && !SILVERLIGHT && !NET20
+              ErrorContext errorContext = GetErrorContext(dictionary.UnderlyingDictionary, keyValue, ex);
+              contract.InvokeOnError(dictionary.UnderlyingDictionary, errorContext);
+
+              if (errorContext.Handled)
+                ClearErrorContext();
+              else
+#endif
+                throw;
+            }
             break;
           case JsonToken.EndObject:
             contract.InvokeOnDeserialized(dictionary.UnderlyingDictionary);
@@ -481,6 +496,8 @@ namespace Newtonsoft.Json.Serialization
 #if !PocketPC && !SILVERLIGHT
           if (contract.OnSerializing != null && isTemporaryListReference)
             throw new JsonSerializationException("Cannot call OnSerializing on an array or readonly list: {0}".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+          if (contract.OnError != null && isTemporaryListReference)
+            throw new JsonSerializationException("Cannot call OnError on an array or readonly list: {0}".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 #endif
 
           PopulateList(l, reader, reference, contract);
@@ -505,9 +522,24 @@ namespace Newtonsoft.Json.Serialization
           case JsonToken.Comment:
             break;
           default:
-            object value = CreateValue(reader, contract.CollectionItemType, null, null);
+            try
+            {
+              object value = CreateValue(reader, contract.CollectionItemType, null, null);
 
-            list.Add(value);
+              list.Add(value);
+            }
+            catch (Exception ex)
+            {
+#if !PocketPC && !SILVERLIGHT && !NET20
+              ErrorContext errorContext = GetErrorContext(list, list.Count, ex);
+              contract.InvokeOnError(list, errorContext);
+
+              if (errorContext.Handled)
+                ClearErrorContext();
+              else
+#endif
+                throw;
+            }
             break;
         }
       }
@@ -537,11 +569,15 @@ namespace Newtonsoft.Json.Serialization
     {
       Type objectType = contract.UnderlyingType;
 
-      // object should have a single constructor
-      ConstructorInfo c = objectType.GetConstructors(BindingFlags.Public | BindingFlags.Instance).SingleOrDefault();
+      ConstructorInfo[] constructors = objectType.GetConstructors(BindingFlags.Public | BindingFlags.Instance);
 
-      if (c == null)
+      if (constructors.Length == 0)
         throw new JsonSerializationException("Could not find a public constructor for type {0}.".FormatWith(CultureInfo.InvariantCulture, objectType));
+      if (constructors.Length > 1)
+        throw new JsonSerializationException("Unable to determine which constructor to use for type {0}. A class with no default constructor should have only one constructor with arguments.".FormatWith(CultureInfo.InvariantCulture, objectType));
+
+      // object should have a single constructor
+      ConstructorInfo c = constructors[0];
 
       // create a dictionary to put retrieved values into
       IDictionary<JsonProperty, object> propertyValues = contract.Properties.Where(p => !p.Ignored).ToDictionary(kv => kv, kv => (object)null);
@@ -631,8 +667,23 @@ namespace Newtonsoft.Json.Serialization
 
             if (reader.TokenType != JsonToken.Null)
               SetRequiredProperty(memberName, requiredProperties);
-            
-            SetObjectMember(reader, newObject, contract, memberName);
+
+            try
+            {
+              SetObjectMember(reader, newObject, contract, memberName);
+            }
+            catch (Exception ex)
+            {
+#if !PocketPC && !SILVERLIGHT && !NET20
+              ErrorContext errorContext = GetErrorContext(newObject, memberName, ex);
+              contract.InvokeOnError(newObject, errorContext);
+
+              if (errorContext.Handled)
+                ClearErrorContext();
+              else
+#endif
+                throw;
+            }
             break;
           case JsonToken.EndObject:
             foreach (KeyValuePair<string, bool> requiredProperty in requiredProperties)

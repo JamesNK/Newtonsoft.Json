@@ -46,7 +46,7 @@ using Newtonsoft.Json.Tests.TestObjects;
 using System.Runtime.Serialization;
 using System.Globalization;
 
-namespace Newtonsoft.Json.Tests
+namespace Newtonsoft.Json.Tests.Serialization
 {
   public class JsonSerializerTest : TestFixtureBase
   {
@@ -1291,7 +1291,7 @@ keyword such as type of business.""
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Could not create an instance of type Newtonsoft.Json.Tests.JsonSerializerTest+ICo. Type is an interface or abstract class and cannot be instantated.")]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Could not create an instance of type Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+ICo. Type is an interface or abstract class and cannot be instantated.")]
     public void DeserializeInterfaceProperty()
     {
       Test testClass = new Test();
@@ -2048,6 +2048,159 @@ keyword such as type of business.""
 
       NullableDateTimeTestClass c = JsonConvert.DeserializeObject<NullableDateTimeTestClass>(json);
       Assert.AreEqual(null, c.DateTimeField);
+    }
+
+    /// <summary>
+    /// What types of events are there? Just sticking to a basic set of four for now.
+    /// </summary>
+    /// <remarks></remarks>
+    public enum EventType
+    {
+      Debug = 0,
+      Info = 1,
+      Warning = 2,
+      Error = 3
+    }
+
+    public sealed class Event
+    {
+
+      /// <summary>
+      /// If no current user is specified, returns Nothing (0 from VB)
+      /// </summary>
+      /// <returns></returns>
+      /// <remarks></remarks>
+      private static int GetCurrentUserId()
+      {
+        return 0;
+      }
+
+      /// <summary>
+      /// Gets either the application path or the current stack trace.
+      /// NOTE: You MUST call this from the top level entry point. Otherwise,
+      /// the stack trace will be buried in Logger itself.
+      /// </summary>
+      /// <returns></returns>
+      /// <remarks></remarks>
+      private static string GetCurrentSubLocation()
+      {
+        return "";
+      }
+
+      private string _sublocation;
+      private int _userId;
+      private EventType _type;
+      private string _summary;
+      private string _details;
+      private string _stackTrace;
+      private string _tag;
+      private DateTime _time;
+
+      public Event(string summary)
+      {
+        _summary = summary;
+        _time = DateTime.Now;
+
+        if (_userId == 0) _userId = GetCurrentUserId();
+        //This call only works at top level for now.
+        //If _stackTrace = Nothing Then _stackTrace = Environment.StackTrace
+        if (_sublocation == null) _sublocation = GetCurrentSubLocation();
+      }
+
+      public Event(string sublocation, int userId, EventType type, string summary, string details, string stackTrace, string tag)
+      {
+        _sublocation = sublocation;
+        _userId = userId;
+        _type = type;
+        _summary = summary;
+        _details = details;
+        _stackTrace = stackTrace;
+        _tag = tag;
+        _time = DateTime.Now;
+
+        if (_userId == 0) _userId = GetCurrentUserId();
+        //If _stackTrace = Nothing Then _stackTrace = Environment.StackTrace
+        if (_sublocation == null) _sublocation = GetCurrentSubLocation();
+      }
+
+      public override string ToString()
+      {
+        return string.Format("{{ sublocation = {0}, userId = {1}, type = {2}, summary = {3}, details = {4}, stackTrace = {5}, tag = {6} }}", _sublocation, _userId, _type, _summary, _details, _stackTrace, _tag);
+      }
+
+      public string sublocation
+      {
+        get { return _sublocation; }
+        set { _sublocation = value; }
+      }
+      public int userId
+      {
+        get { return _userId; }
+        set { _userId = value; }
+      }
+      public EventType type
+      {
+        get { return _type; }
+        set { _type = value; }
+      }
+      public string summary
+      {
+        get { return _summary; }
+        set { _summary = value; }
+      }
+      public string details
+      {
+        get { return _details; }
+        set { _details = value; }
+      }
+      public string stackTrace
+      {
+        get { return _stackTrace; }
+        set { _stackTrace = value; }
+      }
+      public string tag
+      {
+        get { return _tag; }
+        set { _tag = value; }
+      }
+      public DateTime time
+      {
+        get { return _time; }
+      }
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Unable to determine which constructor to use for type Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+Event. A class with no default constructor should have only one constructor with arguments.")]
+    public void FailWhenClassWithNoDefaultConstructorHasMultipleConstructorsWithArguments()
+    {
+      string json = @"{""sublocation"":""AlertEmailSender.Program.Main"",""userId"":0,""type"":0,""summary"":""Loading settings variables"",""details"":null,""stackTrace"":""   at System.Environment.GetStackTrace(Exception e, Boolean needFileInfo)\r\n   at System.Environment.get_StackTrace()\r\n   at mr.Logging.Event..ctor(String summary) in C:\\Projects\\MRUtils\\Logging\\Event.vb:line 71\r\n   at AlertEmailSender.Program.Main(String[] args) in C:\\Projects\\AlertEmailSender\\AlertEmailSender\\Program.cs:line 25"",""tag"":null,""time"":""\/Date(1249591032026-0400)\/""}";
+
+      Event e = JsonConvert.DeserializeObject<Event>(json);
+    }
+
+    public class SetOnlyPropertyClass2
+    {
+      private object _value;
+      public object SetOnlyProperty
+      {
+        set { _value = value; }
+      }
+      public object GetValue()
+      {
+        return _value;
+      }
+    }
+
+    [Test]
+    public void DeserializeObjectSetOnlyProperty()
+    {
+      string json = @"{'SetOnlyProperty':[1,2,3,4,5]}";
+
+      SetOnlyPropertyClass2 setOnly = JsonConvert.DeserializeObject<SetOnlyPropertyClass2>(json);
+      JArray a = (JArray)setOnly.GetValue();
+      Assert.AreEqual(5, a.Count);
+      Assert.AreEqual(1, (int)a[0]);
+      Assert.AreEqual(5, (int)a[a.Count - 1]);
     }
   }
 }

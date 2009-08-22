@@ -309,7 +309,7 @@ namespace Newtonsoft.Json
       ValidationUtils.ArgumentNotNull(reader, "reader");
       ValidationUtils.ArgumentNotNull(target, "target");
 
-      JsonSerializerReader serializerReader = new JsonSerializerReader(this);
+      JsonSerializerInternalReader serializerReader = new JsonSerializerInternalReader(this);
       serializerReader.Populate(reader, target);
     }
 
@@ -351,7 +351,7 @@ namespace Newtonsoft.Json
     {
       ValidationUtils.ArgumentNotNull(reader, "reader");
 
-      JsonSerializerReader serializerReader = new JsonSerializerReader(this);
+      JsonSerializerInternalReader serializerReader = new JsonSerializerInternalReader(this);
       return serializerReader.Deserialize(reader, objectType);
     }
 
@@ -381,7 +381,7 @@ namespace Newtonsoft.Json
     {
       ValidationUtils.ArgumentNotNull(jsonWriter, "jsonWriter");
 
-      JsonSerializerWriter serializerWriter = new JsonSerializerWriter(this);
+      JsonSerializerInternalWriter serializerWriter = new JsonSerializerInternalWriter(this);
       serializerWriter.Serialize(jsonWriter, value);
     }
 

@@ -67,6 +67,10 @@
     <Compile Include="Converters\StringEnumConverterTests.cs" />
     <Compile Include="ExceptionTests.cs" />
     <Compile Include="JsonArrayAttributeTests.cs" />
+    <Compile Include="Linq\ComponentModel\BindingTests.cs" />
+    <Compile Include="Linq\ComponentModel\JPropertyDescriptorTests.cs" />
+    <Compile Include="Linq\ComponentModel\JTypeDescriptionProviderTests.cs" />
+    <Compile Include="Linq\ComponentModel\JTypeDescriptorTests.cs" />
     <Compile Include="Linq\JTokenReaderTest.cs" />
     <Compile Include="Linq\JTokenWriterTest.cs" />
     <Compile Include="JsonValidatingReaderTests.cs" />
@@ -75,6 +79,7 @@
     <Compile Include="Schema\JsonSchemaNodeTests.cs" />
     <Compile Include="Serialization\CamelCasePropertyNamesContractResolverTests.cs" />
     <Compile Include="Serialization\EntitiesSerializationTests.cs" />
+    <Compile Include="Serialization\JsonSerializerTest.cs" />
     <Compile Include="Serialization\PopulateTests.cs" />
     <Compile Include="Serialization\PreserveReferencesHandlingTests.cs" />
     <Compile Include="Serialization\SerializationEventAttributeTests.cs" />
@@ -138,7 +143,6 @@
     <Compile Include="Converters\IsoDateTimeConverterTests.cs" />
     <Compile Include="JsonConvertTest.cs" />
     <Compile Include="Converters\JavaScriptDateTimeConverterTests.cs" />
-    <Compile Include="JsonSerializerTest.cs" />
     <Compile Include="JsonTextReaderTest.cs" />
     <Compile Include="JsonTextWriterTest.cs" />
     <Compile Include="Linq\JArrayTests.cs" />

@@ -70,6 +70,9 @@
     <Compile Include="JsonObjectAttribute.cs" />
     <Compile Include="JsonSerializerSettings.cs" />
     <Compile Include="JsonValidatingReader.cs" />
+    <Compile Include="Linq\ComponentModel\JPropertyDescriptor.cs" />
+    <Compile Include="Linq\ComponentModel\JTypeDescriptionProvider.cs" />
+    <Compile Include="Linq\ComponentModel\JTypeDescriptor.cs" />
     <Compile Include="Linq\IJEnumerable.cs" />
     <Compile Include="Linq\JTokenEqualityComparer.cs" />
     <Compile Include="Linq\JTokenReader.cs" />
@@ -121,6 +124,7 @@
     <Compile Include="Serialization\DefaultContractResolver.cs" />
     <Compile Include="Serialization\DefaultReferenceResolver.cs" />
     <Compile Include="Serialization\DefaultSerializationBinder.cs" />
+    <Compile Include="Serialization\ErrorContext.cs" />
     <Compile Include="Serialization\IContractResolver.cs" />
     <Compile Include="Serialization\IReferenceResolver.cs" />
     <Compile Include="Serialization\JsonArrayContract.cs" />
@@ -138,10 +142,12 @@
     <Compile Include="Serialization\JsonObjectContract.cs" />
     <Compile Include="Serialization\JsonProperty.cs" />
     <Compile Include="Serialization\JsonPropertyCollection.cs" />
+    <Compile Include="Serialization\JsonSerializerInternalBase.cs" />
+    <Compile Include="Serialization\JsonSerializerInternalReader.cs" />
+    <Compile Include="Serialization\JsonSerializerInternalWriter.cs" />
     <Compile Include="Serialization\JsonSerializerProxy.cs" />
-    <Compile Include="Serialization\JsonSerializerReader.cs" />
-    <Compile Include="Serialization\JsonSerializerWriter.cs" />
     <Compile Include="Serialization\JsonTypeReflector.cs" />
+    <Compile Include="Serialization\OnErrorAttribute.cs" />
     <Compile Include="TypeNameHandling.cs" />
     <Compile Include="Utilities\BidirectionalDictionary.cs" />
     <Compile Include="Utilities\ConvertUtils.cs" />

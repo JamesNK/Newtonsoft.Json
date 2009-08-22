@@ -23,11 +23,12 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !PocketPC && !SILVERLIGHT
+#if !PocketPC && !SILVERLIGHT && !NET20
 using System;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
+using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
@@ -47,6 +48,17 @@ namespace Newtonsoft.Json.Tests.TestObjects
 
     // This field is set to null, but populated after deserialization.
     public string Member4 { get; set; }
+
+    // This field is set to null, but populated after error.
+    [JsonIgnore]
+    public string Member5 { get; set; }
+
+    // Getting or setting this field will throw an error.
+    public string Member6
+    {
+      get { throw new Exception("Member5 get error!"); }
+      set { throw new Exception("Member5 set error!"); }
+    }
 
     public SerializationEventTestObject()
     {
@@ -78,6 +90,13 @@ namespace Newtonsoft.Json.Tests.TestObjects
     internal void OnDeserializedMethod(StreamingContext context)
     {
       Member4 = "This value was set after deserialization.";
+    }
+
+    [OnError]
+    internal void OnErrorMethod(StreamingContext context, ErrorContext errorContext)
+    {
+      Member5 = "Error message for member " + errorContext.Member + " = " + errorContext.Error.Message;
+      errorContext.Handled = true;
     }
   }
 }

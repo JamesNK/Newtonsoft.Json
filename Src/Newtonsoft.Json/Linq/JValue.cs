@@ -35,7 +35,7 @@ namespace Newtonsoft.Json.Linq
   /// <summary>
   /// Represents a value in JSON (string, integer, date, etc).
   /// </summary>
-  public class JValue : JToken
+  public class JValue : JToken, IEquatable<JValue>
   {
     private JTokenType _valueType;
     private object _value;
@@ -326,6 +326,51 @@ namespace Newtonsoft.Json.Linq
       int valueHashCode = (_value != null) ? _value.GetHashCode() : 0;
       
       return _valueType.GetHashCode() ^ valueHashCode;
+    }
+
+    /// <summary>
+    /// Indicates whether the current object is equal to another object of the same type.
+    /// </summary>
+    /// <returns>
+    /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+    /// </returns>
+    /// <param name="other">An object to compare with this object.</param>
+    public bool Equals(JValue other)
+    {
+      if (other == null)
+        return false;
+
+      return (_value == other._value);
+    }
+
+    /// <summary>
+    /// Determines whether the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>.
+    /// </summary>
+    /// <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:System.Object"/>.</param>
+    /// <returns>
+    /// true if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>; otherwise, false.
+    /// </returns>
+    /// <exception cref="T:System.NullReferenceException">
+    /// The <paramref name="obj"/> parameter is null.
+    /// </exception>
+    public override bool Equals(object obj)
+    {
+      if (obj == null)
+        return false;
+
+      JValue otherValue = obj as JValue;
+      if (otherValue != null)
+        return Equals(otherValue);
+
+      return base.Equals(obj);
+    }
+
+    public override int GetHashCode()
+    {
+      if (_value == null)
+        return 0;
+
+      return _value.GetHashCode();
     }
   }
 }
