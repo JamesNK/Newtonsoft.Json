@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Utilities;
@@ -87,7 +88,7 @@ namespace Newtonsoft.Json.Linq
       return (t != null && ContentsEqual(t));
     }
 
-    internal override JToken CloneNode()
+    internal override JToken CloneToken()
     {
       return new JArray(this);
     }
@@ -137,7 +138,6 @@ namespace Newtonsoft.Json.Linq
       if (o.Type == JTokenType.Property)
         throw new ArgumentException("An item of type {0} cannot be added to content.".FormatWith(CultureInfo.InvariantCulture, o.Type));
     }
-
 
     /// <summary>
     /// Creates a <see cref="JArray"/> from an object.
@@ -195,7 +195,7 @@ namespace Newtonsoft.Json.Linq
         if (!(key is int))
           throw new ArgumentException("Accessed JArray values with invalid key value: {0}. Array position index expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
 
-        return this[(int)key];
+        return GetItem((int)key);
       }
     }
 
@@ -205,15 +205,8 @@ namespace Newtonsoft.Json.Linq
     /// <value></value>
     public JToken this[int index]
     {
-      get
-      {
-        return GetIndex(this, index);
-      }
-      set
-      {
-        JToken token = this[(object)index];
-        token.Replace(value);
-      }
+      get { return GetItem(index); }
+      set { SetItem(index, value); }
     }
 
     #region IList<JToken> Members
@@ -227,16 +220,7 @@ namespace Newtonsoft.Json.Linq
     /// </returns>
     public int IndexOf(JToken item)
     {
-      int index = 0;
-      foreach (JToken token in Children())
-      {
-        if (token == item)
-          return index;
-
-        index++;
-      }
-
-      return -1;
+      return IndexOfItem(item);
     }
 
     /// <summary>
@@ -249,15 +233,7 @@ namespace Newtonsoft.Json.Linq
     /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.</exception>
     public void Insert(int index, JToken item)
     {
-      if (index == 0)
-      {
-        AddFirst(item);
-      }
-      else
-      {
-        JToken token = GetIndex(this, index);
-        AddInternal(false, token.Previous, item);
-      }
+      InsertItem(index, item);
     }
 
     /// <summary>
@@ -269,22 +245,7 @@ namespace Newtonsoft.Json.Linq
     /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.</exception>
     public void RemoveAt(int index)
     {
-      if (index < 0)
-        throw new ArgumentOutOfRangeException("index", "index is less than 0.");
-
-      int currentIndex = 0;
-      foreach (JToken token in Children())
-      {
-        if (index == currentIndex)
-        {
-          token.Remove();
-          return;
-        }
-
-        currentIndex++;
-      }
-
-      throw new ArgumentOutOfRangeException("index", "index is equal to or greater than Count.");
+      RemoveItemAt(index);
     }
 
     #endregion
@@ -307,7 +268,7 @@ namespace Newtonsoft.Json.Linq
     /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only. </exception>
     public void Clear()
     {
-      RemoveAll();
+      ClearItems();
     }
 
     /// <summary>
@@ -319,26 +280,12 @@ namespace Newtonsoft.Json.Linq
     /// </returns>
     public bool Contains(JToken item)
     {
-      return Children().Contains(item);
+      return ContainsItem(item);
     }
 
     void ICollection<JToken>.CopyTo(JToken[] array, int arrayIndex)
     {
-      if (array == null)
-        throw new ArgumentNullException("array");
-      if (arrayIndex < 0)
-        throw new ArgumentOutOfRangeException("arrayIndex", "arrayIndex is less than 0.");
-      if (arrayIndex >= array.Length)
-        throw new ArgumentException("arrayIndex is equal to or greater than the length of array.");
-      if (Count > array.Length - arrayIndex)
-        throw new ArgumentException("The number of elements in the source JObject is greater than the available space from arrayIndex to the end of the destination array.");
-
-      int index = 0;
-      foreach (JToken token in Children())
-      {
-        array[arrayIndex + index] = token;
-        index++;
-      }
+      CopyItemsTo(array, arrayIndex);
     }
 
     /// <summary>
@@ -348,7 +295,7 @@ namespace Newtonsoft.Json.Linq
     /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.</returns>
     public int Count
     {
-      get { return Children().Count(); }
+      get { return CountItems(); }
     }
 
     bool ICollection<JToken>.IsReadOnly
@@ -364,13 +311,9 @@ namespace Newtonsoft.Json.Linq
     /// true if <paramref name="item"/> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false. This method also returns false if <paramref name="item"/> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"/>.
     /// </returns>
     /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.</exception>
-    public new bool Remove(JToken item)
+    public bool Remove(JToken item)
     {
-      if (!((ICollection<JToken>)this).Contains(item))
-        return false;
-
-      item.Remove();
-      return true;
+      return RemoveItem(item);
     }
 
     #endregion

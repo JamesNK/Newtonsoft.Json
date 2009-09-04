@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
@@ -365,6 +366,35 @@ Parameter name: index")]
         Assert.AreEqual(i, (int)token);
         i++;
       }
+    }
+
+    
+#if !SILVERLIGHT
+    [Test]
+    public void ITypedListGetItemProperties()
+    {
+      JProperty p1 = new JProperty("Test1", 1);
+      JProperty p2 = new JProperty("Test2", "Two");
+      ITypedList a = new JArray(new JObject(p1, p2));
+
+      PropertyDescriptorCollection propertyDescriptors = a.GetItemProperties(null);
+      Assert.IsNotNull(propertyDescriptors);
+      Assert.AreEqual(2, propertyDescriptors.Count);
+      Assert.AreEqual("Test1", propertyDescriptors[0].Name);
+      Assert.AreEqual("Test2", propertyDescriptors[1].Name);
+    }
+#endif
+
+    [Test]
+    public void AddArrayToSelf()
+    {
+      JArray a = new JArray(1, 2);
+      a.Add(a);
+
+      Assert.AreEqual(3, a.Count);
+      Assert.AreEqual(1, (int)a[0]);
+      Assert.AreEqual(2, (int)a[1]);
+      Assert.AreNotSame(a, a[2]);
     }
   }
 }

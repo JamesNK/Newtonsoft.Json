@@ -163,7 +163,7 @@ namespace Newtonsoft.Json.Linq
       }
     }
 
-    internal override JToken CloneNode()
+    internal override JToken CloneToken()
     {
       return new JValue(this);
     }

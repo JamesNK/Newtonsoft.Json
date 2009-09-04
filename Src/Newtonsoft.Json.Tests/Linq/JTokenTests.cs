@@ -94,7 +94,7 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(o.Property("Test1"), v.Parent);
 
       // new value should be cloned
-      Assert.AreNotEqual(p.Value, v);
+      Assert.AreNotSame(p.Value, v);
 
       Assert.AreEqual((DateTime)((JValue)p.Value[1]).Value, (DateTime)((JValue)v[1]).Value);
 
@@ -107,7 +107,7 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreNotEqual(null, o.Parent);
       JProperty o2 = new JProperty("O2", o);
 
-      Assert.AreNotEqual(o1.Value, o2.Value);
+      Assert.AreNotSame(o1.Value, o2.Value);
       Assert.AreEqual(o1.Value.Children().Count(), o2.Value.Children().Count());
       Assert.AreEqual(false, JToken.DeepEquals(o1, o2));
       Assert.AreEqual(true, JToken.DeepEquals(o1.Value, o2.Value));
@@ -505,7 +505,7 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(Exception), ExpectedMessage = "Can not add Newtonsoft.Json.Linq.JProperty to Newtonsoft.Json.Linq.JArray.")]
+    [ExpectedException(typeof(ArgumentException), ExpectedMessage = "Can not add Newtonsoft.Json.Linq.JProperty to Newtonsoft.Json.Linq.JArray.")]
     public void AddPropertyToArray()
     {
       JArray a = new JArray();
@@ -513,7 +513,7 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(Exception), ExpectedMessage = "Can not add Newtonsoft.Json.Linq.JValue to Newtonsoft.Json.Linq.JObject.")]
+    [ExpectedException(typeof(ArgumentException), ExpectedMessage = "Can not add Newtonsoft.Json.Linq.JValue to Newtonsoft.Json.Linq.JObject.")]
     public void AddValueToObject()
     {
       JObject o = new JObject();

@@ -55,23 +55,22 @@ namespace Newtonsoft.Json.Tests.Linq.ComponentModel
 
       object value;
 
-      value = DataBinder.Eval(o, "First");
+      value = (string)DataBinder.Eval(o, "First.Value");
       Assert.AreEqual(value, (string)o["First"]);
 
-      value = DataBinder.Eval(o, "Second");
+      value = DataBinder.Eval(o, "Second.Value");
       Assert.AreEqual(value, (decimal)o["Second"]);
 
       value = DataBinder.Eval(o, "Third");
       Assert.AreEqual(value, o["Third"]);
 
-      value = DataBinder.Eval(o, "Third[0]");
-      // urg!
-      Assert.AreEqual((int)(JToken)value, (int)o["Third"][0]);
+      value = DataBinder.Eval(o, "Third[0].Value");
+      Assert.AreEqual((int)value, (int)o["Third"][0]);
 
-      value = DataBinder.Eval(o, "Third[5].Fourth");
+      value = DataBinder.Eval(o, "Third[5].Fourth.Value");
       Assert.AreEqual(value, (string)o["Third"][5]["Fourth"]);
 
-      value = DataBinder.Eval(o, "Third[5].Fifth.Sixth");
+      value = DataBinder.Eval(o, "Third[5].Fifth.Sixth.Value");
       Assert.AreEqual(value, (string)o["Third"][5]["Fifth"]["Sixth"]);
     }
   }

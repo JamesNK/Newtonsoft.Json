@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Utilities;
@@ -57,8 +58,40 @@ namespace Newtonsoft.Json.Linq
     public JToken Value
     {
       [DebuggerStepThrough]
-      get { return Last; }
-      set { ReplaceAll(value); }
+      get { return Content; }
+      set
+      {
+        CheckReentrancy();
+
+        JToken newValue = value ?? new JValue((object) null);
+
+        if (Content == null)
+        {
+          newValue = EnsureParentToken(newValue);
+
+          Content = newValue;
+          Content.Parent = this;
+          Content.Next = Content;
+        }
+        else
+        {
+          Content.Replace(newValue);
+        }
+      }
+    }
+
+    internal override void ReplaceItem(JToken existing, JToken replacement)
+    {
+      if (IsTokenUnchanged(existing, replacement))
+        return;
+
+      if (Parent != null)
+        ((JObject)Parent).InternalPropertyChanging(this);
+
+      base.ReplaceItem(existing, replacement);
+
+      if (Parent != null)
+        ((JObject)Parent).InternalPropertyChanged(this);
     }
 
     /// <summary>
@@ -71,13 +104,72 @@ namespace Newtonsoft.Json.Linq
       _name = other.Name;
     }
 
+    internal override void AddItem(bool isLast, JToken previous, JToken item)
+    {
+      if (Value != null)
+        throw new Exception("{0} cannot have multiple values.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
+
+      Value = item;
+    }
+
+    internal override JToken GetItem(int index)
+    {
+      if (index != 0)
+        throw new ArgumentOutOfRangeException();
+
+      return Value;
+    }
+
+    internal override void SetItem(int index, JToken item)
+    {
+      if (index != 0)
+        throw new ArgumentOutOfRangeException();
+      
+      Value = item;
+    }
+
+    internal override bool RemoveItem(JToken item)
+    {
+      throw new Exception("Cannot add or remove items from {0}.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
+    }
+
+    internal override void RemoveItemAt(int index)
+    {
+      throw new Exception("Cannot add or remove items from {0}.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
+    }
+
+    internal override void InsertItem(int index, JToken item)
+    {
+      throw new Exception("Cannot add or remove items from {0}.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
+    }
+
+    internal override bool ContainsItem(JToken item)
+    {
+      return (Value == item);
+    }
+
+    internal override void ClearItems()
+    {
+      throw new Exception("Cannot add or remove items from {0}.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
+    }
+
+    public override JEnumerable<JToken> Children()
+    {
+      return new JEnumerable<JToken>(ChildrenInternal());
+    }
+
+    private IEnumerable<JToken> ChildrenInternal()
+    {
+      yield return Value;
+    }
+
     internal override bool DeepEquals(JToken node)
     {
       JProperty t = node as JProperty;
       return (t != null && _name == t.Name && ContentsEqual(t));
     }
 
-    internal override JToken CloneNode()
+    internal override JToken CloneToken()
     {
       return new JProperty(this);
     }
@@ -92,12 +184,9 @@ namespace Newtonsoft.Json.Linq
       get { return JTokenType.Property; }
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="JProperty"/> class.
-    /// </summary>
-    /// <param name="name">The property name.</param>
-    public JProperty(string name)
+    internal JProperty(string name)
     {
+      // called from JTokenWriter
       ValidationUtils.ArgumentNotNull(name, "name");
 
       _name = name;
@@ -147,21 +236,6 @@ namespace Newtonsoft.Json.Linq
       writer.WritePropertyName(_name);
       Value.WriteTo(writer, converters);
     }
-
-    //public static explicit operator JValue(JProperty property)
-    //{
-    //  if (property == null)
-    //    return null;
-
-    //  JToken value = property.Value;
-    //  if (value == null)
-    //    return null;
-
-    //  if (!(value is JValue))
-    //    throw new Exception("Could not cast {0} to JValue".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
-
-    //  return (JValue)value;
-    //}
 
     internal override int GetDeepHashCode()
     {

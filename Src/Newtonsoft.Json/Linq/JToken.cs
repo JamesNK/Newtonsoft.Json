@@ -31,6 +31,7 @@ using Newtonsoft.Json.Utilities;
 using System.Diagnostics;
 using System.Globalization;
 using System.Collections;
+using System.ComponentModel;
 
 namespace Newtonsoft.Json.Linq
 {
@@ -93,7 +94,7 @@ namespace Newtonsoft.Json.Linq
       }
     }
 
-    internal abstract JToken CloneNode();
+    internal abstract JToken CloneToken();
     internal abstract bool DeepEquals(JToken node);
 
     /// <summary>
@@ -303,7 +304,7 @@ namespace Newtonsoft.Json.Linq
       if (_parent == null)
         throw new InvalidOperationException("The parent is missing.");
 
-      _parent.Remove(this);
+      _parent.RemoveItem(this);
     }
 
     /// <summary>
@@ -315,20 +316,7 @@ namespace Newtonsoft.Json.Linq
       if (_parent == null)
         throw new InvalidOperationException("The parent is missing.");
 
-      JContainer parent = _parent;
-
-      JToken previous = this;
-      while (previous._next != this)
-      {
-        previous = previous._next;
-      }
-      if (previous == this)
-        previous = null;
-
-      bool isLast = (this == _parent.Last);
-
-      Remove();
-      parent.AddInternal(isLast, previous, value);
+      _parent.ReplaceItem(this, value);
     }
 
     /// <summary>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Tests.TestObjects;
@@ -7,8 +8,11 @@ using NUnit.Framework;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Converters;
 using System.IO;
+using System.Collections;
 #if !PocketPC && !SILVERLIGHT
 using System.Web.UI;
+using System.Collections;
+using System.ComponentModel;
 #endif
 
 namespace Newtonsoft.Json.Tests.Linq
@@ -88,7 +92,7 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(Exception), ExpectedMessage = "Can not add property PropertyNameValue to Newtonsoft.Json.Linq.JObject. Property with the same name already exists on object.")]
+    [ExpectedException(typeof(ArgumentException), ExpectedMessage = "Can not add property PropertyNameValue to Newtonsoft.Json.Linq.JObject. Property with the same name already exists on object.")]
     public void DuplicatePropertyNameShouldThrow()
     {
       JObject o = new JObject();
@@ -195,7 +199,6 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(3, (int)a[3].Value);
 
       Assert.AreEqual(default(KeyValuePair<string, JToken>), a[4]);
-
     }
 
     [Test]
@@ -560,6 +563,39 @@ Parameter name: arrayIndex")]
       //}
     }
 
+    [Test]
+    public void ReplaceJPropertyWithJPropertyWithSameName()
+    {
+      JProperty p1 = new JProperty("Test1", 1);
+      JProperty p2 = new JProperty("Test2", "Two");
+
+      JObject o = new JObject(p1, p2);
+      IList l = o;
+      Assert.AreEqual(p1, l[0]);
+      Assert.AreEqual(p2, l[1]);
+
+      JProperty p3 = new JProperty("Test1", "III");
+
+      p1.Replace(p3);
+      Assert.AreEqual(null, p1.Parent);
+      Assert.AreEqual(l, p3.Parent);
+
+      Assert.AreEqual(p3, l[0]);
+      Assert.AreEqual(p2, l[1]);
+
+      Assert.AreEqual(2, l.Count);
+      Assert.AreEqual(2, o.Properties().Count());
+
+      JProperty p4 = new JProperty("Test4", "IV");
+
+      p2.Replace(p4);
+      Assert.AreEqual(null, p2.Parent);
+      Assert.AreEqual(l, p4.Parent);
+
+      Assert.AreEqual(p3, l[0]);
+      Assert.AreEqual(p4, l[1]);
+    }
+
 #if !PocketPC && !SILVERLIGHT
     [Test]
     public void PropertyChanging()
@@ -661,5 +697,615 @@ Parameter name: arrayIndex")]
       o["NullValue"] = null;
       Assert.AreEqual(4, changedCount);
     }
+
+    [Test]
+    public void IListContains()
+    {
+      JProperty p = new JProperty("Test", 1);
+      IList l = new JObject(p);
+
+      Assert.IsTrue(l.Contains(p));
+      Assert.IsFalse(l.Contains(new JProperty("Test", 1)));
+    }
+
+    [Test]
+    public void IListIndexOf()
+    {
+      JProperty p = new JProperty("Test", 1);
+      IList l = new JObject(p);
+
+      Assert.AreEqual(0, l.IndexOf(p));
+      Assert.AreEqual(-1, l.IndexOf(new JProperty("Test", 1)));
+    }
+
+    [Test]
+    public void IListClear()
+    {
+      JProperty p = new JProperty("Test", 1);
+      IList l = new JObject(p);
+
+      Assert.AreEqual(1, l.Count);
+
+      l.Clear();
+
+      Assert.AreEqual(0, l.Count);
+    }
+
+    [Test]
+    public void IListCopyTo()
+    {
+      JProperty p1 = new JProperty("Test1", 1);
+      JProperty p2 = new JProperty("Test2", "Two");
+      IList l = new JObject(p1, p2);
+
+      object[] a = new object[l.Count];
+
+      l.CopyTo(a, 0);
+
+      Assert.AreEqual(p1, a[0]);
+      Assert.AreEqual(p2, a[1]);
+    }
+
+    [Test]
+    public void IListAdd()
+    {
+      JProperty p1 = new JProperty("Test1", 1);
+      JProperty p2 = new JProperty("Test2", "Two");
+      IList l = new JObject(p1, p2);
+
+      JProperty p3 = new JProperty("Test3", "III");
+
+      l.Add(p3);
+
+      Assert.AreEqual(3, l.Count);
+      Assert.AreEqual(p3, l[2]);
+    }
+
+    [Test]
+    [ExpectedException(typeof(ArgumentException), ExpectedMessage = "Can not add Newtonsoft.Json.Linq.JValue to Newtonsoft.Json.Linq.JObject.")]
+    public void IListAddBadToken()
+    {
+      JProperty p1 = new JProperty("Test1", 1);
+      JProperty p2 = new JProperty("Test2", "Two");
+      IList l = new JObject(p1, p2);
+
+      l.Add(new JValue("Bad!"));
+    }
+
+    [Test]
+    [ExpectedException(typeof(ArgumentException), ExpectedMessage = "Argument is not a JToken.")]
+    public void IListAddBadValue()
+    {
+      JProperty p1 = new JProperty("Test1", 1);
+      JProperty p2 = new JProperty("Test2", "Two");
+      IList l = new JObject(p1, p2);
+
+      l.Add("Bad!");
+    }
+
+    [Test]
+    [ExpectedException(typeof(ArgumentException), ExpectedMessage = "Can not add property Test2 to Newtonsoft.Json.Linq.JObject. Property with the same name already exists on object.")]
+    public void IListAddPropertyWithExistingName()
+    {
+      JProperty p1 = new JProperty("Test1", 1);
+      JProperty p2 = new JProperty("Test2", "Two");
+      IList l = new JObject(p1, p2);
+
+      JProperty p3 = new JProperty("Test2", "II");
+
+      l.Add(p3);
+    }
+
+    [Test]
+    public void IListRemove()
+    {
+      JProperty p1 = new JProperty("Test1", 1);
+      JProperty p2 = new JProperty("Test2", "Two");
+      IList l = new JObject(p1, p2);
+
+      JProperty p3 = new JProperty("Test3", "III");
+
+      // won't do anything
+      l.Remove(p3);
+      Assert.AreEqual(2, l.Count);
+
+      l.Remove(p1);
+      Assert.AreEqual(1, l.Count);
+      Assert.IsFalse(l.Contains(p1));
+      Assert.IsTrue(l.Contains(p2));
+
+      l.Remove(p2);
+      Assert.AreEqual(0, l.Count);
+      Assert.IsFalse(l.Contains(p2));
+      Assert.AreEqual(null, p2.Parent);
+    }
+
+    [Test]
+    public void IListRemoveAt()
+    {
+      JProperty p1 = new JProperty("Test1", 1);
+      JProperty p2 = new JProperty("Test2", "Two");
+      IList l = new JObject(p1, p2);
+
+      // won't do anything
+      l.RemoveAt(0);
+
+      l.Remove(p1);
+      Assert.AreEqual(1, l.Count);
+
+      l.Remove(p2);
+      Assert.AreEqual(0, l.Count);
+    }
+
+    [Test]
+    public void IListInsert()
+    {
+      JProperty p1 = new JProperty("Test1", 1);
+      JProperty p2 = new JProperty("Test2", "Two");
+      IList l = new JObject(p1, p2);
+
+      JProperty p3 = new JProperty("Test3", "III");
+
+      l.Insert(1, p3);
+      Assert.AreEqual(l, p3.Parent);
+
+      Assert.AreEqual(p1, l[0]);
+      Assert.AreEqual(p3, l[1]);
+      Assert.AreEqual(p2, l[2]);
+    }
+
+    [Test]
+    public void IListIsReadOnly()
+    {
+      IList l = new JObject();
+      Assert.IsFalse(l.IsReadOnly);
+    }
+
+    [Test]
+    public void IListIsFixedSize()
+    {
+      IList l = new JObject();
+      Assert.IsFalse(l.IsFixedSize);
+    }
+
+    [Test]
+    public void IListSetItem()
+    {
+      JProperty p1 = new JProperty("Test1", 1);
+      JProperty p2 = new JProperty("Test2", "Two");
+      IList l = new JObject(p1, p2);
+
+      JProperty p3 = new JProperty("Test3", "III");
+
+      l[0] = p3;
+
+      Assert.AreEqual(p3, l[0]);
+      Assert.AreEqual(p2, l[1]);
+    }
+
+    [Test]
+    [ExpectedException(typeof(ArgumentException), ExpectedMessage = "Can not add property Test3 to Newtonsoft.Json.Linq.JObject. Property with the same name already exists on object.")]
+    public void IListSetItemAlreadyExists()
+    {
+      JProperty p1 = new JProperty("Test1", 1);
+      JProperty p2 = new JProperty("Test2", "Two");
+      IList l = new JObject(p1, p2);
+
+      JProperty p3 = new JProperty("Test3", "III");
+
+      l[0] = p3;
+      l[1] = p3;
+    }
+
+    [Test]
+    [ExpectedException(typeof(ArgumentException), ExpectedMessage = @"Can not add Newtonsoft.Json.Linq.JValue to Newtonsoft.Json.Linq.JObject.")]
+    public void IListSetItemInvalid()
+    {
+      JProperty p1 = new JProperty("Test1", 1);
+      JProperty p2 = new JProperty("Test2", "Two");
+      IList l = new JObject(p1, p2);
+
+      l[0] = new JValue(true);
+    }
+
+    [Test]
+    public void IListSyncRoot()
+    {
+      JProperty p1 = new JProperty("Test1", 1);
+      JProperty p2 = new JProperty("Test2", "Two");
+      IList l = new JObject(p1, p2);
+
+      Assert.IsNotNull(l.SyncRoot);
+    }
+
+    [Test]
+    public void IListIsSynchronized()
+    {
+      JProperty p1 = new JProperty("Test1", 1);
+      JProperty p2 = new JProperty("Test2", "Two");
+      IList l = new JObject(p1, p2);
+
+      Assert.IsFalse(l.IsSynchronized);
+    }
+
+    [Test]
+    public void GenericListJTokenContains()
+    {
+      JProperty p = new JProperty("Test", 1);
+      IList<JToken> l = new JObject(p);
+
+      Assert.IsTrue(l.Contains(p));
+      Assert.IsFalse(l.Contains(new JProperty("Test", 1)));
+    }
+
+    [Test]
+    public void GenericListJTokenIndexOf()
+    {
+      JProperty p = new JProperty("Test", 1);
+      IList<JToken> l = new JObject(p);
+
+      Assert.AreEqual(0, l.IndexOf(p));
+      Assert.AreEqual(-1, l.IndexOf(new JProperty("Test", 1)));
+    }
+
+    [Test]
+    public void GenericListJTokenClear()
+    {
+      JProperty p = new JProperty("Test", 1);
+      IList<JToken> l = new JObject(p);
+
+      Assert.AreEqual(1, l.Count);
+
+      l.Clear();
+
+      Assert.AreEqual(0, l.Count);
+    }
+
+    [Test]
+    public void GenericListJTokenCopyTo()
+    {
+      JProperty p1 = new JProperty("Test1", 1);
+      JProperty p2 = new JProperty("Test2", "Two");
+      IList<JToken> l = new JObject(p1, p2);
+
+      JToken[] a = new JToken[l.Count];
+
+      l.CopyTo(a, 0);
+
+      Assert.AreEqual(p1, a[0]);
+      Assert.AreEqual(p2, a[1]);
+    }
+
+    [Test]
+    public void GenericListJTokenAdd()
+    {
+      JProperty p1 = new JProperty("Test1", 1);
+      JProperty p2 = new JProperty("Test2", "Two");
+      IList<JToken> l = new JObject(p1, p2);
+
+      JProperty p3 = new JProperty("Test3", "III");
+
+      l.Add(p3);
+
+      Assert.AreEqual(3, l.Count);
+      Assert.AreEqual(p3, l[2]);
+    }
+
+    [Test]
+    [ExpectedException(typeof(ArgumentException), ExpectedMessage = "Can not add Newtonsoft.Json.Linq.JValue to Newtonsoft.Json.Linq.JObject.")]
+    public void GenericListJTokenAddBadToken()
+    {
+      JProperty p1 = new JProperty("Test1", 1);
+      JProperty p2 = new JProperty("Test2", "Two");
+      IList<JToken> l = new JObject(p1, p2);
+
+      l.Add(new JValue("Bad!"));
+    }
+
+    [Test]
+    [ExpectedException(typeof(ArgumentException), ExpectedMessage = "Can not add Newtonsoft.Json.Linq.JValue to Newtonsoft.Json.Linq.JObject.")]
+    public void GenericListJTokenAddBadValue()
+    {
+      JProperty p1 = new JProperty("Test1", 1);
+      JProperty p2 = new JProperty("Test2", "Two");
+      IList<JToken> l = new JObject(p1, p2);
+
+      // string is implicitly converted to JValue
+      l.Add("Bad!");
+    }
+
+    [Test]
+    [ExpectedException(typeof(ArgumentException), ExpectedMessage = "Can not add property Test2 to Newtonsoft.Json.Linq.JObject. Property with the same name already exists on object.")]
+    public void GenericListJTokenAddPropertyWithExistingName()
+    {
+      JProperty p1 = new JProperty("Test1", 1);
+      JProperty p2 = new JProperty("Test2", "Two");
+      IList<JToken> l = new JObject(p1, p2);
+
+      JProperty p3 = new JProperty("Test2", "II");
+
+      l.Add(p3);
+    }
+
+    [Test]
+    public void GenericListJTokenRemove()
+    {
+      JProperty p1 = new JProperty("Test1", 1);
+      JProperty p2 = new JProperty("Test2", "Two");
+      IList<JToken> l = new JObject(p1, p2);
+
+      JProperty p3 = new JProperty("Test3", "III");
+
+      // won't do anything
+      Assert.IsFalse(l.Remove(p3));
+      Assert.AreEqual(2, l.Count);
+
+      Assert.IsTrue(l.Remove(p1));
+      Assert.AreEqual(1, l.Count);
+      Assert.IsFalse(l.Contains(p1));
+      Assert.IsTrue(l.Contains(p2));
+
+      Assert.IsTrue(l.Remove(p2));
+      Assert.AreEqual(0, l.Count);
+      Assert.IsFalse(l.Contains(p2));
+      Assert.AreEqual(null, p2.Parent);
+    }
+
+    [Test]
+    public void GenericListJTokenRemoveAt()
+    {
+      JProperty p1 = new JProperty("Test1", 1);
+      JProperty p2 = new JProperty("Test2", "Two");
+      IList<JToken> l = new JObject(p1, p2);
+
+      // won't do anything
+      l.RemoveAt(0);
+
+      l.Remove(p1);
+      Assert.AreEqual(1, l.Count);
+
+      l.Remove(p2);
+      Assert.AreEqual(0, l.Count);
+    }
+
+    [Test]
+    public void GenericListJTokenInsert()
+    {
+      JProperty p1 = new JProperty("Test1", 1);
+      JProperty p2 = new JProperty("Test2", "Two");
+      IList<JToken> l = new JObject(p1, p2);
+
+      JProperty p3 = new JProperty("Test3", "III");
+
+      l.Insert(1, p3);
+      Assert.AreEqual(l, p3.Parent);
+
+      Assert.AreEqual(p1, l[0]);
+      Assert.AreEqual(p3, l[1]);
+      Assert.AreEqual(p2, l[2]);
+    }
+
+    [Test]
+    public void GenericListJTokenIsReadOnly()
+    {
+      IList<JToken> l = new JObject();
+      Assert.IsFalse(l.IsReadOnly);
+    }
+
+    [Test]
+    public void GenericListJTokenSetItem()
+    {
+      JProperty p1 = new JProperty("Test1", 1);
+      JProperty p2 = new JProperty("Test2", "Two");
+      IList<JToken> l = new JObject(p1, p2);
+
+      JProperty p3 = new JProperty("Test3", "III");
+
+      l[0] = p3;
+
+      Assert.AreEqual(p3, l[0]);
+      Assert.AreEqual(p2, l[1]);
+    }
+
+    [Test]
+    [ExpectedException(typeof(ArgumentException), ExpectedMessage = "Can not add property Test3 to Newtonsoft.Json.Linq.JObject. Property with the same name already exists on object.")]
+    public void GenericListJTokenSetItemAlreadyExists()
+    {
+      JProperty p1 = new JProperty("Test1", 1);
+      JProperty p2 = new JProperty("Test2", "Two");
+      IList<JToken> l = new JObject(p1, p2);
+
+      JProperty p3 = new JProperty("Test3", "III");
+
+      l[0] = p3;
+      l[1] = p3;
+    }
+
+#if !SILVERLIGHT
+    [Test]
+    public void IBindingListSortDirection()
+    {
+      IBindingList l = new JObject();
+      Assert.AreEqual(ListSortDirection.Ascending, l.SortDirection);
+    }
+
+    [Test]
+    public void IBindingListSortProperty()
+    {
+      IBindingList l = new JObject();
+      Assert.AreEqual(null, l.SortProperty);
+    }
+
+    [Test]
+    public void IBindingListSupportsChangeNotification()
+    {
+      IBindingList l = new JObject();
+      Assert.AreEqual(true, l.SupportsChangeNotification);
+    }
+
+    [Test]
+    public void IBindingListSupportsSearching()
+    {
+      IBindingList l = new JObject();
+      Assert.AreEqual(false, l.SupportsSearching);
+    }
+
+    [Test]
+    public void IBindingListSupportsSorting()
+    {
+      IBindingList l = new JObject();
+      Assert.AreEqual(false, l.SupportsSorting);
+    }
+
+    [Test]
+    public void IBindingListAllowEdit()
+    {
+      IBindingList l = new JObject();
+      Assert.AreEqual(true, l.AllowEdit);
+    }
+
+    [Test]
+    public void IBindingListAllowNew()
+    {
+      IBindingList l = new JObject();
+      Assert.AreEqual(true, l.AllowNew);
+    }
+
+    [Test]
+    public void IBindingListAllowRemove()
+    {
+      IBindingList l = new JObject();
+      Assert.AreEqual(true, l.AllowRemove);
+    }
+
+    [Test]
+    public void IBindingListAddIndex()
+    {
+      IBindingList l = new JObject();
+      // do nothing
+      l.AddIndex(null);
+    }
+
+    [Test]
+    [ExpectedException(typeof(NotSupportedException))]
+    public void IBindingListApplySort()
+    {
+      IBindingList l = new JObject();
+      l.ApplySort(null, ListSortDirection.Ascending);
+    }
+
+    [Test]
+    [ExpectedException(typeof(NotSupportedException))]
+    public void IBindingListRemoveSort()
+    {
+      IBindingList l = new JObject();
+      l.RemoveSort();
+    }
+
+    [Test]
+    public void IBindingListRemoveIndex()
+    {
+      IBindingList l = new JObject();
+      // do nothing
+      l.RemoveIndex(null);
+    }
+
+    [Test]
+    [ExpectedException(typeof(NotSupportedException))]
+    public void IBindingListFind()
+    {
+      IBindingList l = new JObject();
+      l.Find(null, null);
+    }
+
+    [Test]
+    public void IBindingListIsSorted()
+    {
+      IBindingList l = new JObject();
+      Assert.AreEqual(false, l.IsSorted);
+    }
+
+    [Test]
+    [ExpectedException(typeof(Exception), ExpectedMessage = "Could not determine new value to add to 'Newtonsoft.Json.Linq.JObject'.")]
+    public void IBindingListAddNew()
+    {
+      IBindingList l = new JObject();
+      l.AddNew();
+    }
+
+    [Test]
+    public void IBindingListAddNewWithEvent()
+    {
+      JObject o = new JObject();
+      o.AddingNew += (s, e) => e.NewObject = new JProperty("Property!");
+
+      IBindingList l = o;
+      object newObject = l.AddNew();
+      Assert.IsNotNull(newObject);
+
+      JProperty p = (JProperty) newObject;
+      Assert.AreEqual("Property!", p.Name);
+      Assert.AreEqual(o, p.Parent);
+    }
+
+    [Test]
+    public void ITypedListGetListName()
+    {
+      JProperty p1 = new JProperty("Test1", 1);
+      JProperty p2 = new JProperty("Test2", "Two");
+      ITypedList l = new JObject(p1, p2);
+
+      Assert.AreEqual(string.Empty, l.GetListName(null));
+    }
+
+    [Test]
+    public void ITypedListGetItemProperties()
+    {
+      JProperty p1 = new JProperty("Test1", 1);
+      JProperty p2 = new JProperty("Test2", "Two");
+      ITypedList l = new JObject(p1, p2);
+
+      PropertyDescriptorCollection propertyDescriptors = l.GetItemProperties(null);
+      Assert.IsNull(propertyDescriptors);
+    }
+
+    [Test]
+    public void ListChanged()
+    {
+      JProperty p1 = new JProperty("Test1", 1);
+      JProperty p2 = new JProperty("Test2", "Two");
+      JObject o = new JObject(p1, p2);
+
+      ListChangedType? changedType = null;
+      int? index = null;
+      
+      o.ListChanged += (s, a) =>
+        {
+          changedType = a.ListChangedType;
+          index = a.NewIndex;
+        };
+
+      JProperty p3 = new JProperty("Test3", "III");
+
+      o.Add(p3);
+      Assert.AreEqual(changedType, ListChangedType.ItemAdded);
+      Assert.AreEqual(index, 2);
+      Assert.AreEqual(p3, ((IList<JToken>)o)[index.Value]);
+
+      JProperty p4 = new JProperty("Test4", "IV");
+
+      ((IList<JToken>) o)[index.Value] = p4;
+      Assert.AreEqual(changedType, ListChangedType.ItemChanged);
+      Assert.AreEqual(index, 2);
+      Assert.AreEqual(p4, ((IList<JToken>)o)[index.Value]);
+      Assert.IsFalse(((IList<JToken>)o).Contains(p3));
+      Assert.IsTrue(((IList<JToken>)o).Contains(p4));
+
+      o["Test1"] = 2;
+      Assert.AreEqual(changedType, ListChangedType.ItemChanged);
+      Assert.AreEqual(index, 0);
+      Assert.AreEqual(2, (int)o["Test1"]);
+    }
+#endif
   }
 }

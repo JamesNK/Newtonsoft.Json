@@ -59,6 +59,13 @@ namespace Newtonsoft.Json.Linq
     }
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="JConstructor"/> class.
+    /// </summary>
+    public JConstructor()
+    {
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="JConstructor"/> class from another <see cref="JConstructor"/> object.
     /// </summary>
     /// <param name="other">A <see cref="JConstructor"/> object to copy from.</param>
@@ -106,7 +113,7 @@ namespace Newtonsoft.Json.Linq
       return (c != null && _name == c.Name && ContentsEqual(c));
     }
 
-    internal override JToken CloneNode()
+    internal override JToken CloneToken()
     {
       return new JConstructor(this);
     }
@@ -152,7 +159,7 @@ namespace Newtonsoft.Json.Linq
         if (!(key is int))
           throw new ArgumentException("Accessed JConstructor values with invalid key value: {0}. Argument position index expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
 
-        return GetIndex(this, (int)key);
+        return GetItem((int)key);
       }
     }
 

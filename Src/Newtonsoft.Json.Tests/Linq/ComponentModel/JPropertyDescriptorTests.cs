@@ -44,7 +44,7 @@ namespace Newtonsoft.Json.Tests.Linq.ComponentModel
       JPropertyDescriptor prop1 = new JPropertyDescriptor("prop1", typeof(string));
       JPropertyDescriptor prop2 = new JPropertyDescriptor("prop2", typeof(JArray));
 
-      Assert.AreEqual("12345!", prop1.GetValue(o));
+      Assert.AreEqual("12345!", ((JValue) prop1.GetValue(o)).Value);
       Assert.AreEqual(o["prop2"], prop2.GetValue(o));
     }
 

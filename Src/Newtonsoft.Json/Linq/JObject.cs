@@ -98,20 +98,35 @@ namespace Newtonsoft.Json.Linq
       return (t != null && ContentsEqual(t));
     }
 
-    internal override void ValidateToken(JToken o)
+    internal override void ValidateToken(JToken o, JToken existing)
     {
       ValidationUtils.ArgumentNotNull(o, "o");
 
       if (o.Type != JTokenType.Property)
-        throw new Exception("Can not add {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, o.GetType(), GetType()));
+        throw new ArgumentException("Can not add {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, o.GetType(), GetType()));
 
       JProperty property = (JProperty)o;
-      bool matchingProperty = (Properties().Where(p => string.Compare(p.Name, property.Name, StringComparison.Ordinal) == 0).Count() > 0);
+      bool matchingProperty = Properties().Any(p => string.Equals(p.Name, property.Name, StringComparison.Ordinal) && p != existing);
       if (matchingProperty)
-        throw new Exception("Can not add property {0} to {1}. Property with the same name already exists on object.".FormatWith(CultureInfo.InvariantCulture, property.Name, GetType()));
+        throw new ArgumentException("Can not add property {0} to {1}. Property with the same name already exists on object.".FormatWith(CultureInfo.InvariantCulture, property.Name, GetType()));
     }
 
-    internal override JToken CloneNode()
+    internal void InternalPropertyChanged(JProperty childProperty)
+    {
+      OnPropertyChanged(childProperty.Name);
+#if !SILVERLIGHT
+      OnListChanged(new ListChangedEventArgs(ListChangedType.ItemChanged, IndexOfItem(childProperty)));
+#endif
+    }
+
+    internal void InternalPropertyChanging(JProperty childProperty)
+    {
+#if !PocketPC && !SILVERLIGHT
+      OnPropertyChanging(childProperty.Name);
+#endif
+    }
+
+    internal override JToken CloneToken()
     {
       return new JObject(this);
     }
@@ -192,14 +207,7 @@ namespace Newtonsoft.Json.Linq
         JProperty property = Property(propertyName);
         if (property != null)
         {
-          if (!IsTokenUnchanged(property.Value, value))
-          {
-#if !PocketPC && !SILVERLIGHT
-            OnPropertyChanging(property.Name);
-#endif
-            property.Value = value;
-            OnPropertyChanged(property.Name);
-          }
+          property.Value = value;
         }
         else
         {
@@ -210,21 +218,6 @@ namespace Newtonsoft.Json.Linq
           OnPropertyChanged(propertyName);
         }
       }
-    }
-
-    private static bool IsTokenUnchanged(JToken currentValue, JToken newValue)
-    {
-      JValue v1 = currentValue as JValue;
-      if (v1 != null)
-      {
-        // null will get turned into a JValue of type null
-        if (v1.Type == JTokenType.Null && newValue == null)
-          return true;
-
-        return v1.Equals(newValue);
-      }
-
-      return false;
     }
 
     /// <summary>

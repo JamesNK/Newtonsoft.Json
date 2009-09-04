@@ -26,19 +26,43 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Newtonsoft.Json.Utilities;
 using System.Collections;
 using System.Diagnostics;
 using System.Globalization;
+using System.ComponentModel;
+#if !SILVERLIGHT
+using Newtonsoft.Json.Linq.ComponentModel;
+#endif
 
 namespace Newtonsoft.Json.Linq
 {
   /// <summary>
   /// Represents a token that can contain other tokens.
   /// </summary>
-  public abstract class JContainer : JToken
+  public abstract class JContainer : JToken, IList<JToken>
+#if !SILVERLIGHT
+    , ITypedList, IBindingList
+#else
+    , IList
+#endif
   {
+#if !SILVERLIGHT
+    /// <summary>
+    /// Occurs when the list changes or an item in the list changes.
+    /// </summary>
+    public event ListChangedEventHandler ListChanged;
+
+    /// <summary>
+    /// Occurs before an item is added to the collection.
+    /// </summary>
+    public event AddingNewEventHandler AddingNew;
+#endif
+
     private JToken _content;
+    private object _syncRoot;
+    private bool _busy;
 
     internal JToken Content
     {
@@ -60,11 +84,44 @@ namespace Newtonsoft.Json.Linq
         do
         {
           content = content._next;
-          Add(content.CloneNode());
+          Add(content.CloneToken());
         }
         while (content != other.Last);
       }
     }
+
+    internal void CheckReentrancy()
+    {
+      if (_busy)
+        throw new InvalidOperationException("ObservableCollection_CannotChangeObservableCollection");
+    }
+
+ #if !SILVERLIGHT
+   protected virtual void OnAddingNew(AddingNewEventArgs e)
+    {
+      AddingNewEventHandler handler = AddingNew;
+      if (handler != null)
+        handler(this, e);
+    }
+
+    protected virtual void OnListChanged(ListChangedEventArgs e)
+    {
+      ListChangedEventHandler handler = ListChanged;
+
+      if (handler != null)
+      {
+        _busy = true;
+        try
+        {
+          handler(this, e);
+        }
+        finally
+        {
+          _busy = false;
+        }
+      }
+    }
+#endif
 
     /// <summary>
     /// Gets a value indicating whether this token has childen tokens.
@@ -190,21 +247,63 @@ namespace Newtonsoft.Json.Linq
       }
     }
 
-    internal static JToken GetIndex(JContainer c, object o)
-    {
-      return c.Children().ElementAt((int)o);
-    }
-
     internal bool IsMultiContent(object content)
     {
       return (content is IEnumerable && !(content is string) && !(content is JToken));
+    }
+
+    internal virtual void AddItem(bool isLast, JToken previous, JToken item)
+    {
+      CheckReentrancy();
+
+      ValidateToken(item, null);
+
+      item = EnsureParentToken(item);
+
+      JToken next = (previous != null) ? previous._next : item;
+
+      item.Parent = this;
+      item.Next = next;
+
+      if (previous != null)
+        previous.Next = item;
+
+      if (isLast || previous == null)
+        _content = item;
+
+#if !SILVERLIGHT
+      if (ListChanged != null)
+        OnListChanged(new ListChangedEventArgs(ListChangedType.ItemAdded, IndexOfItem(item)));
+#endif
+    }
+
+    internal JToken EnsureParentToken(JToken item)
+    {
+      if (item.Parent != null)
+      {
+        item = item.CloneToken();
+      }
+      else
+      {
+        // check whether attempting to add a token to itself
+        JContainer parent = this;
+        while (parent.Parent != null)
+        {
+          parent = parent.Parent;
+        }
+        if (item == parent)
+        {
+          item = item.CloneToken();
+        }
+      }
+      return item;
     }
 
     internal void AddInternal(bool isLast, JToken previous, object content)
     {
       if (IsMultiContent(content))
       {
-        IEnumerable enumerable = (IEnumerable)content;
+        IEnumerable enumerable = (IEnumerable) content;
 
         JToken multiPrevious = previous;
         foreach (object c in enumerable)
@@ -215,53 +314,253 @@ namespace Newtonsoft.Json.Linq
       }
       else
       {
-        JToken o = CreateFromContent(content);
+        JToken item = CreateFromContent(content);
 
-        ValidateToken(o);
-
-        if (o.Parent != null)
-        {
-          o = o.CloneNode();
-        }
-        else
-        {
-          JContainer parent = this;
-          while (parent.Parent != null)
-          {
-            parent = parent.Parent;
-          }
-          if (o == parent)
-          {
-            o = o.CloneNode();
-          }
-        }
-
-        JToken next = (previous != null) ? previous._next : o;
-
-        o.Parent = this;
-        o.Next = next;
-
-        if (previous != null)
-          previous.Next = o;
-
-        if (isLast || previous == null)
-          _content = o;
+        AddItem(isLast, previous, item);
       }
     }
 
-    internal virtual void ValidateToken(JToken o)
+    internal int IndexOfItem(JToken item)
+    {
+      int index = 0;
+      foreach (JToken token in Children())
+      {
+        if (token == item)
+          return index;
+
+        index++;
+      }
+
+      return -1;
+    }
+
+    internal virtual void InsertItem(int index, JToken item)
+    {
+      if (index == 0)
+      {
+        AddFirst(item);
+      }
+      else
+      {
+        JToken token = GetItem(index);
+        AddInternal(false, token.Previous, item);
+      }
+    }
+
+    internal virtual void RemoveItemAt(int index)
+    {
+      if (index < 0)
+        throw new ArgumentOutOfRangeException("index", "index is less than 0.");
+
+      CheckReentrancy();
+
+      int currentIndex = 0;
+      foreach (JToken token in Children())
+      {
+        if (index == currentIndex)
+        {
+          token.Remove();
+
+#if !SILVERLIGHT
+          OnListChanged(new ListChangedEventArgs(ListChangedType.ItemDeleted, index));
+#endif
+
+          return;
+        }
+
+        currentIndex++;
+      }
+
+      throw new ArgumentOutOfRangeException("index", "index is equal to or greater than Count.");
+    }
+
+    internal virtual bool RemoveItem(JToken item)
+    {
+      if (item == null || item.Parent != this)
+        return false;
+
+      CheckReentrancy();
+
+      JToken content = _content;
+
+      int itemIndex = 0;
+      while (content._next != item)
+      {
+        itemIndex++;
+        content = content._next;
+      }
+      if (content == item)
+      {
+        // token is containers last child
+        _content = null;
+      }
+      else
+      {
+        if (_content == item)
+        {
+          _content = content;
+        }
+        content._next = item._next;
+      }
+      item.Parent = null;
+      item.Next = null;
+
+#if !SILVERLIGHT
+      OnListChanged(new ListChangedEventArgs(ListChangedType.ItemDeleted, itemIndex));
+#endif
+
+      return true;
+    }
+
+    internal virtual JToken GetItem(int index)
+    {
+      return Children().ElementAt(index);
+    }
+
+    internal virtual void SetItem(int index, JToken item)
+    {
+      CheckReentrancy();
+
+      JToken token = GetItem(index);
+      token.Replace(item);
+
+#if !SILVERLIGHT
+      OnListChanged(new ListChangedEventArgs(ListChangedType.ItemChanged, index));
+#endif
+    }
+
+    internal virtual void ClearItems()
+    {
+      CheckReentrancy();
+
+      while (_content != null)
+      {
+        JToken o = _content;
+
+        JToken next = o._next;
+        if (o != _content || next != o._next)
+          throw new InvalidOperationException("This operation was corrupted by external code.");
+
+        if (next != o)
+          o._next = next._next;
+        else
+          _content = null;
+
+        next.Parent = null;
+        next._next = null;
+      }
+
+#if !SILVERLIGHT
+      OnListChanged(new ListChangedEventArgs(ListChangedType.Reset, -1));
+#endif
+    }
+
+    internal virtual void ReplaceItem(JToken existing, JToken replacement)
+    {
+      if (existing == null || existing.Parent != this)
+        return;
+
+      if (IsTokenUnchanged(existing, replacement))
+        return;
+
+      CheckReentrancy();
+
+      replacement = EnsureParentToken(replacement);
+
+      ValidateToken(replacement, existing);
+
+      JToken content = _content;
+
+      int itemIndex = 0;
+      while (content._next != existing)
+      {
+        itemIndex++;
+        content = content._next;
+      }
+
+      if (content == existing)
+      {
+        // token is containers last child
+        _content = replacement;
+        replacement._next = replacement;
+      }
+      else
+      {
+        if (_content == existing)
+        {
+          _content = replacement;
+        }
+        content._next = replacement;
+        replacement._next = existing._next;
+      }
+
+      replacement.Parent = this;
+
+      existing.Parent = null;
+      existing.Next = null;
+
+#if !SILVERLIGHT
+      OnListChanged(new ListChangedEventArgs(ListChangedType.ItemChanged, itemIndex));
+#endif
+    }
+
+    internal virtual bool ContainsItem(JToken item)
+    {
+      return (IndexOfItem(item) != -1);
+    }
+
+    internal virtual void CopyItemsTo(Array array, int arrayIndex)
+    {
+      if (array == null)
+        throw new ArgumentNullException("array");
+      if (arrayIndex < 0)
+        throw new ArgumentOutOfRangeException("arrayIndex", "arrayIndex is less than 0.");
+      if (arrayIndex >= array.Length)
+        throw new ArgumentException("arrayIndex is equal to or greater than the length of array.");
+      if (CountItems() > array.Length - arrayIndex)
+        throw new ArgumentException("The number of elements in the source JObject is greater than the available space from arrayIndex to the end of the destination array.");
+
+      int index = 0;
+      foreach (JToken token in Children())
+      {
+        array.SetValue(token, arrayIndex + index);
+        index++;
+      }
+    }
+
+    internal virtual int CountItems()
+    {
+      return Children().Count();
+    }
+
+    internal static bool IsTokenUnchanged(JToken currentValue, JToken newValue)
+    {
+      JValue v1 = currentValue as JValue;
+      if (v1 != null)
+      {
+        // null will get turned into a JValue of type null
+        if (v1.Type == JTokenType.Null && newValue == null)
+          return true;
+
+        return v1.Equals(newValue);
+      }
+
+      return false;
+    }
+
+    internal virtual void ValidateToken(JToken o, JToken existing)
     {
       ValidationUtils.ArgumentNotNull(o, "o");
 
       if (o.Type == JTokenType.Property)
-        throw new Exception("Can not add {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, o.GetType(), GetType()));
+        throw new ArgumentException("Can not add {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, o.GetType(), GetType()));
     }
 
     /// <summary>
     /// Adds the specified content as children of this <see cref="JToken"/>.
     /// </summary>
     /// <param name="content">The content to be added.</param>
-    public virtual void Add(object content)
+    public void Add(object content)
     {
       AddInternal(true, Last, content);
     }
@@ -279,8 +578,8 @@ namespace Newtonsoft.Json.Linq
     {
       if (content is JToken)
         return (JToken)content;
-      else
-        return new JValue(content);
+      
+      return new JValue(content);
     }
 
     /// <summary>
@@ -298,7 +597,7 @@ namespace Newtonsoft.Json.Linq
     /// <param name="content">The content.</param>
     public void ReplaceAll(object content)
     {
-      RemoveAll();
+      ClearItems();
       Add(content);
     }
 
@@ -307,50 +606,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     public void RemoveAll()
     {
-      while (_content != null)
-      {
-        JToken o = _content;
-
-        JToken next = o._next;
-        if (o != _content || next != o._next)
-          throw new InvalidOperationException("This operation was corrupted by external code.");
-
-        if (next != o)
-          o._next = next._next;
-        else
-          _content = null;
-
-        next.Parent = null;
-        next._next = null;
-      }
-    }
-
-    internal void Remove(JToken o)
-    {
-      if (o.Parent != this)
-        throw new InvalidOperationException("This operation was corrupted by external code.");
-
-      JToken content = _content;
-
-      while (content._next != o)
-      {
-        content = content._next;
-      }
-      if (content == o)
-      {
-        // token is containers last child
-        _content = null;
-      }
-      else
-      {
-        if (_content == o)
-        {
-          _content = content;
-        }
-        content._next = o._next;
-      }
-      o.Parent = null;
-      o.Next = null;
+      ClearItems();
     }
 
     internal abstract void ValidateObject(JToken o, JToken previous);
@@ -467,5 +723,278 @@ namespace Newtonsoft.Json.Linq
       }
       return hashCode;
     }
+
+#if !SILVERLIGHT
+    string ITypedList.GetListName(PropertyDescriptor[] listAccessors)
+    {
+      return string.Empty;
+    }
+
+    PropertyDescriptorCollection ITypedList.GetItemProperties(PropertyDescriptor[] listAccessors)
+    {
+      JObject o = First as JObject;
+      if (o != null)
+      {
+        // explicitly use constructor because compact framework has no provider
+        JTypeDescriptor descriptor = new JTypeDescriptor(o);
+        return descriptor.GetProperties();
+      }
+
+      return null;
+    }
+#endif
+
+    #region IList<JToken> Members
+
+    int IList<JToken>.IndexOf(JToken item)
+    {
+      return IndexOfItem(item);
+    }
+
+    void IList<JToken>.Insert(int index, JToken item)
+    {
+      InsertItem(index, item);
+    }
+
+    void IList<JToken>.RemoveAt(int index)
+    {
+      RemoveItemAt(index);
+    }
+
+    JToken IList<JToken>.this[int index]
+    {
+      get { return GetItem(index); }
+      set { SetItem(index, value); }
+    }
+
+    #endregion
+
+    #region ICollection<JToken> Members
+
+    void ICollection<JToken>.Add(JToken item)
+    {
+      Add(item);
+    }
+
+    void ICollection<JToken>.Clear()
+    {
+      ClearItems();
+    }
+
+    bool ICollection<JToken>.Contains(JToken item)
+    {
+      return ContainsItem(item);
+    }
+
+    void ICollection<JToken>.CopyTo(JToken[] array, int arrayIndex)
+    {
+      CopyItemsTo(array, arrayIndex);
+    }
+
+    int ICollection<JToken>.Count
+    {
+      get { return CountItems(); }
+    }
+
+    bool ICollection<JToken>.IsReadOnly
+    {
+      get { return false; }
+    }
+
+    bool ICollection<JToken>.Remove(JToken item)
+    {
+      return RemoveItem(item);
+    }
+
+    #endregion
+
+    private JToken EnsureValue(object value)
+    {
+      if (value == null)
+        return null;
+
+      if (value is JToken)
+        return (JToken) value;
+
+      throw new ArgumentException("Argument is not a JToken.");
+    }
+
+    #region IList Members
+
+    int IList.Add(object value)
+    {
+      Add(EnsureValue(value));
+      return CountItems() - 1;
+    }
+
+    void IList.Clear()
+    {
+      ClearItems();
+    }
+
+    bool IList.Contains(object value)
+    {
+      return ContainsItem(EnsureValue(value));
+    }
+
+    int IList.IndexOf(object value)
+    {
+      return IndexOfItem(EnsureValue(value));
+    }
+
+    void IList.Insert(int index, object value)
+    {
+      InsertItem(index, EnsureValue(value));
+    }
+
+    bool IList.IsFixedSize
+    {
+      get { return false; }
+    }
+
+    bool IList.IsReadOnly
+    {
+      get { return false; }
+    }
+
+    void IList.Remove(object value)
+    {
+      RemoveItem(EnsureValue(value));
+    }
+
+    void IList.RemoveAt(int index)
+    {
+      RemoveItemAt(index);
+    }
+
+    object IList.this[int index]
+    {
+      get { return GetItem(index); }
+      set { SetItem(index, EnsureValue(value)); }
+    }
+
+    #endregion
+
+    #region ICollection Members
+
+    void ICollection.CopyTo(Array array, int index)
+    {
+      CopyItemsTo(array, index);
+    }
+
+    int ICollection.Count
+    {
+      get { return CountItems(); }
+    }
+
+    bool ICollection.IsSynchronized
+    {
+      get { return false; }
+    }
+
+    object ICollection.SyncRoot
+    {
+      get
+      {
+        if (_syncRoot == null)
+          Interlocked.CompareExchange(ref _syncRoot, new object(), null);
+
+        return _syncRoot;
+      }
+
+    }
+
+    #endregion
+
+    #region IBindingList Members
+
+#if !SILVERLIGHT
+    void IBindingList.AddIndex(PropertyDescriptor property)
+    {
+    }
+
+    object IBindingList.AddNew()
+    {
+      AddingNewEventArgs args = new AddingNewEventArgs();
+      OnAddingNew(args);
+
+      if (args.NewObject == null)
+        throw new Exception("Could not determine new value to add to '{0}'.".FormatWith(CultureInfo.InvariantCulture, GetType()));
+
+      if (!(args.NewObject is JToken))
+        throw new Exception("New item to be added to collection must be compatible with {0}.".FormatWith(CultureInfo.InvariantCulture, typeof (JToken)));
+
+      JToken newItem = (JToken)args.NewObject;
+      Add(newItem);
+
+      return newItem;
+    }
+
+    bool IBindingList.AllowEdit
+    {
+      get { return true; }
+    }
+
+    bool IBindingList.AllowNew
+    {
+      get { return true; }
+    }
+
+    bool IBindingList.AllowRemove
+    {
+      get { return true; }
+    }
+
+    void IBindingList.ApplySort(PropertyDescriptor property, ListSortDirection direction)
+    {
+      throw new NotSupportedException();
+    }
+
+    int IBindingList.Find(PropertyDescriptor property, object key)
+    {
+      throw new NotSupportedException();
+    }
+
+    bool IBindingList.IsSorted
+    {
+      get { return false; }
+    }
+
+    void IBindingList.RemoveIndex(PropertyDescriptor property)
+    {
+    }
+
+    void IBindingList.RemoveSort()
+    {
+      throw new NotSupportedException();
+    }
+
+    ListSortDirection IBindingList.SortDirection
+    {
+      get { return ListSortDirection.Ascending; }
+    }
+
+    PropertyDescriptor IBindingList.SortProperty
+    {
+      get { return null; }
+    }
+
+    bool IBindingList.SupportsChangeNotification
+    {
+      get { return true; }
+    }
+
+    bool IBindingList.SupportsSearching
+    {
+      get { return false; }
+    }
+
+    bool IBindingList.SupportsSorting
+    {
+      get { return false; }
+    }
+#endif
+
+    #endregion
   }
 }

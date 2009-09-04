@@ -1076,7 +1076,7 @@ keyword such as type of business.""
     [Test]
     public void SerializeTypeProperty()
     {
-      TypeClass typeClass = new TypeClass {TypeProperty = typeof (bool)};
+      TypeClass typeClass = new TypeClass { TypeProperty = typeof(bool) };
 
       string json = JsonConvert.SerializeObject(typeClass);
       Assert.AreEqual(@"{""TypeProperty"":""System.Boolean""}", json);
@@ -1221,7 +1221,7 @@ keyword such as type of business.""
     }
 
     [Test]
-    public  void DeserializeGoogleGeoCode()
+    public void DeserializeGoogleGeoCode()
     {
       string json = @"{
   ""name"": ""1600 Amphitheatre Parkway, Mountain View, CA, USA"",
@@ -1480,7 +1480,7 @@ keyword such as type of business.""
   ""ReferenceLoopHandlingSerializeProperty"": null
 }", json);
 
-      json = JsonConvert.SerializeObject(o, Formatting.Indented, new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
+      json = JsonConvert.SerializeObject(o, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
       Assert.AreEqual(@"{
   ""DefaultValueHandlingIncludeProperty"": ""Default!"",
@@ -2026,7 +2026,7 @@ keyword such as type of business.""
           ""Sizes"": null
         }
       ]";
-      
+
       List<Product> products = JsonConvert.DeserializeObject<List<Product>>(json);
 
       Console.WriteLine(products.Count);
@@ -2201,6 +2201,31 @@ keyword such as type of business.""
       Assert.AreEqual(5, a.Count);
       Assert.AreEqual(1, (int)a[0]);
       Assert.AreEqual(5, (int)a[a.Count - 1]);
+    }
+
+    [JsonObject(MemberSerialization.OptIn)]
+    public class list
+    {
+      [JsonProperty]
+      public string id { get; set; }
+      [JsonProperty]
+      public List<ListItem> items { get; set; }
+
+    }
+
+    [JsonObject(MemberSerialization.OptIn)]
+    public class ListItem
+    {
+      [JsonProperty]
+      public string id { get; set; }
+    }
+
+    [Test]
+    public void DeserializeOptInClasses()
+    {
+      string json = @"{id: ""12"", name: ""test"", items: [{id: ""112"", name: ""testing""}]}";
+
+      list l = JsonConvert.DeserializeObject<list>(json);
     }
   }
 }
