@@ -160,5 +160,13 @@ namespace Newtonsoft.Json.Tests.Linq
     {
       Assert.IsFalse((new JValue(5L)).HasValues);
     }
+
+    [Test]
+    [ExpectedException(typeof(InvalidOperationException), ExpectedMessage = "Cannot set child value on Newtonsoft.Json.Linq.JValue.")]
+    public void SetValue()
+    {
+      JToken t = new JValue(5L);
+      t[0] = new JValue(3);
+    }
   }
 }

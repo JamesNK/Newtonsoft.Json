@@ -1307,5 +1307,78 @@ Parameter name: arrayIndex")]
       Assert.AreEqual(2, (int)o["Test1"]);
     }
 #endif
+
+    [Test]
+    public void GetGeocodeAddress()
+    {
+      string json = @"{
+  ""name"": ""Address: 435 North Mulford Road Rockford, IL 61107"",
+  ""Status"": {
+    ""code"": 200,
+    ""request"": ""geocode""
+  },
+  ""Placemark"": [ {
+    ""id"": ""p1"",
+    ""address"": ""435 N Mulford Rd, Rockford, IL 61107, USA"",
+    ""AddressDetails"": {
+   ""Accuracy"" : 8,
+   ""Country"" : {
+      ""AdministrativeArea"" : {
+         ""AdministrativeAreaName"" : ""IL"",
+         ""SubAdministrativeArea"" : {
+            ""Locality"" : {
+               ""LocalityName"" : ""Rockford"",
+               ""PostalCode"" : {
+                  ""PostalCodeNumber"" : ""61107""
+               },
+               ""Thoroughfare"" : {
+                  ""ThoroughfareName"" : ""435 N Mulford Rd""
+               }
+            },
+            ""SubAdministrativeAreaName"" : ""Winnebago""
+         }
+      },
+      ""CountryName"" : ""USA"",
+      ""CountryNameCode"" : ""US""
+   }
+},
+    ""ExtendedData"": {
+      ""LatLonBox"": {
+        ""north"": 42.2753076,
+        ""south"": 42.2690124,
+        ""east"": -88.9964645,
+        ""west"": -89.0027597
+      }
+    },
+    ""Point"": {
+      ""coordinates"": [ -88.9995886, 42.2721596, 0 ]
+    }
+  } ]
+}";
+
+      JObject o = JObject.Parse(json);
+
+      string searchAddress = (string)o["Placemark"][0]["AddressDetails"]["Country"]["AdministrativeArea"]["SubAdministrativeArea"]["Locality"]["Thoroughfare"]["ThoroughfareName"];
+      Assert.AreEqual("435 N Mulford Rd", searchAddress);
+    }
+
+    [Test]
+    [ExpectedException(typeof(ArgumentException), ExpectedMessage = "Set JObject values with invalid key value: 0. Object property name expected.")]
+    public void SetValueWithInvalidPropertyName()
+    {
+      JObject o = new JObject();
+      o[0] = new JValue(3);
+    }
+
+    [Test]
+    public void SetValue()
+    {
+      object key = "TestKey";
+
+      JObject o = new JObject();
+      o[key] = new JValue(3);
+
+      Assert.AreEqual(3, (int)o[key]);
+    }
   }
 }

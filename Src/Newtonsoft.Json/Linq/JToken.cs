@@ -234,6 +234,7 @@ namespace Newtonsoft.Json.Linq
     public virtual JToken this[object key]
     {
       get { throw new InvalidOperationException("Cannot access child value on {0}.".FormatWith(CultureInfo.InvariantCulture, GetType())); }
+      set { throw new InvalidOperationException("Cannot set child value on {0}.".FormatWith(CultureInfo.InvariantCulture, GetType())); }
     }
 
     /// <summary>

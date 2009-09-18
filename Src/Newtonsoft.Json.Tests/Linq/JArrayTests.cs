@@ -396,5 +396,24 @@ Parameter name: index")]
       Assert.AreEqual(2, (int)a[1]);
       Assert.AreNotSame(a, a[2]);
     }
+
+    [Test]
+    [ExpectedException(typeof(ArgumentException), ExpectedMessage = @"Set JArray values with invalid key value: ""badvalue"". Array position index expected.")]
+    public void SetValueWithInvalidIndex()
+    {
+      JArray a = new JArray();
+      a["badvalue"] = new JValue(3);
+    }
+
+    [Test]
+    public void SetValue()
+    {
+      object key = 0;
+
+      JArray a = new JArray((object)null);
+      a[key] = new JValue(3);
+
+      Assert.AreEqual(3, (int)a[key]);
+    }
   }
 }

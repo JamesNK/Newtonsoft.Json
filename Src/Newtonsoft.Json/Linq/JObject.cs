@@ -186,6 +186,16 @@ namespace Newtonsoft.Json.Linq
 
         return this[propertyName];
       }
+      set
+      {
+        ValidationUtils.ArgumentNotNull(key, "o");
+
+        string propertyName = key as string;
+        if (propertyName == null)
+          throw new ArgumentException("Set JObject values with invalid key value: {0}. Object property name expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
+
+        this[propertyName] = value;
+      }
     }
 
     /// <summary>

@@ -44,5 +44,26 @@ namespace Newtonsoft.Json.Tests.Linq
         i++;
       }
     }
+
+    [Test]
+    [ExpectedException(typeof(ArgumentException), ExpectedMessage = @"Set JConstructor values with invalid key value: ""badvalue"". Argument position index expected.")]
+    public void SetValueWithInvalidIndex()
+    {
+      JConstructor c = new JConstructor();
+      c["badvalue"] = new JValue(3);
+    }
+
+    [Test]
+    public void SetValue()
+    {
+      object key = 0;
+
+      JConstructor c = new JConstructor();
+      c.Name = "con";
+      c.Add(null);
+      c[key] = new JValue(3);
+
+      Assert.AreEqual(3, (int)c[key]);
+    }
   }
 }

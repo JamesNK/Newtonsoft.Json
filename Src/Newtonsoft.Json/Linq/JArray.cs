@@ -197,6 +197,15 @@ namespace Newtonsoft.Json.Linq
 
         return GetItem((int)key);
       }
+      set
+      {
+        ValidationUtils.ArgumentNotNull(key, "o");
+
+        if (!(key is int))
+          throw new ArgumentException("Set JArray values with invalid key value: {0}. Array position index expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
+
+        SetItem((int)key, value);
+      }
     }
 
     /// <summary>
