@@ -449,6 +449,8 @@ namespace Newtonsoft.Json.Serialization
 
       contract.InvokeOnDeserializing(dictionary.UnderlyingDictionary);
 
+      int initialDepth = reader.Depth;
+
       do
       {
         switch (reader.TokenType)
@@ -468,7 +470,7 @@ namespace Newtonsoft.Json.Serialization
               contract.InvokeOnError(dictionary.UnderlyingDictionary, errorContext);
 
               if (errorContext.Handled)
-                ClearErrorContext();
+                HandleError(reader, initialDepth);
               else
 #endif
                 throw;
@@ -511,6 +513,8 @@ namespace Newtonsoft.Json.Serialization
 
       contract.InvokeOnDeserializing(list);
 
+      int initialDepth = reader.Depth;
+
       while (reader.Read())
       {
         switch (reader.TokenType)
@@ -535,7 +539,7 @@ namespace Newtonsoft.Json.Serialization
               contract.InvokeOnError(list, errorContext);
 
               if (errorContext.Handled)
-                ClearErrorContext();
+                HandleError(reader, initialDepth);
               else
 #endif
                 throw;
@@ -655,6 +659,8 @@ namespace Newtonsoft.Json.Serialization
       if (id != null)
         _serializer.ReferenceResolver.AddReference(id, newObject);
 
+      int initialDepth = reader.Depth;
+
       do
       {
         switch (reader.TokenType)
@@ -679,7 +685,7 @@ namespace Newtonsoft.Json.Serialization
               contract.InvokeOnError(newObject, errorContext);
 
               if (errorContext.Handled)
-                ClearErrorContext();
+                HandleError(reader, initialDepth);
               else
 #endif
                 throw;
@@ -723,6 +729,16 @@ namespace Newtonsoft.Json.Serialization
             break;
           }
         }
+      }
+    }
+
+    private void HandleError(JsonReader reader, int initialDepth)
+    {
+      ClearErrorContext();
+
+      while (reader.Depth > (initialDepth + 1))
+      {
+        reader.Read();
       }
     }
   }

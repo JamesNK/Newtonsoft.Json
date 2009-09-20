@@ -129,7 +129,7 @@ namespace Newtonsoft.Json
     /// Gets the top.
     /// </summary>
     /// <value>The top.</value>
-    protected int Top
+    protected internal int Top
     {
       get { return _top; }
     }

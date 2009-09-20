@@ -109,7 +109,7 @@ namespace Newtonsoft.Json.Serialization
 #if !PocketPC && !SILVERLIGHT && !NET20
     internal void InvokeOnError(object o, ErrorContext errorContext)
     {
-      if (OnError != null && o == errorContext.OriginalObject)
+      if (OnError != null)
         OnError.Invoke(o, new object[] { SerializationStreamingContextParameter, errorContext });
     }
 #endif

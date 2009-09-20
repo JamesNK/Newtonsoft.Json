@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -285,6 +285,8 @@ namespace Newtonsoft.Json.Serialization
         WriteTypeProperty(writer, contract.UnderlyingType);
       }
 
+      int initialDepth = writer.Top;
+
       foreach (JsonProperty property in contract.Properties)
       {
         try
@@ -299,7 +301,7 @@ namespace Newtonsoft.Json.Serialization
           contract.InvokeOnError(value, errorContext);
 
           if (errorContext.Handled)
-            ClearErrorContext();
+            HandleError(writer, initialDepth);
           else
 #endif
             throw;
@@ -379,6 +381,8 @@ namespace Newtonsoft.Json.Serialization
 
       writer.WriteStartArray();
 
+      int initialDepth = writer.Top;
+
       for (int i = 0; i < values.Count; i++)
       {
         try
@@ -404,7 +408,7 @@ namespace Newtonsoft.Json.Serialization
           contract.InvokeOnError(values, errorContext);
 
           if (errorContext.Handled)
-            ClearErrorContext();
+            HandleError(writer, initialDepth);
           else
 #endif
           throw;
@@ -441,6 +445,8 @@ namespace Newtonsoft.Json.Serialization
         WriteTypeProperty(writer, values.GetType());
       }
 
+      int initialDepth = writer.Top;
+
       foreach (DictionaryEntry entry in values)
       {
         string propertyName = entry.Key.ToString();
@@ -471,7 +477,7 @@ namespace Newtonsoft.Json.Serialization
           contract.InvokeOnError(values, errorContext);
 
           if (errorContext.Handled)
-            ClearErrorContext();
+            HandleError(writer, initialDepth);
           else
 #endif
           throw;
@@ -482,6 +488,16 @@ namespace Newtonsoft.Json.Serialization
       SerializeStack.RemoveAt(SerializeStack.Count - 1);
 
       contract.InvokeOnSerialized(values);
+    }
+
+    private void HandleError(JsonWriter writer, int initialDepth)
+    {
+      ClearErrorContext();
+
+      while (writer.Top > initialDepth)
+      {
+        writer.WriteEnd();
+      }
     }
   }
 }

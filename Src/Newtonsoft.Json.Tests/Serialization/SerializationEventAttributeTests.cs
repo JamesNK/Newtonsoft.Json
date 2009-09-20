@@ -38,6 +38,7 @@ using Newtonsoft.Json.Tests.TestObjects;
 using NUnit.Framework;
 using Newtonsoft.Json.Linq;
 using System.Collections;
+using Newtonsoft.Json.Converters;
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
@@ -115,14 +116,43 @@ namespace Newtonsoft.Json.Tests.Serialization
 
     public class ListErrorObject
     {
-      public string Member
+      public string Member { get; set; }
+
+      private string _throwError;
+      public string ThrowError
       {
-        get { throw new Exception("ListErrorObject.Member get error!"); }
-        set { throw new Exception("ListErrorObject.Member set error!"); }
+        get
+        {
+          if (_throwError != null)
+            return _throwError;
+
+          throw new Exception("ListErrorObject.ThrowError get error!");
+        }
+        set
+        {
+          if (value != null && value.StartsWith("Handle"))
+          {
+            _throwError = value;
+            return;
+          }
+
+          throw new Exception("ListErrorObject.ThrowError set error!");
+        }
       }
+
+      public string Member2 { get; set; }
     }
 
     public class ListErrorObjectCollection : Collection<ListErrorObject>
+    {
+      [OnError]
+      internal void OnErrorMethod(StreamingContext context, ErrorContext errorContext)
+      {
+        errorContext.Handled = true;
+      }
+    }
+
+    public class DateTimeErrorObjectCollection : Collection<DateTime>
     {
       [OnError]
       internal void OnErrorMethod(StreamingContext context, ErrorContext errorContext)
@@ -237,10 +267,99 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 
     [Test]
-    [ExpectedException(typeof(TargetInvocationException))]
-    public void ErrorInChild()
+    public void DeserializingErrorInChildObject()
     {
-      JsonConvert.DeserializeObject<ListErrorObjectCollection>(@"[{""Member"":""Value""}]");
+      ListErrorObjectCollection c = JsonConvert.DeserializeObject<ListErrorObjectCollection>(@"[
+  {
+    ""Member"": ""Value1"",
+    ""Member2"": null
+  },
+  {
+    ""Member"": ""Value2""
+  },
+  {
+    ""ThrowError"": ""Value"",
+    ""Object"": {
+      ""Array"": [
+        1,
+        2
+      ]
+    }
+  },
+  {
+    ""ThrowError"": ""Handle this!"",
+    ""Member"": ""Value3""
+  }
+]");
+
+      Assert.AreEqual(3, c.Count);
+      Assert.AreEqual("Value1", c[0].Member);
+      Assert.AreEqual("Value2", c[1].Member);
+      Assert.AreEqual("Value3", c[2].Member);
+      Assert.AreEqual("Handle this!", c[2].ThrowError);
+    }
+
+    [Test]
+    public void SerializingErrorInChildObject()
+    {
+      ListErrorObjectCollection c = new ListErrorObjectCollection
+        {
+          new ListErrorObject
+            {
+              Member = "Value1",
+              ThrowError = "Handle this!",
+              Member2 = "Member1"
+            },
+          new ListErrorObject
+            {
+              Member = "Value2",
+              Member2 = "Member2"
+            },
+          new ListErrorObject
+            {
+              Member = "Value3",
+              ThrowError = "Handle that!",
+              Member2 = "Member3"
+            }
+        };
+
+      string json = JsonConvert.SerializeObject(c, Formatting.Indented);
+
+      Assert.AreEqual(@"[
+  {
+    ""Member"": ""Value1"",
+    ""ThrowError"": ""Handle this!"",
+    ""Member2"": ""Member1""
+  },
+  {
+    ""Member"": ""Value2""
+  },
+  {
+    ""Member"": ""Value3"",
+    ""ThrowError"": ""Handle that!"",
+    ""Member2"": ""Member3""
+  }
+]", json);
+    }
+
+    [Test]
+    public void DeserializingErrorInDateTimeCollection()
+    {
+      DateTimeErrorObjectCollection c = JsonConvert.DeserializeObject<DateTimeErrorObjectCollection>(@"[
+  ""2009-09-09T00:00:00Z"",
+  ""kjhkjhkjhkjh"",
+  [
+    1
+  ],
+  ""1977-02-20T00:00:00Z"",
+  null,
+  ""2000-12-01T00:00:00Z""
+]", new IsoDateTimeConverter());
+
+      Assert.AreEqual(3, c.Count);
+      Assert.AreEqual(new DateTime(2009, 9, 9, 0, 0, 0, DateTimeKind.Utc), c[0]);
+      Assert.AreEqual(new DateTime(1977, 2, 20, 0, 0, 0, DateTimeKind.Utc), c[1]);
+      Assert.AreEqual(new DateTime(2000, 12, 1, 0, 0, 0, DateTimeKind.Utc), c[2]);
     }
 
     [Test]
