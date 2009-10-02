@@ -311,8 +311,8 @@ namespace Newtonsoft.Json.Schema
           CurrentSchema.Enum = new List<JToken>();
           CurrentSchema.Options = new Dictionary<JToken, string>();
 
-          EnumValues<ulong> enumValues = EnumUtils.GetNamesAndValues<ulong>(type);
-          foreach (EnumValue<ulong> enumValue in enumValues)
+          EnumValues<long> enumValues = EnumUtils.GetNamesAndValues<long>(type);
+          foreach (EnumValue<long> enumValue in enumValues)
           {
             JToken value = JToken.FromObject(enumValue.Value);
 

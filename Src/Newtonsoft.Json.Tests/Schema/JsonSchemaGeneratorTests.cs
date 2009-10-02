@@ -449,5 +449,54 @@ namespace Newtonsoft.Json.Tests.Schema
   }
 }", json);
     }
+
+    public enum SortTypeFlag
+    {
+      No = 0,
+      Asc = 1,
+      Desc = -1
+    }
+
+    public class X
+    {
+      public SortTypeFlag x;
+    }
+
+    [Test]
+    public void GenerateSchemaWithNegativeEnum()
+    {
+      JsonSchemaGenerator jsonSchemaGenerator = new JsonSchemaGenerator();
+      JsonSchema schema = jsonSchemaGenerator.Generate(typeof(X));
+
+      string json = schema.ToString();
+
+      Assert.AreEqual(@"{
+  ""type"": ""object"",
+  ""properties"": {
+    ""x"": {
+      ""type"": ""integer"",
+      ""enum"": [
+        0,
+        1,
+        -1
+      ],
+      ""options"": [
+        {
+          ""value"": 0,
+          ""value"": ""No""
+        },
+        {
+          ""value"": 1,
+          ""value"": ""Asc""
+        },
+        {
+          ""value"": -1,
+          ""value"": ""Desc""
+        }
+      ]
+    }
+  }
+}", json);
+    }
   }
 }
