@@ -525,7 +525,7 @@ namespace Newtonsoft.Json.Utilities
 
         // can't add or modify a readonly list
         // use List<T> and convert once populated
-        list = (IList)CreateGenericList(readOnlyCollectionContentsType);
+        list = CreateGenericList(readOnlyCollectionContentsType);
         isReadOnlyOrFixedSize = true;
       }
       else if (typeof(IList).IsAssignableFrom(listType))
@@ -537,9 +537,9 @@ namespace Newtonsoft.Json.Utilities
         else
           list = null;
       }
-      else if (listType.IsGenericType && listType.GetGenericTypeDefinition() == typeof(IList<>))
+      else if (ReflectionUtils.ImplementsGenericDefinition(listType, typeof(IList<>)))
       {
-        list = CollectionUtils.CreateGenericList(ReflectionUtils.GetCollectionItemType(listType));
+        list = CreateGenericList(ReflectionUtils.GetCollectionItemType(listType));
       }
       else
       {

@@ -502,12 +502,14 @@ namespace Newtonsoft.Json.Serialization
             throw new JsonSerializationException("Cannot call OnError on an array or readonly list: {0}".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 #endif
 
-          PopulateList(l, reader, reference, contract);
+          PopulateList(CollectionUtils.CreateCollectionWrapper(l), reader, reference, contract);
         });
     }
 
-    private IList PopulateList(IList list, JsonReader reader, string reference, JsonArrayContract contract)
+    private object PopulateList(IWrappedCollection wrappedList, JsonReader reader, string reference, JsonArrayContract contract)
     {
+      object list = wrappedList.UnderlyingCollection;
+
       if (reference != null)
         _serializer.ReferenceResolver.AddReference(reference, list);
 
@@ -522,7 +524,7 @@ namespace Newtonsoft.Json.Serialization
           case JsonToken.EndArray:
             contract.InvokeOnDeserialized(list);
 
-            return list;
+            return wrappedList.UnderlyingCollection;
           case JsonToken.Comment:
             break;
           default:
@@ -530,12 +532,12 @@ namespace Newtonsoft.Json.Serialization
             {
               object value = CreateValue(reader, contract.CollectionItemType, null, null);
 
-              list.Add(value);
+              wrappedList.Add(value);
             }
             catch (Exception ex)
             {
 #if !PocketPC && !SILVERLIGHT && !NET20
-              ErrorContext errorContext = GetErrorContext(list, list.Count, ex);
+              ErrorContext errorContext = GetErrorContext(list, wrappedList.Count, ex);
               contract.InvokeOnError(list, errorContext);
 
               if (errorContext.Handled)

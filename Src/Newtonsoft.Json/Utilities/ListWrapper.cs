@@ -48,7 +48,10 @@ namespace Newtonsoft.Json.Utilities
     {
       ValidationUtils.ArgumentNotNull(list, "list");
 
-      _list = list;
+      if (list is IList<T>)
+        _genericList = (IList<T>) list;
+      else
+        _list = list;
     }
 
     public ListWrapper(IList<T> list)
@@ -267,7 +270,7 @@ namespace Newtonsoft.Json.Utilities
 
     private static bool IsCompatibleObject(object value)
     {
-      if (!(value is T) && (value != null || typeof(T).IsValueType))
+      if (!(value is T) && (value != null || (typeof(T).IsValueType && !ReflectionUtils.IsNullableType(typeof(T)))))
         return false;
 
       return true;

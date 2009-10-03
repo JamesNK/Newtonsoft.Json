@@ -2227,5 +2227,16 @@ keyword such as type of business.""
 
       list l = JsonConvert.DeserializeObject<list>(json);
     }
+
+    [Test]
+    public void sdfsdf()
+    {
+      //List<decimal?> l = new List<decimal?>();
+      //l.Add(null);
+      //IList il = l;
+      //il.Add(null);
+
+      JsonConvert.DeserializeObject<List<decimal?>>("[ 3.3, null, 1.1 ] ");
+    }
   }
 }
