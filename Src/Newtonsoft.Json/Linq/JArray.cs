@@ -131,14 +131,6 @@ namespace Newtonsoft.Json.Linq
       return Load(jsonReader);
     }
 
-    internal override void ValidateObject(JToken o, JToken previous)
-    {
-      ValidationUtils.ArgumentNotNull(o, "o");
-
-      if (o.Type == JTokenType.Property)
-        throw new ArgumentException("An item of type {0} cannot be added to content.".FormatWith(CultureInfo.InvariantCulture, o.Type));
-    }
-
     /// <summary>
     /// Creates a <see cref="JArray"/> from an object.
     /// </summary>

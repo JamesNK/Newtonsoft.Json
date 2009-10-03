@@ -609,15 +609,6 @@ namespace Newtonsoft.Json.Linq
       ClearItems();
     }
 
-    internal abstract void ValidateObject(JToken o, JToken previous);
-
-    internal void AddObjectSkipNotify(JToken o)
-    {
-      ValidateObject(o, this);
-
-      Add(o);
-    }
-
     internal void ReadContentFrom(JsonReader r)
     {
       ValidationUtils.ArgumentNotNull(r, "r");
@@ -643,7 +634,7 @@ namespace Newtonsoft.Json.Linq
           case JsonToken.StartArray:
             JArray a = new JArray();
             a.SetLineInfo(lineInfo);
-            parent.AddObjectSkipNotify(a);
+            parent.Add(a);
             parent = a;
             break;
 
@@ -656,7 +647,7 @@ namespace Newtonsoft.Json.Linq
           case JsonToken.StartObject:
             JObject o = new JObject();
             o.SetLineInfo(lineInfo);
-            parent.AddObjectSkipNotify(o);
+            parent.Add(o);
             parent = o;
             break;
           case JsonToken.EndObject:
@@ -668,7 +659,7 @@ namespace Newtonsoft.Json.Linq
           case JsonToken.StartConstructor:
             JConstructor constructor = new JConstructor(r.Value.ToString());
             constructor.SetLineInfo(constructor);
-            parent.AddObjectSkipNotify(constructor);
+            parent.Add(constructor);
             parent = constructor;
             break;
           case JsonToken.EndConstructor:
@@ -684,27 +675,34 @@ namespace Newtonsoft.Json.Linq
           case JsonToken.Boolean:
             JValue v = new JValue(r.Value);
             v.SetLineInfo(lineInfo);
-            parent.AddObjectSkipNotify(v);
+            parent.Add(v);
             break;
           case JsonToken.Comment:
             v = JValue.CreateComment(r.Value.ToString());
             v.SetLineInfo(lineInfo);
-            parent.AddObjectSkipNotify(v);
+            parent.Add(v);
             break;
           case JsonToken.Null:
             v = new JValue(null, JTokenType.Null);
             v.SetLineInfo(lineInfo);
-            parent.AddObjectSkipNotify(v);
+            parent.Add(v);
             break;
           case JsonToken.Undefined:
             v = new JValue(null, JTokenType.Undefined);
             v.SetLineInfo(lineInfo);
-            parent.AddObjectSkipNotify(v);
+            parent.Add(v);
             break;
           case JsonToken.PropertyName:
-            JProperty property = new JProperty(r.Value.ToString());
+            string propertyName = r.Value.ToString();
+            JProperty property = new JProperty(propertyName);
             property.SetLineInfo(lineInfo);
-            parent.AddObjectSkipNotify(property);
+            JObject parentObject = (JObject) parent;
+            // handle multiple properties with the same name in JSON
+            JProperty existingPropertyWithName = parentObject.Property(propertyName);
+            if (existingPropertyWithName == null)
+              parent.Add(property);
+            else
+              existingPropertyWithName.Replace(property);
             parent = property;
             break;
           default:

@@ -157,7 +157,7 @@ namespace Newtonsoft.Json.Linq
     public JProperty Property(string name)
     {
       return Properties()
-        .Where(p => string.Compare(p.Name, name, StringComparison.Ordinal) == 0)
+        .Where(p => string.Equals(p.Name, name, StringComparison.Ordinal))
         .SingleOrDefault();
     }
 
@@ -296,14 +296,6 @@ namespace Newtonsoft.Json.Linq
         throw new ArgumentException("Object serialized to {0}. JObject instance expected.".FormatWith(CultureInfo.InvariantCulture, token.Type));
 
       return (JObject)token;
-    }
-
-    internal override void ValidateObject(JToken o, JToken previous)
-    {
-      ValidationUtils.ArgumentNotNull(o, "o");
-
-      if (o.Type != JTokenType.Property)
-        throw new ArgumentException("An item of type {0} cannot be added to content.".FormatWith(CultureInfo.InvariantCulture, o.Type));
     }
 
     /// <summary>

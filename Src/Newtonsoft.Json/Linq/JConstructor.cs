@@ -118,17 +118,6 @@ namespace Newtonsoft.Json.Linq
       return new JConstructor(this);
     }
 
-    internal override void ValidateObject(JToken o, JToken previous)
-    {
-      ValidationUtils.ArgumentNotNull(o, "o");
-
-      switch (o.Type)
-      {
-        case JTokenType.Property:
-          throw new ArgumentException("An item of type {0} cannot be added to content.".FormatWith(CultureInfo.InvariantCulture, o.Type));
-      }
-    }
-
     /// <summary>
     /// Writes this token to a <see cref="JsonWriter"/>.
     /// </summary>
