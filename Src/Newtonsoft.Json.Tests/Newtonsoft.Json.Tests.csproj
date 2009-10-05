@@ -110,6 +110,7 @@
     <Compile Include="Linq\ComponentModel\JTypeDescriptionProviderTests.cs" />
     <Compile Include="Linq\ComponentModel\JTypeDescriptorTests.cs" />
     <Compile Include="Serialization\EntitiesSerializationTests.cs" />
+    <Compile Include="Serialization\MissingMemberHandlingTests.cs" />
     <Compile Include="Serialization\PopulateTests.cs" />
     <Compile Include="Serialization\SerializationEventAttributeTests.cs" />
     <Compile Include="Schema\ExtensionsTests.cs" />

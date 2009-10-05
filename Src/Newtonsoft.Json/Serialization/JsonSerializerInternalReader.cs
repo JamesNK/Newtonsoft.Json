@@ -673,8 +673,8 @@ namespace Newtonsoft.Json.Serialization
             if (!reader.Read())
               throw new JsonSerializationException("Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
 
-            if (reader.TokenType != JsonToken.Null)
-              SetRequiredProperty(memberName, requiredProperties);
+            // set required property even if null (matches WCF IsRequired behavour)
+            SetRequiredProperty(memberName, requiredProperties);
 
             try
             {
@@ -734,6 +734,7 @@ namespace Newtonsoft.Json.Serialization
       }
     }
 
+#if !PocketPC && !SILVERLIGHT && !NET20
     private void HandleError(JsonReader reader, int initialDepth)
     {
       ClearErrorContext();
@@ -743,5 +744,6 @@ namespace Newtonsoft.Json.Serialization
         reader.Read();
       }
     }
+#endif
   }
 }

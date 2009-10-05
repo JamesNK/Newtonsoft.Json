@@ -490,6 +490,7 @@ namespace Newtonsoft.Json.Serialization
       contract.InvokeOnSerialized(values);
     }
 
+#if !PocketPC && !SILVERLIGHT && !NET20
     private void HandleError(JsonWriter writer, int initialDepth)
     {
       ClearErrorContext();
@@ -499,5 +500,6 @@ namespace Newtonsoft.Json.Serialization
         writer.WriteEnd();
       }
     }
+#endif
   }
 }

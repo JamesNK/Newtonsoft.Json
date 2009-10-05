@@ -406,73 +406,6 @@ keyword such as type of business.""
       CollectionAssert.AreEqual(r1, r2);
     }
 
-    [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Could not find member 'Price' on object of type 'ProductShort'")]
-    public void MissingMemberDeserialize()
-    {
-      Product product = new Product();
-
-      product.Name = "Apple";
-      product.ExpiryDate = new DateTime(2008, 12, 28);
-      product.Price = 3.99M;
-      product.Sizes = new string[] { "Small", "Medium", "Large" };
-
-      string output = JsonConvert.SerializeObject(product);
-      //{
-      //  "Name": "Apple",
-      //  "ExpiryDate": new Date(1230422400000),
-      //  "Price": 3.99,
-      //  "Sizes": [
-      //    "Small",
-      //    "Medium",
-      //    "Large"
-      //  ]
-      //}
-
-      ProductShort deserializedProductShort = (ProductShort)JsonConvert.DeserializeObject(output, typeof(ProductShort), new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error });
-    }
-
-    [Test]
-    public void MissingMemberDeserializeOkay()
-    {
-      Product product = new Product();
-
-      product.Name = "Apple";
-      product.ExpiryDate = new DateTime(2008, 12, 28);
-      product.Price = 3.99M;
-      product.Sizes = new string[] { "Small", "Medium", "Large" };
-
-      string output = JsonConvert.SerializeObject(product);
-      //{
-      //  "Name": "Apple",
-      //  "ExpiryDate": new Date(1230422400000),
-      //  "Price": 3.99,
-      //  "Sizes": [
-      //    "Small",
-      //    "Medium",
-      //    "Large"
-      //  ]
-      //}
-
-      JsonSerializer jsonSerializer = new JsonSerializer();
-      jsonSerializer.MissingMemberHandling = MissingMemberHandling.Ignore;
-
-      object deserializedValue;
-
-      using (JsonReader jsonReader = new JsonTextReader(new StringReader(output)))
-      {
-        deserializedValue = jsonSerializer.Deserialize(jsonReader, typeof(ProductShort));
-      }
-
-      ProductShort deserializedProductShort = (ProductShort)deserializedValue;
-
-      Assert.AreEqual("Apple", deserializedProductShort.Name);
-      Assert.AreEqual(new DateTime(2008, 12, 28), deserializedProductShort.ExpiryDate);
-      Assert.AreEqual("Small", deserializedProductShort.Sizes[0]);
-      Assert.AreEqual("Medium", deserializedProductShort.Sizes[1]);
-      Assert.AreEqual("Large", deserializedProductShort.Sizes[2]);
-    }
-
 #if !PocketPC && !NET20
     [Test]
     public void Unicode()
@@ -1042,35 +975,12 @@ keyword such as type of business.""
     }
 
     [Test]
-    public void MissingMemberIgnoreComplexValue()
-    {
-      JsonSerializer serializer = new JsonSerializer { MissingMemberHandling = MissingMemberHandling.Ignore };
-      serializer.Converters.Add(new JavaScriptDateTimeConverter());
-
-      string response = @"{""PreProperty"":1,""DateProperty"":new Date(1225962698973),""PostProperty"":2}";
-
-      MyClass myClass = (MyClass)serializer.Deserialize(new StringReader(response), typeof(MyClass));
-
-      Assert.AreEqual(1, myClass.PreProperty);
-      Assert.AreEqual(2, myClass.PostProperty);
-    }
-
-    [Test]
     public void DeserializeInt64ToNullableDouble()
     {
       string json = @"{""Height"":1}";
 
       DoubleClass c = JsonConvert.DeserializeObject<DoubleClass>(json);
       Assert.AreEqual(1, c.Height);
-    }
-
-    [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Could not find member 'Missing' on object of type 'DoubleClass'")]
-    public void MissingMemeber()
-    {
-      string json = @"{""Missing"":1}";
-
-      JsonConvert.DeserializeObject<DoubleClass>(json, new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error });
     }
 
     [Test]
@@ -1089,12 +999,12 @@ keyword such as type of business.""
     public void RequiredMembersClass()
     {
       RequiredMembersClass c = new RequiredMembersClass()
-                                 {
-                                   BirthDate = new DateTime(2000, 12, 20, 10, 55, 55, DateTimeKind.Utc),
-                                   FirstName = "Bob",
-                                   LastName = "Smith",
-                                   MiddleName = "Cosmo"
-                                 };
+      {
+        BirthDate = new DateTime(2000, 12, 20, 10, 55, 55, DateTimeKind.Utc),
+        FirstName = "Bob",
+        LastName = "Smith",
+        MiddleName = "Cosmo"
+      };
 
       string json = JsonConvert.SerializeObject(c, Formatting.Indented);
 
@@ -1109,6 +1019,21 @@ keyword such as type of business.""
 
       Assert.AreEqual("Bob", c2.FirstName);
       Assert.AreEqual(new DateTime(2000, 12, 20, 10, 55, 55, DateTimeKind.Utc), c2.BirthDate);
+    }
+
+    [Test]
+    public void RequiredMembersClassWithNullValues()
+    {
+      string json = @"{
+  ""FirstName"": null,
+  ""MiddleName"": null,
+  ""LastName"": null,
+  ""BirthDate"": ""\/Date(977309755000)\/""
+}";
+
+      RequiredMembersClass c = JsonConvert.DeserializeObject<RequiredMembersClass>(json);
+
+      Assert.AreEqual(null, c.FirstName);
     }
 
     [Test]
@@ -2229,14 +2154,14 @@ keyword such as type of business.""
     }
 
     [Test]
-    public void sdfsdf()
+    public void DeserializeNullableListWithNulls()
     {
-      //List<decimal?> l = new List<decimal?>();
-      //l.Add(null);
-      //IList il = l;
-      //il.Add(null);
+      List<decimal?> l = JsonConvert.DeserializeObject<List<decimal?>>("[ 3.3, null, 1.1 ] ");
+      Assert.AreEqual(3, l.Count);
 
-      JsonConvert.DeserializeObject<List<decimal?>>("[ 3.3, null, 1.1 ] ");
+      Assert.AreEqual(3.3m, l[0]);
+      Assert.AreEqual(null, l[1]);
+      Assert.AreEqual(1.1m, l[2]);
     }
   }
 }
