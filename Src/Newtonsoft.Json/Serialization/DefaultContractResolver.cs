@@ -161,12 +161,12 @@ namespace Newtonsoft.Json.Serialization
       }
 #endif
 
-#if !PocketPC && !SILVERLIGHT && !NET20
       foreach (MethodInfo method in contract.UnderlyingType.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
       {
         Type prevAttributeType = null;
         ParameterInfo[] parameters = method.GetParameters();
 
+#if !PocketPC && !SILVERLIGHT && !NET20
         if (IsValidCallback(method, parameters, typeof(OnSerializingAttribute), contract.OnSerializing, ref prevAttributeType))
         {
           contract.OnSerializing = method;
@@ -183,12 +183,12 @@ namespace Newtonsoft.Json.Serialization
         {
           contract.OnDeserialized = method;
         }
+#endif
         if (IsValidCallback(method, parameters, typeof(OnErrorAttribute), contract.OnError, ref prevAttributeType))
         {
           contract.OnError = method;
         }
       }
-#endif
     }
 
     /// <summary>
@@ -235,7 +235,6 @@ namespace Newtonsoft.Json.Serialization
       return CreateObjectContract(objectType);
     }
 
-#if !PocketPC && !SILVERLIGHT && !NET20
     private static bool IsValidCallback(MethodInfo method, ParameterInfo[] parameters, Type attributeType, MethodInfo currentCallback, ref Type prevAttributeType)
     {
       if (!method.IsDefined(attributeType, false))
@@ -268,7 +267,6 @@ namespace Newtonsoft.Json.Serialization
 
       return true;
     }
-#endif
 
     internal static string GetClrTypeFullName(Type type)
     {

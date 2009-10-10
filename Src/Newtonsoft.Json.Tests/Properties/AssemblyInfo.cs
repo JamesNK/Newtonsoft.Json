@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -17,8 +17,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Newtonsoft")]
-[assembly: AssemblyProduct("Newtonsoft Json.NET Test")]
-[assembly: AssemblyCopyright("Copyright © Newtonsoft 2008")]
+[assembly: AssemblyProduct("Newtonsoft Json.NET Tests")]
+[assembly: AssemblyCopyright("Copyright � Newtonsoft 2008")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

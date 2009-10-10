@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -25,42 +25,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace Newtonsoft.Json.Serialization
+namespace Newtonsoft.Json.Tests.TestObjects
 {
-  /// <summary>
-  /// Provides information surrounding an error.
-  /// </summary>
-  public class ErrorContext
+  public class NonRequest
   {
-    internal ErrorContext(object originalObject, object member, Exception error)
-    {
-      OriginalObject = originalObject;
-      Member = member;
-      Error = error;
-    }
-
-    /// <summary>
-    /// Gets or sets the error.
-    /// </summary>
-    /// <value>The error.</value>
-    public Exception Error { get; private set; }
-    /// <summary>
-    /// Gets the original object that caused the error.
-    /// </summary>
-    /// <value>The original object that caused the error.</value>
-    public object OriginalObject { get; private set; }
-    /// <summary>
-    /// Gets the member that caused the error.
-    /// </summary>
-    /// <value>The member that caused the error.</value>
-    public object Member { get; private set; }
-    /// <summary>
-    /// Gets or sets a value indicating whether this <see cref="ErrorContext"/> is handled.
-    /// </summary>
-    /// <value><c>true</c> if handled; otherwise, <c>false</c>.</value>
-    public bool Handled { get; set; }
+    public Guid Sid { get; set; }
+    public Guid Uid { get; set; }
+    public IList<string> FidOrder { get; set; }
   }
 }

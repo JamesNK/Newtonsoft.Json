@@ -603,7 +603,7 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Deserializes the JSON string to the specified type.
     /// </summary>
-    /// <param name="value">The object to deserialize.</param>
+    /// <param name="value">The JSON to deserialize.</param>
     /// <param name="type">The type of the object to deserialize.</param>
     /// <param name="settings">
     /// The <see cref="JsonSerializerSettings"/> used to deserialize the object.
@@ -628,12 +628,26 @@ namespace Newtonsoft.Json
       return deserializedValue;
     }
 
+    /// <summary>
+    /// Populates the object with values from the JSON string.
+    /// </summary>
+    /// <param name="value">The JSON to populate values from.</param>
+    /// <param name="target">The target object to populate values onto.</param>
     public static void PopulateObject(string value, object target)
     {
       PopulateObject(value, target, null);
     }
 
 
+    /// <summary>
+    /// Populates the object with values from the JSON string.
+    /// </summary>
+    /// <param name="value">The JSON to populate values from.</param>
+    /// <param name="target">The target object to populate values onto.</param>
+    /// <param name="settings">
+    /// The <see cref="JsonSerializerSettings"/> used to deserialize the object.
+    /// If this is null, default serialization settings will be is used.
+    /// </param>
     public static void PopulateObject(string value, object target, JsonSerializerSettings settings)
     {
       StringReader sr = new StringReader(value);

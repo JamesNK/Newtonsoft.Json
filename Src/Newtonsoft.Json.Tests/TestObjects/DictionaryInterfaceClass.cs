@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -23,44 +23,35 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using Newtonsoft.Json.Tests.TestObjects;
 
-namespace Newtonsoft.Json.Serialization
+namespace Newtonsoft.Json.Tests.TestObjects
 {
-  /// <summary>
-  /// Provides information surrounding an error.
-  /// </summary>
-  public class ErrorContext
+  public class DictionaryInterfaceClass
   {
-    internal ErrorContext(object originalObject, object member, Exception error)
-    {
-      OriginalObject = originalObject;
-      Member = member;
-      Error = error;
-    }
+    public string Name { get; set; }
+    public IDictionary<string, int> Dictionary { get; set; }
+    public ICollection<int> Collection { get; set; }
+    public EmployeeReference Employee { get; set; }
+    public object Random { get; set; }
 
-    /// <summary>
-    /// Gets or sets the error.
-    /// </summary>
-    /// <value>The error.</value>
-    public Exception Error { get; private set; }
-    /// <summary>
-    /// Gets the original object that caused the error.
-    /// </summary>
-    /// <value>The original object that caused the error.</value>
-    public object OriginalObject { get; private set; }
-    /// <summary>
-    /// Gets the member that caused the error.
-    /// </summary>
-    /// <value>The member that caused the error.</value>
-    public object Member { get; private set; }
-    /// <summary>
-    /// Gets or sets a value indicating whether this <see cref="ErrorContext"/> is handled.
-    /// </summary>
-    /// <value><c>true</c> if handled; otherwise, <c>false</c>.</value>
-    public bool Handled { get; set; }
+    public DictionaryInterfaceClass()
+    {
+      Dictionary = new Dictionary<string, int>
+        {
+          { "existing", 1 }
+        };
+      Collection = new List<int>
+        {
+          1,
+          2,
+          3
+        };
+      Employee = new EmployeeReference
+        {
+          Name = "EmployeeName!"
+        };
+    }
   }
 }

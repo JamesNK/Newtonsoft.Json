@@ -296,14 +296,12 @@ namespace Newtonsoft.Json.Serialization
         }
         catch (Exception ex)
         {
-#if !PocketPC && !SILVERLIGHT && !NET20
           ErrorContext errorContext = GetErrorContext(value, property.Member.Name, ex);
           contract.InvokeOnError(value, errorContext);
 
           if (errorContext.Handled)
             HandleError(writer, initialDepth);
           else
-#endif
             throw;
         }
       }
@@ -403,15 +401,13 @@ namespace Newtonsoft.Json.Serialization
         }
         catch (Exception ex)
         {
-#if !PocketPC && !SILVERLIGHT && !NET20
           ErrorContext errorContext = GetErrorContext(values, i, ex);
           contract.InvokeOnError(values, errorContext);
 
           if (errorContext.Handled)
             HandleError(writer, initialDepth);
           else
-#endif
-          throw;
+            throw;
         }
       }
 
@@ -472,15 +468,13 @@ namespace Newtonsoft.Json.Serialization
         }
         catch (Exception ex)
         {
-#if !PocketPC && !SILVERLIGHT && !NET20
           ErrorContext errorContext = GetErrorContext(values, propertyName, ex);
           contract.InvokeOnError(values, errorContext);
 
           if (errorContext.Handled)
             HandleError(writer, initialDepth);
           else
-#endif
-          throw;
+            throw;
         }
       }
 
@@ -490,7 +484,6 @@ namespace Newtonsoft.Json.Serialization
       contract.InvokeOnSerialized(values);
     }
 
-#if !PocketPC && !SILVERLIGHT && !NET20
     private void HandleError(JsonWriter writer, int initialDepth)
     {
       ClearErrorContext();
@@ -500,6 +493,5 @@ namespace Newtonsoft.Json.Serialization
         writer.WriteEnd();
       }
     }
-#endif
   }
 }

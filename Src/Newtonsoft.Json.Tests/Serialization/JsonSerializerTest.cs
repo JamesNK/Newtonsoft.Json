@@ -332,26 +332,6 @@ keyword such as type of business.""
       Assert.AreEqual(nestedTorrentsArray.Children().Count(), 19);
     }
 
-    public class JsonPropertyClass
-    {
-      [JsonProperty("pie")]
-      public string Pie = "Yum";
-
-      [JsonIgnore]
-      public string pie = "No pie for you!";
-
-      public string pie1 = "PieChart!";
-
-      private int _sweetCakesCount;
-
-      [JsonProperty("sweet_cakes_count")]
-      public int SweetCakesCount
-      {
-        get { return _sweetCakesCount; }
-        set { _sweetCakesCount = value; }
-      }
-    }
-
     [Test]
     public void JsonPropertyClassSerialize()
     {
@@ -1079,72 +1059,6 @@ keyword such as type of business.""
       Assert.AreEqual(json, after);
     }
 
-    public class GoogleMapGeocoderStructure
-    {
-      public string Name;
-      public Status Status;
-      public List<Placemark> Placemark;
-    }
-
-    public class Status
-    {
-      public string Request;
-      public string Code;
-    }
-
-    public class Placemark
-    {
-      public string Address;
-      public AddressDetails AddressDetails;
-      public Point Point;
-    }
-
-    public class AddressDetails
-    {
-      public int Accuracy;
-      public Country Country;
-    }
-
-    public class Country
-    {
-      public string CountryNameCode;
-      public AdministrativeArea AdministrativeArea;
-    }
-
-    public class AdministrativeArea
-    {
-      public string AdministrativeAreaName;
-      public SubAdministrativeArea SubAdministrativeArea;
-    }
-
-    public class SubAdministrativeArea
-    {
-      public string SubAdministrativeAreaName;
-      public Locality Locality;
-    }
-
-    public class Locality
-    {
-      public string LocalityName;
-      public Thoroughfare Thoroughfare;
-      public PostalCode PostalCode;
-    }
-
-    public class Thoroughfare
-    {
-      public string ThoroughfareName;
-    }
-
-    public class PostalCode
-    {
-      public string PostalCodeNumber;
-    }
-
-    public class Point
-    {
-      public List<decimal> Coordinates;
-    }
-
     [Test]
     public void DeserializeGoogleGeoCode()
     {
@@ -1191,38 +1105,14 @@ keyword such as type of business.""
       GoogleMapGeocoderStructure jsonGoogleMapGeocoder = JsonConvert.DeserializeObject<GoogleMapGeocoderStructure>(json);
     }
 
-    public class Co : ICo
-    {
-      public String Name { get; set; }
-    }
-
-    public interface ICo
-    {
-      String Name { get; set; }
-    }
-
-    public interface ITest
-    {
-      ICo co { get; set; }
-    }
-
-    public class Test : ITest
-    {
-      public ICo co { get; set; }
-
-      public Test()
-      {
-      }
-    }
-
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Could not create an instance of type Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+ICo. Type is an interface or abstract class and cannot be instantated.")]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Could not create an instance of type Newtonsoft.Json.Tests.TestObjects.ICo. Type is an interface or abstract class and cannot be instantated.")]
     public void DeserializeInterfaceProperty()
     {
-      Test testClass = new Test();
+      InterfacePropertyTestClass testClass = new InterfacePropertyTestClass();
       testClass.co = new Co();
       String strFromTest = JsonConvert.SerializeObject(testClass);
-      Test testFromDe = (Test)JsonConvert.DeserializeObject(strFromTest, typeof(Test));
+      InterfacePropertyTestClass testFromDe = (InterfacePropertyTestClass)JsonConvert.DeserializeObject(strFromTest, typeof(InterfacePropertyTestClass));
     }
 
     private Person GetPerson()
@@ -1257,12 +1147,6 @@ keyword such as type of business.""
         JsonSerializer serializer = new JsonSerializer();
         serializer.Serialize(jw, person);
       }
-    }
-
-    public class LogEntry
-    {
-      public string Details { get; set; }
-      public DateTime LogDate { get; set; }
     }
 
     [Test]
@@ -1334,14 +1218,6 @@ keyword such as type of business.""
       CollectionAssert.AreEqual(o.IDictionaryProperty.ToArray(), deserializedObject.IDictionaryProperty.ToArray());
     }
 
-    public class PropertyCase
-    {
-      public string firstName { get; set; }
-      public string FirstName { get; set; }
-      public string LastName { get; set; }
-      public string lastName { get; set; }
-    }
-
     [Test]
     public void DeserializeBestMatchPropertyCase()
     {
@@ -1359,18 +1235,6 @@ keyword such as type of business.""
       Assert.AreEqual("FirstName", o.FirstName);
       Assert.AreEqual("LastName", o.LastName);
       Assert.AreEqual("lastName", o.lastName);
-    }
-
-    public class SuperKlass
-    {
-      public string SuperProp { get; set; }
-      public SuperKlass() { SuperProp = "default superprop"; }
-    }
-
-    public class SubKlass : SuperKlass
-    {
-      public string SubProp { get; set; }
-      public SubKlass(string subprop) { SubProp = subprop; }
     }
 
     [Test]
@@ -1421,18 +1285,6 @@ keyword such as type of business.""
       o.ReferenceLoopHandlingErrorProperty = o;
 
       JsonConvert.SerializeObject(o, Formatting.Indented, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
-    }
-
-    public class RequestOnly
-    {
-      public string Request { get; set; }
-    }
-
-    public class NonRequest
-    {
-      public Guid Sid { get; set; }
-      public Guid Uid { get; set; }
-      public IList<string> FidOrder { get; set; }
     }
 
     [Test]
@@ -1565,33 +1417,6 @@ keyword such as type of business.""
     }
 #endif
 
-    public class DictionaryInterfaceClass
-    {
-      public string Name { get; set; }
-      public IDictionary<string, int> Dictionary { get; set; }
-      public ICollection<int> Collection { get; set; }
-      public EmployeeReference Employee { get; set; }
-      public object Random { get; set; }
-
-      public DictionaryInterfaceClass()
-      {
-        Dictionary = new Dictionary<string, int>
-          {
-            { "existing", 1 }
-          };
-        Collection = new List<int>
-          {
-            1,
-            2,
-            3
-          };
-        Employee = new EmployeeReference
-          {
-            Name = "EmployeeName!"
-          };
-      }
-    }
-
     [Test]
     public void DeserializeDictionaryInterface()
     {
@@ -1720,25 +1545,6 @@ keyword such as type of business.""
       Assert.AreEqual(@"{""bar"":{""baz"":13}}", json);
     }
 
-    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public class Content : IEnumerable<Content>
-    {
-      [JsonProperty]
-      public List<Content> Children;
-      [JsonProperty]
-      public string Text;
-
-      public IEnumerator GetEnumerator()
-      {
-        return Children.GetEnumerator();
-      }
-
-      IEnumerator<Content> IEnumerable<Content>.GetEnumerator()
-      {
-        return Children.GetEnumerator();
-      }
-    }
-
     [Test]
     public void SerializeEnumerableAsObject()
     {
@@ -1794,25 +1600,6 @@ keyword such as type of business.""
       Assert.AreEqual("Second", content.Children[1].Text);
     }
 
-    public enum RoleTransferOperation
-    {
-      First,
-      Second
-    }
-
-    public enum RoleTransferDirection
-    {
-      First,
-      Second
-    }
-
-    public class RoleTransfer
-    {
-      public RoleTransferOperation Operation { get; set; }   //This is enum type
-      public string RoleName { get; set; }
-      public RoleTransferDirection Direction { get; set; }   //This is enum type
-    }
-
     [Test]
     public void RoleTransferTest()
     {
@@ -1823,13 +1610,6 @@ keyword such as type of business.""
       Assert.AreEqual(RoleTransferOperation.Second, r.Operation);
       Assert.AreEqual("Admin", r.RoleName);
       Assert.AreEqual(RoleTransferDirection.First, r.Direction);
-    }
-
-    public class ObjectArrayPropertyTest
-    {
-      public string Action { get; set; }
-      public string Method { get; set; }
-      public object[] Data { get; set; }
     }
 
     [Test]
@@ -1975,145 +1755,13 @@ keyword such as type of business.""
       Assert.AreEqual(null, c.DateTimeField);
     }
 
-    /// <summary>
-    /// What types of events are there? Just sticking to a basic set of four for now.
-    /// </summary>
-    /// <remarks></remarks>
-    public enum EventType
-    {
-      Debug = 0,
-      Info = 1,
-      Warning = 2,
-      Error = 3
-    }
-
-    public sealed class Event
-    {
-
-      /// <summary>
-      /// If no current user is specified, returns Nothing (0 from VB)
-      /// </summary>
-      /// <returns></returns>
-      /// <remarks></remarks>
-      private static int GetCurrentUserId()
-      {
-        return 0;
-      }
-
-      /// <summary>
-      /// Gets either the application path or the current stack trace.
-      /// NOTE: You MUST call this from the top level entry point. Otherwise,
-      /// the stack trace will be buried in Logger itself.
-      /// </summary>
-      /// <returns></returns>
-      /// <remarks></remarks>
-      private static string GetCurrentSubLocation()
-      {
-        return "";
-      }
-
-      private string _sublocation;
-      private int _userId;
-      private EventType _type;
-      private string _summary;
-      private string _details;
-      private string _stackTrace;
-      private string _tag;
-      private DateTime _time;
-
-      public Event(string summary)
-      {
-        _summary = summary;
-        _time = DateTime.Now;
-
-        if (_userId == 0) _userId = GetCurrentUserId();
-        //This call only works at top level for now.
-        //If _stackTrace = Nothing Then _stackTrace = Environment.StackTrace
-        if (_sublocation == null) _sublocation = GetCurrentSubLocation();
-      }
-
-      public Event(string sublocation, int userId, EventType type, string summary, string details, string stackTrace, string tag)
-      {
-        _sublocation = sublocation;
-        _userId = userId;
-        _type = type;
-        _summary = summary;
-        _details = details;
-        _stackTrace = stackTrace;
-        _tag = tag;
-        _time = DateTime.Now;
-
-        if (_userId == 0) _userId = GetCurrentUserId();
-        //If _stackTrace = Nothing Then _stackTrace = Environment.StackTrace
-        if (_sublocation == null) _sublocation = GetCurrentSubLocation();
-      }
-
-      public override string ToString()
-      {
-        return string.Format("{{ sublocation = {0}, userId = {1}, type = {2}, summary = {3}, details = {4}, stackTrace = {5}, tag = {6} }}", _sublocation, _userId, _type, _summary, _details, _stackTrace, _tag);
-      }
-
-      public string sublocation
-      {
-        get { return _sublocation; }
-        set { _sublocation = value; }
-      }
-      public int userId
-      {
-        get { return _userId; }
-        set { _userId = value; }
-      }
-      public EventType type
-      {
-        get { return _type; }
-        set { _type = value; }
-      }
-      public string summary
-      {
-        get { return _summary; }
-        set { _summary = value; }
-      }
-      public string details
-      {
-        get { return _details; }
-        set { _details = value; }
-      }
-      public string stackTrace
-      {
-        get { return _stackTrace; }
-        set { _stackTrace = value; }
-      }
-      public string tag
-      {
-        get { return _tag; }
-        set { _tag = value; }
-      }
-      public DateTime time
-      {
-        get { return _time; }
-      }
-    }
-
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Unable to determine which constructor to use for type Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+Event. A class with no default constructor should have only one constructor with arguments.")]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Unable to determine which constructor to use for type Newtonsoft.Json.Tests.TestObjects.Event. A class with no default constructor should have only one constructor with arguments.")]
     public void FailWhenClassWithNoDefaultConstructorHasMultipleConstructorsWithArguments()
     {
       string json = @"{""sublocation"":""AlertEmailSender.Program.Main"",""userId"":0,""type"":0,""summary"":""Loading settings variables"",""details"":null,""stackTrace"":""   at System.Environment.GetStackTrace(Exception e, Boolean needFileInfo)\r\n   at System.Environment.get_StackTrace()\r\n   at mr.Logging.Event..ctor(String summary) in C:\\Projects\\MRUtils\\Logging\\Event.vb:line 71\r\n   at AlertEmailSender.Program.Main(String[] args) in C:\\Projects\\AlertEmailSender\\AlertEmailSender\\Program.cs:line 25"",""tag"":null,""time"":""\/Date(1249591032026-0400)\/""}";
 
       Event e = JsonConvert.DeserializeObject<Event>(json);
-    }
-
-    public class SetOnlyPropertyClass2
-    {
-      private object _value;
-      public object SetOnlyProperty
-      {
-        set { _value = value; }
-      }
-      public object GetValue()
-      {
-        return _value;
-      }
     }
 
     [Test]
@@ -2128,34 +1776,34 @@ keyword such as type of business.""
       Assert.AreEqual(5, (int)a[a.Count - 1]);
     }
 
-    [JsonObject(MemberSerialization.OptIn)]
-    public class list
-    {
-      [JsonProperty]
-      public string id { get; set; }
-      [JsonProperty]
-      public List<ListItem> items { get; set; }
-
-    }
-
-    [JsonObject(MemberSerialization.OptIn)]
-    public class ListItem
-    {
-      [JsonProperty]
-      public string id { get; set; }
-    }
-
     [Test]
     public void DeserializeOptInClasses()
     {
       string json = @"{id: ""12"", name: ""test"", items: [{id: ""112"", name: ""testing""}]}";
 
-      list l = JsonConvert.DeserializeObject<list>(json);
+      ListTestClass l = JsonConvert.DeserializeObject<ListTestClass>(json);
     }
 
     [Test]
     public void DeserializeNullableListWithNulls()
     {
+      List<decimal?> l = JsonConvert.DeserializeObject<List<decimal?>>("[ 3.3, null, 1.1 ] ");
+      Assert.AreEqual(3, l.Count);
+
+      Assert.AreEqual(3.3m, l[0]);
+      Assert.AreEqual(null, l[1]);
+      Assert.AreEqual(1.1m, l[2]);
+    }
+
+    [Test]
+    public void DeserializeNullableListWithNullss()
+    {
+      //JavaScriptSerializer s = new JavaScriptSerializer();
+      //s.Deserialize<List<decimal?>>("[ 3.3, null, 1.1 ] ");
+
+      //DataContractJsonSerializer s = new DataContractJsonSerializer(typeof(List<decimal?>));
+      //s.ReadObject(new MemoryStream(Encoding.UTF8.GetBytes("[ 3.3, null, 1.1 ] ")));
+
       List<decimal?> l = JsonConvert.DeserializeObject<List<decimal?>>("[ 3.3, null, 1.1 ] ");
       Assert.AreEqual(3, l.Count);
 

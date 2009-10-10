@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -25,13 +25,34 @@
 
 using System;
 
-namespace Newtonsoft.Json.Serialization
+namespace Newtonsoft.Json.Tests.TestObjects
 {
-  /// <summary>
-  /// When applied to a method, specifies that the method is called when an error occurs serializing an object.
-  /// </summary>
-  [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-  public sealed class OnErrorAttribute : Attribute
+  public class ListErrorObject
   {
+    public string Member { get; set; }
+
+    private string _throwError;
+    public string ThrowError
+    {
+      get
+      {
+        if (_throwError != null)
+          return _throwError;
+
+        throw new Exception("ListErrorObject.ThrowError get error!");
+      }
+      set
+      {
+        if (value != null && value.StartsWith("Handle"))
+        {
+          _throwError = value;
+          return;
+        }
+
+        throw new Exception("ListErrorObject.ThrowError set error!");
+      }
+    }
+
+    public string Member2 { get; set; }
   }
 }

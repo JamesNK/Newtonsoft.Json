@@ -148,6 +148,7 @@
     <Compile Include="Serialization\JsonSerializerProxy.cs" />
     <Compile Include="Serialization\JsonTypeReflector.cs" />
     <Compile Include="Serialization\OnErrorAttribute.cs" />
+    <Compile Include="StreamingContext.cs" />
     <Compile Include="TypeNameHandling.cs" />
     <Compile Include="Utilities\BidirectionalDictionary.cs" />
     <Compile Include="Utilities\ConvertUtils.cs" />

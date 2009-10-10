@@ -72,16 +72,33 @@
     <Compile Include="Linq\ComponentModel\JPropertyDescriptorTests.cs" />
     <Compile Include="Linq\ComponentModel\JTypeDescriptionProviderTests.cs" />
     <Compile Include="Linq\ComponentModel\JTypeDescriptorTests.cs" />
+    <Compile Include="TestObjects\Content.cs" />
+    <Compile Include="TestObjects\DictionaryInterfaceClass.cs" />
     <Compile Include="Serialization\EntitiesSerializationTests.cs" />
+    <Compile Include="TestObjects\Event.cs" />
+    <Compile Include="TestObjects\GoogleMapGeocoderStructure.cs" />
+    <Compile Include="TestObjects\InterfacePropertyTestClass.cs" />
+    <Compile Include="TestObjects\JsonPropertyClass.cs" />
     <Compile Include="Serialization\JsonSerializerTest.cs" />
+    <Compile Include="TestObjects\ListTestClass.cs" />
+    <Compile Include="TestObjects\LogEntry.cs" />
     <Compile Include="Serialization\MissingMemberHandlingTests.cs" />
+    <Compile Include="TestObjects\NonRequest.cs" />
+    <Compile Include="TestObjects\ObjectArrayPropertyTest.cs" />
     <Compile Include="Serialization\PopulateTests.cs" />
+    <Compile Include="TestObjects\PropertyCase.cs" />
+    <Compile Include="TestObjects\RequestOnly.cs" />
+    <Compile Include="TestObjects\RoleTransfer.cs" />
+    <Compile Include="Serialization\SerializationErrorHandlingTests.cs" />
     <Compile Include="Serialization\SerializationEventAttributeTests.cs" />
     <Compile Include="Schema\ExtensionsTests.cs" />
     <Compile Include="Schema\JsonSchemaModelBuilderTests.cs" />
     <Compile Include="Schema\JsonSchemaNodeTests.cs" />
     <Compile Include="Serialization\CamelCasePropertyNamesContractResolverTests.cs" />
     <Compile Include="Serialization\PreserveReferencesHandlingTests.cs" />
+    <Compile Include="TestObjects\SetOnlyPropertyClass2.cs" />
+    <Compile Include="TestObjects\SubKlass.cs" />
+    <Compile Include="TestObjects\SuperKlass.cs" />
     <Compile Include="Serialization\TypeNameHandlingTests.cs" />
     <Compile Include="TestObjects\AbstractGenericBase.cs" />
     <Compile Include="TestObjects\ArgumentConverterPrecedenceClassConverter.cs" />
@@ -93,6 +110,7 @@
     <Compile Include="TestObjects\ConverterPrecedenceClass.cs" />
     <Compile Include="TestObjects\ConverterPrecedenceClassConverter.cs" />
     <Compile Include="TestObjects\CircularReferenceWithIdClass.cs" />
+    <Compile Include="TestObjects\DateTimeErrorObjectCollection.cs" />
     <Compile Include="TestObjects\EmployeeReference.cs" />
     <Compile Include="TestObjects\JsonPropertyWithHandlingValues.cs" />
     <Compile Include="TestObjects\DefaultValueAttributeTestClass.cs" />
@@ -103,6 +121,8 @@
     <Compile Include="TestObjects\IncompatibleJsonAttributeClass.cs" />
     <Compile Include="TestObjects\Invoice.cs" />
     <Compile Include="TestObjects\JsonIgnoreAttributeTestClass.cs" />
+    <Compile Include="TestObjects\ListErrorObject.cs" />
+    <Compile Include="TestObjects\ListErrorObjectCollection.cs" />
     <Compile Include="TestObjects\MemberConverterPrecedenceClassConverter.cs" />
     <Compile Include="TestObjects\MethodExecutorObject.cs" />
     <Compile Include="TestObjects\JaggedArray.cs" />
@@ -160,6 +180,7 @@
     <Compile Include="TestObjects\TypeClass.cs" />
     <Compile Include="TestObjects\TypedSubHashtable.cs" />
     <Compile Include="TestObjects\UserNullable.cs" />
+    <Compile Include="TestObjects\VersionKeyedCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />

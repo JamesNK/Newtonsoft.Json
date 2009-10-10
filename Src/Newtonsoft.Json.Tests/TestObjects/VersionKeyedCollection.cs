@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -24,43 +24,46 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Collections.ObjectModel;
+using System.Runtime.Serialization;
+using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json.Tests.TestObjects;
 
-namespace Newtonsoft.Json.Serialization
+namespace Newtonsoft.Json.Tests.TestObjects
 {
-  /// <summary>
-  /// Provides information surrounding an error.
-  /// </summary>
-  public class ErrorContext
+  public class VersionKeyedCollection : KeyedCollection<string, Person>, IList
   {
-    internal ErrorContext(object originalObject, object member, Exception error)
+    public List<string> Messages { get; set; }
+
+    public VersionKeyedCollection()
     {
-      OriginalObject = originalObject;
-      Member = member;
-      Error = error;
+      Messages = new List<string>();
     }
 
-    /// <summary>
-    /// Gets or sets the error.
-    /// </summary>
-    /// <value>The error.</value>
-    public Exception Error { get; private set; }
-    /// <summary>
-    /// Gets the original object that caused the error.
-    /// </summary>
-    /// <value>The original object that caused the error.</value>
-    public object OriginalObject { get; private set; }
-    /// <summary>
-    /// Gets the member that caused the error.
-    /// </summary>
-    /// <value>The member that caused the error.</value>
-    public object Member { get; private set; }
-    /// <summary>
-    /// Gets or sets a value indicating whether this <see cref="ErrorContext"/> is handled.
-    /// </summary>
-    /// <value><c>true</c> if handled; otherwise, <c>false</c>.</value>
-    public bool Handled { get; set; }
+    protected override string GetKeyForItem(Person item)
+    {
+      return item.Name;
+    }
+
+    [OnError]
+    internal void OnErrorMethod(StreamingContext context, ErrorContext errorContext)
+    {
+      Messages.Add("Error message for member " + errorContext.Member + " = " + errorContext.Error.Message);
+      errorContext.Handled = true;
+    }
+
+    object IList.this[int index]
+    {
+      get
+      {
+        if (index % 2 == 0)
+          throw new Exception("Index even: " + index);
+
+        return this[index];
+      }
+      set { this[index] = (Person)value; }
+    }
   }
 }

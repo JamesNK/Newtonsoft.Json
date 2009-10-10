@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -24,14 +24,18 @@
 #endregion
 
 using System;
+using System.Collections.ObjectModel;
+using System.Runtime.Serialization;
+using Newtonsoft.Json.Serialization;
 
-namespace Newtonsoft.Json.Serialization
+namespace Newtonsoft.Json.Tests.TestObjects
 {
-  /// <summary>
-  /// When applied to a method, specifies that the method is called when an error occurs serializing an object.
-  /// </summary>
-  [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-  public sealed class OnErrorAttribute : Attribute
+  public class DateTimeErrorObjectCollection : Collection<DateTime>
   {
+    [OnError]
+    internal void OnErrorMethod(StreamingContext context, ErrorContext errorContext)
+    {
+      errorContext.Handled = true;
+    }
   }
 }

@@ -153,6 +153,12 @@ namespace Newtonsoft.Json.Linq
       throw new Exception("Cannot add or remove items from {0}.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
     }
 
+    /// <summary>
+    /// Returns a collection of the child tokens of this token, in document order.
+    /// </summary>
+    /// <returns>
+    /// An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> containing the child tokens of this <see cref="JToken"/>, in document order.
+    /// </returns>
     public override JEnumerable<JToken> Children()
     {
       return new JEnumerable<JToken>(ChildrenInternal());

@@ -31,7 +31,6 @@ namespace Newtonsoft.Json.Serialization
 {
   internal abstract class JsonSerializerInternalBase
   {
-#if !PocketPC && !SILVERLIGHT && !NET20
     private ErrorContext _currentErrorContext;
 
     protected ErrorContext GetErrorContext(object originalObject, object member, Exception error)
@@ -52,6 +51,5 @@ namespace Newtonsoft.Json.Serialization
 
       _currentErrorContext = null;
     }
-#endif
   }
 }

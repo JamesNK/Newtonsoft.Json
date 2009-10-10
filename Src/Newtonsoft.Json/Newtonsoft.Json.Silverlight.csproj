@@ -112,6 +112,7 @@
     <Compile Include="Serialization\DefaultContractResolver.cs" />
     <Compile Include="Serialization\DefaultReferenceResolver.cs" />
     <Compile Include="Serialization\DefaultSerializationBinder.cs" />
+    <Compile Include="Serialization\ErrorContext.cs" />
     <Compile Include="Serialization\IContractResolver.cs" />
     <Compile Include="Serialization\IReferenceResolver.cs" />
     <Compile Include="Serialization\JsonArrayContract.cs" />
@@ -124,6 +125,8 @@
     <Compile Include="Serialization\JsonSerializerProxy.cs" />
     <Compile Include="Serialization\JsonSerializerInternalReader.cs" />
     <Compile Include="Serialization\JsonSerializerInternalWriter.cs" />
+    <Compile Include="Serialization\OnErrorAttribute.cs" />
+    <Compile Include="StreamingContext.cs" />
     <Compile Include="TypeNameHandling.cs" />
     <Compile Include="Utilities\BidirectionalDictionary.cs" />
     <Compile Include="Utilities\CollectionUtils.cs" />

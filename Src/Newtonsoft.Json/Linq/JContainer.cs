@@ -97,13 +97,21 @@ namespace Newtonsoft.Json.Linq
     }
 
  #if !SILVERLIGHT
-   protected virtual void OnAddingNew(AddingNewEventArgs e)
+    /// <summary>
+    /// Raises the <see cref="E:AddingNew"/> event.
+    /// </summary>
+    /// <param name="e">The <see cref="AddingNewEventArgs"/> instance containing the event data.</param>
+    protected virtual void OnAddingNew(AddingNewEventArgs e)
     {
       AddingNewEventHandler handler = AddingNew;
       if (handler != null)
         handler(this, e);
     }
 
+    /// <summary>
+    /// Raises the <see cref="E:ListChanged"/> event.
+    /// </summary>
+    /// <param name="e">The <see cref="ListChangedEventArgs"/> instance containing the event data.</param>
     protected virtual void OnListChanged(ListChangedEventArgs e)
     {
       ListChangedEventHandler handler = ListChanged;

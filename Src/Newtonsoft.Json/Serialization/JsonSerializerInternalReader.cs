@@ -465,14 +465,12 @@ namespace Newtonsoft.Json.Serialization
             }
             catch (Exception ex)
             {
-#if !PocketPC && !SILVERLIGHT && !NET20
               ErrorContext errorContext = GetErrorContext(dictionary.UnderlyingDictionary, keyValue, ex);
               contract.InvokeOnError(dictionary.UnderlyingDictionary, errorContext);
 
               if (errorContext.Handled)
                 HandleError(reader, initialDepth);
               else
-#endif
                 throw;
             }
             break;
@@ -498,9 +496,9 @@ namespace Newtonsoft.Json.Serialization
 #if !PocketPC && !SILVERLIGHT
           if (contract.OnSerializing != null && isTemporaryListReference)
             throw new JsonSerializationException("Cannot call OnSerializing on an array or readonly list: {0}".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+#endif
           if (contract.OnError != null && isTemporaryListReference)
             throw new JsonSerializationException("Cannot call OnError on an array or readonly list: {0}".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
-#endif
 
           PopulateList(CollectionUtils.CreateCollectionWrapper(l), reader, reference, contract);
         });
@@ -536,14 +534,12 @@ namespace Newtonsoft.Json.Serialization
             }
             catch (Exception ex)
             {
-#if !PocketPC && !SILVERLIGHT && !NET20
               ErrorContext errorContext = GetErrorContext(list, wrappedList.Count, ex);
               contract.InvokeOnError(list, errorContext);
 
               if (errorContext.Handled)
                 HandleError(reader, initialDepth);
               else
-#endif
                 throw;
             }
             break;
@@ -682,14 +678,12 @@ namespace Newtonsoft.Json.Serialization
             }
             catch (Exception ex)
             {
-#if !PocketPC && !SILVERLIGHT && !NET20
               ErrorContext errorContext = GetErrorContext(newObject, memberName, ex);
               contract.InvokeOnError(newObject, errorContext);
 
               if (errorContext.Handled)
                 HandleError(reader, initialDepth);
               else
-#endif
                 throw;
             }
             break;
@@ -734,7 +728,6 @@ namespace Newtonsoft.Json.Serialization
       }
     }
 
-#if !PocketPC && !SILVERLIGHT && !NET20
     private void HandleError(JsonReader reader, int initialDepth)
     {
       ClearErrorContext();
@@ -744,6 +737,5 @@ namespace Newtonsoft.Json.Serialization
         reader.Read();
       }
     }
-#endif
   }
 }

@@ -46,10 +46,10 @@ namespace Newtonsoft.Json.Serialization
     /// <value>Whether this type contract is serialized as a reference.</value>
     public bool? IsReference { get; set; }
 
-#if !PocketPC && !SILVERLIGHT
     private static readonly StreamingContext SerializationStreamingContextParameter = new StreamingContext(StreamingContextStates.All);
     private static readonly object[] SerializationEventParameterValues = new object[] { SerializationStreamingContextParameter };
 
+#if !PocketPC && !SILVERLIGHT
     /// <summary>
     /// Gets or sets the method called immediately after deserialization of the object.
     /// </summary>
@@ -70,9 +70,13 @@ namespace Newtonsoft.Json.Serialization
     /// </summary>
     /// <value>The method called before serialization of the object.</value>
     public MethodInfo OnSerializing { get; set; }
-
-    public MethodInfo OnError { get; set; }
 #endif
+
+    /// <summary>
+    /// Gets or sets the method called when an error is thrown during the serialization of the object.
+    /// </summary>
+    /// <value>The method called when an error is thrown during the serialization of the object.</value>
+    public MethodInfo OnError { get; set; }
 
     internal void InvokeOnSerializing(object o)
     {
@@ -106,13 +110,11 @@ namespace Newtonsoft.Json.Serialization
 #endif
     }
 
-#if !PocketPC && !SILVERLIGHT && !NET20
     internal void InvokeOnError(object o, ErrorContext errorContext)
     {
       if (OnError != null)
         OnError.Invoke(o, new object[] { SerializationStreamingContextParameter, errorContext });
     }
-#endif
 
     internal JsonContract(Type underlyingType)
     {
