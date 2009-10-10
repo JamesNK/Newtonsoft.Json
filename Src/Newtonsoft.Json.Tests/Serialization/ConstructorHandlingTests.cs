@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Newtonsoft.Json.Tests.TestObjects;
 using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Serialization
@@ -9,7 +10,7 @@ namespace Newtonsoft.Json.Tests.Serialization
   public class ConstructorHandlingTests : TestFixtureBase
   {
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Unable to find a constructor to use for type Newtonsoft.Json.Tests.Serialization.PrivateConstructorTestClass. A class should either have a default constructor or only one constructor with arguments.")]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Unable to find a constructor to use for type Newtonsoft.Json.Tests.TestObjects.PrivateConstructorTestClass. A class should either have a default constructor or only one constructor with arguments.")]
     public void FailWithPrivateConstructorAndDefault()
     {
       string json = @"{Name:""Name!""}";
