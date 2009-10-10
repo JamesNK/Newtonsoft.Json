@@ -90,6 +90,7 @@
     <Compile Include="Converters\CustomCreationConverter.cs" />
     <Compile Include="Converters\EntityKeyMemberConverter.cs" />
     <Compile Include="Converters\StringEnumConverter.cs" />
+    <Compile Include="ConstructorHandling.cs" />
     <Compile Include="Linq\ComponentModel\JPropertyDescriptor.cs" />
     <Compile Include="Linq\ComponentModel\JTypeDescriptionProvider.cs" />
     <Compile Include="Linq\ComponentModel\JTypeDescriptor.cs" />

@@ -19,6 +19,7 @@ namespace Newtonsoft.Json
     internal const DefaultValueHandling DefaultDefaultValueHandling = DefaultValueHandling.Include;
     internal const ObjectCreationHandling DefaultObjectCreationHandling = ObjectCreationHandling.Auto;
     internal const PreserveReferencesHandling DefaultPreserveReferencesHandling = PreserveReferencesHandling.None;
+    internal const ConstructorHandling DefaultConstructorHandling = ConstructorHandling.Default;
     internal const TypeNameHandling DefaultTypeNameHandling = TypeNameHandling.None;
 
     /// <summary>
@@ -61,6 +62,11 @@ namespace Newtonsoft.Json
     /// </summary>
     /// <value>The type name handling.</value>
     public TypeNameHandling TypeNameHandling { get; set; }
+    /// <summary>
+    /// Gets or sets how constructors are used during deserialization.
+    /// </summary>
+    /// <value>The constructor handling.</value>
+    public ConstructorHandling ConstructorHandling { get; set; }
 
     /// <summary>
     /// Gets or sets the contract resolver used by the serializer when

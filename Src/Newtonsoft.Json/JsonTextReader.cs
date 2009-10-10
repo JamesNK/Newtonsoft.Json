@@ -347,6 +347,10 @@ namespace Newtonsoft.Json
             SetStateBasedOnCurrent();
             ClearCurrentChar();
             return false;
+          case ' ':
+            // eat whitespace
+            ClearCurrentChar();
+            break;
           default:
             if (char.IsWhiteSpace(_currentChar))
             {
@@ -379,6 +383,9 @@ namespace Newtonsoft.Json
           case ',':
             SetToken(JsonToken.Undefined);
             return true;
+          case ' ':
+            // eat
+            break;
           default:
             if (char.IsWhiteSpace(_currentChar))
             {
@@ -547,6 +554,9 @@ namespace Newtonsoft.Json
           case ')':
             SetToken(JsonToken.EndConstructor);
             return true;
+          case ' ':
+            // eat
+            break;
           default:
             if (char.IsWhiteSpace(_currentChar))
             {
@@ -571,7 +581,7 @@ namespace Newtonsoft.Json
     private bool EatWhitespace(bool oneOrMore)
     {
       bool whitespace = false;
-      while (char.IsWhiteSpace(_currentChar))
+      while (_currentChar == ' ' || char.IsWhiteSpace(_currentChar))
       {
         whitespace = true;
         MoveNext();
@@ -736,6 +746,8 @@ namespace Newtonsoft.Json
           if (CurrentState == State.Constructor || CurrentState == State.ConstructorStart)
             return true;
           break;
+        case ' ':
+          return true;
         default:
           if (char.IsWhiteSpace(_currentChar))
             return true;

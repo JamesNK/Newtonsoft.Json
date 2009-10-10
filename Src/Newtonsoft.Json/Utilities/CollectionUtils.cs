@@ -334,17 +334,6 @@ namespace Newtonsoft.Json.Utilities
       return result;
     }
 
-    public static T[] CreateArray<T>(IEnumerable<T> enumerable)
-    {
-      ValidationUtils.ArgumentNotNull(enumerable, "enumerable");
-
-      if (enumerable is T[])
-        return (T[])enumerable;
-
-      List<T> tempList = new List<T>(enumerable);
-      return tempList.ToArray();
-    }
-
     public static IList CreateGenericList(Type listType)
     {
       ValidationUtils.ArgumentNotNull(listType, "listType");

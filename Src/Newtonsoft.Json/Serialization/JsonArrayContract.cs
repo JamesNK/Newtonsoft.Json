@@ -25,7 +25,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Newtonsoft.Json.Utilities;
+using System.Collections;
 
 namespace Newtonsoft.Json.Serialization
 {
@@ -34,8 +36,12 @@ namespace Newtonsoft.Json.Serialization
   /// </summary>
   public class JsonArrayContract : JsonContract
   {
-    internal Type CollectionTypeToCreate { get; private set; }
     internal Type CollectionItemType { get; private set; }
+
+    private bool _isCollectionItemTypeNullableType;
+    private Type _genericCollectionDefinitionType;
+    private Type _genericWrapperType;
+    private ConstructorInfo _genericWrapperConstructor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonArrayContract"/> class.
@@ -44,17 +50,40 @@ namespace Newtonsoft.Json.Serialization
     public JsonArrayContract(Type underlyingType)
       : base(underlyingType)
     {
-      CollectionItemType = ReflectionUtils.GetCollectionItemType(UnderlyingType);
-
-      if (IsTypeGenericCollectionInterface(UnderlyingType))
+      if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof(ICollection<>), out _genericCollectionDefinitionType))
       {
-        Type itemType = ReflectionUtils.GetCollectionItemType(UnderlyingType);
-        CollectionTypeToCreate = ReflectionUtils.MakeGenericType(typeof(List<>), itemType);
+        CollectionItemType = _genericCollectionDefinitionType.GetGenericArguments()[0];
       }
       else
       {
-        CollectionTypeToCreate = UnderlyingType;
+        CollectionItemType = ReflectionUtils.GetCollectionItemType(UnderlyingType);
       }
+
+      if (CollectionItemType != null)
+        _isCollectionItemTypeNullableType = ReflectionUtils.IsNullableType(CollectionItemType);
+
+      if (IsTypeGenericCollectionInterface(UnderlyingType))
+      {
+        CreatedType = ReflectionUtils.MakeGenericType(typeof(List<>), CollectionItemType);
+      }
+      else
+      {
+        CreatedType = UnderlyingType;
+      }
+    }
+
+    internal IWrappedCollection CreateWrapper(object list)
+    {
+      if (list is IList && (CollectionItemType == null || !_isCollectionItemTypeNullableType))
+        return new CollectionWrapper<object>((IList)list);
+
+      if (_genericWrapperType == null)
+      {
+        _genericWrapperType = ReflectionUtils.MakeGenericType(typeof(CollectionWrapper<>), CollectionItemType);
+        _genericWrapperConstructor = _genericWrapperType.GetConstructor(new[] { _genericCollectionDefinitionType });
+      }
+
+      return (IWrappedCollection)_genericWrapperConstructor.Invoke(new[] { list });
     }
 
     private bool IsTypeGenericCollectionInterface(Type type)

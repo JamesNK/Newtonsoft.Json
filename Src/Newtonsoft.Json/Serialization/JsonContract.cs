@@ -40,6 +40,13 @@ namespace Newtonsoft.Json.Serialization
     /// </summary>
     /// <value>The underlying type for the contract.</value>
     public Type UnderlyingType { get; private set; }
+
+    /// <summary>
+    /// Gets or sets the type created during deserialization.
+    /// </summary>
+    /// <value>The type created during deserialization.</value>
+    public Type CreatedType { get; set; }
+
     /// <summary>
     /// Gets or sets whether this type contract is serialized as a reference.
     /// </summary>
@@ -71,6 +78,12 @@ namespace Newtonsoft.Json.Serialization
     /// <value>The method called before serialization of the object.</value>
     public MethodInfo OnSerializing { get; set; }
 #endif
+
+    /// <summary>
+    /// Gets or sets the default contstructor used to create the object.
+    /// </summary>
+    /// <value>The default contstructor.</value>
+    public ConstructorInfo DefaultContstructor { get; set; }
 
     /// <summary>
     /// Gets or sets the method called when an error is thrown during the serialization of the object.

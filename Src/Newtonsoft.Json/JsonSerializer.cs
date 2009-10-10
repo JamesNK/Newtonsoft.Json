@@ -47,6 +47,7 @@ namespace Newtonsoft.Json
     private ObjectCreationHandling _objectCreationHandling;
     private NullValueHandling _nullValueHandling;
     private DefaultValueHandling _defaultValueHandling;
+    private ConstructorHandling _constructorHandling;
     private JsonConverterCollection _converters;
     private IContractResolver _contractResolver;
     private IReferenceResolver _referenceResolver;
@@ -205,6 +206,22 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
+    /// Gets or sets how constructors are used during deserialization.
+    /// </summary>
+    /// <value>The constructor handling.</value>
+    public virtual ConstructorHandling ConstructorHandling
+    {
+      get { return _constructorHandling; }
+      set
+      {
+        if (value < ConstructorHandling.Default || value > ConstructorHandling.AllowNonPublicDefaultConstructor)
+          throw new ArgumentOutOfRangeException("value");
+
+        _constructorHandling = value;
+      }
+    }
+
+    /// <summary>
     /// Gets a collection <see cref="JsonConverter"/> that will be used during serialization.
     /// </summary>
     /// <value>Collection <see cref="JsonConverter"/> that will be used during serialization.</value>
@@ -247,6 +264,7 @@ namespace Newtonsoft.Json
       _defaultValueHandling = JsonSerializerSettings.DefaultDefaultValueHandling;
       _objectCreationHandling = JsonSerializerSettings.DefaultObjectCreationHandling;
       _preserveReferencesHandling = JsonSerializerSettings.DefaultPreserveReferencesHandling;
+      _constructorHandling = JsonSerializerSettings.DefaultConstructorHandling;
       _typeNameHandling = JsonSerializerSettings.DefaultTypeNameHandling;
       _binder = DefaultSerializationBinder.Instance;
     }
@@ -272,6 +290,7 @@ namespace Newtonsoft.Json
         jsonSerializer.ObjectCreationHandling = settings.ObjectCreationHandling;
         jsonSerializer.NullValueHandling = settings.NullValueHandling;
         jsonSerializer.DefaultValueHandling = settings.DefaultValueHandling;
+        jsonSerializer.ConstructorHandling = settings.ConstructorHandling;
 
         if (settings.ContractResolver != null)
           jsonSerializer.ContractResolver = settings.ContractResolver;

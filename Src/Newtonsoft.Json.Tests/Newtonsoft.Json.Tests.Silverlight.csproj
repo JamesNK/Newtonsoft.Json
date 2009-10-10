@@ -78,6 +78,7 @@
     <Compile Include="Schema\JsonSchemaModelBuilderTests.cs" />
     <Compile Include="Schema\JsonSchemaNodeTests.cs" />
     <Compile Include="Serialization\CamelCasePropertyNamesContractResolverTests.cs" />
+    <Compile Include="Serialization\ConstructorHandlingTests.cs" />
     <Compile Include="Serialization\EntitiesSerializationTests.cs" />
     <Compile Include="Serialization\JsonSerializerTest.cs" />
     <Compile Include="Serialization\MissingMemberHandlingTests.cs" />
@@ -127,6 +128,8 @@
     <Compile Include="TestObjects\ObjectArrayPropertyTest.cs" />
     <Compile Include="TestObjects\PersonRaw.cs" />
     <Compile Include="TestObjects\PhoneNumber.cs" />
+    <Compile Include="TestObjects\PrivateConstructorTestClass.cs" />
+    <Compile Include="TestObjects\PrivateConstructorWithPublicParametizedConstructorTestClass.cs" />
     <Compile Include="TestObjects\PrivateMembersClass.cs" />
     <Compile Include="TestObjects\PropertyCase.cs" />
     <Compile Include="TestObjects\RequestOnly.cs" />

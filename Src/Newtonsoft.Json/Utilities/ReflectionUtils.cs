@@ -56,12 +56,29 @@ namespace Newtonsoft.Json.Utilities
 
     public static bool HasDefaultConstructor(Type t)
     {
+      return HasDefaultConstructor(t, false);
+    }
+
+    public static bool HasDefaultConstructor(Type t, bool nonPublic)
+    {
       ValidationUtils.ArgumentNotNull(t, "t");
 
       if (t.IsValueType)
         return true;
 
-      return (t.GetConstructor(BindingFlags.Public | BindingFlags.Instance, null, new Type[0], null) != null);
+      return (GetDefaultConstructor(t, nonPublic) != null);
+    }
+
+    public static ConstructorInfo GetDefaultConstructor(Type t)
+    {
+      return GetDefaultConstructor(t, false);
+    }
+
+    public static ConstructorInfo GetDefaultConstructor(Type t, bool nonPublic)
+    {
+      BindingFlags accessModifier = (!nonPublic) ? BindingFlags.Public : BindingFlags.NonPublic;
+
+      return t.GetConstructor(accessModifier | BindingFlags.Instance, null, new Type[0], null);
     }
 
     public static bool IsNullable(Type t)
@@ -575,19 +592,10 @@ namespace Newtonsoft.Json.Utilities
       ValidationUtils.ArgumentNotNullOrEmpty(innerTypes, "innerTypes");
       ValidationUtils.ArgumentNotNull(instanceCreator, "createInstance");
 
-      Type specificType = MakeGenericType(genericTypeDefinition, CollectionUtils.CreateArray(innerTypes));
+      Type specificType = MakeGenericType(genericTypeDefinition, innerTypes.ToArray());
 
       return instanceCreator(specificType, args);
     }
-
-     static object CreateInstance(this Assembly a, string typeName, params object[] pars)
-     {
-       var t = a.GetType(typeName);
-       var c = t.GetConstructor(pars.Select(p => p.GetType()).ToArray());
-       if (c == null)
-         return null; 
-       return c.Invoke(pars); 
-     }
 
      public static bool IsCompatibleValue(object value, Type type)
      {

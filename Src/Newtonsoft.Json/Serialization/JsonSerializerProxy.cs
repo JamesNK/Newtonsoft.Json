@@ -94,6 +94,12 @@ namespace Newtonsoft.Json.Serialization
       set { _serializer.TypeNameHandling = value; }
     }
 
+    public override ConstructorHandling ConstructorHandling
+    {
+      get { return _serializer.ConstructorHandling; }
+      set { _serializer.ConstructorHandling = value; }
+    }
+
     public override SerializationBinder Binder
     {
       get { return _serializer.Binder; }

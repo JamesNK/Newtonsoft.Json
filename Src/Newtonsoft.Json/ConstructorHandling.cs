@@ -24,42 +24,24 @@
 #endregion
 
 using System;
-using System.Reflection;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
-namespace Newtonsoft.Json.Serialization
+namespace Newtonsoft.Json
 {
   /// <summary>
-  /// Contract details for a <see cref="Type"/> used by the <see cref="JsonSerializer"/>.
+  /// Specifies how constructors are used when initializing objects during deserialization by the <see cref="JsonSerializer"/>.
   /// </summary>
-  public class JsonObjectContract : JsonContract
+  public enum ConstructorHandling
   {
     /// <summary>
-    /// Gets or sets the object member serialization.
+    /// First attempt to use the public default constructor then fall back to single paramatized constructor.
     /// </summary>
-    /// <value>The member object serialization.</value>
-    public MemberSerialization MemberSerialization { get; set; }
-
+    Default = 0,
     /// <summary>
-    /// Gets the object's properties.
+    /// Allow Json.NET to use a non-public default constructor.
     /// </summary>
-    /// <value>The object's properties.</value>
-    public JsonPropertyCollection Properties { get; private set; }
-
-    /// <summary>
-    /// Gets or sets the parametrized constructor used to create the object.
-    /// </summary>
-    /// <value>The parametrized constructor.</value>
-    public ConstructorInfo ParametrizedConstructor { get; set; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="JsonObjectContract"/> class.
-    /// </summary>
-    /// <param name="underlyingType">The underlying type for the contract.</param>
-    public JsonObjectContract(Type underlyingType)
-      : base(underlyingType)
-    {
-      Properties = new JsonPropertyCollection();
-      CreatedType = underlyingType;
-    }
+    AllowNonPublicDefaultConstructor = 1
   }
 }

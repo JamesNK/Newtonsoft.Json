@@ -25,7 +25,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Newtonsoft.Json.Utilities;
+using System.Collections;
 
 namespace Newtonsoft.Json.Serialization
 {
@@ -34,9 +36,12 @@ namespace Newtonsoft.Json.Serialization
   /// </summary>
   public class JsonDictionaryContract : JsonContract
   {
-    internal Type DictionaryTypeToCreate { get; private set; }
     internal Type DictionaryKeyType { get; private set; }
     internal Type DictionaryValueType { get; private set; }
+
+    private Type _genericCollectionDefinitionType;
+    private Type _genericWrapperType;
+    private ConstructorInfo _genericWrapperConstructor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonDictionaryContract"/> class.
@@ -47,19 +52,41 @@ namespace Newtonsoft.Json.Serialization
     {
       Type keyType;
       Type valueType;
-      ReflectionUtils.GetDictionaryKeyValueTypes(UnderlyingType, out keyType, out valueType);
+      if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof(IDictionary<,>), out _genericCollectionDefinitionType))
+      {
+        keyType = _genericCollectionDefinitionType.GetGenericArguments()[0];
+        valueType = _genericCollectionDefinitionType.GetGenericArguments()[1];
+      }
+      else
+      {
+        ReflectionUtils.GetDictionaryKeyValueTypes(UnderlyingType, out keyType, out valueType);
+      }
 
       DictionaryKeyType = keyType;
       DictionaryValueType = valueType;
 
       if (IsTypeGenericDictionaryInterface(UnderlyingType))
       {
-        DictionaryTypeToCreate = ReflectionUtils.MakeGenericType(typeof(Dictionary<,>), keyType, valueType);
+        CreatedType = ReflectionUtils.MakeGenericType(typeof(Dictionary<,>), keyType, valueType);
       }
       else
       {
-        DictionaryTypeToCreate = underlyingType;
+        CreatedType = underlyingType;
       }
+    }
+
+    internal IWrappedDictionary CreateWrapper(object dictionary)
+    {
+      if (dictionary is IDictionary)
+        return new DictionaryWrapper<object, object>((IDictionary)dictionary);
+
+      if (_genericWrapperType == null)
+      {
+        _genericWrapperType = ReflectionUtils.MakeGenericType(typeof(DictionaryWrapper<,>), DictionaryKeyType, DictionaryValueType);
+        _genericWrapperConstructor = _genericWrapperType.GetConstructor(new[] { _genericCollectionDefinitionType });
+      }
+
+      return (IWrappedDictionary)_genericWrapperConstructor.Invoke(new[] { dictionary });
     }
 
     private bool IsTypeGenericDictionaryInterface(Type type)

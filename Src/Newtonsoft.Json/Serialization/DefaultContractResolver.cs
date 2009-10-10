@@ -140,8 +140,20 @@ namespace Newtonsoft.Json.Serialization
 
       contract.MemberSerialization = JsonTypeReflector.GetObjectMemberSerialization(objectType);
       contract.Properties.AddRange(CreateProperties(contract));
+      if (contract.DefaultContstructor == null || contract.DefaultContstructor.IsPrivate)
+        contract.ParametrizedConstructor = GetParametrizedConstructor(objectType);
 
       return contract;
+    }
+
+    private ConstructorInfo GetParametrizedConstructor(Type objectType)
+    {
+      ConstructorInfo[] constructors = objectType.GetConstructors(BindingFlags.Public | BindingFlags.Instance);
+
+      if (constructors.Length == 1)
+        return constructors[0];
+      else
+        return null;
     }
 
     private void InitializeContract(JsonContract contract)
@@ -160,6 +172,10 @@ namespace Newtonsoft.Json.Serialization
           contract.IsReference = true;
       }
 #endif
+
+      contract.DefaultContstructor =
+        ReflectionUtils.GetDefaultConstructor(contract.CreatedType, false) ??
+        ReflectionUtils.GetDefaultConstructor(contract.CreatedType, true);
 
       foreach (MethodInfo method in contract.UnderlyingType.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
       {

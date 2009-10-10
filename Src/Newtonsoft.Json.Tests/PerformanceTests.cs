@@ -167,7 +167,7 @@ namespace Newtonsoft.Json.Tests
 
       timed.Stop();
 
-      Console.WriteLine("Serialize method: {0}", method);
+      Console.WriteLine("Deserialize method: {0}", method);
       Console.WriteLine("{0} ms", timed.ElapsedMilliseconds);
       Console.WriteLine(value);
       Console.WriteLine();
