@@ -30,6 +30,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
 using System.Runtime.Serialization;
+using ErrorEventArgs=Newtonsoft.Json.Serialization.ErrorEventArgs;
 
 namespace Newtonsoft.Json
 {
@@ -59,6 +60,11 @@ namespace Newtonsoft.Json
         new EntityKeyMemberConverter()
 #endif
       };
+
+    /// <summary>
+    /// Occurs when the <see cref="JsonSerializer"/> errors during serialization and deserialization.
+    /// </summary>
+    public virtual event EventHandler<ErrorEventArgs> Error;
 
     /// <summary>
     /// Gets or sets the <see cref="IReferenceResolver"/> used by the serializer when resolving references.
@@ -292,6 +298,9 @@ namespace Newtonsoft.Json
         jsonSerializer.DefaultValueHandling = settings.DefaultValueHandling;
         jsonSerializer.ConstructorHandling = settings.ConstructorHandling;
 
+        if (settings.Error != null)
+          jsonSerializer.Error += settings.Error;
+
         if (settings.ContractResolver != null)
           jsonSerializer.ContractResolver = settings.ContractResolver;
         if (settings.ReferenceResolver != null)
@@ -444,6 +453,13 @@ namespace Newtonsoft.Json
 
       matchingConverter = null;
       return false;
+    }
+
+    internal void OnError(ErrorEventArgs e)
+    {
+      EventHandler<ErrorEventArgs> error = Error;
+      if (error != null)
+        error(this, e);
     }
   }
 }

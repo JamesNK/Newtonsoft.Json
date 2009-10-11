@@ -98,7 +98,7 @@ namespace Newtonsoft.Json.Linq
 
  #if !SILVERLIGHT
     /// <summary>
-    /// Raises the <see cref="E:AddingNew"/> event.
+    /// Raises the <see cref="AddingNew"/> event.
     /// </summary>
     /// <param name="e">The <see cref="AddingNewEventArgs"/> instance containing the event data.</param>
     protected virtual void OnAddingNew(AddingNewEventArgs e)
@@ -109,7 +109,7 @@ namespace Newtonsoft.Json.Linq
     }
 
     /// <summary>
-    /// Raises the <see cref="E:ListChanged"/> event.
+    /// Raises the <see cref="ListChanged"/> event.
     /// </summary>
     /// <param name="e">The <see cref="ListChangedEventArgs"/> instance containing the event data.</param>
     protected virtual void OnListChanged(ListChangedEventArgs e)

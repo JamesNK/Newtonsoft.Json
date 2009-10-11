@@ -30,6 +30,9 @@ using System.Text;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Tests.TestObjects;
 using NUnit.Framework;
+using Newtonsoft.Json.Serialization;
+using System.IO;
+using ErrorEventArgs=Newtonsoft.Json.Serialization.ErrorEventArgs;
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
@@ -200,6 +203,136 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual(new DateTime(2009, 9, 9, 0, 0, 0, DateTimeKind.Utc), c[0]);
       Assert.AreEqual(new DateTime(1977, 2, 20, 0, 0, 0, DateTimeKind.Utc), c[1]);
       Assert.AreEqual(new DateTime(2000, 12, 1, 0, 0, 0, DateTimeKind.Utc), c[2]);
+    }
+
+    [Test]
+    public void DeserializingErrorHandlingUsingEvent()
+    {
+      List<string> errors = new List<string>();
+
+      List<DateTime> c = JsonConvert.DeserializeObject<List<DateTime>>(@"[
+        ""2009-09-09T00:00:00Z"",
+        ""I am not a date and will error!"",
+        [
+          1
+        ],
+        ""1977-02-20T00:00:00Z"",
+        null,
+        ""2000-12-01T00:00:00Z""
+      ]",
+        new JsonSerializerSettings
+          {
+            Error = delegate(object sender, ErrorEventArgs args)
+              {
+                errors.Add(args.ErrorContext.Error.Message);
+                args.ErrorContext.Handled = true;
+              },
+            Converters = { new IsoDateTimeConverter() }
+          });
+
+      // 2009-09-09T00:00:00Z
+      // 1977-02-20T00:00:00Z
+      // 2000-12-01T00:00:00Z
+
+      // The string was not recognized as a valid DateTime. There is a unknown word starting at index 0.
+      // Unexpected token parsing date. Expected String, got StartArray.
+      // Cannot convert null value to System.DateTime.
+
+      Assert.AreEqual(3, c.Count);
+      Assert.AreEqual(new DateTime(2009, 9, 9, 0, 0, 0, DateTimeKind.Utc), c[0]);
+      Assert.AreEqual(new DateTime(1977, 2, 20, 0, 0, 0, DateTimeKind.Utc), c[1]);
+      Assert.AreEqual(new DateTime(2000, 12, 1, 0, 0, 0, DateTimeKind.Utc), c[2]);
+
+      Assert.AreEqual(3, errors.Count);
+      Assert.AreEqual("The string was not recognized as a valid DateTime. There is a unknown word starting at index 0.", errors[0]);
+      Assert.AreEqual("Unexpected token parsing date. Expected String, got StartArray.", errors[1]);
+      Assert.AreEqual("Cannot convert null value to System.DateTime.", errors[2]);
+    }
+
+    [Test]
+    public void DeserializingErrorInDateTimeCollectionWithAttributeWithEventNotCalled()
+    {
+      bool eventErrorHandlerCalled = false;
+
+      DateTimeErrorObjectCollection c = JsonConvert.DeserializeObject<DateTimeErrorObjectCollection>(@"[
+  ""2009-09-09T00:00:00Z"",
+  ""kjhkjhkjhkjh"",
+  [
+    1
+  ],
+  ""1977-02-20T00:00:00Z"",
+  null,
+  ""2000-12-01T00:00:00Z""
+]",
+        new JsonSerializerSettings
+        {
+          Error = (s, a) => eventErrorHandlerCalled = true,
+          Converters =
+              {
+                new IsoDateTimeConverter()
+              }
+        });
+
+      Assert.AreEqual(3, c.Count);
+      Assert.AreEqual(new DateTime(2009, 9, 9, 0, 0, 0, DateTimeKind.Utc), c[0]);
+      Assert.AreEqual(new DateTime(1977, 2, 20, 0, 0, 0, DateTimeKind.Utc), c[1]);
+      Assert.AreEqual(new DateTime(2000, 12, 1, 0, 0, 0, DateTimeKind.Utc), c[2]);
+
+      Assert.AreEqual(false, eventErrorHandlerCalled);
+    }
+
+    [Test]
+    public void SerializePerson()
+    {
+      PersonError person = new PersonError
+        {
+          Name = "George Michael Bluth",
+          Age = 16,
+          Roles = null,
+          Title = "Mister Manager"
+        };
+
+      string json = JsonConvert.SerializeObject(person, Formatting.Indented);
+
+      Console.WriteLine(json);
+      //{
+      //  "Name": "George Michael Bluth",
+      //  "Age": 16,
+      //  "Title": "Mister Manager"
+      //}
+
+      Assert.AreEqual(@"{
+  ""Name"": ""George Michael Bluth"",
+  ""Age"": 16,
+  ""Title"": ""Mister Manager""
+}", json);
+    }
+
+    [Test]
+    public void DeserializeNestedUnhandled()
+    {
+      List<string> errors = new List<string>();
+
+      string json = @"[[""kjhkjhkjhkjh""]]";
+
+      try
+      {
+        JsonSerializer serializer = new JsonSerializer();
+        serializer.Error += delegate(object sender, ErrorEventArgs args)
+          {
+            // only log an error once
+            if (args.CurrentObject == args.ErrorContext.OriginalObject)
+              errors.Add(args.ErrorContext.Error.Message);
+          };
+
+        serializer.Deserialize(new StringReader(json), typeof(List<List<DateTime>>));
+      }
+      catch
+      {
+      }
+
+      Assert.AreEqual(1, errors.Count);
+      Assert.AreEqual("Could not cast or convert from System.String to System.DateTime.", errors[0]);
     }
   }
 }

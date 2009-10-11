@@ -463,7 +463,7 @@ namespace Newtonsoft.Json.Linq
     }
 
     /// <summary>
-    /// Raises the <see cref="E:PropertyChanged"/> event with the provided arguments.
+    /// Raises the <see cref="PropertyChanged"/> event with the provided arguments.
     /// </summary>
     /// <param name="propertyName">Name of the property.</param>
     protected virtual void OnPropertyChanged(string propertyName)
@@ -474,7 +474,7 @@ namespace Newtonsoft.Json.Linq
 
 #if !PocketPC && !SILVERLIGHT
     /// <summary>
-    /// Raises the <see cref="E:PropertyChanging"/> event with the provided arguments.
+    /// Raises the <see cref="PropertyChanging"/> event with the provided arguments.
     /// </summary>
     /// <param name="propertyName">Name of the property.</param>
     protected virtual void OnPropertyChanging(string propertyName)

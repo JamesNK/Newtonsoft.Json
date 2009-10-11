@@ -87,6 +87,7 @@
     <Compile Include="TestObjects\NonRequest.cs" />
     <Compile Include="TestObjects\ObjectArrayPropertyTest.cs" />
     <Compile Include="Serialization\PopulateTests.cs" />
+    <Compile Include="TestObjects\PersonError.cs" />
     <Compile Include="TestObjects\PrivateConstructorTestClass.cs" />
     <Compile Include="TestObjects\PrivateConstructorWithPublicParametizedConstructorTestClass.cs" />
     <Compile Include="TestObjects\PropertyCase.cs" />

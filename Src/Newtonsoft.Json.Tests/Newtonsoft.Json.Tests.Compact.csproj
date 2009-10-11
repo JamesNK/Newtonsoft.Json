@@ -120,6 +120,7 @@
     <Compile Include="TestObjects\NonRequest.cs" />
     <Compile Include="TestObjects\NullableDateTimeTestClass.cs" />
     <Compile Include="TestObjects\ObjectArrayPropertyTest.cs" />
+    <Compile Include="TestObjects\PersonError.cs" />
     <Compile Include="TestObjects\PersonRaw.cs" />
     <Compile Include="TestObjects\PhoneNumber.cs" />
     <Compile Include="TestObjects\PrivateConstructorTestClass.cs" />

@@ -37,14 +37,10 @@ namespace Newtonsoft.Json.Serialization
 {
   internal class JsonSerializerInternalReader : JsonSerializerInternalBase
   {
-    internal readonly JsonSerializer _serializer;
     private JsonSerializerProxy _internalSerializer;
 
-    public JsonSerializerInternalReader(JsonSerializer serializer)
+    public JsonSerializerInternalReader(JsonSerializer serializer) : base(serializer)
     {
-      ValidationUtils.ArgumentNotNull(serializer, "serializer");
-
-      _serializer = serializer;
     }
 
     public void Populate(JsonReader reader, object target)
@@ -53,7 +49,7 @@ namespace Newtonsoft.Json.Serialization
 
       Type objectType = target.GetType();
 
-      JsonContract contract = _serializer.ContractResolver.ResolveContract(objectType);
+      JsonContract contract = Serializer.ContractResolver.ResolveContract(objectType);
 
       if (reader.TokenType == JsonToken.None)
         reader.Read();
@@ -145,10 +141,10 @@ namespace Newtonsoft.Json.Serialization
       if (memberConverter != null)
         return memberConverter.ReadJson(reader, objectType, GetInternalSerializer());
 
-      if (objectType != null && _serializer.HasClassConverter(objectType, out converter))
+      if (objectType != null && Serializer.HasClassConverter(objectType, out converter))
         return converter.ReadJson(reader, objectType, GetInternalSerializer());
 
-      if (objectType != null && _serializer.HasMatchingConverter(objectType, out converter))
+      if (objectType != null && Serializer.HasMatchingConverter(objectType, out converter))
         return converter.ReadJson(reader, objectType, GetInternalSerializer());
 
       if (objectType == typeof (JsonRaw))
@@ -219,7 +215,7 @@ namespace Newtonsoft.Json.Serialization
             string reference = reader.Value.ToString();
 
             CheckedRead(reader);
-            return _serializer.ReferenceResolver.ResolveReference(reference);
+            return Serializer.ReferenceResolver.ResolveReference(reference);
           }
           else if (string.Equals(propertyName, JsonTypeReflector.TypePropertyName, StringComparison.Ordinal))
           {
@@ -228,7 +224,7 @@ namespace Newtonsoft.Json.Serialization
 
             CheckedRead(reader);
 
-            if (_serializer.TypeNameHandling != TypeNameHandling.None)
+            if (Serializer.TypeNameHandling != TypeNameHandling.None)
             {
               string typeName;
               string assemblyName;
@@ -237,7 +233,7 @@ namespace Newtonsoft.Json.Serialization
               Type specifiedType;
               try
               {
-                specifiedType = _serializer.Binder.BindToType(assemblyName, typeName);
+                specifiedType = Serializer.Binder.BindToType(assemblyName, typeName);
               }
               catch (Exception ex)
               {
@@ -280,7 +276,7 @@ namespace Newtonsoft.Json.Serialization
       if (!HasDefinedType(objectType))
         return CreateJObject(reader);
 
-      JsonContract contract = _serializer.ContractResolver.ResolveContract(objectType);
+      JsonContract contract = Serializer.ContractResolver.ResolveContract(objectType);
 
       if (contract == null)
         throw new JsonSerializationException("Could not resolve type '{0}' to a JsonContract.".FormatWith(CultureInfo.InvariantCulture, objectType));
@@ -306,7 +302,7 @@ namespace Newtonsoft.Json.Serialization
 
     private JsonArrayContract GetArrayContract(Type objectType)
     {
-      JsonContract contract = _serializer.ContractResolver.ResolveContract(objectType);
+      JsonContract contract = Serializer.ContractResolver.ResolveContract(objectType);
       if (contract == null)
         throw new JsonSerializationException("Could not resolve type '{0}' to a JsonContract.".FormatWith(CultureInfo.InvariantCulture, objectType));
 
@@ -377,7 +373,7 @@ namespace Newtonsoft.Json.Serialization
       }
       else
       {
-        if (_serializer.MissingMemberHandling == MissingMemberHandling.Error)
+        if (Serializer.MissingMemberHandling == MissingMemberHandling.Error)
           throw new JsonSerializationException("Could not find member '{0}' on object of type '{1}'".FormatWith(CultureInfo.InvariantCulture, memberName, contract.UnderlyingType.Name));
 
         reader.Skip();
@@ -398,7 +394,7 @@ namespace Newtonsoft.Json.Serialization
       object currentValue = null;
       bool useExistingValue = false;
 
-      if ((_serializer.ObjectCreationHandling == ObjectCreationHandling.Auto || _serializer.ObjectCreationHandling == ObjectCreationHandling.Reuse)
+      if ((Serializer.ObjectCreationHandling == ObjectCreationHandling.Auto || Serializer.ObjectCreationHandling == ObjectCreationHandling.Reuse)
         && (reader.TokenType == JsonToken.StartArray || reader.TokenType == JsonToken.StartObject)
         && property.Readable)
       {
@@ -421,10 +417,10 @@ namespace Newtonsoft.Json.Serialization
 
     private bool ShouldSetPropertyValue(JsonProperty property, object value)
     {
-      if (property.NullValueHandling.GetValueOrDefault(_serializer.NullValueHandling) == NullValueHandling.Ignore && value == null)
+      if (property.NullValueHandling.GetValueOrDefault(Serializer.NullValueHandling) == NullValueHandling.Ignore && value == null)
         return false;
 
-      if (property.DefaultValueHandling.GetValueOrDefault(_serializer.DefaultValueHandling) == DefaultValueHandling.Ignore && Equals(value, property.DefaultValue))
+      if (property.DefaultValueHandling.GetValueOrDefault(Serializer.DefaultValueHandling) == DefaultValueHandling.Ignore && Equals(value, property.DefaultValue))
         return false;
 
       if (!property.Writable)
@@ -445,7 +441,7 @@ namespace Newtonsoft.Json.Serialization
     private IDictionary PopulateDictionary(IWrappedDictionary dictionary, JsonReader reader, JsonDictionaryContract contract, string id)
     {
       if (id != null)
-        _serializer.ReferenceResolver.AddReference(id, dictionary.UnderlyingDictionary);
+        Serializer.ReferenceResolver.AddReference(id, dictionary.UnderlyingDictionary);
 
       contract.InvokeOnDeserializing(dictionary.UnderlyingDictionary);
 
@@ -465,10 +461,7 @@ namespace Newtonsoft.Json.Serialization
             }
             catch (Exception ex)
             {
-              ErrorContext errorContext = GetErrorContext(dictionary.UnderlyingDictionary, keyValue, ex);
-              contract.InvokeOnError(dictionary.UnderlyingDictionary, errorContext);
-
-              if (errorContext.Handled)
+              if (IsErrorHandled(dictionary, contract, keyValue, ex))
                 HandleError(reader, initialDepth);
               else
                 throw;
@@ -509,7 +502,7 @@ namespace Newtonsoft.Json.Serialization
       object list = wrappedList.UnderlyingCollection;
 
       if (reference != null)
-        _serializer.ReferenceResolver.AddReference(reference, list);
+        Serializer.ReferenceResolver.AddReference(reference, list);
 
       contract.InvokeOnDeserializing(list);
 
@@ -534,10 +527,7 @@ namespace Newtonsoft.Json.Serialization
             }
             catch (Exception ex)
             {
-              ErrorContext errorContext = GetErrorContext(list, wrappedList.Count, ex);
-              contract.InvokeOnError(list, errorContext);
-
-              if (errorContext.Handled)
+              if (IsErrorHandled(list, contract, wrappedList.Count, ex))
                 HandleError(reader, initialDepth);
               else
                 throw;
@@ -557,7 +547,7 @@ namespace Newtonsoft.Json.Serialization
         throw new JsonSerializationException("Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantated.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
       if (contract.DefaultContstructor != null &&
-        (contract.DefaultContstructor.IsPublic || _serializer.ConstructorHandling == ConstructorHandling.AllowNonPublicDefaultConstructor))
+        (contract.DefaultContstructor.IsPublic || Serializer.ConstructorHandling == ConstructorHandling.AllowNonPublicDefaultConstructor))
       {
         newObject = contract.DefaultContstructor.Invoke(null);
 
@@ -601,7 +591,7 @@ namespace Newtonsoft.Json.Serialization
             }
             else
             {
-              if (_serializer.MissingMemberHandling == MissingMemberHandling.Error)
+              if (Serializer.MissingMemberHandling == MissingMemberHandling.Error)
                 throw new JsonSerializationException("Could not find member '{0}' on object of type '{1}'".FormatWith(CultureInfo.InvariantCulture, memberName, objectType.Name));
 
               reader.Skip();
@@ -630,7 +620,7 @@ namespace Newtonsoft.Json.Serialization
       object createdObject = contract.ParametrizedConstructor.Invoke(constructorParameters.Values.ToArray());
 
       if (id != null)
-        _serializer.ReferenceResolver.AddReference(id, createdObject);
+        Serializer.ReferenceResolver.AddReference(id, createdObject);
 
       contract.InvokeOnDeserializing(createdObject);
 
@@ -653,7 +643,7 @@ namespace Newtonsoft.Json.Serialization
         contract.Properties.Where(m => m.Required).ToDictionary(m => m.PropertyName, m => false);
 
       if (id != null)
-        _serializer.ReferenceResolver.AddReference(id, newObject);
+        Serializer.ReferenceResolver.AddReference(id, newObject);
 
       int initialDepth = reader.Depth;
 
@@ -676,10 +666,7 @@ namespace Newtonsoft.Json.Serialization
             }
             catch (Exception ex)
             {
-              ErrorContext errorContext = GetErrorContext(newObject, memberName, ex);
-              contract.InvokeOnError(newObject, errorContext);
-
-              if (errorContext.Handled)
+              if (IsErrorHandled(newObject, contract, memberName, ex))
                 HandleError(reader, initialDepth);
               else
                 throw;
@@ -729,6 +716,8 @@ namespace Newtonsoft.Json.Serialization
     private void HandleError(JsonReader reader, int initialDepth)
     {
       ClearErrorContext();
+
+      reader.Skip();
 
       while (reader.Depth > (initialDepth + 1))
       {

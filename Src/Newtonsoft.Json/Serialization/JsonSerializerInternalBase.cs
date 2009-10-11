@@ -33,10 +33,19 @@ namespace Newtonsoft.Json.Serialization
   {
     private ErrorContext _currentErrorContext;
 
-    protected ErrorContext GetErrorContext(object originalObject, object member, Exception error)
+    internal JsonSerializer Serializer { get; private set; }
+
+    protected JsonSerializerInternalBase(JsonSerializer serializer)
+    {
+      ValidationUtils.ArgumentNotNull(serializer, "serializer");
+
+      Serializer = serializer;
+    }
+
+    protected ErrorContext GetErrorContext(object currentObject, object member, Exception error)
     {
       if (_currentErrorContext == null)
-        _currentErrorContext = new ErrorContext(originalObject, member, error);
+        _currentErrorContext = new ErrorContext(currentObject, member, error);
 
       if (_currentErrorContext.Error != error)
         throw new InvalidOperationException("Current error context error is different to requested error.");
@@ -50,6 +59,17 @@ namespace Newtonsoft.Json.Serialization
         throw new InvalidOperationException("Could not clear error context. Error context is already null.");
 
       _currentErrorContext = null;
+    }
+
+    protected bool IsErrorHandled(object currentObject, JsonContract contract, object keyValue, Exception ex)
+    {
+      ErrorContext errorContext = GetErrorContext(currentObject, keyValue, ex);
+      contract.InvokeOnError(currentObject, errorContext);
+
+      if (!errorContext.Handled)
+        Serializer.OnError(new ErrorEventArgs(currentObject, errorContext));
+
+      return errorContext.Handled;
     }
   }
 }

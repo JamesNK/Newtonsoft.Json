@@ -6,6 +6,7 @@
     <siteMapNode title="Serializing Dates in JSON" url=".\DatesInJSON.html" />
     <siteMapNode title="Serializing Collections" url=".\SerializingCollections.html" />
     <siteMapNode title="Serialization Callbacks" url=".\SerializationCallbacks.html" />
+    <siteMapNode title="Serialization Error Handling" url=".\SerializationErrorHandling.html" />
     <siteMapNode title="Serialization and Preserving Object References" url=".\PreserveObjectReferences.html" />
     <siteMapNode title="CustomCreationConverter" url=".\CustomCreationConverter.html" />
     <siteMapNode title="Contract Resolvers" url=".\ContractResolver.html" />

@@ -86,6 +86,12 @@ namespace Newtonsoft.Json
     public SerializationBinder Binder { get; set; }
 
     /// <summary>
+    /// Gets or sets the error handler called during serialization and deserialization.
+    /// </summary>
+    /// <value>The error handler called during serialization and deserialization.</value>
+    public EventHandler<ErrorEventArgs> Error { get; set;}
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="JsonSerializerSettings"/> class.
     /// </summary>
     public JsonSerializerSettings()

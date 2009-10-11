@@ -35,6 +35,12 @@ namespace Newtonsoft.Json.Serialization
     private readonly JsonSerializerInternalWriter _serializerWriter;
     private readonly JsonSerializer _serializer;
 
+    public override event EventHandler<ErrorEventArgs> Error
+    {
+      add { _serializer.Error += value; }
+      remove { _serializer.Error -= value; }
+    }
+
     public override IReferenceResolver ReferenceResolver
     {
       get { return _serializer.ReferenceResolver; }
@@ -111,7 +117,7 @@ namespace Newtonsoft.Json.Serialization
       ValidationUtils.ArgumentNotNull(serializerReader, "serializerReader");
 
       _serializerReader = serializerReader;
-      _serializer = serializerReader._serializer;
+      _serializer = serializerReader.Serializer;
     }
 
     public JsonSerializerProxy(JsonSerializerInternalWriter serializerWriter)
@@ -119,7 +125,7 @@ namespace Newtonsoft.Json.Serialization
       ValidationUtils.ArgumentNotNull(serializerWriter, "serializerWriter");
 
       _serializerWriter = serializerWriter;
-      _serializer = serializerWriter._serializer;
+      _serializer = serializerWriter.Serializer;
     }
 
     internal override object DeserializeInternal(JsonReader reader, Type objectType)

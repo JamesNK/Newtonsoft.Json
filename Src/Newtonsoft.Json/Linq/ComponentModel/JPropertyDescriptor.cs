@@ -153,6 +153,23 @@ namespace Newtonsoft.Json.Linq.ComponentModel
     {
       get { return _propertyType; }
     }
+
+    /// <summary>
+    /// Gets the hash code for the name of the member.
+    /// </summary>
+    /// <value></value>
+    /// <returns>
+    /// The hash code for the name of the member.
+    /// </returns>
+    protected override int NameHashCode
+    {
+      get
+      {
+        // override property to fix up an error in its documentation
+        int nameHashCode = base.NameHashCode;
+        return nameHashCode;
+      }
+    }
   }
 }
 #endif
