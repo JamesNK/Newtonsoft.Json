@@ -155,6 +155,21 @@ now brown cow?", '"', true);
     }
 
     [Test]
+    public void EscapeJavaScriptString_UnicodeLinefeeds()
+    {
+      string result;
+
+      result = JavaScriptUtils.ToEscapedJavaScriptString("before" + '\u0085' + "after", '"', true);
+      Assert.AreEqual(@"""before\u0085after""", result);
+
+      result = JavaScriptUtils.ToEscapedJavaScriptString("before" + '\u2028' + "after", '"', true);
+      Assert.AreEqual(@"""before\u2028after""", result);
+
+      result = JavaScriptUtils.ToEscapedJavaScriptString("before" + '\u2029' + "after", '"', true);
+      Assert.AreEqual(@"""before\u2029after""", result);
+    }
+
+    [Test]
     [ExpectedException(typeof(ArgumentException), ExpectedMessage = "Unsupported type: System.Version. Use the JsonSerializer class to get the object's JSON representation.")]
     public void ToStringInvalid()
     {

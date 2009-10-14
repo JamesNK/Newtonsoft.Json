@@ -265,6 +265,8 @@ namespace Newtonsoft.Json.Schema
         // TODO: include null
         CurrentSchema.Type = JsonSchemaType.Array;
 
+        CurrentSchema.Id = GetTypeId(type, false);
+
         JsonArrayAttribute arrayAttribute = JsonTypeReflector.GetJsonContainerAttribute(type) as JsonArrayAttribute;
         bool allowNullItem = (arrayAttribute != null) ? arrayAttribute.AllowNullItems : false;
 

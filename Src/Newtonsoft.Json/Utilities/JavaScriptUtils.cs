@@ -57,11 +57,15 @@ namespace Newtonsoft.Json.Utilities
         case '\\':
           writer.Write(@"\\");
           break;
-        //case '<':
-        //case '>':
-        //case '\'':
-        //  StringUtils.WriteCharAsUnicode(writer, c);
-        //  break;
+        case '\u0085': // Next Line
+          writer.Write(@"\u0085");
+          break;
+        case '\u2028': // Line Separator
+          writer.Write(@"\u2028");
+          break;
+        case '\u2029': // Paragraph Separator
+          writer.Write(@"\u2029");
+          break;
         case '\'':
           // only escape if this charater is being used as the delimiter
           writer.Write((delimiter == '\'') ? @"\'" : @"'");

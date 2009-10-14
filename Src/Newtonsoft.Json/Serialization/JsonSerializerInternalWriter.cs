@@ -241,7 +241,7 @@ namespace Newtonsoft.Json.Serialization
         }
       }
 #else
-      if (value is Guid || value is Type || value is Uri)
+      if (value is Guid || value is Type || value is Uri || value is TimeSpan)
       {
         s = value.ToString();
         return true;

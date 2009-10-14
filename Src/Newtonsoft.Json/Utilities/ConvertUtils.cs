@@ -166,10 +166,12 @@ namespace Newtonsoft.Json.Utilities
 
       if (initialValue is string)
       {
-        if (targetType == typeof(Guid))
-          return new Guid((string)initialValue);
-        if (targetType == typeof(Uri))
+        if (targetType == typeof (Guid))
+          return new Guid((string) initialValue);
+        if (targetType == typeof (Uri))
           return new Uri((string) initialValue);
+        if (targetType == typeof (TimeSpan))
+          return TimeSpan.Parse((string) initialValue);
       }
 
 #if !PocketPC

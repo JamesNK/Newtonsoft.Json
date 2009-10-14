@@ -60,6 +60,8 @@
     <Compile Include="ConstructorHandling.cs" />
     <Compile Include="Converters\BinaryConverter.cs" />
     <Compile Include="Converters\CustomCreationConverter.cs" />
+    <Compile Include="Converters\DataSetConverter.cs" />
+    <Compile Include="Converters\DataTableConverter.cs" />
     <Compile Include="Converters\EntityKeyMemberConverter.cs" />
     <Compile Include="Converters\StringEnumConverter.cs" />
     <Compile Include="DateTimeOffset.cs" />
@@ -75,6 +77,7 @@
     <Compile Include="Linq\ComponentModel\JTypeDescriptionProvider.cs" />
     <Compile Include="Linq\ComponentModel\JTypeDescriptor.cs" />
     <Compile Include="Linq\IJEnumerable.cs" />
+    <Compile Include="Linq\JPath.cs" />
     <Compile Include="Linq\JTokenEqualityComparer.cs" />
     <Compile Include="Linq\JTokenReader.cs" />
     <Compile Include="Linq\JTokenType.cs" />

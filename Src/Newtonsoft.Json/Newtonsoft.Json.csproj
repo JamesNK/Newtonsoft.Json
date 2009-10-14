@@ -87,10 +87,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Converters\BinaryConverter.cs" />
+    <Compile Include="Converters\DataSetConverter.cs" />
+    <Compile Include="Converters\DataTableConverter.cs" />
     <Compile Include="Converters\CustomCreationConverter.cs" />
     <Compile Include="Converters\EntityKeyMemberConverter.cs" />
     <Compile Include="Converters\StringEnumConverter.cs" />
     <Compile Include="ConstructorHandling.cs" />
+    <Compile Include="Linq\JPath.cs" />
     <Compile Include="Serialization\ErrorEventArgs.cs" />
     <Compile Include="Linq\ComponentModel\JPropertyDescriptor.cs" />
     <Compile Include="Linq\ComponentModel\JTypeDescriptionProvider.cs" />

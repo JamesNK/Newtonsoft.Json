@@ -64,6 +64,8 @@
   <ItemGroup>
     <Compile Include="Converters\BinaryConverterTests.cs" />
     <Compile Include="Converters\CustomCreationConverterTests.cs" />
+    <Compile Include="Converters\DataSetConverterTests.cs" />
+    <Compile Include="Converters\DataTableConverterTests.cs" />
     <Compile Include="Converters\StringEnumConverterTests.cs" />
     <Compile Include="JsonArrayAttributeTests.cs" />
     <Compile Include="ExceptionTests.cs" />
@@ -72,6 +74,7 @@
     <Compile Include="Linq\ComponentModel\JPropertyDescriptorTests.cs" />
     <Compile Include="Linq\ComponentModel\JTypeDescriptionProviderTests.cs" />
     <Compile Include="Linq\ComponentModel\JTypeDescriptorTests.cs" />
+    <Compile Include="Linq\JPathTests.cs" />
     <Compile Include="Serialization\ConstructorHandlingTests.cs" />
     <Compile Include="TestObjects\Content.cs" />
     <Compile Include="TestObjects\DictionaryInterfaceClass.cs" />

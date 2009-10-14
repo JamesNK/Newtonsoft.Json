@@ -498,5 +498,82 @@ namespace Newtonsoft.Json.Tests.Schema
   }
 }", json);
     }
+
+    [Test]
+    public void CircularCollectionReferences()
+    {
+      Type type = typeof (Workspace);
+      JsonSchemaGenerator jsonSchemaGenerator = new JsonSchemaGenerator();
+
+      jsonSchemaGenerator.UndefinedSchemaIdHandling = UndefinedSchemaIdHandling.UseTypeName;
+      JsonSchema jsonSchema = jsonSchemaGenerator.Generate(type);
+
+      // should succeed
+      Assert.IsNotNull(jsonSchema);
+    }
+  }
+
+  public class DMDSLBase
+  {
+    public String Comment;
+  }
+
+  public class Workspace : DMDSLBase
+  {
+    public ControlFlowItemCollection Jobs = new ControlFlowItemCollection();
+  }
+
+  public class ControlFlowItemBase : DMDSLBase
+  {
+    public String Name;
+  }
+
+  public class ControlFlowItem : ControlFlowItemBase//A Job
+  {
+    public TaskCollection Tasks = new TaskCollection();
+    public ContainerCollection Containers = new ContainerCollection();
+  }
+
+  public class ControlFlowItemCollection : List<ControlFlowItem>
+  {
+  }
+
+  public class Task : ControlFlowItemBase
+  {
+    public DataFlowTaskCollection DataFlowTasks = new DataFlowTaskCollection();
+    public BulkInsertTaskCollection BulkInsertTask = new BulkInsertTaskCollection();
+  }
+
+  public class TaskCollection : List<Task>
+  {
+  }
+
+  public class Container : ControlFlowItemBase
+  {
+    public ControlFlowItemCollection ContainerJobs = new ControlFlowItemCollection();
+  }
+
+  public class ContainerCollection : List<Container>
+  {
+  }
+
+  public class DataFlowTask_DSL : ControlFlowItemBase
+  {
+  }
+
+  public class DataFlowTaskCollection : List<DataFlowTask_DSL>
+  {
+  }
+
+  public class SequenceContainer_DSL : Container
+  {
+  }
+
+  public class BulkInsertTaskCollection : List<BulkInsertTask_DSL>
+  {
+  }
+
+  public class BulkInsertTask_DSL
+  {
   }
 }

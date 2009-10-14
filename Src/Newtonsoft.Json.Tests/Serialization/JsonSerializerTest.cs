@@ -659,6 +659,25 @@ keyword such as type of business.""
       Assert.AreEqual(StringComparison.CurrentCultureIgnoreCase, s);
     }
 
+    public class ClassWithTimeSpan
+    {
+      public TimeSpan TimeSpanField;
+    }
+
+    [Test]
+    public void TimeSpanTest()
+    {
+      TimeSpan ts = new TimeSpan(200, 23, 59, 1);
+
+      string json = JsonConvert.SerializeObject(new ClassWithTimeSpan { TimeSpanField = ts }, Formatting.Indented);
+      Assert.AreEqual(@"{
+  ""TimeSpanField"": ""200.23:59:01""
+}", json);
+
+      ClassWithTimeSpan c = JsonConvert.DeserializeObject<ClassWithTimeSpan>(json);
+      Assert.AreEqual(ts, c.TimeSpanField);
+    }
+
     [Test]
     public void JsonIgnoreAttributeOnClassTest()
     {

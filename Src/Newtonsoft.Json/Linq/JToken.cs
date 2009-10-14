@@ -1095,5 +1095,16 @@ namespace Newtonsoft.Json.Linq
     {
       get { return _linePosition ?? 0; }
     }
+
+    public JToken SelectToken(string path)
+    {
+      return SelectToken(path, false);
+    }
+
+    public JToken SelectToken(string path, bool errorWhenNoMatch)
+    {
+      JPath p = new JPath(path);
+      return p.Evaluate(this, errorWhenNoMatch);
+    }
   }
 }
