@@ -164,7 +164,7 @@ namespace Newtonsoft.Json.Schema
 
       _resolver = resolver;
 
-      return GenerateInternal(type, !rootSchemaNullable);
+      return GenerateInternal(type, (!rootSchemaNullable) ? Required.Always : Required.Default);
     }
 
     private string GetTitle(Type type)
@@ -214,7 +214,7 @@ namespace Newtonsoft.Json.Schema
       }
     }
 
-    private JsonSchema GenerateInternal(Type type, bool valueRequired)
+    private JsonSchema GenerateInternal(Type type, Required valueRequired)
     {
       ValidationUtils.ArgumentNotNull(type, "type");
 
@@ -256,7 +256,7 @@ namespace Newtonsoft.Json.Schema
           // can be converted to a string
           if (typeof (IConvertible).IsAssignableFrom(keyType))
           {
-            CurrentSchema.AdditionalProperties = GenerateInternal(valueType, false);
+            CurrentSchema.AdditionalProperties = GenerateInternal(valueType, Required.Default);
           }
         }
       }
@@ -274,7 +274,7 @@ namespace Newtonsoft.Json.Schema
         if (collectionItemType != null)
         {
           CurrentSchema.Items = new List<JsonSchema>();
-          CurrentSchema.Items.Add(GenerateInternal(collectionItemType, !allowNullItem));
+          CurrentSchema.Items.Add(GenerateInternal(collectionItemType, (!allowNullItem) ? Required.Always : Required.Default));
         }
       }
       else
@@ -295,8 +295,7 @@ namespace Newtonsoft.Json.Schema
           {
             if (!property.Ignored)
             {
-              Type propertyMemberType = ReflectionUtils.GetMemberUnderlyingType(property.Member);
-              JsonSchema propertySchema = GenerateInternal(propertyMemberType, property.Required);
+              JsonSchema propertySchema = GenerateInternal(property.PropertyType, property.Required);
 
               if (property.DefaultValue != null)
                 propertySchema.Default = JToken.FromObject(property.DefaultValue);
@@ -336,10 +335,10 @@ namespace Newtonsoft.Json.Schema
       return ((value & flag) == flag);
     }
 
-    private JsonSchemaType GetJsonSchemaType(Type type, bool valueRequired)
+    private JsonSchemaType GetJsonSchemaType(Type type, Required valueRequired)
     {
       JsonSchemaType schemaType = JsonSchemaType.None;
-      if (!valueRequired && ReflectionUtils.IsNullable(type))
+      if (valueRequired != Required.Always && ReflectionUtils.IsNullable(type))
       {
         schemaType = JsonSchemaType.Null;
         if (ReflectionUtils.IsNullableType(type))

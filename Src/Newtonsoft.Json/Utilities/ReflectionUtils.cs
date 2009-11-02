@@ -34,6 +34,8 @@ using System.Globalization;
 
 namespace Newtonsoft.Json.Utilities
 {
+  internal delegate object MemberHandler<T>(T target, params object[] args);
+
   internal static class ReflectionUtils
   {
     public static Type GetObjectType(object v)
@@ -76,7 +78,10 @@ namespace Newtonsoft.Json.Utilities
 
     public static ConstructorInfo GetDefaultConstructor(Type t, bool nonPublic)
     {
-      BindingFlags accessModifier = (!nonPublic) ? BindingFlags.Public : BindingFlags.NonPublic;
+      BindingFlags accessModifier = BindingFlags.Public;
+      
+      if (nonPublic)
+        accessModifier = accessModifier | BindingFlags.NonPublic;
 
       return t.GetConstructor(accessModifier | BindingFlags.Instance, null, new Type[0], null);
     }
@@ -187,7 +192,40 @@ namespace Newtonsoft.Json.Utilities
       return false;
     }
 
-    
+    public static bool AssignableToTypeName(this Type type, string fullTypeName, out Type match)
+    {
+      Type current = type;
+
+      while (current != null)
+      {
+        if (current.FullName == fullTypeName)
+        {
+          match = current;
+          return true;
+        }
+
+        current = current.BaseType;
+      }
+
+      foreach (Type i in type.GetInterfaces())
+      {
+        if (i.Name == fullTypeName)
+        {
+          match = type;
+          return true;
+        }
+      }
+
+      match = null;
+      return false;
+    }
+
+    public static bool AssignableToTypeName(this Type type, string fullTypeName)
+    {
+      Type match;
+      return type.AssignableToTypeName(fullTypeName, out match);
+    }
+
     public static bool InheritsGenericDefinition(Type type, Type genericClassDefinition)
     {
       Type implementingType;
@@ -361,7 +399,7 @@ namespace Newtonsoft.Json.Utilities
         case MemberTypes.Event:
           return ((EventInfo)member).EventHandlerType;
         default:
-          throw new ArgumentException("MemberInfo must be if type FieldInfo, PropertyInfo or EventInfo", "member");
+          throw new ArgumentException("MemberInfo must be of type FieldInfo, PropertyInfo or EventInfo", "member");
       }
     }
 
@@ -483,7 +521,7 @@ namespace Newtonsoft.Json.Utilities
       switch (member.MemberType)
       {
         case MemberTypes.Field:
-          return true;
+          return !((FieldInfo)member).IsInitOnly;
         case MemberTypes.Property:
           return ((PropertyInfo)member).CanWrite;
         default:
@@ -615,6 +653,9 @@ namespace Newtonsoft.Json.Utilities
 #if !PocketPC
        return Activator.CreateInstance(type, args);
 #else
+       if (type.IsValueType)
+         return Activator.CreateInstance(type);
+
        ConstructorInfo[] constructors = type.GetConstructors();
        ConstructorInfo match = constructors.Where(c =>
          {
@@ -635,7 +676,7 @@ namespace Newtonsoft.Json.Utilities
          }).FirstOrDefault();
 
        if (match == null)
-         throw new Exception("Could not create '{0}' with given parameters.".FormatWith(CultureInfo.InvariantCulture, args));
+         throw new Exception("Could not create '{0}' with given parameters.".FormatWith(CultureInfo.InvariantCulture, type));
 
        return match.Invoke(args);
 #endif

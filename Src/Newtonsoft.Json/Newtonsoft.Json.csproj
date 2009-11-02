@@ -72,12 +72,6 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
-    <Reference Include="System.Data.Entity">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
@@ -94,6 +88,8 @@
     <Compile Include="Converters\StringEnumConverter.cs" />
     <Compile Include="ConstructorHandling.cs" />
     <Compile Include="Linq\JPath.cs" />
+    <Compile Include="Required.cs" />
+    <Compile Include="Serialization\DynamicValueProvider.cs" />
     <Compile Include="Serialization\ErrorEventArgs.cs" />
     <Compile Include="Linq\ComponentModel\JPropertyDescriptor.cs" />
     <Compile Include="Linq\ComponentModel\JTypeDescriptionProvider.cs" />
@@ -158,6 +154,7 @@
     <Compile Include="Serialization\DefaultSerializationBinder.cs" />
     <Compile Include="Serialization\ErrorContext.cs" />
     <Compile Include="Serialization\IContractResolver.cs" />
+    <Compile Include="Serialization\IValueProvider.cs" />
     <Compile Include="Serialization\JsonArrayContract.cs" />
     <Compile Include="Serialization\JsonContract.cs" />
     <Compile Include="Serialization\JsonDictionaryContract.cs" />
@@ -179,7 +176,10 @@
     <Compile Include="Serialization\JsonSerializerProxy.cs" />
     <Compile Include="Serialization\JsonTypeReflector.cs" />
     <Compile Include="Serialization\CachedAttributeGetter.cs" />
+    <Compile Include="Serialization\ReflectionValueProvider.cs" />
     <Compile Include="Serialization\OnErrorAttribute.cs" />
+    <Compile Include="Utilities\DynamicWrapper.cs" />
+    <Compile Include="Utilities\LateBoundDelegateFactory.cs" />
     <Compile Include="Utilities\ThreadSafeStore.cs" />
     <Compile Include="TypeNameHandling.cs" />
     <Compile Include="Utilities\BidirectionalDictionary.cs" />
@@ -219,6 +219,9 @@
       <ProductName>.NET Framework 3.5</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Dynamic.snk" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

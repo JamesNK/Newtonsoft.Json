@@ -53,10 +53,10 @@ namespace Newtonsoft.Json.Serialization
     /// <value>Whether this type contract is serialized as a reference.</value>
     public bool? IsReference { get; set; }
 
-    private static readonly StreamingContext SerializationStreamingContextParameter = new StreamingContext(StreamingContextStates.All);
+    private static readonly StreamingContext SerializationStreamingContextParameter = new StreamingContext();
     private static readonly object[] SerializationEventParameterValues = new object[] { SerializationStreamingContextParameter };
 
-#if !PocketPC && !SILVERLIGHT
+#if !PocketPC
     /// <summary>
     /// Gets or sets the method called immediately after deserialization of the object.
     /// </summary>
@@ -79,11 +79,8 @@ namespace Newtonsoft.Json.Serialization
     public MethodInfo OnSerializing { get; set; }
 #endif
 
-    /// <summary>
-    /// Gets or sets the default contstructor used to create the object.
-    /// </summary>
-    /// <value>The default contstructor.</value>
-    public ConstructorInfo DefaultContstructor { get; set; }
+    public Func<object> DefaultCreator { get; set; }
+    public bool DefaultCreatorNonPublic { get; set; }
 
     /// <summary>
     /// Gets or sets the method called when an error is thrown during the serialization of the object.
@@ -93,7 +90,7 @@ namespace Newtonsoft.Json.Serialization
 
     internal void InvokeOnSerializing(object o)
     {
-#if !PocketPC && !SILVERLIGHT
+#if !PocketPC
       if (OnSerializing != null)
         OnSerializing.Invoke(o, SerializationEventParameterValues);
 #endif
@@ -101,7 +98,7 @@ namespace Newtonsoft.Json.Serialization
 
     internal void InvokeOnSerialized(object o)
     {
-#if !PocketPC && !SILVERLIGHT
+#if !PocketPC
       if (OnSerialized != null)
         OnSerialized.Invoke(o, SerializationEventParameterValues);
 #endif
@@ -109,7 +106,7 @@ namespace Newtonsoft.Json.Serialization
 
     internal void InvokeOnDeserializing(object o)
     {
-#if !PocketPC && !SILVERLIGHT
+#if !PocketPC
       if (OnDeserializing != null)
         OnDeserializing.Invoke(o, SerializationEventParameterValues);
 #endif
@@ -117,7 +114,7 @@ namespace Newtonsoft.Json.Serialization
 
     internal void InvokeOnDeserialized(object o)
     {
-#if !PocketPC && !SILVERLIGHT
+#if !PocketPC
       if (OnDeserialized != null)
         OnDeserialized.Invoke(o, SerializationEventParameterValues);
 #endif

@@ -59,7 +59,7 @@ namespace Newtonsoft.Json.Tests.Schema
   }
 }", json);
     }
-    
+
 #if !PocketPC
     [Test]
     public void Generate_DefaultValueAttributeTestClass()
@@ -179,7 +179,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
       Assert.AreEqual(JsonSchemaType.String, schema.Properties["FirstName"].Type);
       Assert.AreEqual(JsonSchemaType.String | JsonSchemaType.Null, schema.Properties["MiddleName"].Type);
-      Assert.AreEqual(JsonSchemaType.String, schema.Properties["LastName"].Type);
+      Assert.AreEqual(JsonSchemaType.String | JsonSchemaType.Null, schema.Properties["LastName"].Type);
       Assert.AreEqual(JsonSchemaType.String, schema.Properties["BirthDate"].Type);
     }
 
@@ -264,7 +264,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
       JsonSchema schema = generator.Generate(typeof(CircularReferenceWithIdClass));
 
-      Assert.AreEqual(JsonSchemaType.String, schema.Properties["Name"].Type);
+      Assert.AreEqual(JsonSchemaType.String | JsonSchemaType.Null, schema.Properties["Name"].Type);
       Assert.AreEqual("MyExplicitId", schema.Id);
       Assert.AreEqual(JsonSchemaType.Object, schema.Properties["Child"].Type);
       Assert.AreEqual(schema, schema.Properties["Child"]);
@@ -287,7 +287,7 @@ namespace Newtonsoft.Json.Tests.Schema
       {
         IList<JsonProperty> properties = base.CreateProperties(contract);
 
-        JsonPropertyCollection c = new JsonPropertyCollection();
+        JsonPropertyCollection c = new JsonPropertyCollection(contract);
         CollectionUtils.AddRange(c, (IEnumerable)properties.Where(m => m.PropertyName != "Root"));
 
         return c;

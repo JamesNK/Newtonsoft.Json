@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !PocketPC && !SILVERLIGHT && !NET20
+#if !PocketPC && !NET20
 using System;
 using System.IO;
 using System.Linq;
@@ -61,7 +61,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual("This value was reset after serialization.", obj.Member2);
       Assert.AreEqual("This is a nonserialized value", obj.Member3);
       Assert.AreEqual(null, obj.Member4);
-      Assert.AreEqual("Error message for member Member6 = Exception has been thrown by the target of an invocation.", obj.Member5);
+      Assert.AreEqual("Error message for member Member6 = Error getting value from 'Member6' on 'Newtonsoft.Json.Tests.TestObjects.SerializationEventTestObject'.", obj.Member5);
 
       JObject o = JObject.Parse(@"{
   ""Member1"": 11,
@@ -76,7 +76,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual("This value went into the data file during serialization.", obj.Member2);
       Assert.AreEqual("This value was set during deserialization", obj.Member3);
       Assert.AreEqual("This value was set after deserialization.", obj.Member4);
-      Assert.AreEqual("Error message for member Member6 = Exception has been thrown by the target of an invocation.", obj.Member5);
+      Assert.AreEqual("Error message for member Member6 = Error setting value to 'Member6' on 'Newtonsoft.Json.Tests.TestObjects.SerializationEventTestObject'.", obj.Member5);
     }
 
     [Test]

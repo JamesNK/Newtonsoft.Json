@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !PocketPC && !SILVERLIGHT
+#if !PocketPC
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using Newtonsoft.Json.Tests.Serialization;

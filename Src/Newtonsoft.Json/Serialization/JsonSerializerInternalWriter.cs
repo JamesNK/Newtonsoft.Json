@@ -168,34 +168,32 @@ namespace Newtonsoft.Json.Serialization
 
     private void WriteMemberInfoProperty(JsonWriter writer, object value, JsonProperty property)
     {
-      MemberInfo member = property.Member;
       string propertyName = property.PropertyName;
       JsonConverter memberConverter = property.MemberConverter;
       object defaultValue = property.DefaultValue;
 
-      if (!ReflectionUtils.IsIndexedProperty(member))
+      object memberValue = property.ValueProvider.GetValue(value);
+
+      if (property.NullValueHandling.GetValueOrDefault(Serializer.NullValueHandling) == NullValueHandling.Ignore &&
+          memberValue == null)
+        return;
+
+      if (property.DefaultValueHandling.GetValueOrDefault(Serializer.DefaultValueHandling) ==
+          DefaultValueHandling.Ignore && Equals(memberValue, defaultValue))
+        return;
+
+      if (ShouldWriteReference(memberValue, property))
       {
-        object memberValue = ReflectionUtils.GetMemberValue(member, value);
-
-        if (property.NullValueHandling.GetValueOrDefault(Serializer.NullValueHandling) == NullValueHandling.Ignore && memberValue == null)
-          return;
-
-        if (property.DefaultValueHandling.GetValueOrDefault(Serializer.DefaultValueHandling) == DefaultValueHandling.Ignore && Equals(memberValue, defaultValue))
-          return;
-
-        if (ShouldWriteReference(memberValue, property))
-        {
-          writer.WritePropertyName(propertyName ?? member.Name);
-          WriteReference(writer, memberValue);
-          return;
-        }
-
-        if (!CheckForCircularReference(memberValue, property.ReferenceLoopHandling))
-          return;
-
-        writer.WritePropertyName(propertyName ?? member.Name);
-        SerializeValue(writer, memberValue, memberConverter);
+        writer.WritePropertyName(propertyName);
+        WriteReference(writer, memberValue);
+        return;
       }
+
+      if (!CheckForCircularReference(memberValue, property.ReferenceLoopHandling))
+        return;
+
+      writer.WritePropertyName(propertyName);
+      SerializeValue(writer, memberValue, memberConverter);
     }
 
     private bool CheckForCircularReference(object value, ReferenceLoopHandling? referenceLoopHandling)
@@ -260,10 +258,8 @@ namespace Newtonsoft.Json.Serialization
       if (TryConvertToString(value, contract.UnderlyingType, out s))
       {
         writer.WriteValue(s);
-
-#if !SILVERLIGHT && !PocketPC
         contract.InvokeOnSerialized(value);
-#endif
+
         return;
       }
 
@@ -292,7 +288,7 @@ namespace Newtonsoft.Json.Serialization
         }
         catch (Exception ex)
         {
-          if (IsErrorHandled(value, contract, property.Member.Name, ex))
+          if (IsErrorHandled(value, contract, property.PropertyName, ex))
             HandleError(writer, initialDepth);
           else
             throw;

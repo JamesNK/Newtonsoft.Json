@@ -327,12 +327,13 @@ namespace Newtonsoft.Json.Tests.Serialization
 
         serializer.Deserialize(new StringReader(json), typeof(List<List<DateTime>>));
       }
-      catch
+      catch (Exception ex)
       {
+        Console.WriteLine(ex.Message);
       }
 
       Assert.AreEqual(1, errors.Count);
-      Assert.AreEqual("Could not cast or convert from System.String to System.DateTime.", errors[0]);
+      Assert.AreEqual(@"Error converting value ""kjhkjhkjhkjh"" to type 'System.DateTime'.", errors[0]);
     }
   }
 }

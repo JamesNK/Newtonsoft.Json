@@ -32,16 +32,16 @@ namespace Newtonsoft.Json.Tests.TestObjects
 {
   public class RequiredMembersClass
   {
-    [JsonProperty(IsRequired = true)]
+    [JsonProperty(Required = Required.Always)]
     public string FirstName { get; set; }
 
     [JsonProperty]
     public string MiddleName { get; set; }
 
-    [JsonProperty(IsRequired = true)]
+    [JsonProperty(Required = Required.AllowNull)]
     public string LastName { get; set; }
 
-    [JsonProperty(IsRequired = true)]
+    [JsonProperty(Required = Required.Default)]
     public DateTime BirthDate { get; set; }
   }
 }

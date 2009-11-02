@@ -88,6 +88,7 @@
     <Compile Include="Linq\ComponentModel\JTypeDescriptionProvider.cs" />
     <Compile Include="Linq\ComponentModel\JTypeDescriptor.cs" />
     <Compile Include="Linq\JPath.cs" />
+    <Compile Include="Required.cs" />
     <Compile Include="Serialization\DefaultReferenceResolver.cs" />
     <Compile Include="PreserveReferencesHandling.cs" />
     <Compile Include="IJsonLineInfo.cs" />
@@ -146,9 +147,11 @@
     <Compile Include="Serialization\CamelCasePropertyNamesContractResolver.cs" />
     <Compile Include="Serialization\DefaultContractResolver.cs" />
     <Compile Include="Serialization\DefaultSerializationBinder.cs" />
+    <Compile Include="Serialization\DynamicValueProvider.cs" />
     <Compile Include="Serialization\ErrorContext.cs" />
     <Compile Include="Serialization\ErrorEventArgs.cs" />
     <Compile Include="Serialization\IContractResolver.cs" />
+    <Compile Include="Serialization\IValueProvider.cs" />
     <Compile Include="Serialization\JsonArrayContract.cs" />
     <Compile Include="Serialization\JsonContract.cs" />
     <Compile Include="Serialization\JsonDictionaryContract.cs" />
@@ -171,6 +174,9 @@
     <Compile Include="Serialization\JsonTypeReflector.cs" />
     <Compile Include="Serialization\CachedAttributeGetter.cs" />
     <Compile Include="Serialization\OnErrorAttribute.cs" />
+    <Compile Include="Serialization\ReflectionValueProvider.cs" />
+    <Compile Include="Utilities\DynamicWrapper.cs" />
+    <Compile Include="Utilities\LateBoundDelegateFactory.cs" />
     <Compile Include="Utilities\ThreadSafeStore.cs" />
     <Compile Include="TypeNameHandling.cs" />
     <Compile Include="Utilities\BidirectionalDictionary.cs" />

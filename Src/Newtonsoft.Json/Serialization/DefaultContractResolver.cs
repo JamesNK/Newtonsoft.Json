@@ -32,9 +32,6 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using Newtonsoft.Json.Utilities;
-#if !PocketPC && !SILVERLIGHT && !NET20
-using System.Data.Objects.DataClasses;
-#endif
 
 namespace Newtonsoft.Json.Serialization
 {
@@ -106,8 +103,9 @@ namespace Newtonsoft.Json.Serialization
       }
 
 #if !PocketPC && !SILVERLIGHT && !NET20
+      Type match;
       // don't include EntityKey on entities objects... this is a bit hacky
-      if (typeof(EntityObject).IsAssignableFrom(objectType))
+      if (objectType.AssignableToTypeName("System.Data.Objects.DataClasses.EntityObject", out match))
         serializableMembers = serializableMembers.Where(ShouldSerializeEntityMember).ToList();
 #endif
 
@@ -120,7 +118,7 @@ namespace Newtonsoft.Json.Serialization
       PropertyInfo propertyInfo = memberInfo as PropertyInfo;
       if (propertyInfo != null)
       {
-        if (propertyInfo.PropertyType.IsGenericType && propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(EntityReference<>))
+        if (propertyInfo.PropertyType.IsGenericType && propertyInfo.PropertyType.GetGenericTypeDefinition().FullName == "System.Data.Objects.DataClasses.EntityReference`1")
           return false;
       }
 
@@ -140,7 +138,7 @@ namespace Newtonsoft.Json.Serialization
 
       contract.MemberSerialization = JsonTypeReflector.GetObjectMemberSerialization(objectType);
       contract.Properties.AddRange(CreateProperties(contract));
-      if (contract.DefaultContstructor == null || contract.DefaultContstructor.IsPrivate)
+      if (contract.DefaultCreator == null || contract.DefaultCreatorNonPublic)
         contract.ParametrizedConstructor = GetParametrizedConstructor(objectType);
 
       return contract;
@@ -173,16 +171,32 @@ namespace Newtonsoft.Json.Serialization
       }
 #endif
 
-      contract.DefaultContstructor =
-        ReflectionUtils.GetDefaultConstructor(contract.CreatedType, false) ??
-        ReflectionUtils.GetDefaultConstructor(contract.CreatedType, true);
+      if (ReflectionUtils.HasDefaultConstructor(contract.CreatedType, true)
+        || contract.CreatedType.IsValueType)
+      {
+#if !PocketPC
+        contract.DefaultCreator = LateBoundDelegateFactory.CreateDefaultConstructor(contract.CreatedType);
+#else
+        ConstructorInfo constructorInfo = ReflectionUtils.GetDefaultConstructor(contract.CreatedType, true);
+
+        contract.DefaultCreator = () =>
+                                    {
+                                      if (contract.CreatedType.IsValueType)
+                                        return Activator.CreateInstance(contract.CreatedType);
+
+                                      return constructorInfo.Invoke(null);
+                                    };
+#endif
+        contract.DefaultCreatorNonPublic = (!contract.CreatedType.IsValueType &&
+                                            ReflectionUtils.GetDefaultConstructor(contract.CreatedType) == null);
+      }
 
       foreach (MethodInfo method in contract.UnderlyingType.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
       {
         Type prevAttributeType = null;
         ParameterInfo[] parameters = method.GetParameters();
 
-#if !PocketPC && !SILVERLIGHT && !NET20
+#if !PocketPC && !NET20
         if (IsValidCallback(method, parameters, typeof(OnSerializingAttribute), contract.OnSerializing, ref prevAttributeType))
         {
           contract.OnSerializing = method;
@@ -303,7 +317,7 @@ namespace Newtonsoft.Json.Serialization
       if (members == null)
         throw new JsonSerializationException("Null collection of seralizable members returned.");
 
-      JsonPropertyCollection properties = new JsonPropertyCollection();
+      JsonPropertyCollection properties = new JsonPropertyCollection(contract);
 
       foreach (MemberInfo member in members)
       {
@@ -325,7 +339,13 @@ namespace Newtonsoft.Json.Serialization
     protected virtual JsonProperty CreateProperty(JsonObjectContract contract, MemberInfo member)
     {
       JsonProperty property = new JsonProperty();
-      property.Member = member;
+      property.PropertyType = ReflectionUtils.GetMemberUnderlyingType(member);
+#if !PocketPC
+      property.ValueProvider = new DynamicValueProvider(member);
+#else
+      property.ValueProvider = new ReflectionValueProvider(member);
+#endif
+      property.Converter = JsonTypeReflector.GetConverter(member, property.PropertyType);
 
 #if !PocketPC && !NET20
       DataContractAttribute dataContractAttribute = JsonTypeReflector.GetDataContractAttribute(member.DeclaringType);
@@ -353,13 +373,13 @@ namespace Newtonsoft.Json.Serialization
       property.PropertyName = ResolvePropertyName(mappedName);
 
       if (propertyAttribute != null)
-        property.Required = propertyAttribute.IsRequired;
+        property.Required = propertyAttribute.Required;
 #if !PocketPC && !NET20
       else if (dataMemberAttribute != null)
-        property.Required = dataMemberAttribute.IsRequired;
+        property.Required = (dataMemberAttribute.IsRequired) ? Required.AllowNull : Required.Default;
 #endif
       else
-        property.Required = false;
+        property.Required = Required.Default;
 
       property.Ignored = (hasIgnoreAttribute ||
                       (contract.MemberSerialization == MemberSerialization.OptIn
@@ -380,6 +400,7 @@ namespace Newtonsoft.Json.Serialization
       property.NullValueHandling = (propertyAttribute != null) ? propertyAttribute._nullValueHandling : null;
       property.DefaultValueHandling = (propertyAttribute != null) ? propertyAttribute._defaultValueHandling : null;
       property.ReferenceLoopHandling = (propertyAttribute != null) ? propertyAttribute._referenceLoopHandling : null;
+      property.ObjectCreationHandling = (propertyAttribute != null) ? propertyAttribute._objectCreationHandling : null;
       property.IsReference = (propertyAttribute != null) ? propertyAttribute._isReference : null;
 
       return property;

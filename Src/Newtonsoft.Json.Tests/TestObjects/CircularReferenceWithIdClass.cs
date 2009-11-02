@@ -33,7 +33,7 @@ namespace Newtonsoft.Json.Tests.TestObjects
   [JsonObject(Id = "MyExplicitId")]
   public class CircularReferenceWithIdClass
   {
-    [JsonProperty(IsRequired = true)]
+    [JsonProperty(Required = Required.AllowNull)]
     public string Name { get; set; }
     public CircularReferenceWithIdClass Child { get; set; }
   }

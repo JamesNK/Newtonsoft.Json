@@ -60,7 +60,12 @@
     JSON array populated with the IEnumerable values. Placing the JsonPropertyAttribute overrides this 
     behavor and forces the serializer to serialize the class's fields and properties.</p>
     <h5>JsonPropertyAttribute</h5>
-<p>Allows the name of the serialized member to be customized. The attribute also indicates that a member should be serialized when member serialization is set to opt-in.</p>
+<p>JsonPropertyAttribute has a number of uses:</p>
+<ul>
+    <li>By default the JSON property will have the same name as the .NET property. This attribute allows the name to be customized.</li>
+    <li>Indicates that a property should be serialized when member serialization is set to opt-in.</li>
+    <li>Includes non-public properties in serialization and deserialization.</li>
+</ul>
     <h5>JsonIgnoreAttribute</h5>
 <p>Excludes a field or property from serialization.</p>
     <h5>JsonConverterAttribute</h5>

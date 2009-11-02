@@ -25,9 +25,6 @@
 
 using System;
 using System.Collections.Generic;
-#if !SILVERLIGHT && !PocketPC && !NET20
-using System.Data.Linq;
-#endif
 #if !SILVERLIGHT
 using System.Data.SqlTypes;
 #endif
@@ -38,11 +35,22 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Converters
 {
+#if !SILVERLIGHT && !PocketPC && !NET20
+  internal interface IBinary
+  {
+    byte[] ToArray();
+  }
+#endif
+
   /// <summary>
   /// Converts a binary value to and from a base 64 string value.
   /// </summary>
   public class BinaryConverter : JsonConverter
   {
+#if !SILVERLIGHT && !PocketPC && !NET20
+    private const string BinaryTypeName = "System.Data.Linq.Binary";
+#endif
+
     /// <summary>
     /// Writes the JSON representation of the object.
     /// </summary>
@@ -68,8 +76,11 @@ namespace Newtonsoft.Json.Converters
     private byte[] GetByteArray(object value)
     {
 #if !SILVERLIGHT && !PocketPC && !NET20
-      if (value is Binary)
-        return ((Binary)value).ToArray();
+      if (value.GetType().AssignableToTypeName(BinaryTypeName))
+      {
+        IBinary binary = DynamicWrapper.CreateWrapper<IBinary>(value);
+        return binary.ToArray();
+      }
 #endif
 #if !SILVERLIGHT
       if (value is SqlBinary)
@@ -110,8 +121,8 @@ namespace Newtonsoft.Json.Converters
         return data;
 
 #if !SILVERLIGHT && !PocketPC && !NET20
-      if (typeof(Binary).IsAssignableFrom(t))
-        return new Binary(data);
+      if (t.AssignableToTypeName(BinaryTypeName))
+        return Activator.CreateInstance(t, data);
 #endif
 #if !SILVERLIGHT
       if (typeof(SqlBinary).IsAssignableFrom(t))
@@ -137,7 +148,7 @@ namespace Newtonsoft.Json.Converters
         return true;
 
 #if !SILVERLIGHT && !PocketPC && !NET20
-      if (typeof(Binary).IsAssignableFrom(t))
+      if (t.AssignableToTypeName(BinaryTypeName))
         return true;
 #endif
 #if !SILVERLIGHT

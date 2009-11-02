@@ -58,7 +58,7 @@ namespace Newtonsoft.Json.Serialization
     public JsonObjectContract(Type underlyingType)
       : base(underlyingType)
     {
-      Properties = new JsonPropertyCollection();
+      Properties = new JsonPropertyCollection(this);
       CreatedType = underlyingType;
     }
   }

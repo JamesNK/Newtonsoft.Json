@@ -32,9 +32,16 @@ namespace Newtonsoft.Json.Tests.TestObjects
   {
     public string Company { get; set; }
     public decimal Amount { get; set; }
-    [DefaultValue(false)]
+
+    // false is default value of bool
     public bool Paid { get; set; }
-    [DefaultValue(null)]
+    // null is default value of nullable
     public DateTime? PaidDate { get; set; }
+
+    // customize default values
+    [DefaultValue(30)]
+    public int FollowUpDays { get; set; }
+    [DefaultValue("")]
+    public string FollowUpEmailAddress { get; set; }
   }
 }

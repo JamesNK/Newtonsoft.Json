@@ -37,9 +37,11 @@ namespace Newtonsoft.Json.Tests.TestObjects
     public int[] RoomsPerFloor = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
     public bool Open = false;
     public char Symbol = '@';
+    [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
     public List<string> Mottos = new List<string>();
     public decimal Cost = 100980.1M;
     public string Escape = "\r\n\t\f\b?{\\r\\n\"\'";
+    [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
     public List<Product> product = new List<Product>();
 
     public Store()

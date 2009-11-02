@@ -14,6 +14,11 @@
     <SilverlightApplication>false</SilverlightApplication>
     <ValidateXaml>true</ValidateXaml>
     <ThrowErrorsInValidation>false</ThrowErrorsInValidation>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -110,16 +115,19 @@
     <Compile Include="PreserveReferencesHandling.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReferenceLoopHandling.cs" />
+    <Compile Include="Required.cs" />
     <Compile Include="SerializationBinder.cs" />
     <Compile Include="Serialization\CachedAttributeGetter.cs" />
     <Compile Include="Serialization\CamelCasePropertyNamesContractResolver.cs" />
     <Compile Include="Serialization\DefaultContractResolver.cs" />
     <Compile Include="Serialization\DefaultReferenceResolver.cs" />
     <Compile Include="Serialization\DefaultSerializationBinder.cs" />
+    <Compile Include="Serialization\DynamicValueProvider.cs" />
     <Compile Include="Serialization\ErrorContext.cs" />
     <Compile Include="Serialization\ErrorEventArgs.cs" />
     <Compile Include="Serialization\IContractResolver.cs" />
     <Compile Include="Serialization\IReferenceResolver.cs" />
+    <Compile Include="Serialization\IValueProvider.cs" />
     <Compile Include="Serialization\JsonArrayContract.cs" />
     <Compile Include="Serialization\JsonContract.cs" />
     <Compile Include="Serialization\JsonDictionaryContract.cs" />
@@ -131,6 +139,7 @@
     <Compile Include="Serialization\JsonSerializerInternalReader.cs" />
     <Compile Include="Serialization\JsonSerializerInternalWriter.cs" />
     <Compile Include="Serialization\OnErrorAttribute.cs" />
+    <Compile Include="Serialization\ReflectionValueProvider.cs" />
     <Compile Include="StreamingContext.cs" />
     <Compile Include="TypeNameHandling.cs" />
     <Compile Include="Utilities\BidirectionalDictionary.cs" />
@@ -139,10 +148,12 @@
     <Compile Include="Utilities\ConvertUtils.cs" />
     <Compile Include="Utilities\DateTimeUtils.cs" />
     <Compile Include="Utilities\DictionaryWrapper.cs" />
+    <Compile Include="Utilities\DynamicWrapper.cs" />
     <Compile Include="Utilities\EnumUtils.cs" />
     <Compile Include="Utilities\EnumValue.cs" />
     <Compile Include="Utilities\EnumValues.cs" />
     <Compile Include="Utilities\JavaScriptUtils.cs" />
+    <Compile Include="Utilities\LateBoundDelegateFactory.cs" />
     <Compile Include="Utilities\ListWrapper.cs" />
     <Compile Include="Utilities\MathUtils.cs" />
     <Compile Include="Utilities\MiscellaneousUtils.cs" />
@@ -169,7 +180,7 @@
     <Compile Include="Schema\JsonSchemaType.cs" />
     <Compile Include="Serialization\JsonTypeReflector.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\v3.0\Microsoft.Silverlight.CSharp.targets" Condition="" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

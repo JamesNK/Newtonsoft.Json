@@ -32,7 +32,7 @@ namespace Newtonsoft.Json.Tests.TestObjects
 {
   public class CircularReferenceClass
   {
-    [JsonProperty(IsRequired = true)]
+    [JsonProperty(Required = Required.Always)]
     public string Name { get; set; }
     public CircularReferenceClass Child { get; set; }
   }

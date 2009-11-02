@@ -113,6 +113,12 @@
     <Compile Include="Linq\ComponentModel\JTypeDescriptorTests.cs" />
     <Compile Include="Linq\JPathTests.cs" />
     <Compile Include="Serialization\ConstructorHandlingTests.cs" />
+    <Compile Include="Serialization\ContractResolverTests.cs" />
+    <Compile Include="Serialization\DefaultValueHandlingTests.cs" />
+    <Compile Include="Serialization\NullValueHandlingTests.cs" />
+    <Compile Include="TestObjects\Car.cs" />
+    <Compile Include="TestObjects\Computer.cs" />
+    <Compile Include="TestObjects\Movie.cs" />
     <Compile Include="TestObjects\PersonError.cs" />
     <Compile Include="TestObjects\PrivateConstructorTestClass.cs" />
     <Compile Include="TestObjects\PrivateConstructorWithPublicParametizedConstructorTestClass.cs" />

@@ -45,6 +45,7 @@ using System.Runtime.Serialization.Json;
 using Newtonsoft.Json.Tests.TestObjects;
 using System.Runtime.Serialization;
 using System.Globalization;
+using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
@@ -60,6 +61,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       Store deserializedStore = (Store)JsonConvert.DeserializeObject(jsonText, typeof(Store));
 
       Assert.AreEqual(store.Establised, deserializedStore.Establised);
+      Assert.AreEqual(store.product.Count, deserializedStore.product.Count);
 
       Console.WriteLine(jsonText);
     }
@@ -510,31 +512,6 @@ keyword such as type of business.""
     }
 
     [Test]
-    public void NullValueHandlingSerialization()
-    {
-      Store s1 = new Store();
-
-      JsonSerializer jsonSerializer = new JsonSerializer();
-      jsonSerializer.NullValueHandling = NullValueHandling.Ignore;
-
-      StringWriter sw = new StringWriter();
-      jsonSerializer.Serialize(sw, s1);
-
-      //JsonConvert.ConvertDateTimeToJavaScriptTicks(s1.Establised.DateTime)
-
-      Assert.AreEqual(@"{""Color"":4,""Establised"":""\/Date(1264122061000+0000)\/"",""Width"":1.1,""Employees"":999,""RoomsPerFloor"":[1,2,3,4,5,6,7,8,9],""Open"":false,""Symbol"":""@"",""Mottos"":[""Hello World"",""öäüÖÄÜ\\'{new Date(12345);}[222]_µ@²³~"",null,"" ""],""Cost"":100980.1,""Escape"":""\r\n\t\f\b?{\\r\\n\""'"",""product"":[{""Name"":""Rocket"",""ExpiryDate"":""\/Date(949532490000)\/"",""Price"":0.0},{""Name"":""Alien"",""ExpiryDate"":""\/Date(946684800000)\/"",""Price"":0.0}]}", sw.GetStringBuilder().ToString());
-
-      Store s2 = (Store)jsonSerializer.Deserialize(new JsonTextReader(new StringReader("{}")), typeof(Store));
-      Assert.AreEqual("\r\n\t\f\b?{\\r\\n\"\'", s2.Escape);
-
-      Store s3 = (Store)jsonSerializer.Deserialize(new JsonTextReader(new StringReader(@"{""Escape"":null}")), typeof(Store));
-      Assert.AreEqual("\r\n\t\f\b?{\\r\\n\"\'", s3.Escape);
-
-      Store s4 = (Store)jsonSerializer.Deserialize(new JsonTextReader(new StringReader(@"{""Color"":2,""Establised"":""\/Date(1264071600000+1300)\/"",""Width"":1.1,""Employees"":999,""RoomsPerFloor"":[1,2,3,4,5,6,7,8,9],""Open"":false,""Symbol"":""@"",""Mottos"":[""Hello World"",""öäüÖÄÜ\\'{new Date(12345);}[222]_µ@²³~"",null,"" ""],""Cost"":100980.1,""Escape"":""\r\n\t\f\b?{\\r\\n\""'"",""product"":[{""Name"":""Rocket"",""ExpiryDate"":""\/Date(949485690000+1300)\/"",""Price"":0},{""Name"":""Alien"",""ExpiryDate"":""\/Date(946638000000)\/"",""Price"":0.0}]}")), typeof(Store));
-      Assert.AreEqual(s1.Establised, s3.Establised);
-    }
-
-    [Test]
     public void SerializeObject()
     {
       string json = JsonConvert.SerializeObject(new object());
@@ -861,49 +838,6 @@ keyword such as type of business.""
     }
 
     [Test]
-    public void DefaultValueAttributeTest()
-    {
-      string json = JsonConvert.SerializeObject(new DefaultValueAttributeTestClass(),
-        Formatting.None, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
-      Assert.AreEqual(@"{""TestField1"":0,""TestProperty1"":null}", json);
-
-      json = JsonConvert.SerializeObject(new DefaultValueAttributeTestClass { TestField1 = int.MinValue, TestProperty1 = "NotDefault" },
-        Formatting.None, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
-      Assert.AreEqual(@"{""TestField1"":-2147483648,""TestProperty1"":""NotDefault""}", json);
-
-      json = JsonConvert.SerializeObject(new DefaultValueAttributeTestClass { TestField1 = 21, TestProperty1 = "NotDefault" },
-        Formatting.None, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
-      Assert.AreEqual(@"{""TestProperty1"":""NotDefault""}", json);
-
-      json = JsonConvert.SerializeObject(new DefaultValueAttributeTestClass { TestField1 = 21, TestProperty1 = "TestProperty1Value" },
-        Formatting.None, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
-      Assert.AreEqual(@"{}", json);
-    }
-
-    [Test]
-    public void SerializeInvoice()
-    {
-      Invoice invoice = new Invoice
-                        {
-                          Company = "Acme Ltd.",
-                          Amount = 50.0m,
-                          Paid = false
-                        };
-
-      string json = JsonConvert.SerializeObject(invoice);
-
-      Console.WriteLine(json);
-      // {"Company":"Acme Ltd.","Amount":50.0,"Paid":false,"PaidDate":null}
-
-      json = JsonConvert.SerializeObject(invoice,
-        Formatting.None,
-        new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
-
-      Console.WriteLine(json);
-      // {"Company":"Acme Ltd.","Amount":50.0}
-    }
-
-    [Test]
     public void DeserializeNullable()
     {
       string json;
@@ -1024,7 +958,7 @@ keyword such as type of business.""
     public void RequiredMembersClassWithNullValues()
     {
       string json = @"{
-  ""FirstName"": null,
+  ""FirstName"": ""I can't be null bro!"",
   ""MiddleName"": null,
   ""LastName"": null,
   ""BirthDate"": ""\/Date(977309755000)\/""
@@ -1032,7 +966,23 @@ keyword such as type of business.""
 
       RequiredMembersClass c = JsonConvert.DeserializeObject<RequiredMembersClass>(json);
 
-      Assert.AreEqual(null, c.FirstName);
+      Assert.AreEqual("I can't be null bro!", c.FirstName);
+      Assert.AreEqual(null, c.MiddleName);
+      Assert.AreEqual(null, c.LastName);
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Required property 'FirstName' expects a value but got null.")]
+    public void RequiredMembersClassNullRequiredValueProperty()
+    {
+      string json = @"{
+  ""FirstName"": null,
+  ""MiddleName"": null,
+  ""LastName"": null,
+  ""BirthDate"": ""\/Date(977309755000)\/""
+}";
+
+      JsonConvert.DeserializeObject<RequiredMembersClass>(json);
     }
 
     [Test]
@@ -1815,20 +1765,151 @@ keyword such as type of business.""
     }
 
     [Test]
-    public void DeserializeNullableListWithNullss()
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Cannot deserialize JSON array into type 'Newtonsoft.Json.Tests.TestObjects.Person'.")]
+    public void CannotDeserializeArrayIntoObject()
     {
-      //JavaScriptSerializer s = new JavaScriptSerializer();
-      //s.Deserialize<List<decimal?>>("[ 3.3, null, 1.1 ] ");
+      string json = @"[]";
 
-      //DataContractJsonSerializer s = new DataContractJsonSerializer(typeof(List<decimal?>));
-      //s.ReadObject(new MemoryStream(Encoding.UTF8.GetBytes("[ 3.3, null, 1.1 ] ")));
+      JsonConvert.DeserializeObject<Person>(json);
+    }
 
-      List<decimal?> l = JsonConvert.DeserializeObject<List<decimal?>>("[ 3.3, null, 1.1 ] ");
-      Assert.AreEqual(3, l.Count);
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Cannot deserialize JSON object into type 'System.Collections.Generic.List`1[Newtonsoft.Json.Tests.TestObjects.Person]'.")]
+    public void CannotDeserializeObjectIntoArray()
+    {
+      string json = @"{}";
 
-      Assert.AreEqual(3.3m, l[0]);
-      Assert.AreEqual(null, l[1]);
-      Assert.AreEqual(1.1m, l[2]);
+      JsonConvert.DeserializeObject<List<Person>>(json);
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Cannot populate JSON array onto type 'Newtonsoft.Json.Tests.TestObjects.Person'.")]
+    public void CannotPopulateArrayIntoObject()
+    {
+      string json = @"[]";
+
+      JsonConvert.PopulateObject(json, new Person());
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Cannot populate JSON object onto type 'System.Collections.Generic.List`1[Newtonsoft.Json.Tests.TestObjects.Person]'.")]
+    public void CannotPopulateObjectIntoArray()
+    {
+      string json = @"{}";
+
+      JsonConvert.PopulateObject(json, new List<Person>());
+    }
+
+    [Test]
+    public void DeserializeEmptyString()
+    {
+      string json = @"{""Name"":""""}";
+
+      Person p = JsonConvert.DeserializeObject<Person>(json);
+      Assert.AreEqual("", p.Name);
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Error getting value from 'ReadTimeout' on 'System.IO.MemoryStream'.")]
+    public void SerializePropertyGetError()
+    {
+      JsonConvert.SerializeObject(new MemoryStream());
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Error setting value to 'ReadTimeout' on 'System.IO.MemoryStream'.")]
+    public void DeserializePropertySetError()
+    {
+      JsonConvert.DeserializeObject<MemoryStream>("{ReadTimeout:0}");
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Error converting value """" to type 'System.Int32'.")]
+    public void DeserializeEnsureTypeEmptyStringToIntError()
+    {
+      JsonConvert.DeserializeObject<MemoryStream>("{ReadTimeout:''}");
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Error converting value {null} to type 'System.Int32'.")]
+    public void DeserializeEnsureTypeNullToIntError()
+    {
+      JsonConvert.DeserializeObject<MemoryStream>("{ReadTimeout:null}");
+    }
+
+    [Test]
+    public void SerializeGenericListOfStrings()
+    {
+      List<String> strings = new List<String>();
+
+      strings.Add("str_1");
+      strings.Add("str_2");
+      strings.Add("str_3");
+
+      string json = JsonConvert.SerializeObject(strings);
+      Assert.AreEqual(@"[""str_1"",""str_2"",""str_3""]", json);
+    }
+
+    public class ConstructorReadonlyFields
+    {
+      public readonly string A;
+      public readonly int B;
+
+      public ConstructorReadonlyFields(string a, int b)
+      {
+        A = a;
+        B = b;
+      }
+    }
+
+    [Test]
+    public void ConstructorReadonlyFieldsTest()
+    {
+      ConstructorReadonlyFields c1 = new ConstructorReadonlyFields("String!", int.MaxValue);
+      string json = JsonConvert.SerializeObject(c1, Formatting.Indented);
+      Assert.AreEqual(@"{
+  ""A"": ""String!"",
+  ""B"": 2147483647
+}", json);
+
+      ConstructorReadonlyFields c2 = JsonConvert.DeserializeObject<ConstructorReadonlyFields>(json);
+      Assert.AreEqual("String!", c2.A);
+      Assert.AreEqual(int.MaxValue, c2.B);
+    }
+
+    public struct StructTest
+    {
+      public string StringProperty { get; set; }
+      public string StringField;
+      public int IntProperty { get; set; }
+      public int IntField;
+    }
+
+    [Test]
+    public void SerializeStruct()
+    {
+      StructTest structTest = new StructTest
+                                {
+                                  StringProperty = "StringProperty!",
+                                  StringField = "StringField",
+                                  IntProperty = 5,
+                                  IntField = 10
+                                };
+
+      string json = JsonConvert.SerializeObject(structTest, Formatting.Indented);
+      Console.WriteLine(json);
+      Assert.AreEqual(@"{
+  ""StringField"": ""StringField"",
+  ""IntField"": 10,
+  ""StringProperty"": ""StringProperty!"",
+  ""IntProperty"": 5
+}", json);
+
+      StructTest deserialized = JsonConvert.DeserializeObject<StructTest>(json);
+      Assert.AreEqual(structTest.StringProperty, deserialized.StringProperty);
+      Assert.AreEqual(structTest.StringField, deserialized.StringField);
+      Assert.AreEqual(structTest.IntProperty, deserialized.IntProperty);
+      Assert.AreEqual(structTest.IntField, deserialized.IntField);
     }
   }
 }

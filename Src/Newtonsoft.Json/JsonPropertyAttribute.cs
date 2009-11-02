@@ -13,6 +13,7 @@ namespace Newtonsoft.Json
     internal NullValueHandling? _nullValueHandling;
     internal DefaultValueHandling? _defaultValueHandling;
     internal ReferenceLoopHandling? _referenceLoopHandling;
+    internal ObjectCreationHandling? _objectCreationHandling;
     internal bool? _isReference;
 
     /// <summary>
@@ -46,6 +47,16 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
+    /// Gets or sets the object creation handling used when deserializing this property.
+    /// </summary>
+    /// <value>The object creation handling.</value>
+    public ObjectCreationHandling ObjectCreationHandling
+    {
+      get { return _objectCreationHandling ?? default(ObjectCreationHandling); }
+      set { _objectCreationHandling = value; }
+    }
+
+    /// <summary>
     /// Gets or sets whether this property's value is serialized as a reference.
     /// </summary>
     /// <value>Whether this property's value is serialized as a reference.</value>
@@ -65,9 +76,9 @@ namespace Newtonsoft.Json
     /// Gets or sets a value indicating whether this property is required.
     /// </summary>
     /// <value>
-    /// 	<c>true</c> if this property is required; otherwise, <c>false</c>.
+    /// 	A value indicating whether this property is required.
     /// </value>
-    public bool IsRequired { get; set; }
+    public Required Required { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonPropertyAttribute"/> class.
