@@ -76,6 +76,7 @@
     <Compile Include="Linq\ComponentModel\JTypeDescriptorTests.cs" />
     <Compile Include="Linq\JPathTests.cs" />
     <Compile Include="Serialization\ConstructorHandlingTests.cs" />
+    <Compile Include="TestObjects\Container.cs" />
     <Compile Include="TestObjects\Content.cs" />
     <Compile Include="TestObjects\DictionaryInterfaceClass.cs" />
     <Compile Include="Serialization\EntitiesSerializationTests.cs" />

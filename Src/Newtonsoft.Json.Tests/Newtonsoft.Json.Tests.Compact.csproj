@@ -91,6 +91,7 @@
     <Compile Include="TestObjects\ClassAndMemberConverterClass.cs" />
     <Compile Include="TestObjects\ClassConverterPrecedenceClassConverter.cs" />
     <Compile Include="TestObjects\ConstructorCaseSensitivityClass.cs" />
+    <Compile Include="TestObjects\Container.cs" />
     <Compile Include="TestObjects\Content.cs" />
     <Compile Include="TestObjects\ConverterPrecedenceClass.cs" />
     <Compile Include="TestObjects\ConverterPrecedenceClassConverter.cs" />

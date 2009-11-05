@@ -118,6 +118,7 @@
     <Compile Include="Serialization\NullValueHandlingTests.cs" />
     <Compile Include="TestObjects\Car.cs" />
     <Compile Include="TestObjects\Computer.cs" />
+    <Compile Include="TestObjects\Container.cs" />
     <Compile Include="TestObjects\Movie.cs" />
     <Compile Include="TestObjects\PersonError.cs" />
     <Compile Include="TestObjects\PrivateConstructorTestClass.cs" />

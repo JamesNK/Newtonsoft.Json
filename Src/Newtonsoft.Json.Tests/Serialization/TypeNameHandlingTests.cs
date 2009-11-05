@@ -280,10 +280,42 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       Assert.IsInstanceOfType(typeof(SendHttpRequest), message);
 
-      SendHttpRequest request = (SendHttpRequest) message;
+      SendHttpRequest request = (SendHttpRequest)message;
       Assert.AreEqual("xyz", request.CorrelationId);
       Assert.AreEqual(2, request.RequestData.Count);
       Assert.AreEqual("siedemnaście", request.RequestData["Id"]);
+    }
+
+    [Test]
+    public void SerializeObjectWithMultipleGenericLists()
+    {
+      string containerTypeName = typeof(Container).AssemblyQualifiedName;
+      string productTypeName = typeof(Product).AssemblyQualifiedName;
+
+      Container container = new Container
+                          {
+                            In = new List<Product>(),
+                            Out = new List<Product>()
+                          };
+
+      string json = JsonConvert.SerializeObject(container, Formatting.Indented,
+          new JsonSerializerSettings
+              {
+                NullValueHandling = NullValueHandling.Ignore,
+                TypeNameHandling = TypeNameHandling.All
+              });
+
+      Assert.AreEqual(@"{
+  ""$type"": """ + containerTypeName + @""",
+  ""In"": {
+    ""$type"": ""System.Collections.Generic.List`1[[" + productTypeName + @"]], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"",
+    ""$values"": []
+  },
+  ""Out"": {
+    ""$type"": ""System.Collections.Generic.List`1[[" + productTypeName + @"]], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"",
+    ""$values"": []
+  }
+}", json);
     }
   }
 }

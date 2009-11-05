@@ -399,7 +399,7 @@ namespace Newtonsoft.Json.Serialization
 
       writer.WriteEndArray();
 
-      if (isReference)
+      if (isReference || includeTypeDetails)
       {
         writer.WriteEndObject();
       }
