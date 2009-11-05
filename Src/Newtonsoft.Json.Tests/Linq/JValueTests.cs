@@ -56,6 +56,10 @@ namespace Newtonsoft.Json.Tests.Linq
       v.Value = "Pie";
       Assert.AreEqual("Pie", v.Value);
       Assert.AreEqual(JTokenType.String, v.Type);
+
+      v.Value = DBNull.Value;
+      Assert.AreEqual(DBNull.Value, v.Value);
+      Assert.AreEqual(JTokenType.Null, v.Type);
     }
 
     [Test]

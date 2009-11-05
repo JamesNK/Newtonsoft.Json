@@ -1394,5 +1394,23 @@ Parameter name: arrayIndex")]
 
       Assert.AreEqual("Name2", value);
     }
+
+    [Test]
+    public void WriteObjectNullDBNullValue()
+    {
+      DBNull dbNull = DBNull.Value;
+      JValue v = new JValue(dbNull);
+      Assert.AreEqual(DBNull.Value, v.Value);
+      Assert.AreEqual(JTokenType.Null, v.Type);
+
+      JObject o = new JObject();
+      o["title"] = v;
+
+      string output = o.ToString();
+      
+      Assert.AreEqual(@"{
+  ""title"": null
+}", output);
+    }
   }
 }
