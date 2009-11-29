@@ -193,6 +193,9 @@ namespace Newtonsoft.Json.Serialization
 
       foreach (MethodInfo method in contract.UnderlyingType.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
       {
+        if (method.ContainsGenericParameters)
+          continue;
+
         Type prevAttributeType = null;
         ParameterInfo[] parameters = method.GetParameters();
 
