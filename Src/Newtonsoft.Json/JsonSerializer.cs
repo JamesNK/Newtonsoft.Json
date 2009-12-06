@@ -423,7 +423,7 @@ namespace Newtonsoft.Json
       if (objectType == null)
         throw new ArgumentNullException("objectType");
 
-      converter = JsonTypeReflector.GetConverter(objectType, objectType);
+      converter = JsonTypeReflector.GetJsonConverter(objectType, objectType);
       return (converter != null);
     }
 

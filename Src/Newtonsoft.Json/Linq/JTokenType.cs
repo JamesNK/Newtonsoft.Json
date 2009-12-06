@@ -90,6 +90,7 @@ namespace Newtonsoft.Json.Linq
     /// <summary>
     /// A raw JSON value.
     /// </summary>
-    Raw
+    Raw,
+    Bytes
   }
 }

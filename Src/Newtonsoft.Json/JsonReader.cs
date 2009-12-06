@@ -169,7 +169,7 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonReader"/> class with the specified <see cref="TextReader"/>.
     /// </summary>
-    public JsonReader()
+    protected JsonReader()
     {
       //_testBuffer = new StringBuilder();
       _currentState = State.Start;
@@ -203,6 +203,8 @@ namespace Newtonsoft.Json
     /// </summary>
     /// <returns>true if the next token was read successfully; false if there are no more tokens to read.</returns>
     public abstract bool Read();
+
+    public abstract byte[] ReadAsBytes();
 
     /// <summary>
     /// Skips the children of the current token.
@@ -275,6 +277,7 @@ namespace Newtonsoft.Json
         case JsonToken.Date:
         case JsonToken.String:
         case JsonToken.Raw:
+        case JsonToken.Bytes:
           _currentState = State.PostValue;
           break;
       }
@@ -351,6 +354,7 @@ namespace Newtonsoft.Json
         case JsonToken.EndConstructor:
         case JsonToken.Date:
         case JsonToken.Raw:
+        case JsonToken.Bytes:
           return false;
         default:
           throw MiscellaneousUtils.CreateArgumentOutOfRangeException("token", token, "Unexpected JsonToken value.");

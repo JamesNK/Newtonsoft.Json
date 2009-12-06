@@ -196,7 +196,7 @@ namespace Newtonsoft.Json.Tests.Linq
     public void Casting()
     {
       Assert.AreEqual(new DateTime(2000, 12, 20), (DateTime)new JValue(new DateTime(2000, 12, 20)));
-#if !PocketPC
+#if !PocketPC && !NET20
       Assert.AreEqual(new DateTimeOffset(2000, 12, 20, 23, 50, 10, TimeSpan.Zero), (DateTimeOffset)new JValue(new DateTimeOffset(2000, 12, 20, 23, 50, 10, TimeSpan.Zero)));
       Assert.AreEqual(null, (DateTimeOffset?)new JValue((DateTimeOffset?)null));
       Assert.AreEqual(null, (DateTimeOffset?)(JValue)null);
@@ -240,13 +240,16 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(5f, (float)(new JValue(5L)));
       Assert.AreEqual(5f, (float)(new JValue(5m)));
       Assert.AreEqual(5f, (float?)(new JValue(5m)));
+
+      byte[] data = new byte[0];
+      Assert.AreEqual(data, (byte[])(new JValue(data)));
     }
 
     [Test]
     public void ImplicitCastingTo()
     {
       Assert.IsTrue(JToken.DeepEquals(new JValue(new DateTime(2000, 12, 20)), (JValue)new DateTime(2000, 12, 20)));
-#if !PocketPC
+#if !PocketPC && !NET20
       Assert.IsTrue(JToken.DeepEquals(new JValue(new DateTimeOffset(2000, 12, 20, 23, 50, 10, TimeSpan.Zero)), (JValue)new DateTimeOffset(2000, 12, 20, 23, 50, 10, TimeSpan.Zero)));
       Assert.IsTrue(JToken.DeepEquals(new JValue((DateTimeOffset?)null), (JValue)(DateTimeOffset?)null));
 #endif
@@ -269,6 +272,7 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.IsTrue(JToken.DeepEquals(new JValue(ushort.MaxValue), (JValue)ushort.MaxValue));
       Assert.IsTrue(JToken.DeepEquals(new JValue(11.1f), (JValue)11.1f));
       Assert.IsTrue(JToken.DeepEquals(new JValue(float.MinValue), (JValue)float.MinValue));
+      Assert.IsTrue(JToken.DeepEquals(new JValue(double.MinValue), (JValue)double.MinValue));
       Assert.IsTrue(JToken.DeepEquals(new JValue(uint.MaxValue), (JValue)uint.MaxValue));
       Assert.IsTrue(JToken.DeepEquals(new JValue(ulong.MaxValue), (JValue)ulong.MaxValue));
       Assert.IsTrue(JToken.DeepEquals(new JValue(ulong.MinValue), (JValue)ulong.MinValue));
@@ -281,7 +285,13 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.IsTrue(JToken.DeepEquals(new JValue(double.MaxValue), (JValue)(double?)double.MaxValue));
       Assert.IsTrue(JToken.DeepEquals(new JValue((object)null), (JValue)(double?)null));
 
+      Assert.IsFalse(JToken.DeepEquals(new JValue(true), (JValue)(bool?)null));
       Assert.IsFalse(JToken.DeepEquals(new JValue((object)null), (JValue)(object)null));
+
+      byte[] emptyData = new byte[0];
+      Assert.IsTrue(JToken.DeepEquals(new JValue(emptyData), (JValue)emptyData));
+      Assert.IsFalse(JToken.DeepEquals(new JValue(emptyData), (JValue)new byte[1]));
+      Assert.IsTrue(JToken.DeepEquals(new JValue(Encoding.UTF8.GetBytes("Hi")), (JValue)Encoding.UTF8.GetBytes("Hi")));
     }
 
     [Test]

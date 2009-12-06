@@ -106,6 +106,7 @@ namespace Newtonsoft.Json
       return ToStringInternal(value, utcOffset, value.Kind);
     }
 
+#if !PocketPC && !NET20
     /// <summary>
     /// Converts the <see cref="DateTimeOffset"/> to its JSON string representation.
     /// </summary>
@@ -115,6 +116,7 @@ namespace Newtonsoft.Json
     {
       return ToStringInternal(value.UtcDateTime, value.Offset, DateTimeKind.Local);
     }
+#endif
 
     internal static string ToStringInternal(DateTime value, TimeSpan offset, DateTimeKind kind)
     {
@@ -387,10 +389,12 @@ namespace Newtonsoft.Json
             return Null;
         }
       }
+#if !PocketPC && !NET20
       else if (value is DateTimeOffset)
       {
         return ToString((DateTimeOffset)value);
       }
+#endif
 
       throw new ArgumentException("Unsupported type: {0}. Use the JsonSerializer class to get the object's JSON representation.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
     }
@@ -427,8 +431,13 @@ namespace Newtonsoft.Json
             return false;
         }
       }
-      
+
+#if !PocketPC && !NET20
       if (value is DateTimeOffset)
+        return true;
+#endif
+
+      if (value is byte[])
         return true;
 
       return false;

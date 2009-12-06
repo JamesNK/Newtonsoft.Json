@@ -334,6 +334,7 @@ namespace Newtonsoft.Json.Linq
       AddValue(value, JsonToken.Date);
     }
 
+#if !PocketPC && !NET20
     /// <summary>
     /// Writes a <see cref="DateTimeOffset"/> value.
     /// </summary>
@@ -342,6 +343,13 @@ namespace Newtonsoft.Json.Linq
     {
       base.WriteValue(value);
       AddValue(value, JsonToken.Date);
+    }
+#endif
+
+    public override void WriteValue(byte[] value)
+    {
+      base.WriteValue(value);
+      AddValue(value, JsonToken.Bytes);
     }
     #endregion
   }

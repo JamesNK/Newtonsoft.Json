@@ -64,7 +64,6 @@
     <Compile Include="Converters\DataTableConverter.cs" />
     <Compile Include="Converters\EntityKeyMemberConverter.cs" />
     <Compile Include="Converters\StringEnumConverter.cs" />
-    <Compile Include="DateTimeOffset.cs" />
     <Compile Include="IJsonLineInfo.cs" />
     <Compile Include="JsonArrayAttribute.cs" />
     <Compile Include="JsonContainerAttribute.cs" />
@@ -159,6 +158,7 @@
     <Compile Include="Serialization\ReflectionValueProvider.cs" />
     <Compile Include="StreamingContext.cs" />
     <Compile Include="TypeNameHandling.cs" />
+    <Compile Include="Utilities\Base64Encoder.cs" />
     <Compile Include="Utilities\BidirectionalDictionary.cs" />
     <Compile Include="Utilities\ConvertUtils.cs" />
     <Compile Include="Utilities\CollectionWrapper.cs" />

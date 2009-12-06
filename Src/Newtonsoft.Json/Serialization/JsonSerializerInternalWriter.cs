@@ -226,19 +226,29 @@ namespace Newtonsoft.Json.Serialization
 
     internal static bool TryConvertToString(object value, Type type, out string s)
     {
-#if !SILVERLIGHT && !PocketPC
-      TypeConverter converter = TypeDescriptor.GetConverter(type);
+#if !PocketPC
+      TypeConverter converter = ConvertUtils.GetConverter(type);
 
       // use the objectType's TypeConverter if it has one and can convert to a string
-      if (converter != null && !(converter is ComponentConverter) && (converter.GetType() != typeof(TypeConverter) || value is Type))
+      if (converter != null
+#if !SILVERLIGHT
+        && !(converter is ComponentConverter)
+#endif
+        && (converter.GetType() != typeof(TypeConverter) || value is Type))
       {
         if (converter.CanConvertTo(typeof(string)))
         {
+#if !SILVERLIGHT
           s = converter.ConvertToInvariantString(value);
+#else
+          s = converter.ConvertToString(value);
+#endif
           return true;
         }
       }
-#else
+#endif
+
+#if SILVERLIGHT || PocketPC
       if (value is Guid || value is Type || value is Uri || value is TimeSpan)
       {
         s = value.ToString();

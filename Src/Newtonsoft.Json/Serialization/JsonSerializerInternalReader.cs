@@ -168,6 +168,7 @@ namespace Newtonsoft.Json.Serialization
           case JsonToken.Float:
           case JsonToken.Boolean:
           case JsonToken.Date:
+          case JsonToken.Bytes:
             return EnsureType(reader.Value, objectType);
           case JsonToken.String:
             // convert empty string to null automatically for nullable types
@@ -382,24 +383,6 @@ namespace Newtonsoft.Json.Serialization
       return value.ToString();
     }
 
-    private void SetObjectMember(JsonReader reader, object target, JsonObjectContract contract, string memberName)
-    {
-      JsonProperty property;
-      // attempt exact case match first
-      // then try match ignoring case
-      if (contract.Properties.TryGetClosestMatchProperty(memberName, out property))
-      {
-        SetPropertyValue(property, reader, target);
-      }
-      else
-      {
-        if (Serializer.MissingMemberHandling == MissingMemberHandling.Error)
-          throw new JsonSerializationException("Could not find member '{0}' on object of type '{1}'".FormatWith(CultureInfo.InvariantCulture, memberName, contract.UnderlyingType.Name));
-
-        reader.Skip();
-      }
-    }
-
     private void SetPropertyValue(JsonProperty property, JsonReader reader, object target)
     {
       if (property.Ignored)
@@ -431,7 +414,11 @@ namespace Newtonsoft.Json.Serialization
 
       object value = CreateValue(reader, property.PropertyType, (useExistingValue) ? currentValue : null, property.Converter);
 
-      if (!useExistingValue && ShouldSetPropertyValue(property, value))
+      // always set the value if useExistingValue is false,
+      // otherwise also set it if CreateValue returns a new value compared to the currentValue
+      // this could happen because of a JsonConverter against the type
+      if ((!useExistingValue || value != currentValue)
+        && ShouldSetPropertyValue(property, value))
         property.ValueProvider.SetValue(target, value);
     }
 
@@ -679,14 +666,34 @@ namespace Newtonsoft.Json.Serialization
           case JsonToken.PropertyName:
             string memberName = reader.Value.ToString();
 
-            if (!reader.Read())
-              throw new JsonSerializationException("Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
+            JsonProperty property;
+            // attempt exact case match first
+            // then try match ignoring case
+            if (!contract.Properties.TryGetClosestMatchProperty(memberName, out property))
+            {
+              if (Serializer.MissingMemberHandling == MissingMemberHandling.Error)
+                throw new JsonSerializationException("Could not find member '{0}' on object of type '{1}'".FormatWith(CultureInfo.InvariantCulture, memberName, contract.UnderlyingType.Name));
 
-            SetRequiredProperty(reader, memberName, contract, requiredProperties);
+              reader.Skip();
+              continue;
+            }
+
+            if (property.PropertyType == typeof(byte[]))
+            {
+              reader.ReadAsBytes();
+            }
+            else
+            {
+              if (!reader.Read())
+                throw new JsonSerializationException(
+                  "Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
+            }
+
+            SetRequiredProperty(reader, property, requiredProperties);
 
             try
             {
-              SetObjectMember(reader, newObject, contract, memberName);
+              SetPropertyValue(property, reader, newObject);
             }
             catch (Exception ex)
             {
@@ -718,9 +725,8 @@ namespace Newtonsoft.Json.Serialization
       throw new JsonSerializationException("Unexpected end when deserializing object.");
     }
 
-    private void SetRequiredProperty(JsonReader reader, string memberName, JsonObjectContract contract, Dictionary<JsonProperty, RequiredValue> requiredProperties)
+    private void SetRequiredProperty(JsonReader reader, JsonProperty property, Dictionary<JsonProperty, RequiredValue> requiredProperties)
     {
-      JsonProperty property = requiredProperties.Keys.ForgivingCaseSensitiveFind(p => p.PropertyName, memberName);
       if (property != null)
       {
         requiredProperties[property] = (reader.TokenType == JsonToken.Null || reader.TokenType == JsonToken.Undefined)

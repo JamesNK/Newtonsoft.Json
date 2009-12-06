@@ -90,5 +90,10 @@ namespace Newtonsoft.Json.Utilities
       // TODO: validation
       return new string(_buffer, start, length);
     }
+
+    public char[] GetInternalBuffer()
+    {
+      return _buffer;
+    }
   }
 }

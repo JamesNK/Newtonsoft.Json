@@ -61,11 +61,29 @@ namespace Newtonsoft.Json
 
     private void ParseString(char quote)
     {
+      ReadStringIntoBuffer(quote, null);
+
+      string text = _buffer.ToString();
+      _buffer.Position = 0;
+
+      if (text.StartsWith("/Date(", StringComparison.Ordinal) && text.EndsWith(")/", StringComparison.Ordinal))
+      {
+        ParseDate(text);
+      }
+      else
+      {
+        SetToken(JsonToken.String, text);
+        QuoteChar = quote;
+      }
+    }
+
+    private void ReadStringIntoBuffer(char quote, int? untilPosition)
+    {
       bool stringTerminated = false;
       bool hexNumber = false;
       int hexCount = 0;
 
-      while (!stringTerminated && MoveNext())
+      while (!stringTerminated && (untilPosition == null || _buffer.Position < untilPosition) && MoveNext())
       {
         if (hexNumber)
           hexCount++;
@@ -136,18 +154,6 @@ namespace Newtonsoft.Json
         throw CreateJsonReaderException("Unterminated string. Expected delimiter: {0}. Line {1}, position {2}.", quote, _currentLineNumber, _currentLinePosition);
 
       ClearCurrentChar();
-      string text = _buffer.ToString();
-      _buffer.Position = 0;
-
-      if (text.StartsWith("/Date(", StringComparison.Ordinal) && text.EndsWith(")/", StringComparison.Ordinal))
-      {
-        ParseDate(text);
-      }
-      else
-      {
-        SetToken(JsonToken.String, text);
-        QuoteChar = quote;
-      }
     }
 
     private JsonReaderException CreateJsonReaderException(string format, params object[] args)
@@ -314,6 +320,61 @@ namespace Newtonsoft.Json
           case State.Closed:
             break;
           case State.Error:
+            break;
+          default:
+            throw CreateJsonReaderException("Unexpected state: {0}. Line {1}, position {2}.", CurrentState, _currentLineNumber, _currentLinePosition);
+        }
+      }
+    }
+
+    public override byte[] ReadAsBytes()
+    {
+      while (true)
+      {
+        if (_currentChar == '\0')
+        {
+          if (!MoveNext())
+            throw CreateJsonReaderException("Unexpected end: Line {0}, position {1}.", _currentLineNumber, _currentLinePosition);
+        }
+
+        switch (CurrentState)
+        {
+          case State.Start:
+          case State.Property:
+          case State.Array:
+          case State.ArrayStart:
+          case State.Constructor:
+          case State.ConstructorStart:
+            do
+            {
+              switch (_currentChar)
+              {
+                case '"':
+                case '\'':
+                  ReadStringIntoBuffer(_currentChar, null);
+
+                  byte[] data = Convert.FromBase64CharArray(_buffer.GetInternalBuffer(), 0, _buffer.Position);
+                  _buffer.Position = 0;
+
+                  SetToken(JsonToken.Bytes, data);
+
+                  return data;
+                case 'n':
+                  ParseNull();
+                  return null;
+                default:
+                  if (char.IsWhiteSpace(_currentChar))
+                  {
+                    // eat
+                  }
+                  else
+                  {
+                    throw CreateJsonReaderException("Unexpected character encountered while parsing value: {0}. Line {1}, position {2}.", _currentChar, _currentLineNumber, _currentLinePosition);
+                  }
+                  break;
+              }
+            } while (MoveNext());
+            ParseValue();
             break;
           default:
             throw CreateJsonReaderException("Unexpected state: {0}. Line {1}, position {2}.", CurrentState, _currentLineNumber, _currentLinePosition);

@@ -545,6 +545,7 @@ keyword such as type of business.""
       Assert.AreEqual(null, c["purple"]);
     }
 
+#if !PocketPC && !NET20
     [Test]
     public void ToStringJsonConverter()
     {
@@ -597,6 +598,7 @@ keyword such as type of business.""
 
       Assert.AreEqual(4, jsonWriter.Token.Children().Count());
     }
+#endif
 
     [Test]
     public void FromObject()
@@ -683,9 +685,8 @@ keyword such as type of business.""
       o =
         new JObject(
           new JProperty("Test1", new DateTime(2000, 10, 15, 5, 5, 5, DateTimeKind.Utc)),
-          new JProperty("Test2", new DateTimeOffset(2000, 10, 15, 5, 5, 5, new TimeSpan(11, 11, 0))),
-          new JProperty("Test3", "Test3Value"),
-          new JProperty("Test4", null)
+          new JProperty("Test2", "Test2Value"),
+          new JProperty("Test3", null)
         );
 
       enumerable = o.AsJEnumerable();

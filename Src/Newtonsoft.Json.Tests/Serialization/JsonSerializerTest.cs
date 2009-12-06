@@ -428,7 +428,6 @@ keyword such as type of business.""
       result = JsonConvert.SerializeObject(testDates);
       Assert.AreEqual(expected, result);
     }
-#endif
 
     [Test]
     public void DateTimeOffset()
@@ -443,6 +442,7 @@ keyword such as type of business.""
       string result = JsonConvert.SerializeObject(testDates);
       Assert.AreEqual(@"[""\/Date(-59011455539000+0000)\/"",""\/Date(946688461000+0000)\/"",""\/Date(946641661000+1300)\/"",""\/Date(946701061000-0330)\/""]", result);
     }
+#endif
 
     [Test]
     public void NonStringKeyDictionary()
@@ -1715,6 +1715,7 @@ keyword such as type of business.""
       Assert.AreEqual("Product 1", products[0].Name);
     }
 
+#if !PocketPC && !NET20
     [Test]
     public void DeserializeEmptyStringToNullableDateTime()
     {
@@ -1723,6 +1724,7 @@ keyword such as type of business.""
       NullableDateTimeTestClass c = JsonConvert.DeserializeObject<NullableDateTimeTestClass>(json);
       Assert.AreEqual(null, c.DateTimeField);
     }
+#endif
 
     [Test]
     [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Unable to find a constructor to use for type Newtonsoft.Json.Tests.TestObjects.Event. A class should either have a default constructor or only one constructor with arguments.")]
@@ -1910,6 +1912,86 @@ keyword such as type of business.""
       Assert.AreEqual(structTest.StringField, deserialized.StringField);
       Assert.AreEqual(structTest.IntProperty, deserialized.IntProperty);
       Assert.AreEqual(structTest.IntField, deserialized.IntField);
+    }
+
+    public class ListOfIds<T> : JsonConverter where T : Bar, new()
+    {
+      public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+      {
+        IList<T> list = (IList<T>) value;
+
+        writer.WriteStartArray();
+        foreach (T item in list)
+        {
+          writer.WriteValue(item.Id);
+        }
+        writer.WriteEndArray();
+      }
+
+      public override object ReadJson(JsonReader reader, Type objectType, JsonSerializer serializer)
+      {
+        IList<T> list = new List<T>();
+
+        reader.Read();
+        while (reader.TokenType != JsonToken.EndArray)
+        {
+          long id = (long)reader.Value;
+
+          list.Add(new T
+                     {
+                       Id = Convert.ToInt32(id)
+                     });
+
+          reader.Read();
+        }
+
+        return list;
+      }
+
+      public override bool CanConvert(Type objectType)
+      {
+        return typeof (IList<T>).IsAssignableFrom(objectType);
+      }
+    }
+
+    public class Foo
+    {
+      public Foo()
+      {
+        Bars = new List<Bar>();
+      }
+
+      [JsonConverter(typeof(ListOfIds<Bar>))]
+      public List<Bar> Bars { get; set; }
+    }
+
+    public class Bar
+    {
+      public int Id { get; set; }
+    }
+
+    [Test]
+    public void SerializeListWithJsonConverter()
+    {
+      Foo f = new Foo();
+      f.Bars.Add(new Bar { Id = 0 });
+      f.Bars.Add(new Bar { Id = 1 });
+      f.Bars.Add(new Bar { Id = 2 });
+
+      string json = JsonConvert.SerializeObject(f, Formatting.Indented);
+      Assert.AreEqual(@"{
+  ""Bars"": [
+    0,
+    1,
+    2
+  ]
+}", json);
+
+      Foo newFoo = JsonConvert.DeserializeObject<Foo>(json);
+      Assert.AreEqual(3, newFoo.Bars.Count);
+      Assert.AreEqual(0, newFoo.Bars[0].Id);
+      Assert.AreEqual(1, newFoo.Bars[1].Id);
+      Assert.AreEqual(2, newFoo.Bars[2].Id);
     }
   }
 }

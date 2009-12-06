@@ -24,9 +24,7 @@
 #endregion
 
 using System;
-#if !SILVERLIGHT && !PocketPC && !NET20
-using System.ComponentModel.DataAnnotations;
-#endif
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -35,6 +33,13 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Serialization
 {
+#if !SILVERLIGHT && !PocketPC && !NET20
+  internal interface IMetadataTypeAttribute
+  {
+    Type MetadataClassType { get; }
+  }
+#endif
+
   internal static class JsonTypeReflector
   {
     public const string IdPropertyName = "$id";
@@ -42,9 +47,30 @@ namespace Newtonsoft.Json.Serialization
     public const string TypePropertyName = "$type";
     public const string ArrayValuesPropertyName = "$values";
 
-    private static readonly ThreadSafeStore<ICustomAttributeProvider, Type> ConverterTypeCache = new ThreadSafeStore<ICustomAttributeProvider, Type>(GetConverterTypeFromAttribute);
+    private static readonly ThreadSafeStore<ICustomAttributeProvider, Type> JsonConverterTypeCache = new ThreadSafeStore<ICustomAttributeProvider, Type>(GetJsonConverterTypeFromAttribute);
 #if !SILVERLIGHT && !PocketPC && !NET20
     private static readonly ThreadSafeStore<Type, Type> AssociatedMetadataTypesCache = new ThreadSafeStore<Type, Type>(GetAssociateMetadataTypeFromAttribute);
+
+    private const string MetadataTypeAttributeTypeName =
+      "System.ComponentModel.DataAnnotations.MetadataTypeAttribute, System.ComponentModel.DataAnnotations, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
+    private static Type _cachedMetadataTypeAttributeType;
+#endif
+#if SILVERLIGHT
+    private static readonly ThreadSafeStore<ICustomAttributeProvider, Type> TypeConverterTypeCache = new ThreadSafeStore<ICustomAttributeProvider, Type>(GetTypeConverterTypeFromAttribute);
+
+    private static Type GetTypeConverterTypeFromAttribute(ICustomAttributeProvider attributeProvider)
+    {
+      TypeConverterAttribute converterAttribute = GetAttribute<TypeConverterAttribute>(attributeProvider);
+      if (converterAttribute == null)
+        return null;
+
+      return Type.GetType(converterAttribute.ConverterTypeName);
+    }
+
+    private static Type GetTypeConverterType(ICustomAttributeProvider attributeProvider)
+    {
+      return TypeConverterTypeCache.Get(attributeProvider);
+    }
 #endif
 
     public static JsonContainerAttribute GetJsonContainerAttribute(Type type)
@@ -83,12 +109,12 @@ namespace Newtonsoft.Json.Serialization
       return objectAttribute.MemberSerialization;
     }
 
-    private static Type GetConverterType(ICustomAttributeProvider attributeProvider)
+    private static Type GetJsonConverterType(ICustomAttributeProvider attributeProvider)
     {
-      return ConverterTypeCache.Get(attributeProvider);
+      return JsonConverterTypeCache.Get(attributeProvider);
     }
 
-    private static Type GetConverterTypeFromAttribute(ICustomAttributeProvider attributeProvider)
+    private static Type GetJsonConverterTypeFromAttribute(ICustomAttributeProvider attributeProvider)
     {
       JsonConverterAttribute converterAttribute = GetAttribute<JsonConverterAttribute>(attributeProvider);
       return (converterAttribute != null)
@@ -96,9 +122,9 @@ namespace Newtonsoft.Json.Serialization
         : null;
     }
 
-    public static JsonConverter GetConverter(ICustomAttributeProvider attributeProvider, Type targetConvertedType)
+    public static JsonConverter GetJsonConverter(ICustomAttributeProvider attributeProvider, Type targetConvertedType)
     {
-      Type converterType = GetConverterType(attributeProvider);
+      Type converterType = GetJsonConverterType(attributeProvider);
 
       if (converterType != null)
       {
@@ -113,6 +139,22 @@ namespace Newtonsoft.Json.Serialization
       return null;
     }
 
+#if !PocketPC
+    public static TypeConverter GetTypeConverter(Type type)
+    {
+#if !SILVERLIGHT
+      return TypeDescriptor.GetConverter(type);
+#else
+      Type converterType = GetTypeConverterType(type);
+
+      if (converterType != null)
+        return (TypeConverter)ReflectionUtils.CreateInstance(converterType);
+
+      return null;
+#endif
+    }
+#endif
+
 #if !SILVERLIGHT && !PocketPC && !NET20
     private static Type GetAssociatedMetadataType(Type type)
     {
@@ -121,9 +163,34 @@ namespace Newtonsoft.Json.Serialization
 
     private static Type GetAssociateMetadataTypeFromAttribute(Type type)
     {
-      MetadataTypeAttribute metadataTypeAttribute = ReflectionUtils.GetAttribute<MetadataTypeAttribute>(type, true);
+      Type metadataTypeAttributeType = GetMetadataTypeAttributeType();
+      if (metadataTypeAttributeType == null)
+        return null;
 
-      return (metadataTypeAttribute != null) ? metadataTypeAttribute.MetadataClassType : null;
+      object attribute = type.GetCustomAttributes(metadataTypeAttributeType, true).SingleOrDefault();
+      if (attribute == null)
+        return null;
+
+      IMetadataTypeAttribute metadataTypeAttribute = DynamicWrapper.CreateWrapper<IMetadataTypeAttribute>(attribute);
+
+      return metadataTypeAttribute.MetadataClassType;
+    }
+
+    private static Type GetMetadataTypeAttributeType()
+    {
+      // always attempt to get the metadata type attribute type
+      // the assembly may have been loaded since last time
+      if (_cachedMetadataTypeAttributeType == null)
+      {
+        Type metadataTypeAttributeType = Type.GetType(MetadataTypeAttributeTypeName);
+
+        if (metadataTypeAttributeType != null)
+          _cachedMetadataTypeAttributeType = metadataTypeAttributeType;
+        else
+          return null;
+      }
+      
+      return _cachedMetadataTypeAttributeType;
     }
 
     private static T GetAttribute<T>(Type type) where T : Attribute
@@ -169,7 +236,5 @@ namespace Newtonsoft.Json.Serialization
       return ReflectionUtils.GetAttribute<T>(attributeProvider, true);
     }
 #endif
-
-
   }
 }

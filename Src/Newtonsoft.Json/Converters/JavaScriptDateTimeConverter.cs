@@ -25,11 +25,17 @@ namespace Newtonsoft.Json.Converters
         DateTime utcDateTime = dateTime.ToUniversalTime();
         ticks = JsonConvert.ConvertDateTimeToJavaScriptTicks(utcDateTime);
       }
-      else
+#if !PocketPC && !NET20
+      else if (value is DateTimeOffset)
       {
         DateTimeOffset dateTimeOffset = (DateTimeOffset)value;
         DateTimeOffset utcDateTimeOffset = dateTimeOffset.ToUniversalTime();
         ticks = JsonConvert.ConvertDateTimeToJavaScriptTicks(utcDateTimeOffset.UtcDateTime);
+      }
+#endif
+      else
+      {
+        throw new Exception("Expected date object value.");
       }
 
       writer.WriteStartConstructor("Date");
@@ -75,8 +81,10 @@ namespace Newtonsoft.Json.Converters
       if (reader.TokenType != JsonToken.EndConstructor)
         throw new Exception("Unexpected token parsing date. Expected EndConstructor, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
 
+#if !PocketPC && !NET20
       if (t == typeof(DateTimeOffset))
         return new DateTimeOffset(d);
+#endif
 
       return d;
     }
@@ -94,10 +102,12 @@ namespace Newtonsoft.Json.Converters
         ? Nullable.GetUnderlyingType(objectType)
         : objectType;
 
-      if (typeof(DateTime).IsAssignableFrom(t))
+      if (t == typeof(DateTime))
         return true;
-      if (typeof(DateTimeOffset).IsAssignableFrom(t))
+#if !PocketPC && !NET20
+      if (t == typeof(DateTimeOffset))
         return true;
+#endif
 
       return false;
     }

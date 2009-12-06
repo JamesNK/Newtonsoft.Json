@@ -523,6 +523,35 @@ namespace Newtonsoft.Json.Tests.Converters
       string json = JsonConvert.SerializeXmlNode(doc);
       Assert.AreEqual(@"{""name"":""O\""Connor""}", json);
     }
+
+    [Test]
+    public void SerializeComment()
+    {
+      string xml = @"<span class=""vevent"">
+  <a class=""url"" href=""http://www.web2con.com/"">Text</a><!-- Hi! -->
+</span>";
+      XmlDocument doc = new XmlDocument();
+      doc.LoadXml(xml);
+
+      string jsonText = JsonConvert.SerializeObject(doc, Formatting.Indented, new XmlNodeConverter());
+
+      string expected = @"{
+  ""span"": {
+    ""@class"": ""vevent"",
+    ""a"": {
+      ""@class"": ""url"",
+      ""@href"": ""http://www.web2con.com/"",
+      ""#text"": ""Text""
+    }/* Hi! */
+  }
+}";
+
+      Assert.AreEqual(expected, jsonText);
+
+      XmlDocument newDoc = JsonConvert.DeserializeObject<XmlDocument>(jsonText, new XmlNodeConverter());
+      Assert.AreEqual(@"<span class=""vevent""><a class=""url"" href=""http://www.web2con.com/"">Text</a><!-- Hi! --></span>", newDoc.InnerXml);
+    }
+
   }
 }
 #endif

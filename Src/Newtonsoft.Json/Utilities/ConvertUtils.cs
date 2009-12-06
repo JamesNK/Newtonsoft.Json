@@ -29,6 +29,8 @@ using System.Linq;
 using System.Text;
 using System.Globalization;
 using System.ComponentModel;
+using Newtonsoft.Json.Serialization;
+
 #if !SILVERLIGHT
 using System.Data.SqlTypes;
 #endif
@@ -53,8 +55,10 @@ namespace Newtonsoft.Json.Utilities
         return true;
       }
 
+#if !PocketPC && !NET20
       if (initialType == typeof(DateTime) && targetType == typeof(DateTimeOffset))
         return true;
+#endif
 
       if (initialType == typeof(Guid) && (targetType == typeof(Guid) || targetType == typeof(string)))
         return true;
@@ -161,8 +165,10 @@ namespace Newtonsoft.Json.Utilities
         return System.Convert.ChangeType(initialValue, targetType, culture);
       }
 
+#if !PocketPC && !NET20
       if (initialValue is DateTime && targetType == typeof(DateTimeOffset))
         return new DateTimeOffset((DateTime)initialValue);
+#endif
 
       if (initialValue is string)
       {
@@ -403,20 +409,9 @@ namespace Newtonsoft.Json.Utilities
 #endif
 
 #if !PocketPC
-    private static TypeConverter GetConverter(Type t)
+    internal static TypeConverter GetConverter(Type t)
     {
-      ValidationUtils.ArgumentNotNull(t, "t");
-
-#if !SILVERLIGHT
-      return TypeDescriptor.GetConverter(t);
-#else
-      object[] customAttributes = t.GetCustomAttributes(typeof(TypeConverterAttribute), true);
-      if (customAttributes.Length != 1)
-        return null;
-
-      TypeConverterAttribute typeConverterAttribute = (TypeConverterAttribute)customAttributes[0];
-      return (Activator.CreateInstance(Type.GetType(typeConverterAttribute.ConverterTypeName)) as TypeConverter);
-#endif
+      return JsonTypeReflector.GetTypeConverter(t);
     }
 #endif
 

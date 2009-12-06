@@ -522,6 +522,9 @@ namespace Newtonsoft.Json.Converters
               DeserializeValue(reader, document, manager, "-" + constructorName, currentNode);
             }
             break;
+          case JsonToken.Comment:
+            currentNode.AppendChild(document.CreateComment((string)reader.Value));
+            break;
           case JsonToken.EndObject:
           case JsonToken.EndArray:
             return;

@@ -66,7 +66,6 @@
     <Compile Include="Converters\StringEnumConverter.cs" />
     <Compile Include="Converters\XmlNodeConverter.cs" />
     <Compile Include="Converters\HtmlColorConverter.cs" />
-    <Compile Include="DateTimeOffset.cs" />
     <Compile Include="DefaultValueHandling.cs" />
     <Compile Include="IJsonLineInfo.cs" />
     <Compile Include="JsonArrayAttribute.cs" />
@@ -142,6 +141,7 @@
     <Compile Include="Serialization\ReflectionValueProvider.cs" />
     <Compile Include="StreamingContext.cs" />
     <Compile Include="TypeNameHandling.cs" />
+    <Compile Include="Utilities\Base64Encoder.cs" />
     <Compile Include="Utilities\BidirectionalDictionary.cs" />
     <Compile Include="Utilities\CollectionUtils.cs" />
     <Compile Include="Utilities\CollectionWrapper.cs" />

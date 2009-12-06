@@ -65,12 +65,9 @@ namespace Newtonsoft.Json.Converters
         return;
       }
 
-      byte[] data = value as byte[];
+      byte[] data = GetByteArray(value);
 
-      if (data == null)
-        data = GetByteArray(value);
-
-      writer.WriteValue(Convert.ToBase64String(data));
+      writer.WriteValue(data);
     }
 
     private byte[] GetByteArray(object value)
@@ -113,19 +110,17 @@ namespace Newtonsoft.Json.Converters
       if (reader.TokenType != JsonToken.String)
         throw new Exception("Unexpected token parsing binary. Expected String, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
 
+      // current token is already at base64 string
+      // unable to call ReadAsBytes so do it the old fashion way
       string encodedData = reader.Value.ToString();
-
       byte[] data = Convert.FromBase64String(encodedData);
-
-      if (t == typeof(byte[]))
-        return data;
 
 #if !SILVERLIGHT && !PocketPC && !NET20
       if (t.AssignableToTypeName(BinaryTypeName))
         return Activator.CreateInstance(t, data);
 #endif
 #if !SILVERLIGHT
-      if (typeof(SqlBinary).IsAssignableFrom(t))
+      if (t == typeof(SqlBinary))
         return new SqlBinary(data);
 #endif
       throw new Exception("Unexpected object type when writing binary: {0}".FormatWith(CultureInfo.InvariantCulture, objectType));
@@ -144,15 +139,12 @@ namespace Newtonsoft.Json.Converters
         ? Nullable.GetUnderlyingType(objectType)
         : objectType;
 
-      if (t == typeof(byte[]))
-        return true;
-
 #if !SILVERLIGHT && !PocketPC && !NET20
       if (t.AssignableToTypeName(BinaryTypeName))
         return true;
 #endif
 #if !SILVERLIGHT
-      if (typeof(SqlBinary).IsAssignableFrom(t))
+      if (t == typeof(SqlBinary))
         return true;
 #endif
       return false;

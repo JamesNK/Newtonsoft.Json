@@ -35,6 +35,7 @@ namespace Newtonsoft.Json.Tests.Linq
 {
   public class JTokenReaderTest : TestFixtureBase
   {
+#if !PocketPC && !NET20
     [Test]
     public void YahooFinance()
     {
@@ -109,6 +110,7 @@ namespace Newtonsoft.Json.Tests.Linq
         Assert.IsFalse(jsonReader.Read());
       }
     }
+#endif
 
     [Test]
     public void ReadLineInfo()
@@ -192,6 +194,57 @@ namespace Newtonsoft.Json.Tests.Linq
         Assert.AreEqual(0, lineInfo.LineNumber);
         Assert.AreEqual(0, lineInfo.LinePosition);
         Assert.AreEqual(false, lineInfo.HasLineInfo());
+      }
+    }
+
+    [Test]
+    public void ReadBytes()
+    {
+      byte[] data = Encoding.UTF8.GetBytes("Hello world!");
+
+      JObject o =
+        new JObject(
+          new JProperty("Test1", data)
+        );
+
+      using (JTokenReader jsonReader = new JTokenReader(o))
+      {
+        jsonReader.Read();
+        Assert.AreEqual(JsonToken.StartObject, jsonReader.TokenType);
+
+        jsonReader.Read();
+        Assert.AreEqual(JsonToken.PropertyName, jsonReader.TokenType);
+        Assert.AreEqual("Test1", jsonReader.Value);
+
+        byte[] readBytes = jsonReader.ReadAsBytes();
+        Assert.AreEqual(data, readBytes);
+
+        Assert.IsTrue(jsonReader.Read());
+        Assert.AreEqual(JsonToken.EndObject, jsonReader.TokenType);
+
+        Assert.IsFalse(jsonReader.Read());
+      }
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error reading bytes. Expected bytes but got Integer.")]
+    public void ReadBytesFailure()
+    {
+      JObject o =
+        new JObject(
+          new JProperty("Test1", 1)
+        );
+
+      using (JTokenReader jsonReader = new JTokenReader(o))
+      {
+        jsonReader.Read();
+        Assert.AreEqual(JsonToken.StartObject, jsonReader.TokenType);
+
+        jsonReader.Read();
+        Assert.AreEqual(JsonToken.PropertyName, jsonReader.TokenType);
+        Assert.AreEqual("Test1", jsonReader.Value);
+
+        jsonReader.ReadAsBytes();
       }
     }
   }

@@ -47,6 +47,7 @@ namespace Newtonsoft.Json.Tests.Converters
       Assert.AreEqual("new Date(976918263055)", result);
     }
 
+#if !PocketPC && !NET20
     [Test]
     public void SerializeDateTimeOffset()
     {
@@ -86,15 +87,6 @@ namespace Newtonsoft.Json.Tests.Converters
     }
 
     [Test]
-    public void DeserializeDateTime()
-    {
-      JavaScriptDateTimeConverter converter = new JavaScriptDateTimeConverter();
-
-      DateTime result = JsonConvert.DeserializeObject<DateTime>("new Date(976918263055)", converter);
-      Assert.AreEqual(new DateTime(2000, 12, 15, 22, 11, 3, 55, DateTimeKind.Utc), result);
-    }
-
-    [Test]
     [ExpectedException(typeof(Exception), ExpectedMessage = "Cannot convert null value to System.DateTime.")]
     public void DeserializeNullToNonNullable()
     {
@@ -112,6 +104,16 @@ namespace Newtonsoft.Json.Tests.Converters
 
       DateTimeOffset result = JsonConvert.DeserializeObject<DateTimeOffset>(json, converter);
       Assert.AreEqual(new DateTimeOffset(2000, 12, 15, 22, 11, 3, 55, TimeSpan.Zero), result);
+    }
+#endif
+
+    [Test]
+    public void DeserializeDateTime()
+    {
+      JavaScriptDateTimeConverter converter = new JavaScriptDateTimeConverter();
+
+      DateTime result = JsonConvert.DeserializeObject<DateTime>("new Date(976918263055)", converter);
+      Assert.AreEqual(new DateTime(2000, 12, 15, 22, 11, 3, 55, DateTimeKind.Utc), result);
     }
   }
 }

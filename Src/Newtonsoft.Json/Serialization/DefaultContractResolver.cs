@@ -193,6 +193,8 @@ namespace Newtonsoft.Json.Serialization
 
       foreach (MethodInfo method in contract.UnderlyingType.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
       {
+        // compact framework errors when getting parameters for a generic method
+        // lame, but generic methods should not be callbacks anyway
         if (method.ContainsGenericParameters)
           continue;
 
@@ -348,7 +350,7 @@ namespace Newtonsoft.Json.Serialization
 #else
       property.ValueProvider = new ReflectionValueProvider(member);
 #endif
-      property.Converter = JsonTypeReflector.GetConverter(member, property.PropertyType);
+      property.Converter = JsonTypeReflector.GetJsonConverter(member, property.PropertyType);
 
 #if !PocketPC && !NET20
       DataContractAttribute dataContractAttribute = JsonTypeReflector.GetDataContractAttribute(member.DeclaringType);
@@ -395,7 +397,7 @@ namespace Newtonsoft.Json.Serialization
       property.Readable = ReflectionUtils.CanReadMemberValue(member);
       property.Writable = ReflectionUtils.CanSetMemberValue(member);
 
-      property.MemberConverter = JsonTypeReflector.GetConverter(member, ReflectionUtils.GetMemberUnderlyingType(member));
+      property.MemberConverter = JsonTypeReflector.GetJsonConverter(member, ReflectionUtils.GetMemberUnderlyingType(member));
 
       DefaultValueAttribute defaultValueAttribute = JsonTypeReflector.GetAttribute<DefaultValueAttribute>(member);
       property.DefaultValue = (defaultValueAttribute != null) ? defaultValueAttribute.Value : null;

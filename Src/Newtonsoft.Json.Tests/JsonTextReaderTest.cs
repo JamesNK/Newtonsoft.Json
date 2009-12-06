@@ -469,5 +469,18 @@ namespace Newtonsoft.Json.Tests
 
       reader.Read();
     }
+
+    [Test]
+    public void ReadSingleBytes()
+    {
+      StringReader s = new StringReader(@"""SGVsbG8gd29ybGQu""");
+      JsonTextReader reader = new JsonTextReader(s);
+
+      byte[] data = reader.ReadAsBytes();
+      Assert.IsNotNull(data);
+
+      string text = Encoding.UTF8.GetString(data, 0, data.Length);
+      Assert.AreEqual("Hello world.", text);
+    }
   }
 }

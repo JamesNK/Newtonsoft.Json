@@ -31,7 +31,7 @@ namespace Newtonsoft.Json.Tests.TestObjects
   public class Store
   {
     public StoreColor Color = StoreColor.Yellow;
-    public DateTimeOffset Establised = new DateTimeOffset(2010, 1, 22, 1, 1, 1, TimeSpan.Zero);
+    public DateTime Establised = new DateTime(2010, 1, 22, 1, 1, 1, DateTimeKind.Utc);
     public double Width = 1.1;
     public int Employees = 999;
     public int[] RoomsPerFloor = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };

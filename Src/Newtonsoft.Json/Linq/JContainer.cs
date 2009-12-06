@@ -257,7 +257,7 @@ namespace Newtonsoft.Json.Linq
 
     internal bool IsMultiContent(object content)
     {
-      return (content is IEnumerable && !(content is string) && !(content is JToken));
+      return (content is IEnumerable && !(content is string) && !(content is JToken) && !(content is byte[]));
     }
 
     internal virtual void AddItem(bool isLast, JToken previous, JToken item)

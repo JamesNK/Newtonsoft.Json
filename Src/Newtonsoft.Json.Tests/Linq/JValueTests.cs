@@ -60,6 +60,12 @@ namespace Newtonsoft.Json.Tests.Linq
       v.Value = DBNull.Value;
       Assert.AreEqual(DBNull.Value, v.Value);
       Assert.AreEqual(JTokenType.Null, v.Type);
+
+      byte[] data = new byte[0];
+      v.Value = data;
+
+      Assert.AreEqual(data, v.Value);
+      Assert.AreEqual(JTokenType.Bytes, v.Type);
     }
 
     [Test]

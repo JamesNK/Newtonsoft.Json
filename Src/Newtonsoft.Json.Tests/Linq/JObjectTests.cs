@@ -11,8 +11,6 @@ using System.IO;
 using System.Collections;
 #if !PocketPC && !SILVERLIGHT
 using System.Web.UI;
-using System.Collections;
-using System.ComponentModel;
 #endif
 
 namespace Newtonsoft.Json.Tests.Linq
@@ -596,7 +594,7 @@ Parameter name: arrayIndex")]
       Assert.AreEqual(p4, l[1]);
     }
 
-#if !PocketPC && !SILVERLIGHT
+#if !PocketPC && !SILVERLIGHT && !NET20
     [Test]
     public void PropertyChanging()
     {

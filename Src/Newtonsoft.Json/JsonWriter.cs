@@ -101,6 +101,7 @@ namespace Newtonsoft.Json
       Array,
       ConstructorStart,
       Constructor,
+      Bytes,
       Closed,
       Error
     }
@@ -578,6 +579,7 @@ namespace Newtonsoft.Json
         case JsonToken.Null:
         case JsonToken.Undefined:
         case JsonToken.Date:
+        case JsonToken.Bytes:
           // a value is being written
           token = 7;
           break;
@@ -780,6 +782,7 @@ namespace Newtonsoft.Json
       AutoComplete(JsonToken.Date);
     }
 
+#if !PocketPC && !NET20
     /// <summary>
     /// Writes a <see cref="DateTimeOffset"/> value.
     /// </summary>
@@ -788,6 +791,7 @@ namespace Newtonsoft.Json
     {
       AutoComplete(JsonToken.Date);
     }
+#endif
 
     /// <summary>
     /// Writes a <see cref="Nullable{Int32}"/> value.
@@ -957,6 +961,7 @@ namespace Newtonsoft.Json
         WriteValue(value.Value);
     }
 
+#if !PocketPC && !NET20
     /// <summary>
     /// Writes a <see cref="Nullable{DateTimeOffset}"/> value.
     /// </summary>
@@ -967,6 +972,15 @@ namespace Newtonsoft.Json
         WriteNull();
       else
         WriteValue(value.Value);
+    }
+#endif
+
+    public virtual void WriteValue(byte[] value)
+    {
+      if (value == null)
+        WriteNull();
+      else
+        AutoComplete(JsonToken.Bytes);
     }
 
     /// <summary>
@@ -1037,9 +1051,16 @@ namespace Newtonsoft.Json
             return;
         }
       }
+#if !PocketPC && !NET20
       else if (value is DateTimeOffset)
       {
         WriteValue((DateTimeOffset)value);
+        return;
+      }
+#endif
+      else if (value is byte[])
+      {
+        WriteValue((byte[])value);
         return;
       }
 

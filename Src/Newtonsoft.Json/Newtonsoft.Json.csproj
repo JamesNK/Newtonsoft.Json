@@ -65,9 +65,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -80,6 +77,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bson\BsonBinaryType.cs" />
+    <Compile Include="Bson\BsonReader.cs" />
+    <Compile Include="Bson\BsonType.cs" />
+    <Compile Include="Bson\BsonWriter.cs" />
     <Compile Include="Converters\BinaryConverter.cs" />
     <Compile Include="Converters\DataSetConverter.cs" />
     <Compile Include="Converters\DataTableConverter.cs" />
@@ -178,6 +179,7 @@
     <Compile Include="Serialization\CachedAttributeGetter.cs" />
     <Compile Include="Serialization\ReflectionValueProvider.cs" />
     <Compile Include="Serialization\OnErrorAttribute.cs" />
+    <Compile Include="Utilities\Base64Encoder.cs" />
     <Compile Include="Utilities\DynamicWrapper.cs" />
     <Compile Include="Utilities\LateBoundDelegateFactory.cs" />
     <Compile Include="Utilities\ThreadSafeStore.cs" />

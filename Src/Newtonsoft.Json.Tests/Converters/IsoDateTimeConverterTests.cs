@@ -142,6 +142,7 @@ namespace Newtonsoft.Json.Tests.Converters
     }
 #endif
 
+#if !PocketPC && !NET20
     [Test]
     public void SerializeDateTimeOffset()
     {
@@ -266,6 +267,7 @@ namespace Newtonsoft.Json.Tests.Converters
       string json2 = JsonConvert.SerializeObject(c, new IsoDateTimeConverter() { DateTimeStyles = DateTimeStyles.AssumeUniversal });
       Assert.AreNotEqual(json, json2);
     }
+#endif
 
     [Test]
     public void BlogCodeSample()

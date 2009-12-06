@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Utilities;
+using System.Globalization;
 
 namespace Newtonsoft.Json.Linq
 {
@@ -25,6 +26,15 @@ namespace Newtonsoft.Json.Linq
 
       _root = token;
       _current = token;
+    }
+
+    public override byte[] ReadAsBytes()
+    {
+      Read();
+      if (TokenType != JsonToken.Bytes)
+        throw new JsonReaderException("Error reading bytes. Expected bytes but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+
+      return (byte[])Value;
     }
 
     /// <summary>
@@ -171,6 +181,9 @@ namespace Newtonsoft.Json.Linq
           break;
         case JTokenType.Raw:
           SetToken(JsonToken.Raw, ((JValue)token).Value);
+          break;
+        case JTokenType.Bytes:
+          SetToken(JsonToken.Bytes, ((JValue)token).Value);
           break;
         default:
           throw MiscellaneousUtils.CreateArgumentOutOfRangeException("Type", token.Type, "Unexpected JTokenType.");

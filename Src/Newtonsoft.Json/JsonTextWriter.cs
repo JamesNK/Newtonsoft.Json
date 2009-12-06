@@ -37,11 +37,23 @@ namespace Newtonsoft.Json
   /// </summary>
   public class JsonTextWriter : JsonWriter
   {
-    private TextWriter _writer;
+    private readonly TextWriter _writer;
+    private Base64Encoder _base64Encoder;
     private char _indentChar;
     private int _indentation;
     private char _quoteChar;
     private bool _quoteName;
+
+    private Base64Encoder Base64Encoder
+    {
+      get
+      {
+        if (_base64Encoder == null)
+          _base64Encoder = new Base64Encoder(_writer);
+
+        return _base64Encoder;
+      }
+    }
 
     /// <summary>
     /// Gets or sets how many IndentChars to write for each level in the hierarchy when <paramref name="Formatting"/> is set to <c>Formatting.Indented</c>.
@@ -419,6 +431,20 @@ namespace Newtonsoft.Json
       WriteValueInternal(JsonConvert.ToString(value), JsonToken.Date);
     }
 
+    public override void WriteValue(byte[] value)
+    {
+      base.WriteValue(value);
+
+      if (value != null)
+      {
+        _writer.Write(_quoteChar);
+        Base64Encoder.Encode(value, 0, value.Length);
+        Base64Encoder.Flush();
+        _writer.Write(_quoteChar);
+      }
+    }
+
+#if !PocketPC && !NET20
     /// <summary>
     /// Writes a <see cref="DateTimeOffset"/> value.
     /// </summary>
@@ -428,6 +454,7 @@ namespace Newtonsoft.Json
       base.WriteValue(value);
       WriteValueInternal(JsonConvert.ToString(value), JsonToken.Date);
     }
+#endif
     #endregion
 
     /// <summary>

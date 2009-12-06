@@ -83,6 +83,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bson\BsonWriterTests.cs" />
+    <Compile Include="Bson\BsonReaderTests.cs" />
     <Compile Include="Converters\BinaryConverterTests.cs" />
     <Compile Include="Converters\DataTableConverterTests.cs" />
     <Compile Include="Converters\DataSetConverterTests.cs" />

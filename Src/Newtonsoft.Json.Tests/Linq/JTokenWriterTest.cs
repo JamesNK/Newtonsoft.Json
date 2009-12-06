@@ -39,6 +39,8 @@ namespace Newtonsoft.Json.Tests.Linq
     [Test]
     public void ValueFormatting()
     {
+      byte[] data = Encoding.UTF8.GetBytes("Hello world.");
+
       JToken root;
       using (JTokenWriter jsonWriter = new JTokenWriter())
       {
@@ -55,13 +57,14 @@ namespace Newtonsoft.Json.Tests.Linq
         jsonWriter.WriteValue("This is a string.");
         jsonWriter.WriteNull();
         jsonWriter.WriteUndefined();
+        jsonWriter.WriteValue(data);
         jsonWriter.WriteEndArray();
 
         root = jsonWriter.Token;
       }
 
       Assert.IsInstanceOfType(typeof(JArray), root);
-      Assert.AreEqual(12, root.Children().Count());
+      Assert.AreEqual(13, root.Children().Count());
       Assert.AreEqual("@", (string)root[0]);
       Assert.AreEqual("\r\n\t\f\b?{\\r\\n\"\'", (string)root[1]);
       Assert.AreEqual(true, (bool)root[2]);
@@ -73,6 +76,8 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(string.Empty, (string)root[8]);
       Assert.AreEqual("This is a string.", (string)root[9]);
       Assert.AreEqual(null, ((JValue)root[10]).Value);
+      Assert.AreEqual(null, ((JValue)root[11]).Value);
+      Assert.AreEqual(data, (byte[])root[12]);
     }
 
     [Test]
@@ -98,6 +103,9 @@ namespace Newtonsoft.Json.Tests.Linq
         Assert.AreEqual(WriteState.Array, jsonWriter.WriteState);
 
         jsonWriter.WriteValue("DVD read/writer");
+        Assert.AreEqual(WriteState.Array, jsonWriter.WriteState);
+
+        jsonWriter.WriteValue(new byte[0]);
         Assert.AreEqual(WriteState.Array, jsonWriter.WriteState);
 
         jsonWriter.WriteEnd();

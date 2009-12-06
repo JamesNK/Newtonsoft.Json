@@ -43,7 +43,7 @@ namespace Newtonsoft.Json.Linq
   [TypeDescriptionProvider(typeof(JTypeDescriptionProvider))]
 #endif
   public class JObject : JContainer, IDictionary<string, JToken>, INotifyPropertyChanged
-#if !PocketPC && !SILVERLIGHT
+#if !PocketPC && !SILVERLIGHT && !NET20
     , INotifyPropertyChanging
 #endif
   {
@@ -51,7 +51,7 @@ namespace Newtonsoft.Json.Linq
     /// Occurs when a property value changes.
     /// </summary>
     public event PropertyChangedEventHandler PropertyChanged;
-#if !PocketPC && !SILVERLIGHT
+#if !PocketPC && !SILVERLIGHT && !NET20
     /// <summary>
     /// Occurs when a property value is changing.
     /// </summary>
@@ -121,7 +121,7 @@ namespace Newtonsoft.Json.Linq
 
     internal void InternalPropertyChanging(JProperty childProperty)
     {
-#if !PocketPC && !SILVERLIGHT
+#if !PocketPC && !SILVERLIGHT && !NET20
       OnPropertyChanging(childProperty.Name);
 #endif
     }
@@ -221,7 +221,7 @@ namespace Newtonsoft.Json.Linq
         }
         else
         {
-#if !PocketPC && !SILVERLIGHT
+#if !PocketPC && !SILVERLIGHT && !NET20
           OnPropertyChanging(propertyName);
 #endif
           Add(new JProperty(propertyName, value));
@@ -472,7 +472,7 @@ namespace Newtonsoft.Json.Linq
         PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
     }
 
-#if !PocketPC && !SILVERLIGHT
+#if !PocketPC && !SILVERLIGHT && !NET20
     /// <summary>
     /// Raises the <see cref="PropertyChanging"/> event with the provided arguments.
     /// </summary>

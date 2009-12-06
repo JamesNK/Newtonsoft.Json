@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if !PocketPC && !NET20
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,3 +39,4 @@ namespace Newtonsoft.Json.Tests.TestObjects
     public string PostField { get; set; }
   }
 }
+#endif

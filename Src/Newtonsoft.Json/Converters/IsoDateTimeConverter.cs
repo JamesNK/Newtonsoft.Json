@@ -68,6 +68,7 @@ namespace Newtonsoft.Json.Converters
 
         text = dateTime.ToString(_dateTimeFormat ?? DefaultDateTimeFormat, Culture);
       }
+#if !PocketPC && !NET20
       else if (value is DateTimeOffset)
       {
         DateTimeOffset dateTimeOffset = (DateTimeOffset)value;
@@ -77,6 +78,7 @@ namespace Newtonsoft.Json.Converters
 
         text = dateTimeOffset.ToString(_dateTimeFormat ?? DefaultDateTimeFormat, Culture);
       }
+#endif
       else
       {
         throw new Exception("Unexpected value when converting date. Expected DateTime or DateTimeOffset, got {0}.".FormatWith(CultureInfo.InvariantCulture, ReflectionUtils.GetObjectType(value)));
@@ -115,6 +117,7 @@ namespace Newtonsoft.Json.Converters
       if (string.IsNullOrEmpty(dateText) && nullable)
         return null;
 
+#if !PocketPC && !NET20
       if (t == typeof(DateTimeOffset))
       {
         if (!string.IsNullOrEmpty(_dateTimeFormat))
@@ -122,6 +125,7 @@ namespace Newtonsoft.Json.Converters
         else
           return DateTimeOffset.Parse(dateText, Culture, _dateTimeStyles);
       }
+#endif
 
       if (!string.IsNullOrEmpty(_dateTimeFormat))
         return DateTime.ParseExact(dateText, _dateTimeFormat, Culture, _dateTimeStyles);
@@ -142,10 +146,12 @@ namespace Newtonsoft.Json.Converters
         ? Nullable.GetUnderlyingType(objectType)
         : objectType;
 
-      if (typeof(DateTime).IsAssignableFrom(t))
+      if (t == typeof(DateTime))
         return true;
-      if (typeof(DateTimeOffset).IsAssignableFrom(t))
+#if !PocketPC && !NET20
+      if (t == typeof(DateTimeOffset))
         return true;
+#endif
 
       return false;
     }

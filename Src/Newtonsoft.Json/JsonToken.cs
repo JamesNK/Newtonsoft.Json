@@ -47,11 +47,11 @@ namespace Newtonsoft.Json
     /// </summary>
     StartArray,
     /// <summary>
-    /// An object property name.
+    /// A constructor start token.
     /// </summary>
     StartConstructor,
     /// <summary>
-    /// A constructor end token.
+    /// An object property name.
     /// </summary>
     PropertyName,
     /// <summary>
@@ -95,12 +95,16 @@ namespace Newtonsoft.Json
     /// </summary>
     EndArray,
     /// <summary>
-    /// A constructor start token.
+    /// A constructor end token.
     /// </summary>
     EndConstructor,
     /// <summary>
     /// A Date.
     /// </summary>
-    Date
+    Date,
+    /// <summary>
+    /// Byte data.
+    /// </summary>
+    Bytes
   }
 }

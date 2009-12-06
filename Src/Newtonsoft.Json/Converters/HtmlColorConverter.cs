@@ -56,7 +56,7 @@ namespace Newtonsoft.Json.Converters
     /// </returns>
     public override bool CanConvert(Type valueType)
     {
-      return typeof(Color).IsAssignableFrom(valueType);
+      return (valueType == typeof(Color));
     }
 
     /// <summary>

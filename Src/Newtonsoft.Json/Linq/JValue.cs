@@ -142,6 +142,8 @@ namespace Newtonsoft.Json.Linq
     {
       if (objA == null && objB == null)
         return true;
+      if (objA == null || objB == null)
+        return false;
 
       switch (_valueType)
       {
@@ -158,6 +160,13 @@ namespace Newtonsoft.Json.Linq
           return objA.Equals(objB);
         case JTokenType.Date:
           return objA.Equals(objB);
+        case JTokenType.Bytes:
+          byte[] b1 = objA as byte[];
+          byte[] b2 = objB as byte[];
+          if (b1 == null || b2 == null)
+            return false;
+
+          return MiscellaneousUtils.ByteArrayCompare(b1, b2);
         default:
           throw MiscellaneousUtils.CreateArgumentOutOfRangeException("valueType", _valueType, "Unexpected value type: {0}".FormatWith(CultureInfo.InvariantCulture, _valueType));
       }
@@ -214,8 +223,12 @@ namespace Newtonsoft.Json.Linq
         return JTokenType.Float;
       else if (value is DateTime)
         return JTokenType.Date;
+#if !PocketPC && !NET20
       else if (value is DateTimeOffset)
         return JTokenType.Date;
+#endif
+      else if (value is byte[])
+        return JTokenType.Bytes;
       else if (value is bool)
         return JTokenType.Boolean;
 
@@ -303,11 +316,16 @@ namespace Newtonsoft.Json.Linq
         case JTokenType.Date:
           WriteConvertableValue(writer, converters, v =>
           {
+#if !PocketPC && !NET20
             if (v is DateTimeOffset)
               writer.WriteValue((DateTimeOffset)v);
             else
-              writer.WriteValue(Convert.ToDateTime(v, CultureInfo.InvariantCulture));
+#endif
+            writer.WriteValue(Convert.ToDateTime(v, CultureInfo.InvariantCulture));
           }, _value);
+          break;
+        case JTokenType.Bytes:
+          WriteConvertableValue(writer, converters, v => writer.WriteValue((byte[])v), _value);
           break;
         case JTokenType.Raw:
           writer.WriteRawValue(_value.ToString());

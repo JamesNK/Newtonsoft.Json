@@ -103,13 +103,21 @@ namespace Newtonsoft.Json.Tests
         jsonWriter.WriteValue((decimal?)1.1m);
         jsonWriter.WriteValue((DateTime?)null);
         jsonWriter.WriteValue((DateTime?)new DateTime(JsonConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc));
+#if !PocketPC && !NET20
         jsonWriter.WriteValue((DateTimeOffset?)null);
         jsonWriter.WriteValue((DateTimeOffset?)new DateTimeOffset(JsonConvert.InitialJavaScriptDateTicks, TimeSpan.Zero));
+#endif
         jsonWriter.WriteEndArray();
       }
 
       string json = sw.ToString();
-      string expected = @"[null,""c"",null,true,null,1,null,1,null,1,null,1,null,1,null,1,null,1,null,1,null,1.1,null,1.1,null,1.1,null,""\/Date(0)\/"",null,""\/Date(0+0000)\/""]";
+      string expected;
+
+#if !PocketPC && !NET20
+      expected = @"[null,""c"",null,true,null,1,null,1,null,1,null,1,null,1,null,1,null,1,null,1,null,1.1,null,1.1,null,1.1,null,""\/Date(0)\/"",null,""\/Date(0+0000)\/""]";
+#else
+      expected = @"[null,""c"",null,true,null,1,null,1,null,1,null,1,null,1,null,1,null,1,null,1,null,1.1,null,1.1,null,1.1,null,""\/Date(0)\/""]";
+#endif
 
       Assert.AreEqual(expected, json);
     }
@@ -528,6 +536,66 @@ namespace Newtonsoft.Json.Tests
       string expected = @"{
 _____'propertyName': NaN
 }";
+      string result = sb.ToString();
+
+      Assert.AreEqual(expected, result);
+    }
+
+    [Test]
+    public void WriteSingleBytes()
+    {
+      StringBuilder sb = new StringBuilder();
+      StringWriter sw = new StringWriter(sb);
+
+      string text = "Hello world.";
+      byte[] data = Encoding.UTF8.GetBytes(text);
+
+      using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
+      {
+        jsonWriter.Formatting = Formatting.Indented;
+        Assert.AreEqual(Formatting.Indented, jsonWriter.Formatting);
+
+        jsonWriter.WriteValue(data);
+      }
+
+      string expected = @"""SGVsbG8gd29ybGQu""";
+      string result = sb.ToString();
+
+      Assert.AreEqual(expected, result);
+
+      byte[] d2 = Convert.FromBase64String(result.Trim('"'));
+
+      Assert.AreEqual(text, Encoding.UTF8.GetString(d2, 0, d2.Length));
+    }
+
+    [Test]
+    public void WriteBytesInArray()
+    {
+      StringBuilder sb = new StringBuilder();
+      StringWriter sw = new StringWriter(sb);
+
+      string text = "Hello world.";
+      byte[] data = Encoding.UTF8.GetBytes(text);
+
+      using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
+      {
+        jsonWriter.Formatting = Formatting.Indented;
+        Assert.AreEqual(Formatting.Indented, jsonWriter.Formatting);
+
+        jsonWriter.WriteStartArray();
+        jsonWriter.WriteValue(data);
+        jsonWriter.WriteValue(data);
+        jsonWriter.WriteValue((object)data);
+        jsonWriter.WriteValue((byte[])null);
+        jsonWriter.WriteEndArray();
+      }
+
+      string expected = @"[
+  ""SGVsbG8gd29ybGQu"",
+  ""SGVsbG8gd29ybGQu"",
+  ""SGVsbG8gd29ybGQu"",
+  null
+]";
       string result = sb.ToString();
 
       Assert.AreEqual(expected, result);
