@@ -49,6 +49,7 @@ namespace Newtonsoft.Json.Bson
     CodeWScope = 15,
     Integer = 16,
     TimeStamp = 17,
+    Long = 18,
     MinKey = -1,
     MaxKey = 127
   }

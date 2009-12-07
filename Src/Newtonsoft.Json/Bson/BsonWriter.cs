@@ -48,10 +48,6 @@ namespace Newtonsoft.Json.Bson
 
     public override void Flush()
     {
-      if (Top != 0)
-        throw new JsonWriterException("Cannot flush BsonWriter until JSON is complete.");
-
-      WriteToken(Token);
       _writer.Flush();
     }
 
@@ -88,10 +84,10 @@ namespace Newtonsoft.Json.Bson
           }
           break;
         case JTokenType.Integer:
-          _writer.Write((int)t);
+          _writer.Write(Convert.ToInt32(((JValue)t).Value));
           break;
         case JTokenType.Float:
-          _writer.Write((double)t);
+          _writer.Write(Convert.ToDouble(((JValue)t).Value));
           break;
         case JTokenType.String:
           WriteStringWithLength((string)t);
@@ -247,45 +243,14 @@ namespace Newtonsoft.Json.Bson
       }
     }
 
-    public void Write(string str)
+    protected override void WriteEnd(JsonToken token)
     {
-      Byte[] buf = new byte[Encoding.UTF8.GetByteCount(str) + 1];
-      buf[buf.Length - 1] = 0;
-      Encoding.UTF8.GetBytes(str, 0, str.Length, buf, 0);
-      _writer.Write(buf);
-    }
+      base.WriteEnd(token);
 
-    public void Write(bool val)
-    {
-      if (val)
-        _writer.Write((byte)1);
-      else
-        _writer.Write((byte)0);
-    }
-
-    public void Write(byte val)
-    {
-      _writer.Write(val);
-    }
-
-    public void Write(byte[] val)
-    {
-      _writer.Write(val);
-    }
-
-    public void Write(int val)
-    {
-      _writer.Write(val);
-    }
-
-    public void Write(long val)
-    {
-      _writer.Write(val);
-    }
-
-    public void Write(double val)
-    {
-      _writer.Write(val);
+      if (Top == 0)
+      {
+        WriteToken(Token);
+      }
     }
   }
 }

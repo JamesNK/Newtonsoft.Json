@@ -45,18 +45,17 @@ namespace Newtonsoft.Json.Utilities
 
     public static byte[] HexToBytes(string hex)
     {
+      string fixedHex = hex.Replace("-", string.Empty);
+
       // array to put the result in
-      byte[] bytes = new byte[hex.Length / 2];
+      byte[] bytes = new byte[fixedHex.Length / 2];
       // variable to determine shift of high/low nibble
       int shift = 4;
       // offset of the current byte in the array
       int offset = 0;
       // loop the characters in the string
-      foreach (char c in hex)
+      foreach (char c in fixedHex)
       {
-        if (c == '-' && shift == 4)
-          continue;
-
         // get character code in range 0-9, 17-22
         // the % 32 handles lower case characters
         int b = (c - '0') % 32;

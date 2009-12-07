@@ -681,6 +681,7 @@ namespace Newtonsoft.Json.Linq
           case JsonToken.Float:
           case JsonToken.Date:
           case JsonToken.Boolean:
+          case JsonToken.Bytes:
             JValue v = new JValue(r.Value);
             v.SetLineInfo(lineInfo);
             parent.Add(v);
