@@ -12,12 +12,12 @@ using System.Globalization;
 
 namespace Newtonsoft.Json.Utilities
 {
-  public class DynamicWrapperBase
+  internal class DynamicWrapperBase
   {
     internal protected object UnderlyingObject;
   }
 
-  public static class DynamicWrapper
+  internal static class DynamicWrapper
   {
     private static readonly object _lock = new object();
     private static readonly WrapperDictionary _wrapperDictionary = new WrapperDictionary();
@@ -224,7 +224,7 @@ namespace Newtonsoft.Json.Utilities
     }
   }
 
-  public static class TypeExtensions
+  internal static class TypeExtensions
   {
     public static MethodInfo GetGenericMethod(this Type type, string name, params Type[] parameterTypes)
     {

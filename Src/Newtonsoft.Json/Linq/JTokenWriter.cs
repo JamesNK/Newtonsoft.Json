@@ -346,6 +346,10 @@ namespace Newtonsoft.Json.Linq
     }
 #endif
 
+    /// <summary>
+    /// Writes a <see cref="T:Byte[]"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="T:Byte[]"/> value to write.</param>
     public override void WriteValue(byte[] value)
     {
       base.WriteValue(value);

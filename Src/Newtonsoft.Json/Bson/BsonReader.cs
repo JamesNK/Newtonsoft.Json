@@ -34,19 +34,9 @@ using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Bson
 {
-  internal enum BsonReaderState
-  {
-    Normal,
-    ReferenceStart,
-    ReferenceRef,
-    ReferenceId,
-    CodeWScopeStart,
-    CodeWScopeCode,
-    CodeWScopeScope,
-    CodeWScopeScopeObject,
-    CodeWScopeScopeEnd
-  }
-
+  /// <summary>
+  /// Represents a reader that provides fast, non-cached, forward-only access to serialized Json data.
+  /// </summary>
   public class BsonReader : JsonReader
   {
     private readonly BinaryReader _reader;
@@ -55,6 +45,19 @@ namespace Newtonsoft.Json.Bson
 
     private BsonType _currentElementType;
     private BsonReaderState _bsonReaderState;
+
+    private enum BsonReaderState
+    {
+      Normal,
+      ReferenceStart,
+      ReferenceRef,
+      ReferenceId,
+      CodeWScopeStart,
+      CodeWScopeCode,
+      CodeWScopeScope,
+      CodeWScopeScopeObject,
+      CodeWScopeScopeEnd
+    }
 
     private class ContainerContext
     {
@@ -79,10 +82,19 @@ namespace Newtonsoft.Json.Bson
       }
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BsonReader"/> class.
+    /// </summary>
+    /// <param name="stream">The stream.</param>
     public BsonReader(Stream stream) : this(stream, false)
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BsonReader"/> class.
+    /// </summary>
+    /// <param name="stream">The stream.</param>
+    /// <param name="rootTypeIsArray">if set to <c>true</c> the root object will be read as a JSON array.</param>
     public BsonReader(Stream stream, bool rootTypeIsArray)
     {
       ValidationUtils.ArgumentNotNull(stream, "stream");
@@ -98,6 +110,12 @@ namespace Newtonsoft.Json.Bson
       return elementName;
     }
 
+    /// <summary>
+    /// Reads the next JSON token from the stream as a <see cref="T:Byte[]"/>.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="T:Byte[]"/> or a null reference if the next JSON token is null.
+    /// </returns>
     public override byte[] ReadAsBytes()
     {
       Read();
@@ -107,6 +125,12 @@ namespace Newtonsoft.Json.Bson
       return (byte[])Value;
     }
 
+    /// <summary>
+    /// Reads the next JSON token from the stream.
+    /// </summary>
+    /// <returns>
+    /// true if the next token was read successfully; false if there are no more tokens to read.
+    /// </returns>
     public override bool Read()
     {
       try

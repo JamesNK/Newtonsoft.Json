@@ -975,6 +975,10 @@ namespace Newtonsoft.Json
     }
 #endif
 
+    /// <summary>
+    /// Writes a <see cref="T:Byte[]"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="T:Byte[]"/> value to write.</param>
     public virtual void WriteValue(byte[] value)
     {
       if (value == null)

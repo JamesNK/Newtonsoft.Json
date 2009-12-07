@@ -24,28 +24,34 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Linq;
+using System.Globalization;
 
 namespace Newtonsoft.Json.Bson
 {
+  /// <summary>
+  /// Represents a writer that provides a fast, non-cached, forward-only way of generating Json data.
+  /// </summary>
   public class BsonWriter : JTokenWriter
   {
-    private readonly Stream _stream;
     private readonly BinaryWriter _writer;
 
-
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BsonWriter"/> class.
+    /// </summary>
+    /// <param name="stream">The stream.</param>
     public BsonWriter(Stream stream)
     {
       ValidationUtils.ArgumentNotNull(stream, "stream");
-      _stream = stream;
       _writer = new BinaryWriter(stream);
     }
 
+    /// <summary>
+    /// Flushes whatever is in the buffer to the underlying streams and also flushes the underlying stream.
+    /// </summary>
     public override void Flush()
     {
       _writer.Flush();
@@ -76,7 +82,7 @@ namespace Newtonsoft.Json.Bson
             foreach (JToken c in t)
             {
               _writer.Write((sbyte)GetTypeNumber(c));
-              WriteString(index.ToString());
+              WriteString(index.ToString(CultureInfo.InvariantCulture));
               WriteToken(c);
               index++;
             }
@@ -84,10 +90,10 @@ namespace Newtonsoft.Json.Bson
           }
           break;
         case JTokenType.Integer:
-          _writer.Write(Convert.ToInt32(((JValue)t).Value));
+          _writer.Write(Convert.ToInt32(((JValue)t).Value, CultureInfo.InvariantCulture));
           break;
         case JTokenType.Float:
-          _writer.Write(Convert.ToDouble(((JValue)t).Value));
+          _writer.Write(Convert.ToDouble(((JValue)t).Value, CultureInfo.InvariantCulture));
           break;
         case JTokenType.String:
           WriteStringWithLength((string)t);
@@ -201,7 +207,7 @@ namespace Newtonsoft.Json.Bson
             foreach (JToken c in t)
             {
               bases += 1;
-              bases += CalculateSize(index.ToString());
+              bases += CalculateSize(index.ToString(CultureInfo.InvariantCulture));
               bases += CalculateSize(c);
               index++;
             }
@@ -243,6 +249,10 @@ namespace Newtonsoft.Json.Bson
       }
     }
 
+    /// <summary>
+    /// Writes the end.
+    /// </summary>
+    /// <param name="token">The token.</param>
     protected override void WriteEnd(JsonToken token)
     {
       base.WriteEnd(token);

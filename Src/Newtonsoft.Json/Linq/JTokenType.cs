@@ -23,11 +23,6 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 namespace Newtonsoft.Json.Linq
 {
   /// <summary>
@@ -91,6 +86,9 @@ namespace Newtonsoft.Json.Linq
     /// A raw JSON value.
     /// </summary>
     Raw,
+    /// <summary>
+    /// A collection of bytes value.
+    /// </summary>
     Bytes
   }
 }

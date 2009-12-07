@@ -204,6 +204,10 @@ namespace Newtonsoft.Json
     /// <returns>true if the next token was read successfully; false if there are no more tokens to read.</returns>
     public abstract bool Read();
 
+    /// <summary>
+    /// Reads the next JSON token from the stream as a <see cref="T:Byte[]"/>.
+    /// </summary>
+    /// <returns>A <see cref="T:Byte[]"/> or a null reference if the next JSON token is null.</returns>
     public abstract byte[] ReadAsBytes();
 
     /// <summary>

@@ -32,8 +32,17 @@ using System.Text;
 
 namespace Newtonsoft.Json.Converters
 {
+  /// <summary>
+  /// Converts a <see cref="DataSet"/> to and from JSON.
+  /// </summary>
   public class DataSetConverter : JsonConverter
   {
+    /// <summary>
+    /// Writes the JSON representation of the object.
+    /// </summary>
+    /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
+    /// <param name="value">The value.</param>
+    /// <param name="serializer">The calling serializer.</param>
     public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {
       DataSet dataSet = (DataSet)value;
@@ -52,6 +61,13 @@ namespace Newtonsoft.Json.Converters
       writer.WriteEndObject();
     }
 
+    /// <summary>
+    /// Reads the JSON representation of the object.
+    /// </summary>
+    /// <param name="reader">The <see cref="JsonReader"/> to read from.</param>
+    /// <param name="objectType">Type of the object.</param>
+    /// <param name="serializer">The calling serializer.</param>
+    /// <returns>The object value.</returns>
     public override object ReadJson(JsonReader reader, Type objectType, JsonSerializer serializer)
     {
       DataSet ds = new DataSet();
@@ -71,6 +87,13 @@ namespace Newtonsoft.Json.Converters
       return ds;
     }
 
+    /// <summary>
+    /// Determines whether this instance can convert the specified value type.
+    /// </summary>
+    /// <param name="valueType">Type of the value.</param>
+    /// <returns>
+    /// 	<c>true</c> if this instance can convert the specified value type; otherwise, <c>false</c>.
+    /// </returns>
     public override bool CanConvert(Type valueType)
     {
       return (valueType == typeof(DataSet));

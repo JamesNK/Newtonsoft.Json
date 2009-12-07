@@ -39,6 +39,10 @@ namespace Newtonsoft.Json.Serialization
   {
     private readonly JsonObjectContract _contract;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonPropertyCollection"/> class.
+    /// </summary>
+    /// <param name="contract">The contract.</param>
     public JsonPropertyCollection(JsonObjectContract contract)
     {
       ValidationUtils.ArgumentNotNull(contract, "contract");

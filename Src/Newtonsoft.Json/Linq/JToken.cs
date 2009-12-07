@@ -742,6 +742,11 @@ namespace Newtonsoft.Json.Linq
       return Convert.ToUInt64(v.Value, CultureInfo.InvariantCulture);
     }
 
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="T:System.Byte[]"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
     public static explicit operator byte[](JToken value)
     {
       JValue v = EnsureValue(value);
@@ -987,6 +992,11 @@ namespace Newtonsoft.Json.Linq
       return new JValue(value);
     }
 
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="T:System.Byte[]"/> to <see cref="Newtonsoft.Json.Linq.JToken"/>.
+    /// </summary>
+    /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
+    /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
     public static implicit operator JToken(byte[] value)
     {
       return new JValue(value);
@@ -1123,11 +1133,32 @@ namespace Newtonsoft.Json.Linq
       get { return _linePosition ?? 0; }
     }
 
+    /// <summary>
+    /// Selects the token that matches the object path.
+    /// </summary>
+    /// <param name="path">
+    /// The object path from the current <see cref="JToken"/> to the <see cref="JToken"/>
+    /// to be returned. This must be a string of property names or array indexes separated
+    /// by periods, such as <code>Tables[0].DefaultView[0].Price</code> in C# or
+    /// <code>Tables(0).DefaultView(0).Price</code> in Visual Basic.
+    /// </param>
+    /// <returns>The <see cref="JToken"/> that matches the object path or a null reference if no matching token is found.</returns>
     public JToken SelectToken(string path)
     {
       return SelectToken(path, false);
     }
 
+    /// <summary>
+    /// Selects the token that matches the object path.
+    /// </summary>
+    /// <param name="path">
+    /// The object path from the current <see cref="JToken"/> to the <see cref="JToken"/>
+    /// to be returned. This must be a string of property names or array indexes separated
+    /// by periods, such as <code>Tables[0].DefaultView[0].Price</code> in C# or
+    /// <code>Tables(0).DefaultView(0).Price</code> in Visual Basic.
+    /// </param>
+    /// <param name="errorWhenNoMatch">A flag to indicate whether an error should be thrown if no token is found.</param>
+    /// <returns>The <see cref="JToken"/> that matches the object path.</returns>
     public JToken SelectToken(string path, bool errorWhenNoMatch)
     {
       JPath p = new JPath(path);

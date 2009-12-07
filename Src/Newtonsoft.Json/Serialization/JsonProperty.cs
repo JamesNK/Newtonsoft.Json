@@ -23,7 +23,6 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-using System.Reflection;
 using System;
 
 namespace Newtonsoft.Json.Serialization
@@ -45,8 +44,16 @@ namespace Newtonsoft.Json.Serialization
     /// <value>The <see cref="IValueProvider"/> that will get and set the <see cref="JsonProperty"/> during serialization.</value>
     public IValueProvider ValueProvider { get; set; }
 
+    /// <summary>
+    /// Gets or sets the type of the property.
+    /// </summary>
+    /// <value>The type of the property.</value>
     public Type PropertyType { get; set; }
 
+    /// <summary>
+    /// Gets or sets the converter.
+    /// </summary>
+    /// <value>The converter.</value>
     public JsonConverter Converter { get; set; }
 
     /// <summary>
