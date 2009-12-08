@@ -11,7 +11,11 @@
     <siteMapNode title="CustomCreationConverter" url="CustomCreationConverter.html" />
     <siteMapNode title="Contract Resolvers" url="ContractResolver.html" />
     <siteMapNode title="Reducing Serialized JSON Size" url="ReducingSerializedJSONSize.html" />
+    <siteMapNode title="Serializing Partial JSON Fragments" url="SerializingJSONFragments.html" />
   </siteMapNode>
-  <siteMapNode title="LINQ to JSON" url="LINQtoJSON.html" />
+  <siteMapNode title="LINQ to JSON" url="LINQtoJSON.html">
+    <siteMapNode title="Querying LINQ to JSON with SelectToken" url="SelectToken.html" />
+  </siteMapNode>
   <siteMapNode title="Reading and writing JSON" url="ReadingWritingJSON.html" />
+  <siteMapNode title="Converting between JSON and XML" url="ConvertingJSONandXML.html" />
 </siteMap>

@@ -25,8 +25,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests
@@ -34,6 +36,14 @@ namespace Newtonsoft.Json.Tests
   [TestFixture]
   public abstract class TestFixtureBase
   {
+    [TestFixtureSetUp]
+    protected void TestSetup()
+    {
+      //CultureInfo turkey = CultureInfo.CreateSpecificCulture("tr");
+      //Thread.CurrentThread.CurrentCulture = turkey;
+      //Thread.CurrentThread.CurrentUICulture = turkey;
+    }
+
     //public string GetOffset(DateTime value)
     //{
     //  TimeSpan utcOffset = TimeZone.CurrentTimeZone.GetUtcOffset(value.ToLocalTime());

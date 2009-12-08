@@ -441,7 +441,7 @@ namespace Newtonsoft.Json.Serialization
 
       foreach (DictionaryEntry entry in values)
       {
-        string propertyName = entry.Key.ToString();
+        string propertyName = GetPropertyName(entry);
 
         try
         {
@@ -475,6 +475,18 @@ namespace Newtonsoft.Json.Serialization
       SerializeStack.RemoveAt(SerializeStack.Count - 1);
 
       contract.InvokeOnSerialized(values);
+    }
+
+    private string GetPropertyName(DictionaryEntry entry)
+    {
+      string propertyName;
+
+      if (entry.Key is IConvertible)
+        return Convert.ToString(entry.Key, CultureInfo.InvariantCulture);
+      else if (TryConvertToString(entry.Key, entry.Key.GetType(), out propertyName))
+        return propertyName;
+
+      throw new JsonSerializationException("Could not create string property name from type '{0}'.".FormatWith(CultureInfo.InvariantCulture, entry.Key.GetType()));
     }
 
     private void HandleError(JsonWriter writer, int initialDepth)

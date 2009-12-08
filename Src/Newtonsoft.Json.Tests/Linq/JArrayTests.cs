@@ -415,5 +415,19 @@ Parameter name: index")]
 
       Assert.AreEqual(3, (int)a[key]);
     }
+
+    [Test]
+    public void ReplaceAll()
+    {
+      JArray a = new JArray(new [] { 1, 2, 3 });
+      Assert.AreEqual(3, a.Count);
+      Assert.AreEqual(1, (int)a[0]);
+      Assert.AreEqual(2, (int)a[1]);
+      Assert.AreEqual(3, (int)a[2]);
+
+      a.ReplaceAll(1);
+      Assert.AreEqual(1, a.Count);
+      Assert.AreEqual(1, (int)a[0]);
+    }
   }
 }

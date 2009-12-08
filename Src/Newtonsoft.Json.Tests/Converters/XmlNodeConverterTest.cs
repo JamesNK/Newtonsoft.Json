@@ -552,6 +552,124 @@ namespace Newtonsoft.Json.Tests.Converters
       Assert.AreEqual(@"<span class=""vevent""><a class=""url"" href=""http://www.web2con.com/"">Text</a><!-- Hi! --></span>", newDoc.InnerXml);
     }
 
+    [Test]
+    public void SerializeExample()
+    {
+      string xml = @"<?xml version=""1.0"" standalone=""no""?>
+			<root>
+			  <person id=""1"">
+				<name>Alan</name>
+				<url>http://www.google.com</url>
+			  </person>
+			  <person id=""2"">
+				<name>Louis</name>
+				<url>http://www.yahoo.com</url>
+			  </person>
+			</root>";
+
+      XmlDocument doc = new XmlDocument();
+      doc.LoadXml(xml);
+
+      string jsonText = JsonConvert.SerializeXmlNode(doc);
+      // {
+      //   "?xml": {
+      //     "@version": "1.0",
+      //     "@standalone": "no"
+      //   },
+      //   "root": {
+      //     "person": [
+      //       {
+      //         "@id": "1",
+      //         "name": "Alan",
+      //         "url": "http://www.google.com"
+      //       },
+      //       {
+      //         "@id": "2",
+      //         "name": "Louis",
+      //         "url": "http://www.yahoo.com"
+      //       }
+      //     ]
+      //   }
+      // }
+
+      // format
+      jsonText = JObject.Parse(jsonText).ToString();
+
+      Assert.AreEqual(@"{
+  ""?xml"": {
+    ""@version"": ""1.0"",
+    ""@standalone"": ""no""
+  },
+  ""root"": {
+    ""person"": [
+      {
+        ""@id"": ""1"",
+        ""name"": ""Alan"",
+        ""url"": ""http://www.google.com""
+      },
+      {
+        ""@id"": ""2"",
+        ""name"": ""Louis"",
+        ""url"": ""http://www.yahoo.com""
+      }
+    ]
+  }
+}", jsonText);
+
+      XmlDocument newDoc = (XmlDocument)JsonConvert.DeserializeXmlNode(jsonText);
+
+      Assert.AreEqual(doc.InnerXml, newDoc.InnerXml);
+    }
+
+    [Test]
+    public void DeserializeExample()
+    {
+      string json = @"{
+        ""?xml"": {
+          ""@version"": ""1.0"",
+          ""@standalone"": ""no""
+        },
+        ""root"": {
+          ""person"": [
+            {
+              ""@id"": ""1"",
+              ""name"": ""Alan"",
+              ""url"": ""http://www.google.com""
+            },
+            {
+              ""@id"": ""2"",
+              ""name"": ""Louis"",
+              ""url"": ""http://www.yahoo.com""
+            }
+          ]
+        }
+      }";
+
+      XmlDocument doc = (XmlDocument)JsonConvert.DeserializeXmlNode(json);
+      // <?xml version="1.0" standalone="no"?>
+      // <root>
+      //   <person id="1">
+      //   <name>Alan</name>
+      //   <url>http://www.google.com</url>
+      //   </person>
+      //   <person id="2">
+      //   <name>Louis</name>
+      //   <url>http://www.yahoo.com</url>
+      //   </person>
+      // </root>
+
+      Assert.AreEqual(@"<?xml version=""1.0"" standalone=""no""?>
+<root>
+<person id=""1"">
+<name>Alan</name>
+<url>http://www.google.com</url>
+</person>
+<person id=""2"">
+<name>Louis</name>
+<url>http://www.yahoo.com</url>
+</person>
+</root>".Replace(Environment.NewLine, string.Empty), doc.InnerXml);
+    }
   }
 }
 #endif

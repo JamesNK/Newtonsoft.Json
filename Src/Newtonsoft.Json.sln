@@ -17,7 +17,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Doc", "Doc", "{8F9E13D9-418
 		Doc\custom.css = Doc\custom.css
 		Doc\CustomCreationConverter.html = Doc\CustomCreationConverter.html
 		Doc\DatesInJSON.html = Doc\DatesInJSON.html
-		doc.shfbproj = doc.shfbproj
 		Doc\doc.sitemap = Doc\doc.sitemap
 		Doc\donate.gif = Doc\donate.gif
 		Doc\Introduction.html = Doc\Introduction.html
@@ -25,10 +24,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Doc", "Doc", "{8F9E13D9-418
 		Doc\PreserveObjectReferences.html = Doc\PreserveObjectReferences.html
 		Doc\ReadingWritingJSON.html = Doc\ReadingWritingJSON.html
 		Doc\ReducingSerializedJSONSize.html = Doc\ReducingSerializedJSONSize.html
+		Doc\SelectToken.html = Doc\SelectToken.html
 		Doc\SerializationAttributes.html = Doc\SerializationAttributes.html
 		Doc\SerializationErrorHandling.html = Doc\SerializationErrorHandling.html
 		Doc\SerializingCollections.html = Doc\SerializingCollections.html
 		Doc\SerializingJSON.html = Doc\SerializingJSON.html
+		Doc\SerializingJSONFragments.html = Doc\SerializingJSONFragments.html
 		Doc\styles.css = Doc\styles.css
 	EndProjectSection
 EndProject

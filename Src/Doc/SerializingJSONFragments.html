@@ -1,0 +1,125 @@
+<html>
+  
+  <head>
+    <title>Serializing Partial JSON Fragments</title>
+    <link href="styles.css" rel="stylesheet" type="text/css" />
+    <link href="custom.css" rel="stylesheet" type="text/css" />
+  </head>
+  
+  <body>
+    
+    <div id="control">
+      <span class="productTitle">Json.NET - Quick Starts & API Documentation</span><br />
+        <span class="topicTitle">Serializing Partial JSON Fragments</span></div>
+
+    <div id="content">
+      <span style="color: DarkGray"> </span>
+        <p>Often when working with large JSON documents you're only interested in a small fragment of information.
+            This scenario can be annoying when you want to serialize that Json.NET into .NET 
+            objects because you have to define .NET classes for the entire JSON result.</p>
+        <p>With Json.NET it is easy to get around this problem. Using LINQ to JSON you can 
+            extract the pieces of JSON you want to serialize before passing them to the Json.NET serializer.</p>
+
+<div class="overflowpanel">
+  <div class="code">
+
+<div style="font-family: Courier New; font-size: 10pt; color: black;">
+<pre style="margin: 0px;"><span style="color: blue;">public</span> <span style="color: blue;">class</span> <span style="color: #2b91af;">SearchResult</span></pre>
+<pre style="margin: 0px;">{</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: blue;">string</span> Title { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: blue;">string</span> Content { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">public</span> <span style="color: blue;">string</span> Url { <span style="color: blue;">get</span>; <span style="color: blue;">set</span>; }</pre>
+<pre style="margin: 0px;">}</pre>
+</div>
+
+  </div>
+</div>
+
+<div class="overflowpanel">
+  <div class="code">
+  
+<div style="font-family: Courier New; font-size: 10pt; color: black;">
+<pre style="margin: 0px;"><span style="color: blue;">string</span> googleSearchText = <span style="color: #a31515;">@&quot;{</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &quot;&quot;responseData&quot;&quot;: {</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &quot;&quot;results&quot;&quot;: [</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; {</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;GsearchResultClass&quot;&quot;: &quot;&quot;GwebSearch&quot;&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;unescapedUrl&quot;&quot;: &quot;&quot;http://en.wikipedia.org/wiki/Paris_Hilton&quot;&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;url&quot;&quot;: &quot;&quot;http://en.wikipedia.org/wiki/Paris_Hilton&quot;&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;visibleUrl&quot;&quot;: &quot;&quot;en.wikipedia.org&quot;&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;cacheUrl&quot;&quot;: &quot;&quot;http://www.google.com/search?q=cache:TwrPfhd22hYJ:en.wikipedia.org&quot;&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;title&quot;&quot;: &quot;&quot;&lt;b&gt;Paris Hilton&lt;/b&gt; - Wikipedia, the free encyclopedia&quot;&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;titleNoFormatting&quot;&quot;: &quot;&quot;Paris Hilton - Wikipedia, the free encyclopedia&quot;&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;content&quot;&quot;: &quot;&quot;[1] In 2006, she released her debut album...&quot;&quot;</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; },</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; {</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;GsearchResultClass&quot;&quot;: &quot;&quot;GwebSearch&quot;&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;unescapedUrl&quot;&quot;: &quot;&quot;http://www.imdb.com/name/nm0385296/&quot;&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;url&quot;&quot;: &quot;&quot;http://www.imdb.com/name/nm0385296/&quot;&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;visibleUrl&quot;&quot;: &quot;&quot;www.imdb.com&quot;&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;cacheUrl&quot;&quot;: &quot;&quot;http://www.google.com/search?q=cache:1i34KkqnsooJ:www.imdb.com&quot;&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;title&quot;&quot;: &quot;&quot;&lt;b&gt;Paris Hilton&lt;/b&gt;&quot;&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;titleNoFormatting&quot;&quot;: &quot;&quot;Paris Hilton&quot;&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;content&quot;&quot;: &quot;&quot;Self: Zoolander. Socialite &lt;b&gt;Paris Hilton&lt;/b&gt;...&quot;&quot;</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; }</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; ],</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &quot;&quot;cursor&quot;&quot;: {</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &quot;&quot;pages&quot;&quot;: [</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; {</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;start&quot;&quot;: &quot;&quot;0&quot;&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;label&quot;&quot;: 1</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; },</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; {</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;start&quot;&quot;: &quot;&quot;4&quot;&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;label&quot;&quot;: 2</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; },</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; {</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;start&quot;&quot;: &quot;&quot;8&quot;&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;label&quot;&quot;: 3</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; },</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; {</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;start&quot;&quot;: &quot;&quot;12&quot;&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;label&quot;&quot;: 4</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; }</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; ],</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &quot;&quot;estimatedResultCount&quot;&quot;: &quot;&quot;59600000&quot;&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &quot;&quot;currentPageIndex&quot;&quot;: 0,</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &quot;&quot;moreResultsUrl&quot;&quot;: &quot;&quot;http://www.google.com/search?oe=utf8&amp;ie=utf8...&quot;&quot;</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; }</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; },</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &quot;&quot;responseDetails&quot;&quot;: null,</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &quot;&quot;responseStatus&quot;&quot;: 200</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">}&quot;</span>;</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">JObject</span> googleSearch = <span style="color: #2b91af;">JObject</span>.Parse(googleSearchText);</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: green;">// get JSON result objects into a list</span></pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">IList</span>&lt;<span style="color: #2b91af;">JToken</span>&gt; results = googleSearch[<span style="color: #a31515;">&quot;responseData&quot;</span>][<span style="color: #a31515;">&quot;results&quot;</span>].Children().ToList();</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: green;">// serialize JSON results into .NET objects</span></pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">IList</span>&lt;<span style="color: #2b91af;">SearchResult</span>&gt; searchResults = <span style="color: blue;">new</span> <span style="color: #2b91af;">List</span>&lt;<span style="color: #2b91af;">SearchResult</span>&gt;();</pre>
+<pre style="margin: 0px;"><span style="color: blue;">foreach</span> (<span style="color: #2b91af;">JToken</span> result <span style="color: blue;">in</span> results)</pre>
+<pre style="margin: 0px;">{</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: #2b91af;">SearchResult</span> searchResult = <span style="color: #2b91af;">JsonConvert</span>.DeserializeObject&lt;<span style="color: #2b91af;">SearchResult</span>&gt;(result.ToString());</pre>
+<pre style="margin: 0px;">&nbsp; searchResults.Add(searchResult);</pre>
+<pre style="margin: 0px;">}</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: green;">// Title = &lt;b&gt;Paris Hilton&lt;/b&gt; - Wikipedia, the free encyclopedia</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">// Content = [1] In 2006, she released her debut album...</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">// Url = http://en.wikipedia.org/wiki/Paris_Hilton</span></pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: green;">// Title = &lt;b&gt;Paris Hilton&lt;/b&gt;</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">// Content = Self: Zoolander. Socialite &lt;b&gt;Paris Hilton&lt;/b&gt;...</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">// Url = http://www.imdb.com/name/nm0385296/</span></pre>
+</div>
+
+
+</div>
+  </div>
+
+      <div id="footer"></div>      
+    </div>
+
+  </body>
+
+</html>

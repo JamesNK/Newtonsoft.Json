@@ -242,5 +242,72 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(JTokenType.Integer, t.Type);
       Assert.AreEqual(3, (int)t);
     }
+
+    [Test]
+    public void Example()
+    {
+      JObject o = JObject.Parse(@"{
+        ""Stores"": [
+          ""Lambton Quay"",
+          ""Willis Street""
+        ],
+        ""Manufacturers"": [
+          {
+            ""Name"": ""Acme Co"",
+            ""Products"": [
+              {
+                ""Name"": ""Anvil"",
+                ""Price"": 50
+              }
+            ]
+          },
+          {
+            ""Name"": ""Contoso"",
+            ""Products"": [
+              {
+                ""Name"": ""Elbow Grease"",
+                ""Price"": 99.95
+              },
+              {
+                ""Name"": ""Headlight Fluid"",
+                ""Price"": 4
+              }
+            ]
+          }
+        ]
+      }");
+
+      string name = (string)o.SelectToken("Manufacturers[0].Name");
+      // Acme Co
+
+      decimal productPrice = (decimal)o.SelectToken("Manufacturers[0].Products[0].Price");
+      // 50
+
+      string productName = (string)o.SelectToken("Manufacturers[1].Products[0].Name");
+      // Elbow Grease
+
+      Assert.AreEqual("Acme Co", name);
+      Assert.AreEqual(50m, productPrice);
+      Assert.AreEqual("Elbow Grease", productName);
+
+      IList<string> storeNames = o.SelectToken("Stores").Select(s => (string)s).ToList();
+      // Lambton Quay
+      // Willis Street
+
+      IList<string> firstProductNames = o["Manufacturers"].Select(m => (string)m.SelectToken("Products[1].Name")).ToList();
+      // null
+      // Headlight Fluid
+
+      decimal totalPrice = o["Manufacturers"].Sum(m => (decimal)m.SelectToken("Products[0].Price"));
+      // 149.95
+
+      Assert.AreEqual(2, storeNames.Count);
+      Assert.AreEqual("Lambton Quay", storeNames[0]);
+      Assert.AreEqual("Willis Street", storeNames[1]);
+      Assert.AreEqual(2, firstProductNames.Count);
+      Assert.AreEqual(null, firstProductNames[0]);
+      Assert.AreEqual("Headlight Fluid", firstProductNames[1]);
+      Assert.AreEqual(149.95m, totalPrice);
+    }
   }
 }

@@ -1,0 +1,146 @@
+<html>
+  
+  <head>
+    <title>Converting between JSON and XML</title>
+    <link href="styles.css" rel="stylesheet" type="text/css" />
+    <link href="custom.css" rel="stylesheet" type="text/css" />
+  </head>
+  
+  <body>
+    
+    <div id="control">
+      <span class="productTitle">Json.NET - Quick Starts & API Documentation</span><br />
+        <span class="topicTitle">Converting between JSON and XML</span></div>
+
+    <div id="content">
+      <span style="color: DarkGray"> </span>
+        <p>Json.NET supports converting JSON to XML and vice versa using the 
+            <a href="./html/T_Newtonsoft_Json_Converters_XmlNodeConverter.htm">XmlNodeConverter</a>.</p>
+
+        <p>
+            Elements, attributes, text, comments, character data, processing instructions, 
+            namespaces and the XML declaration are all preserved when converting between the 
+            two. The only caveat is that it is possible to lose the order of differently 
+            named nodes at the same level when they are grouped together into an array.</p>
+        <h3>Conversion Rules</h3>
+        <ul>
+            <li>Elements remain unchanged. </li>
+            <li>Attributes are prefixed with an @. </li>
+            <li>Single child text nodes are a value directly against an element, otherwise they 
+                are accessed via #text. </li>
+            <li>The XML declaration and processing instructions are prefixed with ?. </li>
+            <li>Charater data, comments, whitespace and significate whitespace nodes are 
+                accessed via #cdata-section,&nbsp;#comment, #whitespace and #significate-whitespace 
+                respectively. </li>
+            <li>Multiple nodes with the same name at the same level are grouped together into an 
+                array. </li>
+            <li>Empty elements are null.</li>
+        </ul>
+
+<h3>SerializeXmlNode</h3>
+<p>The JsonConvert has two helper methods for converting between JSON and XML. The first is <a href="./html/M_Newtonsoft_Json_JsonConvert_SerializeXmlNode.htm">SerializeXmlNode</a>. This method takes an
+XmlNode and serializes it to JSON text.</p>
+<div class="overflowpanel">
+  <div class="code">
+<div style="font-family: Courier New; font-size: 10pt; color: black;">
+<pre style="margin: 0px;"><span style="color: blue;">string</span> xml = <span style="color: #a31515;">@&quot;&lt;?xml version=&quot;&quot;1.0&quot;&quot; standalone=&quot;&quot;no&quot;&quot;?&gt;</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&lt;root&gt;</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &lt;person id=&quot;&quot;1&quot;&quot;&gt;</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &lt;name&gt;Alan&lt;/name&gt;</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &lt;url&gt;http://www.google.com&lt;/url&gt;</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &lt;/person&gt;</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &lt;person id=&quot;&quot;2&quot;&quot;&gt;</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &lt;name&gt;Louis&lt;/name&gt;</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &lt;url&gt;http://www.yahoo.com&lt;/url&gt;</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &lt;/person&gt;</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&lt;/root&gt;&quot;</span>;</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">XmlDocument</span> doc = <span style="color: blue;">new</span> <span style="color: #2b91af;">XmlDocument</span>();</pre>
+<pre style="margin: 0px;">doc.LoadXml(xml);</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: blue;">string</span> jsonText = <span style="color: #2b91af;">JsonConvert</span>.SerializeXmlNode(doc);</pre>
+<pre style="margin: 0px;"><span style="color: green;">//{</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &quot;?xml&quot;: {</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; &quot;@version&quot;: &quot;1.0&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; &quot;@standalone&quot;: &quot;no&quot;</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; },</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &quot;root&quot;: {</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; &quot;person&quot;: [</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; &nbsp; {</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; &nbsp; &nbsp; &quot;@id&quot;: &quot;1&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; &nbsp; &nbsp; &quot;name&quot;: &quot;Alan&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; &nbsp; &nbsp; &quot;url&quot;: &quot;http://www.google.com&quot;</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; &nbsp; },</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; &nbsp; {</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; &nbsp; &nbsp; &quot;@id&quot;: &quot;2&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; &nbsp; &nbsp; &quot;name&quot;: &quot;Louis&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; &nbsp; &nbsp; &quot;url&quot;: &quot;http://www.yahoo.com&quot;</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; &nbsp; }</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; &nbsp; ]</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp; }</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//}</span></pre>
+</div>
+
+</div>
+  </div>
+
+<h3>DeserializeXmlNode</h3>
+
+<p>The second helper method on JsonConvert is <a href="./html/M_Newtonsoft_Json_JsonConvert_DeserializeXmlNode.htm">DeserializeXmlNode</a>. This method takes 
+    JSON text and deserializes it into a XmlNode.</p>
+        <p>Because valid XML must have one root element the JSON passed to 
+            DeserializeXmlNode should have one property in the root JSON object. If the root 
+            JSON object has multiple properties then the overload that also takes an element 
+            name should be used. A root element with that name will be inserted into the 
+            deserialized XmlNode.</p>
+
+<div class="overflowpanel">
+
+  <div class="code">
+
+<div style="font-family: Courier New; font-size: 10pt; color: black;">
+<pre style="margin: 0px;"><span style="color: blue;">string</span> json = <span style="color: #a31515;">@&quot;{</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &quot;&quot;?xml&quot;&quot;: {</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &quot;&quot;@version&quot;&quot;: &quot;&quot;1.0&quot;&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &quot;&quot;@standalone&quot;&quot;: &quot;&quot;no&quot;&quot;</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; },</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &quot;&quot;root&quot;&quot;: {</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &quot;&quot;person&quot;&quot;: [</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; {</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;@id&quot;&quot;: &quot;&quot;1&quot;&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;name&quot;&quot;: &quot;&quot;Alan&quot;&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;url&quot;&quot;: &quot;&quot;http://www.google.com&quot;&quot;</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; },</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; {</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;@id&quot;&quot;: &quot;&quot;2&quot;&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;name&quot;&quot;: &quot;&quot;Louis&quot;&quot;,</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;url&quot;&quot;: &quot;&quot;http://www.yahoo.com&quot;&quot;</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; &nbsp; }</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; &nbsp; ]</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">&nbsp; }</span></pre>
+<pre style="margin: 0px;"><span style="color: #a31515;">}&quot;</span>;</pre>
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;"><span style="color: #2b91af;">XmlDocument</span> doc = (<span style="color: #2b91af;">XmlDocument</span>)<span style="color: #2b91af;">JsonConvert</span>.DeserializeXmlNode(json);</pre>
+<pre style="margin: 0px;"><span style="color: green;">// &lt;?xml version=&quot;1.0&quot; standalone=&quot;no&quot;?&gt;</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">// &lt;root&gt;</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp;&nbsp; &lt;person id=&quot;1&quot;&gt;</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp;&nbsp; &lt;name&gt;Alan&lt;/name&gt;</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp;&nbsp; &lt;url&gt;http://www.google.com&lt;/url&gt;</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp;&nbsp; &lt;/person&gt;</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp;&nbsp; &lt;person id=&quot;2&quot;&gt;</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp;&nbsp; &lt;name&gt;Louis&lt;/name&gt;</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp;&nbsp; &lt;url&gt;http://www.yahoo.com&lt;/url&gt;</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">//&nbsp;&nbsp; &lt;/person&gt;</span></pre>
+<pre style="margin: 0px;"><span style="color: green;">// &lt;/root&gt;</span></pre>
+</div>
+
+
+  </div>
+</div>
+
+      <div id="footer"></div>      
+    </div>
+
+  </body>
+
+</html>

@@ -1993,5 +1993,118 @@ keyword such as type of business.""
       Assert.AreEqual(1, newFoo.Bars[1].Id);
       Assert.AreEqual(2, newFoo.Bars[2].Id);
     }
+
+    [Test]
+    public void SerializeGuidKeyedDictionary()
+    {
+      Dictionary<Guid, int> dictionary = new Dictionary<Guid, int>();
+      dictionary.Add(new Guid("F60EAEE0-AE47-488E-B330-59527B742D77"), 1);
+      dictionary.Add(new Guid("C2594C02-EBA1-426A-AA87-8DD8871350B0"), 2);
+
+      string json = JsonConvert.SerializeObject(dictionary, Formatting.Indented);
+      Assert.AreEqual(@"{
+  ""f60eaee0-ae47-488e-b330-59527b742d77"": 1,
+  ""c2594c02-eba1-426a-aa87-8dd8871350b0"": 2
+}", json);
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Could not create string property name from type 'Newtonsoft.Json.Tests.TestObjects.Person'.")]
+    public void SerializePersonKeyedDictionary()
+    {
+      Dictionary<Person, int> dictionary = new Dictionary<Person, int>();
+      dictionary.Add(new Person { Name = "p1" }, 1);
+      dictionary.Add(new Person { Name = "p2" }, 2);
+
+      JsonConvert.SerializeObject(dictionary, Formatting.Indented);
+    }
+
+    public class SearchResult
+    {
+      public string Title { get; set; }
+      public string Content { get; set; }
+      public string Url { get; set; }
+    }
+
+    [Test]
+    public void SerializeFragment()
+    {
+      string googleSearchText = @"{
+        ""responseData"": {
+          ""results"": [
+            {
+              ""GsearchResultClass"": ""GwebSearch"",
+              ""unescapedUrl"": ""http://en.wikipedia.org/wiki/Paris_Hilton"",
+              ""url"": ""http://en.wikipedia.org/wiki/Paris_Hilton"",
+              ""visibleUrl"": ""en.wikipedia.org"",
+              ""cacheUrl"": ""http://www.google.com/search?q=cache:TwrPfhd22hYJ:en.wikipedia.org"",
+              ""title"": ""<b>Paris Hilton</b> - Wikipedia, the free encyclopedia"",
+              ""titleNoFormatting"": ""Paris Hilton - Wikipedia, the free encyclopedia"",
+              ""content"": ""[1] In 2006, she released her debut album...""
+            },
+            {
+              ""GsearchResultClass"": ""GwebSearch"",
+              ""unescapedUrl"": ""http://www.imdb.com/name/nm0385296/"",
+              ""url"": ""http://www.imdb.com/name/nm0385296/"",
+              ""visibleUrl"": ""www.imdb.com"",
+              ""cacheUrl"": ""http://www.google.com/search?q=cache:1i34KkqnsooJ:www.imdb.com"",
+              ""title"": ""<b>Paris Hilton</b>"",
+              ""titleNoFormatting"": ""Paris Hilton"",
+              ""content"": ""Self: Zoolander. Socialite <b>Paris Hilton</b>...""
+            }
+          ],
+          ""cursor"": {
+            ""pages"": [
+              {
+                ""start"": ""0"",
+                ""label"": 1
+              },
+              {
+                ""start"": ""4"",
+                ""label"": 2
+              },
+              {
+                ""start"": ""8"",
+                ""label"": 3
+              },
+              {
+                ""start"": ""12"",
+                ""label"": 4
+              }
+            ],
+            ""estimatedResultCount"": ""59600000"",
+            ""currentPageIndex"": 0,
+            ""moreResultsUrl"": ""http://www.google.com/search?oe=utf8&ie=utf8...""
+          }
+        },
+        ""responseDetails"": null,
+        ""responseStatus"": 200
+      }";
+
+      JObject googleSearch = JObject.Parse(googleSearchText);
+
+      // get JSON result objects into a list
+      IList<JToken> results = googleSearch["responseData"]["results"].Children().ToList();
+
+      // serialize JSON results into .NET objects
+      IList<SearchResult> searchResults = new List<SearchResult>();
+      foreach (JToken result in results)
+      {
+        SearchResult searchResult = JsonConvert.DeserializeObject<SearchResult>(result.ToString());
+        searchResults.Add(searchResult);
+      }
+
+      // Title = <b>Paris Hilton</b> - Wikipedia, the free encyclopedia
+      // Content = [1] In 2006, she released her debut album...
+      // Url = http://en.wikipedia.org/wiki/Paris_Hilton
+
+      // Title = <b>Paris Hilton</b>
+      // Content = Self: Zoolander. Socialite <b>Paris Hilton</b>...
+      // Url = http://www.imdb.com/name/nm0385296/
+
+      Assert.AreEqual(2, searchResults.Count);
+      Assert.AreEqual("<b>Paris Hilton</b> - Wikipedia, the free encyclopedia", searchResults[0].Title);
+      Assert.AreEqual("<b>Paris Hilton</b>", searchResults[1].Title);
+    }
   }
 }

@@ -36,17 +36,20 @@
     <PresentationStyle>Prototype</PresentationStyle>
     <NamingMethod>MemberName</NamingMethod>
     <DocumentationSources>
-      <DocumentationSource sourceFile="..\..\..\..\..\Newtonsoft\Projects\Json\trunk\Src\Newtonsoft.Json\bin\Release\Newtonsoft.Json.dll" xmlns="" />
-<DocumentationSource sourceFile="..\..\..\..\..\Newtonsoft\Projects\Json\trunk\Src\Newtonsoft.Json\bin\Release\Newtonsoft.Json.xml" xmlns="" /></DocumentationSources>
+      <DocumentationSource sourceFile="..\Newtonsoft.Json\bin\Release\Newtonsoft.Json.dll" />
+      <DocumentationSource sourceFile="..\Newtonsoft.Json\bin\Release\Newtonsoft.Json.xml" />
+    </DocumentationSources>
     <NamespaceSummaries>
-      <NamespaceSummaryItem name="(global)" isDocumented="False" xmlns="" />
-<NamespaceSummaryItem name="Newtonsoft.Json" isDocumented="True" xmlns="">The &lt;b&gt;Newtonsoft.Json&lt;/b&gt; namespace provides classes that are used to implement the core services of the framework.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Newtonsoft.Json.Converters" isDocumented="True" xmlns="">The &lt;b&gt;Newtonsoft.Json.Converters&lt;/b&gt; namespace provides classes that inherit from &lt;a href="T_Newtonsoft_Json_JsonConverter.htm"&gt;JsonConverter&lt;/a&gt;.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Newtonsoft.Json.Linq" isDocumented="True" xmlns="">The &lt;b&gt;Newtonsoft.Json.Linq&lt;/b&gt; namespace provides classes that are used to implement LINQ to JSON.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Newtonsoft.Json.Linq.ComponentModel" isDocumented="True" xmlns="">The &lt;b&gt;Newtonsoft.Json.Linq.ComponentModel&lt;/b&gt; namespace provides classes for LINQ to JSON databinding.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Newtonsoft.Json.Schema" isDocumented="True" xmlns="">The &lt;b&gt;Newtonsoft.Json.Schema&lt;/b&gt; namespace provides classes that are used to implement JSON schema.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Newtonsoft.Json.Serialization" isDocumented="True" xmlns="">The &lt;b&gt;Newtonsoft.Json.Linq&lt;/b&gt; namespace provides classes that are used when serializing and deserializing JSON.</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Newtonsoft.Json.Utilities" isDocumented="False" xmlns="" /></NamespaceSummaries>
+      <NamespaceSummaryItem name="(global)" isDocumented="False" />
+      <NamespaceSummaryItem name="Newtonsoft.Json" isDocumented="True">The &lt;b&gt;Newtonsoft.Json&lt;/b&gt; namespace provides classes that are used to implement the core services of the framework.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Newtonsoft.Json.Converters" isDocumented="True">The &lt;b&gt;Newtonsoft.Json.Converters&lt;/b&gt; namespace provides classes that inherit from &lt;a href="T_Newtonsoft_Json_JsonConverter.htm"&gt;JsonConverter&lt;/a&gt;.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Newtonsoft.Json.Linq" isDocumented="True">The &lt;b&gt;Newtonsoft.Json.Linq&lt;/b&gt; namespace provides classes that are used to implement LINQ to JSON.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Newtonsoft.Json.Linq.ComponentModel" isDocumented="True">The &lt;b&gt;Newtonsoft.Json.Linq.ComponentModel&lt;/b&gt; namespace provides classes for LINQ to JSON databinding.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Newtonsoft.Json.Schema" isDocumented="True">The &lt;b&gt;Newtonsoft.Json.Schema&lt;/b&gt; namespace provides classes that are used to implement JSON schema.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Newtonsoft.Json.Serialization" isDocumented="True">The &lt;b&gt;Newtonsoft.Json.Linq&lt;/b&gt; namespace provides classes that are used when serializing and deserializing JSON.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Newtonsoft.Json.Utilities" isDocumented="False" />
+      <NamespaceSummaryItem name="Newtonsoft.Json.Bson" isDocumented="True">The &lt;b&gt;Newtonsoft.Json.Linq&lt;/b&gt; namespace provides classes that are used to implement BSON.</NamespaceSummaryItem>
+    </NamespaceSummaries>
   </PropertyGroup>
   <!-- There are no properties for these two groups but they need to appear in
        order for Visual Studio to perform the build. -->
@@ -61,6 +64,10 @@
     <Content Include="CustomCreationConverter.html" />
     <Content Include="ContractResolver.html" />
     <Content Include="custom.css" />
+    <Content Include="ConvertingJSONandXML.html" />
+    <Content Include="SerializingJSONFragments.html" />
+    <Content Include="SelectToken.html" />
+    <Content Include="ReducingSerializedJSONSize.html" />
     <Content Include="donate.gif" />
     <Content Include="styles.css" />
     <Content Include="ReadingWritingJSON.html" />
