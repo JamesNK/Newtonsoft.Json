@@ -1,0 +1,79 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <!-- The configuration and platform will be used to determine which
+         assemblies to include from solution and project documentation
+         sources -->
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{fd19f68e-72c8-4576-9775-b4480b0db686}</ProjectGuid>
+    <SHFBSchemaVersion>1.8.0.0</SHFBSchemaVersion>
+    <!-- AssemblyName, Name, and RootNamespace are not used by SHFB but Visual
+         Studio adds them anyway -->
+    <AssemblyName>Documentation</AssemblyName>
+    <RootNamespace>Documentation</RootNamespace>
+    <Name>Documentation</Name>
+    <!-- SHFB properties -->
+    <OutputPath>.\Output\</OutputPath>
+    <HtmlHelpName>Documentation</HtmlHelpName>
+    <ProjectSummary>
+    </ProjectSummary>
+    <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, Namespace, TypeParameter</MissingTags>
+    <VisibleItems>InheritedMembers, InheritedFrameworkMembers, Protected, SealedProtected</VisibleItems>
+    <HtmlHelp1xCompilerPath>
+    </HtmlHelp1xCompilerPath>
+    <HtmlHelp2xCompilerPath>
+    </HtmlHelp2xCompilerPath>
+    <SandcastlePath>
+    </SandcastlePath>
+    <WorkingPath>
+    </WorkingPath>
+    <BuildLogFile>
+    </BuildLogFile>
+    <HelpFileFormat>Help1xAndWebsite</HelpFileFormat>
+    <FrameworkVersion>3.5</FrameworkVersion>
+    <HelpTitle>Json.NET - Quick Starts &amp;amp%3b API Documentation</HelpTitle>
+    <PresentationStyle>Prototype</PresentationStyle>
+    <NamingMethod>MemberName</NamingMethod>
+    <DocumentationSources>
+      <DocumentationSource sourceFile="..\..\..\..\..\Newtonsoft\Projects\Json\trunk\Src\Newtonsoft.Json\bin\Release\Newtonsoft.Json.dll" xmlns="" />
+<DocumentationSource sourceFile="..\..\..\..\..\Newtonsoft\Projects\Json\trunk\Src\Newtonsoft.Json\bin\Release\Newtonsoft.Json.xml" xmlns="" /></DocumentationSources>
+    <NamespaceSummaries>
+      <NamespaceSummaryItem name="(global)" isDocumented="False" xmlns="" />
+<NamespaceSummaryItem name="Newtonsoft.Json" isDocumented="True" xmlns="">The &lt;b&gt;Newtonsoft.Json&lt;/b&gt; namespace provides classes that are used to implement the core services of the framework.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Newtonsoft.Json.Converters" isDocumented="True" xmlns="">The &lt;b&gt;Newtonsoft.Json.Converters&lt;/b&gt; namespace provides classes that inherit from &lt;a href="T_Newtonsoft_Json_JsonConverter.htm"&gt;JsonConverter&lt;/a&gt;.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Newtonsoft.Json.Linq" isDocumented="True" xmlns="">The &lt;b&gt;Newtonsoft.Json.Linq&lt;/b&gt; namespace provides classes that are used to implement LINQ to JSON.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Newtonsoft.Json.Linq.ComponentModel" isDocumented="True" xmlns="">The &lt;b&gt;Newtonsoft.Json.Linq.ComponentModel&lt;/b&gt; namespace provides classes for LINQ to JSON databinding.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Newtonsoft.Json.Schema" isDocumented="True" xmlns="">The &lt;b&gt;Newtonsoft.Json.Schema&lt;/b&gt; namespace provides classes that are used to implement JSON schema.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Newtonsoft.Json.Serialization" isDocumented="True" xmlns="">The &lt;b&gt;Newtonsoft.Json.Linq&lt;/b&gt; namespace provides classes that are used when serializing and deserializing JSON.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Newtonsoft.Json.Utilities" isDocumented="False" xmlns="" /></NamespaceSummaries>
+  </PropertyGroup>
+  <!-- There are no properties for these two groups but they need to appear in
+       order for Visual Studio to perform the build. -->
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  </PropertyGroup>
+  <ItemGroup>
+    <SiteMap Include="doc.sitemap" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="CustomCreationConverter.html" />
+    <Content Include="ContractResolver.html" />
+    <Content Include="custom.css" />
+    <Content Include="donate.gif" />
+    <Content Include="styles.css" />
+    <Content Include="ReadingWritingJSON.html" />
+    <Content Include="LINQtoJSON.html" />
+    <Content Include="PreserveObjectReferences.html" />
+    <Content Include="SerializationErrorHandling.html" />
+    <Content Include="SerializationCallbacks.html" />
+    <Content Include="SerializingCollections.html" />
+    <Content Include="DatesInJSON.html" />
+    <Content Include="SerializationAttributes.html" />
+    <Content Include="SerializingJSON.html" />
+    <Content Include="Introduction.html" />
+  </ItemGroup>
+  <!-- Import the SHFB build targets -->
+  <Import Project="$(SHFBROOT)\SandcastleHelpFileBuilder.targets" />
+</Project>
