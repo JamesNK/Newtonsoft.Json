@@ -43,8 +43,11 @@ namespace Newtonsoft.Json.Bson
     private readonly bool _rootTypeIsArray;
     private readonly List<ContainerContext> _stack;
 
+    private byte[] _byteBuffer;
+    private char[] _charBuffer;
     private BsonType _currentElementType;
     private BsonReaderState _bsonReaderState;
+    private const int MaxCharBytesSize = 128;
 
     private enum BsonReaderState
     {
@@ -441,17 +444,41 @@ namespace Newtonsoft.Json.Bson
 
     private string ReadString()
     {
-      List<byte> buff = new List<byte>();
-      byte b = _reader.ReadByte();
-      while (b != 0)
-      {
-        buff.Add(b);
-        b = _reader.ReadByte();
-      }
+      EnsureBuffers();
 
-      MovePosition(buff.Count + 1);
-      string ret = Encoding.UTF8.GetString(buff.ToArray());
-      return ret;
+      StringBuilder builder = null;
+
+      int totalBytesRead = 0;
+      do
+      {
+        int byteCount = 0;
+        byte b;
+        while (byteCount < MaxCharBytesSize && (b = _reader.ReadByte()) > 0)
+        {
+          _byteBuffer[byteCount++] = b;
+        }
+        totalBytesRead += byteCount;
+
+        int length = Encoding.UTF8.GetChars(_byteBuffer, 0, byteCount, _charBuffer, 0);
+
+        if (byteCount < MaxCharBytesSize && builder == null)
+        {
+          MovePosition(totalBytesRead + 1);
+          return new string(_charBuffer, 0, length);
+        }
+
+        if (builder == null)
+          builder = new StringBuilder(MaxCharBytesSize * 2);
+
+        builder.Append(_charBuffer, 0, length);
+
+        if (byteCount < MaxCharBytesSize)
+        {
+          MovePosition(totalBytesRead + 1);
+          return builder.ToString();
+        }
+      }
+      while (true);
     }
 
     private string ReadLengthString()
@@ -459,10 +486,56 @@ namespace Newtonsoft.Json.Bson
       int length = ReadInt32();
 
       MovePosition(length);
-      byte[] buffer = _reader.ReadBytes(length - 1);
+
+      string s = GetString(length - 1);
       _reader.ReadByte();
 
-      return Encoding.UTF8.GetString(buffer);
+      return s;
+    }
+
+    private string GetString(int length)
+    {
+      if (length == 0)
+        return string.Empty;
+
+      EnsureBuffers();
+
+      StringBuilder builder = null;
+
+      int totalBytesRead = 0;
+      do
+      {
+        int count = ((length - totalBytesRead) > MaxCharBytesSize) ? MaxCharBytesSize : (length - totalBytesRead);
+        int byteCount = _reader.BaseStream.Read(_byteBuffer, 0, count);
+        if (byteCount == 0)
+          throw new EndOfStreamException("Unable to read beyond the end of the stream.");
+
+        int charCount = Encoding.UTF8.GetChars(_byteBuffer, 0, byteCount, _charBuffer, 0);
+        if (totalBytesRead == 0 && byteCount == length)
+          return new string(_charBuffer, 0, charCount);
+
+        if (builder == null)
+          builder = new StringBuilder(length);
+
+        builder.Append(_charBuffer, 0, charCount);
+        totalBytesRead += byteCount;
+      }
+      while (totalBytesRead < length);
+
+      return builder.ToString();
+    }
+
+    private void EnsureBuffers()
+    {
+      if (_byteBuffer == null)
+      {
+        _byteBuffer = new byte[MaxCharBytesSize];
+      }
+      if (_charBuffer == null)
+      {
+        int charBufferSize = Encoding.UTF8.GetMaxCharCount(MaxCharBytesSize);
+        _charBuffer = new char[charBufferSize];
+      }
     }
 
     private double ReadDouble()

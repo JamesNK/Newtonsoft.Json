@@ -8,10 +8,11 @@ using Newtonsoft.Json;
 using System.IO;
 
 using System.Web.Script.Serialization;
-
+using Newtonsoft.Json.Utilities;
 using NUnit.Framework;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using Newtonsoft.Json.Bson;
 
 namespace Newtonsoft.Json.Tests
 {
@@ -23,9 +24,47 @@ namespace Newtonsoft.Json.Tests
     private int Iterations = 100;
     //private int Iterations = 5000;
 
+    private const string BsonHex =
+      @"B4-01-00-00-04-73-74-72-69-6E-67-73-00-44-00-00-00-02-30-00-05-00-00-00-52-69-63-6B-00-02-31-00-17-00-00-00-4D-61-72-6B-75-73-20-65-67-67-65-72-20-5D-5B-2C-20-28-32-6E-64-29-00-02-32-00-0E-00-00-00-4B-65-76-69-6E-20-4D-63-4E-65-69-73-68-00-00-03-64-69-63-74-69-6F-6E-61-72-79-00-27-00-00-00-10-56-61-6C-20-61-73-64-31-00-01-00-00-00-10-56-61-6C-32-00-03-00-00-00-10-56-61-6C-33-00-04-00-00-00-00-02-4E-61-6D-65-00-05-00-00-00-52-69-63-6B-00-09-4E-6F-77-00-A0-80-DB-70-25-01-00-00-01-42-69-67-4E-75-6D-62-65-72-00-E7-7B-CC-26-96-C7-1F-42-03-41-64-64-72-65-73-73-31-00-48-00-00-00-02-41-64-64-72-65-73-73-00-0B-00-00-00-66-66-66-20-53-74-72-65-65-74-00-02-50-68-6F-6E-65-00-0F-00-00-00-28-35-30-33-29-20-38-31-34-2D-36-33-33-35-00-09-45-6E-74-65-72-65-64-00-20-C2-A3-D7-25-01-00-00-00-04-41-64-64-72-65-73-73-65-73-00-A3-00-00-00-03-30-00-4B-00-00-00-02-41-64-64-72-65-73-73-00-0E-00-00-00-61-72-72-61-79-20-61-64-64-72-65-73-73-00-02-50-68-6F-6E-65-00-0F-00-00-00-28-35-30-33-29-20-38-31-34-2D-36-33-33-35-00-09-45-6E-74-65-72-65-64-00-20-36-7E-6B-25-01-00-00-00-03-31-00-4D-00-00-00-02-41-64-64-72-65-73-73-00-10-00-00-00-61-72-72-61-79-20-32-20-61-64-64-72-65-73-73-00-02-50-68-6F-6E-65-00-0F-00-00-00-28-35-30-33-29-20-38-31-34-2D-36-33-33-35-00-09-45-6E-74-65-72-65-64-00-20-DA-57-66-25-01-00-00-00-00-00";
+
+    private const string JsonText =
+      @"{
+  ""strings"": [
+    ""Rick"",
+    ""Markus egger ][, (2nd)"",
+    ""Kevin McNeish""
+  ],
+  ""dictionary"": {
+    ""Val asd1"": 1,
+    ""Val2"": 3,
+    ""Val3"": 4
+  },
+  ""Name"": ""Rick"",
+  ""Now"": ""\/Date(1220867547892+1200)\/"",
+  ""BigNumber"": 34123123123.121,
+  ""Address1"": {
+    ""Address"": ""fff Street"",
+    ""Phone"": ""(503) 814-6335"",
+    ""Entered"": ""\/Date(1222588347892+1300)\/""
+  },
+  ""Addresses"": [
+    {
+      ""Address"": ""array address"",
+      ""Phone"": ""(503) 814-6335"",
+      ""Entered"": ""\/Date(1220777547892+1200)\/""
+    },
+    {
+      ""Address"": ""array 2 address"",
+      ""Phone"": ""(503) 814-6335"",
+      ""Entered"": ""\/Date(1220691147893+1200)\/""
+    }
+  ]
+}";
+
     public enum SerializeMethod
     {
       JsonNet,
+      JsonNetBinary,
       JavaScriptSerializer,
       DataContractJsonSerializer
     }
@@ -72,6 +111,21 @@ namespace Newtonsoft.Json.Tests
       serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
 
       return serializer.Deserialize(new StringReader(json), type);
+    }
+
+    public object DeserializeJsonNetBinary<T>(byte[] bson)
+    {
+      Type type = typeof(T);
+
+      JsonSerializer serializer = new JsonSerializer();
+
+      serializer.NullValueHandling = NullValueHandling.Ignore;
+
+      serializer.ObjectCreationHandling = Newtonsoft.Json.ObjectCreationHandling.Replace;
+      serializer.MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore;
+      serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+
+      return serializer.Deserialize(new BsonReader(new MemoryStream(bson)), type);
     }
 
     public string SerializeWebExtensions(object value)
@@ -127,6 +181,13 @@ namespace Newtonsoft.Json.Tests
           case SerializeMethod.JsonNet:
             json = JsonConvert.SerializeObject(value);
             break;
+          case SerializeMethod.JsonNetBinary:
+            JsonSerializer serializer = new JsonSerializer();
+            MemoryStream ms = new MemoryStream();
+            BsonWriter writer = new BsonWriter(ms);
+            serializer.Serialize(writer, value);
+            json = "{Bytes " + ms.Length + "}";
+            break;
           case SerializeMethod.JavaScriptSerializer:
             json = SerializeWebExtensions(value);
             break;
@@ -144,7 +205,7 @@ namespace Newtonsoft.Json.Tests
       Console.WriteLine();
     }
 
-    public void BenchmarkDeserializeMethod<T>(SerializeMethod method, string json)
+    public void BenchmarkDeserializeMethod<T>(SerializeMethod method, object json)
     {
       Stopwatch timed = new Stopwatch();
       timed.Start();
@@ -155,13 +216,16 @@ namespace Newtonsoft.Json.Tests
         switch (method)
         {
           case SerializeMethod.JsonNet:
-            value = DeserializeJsonNet<T>(json);
+            value = DeserializeJsonNet<T>((string)json);
+            break;
+          case SerializeMethod.JsonNetBinary:
+            value = DeserializeJsonNetBinary<T>((byte[])json);
             break;
           case SerializeMethod.JavaScriptSerializer:
-            value = DeserializeWebExtensions<T>(json);
+            value = DeserializeWebExtensions<T>((string)json);
             break;
           case SerializeMethod.DataContractJsonSerializer:
-            value = DeserializeDataContract<T>(json);
+            value = DeserializeDataContract<T>((string)json);
             break;
         }
       }
@@ -198,6 +262,7 @@ namespace Newtonsoft.Json.Tests
       test.Addresses.Add(address);
 
       BenchmarkSerializeMethod(SerializeMethod.JsonNet, test);
+      BenchmarkSerializeMethod(SerializeMethod.JsonNetBinary, test);
       BenchmarkSerializeMethod(SerializeMethod.JavaScriptSerializer, test);
       BenchmarkSerializeMethod(SerializeMethod.DataContractJsonSerializer, test);
     }
@@ -205,42 +270,10 @@ namespace Newtonsoft.Json.Tests
     [Test]
     public void Deserialize()
     {
-      string json = @"{
-  ""strings"": [
-    ""Rick"",
-    ""Markus egger ][, (2nd)"",
-    ""Kevin McNeish""
-  ],
-  ""dictionary"": {
-    ""Val asd1"": 1,
-    ""Val2"": 3,
-    ""Val3"": 4
-  },
-  ""Name"": ""Rick"",
-  ""Now"": ""\/Date(1220867547892+1200)\/"",
-  ""BigNumber"": 34123123123.121,
-  ""Address1"": {
-    ""Address"": ""fff Street"",
-    ""Phone"": ""(503) 814-6335"",
-    ""Entered"": ""\/Date(1222588347892+1300)\/""
-  },
-  ""Addresses"": [
-    {
-      ""Address"": ""array address"",
-      ""Phone"": ""(503) 814-6335"",
-      ""Entered"": ""\/Date(1220777547892+1200)\/""
-    },
-    {
-      ""Address"": ""array 2 address"",
-      ""Phone"": ""(503) 814-6335"",
-      ""Entered"": ""\/Date(1220691147893+1200)\/""
-    }
-  ]
-}";
-
-      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JsonNet, json);
-      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JavaScriptSerializer, json);
-      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.DataContractJsonSerializer, json);
+      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JsonNet, JsonText);
+      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JsonNetBinary, MiscellaneousUtils.HexToBytes(BsonHex));
+      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JavaScriptSerializer, JsonText);
+      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.DataContractJsonSerializer, JsonText);
     }
   }
 
