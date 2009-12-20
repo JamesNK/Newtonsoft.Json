@@ -216,5 +216,139 @@ namespace Newtonsoft.Json.Tests.Bson
       string bson = MiscellaneousUtils.BytesToHex(ms.ToArray());
       Assert.AreEqual("4E-02-00-00-02-30-2D-31-2D-32-2D-33-2D-34-2D-35-2D-36-2D-37-2D-38-2D-39-2D-31-30-2D-31-31-2D-31-32-2D-31-33-2D-31-34-2D-31-35-2D-31-36-2D-31-37-2D-31-38-2D-31-39-2D-32-30-2D-32-31-2D-32-32-2D-32-33-2D-32-34-2D-32-35-2D-32-36-2D-32-37-2D-32-38-2D-32-39-2D-33-30-2D-33-31-2D-33-32-2D-33-33-2D-33-34-2D-33-35-2D-33-36-2D-33-37-2D-33-38-2D-33-39-2D-34-30-2D-34-31-2D-34-32-2D-34-33-2D-34-34-2D-34-35-2D-34-36-2D-34-37-2D-34-38-2D-34-39-2D-35-30-2D-35-31-2D-35-32-2D-35-33-2D-35-34-2D-35-35-2D-35-36-2D-35-37-2D-35-38-2D-35-39-2D-36-30-2D-36-31-2D-36-32-2D-36-33-2D-36-34-2D-36-35-2D-36-36-2D-36-37-2D-36-38-2D-36-39-2D-37-30-2D-37-31-2D-37-32-2D-37-33-2D-37-34-2D-37-35-2D-37-36-2D-37-37-2D-37-38-2D-37-39-2D-38-30-2D-38-31-2D-38-32-2D-38-33-2D-38-34-2D-38-35-2D-38-36-2D-38-37-2D-38-38-2D-38-39-2D-39-30-2D-39-31-2D-39-32-2D-39-33-2D-39-34-2D-39-35-2D-39-36-2D-39-37-2D-39-38-2D-39-39-00-22-01-00-00-30-2D-31-2D-32-2D-33-2D-34-2D-35-2D-36-2D-37-2D-38-2D-39-2D-31-30-2D-31-31-2D-31-32-2D-31-33-2D-31-34-2D-31-35-2D-31-36-2D-31-37-2D-31-38-2D-31-39-2D-32-30-2D-32-31-2D-32-32-2D-32-33-2D-32-34-2D-32-35-2D-32-36-2D-32-37-2D-32-38-2D-32-39-2D-33-30-2D-33-31-2D-33-32-2D-33-33-2D-33-34-2D-33-35-2D-33-36-2D-33-37-2D-33-38-2D-33-39-2D-34-30-2D-34-31-2D-34-32-2D-34-33-2D-34-34-2D-34-35-2D-34-36-2D-34-37-2D-34-38-2D-34-39-2D-35-30-2D-35-31-2D-35-32-2D-35-33-2D-35-34-2D-35-35-2D-35-36-2D-35-37-2D-35-38-2D-35-39-2D-36-30-2D-36-31-2D-36-32-2D-36-33-2D-36-34-2D-36-35-2D-36-36-2D-36-37-2D-36-38-2D-36-39-2D-37-30-2D-37-31-2D-37-32-2D-37-33-2D-37-34-2D-37-35-2D-37-36-2D-37-37-2D-37-38-2D-37-39-2D-38-30-2D-38-31-2D-38-32-2D-38-33-2D-38-34-2D-38-35-2D-38-36-2D-38-37-2D-38-38-2D-38-39-2D-39-30-2D-39-31-2D-39-32-2D-39-33-2D-39-34-2D-39-35-2D-39-36-2D-39-37-2D-39-38-2D-39-39-00-00", bson);
     }
+
+    [Test]
+    public void SerializeGoogleGeoCode()
+    {
+      string json = @"{
+  ""name"": ""1600 Amphitheatre Parkway, Mountain View, CA, USA"",
+  ""Status"": {
+    ""code"": 200,
+    ""request"": ""geocode""
+  },
+  ""Placemark"": [
+    {
+      ""address"": ""1600 Amphitheatre Pkwy, Mountain View, CA 94043, USA"",
+      ""AddressDetails"": {
+        ""Country"": {
+          ""CountryNameCode"": ""US"",
+          ""AdministrativeArea"": {
+            ""AdministrativeAreaName"": ""CA"",
+            ""SubAdministrativeArea"": {
+              ""SubAdministrativeAreaName"": ""Santa Clara"",
+              ""Locality"": {
+                ""LocalityName"": ""Mountain View"",
+                ""Thoroughfare"": {
+                  ""ThoroughfareName"": ""1600 Amphitheatre Pkwy""
+                },
+                ""PostalCode"": {
+                  ""PostalCodeNumber"": ""94043""
+                }
+              }
+            }
+          }
+        },
+        ""Accuracy"": 8
+      },
+      ""Point"": {
+        ""coordinates"": [-122.083739, 37.423021, 0]
+      }
+    }
+  ]
+}";
+
+      GoogleMapGeocoderStructure jsonGoogleMapGeocoder = JsonConvert.DeserializeObject<GoogleMapGeocoderStructure>(json);
+
+      MemoryStream ms = new MemoryStream();
+      BsonWriter writer = new BsonWriter(ms);
+
+      JsonSerializer serializer = new JsonSerializer();
+      serializer.Serialize(writer, jsonGoogleMapGeocoder);
+
+      ms.Seek(0, SeekOrigin.Begin);
+      BsonReader reader = new BsonReader(ms);
+      GoogleMapGeocoderStructure bsonGoogleMapGeocoder = (GoogleMapGeocoderStructure)serializer.Deserialize(reader, typeof (GoogleMapGeocoderStructure));
+
+      Assert.IsNotNull(bsonGoogleMapGeocoder);
+      Assert.AreEqual("1600 Amphitheatre Parkway, Mountain View, CA, USA", bsonGoogleMapGeocoder.Name);
+      Assert.AreEqual("200", bsonGoogleMapGeocoder.Status.Code);
+      Assert.AreEqual("geocode", bsonGoogleMapGeocoder.Status.Request);
+
+      IList<Placemark> placemarks = bsonGoogleMapGeocoder.Placemark;
+      Assert.IsNotNull(placemarks);
+      Assert.AreEqual(1, placemarks.Count);
+
+      Placemark placemark = placemarks[0];
+      Assert.AreEqual("1600 Amphitheatre Pkwy, Mountain View, CA 94043, USA", placemark.Address);
+      Assert.AreEqual(8, placemark.AddressDetails.Accuracy);
+      Assert.AreEqual("US", placemark.AddressDetails.Country.CountryNameCode);
+      Assert.AreEqual("CA", placemark.AddressDetails.Country.AdministrativeArea.AdministrativeAreaName);
+      Assert.AreEqual("Santa Clara", placemark.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.SubAdministrativeAreaName);
+      Assert.AreEqual("Mountain View", placemark.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.LocalityName);
+      Assert.AreEqual("1600 Amphitheatre Pkwy", placemark.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.Thoroughfare.ThoroughfareName);
+      Assert.AreEqual("94043", placemark.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.PostalCode.PostalCodeNumber);
+      Assert.AreEqual(-122.083739m, placemark.Point.Coordinates[0]);
+      Assert.AreEqual(37.423021m, placemark.Point.Coordinates[1]);
+      Assert.AreEqual(0m, placemark.Point.Coordinates[2]);
+    }
+
+    [Test]
+    public void WriteEmptyStrings()
+    {
+      MemoryStream ms = new MemoryStream();
+      BsonWriter writer = new BsonWriter(ms);
+
+      writer.WriteStartObject();
+      writer.WritePropertyName("");
+      writer.WriteValue("");
+      writer.WriteEndObject();
+
+      string bson = MiscellaneousUtils.BytesToHex(ms.ToArray());
+      Assert.AreEqual("0C-00-00-00-02-00-01-00-00-00-00-00", bson);
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonWriterException), ExpectedMessage = "Cannot write JSON comment as BSON.")]
+    public void WriteComment()
+    {
+      MemoryStream ms = new MemoryStream();
+      BsonWriter writer = new BsonWriter(ms);
+
+      writer.WriteStartArray();
+      writer.WriteComment("fail");
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonWriterException), ExpectedMessage = "Cannot write JSON constructor as BSON.")]
+    public void WriteConstructor()
+    {
+      MemoryStream ms = new MemoryStream();
+      BsonWriter writer = new BsonWriter(ms);
+
+      writer.WriteStartArray();
+      writer.WriteStartConstructor("fail");
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonWriterException), ExpectedMessage = "Cannot write raw JSON as BSON.")]
+    public void WriteRaw()
+    {
+      MemoryStream ms = new MemoryStream();
+      BsonWriter writer = new BsonWriter(ms);
+
+      writer.WriteStartArray();
+      writer.WriteRaw("fail");
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonWriterException), ExpectedMessage = "Cannot write raw JSON as BSON.")]
+    public void WriteRawValue()
+    {
+      MemoryStream ms = new MemoryStream();
+      BsonWriter writer = new BsonWriter(ms);
+
+      writer.WriteStartArray();
+      writer.WriteRawValue("fail");
+    }
   }
 }

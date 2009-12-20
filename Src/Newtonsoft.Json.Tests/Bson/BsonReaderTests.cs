@@ -572,5 +572,29 @@ namespace Newtonsoft.Json.Tests.Bson
 
       Assert.IsFalse(reader.Read());
     }
+
+    [Test]
+    public void ReadEmptyStrings()
+    {
+      string bson = "0C-00-00-00-02-00-01-00-00-00-00-00";
+
+      BsonReader reader = new BsonReader(new MemoryStream(MiscellaneousUtils.HexToBytes(bson)));
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+      Assert.AreEqual("", reader.Value);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.String, reader.TokenType);
+      Assert.AreEqual("", reader.Value);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
+
+      Assert.IsFalse(reader.Read());
+    }
   }
 }

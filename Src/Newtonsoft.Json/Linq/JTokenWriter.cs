@@ -180,8 +180,13 @@ namespace Newtonsoft.Json.Linq
     public override void WriteRaw(string json)
     {
       base.WriteRaw(json);
-      // hack
       AddValue(JValue.CreateRaw(json), JsonToken.Raw);
+    }
+
+    public override void WriteComment(string text)
+    {
+      base.WriteComment(text);
+      AddValue(JValue.CreateComment(text), JsonToken.Comment);
     }
 
     /// <summary>

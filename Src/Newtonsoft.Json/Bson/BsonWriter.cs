@@ -117,7 +117,7 @@ namespace Newtonsoft.Json.Bson
           _writer.Write(data);
           break;
         default:
-          throw new ArgumentOutOfRangeException();
+          throw new ArgumentOutOfRangeException("Type", "Unexpected token when writing BSON: {0}".FormatWith(CultureInfo.InvariantCulture, t.Type));
       }
     }
 
@@ -158,18 +158,13 @@ namespace Newtonsoft.Json.Bson
         case JTokenType.Bytes:
           return BsonType.Binary;
         default:
-          throw new ArgumentOutOfRangeException();
+          throw new ArgumentOutOfRangeException("Type", "Unexpected token when resolving JSON type to BSON type: {0}".FormatWith(CultureInfo.InvariantCulture, t.Type));
       }
     }
 
     private int CalculateSize(string s)
     {
-      int ret;
-      if (s != null)
-        ret = Encoding.UTF8.GetByteCount(s);
-      else
-        ret = 0;
-      return ret + 1;
+      return Encoding.UTF8.GetByteCount(s) + 1;
     }
 
     private int CalculateSizeWithLength(string s, bool includeSize)
@@ -178,12 +173,9 @@ namespace Newtonsoft.Json.Bson
         ? 5 // size bytes + terminator
         : 1; // terminator
 
-      int ret;
-      if (s != null)
-        ret = Encoding.UTF8.GetByteCount(s);
-      else
-        ret = 0;
-      return baseSize + ret;
+      int byteCount = Encoding.UTF8.GetByteCount(s);
+
+      return baseSize + byteCount;
     }
 
     private int CalculateSize(JToken t)
@@ -214,16 +206,12 @@ namespace Newtonsoft.Json.Bson
             bases += 1;
             return bases;
           }
-        case JTokenType.Constructor:
-          throw new JsonWriterException("Cannot write JSON constructor as BSON.");
         case JTokenType.Property:
           JProperty property = (JProperty) t;
           int ss = 1;
           ss += CalculateSize(property.Name);
           ss += CalculateSize(property.Value);
           return ss;
-        case JTokenType.Comment:
-          throw new JsonWriterException("Cannot write JSON comment as BSON.");
         case JTokenType.Integer:
           return 4;
         case JTokenType.Float:
@@ -239,13 +227,11 @@ namespace Newtonsoft.Json.Bson
           return 0;
         case JTokenType.Date:
           return 8;
-        case JTokenType.Raw:
-          throw new JsonWriterException("Cannot write raw JSON as BSON.");
         case JTokenType.Bytes:
           byte[] data = (byte[]) t;
           return 4 + 1 + data.Length;
         default:
-          throw new ArgumentOutOfRangeException();
+          throw new ArgumentOutOfRangeException("Type", "Unexpected token when writing BSON: {0}".FormatWith(CultureInfo.InvariantCulture, t.Type));
       }
     }
 
@@ -261,6 +247,26 @@ namespace Newtonsoft.Json.Bson
       {
         WriteToken(Token);
       }
+    }
+
+    public override void WriteComment(string text)
+    {
+      throw new JsonWriterException("Cannot write JSON comment as BSON.");
+    }
+
+    public override void WriteStartConstructor(string name)
+    {
+      throw new JsonWriterException("Cannot write JSON constructor as BSON.");
+    }
+
+    public override void WriteRaw(string json)
+    {
+      throw new JsonWriterException("Cannot write raw JSON as BSON.");
+    }
+
+    public override void WriteRawValue(string json)
+    {
+      throw new JsonWriterException("Cannot write raw JSON as BSON.");
     }
   }
 }

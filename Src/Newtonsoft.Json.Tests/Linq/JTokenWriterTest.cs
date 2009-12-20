@@ -115,5 +115,53 @@ namespace Newtonsoft.Json.Tests.Linq
         Assert.AreEqual(WriteState.Start, jsonWriter.WriteState);
       }
     }
+
+    [Test]
+    public void WriteComment()
+    {
+      JTokenWriter writer = new JTokenWriter();
+
+      writer.WriteStartArray();
+      writer.WriteComment("fail");
+      writer.WriteEndArray();
+
+      Assert.AreEqual(@"[
+  /*fail*/]", writer.Token.ToString());
+    }
+
+    [Test]
+    public void WriteRaw()
+    {
+      JTokenWriter writer = new JTokenWriter();
+
+      writer.WriteStartArray();
+      writer.WriteRaw("fail");
+      writer.WriteRaw("fail");
+      writer.WriteEndArray();
+
+      // this is a bug. write raw shouldn't be autocompleting like this
+      // hard to fix without introducing Raw and RawValue token types
+      // meh
+      Assert.AreEqual(@"[
+  fail,
+  fail
+]", writer.Token.ToString());
+    }
+
+    [Test]
+    public void WriteRawValue()
+    {
+      JTokenWriter writer = new JTokenWriter();
+
+      writer.WriteStartArray();
+      writer.WriteRawValue("fail");
+      writer.WriteRawValue("fail");
+      writer.WriteEndArray();
+
+      Assert.AreEqual(@"[
+  fail,
+  fail
+]", writer.Token.ToString());
+    }
   }
 }
