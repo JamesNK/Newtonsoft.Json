@@ -31,6 +31,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Serialization
@@ -41,6 +42,17 @@ namespace Newtonsoft.Json.Serialization
   public class DefaultContractResolver : IContractResolver
   {
     internal static readonly IContractResolver Instance = new DefaultContractResolver();
+    private static readonly IList<JsonConverter> BuiltInConverters = new List<JsonConverter>
+      {
+#if !PocketPC && !SILVERLIGHT && !NET20
+        new EntityKeyMemberConverter(),
+#endif
+        new BinaryConverter(),
+#if !SILVERLIGHT
+        new DataSetConverter(),
+        new DataTableConverter()
+#endif
+      };
 
     private readonly ThreadSafeStore<Type, JsonContract> _typeContractCache;
 
@@ -154,6 +166,23 @@ namespace Newtonsoft.Json.Serialization
         return null;
     }
 
+    /// <summary>
+    /// Resolves the default <see cref="JsonConverter" /> for the contract.
+    /// </summary>
+    /// <param name="objectType">Type of the object.</param>
+    /// <returns></returns>
+    protected virtual JsonConverter ResolveContractConverter(Type objectType)
+    {
+      // check for an attribute first
+      JsonConverter converter = JsonTypeReflector.GetJsonConverter(objectType, objectType);
+      if (converter != null)
+        return converter;
+
+      // then see whether object is compadible with any of the built in converters
+      JsonSerializer.HasMatchingConverter(BuiltInConverters, objectType, out converter);
+      return converter;
+    }
+
     private void InitializeContract(JsonContract contract)
     {
       JsonContainerAttribute containerAttribute = JsonTypeReflector.GetJsonContainerAttribute(contract.UnderlyingType);
@@ -170,6 +199,8 @@ namespace Newtonsoft.Json.Serialization
           contract.IsReference = true;
       }
 #endif
+
+      contract.Converter = ResolveContractConverter(contract.UnderlyingType);
 
       if (ReflectionUtils.HasDefaultConstructor(contract.CreatedType, true)
         || contract.CreatedType.IsValueType)
@@ -350,6 +381,9 @@ namespace Newtonsoft.Json.Serialization
 #else
       property.ValueProvider = new ReflectionValueProvider(member);
 #endif
+      
+      // resolve converter for property
+      // the class type might have a converter but the property converter takes presidence
       property.Converter = JsonTypeReflector.GetJsonConverter(member, property.PropertyType);
 
 #if !PocketPC && !NET20

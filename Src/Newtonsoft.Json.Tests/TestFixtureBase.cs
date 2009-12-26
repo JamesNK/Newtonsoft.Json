@@ -36,7 +36,7 @@ namespace Newtonsoft.Json.Tests
   [TestFixture]
   public abstract class TestFixtureBase
   {
-    [TestFixtureSetUp]
+    [SetUp]
     protected void TestSetup()
     {
       //CultureInfo turkey = CultureInfo.CreateSpecificCulture("tr");

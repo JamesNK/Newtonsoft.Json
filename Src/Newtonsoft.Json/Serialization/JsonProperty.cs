@@ -51,7 +51,8 @@ namespace Newtonsoft.Json.Serialization
     public Type PropertyType { get; set; }
 
     /// <summary>
-    /// Gets or sets the converter.
+    /// Gets or sets the <see cref="JsonConverter" /> for the property.
+    /// If set this converter takes presidence over the contract converter for the property type.
     /// </summary>
     /// <value>The converter.</value>
     public JsonConverter Converter { get; set; }

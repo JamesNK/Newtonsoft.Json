@@ -350,5 +350,46 @@ namespace Newtonsoft.Json.Tests.Bson
       writer.WriteStartArray();
       writer.WriteRawValue("fail");
     }
+
+    [Test]
+    public void Example()
+    {
+      Product p = new Product();
+      p.ExpiryDate = DateTime.Parse("2009-04-05T14:45:00Z");
+      p.Name = "Carlos' Spicy Wieners";
+      p.Price = 9.95m;
+      p.Sizes = new[] { "Small", "Medium", "Large" };
+
+      MemoryStream ms = new MemoryStream();
+      JsonSerializer serializer = new JsonSerializer();
+
+      // serialize product to BSON
+      BsonWriter writer = new BsonWriter(ms);
+      serializer.Serialize(writer, p);
+
+      Console.WriteLine(BitConverter.ToString(ms.ToArray()));
+      // 7C-00-00-00-02-4E-61-6D-65-00-16-00-00-00-43-61-72-6C-
+      // 6F-73-27-20-53-70-69-63-79-20-57-69-65-6E-65-72-73-00-
+      // 09-45-78-70-69-72-79-44-61-74-65-00-E0-51-BD-76-20-01-
+      // 00-00-01-50-72-69-63-65-00-66-66-66-66-66-E6-23-40-04-
+      // 53-69-7A-65-73-00-2D-00-00-00-02-30-00-06-00-00-00-53-
+      // 6D-61-6C-6C-00-02-31-00-07-00-00-00-4D-65-64-69-75-6D-
+      // 00-02-32-00-06-00-00-00-4C-61-72-67-65-00-00-00
+
+
+      ms.Seek(0, SeekOrigin.Begin);
+
+      // deserialize product from BSON
+      BsonReader reader = new BsonReader(ms);
+      Product deserializedProduct = serializer.Deserialize<Product>(reader);
+
+      Console.WriteLine(deserializedProduct.Name);
+      // Carlos' Spicy Wieners
+
+
+      Assert.AreEqual("Carlos' Spicy Wieners", deserializedProduct.Name);
+      Assert.AreEqual(9.95m, deserializedProduct.Price);
+      Assert.AreEqual(3, deserializedProduct.Sizes.Length);
+    }
   }
 }

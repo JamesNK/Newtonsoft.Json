@@ -198,7 +198,7 @@ namespace Newtonsoft.Json.Utilities
 
       while (current != null)
       {
-        if (current.FullName == fullTypeName)
+        if (string.Equals(current.FullName, fullTypeName, StringComparison.Ordinal))
         {
           match = current;
           return true;
@@ -209,7 +209,7 @@ namespace Newtonsoft.Json.Utilities
 
       foreach (Type i in type.GetInterfaces())
       {
-        if (i.Name == fullTypeName)
+        if (string.Equals(i.Name, fullTypeName, StringComparison.Ordinal))
         {
           match = type;
           return true;

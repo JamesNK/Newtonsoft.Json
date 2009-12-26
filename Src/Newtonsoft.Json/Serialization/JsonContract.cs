@@ -53,6 +53,12 @@ namespace Newtonsoft.Json.Serialization
     /// <value>Whether this type contract is serialized as a reference.</value>
     public bool? IsReference { get; set; }
 
+    /// <summary>
+    /// Gets or sets the default <see cref="JsonConverter" /> for this contract.
+    /// </summary>
+    /// <value>The converter.</value>
+    public JsonConverter Converter { get; set; }
+
     private static readonly StreamingContext SerializationStreamingContextParameter = new StreamingContext();
     private static readonly object[] SerializationEventParameterValues = new object[] { SerializationStreamingContextParameter };
 

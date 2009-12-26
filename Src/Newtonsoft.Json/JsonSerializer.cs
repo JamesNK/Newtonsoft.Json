@@ -54,18 +54,6 @@ namespace Newtonsoft.Json
     private IReferenceResolver _referenceResolver;
     private SerializationBinder _binder;
 
-    private static readonly IList<JsonConverter> BuiltInConverters = new List<JsonConverter>
-      {
-#if !PocketPC && !SILVERLIGHT && !NET20
-        new EntityKeyMemberConverter(),
-#endif
-        new BinaryConverter(),
-#if !SILVERLIGHT
-        new DataSetConverter(),
-        new DataTableConverter()
-#endif
-      };
-
     /// <summary>
     /// Occurs when the <see cref="JsonSerializer"/> errors during serialization and deserialization.
     /// </summary>
@@ -373,6 +361,18 @@ namespace Newtonsoft.Json
     /// into an instance of the specified type.
     /// </summary>
     /// <param name="reader">The <see cref="JsonReader"/> containing the object.</param>
+    /// <typeparam name="T">The type of the object to deserialize.</typeparam>
+    /// <returns>The instance of <typeparamref name="T"/> being deserialized.</returns>
+    public T Deserialize<T>(JsonReader reader)
+    {
+      return (T)Deserialize(reader, typeof(T));
+    }
+
+    /// <summary>
+    /// Deserializes the Json structure contained by the specified <see cref="JsonReader"/>
+    /// into an instance of the specified type.
+    /// </summary>
+    /// <param name="reader">The <see cref="JsonReader"/> containing the object.</param>
     /// <param name="objectType">The <see cref="Type"/> of object being deserialized.</param>
     /// <returns>The instance of <paramref name="objectType"/> being deserialized.</returns>
     public object Deserialize(JsonReader reader, Type objectType)
@@ -423,15 +423,15 @@ namespace Newtonsoft.Json
       if (objectType == null)
         throw new ArgumentNullException("objectType");
 
-      converter = JsonTypeReflector.GetJsonConverter(objectType, objectType);
+      JsonContract contract = ContractResolver.ResolveContract(objectType);
+      converter = contract.Converter;
+
       return (converter != null);
     }
 
     internal bool HasMatchingConverter(Type type, out JsonConverter matchingConverter)
     {
       if (HasMatchingConverter(_converters, type, out matchingConverter))
-        return true;
-      if (HasMatchingConverter(BuiltInConverters, type, out matchingConverter))
         return true;
 
       return false;

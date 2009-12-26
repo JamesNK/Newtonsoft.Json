@@ -260,7 +260,7 @@ namespace Newtonsoft.Json.Tests
       address.Entered = DateTime.Now.AddDays(-2);
       address.Address = "array 2 address";
       test.Addresses.Add(address);
-
+      
       BenchmarkSerializeMethod(SerializeMethod.JsonNet, test);
       BenchmarkSerializeMethod(SerializeMethod.JsonNetBinary, test);
       BenchmarkSerializeMethod(SerializeMethod.JavaScriptSerializer, test);

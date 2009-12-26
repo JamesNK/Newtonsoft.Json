@@ -183,6 +183,10 @@ namespace Newtonsoft.Json.Linq
       AddValue(JValue.CreateRaw(json), JsonToken.Raw);
     }
 
+    /// <summary>
+    /// Writes out a comment <code>/*...*/</code> containing the specified text.
+    /// </summary>
+    /// <param name="text">Text to place inside the comment.</param>
     public override void WriteComment(string text)
     {
       base.WriteComment(text);

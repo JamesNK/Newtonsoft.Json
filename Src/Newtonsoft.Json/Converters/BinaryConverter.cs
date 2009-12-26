@@ -24,12 +24,9 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 #if !SILVERLIGHT
 using System.Data.SqlTypes;
 #endif
-using System.Linq;
-using System.Text;
 using System.Globalization;
 using Newtonsoft.Json.Utilities;
 
@@ -135,16 +132,12 @@ namespace Newtonsoft.Json.Converters
     /// </returns>
     public override bool CanConvert(Type objectType)
     {
-      Type t = (ReflectionUtils.IsNullableType(objectType))
-        ? Nullable.GetUnderlyingType(objectType)
-        : objectType;
-
 #if !SILVERLIGHT && !PocketPC && !NET20
-      if (t.AssignableToTypeName(BinaryTypeName))
+      if (objectType.AssignableToTypeName(BinaryTypeName))
         return true;
 #endif
 #if !SILVERLIGHT
-      if (t == typeof(SqlBinary))
+      if (objectType == typeof(SqlBinary) || objectType == typeof(SqlBinary?))
         return true;
 #endif
       return false;

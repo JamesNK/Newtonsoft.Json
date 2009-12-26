@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Globalization;
 using Newtonsoft.Json.Utilities;
 
@@ -10,7 +7,7 @@ namespace Newtonsoft.Json.Converters
   /// <summary>
   /// Converts a <see cref="DateTime"/> to and from the ISO 8601 date format (e.g. 2008-04-12T12:53Z).
   /// </summary>
-  public class IsoDateTimeConverter : JsonConverter
+  public class IsoDateTimeConverter : DateTimeConverterBase
   {
     private const string DefaultDateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK";
 
@@ -131,29 +128,6 @@ namespace Newtonsoft.Json.Converters
         return DateTime.ParseExact(dateText, _dateTimeFormat, Culture, _dateTimeStyles);
       else
         return DateTime.Parse(dateText, Culture, _dateTimeStyles);
-    }
-
-    /// <summary>
-    /// Determines whether this instance can convert the specified object type.
-    /// </summary>
-    /// <param name="objectType">Type of the object.</param>
-    /// <returns>
-    /// 	<c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
-    /// </returns>
-    public override bool CanConvert(Type objectType)
-    {
-      Type t = (ReflectionUtils.IsNullableType(objectType))
-        ? Nullable.GetUnderlyingType(objectType)
-        : objectType;
-
-      if (t == typeof(DateTime))
-        return true;
-#if !PocketPC && !NET20
-      if (t == typeof(DateTimeOffset))
-        return true;
-#endif
-
-      return false;
     }
   }
 }

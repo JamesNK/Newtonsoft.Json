@@ -15,8 +15,18 @@
     <div id="content">
       <span style="color: DarkGray"> </span>
         <p><a href="./html/M_Newtonsoft_Json_Linq_JToken_SelectToken.htm">SelectToken</a> provides a method to query LINQ to JSON using a single string path to a 
-            desired <a href="./html/T_Newtonsoft_Json_Linq_JToken.htm">JToken</a>. SelectToken makes dynamic queries much easier because the entire 
+            desired <a href="./html/T_Newtonsoft_Json_Linq_JToken.htm">JToken</a>. SelectToken makes dynamic queries 
+            easy because the entire 
             query is defined in a string.</p>
+            
+<div class="overflowpanel">
+  <div class="code">
+<div style="font-family: Courier New; font-size: 10pt; color: black;">
+<pre style="margin: 0px;"><span style="color: blue;">string</span> name = (<span style="color: blue;">string</span>)o.SelectToken(<span style="color: #a31515;">&quot;Manufacturers[0].Name&quot;</span>);</pre>
+
+</div>
+  </div>
+</div>
 
 <h3>SelectToken</h3>
 <p>SelectToken is a method on JToken and takes a string path to a child token. 
@@ -25,7 +35,7 @@
         <p>The 
     path is made up of property names and array indexes separated by periods. Array indexes 
             can use either square or round brackets. Both 
-    of the following are valid paths and are equivilent to each other: <code>Manufacturers[0].Name</code> 
+    of the following are valid paths and are equivalent to each other: <code>Manufacturers[0].Name</code> 
     and <code>Manufacturers(0).Name</code>.</p>
 
 <div class="overflowpanel">

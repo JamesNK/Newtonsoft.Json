@@ -25,13 +25,9 @@
 
 #if !PocketPC && !SILVERLIGHT && !NET20
 using System;
-using System.Data;
-using System.Reflection;
 using Newtonsoft.Json.Serialization;
 using System.Globalization;
 using Newtonsoft.Json.Utilities;
-using System.Linq;
-using System.Reflection.Emit;
 
 namespace Newtonsoft.Json.Converters
 {

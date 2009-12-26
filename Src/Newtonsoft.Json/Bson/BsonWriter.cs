@@ -117,7 +117,7 @@ namespace Newtonsoft.Json.Bson
           _writer.Write(data);
           break;
         default:
-          throw new ArgumentOutOfRangeException("Type", "Unexpected token when writing BSON: {0}".FormatWith(CultureInfo.InvariantCulture, t.Type));
+          throw new ArgumentOutOfRangeException("t", "Unexpected token when writing BSON: {0}".FormatWith(CultureInfo.InvariantCulture, t.Type));
       }
     }
 
@@ -158,7 +158,7 @@ namespace Newtonsoft.Json.Bson
         case JTokenType.Bytes:
           return BsonType.Binary;
         default:
-          throw new ArgumentOutOfRangeException("Type", "Unexpected token when resolving JSON type to BSON type: {0}".FormatWith(CultureInfo.InvariantCulture, t.Type));
+          throw new ArgumentOutOfRangeException("t", "Unexpected token when resolving JSON type to BSON type: {0}".FormatWith(CultureInfo.InvariantCulture, t.Type));
       }
     }
 
@@ -231,7 +231,7 @@ namespace Newtonsoft.Json.Bson
           byte[] data = (byte[]) t;
           return 4 + 1 + data.Length;
         default:
-          throw new ArgumentOutOfRangeException("Type", "Unexpected token when writing BSON: {0}".FormatWith(CultureInfo.InvariantCulture, t.Type));
+          throw new ArgumentOutOfRangeException("t", "Unexpected token when writing BSON: {0}".FormatWith(CultureInfo.InvariantCulture, t.Type));
       }
     }
 
@@ -249,21 +249,37 @@ namespace Newtonsoft.Json.Bson
       }
     }
 
+    /// <summary>
+    /// Writes out a comment <code>/*...*/</code> containing the specified text.
+    /// </summary>
+    /// <param name="text">Text to place inside the comment.</param>
     public override void WriteComment(string text)
     {
       throw new JsonWriterException("Cannot write JSON comment as BSON.");
     }
 
+    /// <summary>
+    /// Writes the start of a constructor with the given name.
+    /// </summary>
+    /// <param name="name">The name of the constructor.</param>
     public override void WriteStartConstructor(string name)
     {
       throw new JsonWriterException("Cannot write JSON constructor as BSON.");
     }
 
+    /// <summary>
+    /// Writes raw JSON.
+    /// </summary>
+    /// <param name="json">The raw JSON to write.</param>
     public override void WriteRaw(string json)
     {
       throw new JsonWriterException("Cannot write raw JSON as BSON.");
     }
 
+    /// <summary>
+    /// Writes raw JSON where a value is expected and updates the writer's state.
+    /// </summary>
+    /// <param name="json">The raw JSON to write.</param>
     public override void WriteRawValue(string json)
     {
       throw new JsonWriterException("Cannot write raw JSON as BSON.");

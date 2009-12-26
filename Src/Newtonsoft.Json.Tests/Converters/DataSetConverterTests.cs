@@ -67,36 +67,80 @@ namespace Newtonsoft.Json.Tests.Converters
       Assert.AreEqual(2, dt.Rows.Count);
     }
 
+    [Test]
     public void SerializeMultiTableDataSet()
     {
       DataSet ds = new DataSet();
-      ds.Tables.Add(CreateDataTable("FirstTable"));
-      ds.Tables.Add(CreateDataTable("SecondTable"));
+      ds.Tables.Add(CreateDataTable("FirstTable", 2));
+      ds.Tables.Add(CreateDataTable("SecondTable", 1));
 
       string json = JsonConvert.SerializeObject(ds, Formatting.Indented, new IsoDateTimeConverter());
+      // {
+      //   "FirstTable": [
+      //     {
+      //       "StringCol": "Item Name",
+      //       "Int32Col": 1,
+      //       "BooleanCol": true,
+      //       "TimeSpanCol": "10.22:10:15.1000000",
+      //       "DateTimeCol": "2000-12-29T00:00:00Z",
+      //       "DecimalCol": 64.0021
+      //     },
+      //     {
+      //       "StringCol": "Item Name",
+      //       "Int32Col": 2,
+      //       "BooleanCol": true,
+      //       "TimeSpanCol": "10.22:10:15.1000000",
+      //       "DateTimeCol": "2000-12-29T00:00:00Z",
+      //       "DecimalCol": 64.0021
+      //     }
+      //   ],
+      //   "SecondTable": [
+      //     {
+      //       "StringCol": "Item Name",
+      //       "Int32Col": 1,
+      //       "BooleanCol": true,
+      //       "TimeSpanCol": "10.22:10:15.1000000",
+      //       "DateTimeCol": "2000-12-29T00:00:00Z",
+      //       "DecimalCol": 64.0021
+      //     }
+      //   ]
+      // }
+
+      DataSet deserializedDs = JsonConvert.DeserializeObject<DataSet>(json, new IsoDateTimeConverter());
 
       Assert.AreEqual(@"{
   ""FirstTable"": [
     {
       ""StringCol"": ""Item Name"",
-      ""Int32Col"": 2147483647,
+      ""Int32Col"": 1,
       ""BooleanCol"": true,
       ""TimeSpanCol"": ""10.22:10:15.1000000"",
-      ""DateTimeCol"": ""2000-12-29T00:00:00"",
+      ""DateTimeCol"": ""2000-12-29T00:00:00Z"",
+      ""DecimalCol"": 64.0021
+    },
+    {
+      ""StringCol"": ""Item Name"",
+      ""Int32Col"": 2,
+      ""BooleanCol"": true,
+      ""TimeSpanCol"": ""10.22:10:15.1000000"",
+      ""DateTimeCol"": ""2000-12-29T00:00:00Z"",
       ""DecimalCol"": 64.0021
     }
   ],
   ""SecondTable"": [
     {
       ""StringCol"": ""Item Name"",
-      ""Int32Col"": 2147483647,
+      ""Int32Col"": 1,
       ""BooleanCol"": true,
       ""TimeSpanCol"": ""10.22:10:15.1000000"",
-      ""DateTimeCol"": ""2000-12-29T00:00:00"",
+      ""DateTimeCol"": ""2000-12-29T00:00:00Z"",
       ""DecimalCol"": 64.0021
     }
   ]
 }", json);
+
+      Assert.IsNotNull(deserializedDs);
+
     }
 
     [Test]
@@ -109,7 +153,7 @@ namespace Newtonsoft.Json.Tests.Converters
       ""Int32Col"": 2147483647,
       ""BooleanCol"": true,
       ""TimeSpanCol"": ""10.22:10:15.1000000"",
-      ""DateTimeCol"": ""2000-12-29T00:00:00"",
+      ""DateTimeCol"": ""2000-12-29T00:00:00Z"",
       ""DecimalCol"": 64.0021
     }
   ],
@@ -119,7 +163,7 @@ namespace Newtonsoft.Json.Tests.Converters
       ""Int32Col"": 2147483647,
       ""BooleanCol"": true,
       ""TimeSpanCol"": ""10.22:10:15.1000000"",
-      ""DateTimeCol"": ""2000-12-29T00:00:00"",
+      ""DateTimeCol"": ""2000-12-29T00:00:00Z"",
       ""DecimalCol"": 64.0021
     }
   ]
@@ -150,7 +194,7 @@ namespace Newtonsoft.Json.Tests.Converters
       Assert.AreEqual(1, ds.Tables[1].Rows.Count);
     }
 
-    private DataTable CreateDataTable(string dataTableName)
+    private DataTable CreateDataTable(string dataTableName, int rows)
     {
       // create a new DataTable.
       DataTable myTable = new DataTable(dataTableName);
@@ -181,16 +225,18 @@ namespace Newtonsoft.Json.Tests.Converters
       colDecimal.DataType = typeof(decimal);
       myTable.Columns.Add(colDecimal);
 
-      // populate one row with values.
-      DataRow myNewRow = myTable.NewRow();
+      for (int i = 1; i <= rows; i++)
+      {
+        DataRow myNewRow = myTable.NewRow();
 
-      myNewRow["StringCol"] = "Item Name";
-      myNewRow["Int32Col"] = 2147483647;
-      myNewRow["BooleanCol"] = true;
-      myNewRow["TimeSpanCol"] = new TimeSpan(10, 22, 10, 15, 100);
-      myNewRow["DateTimeCol"] = new DateTime(2000, 12, 29, 0, 0, 0, DateTimeKind.Utc);
-      myNewRow["DecimalCol"] = 64.0021;
-      myTable.Rows.Add(myNewRow);
+        myNewRow["StringCol"] = "Item Name";
+        myNewRow["Int32Col"] = i;
+        myNewRow["BooleanCol"] = true;
+        myNewRow["TimeSpanCol"] = new TimeSpan(10, 22, 10, 15, 100);
+        myNewRow["DateTimeCol"] = new DateTime(2000, 12, 29, 0, 0, 0, DateTimeKind.Utc);
+        myNewRow["DecimalCol"] = 64.0021;
+        myTable.Rows.Add(myNewRow);
+      }
 
       return myTable;
     }
