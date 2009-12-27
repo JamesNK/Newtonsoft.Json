@@ -243,7 +243,7 @@ Parameter name: arrayIndex")]
       PersonRaw raw = new PersonRaw
       {
         FirstName = "FirstNameValue",
-        RawContent = new JsonRaw("[1,2,3,4,5]"),
+        RawContent = new JRaw("[1,2,3,4,5]"),
         LastName = "LastNameValue"
       };
 
@@ -261,7 +261,7 @@ Parameter name: arrayIndex")]
       PersonRaw raw = new PersonRaw
       {
         FirstName = "FirstNameValue",
-        RawContent = new JsonRaw("[1,2,3,4,5]"),
+        RawContent = new JRaw("[1,2,3,4,5]"),
         LastName = "LastNameValue"
       };
 
@@ -302,7 +302,7 @@ Parameter name: arrayIndex")]
       PersonRaw raw = new PersonRaw
       {
         FirstName = "FirstNameValue",
-        RawContent = new JsonRaw("[1,2,3,4,5]"),
+        RawContent = new JRaw("[1,2,3,4,5]"),
         LastName = "LastNameValue"
       };
 
@@ -314,7 +314,7 @@ Parameter name: arrayIndex")]
 
       Assert.AreEqual("FirstNameValue", raw.FirstName);
       Assert.AreEqual("LastNameValue", raw.LastName);
-      Assert.AreEqual("[1,2,3,4,5]", raw.RawContent.Content);
+      Assert.AreEqual("[1,2,3,4,5]", raw.RawContent.Value);
     }
 
     [Test]
@@ -366,8 +366,8 @@ Parameter name: arrayIndex")]
     public void RawChildValues()
     {
       JObject o = new JObject();
-      o["val1"] = JValue.CreateRaw("1");
-      o["val2"] = JValue.CreateRaw("1");
+      o["val1"] = new JRaw("1");
+      o["val2"] = new JRaw("1");
 
       string json = o.ToString();
 

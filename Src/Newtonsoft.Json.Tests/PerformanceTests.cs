@@ -16,13 +16,10 @@ using Newtonsoft.Json.Bson;
 
 namespace Newtonsoft.Json.Tests
 {
-  /// <summary>
-  /// Summary description for JsonSerializerTest
-  /// </summary>
   public class PerformanceTests : TestFixtureBase
   {
-    private int Iterations = 100;
-    //private int Iterations = 5000;
+    private const int Iterations = 100;
+    //private const int Iterations = 5000;
 
     private const string BsonHex =
       @"B4-01-00-00-04-73-74-72-69-6E-67-73-00-44-00-00-00-02-30-00-05-00-00-00-52-69-63-6B-00-02-31-00-17-00-00-00-4D-61-72-6B-75-73-20-65-67-67-65-72-20-5D-5B-2C-20-28-32-6E-64-29-00-02-32-00-0E-00-00-00-4B-65-76-69-6E-20-4D-63-4E-65-69-73-68-00-00-03-64-69-63-74-69-6F-6E-61-72-79-00-27-00-00-00-10-56-61-6C-20-61-73-64-31-00-01-00-00-00-10-56-61-6C-32-00-03-00-00-00-10-56-61-6C-33-00-04-00-00-00-00-02-4E-61-6D-65-00-05-00-00-00-52-69-63-6B-00-09-4E-6F-77-00-A0-80-DB-70-25-01-00-00-01-42-69-67-4E-75-6D-62-65-72-00-E7-7B-CC-26-96-C7-1F-42-03-41-64-64-72-65-73-73-31-00-48-00-00-00-02-41-64-64-72-65-73-73-00-0B-00-00-00-66-66-66-20-53-74-72-65-65-74-00-02-50-68-6F-6E-65-00-0F-00-00-00-28-35-30-33-29-20-38-31-34-2D-36-33-33-35-00-09-45-6E-74-65-72-65-64-00-20-C2-A3-D7-25-01-00-00-00-04-41-64-64-72-65-73-73-65-73-00-A3-00-00-00-03-30-00-4B-00-00-00-02-41-64-64-72-65-73-73-00-0E-00-00-00-61-72-72-61-79-20-61-64-64-72-65-73-73-00-02-50-68-6F-6E-65-00-0F-00-00-00-28-35-30-33-29-20-38-31-34-2D-36-33-33-35-00-09-45-6E-74-65-72-65-64-00-20-36-7E-6B-25-01-00-00-00-03-31-00-4D-00-00-00-02-41-64-64-72-65-73-73-00-10-00-00-00-61-72-72-61-79-20-32-20-61-64-64-72-65-73-73-00-02-50-68-6F-6E-65-00-0F-00-00-00-28-35-30-33-29-20-38-31-34-2D-36-33-33-35-00-09-45-6E-74-65-72-65-64-00-20-DA-57-66-25-01-00-00-00-00-00";
@@ -70,6 +67,44 @@ namespace Newtonsoft.Json.Tests
     }
 
     private DateTime BaseDate = DateTime.Parse("01/01/2000");
+
+    [Test]
+    public void Serialize()
+    {
+      TestClass test = new TestClass();
+
+      test.Address1.Address = "fff Street";
+      test.Address1.Entered = DateTime.Now.AddDays(20);
+
+      test.BigNumber = 34123123123.121M;
+      test.Now = DateTime.Now.AddHours(1);
+      test.strings = new List<string>() { "Rick", "Markus egger ][, (2nd)", "Kevin McNeish" };
+
+      cAddress address = new cAddress();
+      address.Entered = DateTime.Now.AddDays(-1);
+      address.Address = "array address";
+
+      test.Addresses.Add(address);
+
+      address = new cAddress();
+      address.Entered = DateTime.Now.AddDays(-2);
+      address.Address = "array 2 address";
+      test.Addresses.Add(address);
+
+      BenchmarkSerializeMethod(SerializeMethod.JsonNet, test);
+      BenchmarkSerializeMethod(SerializeMethod.JsonNetBinary, test);
+      BenchmarkSerializeMethod(SerializeMethod.JavaScriptSerializer, test);
+      BenchmarkSerializeMethod(SerializeMethod.DataContractJsonSerializer, test);
+    }
+
+    [Test]
+    public void Deserialize()
+    {
+      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JsonNet, JsonText);
+      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JsonNetBinary, MiscellaneousUtils.HexToBytes(BsonHex));
+      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JavaScriptSerializer, JsonText);
+      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.DataContractJsonSerializer, JsonText);
+    }
 
     public string SerializeJsonNet(object value)
     {
@@ -236,44 +271,6 @@ namespace Newtonsoft.Json.Tests
       Console.WriteLine("{0} ms", timed.ElapsedMilliseconds);
       Console.WriteLine(value);
       Console.WriteLine();
-    }
-
-    [Test]
-    public void Serialize()
-    {
-      TestClass test = new TestClass();
-
-      test.Address1.Address = "fff Street";
-      test.Address1.Entered = DateTime.Now.AddDays(20);
-
-      test.BigNumber = 34123123123.121M;
-      test.Now = DateTime.Now.AddHours(1);
-      test.strings = new List<string>() { "Rick", "Markus egger ][, (2nd)", "Kevin McNeish" };
-
-      cAddress address = new cAddress();
-      address.Entered = DateTime.Now.AddDays(-1);
-      address.Address = "array address";
-
-      test.Addresses.Add(address);
-
-      address = new cAddress();
-      address.Entered = DateTime.Now.AddDays(-2);
-      address.Address = "array 2 address";
-      test.Addresses.Add(address);
-      
-      BenchmarkSerializeMethod(SerializeMethod.JsonNet, test);
-      BenchmarkSerializeMethod(SerializeMethod.JsonNetBinary, test);
-      BenchmarkSerializeMethod(SerializeMethod.JavaScriptSerializer, test);
-      BenchmarkSerializeMethod(SerializeMethod.DataContractJsonSerializer, test);
-    }
-
-    [Test]
-    public void Deserialize()
-    {
-      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JsonNet, JsonText);
-      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JsonNetBinary, MiscellaneousUtils.HexToBytes(BsonHex));
-      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JavaScriptSerializer, JsonText);
-      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.DataContractJsonSerializer, JsonText);
     }
   }
 

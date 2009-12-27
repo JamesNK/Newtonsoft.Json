@@ -23,43 +23,13 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-using System;
-using Newtonsoft.Json.Linq;
-
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class PersonRaw
+  public struct StructTest
   {
-    private Guid _internalId;
-    private string _firstName;
-    private string _lastName;
-    private JRaw _rawContent;
-
-    [JsonIgnore]
-    public Guid InternalId
-    {
-      get { return _internalId; }
-      set { _internalId = value; }
-    }
-
-    [JsonProperty("first_name")]
-    public string FirstName
-    {
-      get { return _firstName; }
-      set { _firstName = value; }
-    }
-
-    public JRaw RawContent
-    {
-      get { return _rawContent; }
-      set { _rawContent = value; }
-    }
-
-    [JsonProperty("last_name")]
-    public string LastName
-    {
-      get { return _lastName; }
-      set { _lastName = value; }
-    }
+    public string StringProperty { get; set; }
+    public string StringField;
+    public int IntProperty { get; set; }
+    public int IntField;
   }
 }

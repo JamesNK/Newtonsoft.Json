@@ -124,7 +124,7 @@ namespace Newtonsoft.Json.Linq
       if (other == null)
         return false;
 
-      return (this == other || (_valueType == other.Type && Compare(_value, other.Value)));
+      return ValuesEquals(this, other);
     }
 
     /// <summary>
@@ -138,14 +138,14 @@ namespace Newtonsoft.Json.Linq
       get { return false; }
     }
 
-    private bool Compare(object objA, object objB)
+    private static bool Compare(JTokenType valueType, object objA, object objB)
     {
       if (objA == null && objB == null)
         return true;
       if (objA == null || objB == null)
         return false;
 
-      switch (_valueType)
+      switch (valueType)
       {
         case JTokenType.Integer:
           if (objA is ulong || objB is ulong)
@@ -157,6 +157,7 @@ namespace Newtonsoft.Json.Linq
         case JTokenType.Comment:
         case JTokenType.String:
         case JTokenType.Boolean:
+        case JTokenType.Raw:
           return objA.Equals(objB);
         case JTokenType.Date:
           return objA.Equals(objB);
@@ -168,7 +169,7 @@ namespace Newtonsoft.Json.Linq
 
           return MiscellaneousUtils.ByteArrayCompare(b1, b2);
         default:
-          throw MiscellaneousUtils.CreateArgumentOutOfRangeException("valueType", _valueType, "Unexpected value type: {0}".FormatWith(CultureInfo.InvariantCulture, _valueType));
+          throw MiscellaneousUtils.CreateArgumentOutOfRangeException("valueType", valueType, "Unexpected value type: {0}".FormatWith(CultureInfo.InvariantCulture, valueType));
       }
     }
 
@@ -195,17 +196,6 @@ namespace Newtonsoft.Json.Linq
     public static JValue CreateString(string value)
     {
       return new JValue(value, JTokenType.String);
-    }
-
-
-    /// <summary>
-    /// Creates a <see cref="JValue"/> of raw JSON with the given value.
-    /// </summary>
-    /// <param name="value">The value.</param>
-    /// <returns>A <see cref="JValue"/> of raw JSON with the given value.</returns>
-    public static JValue CreateRaw(string value)
-    {
-      return new JValue(value, JTokenType.Raw);
     }
 
     private static JTokenType GetValueType(JTokenType? current, object value)
@@ -324,11 +314,11 @@ namespace Newtonsoft.Json.Linq
             writer.WriteValue(Convert.ToDateTime(v, CultureInfo.InvariantCulture));
           }, _value);
           break;
+        case JTokenType.Raw:
+          writer.WriteRawValue((string)_value);
+          break;
         case JTokenType.Bytes:
           WriteConvertableValue(writer, converters, v => writer.WriteValue((byte[])v), _value);
-          break;
-        case JTokenType.Raw:
-          writer.WriteRawValue(_value.ToString());
           break;
         case JTokenType.Null:
           writer.WriteNull();
@@ -348,6 +338,11 @@ namespace Newtonsoft.Json.Linq
       return _valueType.GetHashCode() ^ valueHashCode;
     }
 
+    private static bool ValuesEquals(JValue v1, JValue v2)
+    {
+      return (v1 == v2|| (v1._valueType == v2._valueType && Compare(v1._valueType, v1._value, v2._value)));
+    }
+
     /// <summary>
     /// Indicates whether the current object is equal to another object of the same type.
     /// </summary>
@@ -360,7 +355,7 @@ namespace Newtonsoft.Json.Linq
       if (other == null)
         return false;
 
-      return (_value == other._value);
+      return ValuesEquals(this, other);
     }
 
     /// <summary>

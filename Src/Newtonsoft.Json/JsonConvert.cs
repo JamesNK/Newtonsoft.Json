@@ -399,6 +399,44 @@ namespace Newtonsoft.Json
       throw new ArgumentException("Unsupported type: {0}. Use the JsonSerializer class to get the object's JSON representation.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
     }
 
+    private static bool IsJsonPrimitiveTypeCode(TypeCode typeCode)
+    {
+      switch (typeCode)
+      {
+        case TypeCode.String:
+        case TypeCode.Char:
+        case TypeCode.Boolean:
+        case TypeCode.SByte:
+        case TypeCode.Int16:
+        case TypeCode.UInt16:
+        case TypeCode.Int32:
+        case TypeCode.Byte:
+        case TypeCode.UInt32:
+        case TypeCode.Int64:
+        case TypeCode.UInt64:
+        case TypeCode.Single:
+        case TypeCode.Double:
+        case TypeCode.DateTime:
+        case TypeCode.Decimal:
+        case TypeCode.DBNull:
+          return true;
+        default:
+          return false;
+      }
+    }
+
+    internal static bool IsJsonPrimitiveType(Type type)
+    {
+#if !PocketPC && !NET20
+     if (type == typeof(DateTimeOffset))
+        return true;
+#endif
+      if (type == typeof(byte[]))
+        return true;
+
+      return IsJsonPrimitiveTypeCode(Type.GetTypeCode(type));
+    }
+
     internal static bool IsJsonPrimitive(object value)
     {
       if (value == null)
@@ -408,28 +446,7 @@ namespace Newtonsoft.Json
       {
         IConvertible convertible = (IConvertible)value;
 
-        switch (convertible.GetTypeCode())
-        {
-          case TypeCode.String:
-          case TypeCode.Char:
-          case TypeCode.Boolean:
-          case TypeCode.SByte:
-          case TypeCode.Int16:
-          case TypeCode.UInt16:
-          case TypeCode.Int32:
-          case TypeCode.Byte:
-          case TypeCode.UInt32:
-          case TypeCode.Int64:
-          case TypeCode.UInt64:
-          case TypeCode.Single:
-          case TypeCode.Double:
-          case TypeCode.DateTime:
-          case TypeCode.Decimal:
-          case TypeCode.DBNull:
-            return true;
-          default:
-            return false;
-        }
+        return IsJsonPrimitiveTypeCode(convertible.GetTypeCode());
       }
 
 #if !PocketPC && !NET20

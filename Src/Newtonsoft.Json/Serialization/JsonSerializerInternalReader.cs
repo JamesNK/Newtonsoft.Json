@@ -81,6 +81,26 @@ namespace Newtonsoft.Json.Serialization
         else
           throw new JsonSerializationException("Cannot populate JSON object onto type '{0}'.".FormatWith(CultureInfo.InvariantCulture, objectType));
       }
+      else
+      {
+        throw new JsonSerializationException("Unexpected initial token '{0}' when populating object. Expected JSON object or array.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
+      }
+    }
+
+    private JsonContract GetContractSafe(Type type)
+    {
+      if (type == null)
+        return null;
+
+      return Serializer.ContractResolver.ResolveContract(type);
+    }
+
+    private JsonContract GetContractSafe(Type type, object value)
+    {
+      if (value == null)
+        return GetContractSafe(type);
+
+      return Serializer.ContractResolver.ResolveContract(value.GetType());
     }
 
     public object Deserialize(JsonReader reader, Type objectType)
@@ -91,7 +111,7 @@ namespace Newtonsoft.Json.Serialization
       if (reader.TokenType == JsonToken.None && !reader.Read())
         return null;
 
-      return CreateValue(reader, objectType, null, null);
+      return CreateValue(reader, objectType, GetContractSafe(objectType), null, null);
     }
 
     private JsonSerializerProxy GetInternalSerializer()
@@ -102,26 +122,32 @@ namespace Newtonsoft.Json.Serialization
       return _internalSerializer;
     }
 
-    private JToken CreateJToken(JsonReader reader)
+    private JToken CreateJToken(JsonReader reader, JsonContract contract)
     {
       ValidationUtils.ArgumentNotNull(reader, "reader");
 
-      JToken token;
-      using (JTokenWriter writer = new JTokenWriter())
+      if (contract != null && contract.UnderlyingType == typeof(JRaw))
       {
-        writer.WriteToken(reader);
-        token = writer.Token;
+        return JRaw.Create(reader);
       }
+      else
+      {
+        JToken token;
+        using (JTokenWriter writer = new JTokenWriter())
+        {
+          writer.WriteToken(reader);
+          token = writer.Token;
+        }
 
-      return token;
+        return token;
+      }
     }
 
     private JToken CreateJObject(JsonReader reader)
     {
       ValidationUtils.ArgumentNotNull(reader, "reader");
 
-//          throw new Exception("Expected current token of type {0}, got {1}.".FormatWith(CultureInfo.InvariantCulture, JsonToken.PropertyName, reader.TokenType));
-
+      // this is needed because we've already read inside the object, looking for special properties
       JToken token;
       using (JTokenWriter writer = new JTokenWriter())
       {
@@ -138,21 +164,21 @@ namespace Newtonsoft.Json.Serialization
       return token;
     }
 
-    private object CreateValue(JsonReader reader, Type objectType, object existingValue, JsonConverter memberConverter)
+    private object CreateValue(JsonReader reader, Type objectType, JsonContract contract, object existingValue, JsonConverter memberConverter)
     {
       JsonConverter converter;
 
       if (memberConverter != null)
         return memberConverter.ReadJson(reader, objectType, GetInternalSerializer());
 
-      if (objectType != null && Serializer.HasClassConverter(objectType, out converter))
+      if (objectType != null && Serializer.HasClassConverter(contract, out converter))
         return converter.ReadJson(reader, objectType, GetInternalSerializer());
 
       if (objectType != null && Serializer.HasMatchingConverter(objectType, out converter))
         return converter.ReadJson(reader, objectType, GetInternalSerializer());
 
-      if (objectType == typeof (JsonRaw))
-        return JsonRaw.Create(reader);
+      if (contract is JsonLinqContract)
+        return CreateJToken(reader, contract);
 
       do
       {
@@ -161,9 +187,9 @@ namespace Newtonsoft.Json.Serialization
             // populate a typed object or generic dictionary/array
             // depending upon whether an objectType was supplied
           case JsonToken.StartObject:
-            return CreateObject(reader, objectType, existingValue);
+            return CreateObject(reader, objectType, contract, existingValue);
           case JsonToken.StartArray:
-            return CreateList(reader, objectType, existingValue, null);
+            return CreateList(reader, objectType, contract, existingValue, null);
           case JsonToken.Integer:
           case JsonToken.Float:
           case JsonToken.Boolean:
@@ -189,6 +215,8 @@ namespace Newtonsoft.Json.Serialization
               return DBNull.Value;
 
             return EnsureType(reader.Value, objectType);
+          case JsonToken.Raw:
+            return new JRaw((string)reader.Value);
           case JsonToken.Comment:
             // ignore
             break;
@@ -200,7 +228,7 @@ namespace Newtonsoft.Json.Serialization
       throw new JsonSerializationException("Unexpected end when deserializing object.");
     }
 
-    private object CreateObject(JsonReader reader, Type objectType, object existingValue)
+    private object CreateObject(JsonReader reader, Type objectType, JsonContract contract, object existingValue)
     {
       CheckedRead(reader);
 
@@ -252,6 +280,7 @@ namespace Newtonsoft.Json.Serialization
                 throw new JsonSerializationException("Type specified in JSON '{0}' is not compatible with '{1}'.".FormatWith(CultureInfo.InvariantCulture, specifiedType.AssemblyQualifiedName, objectType.AssemblyQualifiedName));
 
               objectType = specifiedType;
+              contract = GetContractSafe(specifiedType);
             }
             specialProperty = true;
           }
@@ -266,7 +295,7 @@ namespace Newtonsoft.Json.Serialization
           else if (string.Equals(propertyName, JsonTypeReflector.ArrayValuesPropertyName, StringComparison.Ordinal))
           {
             CheckedRead(reader);
-            object list = CreateList(reader, objectType, existingValue, id);
+            object list = CreateList(reader, objectType, contract, existingValue, id);
             CheckedRead(reader);
             return list;
           }
@@ -280,8 +309,6 @@ namespace Newtonsoft.Json.Serialization
 
       if (!HasDefinedType(objectType))
         return CreateJObject(reader);
-
-      JsonContract contract = Serializer.ContractResolver.ResolveContract(objectType);
 
       if (contract == null)
         throw new JsonSerializationException("Could not resolve type '{0}' to a JsonContract.".FormatWith(CultureInfo.InvariantCulture, objectType));
@@ -305,9 +332,8 @@ namespace Newtonsoft.Json.Serialization
       throw new JsonSerializationException("Cannot deserialize JSON object into type '{0}'.".FormatWith(CultureInfo.InvariantCulture, objectType));
     }
 
-    private JsonArrayContract GetArrayContract(Type objectType)
+    private JsonArrayContract EnsureArrayContract(Type objectType, JsonContract contract)
     {
-      JsonContract contract = Serializer.ContractResolver.ResolveContract(objectType);
       if (contract == null)
         throw new JsonSerializationException("Could not resolve type '{0}' to a JsonContract.".FormatWith(CultureInfo.InvariantCulture, objectType));
 
@@ -324,28 +350,28 @@ namespace Newtonsoft.Json.Serialization
         throw new JsonSerializationException("Unexpected end when deserializing object.");
     }
 
-    private object CreateList(JsonReader reader, Type objectType, object existingValue, string reference)
+    private object CreateList(JsonReader reader, Type objectType, JsonContract contract, object existingValue, string reference)
     {
       object value;
       if (HasDefinedType(objectType))
       {
-        JsonArrayContract contract = GetArrayContract(objectType);
+        JsonArrayContract arrayContract = EnsureArrayContract(objectType, contract);
 
         if (existingValue == null)
-          value = CreateAndPopulateList(reader, reference, contract);
+          value = CreateAndPopulateList(reader, reference, arrayContract);
         else
-          value = PopulateList(CollectionUtils.CreateCollectionWrapper(existingValue), reader, reference, contract);
+          value = PopulateList(CollectionUtils.CreateCollectionWrapper(existingValue), reader, reference, arrayContract);
       }
       else
       {
-        value = CreateJToken(reader);
+        value = CreateJToken(reader, contract);
       }
       return value;
     }
 
     private bool HasDefinedType(Type type)
     {
-      return (type != null && type != typeof (object));
+      return (type != null && type != typeof (object) && !type.IsSubclassOf(typeof(JToken)));
     }
 
     private object EnsureType(object value, Type targetType)
@@ -412,7 +438,8 @@ namespace Newtonsoft.Json.Serialization
         return;
       }
 
-      object value = CreateValue(reader, property.PropertyType, (useExistingValue) ? currentValue : null, property.Converter);
+      object existingValue = (useExistingValue) ? currentValue : null;
+      object value = CreateValue(reader, property.PropertyType, GetContractSafe(property.PropertyType, existingValue), existingValue, property.Converter);
 
       // always set the value if useExistingValue is false,
       // otherwise also set it if CreateValue returns a new value compared to the currentValue
@@ -464,7 +491,7 @@ namespace Newtonsoft.Json.Serialization
 
             try
             {
-              dictionary.Add(keyValue, CreateValue(reader, contract.DictionaryValueType, null, null));
+              dictionary.Add(keyValue, CreateValue(reader, contract.DictionaryValueType, GetContractSafe(contract.DictionaryValueType), null, null));
             }
             catch (Exception ex)
             {
@@ -528,7 +555,7 @@ namespace Newtonsoft.Json.Serialization
           default:
             try
             {
-              object value = CreateValue(reader, contract.CollectionItemType, null, null);
+              object value = CreateValue(reader, contract.CollectionItemType, GetContractSafe(contract.CollectionItemType), null, null);
 
               wrappedList.Add(value);
             }
@@ -595,7 +622,7 @@ namespace Newtonsoft.Json.Serialization
             {
               if (!property.Ignored)
               {
-                propertyValues[property] = CreateValue(reader, property.PropertyType, null, property.MemberConverter);
+                propertyValues[property] = CreateValue(reader, property.PropertyType, GetContractSafe(property.PropertyType), null, property.MemberConverter);
               }
             }
             else

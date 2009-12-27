@@ -418,12 +418,11 @@ namespace Newtonsoft.Json
       serializerWriter.Serialize(jsonWriter, value);
     }
 
-    internal bool HasClassConverter(Type objectType, out JsonConverter converter)
+    internal bool HasClassConverter(JsonContract contract, out JsonConverter converter)
     {
-      if (objectType == null)
-        throw new ArgumentNullException("objectType");
+      if (contract == null)
+        throw new ArgumentNullException("contract");
 
-      JsonContract contract = ContractResolver.ResolveContract(objectType);
       converter = contract.Converter;
 
       return (converter != null);

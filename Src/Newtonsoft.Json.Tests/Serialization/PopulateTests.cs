@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Tests.TestObjects;
 using NUnit.Framework;
+using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
@@ -130,6 +131,13 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       Assert.AreEqual(1, p.Count);
       Assert.AreEqual("James", p["Name"]);
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Unexpected initial token 'Integer' when populating object. Expected JSON object or array.")]
+    public void PopulateWithBadJson()
+    {
+      JsonConvert.PopulateObject("1", new Person());
     }
   }
 }

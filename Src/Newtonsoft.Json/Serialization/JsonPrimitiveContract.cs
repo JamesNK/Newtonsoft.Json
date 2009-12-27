@@ -24,42 +24,22 @@
 #endregion
 
 using System;
-using Newtonsoft.Json.Linq;
 
-namespace Newtonsoft.Json.Tests.TestObjects
+namespace Newtonsoft.Json.Serialization
 {
-  public class PersonRaw
+  /// <summary>
+  /// Contract details for a <see cref="Type"/> used by the <see cref="JsonSerializer"/>.
+  /// </summary>
+  public class JsonPrimitiveContract : JsonContract
   {
-    private Guid _internalId;
-    private string _firstName;
-    private string _lastName;
-    private JRaw _rawContent;
-
-    [JsonIgnore]
-    public Guid InternalId
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonPrimitiveContract"/> class.
+    /// </summary>
+    /// <param name="underlyingType">The underlying type for the contract.</param>
+    public JsonPrimitiveContract(Type underlyingType)
+      : base(underlyingType)
     {
-      get { return _internalId; }
-      set { _internalId = value; }
-    }
-
-    [JsonProperty("first_name")]
-    public string FirstName
-    {
-      get { return _firstName; }
-      set { _firstName = value; }
-    }
-
-    public JRaw RawContent
-    {
-      get { return _rawContent; }
-      set { _rawContent = value; }
-    }
-
-    [JsonProperty("last_name")]
-    public string LastName
-    {
-      get { return _lastName; }
-      set { _lastName = value; }
+      CreatedType = underlyingType;
     }
   }
 }

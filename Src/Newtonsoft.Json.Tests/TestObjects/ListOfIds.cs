@@ -24,42 +24,47 @@
 #endregion
 
 using System;
-using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class PersonRaw
+  public class ListOfIds<T> : JsonConverter where T : Bar, new()
   {
-    private Guid _internalId;
-    private string _firstName;
-    private string _lastName;
-    private JRaw _rawContent;
-
-    [JsonIgnore]
-    public Guid InternalId
+    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {
-      get { return _internalId; }
-      set { _internalId = value; }
+      IList<T> list = (IList<T>)value;
+
+      writer.WriteStartArray();
+      foreach (T item in list)
+      {
+        writer.WriteValue(item.Id);
+      }
+      writer.WriteEndArray();
     }
 
-    [JsonProperty("first_name")]
-    public string FirstName
+    public override object ReadJson(JsonReader reader, Type objectType, JsonSerializer serializer)
     {
-      get { return _firstName; }
-      set { _firstName = value; }
+      IList<T> list = new List<T>();
+
+      reader.Read();
+      while (reader.TokenType != JsonToken.EndArray)
+      {
+        long id = (long)reader.Value;
+
+        list.Add(new T
+                   {
+                     Id = Convert.ToInt32(id)
+                   });
+
+        reader.Read();
+      }
+
+      return list;
     }
 
-    public JRaw RawContent
+    public override bool CanConvert(Type objectType)
     {
-      get { return _rawContent; }
-      set { _rawContent = value; }
-    }
-
-    [JsonProperty("last_name")]
-    public string LastName
-    {
-      get { return _lastName; }
-      set { _lastName = value; }
+      return typeof(IList<T>).IsAssignableFrom(objectType);
     }
   }
 }

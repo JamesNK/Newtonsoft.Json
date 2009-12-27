@@ -78,6 +78,7 @@
     <Compile Include="Linq\ComponentModel\JTypeDescriptor.cs" />
     <Compile Include="Linq\IJEnumerable.cs" />
     <Compile Include="Linq\JPath.cs" />
+    <Compile Include="Linq\JRaw.cs" />
     <Compile Include="Linq\JTokenEqualityComparer.cs" />
     <Compile Include="Linq\JTokenReader.cs" />
     <Compile Include="Linq\JTokenType.cs" />
@@ -95,7 +96,6 @@
     <Compile Include="JsonTextWriter.cs" />
     <Compile Include="JsonWriterException.cs" />
     <Compile Include="JsonReaderException.cs" />
-    <Compile Include="JsonRaw.cs" />
     <Compile Include="JsonConverter.cs" />
     <Compile Include="JsonConverterCollection.cs" />
     <Compile Include="JsonReader.cs" />
@@ -147,7 +147,9 @@
     <Compile Include="Schema\JsonSchemaGenerator.cs" />
     <Compile Include="Schema\JsonSchemaResolver.cs" />
     <Compile Include="Schema\JsonSchemaType.cs" />
+    <Compile Include="Serialization\JsonLinqContract.cs" />
     <Compile Include="Serialization\JsonObjectContract.cs" />
+    <Compile Include="Serialization\JsonPrimitiveContract.cs" />
     <Compile Include="Serialization\JsonProperty.cs" />
     <Compile Include="Serialization\JsonPropertyCollection.cs" />
     <Compile Include="Serialization\JsonSerializerInternalBase.cs" />

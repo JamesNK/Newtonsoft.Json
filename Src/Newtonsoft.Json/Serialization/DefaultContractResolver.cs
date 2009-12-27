@@ -33,6 +33,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Utilities;
+using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Serialization
 {
@@ -79,6 +80,9 @@ namespace Newtonsoft.Json.Serialization
     /// <returns>The contract for a given type.</returns>
     public virtual JsonContract ResolveContract(Type type)
     {
+      if (type == null)
+        throw new ArgumentNullException("type");
+
       return _typeContractCache.Get(type);
     }
 
@@ -283,8 +287,38 @@ namespace Newtonsoft.Json.Serialization
       return contract;
     }
 
+    /// <summary>
+    /// Creates a <see cref="JsonPrimitiveContract"/> for the given type.
+    /// </summary>
+    /// <param name="objectType">Type of the object.</param>
+    /// <returns>A <see cref="JsonPrimitiveContract"/> for the given type.</returns>
+    protected virtual JsonPrimitiveContract CreatePrimitiveContract(Type objectType)
+    {
+      JsonPrimitiveContract contract = new JsonPrimitiveContract(objectType);
+      InitializeContract(contract);
+      
+      return contract;
+    }
+
+    /// <summary>
+    /// Creates a <see cref="JsonLinqContract"/> for the given type.
+    /// </summary>
+    /// <param name="objectType">Type of the object.</param>
+    /// <returns>A <see cref="JsonLinqContract"/> for the given type.</returns>
+    protected virtual JsonLinqContract CreateLinqContract(Type objectType)
+    {
+      JsonLinqContract contract = new JsonLinqContract(objectType);
+      InitializeContract(contract);
+
+      return contract;
+    }
+
     private JsonContract CreateContract(Type objectType)
     {
+      if (JsonConvert.IsJsonPrimitiveType(objectType))
+      {
+        return CreatePrimitiveContract(objectType);
+      }
       if (JsonTypeReflector.GetJsonObjectAttribute(objectType) != null)
       {
         return CreateObjectContract(objectType);
@@ -296,6 +330,10 @@ namespace Newtonsoft.Json.Serialization
       if (typeof(IEnumerable).IsAssignableFrom(objectType))
       {
         return CreateArrayContract(objectType);
+      }
+      if (objectType.IsSubclassOf(typeof(JToken)))
+      {
+        return CreateLinqContract(objectType);
       }
 
       return CreateObjectContract(objectType);

@@ -855,7 +855,7 @@ keyword such as type of business.""
       PersonRaw personRaw = new PersonRaw
       {
         FirstName = "FirstNameValue",
-        RawContent = new JsonRaw("[1,2,3,4,5]"),
+        RawContent = new JRaw("[1,2,3,4,5]"),
         LastName = "LastNameValue"
       };
 
@@ -873,7 +873,7 @@ keyword such as type of business.""
       PersonRaw personRaw = JsonConvert.DeserializeObject<PersonRaw>(json);
 
       Assert.AreEqual("FirstNameValue", personRaw.FirstName);
-      Assert.AreEqual("[1,2,3,4,5]", personRaw.RawContent.Content);
+      Assert.AreEqual("[1,2,3,4,5]", personRaw.RawContent.ToString());
       Assert.AreEqual("LastNameValue", personRaw.LastName);
     }
 
@@ -1852,18 +1852,6 @@ keyword such as type of business.""
       Assert.AreEqual(@"[""str_1"",""str_2"",""str_3""]", json);
     }
 
-    public class ConstructorReadonlyFields
-    {
-      public readonly string A;
-      public readonly int B;
-
-      public ConstructorReadonlyFields(string a, int b)
-      {
-        A = a;
-        B = b;
-      }
-    }
-
     [Test]
     public void ConstructorReadonlyFieldsTest()
     {
@@ -1877,14 +1865,6 @@ keyword such as type of business.""
       ConstructorReadonlyFields c2 = JsonConvert.DeserializeObject<ConstructorReadonlyFields>(json);
       Assert.AreEqual("String!", c2.A);
       Assert.AreEqual(int.MaxValue, c2.B);
-    }
-
-    public struct StructTest
-    {
-      public string StringProperty { get; set; }
-      public string StringField;
-      public int IntProperty { get; set; }
-      public int IntField;
     }
 
     [Test]
@@ -1912,62 +1892,6 @@ keyword such as type of business.""
       Assert.AreEqual(structTest.StringField, deserialized.StringField);
       Assert.AreEqual(structTest.IntProperty, deserialized.IntProperty);
       Assert.AreEqual(structTest.IntField, deserialized.IntField);
-    }
-
-    public class ListOfIds<T> : JsonConverter where T : Bar, new()
-    {
-      public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-      {
-        IList<T> list = (IList<T>) value;
-
-        writer.WriteStartArray();
-        foreach (T item in list)
-        {
-          writer.WriteValue(item.Id);
-        }
-        writer.WriteEndArray();
-      }
-
-      public override object ReadJson(JsonReader reader, Type objectType, JsonSerializer serializer)
-      {
-        IList<T> list = new List<T>();
-
-        reader.Read();
-        while (reader.TokenType != JsonToken.EndArray)
-        {
-          long id = (long)reader.Value;
-
-          list.Add(new T
-                     {
-                       Id = Convert.ToInt32(id)
-                     });
-
-          reader.Read();
-        }
-
-        return list;
-      }
-
-      public override bool CanConvert(Type objectType)
-      {
-        return typeof (IList<T>).IsAssignableFrom(objectType);
-      }
-    }
-
-    public class Foo
-    {
-      public Foo()
-      {
-        Bars = new List<Bar>();
-      }
-
-      [JsonConverter(typeof(ListOfIds<Bar>))]
-      public List<Bar> Bars { get; set; }
-    }
-
-    public class Bar
-    {
-      public int Id { get; set; }
     }
 
     [Test]
@@ -2017,13 +1941,6 @@ keyword such as type of business.""
       dictionary.Add(new Person { Name = "p2" }, 2);
 
       JsonConvert.SerializeObject(dictionary, Formatting.Indented);
-    }
-
-    public class SearchResult
-    {
-      public string Title { get; set; }
-      public string Content { get; set; }
-      public string Url { get; set; }
     }
 
     [Test]
@@ -2105,6 +2022,34 @@ keyword such as type of business.""
       Assert.AreEqual(2, searchResults.Count);
       Assert.AreEqual("<b>Paris Hilton</b> - Wikipedia, the free encyclopedia", searchResults[0].Title);
       Assert.AreEqual("<b>Paris Hilton</b>", searchResults[1].Title);
+    }
+
+    [Test]
+    public void DeserializeBaseReferenceWithDerivedValue()
+    {
+      PersonPropertyClass personPropertyClass = new PersonPropertyClass();
+      WagePerson wagePerson = (WagePerson) personPropertyClass.Person;
+
+      wagePerson.BirthDate = new DateTime(2000, 11, 29, 23, 59, 59, DateTimeKind.Utc);
+      wagePerson.Department = "McDees";
+      wagePerson.HourlyWage = 12.50m;
+      wagePerson.LastModified = new DateTime(2000, 11, 29, 23, 59, 59, DateTimeKind.Utc);
+      wagePerson.Name = "Jim Bob";
+
+      string json = JsonConvert.SerializeObject(personPropertyClass, Formatting.Indented);
+      Assert.AreEqual(
+        @"{
+  ""Person"": {
+    ""HourlyWage"": 12.50,
+    ""Name"": ""Jim Bob"",
+    ""BirthDate"": ""\/Date(975542399000)\/"",
+    ""LastModified"": ""\/Date(975542399000)\/""
+  }
+}",
+        json);
+
+      PersonPropertyClass newPersonPropertyClass = JsonConvert.DeserializeObject<PersonPropertyClass>(json);
+      Assert.AreEqual(wagePerson.HourlyWage, ((WagePerson) newPersonPropertyClass.Person).HourlyWage);
     }
   }
 }

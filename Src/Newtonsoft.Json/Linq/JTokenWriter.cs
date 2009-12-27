@@ -180,7 +180,7 @@ namespace Newtonsoft.Json.Linq
     public override void WriteRaw(string json)
     {
       base.WriteRaw(json);
-      AddValue(JValue.CreateRaw(json), JsonToken.Raw);
+      AddValue(new JRaw(json), JsonToken.Raw);
     }
 
     /// <summary>
