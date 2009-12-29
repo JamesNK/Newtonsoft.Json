@@ -601,9 +601,11 @@ namespace Newtonsoft.Json
           WriteIndentSpace();
       }
 
+      WriteState writeState = WriteState;
+
       // don't indent a property when it is the first token to be written (i.e. at the start)
-      if ((tokenBeingWritten == JsonToken.PropertyName && WriteState != WriteState.Start) ||
-        WriteState == WriteState.Array || WriteState == WriteState.Constructor)
+      if ((tokenBeingWritten == JsonToken.PropertyName && writeState != WriteState.Start) ||
+        writeState == WriteState.Array || writeState == WriteState.Constructor)
       {
         WriteIndent();
       }

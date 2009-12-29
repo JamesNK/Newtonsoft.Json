@@ -35,71 +35,68 @@ namespace Newtonsoft.Json.Utilities
 {
   internal static class JavaScriptUtils
   {
-    public static void WriteEscapedJavaScriptChar(TextWriter writer, char c, char delimiter)
-    {
-      switch (c)
-      {
-        case '\t':
-          writer.Write(@"\t");
-          break;
-        case '\n':
-          writer.Write(@"\n");
-          break;
-        case '\r':
-          writer.Write(@"\r");
-          break;
-        case '\f':
-          writer.Write(@"\f");
-          break;
-        case '\b':
-          writer.Write(@"\b");
-          break;
-        case '\\':
-          writer.Write(@"\\");
-          break;
-        case '\u0085': // Next Line
-          writer.Write(@"\u0085");
-          break;
-        case '\u2028': // Line Separator
-          writer.Write(@"\u2028");
-          break;
-        case '\u2029': // Paragraph Separator
-          writer.Write(@"\u2029");
-          break;
-        case '\'':
-          // only escape if this charater is being used as the delimiter
-          writer.Write((delimiter == '\'') ? @"\'" : @"'");
-          break;
-        case '"':
-          // only escape if this charater is being used as the delimiter
-          writer.Write((delimiter == '"') ? "\\\"" : @"""");
-          break;
-        default:
-          if (c > '\u001f')
-            writer.Write(c);
-          else
-            StringUtils.WriteCharAsUnicode(writer, c);
-          break;
-      }
-    }
-
-    public static void WriteEscapedJavaScriptString(TextWriter writer, string value, char delimiter, bool appendDelimiters)
+    public static void WriteEscapedJavaScriptString(StringBuilder writer, string value, char delimiter, bool appendDelimiters)
     {
       // leading delimiter
       if (appendDelimiters)
-        writer.Write(delimiter);
+        writer.Append(delimiter);
 
       if (value != null)
       {
         for (int i = 0; i < value.Length; i++)
         {
-          WriteEscapedJavaScriptChar(writer, value[i], delimiter);
+          char c = value[i];
+
+          switch (c)
+          {
+            case '\t':
+              writer.Append(@"\t");
+              break;
+            case '\n':
+              writer.Append(@"\n");
+              break;
+            case '\r':
+              writer.Append(@"\r");
+              break;
+            case '\f':
+              writer.Append(@"\f");
+              break;
+            case '\b':
+              writer.Append(@"\b");
+              break;
+            case '\\':
+              writer.Append(@"\\");
+              break;
+            case '\u0085': // Next Line
+              writer.Append(@"\u0085");
+              break;
+            case '\u2028': // Line Separator
+              writer.Append(@"\u2028");
+              break;
+            case '\u2029': // Paragraph Separator
+              writer.Append(@"\u2029");
+              break;
+            case '\'':
+              // only escape if this charater is being used as the delimiter
+              writer.Append((delimiter == '\'') ? @"\'" : @"'");
+              break;
+            case '"':
+              // only escape if this charater is being used as the delimiter
+              writer.Append((delimiter == '"') ? "\\\"" : @"""");
+              break;
+            default:
+              if (c > '\u001f')
+                writer.Append(c);
+              else
+                StringUtils.WriteCharAsUnicode(writer, c);
+              break;
+          }
         }
       }
 
       // trailing delimiter
       if (appendDelimiters)
-        writer.Write(delimiter);
+        writer.Append(delimiter);
     }
 
     public static string ToEscapedJavaScriptString(string value)
@@ -109,11 +106,14 @@ namespace Newtonsoft.Json.Utilities
 
     public static string ToEscapedJavaScriptString(string value, char delimiter, bool appendDelimiters)
     {
-      using (StringWriter w = StringUtils.CreateStringWriter(StringUtils.GetLength(value) ?? 16))
-      {
-        WriteEscapedJavaScriptString(w, value, delimiter, appendDelimiters);
-        return w.ToString();
-      }
+      int length = value.Length;
+      if (appendDelimiters)
+        length += 2;
+
+      StringBuilder builder = new StringBuilder(length);
+
+      WriteEscapedJavaScriptString(builder, value, delimiter, appendDelimiters);
+      return builder.ToString();
     }
   }
 }

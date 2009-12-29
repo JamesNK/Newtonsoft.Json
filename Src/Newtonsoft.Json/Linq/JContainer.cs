@@ -219,8 +219,7 @@ namespace Newtonsoft.Json.Linq
       {
         yield return current;
       }
-      while (current != null
-        && ((current = current.Next) != null));
+      while ((current = current.Next) != null);
     }
 
     /// <summary>

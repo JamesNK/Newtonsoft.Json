@@ -37,7 +37,12 @@ namespace Newtonsoft.Json.Bson
   /// </summary>
   public class BsonWriter : JTokenWriter
   {
+    private static readonly Encoding Encoding = Encoding.UTF8;
+
     private readonly BinaryWriter _writer;
+
+    private byte[] _largeByteBuffer;
+    private int _maxChars;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BsonWriter"/> class.
@@ -68,7 +73,7 @@ namespace Newtonsoft.Json.Bson
             foreach (JProperty property in t)
             {
               _writer.Write((sbyte)GetTypeNumber(property.Value));
-              WriteString(property.Name);
+              WriteString(property.Name, false);
               WriteToken(property.Value);
             }
             _writer.Write((byte)0);
@@ -82,7 +87,7 @@ namespace Newtonsoft.Json.Bson
             foreach (JToken c in t)
             {
               _writer.Write((sbyte)GetTypeNumber(c));
-              WriteString(index.ToString(CultureInfo.InvariantCulture));
+              WriteString(index.ToString(CultureInfo.InvariantCulture), false);
               WriteToken(c);
               index++;
             }
@@ -96,7 +101,7 @@ namespace Newtonsoft.Json.Bson
           _writer.Write(Convert.ToDouble(((JValue)t).Value, CultureInfo.InvariantCulture));
           break;
         case JTokenType.String:
-          WriteStringWithLength((string)t);
+          WriteString((string)t, true);
           break;
         case JTokenType.Boolean:
           _writer.Write((bool)t);
@@ -121,17 +126,37 @@ namespace Newtonsoft.Json.Bson
       }
     }
 
-    private void WriteString(string s)
+    private void WriteString(string s, bool includeLength)
     {
-      byte[] bytes = Encoding.UTF8.GetBytes(s);
-      _writer.Write(bytes);
-      _writer.Write((byte)0);
-    }
+      int byteCount = Encoding.GetByteCount(s);
 
-    private void WriteStringWithLength(string s)
-    {
-      _writer.Write(CalculateSizeWithLength(s, false));
-      WriteString(s);
+      if (includeLength)
+        _writer.Write(CalculateSizeWithLength(byteCount, false));
+
+      if (_largeByteBuffer == null)
+      {
+        _largeByteBuffer = new byte[256];
+        _maxChars = 256 / Encoding.GetMaxByteCount(1);
+      }
+      if (byteCount <= 256)
+      {
+        Encoding.GetBytes(s, 0, s.Length, _largeByteBuffer, 0);
+        _writer.Write(_largeByteBuffer, 0, byteCount);
+      }
+      else
+      {
+        int charCount;
+        int totalCharsWritten = 0;
+        for (int i = s.Length; i > 0; i -= charCount)
+        {
+          charCount = (i > _maxChars) ? _maxChars : i;
+          int count = Encoding.GetBytes(s, totalCharsWritten, charCount, _largeByteBuffer, 0);
+          _writer.Write(_largeByteBuffer, 0, count);
+          totalCharsWritten += charCount;
+        }
+      }
+
+      _writer.Write((byte)0);
     }
 
     private BsonType GetTypeNumber(JToken t)
@@ -164,18 +189,21 @@ namespace Newtonsoft.Json.Bson
 
     private int CalculateSize(string s)
     {
-      return Encoding.UTF8.GetByteCount(s) + 1;
+      return Encoding.GetByteCount(s) + 1;
     }
 
     private int CalculateSizeWithLength(string s, bool includeSize)
+    {
+      return CalculateSizeWithLength(Encoding.GetByteCount(s), includeSize);
+    }
+
+    private int CalculateSizeWithLength(int stringByteCount, bool includeSize)
     {
       int baseSize = (includeSize)
         ? 5 // size bytes + terminator
         : 1; // terminator
 
-      int byteCount = Encoding.UTF8.GetByteCount(s);
-
-      return baseSize + byteCount;
+      return baseSize + stringByteCount;
     }
 
     private int CalculateSize(JToken t)

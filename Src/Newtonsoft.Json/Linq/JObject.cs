@@ -105,10 +105,14 @@ namespace Newtonsoft.Json.Linq
       if (o.Type != JTokenType.Property)
         throw new ArgumentException("Can not add {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, o.GetType(), GetType()));
 
+      // looping over all properties every time isn't good
+      // need to think about performance here
       JProperty property = (JProperty)o;
-      bool matchingProperty = Properties().Any(p => string.Equals(p.Name, property.Name, StringComparison.Ordinal) && p != existing);
-      if (matchingProperty)
-        throw new ArgumentException("Can not add property {0} to {1}. Property with the same name already exists on object.".FormatWith(CultureInfo.InvariantCulture, property.Name, GetType()));
+      foreach (JProperty childProperty in Children())
+      {
+        if (childProperty != existing && string.Equals(childProperty.Name, property.Name, StringComparison.Ordinal))
+          throw new ArgumentException("Can not add property {0} to {1}. Property with the same name already exists on object.".FormatWith(CultureInfo.InvariantCulture, property.Name, GetType()));
+      }
     }
 
     internal void InternalPropertyChanged(JProperty childProperty)

@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Diagnostics;
-
-using Newtonsoft.Json;
 using System.IO;
 
 using System.Web.Script.Serialization;
@@ -16,6 +14,13 @@ using Newtonsoft.Json.Bson;
 
 namespace Newtonsoft.Json.Tests
 {
+  public class Image
+  {
+    public string FileName { get; set; }
+    public string Title { get; set; }
+    public byte[] Data { get; set; }
+  }
+
   public class PerformanceTests : TestFixtureBase
   {
     private const int Iterations = 100;
@@ -71,6 +76,50 @@ namespace Newtonsoft.Json.Tests
     [Test]
     public void Serialize()
     {
+      TestClass test = CreateSerializationObject();
+
+      BenchmarkSerializeMethod(SerializeMethod.JsonNet, test);
+      BenchmarkSerializeMethod(SerializeMethod.JsonNetBinary, test);
+      BenchmarkSerializeMethod(SerializeMethod.JavaScriptSerializer, test);
+      BenchmarkSerializeMethod(SerializeMethod.DataContractJsonSerializer, test);
+    }
+
+    [Test]
+    public void Deserialize()
+    {
+      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JsonNet, JsonText);
+      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JsonNetBinary, MiscellaneousUtils.HexToBytes(BsonHex));
+      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JavaScriptSerializer, JsonText);
+      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.DataContractJsonSerializer, JsonText);
+    }
+
+    [Test]
+    public void SerializeDataSize()
+    {
+      Image image = new Image();
+      image.Data = System.IO.File.ReadAllBytes(@"..\..\bunny_pancake.jpg");
+      image.FileName = "bunny_pancake.jpg";
+      image.Title = "I have no idea what you are talking about so here's a bunny with a pancake on its head";
+
+      string json = JsonConvert.SerializeObject(image, Formatting.None);
+      byte[] jsonBytes = Encoding.UTF8.GetBytes(json);
+
+      MemoryStream ms = new MemoryStream();
+      JsonSerializer serializer = new JsonSerializer();
+      BsonWriter writer = new BsonWriter(ms);
+
+      serializer.Serialize(writer, image);
+      writer.Flush();
+
+      byte[] bsonBytes = ms.ToArray();
+
+      Console.WriteLine("Image size: {0} bytes", image.Data.Length);
+      Console.WriteLine("JSON size: {0} bytes", jsonBytes.Length);
+      Console.WriteLine("BSON size: {0} bytes", bsonBytes.Length);
+    }
+
+    private TestClass CreateSerializationObject()
+    {
       TestClass test = new TestClass();
 
       test.Address1.Address = "fff Street";
@@ -90,20 +139,7 @@ namespace Newtonsoft.Json.Tests
       address.Entered = DateTime.Now.AddDays(-2);
       address.Address = "array 2 address";
       test.Addresses.Add(address);
-
-      BenchmarkSerializeMethod(SerializeMethod.JsonNet, test);
-      BenchmarkSerializeMethod(SerializeMethod.JsonNetBinary, test);
-      BenchmarkSerializeMethod(SerializeMethod.JavaScriptSerializer, test);
-      BenchmarkSerializeMethod(SerializeMethod.DataContractJsonSerializer, test);
-    }
-
-    [Test]
-    public void Deserialize()
-    {
-      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JsonNet, JsonText);
-      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JsonNetBinary, MiscellaneousUtils.HexToBytes(BsonHex));
-      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JavaScriptSerializer, JsonText);
-      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.DataContractJsonSerializer, JsonText);
+      return test;
     }
 
     public string SerializeJsonNet(object value)
@@ -203,33 +239,49 @@ namespace Newtonsoft.Json.Tests
       return dataContractSerializer.ReadObject(ms);
     }
 
+    private static readonly byte[] Buffer = new byte[4096];
+
+    private string Serialize(SerializeMethod method, object value)
+    {
+      string json;
+
+      switch (method)
+      {
+        case SerializeMethod.JsonNet:
+          json = JsonConvert.SerializeObject(value);
+          break;
+        case SerializeMethod.JsonNetBinary:
+          MemoryStream ms = new MemoryStream(Buffer);
+          JsonSerializer serializer = new JsonSerializer();
+          BsonWriter writer = new BsonWriter(ms);
+          serializer.Serialize(writer, value);
+
+          json = "Bytes = " + ms.Length;
+          break;
+        case SerializeMethod.JavaScriptSerializer:
+          json = SerializeWebExtensions(value);
+          break;
+        case SerializeMethod.DataContractJsonSerializer:
+          json = SerializeDataContract(value);
+          break;
+        default:
+          throw new ArgumentOutOfRangeException("method");
+      }
+
+      return json;
+    }
+
     public void BenchmarkSerializeMethod(SerializeMethod method, object value)
     {
+      Serialize(method, value);
+
       Stopwatch timed = new Stopwatch();
       timed.Start();
 
       string json = null;
       for (int x = 0; x < Iterations; x++)
       {
-        switch (method)
-        {
-          case SerializeMethod.JsonNet:
-            json = JsonConvert.SerializeObject(value);
-            break;
-          case SerializeMethod.JsonNetBinary:
-            JsonSerializer serializer = new JsonSerializer();
-            MemoryStream ms = new MemoryStream();
-            BsonWriter writer = new BsonWriter(ms);
-            serializer.Serialize(writer, value);
-            json = "{Bytes " + ms.Length + "}";
-            break;
-          case SerializeMethod.JavaScriptSerializer:
-            json = SerializeWebExtensions(value);
-            break;
-          case SerializeMethod.DataContractJsonSerializer:
-            json = SerializeDataContract(value);
-            break;
-        }
+        json = Serialize(method, value);
       }
 
       timed.Stop();
@@ -248,21 +300,7 @@ namespace Newtonsoft.Json.Tests
       object value = null;
       for (int x = 0; x < Iterations; x++)
       {
-        switch (method)
-        {
-          case SerializeMethod.JsonNet:
-            value = DeserializeJsonNet<T>((string)json);
-            break;
-          case SerializeMethod.JsonNetBinary:
-            value = DeserializeJsonNetBinary<T>((byte[])json);
-            break;
-          case SerializeMethod.JavaScriptSerializer:
-            value = DeserializeWebExtensions<T>((string)json);
-            break;
-          case SerializeMethod.DataContractJsonSerializer:
-            value = DeserializeDataContract<T>((string)json);
-            break;
-        }
+        value = Deserialize<T>(method, json);
       }
 
       timed.Stop();
@@ -271,6 +309,30 @@ namespace Newtonsoft.Json.Tests
       Console.WriteLine("{0} ms", timed.ElapsedMilliseconds);
       Console.WriteLine(value);
       Console.WriteLine();
+    }
+
+    private object Deserialize<T>(SerializeMethod method, object json)
+    {
+      object value;
+
+      switch (method)
+      {
+        case SerializeMethod.JsonNet:
+          value = DeserializeJsonNet<T>((string) json);
+          break;
+        case SerializeMethod.JsonNetBinary:
+          value = DeserializeJsonNetBinary<T>((byte[]) json);
+          break;
+        case SerializeMethod.JavaScriptSerializer:
+          value = DeserializeWebExtensions<T>((string) json);
+          break;
+        case SerializeMethod.DataContractJsonSerializer:
+          value = DeserializeDataContract<T>((string) json);
+          break;
+        default:
+          throw new ArgumentOutOfRangeException("method");
+      }
+      return value;
     }
   }
 
