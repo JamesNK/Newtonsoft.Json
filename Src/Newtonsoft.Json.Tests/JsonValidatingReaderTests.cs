@@ -527,7 +527,7 @@ namespace Newtonsoft.Json.Tests
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Null, reader.TokenType);
-      Assert.AreEqual(@"Value null is not defined in enum. Line 1, position 6.", validationEventArgs.Message);
+      Assert.AreEqual(@"Value null is not defined in enum. Line 1, position 5.", validationEventArgs.Message);
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
@@ -564,7 +564,7 @@ namespace Newtonsoft.Json.Tests
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Boolean, reader.TokenType);
-      Assert.AreEqual(@"Value false is not defined in enum. Line 1, position 12.", validationEventArgs.Message);
+      Assert.AreEqual(@"Value false is not defined in enum. Line 1, position 11.", validationEventArgs.Message);
       
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
@@ -1005,7 +1005,7 @@ namespace Newtonsoft.Json.Tests
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Null, reader.TokenType);
-      Assert.AreEqual("Index 3 has not been defined and the schema does not allow additional items. Line 1, position 14.", validationEventArgs.Message);
+      Assert.AreEqual("Index 3 has not been defined and the schema does not allow additional items. Line 1, position 13.", validationEventArgs.Message);
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.EndArray, reader.TokenType);

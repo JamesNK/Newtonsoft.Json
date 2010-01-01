@@ -288,7 +288,15 @@ namespace Newtonsoft.Json
     public override void WriteValue(string value)
     {
       base.WriteValue(value);
-      WriteValueInternal((value != null) ? JsonConvert.ToString(value, _quoteChar) : JsonConvert.Null, JsonToken.String);
+      if (value == null)
+        WriteValueInternal(JsonConvert.Null, JsonToken.Null);
+      else
+      {
+        JavaScriptUtils.WriteEscapedJavaScriptString(_writer, value, _quoteChar, true);
+        //_writer.Write(JavaScriptUtils.EscapeJavaScriptString(value, _quoteChar, false));
+        //WriteValueInternal(, JsonToken.String);
+        //JavaScriptUtils.WriteEscapedJavaScriptString(_writer, value, _quoteChar, true);
+      }
     }
 
     /// <summary>
@@ -428,7 +436,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(DateTime value)
     {
       base.WriteValue(value);
-      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Date);
+      JsonConvert.WriteDateTimeString(_writer, value);
     }
 
     /// <summary>

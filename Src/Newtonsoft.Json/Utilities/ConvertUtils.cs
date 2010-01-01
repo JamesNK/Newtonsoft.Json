@@ -314,6 +314,10 @@ namespace Newtonsoft.Json.Utilities
     public static object ConvertOrCast(object initialValue, CultureInfo culture, Type targetType)
     {
       object convertedValue;
+
+      if (initialValue == null && ReflectionUtils.IsNullable(targetType))
+        return null;
+
       if (TryConvert(initialValue, culture, targetType, out convertedValue))
         return convertedValue;
 

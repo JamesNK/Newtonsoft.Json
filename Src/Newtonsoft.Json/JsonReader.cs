@@ -102,6 +102,7 @@ namespace Newtonsoft.Json
     private Type _valueType;
     private char _quoteChar;
     private State _currentState;
+    private JTokenType _currentTypeContext;
 
     /// <summary>
     /// Gets the current reader state.
@@ -182,6 +183,7 @@ namespace Newtonsoft.Json
     {
       _stack.Add(value);
       _top++;
+      _currentTypeContext = value;
     }
 
     private JTokenType Pop()
@@ -189,13 +191,14 @@ namespace Newtonsoft.Json
       JTokenType value = Peek();
       _stack.RemoveAt(_stack.Count - 1);
       _top--;
+      _currentTypeContext = _stack[_top - 1];
 
       return value;
     }
 
     private JTokenType Peek()
     {
-      return _stack[_top - 1];
+      return _currentTypeContext;
     }
 
     /// <summary>

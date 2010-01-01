@@ -48,7 +48,7 @@ namespace Newtonsoft.Json.Tests
 ,{""t"":""CSCO"", ""n"":""Cisco Systems, Inc."", ""e"":""NASDAQ"", ""id"":""99624""}
 ,{""t"":""CVX"", ""n"":""Chevron Corporation"", ""e"":""NYSE"", ""id"":""667226""}
 ,{""t"":""TM"", ""n"":""Toyota Motor Corporation (ADR)"", ""e"":""NYSE"", ""id"":""655880""}
-,{""t"":""JPM"", ""n"":""JPMorgan Chase \x26 Co."", ""e"":""NYSE"", ""id"":""665639""}
+,{""t"":""JPM"", ""n"":""JPMorgan Chase \\x26 Co."", ""e"":""NYSE"", ""id"":""665639""}
 ,{""t"":""COP"", ""n"":""ConocoPhillips"", ""e"":""NYSE"", ""id"":""1691168""}
 ,{""t"":""LFC"", ""n"":""China Life Insurance Company Ltd. (ADR)"", ""e"":""NYSE"", ""id"":""688679""}
 ,{""t"":""NOK"", ""n"":""Nokia Corporation (ADR)"", ""e"":""NYSE"", ""id"":""657729""}
@@ -138,6 +138,8 @@ namespace Newtonsoft.Json.Tests
         Assert.AreEqual(jsonReader.TokenType, JsonToken.EndObject);
         Assert.AreEqual(7, jsonReader.LineNumber);
         Assert.AreEqual(1, jsonReader.LinePosition);
+
+        Assert.IsFalse(jsonReader.Read());
       }
     }
 
@@ -176,10 +178,12 @@ namespace Newtonsoft.Json.Tests
 
         jsonReader.Read();
         Assert.AreEqual(jsonReader.TokenType, JsonToken.Integer);
+        Assert.AreEqual(1, jsonReader.Value);
         Assert.AreEqual(3, jsonReader.Depth);
 
         jsonReader.Read();
         Assert.AreEqual(jsonReader.TokenType, JsonToken.Integer);
+        Assert.AreEqual(2, jsonReader.Value);
         Assert.AreEqual(3, jsonReader.Depth);
 
         jsonReader.Read();
@@ -190,6 +194,140 @@ namespace Newtonsoft.Json.Tests
         Assert.AreEqual(jsonReader.TokenType, JsonToken.EndObject);
         Assert.AreEqual(0, jsonReader.Depth);
       }
+    }
+
+    [Test]
+    [ExpectedException(typeof(ArgumentNullException), ExpectedMessage = @"Value cannot be null.
+Parameter name: reader")]
+    public void NullTextReader()
+    {
+      new JsonTextReader(null);
+    }
+    
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unterminated string. Expected delimiter: '. Line 1, position 3.")]
+    public void UnexpectedEndOfString()
+    {
+      JsonReader reader = new JsonTextReader(new StringReader("'hi"));
+      reader.Read();
+    }
+
+    [Test]
+    public void ReadNullTerminatorStrings()
+    {
+      JsonReader reader = new JsonTextReader(new StringReader("'h\0i'"));
+      Assert.IsTrue(reader.Read());
+
+      Assert.AreEqual("h\0i", reader.Value);
+    }
+    
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end while parsing unicode character. Line 1, position 7.")]
+    public void UnexpectedEndOfHex()
+    {
+      JsonReader reader = new JsonTextReader(new StringReader(@"'h\u006"));
+      reader.Read();
+    }
+    
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unterminated string. Expected delimiter: '. Line 1, position 3.")]
+    public void UnexpectedEndOfControlCharacter()
+    {
+      JsonReader reader = new JsonTextReader(new StringReader(@"'h\"));
+      reader.Read();
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected character encountered while parsing value: t. Line 1, position 1.")]
+    public void ReadBytesWithBadCharacter()
+    {
+      JsonReader reader = new JsonTextReader(new StringReader(@"true"));
+      reader.ReadAsBytes();
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unterminated string. Expected delimiter: '. Line 1, position 17.")]
+    public void ReadBytesWithUnexpectedEnd()
+    {
+      string helloWorld = "Hello world!";
+      byte[] helloWorldData = Encoding.UTF8.GetBytes(helloWorld);
+
+      JsonReader reader = new JsonTextReader(new StringReader(@"'" + Convert.ToBase64String(helloWorldData)));
+      reader.ReadAsBytes();
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end when reading bytes: Line 1, position 3.")]
+    public void ReadBytesNoStartWithUnexpectedEnd()
+    {
+      JsonReader reader = new JsonTextReader(new StringReader(@"[  "));
+      Assert.IsTrue(reader.Read());
+      reader.ReadAsBytes();
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end when parsing unquoted property name. Line 1, position 4.")]
+    public void UnexpectedEndWhenParsingUnquotedProperty()
+    {
+      JsonReader reader = new JsonTextReader(new StringReader(@"{aww"));
+      Assert.IsTrue(reader.Read());
+      reader.Read();
+    }
+
+    [Test]
+    public void ParsingQuotedPropertyWithControlCharacters()
+    {
+      JsonReader reader = new JsonTextReader(new StringReader(@"{'hi\r\nbye':1}"));
+      Assert.IsTrue(reader.Read());
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+      Assert.AreEqual(@"hi
+bye", reader.Value);
+      Assert.IsTrue(reader.Read());
+      Assert.IsTrue(reader.Read());
+      Assert.IsFalse(reader.Read());
+    }
+
+    [Test]
+    public void ReadBytesFollowingNumberInArray()
+    {
+      string helloWorld = "Hello world!";
+      byte[] helloWorldData = Encoding.UTF8.GetBytes(helloWorld);
+
+      JsonReader reader = new JsonTextReader(new StringReader(@"[1,'" + Convert.ToBase64String(helloWorldData) + @"']"));
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+      byte[] data = reader.ReadAsBytes();
+      Assert.AreEqual(helloWorldData, data);
+      Assert.AreEqual(JsonToken.Bytes, reader.TokenType);
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+
+      Assert.IsFalse(reader.Read());
+    }
+
+    [Test]
+    public void ReadBytesFollowingNumberInObject()
+    {
+      string helloWorld = "Hello world!";
+      byte[] helloWorldData = Encoding.UTF8.GetBytes(helloWorld);
+
+      JsonReader reader = new JsonTextReader(new StringReader(@"{num:1,data:'" + Convert.ToBase64String(helloWorldData) + @"'}"));
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+      Assert.IsTrue(reader.Read());
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+      Assert.IsTrue(reader.Read());
+      byte[] data = reader.ReadAsBytes();
+      Assert.AreEqual(helloWorldData, data);
+      Assert.AreEqual(JsonToken.Bytes, reader.TokenType);
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
+
+      Assert.IsFalse(reader.Read());
     }
 
     [Test]

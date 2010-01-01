@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !PocketPC
+#if !PocketPC && !SILVERLIGHT
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,6 +64,20 @@ namespace Newtonsoft.Json.Serialization
       {
         if (_setter == null)
           _setter = LateBoundDelegateFactory.CreateSet<object>(_memberInfo);
+
+#if DEBUG
+        // dynamic method doesn't check whether the type is 'legal' to set
+        // add this check for unit tests
+        if (value == null)
+        {
+          if (!ReflectionUtils.IsNullable(ReflectionUtils.GetMemberUnderlyingType(_memberInfo)))
+            throw new Exception("Incompatible value. Cannot set {0} to null.".FormatWith(CultureInfo.InvariantCulture, _memberInfo));
+        }
+        else if (!ReflectionUtils.GetMemberUnderlyingType(_memberInfo).IsAssignableFrom(value.GetType()))
+        {
+            throw new Exception("Incompatible value. Cannot set {0} to type {1}.".FormatWith(CultureInfo.InvariantCulture, _memberInfo, value.GetType()));
+        }
+#endif
 
         _setter(target, value);
       }

@@ -91,7 +91,7 @@ namespace Newtonsoft.Json.Serialization
       }
 
       if (converter != null
-          || Serializer.HasClassConverter(contract, out converter)
+          || ((converter = contract.Converter) != null)
           || Serializer.HasMatchingConverter(contract.UnderlyingType, out converter))
       {
         SerializeConvertable(writer, converter, value, contract);
@@ -165,7 +165,7 @@ namespace Newtonsoft.Json.Serialization
       return Serializer.ReferenceResolver.IsReferenced(value);
     }
 
-    private void WriteMemberInfoProperty(JsonWriter writer, object value, object memberValue, JsonProperty property, JsonContract contract)
+    private void WriteMemberInfoProperty(JsonWriter writer, object memberValue, JsonProperty property, JsonContract contract)
     {
       string propertyName = property.PropertyName;
       JsonConverter memberConverter = property.MemberConverter;
@@ -295,7 +295,7 @@ namespace Newtonsoft.Json.Serialization
             object memberValue = property.ValueProvider.GetValue(value);
             JsonContract memberContract = GetContractSafe(memberValue);
 
-            WriteMemberInfoProperty(writer, value, memberValue, property, memberContract);
+            WriteMemberInfoProperty(writer, memberValue, property, memberContract);
           }
         }
         catch (Exception ex)

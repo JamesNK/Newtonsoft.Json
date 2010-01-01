@@ -171,8 +171,8 @@ namespace Newtonsoft.Json.Serialization
       if (memberConverter != null)
         return memberConverter.ReadJson(reader, objectType, GetInternalSerializer());
 
-      if (objectType != null && Serializer.HasClassConverter(contract, out converter))
-        return converter.ReadJson(reader, objectType, GetInternalSerializer());
+      if (contract != null && contract.Converter != null)
+        return contract.Converter.ReadJson(reader, objectType, GetInternalSerializer());
 
       if (objectType != null && Serializer.HasMatchingConverter(objectType, out converter))
         return converter.ReadJson(reader, objectType, GetInternalSerializer());
@@ -472,7 +472,7 @@ namespace Newtonsoft.Json.Serialization
       return dictionary.UnderlyingDictionary;
     }
 
-    private IDictionary PopulateDictionary(IWrappedDictionary dictionary, JsonReader reader, JsonDictionaryContract contract, string id)
+    private object PopulateDictionary(IWrappedDictionary dictionary, JsonReader reader, JsonDictionaryContract contract, string id)
     {
       if (id != null)
         Serializer.ReferenceResolver.AddReference(id, dictionary.UnderlyingDictionary);
@@ -491,7 +491,7 @@ namespace Newtonsoft.Json.Serialization
 
             try
             {
-              dictionary.Add(keyValue, CreateValue(reader, contract.DictionaryValueType, GetContractSafe(contract.DictionaryValueType), null, null));
+              dictionary[keyValue] = CreateValue(reader, contract.DictionaryValueType, GetContractSafe(contract.DictionaryValueType), null, null);
             }
             catch (Exception ex)
             {
@@ -504,7 +504,7 @@ namespace Newtonsoft.Json.Serialization
           case JsonToken.EndObject:
             contract.InvokeOnDeserialized(dictionary.UnderlyingDictionary);
             
-            return dictionary;
+            return dictionary.UnderlyingDictionary;
           default:
             throw new JsonSerializationException("Unexpected token when deserializing object: " + reader.TokenType);
         }
@@ -615,10 +615,11 @@ namespace Newtonsoft.Json.Serialization
             if (!reader.Read())
               throw new JsonSerializationException("Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
 
-            JsonProperty property;
             // attempt exact case match first
             // then try match ignoring case
-            if (contract.Properties.TryGetClosestMatchProperty(memberName, out property))
+            JsonProperty property = contract.Properties.GetClosestMatchProperty(memberName);
+
+            if (property != null)
             {
               if (!property.Ignored)
               {
@@ -693,10 +694,11 @@ namespace Newtonsoft.Json.Serialization
           case JsonToken.PropertyName:
             string memberName = reader.Value.ToString();
 
-            JsonProperty property;
             // attempt exact case match first
             // then try match ignoring case
-            if (!contract.Properties.TryGetClosestMatchProperty(memberName, out property))
+            JsonProperty property = contract.Properties.GetClosestMatchProperty(memberName);
+
+            if (property == null)
             {
               if (Serializer.MissingMemberHandling == MissingMemberHandling.Error)
                 throw new JsonSerializationException("Could not find member '{0}' on object of type '{1}'".FormatWith(CultureInfo.InvariantCulture, memberName, contract.UnderlyingType.Name));

@@ -418,16 +418,6 @@ namespace Newtonsoft.Json
       serializerWriter.Serialize(jsonWriter, value);
     }
 
-    internal bool HasClassConverter(JsonContract contract, out JsonConverter converter)
-    {
-      if (contract == null)
-        throw new ArgumentNullException("contract");
-
-      converter = contract.Converter;
-
-      return (converter != null);
-    }
-
     internal bool HasMatchingConverter(Type type, out JsonConverter matchingConverter)
     {
       if (HasMatchingConverter(_converters, type, out matchingConverter))

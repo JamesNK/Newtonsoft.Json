@@ -209,7 +209,7 @@ namespace Newtonsoft.Json.Serialization
       if (ReflectionUtils.HasDefaultConstructor(contract.CreatedType, true)
         || contract.CreatedType.IsValueType)
       {
-#if !PocketPC
+#if !PocketPC && !SILVERLIGHT
         contract.DefaultCreator = LateBoundDelegateFactory.CreateDefaultConstructor(contract.CreatedType);
 #else
         ConstructorInfo constructorInfo = ReflectionUtils.GetDefaultConstructor(contract.CreatedType, true);
@@ -414,7 +414,7 @@ namespace Newtonsoft.Json.Serialization
     {
       JsonProperty property = new JsonProperty();
       property.PropertyType = ReflectionUtils.GetMemberUnderlyingType(member);
-#if !PocketPC
+#if !PocketPC && !SILVERLIGHT
       property.ValueProvider = new DynamicValueProvider(member);
 #else
       property.ValueProvider = new ReflectionValueProvider(member);

@@ -29,6 +29,7 @@ using System.Globalization;
 using Newtonsoft.Json.Utilities;
 using System.Xml;
 using Newtonsoft.Json.Converters;
+using System.Text;
 
 namespace Newtonsoft.Json
 {
@@ -96,14 +97,11 @@ namespace Newtonsoft.Json
     /// <returns>A JSON string representation of the <see cref="DateTime"/>.</returns>
     public static string ToString(DateTime value)
     {
-      TimeSpan utcOffset;
-#if !PocketPC && !NET20
-      utcOffset = TimeZoneInfo.Local.GetUtcOffset(value);
-#else
-      utcOffset = TimeZone.CurrentTimeZone.GetUtcOffset(value);
-#endif
-
-      return ToStringInternal(value, utcOffset, value.Kind);
+      using (StringWriter writer = StringUtils.CreateStringWriter(64))
+      {
+        WriteDateTimeString(writer, value, GetUtcOffset(value), value.Kind);
+        return writer.ToString();
+      }
     }
 
 #if !PocketPC && !NET20
@@ -114,33 +112,95 @@ namespace Newtonsoft.Json
     /// <returns>A JSON string representation of the <see cref="DateTimeOffset"/>.</returns>
     public static string ToString(DateTimeOffset value)
     {
-      return ToStringInternal(value.UtcDateTime, value.Offset, DateTimeKind.Local);
+      using (StringWriter writer = StringUtils.CreateStringWriter(64))
+      {
+        WriteDateTimeString(writer, value.UtcDateTime, value.Offset, DateTimeKind.Local);
+        return writer.ToString();
+      }
     }
 #endif
 
-    internal static string ToStringInternal(DateTime value, TimeSpan offset, DateTimeKind kind)
+    private static TimeSpan GetUtcOffset(DateTime dateTime)
     {
-      long javaScriptTicks = ConvertDateTimeToJavaScriptTicks(value);
+#if SILVERLIGHT
+      return TimeZoneInfo.Local.GetUtcOffset(dateTime);
+#else
+      return TimeZone.CurrentTimeZone.GetUtcOffset(dateTime);
+#endif
+    }
 
-      string timezoneOffset;
+    internal static void WriteDateTimeString(TextWriter writer, DateTime value)
+    {
+      WriteDateTimeString(writer, value, GetUtcOffset(value), value.Kind);
+    }
+
+    internal static void WriteDateTimeString(TextWriter writer, DateTime value, TimeSpan offset, DateTimeKind kind)
+    {
+      long javaScriptTicks = ConvertDateTimeToJavaScriptTicks(value, offset);
+
+      writer.Write(@"""\/Date(");
+      writer.Write(javaScriptTicks);
+      
       switch (kind)
       {
         case DateTimeKind.Local:
         case DateTimeKind.Unspecified:
-          timezoneOffset = offset.Hours.ToString("+00;-00", CultureInfo.InvariantCulture) + offset.Minutes.ToString("00;00", CultureInfo.InvariantCulture);
-          break;
-        default:
-          timezoneOffset = string.Empty;
+          writer.Write((offset.Ticks >= 0L) ? "+" : "-");
+
+          int absHours = Math.Abs(offset.Hours);
+          if (absHours < 10)
+            writer.Write(0);
+          writer.Write(absHours);
+          int absMinutes = Math.Abs(offset.Minutes);
+          if (absMinutes < 10)
+            writer.Write(0);
+          writer.Write(absMinutes);
           break;
       }
-      return @"""\/Date(" + javaScriptTicks.ToString(CultureInfo.InvariantCulture) + timezoneOffset + @")\/""";
+
+      writer.Write(@")\/""");
+    }
+
+    private static long ToUniversalTicks(DateTime dateTime)
+    {
+      if (dateTime.Kind == DateTimeKind.Utc)
+        return dateTime.Ticks;
+
+      return ToUniversalTicks(dateTime, GetUtcOffset(dateTime));
+    }
+
+    private static long ToUniversalTicks(DateTime dateTime, TimeSpan offset)
+    {
+      if (dateTime.Kind == DateTimeKind.Utc)
+        return dateTime.Ticks;
+
+      long ticks = dateTime.Ticks - offset.Ticks;
+      if (ticks > 3155378975999999999L)
+        return 3155378975999999999L;
+
+      if (ticks < 0L)
+        return 0L;
+
+      return ticks;
+    }
+
+    internal static long ConvertDateTimeToJavaScriptTicks(DateTime dateTime, TimeSpan offset)
+    {
+      long universialTicks = ToUniversalTicks(dateTime, offset);
+
+      return UniversialTicksToJavaScriptTicks(universialTicks);
     }
 
     internal static long ConvertDateTimeToJavaScriptTicks(DateTime dateTime)
     {
-      DateTime utcDateTime = dateTime.ToUniversalTime();
+      long universialTicks = ToUniversalTicks(dateTime);
 
-      long javaScriptTicks = (utcDateTime.Ticks - InitialJavaScriptDateTicks) / 10000;
+      return UniversialTicksToJavaScriptTicks(universialTicks);
+    }
+
+    private static long UniversialTicksToJavaScriptTicks(long universialTicks)
+    {
+      long javaScriptTicks = (universialTicks - InitialJavaScriptDateTicks) / 10000;
 
       return javaScriptTicks;
     }
@@ -524,7 +584,8 @@ namespace Newtonsoft.Json
     {
       JsonSerializer jsonSerializer = JsonSerializer.Create(settings);
 
-      StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
+      StringBuilder sb = new StringBuilder(128);
+      StringWriter sw = new StringWriter(sb, CultureInfo.InvariantCulture);
       using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
       {
         jsonWriter.Formatting = formatting;

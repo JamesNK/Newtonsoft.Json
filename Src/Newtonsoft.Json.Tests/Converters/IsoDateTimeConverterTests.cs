@@ -97,7 +97,11 @@ namespace Newtonsoft.Json.Tests.Converters
     [Test]
     public void SerializeCustomFormattedDateTime()
     {
-      IsoDateTimeConverter converter = new IsoDateTimeConverter() { DateTimeFormat = "dd/MM/yyyy" };
+      IsoDateTimeConverter converter = new IsoDateTimeConverter
+                                         {
+                                           DateTimeFormat = "dd/MM/yyyy",
+                                           Culture = CultureInfo.InvariantCulture
+                                         };
 
       string json = @"""09/12/2006""";
 

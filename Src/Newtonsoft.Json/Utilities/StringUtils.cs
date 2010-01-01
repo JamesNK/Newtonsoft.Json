@@ -325,13 +325,15 @@ namespace Newtonsoft.Json.Utilities
 
     public static string ToCharAsUnicode(char c)
     {
-      StringBuilder builder = new StringBuilder();
-      WriteCharAsUnicode(builder, c);
+      char h1 = MathUtils.IntToHex((c >> 12) & '\x000f');
+      char h2 = MathUtils.IntToHex((c >> 8) & '\x000f');
+      char h3 = MathUtils.IntToHex((c >> 4) & '\x000f');
+      char h4 = MathUtils.IntToHex(c & '\x000f');
 
-      return builder.ToString();
+      return new string(new[] { '\\', 'u', h1, h2, h3, h4 });
     }
 
-    public static void WriteCharAsUnicode(StringBuilder writer, char c)
+    public static void WriteCharAsUnicode(TextWriter writer, char c)
     {
       ValidationUtils.ArgumentNotNull(writer, "writer");
 
@@ -340,12 +342,12 @@ namespace Newtonsoft.Json.Utilities
       char h3 = MathUtils.IntToHex((c >> 4) & '\x000f');
       char h4 = MathUtils.IntToHex(c & '\x000f');
 
-      writer.Append('\\');
-      writer.Append('u');
-      writer.Append(h1);
-      writer.Append(h2);
-      writer.Append(h3);
-      writer.Append(h4);
+      writer.Write('\\');
+      writer.Write('u');
+      writer.Write(h1);
+      writer.Write(h2);
+      writer.Write(h3);
+      writer.Write(h4);
     }
 
     public static TSource ForgivingCaseSensitiveFind<TSource>(this IEnumerable<TSource> source, Func<TSource, string> valueSelector, string testValue)

@@ -85,7 +85,7 @@ namespace Newtonsoft.Json.Serialization
         _genericWrapperType = ReflectionUtils.MakeGenericType(typeof(DictionaryWrapper<,>), DictionaryKeyType, DictionaryValueType);
 
         ConstructorInfo genericWrapperConstructor = _genericWrapperType.GetConstructor(new[] { _genericCollectionDefinitionType });
-#if !PocketPC
+#if !PocketPC && !SILVERLIGHT
         _genericWrapperCreator = LateBoundDelegateFactory.CreateMethodHandler(genericWrapperConstructor);
 #else
         _genericWrapperCreator = (target, args) => genericWrapperConstructor.Invoke(new[] { args[0] });

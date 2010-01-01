@@ -152,6 +152,9 @@ now brown cow?", '"', true);
 
       result = JavaScriptUtils.ToEscapedJavaScriptString(@"Fred's ""cat"".", '\'', true);
       Assert.AreEqual(result, @"'Fred\'s ""cat"".'");
+
+      result = JavaScriptUtils.ToEscapedJavaScriptString("\u001farray\u003caddress");
+      Assert.AreEqual(result, @"""\u001farray<address""");
     }
 
     [Test]

@@ -46,6 +46,8 @@ namespace Newtonsoft.Json.Bson
     private char[] _charBuffer;
     private BsonType _currentElementType;
     private BsonReaderState _bsonReaderState;
+    private ContainerContext _currentContext;
+
     private const int MaxCharBytesSize = 128;
 
     private enum BsonReaderState
@@ -63,20 +65,9 @@ namespace Newtonsoft.Json.Bson
 
     private class ContainerContext
     {
-      public JTokenType Type { get; private set; }
-      public int Length { get; set; }
-      private int _position;
-      public int Position
-      {
-        get { return _position; }
-        set
-        {
-          if (value > Length && Length != 0)
-            throw new JsonReaderException("Read past end of current container context.");
-
-          _position = value;
-        }
-      }
+      public readonly JTokenType Type;
+      public int Length;
+      public int Position;
 
       public ContainerContext(JTokenType type)
       {
@@ -188,7 +179,7 @@ namespace Newtonsoft.Json.Bson
             _bsonReaderState = BsonReaderState.CodeWScopeScopeObject;
 
             ContainerContext newContext = new ContainerContext(JTokenType.Object);
-            _stack.Add(newContext);
+            PushContext(newContext);
             newContext.Length = ReadInt32();
 
             return true;
@@ -270,7 +261,7 @@ namespace Newtonsoft.Json.Bson
 
             SetToken(token);
             ContainerContext newContext = new ContainerContext(type);
-            _stack.Add(newContext);
+            PushContext(newContext);
             newContext.Length = ReadInt32();
             return true;
           }
@@ -292,7 +283,7 @@ namespace Newtonsoft.Json.Bson
           ReadType(_currentElementType);
           return true;
         case State.PostValue:
-          ContainerContext context = GetCurrentContext();
+          ContainerContext context = _currentContext;
           if (context == null)
             return false;
 
@@ -317,8 +308,8 @@ namespace Newtonsoft.Json.Bson
             if (ReadByte() != 0)
               throw new JsonReaderException("Unexpected end of object byte value.");
 
-            _stack.RemoveAt(_stack.Count - 1);
-            if (_stack.Count != 0)
+            PopContext();
+            if (_currentContext != null)
               MovePosition(context.Length);
 
             JsonToken endToken = (context.Type == JTokenType.Object) ? JsonToken.EndObject : JsonToken.EndArray;
@@ -344,6 +335,21 @@ namespace Newtonsoft.Json.Bson
       return false;
     }
 
+    private void PopContext()
+    {
+      _stack.RemoveAt(_stack.Count - 1);
+      if (_stack.Count == 0)
+        _currentContext = null;
+      else
+        _currentContext = _stack[_stack.Count - 1];
+    }
+
+    private void PushContext(ContainerContext newContext)
+    {
+      _stack.Add(newContext);
+      _currentContext = newContext;
+    }
+
     private byte ReadByte()
     {
       MovePosition(1);
@@ -366,7 +372,7 @@ namespace Newtonsoft.Json.Bson
             SetToken(JsonToken.StartObject);
 
             ContainerContext newContext = new ContainerContext(JTokenType.Object);
-            _stack.Add(newContext);
+            PushContext(newContext);
             newContext.Length = ReadInt32();
             break;
           }
@@ -375,7 +381,7 @@ namespace Newtonsoft.Json.Bson
             SetToken(JsonToken.StartArray);
 
             ContainerContext newContext = new ContainerContext(JTokenType.Array);
-            _stack.Add(newContext);
+            PushContext(newContext);
             newContext.Length = ReadInt32();
             break;
           }
@@ -561,19 +567,9 @@ namespace Newtonsoft.Json.Bson
       return (BsonType)_reader.ReadSByte();
     }
 
-    private ContainerContext GetCurrentContext()
-    {
-      int count = _stack.Count;
-      if (count == 0)
-        return null;
-
-      return _stack[count - 1];
-    }
-
     private void MovePosition(int count)
     {
-      ContainerContext context = GetCurrentContext();
-      context.Position += count;
+      _currentContext.Position += count;
     }
 
     private byte[] ReadBytes(int count)

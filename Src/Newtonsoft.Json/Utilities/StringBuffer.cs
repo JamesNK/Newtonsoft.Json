@@ -56,7 +56,7 @@ namespace Newtonsoft.Json.Utilities
     public void Append(char value)
     {
       // test if the buffer array is large enough to take the value
-      if (_position + 1 > _buffer.Length)
+      if (_position == _buffer.Length)
       {
         EnsureSize(1);
       }

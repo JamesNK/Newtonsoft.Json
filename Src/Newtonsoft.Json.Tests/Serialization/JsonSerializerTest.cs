@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 #if !SILVERLIGHT && !PocketPC && !NET20
 using System.ComponentModel.DataAnnotations;
+using System.Web.Script.Serialization;
 #endif
 using System.Text;
 using NUnit.Framework;
@@ -131,11 +132,20 @@ namespace Newtonsoft.Json.Tests.Serialization
     [Test]
     public void DeserializeJavaScriptDate()
     {
-      DateTime dateValue = new DateTime(2000, 3, 30);
+      DateTime dateValue = new DateTime(2010, 3, 30);
       Dictionary<string, object> testDictionary = new Dictionary<string, object>();
       testDictionary["date"] = dateValue;
 
       string jsonText = JsonConvert.SerializeObject(testDictionary);
+
+#if !PocketPC && !NET20
+      MemoryStream ms = new MemoryStream();
+      DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(Dictionary<string, object>));
+      serializer.WriteObject(ms, testDictionary);
+
+      byte[] data = ms.ToArray();
+      string output = Encoding.UTF8.GetString(data, 0, data.Length);
+#endif
 
       Dictionary<string, object> deserializedDictionary = (Dictionary<string, object>)JsonConvert.DeserializeObject(jsonText, typeof(Dictionary<string, object>));
       DateTime deserializedDate = (DateTime)deserializedDictionary["date"];
@@ -401,6 +411,37 @@ keyword such as type of business.""
 
       Assert.AreEqual(1, jsonNetResult.Count);
       Assert.AreEqual(dataContractResult[0], jsonNetResult[0]);
+    }
+
+    [Test]
+    public void BackslashEqivilence()
+    {
+      string json = @"[""vvv\/vvv\tvvv\""vvv\bvvv\nvvv\rvvv\\vvv\fvvv""]";
+      
+#if !SILVERLIGHT
+      JavaScriptSerializer javaScriptSerializer = new JavaScriptSerializer();
+      List<string> javaScriptSerializerResult = javaScriptSerializer.Deserialize<List<string>>(json);
+#endif
+
+      DataContractJsonSerializer s = new DataContractJsonSerializer(typeof(List<string>));
+      List<string> dataContractResult = (List<string>)s.ReadObject(new MemoryStream(Encoding.UTF8.GetBytes(json)));
+
+      List<string> jsonNetResult = JsonConvert.DeserializeObject<List<string>>(json);
+
+      Assert.AreEqual(1, jsonNetResult.Count);
+      Assert.AreEqual(dataContractResult[0], jsonNetResult[0]);
+#if !SILVERLIGHT
+     Assert.AreEqual(javaScriptSerializerResult[0], jsonNetResult[0]);
+#endif
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = @"Bad JSON escape sequence: \j. Line 1, position 7.")]
+    public void InvalidBackslash()
+    {
+      string json = @"[""vvv\jvvv""]";
+
+      JsonConvert.DeserializeObject<List<string>>(json);
     }
 
     [Test]
@@ -1067,9 +1108,6 @@ keyword such as type of business.""
     }
   ]
 }";
-
-      //JavaScriptSerializer serializer = new JavaScriptSerializer();
-      //GoogleMapGeocoderStructure jsonGoogleMapGeocoder = serializer.Deserialize<GoogleMapGeocoderStructure>(json);
 
       GoogleMapGeocoderStructure jsonGoogleMapGeocoder = JsonConvert.DeserializeObject<GoogleMapGeocoderStructure>(json);
     }
@@ -2050,6 +2088,40 @@ keyword such as type of business.""
 
       PersonPropertyClass newPersonPropertyClass = JsonConvert.DeserializeObject<PersonPropertyClass>(json);
       Assert.AreEqual(wagePerson.HourlyWage, ((WagePerson) newPersonPropertyClass.Person).HourlyWage);
+    }
+
+    public class ExistingValueClass
+    {
+      public Dictionary<string, string> Dictionary { get; set; }
+      public List<string> List { get; set; }
+
+      public ExistingValueClass()
+      {
+        Dictionary = new Dictionary<string, string>
+                       {
+                         {"existing", "yup"}
+                       };
+        List = new List<string>
+                 {
+                   "existing"
+                 };
+      }
+    }
+
+    [Test]
+    public void DeserializePopulateDictionaryAndList()
+    {
+      ExistingValueClass d = JsonConvert.DeserializeObject<ExistingValueClass>(@"{'Dictionary':{appended:'appended',existing:'new'}}");
+
+      Assert.IsNotNull(d);
+      Assert.IsNotNull(d.Dictionary);
+      Assert.AreEqual(typeof(Dictionary<string, string>), d.Dictionary.GetType());
+      Assert.AreEqual(typeof(List<string>), d.List.GetType());
+      Assert.AreEqual(2, d.Dictionary.Count);
+      Assert.AreEqual("new", d.Dictionary["existing"]);
+      Assert.AreEqual("appended", d.Dictionary["appended"]);
+      Assert.AreEqual(1, d.List.Count);
+      Assert.AreEqual("existing", d.List[0]);
     }
   }
 }
