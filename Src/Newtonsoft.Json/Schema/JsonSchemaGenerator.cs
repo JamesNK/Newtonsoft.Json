@@ -79,21 +79,14 @@ namespace Newtonsoft.Json.Schema
     private JsonSchemaResolver _resolver;
     private IList<TypeSchema> _stack = new List<TypeSchema>();
     private JsonSchema _currentSchema;
-    private Type _currentType;
 
     private JsonSchema CurrentSchema
     {
       get { return _currentSchema; }
     }
 
-    private Type CurrentType
-    {
-      get { return _currentType; }
-    }
-
     private void Push(TypeSchema typeSchema)
     {
-      _currentType = typeSchema.Type;
       _currentSchema = typeSchema.Schema;
       _stack.Add(typeSchema);
       _resolver.LoadedSchemas.Add(typeSchema.Schema);
@@ -106,12 +99,10 @@ namespace Newtonsoft.Json.Schema
       TypeSchema newValue = _stack.LastOrDefault();
       if (newValue != null)
       {
-        _currentType = newValue.Type;
         _currentSchema = newValue.Schema;
       }
       else
       {
-        _currentType = null;
         _currentSchema = null;
       }
 

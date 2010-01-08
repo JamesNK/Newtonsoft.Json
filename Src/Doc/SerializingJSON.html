@@ -20,7 +20,7 @@
         equivalent and back again.</p>
 
 
-	<p>For simple scenarios the <a href="./html/Overload_Newtonsoft_Json_JsonConvert_SerializeObject.htm">SerializeObject</a> and <a href="./html/Overload_Newtonsoft_Json_JsonConvert_DeserializeObject.htm">DeserializeObject</a> methods on <a href="./html/T_Newtonsoft_Json_JsonConvert.htm">JsonConvert</a> provide an easy to use wrapper over 
+	<p>For simple scenarios where you want to convert to and from a JSON string the <a href="./html/Overload_Newtonsoft_Json_JsonConvert_SerializeObject.htm">SerializeObject</a> and <a href="./html/Overload_Newtonsoft_Json_JsonConvert_DeserializeObject.htm">DeserializeObject</a> methods on <a href="./html/T_Newtonsoft_Json_JsonConvert.htm">JsonConvert</a> provide an easy to use wrapper over 
         JsonSerializer.</p>
 
 
@@ -55,8 +55,11 @@
 
 
 	<p>For more control over how an object is serialized the JsonSerializer can be used 
-        directly. The JsonSerializer has a number of properties to control its behaviour 
-        when serializing and deserializing.</p>
+        directly. The JsonSerializer is able to read and write JSON text directly to 
+        a stream via <a href="./html/T_Newtonsoft_Json_JsonTextReader.htm">JsonTextReader</a> and <a href="./html/T_Newtonsoft_Json_JsonTextWriter.htm">JsonTextWriter</a>. Other kinds of JsonWriters can 
+        also be used such as <a href="./html/T_Newtonsoft_Json_Linq_JTokenReader.htm">JTokenReader</a>/<a href="./html/T_Newtonsoft_Json_Linq_JTokenWriter.htm">JTokenWriter</a> to 
+        convert your object to and 
+        from LINQ to JSON objects or <a href="./html/T_Newtonsoft_Json_Bson_BsonReader.htm">BsonReader</a>/<a href="./html/T_Newtonsoft_Json_Bson_BsonWriter.htm">BsonWriter</a> to convert to and from BSON.</p>
 
 <div class="overflowpanel"> <div class="code">
 
@@ -77,6 +80,9 @@
 </div>
 
 </div></div>
+<p>JsonSerializer has a number of properties on it to customize how it serializes JSON. 
+    These can also be used with the methods on JsonConvert via the 
+    JsonSerializerSettings overloads.</p>
 
 <h5>ReferenceLoopHandling</h5>
 <p>Controls how circular referencing objects are serialized. Error, ignore or 
@@ -114,11 +120,12 @@ the member's DefaultValueAttribute. Include or ignore.</p>
 	<h5>XmlNodeConverter</h5>
 	<p>Converts an XmlNode to and from JSON. Note that to convert a JSON object it must have only a single property 
         or you must define a root node name to be inserted when using this converter. This is required because properties are converted into nodes and 
-        well formed XML can only have one root node.</p>
+        well formed XML can only have one root node. XmlNodeConverter has an option to 
+        insert a root node for you.</p>
 
     
 	<h5>BinaryConverter</h5>
-	<p>Converts binary data like a byte array or SqlBinary object to JSON. The binary 
+	<p>Converts binary data like the SqlBinary object to JSON. The binary 
         data is written as a string in JSON and is encoded in Base64.</p>
 
 	<h5>CustomCreationConverter</h5>

@@ -41,54 +41,39 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Represents JavaScript's boolean value true as a string. This field is read-only.
     /// </summary>
-    public static readonly string True;
+    public static readonly string True = "true";
 
     /// <summary>
     /// Represents JavaScript's boolean value false as a string. This field is read-only.
     /// </summary>
-    public static readonly string False;
+    public static readonly string False = "false";
 
     /// <summary>
     /// Represents JavaScript's null as a string. This field is read-only.
     /// </summary>
-    public static readonly string Null;
+    public static readonly string Null = "null";
 
     /// <summary>
     /// Represents JavaScript's undefined as a string. This field is read-only.
     /// </summary>
-    public static readonly string Undefined;
+    public static readonly string Undefined = "undefined";
 
     /// <summary>
     /// Represents JavaScript's positive infinity as a string. This field is read-only.
     /// </summary>
-    public static readonly string PositiveInfinity;
+    public static readonly string PositiveInfinity = "Infinity";
 
     /// <summary>
     /// Represents JavaScript's negative infinity as a string. This field is read-only.
     /// </summary>
-    public static readonly string NegativeInfinity;
+    public static readonly string NegativeInfinity = "-Infinity";
 
     /// <summary>
     /// Represents JavaScript's NaN as a string. This field is read-only.
     /// </summary>
-    public static readonly string NaN;
+    public static readonly string NaN = "NaN";
 
-    internal static long InitialJavaScriptDateTicks;
-    internal static DateTime MinimumJavaScriptDate;
-
-    static JsonConvert()
-    {
-      True = "true";
-      False = "false";
-      Null = "null";
-      Undefined = "undefined";
-      PositiveInfinity = "Infinity";
-      NegativeInfinity = "-Infinity";
-      NaN = "NaN";
-
-      InitialJavaScriptDateTicks = (new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).Ticks;
-      MinimumJavaScriptDate = new DateTime(100, 1, 1);
-    }
+    internal static readonly long InitialJavaScriptDateTicks = 621355968000000000;
 
     /// <summary>
     /// Converts the <see cref="DateTime"/> to its JSON string representation.
@@ -409,10 +394,10 @@ namespace Newtonsoft.Json
       if (value == null)
         return Null;
 
-      if (value is IConvertible)
-      {
-        IConvertible convertible = (IConvertible)value;
+      IConvertible convertible = value as IConvertible;
 
+      if (convertible != null)
+      {
         switch (convertible.GetTypeCode())
         {
           case TypeCode.String:
@@ -502,12 +487,10 @@ namespace Newtonsoft.Json
       if (value == null)
         return true;
 
-      if (value is IConvertible)
-      {
-        IConvertible convertible = (IConvertible)value;
+      IConvertible convertible = value as IConvertible;
 
+      if (convertible != null)
         return IsJsonPrimitiveTypeCode(convertible.GetTypeCode());
-      }
 
 #if !PocketPC && !NET20
       if (value is DateTimeOffset)

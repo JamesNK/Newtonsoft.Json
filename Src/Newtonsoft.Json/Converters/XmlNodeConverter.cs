@@ -573,11 +573,6 @@ namespace Newtonsoft.Json.Converters
     {
       return c.OfType<XmlAttribute>().Where(a => a.NamespaceURI != JsonNamespaceUri);
     }
-
-    private IEnumerable<XmlNode> ValueNodes(XmlNodeList c)
-    {
-      return c.OfType<XmlNode>().Where(n => n.NamespaceURI != JsonNamespaceUri);
-    }
     #endregion
 
     /// <summary>

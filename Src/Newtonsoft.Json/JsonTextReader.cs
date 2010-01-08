@@ -663,6 +663,7 @@ namespace Newtonsoft.Json
     private void ParseNumber(char firstChar)
     {
       char currentChar = firstChar;
+      bool nonBase10 = (firstChar == '0');
 
       // parse until seperator character or end
       bool end = false;
@@ -684,16 +685,23 @@ namespace Newtonsoft.Json
       object numberValue;
       JsonToken numberType;
 
-      if (number.IndexOf(".", StringComparison.OrdinalIgnoreCase) == -1
-        && number.IndexOf("e", StringComparison.OrdinalIgnoreCase) == -1)
+      if (number.IndexOf(".", StringComparison.OrdinalIgnoreCase) != -1
+        || number.IndexOf("e", StringComparison.OrdinalIgnoreCase) != -1)
       {
-        numberValue = Convert.ToInt64(number, CultureInfo.InvariantCulture);
+        numberValue = Convert.ToDouble(number, CultureInfo.InvariantCulture);
+        numberType = JsonToken.Float;
+      }
+      else if (nonBase10)
+      {
+        numberValue = number.StartsWith("0x", StringComparison.OrdinalIgnoreCase)
+          ? Convert.ToInt64(number, 16)
+          : Convert.ToInt64(number, 8);
         numberType = JsonToken.Integer;
       }
       else
       {
-        numberValue = Convert.ToDouble(number, CultureInfo.InvariantCulture);
-        numberType = JsonToken.Float;
+        numberValue = Convert.ToInt64(number, CultureInfo.InvariantCulture);
+        numberType = JsonToken.Integer;
       }
 
       _buffer.Position = 0;

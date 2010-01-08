@@ -111,7 +111,6 @@ namespace Newtonsoft.Json
     protected State CurrentState
     {
       get { return _currentState; }
-      private set { _currentState = value; }
     }
 
     private int _top;
@@ -172,10 +171,8 @@ namespace Newtonsoft.Json
     /// </summary>
     protected JsonReader()
     {
-      //_testBuffer = new StringBuilder();
       _currentState = State.Start;
       _stack = new List<JTokenType>();
-      _top = 0;
       Push(JTokenType.None);
     }
 

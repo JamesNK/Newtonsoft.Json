@@ -291,12 +291,7 @@ namespace Newtonsoft.Json
       if (value == null)
         WriteValueInternal(JsonConvert.Null, JsonToken.Null);
       else
-      {
         JavaScriptUtils.WriteEscapedJavaScriptString(_writer, value, _quoteChar, true);
-        //_writer.Write(JavaScriptUtils.EscapeJavaScriptString(value, _quoteChar, false));
-        //WriteValueInternal(, JsonToken.String);
-        //JavaScriptUtils.WriteEscapedJavaScriptString(_writer, value, _quoteChar, true);
-      }
     }
 
     /// <summary>

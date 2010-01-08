@@ -620,5 +620,32 @@ bye", reader.Value);
       string text = Encoding.UTF8.GetString(data, 0, data.Length);
       Assert.AreEqual("Hello world.", text);
     }
+
+    [Test]
+    public void ReadOctalNumber()
+    {
+      StringReader s = new StringReader(@"[0372, 0xFA, 0XFA]");
+      JsonTextReader jsonReader = new JsonTextReader(s);
+
+      Assert.IsTrue(jsonReader.Read());
+      Assert.AreEqual(JsonToken.StartArray, jsonReader.TokenType);
+
+      Assert.IsTrue(jsonReader.Read());
+      Assert.AreEqual(JsonToken.Integer, jsonReader.TokenType);
+      Assert.AreEqual(250, jsonReader.Value);
+
+      Assert.IsTrue(jsonReader.Read());
+      Assert.AreEqual(JsonToken.Integer, jsonReader.TokenType);
+      Assert.AreEqual(250, jsonReader.Value);
+
+      Assert.IsTrue(jsonReader.Read());
+      Assert.AreEqual(JsonToken.Integer, jsonReader.TokenType);
+      Assert.AreEqual(250, jsonReader.Value);
+
+      Assert.IsTrue(jsonReader.Read());
+      Assert.AreEqual(JsonToken.EndArray, jsonReader.TokenType);
+
+      Assert.IsFalse(jsonReader.Read());
+    }
   }
 }

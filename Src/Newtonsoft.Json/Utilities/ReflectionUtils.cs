@@ -550,9 +550,15 @@ namespace Newtonsoft.Json.Utilities
       foreach (var groupedMember in groupedMembers)
       {
         if (groupedMember.Count == 1)
+        {
           distinctMembers.Add(groupedMember.Members.First());
+        }
         else
-          distinctMembers.Add(groupedMember.Members.Where(m => !IsOverridenGenericMember(m, bindingAttr)).First());
+        {
+          var members = groupedMember.Members.Where(m => !IsOverridenGenericMember(m, bindingAttr) || m.Name == "Item");
+
+          distinctMembers.AddRange(members);
+        }
       }
 
       return distinctMembers;

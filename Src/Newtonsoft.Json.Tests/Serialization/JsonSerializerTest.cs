@@ -2123,5 +2123,114 @@ keyword such as type of business.""
       Assert.AreEqual(1, d.List.Count);
       Assert.AreEqual("existing", d.List[0]);
     }
+
+    public interface IKeyValueId
+    {
+      int Id { get; set; }
+      string Key { get; set; }
+      string Value { get; set; }
+    }
+
+
+    public class KeyValueId : IKeyValueId
+    {
+      public int Id { get; set; }
+      public string Key { get; set; }
+      public string Value { get; set; }
+    }
+
+    public class ThisGenericTest<T> where T : IKeyValueId
+    {
+      private Dictionary<string, T> _dict1 = new Dictionary<string, T>();
+
+      public string MyProperty { get; set; }
+
+      public void Add(T item)
+      {
+        this._dict1.Add(item.Key, item);
+      }
+
+      public T this[string key]
+      {
+        get { return this._dict1[key]; }
+        set { this._dict1[key] = value; }
+      }
+
+      public T this[int id]
+      {
+        get { return this._dict1.Values.FirstOrDefault(x => x.Id == id); }
+        set
+        {
+          var item = this[id];
+
+          if (item == null)
+            this.Add(value);
+          else
+            this._dict1[item.Key] = value;
+        }
+      }
+
+      public string ToJson()
+      {
+        return JsonConvert.SerializeObject(this, Formatting.Indented);
+      }
+
+      public T[] TheItems
+      {
+        get { return this._dict1.Values.ToArray<T>(); }
+        set
+        {
+          foreach (var item in value)
+            this.Add(item);
+        }
+      }
+    }
+
+    [Test]
+    public void IgnoreIndexedProperties()
+    {
+      ThisGenericTest<KeyValueId> g = new ThisGenericTest<KeyValueId>();
+
+      g.Add(new KeyValueId { Id = 1, Key = "key1", Value = "value1" });
+      g.Add(new KeyValueId { Id = 2, Key = "key2", Value = "value2" });
+
+      g.MyProperty = "some value";
+
+      string json = g.ToJson();
+
+      Assert.AreEqual(@"{
+  ""MyProperty"": ""some value"",
+  ""TheItems"": [
+    {
+      ""Id"": 1,
+      ""Key"": ""key1"",
+      ""Value"": ""value1""
+    },
+    {
+      ""Id"": 2,
+      ""Key"": ""key2"",
+      ""Value"": ""value2""
+    }
+  ]
+}", json);
+
+      ThisGenericTest<KeyValueId> gen = JsonConvert.DeserializeObject<ThisGenericTest<KeyValueId>>(json);
+      Assert.AreEqual("some value", gen.MyProperty);
+    }
+
+    public class JRawValueTestObject
+    {
+      public JRaw Value { get; set; }
+    }
+
+    [Test]
+    public void JRawValue()
+    {
+      JRawValueTestObject deserialized = JsonConvert.DeserializeObject<JRawValueTestObject>("{value:3}");
+      Assert.AreEqual("3", deserialized.Value.ToString());
+
+      deserialized = JsonConvert.DeserializeObject<JRawValueTestObject>("{value:'3'}");
+      Assert.AreEqual(@"""3""", deserialized.Value.ToString());
+    }
   }
 }

@@ -97,18 +97,22 @@ namespace Newtonsoft.Json.Serialization
       DataContractAttribute dataContractAttribute = JsonTypeReflector.GetDataContractAttribute(objectType);
 #endif
 
-      List<MemberInfo> defaultMembers = ReflectionUtils.GetFieldsAndProperties(objectType, DefaultMembersSearchFlags);
-      List<MemberInfo> allMembers = ReflectionUtils.GetFieldsAndProperties(objectType, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+      List<MemberInfo> defaultMembers = ReflectionUtils.GetFieldsAndProperties(objectType, DefaultMembersSearchFlags)
+        .Where(m => !ReflectionUtils.IsIndexedProperty(m)).ToList();
+      List<MemberInfo> allMembers = ReflectionUtils.GetFieldsAndProperties(objectType, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)
+        .Where(m => !ReflectionUtils.IsIndexedProperty(m)).ToList();
 
       List<MemberInfo> serializableMembers = new List<MemberInfo>();
       foreach (MemberInfo member in allMembers)
       {
         if (defaultMembers.Contains(member))
         {
+          // add all members that are found by default member search
           serializableMembers.Add(member);
         }
         else
         {
+          // add members that are explicitly marked with JsonProperty/DataMember attribute
           if (JsonTypeReflector.GetAttribute<JsonPropertyAttribute>(member) != null)
             serializableMembers.Add(member);
 #if !PocketPC && !NET20
@@ -323,6 +327,11 @@ namespace Newtonsoft.Json.Serialization
       {
         return CreateObjectContract(objectType);
       }
+      if (objectType.IsSubclassOf(typeof(JToken)))
+      {
+        return CreateLinqContract(objectType);
+      }
+
       if (CollectionUtils.IsDictionaryType(objectType))
       {
         return CreateDictionaryContract(objectType);
@@ -330,10 +339,6 @@ namespace Newtonsoft.Json.Serialization
       if (typeof(IEnumerable).IsAssignableFrom(objectType))
       {
         return CreateArrayContract(objectType);
-      }
-      if (objectType.IsSubclassOf(typeof(JToken)))
-      {
-        return CreateLinqContract(objectType);
       }
 
       return CreateObjectContract(objectType);

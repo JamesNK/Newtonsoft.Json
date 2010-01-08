@@ -11,7 +11,7 @@ namespace Newtonsoft.Json
   /// Instructs the <see cref="JsonSerializer"/> to use the specified <see cref="JsonConverter"/> when serializing the member or class.
   /// </summary>
   [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property | AttributeTargets.Class, AllowMultiple = false)]
-  public class JsonConverterAttribute : Attribute
+  public sealed class JsonConverterAttribute : Attribute
   {
     private readonly Type _converterType;
 
