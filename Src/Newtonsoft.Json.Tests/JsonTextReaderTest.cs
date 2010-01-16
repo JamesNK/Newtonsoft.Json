@@ -647,5 +647,29 @@ bye", reader.Value);
 
       Assert.IsFalse(jsonReader.Read());
     }
+
+    [Test]
+    public void ReadUnicode()
+    {
+      string json = @"{""Message"":""Hi,I\u0092ve send you smth""}";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+      Assert.AreEqual("Message", reader.Value);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.String, reader.TokenType);
+      Assert.AreEqual(@"Hi,I" + '\u0092' + "ve send you smth", reader.Value);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
+
+      Assert.IsFalse(reader.Read());
+    }
   }
 }

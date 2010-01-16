@@ -2232,5 +2232,77 @@ keyword such as type of business.""
       deserialized = JsonConvert.DeserializeObject<JRawValueTestObject>("{value:'3'}");
       Assert.AreEqual(@"""3""", deserialized.Value.ToString());
     }
+
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Unable to find a default constructor to use for type Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+DictionaryWithNoDefaultConstructor.")]
+    public void DeserializeDictionaryWithNoDefaultConstructor()
+    {
+      string json = "{key1:'value',key2:'value',key3:'value'}";
+      JsonConvert.DeserializeObject<DictionaryWithNoDefaultConstructor>(json);
+    }
+
+    public class DictionaryWithNoDefaultConstructor : Dictionary<string, string>
+    {
+      public DictionaryWithNoDefaultConstructor(IEnumerable<KeyValuePair<string, string>> initial)
+      {
+        foreach (KeyValuePair<string, string> pair in initial)
+        {
+          Add(pair.Key, pair.Value);
+        }
+      }
+    }
+
+    [JsonObject(MemberSerialization.OptIn)]
+    public class A
+    {
+      [JsonProperty("A1")]
+      private string _A1;
+      public string A1 { get { return _A1; } set { _A1 = value; } }
+
+      [JsonProperty("A2")]
+      private string A2 { get; set; }
+    }
+
+    [JsonObject(MemberSerialization.OptIn)]
+    public class B : A
+    {
+      public string B1 { get; set; }
+
+      [JsonProperty("B2")]
+      string _B2;
+      public string B2 { get { return _B2; } set { _B2 = value; } }
+
+      [JsonProperty("B3")]
+      private string B3 { get; set; }
+    }
+
+    [Test]
+    public void SerializeNonPublicBaseJsonProperties()
+    {
+      B value = new B();
+      string json = JsonConvert.SerializeObject(value, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""B2"": null,
+  ""A1"": null,
+  ""B3"": null,
+  ""A2"": null
+}", json);
+    }
+
+    public class TestClass
+    {
+      public string Key { get; set; }
+      public object Value { get; set; }
+    }
+
+    [Test]
+    public void DeserializeToObjectProperty()
+    {
+      var json = "{ Key: 'abc', Value: 123 }";
+      var item = JsonConvert.DeserializeObject<TestClass>(json);
+      
+      Assert.AreEqual(123, item.Value);
+    }
   }
 }

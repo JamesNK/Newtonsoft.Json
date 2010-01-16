@@ -465,11 +465,19 @@ namespace Newtonsoft.Json.Serialization
 
     private object CreateAndPopulateDictionary(JsonReader reader, JsonDictionaryContract contract, string id)
     {
-      IWrappedDictionary dictionary = contract.CreateWrapper(contract.DefaultCreator());
+      object dictionary;
 
-      PopulateDictionary(dictionary, reader, contract, id);
+      if (contract.DefaultCreator != null &&
+        (!contract.DefaultCreatorNonPublic || Serializer.ConstructorHandling == ConstructorHandling.AllowNonPublicDefaultConstructor))
+        dictionary = contract.DefaultCreator();
+      else
+        throw new JsonSerializationException("Unable to find a default constructor to use for type {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
-      return dictionary.UnderlyingDictionary;
+      IWrappedDictionary dictionaryWrapper = contract.CreateWrapper(dictionary);
+
+      PopulateDictionary(dictionaryWrapper, reader, contract, id);
+
+      return dictionaryWrapper.UnderlyingDictionary;
     }
 
     private object PopulateDictionary(IWrappedDictionary dictionary, JsonReader reader, JsonDictionaryContract contract, string id)

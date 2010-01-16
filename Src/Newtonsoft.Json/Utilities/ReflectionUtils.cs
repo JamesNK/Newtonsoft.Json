@@ -25,10 +25,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Reflection;
 using System.Collections;
-using System.ComponentModel;
 using System.Linq;
 using System.Globalization;
 
@@ -240,10 +238,10 @@ namespace Newtonsoft.Json.Utilities
       if (!genericClassDefinition.IsClass || !genericClassDefinition.IsGenericTypeDefinition)
         throw new ArgumentNullException("'{0}' is not a generic class definition.".FormatWith(CultureInfo.InvariantCulture, genericClassDefinition));
 
-      return InheritsGenericDefinitionInternal(type, type, genericClassDefinition, out implementingType);
+      return InheritsGenericDefinitionInternal(type, genericClassDefinition, out implementingType);
     }
 
-    private static bool InheritsGenericDefinitionInternal(Type initialType, Type currentType, Type genericClassDefinition, out Type implementingType)
+    private static bool InheritsGenericDefinitionInternal(Type currentType, Type genericClassDefinition, out Type implementingType)
     {
       if (currentType.IsGenericType)
       {
@@ -262,7 +260,7 @@ namespace Newtonsoft.Json.Utilities
         return false;
       }
 
-      return InheritsGenericDefinitionInternal(initialType, currentType.BaseType, genericClassDefinition, out implementingType);
+      return InheritsGenericDefinitionInternal(currentType.BaseType, genericClassDefinition, out implementingType);
     }
 
     /// <summary>
@@ -538,8 +536,8 @@ namespace Newtonsoft.Json.Utilities
     {
       List<MemberInfo> targetMembers = new List<MemberInfo>();
 
-      targetMembers.AddRange(type.GetFields(bindingAttr));
-      targetMembers.AddRange(type.GetProperties(bindingAttr));
+      targetMembers.AddRange(GetFields(type, bindingAttr));
+      targetMembers.AddRange(GetProperties(type, bindingAttr));
 
       // for some reason .NET returns multiple members when overriding a generic member on a base class
       // http://forums.msdn.microsoft.com/en-US/netfxbcl/thread/b5abbfee-e292-4a64-8907-4e3f0fb90cd9/
@@ -622,12 +620,12 @@ namespace Newtonsoft.Json.Utilities
 
     public static object CreateGeneric(Type genericTypeDefinition, Type innerType, params object[] args)
     {
-      return CreateGeneric(genericTypeDefinition, new Type[] { innerType }, args);
+      return CreateGeneric(genericTypeDefinition, new [] { innerType }, args);
     }
 
     public static object CreateGeneric(Type genericTypeDefinition, IList<Type> innerTypes, params object[] args)
     {
-      return CreateGeneric(genericTypeDefinition, innerTypes, (t, a) => ReflectionUtils.CreateInstance(t, a.ToArray()), args);
+      return CreateGeneric(genericTypeDefinition, innerTypes, (t, a) => CreateInstance(t, a.ToArray()), args);
     }
 
     public static object CreateGeneric(Type genericTypeDefinition, IList<Type> innerTypes, Func<Type, IList<object>, object> instanceCreator, params object[] args)
@@ -641,16 +639,16 @@ namespace Newtonsoft.Json.Utilities
       return instanceCreator(specificType, args);
     }
 
-     public static bool IsCompatibleValue(object value, Type type)
-     {
-       if (value == null && IsNullable(type))
-         return true;
+    public static bool IsCompatibleValue(object value, Type type)
+    {
+      if (value == null)
+        return IsNullable(type);
 
-       if (type.IsAssignableFrom(value.GetType()))
-         return true;
+      if (type.IsAssignableFrom(value.GetType()))
+        return true;
 
-       return false;
-     }
+      return false;
+    }
 
      public static object CreateInstance(Type type, params object[] args)
      {
@@ -729,6 +727,62 @@ namespace Newtonsoft.Json.Utilities
       }
 
       return null;
+    }
+
+    public static IEnumerable<FieldInfo> GetFields(Type targetType, BindingFlags bindingAttr)
+    {
+      ValidationUtils.ArgumentNotNull(targetType, "targetType");
+
+      List<MemberInfo> fieldInfos = new List<MemberInfo>(targetType.GetFields(bindingAttr));
+      GetChildPrivateFields(fieldInfos, targetType, bindingAttr);
+
+      return fieldInfos.Cast<FieldInfo>();
+    }
+
+    private static void GetChildPrivateFields(IList<MemberInfo> initialFields, Type targetType, BindingFlags bindingAttr)
+    {
+      // fix weirdness with FieldInfos only being returned for the current Type
+      // find base type fields and add them to result
+      if ((bindingAttr & BindingFlags.NonPublic) != 0)
+      {
+        // modify flags to not search for public fields
+        BindingFlags nonPublicBindingAttr = ((bindingAttr & BindingFlags.Public) == BindingFlags.Public)
+          ? bindingAttr ^ BindingFlags.Public
+          : bindingAttr;
+
+        while ((targetType = targetType.BaseType) != null)
+        {
+          initialFields.AddRange(targetType.GetFields(nonPublicBindingAttr));
+        }
+      }
+    }
+
+    public static IEnumerable<PropertyInfo> GetProperties(Type targetType, BindingFlags bindingAttr)
+    {
+      ValidationUtils.ArgumentNotNull(targetType, "targetType");
+
+      List<MemberInfo> propertyInfos = new List<MemberInfo>(targetType.GetProperties(bindingAttr));
+      GetChildPrivateProperties(propertyInfos, targetType, bindingAttr);
+
+      return propertyInfos.Cast<PropertyInfo>();
+    }
+
+    private static void GetChildPrivateProperties(IList<MemberInfo> initialFields, Type targetType, BindingFlags bindingAttr)
+    {
+      // fix weirdness with FieldInfos only being returned for the current Type
+      // find base type fields and add them to result
+      if ((bindingAttr & BindingFlags.NonPublic) != 0)
+      {
+        // modify flags to not search for public fields
+        BindingFlags nonPublicBindingAttr = ((bindingAttr & BindingFlags.Public) == BindingFlags.Public)
+          ? bindingAttr ^ BindingFlags.Public
+          : bindingAttr;
+
+        while ((targetType = targetType.BaseType) != null)
+        {
+          initialFields.AddRange(targetType.GetProperties(nonPublicBindingAttr));
+        }
+      }
     }
   }
 }

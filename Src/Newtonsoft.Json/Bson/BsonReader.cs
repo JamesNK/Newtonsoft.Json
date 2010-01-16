@@ -265,11 +265,6 @@ namespace Newtonsoft.Json.Bson
             newContext.Length = ReadInt32();
             return true;
           }
-        case State.ObjectStart:
-          {
-            SetToken(JsonToken.PropertyName, ReadElement());
-            return true;
-          }
         case State.Complete:
         case State.Closed:
           return false;
@@ -278,10 +273,8 @@ namespace Newtonsoft.Json.Bson
             ReadType(_currentElementType);
             return true;
           }
+        case State.ObjectStart:
         case State.ArrayStart:
-          ReadElement();
-          ReadType(_currentElementType);
-          return true;
         case State.PostValue:
           ContainerContext context = _currentContext;
           if (context == null)

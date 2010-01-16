@@ -315,6 +315,9 @@ namespace Newtonsoft.Json.Utilities
     {
       object convertedValue;
 
+      if (targetType == typeof(object))
+        return initialValue;
+
       if (initialValue == null && ReflectionUtils.IsNullable(targetType))
         return null;
 
