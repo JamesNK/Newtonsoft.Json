@@ -410,6 +410,20 @@ namespace Newtonsoft.Json.Serialization
     }
 
     /// <summary>
+    /// Creates the <see cref="IValueProvider"/> used by the serializer to get and set values from a member.
+    /// </summary>
+    /// <param name="member">The member.</param>
+    /// <returns>The <see cref="IValueProvider"/> used by the serializer to get and set values from a member.</returns>
+    protected virtual IValueProvider CreateMemberValueProvider(MemberInfo member)
+    {
+#if !PocketPC && !SILVERLIGHT
+      return new DynamicValueProvider(member);
+#else
+      return new ReflectionValueProvider(member);
+#endif
+    }
+
+    /// <summary>
     /// Creates a <see cref="JsonProperty"/> for the given <see cref="MemberInfo"/>.
     /// </summary>
     /// <param name="contract">The member's declaring types <see cref="JsonObjectContract"/>.</param>
@@ -419,11 +433,7 @@ namespace Newtonsoft.Json.Serialization
     {
       JsonProperty property = new JsonProperty();
       property.PropertyType = ReflectionUtils.GetMemberUnderlyingType(member);
-#if !PocketPC && !SILVERLIGHT
-      property.ValueProvider = new DynamicValueProvider(member);
-#else
-      property.ValueProvider = new ReflectionValueProvider(member);
-#endif
+      property.ValueProvider = CreateMemberValueProvider(member);
       
       // resolve converter for property
       // the class type might have a converter but the property converter takes presidence

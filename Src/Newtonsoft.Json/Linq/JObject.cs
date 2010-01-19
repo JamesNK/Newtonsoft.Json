@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.IO;
@@ -51,6 +52,7 @@ namespace Newtonsoft.Json.Linq
     /// Occurs when a property value changes.
     /// </summary>
     public event PropertyChangedEventHandler PropertyChanged;
+
 #if !PocketPC && !SILVERLIGHT && !NET20
     /// <summary>
     /// Occurs when a property value is changing.
@@ -120,6 +122,8 @@ namespace Newtonsoft.Json.Linq
       OnPropertyChanged(childProperty.Name);
 #if !SILVERLIGHT
       OnListChanged(new ListChangedEventArgs(ListChangedType.ItemChanged, IndexOfItem(childProperty)));
+#else
+      OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, childProperty, childProperty, IndexOfItem(childProperty)));
 #endif
     }
 

@@ -59,9 +59,6 @@ namespace Newtonsoft.Json.Serialization
     /// <value>The converter.</value>
     public JsonConverter Converter { get; set; }
 
-    private static readonly StreamingContext SerializationStreamingContextParameter = new StreamingContext();
-    private static readonly object[] SerializationEventParameterValues = new object[] { SerializationStreamingContextParameter };
-
 #if !PocketPC
     /// <summary>
     /// Gets or sets the method called immediately after deserialization of the object.
@@ -103,42 +100,42 @@ namespace Newtonsoft.Json.Serialization
     /// <value>The method called when an error is thrown during the serialization of the object.</value>
     public MethodInfo OnError { get; set; }
 
-    internal void InvokeOnSerializing(object o)
+    internal void InvokeOnSerializing(object o, StreamingContext context)
     {
 #if !PocketPC
       if (OnSerializing != null)
-        OnSerializing.Invoke(o, SerializationEventParameterValues);
+        OnSerializing.Invoke(o, new object[] { context });
 #endif
     }
 
-    internal void InvokeOnSerialized(object o)
+    internal void InvokeOnSerialized(object o, StreamingContext context)
     {
 #if !PocketPC
       if (OnSerialized != null)
-        OnSerialized.Invoke(o, SerializationEventParameterValues);
+        OnSerialized.Invoke(o, new object[] { context });
 #endif
     }
 
-    internal void InvokeOnDeserializing(object o)
+    internal void InvokeOnDeserializing(object o, StreamingContext context)
     {
 #if !PocketPC
       if (OnDeserializing != null)
-        OnDeserializing.Invoke(o, SerializationEventParameterValues);
+        OnDeserializing.Invoke(o, new object[] { context });
 #endif
     }
 
-    internal void InvokeOnDeserialized(object o)
+    internal void InvokeOnDeserialized(object o, StreamingContext context)
     {
 #if !PocketPC
       if (OnDeserialized != null)
-        OnDeserialized.Invoke(o, SerializationEventParameterValues);
+        OnDeserialized.Invoke(o, new object[] { context });
 #endif
     }
 
-    internal void InvokeOnError(object o, ErrorContext errorContext)
+    internal void InvokeOnError(object o, StreamingContext context, ErrorContext errorContext)
     {
       if (OnError != null)
-        OnError.Invoke(o, new object[] { SerializationStreamingContextParameter, errorContext });
+        OnError.Invoke(o, new object[] { context, errorContext });
     }
 
     internal JsonContract(Type underlyingType)

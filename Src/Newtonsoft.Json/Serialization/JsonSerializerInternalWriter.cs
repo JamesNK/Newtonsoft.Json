@@ -259,13 +259,13 @@ namespace Newtonsoft.Json.Serialization
 
     private void SerializeObject(JsonWriter writer, object value, JsonObjectContract contract)
     {
-      contract.InvokeOnSerializing(value);
+      contract.InvokeOnSerializing(value, Serializer.Context);
 
       string s;
       if (TryConvertToString(value, contract.UnderlyingType, out s))
       {
         writer.WriteValue(s);
-        contract.InvokeOnSerialized(value);
+        contract.InvokeOnSerialized(value, Serializer.Context);
 
         return;
       }
@@ -310,7 +310,7 @@ namespace Newtonsoft.Json.Serialization
       writer.WriteEndObject();
       SerializeStack.RemoveAt(SerializeStack.Count - 1);
 
-      contract.InvokeOnSerialized(value);
+      contract.InvokeOnSerialized(value, Serializer.Context);
     }
 
     private void WriteTypeProperty(JsonWriter writer, Type type)
@@ -355,7 +355,7 @@ namespace Newtonsoft.Json.Serialization
 
     private void SerializeList(JsonWriter writer, IList values, JsonArrayContract contract)
     {
-      contract.InvokeOnSerializing(values);
+      contract.InvokeOnSerializing(values, Serializer.Context);
 
       SerializeStack.Add(values);
 
@@ -419,12 +419,12 @@ namespace Newtonsoft.Json.Serialization
 
       SerializeStack.RemoveAt(SerializeStack.Count - 1);
 
-      contract.InvokeOnSerialized(values);
+      contract.InvokeOnSerialized(values, Serializer.Context);
     }
 
     private void SerializeDictionary(JsonWriter writer, IDictionary values, JsonDictionaryContract contract)
     {
-      contract.InvokeOnSerializing(values);
+      contract.InvokeOnSerializing(values, Serializer.Context);
 
       SerializeStack.Add(values);
       writer.WriteStartObject();
@@ -478,7 +478,7 @@ namespace Newtonsoft.Json.Serialization
       writer.WriteEndObject();
       SerializeStack.RemoveAt(SerializeStack.Count - 1);
 
-      contract.InvokeOnSerialized(values);
+      contract.InvokeOnSerialized(values, Serializer.Context);
     }
 
     private string GetPropertyName(DictionaryEntry entry)

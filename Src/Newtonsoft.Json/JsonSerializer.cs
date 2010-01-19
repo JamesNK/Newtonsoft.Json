@@ -53,6 +53,7 @@ namespace Newtonsoft.Json
     private IContractResolver _contractResolver;
     private IReferenceResolver _referenceResolver;
     private SerializationBinder _binder;
+    private StreamingContext _context;
 
     /// <summary>
     /// Occurs when the <see cref="JsonSerializer"/> errors during serialization and deserialization.
@@ -250,6 +251,16 @@ namespace Newtonsoft.Json
       }
       set { _contractResolver = value; }
     }
+
+    /// <summary>
+    /// Gets or sets the <see cref="StreamingContext"/> used by the serializer when invoking serialization callback methods.
+    /// </summary>
+    /// <value>The context.</value>
+    public virtual StreamingContext Context
+    {
+      get { return _context; }
+      set { _context = value; }
+    }
     #endregion
 
     /// <summary>
@@ -265,6 +276,8 @@ namespace Newtonsoft.Json
       _preserveReferencesHandling = JsonSerializerSettings.DefaultPreserveReferencesHandling;
       _constructorHandling = JsonSerializerSettings.DefaultConstructorHandling;
       _typeNameHandling = JsonSerializerSettings.DefaultTypeNameHandling;
+      _context = JsonSerializerSettings.DefaultContext;
+
       _binder = DefaultSerializationBinder.Instance;
     }
 
@@ -290,6 +303,7 @@ namespace Newtonsoft.Json
         jsonSerializer.NullValueHandling = settings.NullValueHandling;
         jsonSerializer.DefaultValueHandling = settings.DefaultValueHandling;
         jsonSerializer.ConstructorHandling = settings.ConstructorHandling;
+        jsonSerializer.Context = settings.Context;
 
         if (settings.Error != null)
           jsonSerializer.Error += settings.Error;

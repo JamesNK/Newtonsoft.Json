@@ -21,6 +21,7 @@ namespace Newtonsoft.Json
     internal const PreserveReferencesHandling DefaultPreserveReferencesHandling = PreserveReferencesHandling.None;
     internal const ConstructorHandling DefaultConstructorHandling = ConstructorHandling.Default;
     internal const TypeNameHandling DefaultTypeNameHandling = TypeNameHandling.None;
+    internal static readonly StreamingContext DefaultContext = new StreamingContext();
 
     /// <summary>
     /// Gets or sets how reference loops (e.g. a class referencing itself) is handled.
@@ -89,7 +90,13 @@ namespace Newtonsoft.Json
     /// Gets or sets the error handler called during serialization and deserialization.
     /// </summary>
     /// <value>The error handler called during serialization and deserialization.</value>
-    public EventHandler<ErrorEventArgs> Error { get; set;}
+    public EventHandler<ErrorEventArgs> Error { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="StreamingContext"/> used by the serializer when invoking serialization callback methods.
+    /// </summary>
+    /// <value>The context.</value>
+    public StreamingContext Context { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonSerializerSettings"/> class.
@@ -103,6 +110,7 @@ namespace Newtonsoft.Json
       DefaultValueHandling = DefaultDefaultValueHandling;
       PreserveReferencesHandling = DefaultPreserveReferencesHandling;
       TypeNameHandling = DefaultTypeNameHandling;
+      Context = DefaultContext;
       Converters = new List<JsonConverter>();
     }
   }

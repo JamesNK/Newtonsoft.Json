@@ -112,6 +112,12 @@ namespace Newtonsoft.Json.Serialization
       set { _serializer.Binder = value; }
     }
 
+    public override StreamingContext Context
+    {
+      get { return _serializer.Context; }
+      set { _serializer.Context = value; }
+    }
+
     public JsonSerializerProxy(JsonSerializerInternalReader serializerReader)
     {
       ValidationUtils.ArgumentNotNull(serializerReader, "serializerReader");

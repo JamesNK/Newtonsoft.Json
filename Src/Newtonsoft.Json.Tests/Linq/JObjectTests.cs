@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Converters;
 using System.IO;
 using System.Collections;
+using System.Collections.Specialized;
 #if !PocketPC && !SILVERLIGHT
 using System.Web.UI;
 #endif
@@ -1301,6 +1302,44 @@ Parameter name: arrayIndex")]
 
       o["Test1"] = 2;
       Assert.AreEqual(changedType, ListChangedType.ItemChanged);
+      Assert.AreEqual(index, 0);
+      Assert.AreEqual(2, (int)o["Test1"]);
+    }
+#else
+    [Test]
+    public void ListChanged()
+    {
+      JProperty p1 = new JProperty("Test1", 1);
+      JProperty p2 = new JProperty("Test2", "Two");
+      JObject o = new JObject(p1, p2);
+
+      NotifyCollectionChangedAction? changedType = null;
+      int? index = null;
+
+      o.CollectionChanged += (s, a) =>
+      {
+        changedType = a.Action;
+        index = a.NewStartingIndex;
+      };
+
+      JProperty p3 = new JProperty("Test3", "III");
+
+      o.Add(p3);
+      Assert.AreEqual(changedType, NotifyCollectionChangedAction.Add);
+      Assert.AreEqual(index, 2);
+      Assert.AreEqual(p3, ((IList<JToken>)o)[index.Value]);
+
+      JProperty p4 = new JProperty("Test4", "IV");
+
+      ((IList<JToken>)o)[index.Value] = p4;
+      Assert.AreEqual(changedType, NotifyCollectionChangedAction.Replace);
+      Assert.AreEqual(index, 2);
+      Assert.AreEqual(p4, ((IList<JToken>)o)[index.Value]);
+      Assert.IsFalse(((IList<JToken>)o).Contains(p3));
+      Assert.IsTrue(((IList<JToken>)o).Contains(p4));
+
+      o["Test1"] = 2;
+      Assert.AreEqual(changedType, NotifyCollectionChangedAction.Replace);
       Assert.AreEqual(index, 0);
       Assert.AreEqual(2, (int)o["Test1"]);
     }

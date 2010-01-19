@@ -7,6 +7,8 @@ using Newtonsoft.Json.Tests.LinqToSql;
 using NUnit.Framework;
 using System.Reflection;
 using System.ComponentModel;
+using Newtonsoft.Json.Serialization;
+using System.Data.Linq.Mapping;
 
 namespace Newtonsoft.Json.Tests.LinqToSql
 {
@@ -97,6 +99,12 @@ namespace Newtonsoft.Json.Tests.LinqToSql
       Assert.AreEqual(1, person.PersonRoles[0].Role.PersonRoles.Count);
 
       Assert.AreEqual("Name!", person.Department.Name);
+
+      TableAttribute tableAttribute = JsonTypeReflector.GetAttribute<TableAttribute>(typeof(Person));
+      Assert.AreEqual("", tableAttribute.Name);
+
+      ColumnAttribute columnAttribute = JsonTypeReflector.GetAttribute<ColumnAttribute>(typeof(Person).GetProperty("FirstName"));
+      Assert.AreEqual("_FirstName", columnAttribute.Storage);
     }
   }
 }

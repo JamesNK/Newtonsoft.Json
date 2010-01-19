@@ -485,7 +485,7 @@ namespace Newtonsoft.Json.Serialization
       if (id != null)
         Serializer.ReferenceResolver.AddReference(id, dictionary.UnderlyingDictionary);
 
-      contract.InvokeOnDeserializing(dictionary.UnderlyingDictionary);
+      contract.InvokeOnDeserializing(dictionary.UnderlyingDictionary, Serializer.Context);
 
       int initialDepth = reader.Depth;
 
@@ -510,7 +510,7 @@ namespace Newtonsoft.Json.Serialization
             }
             break;
           case JsonToken.EndObject:
-            contract.InvokeOnDeserialized(dictionary.UnderlyingDictionary);
+            contract.InvokeOnDeserialized(dictionary.UnderlyingDictionary, Serializer.Context);
             
             return dictionary.UnderlyingDictionary;
           default:
@@ -546,7 +546,7 @@ namespace Newtonsoft.Json.Serialization
       if (reference != null)
         Serializer.ReferenceResolver.AddReference(reference, list);
 
-      contract.InvokeOnDeserializing(list);
+      contract.InvokeOnDeserializing(list, Serializer.Context);
 
       int initialDepth = reader.Depth;
 
@@ -555,7 +555,7 @@ namespace Newtonsoft.Json.Serialization
         switch (reader.TokenType)
         {
           case JsonToken.EndArray:
-            contract.InvokeOnDeserialized(list);
+            contract.InvokeOnDeserialized(list, Serializer.Context);
 
             return wrappedList.UnderlyingCollection;
           case JsonToken.Comment:
@@ -667,7 +667,7 @@ namespace Newtonsoft.Json.Serialization
       if (id != null)
         Serializer.ReferenceResolver.AddReference(id, createdObject);
 
-      contract.InvokeOnDeserializing(createdObject);
+      contract.InvokeOnDeserializing(createdObject, Serializer.Context);
 
       // go through unused values and set the newly created object's properties
       foreach (KeyValuePair<JsonProperty, object> remainingPropertyValue in remainingPropertyValues)
@@ -679,13 +679,13 @@ namespace Newtonsoft.Json.Serialization
           property.ValueProvider.SetValue(createdObject, value);
       }
 
-      contract.InvokeOnDeserialized(createdObject);
+      contract.InvokeOnDeserialized(createdObject, Serializer.Context);
       return createdObject;
     }
 
     private object PopulateObject(object newObject, JsonReader reader, JsonObjectContract contract, string id)
     {
-      contract.InvokeOnDeserializing(newObject);
+      contract.InvokeOnDeserializing(newObject, Serializer.Context);
 
       Dictionary<JsonProperty, RequiredValue> requiredProperties =
         contract.Properties.Where(m => m.Required != Required.Default).ToDictionary(m => m, m => RequiredValue.None);
@@ -749,7 +749,7 @@ namespace Newtonsoft.Json.Serialization
                 throw new JsonSerializationException("Required property '{0}' expects a value but got null.".FormatWith(CultureInfo.InvariantCulture, requiredProperty.Key.PropertyName));
             }
 
-            contract.InvokeOnDeserialized(newObject);
+            contract.InvokeOnDeserialized(newObject, Serializer.Context);
             return newObject;
           case JsonToken.Comment:
             // ignore

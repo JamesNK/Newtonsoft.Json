@@ -197,7 +197,11 @@ namespace Newtonsoft.Json.Serialization
     {
       Type metadataType = GetAssociatedMetadataType(type);
       if (metadataType != null)
-        return ReflectionUtils.GetAttribute<T>(metadataType, true);
+      {
+        T attribute = ReflectionUtils.GetAttribute<T>(metadataType, true);
+        if (attribute != null)
+          return attribute;
+      }
 
       return ReflectionUtils.GetAttribute<T>(type, true);
     }
@@ -212,7 +216,11 @@ namespace Newtonsoft.Json.Serialization
           BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance).SingleOrDefault();
 
         if (metadataTypeMemberInfo != null)
-          return ReflectionUtils.GetAttribute<T>(metadataTypeMemberInfo, true);
+        {
+          T attribute = ReflectionUtils.GetAttribute<T>(metadataTypeMemberInfo, true);
+          if (attribute != null)
+            return attribute;
+        }
       }
 
       return ReflectionUtils.GetAttribute<T>(memberInfo, true);

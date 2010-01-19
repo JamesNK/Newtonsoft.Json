@@ -28,6 +28,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Text;
 using Newtonsoft.Json.Tests;
 using Newtonsoft.Json.Tests.TestObjects;
@@ -230,6 +231,37 @@ namespace Newtonsoft.Json.Tests.Serialization
       Console.WriteLine(obj.Member4);
       // This value was set after deserialization.
     }
+
+#if !SILVERLIGHT
+    public class SerializationEventContextTestObject
+    {
+      public string TestMember { get; set; }
+
+      [OnSerializing]
+      internal void OnSerializingMethod(StreamingContext context)
+      {
+        TestMember = context.State + " " + context.Context;
+      }
+    }
+
+    [Test]
+    public void SerializationEventContextTest()
+    {
+      SerializationEventContextTestObject value = new SerializationEventContextTestObject();
+
+      string json = JsonConvert.SerializeObject(value, Formatting.Indented, new JsonSerializerSettings
+                                                                              {
+                                                                                Context =
+                                                                                  new StreamingContext(
+                                                                                  StreamingContextStates.Remoting,
+                                                                                  "ContextValue")
+                                                                              });
+
+      Assert.AreEqual(@"{
+  ""TestMember"": ""Remoting ContextValue""
+}", json);
+    }
+#endif
   }
 }
 #endif
