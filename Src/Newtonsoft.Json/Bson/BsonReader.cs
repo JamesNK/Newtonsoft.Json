@@ -38,8 +38,9 @@ namespace Newtonsoft.Json.Bson
   /// </summary>
   public class BsonReader : JsonReader
   {
+    private const int MaxCharBytesSize = 128;
+
     private readonly BinaryReader _reader;
-    private readonly bool _rootTypeIsArray;
     private readonly List<ContainerContext> _stack;
 
     private byte[] _byteBuffer;
@@ -48,7 +49,8 @@ namespace Newtonsoft.Json.Bson
     private BsonReaderState _bsonReaderState;
     private ContainerContext _currentContext;
 
-    private const int MaxCharBytesSize = 128;
+    private bool _readRootValueAsArray;
+    private DateTimeKind _dateTimeKindHandling;
 
     private enum BsonReaderState
     {
@@ -76,10 +78,33 @@ namespace Newtonsoft.Json.Bson
     }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the root object will be read as a JSON array.
+    /// </summary>
+    /// <value>
+    /// 	<c>true</c> if the root object will be read as a JSON array; otherwise, <c>false</c>.
+    /// </value>
+    public bool ReadRootValueAsArray
+    {
+      get { return _readRootValueAsArray; }
+      set { _readRootValueAsArray = value; }
+    }
+
+    /// <summary>
+    /// Gets or sets the <see cref="DateTimeKind" /> used when reading <see cref="DateTime"/> values from BSON.
+    /// </summary>
+    /// <value>The <see cref="DateTimeKind" /> used when reading <see cref="DateTime"/> values from BSON.</value>
+    public DateTimeKind DateTimeKindHandling
+    {
+      get { return _dateTimeKindHandling; }
+      set { _dateTimeKindHandling = value; }
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="BsonReader"/> class.
     /// </summary>
     /// <param name="stream">The stream.</param>
-    public BsonReader(Stream stream) : this(stream, false)
+    public BsonReader(Stream stream)
+      : this(stream, false, DateTimeKind.Local)
     {
     }
 
@@ -87,13 +112,15 @@ namespace Newtonsoft.Json.Bson
     /// Initializes a new instance of the <see cref="BsonReader"/> class.
     /// </summary>
     /// <param name="stream">The stream.</param>
-    /// <param name="rootTypeIsArray">if set to <c>true</c> the root object will be read as a JSON array.</param>
-    public BsonReader(Stream stream, bool rootTypeIsArray)
+    /// <param name="readRootValueAsArray">if set to <c>true</c> the root object will be read as a JSON array.</param>
+    /// <param name="dateTimeKindHandling">The <see cref="DateTimeKind" /> used when reading <see cref="DateTime"/> values from BSON.</param>
+    public BsonReader(Stream stream, bool readRootValueAsArray, DateTimeKind dateTimeKindHandling)
     {
       ValidationUtils.ArgumentNotNull(stream, "stream");
       _reader = new BinaryReader(stream);
       _stack = new List<ContainerContext>();
-      _rootTypeIsArray = rootTypeIsArray;
+      _readRootValueAsArray = readRootValueAsArray;
+      _dateTimeKindHandling = dateTimeKindHandling;
     }
 
     private string ReadElement()
@@ -256,8 +283,8 @@ namespace Newtonsoft.Json.Bson
       {
         case State.Start:
           {
-            JsonToken token = (!_rootTypeIsArray) ? JsonToken.StartObject : JsonToken.StartArray;
-            JTokenType type = (!_rootTypeIsArray) ? JTokenType.Object : JTokenType.Array;
+            JsonToken token = (!_readRootValueAsArray) ? JsonToken.StartObject : JsonToken.StartArray;
+            JTokenType type = (!_readRootValueAsArray) ? JTokenType.Object : JTokenType.Array;
 
             SetToken(token);
             ContainerContext newContext = new ContainerContext(type);
@@ -394,7 +421,22 @@ namespace Newtonsoft.Json.Bson
           break;
         case BsonType.Date:
           long ticks = ReadInt64();
-          DateTime dateTime = JsonConvert.ConvertJavaScriptTicksToDateTime(ticks);
+          DateTime utcDateTime = JsonConvert.ConvertJavaScriptTicksToDateTime(ticks);
+
+          DateTime dateTime;
+          switch (DateTimeKindHandling)
+          {
+            case DateTimeKind.Unspecified:
+              dateTime = DateTime.SpecifyKind(utcDateTime.ToLocalTime(), DateTimeKind.Unspecified);
+              break;
+            case DateTimeKind.Local:
+              dateTime = utcDateTime.ToLocalTime();
+              break;
+            default:
+              dateTime = utcDateTime;
+              break;
+          }
+
           SetToken(JsonToken.Date, dateTime);
           break;
         case BsonType.Null:

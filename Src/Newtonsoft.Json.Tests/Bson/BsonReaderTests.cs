@@ -117,7 +117,16 @@ namespace Newtonsoft.Json.Tests.Bson
       byte[] data = MiscellaneousUtils.HexToBytes("20-00-00-00-02-30-00-02-00-00-00-61-00-02-31-00-02-00-00-00-62-00-02-32-00-02-00-00-00-63-00-00");
 
       MemoryStream ms = new MemoryStream(data);
-      BsonReader reader = new BsonReader(ms, true);
+      BsonReader reader = new BsonReader(ms);
+
+      Assert.AreEqual(false, reader.ReadRootValueAsArray);
+      Assert.AreEqual(DateTimeKind.Local, reader.DateTimeKindHandling);
+
+      reader.ReadRootValueAsArray = true;
+      reader.DateTimeKindHandling = DateTimeKind.Utc;
+
+      Assert.AreEqual(true, reader.ReadRootValueAsArray);
+      Assert.AreEqual(DateTimeKind.Utc, reader.DateTimeKindHandling);
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
@@ -149,7 +158,10 @@ namespace Newtonsoft.Json.Tests.Bson
       byte[] data = MiscellaneousUtils.HexToBytes("2B-00-00-00-02-30-00-02-00-00-00-61-00-02-31-00-02-00-00-00-62-00-05-32-00-0C-00-00-00-02-48-65-6C-6C-6F-20-77-6F-72-6C-64-21-00");
 
       MemoryStream ms = new MemoryStream(data);
-      BsonReader reader = new BsonReader(ms, true);
+      BsonReader reader = new BsonReader(ms, true, DateTimeKind.Utc);
+
+      Assert.AreEqual(true, reader.ReadRootValueAsArray);
+      Assert.AreEqual(DateTimeKind.Utc, reader.DateTimeKindHandling);
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
@@ -175,7 +187,7 @@ namespace Newtonsoft.Json.Tests.Bson
 
       Assert.IsFalse(reader.Read());
 
-      string decodedString = Encoding.UTF8.GetString(encodedStringData);
+      string decodedString = Encoding.UTF8.GetString(encodedStringData, 0, encodedStringData.Length);
       Assert.AreEqual("Hello world!", decodedString);
     }
 
@@ -645,6 +657,37 @@ namespace Newtonsoft.Json.Tests.Bson
       Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
 
       Assert.IsFalse(reader.Read());
+    }
+
+    [Test]
+    public void DateTimeKindHandling()
+    {
+      DateTime value = new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+      MemoryStream ms = new MemoryStream();
+      BsonWriter writer = new BsonWriter(ms);
+
+      writer.WriteStartObject();
+      writer.WritePropertyName("DateTime");
+      writer.WriteValue(value);
+      writer.WriteEndObject();
+
+      byte[] bson = ms.ToArray();
+
+      JObject o;
+      BsonReader reader;
+      
+      reader = new BsonReader(new MemoryStream(bson), false, DateTimeKind.Utc);
+      o = (JObject)JToken.ReadFrom(reader);
+      Assert.AreEqual(value, (DateTime)o["DateTime"]);
+
+      reader = new BsonReader(new MemoryStream(bson), false, DateTimeKind.Local);
+      o = (JObject)JToken.ReadFrom(reader);
+      Assert.AreEqual(value.ToLocalTime(), (DateTime)o["DateTime"]);
+
+      reader = new BsonReader(new MemoryStream(bson), false, DateTimeKind.Unspecified);
+      o = (JObject)JToken.ReadFrom(reader);
+      Assert.AreEqual(DateTime.SpecifyKind(value.ToLocalTime(), DateTimeKind.Unspecified), (DateTime)o["DateTime"]);
     }
   }
 }

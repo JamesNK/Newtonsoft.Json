@@ -54,6 +54,10 @@
     <Reference Include="System.Windows.Browser" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bson\BsonBinaryType.cs" />
+    <Compile Include="Bson\BsonReader.cs" />
+    <Compile Include="Bson\BsonType.cs" />
+    <Compile Include="Bson\BsonWriter.cs" />
     <Compile Include="ConstructorHandling.cs" />
     <Compile Include="Converters\BinaryConverter.cs" />
     <Compile Include="Converters\CustomCreationConverter.cs" />
