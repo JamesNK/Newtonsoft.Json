@@ -181,14 +181,7 @@ namespace Newtonsoft.Json.Serialization
     /// <returns></returns>
     protected virtual JsonConverter ResolveContractConverter(Type objectType)
     {
-      // check for an attribute first
-      JsonConverter converter = JsonTypeReflector.GetJsonConverter(objectType, objectType);
-      if (converter != null)
-        return converter;
-
-      // then see whether object is compadible with any of the built in converters
-      JsonSerializer.HasMatchingConverter(BuiltInConverters, objectType, out converter);
-      return converter;
+      return JsonTypeReflector.GetJsonConverter(objectType, objectType);
     }
 
     private void InitializeContract(JsonContract contract)
@@ -209,6 +202,11 @@ namespace Newtonsoft.Json.Serialization
 #endif
 
       contract.Converter = ResolveContractConverter(contract.UnderlyingType);
+
+      // then see whether object is compadible with any of the built in converters
+      JsonConverter internalConverter;
+      if (JsonSerializer.HasMatchingConverter(BuiltInConverters, contract.UnderlyingType, out internalConverter))
+        contract.InternalConverter = internalConverter;
 
       if (ReflectionUtils.HasDefaultConstructor(contract.CreatedType, true)
         || contract.CreatedType.IsValueType)

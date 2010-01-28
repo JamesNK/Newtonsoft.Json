@@ -59,6 +59,10 @@ namespace Newtonsoft.Json.Serialization
     /// <value>The converter.</value>
     public JsonConverter Converter { get; set; }
 
+    // internally specified JsonConverter's to override default behavour
+    // checked for after passed in converters and attribute specified converters
+    internal JsonConverter InternalConverter { get; set; }
+
 #if !PocketPC
     /// <summary>
     /// Gets or sets the method called immediately after deserialization of the object.

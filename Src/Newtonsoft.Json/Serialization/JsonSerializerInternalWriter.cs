@@ -92,7 +92,8 @@ namespace Newtonsoft.Json.Serialization
 
       if (converter != null
           || ((converter = contract.Converter) != null)
-          || Serializer.HasMatchingConverter(contract.UnderlyingType, out converter))
+          || Serializer.HasMatchingConverter(contract.UnderlyingType, out converter)
+          || ((converter = contract.InternalConverter) != null))
       {
         SerializeConvertable(writer, converter, value, contract);
       }

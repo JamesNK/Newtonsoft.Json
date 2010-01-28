@@ -102,6 +102,40 @@ namespace Newtonsoft.Json.Tests.Converters
   }
 ]", json);
     }
+
+    public class TestDataTableConverter : JsonConverter
+    {
+      public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+      {
+        DataTable d = (DataTable) value;
+        writer.WriteValue(d.TableName);
+      }
+
+      public override object ReadJson(JsonReader reader, Type objectType, JsonSerializer serializer)
+      {
+        //reader.Read();
+        DataTable d = new DataTable((string)reader.Value);
+
+        return d;
+      }
+
+      public override bool CanConvert(Type objectType)
+      {
+        return (objectType == typeof (DataTable));
+      }
+    }
+
+    [Test]
+    public void PassedInJsonConverterOverridesInternalConverter()
+    {
+      DataTable t1 = new DataTable("Custom");
+
+      string json = JsonConvert.SerializeObject(t1, Formatting.Indented, new TestDataTableConverter());
+      Assert.AreEqual(@"""Custom""", json);
+
+      DataTable t2 = JsonConvert.DeserializeObject<DataTable>(json, new TestDataTableConverter());
+      Assert.AreEqual(t1.TableName, t2.TableName);
+    }
   }
 }
 #endif

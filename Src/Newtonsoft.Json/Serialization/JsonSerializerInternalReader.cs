@@ -168,14 +168,21 @@ namespace Newtonsoft.Json.Serialization
     {
       JsonConverter converter;
 
+      // member attribute converter
       if (memberConverter != null)
         return memberConverter.ReadJson(reader, objectType, GetInternalSerializer());
 
+      // class attribute converter
       if (contract != null && contract.Converter != null)
         return contract.Converter.ReadJson(reader, objectType, GetInternalSerializer());
 
+      // passed in converters
       if (objectType != null && Serializer.HasMatchingConverter(objectType, out converter))
         return converter.ReadJson(reader, objectType, GetInternalSerializer());
+
+      // internally specified converter
+      if (contract != null && contract.InternalConverter != null)
+        return contract.InternalConverter.ReadJson(reader, objectType, GetInternalSerializer());
 
       if (contract is JsonLinqContract)
         return CreateJToken(reader, contract);
