@@ -232,7 +232,7 @@ namespace Newtonsoft.Json.Serialization
 #if !SILVERLIGHT
         && !(converter is ComponentConverter)
 #endif
-        && (converter.GetType() != typeof(TypeConverter) || value is Type))
+        && converter.GetType() != typeof(TypeConverter))
       {
         if (converter.CanConvertTo(typeof(string)))
         {
@@ -247,12 +247,18 @@ namespace Newtonsoft.Json.Serialization
 #endif
 
 #if SILVERLIGHT || PocketPC
-      if (value is Guid || value is Type || value is Uri || value is TimeSpan)
+      if (value is Guid || value is Uri || value is TimeSpan)
       {
         s = value.ToString();
         return true;
       }
 #endif
+
+      if (value is Type)
+      {
+        s = ((Type)value).AssemblyQualifiedName;
+        return true;
+      }
 
       s = null;
       return false;

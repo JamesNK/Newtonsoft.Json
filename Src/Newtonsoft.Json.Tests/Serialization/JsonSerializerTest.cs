@@ -960,13 +960,23 @@ keyword such as type of business.""
     [Test]
     public void SerializeTypeProperty()
     {
+      string boolRef = typeof(bool).AssemblyQualifiedName;
       TypeClass typeClass = new TypeClass { TypeProperty = typeof(bool) };
 
       string json = JsonConvert.SerializeObject(typeClass);
-      Assert.AreEqual(@"{""TypeProperty"":""System.Boolean""}", json);
+      Assert.AreEqual(@"{""TypeProperty"":""" + boolRef + @"""}", json);
 
       TypeClass typeClass2 = JsonConvert.DeserializeObject<TypeClass>(json);
       Assert.AreEqual(typeof(bool), typeClass2.TypeProperty);
+
+      string jsonSerializerTestRef = typeof(JsonSerializerTest).AssemblyQualifiedName;
+      typeClass = new TypeClass { TypeProperty = typeof(JsonSerializerTest) };
+
+      json = JsonConvert.SerializeObject(typeClass);
+      Assert.AreEqual(@"{""TypeProperty"":""" + jsonSerializerTestRef + @"""}", json);
+
+      typeClass2 = JsonConvert.DeserializeObject<TypeClass>(json);
+      Assert.AreEqual(typeof(JsonSerializerTest), typeClass2.TypeProperty);
     }
 
     [Test]
