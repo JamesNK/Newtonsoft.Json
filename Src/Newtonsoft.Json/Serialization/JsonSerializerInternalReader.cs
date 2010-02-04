@@ -39,6 +39,9 @@ namespace Newtonsoft.Json.Serialization
   internal class JsonSerializerInternalReader : JsonSerializerInternalBase
   {
     private JsonSerializerProxy _internalSerializer;
+#if !SILVERLIGHT && !PocketPC
+   private JsonFormatterConverter _formatterConverter;
+#endif
 
     public JsonSerializerInternalReader(JsonSerializer serializer) : base(serializer)
     {
@@ -121,6 +124,16 @@ namespace Newtonsoft.Json.Serialization
 
       return _internalSerializer;
     }
+
+#if !SILVERLIGHT && !PocketPC
+    private JsonFormatterConverter GetFormatterConverter()
+    {
+      if (_formatterConverter == null)
+        _formatterConverter = new JsonFormatterConverter(GetInternalSerializer());
+
+      return _formatterConverter;
+    }
+#endif
 
     private JToken CreateJToken(JsonReader reader, JsonContract contract)
     {
@@ -320,21 +333,31 @@ namespace Newtonsoft.Json.Serialization
       if (contract == null)
         throw new JsonSerializationException("Could not resolve type '{0}' to a JsonContract.".FormatWith(CultureInfo.InvariantCulture, objectType));
 
-      if (contract is JsonDictionaryContract)
+      JsonDictionaryContract dictionaryContract = contract as JsonDictionaryContract;
+      if (dictionaryContract != null)
       {
         if (existingValue == null)
-          return CreateAndPopulateDictionary(reader, (JsonDictionaryContract) contract, id);
+          return CreateAndPopulateDictionary(reader, dictionaryContract, id);
 
-        return PopulateDictionary(CollectionUtils.CreateDictionaryWrapper(existingValue), reader, (JsonDictionaryContract) contract, id);
+        return PopulateDictionary(dictionaryContract.CreateWrapper(existingValue), reader, dictionaryContract, id);
       }
-      
-      if (contract is JsonObjectContract)
+
+      JsonObjectContract objectContract = contract as JsonObjectContract;
+      if (objectContract != null)
       {
         if (existingValue == null)
-          return CreateAndPopulateObject(reader, (JsonObjectContract) contract, id);
-        
-        return PopulateObject(existingValue, reader, (JsonObjectContract) contract, id);
+          return CreateAndPopulateObject(reader, objectContract, id);
+
+        return PopulateObject(existingValue, reader, objectContract, id);
       }
+
+#if !SILVERLIGHT && !PocketPC
+      JsonISerializableContract serializableContract = contract as JsonISerializableContract;
+      if (serializableContract != null)
+      {
+        return CreateISerializable(reader, serializableContract, id);
+      }
+#endif
       
       throw new JsonSerializationException("Cannot deserialize JSON object into type '{0}'.".FormatWith(CultureInfo.InvariantCulture, objectType));
     }
@@ -367,7 +390,7 @@ namespace Newtonsoft.Json.Serialization
         if (existingValue == null)
           value = CreateAndPopulateList(reader, reference, arrayContract);
         else
-          value = PopulateList(CollectionUtils.CreateCollectionWrapper(existingValue), reader, reference, arrayContract);
+          value = PopulateList(arrayContract.CreateWrapper(existingValue), reader, reference, arrayContract);
       }
       else
       {
@@ -501,7 +524,16 @@ namespace Newtonsoft.Json.Serialization
         switch (reader.TokenType)
         {
           case JsonToken.PropertyName:
-            object keyValue = EnsureType(reader.Value, contract.DictionaryKeyType);
+            object keyValue;
+            try
+            {
+              keyValue = EnsureType(reader.Value, contract.DictionaryKeyType);
+            }
+            catch (Exception ex)
+            {
+              throw new JsonSerializationException("Could not convert string '{0}' to dictionary key type {1}. Create a TypeConverter to convert from the string to the key type object.".FormatWith(CultureInfo.InvariantCulture, reader.Value, contract.DictionaryKeyType), ex);
+            }
+
             CheckedRead(reader);
 
             try
@@ -587,6 +619,48 @@ namespace Newtonsoft.Json.Serialization
 
       throw new JsonSerializationException("Unexpected end when deserializing array.");
     }
+
+#if !SILVERLIGHT && !PocketPC
+    private object CreateISerializable(JsonReader reader, JsonISerializableContract contract, string id)
+    {
+      Type objectType = contract.UnderlyingType;
+
+      SerializationInfo serializationInfo = new SerializationInfo(contract.UnderlyingType, GetFormatterConverter());
+
+      bool exit = false;
+      do
+      {
+        switch (reader.TokenType)
+        {
+          case JsonToken.PropertyName:
+            string memberName = reader.Value.ToString();
+            if (!reader.Read())
+              throw new JsonSerializationException("Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
+
+            serializationInfo.AddValue(memberName, JToken.ReadFrom(reader));
+            break;
+          case JsonToken.EndObject:
+            exit = true;
+            break;
+          default:
+            throw new JsonSerializationException("Unexpected token when deserializing object: " + reader.TokenType);
+        }
+      } while (!exit && reader.Read());
+
+      if (contract.ISerializableCreator == null)
+        throw new JsonSerializationException("ISerializable type '{0}' does not have a valid constructor.".FormatWith(CultureInfo.InvariantCulture, objectType));
+
+      object createdObject = contract.ISerializableCreator(null, new object[] { serializationInfo, Serializer.Context });
+
+      if (id != null)
+        Serializer.ReferenceResolver.AddReference(id, createdObject);
+
+      contract.InvokeOnDeserializing(createdObject, Serializer.Context);
+      contract.InvokeOnDeserialized(createdObject, Serializer.Context);
+
+      return createdObject;
+    }
+#endif
 
     private object CreateAndPopulateObject(JsonReader reader, JsonObjectContract contract, string id)
     {

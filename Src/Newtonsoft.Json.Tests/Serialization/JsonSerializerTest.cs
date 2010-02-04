@@ -1981,14 +1981,31 @@ keyword such as type of business.""
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Could not create string property name from type 'Newtonsoft.Json.Tests.TestObjects.Person'.")]
     public void SerializePersonKeyedDictionary()
     {
       Dictionary<Person, int> dictionary = new Dictionary<Person, int>();
       dictionary.Add(new Person { Name = "p1" }, 1);
       dictionary.Add(new Person { Name = "p2" }, 2);
 
-      JsonConvert.SerializeObject(dictionary, Formatting.Indented);
+      string json = JsonConvert.SerializeObject(dictionary, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""Newtonsoft.Json.Tests.TestObjects.Person"": 1,
+  ""Newtonsoft.Json.Tests.TestObjects.Person"": 2
+}", json);
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Could not convert string 'Newtonsoft.Json.Tests.TestObjects.Person' to dictionary key type Newtonsoft.Json.Tests.TestObjects.Person. Create a TypeConverter to convert from the string to the key type object.")]
+    public void DeserializePersonKeyedDictionary()
+    {
+      string json =
+        @"{
+  ""Newtonsoft.Json.Tests.TestObjects.Person"": 1,
+  ""Newtonsoft.Json.Tests.TestObjects.Person"": 2
+}";
+      
+      JsonConvert.DeserializeObject<Dictionary<Person, int>>(json);
     }
 
     [Test]
@@ -2314,5 +2331,288 @@ keyword such as type of business.""
       
       Assert.AreEqual(123, item.Value);
     }
+
+    public abstract class Animal
+    {
+      public abstract string Name { get;  }
+    }
+
+    public class Human : Animal
+    {
+      public override string Name
+      {
+        get { return typeof(Human).Name; }
+      }
+
+      public string Ethnicity { get; set; }
+    }
+
+#if !NET20 && !PocketPC
+    public class DataContractJsonSerializerTestClass
+    {
+      public TimeSpan TimeSpanProperty { get; set; }
+      public Guid GuidProperty { get; set; }
+      public Animal AnimalProperty { get; set; }
+      public Exception ExceptionProperty { get; set; }
+    }
+
+    [Test]
+    public void DataContractJsonSerializerTest()
+    {
+      Exception ex = new Exception("Blah blah blah");
+
+      DataContractJsonSerializerTestClass c = new DataContractJsonSerializerTestClass();
+      c.TimeSpanProperty = new TimeSpan(200, 20, 59, 30, 900);
+      c.GuidProperty = new Guid("66143115-BE2A-4a59-AF0A-348E1EA15B1E");
+      c.AnimalProperty = new Human() {Ethnicity = "European"};
+      c.ExceptionProperty = ex;
+
+      MemoryStream ms = new MemoryStream();
+      DataContractJsonSerializer serializer = new DataContractJsonSerializer(
+        typeof(DataContractJsonSerializerTestClass),
+        new Type[] { typeof(Human) });
+      serializer.WriteObject(ms, c);
+
+      byte[] jsonBytes = ms.ToArray();
+      string json = Encoding.UTF8.GetString(jsonBytes, 0, jsonBytes.Length);
+
+      Console.WriteLine(JObject.Parse(json).ToString());
+      Console.WriteLine();
+
+      Console.WriteLine(JsonConvert.SerializeObject(c, Formatting.Indented, new JsonSerializerSettings
+                                                                          {
+                                                             //               TypeNameHandling = TypeNameHandling.Objects
+                                                                          }));
+    }
+#endif
+
+    public class ModelStateDictionary<T> : IDictionary<string, T>
+    {
+
+      private readonly Dictionary<string, T> _innerDictionary = new Dictionary<string, T>(StringComparer.OrdinalIgnoreCase);
+
+      public ModelStateDictionary()
+      {
+      }
+
+      public ModelStateDictionary(ModelStateDictionary<T> dictionary)
+      {
+        if (dictionary == null)
+        {
+          throw new ArgumentNullException("dictionary");
+        }
+
+        foreach (var entry in dictionary)
+        {
+          _innerDictionary.Add(entry.Key, entry.Value);
+        }
+      }
+
+      public int Count
+      {
+        get
+        {
+          return _innerDictionary.Count;
+        }
+      }
+
+      public bool IsReadOnly
+      {
+        get
+        {
+          return ((IDictionary<string, T>)_innerDictionary).IsReadOnly;
+        }
+      }
+
+      public ICollection<string> Keys
+      {
+        get
+        {
+          return _innerDictionary.Keys;
+        }
+      }
+
+      public T this[string key]
+      {
+        get
+        {
+          T value;
+          _innerDictionary.TryGetValue(key, out value);
+          return value;
+        }
+        set
+        {
+          _innerDictionary[key] = value;
+        }
+      }
+
+      public ICollection<T> Values
+      {
+        get
+        {
+          return _innerDictionary.Values;
+        }
+      }
+
+      public void Add(KeyValuePair<string, T> item)
+      {
+        ((IDictionary<string, T>)_innerDictionary).Add(item);
+      }
+
+      public void Add(string key, T value)
+      {
+        _innerDictionary.Add(key, value);
+      }
+
+      public void Clear()
+      {
+        _innerDictionary.Clear();
+      }
+
+      public bool Contains(KeyValuePair<string, T> item)
+      {
+        return ((IDictionary<string, T>)_innerDictionary).Contains(item);
+      }
+
+      public bool ContainsKey(string key)
+      {
+        return _innerDictionary.ContainsKey(key);
+      }
+
+      public void CopyTo(KeyValuePair<string, T>[] array, int arrayIndex)
+      {
+        ((IDictionary<string, T>)_innerDictionary).CopyTo(array, arrayIndex);
+      }
+
+      public IEnumerator<KeyValuePair<string, T>> GetEnumerator()
+      {
+        return _innerDictionary.GetEnumerator();
+      }
+
+      public void Merge(ModelStateDictionary<T> dictionary)
+      {
+        if (dictionary == null)
+        {
+          return;
+        }
+
+        foreach (var entry in dictionary)
+        {
+          this[entry.Key] = entry.Value;
+        }
+      }
+
+      public bool Remove(KeyValuePair<string, T> item)
+      {
+        return ((IDictionary<string, T>)_innerDictionary).Remove(item);
+      }
+
+      public bool Remove(string key)
+      {
+        return _innerDictionary.Remove(key);
+      }
+
+      public bool TryGetValue(string key, out T value)
+      {
+        return _innerDictionary.TryGetValue(key, out value);
+      }
+
+      IEnumerator IEnumerable.GetEnumerator()
+      {
+        return ((IEnumerable)_innerDictionary).GetEnumerator();
+      }
+    }
+
+    [Test]
+    public void SerializeNonIDictionary()
+    {
+      ModelStateDictionary<string> modelStateDictionary = new ModelStateDictionary<string>();
+      modelStateDictionary.Add("key", "value");
+
+      string json = JsonConvert.SerializeObject(modelStateDictionary);
+
+      Assert.AreEqual(@"{""key"":""value""}", json);
+
+      ModelStateDictionary<string> newModelStateDictionary = JsonConvert.DeserializeObject<ModelStateDictionary<string>>(json);
+      Assert.AreEqual(1, newModelStateDictionary.Count);
+      Assert.AreEqual("value", newModelStateDictionary["key"]);
+    }
+
+#if !SILVERLIGHT && !PocketPC
+    public class ISerializableTestObject : ISerializable
+    {
+      internal string _stringValue;
+      internal int _intValue;
+      internal DateTimeOffset _dateTimeOffsetValue;
+      internal Person _personValue;
+      internal Person _nullPersonValue;
+
+      public ISerializableTestObject(string stringValue, int intValue, DateTimeOffset dateTimeOffset, Person personValue)
+      {
+        _stringValue = stringValue;
+        _intValue = intValue;
+        _dateTimeOffsetValue = dateTimeOffset;
+        _personValue = personValue;
+      }
+
+      protected ISerializableTestObject(SerializationInfo info, StreamingContext context)
+      {
+        _stringValue = info.GetString("stringValue");
+        _intValue = info.GetInt32("intValue");
+        _dateTimeOffsetValue = (DateTimeOffset)info.GetValue("dateTimeOffsetValue", typeof(DateTimeOffset));
+        _personValue = (Person)info.GetValue("personValue", typeof(Person));
+        _nullPersonValue = (Person)info.GetValue("nullPersonValue", typeof(Person));
+      }
+
+      public void GetObjectData(SerializationInfo info, StreamingContext context)
+      {
+        info.AddValue("stringValue", _stringValue);
+        info.AddValue("intValue", _intValue);
+        info.AddValue("dateTimeOffsetValue", _dateTimeOffsetValue);
+        info.AddValue("personValue", _personValue);
+        info.AddValue("nullPersonValue", _nullPersonValue);
+      }
+    }
+
+    [Test]
+    public void SerializeISerializableTestObject()
+    {
+      Person person = new Person();
+      person.BirthDate = new DateTime(2000, 1, 1, 1, 1, 1, DateTimeKind.Utc);
+      person.LastModified = person.BirthDate;
+      person.Department = "Department!";
+      person.Name = "Name!";
+
+      DateTimeOffset dateTimeOffset = new DateTimeOffset(2000, 12, 20, 22, 59, 59, TimeSpan.FromHours(2));
+      string dateTimeOffsetText;
+#if !NET20
+      dateTimeOffsetText = @"\/Date(977345999000+0200)\/";
+#else
+      dateTimeOffsetText = @"12/20/2000 22:59:59 +02:00";
+#endif
+
+      ISerializableTestObject o = new ISerializableTestObject("String!", int.MinValue, dateTimeOffset, person);
+
+      string json = JsonConvert.SerializeObject(o, Formatting.Indented);
+      Assert.AreEqual(@"{
+  ""stringValue"": ""String!"",
+  ""intValue"": -2147483648,
+  ""dateTimeOffsetValue"": """ + dateTimeOffsetText + @""",
+  ""personValue"": {
+    ""Name"": ""Name!"",
+    ""BirthDate"": ""\/Date(946688461000)\/"",
+    ""LastModified"": ""\/Date(946688461000)\/""
+  },
+  ""nullPersonValue"": null
+}", json);
+
+      ISerializableTestObject o2 = JsonConvert.DeserializeObject<ISerializableTestObject>(json);
+      Assert.AreEqual("String!", o2._stringValue);
+      Assert.AreEqual(int.MinValue, o2._intValue);
+      Assert.AreEqual(dateTimeOffset, o2._dateTimeOffsetValue);
+      Assert.AreEqual("Name!", o2._personValue.Name);
+      Assert.AreEqual(null, o2._nullPersonValue);
+    }
+#endif
   }
 }

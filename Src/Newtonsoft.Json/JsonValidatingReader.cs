@@ -70,9 +70,9 @@ namespace Newtonsoft.Json
         _schema = schema;
 
         if (_schema != null && _schema.Properties != null)
-        {
           _requiredProperties = GetRequiredProperties(_schema).Distinct().ToDictionary(p => p, p => false);
-        }
+        else
+          _requiredProperties = new Dictionary<string, bool>();
       }
 
       private IEnumerable<string> GetRequiredProperties(JsonSchemaModel schema)
@@ -178,7 +178,7 @@ namespace Newtonsoft.Json
               throw new Exception("CurrentPropertyName has not been set on scope.");
 
             JsonSchemaModel propertySchema;
-            if (CurrentSchema.Properties.TryGetValue(_currentScope.CurrentPropertyName, out propertySchema))
+            if (CurrentSchema.Properties != null && CurrentSchema.Properties.TryGetValue(_currentScope.CurrentPropertyName, out propertySchema))
               return propertySchema;
 
             return (CurrentSchema.AllowAdditionalProperties) ? CurrentSchema.AdditionalProperties : null;
@@ -552,7 +552,7 @@ namespace Newtonsoft.Json
       if (_currentScope.RequiredProperties.ContainsKey(propertyName))
         _currentScope.RequiredProperties[propertyName] = true;
 
-      if (!schema.Properties.ContainsKey(propertyName))
+      if (schema.Properties != null && !schema.Properties.ContainsKey(propertyName))
       {
         IList<string> definedProperties = schema.Properties.Select(p => p.Key).ToList();
 

@@ -472,6 +472,9 @@ namespace Newtonsoft.Json
 
     internal static bool IsJsonPrimitiveType(Type type)
     {
+      if (ReflectionUtils.IsNullableType(type))
+        type = Nullable.GetUnderlyingType(type);
+
 #if !PocketPC && !NET20
      if (type == typeof(DateTimeOffset))
         return true;

@@ -92,6 +92,8 @@
     <Compile Include="Linq\JPath.cs" />
     <Compile Include="Linq\JRaw.cs" />
     <Compile Include="Required.cs" />
+    <Compile Include="Serialization\JsonFormatterConverter.cs" />
+    <Compile Include="Serialization\JsonISerializableContract.cs" />
     <Compile Include="Serialization\JsonLinqContract.cs" />
     <Compile Include="Serialization\JsonPrimitiveContract.cs" />
     <Compile Include="Serialization\DynamicValueProvider.cs" />
@@ -178,6 +180,7 @@
     <Compile Include="Serialization\JsonSerializerInternalReader.cs" />
     <Compile Include="Serialization\JsonSerializerInternalWriter.cs" />
     <Compile Include="Serialization\JsonSerializerProxy.cs" />
+    <Compile Include="Serialization\JsonStringContract.cs" />
     <Compile Include="Serialization\JsonTypeReflector.cs" />
     <Compile Include="Serialization\CachedAttributeGetter.cs" />
     <Compile Include="Serialization\ReflectionValueProvider.cs" />
@@ -185,6 +188,7 @@
     <Compile Include="Utilities\Base64Encoder.cs" />
     <Compile Include="Utilities\DynamicWrapper.cs" />
     <Compile Include="Utilities\LateBoundDelegateFactory.cs" />
+    <Compile Include="Serialization\MemberHandler.cs" />
     <Compile Include="Utilities\ThreadSafeStore.cs" />
     <Compile Include="TypeNameHandling.cs" />
     <Compile Include="Utilities\BidirectionalDictionary.cs" />

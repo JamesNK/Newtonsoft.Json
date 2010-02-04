@@ -248,11 +248,11 @@ namespace Newtonsoft.Json.Utilities
         return _dictionary.Contains(key);
     }
 
-    private struct DictionaryEnumerator : IDictionaryEnumerator
+    private struct DictionaryEnumerator<TEnumeratorKey, TEnumeratorValue> : IDictionaryEnumerator
     {
-      private IEnumerator _e;
+      private readonly IEnumerator<KeyValuePair<TEnumeratorKey, TEnumeratorValue>> _e;
 
-      public DictionaryEnumerator(IEnumerator e)
+      public DictionaryEnumerator(IEnumerator<KeyValuePair<TEnumeratorKey, TEnumeratorValue>> e)
       {
         ValidationUtils.ArgumentNotNull(e, "e");
         _e = e;
@@ -275,7 +275,7 @@ namespace Newtonsoft.Json.Utilities
 
       public object Current
       {
-        get { return _e.Current; }
+        get { return new DictionaryEntry(_e.Current.Key, _e.Current.Value); }
       }
 
       public bool MoveNext()
@@ -292,7 +292,7 @@ namespace Newtonsoft.Json.Utilities
     IDictionaryEnumerator IDictionary.GetEnumerator()
     {
       if (_genericDictionary != null)
-        return new DictionaryEnumerator(_genericDictionary.GetEnumerator());
+        return new DictionaryEnumerator<TKey, TValue>(_genericDictionary.GetEnumerator());
       else
         return _dictionary.GetEnumerator();
     }

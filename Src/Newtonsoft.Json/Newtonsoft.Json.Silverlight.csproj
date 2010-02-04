@@ -135,6 +135,8 @@
     <Compile Include="Serialization\JsonArrayContract.cs" />
     <Compile Include="Serialization\JsonContract.cs" />
     <Compile Include="Serialization\JsonDictionaryContract.cs" />
+    <Compile Include="Serialization\JsonFormatterConverter.cs" />
+    <Compile Include="Serialization\JsonISerializableContract.cs" />
     <Compile Include="Serialization\JsonLinqContract.cs" />
     <Compile Include="Serialization\JsonObjectContract.cs" />
     <Compile Include="Serialization\JsonPrimitiveContract.cs" />
@@ -144,6 +146,8 @@
     <Compile Include="Serialization\JsonSerializerProxy.cs" />
     <Compile Include="Serialization\JsonSerializerInternalReader.cs" />
     <Compile Include="Serialization\JsonSerializerInternalWriter.cs" />
+    <Compile Include="Serialization\JsonStringContract.cs" />
+    <Compile Include="Serialization\MemberHandler.cs" />
     <Compile Include="Serialization\OnErrorAttribute.cs" />
     <Compile Include="Serialization\ReflectionValueProvider.cs" />
     <Compile Include="StreamingContext.cs" />

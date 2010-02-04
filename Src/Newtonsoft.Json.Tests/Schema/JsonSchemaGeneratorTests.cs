@@ -36,6 +36,8 @@ using Newtonsoft.Json.Schema;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using System.Text;
+using Extensions=Newtonsoft.Json.Schema.Extensions;
 
 namespace Newtonsoft.Json.Tests.Schema
 {
@@ -52,12 +54,26 @@ namespace Newtonsoft.Json.Tests.Schema
       Assert.AreEqual(@"{
   ""type"": ""object"",
   ""additionalProperties"": {
-    ""type"": ""array"",
+    ""type"": [
+      ""array"",
+      ""null""
+    ],
     ""items"": {
       ""type"": ""string""
     }
   }
 }", json);
+
+      Dictionary<string, List<string>> value = new Dictionary<string, List<string>>
+                                                 {
+                                                   {"HasValue", new List<string>() { "first", "second"}},
+                                                   {"NoValue", null}
+                                                 };
+
+      string valueJson = JsonConvert.SerializeObject(value, Formatting.Indented);
+      JObject o = JObject.Parse(valueJson);
+
+      Assert.IsTrue(o.IsValid(schema));
     }
 
 #if !PocketPC
@@ -279,10 +295,49 @@ namespace Newtonsoft.Json.Tests.Schema
       JsonSchema schema = generator.Generate(typeof(Type));
 
       Assert.AreEqual(JsonSchemaType.String, schema.Type);
+
+      string json = JsonConvert.SerializeObject(typeof(Version), Formatting.Indented);
+
+      JValue v = new JValue(json);
+      Assert.IsTrue(v.IsValid(schema));
+    }
+
+#if !SILVERLIGHT && !PocketPC
+    [Test]
+    public void GenerateSchemaForISerializable()
+    {
+      JsonSchemaGenerator generator = new JsonSchemaGenerator();
+      generator.UndefinedSchemaIdHandling = UndefinedSchemaIdHandling.UseTypeName;
+
+      JsonSchema schema = generator.Generate(typeof(Exception));
+
+      Assert.AreEqual(JsonSchemaType.Object, schema.Type);
+      Assert.AreEqual(true, schema.AllowAdditionalProperties);
+      Assert.AreEqual(null, schema.Properties);
+    }
+#endif
+
+    [Test]
+    public void GenerateSchemaForDBNull()
+    {
+      JsonSchemaGenerator generator = new JsonSchemaGenerator();
+      generator.UndefinedSchemaIdHandling = UndefinedSchemaIdHandling.UseTypeName;
+
+      JsonSchema schema = generator.Generate(typeof(DBNull));
+
+      Assert.AreEqual(JsonSchemaType.Null, schema.Type);
     }
 
     public class CustomDirectoryInfoMapper : DefaultContractResolver
     {
+      protected override JsonContract CreateContract(Type objectType)
+      {
+        if (objectType == typeof(DirectoryInfo))
+          return base.CreateObjectContract(objectType);
+
+        return base.CreateContract(objectType);
+      }
+
       protected override IList<JsonProperty> CreateProperties(JsonObjectContract contract)
       {
         IList<JsonProperty> properties = base.CreateProperties(contract);
@@ -299,6 +354,7 @@ namespace Newtonsoft.Json.Tests.Schema
     {
       JsonSchemaGenerator generator = new JsonSchemaGenerator();
       generator.UndefinedSchemaIdHandling = UndefinedSchemaIdHandling.UseTypeName;
+      generator.ContractResolver = new CustomDirectoryInfoMapper();
 
       JsonSchema schema = generator.Generate(typeof(DirectoryInfo), true);
 
@@ -323,9 +379,6 @@ namespace Newtonsoft.Json.Tests.Schema
     },
     ""Exists"": {
       ""type"": ""boolean""
-    },
-    ""Root"": {
-      ""$ref"": ""System.IO.DirectoryInfo""
     },
     ""FullName"": {
       ""type"": [
@@ -374,9 +427,7 @@ namespace Newtonsoft.Json.Tests.Schema
       List<string> errors = new List<string>();
       jsonWriter.Token.Validate(schema, (sender, args) => errors.Add(args.Message));
 
-      Assert.AreEqual(2, errors.Count);
-      Assert.AreEqual("Non-optional properties are missing from object: Root.", errors[0]);
-      Assert.AreEqual("Non-optional properties are missing from object: Root.", errors[1]);
+      Assert.AreEqual(0, errors.Count);
     }
 
     [Test]
@@ -386,64 +437,34 @@ namespace Newtonsoft.Json.Tests.Schema
       generator.UndefinedSchemaIdHandling = UndefinedSchemaIdHandling.UseTypeName;
       generator.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
-      JsonSchema schema = generator.Generate(typeof (DirectoryInfo), true);
+      JsonSchema schema = generator.Generate(typeof (Version), true);
 
       string json = schema.ToString();
 
       Assert.AreEqual(@"{
-  ""id"": ""System.IO.DirectoryInfo"",
+  ""id"": ""System.Version"",
   ""type"": [
     ""object"",
     ""null""
   ],
   ""additionalProperties"": false,
   ""properties"": {
-    ""name"": {
-      ""type"": [
-        ""string"",
-        ""null""
-      ]
+    ""major"": {
+      ""type"": ""integer""
     },
-    ""parent"": {
-      ""$ref"": ""System.IO.DirectoryInfo""
+    ""minor"": {
+      ""type"": ""integer""
     },
-    ""exists"": {
-      ""type"": ""boolean""
+    ""build"": {
+      ""type"": ""integer""
     },
-    ""root"": {
-      ""$ref"": ""System.IO.DirectoryInfo""
+    ""revision"": {
+      ""type"": ""integer""
     },
-    ""fullName"": {
-      ""type"": [
-        ""string"",
-        ""null""
-      ]
+    ""majorRevision"": {
+      ""type"": ""integer""
     },
-    ""extension"": {
-      ""type"": [
-        ""string"",
-        ""null""
-      ]
-    },
-    ""creationTime"": {
-      ""type"": ""string""
-    },
-    ""creationTimeUtc"": {
-      ""type"": ""string""
-    },
-    ""lastAccessTime"": {
-      ""type"": ""string""
-    },
-    ""lastAccessTimeUtc"": {
-      ""type"": ""string""
-    },
-    ""lastWriteTime"": {
-      ""type"": ""string""
-    },
-    ""lastWriteTimeUtc"": {
-      ""type"": ""string""
-    },
-    ""attributes"": {
+    ""minorRevision"": {
       ""type"": ""integer""
     }
   }

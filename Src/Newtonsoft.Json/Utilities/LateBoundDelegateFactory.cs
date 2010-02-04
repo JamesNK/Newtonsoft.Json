@@ -31,6 +31,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 using System.Globalization;
+using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Utilities
 {

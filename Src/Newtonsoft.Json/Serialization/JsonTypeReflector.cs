@@ -83,6 +83,11 @@ namespace Newtonsoft.Json.Serialization
       return GetJsonContainerAttribute(type) as JsonObjectAttribute;
     }
 
+    public static JsonArrayAttribute GetJsonArrayAttribute(Type type)
+    {
+      return GetJsonContainerAttribute(type) as JsonArrayAttribute;
+    }
+
 #if !PocketPC && !NET20
     public static DataContractAttribute GetDataContractAttribute(Type type)
     {

@@ -315,31 +315,88 @@ namespace Newtonsoft.Json.Serialization
       return contract;
     }
 
-    private JsonContract CreateContract(Type objectType)
+#if !SILVERLIGHT && !PocketPC
+    protected virtual JsonISerializableContract CreateISerializableContract(Type objectType)
+    {
+      JsonISerializableContract contract = new JsonISerializableContract(objectType);
+      InitializeContract(contract);
+
+      ConstructorInfo constructorInfo = objectType.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new [] {typeof (SerializationInfo), typeof (StreamingContext)}, null);
+      if (constructorInfo != null)
+        contract.ISerializableCreator = LateBoundDelegateFactory.CreateMethodHandler(constructorInfo);
+
+      return contract;
+    }
+#endif
+
+    protected virtual JsonStringContract CreateStringContract(Type objectType)
+    {
+      JsonStringContract contract = new JsonStringContract(objectType);
+      InitializeContract(contract);
+
+      return contract;
+    }
+
+    protected virtual JsonContract CreateContract(Type objectType)
     {
       if (JsonConvert.IsJsonPrimitiveType(objectType))
-      {
         return CreatePrimitiveContract(objectType);
-      }
+
       if (JsonTypeReflector.GetJsonObjectAttribute(objectType) != null)
-      {
         return CreateObjectContract(objectType);
-      }
+
+      if (JsonTypeReflector.GetJsonArrayAttribute(objectType) != null)
+        return CreateArrayContract(objectType);
+
       if (objectType.IsSubclassOf(typeof(JToken)))
-      {
         return CreateLinqContract(objectType);
-      }
+
+      bool canConvertToString = CanConvertToString(objectType);
+
+#if !SILVERLIGHT && !PocketPC
+      if (typeof(ISerializable).IsAssignableFrom(objectType) && !canConvertToString)
+        return CreateISerializableContract(objectType);
+#endif
 
       if (CollectionUtils.IsDictionaryType(objectType))
-      {
         return CreateDictionaryContract(objectType);
-      }
+
       if (typeof(IEnumerable).IsAssignableFrom(objectType))
-      {
         return CreateArrayContract(objectType);
-      }
+
+      if (canConvertToString)
+        return CreateStringContract(objectType);
 
       return CreateObjectContract(objectType);
+    }
+
+    internal static bool CanConvertToString(Type type)
+    {
+#if !PocketPC
+      TypeConverter converter = ConvertUtils.GetConverter(type);
+
+      // use the objectType's TypeConverter if it has one and can convert to a string
+      if (converter != null
+#if !SILVERLIGHT
+ && !(converter is ComponentConverter)
+ && !(converter is ReferenceConverter)
+#endif
+ && converter.GetType() != typeof(TypeConverter))
+      {
+        if (converter.CanConvertTo(typeof(string)))
+          return true;
+      }
+#endif
+
+      if (type == typeof(Type) || type.IsSubclassOf(typeof(Type)))
+        return true;
+
+#if SILVERLIGHT || PocketPC
+      if (type == typeof(Guid) || type == typeof(Uri) || type == typeof(TimeSpan))
+        return true;
+#endif
+
+      return false;
     }
 
     private static bool IsValidCallback(MethodInfo method, ParameterInfo[] parameters, Type attributeType, MethodInfo currentCallback, ref Type prevAttributeType)

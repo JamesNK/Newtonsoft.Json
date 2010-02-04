@@ -233,10 +233,11 @@ namespace Newtonsoft.Json.Schema
       CurrentSchema.Title = GetTitle(type);
       CurrentSchema.Description = GetDescription(type);
 
-      if (CollectionUtils.IsDictionaryType(type))
+      JsonContract contract = ContractResolver.ResolveContract(type);
+
+      if (contract is JsonDictionaryContract)
       {
-        // TODO: include null
-        CurrentSchema.Type = JsonSchemaType.Object;
+        CurrentSchema.Type = AddNullType(JsonSchemaType.Object, valueRequired);
 
         Type keyType;
         Type valueType;
@@ -251,10 +252,9 @@ namespace Newtonsoft.Json.Schema
           }
         }
       }
-      else if (CollectionUtils.IsCollectionType(type))
+      else if (contract is JsonArrayContract)
       {
-        // TODO: include null
-        CurrentSchema.Type = JsonSchemaType.Array;
+        CurrentSchema.Type = AddNullType(JsonSchemaType.Array, valueRequired);
 
         CurrentSchema.Id = GetTypeId(type, false);
 
@@ -268,37 +268,11 @@ namespace Newtonsoft.Json.Schema
           CurrentSchema.Items.Add(GenerateInternal(collectionItemType, (!allowNullItem) ? Required.Always : Required.Default));
         }
       }
-      else
+      else if (contract is JsonPrimitiveContract)
       {
         CurrentSchema.Type = GetJsonSchemaType(type, valueRequired);
 
-        if (HasFlag(CurrentSchema.Type, JsonSchemaType.Object))
-        {
-          CurrentSchema.Id = GetTypeId(type, false);
-
-          JsonObjectContract contract = ContractResolver.ResolveContract(type) as JsonObjectContract;
-
-          if (contract == null)
-            throw new Exception("Could not resolve contract for '{0}'.".FormatWith(CultureInfo.InvariantCulture, type));
-
-          CurrentSchema.Properties = new Dictionary<string, JsonSchema>();
-          foreach (JsonProperty property in contract.Properties)
-          {
-            if (!property.Ignored)
-            {
-              JsonSchema propertySchema = GenerateInternal(property.PropertyType, property.Required);
-
-              if (property.DefaultValue != null)
-                propertySchema.Default = JToken.FromObject(property.DefaultValue);
-
-              CurrentSchema.Properties.Add(property.PropertyName, propertySchema);
-            }
-          }
-
-          if (type.IsSealed)
-            CurrentSchema.AllowAdditionalProperties = false;
-        }
-        else if (CurrentSchema.Type == JsonSchemaType.Integer && type.IsEnum && !type.IsDefined(typeof(FlagsAttribute), true))
+        if (CurrentSchema.Type == JsonSchemaType.Integer && type.IsEnum && !type.IsDefined(typeof(FlagsAttribute), true))
         {
           CurrentSchema.Enum = new List<JToken>();
           CurrentSchema.Options = new Dictionary<JToken, string>();
@@ -313,9 +287,70 @@ namespace Newtonsoft.Json.Schema
           }
         }
       }
+      else if (contract is JsonObjectContract)
+      {
+        CurrentSchema.Type = AddNullType(JsonSchemaType.Object, valueRequired);
+        CurrentSchema.Id = GetTypeId(type, false);
+        GenerateObjectSchema(type, (JsonObjectContract)contract);
+      }
+#if !SILVERLIGHT && !PocketPC
+      else if (contract is JsonISerializableContract)
+      {
+        CurrentSchema.Type = AddNullType(JsonSchemaType.Object, valueRequired);
+        CurrentSchema.Id = GetTypeId(type, false);
+        GenerateISerializableContract(type, (JsonISerializableContract) contract);
+      }
+#endif
+      else if (contract is JsonStringContract)
+      {
+        JsonSchemaType schemaType = (!ReflectionUtils.IsNullable(contract.UnderlyingType))
+                                      ? JsonSchemaType.String
+                                      : AddNullType(JsonSchemaType.String, valueRequired);
+
+        CurrentSchema.Type = schemaType;
+      }
+      else
+      {
+        throw new Exception("Unexpected contract type: {0}".FormatWith(CultureInfo.InvariantCulture, contract));
+      }
 
       return Pop().Schema;
     }
+
+    private JsonSchemaType AddNullType(JsonSchemaType type, Required valueRequired)
+    {
+      if (valueRequired != Required.Always)
+        return type | JsonSchemaType.Null;
+
+      return type;
+    }
+
+    private void GenerateObjectSchema(Type type, JsonObjectContract contract)
+    {
+      CurrentSchema.Properties = new Dictionary<string, JsonSchema>();
+      foreach (JsonProperty property in contract.Properties)
+      {
+        if (!property.Ignored)
+        {
+          JsonSchema propertySchema = GenerateInternal(property.PropertyType, property.Required);
+
+          if (property.DefaultValue != null)
+            propertySchema.Default = JToken.FromObject(property.DefaultValue);
+
+          CurrentSchema.Properties.Add(property.PropertyName, propertySchema);
+        }
+      }
+
+      if (type.IsSealed)
+        CurrentSchema.AllowAdditionalProperties = false;
+    }
+
+#if !SILVERLIGHT && !PocketPC
+    private void GenerateISerializableContract(Type type, JsonISerializableContract contract)
+    {
+      CurrentSchema.AllowAdditionalProperties = true;
+    }
+#endif
 
     internal static bool HasFlag(JsonSchemaType? value, JsonSchemaType flag)
     {

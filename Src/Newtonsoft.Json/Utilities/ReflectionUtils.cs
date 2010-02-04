@@ -32,8 +32,6 @@ using System.Globalization;
 
 namespace Newtonsoft.Json.Utilities
 {
-  internal delegate object MemberHandler<T>(T target, params object[] args);
-
   internal static class ReflectionUtils
   {
     public static Type GetObjectType(object v)
