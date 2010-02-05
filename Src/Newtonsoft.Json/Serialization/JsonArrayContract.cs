@@ -41,7 +41,7 @@ namespace Newtonsoft.Json.Serialization
     private bool _isCollectionItemTypeNullableType;
     private Type _genericCollectionDefinitionType;
     private Type _genericWrapperType;
-    private MemberHandler<object> _genericWrapperCreator;
+    private MethodCaller<object> _genericWrapperCreator;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonArrayContract"/> class.
@@ -66,10 +66,6 @@ namespace Newtonsoft.Json.Serialization
       {
         CreatedType = ReflectionUtils.MakeGenericType(typeof(List<>), CollectionItemType);
       }
-      else
-      {
-        CreatedType = UnderlyingType;
-      }
     }
 
     internal IWrappedCollection CreateWrapper(object list)
@@ -83,7 +79,7 @@ namespace Newtonsoft.Json.Serialization
 
         ConstructorInfo genericWrapperConstructor = _genericWrapperType.GetConstructor(new[] { _genericCollectionDefinitionType });
 #if !PocketPC && !SILVERLIGHT
-        _genericWrapperCreator = LateBoundDelegateFactory.CreateMethodHandler(genericWrapperConstructor);
+        _genericWrapperCreator = LateBoundDelegateFactory.CreateMethodCall(genericWrapperConstructor);
 #else
         _genericWrapperCreator = (target, args) => genericWrapperConstructor.Invoke(new[] { args[0] });
 #endif

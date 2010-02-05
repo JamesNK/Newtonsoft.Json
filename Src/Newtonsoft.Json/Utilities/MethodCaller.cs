@@ -23,25 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Newtonsoft.Json.Serialization
+namespace Newtonsoft.Json.Utilities
 {
-  /// <summary>
-  /// Contract details for a <see cref="Type"/> used by the <see cref="JsonSerializer"/>.
-  /// </summary>
-  public class JsonStringContract : JsonContract
-  {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="JsonStringContract"/> class.
-    /// </summary>
-    /// <param name="underlyingType">The underlying type for the contract.</param>
-    public JsonStringContract(Type underlyingType)
-      : base(underlyingType)
-    {
-    }
-  }
+  internal delegate object MethodCaller<T>(T target, params object[] args);
 }

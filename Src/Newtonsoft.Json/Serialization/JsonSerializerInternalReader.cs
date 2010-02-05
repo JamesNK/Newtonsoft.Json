@@ -650,7 +650,7 @@ namespace Newtonsoft.Json.Serialization
       if (contract.ISerializableCreator == null)
         throw new JsonSerializationException("ISerializable type '{0}' does not have a valid constructor.".FormatWith(CultureInfo.InvariantCulture, objectType));
 
-      object createdObject = contract.ISerializableCreator(null, new object[] { serializationInfo, Serializer.Context });
+      object createdObject = contract.ISerializableCreator(new object[] { serializationInfo, Serializer.Context });
 
       if (id != null)
         Serializer.ReferenceResolver.AddReference(id, createdObject);

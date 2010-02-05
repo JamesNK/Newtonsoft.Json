@@ -59,14 +59,17 @@ namespace Newtonsoft.Json.Tests.Schema
       ""null""
     ],
     ""items"": {
-      ""type"": ""string""
+      ""type"": [
+        ""string"",
+        ""null""
+      ]
     }
   }
 }", json);
 
       Dictionary<string, List<string>> value = new Dictionary<string, List<string>>
                                                  {
-                                                   {"HasValue", new List<string>() { "first", "second"}},
+                                                   {"HasValue", new List<string>() { "first", "second", null }},
                                                    {"NoValue", null}
                                                  };
 
@@ -282,7 +285,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
       Assert.AreEqual(JsonSchemaType.String | JsonSchemaType.Null, schema.Properties["Name"].Type);
       Assert.AreEqual("MyExplicitId", schema.Id);
-      Assert.AreEqual(JsonSchemaType.Object, schema.Properties["Child"].Type);
+      Assert.AreEqual(JsonSchemaType.Object | JsonSchemaType.Null, schema.Properties["Child"].Type);
       Assert.AreEqual(schema, schema.Properties["Child"]);
     }
 
@@ -531,6 +534,90 @@ namespace Newtonsoft.Json.Tests.Schema
 
       // should succeed
       Assert.IsNotNull(jsonSchema);
+    }
+
+    [Test]
+    public void CircularReferenceWithMixedRequires()
+    {
+      JsonSchemaGenerator jsonSchemaGenerator = new JsonSchemaGenerator();
+
+      jsonSchemaGenerator.UndefinedSchemaIdHandling = UndefinedSchemaIdHandling.UseTypeName;
+      JsonSchema jsonSchema = jsonSchemaGenerator.Generate(typeof(CircularReferenceClass));
+      string json = jsonSchema.ToString();
+
+      Assert.AreEqual(@"{
+  ""id"": ""Newtonsoft.Json.Tests.TestObjects.CircularReferenceClass"",
+  ""optional"": true,
+  ""type"": [
+    ""object"",
+    ""null""
+  ],
+  ""properties"": {
+    ""Name"": {
+      ""type"": ""string""
+    },
+    ""Child"": {
+      ""$ref"": ""Newtonsoft.Json.Tests.TestObjects.CircularReferenceClass""
+    }
+  }
+}", json);
+    }
+
+    [Test]
+    public void JsonPropertyWithHandlingValues()
+    {
+      JsonSchemaGenerator jsonSchemaGenerator = new JsonSchemaGenerator();
+
+      jsonSchemaGenerator.UndefinedSchemaIdHandling = UndefinedSchemaIdHandling.UseTypeName;
+      JsonSchema jsonSchema = jsonSchemaGenerator.Generate(typeof(JsonPropertyWithHandlingValues));
+      string json = jsonSchema.ToString();
+
+      Assert.AreEqual(@"{
+  ""id"": ""Newtonsoft.Json.Tests.TestObjects.JsonPropertyWithHandlingValues"",
+  ""type"": [
+    ""object"",
+    ""null""
+  ],
+  ""properties"": {
+    ""DefaultValueHandlingIgnoreProperty"": {
+      ""optional"": true,
+      ""type"": [
+        ""string"",
+        ""null""
+      ],
+      ""default"": ""Default!""
+    },
+    ""DefaultValueHandlingIncludeProperty"": {
+      ""type"": [
+        ""string"",
+        ""null""
+      ],
+      ""default"": ""Default!""
+    },
+    ""NullValueHandlingIgnoreProperty"": {
+      ""optional"": true,
+      ""type"": [
+        ""string"",
+        ""null""
+      ]
+    },
+    ""NullValueHandlingIncludeProperty"": {
+      ""type"": [
+        ""string"",
+        ""null""
+      ]
+    },
+    ""ReferenceLoopHandlingErrorProperty"": {
+      ""$ref"": ""Newtonsoft.Json.Tests.TestObjects.JsonPropertyWithHandlingValues""
+    },
+    ""ReferenceLoopHandlingIgnoreProperty"": {
+      ""$ref"": ""Newtonsoft.Json.Tests.TestObjects.JsonPropertyWithHandlingValues""
+    },
+    ""ReferenceLoopHandlingSerializeProperty"": {
+      ""$ref"": ""Newtonsoft.Json.Tests.TestObjects.JsonPropertyWithHandlingValues""
+    }
+  }
+}", json);
     }
   }
 

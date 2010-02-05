@@ -31,7 +31,6 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 using System.Globalization;
-using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Utilities
 {
@@ -72,7 +71,7 @@ namespace Newtonsoft.Json.Utilities
       throw new Exception("Could not create setter for {0}.".FormatWith(CultureInfo.InvariantCulture, memberInfo));
     }
 
-    public static MemberHandler<object> CreateMethodHandler(MethodBase method)
+    public static MethodCaller<object> CreateMethodCall(MethodBase method)
     {
       DynamicMethod dynamicMethod = CreateDynamicMethod(method.ToString(), typeof(object), new[] { typeof(object), typeof(object[]) }, method.DeclaringType);
       ILGenerator generator = dynamicMethod.GetILGenerator();
@@ -121,7 +120,7 @@ namespace Newtonsoft.Json.Utilities
 
       generator.Emit(OpCodes.Ret);
 
-      return (MemberHandler<object>)dynamicMethod.CreateDelegate(typeof(MemberHandler<object>));
+      return (MethodCaller<object>)dynamicMethod.CreateDelegate(typeof(MethodCaller<object>));
     }
 
 

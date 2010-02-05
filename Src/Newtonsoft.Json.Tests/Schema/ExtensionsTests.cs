@@ -30,6 +30,11 @@ using System.Text;
 using NUnit.Framework;
 using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Linq;
+using System.IO;
+using Newtonsoft.Json.Tests.TestObjects;
+#if !SILVERLIGHT
+using System.Data;
+#endif
 
 namespace Newtonsoft.Json.Tests.Schema
 {
@@ -144,5 +149,53 @@ namespace Newtonsoft.Json.Tests.Schema
       // true
     }
 
+    private void GenerateSchemaAndSerializeFromType<T>(T value)
+    {
+      JsonSchemaGenerator generator = new JsonSchemaGenerator();
+      generator.UndefinedSchemaIdHandling = UndefinedSchemaIdHandling.UseAssemblyQualifiedName;
+      JsonSchema typeSchema = generator.Generate(typeof (T));
+      string schema = typeSchema.ToString();
+
+      string json = JsonConvert.SerializeObject(value, Formatting.Indented);
+      JToken token = JToken.ReadFrom(new JsonTextReader(new StringReader(json)));
+
+      List<string> errors = new List<string>();
+
+      token.Validate(typeSchema, (sender, args) =>
+                                   {
+                                     errors.Add(args.Message);
+                                   });
+
+      if (errors.Count > 0)
+        Assert.Fail("Schema generated for type '{0}' is not valid." + Environment.NewLine + string.Join(Environment.NewLine, errors.ToArray()), typeof(T));
+    }
+
+    [Test]
+    public void GenerateSchemaAndSerializeFromTypeTests()
+    {
+      GenerateSchemaAndSerializeFromType(new List<string> { "1", "Two", "III" });
+      GenerateSchemaAndSerializeFromType(new List<int> { 1 });
+      GenerateSchemaAndSerializeFromType(new Version("1.2.3.4"));
+      GenerateSchemaAndSerializeFromType(new Store());
+      GenerateSchemaAndSerializeFromType(new Person());
+      GenerateSchemaAndSerializeFromType(new PersonRaw());
+      GenerateSchemaAndSerializeFromType(new CircularReferenceClass() { Name = "I'm required" });
+      GenerateSchemaAndSerializeFromType(new CircularReferenceWithIdClass());
+      GenerateSchemaAndSerializeFromType(new ClassWithArray());
+      GenerateSchemaAndSerializeFromType(new ClassWithGuid());
+#if !NET20 && !PocketPC
+      GenerateSchemaAndSerializeFromType(new NullableDateTimeTestClass());
+#endif
+#if !SILVERLIGHT
+      GenerateSchemaAndSerializeFromType(new DataSet());
+#endif
+      GenerateSchemaAndSerializeFromType(new object());
+      GenerateSchemaAndSerializeFromType(1);
+      GenerateSchemaAndSerializeFromType("Hi");
+      GenerateSchemaAndSerializeFromType(new DateTime(2000, 12, 29, 23, 59, 0, DateTimeKind.Utc));
+      GenerateSchemaAndSerializeFromType(TimeSpan.FromTicks(1000000));
+      GenerateSchemaAndSerializeFromType(DBNull.Value);
+      GenerateSchemaAndSerializeFromType(new JsonPropertyWithHandlingValues());
+    }
   }
 }

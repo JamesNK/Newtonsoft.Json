@@ -37,7 +37,7 @@ namespace Newtonsoft.Json.Serialization
   /// </summary>
   public class JsonISerializableContract : JsonContract
   {
-    public MemberHandler<object> ISerializableCreator { get; set; }
+    public ObjectConstructor<object> ISerializableCreator { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonISerializableContract"/> class.
@@ -46,7 +46,6 @@ namespace Newtonsoft.Json.Serialization
     public JsonISerializableContract(Type underlyingType)
       : base(underlyingType)
     {
-      CreatedType = underlyingType;
     }
   }
 }

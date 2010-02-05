@@ -147,6 +147,7 @@ namespace Newtonsoft.Json.Serialization
       ValidationUtils.ArgumentNotNull(underlyingType, "underlyingType");
 
       UnderlyingType = underlyingType;
+      CreatedType = underlyingType;
     }
   }
 }

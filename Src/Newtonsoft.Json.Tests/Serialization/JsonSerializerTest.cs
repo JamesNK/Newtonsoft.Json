@@ -2546,6 +2546,19 @@ keyword such as type of business.""
       internal DateTimeOffset _dateTimeOffsetValue;
       internal Person _personValue;
       internal Person _nullPersonValue;
+      internal int? _nullableInt;
+      internal bool _booleanValue;
+      internal byte _byteValue;
+      internal char _charValue;
+      internal DateTime _dateTimeValue;
+      internal decimal _decimalValue;
+      internal short _shortValue;
+      internal long _longValue;
+      internal sbyte _sbyteValue;
+      internal float _floatValue;
+      internal ushort _ushortValue;
+      internal uint _uintValue;
+      internal ulong _ulongValue;
 
       public ISerializableTestObject(string stringValue, int intValue, DateTimeOffset dateTimeOffset, Person personValue)
       {
@@ -2553,6 +2566,7 @@ keyword such as type of business.""
         _intValue = intValue;
         _dateTimeOffsetValue = dateTimeOffset;
         _personValue = personValue;
+        _dateTimeValue = new DateTime(0, DateTimeKind.Utc);
       }
 
       protected ISerializableTestObject(SerializationInfo info, StreamingContext context)
@@ -2562,6 +2576,20 @@ keyword such as type of business.""
         _dateTimeOffsetValue = (DateTimeOffset)info.GetValue("dateTimeOffsetValue", typeof(DateTimeOffset));
         _personValue = (Person)info.GetValue("personValue", typeof(Person));
         _nullPersonValue = (Person)info.GetValue("nullPersonValue", typeof(Person));
+        _nullableInt = (int?)info.GetValue("nullableInt", typeof(int?));
+
+        _booleanValue = info.GetBoolean("booleanValue");
+        _byteValue = info.GetByte("byteValue");
+        _charValue = info.GetChar("charValue");
+        _dateTimeValue = info.GetDateTime("dateTimeValue");
+        _decimalValue = info.GetDecimal("decimalValue");
+        _shortValue = info.GetInt16("shortValue");
+        _longValue = info.GetInt64("longValue");
+        _sbyteValue = info.GetSByte("sbyteValue");
+        _floatValue = info.GetSingle("floatValue");
+        _ushortValue = info.GetUInt16("ushortValue");
+        _uintValue = info.GetUInt32("uintValue");
+        _ulongValue = info.GetUInt64("ulongValue");
       }
 
       public void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -2571,6 +2599,20 @@ keyword such as type of business.""
         info.AddValue("dateTimeOffsetValue", _dateTimeOffsetValue);
         info.AddValue("personValue", _personValue);
         info.AddValue("nullPersonValue", _nullPersonValue);
+        info.AddValue("nullableInt", null);
+
+        info.AddValue("booleanValue", _booleanValue);
+        info.AddValue("byteValue", _byteValue);
+        info.AddValue("charValue", _charValue);
+        info.AddValue("dateTimeValue", _dateTimeValue);
+        info.AddValue("decimalValue", _decimalValue);
+        info.AddValue("shortValue", _shortValue);
+        info.AddValue("longValue", _longValue);
+        info.AddValue("sbyteValue", _sbyteValue);
+        info.AddValue("floatValue", _floatValue);
+        info.AddValue("ushortValue", _ushortValue);
+        info.AddValue("uintValue", _uintValue);
+        info.AddValue("ulongValue", _ulongValue);
       }
     }
 
@@ -2603,7 +2645,20 @@ keyword such as type of business.""
     ""BirthDate"": ""\/Date(946688461000)\/"",
     ""LastModified"": ""\/Date(946688461000)\/""
   },
-  ""nullPersonValue"": null
+  ""nullPersonValue"": null,
+  ""nullableInt"": null,
+  ""booleanValue"": false,
+  ""byteValue"": 0,
+  ""charValue"": ""\u0000"",
+  ""dateTimeValue"": ""\/Date(-62135596800000)\/"",
+  ""decimalValue"": 0.0,
+  ""shortValue"": 0,
+  ""longValue"": 0,
+  ""sbyteValue"": 0,
+  ""floatValue"": 0.0,
+  ""ushortValue"": 0,
+  ""uintValue"": 0,
+  ""ulongValue"": 0
 }", json);
 
       ISerializableTestObject o2 = JsonConvert.DeserializeObject<ISerializableTestObject>(json);
@@ -2612,6 +2667,7 @@ keyword such as type of business.""
       Assert.AreEqual(dateTimeOffset, o2._dateTimeOffsetValue);
       Assert.AreEqual("Name!", o2._personValue.Name);
       Assert.AreEqual(null, o2._nullPersonValue);
+      Assert.AreEqual(null, o2._nullableInt);
     }
 #endif
   }

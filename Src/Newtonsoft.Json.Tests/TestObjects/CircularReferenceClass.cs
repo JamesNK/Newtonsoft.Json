@@ -34,6 +34,7 @@ namespace Newtonsoft.Json.Tests.TestObjects
   {
     [JsonProperty(Required = Required.Always)]
     public string Name { get; set; }
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public CircularReferenceClass Child { get; set; }
   }
 }

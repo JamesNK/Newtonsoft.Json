@@ -59,7 +59,6 @@ namespace Newtonsoft.Json.Serialization
       : base(underlyingType)
     {
       Properties = new JsonPropertyCollection(this);
-      CreatedType = underlyingType;
     }
   }
 }

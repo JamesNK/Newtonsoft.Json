@@ -323,7 +323,11 @@ namespace Newtonsoft.Json.Serialization
 
       ConstructorInfo constructorInfo = objectType.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new [] {typeof (SerializationInfo), typeof (StreamingContext)}, null);
       if (constructorInfo != null)
-        contract.ISerializableCreator = LateBoundDelegateFactory.CreateMethodHandler(constructorInfo);
+      {
+        MethodCaller<object> methodCaller = LateBoundDelegateFactory.CreateMethodCall(constructorInfo);
+
+        contract.ISerializableCreator = (args => methodCaller(null, args));
+      }
 
       return contract;
     }

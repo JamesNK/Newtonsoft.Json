@@ -183,12 +183,13 @@
     <Compile Include="Serialization\JsonStringContract.cs" />
     <Compile Include="Serialization\JsonTypeReflector.cs" />
     <Compile Include="Serialization\CachedAttributeGetter.cs" />
-    <Compile Include="Serialization\MemberHandler.cs" />
+    <Compile Include="Serialization\ObjectConstructor.cs" />
     <Compile Include="Serialization\OnErrorAttribute.cs" />
     <Compile Include="Serialization\ReflectionValueProvider.cs" />
     <Compile Include="Utilities\Base64Encoder.cs" />
     <Compile Include="Utilities\DynamicWrapper.cs" />
     <Compile Include="Utilities\LateBoundDelegateFactory.cs" />
+    <Compile Include="Utilities\MethodCaller.cs" />
     <Compile Include="Utilities\ThreadSafeStore.cs" />
     <Compile Include="TypeNameHandling.cs" />
     <Compile Include="Utilities\BidirectionalDictionary.cs" />
