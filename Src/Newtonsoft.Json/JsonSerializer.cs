@@ -432,18 +432,14 @@ namespace Newtonsoft.Json
       serializerWriter.Serialize(jsonWriter, value);
     }
 
-    internal bool HasMatchingConverter(Type type, out JsonConverter matchingConverter)
+    internal JsonConverter GetMatchingConverter(Type type)
     {
-      if (HasMatchingConverter(_converters, type, out matchingConverter))
-        return true;
-
-      return false;
+      return GetMatchingConverter(_converters, type);
     }
 
-    internal static bool HasMatchingConverter(IList<JsonConverter> converters, Type objectType, out JsonConverter matchingConverter)
+    internal static JsonConverter GetMatchingConverter(IList<JsonConverter> converters, Type objectType)
     {
-      if (objectType == null)
-        throw new ArgumentNullException("objectType");
+      ValidationUtils.ArgumentNotNull(objectType, "objectType");
 
       if (converters != null)
       {
@@ -452,15 +448,11 @@ namespace Newtonsoft.Json
           JsonConverter converter = converters[i];
 
           if (converter.CanConvert(objectType))
-          {
-            matchingConverter = converter;
-            return true;
-          }
+            return converter;
         }
       }
 
-      matchingConverter = null;
-      return false;
+      return null;
     }
 
     internal void OnError(ErrorEventArgs e)

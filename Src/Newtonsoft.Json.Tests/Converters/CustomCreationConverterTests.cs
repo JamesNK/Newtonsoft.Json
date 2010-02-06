@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Converters;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Converters
 {
@@ -86,6 +87,63 @@ namespace Newtonsoft.Json.Tests.Converters
 
       Console.WriteLine(employee.JobTitle);
       // Support
+    }
+
+    public class MyClass
+    {
+      public string Value { get; set; }
+
+      [JsonConverter(typeof(MyThingConverter))]
+      public IThing Thing { get; set; }
+    }
+
+    public interface IThing
+    {
+      int Number { get; }
+    }
+
+    public class MyThing : IThing
+    {
+      public int Number { get; set; }
+    }
+
+    public class MyThingConverter : CustomCreationConverter<IThing>
+    {
+      public override IThing Create(Type objectType)
+      {
+        return new MyThing();
+      }
+    }
+
+    [Test]
+    public void AssertDoesDeserialize()
+    {
+      const string json = @"{
+""Value"": ""A value"",
+""Thing"": {
+""Number"": 123
+}
+}
+";
+      MyClass myClass = JsonConvert.DeserializeObject<MyClass>(json);
+      Assert.IsNotNull(myClass);
+      Assert.AreEqual("A value", myClass.Value);
+      Assert.IsNotNull(myClass.Thing);
+      Assert.AreEqual(123, myClass.Thing.Number);
+    }
+
+    [Test]
+    public void AssertShouldSerializeTest()
+    {
+      MyClass myClass = new MyClass
+      {
+        Value = "Foo",
+        Thing = new MyThing { Number = 456, }
+      };
+      string json = JsonConvert.SerializeObject(myClass); // <-- Exception here
+
+      const string expected = @"{""Value"":""Foo"",""Thing"":{""Number"":456}}";
+      Assert.AreEqual(expected, json);
     }
   }
 }

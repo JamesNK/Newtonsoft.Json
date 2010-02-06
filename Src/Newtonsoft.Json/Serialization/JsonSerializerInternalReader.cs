@@ -179,23 +179,28 @@ namespace Newtonsoft.Json.Serialization
 
     private object CreateValue(JsonReader reader, Type objectType, JsonContract contract, object existingValue, JsonConverter memberConverter)
     {
-      JsonConverter converter;
-
-      // member attribute converter
+      JsonConverter converter = null;
       if (memberConverter != null)
-        return memberConverter.ReadJson(reader, objectType, GetInternalSerializer());
+      {
+        // member attribute converter
+        converter = memberConverter;
+      }
+      else if (contract != null)
+      {
+        JsonConverter matchingConverter;
+        if (contract.Converter != null)
+          // class attribute converter
+          converter = contract.Converter;
+        else if ((matchingConverter = Serializer.GetMatchingConverter(contract.UnderlyingType)) != null)
+          // passed in converters
+          converter = matchingConverter;
+        else if (contract.InternalConverter != null)
+          // internally specified converter
+          converter = contract.InternalConverter;
+      }
 
-      // class attribute converter
-      if (contract != null && contract.Converter != null)
-        return contract.Converter.ReadJson(reader, objectType, GetInternalSerializer());
-
-      // passed in converters
-      if (objectType != null && Serializer.HasMatchingConverter(objectType, out converter))
+      if (converter != null && converter.CanRead)
         return converter.ReadJson(reader, objectType, GetInternalSerializer());
-
-      // internally specified converter
-      if (contract != null && contract.InternalConverter != null)
-        return contract.InternalConverter.ReadJson(reader, objectType, GetInternalSerializer());
 
       if (contract is JsonLinqContract)
         return CreateJToken(reader, contract);

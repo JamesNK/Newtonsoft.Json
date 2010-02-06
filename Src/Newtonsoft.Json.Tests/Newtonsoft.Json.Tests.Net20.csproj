@@ -57,6 +57,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Security" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
@@ -68,6 +69,7 @@
     <Compile Include="Converters\CustomCreationConverterTests.cs" />
     <Compile Include="Converters\DataSetConverterTests.cs" />
     <Compile Include="Converters\DataTableConverterTests.cs" />
+    <Compile Include="Converters\HtmlColorConverterTests.cs" />
     <Compile Include="Converters\StringEnumConverterTests.cs" />
     <Compile Include="JsonArrayAttributeTests.cs" />
     <Compile Include="ExceptionTests.cs" />

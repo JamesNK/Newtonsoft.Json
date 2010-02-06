@@ -63,6 +63,7 @@
     <Reference Include="System.Data.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -89,6 +90,7 @@
     <Compile Include="Converters\DataTableConverterTests.cs" />
     <Compile Include="Converters\DataSetConverterTests.cs" />
     <Compile Include="Converters\CustomCreationConverterTests.cs" />
+    <Compile Include="Converters\HtmlColorConverterTests.cs" />
     <Compile Include="Converters\StringEnumConverterTests.cs" />
     <Compile Include="FileSystemEntityModel.Designer.cs">
       <AutoGen>True</AutoGen>

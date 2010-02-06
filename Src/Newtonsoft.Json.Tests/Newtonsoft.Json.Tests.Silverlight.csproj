@@ -71,8 +71,10 @@
     <Compile Include="Bson\BsonReaderTests.cs" />
     <Compile Include="Bson\BsonWriterTests.cs" />
     <Compile Include="Converters\BinaryConverterTests.cs" />
+    <Compile Include="Converters\CustomCreationConverterTests.cs" />
     <Compile Include="Converters\DataSetConverterTests.cs" />
     <Compile Include="Converters\DataTableConverterTests.cs" />
+    <Compile Include="Converters\HtmlColorConverterTests.cs" />
     <Compile Include="Converters\StringEnumConverterTests.cs" />
     <Compile Include="ExceptionTests.cs" />
     <Compile Include="JsonArrayAttributeTests.cs" />

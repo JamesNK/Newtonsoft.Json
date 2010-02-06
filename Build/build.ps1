@@ -18,7 +18,7 @@
   )
 } 
 
-task default -depends Build
+task default -depends Test
 
 task Clean {
   Set-Location $baseDir

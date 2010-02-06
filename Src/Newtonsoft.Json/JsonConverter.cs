@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json.Utilities;
+using Newtonsoft.Json.Schema;
 
 namespace Newtonsoft.Json
 {
@@ -60,5 +61,32 @@ namespace Newtonsoft.Json
     /// 	<c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
     /// </returns>
     public abstract bool CanConvert(Type objectType);
+
+    /// <summary>
+    /// Gets the <see cref="JsonSchema"/> of the JSON produced by the JsonConverter.
+    /// </summary>
+    /// <returns>The <see cref="JsonSchema"/> of the JSON produced by the JsonConverter.</returns>
+    public virtual JsonSchema GetSchema()
+    {
+      return null;
+    }
+
+    /// <summary>
+    /// Gets a value indicating whether this <see cref="JsonConverter"/> can read JSON.
+    /// </summary>
+    /// <value><c>true</c> if this <see cref="JsonConverter"/> can read JSON; otherwise, <c>false</c>.</value>
+    public virtual bool CanRead
+    {
+       get { return true; }
+    }
+
+    /// <summary>
+    /// Gets a value indicating whether this <see cref="JsonConverter"/> can write JSON.
+    /// </summary>
+    /// <value><c>true</c> if this <see cref="JsonConverter"/> can write JSON; otherwise, <c>false</c>.</value>
+    public virtual bool CanWrite
+    {
+      get { return true; }
+    }
   }
 }

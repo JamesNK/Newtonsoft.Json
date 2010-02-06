@@ -90,10 +90,11 @@ namespace Newtonsoft.Json.Serialization
         return;
       }
 
-      if (converter != null
+      if ((converter != null
           || ((converter = contract.Converter) != null)
-          || Serializer.HasMatchingConverter(contract.UnderlyingType, out converter)
+          || ((converter = Serializer.GetMatchingConverter(contract.UnderlyingType)) != null)
           || ((converter = contract.InternalConverter) != null))
+        && converter.CanWrite)
       {
         SerializeConvertable(writer, converter, value, contract);
       }

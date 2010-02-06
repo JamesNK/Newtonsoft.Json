@@ -234,6 +234,15 @@ namespace Newtonsoft.Json.Schema
         throw new Exception("Unresolved circular reference for type '{0}'. Explicitly define an Id for the type using a JsonObject/JsonArray attribute or automatically generate a type Id using the UndefinedSchemaIdHandling property.".FormatWith(CultureInfo.InvariantCulture, type));
       }
 
+      JsonContract contract = ContractResolver.ResolveContract(type);
+      JsonConverter converter;
+      if ((converter = contract.Converter) != null || (converter = contract.InternalConverter) != null)
+      {
+        JsonSchema converterSchema = converter.GetSchema();
+        if (converterSchema != null)
+          return converterSchema;
+      }
+
       Push(new TypeSchema(type, new JsonSchema()));
 
       if (explicitId != null)
@@ -244,8 +253,7 @@ namespace Newtonsoft.Json.Schema
       CurrentSchema.Title = GetTitle(type);
       CurrentSchema.Description = GetDescription(type);
 
-      JsonContract contract = ContractResolver.ResolveContract(type);
-      if (contract.Converter != null || contract.InternalConverter != null)
+      if (converter != null)
       {
         // todo: Add GetSchema to JsonConverter and use here?
         CurrentSchema.Type = JsonSchemaType.Any;
