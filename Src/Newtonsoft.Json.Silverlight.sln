@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lib", "Lib", "{F69285DD-24FB-4A60-AE8B-4C2744285D0F}"
 	ProjectSection(SolutionItems) = preProject
-		Lib\nunit.framework.silverlight.dll = Lib\nunit.framework.silverlight.dll
+		Lib\NUnit\Silverlight\nunit.framework.dll = Lib\NUnit\Silverlight\nunit.framework.dll
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.Silverlight", "Newtonsoft.Json\Newtonsoft.Json.Silverlight.csproj", "{DC3C6F3D-2CA1-4278-9B79-63770FB3EA2D}"

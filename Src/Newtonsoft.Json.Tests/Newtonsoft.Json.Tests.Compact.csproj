@@ -46,9 +46,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
-    <Reference Include="NUnitLite, Version=2.4.7.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="NUnitLite, Version=0.2.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\NUnitLite.dll</HintPath>
+      <HintPath>..\Lib\NUnit\Compact\NUnitLite.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

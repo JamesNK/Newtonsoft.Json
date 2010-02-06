@@ -5,7 +5,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.Compact", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lib", "Lib", "{9ACB12BA-F27A-4BC4-A8C7-9A5B0DD02DF2}"
 	ProjectSection(SolutionItems) = preProject
-		Lib\NUnitLite.dll = Lib\NUnitLite.dll
+		Lib\NUnit\Compact\NUnitLite.dll = Lib\NUnit\Compact\NUnitLite.dll
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.Tests.Compact", "Newtonsoft.Json.Tests\Newtonsoft.Json.Tests.Compact.csproj", "{32EA9694-4FB3-43E9-A6AD-050F1D35EA0A}"
