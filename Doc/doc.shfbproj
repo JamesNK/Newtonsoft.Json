@@ -14,7 +14,7 @@
     <RootNamespace>Documentation</RootNamespace>
     <Name>Documentation</Name>
     <!-- SHFB properties -->
-    <OutputPath>.\Output\</OutputPath>
+    <OutputPath>..\Working\Documentation\</OutputPath>
     <HtmlHelpName>Documentation</HtmlHelpName>
     <ProjectSummary>
     </ProjectSummary>
@@ -36,8 +36,8 @@
     <PresentationStyle>Prototype</PresentationStyle>
     <NamingMethod>MemberName</NamingMethod>
     <DocumentationSources>
-      <DocumentationSource sourceFile="..\Newtonsoft.Json\bin\Release\Newtonsoft.Json.dll" />
-      <DocumentationSource sourceFile="..\Newtonsoft.Json\bin\Release\Newtonsoft.Json.xml" />
+      <DocumentationSource sourceFile="..\Src\Newtonsoft.Json\bin\Release\Newtonsoft.Json.dll" />
+      <DocumentationSource sourceFile="..\Src\Newtonsoft.Json\bin\Release\Newtonsoft.Json.xml" />
     </DocumentationSources>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="(global)" isDocumented="False" />

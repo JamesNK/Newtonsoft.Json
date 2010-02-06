@@ -37,6 +37,10 @@ namespace Newtonsoft.Json.Serialization
   /// </summary>
   public class JsonISerializableContract : JsonContract
   {
+    /// <summary>
+    /// Gets or sets the ISerializable object constructor.
+    /// </summary>
+    /// <value>The ISerializable object constructor.</value>
     public ObjectConstructor<object> ISerializableCreator { get; set; }
 
     /// <summary>

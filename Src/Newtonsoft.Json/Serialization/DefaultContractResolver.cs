@@ -316,6 +316,11 @@ namespace Newtonsoft.Json.Serialization
     }
 
 #if !SILVERLIGHT && !PocketPC
+    /// <summary>
+    /// Creates a <see cref="JsonISerializableContract"/> for the given type.
+    /// </summary>
+    /// <param name="objectType">Type of the object.</param>
+    /// <returns>A <see cref="JsonISerializableContract"/> for the given type.</returns>
     protected virtual JsonISerializableContract CreateISerializableContract(Type objectType)
     {
       JsonISerializableContract contract = new JsonISerializableContract(objectType);
@@ -333,6 +338,11 @@ namespace Newtonsoft.Json.Serialization
     }
 #endif
 
+    /// <summary>
+    /// Creates a <see cref="JsonStringContract"/> for the given type.
+    /// </summary>
+    /// <param name="objectType">Type of the object.</param>
+    /// <returns>A <see cref="JsonStringContract"/> for the given type.</returns>
     protected virtual JsonStringContract CreateStringContract(Type objectType)
     {
       JsonStringContract contract = new JsonStringContract(objectType);
@@ -341,6 +351,11 @@ namespace Newtonsoft.Json.Serialization
       return contract;
     }
 
+    /// <summary>
+    /// Determines which contract type is created for the given type.
+    /// </summary>
+    /// <param name="objectType">Type of the object.</param>
+    /// <returns>A <see cref="JsonContract"/> for the given type.</returns>
     protected virtual JsonContract CreateContract(Type objectType)
     {
       if (JsonConvert.IsJsonPrimitiveType(objectType))
