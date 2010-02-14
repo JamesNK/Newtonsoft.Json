@@ -47,6 +47,7 @@ using Newtonsoft.Json.Tests.TestObjects;
 using System.Runtime.Serialization;
 using System.Globalization;
 using Newtonsoft.Json.Utilities;
+using System.Reflection;
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
@@ -417,7 +418,7 @@ keyword such as type of business.""
     public void BackslashEqivilence()
     {
       string json = @"[""vvv\/vvv\tvvv\""vvv\bvvv\nvvv\rvvv\\vvv\fvvv""]";
-      
+
 #if !SILVERLIGHT
       JavaScriptSerializer javaScriptSerializer = new JavaScriptSerializer();
       List<string> javaScriptSerializerResult = javaScriptSerializer.Deserialize<List<string>>(json);
@@ -431,7 +432,7 @@ keyword such as type of business.""
       Assert.AreEqual(1, jsonNetResult.Count);
       Assert.AreEqual(dataContractResult[0], jsonNetResult[0]);
 #if !SILVERLIGHT
-     Assert.AreEqual(javaScriptSerializerResult[0], jsonNetResult[0]);
+      Assert.AreEqual(javaScriptSerializerResult[0], jsonNetResult[0]);
 #endif
     }
 
@@ -2004,7 +2005,7 @@ keyword such as type of business.""
   ""Newtonsoft.Json.Tests.TestObjects.Person"": 1,
   ""Newtonsoft.Json.Tests.TestObjects.Person"": 2
 }";
-      
+
       JsonConvert.DeserializeObject<Dictionary<Person, int>>(json);
     }
 
@@ -2093,7 +2094,7 @@ keyword such as type of business.""
     public void DeserializeBaseReferenceWithDerivedValue()
     {
       PersonPropertyClass personPropertyClass = new PersonPropertyClass();
-      WagePerson wagePerson = (WagePerson) personPropertyClass.Person;
+      WagePerson wagePerson = (WagePerson)personPropertyClass.Person;
 
       wagePerson.BirthDate = new DateTime(2000, 11, 29, 23, 59, 59, DateTimeKind.Utc);
       wagePerson.Department = "McDees";
@@ -2114,7 +2115,7 @@ keyword such as type of business.""
         json);
 
       PersonPropertyClass newPersonPropertyClass = JsonConvert.DeserializeObject<PersonPropertyClass>(json);
-      Assert.AreEqual(wagePerson.HourlyWage, ((WagePerson) newPersonPropertyClass.Person).HourlyWage);
+      Assert.AreEqual(wagePerson.HourlyWage, ((WagePerson)newPersonPropertyClass.Person).HourlyWage);
     }
 
     public class ExistingValueClass
@@ -2328,13 +2329,13 @@ keyword such as type of business.""
     {
       var json = "{ Key: 'abc', Value: 123 }";
       var item = JsonConvert.DeserializeObject<TestClass>(json);
-      
+
       Assert.AreEqual(123, item.Value);
     }
 
     public abstract class Animal
     {
-      public abstract string Name { get;  }
+      public abstract string Name { get; }
     }
 
     public class Human : Animal
@@ -2364,7 +2365,7 @@ keyword such as type of business.""
       DataContractJsonSerializerTestClass c = new DataContractJsonSerializerTestClass();
       c.TimeSpanProperty = new TimeSpan(200, 20, 59, 30, 900);
       c.GuidProperty = new Guid("66143115-BE2A-4a59-AF0A-348E1EA15B1E");
-      c.AnimalProperty = new Human() {Ethnicity = "European"};
+      c.AnimalProperty = new Human() { Ethnicity = "European" };
       c.ExceptionProperty = ex;
 
       MemoryStream ms = new MemoryStream();
@@ -2381,7 +2382,7 @@ keyword such as type of business.""
 
       Console.WriteLine(JsonConvert.SerializeObject(c, Formatting.Indented, new JsonSerializerSettings
                                                                           {
-                                                             //               TypeNameHandling = TypeNameHandling.Objects
+                                                                            //               TypeNameHandling = TypeNameHandling.Objects
                                                                           }));
     }
 #endif
@@ -2670,5 +2671,181 @@ keyword such as type of business.""
       Assert.AreEqual(null, o2._nullableInt);
     }
 #endif
+
+    public class KVPair<TKey, TValue>
+    {
+      public TKey Key { get; set; }
+      public TValue Value { get; set; }
+
+      public KVPair(TKey k, TValue v)
+      {
+        Key = k;
+        Value = v;
+      }
+    }
+
+    [Test]
+    public void DeserializeUsingNonDefaultConstructorWithLeftOverValues()
+    {
+      List<KVPair<string, string>> kvPairs =
+        JsonConvert.DeserializeObject<List<KVPair<string, string>>>(
+          "[{\"Key\":\"Two\",\"Value\":\"2\"},{\"Key\":\"One\",\"Value\":\"1\"}]");
+
+      Assert.AreEqual(2, kvPairs.Count);
+      Assert.AreEqual("Two", kvPairs[0].Key);
+      Assert.AreEqual("2", kvPairs[0].Value);
+      Assert.AreEqual("One", kvPairs[1].Key);
+      Assert.AreEqual("1", kvPairs[1].Value);
+    }
+
+    [Test]
+    public void SerializeClassWithInheritedProtectedMember()
+    {
+      AA myA = new AA(2);
+      string json = JsonConvert.SerializeObject(myA, Formatting.Indented);
+      Assert.AreEqual(@"{
+  ""AA_field1"": 2,
+  ""AA_property1"": 2,
+  ""AA_property2"": 2,
+  ""AA_property3"": 2,
+  ""AA_property4"": 2
+}", json);
+
+      BB myB = new BB(3, 4);
+      json = JsonConvert.SerializeObject(myB, Formatting.Indented);
+      Assert.AreEqual(@"{
+  ""BB_field1"": 4,
+  ""AA_field1"": 3,
+  ""BB_property1"": 4,
+  ""BB_property2"": 4,
+  ""BB_property3"": 4,
+  ""BB_property4"": 4,
+  ""BB_property5"": 4,
+  ""AA_property1"": 3,
+  ""AA_property2"": 3,
+  ""AA_property3"": 3,
+  ""AA_property4"": 3
+}", json);
+    }
+
+    [Test]
+    public void DeserializeClassWithInheritedProtectedMember()
+    {
+      AA myA = JsonConvert.DeserializeObject<AA>(
+          @"{
+  ""AA_field1"": 2,
+  ""AA_property1"": 2,
+  ""AA_property2"": 2,
+  ""AA_property3"": 2,
+  ""AA_property4"": 2,
+  ""AA_property5"": 2,
+  ""AA_property6"": 2
+}");
+
+      Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AA).GetField("AA_field1", BindingFlags.Instance | BindingFlags.NonPublic), myA));
+      Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property1", BindingFlags.Instance | BindingFlags.NonPublic), myA));
+      Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property2", BindingFlags.Instance | BindingFlags.NonPublic), myA));
+      Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property3", BindingFlags.Instance | BindingFlags.NonPublic), myA));
+      Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property4", BindingFlags.Instance | BindingFlags.NonPublic), myA));
+      Assert.AreEqual(0, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property5", BindingFlags.Instance | BindingFlags.NonPublic), myA));
+      Assert.AreEqual(0, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property6", BindingFlags.Instance | BindingFlags.NonPublic), myA));
+
+      BB myB = JsonConvert.DeserializeObject<BB>(
+          @"{
+  ""BB_field1"": 4,
+  ""AA_field1"": 3,
+  ""AA_property1"": 2,
+  ""AA_property2"": 2,
+  ""AA_property3"": 2,
+  ""AA_property4"": 2,
+  ""AA_property5"": 2,
+  ""AA_property6"": 2,
+  ""BB_property1"": 3,
+  ""BB_property2"": 3,
+  ""BB_property3"": 3,
+  ""BB_property4"": 3,
+  ""BB_property5"": 3,
+  ""BB_property6"": 3
+}");
+
+      Assert.AreEqual(3, ReflectionUtils.GetMemberValue(typeof(AA).GetField("AA_field1", BindingFlags.Instance | BindingFlags.NonPublic), myB));
+      Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property1", BindingFlags.Instance | BindingFlags.NonPublic), myB));
+      Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property2", BindingFlags.Instance | BindingFlags.NonPublic), myB));
+      Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property3", BindingFlags.Instance | BindingFlags.NonPublic), myB));
+      Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property4", BindingFlags.Instance | BindingFlags.NonPublic), myB));
+      Assert.AreEqual(0, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property5", BindingFlags.Instance | BindingFlags.NonPublic), myB));
+      Assert.AreEqual(0, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property6", BindingFlags.Instance | BindingFlags.NonPublic), myB));
+
+      Assert.AreEqual(4, myB.BB_field1);
+      Assert.AreEqual(3, myB.BB_property1);
+      Assert.AreEqual(3, myB.BB_property2);
+      Assert.AreEqual(3, ReflectionUtils.GetMemberValue(typeof(BB).GetProperty("BB_property3", BindingFlags.Instance | BindingFlags.Public), myB));
+      Assert.AreEqual(3, ReflectionUtils.GetMemberValue(typeof(BB).GetProperty("BB_property4", BindingFlags.Instance | BindingFlags.NonPublic), myB));
+      Assert.AreEqual(0, myB.BB_property5);
+      Assert.AreEqual(3, ReflectionUtils.GetMemberValue(typeof(BB).GetProperty("BB_property6", BindingFlags.Instance | BindingFlags.Public), myB));
+    }
+
+    public class AA
+    {
+      [JsonProperty]
+      protected int AA_field1;
+      [JsonProperty]
+      protected int AA_property1 { get; set; }
+      [JsonProperty]
+      protected int AA_property2 { get; private set; }
+      [JsonProperty]
+      protected int AA_property3 { private get; set; }
+      [JsonProperty]
+      private int AA_property4 { get; set; }
+      protected int AA_property5 { get; private set; }
+      protected int AA_property6 { private get; set; }
+
+      public AA()
+      {
+      }
+
+      public AA(int f)
+      {
+        AA_field1 = f;
+        AA_property1 = f;
+        AA_property2 = f;
+        AA_property3 = f;
+        AA_property4 = f;
+        AA_property5 = f;
+        AA_property6 = f;
+      }
+    }
+
+    public class BB : AA
+    {
+      [JsonProperty]
+      public int BB_field1;
+      [JsonProperty]
+      public int BB_property1 { get; set; }
+      [JsonProperty]
+      public int BB_property2 { get; private set; }
+      [JsonProperty]
+      public int BB_property3 { private get; set; }
+      [JsonProperty]
+      private int BB_property4 { get; set; }
+      public int BB_property5 { get; private set; }
+      public int BB_property6 { private get; set; }
+
+      public BB()
+      {
+      }
+
+      public BB(int f, int g)
+        : base(f)
+      {
+        BB_field1 = g;
+        BB_property1 = g;
+        BB_property2 = g;
+        BB_property3 = g;
+        BB_property4 = g;
+        BB_property5 = g;
+        BB_property6 = g;
+      }
+    }
   }
 }

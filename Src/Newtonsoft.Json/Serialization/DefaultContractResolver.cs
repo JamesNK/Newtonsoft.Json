@@ -553,8 +553,18 @@ namespace Newtonsoft.Json.Serialization
 #endif
 ));
 
-      property.Readable = ReflectionUtils.CanReadMemberValue(member);
-      property.Writable = ReflectionUtils.CanSetMemberValue(member);
+      bool allowNonPublicAccess = false;
+      if ((DefaultMembersSearchFlags & BindingFlags.NonPublic) == BindingFlags.NonPublic)
+        allowNonPublicAccess = true;
+      if (propertyAttribute != null)
+        allowNonPublicAccess = true;
+#if !PocketPC && !NET20
+      if (dataMemberAttribute != null)
+        allowNonPublicAccess = true;
+#endif
+
+      property.Readable = ReflectionUtils.CanReadMemberValue(member, allowNonPublicAccess);
+      property.Writable = ReflectionUtils.CanSetMemberValue(member, allowNonPublicAccess);
 
       property.MemberConverter = JsonTypeReflector.GetJsonConverter(member, ReflectionUtils.GetMemberUnderlyingType(member));
 

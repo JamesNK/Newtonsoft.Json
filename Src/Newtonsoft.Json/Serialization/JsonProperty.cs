@@ -124,5 +124,16 @@ namespace Newtonsoft.Json.Serialization
     /// </summary>
     /// <value>The object creation handling.</value>
     public ObjectCreationHandling? ObjectCreationHandling { get; set; }
+
+    /// <summary>
+    /// Returns a <see cref="String"/> that represents this instance.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="String"/> that represents this instance.
+    /// </returns>
+    public override string ToString()
+    {
+      return PropertyName;
+    }
   }
 }

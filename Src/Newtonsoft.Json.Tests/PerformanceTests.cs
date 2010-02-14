@@ -24,7 +24,9 @@ namespace Newtonsoft.Json.Tests
     [DataMember]
     public string FileName { get; set; }
     [DataMember]
-    public string Title { get; set; }
+    public string Author { get; set; }
+    [DataMember]
+    public string Caption { get; set; }
     [DataMember]
     public byte[] Data { get; set; }
   }
@@ -94,44 +96,97 @@ namespace Newtonsoft.Json.Tests
       Image image = new Image();
       image.Data = System.IO.File.ReadAllBytes(@"..\..\bunny_pancake.jpg");
       image.FileName = "bunny_pancake.jpg";
-      image.Title = "I have no idea what you are talking about so here's a bunny with a pancake on its head";
+      image.Author = "Hironori Akutagawa";
+      image.Caption = "I have no idea what you are talking about so here's a bunny with a pancake on its head";
 
       SerializeSize(image);
     }
 
+    private T TimeOperation<T>(Func<T> operation, string name)
+    {
+      // warm up
+      operation();
+
+      Stopwatch timed = new Stopwatch();
+      timed.Start();
+
+      T result = operation();
+
+      Console.WriteLine(name);
+      Console.WriteLine("{0} ms", timed.ElapsedMilliseconds);
+
+      timed.Stop();
+
+      return result;
+    }
+
     private void SerializeSize(object value)
     {
-      string json = JsonConvert.SerializeObject(value, Formatting.None);
-      byte[] jsonBytes = Encoding.UTF8.GetBytes(json);
+      byte[] jsonBytes = TimeOperation(() =>
+      {
+        string json = null;
+        for (int i = 0; i < Iterations; i++)
+        {
+          json = JsonConvert.SerializeObject(value, Formatting.None);
+        }
 
-      MemoryStream ms = new MemoryStream();
-      JsonSerializer serializer = new JsonSerializer();
-      BsonWriter writer = new BsonWriter(ms);
+        return Encoding.UTF8.GetBytes(json);
+      }, "Json.NET");
 
-      serializer.Serialize(writer, value);
-      writer.Flush();
+      byte[] bsonBytes = TimeOperation(() =>
+      {
+        MemoryStream ms = null;
+        for (int i = 0; i < Iterations; i++)
+        {
+          ms = new MemoryStream();
+          JsonSerializer serializer = new JsonSerializer();
+          BsonWriter writer = new BsonWriter(ms);
 
-      byte[] bsonBytes = ms.ToArray();
+          serializer.Serialize(writer, value);
+          writer.Flush();
+        }
 
-      DataContractSerializer dataContractSerializer = new DataContractSerializer(value.GetType());
+        return ms.ToArray();
+      }, "Json.NET BSON");
 
-      ms = new MemoryStream();
-      dataContractSerializer.WriteObject(ms, value);
+      byte[] xmlBytes = TimeOperation(() =>
+      {
+        MemoryStream ms = null;
+        for (int i = 0; i < Iterations; i++)
+        {
+          ms = new MemoryStream();
+          DataContractSerializer dataContractSerializer = new DataContractSerializer(value.GetType());
+          dataContractSerializer.WriteObject(ms, value);
+        }
 
-      byte[] xmlBytes = ms.ToArray();
+        return ms.ToArray();
+      }, "DataContractSerializer");
 
-      DataContractJsonSerializer dataContractJsonSerializer = new DataContractJsonSerializer(value.GetType());
+      byte[] wcfJsonBytes = TimeOperation(() =>
+      {
+        MemoryStream ms = null;
+        for (int i = 0; i < Iterations; i++)
+        {
+          ms = new MemoryStream();
+          DataContractJsonSerializer dataContractJsonSerializer = new DataContractJsonSerializer(value.GetType());
+          dataContractJsonSerializer.WriteObject(ms, value);
+        }
 
-      ms = new MemoryStream();
-      dataContractJsonSerializer.WriteObject(ms, value);
+        return ms.ToArray();
+      }, "DataContractJsonSerializer");
 
-      byte[] wcfJsonBytes = ms.ToArray();
+      byte[] binaryFormatterBytes = TimeOperation(() =>
+      {
+        MemoryStream ms = null;
+        for (int i = 0; i < Iterations; i++)
+        {
+          ms = new MemoryStream();
+          BinaryFormatter formatter = new BinaryFormatter();
+          formatter.Serialize(ms, value);
+        }
 
-      ms = new MemoryStream();
-      BinaryFormatter formatter = new BinaryFormatter();
-      formatter.Serialize(ms, value);
-
-      byte[] binaryFormatterBytes = ms.ToArray();
+        return ms.ToArray();
+      }, "BinaryFormatter");
 
       Console.WriteLine("Json.NET size: {0} bytes", jsonBytes.Length);
       Console.WriteLine("BSON size: {0} bytes", bsonBytes.Length);

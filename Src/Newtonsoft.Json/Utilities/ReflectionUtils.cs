@@ -489,17 +489,30 @@ namespace Newtonsoft.Json.Utilities
     /// Determines whether the specified MemberInfo can be read.
     /// </summary>
     /// <param name="member">The MemberInfo to determine whether can be read.</param>
+    /// /// <param name="nonPublic">if set to <c>true</c> then allow the member to be gotten non-publicly.</param>
     /// <returns>
     /// 	<c>true</c> if the specified MemberInfo can be read; otherwise, <c>false</c>.
     /// </returns>
-    public static bool CanReadMemberValue(MemberInfo member)
+    public static bool CanReadMemberValue(MemberInfo member, bool nonPublic)
     {
       switch (member.MemberType)
       {
         case MemberTypes.Field:
-          return true;
+          FieldInfo fieldInfo = (FieldInfo)member;
+
+          if (nonPublic)
+            return true;
+          else if (fieldInfo.IsPublic)
+            return true;
+          return false;
         case MemberTypes.Property:
-          return ((PropertyInfo)member).CanRead;
+          PropertyInfo propertyInfo = (PropertyInfo) member;
+
+          if (!propertyInfo.CanRead)
+            return false;
+          if (nonPublic)
+            return true;
+          return (propertyInfo.GetGetMethod(nonPublic) != null);
         default:
           return false;
       }
@@ -509,17 +522,32 @@ namespace Newtonsoft.Json.Utilities
     /// Determines whether the specified MemberInfo can be set.
     /// </summary>
     /// <param name="member">The MemberInfo to determine whether can be set.</param>
+    /// <param name="nonPublic">if set to <c>true</c> then allow the member to be set non-publicly.</param>
     /// <returns>
     /// 	<c>true</c> if the specified MemberInfo can be set; otherwise, <c>false</c>.
     /// </returns>
-    public static bool CanSetMemberValue(MemberInfo member)
+    public static bool CanSetMemberValue(MemberInfo member, bool nonPublic)
     {
       switch (member.MemberType)
       {
         case MemberTypes.Field:
-          return !((FieldInfo)member).IsInitOnly;
+          FieldInfo fieldInfo = (FieldInfo)member;
+
+          if (fieldInfo.IsInitOnly)
+            return false;
+          if (nonPublic)
+            return true;
+          else if (fieldInfo.IsPublic)
+            return true;
+          return false;
         case MemberTypes.Property:
-          return ((PropertyInfo)member).CanWrite;
+          PropertyInfo propertyInfo = (PropertyInfo)member;
+
+          if (!propertyInfo.CanWrite)
+            return false;
+          if (nonPublic)
+            return true;
+          return (propertyInfo.GetSetMethod(nonPublic) != null);
         default:
           return false;
       }
@@ -540,6 +568,7 @@ namespace Newtonsoft.Json.Utilities
       // for some reason .NET returns multiple members when overriding a generic member on a base class
       // http://forums.msdn.microsoft.com/en-US/netfxbcl/thread/b5abbfee-e292-4a64-8907-4e3f0fb90cd9/
       // filter members to only return the override on the topmost class
+      // update: I think this is fixed in .NET 3.5 SP1 - leave this in for now...
       List<MemberInfo> distinctMembers = new List<MemberInfo>(targetMembers.Count);
 
       var groupedMembers = targetMembers.GroupBy(m => m.Name).Select(g => new { Count = g.Count(), Members = g.Cast<MemberInfo>() });
@@ -655,6 +684,9 @@ namespace Newtonsoft.Json.Utilities
 #if !PocketPC
        return Activator.CreateInstance(type, args);
 #else
+       // CF doesn't have a Activator.CreateInstance overload that takes args
+       // lame
+
        if (type.IsValueType)
          return Activator.CreateInstance(type);
 
@@ -732,6 +764,8 @@ namespace Newtonsoft.Json.Utilities
       ValidationUtils.ArgumentNotNull(targetType, "targetType");
 
       List<MemberInfo> fieldInfos = new List<MemberInfo>(targetType.GetFields(bindingAttr));
+      // Type.GetFields doesn't return inherited private fields
+      // manually find private fields from base class
       GetChildPrivateFields(fieldInfos, targetType, bindingAttr);
 
       return fieldInfos.Cast<FieldInfo>();
@@ -739,18 +773,20 @@ namespace Newtonsoft.Json.Utilities
 
     private static void GetChildPrivateFields(IList<MemberInfo> initialFields, Type targetType, BindingFlags bindingAttr)
     {
-      // fix weirdness with FieldInfos only being returned for the current Type
+      // fix weirdness with private FieldInfos only being returned for the current Type
       // find base type fields and add them to result
       if ((bindingAttr & BindingFlags.NonPublic) != 0)
       {
         // modify flags to not search for public fields
-        BindingFlags nonPublicBindingAttr = ((bindingAttr & BindingFlags.Public) == BindingFlags.Public)
-          ? bindingAttr ^ BindingFlags.Public
-          : bindingAttr;
+        BindingFlags nonPublicBindingAttr = bindingAttr.RemoveFlag(BindingFlags.Public);
 
         while ((targetType = targetType.BaseType) != null)
         {
-          initialFields.AddRange(targetType.GetFields(nonPublicBindingAttr));
+          // filter out protected fields
+          IEnumerable<MemberInfo> childPrivateFields =
+            targetType.GetFields(nonPublicBindingAttr).Where(f => f.IsPrivate).Cast<MemberInfo>();
+
+          initialFields.AddRange(childPrivateFields);
         }
       }
     }
@@ -765,20 +801,43 @@ namespace Newtonsoft.Json.Utilities
       return propertyInfos.Cast<PropertyInfo>();
     }
 
-    private static void GetChildPrivateProperties(IList<MemberInfo> initialFields, Type targetType, BindingFlags bindingAttr)
+    public static BindingFlags RemoveFlag(this BindingFlags bindingAttr, BindingFlags flag)
     {
-      // fix weirdness with FieldInfos only being returned for the current Type
-      // find base type fields and add them to result
+      return ((bindingAttr & flag) == flag)
+        ? bindingAttr ^ flag
+        : bindingAttr;
+    }
+
+    private static void GetChildPrivateProperties(IList<MemberInfo> initialProperties, Type targetType, BindingFlags bindingAttr)
+    {
+      // fix weirdness with private PropertyInfos only being returned for the current Type
+      // find base type properties and add them to result
       if ((bindingAttr & BindingFlags.NonPublic) != 0)
       {
         // modify flags to not search for public fields
-        BindingFlags nonPublicBindingAttr = ((bindingAttr & BindingFlags.Public) == BindingFlags.Public)
-          ? bindingAttr ^ BindingFlags.Public
-          : bindingAttr;
+        BindingFlags nonPublicBindingAttr = bindingAttr.RemoveFlag(BindingFlags.Public);
 
         while ((targetType = targetType.BaseType) != null)
         {
-          initialFields.AddRange(targetType.GetProperties(nonPublicBindingAttr));
+          foreach (PropertyInfo propertyInfo in targetType.GetProperties(nonPublicBindingAttr))
+          {
+            PropertyInfo nonPublicProperty = propertyInfo;
+
+            // have to test on name rather than reference because instances are different
+            // depending on the type that GetProperties was called on
+            int index = initialProperties.IndexOf(p => p.Name == nonPublicProperty.Name);
+            if (index == -1)
+            {
+              initialProperties.Add(nonPublicProperty);
+            }
+            else
+            {
+              // replace nonpublic properties for a child, but gotten from
+              // the parent with the one from the child
+              // the property gotten from the child will have access to private getter/setter
+              initialProperties[index] = nonPublicProperty;
+            }
+          }
         }
       }
     }
