@@ -50,6 +50,7 @@ namespace Newtonsoft.Json.Serialization
 #endif
         new BinaryConverter(),
 #if !SILVERLIGHT
+        new XmlNodeConverter(),
         new DataSetConverter(),
         new DataTableConverter()
 #endif

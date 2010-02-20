@@ -48,6 +48,9 @@ using System.Runtime.Serialization;
 using System.Globalization;
 using Newtonsoft.Json.Utilities;
 using System.Reflection;
+#if !NET20 && !SILVERLIGHT
+using System.Xml.Linq;
+#endif
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
@@ -2715,12 +2718,14 @@ keyword such as type of business.""
       json = JsonConvert.SerializeObject(myB, Formatting.Indented);
       Assert.AreEqual(@"{
   ""BB_field1"": 4,
+  ""BB_field2"": 4,
   ""AA_field1"": 3,
   ""BB_property1"": 4,
   ""BB_property2"": 4,
   ""BB_property3"": 4,
   ""BB_property4"": 4,
   ""BB_property5"": 4,
+  ""BB_property7"": 4,
   ""AA_property1"": 3,
   ""AA_property2"": 3,
   ""AA_property3"": 3,
@@ -2734,6 +2739,7 @@ keyword such as type of business.""
       AA myA = JsonConvert.DeserializeObject<AA>(
           @"{
   ""AA_field1"": 2,
+  ""AA_field2"": 2,
   ""AA_property1"": 2,
   ""AA_property2"": 2,
   ""AA_property3"": 2,
@@ -2743,6 +2749,7 @@ keyword such as type of business.""
 }");
 
       Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AA).GetField("AA_field1", BindingFlags.Instance | BindingFlags.NonPublic), myA));
+      Assert.AreEqual(0, ReflectionUtils.GetMemberValue(typeof(AA).GetField("AA_field2", BindingFlags.Instance | BindingFlags.NonPublic), myA));
       Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property1", BindingFlags.Instance | BindingFlags.NonPublic), myA));
       Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property2", BindingFlags.Instance | BindingFlags.NonPublic), myA));
       Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property3", BindingFlags.Instance | BindingFlags.NonPublic), myA));
@@ -2753,7 +2760,9 @@ keyword such as type of business.""
       BB myB = JsonConvert.DeserializeObject<BB>(
           @"{
   ""BB_field1"": 4,
+  ""BB_field2"": 4,
   ""AA_field1"": 3,
+  ""AA_field2"": 3,
   ""AA_property1"": 2,
   ""AA_property2"": 2,
   ""AA_property3"": 2,
@@ -2765,10 +2774,13 @@ keyword such as type of business.""
   ""BB_property3"": 3,
   ""BB_property4"": 3,
   ""BB_property5"": 3,
-  ""BB_property6"": 3
+  ""BB_property6"": 3,
+  ""BB_property7"": 3,
+  ""BB_property8"": 3
 }");
 
       Assert.AreEqual(3, ReflectionUtils.GetMemberValue(typeof(AA).GetField("AA_field1", BindingFlags.Instance | BindingFlags.NonPublic), myB));
+      Assert.AreEqual(0, ReflectionUtils.GetMemberValue(typeof(AA).GetField("AA_field2", BindingFlags.Instance | BindingFlags.NonPublic), myB));
       Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property1", BindingFlags.Instance | BindingFlags.NonPublic), myB));
       Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property2", BindingFlags.Instance | BindingFlags.NonPublic), myB));
       Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property3", BindingFlags.Instance | BindingFlags.NonPublic), myB));
@@ -2777,18 +2789,22 @@ keyword such as type of business.""
       Assert.AreEqual(0, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property6", BindingFlags.Instance | BindingFlags.NonPublic), myB));
 
       Assert.AreEqual(4, myB.BB_field1);
+      Assert.AreEqual(4, myB.BB_field2);
       Assert.AreEqual(3, myB.BB_property1);
       Assert.AreEqual(3, myB.BB_property2);
       Assert.AreEqual(3, ReflectionUtils.GetMemberValue(typeof(BB).GetProperty("BB_property3", BindingFlags.Instance | BindingFlags.Public), myB));
       Assert.AreEqual(3, ReflectionUtils.GetMemberValue(typeof(BB).GetProperty("BB_property4", BindingFlags.Instance | BindingFlags.NonPublic), myB));
       Assert.AreEqual(0, myB.BB_property5);
       Assert.AreEqual(3, ReflectionUtils.GetMemberValue(typeof(BB).GetProperty("BB_property6", BindingFlags.Instance | BindingFlags.Public), myB));
+      Assert.AreEqual(3, ReflectionUtils.GetMemberValue(typeof(BB).GetProperty("BB_property7", BindingFlags.Instance | BindingFlags.Public), myB));
+      Assert.AreEqual(3, ReflectionUtils.GetMemberValue(typeof(BB).GetProperty("BB_property8", BindingFlags.Instance | BindingFlags.Public), myB));
     }
 
     public class AA
     {
       [JsonProperty]
       protected int AA_field1;
+      protected int AA_field2;
       [JsonProperty]
       protected int AA_property1 { get; set; }
       [JsonProperty]
@@ -2807,6 +2823,7 @@ keyword such as type of business.""
       public AA(int f)
       {
         AA_field1 = f;
+        AA_field2 = f;
         AA_property1 = f;
         AA_property2 = f;
         AA_property3 = f;
@@ -2820,6 +2837,7 @@ keyword such as type of business.""
     {
       [JsonProperty]
       public int BB_field1;
+      public int BB_field2;
       [JsonProperty]
       public int BB_property1 { get; set; }
       [JsonProperty]
@@ -2830,6 +2848,9 @@ keyword such as type of business.""
       private int BB_property4 { get; set; }
       public int BB_property5 { get; private set; }
       public int BB_property6 { private get; set; }
+      [JsonProperty]
+      public int BB_property7 { protected get; set; }
+      public int BB_property8 { protected get; set; }
 
       public BB()
       {
@@ -2839,13 +2860,84 @@ keyword such as type of business.""
         : base(f)
       {
         BB_field1 = g;
+        BB_field2 = g;
         BB_property1 = g;
         BB_property2 = g;
         BB_property3 = g;
         BB_property4 = g;
         BB_property5 = g;
         BB_property6 = g;
+        BB_property7 = g;
+        BB_property8 = g;
       }
     }
+
+#if !NET20 && !SILVERLIGHT
+    public class XNodeTestObject
+    {
+      public XDocument Document { get; set; }
+      public XElement Element { get; set; }
+    }
+#endif
+
+#if !SILVERLIGHT
+    public class XmlNodeTestObject
+    {
+      public XmlDocument Document { get; set; }
+    }
+#endif
+
+#if !NET20 && !SILVERLIGHT
+    [Test]
+    public void SerializeDeserializeXNodeProperties()
+    {
+      XNodeTestObject testObject = new XNodeTestObject();
+      testObject.Document = XDocument.Parse("<root>hehe, root</root>");
+      testObject.Element = XElement.Parse(@"<fifth xmlns:json=""http://json.org"" json:Awesome=""true"">element</fifth>");
+
+      string json = JsonConvert.SerializeObject(testObject, Formatting.Indented);
+      string expected = @"{
+  ""Document"": {
+    ""root"": ""hehe, root""
+  },
+  ""Element"": {
+    ""fifth"": {
+      ""@xmlns:json"": ""http://json.org"",
+      ""@json:Awesome"": ""true"",
+      ""#text"": ""element""
+    }
+  }
+}";
+      Assert.AreEqual(expected, json);
+
+      XNodeTestObject newTestObject = JsonConvert.DeserializeObject<XNodeTestObject>(json);
+      Assert.AreEqual(testObject.Document.ToString(), newTestObject.Document.ToString());
+      Assert.AreEqual(testObject.Element.ToString(), newTestObject.Element.ToString());
+
+      Assert.IsNull(newTestObject.Element.Parent);
+    }
+#endif
+
+#if !SILVERLIGHT
+    [Test]
+    public void SerializeDeserializeXmlNodeProperties()
+    {
+      XmlNodeTestObject testObject = new XmlNodeTestObject();
+      XmlDocument document = new XmlDocument();
+      document.LoadXml("<root>hehe, root</root>");
+      testObject.Document = document;
+
+      string json = JsonConvert.SerializeObject(testObject, Formatting.Indented);
+      string expected = @"{
+  ""Document"": {
+    ""root"": ""hehe, root""
+  }
+}";
+      Assert.AreEqual(expected, json);
+
+      XmlNodeTestObject newTestObject = JsonConvert.DeserializeObject<XmlNodeTestObject>(json);
+      Assert.AreEqual(testObject.Document.InnerXml, newTestObject.Document.InnerXml);
+    }
+#endif
   }
 }

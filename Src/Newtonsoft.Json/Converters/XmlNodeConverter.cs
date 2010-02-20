@@ -27,11 +27,703 @@
 using System;
 using System.Collections.Generic;
 using System.Xml;
+#if !NET20
+using System.Xml.Linq;
+#endif
 using Newtonsoft.Json.Utilities;
 using System.Linq;
 
 namespace Newtonsoft.Json.Converters
 {
+  #region Wrappers
+  internal class XmlDocumentWrapper : XmlNodeWrapper, IXmlDocument
+  {
+    private XmlDocument _document;
+
+    public XmlDocumentWrapper(XmlDocument document)
+      : base(document)
+    {
+      _document = document;
+    }
+
+    public IXmlNode CreateComment(string data)
+    {
+      return new XmlNodeWrapper(_document.CreateComment(data));
+    }
+
+    public IXmlNode CreateTextNode(string text)
+    {
+      return new XmlNodeWrapper(_document.CreateTextNode(text));
+    }
+
+    public IXmlNode CreateCDataSection(string data)
+    {
+      return new XmlNodeWrapper(_document.CreateCDataSection(data));
+    }
+
+    public IXmlNode CreateWhitespace(string text)
+    {
+      return new XmlNodeWrapper(_document.CreateWhitespace(text));
+    }
+
+    public IXmlNode CreateSignificantWhitespace(string text)
+    {
+      return new XmlNodeWrapper(_document.CreateSignificantWhitespace(text));
+    }
+
+    public IXmlNode CreateXmlDeclaration(string version, string encoding, string standalone)
+    {
+      return new XmlNodeWrapper(_document.CreateXmlDeclaration(version, encoding, standalone));
+    }
+
+    public IXmlNode CreateProcessingInstruction(string target, string data)
+    {
+      return new XmlNodeWrapper(_document.CreateProcessingInstruction(target, data));
+    }
+
+    public IXmlElement CreateElement(string elementName)
+    {
+      return new XmlElementWrapper(_document.CreateElement(elementName));
+    }
+
+    public IXmlElement CreateElement(string qualifiedName, string namespaceURI)
+    {
+      return new XmlElementWrapper(_document.CreateElement(qualifiedName, namespaceURI));
+    }
+
+    public IXmlNode CreateAttribute(string name, string value)
+    {
+      XmlNodeWrapper attribute = new XmlNodeWrapper(_document.CreateAttribute(name));
+      attribute.Value = value;
+
+      return attribute;
+    }
+
+    public IXmlNode CreateAttribute(string qualifiedName, string namespaceURI, string value)
+    {
+      XmlNodeWrapper attribute = new XmlNodeWrapper(_document.CreateAttribute(qualifiedName, namespaceURI));
+      attribute.Value = value;
+
+      return attribute;
+    }
+
+    public IXmlElement DocumentElement
+    {
+      get
+      {
+        if (_document.DocumentElement == null)
+          return null;
+
+        return new XmlElementWrapper(_document.DocumentElement);
+      }
+    }
+  }
+
+  internal class XmlElementWrapper : XmlNodeWrapper, IXmlElement
+  {
+    private XmlElement _element;
+
+    public XmlElementWrapper(XmlElement element)
+      : base(element)
+    {
+      _element = element;
+    }
+
+    public void SetAttributeNode(IXmlNode attribute)
+    {
+      XmlNodeWrapper xmlAttributeWrapper = (XmlNodeWrapper)attribute;
+
+      _element.SetAttributeNode((XmlAttribute) xmlAttributeWrapper.WrappedNode);
+    }
+  }
+
+  internal class XmlDeclarationWrapper : XmlNodeWrapper, IXmlDeclaration
+  {
+    private XmlDeclaration _declaration;
+
+    public XmlDeclarationWrapper(XmlDeclaration declaration)
+      : base(declaration)
+    {
+      _declaration = declaration;
+    }
+
+    public string Version
+    {
+      get { return _declaration.Version; }
+    }
+
+    public string Encoding
+    {
+      get { return _declaration.Encoding; }
+      set { _declaration.Encoding = value; }
+    }
+
+    public string Standalone
+    {
+      get { return _declaration.Standalone; }
+      set { _declaration.Standalone = value; }
+    }
+  }
+
+  internal class XmlNodeWrapper : IXmlNode
+  {
+    private readonly XmlNode _node;
+
+    public XmlNodeWrapper(XmlNode node)
+    {
+      _node = node;
+    }
+
+    public object WrappedNode
+    {
+      get { return _node; }
+    }
+
+    public XmlNodeType NodeType
+    {
+      get { return _node.NodeType; }
+    }
+
+    public string Name
+    {
+      get { return _node.Name; }
+    }
+
+    public string LocalName
+    {
+      get { return _node.LocalName; }
+    }
+
+    public IList<IXmlNode> ChildNodes
+    {
+      get { return _node.ChildNodes.Cast<XmlNode>().Select(n => WrapNode(n)).ToList(); }
+    }
+
+    private IXmlNode WrapNode(XmlNode node)
+    {
+      switch (node.NodeType)
+      {
+        case XmlNodeType.Element:
+          return new XmlElementWrapper((XmlElement) node);
+        case XmlNodeType.XmlDeclaration:
+          return new XmlDeclarationWrapper((XmlDeclaration) node);
+        default:
+          return new XmlNodeWrapper(node);
+      }
+    }
+
+    public IList<IXmlNode> Attributes
+    {
+      get
+      {
+        if (_node.Attributes == null)
+          return null;
+
+        return _node.Attributes.Cast<XmlAttribute>().Select(a => WrapNode(a)).ToList();
+      }
+    }
+
+    public IXmlNode ParentNode
+    {
+      get
+      {
+        XmlNode node = (_node is XmlAttribute)
+                         ? ((XmlAttribute) _node).OwnerElement
+                         : _node.ParentNode;
+        
+        if (node == null)
+          return null;
+
+        return WrapNode(node);
+      }
+    }
+
+    public string Value
+    {
+      get { return _node.Value; }
+      set { _node.Value = value; }
+    }
+
+    public IXmlNode AppendChild(IXmlNode newChild)
+    {
+      XmlNodeWrapper xmlNodeWrapper = (XmlNodeWrapper) newChild;
+      _node.AppendChild(xmlNodeWrapper._node);
+
+      return newChild;
+    }
+
+    public string Prefix
+    {
+      get { return _node.Prefix; }
+    }
+
+    public string NamespaceURI
+    {
+      get { return _node.NamespaceURI; }
+    }
+  }
+
+  internal interface IXmlDocument : IXmlNode
+  {
+    IXmlNode CreateComment(string text);
+    IXmlNode CreateTextNode(string text);
+    IXmlNode CreateCDataSection(string data);
+    IXmlNode CreateWhitespace(string text);
+    IXmlNode CreateSignificantWhitespace(string text);
+    IXmlNode CreateXmlDeclaration(string version, string encoding, string standalone);
+    IXmlNode CreateProcessingInstruction(string target, string data);
+    IXmlElement CreateElement(string elementName);
+    IXmlElement CreateElement(string qualifiedName, string namespaceURI);
+    IXmlNode CreateAttribute(string name, string value);
+    IXmlNode CreateAttribute(string qualifiedName, string namespaceURI, string value);
+
+    IXmlElement DocumentElement { get; }
+  }
+
+  internal interface IXmlDeclaration : IXmlNode
+  {
+    string Version { get; }
+    string Encoding { get; set; }
+    string Standalone { get; set; }
+  }
+
+  internal interface IXmlElement : IXmlNode
+  {
+    void SetAttributeNode(IXmlNode attribute);
+  }
+
+  internal interface IXmlNode
+  {
+    XmlNodeType NodeType { get; }
+    string LocalName { get; }
+    IList<IXmlNode> ChildNodes { get; }
+    IList<IXmlNode> Attributes { get; }
+    IXmlNode ParentNode { get; }
+    string Value { get; set; }
+    IXmlNode AppendChild(IXmlNode newChild);
+    string NamespaceURI { get; }
+    object WrappedNode { get; }
+  }
+
+  #if !NET20
+  internal class XDeclarationWrapper : XObjectWrapper, IXmlDeclaration
+  {
+    internal readonly XDeclaration _declaration;
+
+    public XDeclarationWrapper(XDeclaration declaration)
+      : base(null)
+    {
+      _declaration = declaration;
+    }
+
+    public override XmlNodeType NodeType
+    {
+      get { return XmlNodeType.XmlDeclaration; }
+    }
+
+    public string Version
+    {
+      get { return _declaration.Version; }
+    }
+
+    public string Encoding
+    {
+      get { return _declaration.Encoding; }
+      set { _declaration.Encoding = value; }
+    }
+
+    public string Standalone
+    {
+      get { return _declaration.Standalone; }
+      set { _declaration.Standalone = value; }
+    }
+  }
+
+  internal class XDocumentWrapper : XContainerWrapper, IXmlDocument
+  {
+    private XDocument Document
+    {
+      get { return (XDocument)WrappedNode; }
+    }
+
+    public XDocumentWrapper(XDocument document)
+      : base(document)
+    {
+    }
+
+    public override IList<IXmlNode> ChildNodes
+    {
+      get
+      {
+        IList<IXmlNode> childNodes = base.ChildNodes;
+
+        if (Document.Declaration != null)
+          childNodes.Insert(0, new XDeclarationWrapper(Document.Declaration));
+
+        return childNodes;
+      }
+    }
+
+    public IXmlNode CreateComment(string text)
+    {
+      return new XObjectWrapper(new XComment(text));
+    }
+
+    public IXmlNode CreateTextNode(string text)
+    {
+      return new XObjectWrapper(new XText(text));
+    }
+
+    public IXmlNode CreateCDataSection(string data)
+    {
+      return new XObjectWrapper(new XCData(data));
+    }
+
+    public IXmlNode CreateWhitespace(string text)
+    {
+      return new XObjectWrapper(new XText(text));
+    }
+
+    public IXmlNode CreateSignificantWhitespace(string text)
+    {
+      return new XObjectWrapper(new XText(text));
+    }
+
+    public IXmlNode CreateXmlDeclaration(string version, string encoding, string standalone)
+    {
+      return new XDeclarationWrapper(new XDeclaration(version, encoding, standalone));
+    }
+
+    public IXmlNode CreateProcessingInstruction(string target, string data)
+    {
+      return new XProcessingInstructionWrapper(new XProcessingInstruction(target, data));
+    }
+
+    public IXmlElement CreateElement(string elementName)
+    {
+      return new XElementWrapper(new XElement(elementName));
+    }
+
+    public IXmlElement CreateElement(string qualifiedName, string namespaceURI)
+    {
+      string localName = MiscellaneousUtils.GetLocalName(qualifiedName);
+      return new XElementWrapper(new XElement(XName.Get(localName, namespaceURI)));
+    }
+
+    public IXmlNode CreateAttribute(string name, string value)
+    {
+      return new XAttributeWrapper(new XAttribute(name, value));
+    }
+
+    public IXmlNode CreateAttribute(string qualifiedName, string namespaceURI, string value)
+    {
+      string localName = MiscellaneousUtils.GetLocalName(qualifiedName);
+      return new XAttributeWrapper(new XAttribute(XName.Get(localName, namespaceURI), value));
+    }
+
+    public IXmlElement DocumentElement
+    {
+      get
+      {
+        if (Document.Root == null)
+          return null;
+
+        return new XElementWrapper(Document.Root);
+      }
+    }
+
+    public override IXmlNode AppendChild(IXmlNode newChild)
+    {
+      XDeclarationWrapper declarationWrapper = newChild as XDeclarationWrapper;
+      if (declarationWrapper != null)
+      {
+        Document.Declaration = declarationWrapper._declaration;
+        return declarationWrapper;
+      }
+      else
+      {
+        return base.AppendChild(newChild);
+      }
+    }
+  }
+
+  internal class XTextWrapper : XObjectWrapper
+  {
+    private XText Text
+    {
+      get { return (XText)WrappedNode; }
+    }
+
+    public XTextWrapper(XText text)
+      : base(text)
+    {
+    }
+
+    public override string Value
+    {
+      get { return Text.Value; }
+      set { Text.Value = value; }
+    }
+
+    public override IXmlNode ParentNode
+    {
+      get
+      {
+        if (Text.Parent == null)
+          return null;
+        
+        return XContainerWrapper.WrapNode(Text.Parent);
+      }
+    }
+  }
+
+  internal class XCommentWrapper : XObjectWrapper
+  {
+    private XComment Text
+    {
+      get { return (XComment)WrappedNode; }
+    }
+
+    public XCommentWrapper(XComment text)
+      : base(text)
+    {
+    }
+
+    public override string Value
+    {
+      get { return Text.Value; }
+      set { Text.Value = value; }
+    }
+
+    public override IXmlNode ParentNode
+    {
+      get
+      {
+        if (Text.Parent == null)
+          return null;
+
+        return XContainerWrapper.WrapNode(Text.Parent);
+      }
+    }
+  }
+
+  internal class XProcessingInstructionWrapper : XObjectWrapper
+  {
+    private XProcessingInstruction ProcessingInstruction
+    {
+      get { return (XProcessingInstruction)WrappedNode; }
+    }
+
+    public XProcessingInstructionWrapper(XProcessingInstruction processingInstruction)
+      : base(processingInstruction)
+    {
+    }
+
+    public override string LocalName
+    {
+      get { return ProcessingInstruction.Target; }
+    }
+
+    public override string Value
+    {
+      get { return ProcessingInstruction.Data; }
+      set { ProcessingInstruction.Data = value; }
+    }
+  }
+
+  internal class XContainerWrapper : XObjectWrapper
+  {
+    private XContainer Container
+    {
+      get { return (XContainer)WrappedNode; }
+    }
+
+    public XContainerWrapper(XContainer container)
+      : base(container)
+    {
+    }
+
+    public override IList<IXmlNode> ChildNodes
+    {
+      get { return Container.Nodes().Select(n => WrapNode(n)).ToList(); }
+    }
+
+    public override IXmlNode ParentNode
+    {
+      get
+      {
+        if (Container.Parent == null)
+          return null;
+        
+        return WrapNode(Container.Parent);
+      }
+    }
+
+    internal static IXmlNode WrapNode(XObject node)
+    {
+      if (node is XDocument)
+        return new XDocumentWrapper((XDocument)node);
+      else if (node is XElement)
+        return new XElementWrapper((XElement)node);
+      else if (node is XContainer)
+        return new XContainerWrapper((XContainer)node);
+      else if (node is XProcessingInstruction)
+        return new XProcessingInstructionWrapper((XProcessingInstruction)node);
+      else if (node is XText)
+        return new XTextWrapper((XText)node);
+      else if (node is XComment)
+        return new XCommentWrapper((XComment)node);
+      else if (node is XAttribute)
+        return new XAttributeWrapper((XAttribute) node);
+      else
+        return new XObjectWrapper(node);
+    }
+
+    public override IXmlNode AppendChild(IXmlNode newChild)
+    {
+      Container.Add(newChild.WrappedNode);
+      return newChild;
+    }
+  }
+
+  internal class XObjectWrapper : IXmlNode
+  {
+    private readonly XObject _xmlObject;
+
+    public XObjectWrapper(XObject xmlObject)
+    {
+      _xmlObject = xmlObject;
+    }
+
+    public object WrappedNode
+    {
+      get { return _xmlObject; }
+    }
+
+    public virtual XmlNodeType NodeType
+    {
+      get { return _xmlObject.NodeType; }
+    }
+
+    public virtual string LocalName
+    {
+      get { return null; }
+    }
+
+    public virtual IList<IXmlNode> ChildNodes
+    {
+      get { return new List<IXmlNode>(); }
+    }
+
+    public virtual IList<IXmlNode> Attributes
+    {
+      get { return null; }
+    }
+
+    public virtual IXmlNode ParentNode
+    {
+      get { return null; }
+    }
+
+    public virtual string Value
+    {
+      get { return null; }
+      set { throw new InvalidOperationException(); }
+    }
+
+    public virtual IXmlNode AppendChild(IXmlNode newChild)
+    {
+      throw new InvalidOperationException();
+    }
+
+    public virtual string NamespaceURI
+    {
+      get { return null; }
+    }
+  }
+
+  internal class XAttributeWrapper : XObjectWrapper
+  {
+    private XAttribute Attribute
+    {
+      get { return (XAttribute)WrappedNode; }
+    }
+
+    public XAttributeWrapper(XAttribute attribute)
+      : base(attribute)
+    {
+    }
+
+    public override string Value
+    {
+      get { return Attribute.Value; }
+      set { Attribute.Value = value; }
+    }
+
+    public override string LocalName
+    {
+      get { return Attribute.Name.LocalName; }
+    }
+
+    public override string NamespaceURI
+    {
+      get { return Attribute.Name.NamespaceName; }
+    }
+
+    public override IXmlNode ParentNode
+    {
+      get
+      {
+        if (Attribute.Parent == null)
+          return null;
+
+        return XContainerWrapper.WrapNode(Attribute.Parent);
+      }
+    }
+  }
+
+  internal class XElementWrapper : XContainerWrapper, IXmlElement
+  {
+    private XElement Element
+    {
+      get { return (XElement) WrappedNode; }
+    }
+
+    public XElementWrapper(XElement element)
+      : base(element)
+    {
+    }
+
+    public void SetAttributeNode(IXmlNode attribute)
+    {
+      XObjectWrapper wrapper = (XObjectWrapper)attribute;
+      Element.Add(wrapper.WrappedNode);
+    }
+
+    public override IList<IXmlNode> Attributes
+    {
+      get { return Element.Attributes().Select(a => new XAttributeWrapper(a)).Cast<IXmlNode>().ToList(); }
+    }
+
+    public override string Value
+    {
+      get { return Element.Value; }
+      set { Element.Value = value; }
+    }
+
+    public override string LocalName
+    {
+      get { return Element.Name.LocalName; }
+    }
+
+    public override string NamespaceURI
+    {
+      get { return Element.Name.NamespaceName; }
+    }
+  }
+#endif
+  #endregion
+
   /// <summary>
   /// Converts an <see cref="XmlNode"/> to and from JSON.
   /// </summary>
@@ -60,30 +752,83 @@ namespace Newtonsoft.Json.Converters
     /// <param name="value">The value.</param>
     public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {
-      XmlNode node = value as XmlNode;
+      IXmlNode node;
 
-      if (node == null)
+      if (value is XmlNode)
+        node = new XmlNodeWrapper((XmlNode)value);
+#if !NET20
+      else if (value is XObject)
+        node = XContainerWrapper.WrapNode((XObject)value);
+#endif
+      else
         throw new ArgumentException("Value must be an XmlNode", "value");
 
+      XmlNamespaceManager manager = new XmlNamespaceManager(new NameTable());
+      PushParentNamespaces(node, manager);
+
       writer.WriteStartObject();
-      SerializeNode(writer, node, true);
+      SerializeNode(writer, node, manager, true);
       writer.WriteEndObject();
     }
 
-    private string GetPropertyName(XmlNode node)
+    private void PushParentNamespaces(IXmlNode node, XmlNamespaceManager manager)
+    {
+      List<IXmlNode> parentElements = null;
+
+      IXmlNode parent = node;
+      while ((parent = parent.ParentNode) != null)
+      {
+        if (parent.NodeType == XmlNodeType.Element)
+        {
+          if (parentElements == null)
+            parentElements = new List<IXmlNode>();
+
+          parentElements.Add(parent);
+        }
+      }
+
+      if (parentElements != null)
+      {
+        parentElements.Reverse();
+
+        foreach (IXmlNode parentElement in parentElements)
+        {
+          manager.PushScope();
+          foreach (IXmlNode attribute in parentElement.Attributes)
+          {
+            if (attribute.NamespaceURI == "http://www.w3.org/2000/xmlns/" && attribute.LocalName != "xmlns")
+              manager.AddNamespace(attribute.LocalName, attribute.Value);
+          }
+        }
+      }
+    }
+
+    private string ResolveFullName(IXmlNode node, XmlNamespaceManager manager)
+    {
+      string prefix = (node.NamespaceURI == null || (node.LocalName == "xmlns" && node.NamespaceURI == "http://www.w3.org/2000/xmlns/"))
+                        ? null
+                        : manager.LookupPrefix(node.NamespaceURI);
+
+      if (!string.IsNullOrEmpty(prefix))
+        return prefix + ":" + node.LocalName;
+      else
+        return node.LocalName;
+    }
+
+    private string GetPropertyName(IXmlNode node, XmlNamespaceManager manager)
     {
       switch (node.NodeType)
       {
         case XmlNodeType.Attribute:
-          return "@" + node.Name;
+          return "@" + ResolveFullName(node, manager);
         case XmlNodeType.CDATA:
           return CDataName;
         case XmlNodeType.Comment:
           return CommentName;
         case XmlNodeType.Element:
-          return node.Name;
+          return ResolveFullName(node, manager);
         case XmlNodeType.ProcessingInstruction:
-          return "?" + node.Name;
+          return "?" + ResolveFullName(node, manager);
         case XmlNodeType.XmlDeclaration:
           return DeclarationName;
         case XmlNodeType.SignificantWhitespace:
@@ -97,20 +842,20 @@ namespace Newtonsoft.Json.Converters
       }
     }
 
-    private void SerializeGroupedNodes(JsonWriter writer, XmlNode node)
+    private void SerializeGroupedNodes(JsonWriter writer, IXmlNode node, XmlNamespaceManager manager)
     {
       // group nodes together by name
-      Dictionary<string, List<XmlNode>> nodesGroupedByName = new Dictionary<string, List<XmlNode>>();
+      Dictionary<string, List<IXmlNode>> nodesGroupedByName = new Dictionary<string, List<IXmlNode>>();
 
       for (int i = 0; i < node.ChildNodes.Count; i++)
       {
-        XmlNode childNode = node.ChildNodes[i];
-        string nodeName = GetPropertyName(childNode);
+        IXmlNode childNode = node.ChildNodes[i];
+        string nodeName = GetPropertyName(childNode, manager);
 
-        List<XmlNode> nodes;
+        List<IXmlNode> nodes;
         if (!nodesGroupedByName.TryGetValue(nodeName, out nodes))
         {
-          nodes = new List<XmlNode>();
+          nodes = new List<IXmlNode>();
           nodesGroupedByName.Add(nodeName, nodes);
         }
 
@@ -119,15 +864,17 @@ namespace Newtonsoft.Json.Converters
 
       // loop through grouped nodes. write single name instances as normal,
       // write multiple names together in an array
-      foreach (KeyValuePair<string, List<XmlNode>> nodeNameGroup in nodesGroupedByName)
+      foreach (KeyValuePair<string, List<IXmlNode>> nodeNameGroup in nodesGroupedByName)
       {
-        List<XmlNode> groupedNodes = nodeNameGroup.Value;
+        List<IXmlNode> groupedNodes = nodeNameGroup.Value;
         bool writeArray;
 
         if (groupedNodes.Count == 1)
         {
-          XmlNode singleNode = groupedNodes[0];
-          XmlAttribute jsonArrayAttribute = (singleNode.Attributes != null) ? singleNode.Attributes["Array", JsonNamespaceUri] : null;
+          IXmlNode singleNode = groupedNodes[0];
+          IXmlNode jsonArrayAttribute = (singleNode.Attributes != null)
+            ? singleNode.Attributes.SingleOrDefault(a => a.LocalName == "Array" && a.NamespaceURI == JsonNamespaceUri)
+            : null;
           if (jsonArrayAttribute != null)
             writeArray = XmlConvert.ToBoolean(jsonArrayAttribute.Value);
           else
@@ -140,7 +887,7 @@ namespace Newtonsoft.Json.Converters
 
         if (!writeArray)
         {
-          SerializeNode(writer, groupedNodes[0], true);
+          SerializeNode(writer, groupedNodes[0], manager, true);
         }
         else
         {
@@ -150,7 +897,7 @@ namespace Newtonsoft.Json.Converters
 
           for (int i = 0; i < groupedNodes.Count; i++)
           {
-            SerializeNode(writer, groupedNodes[i], false);
+            SerializeNode(writer, groupedNodes[i], manager, false);
           }
 
           writer.WriteEndArray();
@@ -158,17 +905,29 @@ namespace Newtonsoft.Json.Converters
       }
     }
 
-    private void SerializeNode(JsonWriter writer, XmlNode node, bool writePropertyName)
+    private void SerializeNode(JsonWriter writer, IXmlNode node, XmlNamespaceManager manager, bool writePropertyName)
     {
       switch (node.NodeType)
       {
         case XmlNodeType.Document:
         case XmlNodeType.DocumentFragment:
-          SerializeGroupedNodes(writer, node);
+          SerializeGroupedNodes(writer, node, manager);
           break;
         case XmlNodeType.Element:
+          foreach (IXmlNode attribute in node.Attributes)
+          {
+            if (attribute.NamespaceURI == "http://www.w3.org/2000/xmlns/")
+            {
+              string prefix = (attribute.LocalName != "xmlns")
+                                ? attribute.LocalName
+                                : string.Empty;
+
+              manager.AddNamespace(prefix, attribute.Value);
+            }
+          }
+
           if (writePropertyName)
-            writer.WritePropertyName(node.Name);
+            writer.WritePropertyName(GetPropertyName(node, manager));
 
           if (ValueAttributes(node.Attributes).Count() == 0 && node.ChildNodes.Count == 1
                   && node.ChildNodes[0].NodeType == XmlNodeType.Text)
@@ -181,30 +940,16 @@ namespace Newtonsoft.Json.Converters
             // empty element
             writer.WriteNull();
           }
-          else if (node.ChildNodes.OfType<XmlElement>().Where(x => x.Name.StartsWith("-")).Count() > 1)
-          {
-            XmlElement constructorValueElement = node.ChildNodes.OfType<XmlElement>().Where(x => x.Name.StartsWith("-")).First();
-            string constructorName = constructorValueElement.Name.Substring(1);
-
-            writer.WriteStartConstructor(constructorName);
-
-            for (int i = 0; i < node.ChildNodes.Count; i++)
-            {
-              SerializeNode(writer, node.ChildNodes[i], false);
-            }
-
-            writer.WriteEndConstructor();
-          }
           else
           {
             writer.WriteStartObject();
 
             for (int i = 0; i < node.Attributes.Count; i++)
             {
-              SerializeNode(writer, node.Attributes[i], true);
+              SerializeNode(writer, node.Attributes[i], manager, true);
             }
 
-            SerializeGroupedNodes(writer, node);
+            SerializeGroupedNodes(writer, node, manager);
 
             writer.WriteEndObject();
           }
@@ -220,18 +965,18 @@ namespace Newtonsoft.Json.Converters
         case XmlNodeType.ProcessingInstruction:
         case XmlNodeType.Whitespace:
         case XmlNodeType.SignificantWhitespace:
-          if (node.Prefix == "xmlns" && node.Value == JsonNamespaceUri)
+          if (node.NamespaceURI == "http://www.w3.org/2000/xmlns/" && node.Value == JsonNamespaceUri)
             break;
           else if (node.NamespaceURI == JsonNamespaceUri)
             break;
 
           if (writePropertyName)
-            writer.WritePropertyName(GetPropertyName(node));
+            writer.WritePropertyName(GetPropertyName(node, manager));
           writer.WriteValue(node.Value);
           break;
         case XmlNodeType.XmlDeclaration:
-          XmlDeclaration declaration = (XmlDeclaration)node;
-          writer.WritePropertyName(GetPropertyName(node));
+          IXmlDeclaration declaration = (IXmlDeclaration)node;
+          writer.WritePropertyName(GetPropertyName(node, manager));
           writer.WriteStartObject();
 
           if (!string.IsNullOrEmpty(declaration.Version))
@@ -268,23 +1013,39 @@ namespace Newtonsoft.Json.Converters
     /// <returns>The object value.</returns>
     public override object ReadJson(JsonReader reader, Type objectType, JsonSerializer serializer)
     {
-      // maybe have CanReader and a CanWrite methods so this sort of test wouldn't be necessary
-      if (objectType != typeof(XmlDocument))
-        throw new JsonSerializationException("XmlNodeConverter only supports deserializing XmlDocuments");
+      XmlNamespaceManager manager = new XmlNamespaceManager(new NameTable());
+      IXmlDocument document;
+      IXmlNode rootNode;
 
-      XmlDocument document = new XmlDocument();
-      XmlNamespaceManager manager = new XmlNamespaceManager(document.NameTable);
+      if (typeof (XmlNode).IsAssignableFrom(objectType))
+      {
+        if (objectType != typeof (XmlDocument))
+          throw new JsonSerializationException("XmlNodeConverter only supports deserializing XmlDocuments");
 
-      XmlNode rootNode;
-      
+        XmlDocument d = new XmlDocument();
+        document = new XmlDocumentWrapper(d);
+        rootNode = document;
+      }
+#if !NET20
+      else if (typeof(XObject).IsAssignableFrom(objectType))
+      {
+        if (objectType != typeof (XDocument) && objectType != typeof (XElement))
+          throw new JsonSerializationException("XmlNodeConverter only supports deserializing XDocument or XElement.");
+
+        XDocument d = new XDocument();
+        document = new XDocumentWrapper(d);
+        rootNode = document;
+      }
+#endif
+      else
+      {
+        throw new JsonSerializationException("Unexpected type when converting XML: " + objectType);
+      }
+
       if (!string.IsNullOrEmpty(DeserializeRootElementName))
       {
         rootNode = document.CreateElement(DeserializeRootElementName);
         document.AppendChild(rootNode);
-      }
-      else
-      {
-        rootNode = document;
       }
 
       if (reader.TokenType != JsonToken.StartObject)
@@ -294,10 +1055,20 @@ namespace Newtonsoft.Json.Converters
 
       DeserializeNode(reader, document, manager, rootNode);
 
-      return document;
+#if !NET20
+      if (objectType == typeof(XElement))
+      {
+        XElement element = (XElement)document.DocumentElement.WrappedNode;
+        element.Remove();
+
+        return element;
+      }
+#endif
+
+      return document.WrappedNode;
     }
 
-    private void DeserializeValue(JsonReader reader, XmlDocument document, XmlNamespaceManager manager, string propertyName, XmlNode currentNode)
+    private void DeserializeValue(JsonReader reader, IXmlDocument document, XmlNamespaceManager manager, string propertyName, IXmlNode currentNode)
     {
       switch (propertyName)
       {
@@ -343,12 +1114,12 @@ namespace Newtonsoft.Json.Converters
                 }
               }
 
-              XmlDeclaration declaration = document.CreateXmlDeclaration(version, encoding, standalone);
+              IXmlNode declaration = document.CreateXmlDeclaration(version, encoding, standalone);
               currentNode.AppendChild(declaration);
             }
             else
             {
-              XmlProcessingInstruction instruction = document.CreateProcessingInstruction(propertyName.Substring(1), reader.Value.ToString());
+              IXmlNode instruction = document.CreateProcessingInstruction(propertyName.Substring(1), reader.Value.ToString());
               currentNode.AppendChild(instruction);
             }
           }
@@ -357,12 +1128,13 @@ namespace Newtonsoft.Json.Converters
             // deserialize xml element
             bool finishedAttributes = false;
             bool finishedElement = false;
-            string elementPrefix = GetPrefix(propertyName);
+            string elementPrefix = MiscellaneousUtils.GetPrefix(propertyName);
+
             Dictionary<string, string> attributeNameValues = new Dictionary<string, string>();
 
             if (reader.TokenType == JsonToken.StartArray)
             {
-              XmlElement nestedArrayElement = CreateElement(propertyName, document, elementPrefix, manager);
+              IXmlElement nestedArrayElement = CreateElement(propertyName, document, elementPrefix, manager);
 
               currentNode.AppendChild(nestedArrayElement);
 
@@ -421,20 +1193,18 @@ namespace Newtonsoft.Json.Converters
 
             // have to wait until attributes have been parsed before creating element
             // attributes may contain namespace info used by the element
-            XmlElement element = CreateElement(propertyName, document, elementPrefix, manager);
+            IXmlElement element = CreateElement(propertyName, document, elementPrefix, manager);
 
             currentNode.AppendChild(element);
 
             // add attributes to newly created element
             foreach (KeyValuePair<string, string> nameValue in attributeNameValues)
             {
-              string attributePrefix = GetPrefix(nameValue.Key);
+              string attributePrefix = MiscellaneousUtils.GetPrefix(nameValue.Key);
 
-              XmlAttribute attribute = (!string.IsNullOrEmpty(attributePrefix))
-                      ? document.CreateAttribute(nameValue.Key, manager.LookupNamespace(attributePrefix))
-                      : document.CreateAttribute(nameValue.Key);
-
-              attribute.Value = nameValue.Value;
+              IXmlNode attribute = (!string.IsNullOrEmpty(attributePrefix))
+                      ? document.CreateAttribute(nameValue.Key, manager.LookupNamespace(attributePrefix), nameValue.Value)
+                      : document.CreateAttribute(nameValue.Key, nameValue.Value);
 
               element.SetAttributeNode(attribute);
             }
@@ -481,14 +1251,14 @@ namespace Newtonsoft.Json.Converters
       }
     }
 
-    private XmlElement CreateElement(string elementName, XmlDocument document, string elementPrefix, XmlNamespaceManager manager)
+    private IXmlElement CreateElement(string elementName, IXmlDocument document, string elementPrefix, XmlNamespaceManager manager)
     {
       return (!string.IsNullOrEmpty(elementPrefix))
                ? document.CreateElement(elementName, manager.LookupNamespace(elementPrefix))
                : document.CreateElement(elementName);
     }
 
-    private void DeserializeNode(JsonReader reader, XmlDocument document, XmlNamespaceManager manager, XmlNode currentNode)
+    private void DeserializeNode(JsonReader reader, IXmlDocument document, XmlNamespaceManager manager, IXmlNode currentNode)
     {
       do
       {
@@ -518,7 +1288,7 @@ namespace Newtonsoft.Json.Converters
 
             while (reader.Read() && reader.TokenType != JsonToken.EndConstructor)
             {
-              DeserializeValue(reader, document, manager, "-" + constructorName, currentNode);
+              DeserializeValue(reader, document, manager, constructorName, currentNode);
             }
             break;
           case JsonToken.Comment:
@@ -559,19 +1329,9 @@ namespace Newtonsoft.Json.Converters
       return false;
     }
 
-    private string GetPrefix(string qualifiedName)
+    private IEnumerable<IXmlNode> ValueAttributes(IEnumerable<IXmlNode> c)
     {
-      int colonPosition = qualifiedName.IndexOf(':');
-
-      if ((colonPosition == -1 || colonPosition == 0) || (qualifiedName.Length - 1) == colonPosition)
-        return string.Empty;
-      else
-        return qualifiedName.Substring(0, colonPosition);
-    }
-
-    private IEnumerable<XmlAttribute> ValueAttributes(XmlAttributeCollection c)
-    {
-      return c.OfType<XmlAttribute>().Where(a => a.NamespaceURI != JsonNamespaceUri);
+      return c.Where(a => a.NamespaceURI != JsonNamespaceUri);
     }
     #endregion
 
@@ -584,7 +1344,14 @@ namespace Newtonsoft.Json.Converters
     /// </returns>
     public override bool CanConvert(Type valueType)
     {
-      return typeof(XmlNode).IsAssignableFrom(valueType);
+      if (typeof(XmlNode).IsAssignableFrom(valueType))
+        return true;
+#if !NET20
+      if (typeof(XObject).IsAssignableFrom(valueType))
+        return true;
+#endif
+
+      return false;
     }
   }
 }

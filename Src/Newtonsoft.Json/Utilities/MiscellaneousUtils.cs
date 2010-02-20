@@ -98,5 +98,39 @@ namespace Newtonsoft.Json.Utilities
 
       return true;
     }
+
+    public static string GetPrefix(string qualifiedName)
+    {
+      string prefix;
+      string localName;
+      GetQualifiedNameParts(qualifiedName, out prefix, out localName);
+
+      return prefix;
+    }
+
+    public static string GetLocalName(string qualifiedName)
+    {
+      string prefix;
+      string localName;
+      GetQualifiedNameParts(qualifiedName, out prefix, out localName);
+
+      return localName;
+    }
+
+    public static void GetQualifiedNameParts(string qualifiedName, out string prefix, out string localName)
+    {
+      int colonPosition = qualifiedName.IndexOf(':');
+
+      if ((colonPosition == -1 || colonPosition == 0) || (qualifiedName.Length - 1) == colonPosition)
+      {
+        prefix = null;
+        localName = qualifiedName;
+      }
+      else
+      {
+        prefix = qualifiedName.Substring(0, colonPosition);
+        localName = qualifiedName.Substring(colonPosition + 1);
+      }
+    }
   }
 }
