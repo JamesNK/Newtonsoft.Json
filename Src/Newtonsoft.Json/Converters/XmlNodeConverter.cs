@@ -820,7 +820,10 @@ namespace Newtonsoft.Json.Converters
       switch (node.NodeType)
       {
         case XmlNodeType.Attribute:
-          return "@" + ResolveFullName(node, manager);
+          if (node.NamespaceURI == JsonNamespaceUri)
+            return "$" + node.LocalName;
+          else
+            return "@" + ResolveFullName(node, manager);
         case XmlNodeType.CDATA:
           return CDataName;
         case XmlNodeType.Comment:
@@ -966,9 +969,13 @@ namespace Newtonsoft.Json.Converters
         case XmlNodeType.Whitespace:
         case XmlNodeType.SignificantWhitespace:
           if (node.NamespaceURI == "http://www.w3.org/2000/xmlns/" && node.Value == JsonNamespaceUri)
-            break;
-          else if (node.NamespaceURI == JsonNamespaceUri)
-            break;
+            return;
+
+          if (node.NamespaceURI == JsonNamespaceUri)
+          {
+            if (node.LocalName == "Array")
+              return;
+          }
 
           if (writePropertyName)
             writer.WritePropertyName(GetPropertyName(node, manager));
@@ -1042,18 +1049,20 @@ namespace Newtonsoft.Json.Converters
         throw new JsonSerializationException("Unexpected type when converting XML: " + objectType);
       }
 
-      if (!string.IsNullOrEmpty(DeserializeRootElementName))
-      {
-        rootNode = document.CreateElement(DeserializeRootElementName);
-        document.AppendChild(rootNode);
-      }
-
       if (reader.TokenType != JsonToken.StartObject)
         throw new JsonSerializationException("XmlNodeConverter can only convert JSON that begins with an object.");
 
-      reader.Read();
-
-      DeserializeNode(reader, document, manager, rootNode);
+      if (!string.IsNullOrEmpty(DeserializeRootElementName))
+      {
+        //rootNode = document.CreateElement(DeserializeRootElementName);
+        //document.AppendChild(rootNode);
+        ReadElement(reader, document, rootNode, DeserializeRootElementName, manager);
+      }
+      else
+      {
+        reader.Read();
+        DeserializeNode(reader, document, manager, rootNode);
+      }
 
 #if !NET20
       if (objectType == typeof(XElement))
@@ -1088,166 +1097,214 @@ namespace Newtonsoft.Json.Converters
           // processing instructions and the xml declaration start with ?
           if (!string.IsNullOrEmpty(propertyName) && propertyName[0] == '?')
           {
-            if (propertyName == DeclarationName)
-            {
-              string version = null;
-              string encoding = null;
-              string standalone = null;
-              while (reader.Read() && reader.TokenType != JsonToken.EndObject)
-              {
-                switch (reader.Value.ToString())
-                {
-                  case "@version":
-                    reader.Read();
-                    version = reader.Value.ToString();
-                    break;
-                  case "@encoding":
-                    reader.Read();
-                    encoding = reader.Value.ToString();
-                    break;
-                  case "@standalone":
-                    reader.Read();
-                    standalone = reader.Value.ToString();
-                    break;
-                  default:
-                    throw new JsonSerializationException("Unexpected property name encountered while deserializing XmlDeclaration: " + reader.Value);
-                }
-              }
-
-              IXmlNode declaration = document.CreateXmlDeclaration(version, encoding, standalone);
-              currentNode.AppendChild(declaration);
-            }
-            else
-            {
-              IXmlNode instruction = document.CreateProcessingInstruction(propertyName.Substring(1), reader.Value.ToString());
-              currentNode.AppendChild(instruction);
-            }
+            CreateInstruction(reader, document, currentNode, propertyName);
           }
           else
           {
-            // deserialize xml element
-            bool finishedAttributes = false;
-            bool finishedElement = false;
-            string elementPrefix = MiscellaneousUtils.GetPrefix(propertyName);
-
-            Dictionary<string, string> attributeNameValues = new Dictionary<string, string>();
-
             if (reader.TokenType == JsonToken.StartArray)
             {
-              IXmlElement nestedArrayElement = CreateElement(propertyName, document, elementPrefix, manager);
-
-              currentNode.AppendChild(nestedArrayElement);
-
-              while (reader.Read() && reader.TokenType != JsonToken.EndArray)
-              {
-                DeserializeValue(reader, document, manager, propertyName, nestedArrayElement);
-              }
-
+              ReadArrayElements(reader, document, propertyName, currentNode, manager);
               return;
-            }
-
-            // a string token means the element only has a single text child
-            if (reader.TokenType != JsonToken.String
-              && reader.TokenType != JsonToken.Null
-              && reader.TokenType != JsonToken.Boolean
-              && reader.TokenType != JsonToken.Integer
-              && reader.TokenType != JsonToken.Float
-              && reader.TokenType != JsonToken.Date
-              && reader.TokenType != JsonToken.StartConstructor)
-            {
-              // read properties until first non-attribute is encountered
-              while (!finishedAttributes && !finishedElement && reader.Read())
-              {
-                switch (reader.TokenType)
-                {
-                  case JsonToken.PropertyName:
-                    string attributeName = reader.Value.ToString();
-
-                    if (attributeName[0] == '@')
-                    {
-                      attributeName = attributeName.Substring(1);
-                      reader.Read();
-                      string attributeValue = reader.Value.ToString();
-                      attributeNameValues.Add(attributeName, attributeValue);
-
-                      string namespacePrefix;
-
-                      if (IsNamespaceAttribute(attributeName, out namespacePrefix))
-                      {
-                        manager.AddNamespace(namespacePrefix, attributeValue);
-                      }
-                    }
-                    else
-                    {
-                      finishedAttributes = true;
-                    }
-                    break;
-                  case JsonToken.EndObject:
-                    finishedElement = true;
-                    break;
-                  default:
-                    throw new JsonSerializationException("Unexpected JsonToken: " + reader.TokenType);
-                }
-              }
             }
 
             // have to wait until attributes have been parsed before creating element
             // attributes may contain namespace info used by the element
-            IXmlElement element = CreateElement(propertyName, document, elementPrefix, manager);
-
-            currentNode.AppendChild(element);
-
-            // add attributes to newly created element
-            foreach (KeyValuePair<string, string> nameValue in attributeNameValues)
-            {
-              string attributePrefix = MiscellaneousUtils.GetPrefix(nameValue.Key);
-
-              IXmlNode attribute = (!string.IsNullOrEmpty(attributePrefix))
-                      ? document.CreateAttribute(nameValue.Key, manager.LookupNamespace(attributePrefix), nameValue.Value)
-                      : document.CreateAttribute(nameValue.Key, nameValue.Value);
-
-              element.SetAttributeNode(attribute);
-            }
-
-            if (reader.TokenType == JsonToken.String)
-            {
-              element.AppendChild(document.CreateTextNode(reader.Value.ToString()));
-            }
-            else if (reader.TokenType == JsonToken.Integer)
-            {
-              element.AppendChild(document.CreateTextNode(XmlConvert.ToString((long)reader.Value)));
-            }
-            else if (reader.TokenType == JsonToken.Float)
-            {
-              element.AppendChild(document.CreateTextNode(XmlConvert.ToString((double)reader.Value)));
-            }
-            else if (reader.TokenType == JsonToken.Boolean)
-            {
-              element.AppendChild(document.CreateTextNode(XmlConvert.ToString((bool)reader.Value)));
-            }
-            else if (reader.TokenType == JsonToken.Date)
-            {
-              DateTime d = (DateTime)reader.Value;
-              element.AppendChild(document.CreateTextNode(XmlConvert.ToString(d, DateTimeUtils.ToSerializationMode(d.Kind))));
-            }
-            else if (reader.TokenType == JsonToken.Null)
-            {
-              // empty element. do nothing
-            }
-            else
-            {
-              // finished element will have no children to deserialize
-              if (!finishedElement)
-              {
-                manager.PushScope();
-
-                DeserializeNode(reader, document, manager, element);
-
-                manager.PopScope();
-              }
-            }
+            ReadElement(reader, document, currentNode, propertyName, manager);
           }
           break;
+      }
+    }
+
+    private void ReadElement(JsonReader reader, IXmlDocument document, IXmlNode currentNode, string propertyName, XmlNamespaceManager manager)
+    {
+      Dictionary<string, string> attributeNameValues = ReadAttributeElements(reader, manager);
+
+      string elementPrefix = MiscellaneousUtils.GetPrefix(propertyName);
+
+      IXmlElement element = CreateElement(propertyName, document, elementPrefix, manager);
+
+      currentNode.AppendChild(element);
+
+      // add attributes to newly created element
+      foreach (KeyValuePair<string, string> nameValue in attributeNameValues)
+      {
+        string attributePrefix = MiscellaneousUtils.GetPrefix(nameValue.Key);
+
+        IXmlNode attribute = (!string.IsNullOrEmpty(attributePrefix))
+                               ? document.CreateAttribute(nameValue.Key, manager.LookupNamespace(attributePrefix), nameValue.Value)
+                               : document.CreateAttribute(nameValue.Key, nameValue.Value);
+
+        element.SetAttributeNode(attribute);
+      }
+
+      if (reader.TokenType == JsonToken.String)
+      {
+        element.AppendChild(document.CreateTextNode(reader.Value.ToString()));
+      }
+      else if (reader.TokenType == JsonToken.Integer)
+      {
+        element.AppendChild(document.CreateTextNode(XmlConvert.ToString((long)reader.Value)));
+      }
+      else if (reader.TokenType == JsonToken.Float)
+      {
+        element.AppendChild(document.CreateTextNode(XmlConvert.ToString((double)reader.Value)));
+      }
+      else if (reader.TokenType == JsonToken.Boolean)
+      {
+        element.AppendChild(document.CreateTextNode(XmlConvert.ToString((bool)reader.Value)));
+      }
+      else if (reader.TokenType == JsonToken.Date)
+      {
+        DateTime d = (DateTime)reader.Value;
+        element.AppendChild(document.CreateTextNode(XmlConvert.ToString(d, DateTimeUtils.ToSerializationMode(d.Kind))));
+      }
+      else if (reader.TokenType == JsonToken.Null)
+      {
+        // empty element. do nothing
+      }
+      else
+      {
+        // finished element will have no children to deserialize
+        if (reader.TokenType != JsonToken.EndObject)
+        {
+          manager.PushScope();
+
+          DeserializeNode(reader, document, manager, element);
+
+          manager.PopScope();
+        }
+      }
+    }
+
+    private void ReadArrayElements(JsonReader reader, IXmlDocument document, string propertyName, IXmlNode currentNode, XmlNamespaceManager manager)
+    {
+      string elementPrefix = MiscellaneousUtils.GetPrefix(propertyName);
+
+      IXmlElement nestedArrayElement = CreateElement(propertyName, document, elementPrefix, manager);
+
+      currentNode.AppendChild(nestedArrayElement);
+
+      while (reader.Read() && reader.TokenType != JsonToken.EndArray)
+      {
+        DeserializeValue(reader, document, manager, propertyName, nestedArrayElement);
+      }
+    }
+
+    private Dictionary<string, string> ReadAttributeElements(JsonReader reader, XmlNamespaceManager manager)
+    {
+      Dictionary<string, string> attributeNameValues = new Dictionary<string, string>();
+      bool finishedAttributes = false;
+      bool finishedElement = false;
+
+      // a string token means the element only has a single text child
+      if (reader.TokenType != JsonToken.String
+          && reader.TokenType != JsonToken.Null
+          && reader.TokenType != JsonToken.Boolean
+          && reader.TokenType != JsonToken.Integer
+          && reader.TokenType != JsonToken.Float
+          && reader.TokenType != JsonToken.Date
+          && reader.TokenType != JsonToken.StartConstructor)
+      {
+        // read properties until first non-attribute is encountered
+        while (!finishedAttributes && !finishedElement && reader.Read())
+        {
+          switch (reader.TokenType)
+          {
+            case JsonToken.PropertyName:
+              string attributeName = reader.Value.ToString();
+              string attributeValue;
+              char firstChar = attributeName[0];
+
+              switch (firstChar)
+              {
+                case '@':
+                  attributeName = attributeName.Substring(1);
+                  reader.Read();
+                  attributeValue = reader.Value.ToString();
+                  attributeNameValues.Add(attributeName, attributeValue);
+
+                  string namespacePrefix;
+                  if (IsNamespaceAttribute(attributeName, out namespacePrefix))
+                  {
+                    manager.AddNamespace(namespacePrefix, attributeValue);
+                  }
+                  break;
+                case '$':
+                  attributeName = attributeName.Substring(1);
+                  reader.Read();
+                  attributeValue = reader.Value.ToString();
+
+                  // check that JsonNamespaceUri is in scope
+                  // if it isn't then add it to document and namespace manager
+                  string jsonPrefix = manager.LookupPrefix(JsonNamespaceUri);
+                  if (jsonPrefix == null)
+                  {
+                    // ensure that the prefix used is free
+                    int? i = null;
+                    while (manager.LookupNamespace("json" + i) != null)
+                    {
+                      i = i.GetValueOrDefault() + 1;
+                    }
+                    jsonPrefix = "json" + i;
+
+                    attributeNameValues.Add("xmlns:" + jsonPrefix, JsonNamespaceUri);
+                    manager.AddNamespace(jsonPrefix, JsonNamespaceUri);
+                  }
+
+                  attributeNameValues.Add(jsonPrefix + ":" + attributeName, attributeValue);
+                  break;
+                default:
+                  finishedAttributes = true;
+                  break;
+              }
+              break;
+            case JsonToken.EndObject:
+              finishedElement = true;
+              break;
+            default:
+              throw new JsonSerializationException("Unexpected JsonToken: " + reader.TokenType);
+          }
+        }
+      }
+
+      return attributeNameValues;
+    }
+
+    private void CreateInstruction(JsonReader reader, IXmlDocument document, IXmlNode currentNode, string propertyName)
+    {
+      if (propertyName == DeclarationName)
+      {
+        string version = null;
+        string encoding = null;
+        string standalone = null;
+        while (reader.Read() && reader.TokenType != JsonToken.EndObject)
+        {
+          switch (reader.Value.ToString())
+          {
+            case "@version":
+              reader.Read();
+              version = reader.Value.ToString();
+              break;
+            case "@encoding":
+              reader.Read();
+              encoding = reader.Value.ToString();
+              break;
+            case "@standalone":
+              reader.Read();
+              standalone = reader.Value.ToString();
+              break;
+            default:
+              throw new JsonSerializationException("Unexpected property name encountered while deserializing XmlDeclaration: " + reader.Value);
+          }
+        }
+
+        IXmlNode declaration = document.CreateXmlDeclaration(version, encoding, standalone);
+        currentNode.AppendChild(declaration);
+      }
+      else
+      {
+        IXmlNode instruction = document.CreateProcessingInstruction(propertyName.Substring(1), reader.Value.ToString());
+        currentNode.AppendChild(instruction);
       }
     }
 

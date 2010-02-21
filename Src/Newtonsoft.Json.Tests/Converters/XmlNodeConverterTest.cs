@@ -25,6 +25,7 @@
 
 #if !SILVERLIGHT
 using System;
+using Newtonsoft.Json.Tests.Serialization;
 using NUnit.Framework;
 using Newtonsoft.Json;
 using System.IO;
@@ -72,11 +73,18 @@ namespace Newtonsoft.Json.Tests.Converters
 
     private XmlNode DeserializeXmlNode(string json)
     {
+      return DeserializeXmlNode(json, null);
+    }
+
+    private XmlNode DeserializeXmlNode(string json, string deserializeRootElementName)
+    {
       JsonTextReader reader;
 
       reader = new JsonTextReader(new StringReader(json));
       reader.Read();
       XmlNodeConverter converter = new XmlNodeConverter();
+      if (deserializeRootElementName != null)
+        converter.DeserializeRootElementName = deserializeRootElementName;
 
       XmlNode node = (XmlNode)converter.ReadJson(reader, typeof (XmlDocument), new JsonSerializer());
 
@@ -847,6 +855,56 @@ namespace Newtonsoft.Json.Tests.Converters
 <url>http://www.yahoo.com</url>
 </person>
 </root>".Replace(Environment.NewLine, string.Empty), doc.InnerXml);
+    }
+
+    [Test]
+    public void SerializeDeserializeSpecialProperties()
+    {
+      PreserveReferencesHandlingTests.CircularDictionary circularDictionary = new PreserveReferencesHandlingTests.CircularDictionary();
+      circularDictionary.Add("other", new PreserveReferencesHandlingTests.CircularDictionary { { "blah", null } });
+      circularDictionary.Add("self", circularDictionary);
+
+      string json = JsonConvert.SerializeObject(circularDictionary, Formatting.Indented,
+        new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.All });
+
+      Assert.AreEqual(@"{
+  ""$id"": ""1"",
+  ""other"": {
+    ""$id"": ""2"",
+    ""blah"": null
+  },
+  ""self"": {
+    ""$ref"": ""1""
+  }
+}", json);
+
+      XmlNode node = DeserializeXmlNode(json, "root");
+      string xml = GetIndentedInnerXml(node);
+      string expected = @"<?xml version=""1.0"" encoding=""utf-16""?>
+<root xmlns:json=""http://james.newtonking.com/projects/json"" json:id=""1"">
+  <other json:id=""2"">
+    <blah />
+  </other>
+  <self json:ref=""1"" />
+</root>";
+
+      Assert.AreEqual(expected, xml);
+
+      string xmlJson = SerializeXmlNode(node);
+      string expectedXmlJson = @"{
+  ""root"": {
+    ""$id"": ""1"",
+    ""other"": {
+      ""$id"": ""2"",
+      ""blah"": null
+    },
+    ""self"": {
+      ""$ref"": ""1""
+    }
+  }
+}";
+
+      Assert.AreEqual(expectedXmlJson, xmlJson);
     }
   }
 }

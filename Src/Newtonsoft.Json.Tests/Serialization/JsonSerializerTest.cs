@@ -2939,5 +2939,82 @@ keyword such as type of business.""
       Assert.AreEqual(testObject.Document.InnerXml, newTestObject.Document.InnerXml);
     }
 #endif
+
+    [Test]
+    public void FullClientMapSerialization()
+    {
+      ClientMap source = new ClientMap()
+      {
+        position = new Pos() { X = 100, Y = 200 },
+        center = new PosDouble() { X = 251.6, Y = 361.3 }
+      };
+
+      string json = JsonConvert.SerializeObject(source, new PosConverter(), new PosDoubleConverter());
+      Assert.AreEqual("{\"position\":new Pos(100,200),\"center\":new PosD(251.6,361.3)}", json);
+    }
+
+    public class ClientMap
+    {
+      public Pos position { get; set; }
+      public PosDouble center { get; set; }
+    }
+
+    public class Pos
+    {
+      public int X { get; set; }
+      public int Y { get; set; }
+    }
+
+    public class PosDouble
+    {
+      public double X { get; set; }
+      public double Y { get; set; }
+    }
+
+    public class PosConverter : JsonConverter
+    {
+      public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+      {
+        Pos p = (Pos)value;
+
+        if (p != null)
+          writer.WriteRawValue(String.Format("new Pos({0},{1})", p.X, p.Y));
+        else
+          writer.WriteNull();
+      }
+
+      public override object ReadJson(JsonReader reader, Type objectType, JsonSerializer serializer)
+      {
+        throw new NotImplementedException();
+      }
+
+      public override bool CanConvert(Type objectType)
+      {
+        return objectType.IsAssignableFrom(typeof(Pos));
+      }
+    }
+
+    public class PosDoubleConverter : JsonConverter
+    {
+      public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+      {
+        PosDouble p = (PosDouble)value;
+
+        if (p != null)
+          writer.WriteRawValue(String.Format("new PosD({0},{1})", p.X, p.Y));
+        else
+          writer.WriteNull();
+      }
+
+      public override object ReadJson(JsonReader reader, Type objectType, JsonSerializer serializer)
+      {
+        throw new NotImplementedException();
+      }
+
+      public override bool CanConvert(Type objectType)
+      {
+        return objectType.IsAssignableFrom(typeof(PosDouble));
+      }
+    }
   }
 }
