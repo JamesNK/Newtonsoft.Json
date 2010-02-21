@@ -200,13 +200,7 @@ namespace Newtonsoft.Json
     {
       base.WritePropertyName(name);
 
-      if (_quoteName)
-        _writer.Write(_quoteChar);
-
-      _writer.Write(name);
-
-      if (_quoteName)
-        _writer.Write(_quoteChar);
+      JavaScriptUtils.WriteEscapedJavaScriptString(_writer, name, _quoteChar, _quoteName);
 
       _writer.Write(':');
     }

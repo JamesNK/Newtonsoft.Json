@@ -3016,5 +3016,21 @@ keyword such as type of business.""
         return objectType.IsAssignableFrom(typeof(PosDouble));
       }
     }
+
+    [Test]
+    public void TestEscapeDictionaryStrings()
+    {
+      const string s = @"host\user";
+      string serialized = JsonConvert.SerializeObject(s);
+      Assert.AreEqual(@"""host\\user""", serialized);
+
+      Dictionary<int, object> d1 = new Dictionary<int, object>();
+      d1.Add(5, s);
+      Assert.AreEqual(@"{""5"":""host\\user""}", JsonConvert.SerializeObject(d1));
+
+      Dictionary<string, object> d2 = new Dictionary<string, object>();
+      d2.Add(s, 5);
+      Assert.AreEqual(@"{""host\\user"":5}", JsonConvert.SerializeObject(d2));
+    }
   }
 }
