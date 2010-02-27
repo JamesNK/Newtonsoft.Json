@@ -37,12 +37,42 @@ using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Serialization
 {
+  internal struct ResolverContractKey : IEquatable<ResolverContractKey>
+  {
+    private readonly Type _resolverType;
+    private readonly Type _contractType;
+
+    public ResolverContractKey(Type resolverType, Type contractType)
+    {
+      _resolverType = resolverType;
+      _contractType = contractType;
+    }
+
+    public override int GetHashCode()
+    {
+      return _resolverType.GetHashCode() ^ _contractType.GetHashCode();
+    }
+
+    public override bool Equals(object obj)
+    {
+      if (!(obj is ResolverContractKey))
+        return false;
+
+      return Equals((ResolverContractKey) obj);
+    }
+
+    public bool Equals(ResolverContractKey other)
+    {
+      return (_resolverType == other._resolverType && _contractType == other._contractType);
+    }
+  }
+
   /// <summary>
   /// Used by <see cref="JsonSerializer"/> to resolves a <see cref="JsonContract"/> for a given <see cref="Type"/>.
   /// </summary>
   public class DefaultContractResolver : IContractResolver
   {
-    internal static readonly IContractResolver Instance = new DefaultContractResolver();
+    internal static readonly IContractResolver Instance = new DefaultContractResolver(true);
     private static readonly IList<JsonConverter> BuiltInConverters = new List<JsonConverter>
       {
 #if !PocketPC && !SILVERLIGHT && !NET20
@@ -56,7 +86,11 @@ namespace Newtonsoft.Json.Serialization
 #endif
       };
 
-    private readonly ThreadSafeStore<Type, JsonContract> _typeContractCache;
+    private static Dictionary<ResolverContractKey, JsonContract> _sharedContractCache;
+    private static readonly object _typeContractCacheLock = new object();
+
+    private Dictionary<ResolverContractKey, JsonContract> _instanceContractCache;
+    private readonly bool _sharedCache;
 
     /// <summary>
     /// Gets or sets the default members search flags.
@@ -68,10 +102,37 @@ namespace Newtonsoft.Json.Serialization
     /// Initializes a new instance of the <see cref="DefaultContractResolver"/> class.
     /// </summary>
     public DefaultContractResolver()
+      : this(false)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DefaultContractResolver"/> class.
+    /// </summary>
+    /// <param name="shareCache">
+    /// if set to <c>true</c> the <see cref="IContractResolver"/> will use a cached shared with other resolvers of the same type.
+    /// This will improve significantly performance for unshared resolvers but cause unexpected behavior if instances of the resolver could produce different results.
+    /// </param>
+    public DefaultContractResolver(bool shareCache)
     {
       DefaultMembersSearchFlags = BindingFlags.Public | BindingFlags.Instance;
+      _sharedCache = shareCache;
+    }
 
-      _typeContractCache = new ThreadSafeStore<Type, JsonContract>(CreateContract);
+    private Dictionary<ResolverContractKey, JsonContract> GetCache()
+    {
+      if (_sharedCache)
+        return _sharedContractCache;
+      else
+        return _instanceContractCache;
+    }
+
+    private void UpdateCache(Dictionary<ResolverContractKey, JsonContract> cache)
+    {
+      if (_sharedCache)
+        _sharedContractCache = cache;
+      else
+        _instanceContractCache = cache;
     }
 
     /// <summary>
@@ -84,7 +145,28 @@ namespace Newtonsoft.Json.Serialization
       if (type == null)
         throw new ArgumentNullException("type");
 
-      return _typeContractCache.Get(type);
+      JsonContract contract;
+      ResolverContractKey key = new ResolverContractKey(GetType(), type);
+      Dictionary<ResolverContractKey, JsonContract> cache = GetCache();
+      if (cache == null || !cache.TryGetValue(key, out contract))
+      {
+        contract = CreateContract(type);
+
+        // avoid the possibility of modifying the cache dictionary while another thread is accessing it
+        lock (_typeContractCacheLock)
+        {
+          cache = GetCache();
+          Dictionary<ResolverContractKey, JsonContract> updatedCache =
+            (cache != null)
+              ? new Dictionary<ResolverContractKey, JsonContract>(cache)
+              : new Dictionary<ResolverContractKey, JsonContract>();
+          updatedCache[key] = contract;
+
+          UpdateCache(updatedCache);
+        }
+      }
+
+      return contract;
     }
 
     /// <summary>

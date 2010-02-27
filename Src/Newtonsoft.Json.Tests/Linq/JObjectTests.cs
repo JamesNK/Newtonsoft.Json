@@ -1449,5 +1449,35 @@ Parameter name: arrayIndex")]
   ""title"": null
 }", output);
     }
+
+    [Test]
+    [ExpectedException(typeof(ArgumentException), ExpectedMessage = "Can not convert Object to String.")]
+    public void InvalidValueCastExceptionMessage()
+    {
+      string json = @"{
+  ""responseData"": {}, 
+  ""responseDetails"": null, 
+  ""responseStatus"": 200
+}";
+
+      JObject o = JObject.Parse(json);
+
+      string name = (string)o["responseData"];
+    }
+
+    [Test]
+    [ExpectedException(typeof(ArgumentException), ExpectedMessage = "Can not convert Object to String.")]
+    public void InvalidPropertyValueCastExceptionMessage()
+    {
+      string json = @"{
+  ""responseData"": {}, 
+  ""responseDetails"": null, 
+  ""responseStatus"": 200
+}";
+
+      JObject o = JObject.Parse(json);
+
+      string name = (string)o.Property("responseData");
+    }
   }
 }

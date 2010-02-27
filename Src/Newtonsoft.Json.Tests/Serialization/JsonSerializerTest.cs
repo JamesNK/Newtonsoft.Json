@@ -689,11 +689,11 @@ keyword such as type of business.""
     [Test]
     public void TimeSpanTest()
     {
-      TimeSpan ts = new TimeSpan(200, 23, 59, 1);
+      TimeSpan ts = new TimeSpan(00, 23, 59, 1);
 
       string json = JsonConvert.SerializeObject(new ClassWithTimeSpan { TimeSpanField = ts }, Formatting.Indented);
       Assert.AreEqual(@"{
-  ""TimeSpanField"": ""200.23:59:01""
+  ""TimeSpanField"": ""23:59:01""
 }", json);
 
       ClassWithTimeSpan c = JsonConvert.DeserializeObject<ClassWithTimeSpan>(json);
@@ -3031,6 +3031,30 @@ keyword such as type of business.""
       Dictionary<string, object> d2 = new Dictionary<string, object>();
       d2.Add(s, 5);
       Assert.AreEqual(@"{""host\\user"":5}", JsonConvert.SerializeObject(d2));
+    }
+
+    public class GenericListTestClass
+    {
+      public List<string> GenericList { get; set; }
+
+      public GenericListTestClass()
+      {
+        GenericList = new List<string>();
+      }
+    }
+
+    [Test]
+    public void DeserializeExistingGenericList()
+    {
+      GenericListTestClass c = new GenericListTestClass();
+      c.GenericList.Add("1");
+      c.GenericList.Add("2");
+
+      string json = JsonConvert.SerializeObject(c, Formatting.Indented);
+
+      GenericListTestClass newValue = JsonConvert.DeserializeObject<GenericListTestClass>(json);
+      Assert.AreEqual(2, newValue.GenericList.Count);
+      Assert.AreEqual(typeof(List<string>), newValue.GenericList.GetType());
     }
   }
 }

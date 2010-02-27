@@ -33,6 +33,14 @@ namespace Newtonsoft.Json.Serialization
   public class CamelCasePropertyNamesContractResolver : DefaultContractResolver
   {
     /// <summary>
+    /// Initializes a new instance of the <see cref="CamelCasePropertyNamesContractResolver"/> class.
+    /// </summary>
+    public CamelCasePropertyNamesContractResolver()
+      : base(true)
+    {
+    }
+
+    /// <summary>
     /// Resolves the name of the property.
     /// </summary>
     /// <param name="propertyName">Name of the property.</param>

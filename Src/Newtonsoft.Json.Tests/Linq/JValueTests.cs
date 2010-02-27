@@ -178,5 +178,13 @@ namespace Newtonsoft.Json.Tests.Linq
       JToken t = new JValue(5L);
       t[0] = new JValue(3);
     }
+
+    [Test]
+    [ExpectedException(typeof(ArgumentException), ExpectedMessage = "Can not convert Null to Int32.")]
+    public void CastNullValueToNonNullable()
+    {
+      JValue v = new JValue((object)null);
+      int i = (int) v;
+    }
   }
 }

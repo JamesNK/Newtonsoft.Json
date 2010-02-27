@@ -11,6 +11,7 @@ namespace Newtonsoft.Json.Tests.Serialization
   {
     private readonly char _startingWithChar;
     public DynamicContractResolver(char startingWithChar)
+      : base(false)
     {
       _startingWithChar = startingWithChar;
     }

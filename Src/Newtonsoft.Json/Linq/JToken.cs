@@ -370,6 +370,16 @@ namespace Newtonsoft.Json.Linq
       return v;
     }
 
+    private static string GetType(JToken token)
+    {
+      ValidationUtils.ArgumentNotNull(token, "token");
+
+      if (token is JProperty)
+        token = ((JProperty)token).Value;
+
+      return token.Type.ToString();
+    }
+
     private static bool IsNullable(JToken o)
     {
       return (o.Type == JTokenType.Undefined || o.Type == JTokenType.Null);
@@ -405,11 +415,6 @@ namespace Newtonsoft.Json.Linq
       return (o.Type == JTokenType.Bytes || IsNullable(o));
     }
 
-    private static string GetType(JToken t)
-    {
-      return (t != null) ? t.Type.ToString() : "{null}";
-    }
-
     #region Cast from operators
     /// <summary>
     /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="System.Boolean"/>.
@@ -420,7 +425,7 @@ namespace Newtonsoft.Json.Linq
     {
       JValue v = EnsureValue(value);
       if (v == null || !ValidateBoolean(v, false))
-        throw new ArgumentException("Can not convert {0} to Boolean.".FormatWith(CultureInfo.InvariantCulture, GetType(v)));
+        throw new ArgumentException("Can not convert {0} to Boolean.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       return (bool)v.Value;
     }
@@ -435,7 +440,7 @@ namespace Newtonsoft.Json.Linq
     {
       JValue v = EnsureValue(value);
       if (v == null || !ValidateDate(v, false))
-        throw new ArgumentException("Can not convert {0} to DateTimeOffset.".FormatWith(CultureInfo.InvariantCulture, GetType(v)));
+        throw new ArgumentException("Can not convert {0} to DateTimeOffset.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       return (DateTimeOffset)v.Value;
     }
@@ -453,7 +458,7 @@ namespace Newtonsoft.Json.Linq
 
       JValue v = EnsureValue(value);
       if (v == null || !ValidateBoolean(v, true))
-        throw new ArgumentException("Can not convert {0} to Boolean.".FormatWith(CultureInfo.InvariantCulture, GetType(v)));
+        throw new ArgumentException("Can not convert {0} to Boolean.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       return (bool?)v.Value;
     }
@@ -467,7 +472,7 @@ namespace Newtonsoft.Json.Linq
     {
       JValue v = EnsureValue(value);
       if (v == null || !ValidateInteger(v, false))
-        throw new ArgumentException("Can not convert {0} to Int64.".FormatWith(CultureInfo.InvariantCulture, GetType(v)));
+        throw new ArgumentException("Can not convert {0} to Int64.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       return (long)v.Value;
     }
@@ -484,7 +489,7 @@ namespace Newtonsoft.Json.Linq
 
       JValue v = EnsureValue(value);
       if (v == null || !ValidateDate(v, true))
-        throw new ArgumentException("Can not convert {0} to DateTime.".FormatWith(CultureInfo.InvariantCulture, GetType(v)));
+        throw new ArgumentException("Can not convert {0} to DateTime.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       return (DateTime?)v.Value;
     }
@@ -502,7 +507,7 @@ namespace Newtonsoft.Json.Linq
 
       JValue v = EnsureValue(value);
       if (v == null || !ValidateDate(v, true))
-        throw new ArgumentException("Can not convert {0} to DateTimeOffset.".FormatWith(CultureInfo.InvariantCulture, GetType(v)));
+        throw new ArgumentException("Can not convert {0} to DateTimeOffset.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       return (DateTimeOffset?)v.Value;
     }
@@ -520,7 +525,7 @@ namespace Newtonsoft.Json.Linq
 
       JValue v = EnsureValue(value);
       if (v == null || !ValidateFloat(v, true))
-        throw new ArgumentException("Can not convert {0} to Decimal.".FormatWith(CultureInfo.InvariantCulture, GetType(v)));
+        throw new ArgumentException("Can not convert {0} to Decimal.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       return (v.Value != null) ? (decimal?)Convert.ToDecimal(v.Value, CultureInfo.InvariantCulture) : null;
     }
@@ -537,7 +542,7 @@ namespace Newtonsoft.Json.Linq
 
       JValue v = EnsureValue(value);
       if (v == null || !ValidateFloat(v, true))
-        throw new ArgumentException("Can not convert {0} to Double.".FormatWith(CultureInfo.InvariantCulture, GetType(v)));
+        throw new ArgumentException("Can not convert {0} to Double.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       return (double?)v.Value;
     }
@@ -551,7 +556,7 @@ namespace Newtonsoft.Json.Linq
     {
       JValue v = EnsureValue(value);
       if (v == null || !ValidateInteger(v, false))
-        throw new ArgumentException("Can not convert {0} to Int32.".FormatWith(CultureInfo.InvariantCulture, GetType(v)));
+        throw new ArgumentException("Can not convert {0} to Int32.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       return Convert.ToInt32(v.Value, CultureInfo.InvariantCulture);
     }
@@ -568,7 +573,7 @@ namespace Newtonsoft.Json.Linq
 
       JValue v = EnsureValue(value);
       if (v == null || !ValidateInteger(v, true))
-        throw new ArgumentException("Can not convert {0} to Int32.".FormatWith(CultureInfo.InvariantCulture, GetType(v)));
+        throw new ArgumentException("Can not convert {0} to Int32.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       return (v.Value != null) ? (int?)Convert.ToInt32(v.Value, CultureInfo.InvariantCulture) : null;
     }
@@ -582,7 +587,7 @@ namespace Newtonsoft.Json.Linq
     {
       JValue v = EnsureValue(value);
       if (v == null || !ValidateDate(v, false))
-        throw new ArgumentException("Can not convert {0} to DateTime.".FormatWith(CultureInfo.InvariantCulture, GetType(v)));
+        throw new ArgumentException("Can not convert {0} to DateTime.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       return (DateTime)v.Value;
     }
@@ -599,7 +604,7 @@ namespace Newtonsoft.Json.Linq
 
       JValue v = EnsureValue(value);
       if (v == null || !ValidateInteger(v, true))
-        throw new ArgumentException("Can not convert {0} to Int64.".FormatWith(CultureInfo.InvariantCulture, GetType(v)));
+        throw new ArgumentException("Can not convert {0} to Int64.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       return (long?)v.Value;
     }
@@ -616,7 +621,7 @@ namespace Newtonsoft.Json.Linq
 
       JValue v = EnsureValue(value);
       if (v == null || !ValidateFloat(v, true))
-        throw new ArgumentException("Can not convert {0} to Single.".FormatWith(CultureInfo.InvariantCulture, GetType(v)));
+        throw new ArgumentException("Can not convert {0} to Single.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       return (v.Value != null) ? (float?)Convert.ToSingle(v.Value, CultureInfo.InvariantCulture) : null;
     }
@@ -630,7 +635,7 @@ namespace Newtonsoft.Json.Linq
     {
       JValue v = EnsureValue(value);
       if (v == null || !ValidateFloat(v, false))
-        throw new ArgumentException("Can not convert {0} to Decimal.".FormatWith(CultureInfo.InvariantCulture, GetType(v)));
+        throw new ArgumentException("Can not convert {0} to Decimal.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       return Convert.ToDecimal(v.Value, CultureInfo.InvariantCulture);
     }
@@ -647,7 +652,7 @@ namespace Newtonsoft.Json.Linq
 
       JValue v = EnsureValue(value);
       if (v == null || !ValidateInteger(v, true))
-        throw new ArgumentException("Can not convert {0} to UInt32.".FormatWith(CultureInfo.InvariantCulture, GetType(v)));
+        throw new ArgumentException("Can not convert {0} to UInt32.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       return (uint?)v.Value;
     }
@@ -664,7 +669,7 @@ namespace Newtonsoft.Json.Linq
 
       JValue v = EnsureValue(value);
       if (v == null || !ValidateInteger(v, true))
-        throw new ArgumentException("Can not convert {0} to UInt64.".FormatWith(CultureInfo.InvariantCulture, GetType(v)));
+        throw new ArgumentException("Can not convert {0} to UInt64.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       return (ulong?)v.Value;
     }
@@ -678,7 +683,7 @@ namespace Newtonsoft.Json.Linq
     {
       JValue v = EnsureValue(value);
       if (v == null || !ValidateFloat(v, false))
-        throw new ArgumentException("Can not convert {0} to Double.".FormatWith(CultureInfo.InvariantCulture, GetType(v)));
+        throw new ArgumentException("Can not convert {0} to Double.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       return (double)v.Value;
     }
@@ -692,7 +697,7 @@ namespace Newtonsoft.Json.Linq
     {
       JValue v = EnsureValue(value);
       if (v == null || !ValidateFloat(v, false))
-        throw new ArgumentException("Can not convert {0} to Single.".FormatWith(CultureInfo.InvariantCulture, GetType(v)));
+        throw new ArgumentException("Can not convert {0} to Single.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       return Convert.ToSingle(v.Value, CultureInfo.InvariantCulture);
     }
@@ -709,7 +714,7 @@ namespace Newtonsoft.Json.Linq
 
       JValue v = EnsureValue(value);
       if (v == null || !ValidateString(v))
-        throw new ArgumentException("Can not convert {0} to String.".FormatWith(CultureInfo.InvariantCulture, GetType(v)));
+        throw new ArgumentException("Can not convert {0} to String.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       return (string)v.Value;
     }
@@ -723,7 +728,7 @@ namespace Newtonsoft.Json.Linq
     {
       JValue v = EnsureValue(value);
       if (v == null || !ValidateInteger(v, false))
-        throw new ArgumentException("Can not convert {0} to UInt32.".FormatWith(CultureInfo.InvariantCulture, GetType(v)));
+        throw new ArgumentException("Can not convert {0} to UInt32.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       return Convert.ToUInt32(v.Value, CultureInfo.InvariantCulture);
     }
@@ -737,7 +742,7 @@ namespace Newtonsoft.Json.Linq
     {
       JValue v = EnsureValue(value);
       if (v == null || !ValidateInteger(v, false))
-        throw new ArgumentException("Can not convert {0} to UInt64.".FormatWith(CultureInfo.InvariantCulture, GetType(v)));
+        throw new ArgumentException("Can not convert {0} to UInt64.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       return Convert.ToUInt64(v.Value, CultureInfo.InvariantCulture);
     }
@@ -751,7 +756,7 @@ namespace Newtonsoft.Json.Linq
     {
       JValue v = EnsureValue(value);
       if (v == null || !ValidateBytes(v))
-        throw new ArgumentException("Can not convert {0} to byte array.".FormatWith(CultureInfo.InvariantCulture, GetType(v)));
+        throw new ArgumentException("Can not convert {0} to byte array.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       return (byte[])v.Value;
     }
