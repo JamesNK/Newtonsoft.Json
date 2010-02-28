@@ -38,41 +38,33 @@ task Build -depends Clean {
   foreach ($build in $builds)
   {
     $name = $build.Name
+    $finalDir = $build.FinalDir
+
     Write-Host -ForegroundColor Green "Building " $name
     Write-Host
-    exec { msbuild "/t:Clean;Rebuild" /p:Configuration=Release /p:AssemblyOriginatorKeyFile=$signKeyPath "/p:SignAssembly=$signAssemblies" (GetConstants $build.Constants $signAssemblies) ".\Src\Newtonsoft.Json\$name.csproj" } "Error building $name"
+    exec { msbuild "/t:Clean;Rebuild" /p:Configuration=Release /p:OutputPath=bin\Release\$finalDir\ /p:AssemblyOriginatorKeyFile=$signKeyPath "/p:SignAssembly=$signAssemblies" (GetConstants $build.Constants $signAssemblies) ".\Src\$name.sln" } "Error building $name"
   }
 }
 
-task Package -depends Build {
-  $compileOutputDir = "$sourceDir\Newtonsoft.Json\bin\Release"
-  
-  Copy-Item -Path $compileOutputDir -Destination $workingDir -recurse
+task Merge -depends Build {
+  $binaryDir = "$sourceDir\Newtonsoft.Json\bin\Release\DotNet20"
+  MergeAssembly "$binaryDir\Newtonsoft.Json.Net20.dll" $signKeyPath "$binaryDir\LinqBridge.dll"
+  del $binaryDir\LinqBridge.dll
 
-  New-Item -Path $workingDir\Merge -ItemType Directory
-  
-  $ilMergeKeyFile = switch($signAssemblies) { $true { "/keyfile:$signKeyPath" } default { "" } }
-  
-  exec { .\Tools\ILMerge\ilmerge.exe "/internalize" $ilMergeKeyFile "/out:$workingDir\Merge\Newtonsoft.Json.Net20.dll" "$workingDir\Release\Newtonsoft.Json.Net20.dll" "$workingDir\Release\LinqBridge.dll" } "Error executing ILMerge"
+  $binaryDir = "$sourceDir\Newtonsoft.Json.Tests\bin\Release\DotNet20"
+  MergeAssembly "$binaryDir\Newtonsoft.Json.Net20.dll" $signKeyPath "$binaryDir\LinqBridge.dll"
+  MergeAssembly "$binaryDir\Newtonsoft.Json.Tests.Net20.dll" $signKeyPath "$binaryDir\LinqBridge.dll"
+  del $binaryDir\LinqBridge.dll
+}
 
-  del $workingDir\Release\Newtonsoft.Json.Net20.dll
-  del $workingDir\Release\Newtonsoft.Json.Net20.pdb
-  del $workingDir\Release\LinqBridge.dll
-
-  Copy-Item -Path $workingDir\Merge\Newtonsoft.Json.Net20.dll -Destination $workingDir\Release\
-  Copy-Item -Path $workingDir\Merge\Newtonsoft.Json.Net20.pdb -Destination $workingDir\Release\
-
+task Package -depends Merge {
   foreach ($build in $builds)
   {
-    $name = $build.Name
+    $name = $build.TestsName
     $finalDir = $build.FinalDir
     
-    New-Item -Path $workingDir\Package\Bin\$finalDir -ItemType Directory    
-    dir $workingDir\Release | where { $_.Name -like "*$name*" -and $_.PSIsContainer -ne $true } | move -Destination $workingDir\Package\Bin\$finalDir\$_
+    Copy-Item -Path "$sourceDir\Newtonsoft.Json\bin\Release\$finalDir" -Destination $workingDir\Package\Bin\$finalDir -recurse
   }
-  
-  del $workingDir\Merge -Recurse
-  del $workingDir\Release -Recurse
   
   if ($buildDocumentation)
   {
@@ -99,12 +91,37 @@ task Test -depends Deploy {
   foreach ($build in $builds)
   {
     $name = $build.TestsName
-    Write-Host -ForegroundColor Green "Building " $name
+    $finalDir = $build.FinalDir
+    
+    Write-Host -ForegroundColor Green "Copying test assembly $name to deployed directory"
     Write-Host
-    exec { msbuild "/t:Clean;Rebuild" /p:Configuration=Release /p:AssemblyOriginatorKeyFile=$signKeyPath "/p:SignAssembly=$signAssemblies" (GetConstants $build.Constants $signAssemblies) ".\Src\Newtonsoft.Json.Tests\$name.csproj" } "Error executing MSBUILD"
+    robocopy ".\Src\Newtonsoft.Json.Tests\bin\Release\$finalDir" $workingDir\Deployed\Bin\$finalDir /NP /XO /XF LinqBridge.dll
+    
+    Copy-Item -Path ".\Src\Newtonsoft.Json.Tests\bin\Release\$finalDir\$name.dll" -Destination $workingDir\Deployed\Bin\$finalDir\
+
     Write-Host -ForegroundColor Green "Running tests " $name
     Write-Host
-    exec { .\Tools\NUnit\nunit-console.exe ".\Src\Newtonsoft.Json.Tests\bin\Release\$name.dll" /xml:$workingDir\$name.xml } "Error running $name tests"
+    exec { .\Tools\NUnit\nunit-console.exe "$workingDir\Deployed\Bin\$finalDir\$name.dll" /xml:$workingDir\$name.xml } "Error running $name tests"
+  }
+}
+
+function MergeAssembly($dllPrimaryAssembly, $signKey, [string[]]$mergedAssemlies)
+{
+  $mergeAssemblyPaths = [String]::Join(" ", $mergedAssemlies)
+  
+  $primary = Get-Item $dllPrimaryAssembly
+  $mergedAssemblyName = $primary.Name
+  $temporaryDir = $primary.DirectoryName + "\" + [Guid]::NewGuid().ToString()
+  New-Item $temporaryDir -ItemType Directory
+  
+  try
+  {
+    exec { .\Tools\ILMerge\ilmerge.exe "/internalize" $ilMergeKeyFile "/out:$temporaryDir\$mergedAssemblyName" $dllPrimaryAssembly $mergeAssemblyPaths } "Error executing ILMerge"
+    Copy-Item -Path $temporaryDir\$mergedAssemblyName -Destination $dllPrimaryAssembly -Force
+  }
+  finally
+  {
+    Remove-Item $temporaryDir -Recurse -Force
   }
 }
 

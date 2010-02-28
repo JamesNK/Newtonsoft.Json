@@ -94,7 +94,7 @@ namespace Newtonsoft.Json.Tests
     public void SerializeSizeData()
     {
       Image image = new Image();
-      image.Data = System.IO.File.ReadAllBytes(@"..\..\bunny_pancake.jpg");
+      image.Data = System.IO.File.ReadAllBytes(@"bunny_pancake.jpg");
       image.FileName = "bunny_pancake.jpg";
       image.Author = "Hironori Akutagawa";
       image.Caption = "I have no idea what you are talking about so here's a bunny with a pancake on its head";

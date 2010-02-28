@@ -270,6 +270,11 @@
       <DependentUpon>LinqToSqlClasses.dbml</DependentUpon>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="bunny_pancake.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
