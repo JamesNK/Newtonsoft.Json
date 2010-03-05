@@ -1,0 +1,15 @@
+Versions:
+
+Json.NET comes in different versions for the various .NET frameworks.
+
+-DotNet:
+  .NET latest (3.5 SP1)
+
+-DotNet20:
+  .NET 2.0
+
+-Silverlight:
+  Silverlight 3.0
+
+-Compact:
+  Compact Framework 3.5

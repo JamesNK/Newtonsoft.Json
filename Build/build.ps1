@@ -8,6 +8,7 @@
   $buildDir = "$baseDir\Build"
   $sourceDir = "$baseDir\Src"
   $toolsDir = "$baseDir\Tools"
+  $docDir = "$baseDir\Doc"
   $releaseDir = "$baseDir\Release"
   $workingDir = "$baseDir\Working"
   $builds = @(
@@ -68,12 +69,14 @@ task Package -depends Merge {
   
   if ($buildDocumentation)
   {
-    exec { msbuild "/t:Clean;Rebuild" /p:Configuration=Release .\Doc\doc.shfbproj } "Error building documentation. Check that you have Sandcastle, Sandcastle Help File Builder and HTML Help Workshop installed."
+    exec { msbuild "/t:Clean;Rebuild" /p:Configuration=Release $docDir\doc.shfbproj } "Error building documentation. Check that you have Sandcastle, Sandcastle Help File Builder and HTML Help Workshop installed."
     
-    New-Item -Path $workingDir\Package\Documentation -ItemType Directory
-    move -Path $workingDir\Documentation\Documentation.chm -Destination $workingDir\Package\Documentation\Documentation.chm
+    move -Path $workingDir\Documentation\Documentation.chm -Destination $workingDir\Package\Documentation.chm
     move -Path $workingDir\Documentation\LastBuild.log -Destination $workingDir\Documentation.log
   }
+  
+  Copy-Item -Path $docDir\readme.txt -Destination $workingDir\Package\
+  Copy-Item -Path $docDir\versions.txt -Destination $workingDir\Package\Bin\
 
   robocopy $sourceDir $workingDir\Package\Source\Src /MIR /NP /XD .svn bin obj /XF *.suo *.user
   robocopy $buildDir $workingDir\Package\Source\Build /MIR /NP /XD .svn
@@ -116,7 +119,7 @@ function MergeAssembly($dllPrimaryAssembly, $signKey, [string[]]$mergedAssemlies
   
   try
   {
-    exec { .\Tools\ILMerge\ilmerge.exe "/internalize" "/closed" "/log" $ilMergeKeyFile "/out:$temporaryDir\$mergedAssemblyName" $dllPrimaryAssembly $mergeAssemblyPaths } "Error executing ILMerge"
+    exec { .\Tools\ILMerge\ilmerge.exe "/internalize" "/closed" "/log:$workingDir\$mergedAssemblyName.MergeLog.txt" $ilMergeKeyFile "/out:$temporaryDir\$mergedAssemblyName" $dllPrimaryAssembly $mergeAssemblyPaths } "Error executing ILMerge"
     Copy-Item -Path $temporaryDir\$mergedAssemblyName -Destination $dllPrimaryAssembly -Force
   }
   finally
