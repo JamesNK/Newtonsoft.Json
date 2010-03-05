@@ -244,6 +244,7 @@
     <Compile Include="TestObjects\TypeClass.cs" />
     <Compile Include="TestObjects\TypedSubHashtable.cs" />
     <Compile Include="TestObjects\UserNullable.cs" />
+    <Compile Include="Utilities\LateBoundDelegateFactoryTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.csproj">

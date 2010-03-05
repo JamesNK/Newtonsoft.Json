@@ -52,8 +52,8 @@ task Merge -depends Build {
   del $binaryDir\LinqBridge.dll
 
   $binaryDir = "$sourceDir\Newtonsoft.Json.Tests\bin\Release\DotNet20"
-  MergeAssembly "$binaryDir\Newtonsoft.Json.Net20.dll" $signKeyPath "$binaryDir\LinqBridge.dll"
   MergeAssembly "$binaryDir\Newtonsoft.Json.Tests.Net20.dll" $signKeyPath "$binaryDir\LinqBridge.dll"
+  MergeAssembly "$binaryDir\Newtonsoft.Json.Net20.dll" $signKeyPath "$binaryDir\LinqBridge.dll"
   del $binaryDir\LinqBridge.dll
 }
 
@@ -116,7 +116,7 @@ function MergeAssembly($dllPrimaryAssembly, $signKey, [string[]]$mergedAssemlies
   
   try
   {
-    exec { .\Tools\ILMerge\ilmerge.exe "/internalize" $ilMergeKeyFile "/out:$temporaryDir\$mergedAssemblyName" $dllPrimaryAssembly $mergeAssemblyPaths } "Error executing ILMerge"
+    exec { .\Tools\ILMerge\ilmerge.exe "/internalize" "/closed" "/log" $ilMergeKeyFile "/out:$temporaryDir\$mergedAssemblyName" $dllPrimaryAssembly $mergeAssemblyPaths } "Error executing ILMerge"
     Copy-Item -Path $temporaryDir\$mergedAssemblyName -Destination $dllPrimaryAssembly -Force
   }
   finally
