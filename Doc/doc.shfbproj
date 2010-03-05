@@ -35,10 +35,10 @@
     <HelpTitle>Json.NET - Quick Starts &amp;amp%3b API Documentation</HelpTitle>
     <PresentationStyle>Prototype</PresentationStyle>
     <NamingMethod>MemberName</NamingMethod>
+    <DocumentationSourcePath>..\Src\Newtonsoft.Json\bin\Release</DocumentationSourcePath>
     <DocumentationSources>
-      <DocumentationSource sourceFile="..\Src\Newtonsoft.Json\bin\Release\Newtonsoft.Json.dll" />
-      <DocumentationSource sourceFile="..\Src\Newtonsoft.Json\bin\Release\Newtonsoft.Json.xml" />
-    </DocumentationSources>
+      <DocumentationSource sourceFile="$(DocumentationSourcePath)\Newtonsoft.Json.dll" />
+<DocumentationSource sourceFile="$(DocumentationSourcePath)\Newtonsoft.Json.xml" /></DocumentationSources>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="(global)" isDocumented="False" />
       <NamespaceSummaryItem name="Newtonsoft.Json" isDocumented="True">The &lt;b&gt;Newtonsoft.Json&lt;/b&gt; namespace provides classes that are used to implement the core services of the framework.</NamespaceSummaryItem>
