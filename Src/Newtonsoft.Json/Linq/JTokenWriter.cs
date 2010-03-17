@@ -139,7 +139,7 @@ namespace Newtonsoft.Json.Linq
       AddValue(new JValue(value), token);
     }
 
-    private void AddValue(JValue value, JsonToken token)
+    internal void AddValue(JValue value, JsonToken token)
     {
       if (_parent != null)
       {

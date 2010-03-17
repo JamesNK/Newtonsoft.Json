@@ -29,6 +29,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Security.Permissions;
 using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Serialization
@@ -176,7 +177,9 @@ namespace Newtonsoft.Json.Serialization
       if (attribute == null)
         return null;
 
-      IMetadataTypeAttribute metadataTypeAttribute = DynamicWrapper.CreateWrapper<IMetadataTypeAttribute>(attribute);
+      IMetadataTypeAttribute metadataTypeAttribute = (DynamicCodeGeneration)
+                                                       ? DynamicWrapper.CreateWrapper<IMetadataTypeAttribute>(attribute)
+                                                       : new LateBoundMetadataTypeAttribute(attribute);
 
       return metadataTypeAttribute.MetadataClassType;
     }
@@ -249,5 +252,45 @@ namespace Newtonsoft.Json.Serialization
       return ReflectionUtils.GetAttribute<T>(attributeProvider, true);
     }
 #endif
+
+    private static bool? _dynamicCodeGeneration;
+
+    public static bool DynamicCodeGeneration
+    {
+      get
+      {
+        if (_dynamicCodeGeneration == null)
+        {
+#if !PocketPC && !SILVERLIGHT
+          try
+          {
+            new ReflectionPermission(ReflectionPermissionFlag.MemberAccess).Demand();
+            _dynamicCodeGeneration = true;
+          }
+          catch (Exception)
+          {
+            _dynamicCodeGeneration = false;
+          }
+#else
+          _dynamicCodeGeneration = false;
+#endif
+        }
+
+        return _dynamicCodeGeneration.Value;
+      }
+    }
+
+    public static ReflectionDelegateFactory ReflectionDelegateFactory
+    {
+      get
+      {
+#if !PocketPC && !SILVERLIGHT
+        if (DynamicCodeGeneration)
+          return DynamicReflectionDelegateFactory.Instance;
+#endif
+
+        return LateBoundReflectionDelegateFactory.Instance;
+      }
+    }
   }
 }

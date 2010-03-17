@@ -315,7 +315,7 @@ namespace Newtonsoft.Json.Linq
           }, _value);
           break;
         case JTokenType.Raw:
-          writer.WriteRawValue((string)_value);
+          writer.WriteRawValue((_value != null) ? _value.ToString() : null);
           break;
         case JTokenType.Bytes:
           WriteConvertableValue(writer, converters, v => writer.WriteValue((byte[])v), _value);

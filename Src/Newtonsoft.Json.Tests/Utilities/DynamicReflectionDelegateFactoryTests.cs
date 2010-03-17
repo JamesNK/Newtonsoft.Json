@@ -34,7 +34,7 @@ using Newtonsoft.Json.Tests.TestObjects;
 
 namespace Newtonsoft.Json.Tests.Utilities
 {
-  public class LateBoundDelegateFactoryTests : TestFixtureBase
+  public class DynamicReflectionDelegateFactoryTests : TestFixtureBase
   {
     [Test]
     [ExpectedException(typeof(InvalidCastException), ExpectedMessage = "Unable to cast object of type 'Newtonsoft.Json.Tests.TestObjects.Person' to type 'Newtonsoft.Json.Tests.TestObjects.Movie'.")]
@@ -43,7 +43,7 @@ namespace Newtonsoft.Json.Tests.Utilities
       Person p = new Person();
       p.Name = "Hi";
 
-      Func<object, object> setter = LateBoundDelegateFactory.CreateGet<object>(typeof(Movie).GetProperty("Name"));
+      Func<object, object> setter = DynamicReflectionDelegateFactory.Instance.CreateGet<object>(typeof(Movie).GetProperty("Name"));
 
       setter(p);
     }
@@ -55,7 +55,7 @@ namespace Newtonsoft.Json.Tests.Utilities
       Person p = new Person();
       Movie m = new Movie();
 
-      Action<object, object> setter = LateBoundDelegateFactory.CreateSet<object>(typeof(Movie).GetProperty("Name"));
+      Action<object, object> setter = DynamicReflectionDelegateFactory.Instance.CreateSet<object>(typeof(Movie).GetProperty("Name"));
 
       setter(m, "Hi");
 
@@ -70,7 +70,7 @@ namespace Newtonsoft.Json.Tests.Utilities
     {
       object structTest = new StructTest();
 
-      Action<object, object> setter = LateBoundDelegateFactory.CreateSet<object>(typeof(StructTest).GetProperty("StringProperty"));
+      Action<object, object> setter = DynamicReflectionDelegateFactory.Instance.CreateSet<object>(typeof(StructTest).GetProperty("StringProperty"));
 
       setter(structTest, "Hi");
 
@@ -85,7 +85,7 @@ namespace Newtonsoft.Json.Tests.Utilities
     {
       Movie m = new Movie();
 
-      Action<object, object> setter = LateBoundDelegateFactory.CreateSet<object>(typeof(Movie).GetProperty("Name"));
+      Action<object, object> setter = DynamicReflectionDelegateFactory.Instance.CreateSet<object>(typeof(Movie).GetProperty("Name"));
 
       setter(m, new Version());
     }

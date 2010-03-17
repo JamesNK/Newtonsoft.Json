@@ -2983,7 +2983,7 @@ keyword such as type of business.""
           writer.WriteNull();
       }
 
-      public override object ReadJson(JsonReader reader, Type objectType, JsonSerializer serializer)
+      public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
       {
         throw new NotImplementedException();
       }
@@ -3006,7 +3006,7 @@ keyword such as type of business.""
           writer.WriteNull();
       }
 
-      public override object ReadJson(JsonReader reader, Type objectType, JsonSerializer serializer)
+      public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
       {
         throw new NotImplementedException();
       }
@@ -3055,6 +3055,159 @@ keyword such as type of business.""
       GenericListTestClass newValue = JsonConvert.DeserializeObject<GenericListTestClass>(json);
       Assert.AreEqual(2, newValue.GenericList.Count);
       Assert.AreEqual(typeof(List<string>), newValue.GenericList.GetType());
+    }
+
+    [Test]
+    public void DeserializeSimpleKeyValuePair()
+    {
+      List<KeyValuePair<string, string>> list = new List<KeyValuePair<string, string>>();
+      list.Add(new KeyValuePair<string, string>("key1", "value1"));
+      list.Add(new KeyValuePair<string, string>("key2", "value2"));
+
+      string json = JsonConvert.SerializeObject(list);
+
+      Assert.AreEqual(@"[{""Key"":""key1"",""Value"":""value1""},{""Key"":""key2"",""Value"":""value2""}]", json);
+
+      List<KeyValuePair<string, string>> result = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(json);
+      Assert.AreEqual(2, result.Count);
+      Assert.AreEqual("key1", result[0].Key);
+      Assert.AreEqual("value1", result[0].Value);
+      Assert.AreEqual("key2", result[1].Key);
+      Assert.AreEqual("value2", result[1].Value);
+    }
+
+    [Test]
+    public void DeserializeComplexKeyValuePair()
+    {
+      DateTime dateTime = new DateTime(2000, 12, 1, 23, 1, 1, DateTimeKind.Utc);
+
+      List<KeyValuePair<string, WagePerson>> list = new List<KeyValuePair<string, WagePerson>>();
+      list.Add(new KeyValuePair<string, WagePerson>("key1", new WagePerson
+                                                              {
+                                                                BirthDate = dateTime,
+                                                                Department = "Department1",
+                                                                LastModified = dateTime,
+                                                                HourlyWage = 1
+                                                              }));
+      list.Add(new KeyValuePair<string, WagePerson>("key2", new WagePerson
+      {
+        BirthDate = dateTime,
+        Department = "Department2",
+        LastModified = dateTime,
+        HourlyWage = 2
+      }));
+
+      string json = JsonConvert.SerializeObject(list, Formatting.Indented);
+
+      Assert.AreEqual(@"[
+  {
+    ""Key"": ""key1"",
+    ""Value"": {
+      ""HourlyWage"": 1.0,
+      ""Name"": null,
+      ""BirthDate"": ""\/Date(975711661000)\/"",
+      ""LastModified"": ""\/Date(975711661000)\/""
+    }
+  },
+  {
+    ""Key"": ""key2"",
+    ""Value"": {
+      ""HourlyWage"": 2.0,
+      ""Name"": null,
+      ""BirthDate"": ""\/Date(975711661000)\/"",
+      ""LastModified"": ""\/Date(975711661000)\/""
+    }
+  }
+]", json);
+
+      List<KeyValuePair<string, WagePerson>> result = JsonConvert.DeserializeObject<List<KeyValuePair<string, WagePerson>>>(json);
+      Assert.AreEqual(2, result.Count);
+      Assert.AreEqual("key1", result[0].Key);
+      Assert.AreEqual(1, result[0].Value.HourlyWage);
+      Assert.AreEqual("key2", result[1].Key);
+      Assert.AreEqual(2, result[1].Value.HourlyWage);
+    }
+
+    public class StringListAppenderConverter : JsonConverter
+    {
+      public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+      {
+        writer.WriteValue(value);
+      }
+
+      public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+      {
+        List<string> existingStrings = (List<string>)existingValue;
+        List<string> newStrings = new List<string>(existingStrings);        
+
+        reader.Read();
+
+        while (reader.TokenType != JsonToken.EndArray)
+        {
+          string s = (string)reader.Value;
+          newStrings.Add(s);
+
+          reader.Read();
+        }
+
+        return newStrings;
+      }
+
+      public override bool CanConvert(Type objectType)
+      {
+        return (objectType == typeof (List<string>));
+      }
+    }
+
+    [Test]
+    public void StringListAppenderConverterTest()
+    {
+      Movie p = new Movie();
+      p.ReleaseCountries = new List<string> { "Existing" };
+
+      JsonConvert.PopulateObject("{'ReleaseCountries':['Appended']}", p, new JsonSerializerSettings
+        {
+          Converters = new List<JsonConverter> { new StringListAppenderConverter() }
+        });
+
+      Assert.AreEqual(2, p.ReleaseCountries.Count);
+      Assert.AreEqual("Existing", p.ReleaseCountries[0]);
+      Assert.AreEqual("Appended", p.ReleaseCountries[1]);
+    }
+
+    public class StringAppenderConverter : JsonConverter
+    {
+      public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+      {
+        writer.WriteValue(value);
+      }
+
+      public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+      {
+        string existingString = (string)existingValue;
+        string newString = existingString + (string)reader.Value;
+
+        return newString;
+      }
+
+      public override bool CanConvert(Type objectType)
+      {
+        return (objectType == typeof(string));
+      }
+    }
+
+    [Test]
+    public void StringAppenderConverterTest()
+    {
+      Movie p = new Movie();
+      p.Name = "Existing,";
+
+      JsonConvert.PopulateObject("{'Name':'Appended'}", p, new JsonSerializerSettings
+      {
+        Converters = new List<JsonConverter> { new StringAppenderConverter() }
+      });
+
+      Assert.AreEqual(p.Name, "Existing,Appended");
     }
   }
 }

@@ -687,7 +687,7 @@ namespace Newtonsoft.Json.Utilities
        // CF doesn't have a Activator.CreateInstance overload that takes args
        // lame
 
-       if (type.IsValueType)
+       if (type.IsValueType && CollectionUtils.IsNullOrEmpty<object>(args))
          return Activator.CreateInstance(type);
 
        ConstructorInfo[] constructors = type.GetConstructors();

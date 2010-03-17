@@ -19,7 +19,7 @@ namespace Newtonsoft.Json.Tests.LinqToSql
       o.WriteTo(writer);
     }
 
-    public override object ReadJson(JsonReader reader, Type objectType, JsonSerializer serializer)
+    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
     {
       JObject o = JObject.Load(reader);
 

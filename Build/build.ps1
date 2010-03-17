@@ -21,6 +21,7 @@
 
 task default -depends Test
 
+# Ensure a clean working directory
 task Clean {
   Set-Location $baseDir
   
@@ -34,6 +35,7 @@ task Clean {
   New-Item -Path $workingDir -ItemType Directory
 }
 
+# Build each solution, optionally signed
 task Build -depends Clean { 
   
   foreach ($build in $builds)
@@ -47,6 +49,7 @@ task Build -depends Clean {
   }
 }
 
+# Merge LinqBridge into .NET 2.0 build
 task Merge -depends Build {
   $binaryDir = "$sourceDir\Newtonsoft.Json\bin\Release\DotNet20"
   MergeAssembly "$binaryDir\Newtonsoft.Json.Net20.dll" $signKeyPath "$binaryDir\LinqBridge.dll"
@@ -58,6 +61,7 @@ task Merge -depends Build {
   del $binaryDir\LinqBridge.dll
 }
 
+# Optional build documentation, add files to final zip
 task Package -depends Merge {
   foreach ($build in $builds)
   {
@@ -86,10 +90,12 @@ task Package -depends Merge {
   exec { .\Tools\7-zip\7za.exe a -tzip $workingDir\$zipFileName $workingDir\Package\* } "Error zipping"
 }
 
+# Unzip package to a location
 task Deploy -depends Package {
   exec { .\Tools\7-zip\7za.exe x -y "-o$workingDir\Deployed" $workingDir\$zipFileName } "Error unzipping"
 }
 
+# Run tests on deployed files
 task Test -depends Deploy {
   foreach ($build in $builds)
   {

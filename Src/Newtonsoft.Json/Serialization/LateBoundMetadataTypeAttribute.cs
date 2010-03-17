@@ -1,4 +1,4 @@
-#region License
+﻿#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -23,41 +23,37 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if !SILVERLIGHT && !PocketPC && !NET20
 using System;
-using System.Globalization;
-using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Newtonsoft.Json.Utilities;
+using System.Reflection;
 
-namespace Newtonsoft.Json.Tests.TestObjects
+namespace Newtonsoft.Json.Serialization
 {
-  public abstract class ConverterPrecedenceClassConverter : JsonConverter
+  internal class LateBoundMetadataTypeAttribute : IMetadataTypeAttribute
   {
-    public abstract string ConverterType { get; }
+    private static PropertyInfo _metadataClassTypeProperty;
 
-    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    private readonly object _attribute;
+
+    public LateBoundMetadataTypeAttribute(object attribute)
     {
-      ConverterPrecedenceClass c = (ConverterPrecedenceClass)value;
-
-      JToken j = new JArray(ConverterType, c.TestValue);
-
-      j.WriteTo(writer);
+      _attribute = attribute;
     }
 
-    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+    public Type MetadataClassType
     {
-      JToken j = JArray.Load(reader);
+      get
+      {
+        if (_metadataClassTypeProperty == null)
+          _metadataClassTypeProperty = _attribute.GetType().GetProperty("MetadataClassType");
 
-      string converter = (string)j[0];
-      if (converter != ConverterType)
-        throw new Exception(StringUtils.FormatWith("Serialize converter {0} and deserialize converter {1} do not match.", CultureInfo.InvariantCulture, converter, ConverterType));
-
-      string testValue = (string)j[1];
-      return new ConverterPrecedenceClass(testValue);
-    }
-
-    public override bool CanConvert(Type objectType)
-    {
-      return (objectType == typeof(ConverterPrecedenceClass));
+        return (Type)ReflectionUtils.GetMemberValue(_metadataClassTypeProperty, _attribute);
+      }
     }
   }
 }
+#endif

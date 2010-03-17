@@ -23,48 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-using System;
-using System.Collections.Generic;
-
-namespace Newtonsoft.Json.Tests.TestObjects
+namespace Newtonsoft.Json.Utilities
 {
-  public class ListOfIds<T> : JsonConverter where T : Bar, new()
-  {
-    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-    {
-      IList<T> list = (IList<T>)value;
-
-      writer.WriteStartArray();
-      foreach (T item in list)
-      {
-        writer.WriteValue(item.Id);
-      }
-      writer.WriteEndArray();
-    }
-
-    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-    {
-      IList<T> list = new List<T>();
-
-      reader.Read();
-      while (reader.TokenType != JsonToken.EndArray)
-      {
-        long id = (long)reader.Value;
-
-        list.Add(new T
-                   {
-                     Id = Convert.ToInt32(id)
-                   });
-
-        reader.Read();
-      }
-
-      return list;
-    }
-
-    public override bool CanConvert(Type objectType)
-    {
-      return typeof(IList<T>).IsAssignableFrom(objectType);
-    }
-  }
+  internal delegate object MethodCall<T>(T target, params object[] args);
 }

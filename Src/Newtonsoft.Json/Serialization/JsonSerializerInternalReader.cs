@@ -114,7 +114,7 @@ namespace Newtonsoft.Json.Serialization
       if (reader.TokenType == JsonToken.None && !reader.Read())
         return null;
 
-      return CreateValue(reader, objectType, GetContractSafe(objectType), null, null);
+      return CreateValueNonProperty(reader, objectType, GetContractSafe(objectType));
     }
 
     private JsonSerializerProxy GetInternalSerializer()
@@ -177,31 +177,36 @@ namespace Newtonsoft.Json.Serialization
       return token;
     }
 
-    private object CreateValue(JsonReader reader, Type objectType, JsonContract contract, object existingValue, JsonConverter memberConverter)
+    private object CreateValueProperty(JsonReader reader, JsonProperty property, object target, bool gottenCurrentValue, object currentValue)
     {
-      JsonConverter converter = null;
-      if (memberConverter != null)
-      {
-        // member attribute converter
-        converter = memberConverter;
-      }
-      else if (contract != null)
-      {
-        JsonConverter matchingConverter;
-        if (contract.Converter != null)
-          // class attribute converter
-          converter = contract.Converter;
-        else if ((matchingConverter = Serializer.GetMatchingConverter(contract.UnderlyingType)) != null)
-          // passed in converters
-          converter = matchingConverter;
-        else if (contract.InternalConverter != null)
-          // internally specified converter
-          converter = contract.InternalConverter;
-      }
+      JsonContract contract = GetContractSafe(property.PropertyType, currentValue);
+      Type objectType = property.PropertyType;
+
+      JsonConverter converter = GetConverter(contract, property.MemberConverter);
 
       if (converter != null && converter.CanRead)
-        return converter.ReadJson(reader, objectType, GetInternalSerializer());
+      {
+        if (!gottenCurrentValue && target != null && property.Readable)
+          currentValue = property.ValueProvider.GetValue(target);
 
+        return converter.ReadJson(reader, objectType, currentValue, GetInternalSerializer());
+      }
+
+      return CreateValueInternal(reader, objectType, contract, currentValue);
+    }
+
+    private object CreateValueNonProperty(JsonReader reader, Type objectType, JsonContract contract)
+    {
+      JsonConverter converter = GetConverter(contract, null);
+
+      if (converter != null && converter.CanRead)
+        return converter.ReadJson(reader, objectType, null, GetInternalSerializer());
+
+      return CreateValueInternal(reader, objectType, contract, null);
+    }
+
+    private object CreateValueInternal(JsonReader reader, Type objectType, JsonContract contract, object existingValue)
+    {
       if (contract is JsonLinqContract)
         return CreateJToken(reader, contract);
 
@@ -251,6 +256,30 @@ namespace Newtonsoft.Json.Serialization
       } while (reader.Read());
 
       throw new JsonSerializationException("Unexpected end when deserializing object.");
+    }
+
+    private JsonConverter GetConverter(JsonContract contract, JsonConverter memberConverter)
+    {
+      JsonConverter converter = null;
+      if (memberConverter != null)
+      {
+        // member attribute converter
+        converter = memberConverter;
+      }
+      else if (contract != null)
+      {
+        JsonConverter matchingConverter;
+        if (contract.Converter != null)
+          // class attribute converter
+          converter = contract.Converter;
+        else if ((matchingConverter = Serializer.GetMatchingConverter(contract.UnderlyingType)) != null)
+          // passed in converters
+          converter = matchingConverter;
+        else if (contract.InternalConverter != null)
+          // internally specified converter
+          converter = contract.InternalConverter;
+      }
+      return converter;
     }
 
     private object CreateObject(JsonReader reader, Type objectType, JsonContract contract, object existingValue)
@@ -454,6 +483,7 @@ namespace Newtonsoft.Json.Serialization
 
       object currentValue = null;
       bool useExistingValue = false;
+      bool gottenCurrentValue = false;
 
       ObjectCreationHandling objectCreationHandling =
         property.ObjectCreationHandling.GetValueOrDefault(Serializer.ObjectCreationHandling);
@@ -463,6 +493,7 @@ namespace Newtonsoft.Json.Serialization
         && property.Readable)
       {
         currentValue = property.ValueProvider.GetValue(target);
+        gottenCurrentValue = true;
 
         useExistingValue = (currentValue != null && !property.PropertyType.IsArray && !ReflectionUtils.InheritsGenericDefinition(property.PropertyType, typeof(ReadOnlyCollection<>)));
       }
@@ -474,7 +505,7 @@ namespace Newtonsoft.Json.Serialization
       }
 
       object existingValue = (useExistingValue) ? currentValue : null;
-      object value = CreateValue(reader, property.PropertyType, GetContractSafe(property.PropertyType, existingValue), existingValue, property.Converter);
+      object value = CreateValueProperty(reader, property, target, gottenCurrentValue, existingValue);
 
       // always set the value if useExistingValue is false,
       // otherwise also set it if CreateValue returns a new value compared to the currentValue
@@ -543,7 +574,7 @@ namespace Newtonsoft.Json.Serialization
 
             try
             {
-              dictionary[keyValue] = CreateValue(reader, contract.DictionaryValueType, GetContractSafe(contract.DictionaryValueType), null, null);
+              dictionary[keyValue] = CreateValueNonProperty(reader, contract.DictionaryValueType, GetContractSafe(contract.DictionaryValueType));
             }
             catch (Exception ex)
             {
@@ -607,7 +638,7 @@ namespace Newtonsoft.Json.Serialization
           default:
             try
             {
-              object value = CreateValue(reader, contract.CollectionItemType, GetContractSafe(contract.CollectionItemType), null, null);
+              object value = CreateValueNonProperty(reader, contract.CollectionItemType, GetContractSafe(contract.CollectionItemType));
 
               wrappedList.Add(value);
             }
@@ -717,7 +748,7 @@ namespace Newtonsoft.Json.Serialization
             {
               if (!property.Ignored)
               {
-                propertyValues[property] = CreateValue(reader, property.PropertyType, GetContractSafe(property.PropertyType), null, property.MemberConverter);
+                propertyValues[property] = CreateValueProperty(reader, property, null, true, null);
               }
             }
             else

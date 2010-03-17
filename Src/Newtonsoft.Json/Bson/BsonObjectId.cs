@@ -1,4 +1,4 @@
-#region License
+﻿#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -23,7 +23,25 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-namespace Newtonsoft.Json.Utilities
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Newtonsoft.Json.Utilities;
+
+namespace Newtonsoft.Json.Bson
 {
-  internal delegate object MethodCaller<T>(T target, params object[] args);
+  public class BsonObjectId
+  {
+    public byte[] Value { get; private set; }
+
+    public BsonObjectId(byte[] value)
+    {
+      ValidationUtils.ArgumentNotNull(value, "value");
+      if (value.Length != 12)
+        throw new Exception("An ObjectId must be 12 bytes");
+
+      Value = value;
+    }
+  }
 }

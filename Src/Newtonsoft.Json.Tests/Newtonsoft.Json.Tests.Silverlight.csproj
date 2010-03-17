@@ -209,7 +209,7 @@
     <Compile Include="TestObjects\UserNullable.cs" />
     <Compile Include="TestObjects\VersionKeyedCollection.cs" />
     <Compile Include="TestObjects\WagePerson.cs" />
-    <Compile Include="Utilities\LateBoundDelegateFactoryTests.cs" />
+    <Compile Include="Utilities\DynamicReflectionDelegateFactoryTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.Silverlight.csproj">

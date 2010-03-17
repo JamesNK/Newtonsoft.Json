@@ -34,20 +34,9 @@ using System.Globalization;
 
 namespace Newtonsoft.Json.Utilities
 {
-  internal static class LateBoundDelegateFactory
+  internal class DynamicReflectionDelegateFactory : ReflectionDelegateFactory
   {
-    public static Func<T, object> CreateGet<T>(MemberInfo memberInfo)
-    {
-      PropertyInfo propertyInfo = memberInfo as PropertyInfo;
-      if (propertyInfo != null)
-        return CreateGet<T>(propertyInfo);
-
-      FieldInfo fieldInfo = memberInfo as FieldInfo;
-      if (fieldInfo != null)
-        return CreateGet<T>(fieldInfo);
-
-      throw new Exception("Could not create getter for {0}.".FormatWith(CultureInfo.InvariantCulture, memberInfo));
-    }
+    public static DynamicReflectionDelegateFactory Instance = new DynamicReflectionDelegateFactory();
 
     private static DynamicMethod CreateDynamicMethod(string name, Type returnType, Type[] parameterTypes, Type owner)
     {
@@ -58,20 +47,7 @@ namespace Newtonsoft.Json.Utilities
       return dynamicMethod;
     }
 
-    public static Action<T, object> CreateSet<T>(MemberInfo memberInfo)
-    {
-      PropertyInfo propertyInfo = memberInfo as PropertyInfo;
-      if (propertyInfo != null)
-        return CreateSet<T>(propertyInfo);
-
-      FieldInfo fieldInfo = memberInfo as FieldInfo;
-      if (fieldInfo != null)
-        return CreateSet<T>(fieldInfo);
-
-      throw new Exception("Could not create setter for {0}.".FormatWith(CultureInfo.InvariantCulture, memberInfo));
-    }
-
-    public static MethodCaller<object> CreateMethodCall(MethodBase method)
+    public override MethodCall<object> CreateMethodCall(MethodBase method)
     {
       DynamicMethod dynamicMethod = CreateDynamicMethod(method.ToString(), typeof(object), new[] { typeof(object), typeof(object[]) }, method.DeclaringType);
       ILGenerator generator = dynamicMethod.GetILGenerator();
@@ -105,9 +81,7 @@ namespace Newtonsoft.Json.Utilities
       if (method.IsConstructor)
         generator.Emit(OpCodes.Newobj, (ConstructorInfo)method);
       else if (method.IsFinal || !method.IsVirtual)
-        generator.Emit(OpCodes.Call, (MethodInfo)method);
-      else
-        generator.Emit(OpCodes.Callvirt, (MethodInfo)method);
+        generator.CallMethod((MethodInfo)method);
 
       Type returnType = method.IsConstructor
         ? method.DeclaringType
@@ -118,13 +92,12 @@ namespace Newtonsoft.Json.Utilities
       else
         generator.Emit(OpCodes.Ldnull);
 
-      generator.Emit(OpCodes.Ret);
+      generator.Return();
 
-      return (MethodCaller<object>)dynamicMethod.CreateDelegate(typeof(MethodCaller<object>));
+      return (MethodCall<object>)dynamicMethod.CreateDelegate(typeof(MethodCall<object>));
     }
 
-
-    public static Func<object> CreateDefaultConstructor(Type type)
+    public override Func<object> CreateDefaultConstructor(Type type)
     {
       DynamicMethod dynamicMethod = CreateDynamicMethod("Create" + type.FullName, typeof(object), Type.EmptyTypes, type);
       dynamicMethod.InitLocals = true;
@@ -148,12 +121,12 @@ namespace Newtonsoft.Json.Utilities
         generator.Emit(OpCodes.Newobj, constructorInfo);
       }
 
-      generator.Emit(OpCodes.Ret);
+      generator.Return();
 
       return (Func<object>)dynamicMethod.CreateDelegate(typeof(Func<object>));
     }
 
-    public static Func<T, object> CreateGet<T>(PropertyInfo propertyInfo)
+    public override Func<T, object> CreateGet<T>(PropertyInfo propertyInfo)
     {
       MethodInfo getMethod = propertyInfo.GetGetMethod(true);
       if (getMethod == null)
@@ -167,43 +140,14 @@ namespace Newtonsoft.Json.Utilities
       if (!getMethod.IsStatic)
         generator.PushInstance(propertyInfo.DeclaringType);
 
-      if (getMethod.IsFinal || !getMethod.IsVirtual)
-        generator.Emit(OpCodes.Call, getMethod);
-      else
-        generator.Emit(OpCodes.Callvirt, getMethod);
-
+      generator.CallMethod(getMethod);
       generator.BoxIfNeeded(propertyInfo.PropertyType);
-      generator.Emit(OpCodes.Ret);
+      generator.Return();
 
       return (Func<T, object>)dynamicMethod.CreateDelegate(typeof(Func<T, object>));
     }
 
-    static void PushInstance(this ILGenerator generator, Type type)
-    {
-      generator.Emit(OpCodes.Ldarg_0);
-      if (type.IsValueType)
-        generator.Emit(OpCodes.Unbox, type);
-      else
-        generator.Emit(OpCodes.Castclass, type);
-    }
-
-    static void BoxIfNeeded(this ILGenerator generator, Type type)
-    {
-      if (type.IsValueType)
-        generator.Emit(OpCodes.Box, type);
-      else
-        generator.Emit(OpCodes.Castclass, type);
-    }
-
-    static void UnboxIfNeeded(this ILGenerator generator, Type type)
-    {
-      if (type.IsValueType)
-        generator.Emit(OpCodes.Unbox_Any, type);
-      else
-        generator.Emit(OpCodes.Castclass, type);
-    }
-
-    public static Func<T, object> CreateGet<T>(FieldInfo fieldInfo)
+    public override Func<T, object> CreateGet<T>(FieldInfo fieldInfo)
     {
       DynamicMethod dynamicMethod = CreateDynamicMethod("Get" + fieldInfo.Name, typeof(T), new[] { typeof(object) }, fieldInfo.DeclaringType);
 
@@ -214,13 +158,12 @@ namespace Newtonsoft.Json.Utilities
 
       generator.Emit(OpCodes.Ldfld, fieldInfo);
       generator.BoxIfNeeded(fieldInfo.FieldType);
-      generator.Emit(OpCodes.Ret);
+      generator.Return();
 
-      return (Func<T, object>)
-          dynamicMethod.CreateDelegate(typeof(Func<T, object>));
+      return (Func<T, object>)dynamicMethod.CreateDelegate(typeof(Func<T, object>));
     }
 
-    public static Action<T, object> CreateSet<T>(FieldInfo fieldInfo)
+    public override Action<T, object> CreateSet<T>(FieldInfo fieldInfo)
     {
       DynamicMethod dynamicMethod = CreateDynamicMethod("Set" + fieldInfo.Name, null, new[] { typeof(object), typeof(object) }, fieldInfo.DeclaringType);
       ILGenerator generator = dynamicMethod.GetILGenerator();
@@ -231,29 +174,24 @@ namespace Newtonsoft.Json.Utilities
       generator.Emit(OpCodes.Ldarg_1);
       generator.UnboxIfNeeded(fieldInfo.FieldType);
       generator.Emit(OpCodes.Stfld, fieldInfo);
-      generator.Emit(OpCodes.Ret);
+      generator.Return();
 
       return (Action<T, object>)dynamicMethod.CreateDelegate(typeof(Action<T, object>));
     }
 
-    public static Action<T, object> CreateSet<T>(PropertyInfo propertyInfo)
+    public override Action<T, object> CreateSet<T>(PropertyInfo propertyInfo)
     {
-      MethodInfo getMethod = propertyInfo.GetSetMethod(true);
+      MethodInfo setMethod = propertyInfo.GetSetMethod(true);
       DynamicMethod dynamicMethod = CreateDynamicMethod("Set" + propertyInfo.Name, null, new[] { typeof(object), typeof(object) }, propertyInfo.DeclaringType);
       ILGenerator generator = dynamicMethod.GetILGenerator();
 
-      if (!getMethod.IsStatic)
+      if (!setMethod.IsStatic)
         generator.PushInstance(propertyInfo.DeclaringType);
 
       generator.Emit(OpCodes.Ldarg_1);
       generator.UnboxIfNeeded(propertyInfo.PropertyType);
-
-      if (getMethod.IsFinal || !getMethod.IsVirtual)
-        generator.Emit(OpCodes.Call, getMethod);
-      else
-        generator.Emit(OpCodes.Callvirt, getMethod);
-
-      generator.Emit(OpCodes.Ret);
+      generator.CallMethod(setMethod);
+      generator.Return();
 
       return (Action<T, object>)dynamicMethod.CreateDelegate(typeof(Action<T, object>));
     }

@@ -49,9 +49,10 @@ namespace Newtonsoft.Json.Converters
     /// </summary>
     /// <param name="reader">The <see cref="JsonReader"/> to read from.</param>
     /// <param name="objectType">Type of the object.</param>
+    /// <param name="existingValue">The existing value of object being read.</param>
     /// <param name="serializer">The calling serializer.</param>
     /// <returns>The object value.</returns>
-    public override object ReadJson(JsonReader reader, Type objectType, JsonSerializer serializer)
+    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
     {
       T value = Create(objectType);
       if (value == null)

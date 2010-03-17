@@ -55,11 +55,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bson\BsonBinaryType.cs" />
+    <Compile Include="Bson\BsonObjectId.cs" />
     <Compile Include="Bson\BsonReader.cs" />
     <Compile Include="Bson\BsonType.cs" />
     <Compile Include="Bson\BsonWriter.cs" />
     <Compile Include="ConstructorHandling.cs" />
     <Compile Include="Converters\BinaryConverter.cs" />
+    <Compile Include="Converters\BsonObjectIdConverter.cs" />
     <Compile Include="Converters\CustomCreationConverter.cs" />
     <Compile Include="Converters\DataSetConverter.cs" />
     <Compile Include="Converters\DataTableConverter.cs" />
@@ -68,6 +70,7 @@
     <Compile Include="Converters\IsoDateTimeConverter.cs" />
     <Compile Include="Converters\JavaScriptDateTimeConverter.cs" />
     <Compile Include="Converters\JsonDateTimeSerializationMode.cs" />
+    <Compile Include="Converters\KeyValuePairConverter.cs" />
     <Compile Include="Converters\StringEnumConverter.cs" />
     <Compile Include="Converters\XmlNodeConverter.cs" />
     <Compile Include="Converters\HtmlColorConverter.cs" />
@@ -147,6 +150,7 @@
     <Compile Include="Serialization\JsonSerializerInternalReader.cs" />
     <Compile Include="Serialization\JsonSerializerInternalWriter.cs" />
     <Compile Include="Serialization\JsonStringContract.cs" />
+    <Compile Include="Serialization\LateBoundMetadataTypeAttribute.cs" />
     <Compile Include="Serialization\ObjectConstructor.cs" />
     <Compile Include="Serialization\OnErrorAttribute.cs" />
     <Compile Include="Serialization\ReflectionValueProvider.cs" />
@@ -159,16 +163,19 @@
     <Compile Include="Utilities\ConvertUtils.cs" />
     <Compile Include="Utilities\DateTimeUtils.cs" />
     <Compile Include="Utilities\DictionaryWrapper.cs" />
+    <Compile Include="Utilities\DynamicReflectionDelegateFactory.cs" />
     <Compile Include="Utilities\DynamicWrapper.cs" />
     <Compile Include="Utilities\EnumUtils.cs" />
     <Compile Include="Utilities\EnumValue.cs" />
     <Compile Include="Utilities\EnumValues.cs" />
+    <Compile Include="Utilities\ILGeneratorExtensions.cs" />
     <Compile Include="Utilities\JavaScriptUtils.cs" />
-    <Compile Include="Utilities\LateBoundDelegateFactory.cs" />
+    <Compile Include="Utilities\LateBoundReflectionDelegateFactory.cs" />
     <Compile Include="Utilities\ListWrapper.cs" />
     <Compile Include="Utilities\MathUtils.cs" />
-    <Compile Include="Utilities\MethodCaller.cs" />
+    <Compile Include="Utilities\MethodCall.cs" />
     <Compile Include="Utilities\MiscellaneousUtils.cs" />
+    <Compile Include="Utilities\ReflectionDelegateFactory.cs" />
     <Compile Include="Utilities\ReflectionUtils.cs" />
     <Compile Include="Utilities\StringBuffer.cs" />
     <Compile Include="Utilities\StringUtils.cs" />

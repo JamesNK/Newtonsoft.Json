@@ -373,6 +373,9 @@ namespace Newtonsoft.Json
           case JsonToken.Raw:
             WriteRawValue((string)reader.Value);
             break;
+          case JsonToken.Bytes:
+            WriteValue((byte[])reader.Value);
+            break;
           default:
             throw MiscellaneousUtils.CreateArgumentOutOfRangeException("TokenType", reader.TokenType, "Unexpected token type.");
         }
@@ -563,7 +566,7 @@ namespace Newtonsoft.Json
     {
     }
 
-    private void AutoComplete(JsonToken tokenBeingWritten)
+    internal void AutoComplete(JsonToken tokenBeingWritten)
     {
       int token;
 

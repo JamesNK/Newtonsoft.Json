@@ -110,7 +110,7 @@ namespace Newtonsoft.Json.Bson
         case JTokenType.Undefined:
           break;
         case JTokenType.Date:
-          DateTime dateTime = (DateTime) t;
+          DateTime dateTime = (DateTime)t;
           dateTime = dateTime.ToUniversalTime();
           long ticks = JsonConvert.ConvertDateTimeToJavaScriptTicks(dateTime);
           _writer.Write(ticks);
@@ -120,6 +120,11 @@ namespace Newtonsoft.Json.Bson
           _writer.Write(data.Length);
           _writer.Write((byte)BsonBinaryType.Data);
           _writer.Write(data);
+          break;
+        case JTokenType.Raw:
+          // hacky
+          JRaw r = (JRaw)t;
+          _writer.Write((byte[])r.Value);
           break;
         default:
           throw new ArgumentOutOfRangeException("t", "Unexpected token when writing BSON: {0}".FormatWith(CultureInfo.InvariantCulture, t.Type));
@@ -182,6 +187,9 @@ namespace Newtonsoft.Json.Bson
           return BsonType.Date;
         case JTokenType.Bytes:
           return BsonType.Binary;
+        case JTokenType.Raw:
+          // hacky
+          return BsonType.Oid;
         default:
           throw new ArgumentOutOfRangeException("t", "Unexpected token when resolving JSON type to BSON type: {0}".FormatWith(CultureInfo.InvariantCulture, t.Type));
       }
@@ -235,7 +243,7 @@ namespace Newtonsoft.Json.Bson
             return bases;
           }
         case JTokenType.Property:
-          JProperty property = (JProperty) t;
+          JProperty property = (JProperty)t;
           int ss = 1;
           ss += CalculateSize(property.Name);
           ss += CalculateSize(property.Value);
@@ -256,8 +264,11 @@ namespace Newtonsoft.Json.Bson
         case JTokenType.Date:
           return 8;
         case JTokenType.Bytes:
-          byte[] data = (byte[]) t;
+          byte[] data = (byte[])t;
           return 4 + 1 + data.Length;
+        case JTokenType.Raw:
+          // hacky
+          return 12;
         default:
           throw new ArgumentOutOfRangeException("t", "Unexpected token when writing BSON: {0}".FormatWith(CultureInfo.InvariantCulture, t.Type));
       }
@@ -311,6 +322,22 @@ namespace Newtonsoft.Json.Bson
     public override void WriteRawValue(string json)
     {
       throw new JsonWriterException("Cannot write raw JSON as BSON.");
+    }
+
+    /// <summary>
+    /// Writes a <see cref="T:Byte[]"/> value that represents a BSON object id.
+    /// </summary>
+    /// <param name="value"></param>
+    public void WriteObjectId(byte[] value)
+    {
+      ValidationUtils.ArgumentNotNull(value, "value");
+
+      if (value.Length != 12)
+        throw new Exception("An object id must be 12 bytes");
+
+      // hack to update the writer state
+      AutoComplete(JsonToken.Undefined);
+      AddValue(new JRaw(value), JsonToken.Raw);
     }
   }
 }

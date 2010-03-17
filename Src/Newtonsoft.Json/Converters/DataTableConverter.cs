@@ -67,7 +67,7 @@ namespace Newtonsoft.Json.Converters
     /// <param name="objectType">Type of the object.</param>
     /// <param name="serializer">The calling serializer.</param>
     /// <returns>The object value.</returns>
-    public override object ReadJson(JsonReader reader, Type objectType, JsonSerializer serializer)
+    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
     {
       DataTable dt;
 

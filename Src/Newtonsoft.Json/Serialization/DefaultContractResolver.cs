@@ -31,6 +31,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Security.Permissions;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Linq;
@@ -79,11 +80,13 @@ namespace Newtonsoft.Json.Serialization
         new EntityKeyMemberConverter(),
 #endif
         new BinaryConverter(),
+        new KeyValuePairConverter(),
 #if !SILVERLIGHT
         new XmlNodeConverter(),
         new DataSetConverter(),
-        new DataTableConverter()
+        new DataTableConverter(),
 #endif
+        new BsonObjectIdConverter()
       };
 
     private static Dictionary<ResolverContractKey, JsonContract> _sharedContractCache;
@@ -91,6 +94,18 @@ namespace Newtonsoft.Json.Serialization
 
     private Dictionary<ResolverContractKey, JsonContract> _instanceContractCache;
     private readonly bool _sharedCache;
+
+    /// <summary>
+    /// Gets a value indicating whether members are being get and set using dynamic code generation.
+    /// This value is determined by the runtime permissions available.
+    /// </summary>
+    /// <value>
+    /// 	<c>true</c> if using dynamic code generation; otherwise, <c>false</c>.
+    /// </value>
+    public bool DynamicCodeGeneration
+    {
+      get { return JsonTypeReflector.DynamicCodeGeneration; }
+    }
 
     /// <summary>
     /// Gets or sets the default members search flags.
@@ -267,6 +282,11 @@ namespace Newtonsoft.Json.Serialization
       return JsonTypeReflector.GetJsonConverter(objectType, objectType);
     }
 
+    private Func<object> GetDefaultCreator(Type createdType)
+    {
+      return JsonTypeReflector.ReflectionDelegateFactory.CreateDefaultConstructor(createdType);
+    }
+
     private void InitializeContract(JsonContract contract)
     {
       JsonContainerAttribute containerAttribute = JsonTypeReflector.GetJsonContainerAttribute(contract.UnderlyingType);
@@ -292,19 +312,8 @@ namespace Newtonsoft.Json.Serialization
       if (ReflectionUtils.HasDefaultConstructor(contract.CreatedType, true)
         || contract.CreatedType.IsValueType)
       {
-#if !PocketPC && !SILVERLIGHT
-        contract.DefaultCreator = LateBoundDelegateFactory.CreateDefaultConstructor(contract.CreatedType);
-#else
-        ConstructorInfo constructorInfo = ReflectionUtils.GetDefaultConstructor(contract.CreatedType, true);
+        contract.DefaultCreator = GetDefaultCreator(contract.CreatedType);
 
-        contract.DefaultCreator = () =>
-                                    {
-                                      if (contract.CreatedType.IsValueType)
-                                        return Activator.CreateInstance(contract.CreatedType);
-
-                                      return constructorInfo.Invoke(null);
-                                    };
-#endif
         contract.DefaultCreatorNonPublic = (!contract.CreatedType.IsValueType &&
                                             ReflectionUtils.GetDefaultConstructor(contract.CreatedType) == null);
       }
@@ -410,9 +419,9 @@ namespace Newtonsoft.Json.Serialization
       ConstructorInfo constructorInfo = objectType.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new [] {typeof (SerializationInfo), typeof (StreamingContext)}, null);
       if (constructorInfo != null)
       {
-        MethodCaller<object> methodCaller = LateBoundDelegateFactory.CreateMethodCall(constructorInfo);
+        MethodCall<object> methodCall = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall(constructorInfo);
 
-        contract.ISerializableCreator = (args => methodCaller(null, args));
+        contract.ISerializableCreator = (args => methodCall(null, args));
       }
 
       return contract;
@@ -572,10 +581,11 @@ namespace Newtonsoft.Json.Serialization
     protected virtual IValueProvider CreateMemberValueProvider(MemberInfo member)
     {
 #if !PocketPC && !SILVERLIGHT
-      return new DynamicValueProvider(member);
-#else
-      return new ReflectionValueProvider(member);
+      if (DynamicCodeGeneration)
+        return new DynamicValueProvider(member);
 #endif
+
+      return new ReflectionValueProvider(member);
     }
 
     /// <summary>

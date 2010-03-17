@@ -392,5 +392,56 @@ namespace Newtonsoft.Json.Tests.Bson
       Assert.AreEqual(9.95m, deserializedProduct.Price);
       Assert.AreEqual(3, deserializedProduct.Sizes.Length);
     }
+
+    [Test]
+    public void WriteOid()
+    {
+      MemoryStream ms = new MemoryStream();
+      BsonWriter writer = new BsonWriter(ms);
+
+      byte[] oid = new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+
+      writer.WriteStartObject();
+      writer.WritePropertyName("_oid");
+      writer.WriteObjectId(oid);
+      writer.WriteEndObject();
+
+      string bson = MiscellaneousUtils.BytesToHex(ms.ToArray());
+      Assert.AreEqual("17-00-00-00-07-5F-6F-69-64-00-01-02-03-04-05-06-07-08-09-0A-0B-0C-00", bson);
+
+      ms.Seek(0, SeekOrigin.Begin);
+      BsonReader reader = new BsonReader(ms);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Bytes, reader.TokenType);
+      Assert.AreEqual(oid, reader.Value);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
+    }
+
+    [Test]
+    public void WriteOidPlusContent()
+    {
+      MemoryStream ms = new MemoryStream();
+      BsonWriter writer = new BsonWriter(ms);
+
+      writer.WriteStartObject();
+      writer.WritePropertyName("_id");
+      writer.WriteObjectId(MiscellaneousUtils.HexToBytes("4ABBED9D1D8B0F0218000001"));
+      writer.WritePropertyName("test");
+      writer.WriteValue("1234£56");
+      writer.WriteEndObject();
+
+      byte[] expected = MiscellaneousUtils.HexToBytes("29000000075F6964004ABBED9D1D8B0F02180000010274657374000900000031323334C2A335360000");
+
+      Assert.AreEqual(expected, ms.ToArray());
+    }
   }
 }

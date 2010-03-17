@@ -111,7 +111,7 @@ namespace Newtonsoft.Json.Tests.Converters
         writer.WriteValue(d.TableName);
       }
 
-      public override object ReadJson(JsonReader reader, Type objectType, JsonSerializer serializer)
+      public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
       {
         //reader.Read();
         DataTable d = new DataTable((string)reader.Value);

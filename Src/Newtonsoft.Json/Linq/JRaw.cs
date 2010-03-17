@@ -25,7 +25,7 @@ namespace Newtonsoft.Json.Linq
     /// Initializes a new instance of the <see cref="JRaw"/> class.
     /// </summary>
     /// <param name="rawJson">The raw json.</param>
-    public JRaw(string rawJson)
+    public JRaw(object rawJson)
       : base(rawJson, JTokenType.Raw)
     {
     }
@@ -50,39 +50,5 @@ namespace Newtonsoft.Json.Linq
     {
       return new JRaw(this);
     }
-
-    //public override void WriteTo(JsonWriter writer, params JsonConverter[] converters)
-    //{
-    //  writer.WriteRawValue(Value);
-    //}
-
-    //internal override JToken CloneToken()
-    //{
-    //  throw new NotImplementedException();
-    //}
-
-    //internal override bool DeepEquals(JToken node)
-    //{
-    //  JRaw other = node as JRaw;
-    //  if (other == null)
-    //    return false;
-
-    //  return (this == other || string.Equals(Value, other.Value, StringComparison.Ordinal));
-    //}
-
-    //public override JTokenType Type
-    //{
-    //  get { return JTokenType.Raw; }
-    //}
-
-    //public override bool HasValues
-    //{
-    //  get { return false; }
-    //}
-
-    //internal override int GetDeepHashCode()
-    //{
-    //  return Value.GetHashCode();
-    //}
   }
 }

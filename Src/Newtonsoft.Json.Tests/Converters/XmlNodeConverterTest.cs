@@ -86,14 +86,14 @@ namespace Newtonsoft.Json.Tests.Converters
       if (deserializeRootElementName != null)
         converter.DeserializeRootElementName = deserializeRootElementName;
 
-      XmlNode node = (XmlNode)converter.ReadJson(reader, typeof (XmlDocument), new JsonSerializer());
+      XmlNode node = (XmlNode)converter.ReadJson(reader, typeof (XmlDocument), null, new JsonSerializer());
 
 #if !NET20
      string xmlText = node.OuterXml;
 
       reader = new JsonTextReader(new StringReader(json));
       reader.Read();
-      XDocument d = (XDocument) converter.ReadJson(reader, typeof (XDocument), new JsonSerializer());
+      XDocument d = (XDocument) converter.ReadJson(reader, typeof (XDocument), null, new JsonSerializer());
 
       string linqXmlText = d.ToString(SaveOptions.DisableFormatting);
       if (d.Declaration != null)

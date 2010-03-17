@@ -91,6 +91,7 @@
     <Compile Include="Converters\DataSetConverterTests.cs" />
     <Compile Include="Converters\CustomCreationConverterTests.cs" />
     <Compile Include="Converters\HtmlColorConverterTests.cs" />
+    <Compile Include="Converters\ObjectIdConverterTests.cs" />
     <Compile Include="Converters\StringEnumConverterTests.cs" />
     <Compile Include="FileSystemEntityModel.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -244,7 +245,7 @@
     <Compile Include="TestObjects\TypeClass.cs" />
     <Compile Include="TestObjects\TypedSubHashtable.cs" />
     <Compile Include="TestObjects\UserNullable.cs" />
-    <Compile Include="Utilities\LateBoundDelegateFactoryTests.cs" />
+    <Compile Include="Utilities\DynamicReflectionDelegateFactoryTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.csproj">
