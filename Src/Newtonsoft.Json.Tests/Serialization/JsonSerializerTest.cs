@@ -3209,5 +3209,43 @@ keyword such as type of business.""
 
       Assert.AreEqual(p.Name, "Existing,Appended");
     }
+
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Additional content found in JSON reference object. A JSON reference object should only have a $ref property.")]
+    public void SerializeRefAdditionalContent()
+    {
+      //Additional text found in JSON string after finishing deserializing object.
+      //Test 1
+      var reference = new Dictionary<string, object>();
+      reference.Add("$ref", "Persons");
+      reference.Add("$id", 1);
+
+      var child = new Dictionary<string, object>();
+      child.Add("_id", 2);
+      child.Add("Name", "Isabell");
+      child.Add("Father", reference);
+
+      var json = JsonConvert.SerializeObject(child);
+      JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "JSON reference $ref property must have a string value.")]
+    public void SerializeRefBadType()
+    {
+      //Additional text found in JSON string after finishing deserializing object.
+      //Test 1
+      var reference = new Dictionary<string, object>();
+      reference.Add("$ref", 1);
+      reference.Add("$id", 1);
+
+      var child = new Dictionary<string, object>();
+      child.Add("_id", 2);
+      child.Add("Name", "Isabell");
+      child.Add("Father", reference);
+
+      var json = JsonConvert.SerializeObject(child);
+      JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+    }
   }
 }

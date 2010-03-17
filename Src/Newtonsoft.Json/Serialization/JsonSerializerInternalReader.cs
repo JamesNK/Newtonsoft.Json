@@ -299,9 +299,15 @@ namespace Newtonsoft.Json.Serialization
           if (string.Equals(propertyName, JsonTypeReflector.RefPropertyName, StringComparison.Ordinal))
           {
             CheckedRead(reader);
+            if (reader.TokenType != JsonToken.String)
+              throw new JsonSerializationException("JSON reference {0} property must have a string value.".FormatWith(CultureInfo.InvariantCulture, JsonTypeReflector.RefPropertyName));
+
             string reference = reader.Value.ToString();
 
             CheckedRead(reader);
+            if (reader.TokenType == JsonToken.PropertyName)
+              throw new JsonSerializationException("Additional content found in JSON reference object. A JSON reference object should only have a {0} property.".FormatWith(CultureInfo.InvariantCulture, JsonTypeReflector.RefPropertyName));
+
             return Serializer.ReferenceResolver.ResolveReference(reference);
           }
           else if (string.Equals(propertyName, JsonTypeReflector.TypePropertyName, StringComparison.Ordinal))
