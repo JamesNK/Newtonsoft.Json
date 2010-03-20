@@ -39,12 +39,17 @@ namespace Newtonsoft.Json.Bson
   public class BsonReader : JsonReader
   {
     private const int MaxCharBytesSize = 128;
+    private static readonly byte[] _seqRange1 = new byte[] { 0, 127 }; // range of 1-byte sequence
+    private static readonly byte[] _seqRange2 = new byte[] { 194, 223 }; // range of 2-byte sequence
+    private static readonly byte[] _seqRange3 = new byte[] { 224, 239 }; // range of 3-byte sequence
+    private static readonly byte[] _seqRange4 = new byte[] { 240, 244 }; // range of 4-byte sequence
 
     private readonly BinaryReader _reader;
     private readonly List<ContainerContext> _stack;
 
     private byte[] _byteBuffer;
     private char[] _charBuffer;
+
     private BsonType _currentElementType;
     private BsonReaderState _bsonReaderState;
     private ContainerContext _currentContext;
@@ -489,33 +494,57 @@ namespace Newtonsoft.Json.Bson
       StringBuilder builder = null;
 
       int totalBytesRead = 0;
+      // used in case of left over multibyte characters in the buffer
+      int offset = 0;
       do
       {
-        int byteCount = 0;
+        int count = offset;
         byte b;
-        while (byteCount < MaxCharBytesSize && (b = _reader.ReadByte()) > 0)
+        while (count < MaxCharBytesSize && (b = _reader.ReadByte()) > 0)
         {
-          _byteBuffer[byteCount++] = b;
+          _byteBuffer[count++] = b;
         }
+        int byteCount = count - offset;
         totalBytesRead += byteCount;
 
-        int length = Encoding.UTF8.GetChars(_byteBuffer, 0, byteCount, _charBuffer, 0);
-
-        if (byteCount < MaxCharBytesSize && builder == null)
+        if (count < MaxCharBytesSize && builder == null)
         {
+          // pref optimization to avoid reading into a string builder
+          // if string is smaller than the buffer then return it directly
+          int length = Encoding.UTF8.GetChars(_byteBuffer, 0, byteCount, _charBuffer, 0);
+
           MovePosition(totalBytesRead + 1);
           return new string(_charBuffer, 0, length);
         }
-
-        if (builder == null)
-          builder = new StringBuilder(MaxCharBytesSize * 2);
-
-        builder.Append(_charBuffer, 0, length);
-
-        if (byteCount < MaxCharBytesSize)
+        else
         {
-          MovePosition(totalBytesRead + 1);
-          return builder.ToString();
+          // calculate the index of the end of the last full character in the buffer
+          int lastFullCharStop = GetLastFullCharStop(count - 1);
+
+          int charCount = Encoding.UTF8.GetChars(_byteBuffer, 0, lastFullCharStop + 1, _charBuffer, 0);
+
+          if (builder == null)
+            builder = new StringBuilder(MaxCharBytesSize * 2);
+
+          builder.Append(_charBuffer, 0, charCount);
+
+          if (lastFullCharStop < byteCount - 1)
+          {
+            offset = byteCount - lastFullCharStop - 1;
+            // copy left over multi byte characters to beginning of buffer for next iteration
+            Array.Copy(_byteBuffer, lastFullCharStop + 1, _byteBuffer, 0, offset);
+          }
+          else
+          {
+            // reached end of string
+            if (count < MaxCharBytesSize)
+            {
+              MovePosition(totalBytesRead + 1);
+              return builder.ToString();
+            }
+
+            offset = 0;
+          }
         }
       }
       while (true);
@@ -543,26 +572,96 @@ namespace Newtonsoft.Json.Bson
       StringBuilder builder = null;
 
       int totalBytesRead = 0;
+      int offset = 0;
       do
       {
-        int count = ((length - totalBytesRead) > MaxCharBytesSize) ? MaxCharBytesSize : (length - totalBytesRead);
-        int byteCount = _reader.BaseStream.Read(_byteBuffer, 0, count);
+        int count = ((length - totalBytesRead) > MaxCharBytesSize - offset)
+          ? MaxCharBytesSize - offset
+          : length - totalBytesRead;
+
+        int byteCount = _reader.BaseStream.Read(_byteBuffer, offset, count);
+
         if (byteCount == 0)
           throw new EndOfStreamException("Unable to read beyond the end of the stream.");
 
-        int charCount = Encoding.UTF8.GetChars(_byteBuffer, 0, byteCount, _charBuffer, 0);
+        byteCount += offset;
+
         if (totalBytesRead == 0 && byteCount == length)
+        {
+          // pref optimization to avoid reading into a string builder
+          // first iteration and all bytes read then return string directly
+          int charCount = Encoding.UTF8.GetChars(_byteBuffer, 0, byteCount, _charBuffer, 0);
           return new string(_charBuffer, 0, charCount);
+        }
+        else
+        {
+          int lastFullCharStop = GetLastFullCharStop(byteCount - 1);
 
-        if (builder == null)
-          builder = new StringBuilder(length);
+          if (builder == null)
+            builder = new StringBuilder(length);
 
-        builder.Append(_charBuffer, 0, charCount);
-        totalBytesRead += byteCount;
+          int charCount = Encoding.UTF8.GetChars(_byteBuffer, 0, lastFullCharStop + 1, _charBuffer, 0);
+          builder.Append(_charBuffer, 0, charCount);
+
+          if (lastFullCharStop < byteCount - 1)
+          {
+            offset = byteCount - lastFullCharStop - 1;
+            // copy left over multi byte characters to beginning of buffer for next iteration
+            Array.Copy(_byteBuffer, lastFullCharStop + 1, _byteBuffer, 0, offset);
+          }
+          else
+          {
+            offset = 0;
+          }
+
+          totalBytesRead += (byteCount - offset);
+        }
       }
       while (totalBytesRead < length);
 
       return builder.ToString();
+    }
+
+    private int GetLastFullCharStop(int start)
+    {
+      int lookbackPos = start;
+      int bis = 0;
+      while (lookbackPos >= 0)
+      {
+        bis = BytesInSequence(_byteBuffer[lookbackPos]);
+        if (bis == 0)
+        {
+          lookbackPos--;
+          continue;
+        }
+        else if (bis == 1)
+        {
+          break;
+        }
+        else
+        {
+          lookbackPos--;
+          break;
+        }
+      }
+      if (bis == start - lookbackPos)
+      {
+        //Full character.
+        return start;
+      }
+      else
+      {
+        return lookbackPos;
+      }
+    }
+
+    private int BytesInSequence(byte b)
+    {
+      if (b <= _seqRange1[1]) return 1;
+      if (b >= _seqRange2[0] && b <= _seqRange2[1]) return 2;
+      if (b >= _seqRange3[0] && b <= _seqRange3[1]) return 3;
+      if (b >= _seqRange4[0] && b <= _seqRange4[1]) return 4;
+      return 0;
     }
 
     private void EnsureBuffers()

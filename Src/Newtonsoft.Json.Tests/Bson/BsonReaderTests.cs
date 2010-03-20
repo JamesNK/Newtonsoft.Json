@@ -38,6 +38,9 @@ namespace Newtonsoft.Json.Tests.Bson
 {
   public class BsonReaderTests : TestFixtureBase
   {
+    private char pound = '\u00a3';
+    private char euro = '\u20ac';
+
     [Test]
     public void ReadSingleObject()
     {
@@ -688,6 +691,204 @@ namespace Newtonsoft.Json.Tests.Bson
       reader = new BsonReader(new MemoryStream(bson), false, DateTimeKind.Unspecified);
       o = (JObject)JToken.ReadFrom(reader);
       Assert.AreEqual(DateTime.SpecifyKind(value.ToLocalTime(), DateTimeKind.Unspecified), (DateTime)o["DateTime"]);
+    }
+
+    private string WriteAndReadStringValue(string val)
+    {
+      MemoryStream ms = new MemoryStream();
+      BsonWriter bs = new BsonWriter(ms);
+      bs.WriteStartObject();
+      bs.WritePropertyName("StringValue");
+      bs.WriteValue(val);
+      bs.WriteEnd();
+
+      ms.Seek(0, SeekOrigin.Begin);
+
+      BsonReader reader = new BsonReader(ms);
+      // object
+      reader.Read();
+      // property name
+      reader.Read();
+      // string
+      reader.Read();
+      return (string)reader.Value;
+    }
+
+    private string WriteAndReadStringPropertyName(string val)
+    {
+      MemoryStream ms = new MemoryStream();
+      BsonWriter bs = new BsonWriter(ms);
+      bs.WriteStartObject();
+      bs.WritePropertyName(val);
+      bs.WriteValue("Dummy");
+      bs.WriteEnd();
+
+      ms.Seek(0, SeekOrigin.Begin);
+
+      BsonReader reader = new BsonReader(ms);
+      // object
+      reader.Read();
+      // property name
+      reader.Read();
+      return (string)reader.Value;
+    }
+
+    [Test]
+    public void TestReadLenStringValueShortTripleByte()
+    {
+      StringBuilder sb = new StringBuilder();
+      //sb.Append('1',127); //first char of euro at the end of the boundry.
+      //sb.Append(euro, 5);
+      //sb.Append('1',128);
+      sb.Append(euro);
+
+      string expected = sb.ToString();
+      Assert.AreEqual(expected, WriteAndReadStringValue(expected));
+    }
+
+    [Test]
+    public void TestReadLenStringValueTripleByteCharBufferBoundry0()
+    {
+      StringBuilder sb = new StringBuilder();
+      sb.Append('1', 127); //first char of euro at the end of the boundry.
+      sb.Append(euro, 5);
+      sb.Append('1', 128);
+      sb.Append(euro);
+
+      string expected = sb.ToString();
+      Assert.AreEqual(expected, WriteAndReadStringValue(expected));
+    }
+
+    [Test]
+    public void TestReadLenStringValueTripleByteCharBufferBoundry1()
+    {
+      StringBuilder sb = new StringBuilder();
+      sb.Append('1', 126);
+      sb.Append(euro, 5); //middle char of euro at the end of the boundry.
+      sb.Append('1', 128);
+      sb.Append(euro);
+
+      string expected = sb.ToString();
+      string result = WriteAndReadStringValue(expected);
+      Assert.AreEqual(expected, result);
+    }
+
+    [Test]
+    public void TestReadLenStringValueTripleByteCharOne()
+    {
+      StringBuilder sb = new StringBuilder();
+      sb.Append(euro, 1); //Just one triple byte char in the string.
+
+      string expected = sb.ToString();
+      Assert.AreEqual(expected, WriteAndReadStringValue(expected));
+    }
+
+    [Test]
+    public void TestReadLenStringValueTripleByteCharBufferBoundry2()
+    {
+      StringBuilder sb = new StringBuilder();
+      sb.Append('1', 125);
+      sb.Append(euro, 5); //last char of the eruo at the end of the boundry.
+      sb.Append('1', 128);
+      sb.Append(euro);
+
+      string expected = sb.ToString();
+      Assert.AreEqual(expected, WriteAndReadStringValue(expected));
+    }
+
+    [Test]
+    public void TestReadStringValue()
+    {
+      string expected = "test";
+      Assert.AreEqual(expected, WriteAndReadStringValue(expected));
+    }
+
+    [Test]
+    public void TestReadStringValueLong()
+    {
+      StringBuilder sb = new StringBuilder();
+      sb.Append('t', 150);
+      string expected = sb.ToString();
+      Assert.AreEqual(expected, WriteAndReadStringValue(expected));
+    }
+
+    [Test]
+    public void TestReadStringPropertyNameShortTripleByte()
+    {
+      StringBuilder sb = new StringBuilder();
+      //sb.Append('1',127); //first char of euro at the end of the boundry.
+      //sb.Append(euro, 5);
+      //sb.Append('1',128);
+      sb.Append(euro);
+
+      string expected = sb.ToString();
+      Assert.AreEqual(expected, WriteAndReadStringPropertyName(expected));
+    }
+
+    [Test]
+    public void TestReadStringPropertyNameTripleByteCharBufferBoundry0()
+    {
+      StringBuilder sb = new StringBuilder();
+      sb.Append('1', 127); //first char of euro at the end of the boundry.
+      sb.Append(euro, 5);
+      sb.Append('1', 128);
+      sb.Append(euro);
+
+      string expected = sb.ToString();
+      string result = WriteAndReadStringPropertyName(expected);
+      Assert.AreEqual(expected, result);
+    }
+
+    [Test]
+    public void TestReadStringPropertyNameTripleByteCharBufferBoundry1()
+    {
+      StringBuilder sb = new StringBuilder();
+      sb.Append('1', 126);
+      sb.Append(euro, 5); //middle char of euro at the end of the boundry.
+      sb.Append('1', 128);
+      sb.Append(euro);
+
+      string expected = sb.ToString();
+      Assert.AreEqual(expected, WriteAndReadStringPropertyName(expected));
+    }
+
+    [Test]
+    public void TestReadStringPropertyNameTripleByteCharOne()
+    {
+      StringBuilder sb = new StringBuilder();
+      sb.Append(euro, 1); //Just one triple byte char in the string.
+
+      string expected = sb.ToString();
+      Assert.AreEqual(expected, WriteAndReadStringPropertyName(expected));
+    }
+
+    [Test]
+    public void TestReadStringPropertyNameTripleByteCharBufferBoundry2()
+    {
+      StringBuilder sb = new StringBuilder();
+      sb.Append('1', 125);
+      sb.Append(euro, 5); //last char of the eruo at the end of the boundry.
+      sb.Append('1', 128);
+      sb.Append(euro);
+
+      string expected = sb.ToString();
+      Assert.AreEqual(expected, WriteAndReadStringPropertyName(expected));
+    }
+
+    [Test]
+    public void TestReadStringPropertyName()
+    {
+      string expected = "test";
+      Assert.AreEqual(expected, WriteAndReadStringPropertyName(expected));
+    }
+
+    [Test]
+    public void TestReadStringPropertyNameLong()
+    {
+      StringBuilder sb = new StringBuilder();
+      sb.Append('t', 150);
+      string expected = sb.ToString();
+      Assert.AreEqual(expected, WriteAndReadStringPropertyName(expected));
     }
   }
 }
