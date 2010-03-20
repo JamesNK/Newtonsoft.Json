@@ -3247,5 +3247,74 @@ keyword such as type of business.""
       var json = JsonConvert.SerializeObject(child);
       JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
     }
+
+    public class ConstructorCompexIgnoredProperty
+    {
+      [JsonIgnore]
+      public Product Ignored { get; set; }
+      public string First { get; set; }
+      public int Second { get; set; }
+
+      public ConstructorCompexIgnoredProperty(string first, int second)
+      {
+        First = first;
+        Second = second;
+      }
+    }
+
+    [Test]
+    public void DeserializeIgnoredPropertyInConstructor()
+    {
+      string json = @"{""First"":""First"",""Second"":2,""Ignored"":{""Name"":""James""},""AdditionalContent"":{""LOL"":true}}";
+
+      ConstructorCompexIgnoredProperty cc = JsonConvert.DeserializeObject<ConstructorCompexIgnoredProperty>(json);
+      Assert.AreEqual("First", cc.First);
+      Assert.AreEqual(2, cc.Second);
+      Assert.AreEqual(null, cc.Ignored);
+    }
+
+    public class ShouldSerializeTestClass
+    {
+      internal bool _shouldSerializeName;
+
+      public string Name { get; set; }
+      public int Age { get; set; }
+
+      public void ShouldSerializeAge()
+      {
+        // dummy. should never be used because it doesn't return bool
+      }
+
+      public bool ShouldSerializeName()
+      {
+        return _shouldSerializeName;
+      }
+    }
+
+    [Test]
+    public void ShouldSerializeTest()
+    {
+      ShouldSerializeTestClass c = new ShouldSerializeTestClass();
+      c.Name = "James";
+      c.Age = 27;
+
+      string json = JsonConvert.SerializeObject(c, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""Age"": 27
+}", json);
+
+      c._shouldSerializeName = true;
+      json = JsonConvert.SerializeObject(c, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""Name"": ""James"",
+  ""Age"": 27
+}", json);
+
+      ShouldSerializeTestClass deserialized = JsonConvert.DeserializeObject<ShouldSerializeTestClass>(json);
+      Assert.AreEqual("James", deserialized.Name);
+      Assert.AreEqual(27, deserialized.Age);
+    }
   }
 }

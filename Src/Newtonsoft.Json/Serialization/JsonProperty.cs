@@ -125,6 +125,8 @@ namespace Newtonsoft.Json.Serialization
     /// <value>The object creation handling.</value>
     public ObjectCreationHandling? ObjectCreationHandling { get; set; }
 
+    public Predicate<object> ShouldSerialize { get; set; }
+
     /// <summary>
     /// Returns a <see cref="String"/> that represents this instance.
     /// </summary>

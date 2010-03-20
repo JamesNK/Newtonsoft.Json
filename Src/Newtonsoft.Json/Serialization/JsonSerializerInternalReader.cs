@@ -753,9 +753,9 @@ namespace Newtonsoft.Json.Serialization
             if (property != null)
             {
               if (!property.Ignored)
-              {
                 propertyValues[property] = CreateValueProperty(reader, property, null, true, null);
-              }
+              else
+                reader.Skip();
             }
             else
             {

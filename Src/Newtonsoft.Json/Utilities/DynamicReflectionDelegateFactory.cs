@@ -47,7 +47,7 @@ namespace Newtonsoft.Json.Utilities
       return dynamicMethod;
     }
 
-    public override MethodCall<object> CreateMethodCall(MethodBase method)
+    public override MethodCall<T, object> CreateMethodCall<T>(MethodBase method)
     {
       DynamicMethod dynamicMethod = CreateDynamicMethod(method.ToString(), typeof(object), new[] { typeof(object), typeof(object[]) }, method.DeclaringType);
       ILGenerator generator = dynamicMethod.GetILGenerator();
@@ -94,10 +94,10 @@ namespace Newtonsoft.Json.Utilities
 
       generator.Return();
 
-      return (MethodCall<object>)dynamicMethod.CreateDelegate(typeof(MethodCall<object>));
+      return (MethodCall<T, object>)dynamicMethod.CreateDelegate(typeof(MethodCall<T, object>));
     }
 
-    public override Func<object> CreateDefaultConstructor(Type type)
+    public override Func<T> CreateDefaultConstructor<T>(Type type)
     {
       DynamicMethod dynamicMethod = CreateDynamicMethod("Create" + type.FullName, typeof(object), Type.EmptyTypes, type);
       dynamicMethod.InitLocals = true;
@@ -123,7 +123,7 @@ namespace Newtonsoft.Json.Utilities
 
       generator.Return();
 
-      return (Func<object>)dynamicMethod.CreateDelegate(typeof(Func<object>));
+      return (Func<T>)dynamicMethod.CreateDelegate(typeof(Func<T>));
     }
 
     public override Func<T, object> CreateGet<T>(PropertyInfo propertyInfo)

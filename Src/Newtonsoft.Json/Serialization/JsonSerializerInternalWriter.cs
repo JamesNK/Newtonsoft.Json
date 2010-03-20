@@ -311,7 +311,7 @@ namespace Newtonsoft.Json.Serialization
       {
         try
         {
-          if (!property.Ignored && property.Readable)
+          if (!property.Ignored && property.Readable && ShouldSerialize(property, value))
           {
             object memberValue = property.ValueProvider.GetValue(value);
             JsonContract memberContract = GetContractSafe(memberValue);
@@ -546,6 +546,14 @@ namespace Newtonsoft.Json.Serialization
       {
         writer.WriteEnd();
       }
+    }
+
+    private bool ShouldSerialize(JsonProperty property, object target)
+    {
+      if (property.ShouldSerialize == null)
+        return true;
+
+      return property.ShouldSerialize(target);
     }
   }
 }

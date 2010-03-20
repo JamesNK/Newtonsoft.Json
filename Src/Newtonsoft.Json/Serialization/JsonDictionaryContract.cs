@@ -41,7 +41,7 @@ namespace Newtonsoft.Json.Serialization
 
     private readonly Type _genericCollectionDefinitionType;
     private Type _genericWrapperType;
-    private MethodCall<object> _genericWrapperCreator;
+    private MethodCall<object, object> _genericWrapperCreator;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonDictionaryContract"/> class.
@@ -81,7 +81,7 @@ namespace Newtonsoft.Json.Serialization
         _genericWrapperType = ReflectionUtils.MakeGenericType(typeof(DictionaryWrapper<,>), DictionaryKeyType, DictionaryValueType);
 
         ConstructorInfo genericWrapperConstructor = _genericWrapperType.GetConstructor(new[] { _genericCollectionDefinitionType });
-        _genericWrapperCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall(genericWrapperConstructor);
+        _genericWrapperCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(genericWrapperConstructor);
       }
 
       return (IWrappedDictionary)_genericWrapperCreator(null, dictionary);

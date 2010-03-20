@@ -38,10 +38,10 @@ namespace Newtonsoft.Json.Serialization
   {
     internal Type CollectionItemType { get; private set; }
 
-    private bool _isCollectionItemTypeNullableType;
-    private Type _genericCollectionDefinitionType;
+    private readonly bool _isCollectionItemTypeNullableType;
+    private readonly Type _genericCollectionDefinitionType;
     private Type _genericWrapperType;
-    private MethodCall<object> _genericWrapperCreator;
+    private MethodCall<object, object> _genericWrapperCreator;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonArrayContract"/> class.
@@ -78,7 +78,7 @@ namespace Newtonsoft.Json.Serialization
         _genericWrapperType = ReflectionUtils.MakeGenericType(typeof(CollectionWrapper<>), CollectionItemType);
 
         ConstructorInfo genericWrapperConstructor = _genericWrapperType.GetConstructor(new[] { _genericCollectionDefinitionType });
-        _genericWrapperCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall(genericWrapperConstructor);
+        _genericWrapperCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(genericWrapperConstructor);
       }
 
       return (IWrappedCollection)_genericWrapperCreator(null, list);

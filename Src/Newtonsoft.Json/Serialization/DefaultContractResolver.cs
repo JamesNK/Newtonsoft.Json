@@ -284,7 +284,7 @@ namespace Newtonsoft.Json.Serialization
 
     private Func<object> GetDefaultCreator(Type createdType)
     {
-      return JsonTypeReflector.ReflectionDelegateFactory.CreateDefaultConstructor(createdType);
+      return JsonTypeReflector.ReflectionDelegateFactory.CreateDefaultConstructor<object>(createdType);
     }
 
     private void InitializeContract(JsonContract contract)
@@ -419,7 +419,7 @@ namespace Newtonsoft.Json.Serialization
       ConstructorInfo constructorInfo = objectType.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new [] {typeof (SerializationInfo), typeof (StreamingContext)}, null);
       if (constructorInfo != null)
       {
-        MethodCall<object> methodCall = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall(constructorInfo);
+        MethodCall<object, object> methodCall = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(constructorInfo);
 
         contract.ISerializableCreator = (args => methodCall(null, args));
       }
@@ -670,7 +670,22 @@ namespace Newtonsoft.Json.Serialization
       property.ObjectCreationHandling = (propertyAttribute != null) ? propertyAttribute._objectCreationHandling : null;
       property.IsReference = (propertyAttribute != null) ? propertyAttribute._isReference : null;
 
+      property.ShouldSerialize = CreateShouldSerializeTest(member);
+
       return property;
+    }
+
+    private Predicate<object> CreateShouldSerializeTest(MemberInfo member)
+    {
+      MethodInfo shouldSerializeMethod = member.DeclaringType.GetMethod(JsonTypeReflector.ShouldSerializePrefix + member.Name, new Type[0]);
+
+      if (shouldSerializeMethod == null || shouldSerializeMethod.ReturnType != typeof(bool))
+        return null;
+
+      MethodCall<object, object> shouldSerializeCall =
+        JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(shouldSerializeMethod);
+
+      return o => (bool) shouldSerializeCall(o);
     }
 
     /// <summary>

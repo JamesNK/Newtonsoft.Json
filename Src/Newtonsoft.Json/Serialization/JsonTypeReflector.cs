@@ -48,6 +48,8 @@ namespace Newtonsoft.Json.Serialization
     public const string TypePropertyName = "$type";
     public const string ArrayValuesPropertyName = "$values";
 
+    public const string ShouldSerializePrefix = "ShouldSerialize";
+
     private static readonly ThreadSafeStore<ICustomAttributeProvider, Type> JsonConverterTypeCache = new ThreadSafeStore<ICustomAttributeProvider, Type>(GetJsonConverterTypeFromAttribute);
 #if !SILVERLIGHT && !PocketPC && !NET20
     private static readonly ThreadSafeStore<Type, Type> AssociatedMetadataTypesCache = new ThreadSafeStore<Type, Type>(GetAssociateMetadataTypeFromAttribute);

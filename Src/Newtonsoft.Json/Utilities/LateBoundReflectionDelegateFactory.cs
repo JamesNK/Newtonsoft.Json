@@ -33,7 +33,7 @@ namespace Newtonsoft.Json.Utilities
   {
     public static readonly LateBoundReflectionDelegateFactory Instance = new LateBoundReflectionDelegateFactory();
 
-    public override MethodCall<object> CreateMethodCall(MethodBase method)
+    public override MethodCall<T, object> CreateMethodCall<T>(MethodBase method)
     {
       ConstructorInfo c = method as ConstructorInfo;
       if (c != null)
@@ -42,14 +42,14 @@ namespace Newtonsoft.Json.Utilities
       return (o, a) => method.Invoke(o, a);
     }
 
-    public override Func<object> CreateDefaultConstructor(Type type)
+    public override Func<T> CreateDefaultConstructor<T>(Type type)
     {
       if (type.IsValueType)
-        return () => ReflectionUtils.CreateInstance(type);
+        return () => (T)ReflectionUtils.CreateInstance(type);
 
       ConstructorInfo constructorInfo = ReflectionUtils.GetDefaultConstructor(type, true);
 
-      return () => constructorInfo.Invoke(null);
+      return () => (T)constructorInfo.Invoke(null);
     }
 
     public override Func<T, object> CreateGet<T>(PropertyInfo propertyInfo)

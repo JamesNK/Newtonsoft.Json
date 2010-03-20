@@ -57,8 +57,8 @@ namespace Newtonsoft.Json.Utilities
       throw new Exception("Could not create setter for {0}.".FormatWith(CultureInfo.InvariantCulture, memberInfo));
     }
 
-    public abstract MethodCall<object> CreateMethodCall(MethodBase method);
-    public abstract Func<object> CreateDefaultConstructor(Type type);
+    public abstract MethodCall<T, object> CreateMethodCall<T>(MethodBase method);
+    public abstract Func<T> CreateDefaultConstructor<T>(Type type);
     public abstract Func<T, object> CreateGet<T>(PropertyInfo propertyInfo);
     public abstract Func<T, object> CreateGet<T>(FieldInfo fieldInfo);
     public abstract Action<T, object> CreateSet<T>(FieldInfo fieldInfo);
