@@ -34,6 +34,19 @@ namespace Newtonsoft.Json.Serialization
 {
   internal class DefaultReferenceResolver : IReferenceResolver
   {
+    private class ReferenceEqualsEqualityComparer : IEqualityComparer<object>
+    {
+      bool IEqualityComparer<object>.Equals(object x, object y)
+      {
+        return ReferenceEquals(x, y);
+      }
+
+      int IEqualityComparer<object>.GetHashCode(object obj)
+      {
+        return -1;
+      }
+    }
+
     private int _referenceCount;
     private BidirectionalDictionary<string, object> _mappings;
 
@@ -41,8 +54,12 @@ namespace Newtonsoft.Json.Serialization
     {
       get
       {
+        // override equality comparer for object key dictionary
+        // object will be modified as it deserializes and might have mutable hashcode
         if (_mappings == null)
-          _mappings = new BidirectionalDictionary<string, object>();
+          _mappings = new BidirectionalDictionary<string, object>(
+            EqualityComparer<string>.Default,
+            new ReferenceEqualsEqualityComparer());
 
         return _mappings;
       }

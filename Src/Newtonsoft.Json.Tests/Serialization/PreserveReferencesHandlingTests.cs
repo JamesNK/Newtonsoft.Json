@@ -728,5 +728,79 @@ namespace Newtonsoft.Json.Tests.Serialization
       // true
     }
 
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
+    public class User
+    {
+      #region properties
+
+      [JsonProperty(Required = Required.Always, PropertyName = "SecretType")]
+      private string secretType;
+
+      [JsonProperty(Required = Required.Always)]
+      public string Login { get; set; }
+
+      public Type SecretType
+      {
+        get { return Type.GetType(secretType); }
+        set { secretType = value.AssemblyQualifiedName; }
+      }
+
+      [JsonProperty]
+      public User Friend { get; set; }
+
+      #endregion
+
+      #region constructors
+
+      public User()
+      {
+
+      }
+
+      public User(string login, Type secretType)
+        : this()
+      {
+        this.Login = login;
+        this.SecretType = secretType;
+      }
+
+      #endregion
+
+      #region methods
+
+      public override int GetHashCode()
+      {
+        return SecretType.GetHashCode();
+      }
+
+      public override string ToString()
+      {
+        return string.Format("SecretType: {0}, Login: {1}", secretType, Login);
+      }
+
+      #endregion
+    }
+
+    [Test]
+    public void DeserializeTypeWithDubiousGetHashcode()
+    {
+      User user1 = new User("Peter", typeof(Version));
+      User user2 = new User("Michael", typeof(Version));
+
+      user1.Friend = user2;
+
+      JsonSerializerSettings serializerSettings = new JsonSerializerSettings
+      {
+        TypeNameHandling = TypeNameHandling.All,
+        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+        ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
+        PreserveReferencesHandling = PreserveReferencesHandling.Objects
+      };
+
+      string json = JsonConvert.SerializeObject(user1, Formatting.Indented, serializerSettings);
+
+      User deserializedUser = JsonConvert.DeserializeObject<User>(json, serializerSettings);
+      Assert.IsNotNull(deserializedUser);
+    }
   }
 }

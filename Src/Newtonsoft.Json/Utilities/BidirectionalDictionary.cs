@@ -32,8 +32,19 @@ namespace Newtonsoft.Json.Utilities
 {
   internal class BidirectionalDictionary<TFirst, TSecond>
   {
-    private readonly IDictionary<TFirst, TSecond> _firstToSecond = new Dictionary<TFirst, TSecond>();
-    private readonly IDictionary<TSecond, TFirst> _secondToFirst = new Dictionary<TSecond, TFirst>();
+    private readonly IDictionary<TFirst, TSecond> _firstToSecond;
+    private readonly IDictionary<TSecond, TFirst> _secondToFirst;
+
+    public BidirectionalDictionary()
+      : this(EqualityComparer<TFirst>.Default, EqualityComparer<TSecond>.Default)
+    {
+    }
+
+    public BidirectionalDictionary(IEqualityComparer<TFirst> firstEqualityComparer, IEqualityComparer<TSecond> secondEqualityComparer)
+    {
+      _firstToSecond = new Dictionary<TFirst, TSecond>(firstEqualityComparer);
+      _secondToFirst = new Dictionary<TSecond, TFirst>(secondEqualityComparer);
+    }
 
     public void Add(TFirst first, TSecond second)
     {
