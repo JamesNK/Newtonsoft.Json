@@ -30,6 +30,7 @@ using System.Text;
 using System.Globalization;
 using System.ComponentModel;
 using Newtonsoft.Json.Serialization;
+using System.Reflection;
 
 #if !SILVERLIGHT
 using System.Data.SqlTypes;
@@ -39,6 +40,63 @@ namespace Newtonsoft.Json.Utilities
 {
   internal static class ConvertUtils
   {
+    internal struct TypeConvertKey : IEquatable<TypeConvertKey>
+    {
+      private readonly Type _initialType;
+      private readonly Type _targetType;
+
+      public Type InitialType
+      {
+        get { return _initialType; }
+      }
+
+      public Type TargetType
+      {
+        get { return _targetType; }
+      }
+
+      public TypeConvertKey(Type initialType, Type targetType)
+      {
+        _initialType = initialType;
+        _targetType = targetType;
+      }
+
+      public override int GetHashCode()
+      {
+        return _initialType.GetHashCode() ^ _targetType.GetHashCode();
+      }
+
+      public override bool Equals(object obj)
+      {
+        if (!(obj is TypeConvertKey))
+          return false;
+
+        return Equals((TypeConvertKey)obj);
+      }
+
+      public bool Equals(TypeConvertKey other)
+      {
+        return (_initialType == other._initialType && _targetType == other._targetType);
+      }
+    }
+
+    private static readonly ThreadSafeStore<TypeConvertKey, Func<object, object>> CastConverters =
+      new ThreadSafeStore<TypeConvertKey, Func<object, object>>(CreateCastConverter);
+
+    private static Func<object, object> CreateCastConverter(TypeConvertKey t)
+    {
+      MethodInfo castMethodInfo = t.TargetType.GetMethod("op_Implicit", new[] { t.InitialType });
+      if (castMethodInfo == null)
+        castMethodInfo = t.TargetType.GetMethod("op_Explicit", new[] { t.InitialType });
+
+      if (castMethodInfo == null)
+        return null;
+
+      MethodCall<object, object> call = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(castMethodInfo);
+
+      return o => call(null, o);
+    }
+
     public static bool CanConvertType(Type initialType, Type targetType, bool allowTypeNameToString)
     {
       ValidationUtils.ArgumentNotNull(initialType, "initialType");
@@ -387,12 +445,22 @@ namespace Newtonsoft.Json.Utilities
     {
       Type valueType = (value != null) ? value.GetType() : null;
 
-      if (value != null && targetType.IsAssignableFrom(valueType))
-        return value;
-      else if (value == null && ReflectionUtils.IsNullable(targetType))
-        return null;
+      if (value != null)
+      {
+        if (targetType.IsAssignableFrom(valueType))
+          return value;
+
+        Func<object, object> castConverter = CastConverters.Get(new TypeConvertKey(valueType, targetType));
+        if (castConverter != null)
+          return castConverter(value);
+      }
       else
-        throw new Exception("Could not cast or convert from {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, (initialType != null) ? initialType.ToString() : "{null}", targetType));
+      {
+        if (ReflectionUtils.IsNullable(targetType))
+          return null;
+      }
+
+      throw new Exception("Could not cast or convert from {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, (initialType != null) ? initialType.ToString() : "{null}", targetType));
     }
 
 #if !SILVERLIGHT

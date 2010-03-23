@@ -27,10 +27,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using NUnit.Framework;
 using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Tests.TestObjects;
+using Newtonsoft.Json.Tests.Serialization;
 
 namespace Newtonsoft.Json.Tests.Utilities
 {
@@ -88,6 +90,22 @@ namespace Newtonsoft.Json.Tests.Utilities
       Action<object, object> setter = DynamicReflectionDelegateFactory.Instance.CreateSet<object>(typeof(Movie).GetProperty("Name"));
 
       setter(m, new Version());
+    }
+
+    [Test]
+    public void CreateStaticMethodCall()
+    {
+      MethodInfo castMethodInfo = typeof(JsonSerializerTest.DictionaryKey).GetMethod("op_Implicit", new[] { typeof(string) });
+
+      Assert.IsNotNull(castMethodInfo);
+
+      MethodCall<object, object> call = DynamicReflectionDelegateFactory.Instance.CreateMethodCall<object>(castMethodInfo);
+
+      object result = call(null, "First!");
+      Assert.IsNotNull(result);
+
+      JsonSerializerTest.DictionaryKey key = (JsonSerializerTest.DictionaryKey) result;
+      Assert.AreEqual("First!", key.Value);
     }
   }
 }

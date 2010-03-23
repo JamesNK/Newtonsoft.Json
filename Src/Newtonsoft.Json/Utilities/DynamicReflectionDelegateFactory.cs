@@ -66,7 +66,7 @@ namespace Newtonsoft.Json.Utilities
 
       generator.MarkLabel(argsOk);
 
-      if (!method.IsConstructor)
+      if (!method.IsConstructor && !method.IsStatic)
         generator.PushInstance(method.DeclaringType);
 
       for (int i = 0; i < args.Length; i++)

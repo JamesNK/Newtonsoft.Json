@@ -2000,7 +2000,7 @@ keyword such as type of business.""
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Could not convert string 'Newtonsoft.Json.Tests.TestObjects.Person' to dictionary key type Newtonsoft.Json.Tests.TestObjects.Person. Create a TypeConverter to convert from the string to the key type object.")]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Could not convert string 'Newtonsoft.Json.Tests.TestObjects.Person' to dictionary key type 'Newtonsoft.Json.Tests.TestObjects.Person'. Create a TypeConverter to convert from the string to the key type object.")]
     public void DeserializePersonKeyedDictionary()
     {
       string json =
@@ -3315,6 +3315,42 @@ keyword such as type of business.""
       ShouldSerializeTestClass deserialized = JsonConvert.DeserializeObject<ShouldSerializeTestClass>(json);
       Assert.AreEqual("James", deserialized.Name);
       Assert.AreEqual(27, deserialized.Age);
+    }
+
+    public class DictionaryKey
+    {
+      public string Value { get; set; }
+
+      public override string ToString()
+      {
+        return Value;
+      }
+
+      public static implicit operator DictionaryKey(string value)
+      {
+        return new DictionaryKey() {Value = value};
+      }
+    }
+
+    [Test]
+    public void SerializeDeserializeDictionaryKey()
+    {
+      Dictionary<DictionaryKey, string> dictionary = new Dictionary<DictionaryKey, string>();
+
+      dictionary.Add(new DictionaryKey() { Value = "First!" }, "First");
+      dictionary.Add(new DictionaryKey() { Value = "Second!" }, "Second");
+
+      string json = JsonConvert.SerializeObject(dictionary, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""First!"": ""First"",
+  ""Second!"": ""Second""
+}", json);
+
+      Dictionary<DictionaryKey, string> newDictionary =
+        JsonConvert.DeserializeObject<Dictionary<DictionaryKey, string>>(json);
+
+      Assert.AreEqual(2, newDictionary.Count);
     }
   }
 }

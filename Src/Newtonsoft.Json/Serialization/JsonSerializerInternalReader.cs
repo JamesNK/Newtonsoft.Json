@@ -573,7 +573,7 @@ namespace Newtonsoft.Json.Serialization
             }
             catch (Exception ex)
             {
-              throw new JsonSerializationException("Could not convert string '{0}' to dictionary key type {1}. Create a TypeConverter to convert from the string to the key type object.".FormatWith(CultureInfo.InvariantCulture, reader.Value, contract.DictionaryKeyType), ex);
+              throw new JsonSerializationException("Could not convert string '{0}' to dictionary key type '{1}'. Create a TypeConverter to convert from the string to the key type object.".FormatWith(CultureInfo.InvariantCulture, reader.Value, contract.DictionaryKeyType), ex);
             }
 
             CheckedRead(reader);

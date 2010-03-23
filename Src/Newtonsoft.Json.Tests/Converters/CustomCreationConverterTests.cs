@@ -145,5 +145,86 @@ namespace Newtonsoft.Json.Tests.Converters
       const string expected = @"{""Value"":""Foo"",""Thing"":{""Number"":456}}";
       Assert.AreEqual(expected, json);
     }
+
+    internal interface IRange<T>
+    {
+      T First { get; }
+      T Last { get; }
+    }
+
+    internal class Range<T> : IRange<T>
+    {
+      public T First { get; set; }
+      public T Last { get; set; }
+    }
+
+    internal class NullInterfaceTestClass
+    {
+      public virtual Guid Id { get; set; }
+      public virtual int? Year { get; set; }
+      public virtual string Company { get; set; }
+      public virtual IRange<decimal> DecimalRange { get; set; }
+      public virtual IRange<int> IntRange { get; set; }
+      public virtual IRange<decimal> NullDecimalRange { get; set; }
+    }
+
+    internal class DecimalRangeConverter : CustomCreationConverter<IRange<decimal>>
+    {
+      public override IRange<decimal> Create(Type objectType)
+      {
+        return new Range<decimal>();
+      }
+    }
+
+    internal class IntRangeConverter : CustomCreationConverter<IRange<int>>
+    {
+      public override IRange<int> Create(Type objectType)
+      {
+        return new Range<int>();
+      }
+    }
+
+    [Test]
+    public void DeserializeAndConvertNullValue()
+    {
+      NullInterfaceTestClass initial = new NullInterfaceTestClass
+      {
+        Company = "Company!",
+        DecimalRange = new Range<decimal> { First = 0, Last = 1 },
+        Id = new Guid(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11),
+        IntRange = new Range<int> { First = int.MinValue, Last = int.MaxValue },
+        Year = 2010,
+        NullDecimalRange = null
+      };
+
+      string json = JsonConvert.SerializeObject(initial, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""Id"": ""00000001-0002-0003-0405-060708090a0b"",
+  ""Year"": 2010,
+  ""Company"": ""Company!"",
+  ""DecimalRange"": {
+    ""First"": 0.0,
+    ""Last"": 1.0
+  },
+  ""IntRange"": {
+    ""First"": -2147483648,
+    ""Last"": 2147483647
+  },
+  ""NullDecimalRange"": null
+}", json);
+
+      NullInterfaceTestClass deserialized = JsonConvert.DeserializeObject<NullInterfaceTestClass>(
+        json, new IntRangeConverter(), new DecimalRangeConverter());
+
+      Assert.AreEqual("Company!", deserialized.Company);
+      Assert.AreEqual(new Guid(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11), deserialized.Id);
+      Assert.AreEqual(0, deserialized.DecimalRange.First);
+      Assert.AreEqual(1, deserialized.DecimalRange.Last);
+      Assert.AreEqual(int.MinValue, deserialized.IntRange.First);
+      Assert.AreEqual(int.MaxValue, deserialized.IntRange.Last);
+      Assert.AreEqual(null, deserialized.NullDecimalRange);
+      Assert.AreEqual(2010, deserialized.Year);
+    }
   }
 }
