@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
@@ -43,7 +44,13 @@ namespace Newtonsoft.Json.Serialization
 
       int IEqualityComparer<object>.GetHashCode(object obj)
       {
+#if !PocketPC
+        // put objects in a bucket based on their reference
+        return RuntimeHelpers.GetHashCode(obj);
+#else
+        // put all objects in the same bucket so ReferenceEquals is called on all
         return -1;
+#endif
       }
     }
 

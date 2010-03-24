@@ -68,6 +68,95 @@ namespace Newtonsoft.Json.Tests.Bson
     }
 
     [Test]
+    public void WriteValues()
+    {
+      byte[] data = MiscellaneousUtils.HexToBytes("8C-00-00-00-12-30-00-FF-FF-FF-FF-FF-FF-FF-7F-12-31-00-FF-FF-FF-FF-FF-FF-FF-7F-10-32-00-FF-FF-FF-7F-10-33-00-FF-FF-FF-7F-10-34-00-FF-00-00-00-10-35-00-7F-00-00-00-02-36-00-02-00-00-00-61-00-01-37-00-00-00-00-00-00-00-F0-45-01-38-00-FF-FF-FF-FF-FF-FF-EF-7F-01-39-00-00-00-00-E0-FF-FF-EF-47-08-31-30-00-01-05-31-31-00-05-00-00-00-02-00-01-02-03-04-09-31-32-00-40-C5-E2-BA-E3-00-00-00-09-31-33-00-40-C5-E2-BA-E3-00-00-00-00");
+      MemoryStream ms = new MemoryStream(data);
+      BsonReader reader = new BsonReader(ms);
+      reader.ReadRootValueAsArray = true;
+      reader.DateTimeKindHandling = DateTimeKind.Utc;
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+      Assert.AreEqual(long.MaxValue, reader.Value);
+      Assert.AreEqual(typeof(long), reader.ValueType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+      Assert.AreEqual(long.MaxValue, reader.Value);
+      Assert.AreEqual(typeof(long), reader.ValueType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+      Assert.AreEqual(int.MaxValue, reader.Value);
+      Assert.AreEqual(typeof(long), reader.ValueType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+      Assert.AreEqual(int.MaxValue, reader.Value);
+      Assert.AreEqual(typeof(long), reader.ValueType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+      Assert.AreEqual(byte.MaxValue, reader.Value);
+      Assert.AreEqual(typeof(long), reader.ValueType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+      Assert.AreEqual(sbyte.MaxValue, reader.Value);
+      Assert.AreEqual(typeof(long), reader.ValueType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.String, reader.TokenType);
+      Assert.AreEqual("a", reader.Value);
+      Assert.AreEqual(typeof(string), reader.ValueType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+      Assert.AreEqual(decimal.MaxValue, reader.Value);
+      Assert.AreEqual(typeof(double), reader.ValueType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+      Assert.AreEqual(double.MaxValue, reader.Value);
+      Assert.AreEqual(typeof(double), reader.ValueType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+      Assert.AreEqual(float.MaxValue, reader.Value);
+      Assert.AreEqual(typeof(double), reader.ValueType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Boolean, reader.TokenType);
+      Assert.AreEqual(true, reader.Value);
+      Assert.AreEqual(typeof(bool), reader.ValueType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Bytes, reader.TokenType);
+      Assert.AreEqual(new byte[] { 0, 1, 2, 3, 4 }, reader.Value);
+      Assert.AreEqual(typeof(byte[]), reader.ValueType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Date, reader.TokenType);
+      Assert.AreEqual(new DateTime(2000, 12, 29, 12, 30, 0, DateTimeKind.Utc), reader.Value);
+      Assert.AreEqual(typeof(DateTime), reader.ValueType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Date, reader.TokenType);
+      Assert.AreEqual(new DateTime(2000, 12, 29, 12, 30, 0, DateTimeKind.Utc), reader.Value);
+      Assert.AreEqual(typeof(DateTime), reader.ValueType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+
+      Assert.IsFalse(reader.Read());
+    }
+
+
+    [Test]
     public void ReadObjectBsonFromSite()
     {
       byte[] data = MiscellaneousUtils.HexToBytes("20-00-00-00-02-30-00-02-00-00-00-61-00-02-31-00-02-00-00-00-62-00-02-32-00-02-00-00-00-63-00-00");

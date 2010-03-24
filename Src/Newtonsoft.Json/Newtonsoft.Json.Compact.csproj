@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bson\BsonBinaryType.cs" />
+    <Compile Include="Bson\BsonBinaryWriter.cs" />
     <Compile Include="Bson\BsonObjectId.cs" />
     <Compile Include="Bson\BsonReader.cs" />
     <Compile Include="Bson\BsonType.cs" />

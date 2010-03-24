@@ -122,10 +122,13 @@ namespace Newtonsoft.Json.Tests
 
     private void SerializeSize(object value)
     {
+      // this is extremely slow with 5000 interations
+      int interations = 100;
+
       byte[] jsonBytes = TimeOperation(() =>
       {
         string json = null;
-        for (int i = 0; i < Iterations; i++)
+        for (int i = 0; i < interations; i++)
         {
           json = JsonConvert.SerializeObject(value, Formatting.None);
         }
@@ -136,7 +139,7 @@ namespace Newtonsoft.Json.Tests
       byte[] bsonBytes = TimeOperation(() =>
       {
         MemoryStream ms = null;
-        for (int i = 0; i < Iterations; i++)
+        for (int i = 0; i < interations; i++)
         {
           ms = new MemoryStream();
           JsonSerializer serializer = new JsonSerializer();
@@ -152,7 +155,7 @@ namespace Newtonsoft.Json.Tests
       byte[] xmlBytes = TimeOperation(() =>
       {
         MemoryStream ms = null;
-        for (int i = 0; i < Iterations; i++)
+        for (int i = 0; i < interations; i++)
         {
           ms = new MemoryStream();
           DataContractSerializer dataContractSerializer = new DataContractSerializer(value.GetType());
@@ -165,7 +168,7 @@ namespace Newtonsoft.Json.Tests
       byte[] wcfJsonBytes = TimeOperation(() =>
       {
         MemoryStream ms = null;
-        for (int i = 0; i < Iterations; i++)
+        for (int i = 0; i < interations; i++)
         {
           ms = new MemoryStream();
           DataContractJsonSerializer dataContractJsonSerializer = new DataContractJsonSerializer(value.GetType());
@@ -178,7 +181,7 @@ namespace Newtonsoft.Json.Tests
       byte[] binaryFormatterBytes = TimeOperation(() =>
       {
         MemoryStream ms = null;
-        for (int i = 0; i < Iterations; i++)
+        for (int i = 0; i < interations; i++)
         {
           ms = new MemoryStream();
           BinaryFormatter formatter = new BinaryFormatter();

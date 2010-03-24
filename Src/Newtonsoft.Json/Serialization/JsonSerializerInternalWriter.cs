@@ -199,15 +199,18 @@ namespace Newtonsoft.Json.Serialization
         return;
       }
 
-      if (!CheckForCircularReference(memberValue, property.ReferenceLoopHandling))
+      if (!CheckForCircularReference(memberValue, property.ReferenceLoopHandling, contract))
         return;
 
       writer.WritePropertyName(propertyName);
       SerializeValue(writer, memberValue, memberConverter, contract);
     }
 
-    private bool CheckForCircularReference(object value, ReferenceLoopHandling? referenceLoopHandling)
+    private bool CheckForCircularReference(object value, ReferenceLoopHandling? referenceLoopHandling, JsonContract contract)
     {
+      if (value == null || contract is JsonPrimitiveContract)
+        return true;
+
       if (SerializeStack.IndexOf(value) != -1)
       {
         switch (referenceLoopHandling.GetValueOrDefault(Serializer.ReferenceLoopHandling))
@@ -358,7 +361,7 @@ namespace Newtonsoft.Json.Serialization
       }
       else
       {
-        if (!CheckForCircularReference(value, null))
+        if (!CheckForCircularReference(value, null, contract))
           return;
 
         SerializeStack.Add(value);
@@ -416,7 +419,7 @@ namespace Newtonsoft.Json.Serialization
           }
           else
           {
-            if (!CheckForCircularReference(value, null))
+            if (!CheckForCircularReference(value, null, contract))
               continue;
 
             SerializeValue(writer, value, null, valueContract);
@@ -503,7 +506,7 @@ namespace Newtonsoft.Json.Serialization
           }
           else
           {
-            if (!CheckForCircularReference(value, null))
+            if (!CheckForCircularReference(value, null, contract))
               continue;
 
             writer.WritePropertyName(propertyName);

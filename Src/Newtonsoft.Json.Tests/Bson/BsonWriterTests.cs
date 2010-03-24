@@ -48,10 +48,39 @@ namespace Newtonsoft.Json.Tests.Bson
       writer.WritePropertyName("Blah");
       writer.WriteValue(1);
       writer.WriteEndObject();
-      
+
       string bson = MiscellaneousUtils.BytesToHex(ms.ToArray());
       Assert.AreEqual("0F-00-00-00-10-42-6C-61-68-00-01-00-00-00-00", bson);
     }
+
+#if !PocketPC && !NET20
+    [Test]
+    public void WriteValues()
+    {
+      MemoryStream ms = new MemoryStream();
+      BsonWriter writer = new BsonWriter(ms);
+
+      writer.WriteStartArray();
+      writer.WriteValue(long.MaxValue);
+      writer.WriteValue((ulong)long.MaxValue);
+      writer.WriteValue(int.MaxValue);
+      writer.WriteValue((uint)int.MaxValue);
+      writer.WriteValue(byte.MaxValue);
+      writer.WriteValue(sbyte.MaxValue);
+      writer.WriteValue('a');
+      writer.WriteValue(decimal.MaxValue);
+      writer.WriteValue(double.MaxValue);
+      writer.WriteValue(float.MaxValue);
+      writer.WriteValue(true);
+      writer.WriteValue(new byte[] { 0, 1, 2, 3, 4 });
+      writer.WriteValue(new DateTimeOffset(2000, 12, 29, 12, 30, 0, TimeSpan.Zero));
+      writer.WriteValue(new DateTime(2000, 12, 29, 12, 30, 0, DateTimeKind.Utc));
+      writer.WriteEnd();
+
+      string bson = MiscellaneousUtils.BytesToHex(ms.ToArray());
+      Assert.AreEqual("8C-00-00-00-12-30-00-FF-FF-FF-FF-FF-FF-FF-7F-12-31-00-FF-FF-FF-FF-FF-FF-FF-7F-10-32-00-FF-FF-FF-7F-10-33-00-FF-FF-FF-7F-10-34-00-FF-00-00-00-10-35-00-7F-00-00-00-02-36-00-02-00-00-00-61-00-01-37-00-00-00-00-00-00-00-F0-45-01-38-00-FF-FF-FF-FF-FF-FF-EF-7F-01-39-00-00-00-00-E0-FF-FF-EF-47-08-31-30-00-01-05-31-31-00-05-00-00-00-02-00-01-02-03-04-09-31-32-00-40-C5-E2-BA-E3-00-00-00-09-31-33-00-40-C5-E2-BA-E3-00-00-00-00", bson);
+    }
+#endif
 
     [Test]
     public void WriteArrayBsonFromSite()

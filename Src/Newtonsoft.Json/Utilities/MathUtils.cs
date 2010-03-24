@@ -31,6 +31,17 @@ namespace Newtonsoft.Json.Utilities
 {
   internal class MathUtils
   {
+    public static int IntLength(int i)
+    {
+      if (i < 0)
+        throw new ArgumentOutOfRangeException();
+
+      if (i == 0)
+        return 1;
+
+      return (int)Math.Floor(Math.Log10(i)) + 1;
+    }
+
     public static int HexToInt(char h)
     {
       if ((h >= '0') && (h <= '9'))

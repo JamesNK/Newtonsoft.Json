@@ -72,11 +72,11 @@ namespace Newtonsoft.Json.Bson
 
     private class ContainerContext
     {
-      public readonly JTokenType Type;
+      public readonly BsonType Type;
       public int Length;
       public int Position;
 
-      public ContainerContext(JTokenType type)
+      public ContainerContext(BsonType type)
       {
         Type = type;
       }
@@ -210,7 +210,7 @@ namespace Newtonsoft.Json.Bson
             SetToken(JsonToken.StartObject);
             _bsonReaderState = BsonReaderState.CodeWScopeScopeObject;
 
-            ContainerContext newContext = new ContainerContext(JTokenType.Object);
+            ContainerContext newContext = new ContainerContext(BsonType.Object);
             PushContext(newContext);
             newContext.Length = ReadInt32();
 
@@ -289,7 +289,7 @@ namespace Newtonsoft.Json.Bson
         case State.Start:
           {
             JsonToken token = (!_readRootValueAsArray) ? JsonToken.StartObject : JsonToken.StartArray;
-            JTokenType type = (!_readRootValueAsArray) ? JTokenType.Object : JTokenType.Array;
+            BsonType type = (!_readRootValueAsArray) ? BsonType.Object : BsonType.Array;
 
             SetToken(token);
             ContainerContext newContext = new ContainerContext(type);
@@ -316,7 +316,7 @@ namespace Newtonsoft.Json.Bson
 
           if (context.Position < lengthMinusEnd)
           {
-            if (context.Type == JTokenType.Array)
+            if (context.Type == BsonType.Array)
             {
               ReadElement();
               ReadType(_currentElementType);
@@ -337,7 +337,7 @@ namespace Newtonsoft.Json.Bson
             if (_currentContext != null)
               MovePosition(context.Length);
 
-            JsonToken endToken = (context.Type == JTokenType.Object) ? JsonToken.EndObject : JsonToken.EndArray;
+            JsonToken endToken = (context.Type == BsonType.Object) ? JsonToken.EndObject : JsonToken.EndArray;
             SetToken(endToken);
             return true;
           }
@@ -396,7 +396,7 @@ namespace Newtonsoft.Json.Bson
           {
             SetToken(JsonToken.StartObject);
 
-            ContainerContext newContext = new ContainerContext(JTokenType.Object);
+            ContainerContext newContext = new ContainerContext(BsonType.Object);
             PushContext(newContext);
             newContext.Length = ReadInt32();
             break;
@@ -405,7 +405,7 @@ namespace Newtonsoft.Json.Bson
           {
             SetToken(JsonToken.StartArray);
 
-            ContainerContext newContext = new ContainerContext(JTokenType.Array);
+            ContainerContext newContext = new ContainerContext(BsonType.Array);
             PushContext(newContext);
             newContext.Length = ReadInt32();
             break;

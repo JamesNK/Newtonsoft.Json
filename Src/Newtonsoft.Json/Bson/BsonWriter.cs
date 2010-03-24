@@ -24,6 +24,8 @@
 #endregion
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Newtonsoft.Json.Utilities;
@@ -32,17 +34,115 @@ using System.Globalization;
 
 namespace Newtonsoft.Json.Bson
 {
+  internal abstract class BsonToken
+  {
+    public abstract BsonType Type { get; }
+    public BsonToken Parent { get; set; }
+    public int CalculatedSize { get; set; }
+  }
+
+  internal class BsonObject : BsonToken, IEnumerable<BsonProperty>
+  {
+    private readonly List<BsonProperty> _children = new List<BsonProperty>();
+
+    public void Add(string name, BsonToken token)
+    {
+      _children.Add(new BsonProperty { Name = new BsonString(name, false), Value = token });
+      token.Parent = this;
+    }
+
+    public override BsonType Type
+    {
+      get { return BsonType.Object; }
+    }
+
+    public IEnumerator<BsonProperty> GetEnumerator()
+    {
+      return _children.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+      return GetEnumerator();
+    }
+  }
+
+  internal class BsonArray : BsonToken, IEnumerable<BsonToken>
+  {
+    private readonly List<BsonToken> _children = new List<BsonToken>();
+
+    public void Add(BsonToken token)
+    {
+      _children.Add(token);
+      token.Parent = this;
+    }
+
+    public override BsonType Type
+    {
+      get { return BsonType.Array; }
+    }
+
+    public IEnumerator<BsonToken> GetEnumerator()
+    {
+      return _children.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+      return GetEnumerator();
+    }
+  }
+
+  internal class BsonValue : BsonToken
+  {
+    private object _value;
+    private BsonType _type;
+
+    public BsonValue(object value, BsonType type)
+    {
+      _value = value;
+      _type = type;
+    }
+
+    public object Value
+    {
+      get { return _value; }
+    }
+
+    public override BsonType Type
+    {
+      get { return _type; }
+    }
+  }
+
+  internal class BsonString : BsonValue
+  {
+    public int ByteCount { get; set; }
+    public bool IncludeLength { get; set; }
+
+    public BsonString(object value, bool includeLength)
+      : base(value, BsonType.String)
+    {
+      IncludeLength = includeLength;
+    }
+  }
+
+  internal class BsonProperty
+  {
+    public BsonString Name { get; set; }
+    public BsonToken Value { get; set; }
+  }
+
   /// <summary>
   /// Represents a writer that provides a fast, non-cached, forward-only way of generating Json data.
   /// </summary>
-  public class BsonWriter : JTokenWriter
+  public class BsonWriter : JsonWriter
   {
-    private static readonly Encoding Encoding = Encoding.UTF8;
+    private readonly BsonBinaryWriter _writer;
 
-    private readonly BinaryWriter _writer;
-
-    private byte[] _largeByteBuffer;
-    private int _maxChars;
+    private BsonToken _root;
+    private BsonToken _parent;
+    private string _propertyName;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BsonWriter"/> class.
@@ -51,7 +151,7 @@ namespace Newtonsoft.Json.Bson
     public BsonWriter(Stream stream)
     {
       ValidationUtils.ArgumentNotNull(stream, "stream");
-      _writer = new BinaryWriter(stream);
+      _writer = new BsonBinaryWriter(stream);
     }
 
     /// <summary>
@@ -62,218 +162,6 @@ namespace Newtonsoft.Json.Bson
       _writer.Flush();
     }
 
-    private void WriteToken(JToken t)
-    {
-      switch (t.Type)
-      {
-        case JTokenType.Object:
-          {
-            int size = CalculateSize(t);
-            _writer.Write(size);
-            foreach (JProperty property in t)
-            {
-              _writer.Write((sbyte)GetTypeNumber(property.Value));
-              WriteString(property.Name, false);
-              WriteToken(property.Value);
-            }
-            _writer.Write((byte)0);
-          }
-          break;
-        case JTokenType.Array:
-          {
-            int size = CalculateSize(t);
-            _writer.Write(size);
-            int index = 0;
-            foreach (JToken c in t)
-            {
-              _writer.Write((sbyte)GetTypeNumber(c));
-              WriteString(index.ToString(CultureInfo.InvariantCulture), false);
-              WriteToken(c);
-              index++;
-            }
-            _writer.Write((byte)0);
-          }
-          break;
-        case JTokenType.Integer:
-          _writer.Write(Convert.ToInt32(((JValue)t).Value, CultureInfo.InvariantCulture));
-          break;
-        case JTokenType.Float:
-          _writer.Write(Convert.ToDouble(((JValue)t).Value, CultureInfo.InvariantCulture));
-          break;
-        case JTokenType.String:
-          WriteString((string)t, true);
-          break;
-        case JTokenType.Boolean:
-          _writer.Write((bool)t);
-          break;
-        case JTokenType.Null:
-        case JTokenType.Undefined:
-          break;
-        case JTokenType.Date:
-          DateTime dateTime = (DateTime)t;
-          dateTime = dateTime.ToUniversalTime();
-          long ticks = JsonConvert.ConvertDateTimeToJavaScriptTicks(dateTime);
-          _writer.Write(ticks);
-          break;
-        case JTokenType.Bytes:
-          byte[] data = (byte[])t;
-          _writer.Write(data.Length);
-          _writer.Write((byte)BsonBinaryType.Data);
-          _writer.Write(data);
-          break;
-        case JTokenType.Raw:
-          // hacky
-          JRaw r = (JRaw)t;
-          _writer.Write((byte[])r.Value);
-          break;
-        default:
-          throw new ArgumentOutOfRangeException("t", "Unexpected token when writing BSON: {0}".FormatWith(CultureInfo.InvariantCulture, t.Type));
-      }
-    }
-
-    private void WriteString(string s, bool includeLength)
-    {
-      int byteCount = Encoding.GetByteCount(s);
-
-      if (includeLength)
-        _writer.Write(CalculateSizeWithLength(byteCount, false));
-
-      if (_largeByteBuffer == null)
-      {
-        _largeByteBuffer = new byte[256];
-        _maxChars = 256 / Encoding.GetMaxByteCount(1);
-      }
-      if (byteCount <= 256)
-      {
-        Encoding.GetBytes(s, 0, s.Length, _largeByteBuffer, 0);
-        _writer.Write(_largeByteBuffer, 0, byteCount);
-      }
-      else
-      {
-        int charCount;
-        int totalCharsWritten = 0;
-        for (int i = s.Length; i > 0; i -= charCount)
-        {
-          charCount = (i > _maxChars) ? _maxChars : i;
-          int count = Encoding.GetBytes(s, totalCharsWritten, charCount, _largeByteBuffer, 0);
-          _writer.Write(_largeByteBuffer, 0, count);
-          totalCharsWritten += charCount;
-        }
-      }
-
-      _writer.Write((byte)0);
-    }
-
-    private BsonType GetTypeNumber(JToken t)
-    {
-      switch (t.Type)
-      {
-        case JTokenType.Object:
-          return BsonType.Object;
-        case JTokenType.Array:
-          return BsonType.Array;
-        case JTokenType.Integer:
-          return BsonType.Integer;
-        case JTokenType.Float:
-          return BsonType.Number;
-        case JTokenType.String:
-          return BsonType.String;
-        case JTokenType.Boolean:
-          return BsonType.Boolean;
-        case JTokenType.Null:
-        case JTokenType.Undefined:
-          return BsonType.Null;
-        case JTokenType.Date:
-          return BsonType.Date;
-        case JTokenType.Bytes:
-          return BsonType.Binary;
-        case JTokenType.Raw:
-          // hacky
-          return BsonType.Oid;
-        default:
-          throw new ArgumentOutOfRangeException("t", "Unexpected token when resolving JSON type to BSON type: {0}".FormatWith(CultureInfo.InvariantCulture, t.Type));
-      }
-    }
-
-    private int CalculateSize(string s)
-    {
-      return Encoding.GetByteCount(s) + 1;
-    }
-
-    private int CalculateSizeWithLength(string s, bool includeSize)
-    {
-      return CalculateSizeWithLength(Encoding.GetByteCount(s), includeSize);
-    }
-
-    private int CalculateSizeWithLength(int stringByteCount, bool includeSize)
-    {
-      int baseSize = (includeSize)
-        ? 5 // size bytes + terminator
-        : 1; // terminator
-
-      return baseSize + stringByteCount;
-    }
-
-    private int CalculateSize(JToken t)
-    {
-      switch (t.Type)
-      {
-        case JTokenType.Object:
-          {
-            int bases = 4;
-            foreach (JProperty p in t)
-            {
-              bases += CalculateSize(p);
-            }
-            bases += 1;
-            return bases;
-          }
-        case JTokenType.Array:
-          {
-            int bases = 4;
-            int index = 0;
-            foreach (JToken c in t)
-            {
-              bases += 1;
-              bases += CalculateSize(index.ToString(CultureInfo.InvariantCulture));
-              bases += CalculateSize(c);
-              index++;
-            }
-            bases += 1;
-            return bases;
-          }
-        case JTokenType.Property:
-          JProperty property = (JProperty)t;
-          int ss = 1;
-          ss += CalculateSize(property.Name);
-          ss += CalculateSize(property.Value);
-          return ss;
-        case JTokenType.Integer:
-          return 4;
-        case JTokenType.Float:
-          return 8;
-        case JTokenType.String:
-          string s = (string)t;
-
-          return CalculateSizeWithLength(s, true);
-        case JTokenType.Boolean:
-          return 1;
-        case JTokenType.Null:
-        case JTokenType.Undefined:
-          return 0;
-        case JTokenType.Date:
-          return 8;
-        case JTokenType.Bytes:
-          byte[] data = (byte[])t;
-          return 4 + 1 + data.Length;
-        case JTokenType.Raw:
-          // hacky
-          return 12;
-        default:
-          throw new ArgumentOutOfRangeException("t", "Unexpected token when writing BSON: {0}".FormatWith(CultureInfo.InvariantCulture, t.Type));
-      }
-    }
-
     /// <summary>
     /// Writes the end.
     /// </summary>
@@ -281,10 +169,11 @@ namespace Newtonsoft.Json.Bson
     protected override void WriteEnd(JsonToken token)
     {
       base.WriteEnd(token);
+      RemoveParent();
 
       if (Top == 0)
       {
-        WriteToken(Token);
+        _writer.WriteToken(_root);
       }
     }
 
@@ -337,7 +226,269 @@ namespace Newtonsoft.Json.Bson
 
       // hack to update the writer state
       AutoComplete(JsonToken.Undefined);
-      AddValue(new JRaw(value), JsonToken.Raw);
+      AddValue(value, BsonType.Oid);
     }
+
+    /// <summary>
+    /// Writes the beginning of a Json array.
+    /// </summary>
+    public override void WriteStartArray()
+    {
+      base.WriteStartArray();
+
+      AddParent(new BsonArray());
+    }
+
+    /// <summary>
+    /// Writes the beginning of a Json object.
+    /// </summary>
+    public override void WriteStartObject()
+    {
+      base.WriteStartObject();
+
+      AddParent(new BsonObject());
+    }
+
+    public override void WritePropertyName(string name)
+    {
+      base.WritePropertyName(name);
+
+      _propertyName = name;
+    }
+
+    private void AddParent(BsonToken container)
+    {
+      AddToken(container);
+      _parent = container;
+    }
+
+    private void RemoveParent()
+    {
+      _parent = _parent.Parent;
+    }
+
+    private void AddValue(object value, BsonType type)
+    {
+      AddToken(new BsonValue(value, type));
+    }
+
+    internal void AddToken(BsonToken token)
+    {
+      if (_parent != null)
+      {
+        if (_parent is BsonObject)
+        {
+          ((BsonObject)_parent).Add(_propertyName, token);
+          _propertyName = null;
+        }
+        else
+        {
+          ((BsonArray)_parent).Add(token);
+        }
+      }
+      else
+      {
+        _parent = token;
+        _root = token;
+      }
+    }
+
+    #region WriteValue methods
+    /// <summary>
+    /// Writes a null value.
+    /// </summary>
+    public override void WriteNull()
+    {
+      base.WriteNull();
+      AddValue(null, BsonType.Null);
+    }
+
+    /// <summary>
+    /// Writes an undefined value.
+    /// </summary>
+    public override void WriteUndefined()
+    {
+      base.WriteUndefined();
+      AddValue(null, BsonType.Undefined);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="String"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="String"/> value to write.</param>
+    public override void WriteValue(string value)
+    {
+      base.WriteValue(value);
+      AddToken(new BsonString(value ?? string.Empty, true));
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Int32"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Int32"/> value to write.</param>
+    public override void WriteValue(int value)
+    {
+      base.WriteValue(value);
+      AddValue(value, BsonType.Integer);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="UInt32"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="UInt32"/> value to write.</param>
+    public override void WriteValue(uint value)
+    {
+      if (value > int.MaxValue)
+        throw new JsonWriterException("Value is too large to fit in a signed 32 bit integer. BSON does not support unsigned values.");
+
+      base.WriteValue(value);
+      AddValue(value, BsonType.Integer);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Int64"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Int64"/> value to write.</param>
+    public override void WriteValue(long value)
+    {
+      base.WriteValue(value);
+      AddValue(value, BsonType.Long);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="UInt64"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="UInt64"/> value to write.</param>
+    public override void WriteValue(ulong value)
+    {
+      if (value > long.MaxValue)
+        throw new JsonWriterException("Value is too large to fit in a signed 64 bit integer. BSON does not support unsigned values.");
+
+      base.WriteValue(value);
+      AddValue(value, BsonType.Long);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Single"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Single"/> value to write.</param>
+    public override void WriteValue(float value)
+    {
+      base.WriteValue(value);
+      AddValue(value, BsonType.Number);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Double"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Double"/> value to write.</param>
+    public override void WriteValue(double value)
+    {
+      base.WriteValue(value);
+      AddValue(value, BsonType.Number);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Boolean"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Boolean"/> value to write.</param>
+    public override void WriteValue(bool value)
+    {
+      base.WriteValue(value);
+      AddValue(value, BsonType.Boolean);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Int16"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Int16"/> value to write.</param>
+    public override void WriteValue(short value)
+    {
+      base.WriteValue(value);
+      AddValue(value, BsonType.Integer);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="UInt16"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="UInt16"/> value to write.</param>
+    public override void WriteValue(ushort value)
+    {
+      base.WriteValue(value);
+      AddValue(value, BsonType.Integer);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Char"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Char"/> value to write.</param>
+    public override void WriteValue(char value)
+    {
+      base.WriteValue(value);
+      AddToken(new BsonString(value.ToString(), true));
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Byte"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Byte"/> value to write.</param>
+    public override void WriteValue(byte value)
+    {
+      base.WriteValue(value);
+      AddValue(value, BsonType.Integer);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="SByte"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="SByte"/> value to write.</param>
+    public override void WriteValue(sbyte value)
+    {
+      base.WriteValue(value);
+      AddValue(value, BsonType.Integer);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Decimal"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Decimal"/> value to write.</param>
+    public override void WriteValue(decimal value)
+    {
+      base.WriteValue(value);
+      AddValue(value, BsonType.Number);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="DateTime"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="DateTime"/> value to write.</param>
+    public override void WriteValue(DateTime value)
+    {
+      base.WriteValue(value);
+      AddValue(value, BsonType.Date);
+    }
+
+#if !PocketPC && !NET20
+    /// <summary>
+    /// Writes a <see cref="DateTimeOffset"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="DateTimeOffset"/> value to write.</param>
+    public override void WriteValue(DateTimeOffset value)
+    {
+      base.WriteValue(value);
+      AddValue(value, BsonType.Date);
+    }
+#endif
+
+    /// <summary>
+    /// Writes a <see cref="T:Byte[]"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="T:Byte[]"/> value to write.</param>
+    public override void WriteValue(byte[] value)
+    {
+      base.WriteValue(value);
+      AddValue(value, BsonType.Binary);
+    }
+    #endregion
   }
 }
