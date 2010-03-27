@@ -70,7 +70,8 @@ namespace Newtonsoft.Json.Serialization
 
     internal IWrappedCollection CreateWrapper(object list)
     {
-      if (list is IList && (CollectionItemType == null || !_isCollectionItemTypeNullableType))
+      if ((list is IList && (CollectionItemType == null || !_isCollectionItemTypeNullableType))
+        || UnderlyingType.IsArray)
         return new CollectionWrapper<object>((IList)list);
 
       if (_genericWrapperType == null)

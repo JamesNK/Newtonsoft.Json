@@ -3353,5 +3353,24 @@ keyword such as type of business.""
 
       Assert.AreEqual(2, newDictionary.Count);
     }
+
+    [Test]
+    public void SerializeNullableArray()
+    {
+      string jsonText = JsonConvert.SerializeObject(new double?[] { 2.4, 4.3, null }, Formatting.Indented);
+
+      Assert.AreEqual(@"[
+  2.4,
+  4.3,
+  null
+]", jsonText);
+
+      double?[] d = (double?[])JsonConvert.DeserializeObject(jsonText, typeof(double?[]));
+
+      Assert.AreEqual(3, d.Length);
+      Assert.AreEqual(2.4, d[0]);
+      Assert.AreEqual(4.3, d[1]);
+      Assert.AreEqual(null, d[2]);
+    }
   }
 }
