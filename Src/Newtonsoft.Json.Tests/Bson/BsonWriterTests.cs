@@ -472,5 +472,91 @@ namespace Newtonsoft.Json.Tests.Bson
 
       Assert.AreEqual(expected, ms.ToArray());
     }
+
+    [Test]
+    public void WriteRegexPlusContent()
+    {
+      MemoryStream ms = new MemoryStream();
+      BsonWriter writer = new BsonWriter(ms);
+
+      writer.WriteStartObject();
+      writer.WritePropertyName("regex");
+      writer.WriteRegex("abc", "i");
+      writer.WritePropertyName("test");
+      writer.WriteRegex(string.Empty, null);
+      writer.WriteEndObject();
+
+      byte[] expected = MiscellaneousUtils.HexToBytes("1A-00-00-00-0B-72-65-67-65-78-00-61-62-63-00-69-00-0B-74-65-73-74-00-00-00-00");
+
+      Assert.AreEqual(expected, ms.ToArray());
+    }
+
+    [Test]
+    public void SerializeEmptyAndNullStrings()
+    {
+      Product p = new Product();
+      p.ExpiryDate = DateTime.Parse("2009-04-05T14:45:00Z");
+      p.Name = null;
+      p.Price = 9.95m;
+      p.Sizes = new[] { "Small", "", null };
+
+      MemoryStream ms = new MemoryStream();
+      JsonSerializer serializer = new JsonSerializer();
+
+      BsonWriter writer = new BsonWriter(ms);
+      serializer.Serialize(writer, p);
+
+      ms.Seek(0, SeekOrigin.Begin);
+
+      BsonReader reader = new BsonReader(ms);
+      Product deserializedProduct = serializer.Deserialize<Product>(reader);
+
+      Console.WriteLine(deserializedProduct.Name);
+
+      Assert.AreEqual(null, deserializedProduct.Name);
+      Assert.AreEqual(9.95m, deserializedProduct.Price);
+      Assert.AreEqual(3, deserializedProduct.Sizes.Length);
+      Assert.AreEqual("Small", deserializedProduct.Sizes[0]);
+      Assert.AreEqual("", deserializedProduct.Sizes[1]);
+      Assert.AreEqual(null, deserializedProduct.Sizes[2]);
+    }
+
+    [Test]
+    public void WriteReadEmptyAndNullStrings()
+    {
+      MemoryStream ms = new MemoryStream();
+      BsonWriter writer = new BsonWriter(ms);
+
+      writer.WriteStartArray();
+      writer.WriteValue("Content!");
+      writer.WriteValue("");
+      writer.WriteValue((string)null);
+      writer.WriteEndArray();
+
+      ms.Seek(0, SeekOrigin.Begin);
+
+      BsonReader reader = new BsonReader(ms);
+      reader.ReadRootValueAsArray = true;
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.String, reader.TokenType);
+      Assert.AreEqual("Content!", reader.Value);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.String, reader.TokenType);
+      Assert.AreEqual("", reader.Value);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Null, reader.TokenType);
+      Assert.AreEqual(null, reader.Value);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+
+      Assert.IsFalse(reader.Read());
+    }
   }
 }

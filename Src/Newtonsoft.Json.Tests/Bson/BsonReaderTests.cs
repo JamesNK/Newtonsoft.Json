@@ -979,5 +979,40 @@ namespace Newtonsoft.Json.Tests.Bson
       string expected = sb.ToString();
       Assert.AreEqual(expected, WriteAndReadStringPropertyName(expected));
     }
+
+    [Test]
+    public void ReadRegexWithOptions()
+    {
+      string hexdoc = "1A-00-00-00-0B-72-65-67-65-78-00-61-62-63-00-69-00-0B-74-65-73-74-00-00-00-00";
+
+      byte[] data = MiscellaneousUtils.HexToBytes(hexdoc);
+
+      MemoryStream ms = new MemoryStream(data);
+      BsonReader reader = new BsonReader(ms);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.String, reader.TokenType);
+      Assert.AreEqual("/abc/i", reader.Value);
+      Assert.AreEqual(typeof(string), reader.ValueType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.String, reader.TokenType);
+      Assert.AreEqual("//", reader.Value);
+      Assert.AreEqual(typeof(string), reader.ValueType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
+
+      Assert.IsFalse(reader.Read());
+    }
   }
 }

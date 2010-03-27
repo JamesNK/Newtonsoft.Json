@@ -34,105 +34,6 @@ using System.Globalization;
 
 namespace Newtonsoft.Json.Bson
 {
-  internal abstract class BsonToken
-  {
-    public abstract BsonType Type { get; }
-    public BsonToken Parent { get; set; }
-    public int CalculatedSize { get; set; }
-  }
-
-  internal class BsonObject : BsonToken, IEnumerable<BsonProperty>
-  {
-    private readonly List<BsonProperty> _children = new List<BsonProperty>();
-
-    public void Add(string name, BsonToken token)
-    {
-      _children.Add(new BsonProperty { Name = new BsonString(name, false), Value = token });
-      token.Parent = this;
-    }
-
-    public override BsonType Type
-    {
-      get { return BsonType.Object; }
-    }
-
-    public IEnumerator<BsonProperty> GetEnumerator()
-    {
-      return _children.GetEnumerator();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-      return GetEnumerator();
-    }
-  }
-
-  internal class BsonArray : BsonToken, IEnumerable<BsonToken>
-  {
-    private readonly List<BsonToken> _children = new List<BsonToken>();
-
-    public void Add(BsonToken token)
-    {
-      _children.Add(token);
-      token.Parent = this;
-    }
-
-    public override BsonType Type
-    {
-      get { return BsonType.Array; }
-    }
-
-    public IEnumerator<BsonToken> GetEnumerator()
-    {
-      return _children.GetEnumerator();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-      return GetEnumerator();
-    }
-  }
-
-  internal class BsonValue : BsonToken
-  {
-    private object _value;
-    private BsonType _type;
-
-    public BsonValue(object value, BsonType type)
-    {
-      _value = value;
-      _type = type;
-    }
-
-    public object Value
-    {
-      get { return _value; }
-    }
-
-    public override BsonType Type
-    {
-      get { return _type; }
-    }
-  }
-
-  internal class BsonString : BsonValue
-  {
-    public int ByteCount { get; set; }
-    public bool IncludeLength { get; set; }
-
-    public BsonString(object value, bool includeLength)
-      : base(value, BsonType.String)
-    {
-      IncludeLength = includeLength;
-    }
-  }
-
-  internal class BsonProperty
-  {
-    public BsonString Name { get; set; }
-    public BsonToken Value { get; set; }
-  }
-
   /// <summary>
   /// Represents a writer that provides a fast, non-cached, forward-only way of generating Json data.
   /// </summary>
@@ -211,22 +112,6 @@ namespace Newtonsoft.Json.Bson
     public override void WriteRawValue(string json)
     {
       throw new JsonWriterException("Cannot write raw JSON as BSON.");
-    }
-
-    /// <summary>
-    /// Writes a <see cref="T:Byte[]"/> value that represents a BSON object id.
-    /// </summary>
-    /// <param name="value"></param>
-    public void WriteObjectId(byte[] value)
-    {
-      ValidationUtils.ArgumentNotNull(value, "value");
-
-      if (value.Length != 12)
-        throw new Exception("An object id must be 12 bytes");
-
-      // hack to update the writer state
-      AutoComplete(JsonToken.Undefined);
-      AddValue(value, BsonType.Oid);
     }
 
     /// <summary>
@@ -319,7 +204,10 @@ namespace Newtonsoft.Json.Bson
     public override void WriteValue(string value)
     {
       base.WriteValue(value);
-      AddToken(new BsonString(value ?? string.Empty, true));
+      if (value == null)
+        AddValue(null, BsonType.Null);
+      else
+        AddToken(new BsonString(value, true));
     }
 
     /// <summary>
@@ -490,5 +378,35 @@ namespace Newtonsoft.Json.Bson
       AddValue(value, BsonType.Binary);
     }
     #endregion
+
+    /// <summary>
+    /// Writes a <see cref="T:Byte[]"/> value that represents a BSON object id.
+    /// </summary>
+    /// <param name="value"></param>
+    public void WriteObjectId(byte[] value)
+    {
+      ValidationUtils.ArgumentNotNull(value, "value");
+
+      if (value.Length != 12)
+        throw new Exception("An object id must be 12 bytes");
+
+      // hack to update the writer state
+      AutoComplete(JsonToken.Undefined);
+      AddValue(value, BsonType.Oid);
+    }
+
+    /// <summary>
+    /// Writes a BSON regex.
+    /// </summary>
+    /// <param name="pattern">The regex pattern.</param>
+    /// <param name="options">The regex options.</param>
+    public void WriteRegex(string pattern, string options)
+    {
+      ValidationUtils.ArgumentNotNull(pattern, "pattern");
+
+      // hack to update the writer state
+      AutoComplete(JsonToken.Undefined);
+      AddToken(new BsonRegex(pattern, options));
+    }
   }
 }

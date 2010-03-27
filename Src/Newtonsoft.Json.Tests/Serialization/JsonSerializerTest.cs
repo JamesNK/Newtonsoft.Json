@@ -50,6 +50,7 @@ using Newtonsoft.Json.Utilities;
 using System.Reflection;
 #if !NET20 && !SILVERLIGHT
 using System.Xml.Linq;
+using System.Text.RegularExpressions;
 #endif
 
 namespace Newtonsoft.Json.Tests.Serialization

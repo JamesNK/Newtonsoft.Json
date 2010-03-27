@@ -139,6 +139,14 @@ namespace Newtonsoft.Json.Bson
             _writer.Write(data);
           }
           break;
+        case BsonType.Regex:
+          {
+            BsonRegex value = (BsonRegex) t;
+
+            WriteString((string)value.Pattern.Value, value.Pattern.ByteCount, null);
+            WriteString((string)value.Options.Value, value.Options.ByteCount, null);
+          }
+          break;
         default:
           throw new ArgumentOutOfRangeException("t", "Unexpected token when writing BSON: {0}".FormatWith(CultureInfo.InvariantCulture, t.Type));
       }
@@ -149,26 +157,29 @@ namespace Newtonsoft.Json.Bson
       if (calculatedlengthPrefix != null)
         _writer.Write(calculatedlengthPrefix.Value);
 
-      if (_largeByteBuffer == null)
+      if (s != null)
       {
-        _largeByteBuffer = new byte[256];
-        _maxChars = 256 / Encoding.GetMaxByteCount(1);
-      }
-      if (byteCount <= 256)
-      {
-        Encoding.GetBytes(s, 0, s.Length, _largeByteBuffer, 0);
-        _writer.Write(_largeByteBuffer, 0, byteCount);
-      }
-      else
-      {
-        int charCount;
-        int totalCharsWritten = 0;
-        for (int i = s.Length; i > 0; i -= charCount)
+        if (_largeByteBuffer == null)
         {
-          charCount = (i > _maxChars) ? _maxChars : i;
-          int count = Encoding.GetBytes(s, totalCharsWritten, charCount, _largeByteBuffer, 0);
-          _writer.Write(_largeByteBuffer, 0, count);
-          totalCharsWritten += charCount;
+          _largeByteBuffer = new byte[256];
+          _maxChars = 256/Encoding.GetMaxByteCount(1);
+        }
+        if (byteCount <= 256)
+        {
+          Encoding.GetBytes(s, 0, s.Length, _largeByteBuffer, 0);
+          _writer.Write(_largeByteBuffer, 0, byteCount);
+        }
+        else
+        {
+          int charCount;
+          int totalCharsWritten = 0;
+          for (int i = s.Length; i > 0; i -= charCount)
+          {
+            charCount = (i > _maxChars) ? _maxChars : i;
+            int count = Encoding.GetBytes(s, totalCharsWritten, charCount, _largeByteBuffer, 0);
+            _writer.Write(_largeByteBuffer, 0, count);
+            totalCharsWritten += charCount;
+          }
         }
       }
 
@@ -238,7 +249,7 @@ namespace Newtonsoft.Json.Bson
           {
             BsonString value = (BsonString)t;
             string s = (string) value.Value;
-            value.ByteCount = Encoding.GetByteCount(s);
+            value.ByteCount = (s != null) ? Encoding.GetByteCount(s) : 0;
             value.CalculatedSize = CalculateSizeWithLength(value.ByteCount, value.IncludeLength);
 
             return value.CalculatedSize;
@@ -261,6 +272,16 @@ namespace Newtonsoft.Json.Bson
           }
         case BsonType.Oid:
           return 12;
+        case BsonType.Regex:
+          {
+            BsonRegex value = (BsonRegex) t;
+            int size = 0;
+            size += CalculateSize(value.Pattern);
+            size += CalculateSize(value.Options);
+            value.CalculatedSize = size;
+
+            return value.CalculatedSize;
+          }
         default:
           throw new ArgumentOutOfRangeException("t", "Unexpected token when writing BSON: {0}".FormatWith(CultureInfo.InvariantCulture, t.Type));
       }
