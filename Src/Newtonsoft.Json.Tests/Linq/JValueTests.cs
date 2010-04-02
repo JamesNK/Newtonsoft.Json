@@ -66,6 +66,10 @@ namespace Newtonsoft.Json.Tests.Linq
 
       Assert.AreEqual(data, v.Value);
       Assert.AreEqual(JTokenType.Bytes, v.Type);
+
+      v.Value = StringComparison.OrdinalIgnoreCase;
+      Assert.AreEqual(StringComparison.OrdinalIgnoreCase, v.Value);
+      Assert.AreEqual(JTokenType.Integer, v.Type);
     }
 
     [Test]

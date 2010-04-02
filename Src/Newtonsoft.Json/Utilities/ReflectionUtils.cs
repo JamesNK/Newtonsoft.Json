@@ -29,6 +29,7 @@ using System.Reflection;
 using System.Collections;
 using System.Linq;
 using System.Globalization;
+using System.Runtime.Serialization.Formatters;
 
 namespace Newtonsoft.Json.Utilities
 {
@@ -37,6 +38,19 @@ namespace Newtonsoft.Json.Utilities
     public static Type GetObjectType(object v)
     {
       return (v != null) ? v.GetType() : null;
+    }
+
+    public static string GetTypeName(Type t, FormatterAssemblyStyle assemblyFormat)
+    {
+      switch (assemblyFormat)
+      {
+        case FormatterAssemblyStyle.Simple:
+          return t.FullName + ", " + t.Assembly.GetName().Name;
+        case FormatterAssemblyStyle.Full:
+          return t.AssemblyQualifiedName;
+        default:
+          throw new ArgumentOutOfRangeException();
+      }
     }
 
     public static bool IsInstantiatableType(Type t)

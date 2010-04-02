@@ -209,6 +209,8 @@ namespace Newtonsoft.Json.Linq
       else if (value is long || value is int || value is short || value is sbyte
         || value is ulong || value is uint || value is ushort || value is byte)
         return JTokenType.Integer;
+      else if (value is Enum)
+        return JTokenType.Integer;
       else if (value is double || value is float || value is decimal)
         return JTokenType.Float;
       else if (value is DateTime)

@@ -473,7 +473,7 @@ namespace Newtonsoft.Json.Utilities
       }
     }
 
-    public static IList CreateAndPopulateList(Type listType, Action<IList, bool> populateList)
+    public static object CreateAndPopulateList(Type listType, Action<IList, bool> populateList)
     {
       ValidationUtils.ArgumentNotNull(listType, "listType");
       ValidationUtils.ArgumentNotNull(populateList, "populateList");
@@ -526,9 +526,12 @@ namespace Newtonsoft.Json.Utilities
         else
           list = null;
       }
-      else if (ReflectionUtils.ImplementsGenericDefinition(listType, typeof(IList<>)))
+      else if (ReflectionUtils.ImplementsGenericDefinition(listType, typeof(ICollection<>)))
       {
-        list = CreateGenericList(ReflectionUtils.GetCollectionItemType(listType));
+        if (ReflectionUtils.IsInstantiatableType(listType))
+          list = CreateCollectionWrapper(Activator.CreateInstance(listType));
+        else
+          list = null;
       }
       else
       {
@@ -547,6 +550,10 @@ namespace Newtonsoft.Json.Utilities
           list = ToArray(((List<object>)list).ToArray(), ReflectionUtils.GetCollectionItemType(listType));
         else if (ReflectionUtils.InheritsGenericDefinition(listType, typeof(ReadOnlyCollection<>)))
           list = (IList)ReflectionUtils.CreateInstance(listType, list);
+      }
+      else if (list is IWrappedCollection)
+      {
+        return ((IWrappedCollection) list).UnderlyingCollection;
       }
 
       return list;

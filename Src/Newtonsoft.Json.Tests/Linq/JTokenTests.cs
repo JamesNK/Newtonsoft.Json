@@ -243,6 +243,8 @@ namespace Newtonsoft.Json.Tests.Linq
 
       byte[] data = new byte[0];
       Assert.AreEqual(data, (byte[])(new JValue(data)));
+
+      Assert.AreEqual(5, (int)(new JValue(StringComparison.OrdinalIgnoreCase)));
     }
 
     [Test]

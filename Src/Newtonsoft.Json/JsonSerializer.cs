@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization.Formatters;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
@@ -42,6 +43,7 @@ namespace Newtonsoft.Json
   {
     #region Properties
     private TypeNameHandling _typeNameHandling;
+    private FormatterAssemblyStyle _typeNameAssemblyFormat;
     private PreserveReferencesHandling _preserveReferencesHandling;
     private ReferenceLoopHandling _referenceLoopHandling;
     private MissingMemberHandling _missingMemberHandling;
@@ -111,6 +113,22 @@ namespace Newtonsoft.Json
           throw new ArgumentOutOfRangeException("value");
 
         _typeNameHandling = value;
+      }
+    }
+
+    /// <summary>
+    /// Gets or sets how a type name assembly is written and resolved by the serializer.
+    /// </summary>
+    /// <value>The type name assembly format.</value>
+    public virtual FormatterAssemblyStyle TypeNameAssemblyFormat
+    {
+      get { return _typeNameAssemblyFormat; }
+      set
+      {
+        if (value < FormatterAssemblyStyle.Simple || value > FormatterAssemblyStyle.Full)
+          throw new ArgumentOutOfRangeException("value");
+
+        _typeNameAssemblyFormat = value;
       }
     }
 
@@ -296,6 +314,7 @@ namespace Newtonsoft.Json
           jsonSerializer.Converters.AddRange(settings.Converters);
 
         jsonSerializer.TypeNameHandling = settings.TypeNameHandling;
+        jsonSerializer.TypeNameAssemblyFormat = settings.TypeNameAssemblyFormat;
         jsonSerializer.PreserveReferencesHandling = settings.PreserveReferencesHandling;
         jsonSerializer.ReferenceLoopHandling = settings.ReferenceLoopHandling;
         jsonSerializer.MissingMemberHandling = settings.MissingMemberHandling;

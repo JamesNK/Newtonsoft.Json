@@ -14,6 +14,7 @@ namespace Newtonsoft.Json
     internal DefaultValueHandling? _defaultValueHandling;
     internal ReferenceLoopHandling? _referenceLoopHandling;
     internal ObjectCreationHandling? _objectCreationHandling;
+    internal TypeNameHandling? _typeNameHandling;
     internal bool? _isReference;
 
     /// <summary>
@@ -54,6 +55,12 @@ namespace Newtonsoft.Json
     {
       get { return _objectCreationHandling ?? default(ObjectCreationHandling); }
       set { _objectCreationHandling = value; }
+    }
+
+    public TypeNameHandling TypeNameHandling
+    {
+      get { return _typeNameHandling ?? default(TypeNameHandling); }
+      set { _typeNameHandling = value; }
     }
 
     /// <summary>

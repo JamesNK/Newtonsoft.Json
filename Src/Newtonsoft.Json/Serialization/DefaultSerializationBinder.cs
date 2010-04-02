@@ -50,13 +50,24 @@ namespace Newtonsoft.Json.Serialization
     {
       if (assemblyName != null)
       {
-        Assembly assembly = Assembly.Load(assemblyName);
+        Assembly assembly;
+
+#if !SILVERLIGHT && !PocketPC
+        // look, I don't like using obsolete methods as much as you do but this is the only way
+        // Assembly.Load won't check the GAC for a partial name
+#pragma warning disable 618,612
+        assembly = Assembly.LoadWithPartialName(assemblyName);
+#pragma warning restore 618,612
+#else
+        assembly = Assembly.Load(assemblyName);
+#endif
+
         if (assembly == null)
           throw new JsonSerializationException("Could not load assembly '{0}'.".FormatWith(CultureInfo.InvariantCulture, assemblyName));
 
         Type type = assembly.GetType(typeName);
         if (type == null)
-          throw new JsonSerializationException("Could not find type '{0}'.".FormatWith(CultureInfo.InvariantCulture, typeName));
+          throw new JsonSerializationException("Could not find type '{0}' in assembly '{1}'.".FormatWith(CultureInfo.InvariantCulture, typeName, assembly.FullName));
 
         return type;
       }

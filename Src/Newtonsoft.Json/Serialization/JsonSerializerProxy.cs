@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.Runtime.Serialization.Formatters;
 using Newtonsoft.Json.Utilities;
 using System.Runtime.Serialization;
 
@@ -98,6 +99,12 @@ namespace Newtonsoft.Json.Serialization
     {
       get { return _serializer.TypeNameHandling; }
       set { _serializer.TypeNameHandling = value; }
+    }
+
+    public override FormatterAssemblyStyle TypeNameAssemblyFormat
+    {
+      get { return _serializer.TypeNameAssemblyFormat; }
+      set { _serializer.TypeNameAssemblyFormat = value; }
     }
 
     public override ConstructorHandling ConstructorHandling

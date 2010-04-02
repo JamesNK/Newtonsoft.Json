@@ -3372,5 +3372,31 @@ keyword such as type of business.""
       Assert.AreEqual(4.3, d[1]);
       Assert.AreEqual(null, d[2]);
     }
+
+#if !SILVERLIGHT && !NET20 && !PocketPC
+    [Test]
+    public void SerializeHashSet()
+    {
+      string jsonText = JsonConvert.SerializeObject(new HashSet<string>()
+                                                      {
+                                                        "One",
+                                                        "2",
+                                                        "III"
+                                                      }, Formatting.Indented);
+
+      Assert.AreEqual(@"[
+  ""One"",
+  ""2"",
+  ""III""
+]", jsonText);
+
+      HashSet<string> d = JsonConvert.DeserializeObject<HashSet<string>>(jsonText);
+
+      Assert.AreEqual(3, d.Count);
+      Assert.IsTrue(d.Contains("One"));
+      Assert.IsTrue(d.Contains("2"));
+      Assert.IsTrue(d.Contains("III"));
+    }
+#endif
   }
 }

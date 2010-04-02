@@ -33,8 +33,8 @@ namespace Newtonsoft.Json.Tests
 
   public class PerformanceTests : TestFixtureBase
   {
-    private const int Iterations = 100;
-    //private const int Iterations = 5000;
+    //private const int Iterations = 100;
+    private const int Iterations = 5000;
 
     #region Data
     private const string BsonHex =
@@ -472,6 +472,39 @@ namespace Newtonsoft.Json.Tests
       return (T)formatter.Deserialize(new MemoryStream(bytes));
     }
     #endregion
+
+
+
+    [Test]
+    public void SerializeLargeObject()
+    {
+      LargeRecursiveTestClass rootValue = null;
+      LargeRecursiveTestClass parentValue = null;
+      for (int i = 0; i < 20; i++)
+      {
+        LargeRecursiveTestClass currentValue = new LargeRecursiveTestClass()
+        {
+          Integer = int.MaxValue,
+          Text = "The quick red fox jumped over the lazy dog."
+        };
+        
+        if (rootValue == null)
+          rootValue = currentValue;
+        if (parentValue != null)
+          parentValue.Child = currentValue;
+
+        parentValue = currentValue;
+      }
+
+      BenchmarkSerializeMethod(SerializeMethod.JsonNetBinary, rootValue);
+    }
+  }
+
+  public class LargeRecursiveTestClass
+  {
+    public LargeRecursiveTestClass Child { get; set; }
+    public string Text { get; set; }
+    public int Integer { get; set; }
   }
 
   #region Classes

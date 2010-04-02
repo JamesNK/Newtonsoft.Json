@@ -23,7 +23,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\Debug\Compact\</OutputPath>
     <DefineConstants>DEBUG;TRACE;$(PlatformFamilyName)</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
@@ -37,7 +37,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\Release\Compact\</OutputPath>
     <DefineConstants>TRACE;$(PlatformFamilyName)</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
@@ -45,7 +45,7 @@
     <FileAlignment>512</FileAlignment>
     <WarningLevel>4</WarningLevel>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <DocumentationFile>bin\Release\Newtonsoft.Json.Compact.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\Compact\Newtonsoft.Json.Compact.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
@@ -75,6 +75,7 @@
     <Compile Include="Converters\KeyValuePairConverter.cs" />
     <Compile Include="Converters\RegexConverter.cs" />
     <Compile Include="Converters\StringEnumConverter.cs" />
+    <Compile Include="FormatterAssemblyStyle.cs" />
     <Compile Include="IJsonLineInfo.cs" />
     <Compile Include="JsonArrayAttribute.cs" />
     <Compile Include="JsonContainerAttribute.cs" />

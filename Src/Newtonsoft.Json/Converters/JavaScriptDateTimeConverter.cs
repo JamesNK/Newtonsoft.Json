@@ -48,6 +48,7 @@ namespace Newtonsoft.Json.Converters
     /// </summary>
     /// <param name="reader">The <see cref="JsonReader"/> to read from.</param>
     /// <param name="objectType">Type of the object.</param>
+    /// <param name="existingValue">The existing property value of the JSON that is being converted.</param>
     /// <param name="serializer">The calling serializer.</param>
     /// <returns>The object value.</returns>
     public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)

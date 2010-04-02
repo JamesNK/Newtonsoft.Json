@@ -267,6 +267,8 @@ namespace Newtonsoft.Json.Serialization
           try
           {
             new ReflectionPermission(ReflectionPermissionFlag.MemberAccess).Demand();
+            new ReflectionPermission(ReflectionPermissionFlag.RestrictedMemberAccess).Demand();
+            new SecurityPermission(SecurityPermissionFlag.UnmanagedCode).Demand();
             _dynamicCodeGeneration = true;
           }
           catch (Exception)

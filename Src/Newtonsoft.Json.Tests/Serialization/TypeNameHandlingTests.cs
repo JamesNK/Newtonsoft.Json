@@ -26,10 +26,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization.Formatters;
 using System.Text;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Tests.TestObjects;
 using NUnit.Framework;
+using Newtonsoft.Json.Utilities;
+using System.Net;
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
@@ -38,7 +41,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     [Test]
     public void WriteTypeNameForObjects()
     {
-      string employeeRef = typeof(EmployeeReference).AssemblyQualifiedName;
+      string employeeRef = ReflectionUtils.GetTypeName(typeof(EmployeeReference), FormatterAssemblyStyle.Simple);
 
       EmployeeReference employee = new EmployeeReference();
 
@@ -58,7 +61,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     [Test]
     public void DeserializeTypeName()
     {
-      string employeeRef = typeof(EmployeeReference).AssemblyQualifiedName;
+      string employeeRef = ReflectionUtils.GetTypeName(typeof(EmployeeReference), FormatterAssemblyStyle.Simple);
 
       string json = @"{
   ""$id"": ""1"",
@@ -75,6 +78,26 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.IsInstanceOfType(typeof(EmployeeReference), employee);
       Assert.AreEqual("Name!", ((EmployeeReference)employee).Name);
     }
+
+#if !SILVERLIGHT && !PocketPC
+    [Test]
+    public void DeserializeTypeNameFromGacAssembly()
+    {
+      string cookieRef = ReflectionUtils.GetTypeName(typeof(Cookie), FormatterAssemblyStyle.Simple);
+
+      string json = @"{
+  ""$id"": ""1"",
+  ""$type"": """ + cookieRef + @"""
+}";
+
+      object cookie = JsonConvert.DeserializeObject(json, null, new JsonSerializerSettings
+      {
+        TypeNameHandling = TypeNameHandling.Objects
+      });
+
+      Assert.IsInstanceOfType(typeof(Cookie), cookie);
+    }
+#endif
 
     [Test]
     public void SerializeGenericObjectListWithTypeName()
@@ -101,7 +124,8 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       string json = JsonConvert.SerializeObject(values, Formatting.Indented, new JsonSerializerSettings
       {
-        TypeNameHandling = TypeNameHandling.Objects
+        TypeNameHandling = TypeNameHandling.Objects,
+        TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
       });
 
       Assert.AreEqual(@"[
@@ -157,7 +181,8 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       List<object> values = (List<object>)JsonConvert.DeserializeObject(json, typeof(List<object>), new JsonSerializerSettings
       {
-        TypeNameHandling = TypeNameHandling.Objects
+        TypeNameHandling = TypeNameHandling.Objects,
+        TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
       });
 
       Assert.AreEqual(4, values.Count);
@@ -191,7 +216,8 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       JsonConvert.DeserializeObject(json, typeof(Person), new JsonSerializerSettings
       {
-        TypeNameHandling = TypeNameHandling.Objects
+        TypeNameHandling = TypeNameHandling.Objects,
+        TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
       });
     }
 
@@ -275,7 +301,8 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       ICorrelatedMessage message = JsonConvert.DeserializeObject<ICorrelatedMessage>(json, new JsonSerializerSettings
         {
-          TypeNameHandling = TypeNameHandling.Objects
+          TypeNameHandling = TypeNameHandling.Objects,
+          TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
         });
 
       Assert.IsInstanceOfType(typeof(SendHttpRequest), message);
@@ -302,7 +329,8 @@ namespace Newtonsoft.Json.Tests.Serialization
           new JsonSerializerSettings
               {
                 NullValueHandling = NullValueHandling.Ignore,
-                TypeNameHandling = TypeNameHandling.All
+                TypeNameHandling = TypeNameHandling.All,
+                TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
               });
 
       Assert.AreEqual(@"{
@@ -316,6 +344,87 @@ namespace Newtonsoft.Json.Tests.Serialization
     ""$values"": []
   }
 }", json);
+    }
+
+    public class TypeNameProperty
+    {
+      public string Name { get; set; }
+      [JsonProperty(TypeNameHandling = TypeNameHandling.All)]
+      public object Value { get; set; }
+    }
+
+    [Test]
+    public void WriteObjectTypeNameForProperty()
+    {
+      string typeNamePropertyRef = ReflectionUtils.GetTypeName(typeof(TypeNameProperty), FormatterAssemblyStyle.Simple);
+
+      TypeNameProperty typeNameProperty = new TypeNameProperty
+                                            {
+                                              Name = "Name!",
+                                              Value = new TypeNameProperty
+                                                        {
+                                                          Name = "Nested!"
+                                                        }
+                                            };
+
+      string json = JsonConvert.SerializeObject(typeNameProperty, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""Name"": ""Name!"",
+  ""Value"": {
+    ""$type"": """ + typeNamePropertyRef + @""",
+    ""Name"": ""Nested!"",
+    ""Value"": null
+  }
+}", json);
+
+      TypeNameProperty deserialized = JsonConvert.DeserializeObject<TypeNameProperty>(json);
+      Assert.AreEqual("Name!", deserialized.Name);
+      Assert.IsInstanceOfType(typeof(TypeNameProperty), deserialized.Value);
+
+      TypeNameProperty nested = (TypeNameProperty)deserialized.Value;
+      Assert.AreEqual("Nested!", nested.Name);
+      Assert.AreEqual(null, nested.Value);
+    }
+
+    [Test]
+    public void WriteListTypeNameForProperty()
+    {
+      string listRef = ReflectionUtils.GetTypeName(typeof(List<int>), FormatterAssemblyStyle.Simple);
+
+      TypeNameProperty typeNameProperty = new TypeNameProperty
+      {
+        Name = "Name!",
+        Value = new List<int> { 1, 2, 3, 4, 5 }
+      };
+
+      string json = JsonConvert.SerializeObject(typeNameProperty, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""Name"": ""Name!"",
+  ""Value"": {
+    ""$type"": """ + listRef + @""",
+    ""$values"": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ]
+  }
+}", json);
+
+      TypeNameProperty deserialized = JsonConvert.DeserializeObject<TypeNameProperty>(json);
+      Assert.AreEqual("Name!", deserialized.Name);
+      Assert.IsInstanceOfType(typeof(List<int>), deserialized.Value);
+
+      List<int> nested = (List<int>)deserialized.Value;
+      Assert.AreEqual(5, nested.Count);
+      Assert.AreEqual(1, nested[0]);
+      Assert.AreEqual(2, nested[1]);
+      Assert.AreEqual(3, nested[2]);
+      Assert.AreEqual(4, nested[3]);
+      Assert.AreEqual(5, nested[4]);
     }
   }
 }

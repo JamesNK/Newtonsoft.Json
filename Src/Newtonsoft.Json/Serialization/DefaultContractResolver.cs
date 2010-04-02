@@ -460,21 +460,19 @@ namespace Newtonsoft.Json.Serialization
       if (objectType.IsSubclassOf(typeof(JToken)))
         return CreateLinqContract(objectType);
 
-      bool canConvertToString = CanConvertToString(objectType);
-
-#if !SILVERLIGHT && !PocketPC
-      if (typeof(ISerializable).IsAssignableFrom(objectType) && !canConvertToString)
-        return CreateISerializableContract(objectType);
-#endif
-
       if (CollectionUtils.IsDictionaryType(objectType))
         return CreateDictionaryContract(objectType);
 
       if (typeof(IEnumerable).IsAssignableFrom(objectType))
         return CreateArrayContract(objectType);
 
-      if (canConvertToString)
+      if (CanConvertToString(objectType))
         return CreateStringContract(objectType);
+
+#if !SILVERLIGHT && !PocketPC
+      if (typeof(ISerializable).IsAssignableFrom(objectType))
+        return CreateISerializableContract(objectType);
+#endif
 
       return CreateObjectContract(objectType);
     }
@@ -668,6 +666,7 @@ namespace Newtonsoft.Json.Serialization
       property.DefaultValueHandling = (propertyAttribute != null) ? propertyAttribute._defaultValueHandling : null;
       property.ReferenceLoopHandling = (propertyAttribute != null) ? propertyAttribute._referenceLoopHandling : null;
       property.ObjectCreationHandling = (propertyAttribute != null) ? propertyAttribute._objectCreationHandling : null;
+      property.TypeNameHandling = (propertyAttribute != null) ? propertyAttribute._typeNameHandling : null;
       property.IsReference = (propertyAttribute != null) ? propertyAttribute._isReference : null;
 
       property.ShouldSerialize = CreateShouldSerializeTest(member);

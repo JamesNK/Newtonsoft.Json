@@ -24,24 +24,24 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>Bin\Debug</OutputPath>
+    <OutputPath>Bin\Debug\Silverlight\</OutputPath>
     <DefineConstants>DEBUG;TRACE;SILVERLIGHT</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>Bin\Debug\Newtonsoft.Json.Silverlight.xml</DocumentationFile>
+    <DocumentationFile>Bin\Debug\Silverlight\Newtonsoft.Json.Silverlight.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>Bin\Release</OutputPath>
+    <OutputPath>Bin\Release\Silverlight\</OutputPath>
     <DefineConstants>TRACE;SILVERLIGHT</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>Bin\Release\Newtonsoft.Json.Silverlight.xml</DocumentationFile>
+    <DocumentationFile>Bin\Release\Silverlight\Newtonsoft.Json.Silverlight.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.Runtime.Serialization" />
@@ -77,6 +77,7 @@
     <Compile Include="Converters\StringEnumConverter.cs" />
     <Compile Include="Converters\XmlNodeConverter.cs" />
     <Compile Include="Converters\HtmlColorConverter.cs" />
+    <Compile Include="FormatterAssemblyStyle.cs" />
     <Compile Include="DefaultValueHandling.cs" />
     <Compile Include="IJsonLineInfo.cs" />
     <Compile Include="JsonArrayAttribute.cs" />

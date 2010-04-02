@@ -127,6 +127,8 @@ namespace Newtonsoft.Json.Serialization
 
     public Predicate<object> ShouldSerialize { get; set; }
 
+    public TypeNameHandling? TypeNameHandling { get; set; }
+
     /// <summary>
     /// Returns a <see cref="String"/> that represents this instance.
     /// </summary>

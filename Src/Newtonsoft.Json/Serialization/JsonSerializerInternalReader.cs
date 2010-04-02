@@ -192,7 +192,7 @@ namespace Newtonsoft.Json.Serialization
         return converter.ReadJson(reader, objectType, currentValue, GetInternalSerializer());
       }
 
-      return CreateValueInternal(reader, objectType, contract, currentValue);
+      return CreateValueInternal(reader, objectType, contract, property, currentValue);
     }
 
     private object CreateValueNonProperty(JsonReader reader, Type objectType, JsonContract contract)
@@ -202,10 +202,10 @@ namespace Newtonsoft.Json.Serialization
       if (converter != null && converter.CanRead)
         return converter.ReadJson(reader, objectType, null, GetInternalSerializer());
 
-      return CreateValueInternal(reader, objectType, contract, null);
+      return CreateValueInternal(reader, objectType, contract, null, null);
     }
 
-    private object CreateValueInternal(JsonReader reader, Type objectType, JsonContract contract, object existingValue)
+    private object CreateValueInternal(JsonReader reader, Type objectType, JsonContract contract, JsonProperty member, object existingValue)
     {
       if (contract is JsonLinqContract)
         return CreateJToken(reader, contract);
@@ -217,9 +217,9 @@ namespace Newtonsoft.Json.Serialization
             // populate a typed object or generic dictionary/array
             // depending upon whether an objectType was supplied
           case JsonToken.StartObject:
-            return CreateObject(reader, objectType, contract, existingValue);
+            return CreateObject(reader, objectType, contract, member, existingValue);
           case JsonToken.StartArray:
-            return CreateList(reader, objectType, contract, existingValue, null);
+            return CreateList(reader, objectType, contract, member, existingValue, null);
           case JsonToken.Integer:
           case JsonToken.Float:
           case JsonToken.Boolean:
@@ -282,7 +282,7 @@ namespace Newtonsoft.Json.Serialization
       return converter;
     }
 
-    private object CreateObject(JsonReader reader, Type objectType, JsonContract contract, object existingValue)
+    private object CreateObject(JsonReader reader, Type objectType, JsonContract contract, JsonProperty member, object existingValue)
     {
       CheckedRead(reader);
 
@@ -317,7 +317,7 @@ namespace Newtonsoft.Json.Serialization
 
             CheckedRead(reader);
 
-            if (Serializer.TypeNameHandling != TypeNameHandling.None)
+            if ((((member != null) ? member.TypeNameHandling : null) ?? Serializer.TypeNameHandling) != TypeNameHandling.None)
             {
               string typeName;
               string assemblyName;
@@ -355,7 +355,7 @@ namespace Newtonsoft.Json.Serialization
           else if (string.Equals(propertyName, JsonTypeReflector.ArrayValuesPropertyName, StringComparison.Ordinal))
           {
             CheckedRead(reader);
-            object list = CreateList(reader, objectType, contract, existingValue, id);
+            object list = CreateList(reader, objectType, contract, member, existingValue, id);
             CheckedRead(reader);
             return list;
           }
@@ -420,7 +420,7 @@ namespace Newtonsoft.Json.Serialization
         throw new JsonSerializationException("Unexpected end when deserializing object.");
     }
 
-    private object CreateList(JsonReader reader, Type objectType, JsonContract contract, object existingValue, string reference)
+    private object CreateList(JsonReader reader, Type objectType, JsonContract contract, JsonProperty member, object existingValue, string reference)
     {
       object value;
       if (HasDefinedType(objectType))
