@@ -58,7 +58,7 @@ namespace Newtonsoft.Json.Bson
             foreach (BsonToken c in value)
             {
               _writer.Write((sbyte)c.Type);
-              WriteString(index.ToString(CultureInfo.InvariantCulture), Encoding.GetByteCount(index.ToString(CultureInfo.InvariantCulture)), null);
+              WriteString(index.ToString(CultureInfo.InvariantCulture), MathUtils.IntLength(index), null);
               WriteTokenInternal(c);
               index++;
             }

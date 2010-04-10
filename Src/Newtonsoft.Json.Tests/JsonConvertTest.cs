@@ -257,7 +257,7 @@ now brown cow?", '"', true);
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "After parsing a value an unexpected character was encoutered: t. Line 1, position 20.")]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "After parsing a value an unexpected character was encountered: t. Line 1, position 20.")]
     public void TestInvalidStrings()
     {
       string orig = @"this is a string ""that has quotes"" ";

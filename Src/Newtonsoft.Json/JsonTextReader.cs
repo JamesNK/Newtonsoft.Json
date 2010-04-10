@@ -409,7 +409,7 @@ namespace Newtonsoft.Json
             }
             else
             {
-              throw CreateJsonReaderException("After parsing a value an unexpected character was encoutered: {0}. Line {1}, position {2}.", currentChar, _currentLineNumber, _currentLinePosition);
+              throw CreateJsonReaderException("After parsing a value an unexpected character was encountered: {0}. Line {1}, position {2}.", currentChar, _currentLineNumber, _currentLinePosition);
             }
             break;
         }
