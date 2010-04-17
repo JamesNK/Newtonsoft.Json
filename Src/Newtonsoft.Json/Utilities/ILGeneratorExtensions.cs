@@ -33,7 +33,7 @@ using System.Reflection;
 
 namespace Newtonsoft.Json.Utilities
 {
-  public static class ILGeneratorExtensions
+  internal static class ILGeneratorExtensions
   {
     public static void PushInstance(this ILGenerator generator, Type type)
     {

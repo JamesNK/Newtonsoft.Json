@@ -57,6 +57,10 @@ namespace Newtonsoft.Json
       set { _objectCreationHandling = value; }
     }
 
+    /// <summary>
+    /// Gets or sets the type name handling used when serializing this property.
+    /// </summary>
+    /// <value>The type name handling.</value>
     public TypeNameHandling TypeNameHandling
     {
       get { return _typeNameHandling ?? default(TypeNameHandling); }

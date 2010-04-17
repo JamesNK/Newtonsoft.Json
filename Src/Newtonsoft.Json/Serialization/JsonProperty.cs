@@ -125,9 +125,17 @@ namespace Newtonsoft.Json.Serialization
     /// <value>The object creation handling.</value>
     public ObjectCreationHandling? ObjectCreationHandling { get; set; }
 
-    public Predicate<object> ShouldSerialize { get; set; }
-
+    /// <summary>
+    /// Gets or sets the type name handling.
+    /// </summary>
+    /// <value>The type name handling.</value>
     public TypeNameHandling? TypeNameHandling { get; set; }
+
+    /// <summary>
+    /// Gets or sets a predicate used to determine whether the property should be serialize.
+    /// </summary>
+    /// <value>A predicate used to determine whether the property should be serialize.</value>
+    public Predicate<object> ShouldSerialize { get; set; }
 
     /// <summary>
     /// Returns a <see cref="String"/> that represents this instance.

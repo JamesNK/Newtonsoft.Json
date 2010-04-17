@@ -38,8 +38,7 @@ namespace Newtonsoft.Json.Tests.Bson
 {
   public class BsonReaderTests : TestFixtureBase
   {
-    private char pound = '\u00a3';
-    private char euro = '\u20ac';
+    private const char Euro = '\u20ac';
 
     [Test]
     public void ReadSingleObject()
@@ -829,7 +828,7 @@ namespace Newtonsoft.Json.Tests.Bson
       //sb.Append('1',127); //first char of euro at the end of the boundry.
       //sb.Append(euro, 5);
       //sb.Append('1',128);
-      sb.Append(euro);
+      sb.Append(Euro);
 
       string expected = sb.ToString();
       Assert.AreEqual(expected, WriteAndReadStringValue(expected));
@@ -840,9 +839,9 @@ namespace Newtonsoft.Json.Tests.Bson
     {
       StringBuilder sb = new StringBuilder();
       sb.Append('1', 127); //first char of euro at the end of the boundry.
-      sb.Append(euro, 5);
+      sb.Append(Euro, 5);
       sb.Append('1', 128);
-      sb.Append(euro);
+      sb.Append(Euro);
 
       string expected = sb.ToString();
       Assert.AreEqual(expected, WriteAndReadStringValue(expected));
@@ -853,9 +852,9 @@ namespace Newtonsoft.Json.Tests.Bson
     {
       StringBuilder sb = new StringBuilder();
       sb.Append('1', 126);
-      sb.Append(euro, 5); //middle char of euro at the end of the boundry.
+      sb.Append(Euro, 5); //middle char of euro at the end of the boundry.
       sb.Append('1', 128);
-      sb.Append(euro);
+      sb.Append(Euro);
 
       string expected = sb.ToString();
       string result = WriteAndReadStringValue(expected);
@@ -866,7 +865,7 @@ namespace Newtonsoft.Json.Tests.Bson
     public void TestReadLenStringValueTripleByteCharOne()
     {
       StringBuilder sb = new StringBuilder();
-      sb.Append(euro, 1); //Just one triple byte char in the string.
+      sb.Append(Euro, 1); //Just one triple byte char in the string.
 
       string expected = sb.ToString();
       Assert.AreEqual(expected, WriteAndReadStringValue(expected));
@@ -877,9 +876,9 @@ namespace Newtonsoft.Json.Tests.Bson
     {
       StringBuilder sb = new StringBuilder();
       sb.Append('1', 125);
-      sb.Append(euro, 5); //last char of the eruo at the end of the boundry.
+      sb.Append(Euro, 5); //last char of the eruo at the end of the boundry.
       sb.Append('1', 128);
-      sb.Append(euro);
+      sb.Append(Euro);
 
       string expected = sb.ToString();
       Assert.AreEqual(expected, WriteAndReadStringValue(expected));
@@ -908,7 +907,7 @@ namespace Newtonsoft.Json.Tests.Bson
       //sb.Append('1',127); //first char of euro at the end of the boundry.
       //sb.Append(euro, 5);
       //sb.Append('1',128);
-      sb.Append(euro);
+      sb.Append(Euro);
 
       string expected = sb.ToString();
       Assert.AreEqual(expected, WriteAndReadStringPropertyName(expected));
@@ -919,9 +918,9 @@ namespace Newtonsoft.Json.Tests.Bson
     {
       StringBuilder sb = new StringBuilder();
       sb.Append('1', 127); //first char of euro at the end of the boundry.
-      sb.Append(euro, 5);
+      sb.Append(Euro, 5);
       sb.Append('1', 128);
-      sb.Append(euro);
+      sb.Append(Euro);
 
       string expected = sb.ToString();
       string result = WriteAndReadStringPropertyName(expected);
@@ -933,9 +932,9 @@ namespace Newtonsoft.Json.Tests.Bson
     {
       StringBuilder sb = new StringBuilder();
       sb.Append('1', 126);
-      sb.Append(euro, 5); //middle char of euro at the end of the boundry.
+      sb.Append(Euro, 5); //middle char of euro at the end of the boundry.
       sb.Append('1', 128);
-      sb.Append(euro);
+      sb.Append(Euro);
 
       string expected = sb.ToString();
       Assert.AreEqual(expected, WriteAndReadStringPropertyName(expected));
@@ -945,7 +944,7 @@ namespace Newtonsoft.Json.Tests.Bson
     public void TestReadStringPropertyNameTripleByteCharOne()
     {
       StringBuilder sb = new StringBuilder();
-      sb.Append(euro, 1); //Just one triple byte char in the string.
+      sb.Append(Euro, 1); //Just one triple byte char in the string.
 
       string expected = sb.ToString();
       Assert.AreEqual(expected, WriteAndReadStringPropertyName(expected));
@@ -956,9 +955,9 @@ namespace Newtonsoft.Json.Tests.Bson
     {
       StringBuilder sb = new StringBuilder();
       sb.Append('1', 125);
-      sb.Append(euro, 5); //last char of the eruo at the end of the boundry.
+      sb.Append(Euro, 5); //last char of the eruo at the end of the boundry.
       sb.Append('1', 128);
-      sb.Append(euro);
+      sb.Append(Euro);
 
       string expected = sb.ToString();
       Assert.AreEqual(expected, WriteAndReadStringPropertyName(expected));

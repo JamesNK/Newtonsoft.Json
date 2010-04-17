@@ -3318,6 +3318,44 @@ keyword such as type of business.""
       Assert.AreEqual(27, deserialized.Age);
     }
 
+    public class Employee
+    {
+      public string Name { get; set; }
+      public Employee Manager { get; set; }
+
+      public bool ShouldSerializeManager()
+      {
+        return (Manager != this);
+      }
+    }
+
+    [Test]
+    public void ShouldSerializeExample()
+    {
+      Employee joe = new Employee();
+      joe.Name = "Joe Employee";
+      Employee mike = new Employee();
+      mike.Name = "Mike Manager";
+
+      joe.Manager = mike;
+      mike.Manager = mike;
+
+      string json = JsonConvert.SerializeObject(new []{ joe, mike }, Formatting.Indented);
+      // [
+      //   {
+      //     "Name": "Joe Employee",
+      //     "Manager": {
+      //       "Name": "Mike Manager"
+      //     }
+      //   },
+      //   {
+      //     "Name": "Mike Manager"
+      //   }
+      // ]
+
+      Console.WriteLine(json);
+    }
+
     public class DictionaryKey
     {
       public string Value { get; set; }

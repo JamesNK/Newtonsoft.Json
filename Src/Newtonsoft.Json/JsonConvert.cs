@@ -739,16 +739,51 @@ namespace Newtonsoft.Json
     }
 
 #if !NET20 && !SILVERLIGHT
+    /// <summary>
+    /// Serializes the <see cref="XNode"/> to a JSON string.
+    /// </summary>
+    /// <param name="node">The node to convert to JSON.</param>
+    /// <returns>A JSON string of the XNode.</returns>
     public static string SerializeXNode(XObject node)
     {
       return SerializeXNode(node, Formatting.None);
     }
 
+    /// <summary>
+    /// Serializes the <see cref="XNode"/> to a JSON string.
+    /// </summary>
+    /// <param name="node">The node to convert to JSON.</param>
+    /// <param name="formatting">Indicates how the output is formatted.</param>
+    /// <returns>A JSON string of the XNode.</returns>
     public static string SerializeXNode(XObject node, Formatting formatting)
     {
       XmlNodeConverter converter = new XmlNodeConverter();
 
       return SerializeObject(node, formatting, converter);
+    }
+
+    /// <summary>
+    /// Deserializes the <see cref="XNode"/> from a JSON string.
+    /// </summary>
+    /// <param name="value">The JSON string.</param>
+    /// <returns>The deserialized XNode</returns>
+    public static XDocument DeserializeXNode(string value)
+    {
+      return DeserializeXNode(value, null);
+    }
+
+    /// <summary>
+    /// Deserializes the <see cref="XNode"/> from a JSON string nested in a root elment.
+    /// </summary>
+    /// <param name="value">The JSON string.</param>
+    /// <param name="deserializeRootElementName">The name of the root element to append when deserializing.</param>
+    /// <returns>The deserialized XNode</returns>
+    public static XDocument DeserializeXNode(string value, string deserializeRootElementName)
+    {
+      XmlNodeConverter converter = new XmlNodeConverter();
+      converter.DeserializeRootElementName = deserializeRootElementName;
+
+      return (XDocument)DeserializeObject(value, typeof(XDocument), converter);
     }
 #endif
 
@@ -799,32 +834,6 @@ namespace Newtonsoft.Json
 
       return (XmlDocument)DeserializeObject(value, typeof(XmlDocument), converter);
     }
-
-#if !NET20
-    /// <summary>
-    /// Deserializes the XNode from a JSON string.
-    /// </summary>
-    /// <param name="value">The JSON string.</param>
-    /// <returns>The deserialized XmlNode</returns>
-    public static XDocument DeserializeXNode(string value)
-    {
-      return DeserializeXNode(value, null);
-    }
-
-    /// <summary>
-    /// Deserializes the XmlNode from a JSON string nested in a root elment.
-    /// </summary>
-    /// <param name="value">The JSON string.</param>
-    /// <param name="deserializeRootElementName">The name of the root element to append when deserializing.</param>
-    /// <returns>The deserialized XmlNode</returns>
-    public static XDocument DeserializeXNode(string value, string deserializeRootElementName)
-    {
-      XmlNodeConverter converter = new XmlNodeConverter();
-      converter.DeserializeRootElementName = deserializeRootElementName;
-
-      return (XDocument)DeserializeObject(value, typeof(XDocument), converter);
-    }
-#endif
 #endif
   }
 }
