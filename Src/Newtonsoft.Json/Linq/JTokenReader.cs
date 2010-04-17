@@ -37,6 +37,14 @@ namespace Newtonsoft.Json.Linq
     public override byte[] ReadAsBytes()
     {
       Read();
+
+      // attempt to convert possible base 64 string to bytes
+      if (TokenType == JsonToken.String)
+      {
+        byte[] data = Convert.FromBase64String((string)Value);
+        SetToken(JsonToken.Bytes, data);
+      }
+
       if (TokenType != JsonToken.Bytes)
         throw new JsonReaderException("Error reading bytes. Expected bytes but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
 

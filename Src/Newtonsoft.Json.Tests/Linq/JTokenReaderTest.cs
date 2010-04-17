@@ -247,5 +247,31 @@ namespace Newtonsoft.Json.Tests.Linq
         jsonReader.ReadAsBytes();
       }
     }
+
+    public class HasBytes
+    {
+      public byte[] Bytes { get; set; }
+    }
+
+    [Test]
+    public void ReadBytesFromString()
+    {
+      var bytes = new HasBytes { Bytes = new byte[] { 1, 2, 3, 4 } };
+      var json = JsonConvert.SerializeObject(bytes);
+
+      TextReader textReader = new StringReader(json);
+      JsonReader jsonReader = new JsonTextReader(textReader);
+      //var result = (HasBytes)JsonSerializer.Create(null)
+      //                 .Deserialize(jsonReader, typeof(HasBytes));
+
+      var jToken = JToken.ReadFrom(jsonReader);
+
+      jsonReader = new JTokenReader(jToken);
+
+      var result2 = (HasBytes)JsonSerializer.Create(null)
+                 .Deserialize(jsonReader, typeof(HasBytes));
+
+      Assert.AreEqual(new byte[] { 1, 2, 3, 4 }, result2.Bytes);
+    }
   }
 }
