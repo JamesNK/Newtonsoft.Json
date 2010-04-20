@@ -337,8 +337,16 @@ namespace Newtonsoft.Json
                 case '\'':
                   ReadStringIntoBuffer(currentChar);
 
-                  byte[] data = Convert.FromBase64CharArray(_buffer.GetInternalBuffer(), 0, _buffer.Position);
-                  _buffer.Position = 0;
+                  byte[] data;
+                  if (_buffer.Position == 0)
+                  {
+                    data = new byte[0];
+                  }
+                  else
+                  {
+                    data = Convert.FromBase64CharArray(_buffer.GetInternalBuffer(), 0, _buffer.Position);
+                    _buffer.Position = 0;
+                  }
 
                   SetToken(JsonToken.Bytes, data);
 

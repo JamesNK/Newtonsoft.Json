@@ -123,6 +123,8 @@ function MergeAssembly($dllPrimaryAssembly, $signKey, [string[]]$mergedAssemlies
   $temporaryDir = $primary.DirectoryName + "\" + [Guid]::NewGuid().ToString()
   New-Item $temporaryDir -ItemType Directory
   
+  $ilMergeKeyFile = switch($signAssemblies) { $true { "/keyfile:$signKeyPath" } default { "" } }
+  
   try
   {
     exec { .\Tools\ILMerge\ilmerge.exe "/internalize" "/closed" "/log:$workingDir\$mergedAssemblyName.MergeLog.txt" $ilMergeKeyFile "/out:$temporaryDir\$mergedAssemblyName" $dllPrimaryAssembly $mergeAssemblyPaths } "Error executing ILMerge"

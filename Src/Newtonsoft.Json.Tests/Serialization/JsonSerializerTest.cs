@@ -3436,5 +3436,32 @@ keyword such as type of business.""
       Assert.IsTrue(d.Contains("III"));
     }
 #endif
+
+    private class MyClass
+    {
+      public byte[] Prop1 { get; set; }
+
+      public MyClass()
+      {
+        Prop1 = new byte[0];
+      }
+    }
+
+    [Test]
+    public void DeserializeByteArray()
+    {
+      JsonSerializer serializer1 = new JsonSerializer();
+      serializer1.Converters.Add(new IsoDateTimeConverter());
+      serializer1.NullValueHandling = NullValueHandling.Ignore;
+
+      string json = @"[{""Prop1"":""""},{""Prop1"":""""}]";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+      MyClass[] z = (MyClass[])serializer1.Deserialize(reader, typeof(MyClass[]));
+      Assert.AreEqual(2, z.Length);
+      Assert.AreEqual(0, z[0].Prop1.Length);
+      Assert.AreEqual(0, z[1].Prop1.Length);
+    }
   }
 }

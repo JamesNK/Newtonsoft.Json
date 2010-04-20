@@ -41,7 +41,8 @@ namespace Newtonsoft.Json.Linq
       // attempt to convert possible base 64 string to bytes
       if (TokenType == JsonToken.String)
       {
-        byte[] data = Convert.FromBase64String((string)Value);
+        string s = (string) Value;
+        byte[] data = (s.Length == 0) ? new byte[0] : Convert.FromBase64String(s);
         SetToken(JsonToken.Bytes, data);
       }
 
