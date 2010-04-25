@@ -708,7 +708,15 @@ namespace Newtonsoft.Json
       }
       else
       {
-        numberValue = Convert.ToInt64(number, CultureInfo.InvariantCulture);
+        try
+        {
+          numberValue = Convert.ToInt64(number, CultureInfo.InvariantCulture);
+        }
+        catch (OverflowException ex)
+        {
+          throw new JsonReaderException("JSON integer {0} is too large or small for an Int64.".FormatWith(CultureInfo.InvariantCulture, number), ex);
+        }
+
         numberType = JsonToken.Integer;
       }
 

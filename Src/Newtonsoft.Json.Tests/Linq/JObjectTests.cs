@@ -1479,5 +1479,14 @@ Parameter name: arrayIndex")]
 
       string name = (string)o.Property("responseData");
     }
+
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "JSON integer 307953220000517141511 is too large or small for an Int64.")]
+    public void NumberTooBigForInt64()
+    {
+      string json = @"{""code"": 307953220000517141511}";
+
+      JObject.Parse(json);
+    }
   }
 }
