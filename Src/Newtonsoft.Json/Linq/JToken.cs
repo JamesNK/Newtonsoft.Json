@@ -645,6 +645,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="value">The value.</param>
     /// <returns>The result of the conversion.</returns>
+    [CLSCompliant(false)]
     public static explicit operator uint?(JToken value)
     {
       if (value == null)
@@ -662,6 +663,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="value">The value.</param>
     /// <returns>The result of the conversion.</returns>
+    [CLSCompliant(false)]
     public static explicit operator ulong?(JToken value)
     {
       if (value == null)
@@ -724,6 +726,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="value">The value.</param>
     /// <returns>The result of the conversion.</returns>
+    [CLSCompliant(false)]
     public static explicit operator uint(JToken value)
     {
       JValue v = EnsureValue(value);
@@ -738,6 +741,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="value">The value.</param>
     /// <returns>The result of the conversion.</returns>
+    [CLSCompliant(false)]
     public static explicit operator ulong(JToken value)
     {
       JValue v = EnsureValue(value);
@@ -852,6 +856,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
     /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    [CLSCompliant(false)]
     public static implicit operator JToken(ushort value)
     {
       return new JValue(value);
@@ -922,6 +927,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
     /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    [CLSCompliant(false)]
     public static implicit operator JToken(ushort? value)
     {
       return new JValue(value);
@@ -932,6 +938,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
     /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    [CLSCompliant(false)]
     public static implicit operator JToken(uint? value)
     {
       return new JValue(value);
@@ -942,6 +949,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
     /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    [CLSCompliant(false)]
     public static implicit operator JToken(ulong? value)
     {
       return new JValue(value);
@@ -982,6 +990,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
     /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    [CLSCompliant(false)]
     public static implicit operator JToken(uint value)
     {
       return new JValue(value);
@@ -992,6 +1001,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
     /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    [CLSCompliant(false)]
     public static implicit operator JToken(ulong value)
     {
       return new JValue(value);

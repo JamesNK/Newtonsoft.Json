@@ -236,7 +236,7 @@ namespace Newtonsoft.Json.Linq
       return new JEnumerable<JToken>(ChildrenInternal());
     }
 
-    private IEnumerable<JToken> ChildrenInternal()
+    internal IEnumerable<JToken> ChildrenInternal()
     {
       JToken first = First;
       JToken current = first;

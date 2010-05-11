@@ -68,6 +68,7 @@ namespace Newtonsoft.Json.Linq
     /// Initializes a new instance of the <see cref="JValue"/> class with the given value.
     /// </summary>
     /// <param name="value">The value.</param>
+    [CLSCompliant(false)]
     public JValue(ulong value)
       : this(value, JTokenType.Integer)
     {
@@ -271,16 +272,6 @@ namespace Newtonsoft.Json.Linq
       }
     }
 
-    private static void WriteConvertableValue(JsonWriter writer, IList<JsonConverter> converters, Action<object> defaultWrite, object value)
-    {
-      JsonConverter matchingConverter;
-
-      if (value != null && ((matchingConverter = JsonSerializer.GetMatchingConverter(converters, value.GetType())) != null))
-        matchingConverter.WriteJson(writer, value, new JsonSerializer());
-      else
-        defaultWrite(value);
-    }
-
     /// <summary>
     /// Writes this token to a <see cref="JsonWriter"/>.
     /// </summary>
@@ -292,45 +283,53 @@ namespace Newtonsoft.Json.Linq
       {
         case JTokenType.Comment:
           writer.WriteComment(_value.ToString());
-          break;
-        case JTokenType.Integer:
-          WriteConvertableValue(writer, converters, v => writer.WriteValue(Convert.ToInt64(v, CultureInfo.InvariantCulture)), _value);
-          break;
-        case JTokenType.Float:
-          WriteConvertableValue(writer, converters, v => writer.WriteValue(Convert.ToDouble(v, CultureInfo.InvariantCulture)), _value);
-          break;
-        case JTokenType.String:
-          WriteConvertableValue(writer, converters, v => writer.WriteValue((v != null) ? v.ToString() : null), _value);
-          break;
-        case JTokenType.Boolean:
-          WriteConvertableValue(writer, converters, v => writer.WriteValue(Convert.ToBoolean(v, CultureInfo.InvariantCulture)), _value);
-          break;
-        case JTokenType.Date:
-          WriteConvertableValue(writer, converters, v =>
-          {
-#if !PocketPC && !NET20
-            if (v is DateTimeOffset)
-              writer.WriteValue((DateTimeOffset)v);
-            else
-#endif
-            writer.WriteValue(Convert.ToDateTime(v, CultureInfo.InvariantCulture));
-          }, _value);
-          break;
+          return;
         case JTokenType.Raw:
           writer.WriteRawValue((_value != null) ? _value.ToString() : null);
-          break;
-        case JTokenType.Bytes:
-          WriteConvertableValue(writer, converters, v => writer.WriteValue((byte[])v), _value);
-          break;
+          return;
         case JTokenType.Null:
           writer.WriteNull();
-          break;
+          return;
         case JTokenType.Undefined:
           writer.WriteUndefined();
-          break;
-        default:
-          throw MiscellaneousUtils.CreateArgumentOutOfRangeException("TokenType", _valueType, "Unexpected token type.");
+          return;
       }
+
+      JsonConverter matchingConverter;
+      if (_value != null && ((matchingConverter = JsonSerializer.GetMatchingConverter(converters, _value.GetType())) != null))
+      {
+        matchingConverter.WriteJson(writer, _value, new JsonSerializer());
+        return;
+      }
+
+      switch (_valueType)
+      {
+        case JTokenType.Integer:
+          writer.WriteValue(Convert.ToInt64(_value, CultureInfo.InvariantCulture));
+          return;
+        case JTokenType.Float:
+          writer.WriteValue(Convert.ToDouble(_value, CultureInfo.InvariantCulture));
+          return;
+        case JTokenType.String:
+          writer.WriteValue((_value != null) ? _value.ToString() : null);
+          return;
+        case JTokenType.Boolean:
+          writer.WriteValue(Convert.ToBoolean(_value, CultureInfo.InvariantCulture));
+          return;
+        case JTokenType.Date:
+#if !PocketPC && !NET20
+          if (_value is DateTimeOffset)
+            writer.WriteValue((DateTimeOffset)_value);
+          else
+#endif
+            writer.WriteValue(Convert.ToDateTime(_value, CultureInfo.InvariantCulture)); ;
+          return;
+        case JTokenType.Bytes:
+          writer.WriteValue((byte[])_value);
+          return;
+      }
+
+      throw MiscellaneousUtils.CreateArgumentOutOfRangeException("TokenType", _valueType, "Unexpected token type.");
     }
 
     internal override int GetDeepHashCode()

@@ -577,7 +577,7 @@ namespace Newtonsoft.Json.Bson
       {
         int count = ((length - totalBytesRead) > MaxCharBytesSize - offset)
           ? MaxCharBytesSize - offset
-          : length - totalBytesRead;
+          : length - totalBytesRead - offset;
 
         int byteCount = _reader.BaseStream.Read(_byteBuffer, offset, count);
 

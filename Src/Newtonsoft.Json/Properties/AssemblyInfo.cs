@@ -17,6 +17,7 @@
 //    * Any of these conditions can be waived if you get permission from the copyright holder.
 #endregion
 
+using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -98,3 +99,5 @@ using System.Security;
 #if !PocketPC
 [assembly: AssemblyFileVersion("3.5.0.0")]
 #endif
+
+[assembly: CLSCompliant(true)]

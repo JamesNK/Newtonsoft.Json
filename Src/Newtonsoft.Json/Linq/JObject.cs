@@ -315,7 +315,7 @@ namespace Newtonsoft.Json.Linq
     {
       writer.WriteStartObject();
 
-      foreach (JProperty property in Properties())
+      foreach (JProperty property in ChildrenInternal())
       {
         property.WriteTo(writer, converters);
       }

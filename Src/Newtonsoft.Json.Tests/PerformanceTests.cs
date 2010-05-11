@@ -14,6 +14,7 @@ using System.Text;
 using Newtonsoft.Json.Bson;
 using System.Runtime.Serialization.Formatters.Binary;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Converters;
 
 namespace Newtonsoft.Json.Tests
 {
@@ -442,17 +443,17 @@ namespace Newtonsoft.Json.Tests
       switch (method)
       {
         case SerializeMethod.JsonNet:
-          return DeserializeJsonNet<T>((string) json);
+          return DeserializeJsonNet<T>((string)json);
         case SerializeMethod.JsonNetBinary:
-          return DeserializeJsonNetBinary<T>((byte[]) json);
+          return DeserializeJsonNetBinary<T>((byte[])json);
         case SerializeMethod.BinaryFormatter:
-          return DeserializeBinaryFormatter<T>((byte[]) json);
+          return DeserializeBinaryFormatter<T>((byte[])json);
         case SerializeMethod.JavaScriptSerializer:
-          return DeserializeWebExtensions<T>((string) json);
+          return DeserializeWebExtensions<T>((string)json);
         case SerializeMethod.DataContractSerializer:
-          return DeserializeDataContract<T>((string) json);
+          return DeserializeDataContract<T>((string)json);
         case SerializeMethod.DataContractJsonSerializer:
-          return DeserializeDataContractJson<T>((string) json);
+          return DeserializeDataContractJson<T>((string)json);
         default:
           throw new ArgumentOutOfRangeException("method");
       }
@@ -462,8 +463,8 @@ namespace Newtonsoft.Json.Tests
     {
       MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(xml));
 
-      DataContractSerializer serializer = new DataContractSerializer(typeof (T));
-      return (T) serializer.ReadObject(ms);
+      DataContractSerializer serializer = new DataContractSerializer(typeof(T));
+      return (T)serializer.ReadObject(ms);
     }
 
     private T DeserializeBinaryFormatter<T>(byte[] bytes)
@@ -487,7 +488,7 @@ namespace Newtonsoft.Json.Tests
           Integer = int.MaxValue,
           Text = "The quick red fox jumped over the lazy dog."
         };
-        
+
         if (rootValue == null)
           rootValue = currentValue;
         if (parentValue != null)
@@ -497,6 +498,47 @@ namespace Newtonsoft.Json.Tests
       }
 
       BenchmarkSerializeMethod(SerializeMethod.JsonNetBinary, rootValue);
+    }
+
+    [Test]
+    public void JObjectToString()
+    {
+      JObject test = JObject.Parse(JsonText);
+      IsoDateTimeConverter isoDateTimeConverter = null;// = new IsoDateTimeConverter();
+
+      TimeOperation<object>(() =>
+        {
+          for (int i = 0; i < 5000; i++)
+          {
+            test["dummy"] = new JValue(i);
+            Encoding.UTF8.GetBytes(test.ToString(Formatting.None));
+          }
+          return null;
+        }, "JObject.ToString");
+    }
+
+    [Test]
+    public void JObjectToString2()
+    {
+      JObject test = JObject.Parse(JsonText);
+      IsoDateTimeConverter isoDateTimeConverter = null;// = new IsoDateTimeConverter();
+          MemoryStream ms = new MemoryStream();
+
+      TimeOperation<object>(() =>
+      {
+        for (int i = 0; i < 5000; i++)
+        {
+          test["dummy"] = new JValue(i);
+          ms.Seek(0, SeekOrigin.Begin);
+          JsonTextWriter jsonTextWriter = new JsonTextWriter(new StreamWriter(ms));
+          test.WriteTo(jsonTextWriter);
+          jsonTextWriter.Flush();
+          ms.ToArray();
+          
+          //Encoding.UTF8.GetBytes(test.ToString(Formatting.None));
+        }
+        return null;
+      }, "JObject.ToString");
     }
   }
 

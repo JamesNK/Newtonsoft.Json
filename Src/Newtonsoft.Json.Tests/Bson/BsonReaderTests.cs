@@ -1013,5 +1013,56 @@ namespace Newtonsoft.Json.Tests.Bson
 
       Assert.IsFalse(reader.Read());
     }
+
+    [Test]
+    public void CanRoundTripStackOverflowData()
+    {
+      var doc =
+          @"{
+""AboutMe"": ""<p>I'm the Director for Research and Development for <a href=\""http://www.prophoenix.com\"" rel=\""nofollow\"">ProPhoenix</a>, a public safety software company.  This position allows me to investigate new and existing technologies and incorporate them into our product line, with the end goal being to help public safety agencies to do their jobs more effeciently and safely.</p>\r\n\r\n<p>I'm an advocate for PowerShell, as I believe it encourages administrative best practices and allows developers to provide additional access to their applications, without needing to explicity write code for each administrative feature.  Part of my advocacy for PowerShell includes <a href=\""http://blog.usepowershell.com\"" rel=\""nofollow\"">my blog</a>, appearances on various podcasts, and acting as a Community Director for <a href=\""http://powershellcommunity.org\"" rel=\""nofollow\"">PowerShellCommunity.Org</a></p>\r\n\r\n<p>I’m also a co-host of Mind of Root (a weekly audio podcast about systems administration, tech news, and topics).</p>\r\n"",
+""WebsiteUrl"": ""http://blog.usepowershell.com""
+}";
+      JObject parsed = JObject.Parse(doc);
+      var memoryStream = new MemoryStream();
+      var bsonWriter = new BsonWriter(memoryStream);
+      parsed.WriteTo(bsonWriter);
+      bsonWriter.Flush();
+      memoryStream.Position = 0;
+
+      BsonReader reader = new BsonReader(memoryStream);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+      Assert.AreEqual("AboutMe", reader.Value);
+      Assert.AreEqual(typeof(string), reader.ValueType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.String, reader.TokenType);
+      Assert.AreEqual(@"<p>I'm the Director for Research and Development for <a href=""http://www.prophoenix.com"" rel=""nofollow"">ProPhoenix</a>, a public safety software company.  This position allows me to investigate new and existing technologies and incorporate them into our product line, with the end goal being to help public safety agencies to do their jobs more effeciently and safely.</p>
+
+<p>I'm an advocate for PowerShell, as I believe it encourages administrative best practices and allows developers to provide additional access to their applications, without needing to explicity write code for each administrative feature.  Part of my advocacy for PowerShell includes <a href=""http://blog.usepowershell.com"" rel=""nofollow"">my blog</a>, appearances on various podcasts, and acting as a Community Director for <a href=""http://powershellcommunity.org"" rel=""nofollow"">PowerShellCommunity.Org</a></p>
+
+<p>I’m also a co-host of Mind of Root (a weekly audio podcast about systems administration, tech news, and topics).</p>
+", reader.Value);
+      Assert.AreEqual(typeof(string), reader.ValueType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+      Assert.AreEqual("WebsiteUrl", reader.Value);
+      Assert.AreEqual(typeof(string), reader.ValueType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.String, reader.TokenType);
+      Assert.AreEqual("http://blog.usepowershell.com", reader.Value);
+      Assert.AreEqual(typeof(string), reader.ValueType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
+
+      Assert.IsFalse(reader.Read());
+    }
   }
 }
