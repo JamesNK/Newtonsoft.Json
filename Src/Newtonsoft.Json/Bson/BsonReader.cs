@@ -575,6 +575,8 @@ namespace Newtonsoft.Json.Bson
       int offset = 0;
       do
       {
+        // read up to the maximum size of the buffer or what is remaining, minus the offset
+        // of left over multibyte chars
         int count = ((length - totalBytesRead) > MaxCharBytesSize - offset)
           ? MaxCharBytesSize - offset
           : length - totalBytesRead - offset;

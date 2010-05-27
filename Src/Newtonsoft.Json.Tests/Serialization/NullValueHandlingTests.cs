@@ -36,6 +36,20 @@ namespace Newtonsoft.Json.Tests.Serialization
   public class NullValueHandlingTests : TestFixtureBase
   {
     [Test]
+    public void DeserializeNullIntoDateTime()
+    {
+      DateTimeTestClass c = JsonConvert.DeserializeObject<DateTimeTestClass>(@"{DateTimeField:null}", new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+      Assert.AreEqual(c.DateTimeField, default(DateTime));
+    }
+
+    [Test]
+    public void DeserializeEmptyStringIntoDateTimeWithEmptyStringDefaultValue()
+    {
+      DateTimeTestClass c = JsonConvert.DeserializeObject<DateTimeTestClass>(@"{DateTimeField:""""}", new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+      Assert.AreEqual(c.DateTimeField, default(DateTime));
+    }
+
+    [Test]
     public void NullValueHandlingSerialization()
     {
       Store s1 = new Store();

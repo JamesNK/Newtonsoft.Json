@@ -125,8 +125,10 @@ namespace Newtonsoft.Json.Serialization
     /// Initializes a new instance of the <see cref="DefaultContractResolver"/> class.
     /// </summary>
     /// <param name="shareCache">
-    /// if set to <c>true</c> the <see cref="IContractResolver"/> will use a cached shared with other resolvers of the same type.
-    /// This will improve significantly performance for unshared resolvers but cause unexpected behavior if instances of the resolver could produce different results.
+    /// If set to <c>true</c> the <see cref="DefaultContractResolver"/> will use a cached shared with other resolvers of the same type.
+    /// Sharing the cache will significantly performance because expensive reflection will only happen once but could cause unexpected
+    /// behavior if different instances of the resolver are suppose to produce different results. When set to false it is highly
+    /// recommended to reuse <see cref="DefaultContractResolver"/> instances with the <see cref="JsonSerializer"/>.
     /// </param>
     public DefaultContractResolver(bool shareCache)
     {

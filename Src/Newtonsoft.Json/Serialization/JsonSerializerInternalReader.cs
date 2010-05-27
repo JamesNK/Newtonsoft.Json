@@ -510,6 +510,22 @@ namespace Newtonsoft.Json.Serialization
         return;
       }
 
+      // test tokentype here because null might not be convertable to some types, e.g. ignoring null when applied to DateTime
+      if (property.NullValueHandling.GetValueOrDefault(Serializer.NullValueHandling) == NullValueHandling.Ignore && reader.TokenType == JsonToken.Null)
+      {
+        reader.Skip();
+        return;
+      }
+
+      // test tokentype here because default value might not be convertable to actual type, e.g. default of "" for DateTime
+      if (property.DefaultValueHandling.GetValueOrDefault(Serializer.DefaultValueHandling) == DefaultValueHandling.Ignore
+        && JsonReader.IsPrimitiveToken(reader.TokenType)
+        && Equals(reader.Value, property.DefaultValue))
+      {
+        reader.Skip();
+        return;
+      }
+
       object existingValue = (useExistingValue) ? currentValue : null;
       object value = CreateValueProperty(reader, property, target, gottenCurrentValue, existingValue);
 

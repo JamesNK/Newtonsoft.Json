@@ -36,11 +36,11 @@ namespace Newtonsoft.Json
   public enum DefaultValueHandling
   {
     /// <summary>
-    /// Include null values when serializing and deserializing objects.
+    /// Include default values when serializing and deserializing objects.
     /// </summary>
     Include = 0,
     /// <summary>
-    /// Ignore null values when serializing and deserializing objects.
+    /// Ignore default values when serializing and deserializing objects.
     /// </summary>
     Ignore = 1
   }
