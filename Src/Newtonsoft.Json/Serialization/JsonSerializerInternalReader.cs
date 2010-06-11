@@ -214,8 +214,8 @@ namespace Newtonsoft.Json.Serialization
       {
         switch (reader.TokenType)
         {
-            // populate a typed object or generic dictionary/array
-            // depending upon whether an objectType was supplied
+          // populate a typed object or generic dictionary/array
+          // depending upon whether an objectType was supplied
           case JsonToken.StartObject:
             return CreateObject(reader, objectType, contract, member, existingValue);
           case JsonToken.StartArray:
@@ -232,6 +232,10 @@ namespace Newtonsoft.Json.Serialization
               objectType != null &&
               ReflectionUtils.IsNullableType(objectType))
               return null;
+
+            // string that needs to be returned as a byte array should be base 64 decoded
+            if (objectType == typeof(byte[]))
+              return Convert.FromBase64String((string)reader.Value);
 
             return EnsureType(reader.Value, objectType);
           case JsonToken.StartConstructor:

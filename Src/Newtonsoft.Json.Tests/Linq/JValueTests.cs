@@ -190,5 +190,12 @@ namespace Newtonsoft.Json.Tests.Linq
       JValue v = new JValue((object)null);
       int i = (int) v;
     }
+
+    [Test]
+    public void ConvertValueToCompatibleType()
+    {
+      IComparable c = (new JValue(1).Value<IComparable>());
+      Assert.AreEqual(1, c);
+    }
   }
 }

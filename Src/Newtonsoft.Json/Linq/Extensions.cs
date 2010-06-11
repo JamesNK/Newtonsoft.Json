@@ -267,6 +267,9 @@ namespace Newtonsoft.Json.Linq
         if (value == null)
           throw new InvalidCastException("Cannot cast {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, token.GetType(), typeof(T)));
 
+        if (value.Value is U)
+          return (U)value.Value;
+
         Type targetType = typeof(U);
 
         if (ReflectionUtils.IsNullableType(targetType))

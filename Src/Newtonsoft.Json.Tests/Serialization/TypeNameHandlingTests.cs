@@ -33,6 +33,7 @@ using Newtonsoft.Json.Tests.TestObjects;
 using NUnit.Framework;
 using Newtonsoft.Json.Utilities;
 using System.Net;
+using System.Runtime.Serialization;
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
@@ -426,5 +427,37 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual(4, nested[3]);
       Assert.AreEqual(5, nested[4]);
     }
+
+#if !SILVERLIGHT && !PocketPC
+    [Test]
+    public void DeserializeUsingCustomBinder()
+    {
+      string json = @"{
+  ""$id"": ""1"",
+  ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Employee"",
+  ""Name"": ""Name!""
+}";
+
+      object p = JsonConvert.DeserializeObject(json, null, new JsonSerializerSettings
+      {
+        TypeNameHandling = TypeNameHandling.Objects,
+        Binder = new CustomSerializationBinder()
+      });
+
+      Assert.IsInstanceOfType(typeof(Person), p);
+
+      Person person = (Person)p;
+
+      Assert.AreEqual("Name!", person.Name);
+    }
+
+    public class CustomSerializationBinder : SerializationBinder
+    {
+      public override Type BindToType(string assemblyName, string typeName)
+      {
+        return typeof (Person);
+      }
+    }
+#endif
   }
 }
