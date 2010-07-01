@@ -69,7 +69,6 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -128,7 +127,6 @@
     <Compile Include="Converters\JavaScriptDateTimeConverter.cs" />
     <Compile Include="Converters\JsonDateTimeSerializationMode.cs" />
     <Compile Include="Converters\XmlNodeConverter.cs" />
-    <Compile Include="Converters\HtmlColorConverter.cs" />
     <Compile Include="JsonTextReader.cs" />
     <Compile Include="JsonPropertyAttribute.cs" />
     <Compile Include="JsonIgnoreAttribute.cs" />

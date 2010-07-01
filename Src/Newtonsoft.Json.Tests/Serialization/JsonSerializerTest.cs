@@ -51,6 +51,7 @@ using System.Reflection;
 #if !NET20 && !SILVERLIGHT
 using System.Xml.Linq;
 using System.Text.RegularExpressions;
+using System.Collections.Specialized;
 #endif
 
 namespace Newtonsoft.Json.Tests.Serialization
@@ -3463,5 +3464,31 @@ keyword such as type of business.""
       Assert.AreEqual(0, z[0].Prop1.Length);
       Assert.AreEqual(0, z[1].Prop1.Length);
     }
+
+#if !NET20 && !PocketPC && !SILVERLIGHT
+    public class StringDictionaryTestClass
+    {
+      public StringDictionary StringDictionaryProperty { get; set; }
+    }
+
+    [Test]
+    [ExpectedException(typeof(Exception), ExpectedMessage = "Cannot create and populate list type System.Collections.Specialized.StringDictionary.")]
+    public void StringDictionaryTest()
+    {
+      StringDictionaryTestClass s1 = new StringDictionaryTestClass()
+        {
+          StringDictionaryProperty = new StringDictionary()
+            {
+              {"1", "One"},
+              {"2", "II"},
+              {"3", "3"}              
+            }
+        };
+
+      string json = JsonConvert.SerializeObject(s1, Formatting.Indented);
+
+      JsonConvert.DeserializeObject<StringDictionaryTestClass>(json);
+    }
+#endif
   }
 }

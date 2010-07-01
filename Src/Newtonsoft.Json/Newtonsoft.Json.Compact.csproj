@@ -100,7 +100,6 @@
     <Compile Include="Converters\JavaScriptDateTimeConverter.cs" />
     <Compile Include="Converters\JsonDateTimeSerializationMode.cs" />
     <Compile Include="Converters\XmlNodeConverter.cs" />
-    <Compile Include="Converters\HtmlColorConverter.cs" />
     <Compile Include="JsonTextReader.cs" />
     <Compile Include="JsonPropertyAttribute.cs" />
     <Compile Include="JsonIgnoreAttribute.cs" />

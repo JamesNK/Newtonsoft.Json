@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !PocketPC && !NET20
+#if !PocketPC
 using System;
 using System.Linq;
 using System.Runtime.Serialization;

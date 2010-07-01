@@ -34,6 +34,7 @@ using NUnit.Framework;
 using Newtonsoft.Json.Utilities;
 using System.Net;
 using System.Runtime.Serialization;
+using System.IO;
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
@@ -459,5 +460,61 @@ namespace Newtonsoft.Json.Tests.Serialization
       }
     }
 #endif
+
+    //[Test]
+    //[Ignore("TODO")]
+    //public void CollectionWithAbstractItems()
+    //{
+    //  string Text = "";
+
+    //  HolderClass testObject = new HolderClass();
+    //  testObject.TestMember = new ContentSubClass("First One");
+    //  testObject.AnotherTestMember = new Dictionary<int, List<ContentBaseClass>>();
+    //  testObject.AnotherTestMember.Add(1, new List<ContentBaseClass>());
+    //  testObject.AnotherTestMember[1].Add(new ContentSubClass("Second One"));
+    //  testObject.AThirdTestMember = new ContentSubClass("Third One");
+
+    //  HolderClass anotherTestObject = null;
+
+    //  Newtonsoft.Json.JsonSerializer serializingTester = new Newtonsoft.Json.JsonSerializer();
+    //  serializingTester.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+
+    //  StringWriter sw = new StringWriter();
+    //  using (Newtonsoft.Json.JsonTextWriter jsonWriter = new Newtonsoft.Json.JsonTextWriter(sw))
+    //  {
+    //    jsonWriter.Formatting = Newtonsoft.Json.Formatting.Indented;
+
+    //    if (Text.Equals("Properties All, Serializer All"))
+    //      serializingTester.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All;
+    //    else if (Text.Equals("Properties All, Serializer Objects"))
+    //      serializingTester.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Objects;
+    //    else if (Text.Equals("Properties All, Serializer Arrays"))
+    //      serializingTester.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Arrays;
+    //    //otherwise leave default, which looks like it's "None"
+
+    //    serializingTester.Serialize(jsonWriter, testObject);
+    //  }
+
+    //  string json = sw.ToString();
+
+    //  Console.WriteLine(json);
+
+    //  StringReader sr = new StringReader(json);
+
+    //  Newtonsoft.Json.JsonSerializer deserializingTester = new Newtonsoft.Json.JsonSerializer();
+
+    //  using (Newtonsoft.Json.JsonTextReader jsonReader = new Newtonsoft.Json.JsonTextReader(sr))
+    //  {
+    //    if (Text.Equals("Properties All, Serializer All"))
+    //      deserializingTester.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All;
+    //    else if (Text.Equals("Properties All, Serializer Objects"))
+    //      deserializingTester.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Objects;
+    //    else if (Text.Equals("Properties All, Serializer Arrays"))
+    //      deserializingTester.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Arrays;
+    //    //otherwise leave default, which looks like it's "None"
+
+    //    anotherTestObject = deserializingTester.Deserialize<HolderClass>(jsonReader);
+    //  }
+    //}
   }
 }

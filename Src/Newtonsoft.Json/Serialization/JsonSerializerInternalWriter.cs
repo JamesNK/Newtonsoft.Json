@@ -481,7 +481,10 @@ namespace Newtonsoft.Json.Serialization
 
       int initialDepth = writer.Top;
 
-      foreach (DictionaryEntry entry in values)
+      // Mono Unity 3.0 fix
+      IDictionary d = values;
+
+      foreach (DictionaryEntry entry in d)
       {
         string propertyName = GetPropertyName(entry);
 

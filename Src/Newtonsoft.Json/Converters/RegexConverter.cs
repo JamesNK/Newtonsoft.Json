@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Bson;
+using System.Globalization;
 
 namespace Newtonsoft.Json.Converters
 {
@@ -129,7 +130,7 @@ namespace Newtonsoft.Json.Converters
 
       reader.Read();
       reader.Read();
-      int options = Convert.ToInt32(reader.Value);
+      int options = Convert.ToInt32(reader.Value, CultureInfo.InvariantCulture);
 
       reader.Read();
 

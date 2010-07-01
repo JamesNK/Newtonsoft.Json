@@ -69,7 +69,6 @@
     <Compile Include="Converters\CustomCreationConverterTests.cs" />
     <Compile Include="Converters\DataSetConverterTests.cs" />
     <Compile Include="Converters\DataTableConverterTests.cs" />
-    <Compile Include="Converters\HtmlColorConverterTests.cs" />
     <Compile Include="Converters\ObjectIdConverterTests.cs" />
     <Compile Include="Converters\RegexConverterTests.cs" />
     <Compile Include="Converters\StringEnumConverterTests.cs" />
@@ -89,11 +88,14 @@
     <Compile Include="TestObjects\ConstructorReadonlyFields.cs" />
     <Compile Include="TestObjects\Container.cs" />
     <Compile Include="TestObjects\Content.cs" />
+    <Compile Include="TestObjects\ContentBaseClass.cs" />
+    <Compile Include="TestObjects\ContentSubClass.cs" />
     <Compile Include="TestObjects\DictionaryInterfaceClass.cs" />
     <Compile Include="Serialization\EntitiesSerializationTests.cs" />
     <Compile Include="TestObjects\Event.cs" />
     <Compile Include="TestObjects\Foo.cs" />
     <Compile Include="TestObjects\GoogleMapGeocoderStructure.cs" />
+    <Compile Include="TestObjects\HolderClass.cs" />
     <Compile Include="TestObjects\InterfacePropertyTestClass.cs" />
     <Compile Include="TestObjects\JsonPropertyClass.cs" />
     <Compile Include="Serialization\JsonSerializerTest.cs" />

@@ -76,7 +76,6 @@
     <Compile Include="Converters\RegexConverter.cs" />
     <Compile Include="Converters\StringEnumConverter.cs" />
     <Compile Include="Converters\XmlNodeConverter.cs" />
-    <Compile Include="Converters\HtmlColorConverter.cs" />
     <Compile Include="FormatterAssemblyStyle.cs" />
     <Compile Include="DefaultValueHandling.cs" />
     <Compile Include="IJsonLineInfo.cs" />

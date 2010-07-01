@@ -330,7 +330,7 @@ namespace Newtonsoft.Json.Serialization
         Type prevAttributeType = null;
         ParameterInfo[] parameters = method.GetParameters();
 
-#if !PocketPC && !NET20
+#if !PocketPC
         if (IsValidCallback(method, parameters, typeof(OnSerializingAttribute), contract.OnSerializing, ref prevAttributeType))
         {
           contract.OnSerializing = method;

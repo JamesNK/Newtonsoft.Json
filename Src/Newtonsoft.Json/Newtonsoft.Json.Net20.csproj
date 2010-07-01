@@ -72,7 +72,6 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -119,7 +118,6 @@
     <Compile Include="Converters\JavaScriptDateTimeConverter.cs" />
     <Compile Include="Converters\JsonDateTimeSerializationMode.cs" />
     <Compile Include="Converters\XmlNodeConverter.cs" />
-    <Compile Include="Converters\HtmlColorConverter.cs" />
     <Compile Include="JsonTextReader.cs" />
     <Compile Include="JsonPropertyAttribute.cs" />
     <Compile Include="JsonIgnoreAttribute.cs" />
