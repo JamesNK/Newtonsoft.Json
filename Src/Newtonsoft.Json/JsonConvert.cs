@@ -181,9 +181,14 @@ namespace Newtonsoft.Json
 
     internal static long ConvertDateTimeToJavaScriptTicks(DateTime dateTime)
     {
-      long universialTicks = ToUniversalTicks(dateTime);
+      return ConvertDateTimeToJavaScriptTicks(dateTime, true);
+    }
 
-      return UniversialTicksToJavaScriptTicks(universialTicks);
+    internal static long ConvertDateTimeToJavaScriptTicks(DateTime dateTime, bool convertToUtc)
+    {
+      long ticks = (convertToUtc) ? ToUniversalTicks(dateTime) : dateTime.Ticks;
+
+      return UniversialTicksToJavaScriptTicks(ticks);
     }
 
     private static long UniversialTicksToJavaScriptTicks(long universialTicks)

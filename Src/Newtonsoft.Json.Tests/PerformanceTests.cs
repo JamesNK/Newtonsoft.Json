@@ -34,8 +34,8 @@ namespace Newtonsoft.Json.Tests
 
   public class PerformanceTests : TestFixtureBase
   {
-    //private const int Iterations = 100;
-    private const int Iterations = 5000;
+    private const int Iterations = 100;
+    //private const int Iterations = 5000;
 
     #region Data
     private const string BsonHex =
@@ -508,7 +508,7 @@ namespace Newtonsoft.Json.Tests
 
       TimeOperation<object>(() =>
         {
-          for (int i = 0; i < 5000; i++)
+          for (int i = 0; i < Iterations; i++)
           {
             test["dummy"] = new JValue(i);
             Encoding.UTF8.GetBytes(test.ToString(Formatting.None));
@@ -526,7 +526,7 @@ namespace Newtonsoft.Json.Tests
 
       TimeOperation<object>(() =>
       {
-        for (int i = 0; i < 5000; i++)
+        for (int i = 0; i < Iterations; i++)
         {
           test["dummy"] = new JValue(i);
           ms.Seek(0, SeekOrigin.Begin);

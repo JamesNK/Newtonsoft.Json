@@ -572,23 +572,27 @@ namespace Newtonsoft.Json.Bson
       StringBuilder builder = null;
 
       int totalBytesRead = 0;
+
+      // used in case of left over multibyte characters in the buffer
       int offset = 0;
       do
       {
-        // read up to the maximum size of the buffer or what is remaining, minus the offset
-        // of left over multibyte chars
         int count = ((length - totalBytesRead) > MaxCharBytesSize - offset)
           ? MaxCharBytesSize - offset
-          : length - totalBytesRead - offset;
+          : length - totalBytesRead;
 
         int byteCount = _reader.BaseStream.Read(_byteBuffer, offset, count);
 
         if (byteCount == 0)
           throw new EndOfStreamException("Unable to read beyond the end of the stream.");
 
+        totalBytesRead += byteCount;
+
+        // Above, byteCount is how many bytes we read this time.
+        // Below, byteCount is how many bytes are in the _byteBuffer.
         byteCount += offset;
 
-        if (totalBytesRead == 0 && byteCount == length)
+        if (byteCount == length)
         {
           // pref optimization to avoid reading into a string builder
           // first iteration and all bytes read then return string directly
@@ -615,8 +619,6 @@ namespace Newtonsoft.Json.Bson
           {
             offset = 0;
           }
-
-          totalBytesRead += (byteCount - offset);
         }
       }
       while (totalBytesRead < length);

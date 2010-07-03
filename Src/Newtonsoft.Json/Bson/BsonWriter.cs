@@ -46,6 +46,17 @@ namespace Newtonsoft.Json.Bson
     private string _propertyName;
 
     /// <summary>
+    /// Gets or sets the <see cref="DateTimeKind" /> used when writing <see cref="DateTime"/> values to BSON.
+    /// When set to <see cref="DateTimeKind.Unspecified" /> no conversion will occur.
+    /// </summary>
+    /// <value>The <see cref="DateTimeKind" /> used when writing <see cref="DateTime"/> values to BSON.</value>
+    public DateTimeKind DateTimeKindHandling
+    {
+      get { return _writer.DateTimeKindHandling; }
+      set { _writer.DateTimeKindHandling = value; }
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="BsonWriter"/> class.
     /// </summary>
     /// <param name="stream">The stream.</param>

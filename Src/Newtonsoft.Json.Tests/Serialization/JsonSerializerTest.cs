@@ -1012,7 +1012,7 @@ keyword such as type of business.""
     }
 
     [Test]
-    public void RequiredMembersClassWithNullValues()
+    public void DeserializeRequiredMembersClassWithNullValues()
     {
       string json = @"{
   ""FirstName"": ""I can't be null bro!"",
@@ -1030,7 +1030,7 @@ keyword such as type of business.""
 
     [Test]
     [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Required property 'FirstName' expects a value but got null.")]
-    public void RequiredMembersClassNullRequiredValueProperty()
+    public void DeserializeRequiredMembersClassNullRequiredValueProperty()
     {
       string json = @"{
   ""FirstName"": null,
@@ -1040,6 +1040,22 @@ keyword such as type of business.""
 }";
 
       JsonConvert.DeserializeObject<RequiredMembersClass>(json);
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Cannot write a null value for property 'FirstName'. Property requires a value.")]
+    public void SerializeRequiredMembersClassNullRequiredValueProperty()
+    {
+      RequiredMembersClass requiredMembersClass = new RequiredMembersClass
+        {
+          FirstName = null,
+          BirthDate = new DateTime(2000, 10, 10, 10, 10, 10, DateTimeKind.Utc),
+          LastName = null,
+          MiddleName = null
+        };
+
+      string json = JsonConvert.SerializeObject(requiredMembersClass);
+      Console.WriteLine(json);
     }
 
     [Test]

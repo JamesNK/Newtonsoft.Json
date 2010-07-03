@@ -461,60 +461,82 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 #endif
 
-    //[Test]
-    //[Ignore("TODO")]
-    //public void CollectionWithAbstractItems()
-    //{
-    //  string Text = "";
+    [Test]
+    public void CollectionWithAbstractItems()
+    {
+      HolderClass testObject = new HolderClass();
+      testObject.TestMember = new ContentSubClass("First One");
+      testObject.AnotherTestMember = new Dictionary<int, IList<ContentBaseClass>>();
+      testObject.AnotherTestMember.Add(1, new List<ContentBaseClass>());
+      testObject.AnotherTestMember[1].Add(new ContentSubClass("Second One"));
+      testObject.AThirdTestMember = new ContentSubClass("Third One");
 
-    //  HolderClass testObject = new HolderClass();
-    //  testObject.TestMember = new ContentSubClass("First One");
-    //  testObject.AnotherTestMember = new Dictionary<int, List<ContentBaseClass>>();
-    //  testObject.AnotherTestMember.Add(1, new List<ContentBaseClass>());
-    //  testObject.AnotherTestMember[1].Add(new ContentSubClass("Second One"));
-    //  testObject.AThirdTestMember = new ContentSubClass("Third One");
 
-    //  HolderClass anotherTestObject = null;
+      JsonSerializer serializingTester = new JsonSerializer();
+      serializingTester.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
 
-    //  Newtonsoft.Json.JsonSerializer serializingTester = new Newtonsoft.Json.JsonSerializer();
-    //  serializingTester.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+      StringWriter sw = new StringWriter();
+      using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
+      {
+        jsonWriter.Formatting = Formatting.Indented;
+        serializingTester.TypeNameHandling = TypeNameHandling.Auto;
+        serializingTester.Serialize(jsonWriter, testObject);
+      }
 
-    //  StringWriter sw = new StringWriter();
-    //  using (Newtonsoft.Json.JsonTextWriter jsonWriter = new Newtonsoft.Json.JsonTextWriter(sw))
-    //  {
-    //    jsonWriter.Formatting = Newtonsoft.Json.Formatting.Indented;
+      string json = sw.ToString();
 
-    //    if (Text.Equals("Properties All, Serializer All"))
-    //      serializingTester.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All;
-    //    else if (Text.Equals("Properties All, Serializer Objects"))
-    //      serializingTester.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Objects;
-    //    else if (Text.Equals("Properties All, Serializer Arrays"))
-    //      serializingTester.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Arrays;
-    //    //otherwise leave default, which looks like it's "None"
+      string contentSubClassRef = ReflectionUtils.GetTypeName(typeof(ContentSubClass), FormatterAssemblyStyle.Simple);
+      string dictionaryRef = ReflectionUtils.GetTypeName(typeof(Dictionary<int, IList<ContentBaseClass>>), FormatterAssemblyStyle.Simple);
+      string listRef = ReflectionUtils.GetTypeName(typeof(List<ContentBaseClass>), FormatterAssemblyStyle.Simple);
 
-    //    serializingTester.Serialize(jsonWriter, testObject);
-    //  }
 
-    //  string json = sw.ToString();
+      Assert.AreEqual(@"{
+  ""TestMember"": {
+    ""$type"": """ + contentSubClassRef + @""",
+    ""SomeString"": ""First One""
+  },
+  ""AnotherTestMember"": {
+    ""$type"": """ + dictionaryRef + @""",
+    ""1"": {
+      ""$type"": """ + listRef + @""",
+      ""$values"": [
+        {
+          ""$type"": """ + contentSubClassRef + @""",
+          ""SomeString"": ""Second One""
+        }
+      ]
+    }
+  },
+  ""AThirdTestMember"": {
+    ""$type"": """ + contentSubClassRef + @""",
+    ""SomeString"": ""Third One""
+  }
+}", json);
+      Console.WriteLine(json);
 
-    //  Console.WriteLine(json);
+      StringReader sr = new StringReader(json);
 
-    //  StringReader sr = new StringReader(json);
+      JsonSerializer deserializingTester = new JsonSerializer();
 
-    //  Newtonsoft.Json.JsonSerializer deserializingTester = new Newtonsoft.Json.JsonSerializer();
+      HolderClass anotherTestObject;
 
-    //  using (Newtonsoft.Json.JsonTextReader jsonReader = new Newtonsoft.Json.JsonTextReader(sr))
-    //  {
-    //    if (Text.Equals("Properties All, Serializer All"))
-    //      deserializingTester.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.All;
-    //    else if (Text.Equals("Properties All, Serializer Objects"))
-    //      deserializingTester.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Objects;
-    //    else if (Text.Equals("Properties All, Serializer Arrays"))
-    //      deserializingTester.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Arrays;
-    //    //otherwise leave default, which looks like it's "None"
+      using (JsonTextReader jsonReader = new JsonTextReader(sr))
+      {
+        deserializingTester.TypeNameHandling = TypeNameHandling.Auto;
 
-    //    anotherTestObject = deserializingTester.Deserialize<HolderClass>(jsonReader);
-    //  }
-    //}
+        anotherTestObject = deserializingTester.Deserialize<HolderClass>(jsonReader);
+      }
+
+      Assert.IsNotNull(anotherTestObject);
+      Assert.IsInstanceOfType(typeof(ContentSubClass), anotherTestObject.TestMember);
+      Assert.IsInstanceOfType(typeof(Dictionary<int, IList<ContentBaseClass>>), anotherTestObject.AnotherTestMember);
+      Assert.AreEqual(1, anotherTestObject.AnotherTestMember.Count);
+
+      IList<ContentBaseClass> list = anotherTestObject.AnotherTestMember[1];
+
+      Assert.IsInstanceOfType(typeof(List<ContentBaseClass>), list);
+      Assert.AreEqual(1, list.Count);
+      Assert.IsInstanceOfType(typeof(ContentSubClass), list[0]);
+    }
   }
 }

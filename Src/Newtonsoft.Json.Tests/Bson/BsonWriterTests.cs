@@ -558,5 +558,45 @@ namespace Newtonsoft.Json.Tests.Bson
 
       Assert.IsFalse(reader.Read());
     }
+
+    [Test]
+    public void WriteDateTimes()
+    {
+      MemoryStream ms = new MemoryStream();
+      BsonWriter writer = new BsonWriter(ms);
+      writer.DateTimeKindHandling = DateTimeKind.Unspecified;
+
+      writer.WriteStartArray();
+      writer.WriteValue(new DateTime(2000, 10, 12, 20, 55, 0, DateTimeKind.Utc));
+      writer.WriteValue(new DateTime(2000, 10, 12, 20, 55, 0, DateTimeKind.Local));
+      writer.WriteValue(new DateTime(2000, 10, 12, 20, 55, 0, DateTimeKind.Unspecified));
+      writer.WriteEndArray();
+
+      ms.Seek(0, SeekOrigin.Begin);
+
+      BsonReader reader = new BsonReader(ms);
+      reader.ReadRootValueAsArray = true;
+      reader.DateTimeKindHandling = DateTimeKind.Utc;
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Date, reader.TokenType);
+      Assert.AreEqual(new DateTime(2000, 10, 12, 20, 55, 0, DateTimeKind.Utc), reader.Value);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Date, reader.TokenType);
+      Assert.AreEqual(new DateTime(2000, 10, 12, 20, 55, 0, DateTimeKind.Utc), reader.Value);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Date, reader.TokenType);
+      Assert.AreEqual(new DateTime(2000, 10, 12, 20, 55, 0, DateTimeKind.Utc), reader.Value);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+
+      Assert.IsFalse(reader.Read());
+    }
   }
 }

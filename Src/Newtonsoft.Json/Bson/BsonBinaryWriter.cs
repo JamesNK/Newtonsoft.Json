@@ -17,8 +17,11 @@ namespace Newtonsoft.Json.Bson
     private byte[] _largeByteBuffer;
     private int _maxChars;
 
+    public DateTimeKind DateTimeKindHandling { get; set; }
+
     public BsonBinaryWriter(Stream stream)
     {
+      DateTimeKindHandling = DateTimeKind.Utc;
       _writer = new BinaryWriter(stream);
     }
 
@@ -107,8 +110,12 @@ namespace Newtonsoft.Json.Bson
             if (value.Value is DateTime)
             {
               DateTime dateTime = (DateTime) value.Value;
-              dateTime = dateTime.ToUniversalTime();
-              ticks = JsonConvert.ConvertDateTimeToJavaScriptTicks(dateTime);
+              if (DateTimeKindHandling == DateTimeKind.Utc)
+                dateTime = dateTime.ToUniversalTime();
+              else if (DateTimeKindHandling == DateTimeKind.Local)
+                dateTime = dateTime.ToLocalTime();
+
+              ticks = JsonConvert.ConvertDateTimeToJavaScriptTicks(dateTime, false);
             }
 #if !PocketPC && !NET20
             else
