@@ -30,6 +30,8 @@ using System.Collections;
 using System.Linq;
 using System.Globalization;
 using System.Runtime.Serialization.Formatters;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Newtonsoft.Json.Utilities
 {
@@ -45,12 +47,61 @@ namespace Newtonsoft.Json.Utilities
       switch (assemblyFormat)
       {
         case FormatterAssemblyStyle.Simple:
-          return t.FullName + ", " + t.Assembly.GetName().Name;
+          return GetSimpleTypeName(t);
         case FormatterAssemblyStyle.Full:
           return t.AssemblyQualifiedName;
         default:
           throw new ArgumentOutOfRangeException();
       }
+    }
+
+    private static string GetSimpleTypeName(Type type)
+    {
+      string fullyQualifiedTypeName = type.FullName + ", " + type.Assembly.GetName().Name;
+
+      // for type names with no nested type names then return
+      if (!type.IsGenericType || type.IsGenericTypeDefinition)
+        return fullyQualifiedTypeName;
+
+      StringBuilder builder = new StringBuilder();
+
+      // loop through the type name and filter out qualified assembly details from nested type names
+      bool writingAssemblyName = false;
+      bool skippingAssemblyDetails = false;
+      for (int i = 0; i < fullyQualifiedTypeName.Length; i++)
+      {
+        char current = fullyQualifiedTypeName[i];
+        switch (current)
+        {
+          case '[':
+            writingAssemblyName = false;
+            skippingAssemblyDetails = false;
+            builder.Append(current);
+            break;
+          case ']':
+            writingAssemblyName = false;
+            skippingAssemblyDetails = false;
+            builder.Append(current);
+            break;
+          case ',':
+            if (!writingAssemblyName)
+            {
+              writingAssemblyName = true;
+              builder.Append(current);
+            }
+            else
+            {
+              skippingAssemblyDetails = true;
+            }
+            break;
+          default:
+            if (!skippingAssemblyDetails)
+              builder.Append(current);
+            break;
+        }
+      }
+
+      return builder.ToString();
     }
 
     public static bool IsInstantiatableType(Type t)

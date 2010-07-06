@@ -3506,5 +3506,32 @@ keyword such as type of business.""
       JsonConvert.DeserializeObject<StringDictionaryTestClass>(json);
     }
 #endif
+
+    [JsonObject(MemberSerialization.OptIn)]
+    public struct StructWithAttribute
+    {
+      public string MyString { get; set; }
+      [JsonProperty]
+      public int MyInt { get; set; }
+    }
+
+    [Test]
+    public void SerializeStructWithJsonObjectAttribute()
+    {
+      StructWithAttribute testStruct = new StructWithAttribute
+        {
+          MyInt = int.MaxValue
+        };
+
+      string json = JsonConvert.SerializeObject(testStruct, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""MyInt"": 2147483647
+}", json);
+
+      StructWithAttribute newStruct = JsonConvert.DeserializeObject<StructWithAttribute>(json);
+
+      Assert.AreEqual(int.MaxValue, newStruct.MyInt);
+    }
   }
 }

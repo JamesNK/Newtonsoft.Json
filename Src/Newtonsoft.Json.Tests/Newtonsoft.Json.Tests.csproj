@@ -249,6 +249,7 @@
     <Compile Include="TestObjects\TypedSubHashtable.cs" />
     <Compile Include="TestObjects\UserNullable.cs" />
     <Compile Include="Utilities\DynamicReflectionDelegateFactoryTests.cs" />
+    <Compile Include="Utilities\ReflectionUtilsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.csproj">

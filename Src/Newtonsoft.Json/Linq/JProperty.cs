@@ -161,10 +161,10 @@ namespace Newtonsoft.Json.Linq
     /// </returns>
     public override JEnumerable<JToken> Children()
     {
-      return new JEnumerable<JToken>(ChildrenInternal());
+      return new JEnumerable<JToken>(GetValueEnumerable());
     }
 
-    private IEnumerable<JToken> ChildrenInternal()
+    private IEnumerable<JToken> GetValueEnumerable()
     {
       yield return Value;
     }
