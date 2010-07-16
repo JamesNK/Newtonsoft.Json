@@ -671,5 +671,26 @@ bye", reader.Value);
 
       Assert.IsFalse(reader.Read());
     }
+
+    [Test]
+    public void ReadHexidecimalWithAllLetters()
+    {
+      string json = @"{""text"":0xabcdef12345}";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+      Assert.AreEqual(11806310474565, reader.Value);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
+    }
   }
 }
