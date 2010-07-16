@@ -57,11 +57,16 @@ namespace Newtonsoft.Json.Utilities
 
     private static string GetSimpleTypeName(Type type)
     {
+#if !SILVERLIGHT
       string fullyQualifiedTypeName = type.FullName + ", " + type.Assembly.GetName().Name;
 
       // for type names with no nested type names then return
       if (!type.IsGenericType || type.IsGenericTypeDefinition)
         return fullyQualifiedTypeName;
+#else
+      // Assembly.GetName() is marked SecurityCritical
+      string fullyQualifiedTypeName = type.AssemblyQualifiedName;
+#endif
 
       StringBuilder builder = new StringBuilder();
 
