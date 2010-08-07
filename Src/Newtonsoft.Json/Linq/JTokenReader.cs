@@ -46,10 +46,12 @@ namespace Newtonsoft.Json.Linq
         SetToken(JsonToken.Bytes, data);
       }
 
-      if (TokenType != JsonToken.Bytes)
-        throw new JsonReaderException("Error reading bytes. Expected bytes but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+      if (TokenType == JsonToken.Bytes)
+        return (byte[])Value;
+      if (TokenType == JsonToken.Null)
+        return null;
 
-      return (byte[])Value;
+      throw new JsonReaderException("Error reading bytes. Expected bytes but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
     }
 
     /// <summary>

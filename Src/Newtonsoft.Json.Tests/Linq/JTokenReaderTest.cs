@@ -290,5 +290,20 @@ namespace Newtonsoft.Json.Tests.Linq
 
       Assert.AreEqual(new byte[0], result2.Bytes);
     }
+
+    public class ReadAsBytesTestObject
+    {
+      public byte[] Data;
+    }
+
+    [Test]
+    public void ReadAsBytesNull()
+    {
+      JsonSerializer s = new JsonSerializer();
+
+      JToken nullToken = JToken.ReadFrom(new JsonTextReader(new StringReader("{ Data: null }")));
+      ReadAsBytesTestObject x = s.Deserialize<ReadAsBytesTestObject>(new JTokenReader(nullToken));
+      Assert.IsNull(x.Data);
+    }
   }
 }

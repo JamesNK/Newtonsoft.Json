@@ -3156,7 +3156,7 @@ keyword such as type of business.""
       public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
       {
         List<string> existingStrings = (List<string>)existingValue;
-        List<string> newStrings = new List<string>(existingStrings);        
+        List<string> newStrings = new List<string>(existingStrings);
 
         reader.Read();
 
@@ -3173,7 +3173,7 @@ keyword such as type of business.""
 
       public override bool CanConvert(Type objectType)
       {
-        return (objectType == typeof (List<string>));
+        return (objectType == typeof(List<string>));
       }
     }
 
@@ -3357,7 +3357,7 @@ keyword such as type of business.""
       joe.Manager = mike;
       mike.Manager = mike;
 
-      string json = JsonConvert.SerializeObject(new []{ joe, mike }, Formatting.Indented);
+      string json = JsonConvert.SerializeObject(new[] { joe, mike }, Formatting.Indented);
       // [
       //   {
       //     "Name": "Joe Employee",
@@ -3384,7 +3384,7 @@ keyword such as type of business.""
 
       public static implicit operator DictionaryKey(string value)
       {
-        return new DictionaryKey() {Value = value};
+        return new DictionaryKey() { Value = value };
       }
     }
 
@@ -3532,6 +3532,46 @@ keyword such as type of business.""
       StructWithAttribute newStruct = JsonConvert.DeserializeObject<StructWithAttribute>(json);
 
       Assert.AreEqual(int.MaxValue, newStruct.MyInt);
+    }
+
+    //public class TimeZoneOffsetObject
+    //{
+    //  public DateTimeOffset Offset { get; set; }
+    //}
+
+    //[Test]
+    //public void ReadWriteTimeZoneOffset()
+    //{
+    //  var serializeObject = JsonConvert.SerializeObject(new TimeZoneOffsetObject
+    //  {
+    //    Offset = new DateTimeOffset(new DateTime(2000, 1, 1), TimeSpan.FromHours(6))
+    //  });
+
+    //  Assert.AreEqual("{\"Offset\":\"\\/Date(946663200000+0600)\\/\"}", serializeObject);
+    //  var deserializeObject = JsonConvert.DeserializeObject<TimeZoneOffsetObject>(serializeObject);
+    //  Assert.AreEqual(TimeSpan.FromHours(6), deserializeObject.Offset.Offset); // fails here
+    //  Assert.AreEqual(new DateTime(2000, 1, 1), deserializeObject.Offset.Date);
+    //}
+
+    public abstract class LogEvent
+    {
+      [JsonProperty("event")]
+      public abstract string EventName { get; }
+    }
+
+    public class DerivedEvent : LogEvent
+    {
+      public override string EventName { get { return "derived"; } }
+    }
+
+    [Test]
+    public void OverridenPropertyMembers()
+    {
+      string json = JsonConvert.SerializeObject(new DerivedEvent(), Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""event"": ""derived""
+}", json);
     }
   }
 }

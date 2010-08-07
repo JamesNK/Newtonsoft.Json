@@ -38,12 +38,19 @@ namespace Newtonsoft.Json
   /// </summary>
   public class JsonTextReader : JsonReader, IJsonLineInfo
   {
+    private enum ReadType
+    {
+      Read,
+      ReadAsBytes
+    }
+
     private readonly TextReader _reader;
     private readonly StringBuffer _buffer;
     private char? _lastChar;
     private int _currentLinePosition;
     private int _currentLineNumber;
     private bool _end;
+    private ReadType _readType;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonReader"/> class with the specified <see cref="TextReader"/>.
@@ -63,17 +70,35 @@ namespace Newtonsoft.Json
     {
       ReadStringIntoBuffer(quote);
 
-      string text = _buffer.ToString();
-      _buffer.Position = 0;
-
-      if (text.StartsWith("/Date(", StringComparison.Ordinal) && text.EndsWith(")/", StringComparison.Ordinal))
+      if (_readType == ReadType.ReadAsBytes)
       {
-        ParseDate(text);
+        byte[] data;
+        if (_buffer.Position == 0)
+        {
+          data = new byte[0];
+        }
+        else
+        {
+          data = Convert.FromBase64CharArray(_buffer.GetInternalBuffer(), 0, _buffer.Position);
+          _buffer.Position = 0;
+        }
+
+        SetToken(JsonToken.Bytes, data);
       }
       else
       {
-        SetToken(JsonToken.String, text);
-        QuoteChar = quote;
+        string text = _buffer.ToString();
+        _buffer.Position = 0;
+
+        if (text.StartsWith("/Date(", StringComparison.Ordinal) && text.EndsWith(")/", StringComparison.Ordinal))
+        {
+          ParseDate(text);
+        }
+        else
+        {
+          SetToken(JsonToken.String, text);
+          QuoteChar = quote;
+        } 
       }
     }
 
@@ -250,6 +275,32 @@ namespace Newtonsoft.Json
     /// </returns>
     public override bool Read()
     {
+      _readType = ReadType.Read;
+      return ReadInternal();
+    }
+
+    /// <summary>
+    /// Reads the next JSON token from the stream as a <see cref="T:Byte[]"/>.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="T:Byte[]"/> or a null reference if the next JSON token is null.
+    /// </returns>
+    public override byte[] ReadAsBytes()
+    {
+      _readType = ReadType.ReadAsBytes;
+      if (!ReadInternal())
+        throw CreateJsonReaderException("Unexpected end when reading bytes: Line {0}, position {1}.", _currentLineNumber, _currentLinePosition);
+
+      if (TokenType == JsonToken.Null)
+        return null;
+      if (TokenType == JsonToken.Bytes)
+        return (byte[]) Value;
+
+      throw CreateJsonReaderException("Unexpected token when reading bytes: {0}. Line {1}, position {2}.", TokenType, _currentLineNumber, _currentLinePosition);
+    }
+
+    private bool ReadInternal()
+    {
       while (true)
       {
         char currentChar;
@@ -289,92 +340,6 @@ namespace Newtonsoft.Json
           case State.Closed:
             break;
           case State.Error:
-            break;
-          default:
-            throw CreateJsonReaderException("Unexpected state: {0}. Line {1}, position {2}.", CurrentState, _currentLineNumber, _currentLinePosition);
-        }
-      }
-    }
-
-    /// <summary>
-    /// Reads the next JSON token from the stream as a <see cref="T:Byte[]"/>.
-    /// </summary>
-    /// <returns>
-    /// A <see cref="T:Byte[]"/> or a null reference if the next JSON token is null.
-    /// </returns>
-    public override byte[] ReadAsBytes()
-    {
-      while (true)
-      {
-        char currentChar;
-        if (_lastChar != null)
-        {
-          currentChar = _lastChar.Value;
-          _lastChar = null;
-        }
-        else
-        {
-          currentChar = MoveNext();
-        }
-
-        if (currentChar == '\0' && _end)
-          throw CreateJsonReaderException("Unexpected end when reading bytes: Line {0}, position {1}.", _currentLineNumber, _currentLinePosition);
-
-        switch (CurrentState)
-        {
-          case State.PostValue:
-          case State.Start:
-          case State.Property:
-          case State.Array:
-          case State.ArrayStart:
-          case State.Constructor:
-          case State.ConstructorStart:
-            do
-            {
-              switch (currentChar)
-              {
-                case '"':
-                case '\'':
-                  ReadStringIntoBuffer(currentChar);
-
-                  byte[] data;
-                  if (_buffer.Position == 0)
-                  {
-                    data = new byte[0];
-                  }
-                  else
-                  {
-                    data = Convert.FromBase64CharArray(_buffer.GetInternalBuffer(), 0, _buffer.Position);
-                    _buffer.Position = 0;
-                  }
-
-                  SetToken(JsonToken.Bytes, data);
-
-                  return data;
-                case 'n':
-                  ParseNull();
-                  return null;
-                case ' ':
-                case StringUtils.Tab:
-                case StringUtils.LineFeed:
-                case StringUtils.CarriageReturn:
-                  // eat
-                  break;
-                case ',':
-                  SetStateBasedOnCurrent();
-                  break;
-                default:
-                  if (char.IsWhiteSpace(currentChar))
-                  {
-                    // eat
-                  }
-                  else
-                  {
-                    throw CreateJsonReaderException("Unexpected character encountered while parsing value: {0}. Line {1}, position {2}.", currentChar, _currentLineNumber, _currentLinePosition);
-                  }
-                  break;
-              }
-            } while ((currentChar = MoveNext()) != '\0' || !_end);
             break;
           default:
             throw CreateJsonReaderException("Unexpected state: {0}. Line {1}, position {2}.", CurrentState, _currentLineNumber, _currentLinePosition);

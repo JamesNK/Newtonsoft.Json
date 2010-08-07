@@ -238,7 +238,7 @@ Parameter name: reader")]
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected character encountered while parsing value: t. Line 1, position 1.")]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected token when reading bytes: Boolean. Line 1, position 4.")]
     public void ReadBytesWithBadCharacter()
     {
       JsonReader reader = new JsonTextReader(new StringReader(@"true"));

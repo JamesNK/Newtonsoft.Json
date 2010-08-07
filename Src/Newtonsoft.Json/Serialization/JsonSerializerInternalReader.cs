@@ -865,8 +865,7 @@ namespace Newtonsoft.Json.Serialization
             else
             {
               if (!reader.Read())
-                throw new JsonSerializationException(
-                  "Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
+                throw new JsonSerializationException("Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
             }
 
             SetRequiredProperty(reader, property, requiredProperties);

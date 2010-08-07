@@ -696,6 +696,21 @@ namespace Newtonsoft.Json.Utilities
     {
       ValidationUtils.ArgumentNotNull(attributeProvider, "attributeProvider");
 
+      // http://hyperthink.net/blog/getcustomattributes-gotcha/
+      // ICustomAttributeProvider doesn't do inheritance
+
+      if (attributeProvider is Assembly)
+        return (T[])Attribute.GetCustomAttributes((Assembly)attributeProvider, typeof(T), inherit);
+
+      if (attributeProvider is MemberInfo)
+        return (T[])Attribute.GetCustomAttributes((MemberInfo)attributeProvider, typeof(T), inherit);
+
+      if (attributeProvider is Module)
+        return (T[])Attribute.GetCustomAttributes((Module)attributeProvider, typeof(T), inherit);
+
+      if (attributeProvider is ParameterInfo)
+        return (T[])Attribute.GetCustomAttributes((ParameterInfo)attributeProvider, typeof(T), inherit);
+
       return (T[])attributeProvider.GetCustomAttributes(typeof(T), inherit);
     }
 
