@@ -35,6 +35,7 @@ using System.Security.Permissions;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Newtonsoft.Json.Serialization
 {
@@ -112,6 +113,14 @@ namespace Newtonsoft.Json.Serialization
     /// </summary>
     /// <value>The default members search flags.</value>
     public BindingFlags DefaultMembersSearchFlags { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether compiler generated members should be serialized.
+    /// </summary>
+    /// <value>
+    /// 	<c>true</c> if serialized compiler generated members; otherwise, <c>false</c>.
+    /// </value>
+    public bool SerializeCompilerGeneratedMembers { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DefaultContractResolver"/> class.
@@ -205,20 +214,24 @@ namespace Newtonsoft.Json.Serialization
       List<MemberInfo> serializableMembers = new List<MemberInfo>();
       foreach (MemberInfo member in allMembers)
       {
-        if (defaultMembers.Contains(member))
+        // exclude members that are compiler generated if set
+        if (SerializeCompilerGeneratedMembers || !member.IsDefined(typeof(CompilerGeneratedAttribute), true))
         {
-          // add all members that are found by default member search
-          serializableMembers.Add(member);
-        }
-        else
-        {
-          // add members that are explicitly marked with JsonProperty/DataMember attribute
-          if (JsonTypeReflector.GetAttribute<JsonPropertyAttribute>(member) != null)
+          if (defaultMembers.Contains(member))
+          {
+            // add all members that are found by default member search
             serializableMembers.Add(member);
+          }
+          else
+          {
+            // add members that are explicitly marked with JsonProperty/DataMember attribute
+            if (JsonTypeReflector.GetAttribute<JsonPropertyAttribute>(member) != null)
+              serializableMembers.Add(member);
 #if !PocketPC && !NET20
-          else if (dataContractAttribute != null && JsonTypeReflector.GetAttribute<DataMemberAttribute>(member) != null)
-            serializableMembers.Add(member);
+            else if (dataContractAttribute != null && JsonTypeReflector.GetAttribute<DataMemberAttribute>(member) != null)
+              serializableMembers.Add(member);
 #endif
+          }
         }
       }
 

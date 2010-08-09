@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json.Tests.TestObjects;
+using System.Reflection;
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
@@ -78,6 +80,51 @@ namespace Newtonsoft.Json.Tests.Serialization
   ""BookName"": ""The Gathering Storm"",
   ""BookPrice"": 16.19
 }", startingWithB);
+    }
+
+    [Test]
+    public void SerializeCompilerGeneratedMembers()
+    {
+      StructTest structTest = new StructTest
+        {
+          IntField = 1,
+          IntProperty = 2,
+          StringField = "Field",
+          StringProperty = "Property"
+        };
+
+      DefaultContractResolver skipCompilerGeneratedResolver = new DefaultContractResolver
+      {
+        DefaultMembersSearchFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public
+      };
+
+      string skipCompilerGeneratedJson = JsonConvert.SerializeObject(structTest, Formatting.Indented,
+        new JsonSerializerSettings { ContractResolver = skipCompilerGeneratedResolver });
+
+      Assert.AreEqual(@"{
+  ""StringField"": ""Field"",
+  ""IntField"": 1,
+  ""StringProperty"": ""Property"",
+  ""IntProperty"": 2
+}", skipCompilerGeneratedJson);
+
+      DefaultContractResolver includeCompilerGeneratedResolver = new DefaultContractResolver
+      {
+        DefaultMembersSearchFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
+        SerializeCompilerGeneratedMembers = true
+      };
+
+      string includeCompilerGeneratedJson = JsonConvert.SerializeObject(structTest, Formatting.Indented,
+        new JsonSerializerSettings { ContractResolver = includeCompilerGeneratedResolver });
+
+      Assert.AreEqual(@"{
+  ""StringField"": ""Field"",
+  ""IntField"": 1,
+  ""<StringProperty>k__BackingField"": ""Property"",
+  ""<IntProperty>k__BackingField"": 2,
+  ""StringProperty"": ""Property"",
+  ""IntProperty"": 2
+}", includeCompilerGeneratedJson);
     }
   }
 }
