@@ -1,5 +1,5 @@
 ﻿properties { 
-  $zipFileName = "Json35r7.zip"
+  $zipFileName = "Json35r8.zip"
   $signAssemblies = $false
   $signKeyPath = "D:\Development\Releases\newtonsoft.snk"
   $buildDocumentation = $false

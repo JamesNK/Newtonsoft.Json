@@ -538,5 +538,46 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual(1, list.Count);
       Assert.IsInstanceOfType(typeof(ContentSubClass), list[0]);
     }
+
+    [Test]
+    public void WriteObjectTypeNameForPropertyDemo()
+    {
+      Message message = new Message();
+      message.Address = "http://www.google.com";
+      message.Body = new SearchDetails
+        {
+          Query = "Json.NET",
+          Language = "en-us"
+        };
+
+      string json = JsonConvert.SerializeObject(message, Formatting.Indented);
+      // {
+      //   "Address": "http://www.google.com",
+      //   "Body": {
+      //     "$type": "Newtonsoft.Json.Tests.Serialization.SearchDetails, Newtonsoft.Json.Tests",
+      //     "Query": "Json.NET",
+      //     "Language": "en-us"
+      //   }
+      // }
+
+      Message deserialized = JsonConvert.DeserializeObject<Message>(json);
+
+      SearchDetails searchDetails = (SearchDetails) deserialized.Body;
+      // Json.NET
+    }
+  }
+
+  public class Message
+  {
+    public string Address { get; set; }
+
+    [JsonProperty(TypeNameHandling = TypeNameHandling.All)]
+    public object Body { get; set; }
+  }
+
+  public class SearchDetails
+  {
+    public string Query { get; set; }
+    public string Language { get; set; }
   }
 }
