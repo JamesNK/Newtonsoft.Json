@@ -56,7 +56,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Gets or sets how many IndentChars to write for each level in the hierarchy when <paramref name="Formatting"/> is set to <c>Formatting.Indented</c>.
+    /// Gets or sets how many IndentChars to write for each level in the hierarchy when <see cref="Formatting"/> is set to <c>Formatting.Indented</c>.
     /// </summary>
     public int Indentation
     {
@@ -86,7 +86,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Gets or sets which character to use for indenting when <paramref name="Formatting"/> is set to <c>Formatting.Indented</c>.
+    /// Gets or sets which character to use for indenting when <see cref="Formatting"/> is set to <c>Formatting.Indented</c>.
     /// </summary>
     public char IndentChar
     {

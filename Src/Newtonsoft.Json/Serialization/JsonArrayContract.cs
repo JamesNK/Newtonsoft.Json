@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json.Utilities;
 using System.Collections;
@@ -74,15 +75,22 @@ namespace Newtonsoft.Json.Serialization
         || UnderlyingType.IsArray)
         return new CollectionWrapper<object>((IList)list);
 
-      if (_genericWrapperType == null)
+      if (_genericCollectionDefinitionType != null)
       {
-        _genericWrapperType = ReflectionUtils.MakeGenericType(typeof(CollectionWrapper<>), CollectionItemType);
+        if (_genericWrapperType == null)
+        {
+          _genericWrapperType = ReflectionUtils.MakeGenericType(typeof (CollectionWrapper<>), CollectionItemType);
 
-        ConstructorInfo genericWrapperConstructor = _genericWrapperType.GetConstructor(new[] { _genericCollectionDefinitionType });
-        _genericWrapperCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(genericWrapperConstructor);
+          ConstructorInfo genericWrapperConstructor = _genericWrapperType.GetConstructor(new[] {_genericCollectionDefinitionType});
+          _genericWrapperCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(genericWrapperConstructor);
+        }
+
+        return (IWrappedCollection) _genericWrapperCreator(null, list);
       }
-
-      return (IWrappedCollection)_genericWrapperCreator(null, list);
+      else
+      {
+        return new CollectionWrapper<object>((IList<object>)((IEnumerable)list).Cast<object>().ToList());
+      }
     }
 
     private bool IsTypeGenericCollectionInterface(Type type)

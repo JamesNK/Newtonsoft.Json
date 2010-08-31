@@ -61,7 +61,7 @@ namespace Newtonsoft.Json.Utilities
       _genericCollection = list;
     }
 
-    public void Add(T item)
+    public virtual void Add(T item)
     {
       if (_genericCollection != null)
         _genericCollection.Add(item);
@@ -69,7 +69,7 @@ namespace Newtonsoft.Json.Utilities
         _list.Add(item);
     }
 
-    public void Clear()
+    public virtual void Clear()
     {
       if (_genericCollection != null)
         _genericCollection.Clear();
@@ -77,7 +77,7 @@ namespace Newtonsoft.Json.Utilities
         _list.Clear();
     }
 
-    public bool Contains(T item)
+    public virtual bool Contains(T item)
     {
       if (_genericCollection != null)
         return _genericCollection.Contains(item);
@@ -85,7 +85,7 @@ namespace Newtonsoft.Json.Utilities
         return _list.Contains(item);
     }
 
-    public void CopyTo(T[] array, int arrayIndex)
+    public virtual void CopyTo(T[] array, int arrayIndex)
     {
       if (_genericCollection != null)
         _genericCollection.CopyTo(array, arrayIndex);
@@ -93,7 +93,7 @@ namespace Newtonsoft.Json.Utilities
         _list.CopyTo(array, arrayIndex);
     }
 
-    public int Count
+    public virtual int Count
     {
       get
       {
@@ -104,7 +104,7 @@ namespace Newtonsoft.Json.Utilities
       }
     }
 
-    public bool IsReadOnly
+    public virtual bool IsReadOnly
     {
       get
       {
@@ -115,7 +115,7 @@ namespace Newtonsoft.Json.Utilities
       }
     }
 
-    public bool Remove(T item)
+    public virtual bool Remove(T item)
     {
       if (_genericCollection != null)
       {
@@ -132,7 +132,7 @@ namespace Newtonsoft.Json.Utilities
       }
     }
 
-    public IEnumerator<T> GetEnumerator()
+    public virtual IEnumerator<T> GetEnumerator()
     {
       if (_genericCollection != null)
         return _genericCollection.GetEnumerator();

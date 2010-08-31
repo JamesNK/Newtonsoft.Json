@@ -34,6 +34,7 @@ using System.Runtime.Serialization.Formatters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities;
 using System.Runtime.Serialization;
+using System.Security;
 
 namespace Newtonsoft.Json.Serialization
 {
@@ -118,20 +119,8 @@ namespace Newtonsoft.Json.Serialization
       }
       else if (valueContract is JsonArrayContract)
       {
-        if (value is IList)
-        {
-          SerializeList(writer, (IList)value, (JsonArrayContract)valueContract, member, collectionValueContract);
-        }
-        else if (value is IEnumerable)
-        {
-          SerializeList(writer, ((IEnumerable)value).Cast<object>().ToList(), (JsonArrayContract)valueContract, member, collectionValueContract);
-        }
-        else
-        {
-          throw new Exception(
-            "Cannot serialize '{0}' into a JSON array. Type does not implement IEnumerable.".FormatWith(
-              CultureInfo.InvariantCulture, value.GetType()));
-        }
+        JsonArrayContract arrayContract = (JsonArrayContract) valueContract;
+        SerializeList(writer, arrayContract.CreateWrapper(value), arrayContract, member, collectionValueContract);
       }
       else if (valueContract is JsonLinqContract)
       {
@@ -371,11 +360,11 @@ namespace Newtonsoft.Json.Serialization
       }
     }
 
-    private void SerializeList(JsonWriter writer, IList values, JsonArrayContract contract, JsonProperty member, JsonContract collectionValueContract)
+    private void SerializeList(JsonWriter writer, IWrappedCollection values, JsonArrayContract contract, JsonProperty member, JsonContract collectionValueContract)
     {
-      contract.InvokeOnSerializing(values, Serializer.Context);
+      contract.InvokeOnSerializing(values.UnderlyingCollection, Serializer.Context);
 
-      SerializeStack.Add(values);
+      SerializeStack.Add(values.UnderlyingCollection);
 
       bool isReference = contract.IsReference ?? HasFlag(Serializer.PreserveReferencesHandling, PreserveReferencesHandling.Arrays);
       bool includeTypeDetails = ShouldWriteType(TypeNameHandling.Arrays, contract, member, collectionValueContract);
@@ -387,11 +376,11 @@ namespace Newtonsoft.Json.Serialization
         if (isReference)
         {
           writer.WritePropertyName(JsonTypeReflector.IdPropertyName);
-          writer.WriteValue(Serializer.ReferenceResolver.GetReference(values));
+          writer.WriteValue(Serializer.ReferenceResolver.GetReference(values.UnderlyingCollection));
         }
         if (includeTypeDetails)
         {
-          WriteTypeProperty(writer, values.GetType());
+          WriteTypeProperty(writer, values.UnderlyingCollection.GetType());
         }
         writer.WritePropertyName(JsonTypeReflector.ArrayValuesPropertyName);
       }
@@ -402,11 +391,12 @@ namespace Newtonsoft.Json.Serialization
 
       int initialDepth = writer.Top;
 
-      for (int i = 0; i < values.Count; i++)
+      int index = 0;
+      // note that an error in the IEnumerable won't be caught
+      foreach (object value in values)
       {
         try
         {
-          object value = values[i];
           JsonContract valueContract = GetContractSafe(value);
 
           if (ShouldWriteReference(value, null, valueContract))
@@ -415,18 +405,22 @@ namespace Newtonsoft.Json.Serialization
           }
           else
           {
-            if (!CheckForCircularReference(value, null, contract))
-              continue;
-
-            SerializeValue(writer, value, valueContract, null, childValuesContract);
+            if (CheckForCircularReference(value, null, contract))
+            {
+              SerializeValue(writer, value, valueContract, null, childValuesContract);
+            }
           }
         }
         catch (Exception ex)
         {
-          if (IsErrorHandled(values, contract, i, ex))
+          if (IsErrorHandled(values.UnderlyingCollection, contract, index, ex))
             HandleError(writer, initialDepth);
           else
             throw;
+        }
+        finally
+        {
+          index++;
         }
       }
 
@@ -439,10 +433,13 @@ namespace Newtonsoft.Json.Serialization
 
       SerializeStack.RemoveAt(SerializeStack.Count - 1);
 
-      contract.InvokeOnSerialized(values, Serializer.Context);
+      contract.InvokeOnSerialized(values.UnderlyingCollection, Serializer.Context);
     }
 
 #if !SILVERLIGHT && !PocketPC
+#if !NET20
+    [SecuritySafeCritical]
+#endif
     private void SerializeISerializable(JsonWriter writer, ISerializable value, JsonISerializableContract contract)
     {
       contract.InvokeOnSerializing(value, Serializer.Context);

@@ -319,7 +319,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     public void SerializeObjectWithMultipleGenericLists()
     {
       string containerTypeName = typeof(Container).AssemblyQualifiedName;
-      string productTypeName = typeof(Product).AssemblyQualifiedName;
+      string productListTypeName = typeof(List<Product>).AssemblyQualifiedName;
 
       Container container = new Container
                           {
@@ -338,11 +338,11 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual(@"{
   ""$type"": """ + containerTypeName + @""",
   ""In"": {
-    ""$type"": ""System.Collections.Generic.List`1[[" + productTypeName + @"]], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"",
+    ""$type"": """ + productListTypeName + @""",
     ""$values"": []
   },
   ""Out"": {
-    ""$type"": ""System.Collections.Generic.List`1[[" + productTypeName + @"]], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"",
+    ""$type"": """ + productListTypeName + @""",
     ""$values"": []
   }
 }", json);

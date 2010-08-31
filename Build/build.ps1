@@ -1,4 +1,5 @@
 ﻿properties { 
+ 
   $zipFileName = "Json35r8.zip"
   $signAssemblies = $false
   $signKeyPath = "D:\Development\Releases\newtonsoft.snk"
@@ -12,12 +13,13 @@
   $releaseDir = "$baseDir\Release"
   $workingDir = "$baseDir\Working"
   $builds = @(
-    @{Name = "Newtonsoft.Json.Silverlight"; TestsName = "Newtonsoft.Json.Tests.Silverlight"; Constants="SILVERLIGHT"; FinalDir="Silverlight"},
-    @{Name = "Newtonsoft.Json.Compact"; TestsName = "Newtonsoft.Json.Tests.Compact"; Constants="PocketPC"; FinalDir="Compact"},
-    @{Name = "Newtonsoft.Json.Net20"; TestsName = "Newtonsoft.Json.Tests.Net20"; Constants="NET20"; FinalDir="DotNet20"},
-    @{Name = "Newtonsoft.Json"; TestsName = "Newtonsoft.Json.Tests"; Constants=""; FinalDir="DotNet"}
+    @{Name = "Newtonsoft.Json"; TestsName = "Newtonsoft.Json.Tests"; Constants=""; FinalDir="DotNet"; Framework="net-4.0"},
+    @{Name = "Newtonsoft.Json.Silverlight"; TestsName = "Newtonsoft.Json.Tests.Silverlight"; Constants="SILVERLIGHT"; FinalDir="Silverlight"; Framework="net-2.0"},
+    @{Name = "Newtonsoft.Json.Net20"; TestsName = "Newtonsoft.Json.Tests.Net20"; Constants="NET20"; FinalDir="DotNet20"; Framework="net-2.0"}
   )
-} 
+}
+
+$framework = '4.0x86'
 
 task default -depends Test
 
@@ -101,6 +103,7 @@ task Test -depends Deploy {
   {
     $name = $build.TestsName
     $finalDir = $build.FinalDir
+    $framework = $build.Framework
     
     Write-Host -ForegroundColor Green "Copying test assembly $name to deployed directory"
     Write-Host
@@ -110,7 +113,7 @@ task Test -depends Deploy {
 
     Write-Host -ForegroundColor Green "Running tests " $name
     Write-Host
-    exec { .\Tools\NUnit\nunit-console.exe "$workingDir\Deployed\Bin\$finalDir\$name.dll" /xml:$workingDir\$name.xml } "Error running $name tests"
+    exec { .\Tools\NUnit\nunit-console.exe "$workingDir\Deployed\Bin\$finalDir\$name.dll" /framework=$framework /xml:$workingDir\$name.xml } "Error running $name tests"
   }
 }
 

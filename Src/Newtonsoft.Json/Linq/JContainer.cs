@@ -779,13 +779,9 @@ namespace Newtonsoft.Json.Linq
 
     PropertyDescriptorCollection ITypedList.GetItemProperties(PropertyDescriptor[] listAccessors)
     {
-      JObject o = First as JObject;
-      if (o != null)
-      {
-        // explicitly use constructor because compact framework has no provider
-        JTypeDescriptor descriptor = new JTypeDescriptor(o);
-        return descriptor.GetProperties();
-      }
+      ICustomTypeDescriptor d = First as ICustomTypeDescriptor;
+      if (d != null)
+        return d.GetProperties();
 
       return null;
     }

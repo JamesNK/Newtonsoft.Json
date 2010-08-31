@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx">
+<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
   <!-- EF Runtime content -->
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="DataServicesTestDatabaseModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2005" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2006/04/edm/ssdl">
+      <Schema Namespace="DataServicesTestDatabaseModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2005" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
         <EntityContainer Name="DataServicesTestDatabaseModelStoreContainer">
-          <EntitySet Name="File" EntityType="DataServicesTestDatabaseModel.Store.File" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="Folder" EntityType="DataServicesTestDatabaseModel.Store.Folder" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="File" EntityType="DataServicesTestDatabaseModel.Store.File" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="Folder" EntityType="DataServicesTestDatabaseModel.Store.Folder" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
           <AssociationSet Name="FK_File_Folder" Association="DataServicesTestDatabaseModel.Store.FK_File_Folder">
             <End Role="Folder" EntitySet="Folder" />
             <End Role="File" EntitySet="File" />
@@ -65,7 +65,7 @@
     </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="DataServicesTestDatabaseModel" Alias="Self" xmlns="http://schemas.microsoft.com/ado/2006/04/edm">
+      <Schema Namespace="DataServicesTestDatabaseModel" Alias="Self" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
         <EntityContainer Name="DataServicesTestDatabaseEntities">
           <EntitySet Name="File" EntityType="DataServicesTestDatabaseModel.File" />
           <EntitySet Name="Folder" EntityType="DataServicesTestDatabaseModel.Folder" />
@@ -112,7 +112,7 @@
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
-      <Mapping Space="C-S" xmlns="urn:schemas-microsoft-com:windows:storage:mapping:CS">
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="DataServicesTestDatabaseModelStoreContainer" CdmEntityContainer="DataServicesTestDatabaseEntities">
           <EntitySetMapping Name="File">
             <EntityTypeMapping TypeName="IsTypeOf(DataServicesTestDatabaseModel.File)">
@@ -156,20 +156,20 @@
     </edmx:Mappings>
   </edmx:Runtime>
   <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
-  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2007/06/edmx">
+  <edmx:Designer>
     <edmx:Connection>
-      <DesignerInfoPropertySet>
+      <DesignerInfoPropertySet xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
         <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
       </DesignerInfoPropertySet>
     </edmx:Connection>
     <edmx:Options>
-      <DesignerInfoPropertySet>
+      <DesignerInfoPropertySet xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
         <DesignerProperty Name="ValidateOnBuild" Value="true" />
       </DesignerInfoPropertySet>
     </edmx:Options>
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram Name="FileSystemEntityModel">
+      <Diagram Name="FileSystemEntityModel" xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
         <EntityTypeShape EntityType="DataServicesTestDatabaseModel.File" Width="1.5" PointX="3" PointY="1.125" Height="1.9802864583333335" IsExpanded="true" />
         <EntityTypeShape EntityType="DataServicesTestDatabaseModel.Folder" Width="1.5" PointX="0.75" PointY="1" Height="2.3648893229166665" IsExpanded="true" />
         <AssociationConnector Association="DataServicesTestDatabaseModel.FK_File_Folder" ManuallyRouted="false">

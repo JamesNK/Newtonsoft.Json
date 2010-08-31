@@ -38,23 +38,21 @@ namespace Newtonsoft.Json.Utilities
     object UnderlyingList { get; }
   }
 
-  internal class ListWrapper<T> : IList<T>, IWrappedList
+  internal class ListWrapper<T> : CollectionWrapper<T>, IList<T>, IWrappedList
   {
-    private readonly IList _list;
     private readonly IList<T> _genericList;
-    private object _syncRoot;
 
     public ListWrapper(IList list)
+      : base(list)
     {
       ValidationUtils.ArgumentNotNull(list, "list");
 
       if (list is IList<T>)
         _genericList = (IList<T>) list;
-      else
-        _list = list;
     }
 
     public ListWrapper(IList<T> list)
+      : base(list)
     {
       ValidationUtils.ArgumentNotNull(list, "list");
 
@@ -66,7 +64,7 @@ namespace Newtonsoft.Json.Utilities
       if (_genericList != null)
         return _genericList.IndexOf(item);
       else
-        return _list.IndexOf(item);
+        return ((IList)this).IndexOf(item);
     }
 
     public void Insert(int index, T item)
@@ -74,7 +72,7 @@ namespace Newtonsoft.Json.Utilities
       if (_genericList != null)
         _genericList.Insert(index, item);
       else
-        _list.Insert(index, item);
+        ((IList)this).Insert(index, item);
     }
 
     public void RemoveAt(int index)
@@ -82,7 +80,7 @@ namespace Newtonsoft.Json.Utilities
       if (_genericList != null)
         _genericList.RemoveAt(index);
       else
-        _list.RemoveAt(index);
+        ((IList)this).RemoveAt(index);
     }
 
     public T this[int index]
@@ -92,72 +90,72 @@ namespace Newtonsoft.Json.Utilities
         if (_genericList != null)
           return _genericList[index];
         else
-          return (T)_list[index];
+          return (T)((IList)this)[index];
       }
       set
       {
         if (_genericList != null)
           _genericList[index] = value;
         else
-          _list[index] = value;
+          ((IList)this)[index] = value;
       }
     }
 
-    public void Add(T item)
+    public override void Add(T item)
     {
       if (_genericList != null)
         _genericList.Add(item);
       else
-        _list.Add(item);
+        base.Add(item);
     }
 
-    public void Clear()
+    public override void Clear()
     {
       if (_genericList != null)
         _genericList.Clear();
       else
-        _list.Clear();
+        base.Clear();
     }
 
-    public bool Contains(T item)
+    public override bool Contains(T item)
     {
       if (_genericList != null)
         return _genericList.Contains(item);
       else
-        return _list.Contains(item);
+        return base.Contains(item);
     }
 
-    public void CopyTo(T[] array, int arrayIndex)
+    public override void CopyTo(T[] array, int arrayIndex)
     {
       if (_genericList != null)
         _genericList.CopyTo(array, arrayIndex);
       else
-        _list.CopyTo(array, arrayIndex);
+        base.CopyTo(array, arrayIndex);
     }
 
-    public int Count
+    public override int Count
     {
       get
       {
         if (_genericList != null)
           return _genericList.Count;
         else
-          return _list.Count;
+          return base.Count;
       }
     }
 
-    public bool IsReadOnly
+    public override bool IsReadOnly
     {
       get
       {
         if (_genericList != null)
           return _genericList.IsReadOnly;
         else
-          return _list.IsReadOnly;
+          return base.IsReadOnly;
       }
     }
 
-    public bool Remove(T item)
+    public override bool Remove(T item)
     {
       if (_genericList != null)
       {
@@ -165,115 +163,21 @@ namespace Newtonsoft.Json.Utilities
       }
       else
       {
-        bool contains = _list.Contains(item);
+        bool contains = base.Contains(item);
 
         if (contains)
-          _list.Remove(item);
+          base.Remove(item);
 
         return contains;
       }
     }
 
-    public IEnumerator<T> GetEnumerator()
+    public override IEnumerator<T> GetEnumerator()
     {
       if (_genericList != null)
         return _genericList.GetEnumerator();
 
-      return _list.Cast<T>().GetEnumerator();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-      if (_genericList != null)
-        return _genericList.GetEnumerator();
-      else
-        return _list.GetEnumerator();
-    }
-
-    int IList.Add(object value)
-    {
-      VerifyValueType(value);
-      Add((T)value);
-
-      return (Count - 1);
-    }
-
-    bool IList.Contains(object value)
-    {
-      if (IsCompatibleObject(value))
-        return Contains((T)value);
-
-      return false;
-    }
-
-    int IList.IndexOf(object value)
-    {
-      if (IsCompatibleObject(value))
-        return IndexOf((T)value);
-
-      return -1;
-    }
-
-    void IList.Insert(int index, object value)
-    {
-      VerifyValueType(value);
-      Insert(index, (T)value);
-    }
-
-    bool IList.IsFixedSize
-    {
-      get { return false; }
-    }
-
-    void IList.Remove(object value)
-    {
-      if (IsCompatibleObject(value))
-        Remove((T)value);
-    }
-
-    object IList.this[int index]
-    {
-      get { return this[index]; }
-      set
-      {
-        VerifyValueType(value);
-        this[index] = (T)value;
-      }
-    }
-
-    void ICollection.CopyTo(Array array, int arrayIndex)
-    {
-      CopyTo((T[])array, arrayIndex);
-    }
-
-    bool ICollection.IsSynchronized
-    {
-      get { return false; }
-    }
-
-    object ICollection.SyncRoot
-    {
-      get
-      {
-        if (_syncRoot == null)
-          Interlocked.CompareExchange(ref _syncRoot, new object(), null);
-
-        return _syncRoot;
-      }
-    }
-
-    private static void VerifyValueType(object value)
-    {
-      if (!IsCompatibleObject(value))
-        throw new ArgumentException("The value '{0}' is not of type '{1}' and cannot be used in this generic collection.".FormatWith(CultureInfo.InvariantCulture, value, typeof(T)), "value");
-    }
-
-    private static bool IsCompatibleObject(object value)
-    {
-      if (!(value is T) && (value != null || (typeof(T).IsValueType && !ReflectionUtils.IsNullableType(typeof(T)))))
-        return false;
-
-      return true;
+      return base.GetEnumerator();
     }
 
     public object UnderlyingList
@@ -283,7 +187,7 @@ namespace Newtonsoft.Json.Utilities
         if (_genericList != null)
           return _genericList;
         else
-          return _list;
+          return UnderlyingCollection;
       }
     }
   }

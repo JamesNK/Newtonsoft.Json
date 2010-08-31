@@ -61,55 +61,6 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 
     [Test]
-    public void ErrorSerializingListHandled()
-    {
-      VersionKeyedCollection c = new VersionKeyedCollection();
-      c.Add(new Person
-      {
-        Name = "Jim",
-        BirthDate = new DateTime(2000, 12, 29, 0, 0, 0, DateTimeKind.Utc),
-        LastModified = new DateTime(2000, 12, 29, 0, 0, 0, DateTimeKind.Utc)
-      });
-      c.Add(new Person
-      {
-        Name = "Jimbo",
-        BirthDate = new DateTime(2000, 12, 29, 0, 0, 0, DateTimeKind.Utc),
-        LastModified = new DateTime(2000, 12, 29, 0, 0, 0, DateTimeKind.Utc)
-      });
-      c.Add(new Person
-      {
-        Name = "Jimmy",
-        BirthDate = new DateTime(2000, 12, 29, 0, 0, 0, DateTimeKind.Utc),
-        LastModified = new DateTime(2000, 12, 29, 0, 0, 0, DateTimeKind.Utc)
-      });
-      c.Add(new Person
-      {
-        Name = "Jim Bean",
-        BirthDate = new DateTime(2000, 12, 29, 0, 0, 0, DateTimeKind.Utc),
-        LastModified = new DateTime(2000, 12, 29, 0, 0, 0, DateTimeKind.Utc)
-      });
-
-      string json = JsonConvert.SerializeObject(c, Formatting.Indented);
-
-      Assert.AreEqual(@"[
-  {
-    ""Name"": ""Jimbo"",
-    ""BirthDate"": ""\/Date(978048000000)\/"",
-    ""LastModified"": ""\/Date(978048000000)\/""
-  },
-  {
-    ""Name"": ""Jim Bean"",
-    ""BirthDate"": ""\/Date(978048000000)\/"",
-    ""LastModified"": ""\/Date(978048000000)\/""
-  }
-]", json);
-
-      Assert.AreEqual(2, c.Messages.Count);
-      Assert.AreEqual("Error message for member 0 = Index even: 0", c.Messages[0]);
-      Assert.AreEqual("Error message for member 2 = Index even: 2", c.Messages[1]);
-    }
-
-    [Test]
     public void DeserializingErrorInChildObject()
     {
       ListErrorObjectCollection c = JsonConvert.DeserializeObject<ListErrorObjectCollection>(@"[
@@ -244,7 +195,11 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual(new DateTime(2000, 12, 1, 0, 0, 0, DateTimeKind.Utc), c[2]);
 
       Assert.AreEqual(3, errors.Count);
+#if !(NET20 || SILVERLIGHT)
+      Assert.AreEqual("The string was not recognized as a valid DateTime. There is an unknown word starting at index 0.", errors[0]);
+#else
       Assert.AreEqual("The string was not recognized as a valid DateTime. There is a unknown word starting at index 0.", errors[0]);
+#endif
       Assert.AreEqual("Unexpected token parsing date. Expected String, got StartArray.", errors[1]);
       Assert.AreEqual("Cannot convert null value to System.DateTime.", errors[2]);
     }

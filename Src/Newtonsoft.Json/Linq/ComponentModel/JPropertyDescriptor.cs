@@ -80,8 +80,6 @@ namespace Newtonsoft.Json.Linq.ComponentModel
     public override object GetValue(object component)
     {
       JToken token = CastInstance(component)[Name];
-      //if (token is JValue)
-      //  return ((JValue) token).Value;
 
       return token;
     }

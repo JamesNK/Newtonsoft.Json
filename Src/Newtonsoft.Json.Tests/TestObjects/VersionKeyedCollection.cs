@@ -33,7 +33,7 @@ using Newtonsoft.Json.Tests.TestObjects;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class VersionKeyedCollection : KeyedCollection<string, Person>, IList
+  public class VersionKeyedCollection : KeyedCollection<string, Person>, IEnumerable<Person>
   {
     public List<string> Messages { get; set; }
 
@@ -54,16 +54,20 @@ namespace Newtonsoft.Json.Tests.TestObjects
       errorContext.Handled = true;
     }
 
-    object IList.this[int index]
+    IEnumerator<Person> IEnumerable<Person>.GetEnumerator()
     {
-      get
+      for (int i = 0; i < Count; i++)
       {
-        if (index % 2 == 0)
-          throw new Exception("Index even: " + index);
+        if (i % 2 == 0)
+          throw new Exception("Index even: " + i);
 
-        return this[index];
+        yield return this[i];
       }
-      set { this[index] = (Person)value; }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+      return ((IEnumerable<Person>) this).GetEnumerator();
     }
   }
 }
