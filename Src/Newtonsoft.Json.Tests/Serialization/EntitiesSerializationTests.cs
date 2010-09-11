@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !PocketPC && !SILVERLIGHT && !NET20
+#if !(NET35 || NET20 || SILVERLIGHT)
 using System;
 using System.Collections.Generic;
 using System.Data;

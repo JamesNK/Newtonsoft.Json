@@ -235,7 +235,7 @@ namespace Newtonsoft.Json.Utilities
         if (targetType == typeof (Uri))
           return new Uri((string) initialValue);
         if (targetType == typeof (TimeSpan))
-#if !NET20 && !SILVERLIGHT
+#if !(NET35 || NET20 || SILVERLIGHT)
           return TimeSpan.Parse((string) initialValue, CultureInfo.InvariantCulture);
 #else
           return TimeSpan.Parse((string)initialValue);

@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests
 {
+  // todo: need to fix this to get WP unit tests running off right dlls
 #if SILVERLIGHT
   [TestFixture]
   public class SilverlightTests

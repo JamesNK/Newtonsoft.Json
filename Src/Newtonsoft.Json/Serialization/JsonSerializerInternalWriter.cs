@@ -27,6 +27,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+#if !(NET35 || NET20 || SILVERLIGHT)
+using System.Dynamic;
+#endif
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -130,6 +133,12 @@ namespace Newtonsoft.Json.Serialization
       else if (valueContract is JsonISerializableContract)
       {
         SerializeISerializable(writer, (ISerializable) value, (JsonISerializableContract) valueContract);
+      }
+#endif
+#if !(NET35 || NET20 || SILVERLIGHT)
+      else if (valueContract is JsonDynamicContract)
+      {
+        SerializeDynamic(writer, (IDynamicMetaObjectProvider) value, (JsonDynamicContract) valueContract);
       }
 #endif
     }
@@ -463,18 +472,30 @@ namespace Newtonsoft.Json.Serialization
     }
 #endif
 
-    //private bool ShouldWriteTypeProperty(JsonProperty member, JsonContract contract, TypeNameHandling typeFlag)
-    //{
-    //  if (HasFlag(((member != null) ? member.TypeNameHandling : null) ?? Serializer.TypeNameHandling, typeFlag))
-    //    return true;
+#if !(NET35 || NET20 || SILVERLIGHT)
+    private void SerializeDynamic(JsonWriter writer, IDynamicMetaObjectProvider value, JsonDynamicContract contract)
+    {
+      contract.InvokeOnSerializing(value, Serializer.Context);
+      SerializeStack.Add(value);
 
-    //  if ((((member != null) ? member.TypeNameHandling : null) ?? Serializer.TypeNameHandling) == TypeNameHandling.Auto)
+      writer.WriteStartObject();
 
-    //      || (member != null
-    //          && (member.TypeNameHandling ?? Serializer.TypeNameHandling) == TypeNameHandling.Auto
-    //          && contract.UnderlyingType != member.PropertyType)
-    //      )
-    //}
+      foreach (string memberName in value.GetDynamicMemberNames())
+      {
+        object memberValue;
+        if (DynamicUtils.TryGetMember(value, memberName, out memberValue))
+        {
+          writer.WritePropertyName(memberName);
+          SerializeValue(writer, memberValue, GetContractSafe(memberValue), null, null);
+        }
+      }
+
+      writer.WriteEndObject();
+
+      SerializeStack.RemoveAt(SerializeStack.Count - 1);
+      contract.InvokeOnSerialized(value, Serializer.Context);
+    }
+#endif
 
     private bool ShouldWriteType(TypeNameHandling typeNameHandlingFlag, JsonContract contract, JsonProperty member, JsonContract collectionValueContract)
     {

@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 #if !SILVERLIGHT && !PocketPC && !NET20
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.CompilerServices;
 using System.Web.Script.Serialization;
 #endif
 using System.Text;
@@ -52,6 +53,10 @@ using System.Reflection;
 using System.Xml.Linq;
 using System.Text.RegularExpressions;
 using System.Collections.Specialized;
+using System.Linq.Expressions;
+#endif
+#if !(NET35 || NET20 || SILVERLIGHT)
+using System.Dynamic;
 #endif
 
 namespace Newtonsoft.Json.Tests.Serialization
@@ -3019,7 +3024,7 @@ keyword such as type of business.""
         PosDouble p = (PosDouble)value;
 
         if (p != null)
-          writer.WriteRawValue(String.Format("new PosD({0},{1})", p.X, p.Y));
+          writer.WriteRawValue(String.Format(CultureInfo.InvariantCulture, "new PosD({0},{1})", p.X, p.Y));
         else
           writer.WriteNull();
       }
@@ -3573,5 +3578,45 @@ keyword such as type of business.""
   ""event"": ""derived""
 }", json);
     }
+
+#if !(NET35 || NET20 || SILVERLIGHT)
+   [Test]
+    public void SerializeExpandoObject()
+    {
+      dynamic expando = new ExpandoObject();
+      expando.Int = 1;
+      expando.Decimal = 99.9d;
+      expando.Complex = new ExpandoObject();
+      expando.Complex.String = "I am a string";
+      expando.Complex.DateTime = new DateTime(2000, 12, 20, 18, 55, 0, DateTimeKind.Utc);
+
+      string json = JsonConvert.SerializeObject(expando, Formatting.Indented);
+      Assert.AreEqual(@"{
+  ""Int"": 1,
+  ""Decimal"": 99.9,
+  ""Complex"": {
+    ""String"": ""I am a string"",
+    ""DateTime"": ""\/Date(977338500000)\/""
+  }
+}", json);
+
+      IDictionary<string, object> newExpando = JsonConvert.DeserializeObject<ExpandoObject>(json);
+
+      Assert.IsInstanceOfType(typeof(long), newExpando["Int"]);
+      Assert.AreEqual(expando.Int, newExpando["Int"]);
+
+      Assert.IsInstanceOfType(typeof(double), newExpando["Decimal"]);
+      Assert.AreEqual(expando.Decimal, newExpando["Decimal"]);
+
+      Assert.IsInstanceOfType(typeof(JObject), newExpando["Complex"]);
+      JObject o = (JObject)newExpando["Complex"];
+
+      Assert.IsInstanceOfType(typeof(string), ((JValue)o["String"]).Value);
+      Assert.AreEqual(expando.Complex.String, (string)o["String"]);
+
+      Assert.IsInstanceOfType(typeof(DateTime), ((JValue)o["DateTime"]).Value);
+      Assert.AreEqual(expando.Complex.DateTime, (DateTime)o["DateTime"]);
+    }
+#endif
   }
 }

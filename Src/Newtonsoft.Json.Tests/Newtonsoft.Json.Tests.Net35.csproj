@@ -8,8 +8,8 @@
     <ProjectGuid>{3E6E2335-B079-4B5B-A65A-9D586914BCBB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Newtonsoft.Json.Tests</RootNamespace>
-    <AssemblyName>Newtonsoft.Json.Tests</AssemblyName>
+    <RootNamespace>Newtonsoft.Json.Tests.Net35</RootNamespace>
+    <AssemblyName>Newtonsoft.Json.Tests.Net35</AssemblyName>
     <SccProjectName>
     </SccProjectName>
     <SccLocalPath>
@@ -23,7 +23,7 @@
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>
     </AssemblyOriginatorKeyFile>
@@ -49,8 +49,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\DotNet\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <OutputPath>bin\Debug\DotNet35\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NET35</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
@@ -58,14 +58,13 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\DotNet\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <OutputPath>bin\Release\DotNet35\</OutputPath>
+    <DefineConstants>TRACE;NET35</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="nunit.framework, Version=2.4.3.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\NUnit\DotNet\nunit.framework.dll</HintPath>
@@ -114,11 +113,6 @@
     <Compile Include="Converters\CustomCreationConverterTests.cs" />
     <Compile Include="Converters\ObjectIdConverterTests.cs" />
     <Compile Include="Converters\StringEnumConverterTests.cs" />
-    <Compile Include="FileSystemEntityModel.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>FileSystemEntityModel.edmx</DependentUpon>
-    </Compile>
     <Compile Include="JsonArrayAttributeTests.cs" />
     <Compile Include="ExceptionTests.cs" />
     <Compile Include="JsonValidatingReaderTests.cs" />
@@ -273,12 +267,7 @@
     <Compile Include="Utilities\ReflectionUtilsTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.csproj">
-      <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
-      <Name>Newtonsoft.Json</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
+    <None Include="App.Config" />
     <None Include="LinqToSql\LinqToSqlClasses.dbml">
       <Generator>MSLinqToSQLGenerator</Generator>
       <LastGenOutput>LinqToSqlClasses.designer.cs</LastGenOutput>
@@ -289,10 +278,6 @@
     <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
   </ItemGroup>
   <ItemGroup>
-    <EntityDeploy Include="FileSystemEntityModel.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>FileSystemEntityModel.Designer.cs</LastGenOutput>
-    </EntityDeploy>
     <None Include="LinqToSql\LinqToSqlClasses.dbml.layout">
       <DependentUpon>LinqToSqlClasses.dbml</DependentUpon>
     </None>
@@ -318,6 +303,12 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.Net35.csproj">
+      <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
+      <Name>Newtonsoft.Json.Net35</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -25,6 +25,10 @@
 
 using System;
 using System.Collections.Generic;
+#if !(NET35 || NET20 || SILVERLIGHT)
+using System.Dynamic;
+using System.Linq.Expressions;
+#endif
 using System.Linq;
 using System.IO;
 using Newtonsoft.Json.Utilities;
@@ -39,7 +43,10 @@ namespace Newtonsoft.Json.Linq
   /// Represents an abstract JSON token.
   /// </summary>
   public abstract class JToken : IJEnumerable<JToken>, IJsonLineInfo
-  {
+#if !(NET35 || NET20 || SILVERLIGHT)
+    , IDynamicMetaObjectProvider
+#endif
+    {
     private JContainer _parent;
     internal JToken _next;
     private static JTokenEqualityComparer _equalityComparer;
@@ -562,6 +569,35 @@ namespace Newtonsoft.Json.Linq
     }
 
     /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="System.Int16"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static explicit operator short(JToken value)
+    {
+      JValue v = EnsureValue(value);
+      if (v == null || !ValidateInteger(v, false))
+        throw new ArgumentException("Can not convert {0} to Int16.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+
+      return Convert.ToInt16(v.Value, CultureInfo.InvariantCulture);
+    }
+
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="System.UInt16"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
+    [CLSCompliant(false)]
+    public static explicit operator ushort(JToken value)
+    {
+      JValue v = EnsureValue(value);
+      if (v == null || !ValidateInteger(v, false))
+        throw new ArgumentException("Can not convert {0} to UInt16.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+
+      return Convert.ToUInt16(v.Value, CultureInfo.InvariantCulture);
+    }
+
+    /// <summary>
     /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="Nullable{Int32}"/>.
     /// </summary>
     /// <param name="value">The value.</param>
@@ -576,6 +612,41 @@ namespace Newtonsoft.Json.Linq
         throw new ArgumentException("Can not convert {0} to Int32.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       return (v.Value != null) ? (int?)Convert.ToInt32(v.Value, CultureInfo.InvariantCulture) : null;
+    }
+
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="Nullable{Int16}"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static explicit operator short?(JToken value)
+    {
+      if (value == null)
+        return null;
+
+      JValue v = EnsureValue(value);
+      if (v == null || !ValidateInteger(v, true))
+        throw new ArgumentException("Can not convert {0} to Int16.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+
+      return (v.Value != null) ? (short?)Convert.ToInt16(v.Value, CultureInfo.InvariantCulture) : null;
+    }
+
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="Nullable{UInt16}"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
+    [CLSCompliant(false)]
+    public static explicit operator ushort?(JToken value)
+    {
+      if (value == null)
+        return null;
+
+      JValue v = EnsureValue(value);
+      if (v == null || !ValidateInteger(v, true))
+        throw new ArgumentException("Can not convert {0} to UInt16.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+
+      return (v.Value != null) ? (ushort?)Convert.ToInt16(v.Value, CultureInfo.InvariantCulture) : null;
     }
 
     /// <summary>
@@ -852,6 +923,17 @@ namespace Newtonsoft.Json.Linq
     }
 
     /// <summary>
+    /// Performs an implicit conversion from <see cref="Int16"/> to <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
+    /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    [CLSCompliant(false)]
+    public static implicit operator JToken(short value)
+    {
+      return new JValue(value);
+    }
+
+    /// <summary>
     /// Performs an implicit conversion from <see cref="UInt16"/> to <see cref="JToken"/>.
     /// </summary>
     /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
@@ -918,6 +1000,17 @@ namespace Newtonsoft.Json.Linq
     /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
     /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
     public static implicit operator JToken(decimal value)
+    {
+      return new JValue(value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="Nullable{Int16}"/> to <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
+    /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
+    [CLSCompliant(false)]
+    public static implicit operator JToken(short? value)
     {
       return new JValue(value);
     }
@@ -1179,5 +1272,31 @@ namespace Newtonsoft.Json.Linq
       JPath p = new JPath(path);
       return p.Evaluate(this, errorWhenNoMatch);
     }
+
+#if !(NET35 || NET20 || SILVERLIGHT)
+    /// <summary>
+    /// Returns the <see cref="T:System.Dynamic.DynamicMetaObject"/> responsible for binding operations performed on this object.
+    /// </summary>
+    /// <param name="parameter">The expression tree representation of the runtime value.</param>
+    /// <returns>
+    /// The <see cref="T:System.Dynamic.DynamicMetaObject"/> to bind this object.
+    /// </returns>
+    protected virtual DynamicMetaObject GetMetaObject(Expression parameter)
+    {
+      return new DynamicProxyMetaObject<JToken>(parameter, new DynamicProxy<JToken>(this), true);
+    }
+
+    /// <summary>
+    /// Returns the <see cref="T:System.Dynamic.DynamicMetaObject"/> responsible for binding operations performed on this object.
+    /// </summary>
+    /// <param name="parameter">The expression tree representation of the runtime value.</param>
+    /// <returns>
+    /// The <see cref="T:System.Dynamic.DynamicMetaObject"/> to bind this object.
+    /// </returns>
+    DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
+    {
+      return GetMetaObject(parameter);
+    }
+#endif
   }
 }

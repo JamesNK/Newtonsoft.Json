@@ -37,16 +37,16 @@ namespace Newtonsoft.Json.Serialization
   /// </summary>
   public class JsonPropertyCollection : KeyedCollection<string, JsonProperty>
   {
-    private readonly JsonObjectContract _contract;
+    private readonly Type _type;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonPropertyCollection"/> class.
     /// </summary>
-    /// <param name="contract">The contract.</param>
-    public JsonPropertyCollection(JsonObjectContract contract)
+    /// <param name="type">The type.</param>
+    public JsonPropertyCollection(Type type)
     {
-      ValidationUtils.ArgumentNotNull(contract, "contract");
-      _contract = contract;
+      ValidationUtils.ArgumentNotNull(type, "type");
+      _type = type;
     }
 
     /// <summary>
@@ -75,7 +75,7 @@ namespace Newtonsoft.Json.Serialization
 
         if (!existingProperty.Ignored)
           throw new JsonSerializationException(
-            "A member with the name '{0}' already exists on '{1}'. Use the JsonPropertyAttribute to specify another name.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName, _contract.UnderlyingType));
+            "A member with the name '{0}' already exists on '{1}'. Use the JsonPropertyAttribute to specify another name.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName, _type));
 
         // remove ignored property so it can be replaced in collection
         Remove(existingProperty);

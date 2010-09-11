@@ -1,11 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Database Class="LinqToSqlClassesDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+﻿<?xml version="1.0" encoding="utf-8"?><Database EntityNamespace="Newtonsoft.Json.Tests.LinqToSql" ContextNamespace="Newtonsoft.Json.Tests.LinqToSql" Class="LinqToSqlClassesDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
   <Table Name="" Member="Persons">
     <Type Name="Person">
       <Column Name="FirstName" Type="System.String" CanBeNull="false" />
       <Column Name="LastName" Type="System.String" CanBeNull="false" />
       <Column Name="PersonId" Type="System.Guid" IsPrimaryKey="true" CanBeNull="false" />
-      <Column Member="DepartmentId" Type="System.Guid" CanBeNull="false" />
+      <Column Name="DepartmentId" Type="System.Guid" CanBeNull="false" />
       <Association Name="Person_PersonRole" Member="PersonRoles" ThisKey="PersonId" OtherKey="PersonId" Type="PersonRole" />
       <Association Name="Department_Person" Member="Department" ThisKey="DepartmentId" OtherKey="DepartmentId" Type="Department" IsForeignKey="true" />
     </Type>
@@ -29,7 +28,7 @@
   <Table Name="" Member="Departments">
     <Type Name="Department">
       <Column Name="DepartmentId" Type="System.Guid" IsPrimaryKey="true" CanBeNull="false" />
-      <Column Member="Name" Type="System.String" CanBeNull="false" />
+      <Column Name="Name" Type="System.String" CanBeNull="false" />
       <Association Name="Department_Person" Member="Persons" ThisKey="DepartmentId" OtherKey="DepartmentId" Type="Person" />
     </Type>
   </Table>

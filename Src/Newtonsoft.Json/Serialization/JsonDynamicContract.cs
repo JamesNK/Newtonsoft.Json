@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -23,22 +23,20 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if !(NET35 || NET20 || SILVERLIGHT)
 using System;
+using System.Collections.Generic;
 using System.Reflection;
+using Newtonsoft.Json.Utilities;
+using System.Collections;
 
 namespace Newtonsoft.Json.Serialization
 {
   /// <summary>
   /// Contract details for a <see cref="Type"/> used by the <see cref="JsonSerializer"/>.
   /// </summary>
-  public class JsonObjectContract : JsonContract
+  public class JsonDynamicContract : JsonContract
   {
-    /// <summary>
-    /// Gets or sets the object member serialization.
-    /// </summary>
-    /// <value>The member object serialization.</value>
-    public MemberSerialization MemberSerialization { get; set; }
-
     /// <summary>
     /// Gets the object's properties.
     /// </summary>
@@ -46,19 +44,14 @@ namespace Newtonsoft.Json.Serialization
     public JsonPropertyCollection Properties { get; private set; }
 
     /// <summary>
-    /// Gets or sets the parametrized constructor used to create the object.
-    /// </summary>
-    /// <value>The parametrized constructor.</value>
-    public ConstructorInfo ParametrizedConstructor { get; set; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="JsonObjectContract"/> class.
+    /// Initializes a new instance of the <see cref="JsonDynamicContract"/> class.
     /// </summary>
     /// <param name="underlyingType">The underlying type for the contract.</param>
-    public JsonObjectContract(Type underlyingType)
+    public JsonDynamicContract(Type underlyingType)
       : base(underlyingType)
     {
       Properties = new JsonPropertyCollection(UnderlyingType);
     }
   }
 }
+#endif

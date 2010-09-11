@@ -27,6 +27,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+#if !(NET35 || NET20 || SILVERLIGHT)
+using System.Dynamic;
+#endif
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -402,6 +405,14 @@ namespace Newtonsoft.Json.Serialization
         return CreateISerializable(reader, serializableContract, id);
       }
 #endif
+
+#if !(NET35 || NET20 || SILVERLIGHT)
+      JsonDynamicContract dynamicContract = contract as JsonDynamicContract;
+      if (dynamicContract != null)
+      {
+        return CreateDynamic(reader, dynamicContract, id);
+      }
+#endif
       
       throw new JsonSerializationException("Cannot deserialize JSON object into type '{0}'.".FormatWith(CultureInfo.InvariantCulture, objectType));
     }
@@ -717,10 +728,69 @@ namespace Newtonsoft.Json.Serialization
       if (id != null)
         Serializer.ReferenceResolver.AddReference(id, createdObject);
 
+      // these are together because OnDeserializing takes an object but for an ISerializable the object is full created in the constructor
       contract.InvokeOnDeserializing(createdObject, Serializer.Context);
       contract.InvokeOnDeserialized(createdObject, Serializer.Context);
 
       return createdObject;
+    }
+#endif
+
+#if !(NET35 || NET20 || SILVERLIGHT)
+    private object CreateDynamic(JsonReader reader, JsonDynamicContract contract, string id)
+    {
+      IDynamicMetaObjectProvider newObject = null;
+
+      if (contract.UnderlyingType.IsInterface || contract.UnderlyingType.IsAbstract)
+        throw new JsonSerializationException("Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantated.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+
+      if (contract.DefaultCreator != null &&
+        (!contract.DefaultCreatorNonPublic || Serializer.ConstructorHandling == ConstructorHandling.AllowNonPublicDefaultConstructor))
+      {
+        newObject = (IDynamicMetaObjectProvider)contract.DefaultCreator();
+      }
+
+      if (id != null)
+        Serializer.ReferenceResolver.AddReference(id, newObject);
+
+      contract.InvokeOnDeserializing(newObject, Serializer.Context);
+      
+      bool exit = false;
+      do
+      {
+        switch (reader.TokenType)
+        {
+          case JsonToken.PropertyName:
+            string memberName = reader.Value.ToString();
+            if (!reader.Read())
+              throw new JsonSerializationException("Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
+
+            // first attempt to find a settable property, otherwise fall back to a dynamic set without type
+            JsonProperty property = contract.Properties.GetClosestMatchProperty(memberName);
+            if (property != null && property.Writable && !property.Ignored)
+            {
+              SetPropertyValue(property, reader, newObject);
+            }
+            else
+            {
+              object value = (JsonReader.IsPrimitiveToken(reader.TokenType))
+                ? reader.Value
+                : CreateObject(reader, typeof(IDynamicMetaObjectProvider), GetContractSafe(typeof(IDynamicMetaObjectProvider), null), null, null);
+
+              newObject.TrySetMember(memberName, value);
+            }
+            break;
+          case JsonToken.EndObject:
+            exit = true;
+            break;
+          default:
+            throw new JsonSerializationException("Unexpected token when deserializing object: " + reader.TokenType);
+        }
+      } while (!exit && reader.Read());
+
+      contract.InvokeOnDeserialized(newObject, Serializer.Context);
+
+      return newObject;
     }
 #endif
 

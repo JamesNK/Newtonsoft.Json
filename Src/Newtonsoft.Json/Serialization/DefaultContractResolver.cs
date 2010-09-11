@@ -27,6 +27,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+#if !(NET35 || NET20 || SILVERLIGHT)
+using System.Dynamic;
+#endif
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -270,7 +273,7 @@ namespace Newtonsoft.Json.Serialization
       InitializeContract(contract);
 
       contract.MemberSerialization = JsonTypeReflector.GetObjectMemberSerialization(objectType);
-      contract.Properties.AddRange(CreateProperties(contract));
+      contract.Properties.AddRange(CreateProperties(contract.UnderlyingType, contract.MemberSerialization));
       if (contract.DefaultCreator == null || contract.DefaultCreatorNonPublic)
         contract.ParametrizedConstructor = GetParametrizedConstructor(objectType);
 
@@ -443,6 +446,23 @@ namespace Newtonsoft.Json.Serialization
     }
 #endif
 
+#if !(NET35 || NET20 || SILVERLIGHT)
+    /// <summary>
+    /// Creates a <see cref="JsonDynamicContract"/> for the given type.
+    /// </summary>
+    /// <param name="objectType">Type of the object.</param>
+    /// <returns>A <see cref="JsonDynamicContract"/> for the given type.</returns>
+    protected virtual JsonDynamicContract CreateDynamicContract(Type objectType)
+    {
+      JsonDynamicContract contract = new JsonDynamicContract(objectType);
+      InitializeContract(contract);
+
+      contract.Properties.AddRange(CreateProperties(objectType, MemberSerialization.OptOut));
+
+      return contract;
+    }
+#endif
+
     /// <summary>
     /// Creates a <see cref="JsonStringContract"/> for the given type.
     /// </summary>
@@ -487,6 +507,11 @@ namespace Newtonsoft.Json.Serialization
 #if !SILVERLIGHT && !PocketPC
       if (typeof(ISerializable).IsAssignableFrom(objectType))
         return CreateISerializableContract(objectType);
+#endif
+
+#if !(NET35 || NET20 || SILVERLIGHT)
+      if (typeof(IDynamicMetaObjectProvider).IsAssignableFrom(objectType))
+        return CreateDynamicContract(objectType);
 #endif
 
       return CreateObjectContract(objectType);
@@ -563,21 +588,22 @@ namespace Newtonsoft.Json.Serialization
     }
 
     /// <summary>
-    /// Creates properties for the given <see cref="JsonObjectContract"/>.
+    /// Creates properties for the given <see cref="JsonContract"/>.
     /// </summary>
-    /// <param name="contract">The contract to create properties for.</param>
-    /// <returns>Properties for the given <see cref="JsonObjectContract"/>.</returns>
-    protected virtual IList<JsonProperty> CreateProperties(JsonObjectContract contract)
+    /// <param name="type">The type to create properties for.</param>
+    /// /// <param name="memberSerialization">The member serialization mode for the type.</param>
+    /// <returns>Properties for the given <see cref="JsonContract"/>.</returns>
+    protected virtual IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
     {
-      List<MemberInfo> members = GetSerializableMembers(contract.UnderlyingType);
+      List<MemberInfo> members = GetSerializableMembers(type);
       if (members == null)
         throw new JsonSerializationException("Null collection of seralizable members returned.");
 
-      JsonPropertyCollection properties = new JsonPropertyCollection(contract);
+      JsonPropertyCollection properties = new JsonPropertyCollection(type);
 
       foreach (MemberInfo member in members)
       {
-        JsonProperty property = CreateProperty(contract, member);
+        JsonProperty property = CreateProperty(member, memberSerialization);
 
         if (property != null)
           properties.AddProperty(property);
@@ -604,10 +630,10 @@ namespace Newtonsoft.Json.Serialization
     /// <summary>
     /// Creates a <see cref="JsonProperty"/> for the given <see cref="MemberInfo"/>.
     /// </summary>
-    /// <param name="contract">The member's declaring types <see cref="JsonObjectContract"/>.</param>
+    /// <param name="memberSerialization">The member's parent <see cref="MemberSerialization"/>.</param>
     /// <param name="member">The member to create a <see cref="JsonProperty"/> for.</param>
     /// <returns>A created <see cref="JsonProperty"/> for the given <see cref="MemberInfo"/>.</returns>
-    protected virtual JsonProperty CreateProperty(JsonObjectContract contract, MemberInfo member)
+    protected virtual JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
     {
       JsonProperty property = new JsonProperty();
       property.PropertyType = ReflectionUtils.GetMemberUnderlyingType(member);
@@ -652,7 +678,7 @@ namespace Newtonsoft.Json.Serialization
         property.Required = Required.Default;
 
       property.Ignored = (hasIgnoreAttribute ||
-                      (contract.MemberSerialization == MemberSerialization.OptIn
+                      (memberSerialization == MemberSerialization.OptIn
                        && propertyAttribute == null
 #if !PocketPC && !NET20
                        && dataMemberAttribute == null

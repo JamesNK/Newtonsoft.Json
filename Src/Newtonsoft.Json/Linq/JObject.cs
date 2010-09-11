@@ -27,6 +27,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+#if !(NET35 || NET20 || SILVERLIGHT)
+using System.Dynamic;
+using System.Linq.Expressions;
+#endif
 using System.Linq;
 using System.IO;
 using Newtonsoft.Json.Utilities;
@@ -649,6 +653,51 @@ namespace Newtonsoft.Json.Linq
       return null;
     }
     #endregion
+#endif
+
+#if !(NET35 || NET20 || SILVERLIGHT)
+    /// <summary>
+    /// Returns the <see cref="T:System.Dynamic.DynamicMetaObject"/> responsible for binding operations performed on this object.
+    /// </summary>
+    /// <param name="parameter">The expression tree representation of the runtime value.</param>
+    /// <returns>
+    /// The <see cref="T:System.Dynamic.DynamicMetaObject"/> to bind this object.
+    /// </returns>
+    protected override DynamicMetaObject GetMetaObject(Expression parameter)
+    {
+      return new DynamicProxyMetaObject<JObject>(parameter, new JObjectDynamicProxy(this), true);
+    }
+
+    private class JObjectDynamicProxy : DynamicProxy<JObject>
+    {
+      public JObjectDynamicProxy(JObject value) : base(value)
+      {
+      }
+
+      public override bool TryGetMember(GetMemberBinder binder, out object result)
+      {
+        // result can be null
+        result = Value[binder.Name];
+        return true;
+      }
+
+      public override bool TrySetMember(SetMemberBinder binder, object value)
+      {
+        JToken v = value as JToken;
+
+        // this can throw an error if value isn't a valid for a JValue
+        if (v == null)
+          v = new JValue(value);
+
+        Value[binder.Name] = v;
+        return true;
+      }
+
+      public override IEnumerable<string> GetDynamicMemberNames()
+      {
+        return Value.Properties().Select(p => p.Name);
+      }
+    }
 #endif
   }
 }

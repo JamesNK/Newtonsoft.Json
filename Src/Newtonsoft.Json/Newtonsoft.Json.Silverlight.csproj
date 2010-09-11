@@ -165,6 +165,7 @@
     <Compile Include="Serialization\JsonArrayContract.cs" />
     <Compile Include="Serialization\JsonContract.cs" />
     <Compile Include="Serialization\JsonDictionaryContract.cs" />
+    <Compile Include="Serialization\JsonDynamicContract.cs" />
     <Compile Include="Serialization\JsonFormatterConverter.cs" />
     <Compile Include="Serialization\JsonISerializableContract.cs" />
     <Compile Include="Serialization\JsonLinqContract.cs" />

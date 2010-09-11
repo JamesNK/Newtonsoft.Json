@@ -20,7 +20,7 @@
         <elementListCompartment Id="6865be45-c748-47ff-be37-534064fc2e80" absoluteBounds="3.7649999999999997, 2.71, 1.9700000000000002, 0.8262939453125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <associationConnector edgePoints="[(2.875 : 2.85179768880208); (3.75 : 2.85179768880208)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(2.875 : 2.85179768880208); (3.75 : 2.85179768880208)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/LinqToSqlClassesDataContext/Person/Person_PersonRole" />
       <nodes>
         <classShapeMoniker Id="be91ec15-4a64-4976-9358-2e01309ef584" />
@@ -40,7 +40,7 @@
         <elementListCompartment Id="46cdd558-04c5-4c77-82ce-fe92cda427fe" absoluteBounds="0.89, 4.96, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <associationConnector edgePoints="[(1.875 : 4.5); (1.875 : 3.45359537760417)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(1.875 : 4.5); (1.875 : 3.45359537760417)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/LinqToSqlClassesDataContext/Department/Department_Person" />
       <nodes>
         <classShapeMoniker Id="b96fa86b-7f23-489f-8eb2-44ca2af1551b" />

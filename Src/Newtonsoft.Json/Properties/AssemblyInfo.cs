@@ -46,6 +46,8 @@ using System.Security;
 [assembly: InternalsVisibleTo("Newtonsoft.Json.Tests.Compact")]
 #elif NET20
 [assembly: InternalsVisibleTo("Newtonsoft.Json.Tests.Net20")]
+#elif NET35
+[assembly: InternalsVisibleTo("Newtonsoft.Json.Tests.Net35")]
 #else
 [assembly: InternalsVisibleTo("Newtonsoft.Json.Tests")]
 #endif

@@ -346,11 +346,11 @@ namespace Newtonsoft.Json.Tests.Schema
         return base.CreateContract(objectType);
       }
 
-      protected override IList<JsonProperty> CreateProperties(JsonObjectContract contract)
+      protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
       {
-        IList<JsonProperty> properties = base.CreateProperties(contract);
+        IList<JsonProperty> properties = base.CreateProperties(type, memberSerialization);
 
-        JsonPropertyCollection c = new JsonPropertyCollection(contract);
+        JsonPropertyCollection c = new JsonPropertyCollection(type);
         CollectionUtils.AddRange(c, (IEnumerable)properties.Where(m => m.PropertyName != "Root"));
 
         return c;

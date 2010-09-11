@@ -195,7 +195,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual(new DateTime(2000, 12, 1, 0, 0, 0, DateTimeKind.Utc), c[2]);
 
       Assert.AreEqual(3, errors.Count);
-#if !(NET20 || SILVERLIGHT)
+#if !(NET20 || NET35 || SILVERLIGHT)
       Assert.AreEqual("The string was not recognized as a valid DateTime. There is an unknown word starting at index 0.", errors[0]);
 #else
       Assert.AreEqual("The string was not recognized as a valid DateTime. There is a unknown word starting at index 0.", errors[0]);
