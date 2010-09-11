@@ -197,5 +197,25 @@ namespace Newtonsoft.Json.Tests.Schema
       GenerateSchemaAndSerializeFromType(DBNull.Value);
       GenerateSchemaAndSerializeFromType(new JsonPropertyWithHandlingValues());
     }
+
+    [Test]
+    public void UndefinedPropertyOnNoPropertySchema()
+    {
+      JsonSchema schema = JsonSchema.Parse(@"{
+  ""description"": ""test"",
+  ""type"": ""object"",
+  ""additionalProperties"": false,
+  ""properties"": {
+  }
+}");
+
+      JObject o = JObject.Parse("{'g':1}");
+
+      List<string> errors = new List<string>();
+      o.Validate(schema, (sender, args) => errors.Add(args.Message));
+
+      Assert.AreEqual(1, errors.Count);
+      Assert.AreEqual("Property 'g' has not been defined and the schema does not allow additional properties. Line 1, position 5.", errors[0]);
+    }
   }
 }

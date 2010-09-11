@@ -552,15 +552,10 @@ namespace Newtonsoft.Json
       if (_currentScope.RequiredProperties.ContainsKey(propertyName))
         _currentScope.RequiredProperties[propertyName] = true;
 
-      if (schema.Properties != null && !schema.Properties.ContainsKey(propertyName))
-      {
-        IList<string> definedProperties = schema.Properties.Select(p => p.Key).ToList();
+      bool propertyDefinied = (schema.Properties != null && schema.Properties.ContainsKey(propertyName));
 
-        if (!schema.AllowAdditionalProperties && !definedProperties.Contains(propertyName))
-        {
-          RaiseError("Property '{0}' has not been defined and the schema does not allow additional properties.".FormatWith(CultureInfo.InvariantCulture, propertyName), schema);
-        }
-      }
+      if (!propertyDefinied && !schema.AllowAdditionalProperties)
+        RaiseError("Property '{0}' has not been defined and the schema does not allow additional properties.".FormatWith(CultureInfo.InvariantCulture, propertyName), schema);
 
       _currentScope.CurrentPropertyName = propertyName;
     }

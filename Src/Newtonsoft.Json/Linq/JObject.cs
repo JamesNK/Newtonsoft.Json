@@ -45,10 +45,10 @@ namespace Newtonsoft.Json.Linq
   /// Represents a JSON object.
   /// </summary>
   public class JObject : JContainer, IDictionary<string, JToken>, INotifyPropertyChanged
-#if !PocketPC && !SILVERLIGHT
+#if !(PocketPC || SILVERLIGHT)
     , ICustomTypeDescriptor
 #endif
-#if !PocketPC && !SILVERLIGHT && !NET20
+#if !(PocketPC || SILVERLIGHT || NET20)
     , INotifyPropertyChanging
 #endif
   {
@@ -57,7 +57,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     public event PropertyChangedEventHandler PropertyChanged;
 
-#if !PocketPC && !SILVERLIGHT && !NET20
+#if !(PocketPC || SILVERLIGHT || NET20)
     /// <summary>
     /// Occurs when a property value is changing.
     /// </summary>
@@ -126,7 +126,8 @@ namespace Newtonsoft.Json.Linq
       OnPropertyChanged(childProperty.Name);
 #if !SILVERLIGHT
       OnListChanged(new ListChangedEventArgs(ListChangedType.ItemChanged, IndexOfItem(childProperty)));
-#else
+#endif
+#if SILVERLIGHT || !(NET20 || NET35)
       OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, childProperty, childProperty, IndexOfItem(childProperty)));
 #endif
     }

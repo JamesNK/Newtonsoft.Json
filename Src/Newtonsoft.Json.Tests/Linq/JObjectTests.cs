@@ -1305,9 +1305,10 @@ Parameter name: arrayIndex")]
       Assert.AreEqual(index, 0);
       Assert.AreEqual(2, (int)o["Test1"]);
     }
-#else
+#endif
+#if SILVERLIGHT || !(NET20 || NET35)
     [Test]
-    public void ListChanged()
+    public void CollectionChanged()
     {
       JProperty p1 = new JProperty("Test1", 1);
       JProperty p2 = new JProperty("Test2", "Two");

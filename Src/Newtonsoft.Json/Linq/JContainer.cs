@@ -48,6 +48,9 @@ namespace Newtonsoft.Json.Linq
 #else
     , IList, INotifyCollectionChanged
 #endif
+#if !(SILVERLIGHT || NET20 || NET35)
+    , INotifyCollectionChanged
+#endif
   {
 #if !SILVERLIGHT
     /// <summary>
@@ -59,7 +62,8 @@ namespace Newtonsoft.Json.Linq
     /// Occurs before an item is added to the collection.
     /// </summary>
     public event AddingNewEventHandler AddingNew;
-#else
+#endif
+#if SILVERLIGHT || !(NET20 || NET35)
     /// <summary>
     /// Occurs when the items list of the collection has changed, or the collection is reset.
     /// </summary>
@@ -135,7 +139,8 @@ namespace Newtonsoft.Json.Linq
         }
       }
     }
-#else
+#endif
+#if SILVERLIGHT || !(NET20 || NET35)
     /// <summary>
     /// Raises the <see cref="CollectionChanged"/> event.
     /// </summary>
@@ -309,7 +314,8 @@ namespace Newtonsoft.Json.Linq
 #if !SILVERLIGHT
       if (ListChanged != null)
         OnListChanged(new ListChangedEventArgs(ListChangedType.ItemAdded, IndexOfItem(item)));
-#else
+#endif
+#if SILVERLIGHT || !(NET20 || NET35)
       if (CollectionChanged != null)
         OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, IndexOfItem(item)));
 #endif
@@ -401,7 +407,8 @@ namespace Newtonsoft.Json.Linq
 
 #if !SILVERLIGHT
           OnListChanged(new ListChangedEventArgs(ListChangedType.ItemDeleted, index));
-#else
+#endif
+#if SILVERLIGHT || !(NET20 || NET35)
           OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, token, index));
 #endif
 
@@ -447,7 +454,8 @@ namespace Newtonsoft.Json.Linq
 
 #if !SILVERLIGHT
       OnListChanged(new ListChangedEventArgs(ListChangedType.ItemDeleted, itemIndex));
-#else
+#endif
+#if SILVERLIGHT || !(NET20 || NET35)
       OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, itemIndex));
 #endif
 
@@ -468,7 +476,8 @@ namespace Newtonsoft.Json.Linq
 
 #if !SILVERLIGHT
       OnListChanged(new ListChangedEventArgs(ListChangedType.ItemChanged, index));
-#else
+#endif
+#if SILVERLIGHT || !(NET20 || NET35)
       OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, item, token, index));
 #endif
     }
@@ -496,7 +505,8 @@ namespace Newtonsoft.Json.Linq
 
 #if !SILVERLIGHT
       OnListChanged(new ListChangedEventArgs(ListChangedType.Reset, -1));
-#else
+#endif
+#if SILVERLIGHT || !(NET20 || NET35)
       OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 #endif
     }
@@ -547,7 +557,8 @@ namespace Newtonsoft.Json.Linq
 
 #if !SILVERLIGHT
       OnListChanged(new ListChangedEventArgs(ListChangedType.ItemChanged, itemIndex));
-#else
+#endif
+#if SILVERLIGHT || !(NET20 || NET35)
       OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, replacement, existing, itemIndex));
 #endif
     }
