@@ -3539,24 +3539,26 @@ keyword such as type of business.""
       Assert.AreEqual(int.MaxValue, newStruct.MyInt);
     }
 
-    //public class TimeZoneOffsetObject
-    //{
-    //  public DateTimeOffset Offset { get; set; }
-    //}
+    public class TimeZoneOffsetObject
+    {
+      public DateTimeOffset Offset { get; set; }
+    }
 
-    //[Test]
-    //public void ReadWriteTimeZoneOffset()
-    //{
-    //  var serializeObject = JsonConvert.SerializeObject(new TimeZoneOffsetObject
-    //  {
-    //    Offset = new DateTimeOffset(new DateTime(2000, 1, 1), TimeSpan.FromHours(6))
-    //  });
+#if !NET20
+    [Test]
+    public void ReadWriteTimeZoneOffset()
+    {
+      var serializeObject = JsonConvert.SerializeObject(new TimeZoneOffsetObject
+      {
+        Offset = new DateTimeOffset(new DateTime(2000, 1, 1), TimeSpan.FromHours(6))
+      });
 
-    //  Assert.AreEqual("{\"Offset\":\"\\/Date(946663200000+0600)\\/\"}", serializeObject);
-    //  var deserializeObject = JsonConvert.DeserializeObject<TimeZoneOffsetObject>(serializeObject);
-    //  Assert.AreEqual(TimeSpan.FromHours(6), deserializeObject.Offset.Offset); // fails here
-    //  Assert.AreEqual(new DateTime(2000, 1, 1), deserializeObject.Offset.Date);
-    //}
+      Assert.AreEqual("{\"Offset\":\"\\/Date(946663200000+0600)\\/\"}", serializeObject);
+      var deserializeObject = JsonConvert.DeserializeObject<TimeZoneOffsetObject>(serializeObject);
+      Assert.AreEqual(TimeSpan.FromHours(6), deserializeObject.Offset.Offset);
+      Assert.AreEqual(new DateTime(2000, 1, 1), deserializeObject.Offset.Date);
+    }
+#endif
 
     public abstract class LogEvent
     {

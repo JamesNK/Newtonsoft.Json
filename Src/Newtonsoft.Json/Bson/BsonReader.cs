@@ -150,6 +150,23 @@ namespace Newtonsoft.Json.Bson
       return (byte[])Value;
     }
 
+#if !NET20
+    /// <summary>
+    /// Reads the next JSON token from the stream as a <see cref="DateTimeOffset"/>.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="DateTimeOffset"/>.
+    /// </returns>
+    public override DateTimeOffset ReadAsDateTimeOffset()
+    {
+      Read();
+      if (TokenType != JsonToken.Date)
+        throw new JsonReaderException("Error reading date. Expected bytes but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+
+      return new DateTimeOffset((DateTime)Value);
+    }
+#endif
+
     /// <summary>
     /// Reads the next JSON token from the stream.
     /// </summary>

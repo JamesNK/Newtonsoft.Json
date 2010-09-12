@@ -54,6 +54,22 @@ namespace Newtonsoft.Json.Linq
       throw new JsonReaderException("Error reading bytes. Expected bytes but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
     }
 
+#if !NET20
+    /// <summary>
+    /// Reads the next JSON token from the stream as a <see cref="DateTimeOffset"/>.
+    /// </summary>
+    /// <returns>A <see cref="DateTimeOffset"/>.</returns>
+    public override DateTimeOffset ReadAsDateTimeOffset()
+    {
+      Read();
+
+      if (TokenType == JsonToken.Date)
+        return new DateTimeOffset((DateTime)Value);
+
+      throw new JsonReaderException("Error reading date. Expected bytes but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+    }
+#endif
+
     /// <summary>
     /// Reads the next JSON token from the stream.
     /// </summary>

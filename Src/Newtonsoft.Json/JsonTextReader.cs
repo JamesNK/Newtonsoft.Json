@@ -41,7 +41,10 @@ namespace Newtonsoft.Json
     private enum ReadType
     {
       Read,
-      ReadAsBytes
+      ReadAsBytes,
+#if !NET20
+      ReadAsDateTimeOffset
+#endif
     }
 
     private readonly TextReader _reader;
@@ -190,6 +193,22 @@ namespace Newtonsoft.Json
       return new JsonReaderException(message, null, _currentLineNumber, _currentLinePosition);
     }
 
+    private TimeSpan ReadOffset(string offsetText)
+    {
+      bool negative = (offsetText[0] == '-');
+
+      int hours = int.Parse(offsetText.Substring(1, 2), NumberStyles.Integer, CultureInfo.InvariantCulture);
+      int minutes = 0;
+      if (offsetText.Length >= 5)
+        minutes = int.Parse(offsetText.Substring(3, 2), NumberStyles.Integer, CultureInfo.InvariantCulture);
+
+      TimeSpan offset = TimeSpan.FromHours(hours) + TimeSpan.FromMinutes(minutes);
+      if (negative)
+        offset = offset.Negate();
+      
+      return offset;
+    }
+
     private void ParseDate(string text)
     {
       string value = text.Substring(6, text.Length - 8);
@@ -200,30 +219,44 @@ namespace Newtonsoft.Json
       if (index == -1)
         index = value.IndexOf('-', 1);
 
+      TimeSpan offset = TimeSpan.Zero;
+
       if (index != -1)
       {
         kind = DateTimeKind.Local;
+        offset = ReadOffset(value.Substring(index));
         value = value.Substring(0, index);
       }
 
       long javaScriptTicks = long.Parse(value, NumberStyles.Integer, CultureInfo.InvariantCulture);
+
       DateTime utcDateTime = JsonConvert.ConvertJavaScriptTicksToDateTime(javaScriptTicks);
-      DateTime dateTime;
 
-      switch (kind)
+#if !NET20
+      if (_readType == ReadType.ReadAsDateTimeOffset)
       {
-        case DateTimeKind.Unspecified:
-          dateTime = DateTime.SpecifyKind(utcDateTime.ToLocalTime(), DateTimeKind.Unspecified);
-          break;
-        case DateTimeKind.Local:
-          dateTime = utcDateTime.ToLocalTime();
-          break;
-        default:
-          dateTime = utcDateTime;
-          break;
+        SetToken(JsonToken.Date, new DateTimeOffset(utcDateTime.Add(offset).Ticks, offset));
       }
+      else
+#endif
+      {
+        DateTime dateTime;
 
-      SetToken(JsonToken.Date, dateTime);
+        switch (kind)
+        {
+          case DateTimeKind.Unspecified:
+            dateTime = DateTime.SpecifyKind(utcDateTime.ToLocalTime(), DateTimeKind.Unspecified);
+            break;
+          case DateTimeKind.Local:
+            dateTime = utcDateTime.ToLocalTime();
+            break;
+          default:
+            dateTime = utcDateTime;
+            break;
+        }
+
+        SetToken(JsonToken.Date, dateTime);
+      }
     }
 
     private const int LineFeedValue = StringUtils.LineFeed;
@@ -298,6 +331,24 @@ namespace Newtonsoft.Json
 
       throw CreateJsonReaderException("Unexpected token when reading bytes: {0}. Line {1}, position {2}.", TokenType, _currentLineNumber, _currentLinePosition);
     }
+
+#if !NET20
+    /// <summary>
+    /// Reads the next JSON token from the stream as a <see cref="DateTimeOffset"/>.
+    /// </summary>
+    /// <returns>A <see cref="DateTimeOffset"/>.</returns>
+    public override DateTimeOffset ReadAsDateTimeOffset()
+    {
+      _readType = ReadType.ReadAsDateTimeOffset;
+      if (!ReadInternal())
+        throw CreateJsonReaderException("Unexpected end when reading date: Line {0}, position {1}.", _currentLineNumber, _currentLinePosition);
+
+      if (TokenType == JsonToken.Date)
+        return (DateTimeOffset)Value;
+
+      throw CreateJsonReaderException("Unexpected token when reading date: {0}. Line {1}, position {2}.", TokenType, _currentLineNumber, _currentLinePosition);
+    }
+#endif
 
     private bool ReadInternal()
     {

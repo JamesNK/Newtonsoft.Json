@@ -210,6 +210,14 @@ namespace Newtonsoft.Json
     /// <returns>A <see cref="T:Byte[]"/> or a null reference if the next JSON token is null.</returns>
     public abstract byte[] ReadAsBytes();
 
+#if !NET20
+    /// <summary>
+    /// Reads the next JSON token from the stream as a <see cref="DateTimeOffset"/>.
+    /// </summary>
+    /// <returns>A <see cref="DateTimeOffset"/>.</returns>
+    public abstract DateTimeOffset ReadAsDateTimeOffset();
+#endif
+
     /// <summary>
     /// Skips the children of the current token.
     /// </summary>

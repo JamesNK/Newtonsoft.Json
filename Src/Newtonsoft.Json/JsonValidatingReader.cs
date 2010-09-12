@@ -318,6 +318,20 @@ namespace Newtonsoft.Json
       return data;
     }
 
+#if !NET20
+    /// <summary>
+    /// Reads the next JSON token from the stream as a <see cref="DateTimeOffset"/>.
+    /// </summary>
+    /// <returns>A <see cref="DateTimeOffset"/>.</returns>
+    public override DateTimeOffset ReadAsDateTimeOffset()
+    {
+      DateTimeOffset dateTimeOffset = _reader.ReadAsDateTimeOffset();
+
+      ValidateCurrentToken();
+      return dateTimeOffset;
+    }
+#endif
+
     /// <summary>
     /// Reads the next JSON token from the stream.
     /// </summary>

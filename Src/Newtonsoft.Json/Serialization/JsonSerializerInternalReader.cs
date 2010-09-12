@@ -928,10 +928,20 @@ namespace Newtonsoft.Json.Serialization
               continue;
             }
 
-            if (property.PropertyType == typeof(byte[]))
+            // don't read properties with converters as a specific value
+            // the value might be a string which will then get converted which will error if read as date for example
+            bool hasConverter = (GetConverter(GetContractSafe(property.PropertyType), property.Converter) != null);
+
+            if (property.PropertyType == typeof(byte[]) && !hasConverter)
             {
               reader.ReadAsBytes();
             }
+#if !NET20
+            else if (property.PropertyType == typeof(DateTimeOffset) && !hasConverter)
+            {
+              reader.ReadAsDateTimeOffset();
+            }
+#endif
             else
             {
               if (!reader.Read())

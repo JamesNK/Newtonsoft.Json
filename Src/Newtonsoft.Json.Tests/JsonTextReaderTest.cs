@@ -692,5 +692,95 @@ bye", reader.Value);
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
     }
+
+#if !NET20
+    [Test]
+    public void ReadAsDateTimeOffset()
+    {
+      string json = "{\"Offset\":\"\\/Date(946663200000+0600)\\/\"}";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      reader.ReadAsDateTimeOffset();
+      Assert.AreEqual(JsonToken.Date, reader.TokenType);
+      Assert.AreEqual(typeof(DateTimeOffset), reader.ValueType);
+      Assert.AreEqual(new DateTimeOffset(new DateTime(2000, 1, 1), TimeSpan.FromHours(6)), reader.Value);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
+    }
+
+    [Test]
+    public void ReadAsDateTimeOffsetNegative()
+    {
+      string json = @"{""Offset"":""\/Date(946706400000-0600)\/""}";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      reader.ReadAsDateTimeOffset();
+      Assert.AreEqual(JsonToken.Date, reader.TokenType);
+      Assert.AreEqual(typeof(DateTimeOffset), reader.ValueType);
+      Assert.AreEqual(new DateTimeOffset(new DateTime(2000, 1, 1), TimeSpan.FromHours(-6)), reader.Value);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
+    }
+
+    [Test]
+    public void ReadAsDateTimeOffsetHoursOnly()
+    {
+      string json = "{\"Offset\":\"\\/Date(946663200000+06)\\/\"}";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      reader.ReadAsDateTimeOffset();
+      Assert.AreEqual(JsonToken.Date, reader.TokenType);
+      Assert.AreEqual(typeof(DateTimeOffset), reader.ValueType);
+      Assert.AreEqual(new DateTimeOffset(new DateTime(2000, 1, 1), TimeSpan.FromHours(6)), reader.Value);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
+    }
+
+    [Test]
+    public void ReadAsDateTimeOffsetWithMinutes()
+    {
+      string json = @"{""Offset"":""\/Date(946708260000-0631)\/""}";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      reader.ReadAsDateTimeOffset();
+      Assert.AreEqual(JsonToken.Date, reader.TokenType);
+      Assert.AreEqual(typeof(DateTimeOffset), reader.ValueType);
+      Assert.AreEqual(new DateTimeOffset(new DateTime(2000, 1, 1), TimeSpan.FromHours(-6).Add(TimeSpan.FromMinutes(-31))), reader.Value);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
+    }
+#endif
   }
 }
