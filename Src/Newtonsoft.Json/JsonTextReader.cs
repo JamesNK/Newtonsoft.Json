@@ -42,6 +42,7 @@ namespace Newtonsoft.Json
     {
       Read,
       ReadAsBytes,
+      ReadAsDecimal,
 #if !NET20
       ReadAsDateTimeOffset
 #endif
@@ -332,17 +333,37 @@ namespace Newtonsoft.Json
       throw CreateJsonReaderException("Unexpected token when reading bytes: {0}. Line {1}, position {2}.", TokenType, _currentLineNumber, _currentLinePosition);
     }
 
+    /// <summary>
+    /// Reads the next JSON token from the stream as a <see cref="Nullable{Decimal}"/>.
+    /// </summary>
+    /// <returns>A <see cref="Nullable{Decimal}"/>.</returns>
+    public override decimal? ReadAsDecimal()
+    {
+      _readType = ReadType.ReadAsDecimal;
+      if (!ReadInternal())
+        throw CreateJsonReaderException("Unexpected end when reading decimal: Line {0}, position {1}.", _currentLineNumber, _currentLinePosition);
+
+      if (TokenType == JsonToken.Null)
+        return null;
+      if (TokenType == JsonToken.Float)
+        return (decimal?)Value;
+
+      throw CreateJsonReaderException("Unexpected token when reading decimal: {0}. Line {1}, position {2}.", TokenType, _currentLineNumber, _currentLinePosition);
+    }
+
 #if !NET20
     /// <summary>
-    /// Reads the next JSON token from the stream as a <see cref="DateTimeOffset"/>.
+    /// Reads the next JSON token from the stream as a <see cref="Nullable{DateTimeOffset}"/>.
     /// </summary>
     /// <returns>A <see cref="DateTimeOffset"/>.</returns>
-    public override DateTimeOffset ReadAsDateTimeOffset()
+    public override DateTimeOffset? ReadAsDateTimeOffset()
     {
       _readType = ReadType.ReadAsDateTimeOffset;
       if (!ReadInternal())
         throw CreateJsonReaderException("Unexpected end when reading date: Line {0}, position {1}.", _currentLineNumber, _currentLinePosition);
 
+      if (TokenType == JsonToken.Null)
+        return null;
       if (TokenType == JsonToken.Date)
         return (DateTimeOffset)Value;
 
@@ -708,30 +729,53 @@ namespace Newtonsoft.Json
       object numberValue;
       JsonToken numberType;
 
-      if (firstChar == '0' && !number.StartsWith("0.", StringComparison.OrdinalIgnoreCase))
+      bool nonBase10 = (firstChar == '0' && !number.StartsWith("0.", StringComparison.OrdinalIgnoreCase));
+
+      if (_readType == ReadType.ReadAsDecimal)
       {
-        numberValue = number.StartsWith("0x", StringComparison.OrdinalIgnoreCase)
-          ? Convert.ToInt64(number, 16)
-          : Convert.ToInt64(number, 8);
-        numberType = JsonToken.Integer;
-      } 
-      else if (number.IndexOf(".", StringComparison.OrdinalIgnoreCase) != -1 || number.IndexOf("e", StringComparison.OrdinalIgnoreCase) != -1)
-      {
-        numberValue = Convert.ToDouble(number, CultureInfo.InvariantCulture);
+        if (nonBase10)
+        {
+          // decimal.Parse doesn't support parsing hexadecimal values
+          long integer = number.StartsWith("0x", StringComparison.OrdinalIgnoreCase)
+            ? Convert.ToInt64(number, 16)
+            : Convert.ToInt64(number, 8);
+
+          numberValue = Convert.ToDecimal(integer);
+        }
+        else
+        {
+          numberValue = decimal.Parse(number, NumberStyles.Number | NumberStyles.AllowExponent);
+        }
+
         numberType = JsonToken.Float;
       }
       else
       {
-        try
+        if (nonBase10)
         {
-          numberValue = Convert.ToInt64(number, CultureInfo.InvariantCulture);
+          numberValue = number.StartsWith("0x", StringComparison.OrdinalIgnoreCase)
+            ? Convert.ToInt64(number, 16)
+            : Convert.ToInt64(number, 8);
+          numberType = JsonToken.Integer;
         }
-        catch (OverflowException ex)
+        else if (number.IndexOf(".", StringComparison.OrdinalIgnoreCase) != -1 || number.IndexOf("e", StringComparison.OrdinalIgnoreCase) != -1)
         {
-          throw new JsonReaderException("JSON integer {0} is too large or small for an Int64.".FormatWith(CultureInfo.InvariantCulture, number), ex);
+          numberValue = Convert.ToDouble(number, CultureInfo.InvariantCulture);
+          numberType = JsonToken.Float;
         }
+        else
+        {
+          try
+          {
+            numberValue = Convert.ToInt64(number, CultureInfo.InvariantCulture);
+          }
+          catch (OverflowException ex)
+          {
+            throw new JsonReaderException("JSON integer {0} is too large or small for an Int64.".FormatWith(CultureInfo.InvariantCulture, number), ex);
+          }
 
-        numberType = JsonToken.Integer;
+          numberType = JsonToken.Integer;
+        }
       }
 
       _buffer.Position = 0;

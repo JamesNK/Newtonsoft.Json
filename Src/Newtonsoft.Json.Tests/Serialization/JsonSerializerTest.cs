@@ -3558,6 +3558,13 @@ keyword such as type of business.""
       Assert.AreEqual(TimeSpan.FromHours(6), deserializeObject.Offset.Offset);
       Assert.AreEqual(new DateTime(2000, 1, 1), deserializeObject.Offset.Date);
     }
+
+    [Test]
+    public void DeserializePropertyNullableDateTimeOffsetExact()
+    {
+      NullableDateTimeTestClass d = JsonConvert.DeserializeObject<NullableDateTimeTestClass>("{\"DateTimeOffsetField\":\"\\/Date(946663200000+0600)\\/\"}");
+      Assert.AreEqual(new DateTimeOffset(new DateTime(2000, 1, 1), TimeSpan.FromHours(6)), d.DateTimeOffsetField);
+    }
 #endif
 
     public abstract class LogEvent
@@ -3582,7 +3589,7 @@ keyword such as type of business.""
     }
 
 #if !(NET35 || NET20 || SILVERLIGHT)
-   [Test]
+    [Test]
     public void SerializeExpandoObject()
     {
       dynamic expando = new ExpandoObject();
@@ -3620,5 +3627,43 @@ keyword such as type of business.""
       Assert.AreEqual(expando.Complex.DateTime, (DateTime)o["DateTime"]);
     }
 #endif
+
+    [Test]
+    public void DeserializeDecimalExact()
+    {
+      decimal d = JsonConvert.DeserializeObject<decimal>("123456789876543.21");
+      Assert.AreEqual(123456789876543.21m, d);
+    }
+
+    [Test]
+    public void DeserializeNullableDecimalExact()
+    {
+      decimal? d = JsonConvert.DeserializeObject<decimal?>("123456789876543.21");
+      Assert.AreEqual(123456789876543.21m, d);
+    }
+
+    [Test]
+    public void DeserializeDecimalPropertyExact()
+    {
+      string json = "{Amount:123456789876543.21}";
+      Invoice i = JsonConvert.DeserializeObject<Invoice>(json);
+      Assert.AreEqual(123456789876543.21m, i.Amount);
+    }
+
+    [Test]
+    public void DeserializeDecimalArrayExact()
+    {
+      string json = "[123456789876543.21]";
+      IList<decimal> a = JsonConvert.DeserializeObject<IList<decimal>>(json);
+      Assert.AreEqual(123456789876543.21m, a[0]);
+    }
+
+    [Test]
+    public void DeserializeDecimalDictionaryExact()
+    {
+      string json = "{'Value':123456789876543.21}";
+      IDictionary<string, decimal> d = JsonConvert.DeserializeObject<IDictionary<string, decimal>>(json);
+      Assert.AreEqual(123456789876543.21m, d["Value"]);
+    }
   }
 }

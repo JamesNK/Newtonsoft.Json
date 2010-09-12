@@ -114,7 +114,7 @@ namespace Newtonsoft.Json.Serialization
       if (reader == null)
         throw new ArgumentNullException("reader");
 
-      if (reader.TokenType == JsonToken.None && !reader.Read())
+      if (reader.TokenType == JsonToken.None && !ReadForType(reader, objectType, null))
         return null;
 
       return CreateValueNonProperty(reader, objectType, GetContractSafe(objectType));
@@ -607,7 +607,8 @@ namespace Newtonsoft.Json.Serialization
               throw new JsonSerializationException("Could not convert string '{0}' to dictionary key type '{1}'. Create a TypeConverter to convert from the string to the key type object.".FormatWith(CultureInfo.InvariantCulture, reader.Value, contract.DictionaryKeyType), ex);
             }
 
-            CheckedRead(reader);
+            if (!ReadForType(reader, contract.DictionaryValueType, null))
+              throw new JsonSerializationException("Unexpected end when deserializing object.");
 
             try
             {
@@ -651,6 +652,23 @@ namespace Newtonsoft.Json.Serialization
         });
     }
 
+    private bool ReadForTypeArrayHack(JsonReader reader, Type t)
+    {
+      // this is a nasty hack because calling ReadAsDecimal for example will error when we hit the end of the array
+      // need to think of a better way of doing this
+      try
+      {
+        return ReadForType(reader, t, null);
+      }
+      catch (JsonReaderException)
+      {
+        if (reader.TokenType == JsonToken.EndArray)
+          return true;
+
+        throw;
+      }
+    }
+
     private object PopulateList(IWrappedCollection wrappedList, JsonReader reader, string reference, JsonArrayContract contract)
     {
       object list = wrappedList.UnderlyingCollection;
@@ -662,7 +680,7 @@ namespace Newtonsoft.Json.Serialization
 
       int initialDepth = reader.Depth;
 
-      while (reader.Read())
+      while (ReadForTypeArrayHack(reader, contract.CollectionItemType))
       {
         switch (reader.TokenType)
         {
@@ -896,6 +914,36 @@ namespace Newtonsoft.Json.Serialization
       return createdObject;
     }
 
+    private bool ReadForType(JsonReader reader, Type t, JsonConverter propertyConverter)
+    {
+      // don't read properties with converters as a specific value
+      // the value might be a string which will then get converted which will error if read as date for example
+      bool hasConverter = (GetConverter(GetContractSafe(t), propertyConverter) != null);
+
+      if (hasConverter)
+        return reader.Read();
+
+      if (t == typeof(byte[]))
+      {
+        reader.ReadAsBytes();
+        return true;
+      }
+      else if ((t == typeof(decimal) || t == typeof(decimal?)))
+      {
+        reader.ReadAsDecimal();
+        return true;
+      }
+#if !NET20
+      else if ((t == typeof(DateTimeOffset) || t == typeof(DateTimeOffset?)))
+      {
+        reader.ReadAsDateTimeOffset();
+        return true;
+      }
+#endif
+      
+      return reader.Read();
+    }
+
     private object PopulateObject(object newObject, JsonReader reader, JsonObjectContract contract, string id)
     {
       contract.InvokeOnDeserializing(newObject, Serializer.Context);
@@ -928,25 +976,8 @@ namespace Newtonsoft.Json.Serialization
               continue;
             }
 
-            // don't read properties with converters as a specific value
-            // the value might be a string which will then get converted which will error if read as date for example
-            bool hasConverter = (GetConverter(GetContractSafe(property.PropertyType), property.Converter) != null);
-
-            if (property.PropertyType == typeof(byte[]) && !hasConverter)
-            {
-              reader.ReadAsBytes();
-            }
-#if !NET20
-            else if (property.PropertyType == typeof(DateTimeOffset) && !hasConverter)
-            {
-              reader.ReadAsDateTimeOffset();
-            }
-#endif
-            else
-            {
-              if (!reader.Read())
-                throw new JsonSerializationException("Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
-            }
+            if (!ReadForType(reader, property.PropertyType, property.Converter))
+              throw new JsonSerializationException("Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
 
             SetRequiredProperty(reader, property, requiredProperties);
 

@@ -318,14 +318,26 @@ namespace Newtonsoft.Json
       return data;
     }
 
+    /// <summary>
+    /// Reads the next JSON token from the stream as a <see cref="Nullable{Decimal}"/>.
+    /// </summary>
+    /// <returns>A <see cref="Nullable{Decimal}"/>.</returns>
+    public override decimal? ReadAsDecimal()
+    {
+      decimal? d = _reader.ReadAsDecimal();
+
+      ValidateCurrentToken();
+      return d;
+    }
+
 #if !NET20
     /// <summary>
-    /// Reads the next JSON token from the stream as a <see cref="DateTimeOffset"/>.
+    /// Reads the next JSON token from the stream as a <see cref="Nullable{DateTimeOffset}"/>.
     /// </summary>
-    /// <returns>A <see cref="DateTimeOffset"/>.</returns>
-    public override DateTimeOffset ReadAsDateTimeOffset()
+    /// <returns>A <see cref="Nullable{DateTimeOffset}"/>.</returns>
+    public override DateTimeOffset? ReadAsDateTimeOffset()
     {
-      DateTimeOffset dateTimeOffset = _reader.ReadAsDateTimeOffset();
+      DateTimeOffset? dateTimeOffset = _reader.ReadAsDateTimeOffset();
 
       ValidateCurrentToken();
       return dateTimeOffset;

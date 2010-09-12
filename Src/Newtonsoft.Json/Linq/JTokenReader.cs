@@ -46,25 +46,49 @@ namespace Newtonsoft.Json.Linq
         SetToken(JsonToken.Bytes, data);
       }
 
-      if (TokenType == JsonToken.Bytes)
-        return (byte[])Value;
       if (TokenType == JsonToken.Null)
         return null;
+      if (TokenType == JsonToken.Bytes)
+        return (byte[])Value;
 
       throw new JsonReaderException("Error reading bytes. Expected bytes but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
     }
 
-#if !NET20
     /// <summary>
-    /// Reads the next JSON token from the stream as a <see cref="DateTimeOffset"/>.
+    /// Reads the next JSON token from the stream as a <see cref="Nullable{Decimal}"/>.
     /// </summary>
-    /// <returns>A <see cref="DateTimeOffset"/>.</returns>
-    public override DateTimeOffset ReadAsDateTimeOffset()
+    /// <returns>A <see cref="Nullable{Decimal}"/>.</returns>
+    public override decimal? ReadAsDecimal()
     {
       Read();
 
+      if (TokenType == JsonToken.Null)
+        return null;
+      if (TokenType == JsonToken.Integer || TokenType == JsonToken.Float)
+      {
+        SetToken(JsonToken.Float, Convert.ToDecimal(Value));
+        return (decimal) Value;
+      }
+
+      throw new JsonReaderException("Error reading decimal. Expected a number but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+    }
+
+#if !NET20
+    /// <summary>
+    /// Reads the next JSON token from the stream as a <see cref="Nullable{DateTimeOffset}"/>.
+    /// </summary>
+    /// <returns>A <see cref="Nullable{DateTimeOffset}"/>.</returns>
+    public override DateTimeOffset? ReadAsDateTimeOffset()
+    {
+      Read();
+
+      if (TokenType == JsonToken.Null)
+        return null;
       if (TokenType == JsonToken.Date)
-        return new DateTimeOffset((DateTime)Value);
+      {
+        SetToken(JsonToken.Date, new DateTimeOffset((DateTime)Value));
+        return (DateTimeOffset)Value;
+      }
 
       throw new JsonReaderException("Error reading date. Expected bytes but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
     }

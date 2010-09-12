@@ -144,26 +144,54 @@ namespace Newtonsoft.Json.Bson
     public override byte[] ReadAsBytes()
     {
       Read();
-      if (TokenType != JsonToken.Bytes)
-        throw new JsonReaderException("Error reading bytes. Expected bytes but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
 
-      return (byte[])Value;
+      if (TokenType == JsonToken.Null)
+        return null;
+      if (TokenType == JsonToken.Bytes)
+        return (byte[])Value;
+
+      throw new JsonReaderException("Error reading bytes. Expected bytes but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+    }
+
+    /// <summary>
+    /// Reads the next JSON token from the stream as a <see cref="Nullable{Decimal}"/>.
+    /// </summary>
+    /// <returns>A <see cref="Nullable{Decimal}"/>.</returns>
+    public override decimal? ReadAsDecimal()
+    {
+      Read();
+
+      if (TokenType == JsonToken.Null)
+        return null;
+      if (TokenType == JsonToken.Integer || TokenType == JsonToken.Float)
+      {
+        SetToken(JsonToken.Float, Convert.ToDecimal(Value));
+        return (decimal)Value;
+      }
+
+      throw new JsonReaderException("Error reading decimal. Expected a number but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
     }
 
 #if !NET20
     /// <summary>
-    /// Reads the next JSON token from the stream as a <see cref="DateTimeOffset"/>.
+    /// Reads the next JSON token from the stream as a <see cref="Nullable{DateTimeOffset}"/>.
     /// </summary>
     /// <returns>
-    /// A <see cref="DateTimeOffset"/>.
+    /// A <see cref="Nullable{DateTimeOffset}"/>.
     /// </returns>
-    public override DateTimeOffset ReadAsDateTimeOffset()
+    public override DateTimeOffset? ReadAsDateTimeOffset()
     {
       Read();
-      if (TokenType != JsonToken.Date)
-        throw new JsonReaderException("Error reading date. Expected bytes but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
 
-      return new DateTimeOffset((DateTime)Value);
+      if (TokenType == JsonToken.Null)
+        return null;
+      if (TokenType == JsonToken.Date)
+      {
+        SetToken(JsonToken.Date, new DateTimeOffset((DateTime)Value));
+        return (DateTimeOffset)Value;
+      }
+      
+      throw new JsonReaderException("Error reading date. Expected bytes but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
     }
 #endif
 
