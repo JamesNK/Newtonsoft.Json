@@ -1,6 +1,6 @@
 ﻿properties { 
  
-  $zipFileName = "Json35r8.zip"
+  $zipFileName = "Json40r1.zip"
   $signAssemblies = $false
   $signKeyPath = "D:\Development\Releases\newtonsoft.snk"
   $buildDocumentation = $false
@@ -14,6 +14,7 @@
   $workingDir = "$baseDir\Working"
   $builds = @(
     @{Name = "Newtonsoft.Json"; TestsName = "Newtonsoft.Json.Tests"; Constants=""; FinalDir="DotNet"; Framework="net-4.0"},
+    @{Name = "Newtonsoft.Json.Phone"; TestsName = $null; Constants="SILVERLIGHT;WINDOWS_PHONE"; FinalDir="Phone"; Framework="net-4.0"},
     @{Name = "Newtonsoft.Json.Silverlight"; TestsName = "Newtonsoft.Json.Tests.Silverlight"; Constants="SILVERLIGHT"; FinalDir="Silverlight"; Framework="net-2.0"},
     @{Name = "Newtonsoft.Json.Net20"; TestsName = "Newtonsoft.Json.Tests.Net20"; Constants="NET20"; FinalDir="DotNet20"; Framework="net-2.0"},
     @{Name = "Newtonsoft.Json.Net35"; TestsName = "Newtonsoft.Json.Tests.Net35"; Constants="NET35"; FinalDir="DotNet35"; Framework="net-2.0"}
@@ -103,18 +104,21 @@ task Test -depends Deploy {
   foreach ($build in $builds)
   {
     $name = $build.TestsName
-    $finalDir = $build.FinalDir
-    $framework = $build.Framework
-    
-    Write-Host -ForegroundColor Green "Copying test assembly $name to deployed directory"
-    Write-Host
-    robocopy ".\Src\Newtonsoft.Json.Tests\bin\Release\$finalDir" $workingDir\Deployed\Bin\$finalDir /NP /XO /XF LinqBridge.dll
-    
-    Copy-Item -Path ".\Src\Newtonsoft.Json.Tests\bin\Release\$finalDir\$name.dll" -Destination $workingDir\Deployed\Bin\$finalDir\
+    if ($name -ne $null)
+    {
+        $finalDir = $build.FinalDir
+        $framework = $build.Framework
+        
+        Write-Host -ForegroundColor Green "Copying test assembly $name to deployed directory"
+        Write-Host
+        robocopy ".\Src\Newtonsoft.Json.Tests\bin\Release\$finalDir" $workingDir\Deployed\Bin\$finalDir /NP /XO /XF LinqBridge.dll
+        
+        Copy-Item -Path ".\Src\Newtonsoft.Json.Tests\bin\Release\$finalDir\$name.dll" -Destination $workingDir\Deployed\Bin\$finalDir\
 
-    Write-Host -ForegroundColor Green "Running tests " $name
-    Write-Host
-    exec { .\Tools\NUnit\nunit-console.exe "$workingDir\Deployed\Bin\$finalDir\$name.dll" /framework=$framework /xml:$workingDir\$name.xml } "Error running $name tests"
+        Write-Host -ForegroundColor Green "Running tests " $name
+        Write-Host
+        exec { .\Tools\NUnit\nunit-console.exe "$workingDir\Deployed\Bin\$finalDir\$name.dll" /framework=$framework /xml:$workingDir\$name.xml } "Error running $name tests"
+    }
   }
 }
 

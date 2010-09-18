@@ -41,7 +41,7 @@ using System.Collections.ObjectModel;
 using Newtonsoft.Json.Linq;
 using System.Linq;
 using Newtonsoft.Json.Converters;
-#if !PocketPC && !NET20
+#if !PocketPC && !NET20 && !WINDOWS_PHONE
 using System.Runtime.Serialization.Json;
 #endif
 using Newtonsoft.Json.Tests.TestObjects;
@@ -149,7 +149,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       string jsonText = JsonConvert.SerializeObject(testDictionary);
 
-#if !PocketPC && !NET20
+#if !PocketPC && !NET20 && !WINDOWS_PHONE
       MemoryStream ms = new MemoryStream();
       DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(Dictionary<string, object>));
       serializer.WriteObject(ms, testDictionary);
@@ -409,7 +409,7 @@ keyword such as type of business.""
       CollectionAssert.AreEqual(r1, r2);
     }
 
-#if !PocketPC && !NET20
+#if !PocketPC && !NET20 && !WINDOWS_PHONE
     [Test]
     public void Unicode()
     {
@@ -2374,7 +2374,7 @@ keyword such as type of business.""
       public string Ethnicity { get; set; }
     }
 
-#if !NET20 && !PocketPC
+#if !NET20 && !PocketPC && !WINDOWS_PHONE
     public class DataContractJsonSerializerTestClass
     {
       public TimeSpan TimeSpanProperty { get; set; }
