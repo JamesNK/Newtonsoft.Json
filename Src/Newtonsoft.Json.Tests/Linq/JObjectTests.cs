@@ -331,7 +331,7 @@ Parameter name: arrayIndex")]
     {
       string json = @"[new Date(1207285200000)]";
 
-      JArray a = (JArray)JsonConvert.DeserializeObject(json, null);
+      JArray a = (JArray)JsonConvert.DeserializeObject(json);
       JValue v = (JValue)a[0];
 
       Assert.AreEqual(JsonConvert.ConvertJavaScriptTicksToDateTime(1207285200000), (DateTime)v);

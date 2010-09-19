@@ -595,9 +595,9 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the specified object to a Json object.
+    /// Deserializes the JSON to a .NET object.
     /// </summary>
-    /// <param name="value">The object to deserialize.</param>
+    /// <param name="value">The JSON to deserialize.</param>
     /// <returns>The deserialized object from the Json string.</returns>
     public static object DeserializeObject(string value)
     {
@@ -605,9 +605,23 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the specified object to a Json object.
+    /// Deserializes the JSON to a .NET object.
     /// </summary>
-    /// <param name="value">The object to deserialize.</param>
+    /// <param name="value">The JSON to deserialize.</param>
+    /// <param name="settings">
+    /// The <see cref="JsonSerializerSettings"/> used to deserialize the object.
+    /// If this is null, default serialization settings will be is used.
+    /// </param>
+    /// <returns>The deserialized object from the JSON string.</returns>
+    public static object DeserializeObject(string value, JsonSerializerSettings settings)
+    {
+      return DeserializeObject(value, null, settings);
+    }
+
+    /// <summary>
+    /// Deserializes the JSON to the specified .NET type.
+    /// </summary>
+    /// <param name="value">The JSON to deserialize.</param>
     /// <param name="type">The <see cref="Type"/> of object being deserialized.</param>
     /// <returns>The deserialized object from the Json string.</returns>
     public static object DeserializeObject(string value, Type type)
@@ -616,10 +630,10 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the specified object to a Json object.
+    /// Deserializes the JSON to the specified .NET type.
     /// </summary>
-    /// <typeparam name="T">The type of the object to deserialize.</typeparam>
-    /// <param name="value">The object to deserialize.</param>
+    /// <typeparam name="T">The type of the object to deserialize to.</typeparam>
+    /// <param name="value">The JSON to deserialize.</param>
     /// <returns>The deserialized object from the Json string.</returns>
     public static T DeserializeObject<T>(string value)
     {
@@ -627,14 +641,14 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the specified JSON to the given anonymous type.
+    /// Deserializes the JSON to the given anonymous type.
     /// </summary>
     /// <typeparam name="T">
     /// The anonymous type to deserialize to. This can't be specified
     /// traditionally and must be infered from the anonymous type passed
     /// as a parameter.
     /// </typeparam>
-    /// <param name="value">The object to deserialize.</param>
+    /// <param name="value">The JSON to deserialize.</param>
     /// <param name="anonymousTypeObject">The anonymous type object.</param>
     /// <returns>The deserialized anonymous type from the JSON string.</returns>
     public static T DeserializeAnonymousType<T>(string value, T anonymousTypeObject)
@@ -643,10 +657,10 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the JSON string to the specified type.
+    /// Deserializes the JSON to the specified .NET type.
     /// </summary>
-    /// <typeparam name="T">The type of the object to deserialize.</typeparam>
-    /// <param name="value">The object to deserialize.</param>
+    /// <typeparam name="T">The type of the object to deserialize to.</typeparam>
+    /// <param name="value">The JSON to deserialize.</param>
     /// <param name="converters">Converters to use while deserializing.</param>
     /// <returns>The deserialized object from the JSON string.</returns>
     public static T DeserializeObject<T>(string value, params JsonConverter[] converters)
@@ -655,9 +669,9 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the JSON string to the specified type.
+    /// Deserializes the JSON to the specified .NET type.
     /// </summary>
-    /// <typeparam name="T">The type of the object to deserialize.</typeparam>
+    /// <typeparam name="T">The type of the object to deserialize to.</typeparam>
     /// <param name="value">The object to deserialize.</param>
     /// <param name="settings">
     /// The <see cref="JsonSerializerSettings"/> used to deserialize the object.
@@ -670,9 +684,9 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the JSON string to the specified type.
+    /// Deserializes the JSON to the specified .NET type.
     /// </summary>
-    /// <param name="value">The object to deserialize.</param>
+    /// <param name="value">The JSON to deserialize.</param>
     /// <param name="type">The type of the object to deserialize.</param>
     /// <param name="converters">Converters to use while deserializing.</param>
     /// <returns>The deserialized object from the JSON string.</returns>
@@ -686,10 +700,10 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the JSON string to the specified type.
+    /// Deserializes the JSON to the specified .NET type.
     /// </summary>
     /// <param name="value">The JSON to deserialize.</param>
-    /// <param name="type">The type of the object to deserialize.</param>
+    /// <param name="type">The type of the object to deserialize to.</param>
     /// <param name="settings">
     /// The <see cref="JsonSerializerSettings"/> used to deserialize the object.
     /// If this is null, default serialization settings will be is used.
