@@ -262,14 +262,21 @@ namespace Newtonsoft.Json.Tests.Converters
     [Test]
     public void SerializeShouldChangeNonUTCDates()
     {
+      DateTime localDateTime = new DateTime(2008, 1, 1, 1, 1, 1, 0, DateTimeKind.Local);
+
       DateTimeTestClass c = new DateTimeTestClass();
-      c.DateTimeField = new DateTime(2008, 1, 1, 1, 1, 1, 0, DateTimeKind.Local);
+      c.DateTimeField = localDateTime;
       c.PreField = "Pre";
       c.PostField = "Post";
       string json = JsonConvert.SerializeObject(c, new IsoDateTimeConverter() { DateTimeStyles = DateTimeStyles.AssumeUniversal }); //note that this fails without the Utc converter...
       c.DateTimeField = new DateTime(2008, 1, 1, 1, 1, 1, 0, DateTimeKind.Utc);
       string json2 = JsonConvert.SerializeObject(c, new IsoDateTimeConverter() { DateTimeStyles = DateTimeStyles.AssumeUniversal });
-      Assert.AreNotEqual(json, json2);
+
+      // if the current timezone is utc then local already equals utc
+      if (TimeZone.CurrentTimeZone.GetUtcOffset(localDateTime) == TimeSpan.Zero)
+        Assert.AreEqual(json, json2);
+      else
+        Assert.AreNotEqual(json, json2);
     }
 #endif
 

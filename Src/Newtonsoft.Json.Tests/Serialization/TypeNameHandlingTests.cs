@@ -579,12 +579,18 @@ namespace Newtonsoft.Json.Tests.Serialization
       Dictionary<string, object> collection = new Dictionary<string, object>()
         {
           {"First", new UrlStatus{ Status = 404, Url = @"http://www.bing.com"}},
-          {"Second", new UrlStatus{Status = 400, Url = @"http://www.google.com"}}
+          {"Second", new UrlStatus{Status = 400, Url = @"http://www.google.com"}},
+          {"List", new List<UrlStatus>
+            {
+              new UrlStatus {Status = 300, Url = @"http://www.yahoo.com"},
+              new UrlStatus {Status = 200, Url = @"http://www.askjeeves.com"}
+            }
+          }
         };
 
       string json = JsonConvert.SerializeObject(collection, Formatting.Indented, new JsonSerializerSettings
       {
-        TypeNameHandling = TypeNameHandling.Objects,
+        TypeNameHandling = TypeNameHandling.All,
         TypeNameAssemblyFormat = FormatterAssemblyStyle.Simple
       });
 
@@ -599,20 +605,38 @@ namespace Newtonsoft.Json.Tests.Serialization
     ""$type"": ""Newtonsoft.Json.Tests.Serialization.TypeNameHandlingTests+UrlStatus, Newtonsoft.Json.Tests"",
     ""Status"": 400,
     ""Url"": ""http://www.google.com""
+  },
+  ""List"": {
+    ""$type"": ""System.Collections.Generic.List`1[[Newtonsoft.Json.Tests.Serialization.TypeNameHandlingTests+UrlStatus, Newtonsoft.Json.Tests]], mscorlib"",
+    ""$values"": [
+      {
+        ""$type"": ""Newtonsoft.Json.Tests.Serialization.TypeNameHandlingTests+UrlStatus, Newtonsoft.Json.Tests"",
+        ""Status"": 300,
+        ""Url"": ""http://www.yahoo.com""
+      },
+      {
+        ""$type"": ""Newtonsoft.Json.Tests.Serialization.TypeNameHandlingTests+UrlStatus, Newtonsoft.Json.Tests"",
+        ""Status"": 200,
+        ""Url"": ""http://www.askjeeves.com""
+      }
+    ]
   }
 }", json);
 
       object c = JsonConvert.DeserializeObject(json, new JsonSerializerSettings
       {
-        TypeNameHandling = TypeNameHandling.Objects,
+        TypeNameHandling = TypeNameHandling.All,
         TypeNameAssemblyFormat = FormatterAssemblyStyle.Simple
       });
 
       Assert.IsInstanceOfType(typeof(Dictionary<string, object>), c);
 
       Dictionary<string, object> newCollection = (Dictionary<string, object>)c;
-      Assert.AreEqual(2, newCollection.Count);
+      Assert.AreEqual(3, newCollection.Count);
       Assert.AreEqual(@"http://www.bing.com", ((UrlStatus)newCollection["First"]).Url);
+
+      List<UrlStatus> statues = (List<UrlStatus>) newCollection["List"];
+      Assert.AreEqual(2, statues.Count);
     }
   }
 
