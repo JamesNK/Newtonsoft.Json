@@ -744,7 +744,7 @@ namespace Newtonsoft.Json
         }
         else
         {
-          numberValue = decimal.Parse(number, NumberStyles.Number | NumberStyles.AllowExponent);
+          numberValue = decimal.Parse(number, NumberStyles.Number | NumberStyles.AllowExponent, CultureInfo.InvariantCulture);
         }
 
         numberType = JsonToken.Float;

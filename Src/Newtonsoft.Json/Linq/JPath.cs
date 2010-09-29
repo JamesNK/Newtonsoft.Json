@@ -65,7 +65,7 @@ namespace Newtonsoft.Json.Linq
         _currentIndex++;
       }
 
-      if (_currentIndex - 1 > currentPartStartIndex)
+      if (_currentIndex > currentPartStartIndex)
       {
         string member = _expression.Substring(currentPartStartIndex, _currentIndex - currentPartStartIndex);
         Parts.Add(member);

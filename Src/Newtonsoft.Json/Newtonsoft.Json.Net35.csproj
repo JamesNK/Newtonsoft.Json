@@ -67,6 +67,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\DotNet35\Newtonsoft.Json.Net35.xml</DocumentationFile>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

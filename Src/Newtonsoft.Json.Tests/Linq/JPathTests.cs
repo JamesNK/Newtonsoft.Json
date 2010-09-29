@@ -244,6 +244,15 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
+    public void EvaluateLastSingleCharacterProperty()
+    {
+      JObject o2 = JObject.Parse("{'People':[{'N':'Jeff'}]}");
+      string a2 = (string)o2.SelectToken("People[0].N");
+
+      Assert.AreEqual("Jeff", a2);
+    }
+
+    [Test]
     public void Example()
     {
       JObject o = JObject.Parse(@"{

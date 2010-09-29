@@ -305,6 +305,9 @@ namespace Newtonsoft.Json.Serialization
       return JsonTypeReflector.ReflectionDelegateFactory.CreateDefaultConstructor<object>(createdType);
     }
 
+#if !PocketPC && !NET20
+   [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.Runtime.Serialization.DataContractAttribute.#get_IsReference()")]
+#endif
     private void InitializeContract(JsonContract contract)
     {
       JsonContainerAttribute containerAttribute = JsonTypeReflector.GetJsonContainerAttribute(contract.UnderlyingType);

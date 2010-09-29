@@ -272,8 +272,16 @@ namespace Newtonsoft.Json.Tests.Converters
       c.DateTimeField = new DateTime(2008, 1, 1, 1, 1, 1, 0, DateTimeKind.Utc);
       string json2 = JsonConvert.SerializeObject(c, new IsoDateTimeConverter() { DateTimeStyles = DateTimeStyles.AssumeUniversal });
 
+      TimeSpan offset;
+
+#if SILVERLIGHT
+      offset = TimeZoneInfo.Local.GetUtcOffset(localDateTime);
+#else
+      offset = TimeZone.CurrentTimeZone.GetUtcOffset(localDateTime);
+#endif
+
       // if the current timezone is utc then local already equals utc
-      if (TimeZone.CurrentTimeZone.GetUtcOffset(localDateTime) == TimeSpan.Zero)
+      if (offset == TimeSpan.Zero)
         Assert.AreEqual(json, json2);
       else
         Assert.AreNotEqual(json, json2);

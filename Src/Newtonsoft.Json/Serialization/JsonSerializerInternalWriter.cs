@@ -447,6 +447,7 @@ namespace Newtonsoft.Json.Serialization
 
 #if !SILVERLIGHT && !PocketPC
 #if !NET20
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.Security.SecuritySafeCriticalAttribute")]
     [SecuritySafeCritical]
 #endif
     private void SerializeISerializable(JsonWriter writer, ISerializable value, JsonISerializableContract contract)

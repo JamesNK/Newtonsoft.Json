@@ -165,7 +165,7 @@ namespace Newtonsoft.Json.Bson
         return null;
       if (TokenType == JsonToken.Integer || TokenType == JsonToken.Float)
       {
-        SetToken(JsonToken.Float, Convert.ToDecimal(Value));
+        SetToken(JsonToken.Float, Convert.ToDecimal(Value, CultureInfo.InvariantCulture));
         return (decimal)Value;
       }
 

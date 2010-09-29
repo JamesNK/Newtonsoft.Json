@@ -6,7 +6,7 @@ Json.NET comes in different versions for the various .NET frameworks.
   .NET latest (4.0)
 
 -DotNet35:
-  .NET 3.5, Mono
+  .NET 3.5 SP1, Mono
 
 -DotNet20:
   .NET 2.0

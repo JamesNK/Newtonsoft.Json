@@ -594,28 +594,30 @@ namespace Newtonsoft.Json.Tests.Serialization
         TypeNameAssemblyFormat = FormatterAssemblyStyle.Simple
       });
 
+      string urlStatusTypeName = ReflectionUtils.GetTypeName(typeof (UrlStatus), FormatterAssemblyStyle.Simple);
+
       Assert.AreEqual(@"{
   ""$type"": ""System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib"",
   ""First"": {
-    ""$type"": ""Newtonsoft.Json.Tests.Serialization.TypeNameHandlingTests+UrlStatus, Newtonsoft.Json.Tests"",
+    ""$type"": """ + urlStatusTypeName + @""",
     ""Status"": 404,
     ""Url"": ""http://www.bing.com""
   },
   ""Second"": {
-    ""$type"": ""Newtonsoft.Json.Tests.Serialization.TypeNameHandlingTests+UrlStatus, Newtonsoft.Json.Tests"",
+    ""$type"": """ + urlStatusTypeName + @""",
     ""Status"": 400,
     ""Url"": ""http://www.google.com""
   },
   ""List"": {
-    ""$type"": ""System.Collections.Generic.List`1[[Newtonsoft.Json.Tests.Serialization.TypeNameHandlingTests+UrlStatus, Newtonsoft.Json.Tests]], mscorlib"",
+    ""$type"": ""System.Collections.Generic.List`1[[" + urlStatusTypeName + @"]], mscorlib"",
     ""$values"": [
       {
-        ""$type"": ""Newtonsoft.Json.Tests.Serialization.TypeNameHandlingTests+UrlStatus, Newtonsoft.Json.Tests"",
+        ""$type"": """ + urlStatusTypeName + @""",
         ""Status"": 300,
         ""Url"": ""http://www.yahoo.com""
       },
       {
-        ""$type"": ""Newtonsoft.Json.Tests.Serialization.TypeNameHandlingTests+UrlStatus, Newtonsoft.Json.Tests"",
+        ""$type"": """ + urlStatusTypeName + @""",
         ""Status"": 200,
         ""Url"": ""http://www.askjeeves.com""
       }
