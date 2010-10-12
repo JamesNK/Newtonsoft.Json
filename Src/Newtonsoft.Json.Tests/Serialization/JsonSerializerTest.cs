@@ -3665,5 +3665,37 @@ keyword such as type of business.""
       IDictionary<string, decimal> d = JsonConvert.DeserializeObject<IDictionary<string, decimal>>(json);
       Assert.AreEqual(123456789876543.21m, d["Value"]);
     }
+
+    public struct Vector
+    {
+      public float X;
+      public float Y;
+      public float Z;
+
+      public override string ToString()
+      {
+        return string.Format("({0},{1},{2})", X, Y, Z);
+      }
+    }
+
+    public class VectorParent
+    {
+      public Vector Position;
+    }
+
+    [Test]
+    public void DeserializeStructProperty()
+    {
+      VectorParent obj = new VectorParent();
+      obj.Position = new Vector { X = 1, Y = 2, Z = 3 };
+
+      string str = JsonConvert.SerializeObject(obj);
+
+      obj = JsonConvert.DeserializeObject<VectorParent>(str);
+
+      Assert.AreEqual(1, obj.Position.X);
+      Assert.AreEqual(2, obj.Position.Y);
+      Assert.AreEqual(3, obj.Position.Z);
+    }
   }
 }

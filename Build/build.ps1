@@ -4,6 +4,7 @@
   $signAssemblies = $false
   $signKeyPath = "D:\Development\Releases\newtonsoft.snk"
   $buildDocumentation = $false
+  $buildNuPackage = $true
   
   $baseDir  = resolve-path ..
   $buildDir = "$baseDir\Build"
@@ -13,11 +14,11 @@
   $releaseDir = "$baseDir\Release"
   $workingDir = "$baseDir\Working"
   $builds = @(
-    @{Name = "Newtonsoft.Json"; TestsName = "Newtonsoft.Json.Tests"; Constants=""; FinalDir="DotNet"; Framework="net-4.0"},
-    @{Name = "Newtonsoft.Json.Phone"; TestsName = $null; Constants="SILVERLIGHT;WINDOWS_PHONE"; FinalDir="Phone"; Framework="net-4.0"},
-    @{Name = "Newtonsoft.Json.Silverlight"; TestsName = "Newtonsoft.Json.Tests.Silverlight"; Constants="SILVERLIGHT"; FinalDir="Silverlight"; Framework="net-2.0"},
-    @{Name = "Newtonsoft.Json.Net20"; TestsName = "Newtonsoft.Json.Tests.Net20"; Constants="NET20"; FinalDir="DotNet20"; Framework="net-2.0"},
-    @{Name = "Newtonsoft.Json.Net35"; TestsName = "Newtonsoft.Json.Tests.Net35"; Constants="NET35"; FinalDir="DotNet35"; Framework="net-2.0"}
+    @{Name = "Newtonsoft.Json"; TestsName = "Newtonsoft.Json.Tests"; Constants=""; FinalDir="Net"; NuPackDir = "40"; Framework="net-4.0"},
+    @{Name = "Newtonsoft.Json.WindowsPhone"; TestsName = $null; Constants="SILVERLIGHT;WINDOWS_PHONE"; FinalDir="WindowsPhone"; NuPackDir = "WP"; Framework="net-4.0"},
+    @{Name = "Newtonsoft.Json.Silverlight"; TestsName = "Newtonsoft.Json.Tests.Silverlight"; Constants="SILVERLIGHT"; FinalDir="Silverlight"; NuPackDir = "SL"; Framework="net-2.0"},
+    @{Name = "Newtonsoft.Json.Net35"; TestsName = "Newtonsoft.Json.Tests.Net35"; Constants="NET35"; FinalDir="Net35"; NuPackDir = "35"; Framework="net-2.0"},
+    @{Name = "Newtonsoft.Json.Net20"; TestsName = "Newtonsoft.Json.Tests.Net20"; Constants="NET20"; FinalDir="Net20"; NuPackDir = "20"; Framework="net-2.0"}
   )
 }
 
@@ -55,11 +56,11 @@ task Build -depends Clean {
 
 # Merge LinqBridge into .NET 2.0 build
 task Merge -depends Build {
-  $binaryDir = "$sourceDir\Newtonsoft.Json\bin\Release\DotNet20"
+  $binaryDir = "$sourceDir\Newtonsoft.Json\bin\Release\Net20"
   MergeAssembly "$binaryDir\Newtonsoft.Json.Net20.dll" $signKeyPath "$binaryDir\LinqBridge.dll"
   del $binaryDir\LinqBridge.dll
 
-  $binaryDir = "$sourceDir\Newtonsoft.Json.Tests\bin\Release\DotNet20"
+  $binaryDir = "$sourceDir\Newtonsoft.Json.Tests\bin\Release\Net20"
   MergeAssembly "$binaryDir\Newtonsoft.Json.Tests.Net20.dll" $signKeyPath "$binaryDir\LinqBridge.dll"
   MergeAssembly "$binaryDir\Newtonsoft.Json.Net20.dll" $signKeyPath "$binaryDir\LinqBridge.dll"
   del $binaryDir\LinqBridge.dll
@@ -77,10 +78,27 @@ task Package -depends Merge {
   
   if ($buildDocumentation)
   {
-    exec { msbuild "/t:Clean;Rebuild" /p:Configuration=Release "/p:DocumentationSourcePath=$workingDir\Package\Bin\DotNet" $docDir\doc.shfbproj } "Error building documentation. Check that you have Sandcastle, Sandcastle Help File Builder and HTML Help Workshop installed."
+    exec { msbuild "/t:Clean;Rebuild" /p:Configuration=Release "/p:DocumentationSourcePath=$workingDir\Package\Bin\Net" $docDir\doc.shfbproj } "Error building documentation. Check that you have Sandcastle, Sandcastle Help File Builder and HTML Help Workshop installed."
     
     move -Path $workingDir\Documentation\Documentation.chm -Destination $workingDir\Package\Documentation.chm
     move -Path $workingDir\Documentation\LastBuild.log -Destination $workingDir\Documentation.log
+  }
+  if ($buildNuPackage)
+  {
+    New-Item -Path $workingDir\NuPack -ItemType Directory
+    Copy-Item -Path "$buildDir\Newtonsoft.Json.nuspec" -Destination $workingDir\NuPack\Newtonsoft.Json.nuspec -recurse
+    
+    foreach ($build in $builds)
+    {
+        $name = $build.TestsName
+        $finalDir = $build.FinalDir
+        $frameworkDir = $build.NuPackDir
+        
+        Copy-Item -Path "$sourceDir\Newtonsoft.Json\bin\Release\$finalDir" -Destination $workingDir\NuPack\lib\$frameworkDir -recurse
+    }
+  
+    exec { .\Tools\NuPack\NuPack.exe $workingDir\NuPack\Newtonsoft.Json.nuspec }
+    move -Path .\*.nupkg -Destination $workingDir\NuPack
   }
   
   Copy-Item -Path $docDir\readme.txt -Destination $workingDir\Package\

@@ -26,7 +26,9 @@ using System.Security;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-#if SILVERLIGHT
+#if WINDOWS_PHONE
+[assembly: AssemblyTitle("Newtonsoft Json.NET Windows Phone")]
+#elif SILVERLIGHT
 [assembly: AssemblyTitle("Newtonsoft Json.NET Silverlight")]
 #elif PocketPC
 [assembly: AssemblyTitle("Newtonsoft Json.NET Compact")]
@@ -44,7 +46,7 @@ using System.Security;
 #if !SIGNED
 
 #if WINDOWS_PHONE
-[assembly: InternalsVisibleTo("Newtonsoft.Json.Tests.Phone")]
+[assembly: InternalsVisibleTo("Newtonsoft.Json.Tests.WindowsPhone")]
 #elif SILVERLIGHT
 [assembly: InternalsVisibleTo("Newtonsoft.Json.Tests.Silverlight")]
 #elif PocketPC

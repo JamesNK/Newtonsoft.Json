@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>Newtonsoft.Json</id>
+    <version>3.5.8</version>
+    <authors>
+      <author>James Newton-King</author> 
+    </authors>
+    <description>Json.NET is a popular high-performance JSON framework for .NET</description>
+    <language>en-US</language>
+  </metadata>
+</package>

@@ -516,7 +516,10 @@ namespace Newtonsoft.Json.Serialization
         currentValue = property.ValueProvider.GetValue(target);
         gottenCurrentValue = true;
 
-        useExistingValue = (currentValue != null && !property.PropertyType.IsArray && !ReflectionUtils.InheritsGenericDefinition(property.PropertyType, typeof(ReadOnlyCollection<>)));
+        useExistingValue = (currentValue != null
+          && !property.PropertyType.IsArray
+          && !ReflectionUtils.InheritsGenericDefinition(property.PropertyType, typeof(ReadOnlyCollection<>))
+          && !property.PropertyType.IsValueType);
       }
 
       if (!property.Writable && !useExistingValue)
