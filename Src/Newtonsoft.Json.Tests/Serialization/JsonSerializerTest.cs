@@ -3697,5 +3697,54 @@ keyword such as type of business.""
       Assert.AreEqual(2, obj.Position.Y);
       Assert.AreEqual(3, obj.Position.Z);
     }
+
+    [JsonObject(MemberSerialization.OptIn)]
+    public class Derived : Base
+    {
+      [JsonProperty]
+      public string IDoWork { get; private set; }
+
+      private Derived() { }
+
+      internal Derived(string dontWork, string doWork)
+        : base(dontWork)
+      {
+        IDoWork = doWork;
+      }
+    }
+
+    [JsonObject(MemberSerialization.OptIn)]
+    public class Base
+    {
+      [JsonProperty]
+      public string IDontWork { get; private set; }
+
+      protected Base() { }
+
+      internal Base(string dontWork)
+      {
+        IDontWork = dontWork;
+      }
+    }
+
+    [Test]
+    public void PrivateSetterOnBaseClassProperty()
+    {
+      var derived = new Derived("meh", "woo");
+
+      var settings = new JsonSerializerSettings
+      {
+        TypeNameHandling = TypeNameHandling.Objects,
+        ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
+      };
+
+      string json = JsonConvert.SerializeObject(derived, Formatting.Indented, settings);
+
+      var meh = JsonConvert.DeserializeObject<Base>(json, settings);
+
+      Assert.AreEqual(((Derived)meh).IDoWork, "woo");
+      Assert.AreEqual(meh.IDontWork, "meh");
+    }
+
   }
 }

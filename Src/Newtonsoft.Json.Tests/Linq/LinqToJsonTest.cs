@@ -698,6 +698,21 @@ keyword such as type of business.""
       Assert.AreEqual(new DateTime(2000, 10, 15, 5, 5, 5, DateTimeKind.Utc), d);
     }
 
+#if !(NET20 || NET35 || SILVERLIGHT)
+    [Test]
+    public void CovariantIJEnumerable()
+    {
+      IEnumerable<JObject> o = new[]
+        {
+          JObject.FromObject(new {First = 1, Second = 2}),
+          JObject.FromObject(new {First = 1, Second = 2})
+        };
+
+      IJEnumerable<JToken> values = o.Properties();
+      Assert.AreEqual(4, values.Count());
+    }
+#endif
+
     [Test]
     public void ChildrenExtension()
     {

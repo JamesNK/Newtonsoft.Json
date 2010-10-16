@@ -880,10 +880,21 @@ namespace Newtonsoft.Json.Utilities
     {
       ValidationUtils.ArgumentNotNull(targetType, "targetType");
 
-      List<MemberInfo> propertyInfos = new List<MemberInfo>(targetType.GetProperties(bindingAttr));
+      List<PropertyInfo> propertyInfos = new List<PropertyInfo>(targetType.GetProperties(bindingAttr));
       GetChildPrivateProperties(propertyInfos, targetType, bindingAttr);
 
-      return propertyInfos.Cast<PropertyInfo>();
+      // a base class private getter/setter will be inaccessable unless the property was gotten from the base class
+      for (int i = 0; i < propertyInfos.Count; i++)
+      {
+        PropertyInfo member = propertyInfos[i];
+        if (member.DeclaringType != targetType)
+        {
+          PropertyInfo declaredMember = member.DeclaringType.GetProperty(member.Name, bindingAttr);
+          propertyInfos[i] = declaredMember;
+        }
+      }
+
+      return propertyInfos;
     }
 
     public static BindingFlags RemoveFlag(this BindingFlags bindingAttr, BindingFlags flag)
@@ -893,7 +904,7 @@ namespace Newtonsoft.Json.Utilities
         : bindingAttr;
     }
 
-    private static void GetChildPrivateProperties(IList<MemberInfo> initialProperties, Type targetType, BindingFlags bindingAttr)
+    private static void GetChildPrivateProperties(IList<PropertyInfo> initialProperties, Type targetType, BindingFlags bindingAttr)
     {
       // fix weirdness with private PropertyInfos only being returned for the current Type
       // find base type properties and add them to result
