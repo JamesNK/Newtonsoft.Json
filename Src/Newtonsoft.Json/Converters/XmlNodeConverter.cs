@@ -1118,6 +1118,9 @@ namespace Newtonsoft.Json.Converters
 
     private void ReadElement(JsonReader reader, IXmlDocument document, IXmlNode currentNode, string propertyName, XmlNamespaceManager manager)
     {
+      if (string.IsNullOrEmpty(propertyName))
+        throw new JsonSerializationException("XmlNodeConverter cannot convert JSON with an empty property name to XML.");
+
       Dictionary<string, string> attributeNameValues = ReadAttributeElements(reader, manager);
 
       string elementPrefix = MiscellaneousUtils.GetPrefix(propertyName);
@@ -1214,50 +1217,59 @@ namespace Newtonsoft.Json.Converters
             case JsonToken.PropertyName:
               string attributeName = reader.Value.ToString();
               string attributeValue;
-              char firstChar = attributeName[0];
 
-              switch (firstChar)
+              if (!string.IsNullOrEmpty(attributeName))
               {
-                case '@':
-                  attributeName = attributeName.Substring(1);
-                  reader.Read();
-                  attributeValue = reader.Value.ToString();
-                  attributeNameValues.Add(attributeName, attributeValue);
+                char firstChar = attributeName[0];
 
-                  string namespacePrefix;
-                  if (IsNamespaceAttribute(attributeName, out namespacePrefix))
-                  {
-                    manager.AddNamespace(namespacePrefix, attributeValue);
-                  }
-                  break;
-                case '$':
-                  attributeName = attributeName.Substring(1);
-                  reader.Read();
-                  attributeValue = reader.Value.ToString();
+                switch (firstChar)
+                {
+                  case '@':
+                    attributeName = attributeName.Substring(1);
+                    reader.Read();
+                    attributeValue = reader.Value.ToString();
+                    attributeNameValues.Add(attributeName, attributeValue);
 
-                  // check that JsonNamespaceUri is in scope
-                  // if it isn't then add it to document and namespace manager
-                  string jsonPrefix = manager.LookupPrefix(JsonNamespaceUri);
-                  if (jsonPrefix == null)
-                  {
-                    // ensure that the prefix used is free
-                    int? i = null;
-                    while (manager.LookupNamespace("json" + i) != null)
+                    string namespacePrefix;
+                    if (IsNamespaceAttribute(attributeName, out namespacePrefix))
                     {
-                      i = i.GetValueOrDefault() + 1;
+                      manager.AddNamespace(namespacePrefix, attributeValue);
                     }
-                    jsonPrefix = "json" + i;
+                    break;
+                  case '$':
+                    attributeName = attributeName.Substring(1);
+                    reader.Read();
+                    attributeValue = reader.Value.ToString();
 
-                    attributeNameValues.Add("xmlns:" + jsonPrefix, JsonNamespaceUri);
-                    manager.AddNamespace(jsonPrefix, JsonNamespaceUri);
-                  }
+                    // check that JsonNamespaceUri is in scope
+                    // if it isn't then add it to document and namespace manager
+                    string jsonPrefix = manager.LookupPrefix(JsonNamespaceUri);
+                    if (jsonPrefix == null)
+                    {
+                      // ensure that the prefix used is free
+                      int? i = null;
+                      while (manager.LookupNamespace("json" + i) != null)
+                      {
+                        i = i.GetValueOrDefault() + 1;
+                      }
+                      jsonPrefix = "json" + i;
 
-                  attributeNameValues.Add(jsonPrefix + ":" + attributeName, attributeValue);
-                  break;
-                default:
-                  finishedAttributes = true;
-                  break;
+                      attributeNameValues.Add("xmlns:" + jsonPrefix, JsonNamespaceUri);
+                      manager.AddNamespace(jsonPrefix, JsonNamespaceUri);
+                    }
+
+                    attributeNameValues.Add(jsonPrefix + ":" + attributeName, attributeValue);
+                    break;
+                  default:
+                    finishedAttributes = true;
+                    break;
+                }
               }
+              else
+              {
+                finishedAttributes = true;
+              }
+
               break;
             case JsonToken.EndObject:
               finishedElement = true;

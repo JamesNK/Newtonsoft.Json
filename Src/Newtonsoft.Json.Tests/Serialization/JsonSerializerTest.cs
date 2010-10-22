@@ -3746,5 +3746,86 @@ keyword such as type of business.""
       Assert.AreEqual(meh.IDontWork, "meh");
     }
 
+#if !(SILVERLIGHT || PocketPC || NET20)
+    [DataContract]
+    public struct StructISerializable : ISerializable
+    {
+      private string _name;
+
+      public StructISerializable(SerializationInfo info, StreamingContext context)
+      {
+        _name = info.GetString("Name");
+      }
+
+      [DataMember]
+      public string Name
+      {
+        get { return _name; }
+        set { _name = value; }
+      }
+
+      public void GetObjectData(SerializationInfo info, StreamingContext context)
+      {
+        info.AddValue("Name", _name);
+      }
+    }
+
+    [DataContract]
+    public class NullableStructPropertyClass
+    {
+      private StructISerializable _foo1;
+      private StructISerializable? _foo2;
+
+      [DataMember]
+      public StructISerializable Foo1
+      {
+        get { return _foo1; }
+        set { _foo1 = value; }
+      }
+
+      [DataMember]
+      public StructISerializable? Foo2
+      {
+        get { return _foo2; }
+        set { _foo2 = value; }
+      }
+    }
+
+    [Test]
+    public void DeserializeNullableStruct()
+    {
+      NullableStructPropertyClass nullableStructPropertyClass = new NullableStructPropertyClass();
+      nullableStructPropertyClass.Foo1 = new StructISerializable() {Name = "foo 1"};
+      nullableStructPropertyClass.Foo2 = new StructISerializable() {Name = "foo 2"};
+
+      NullableStructPropertyClass barWithNull = new NullableStructPropertyClass();
+      barWithNull.Foo1 = new StructISerializable() {Name = "foo 1"};
+      barWithNull.Foo2 = null;
+
+      //throws error on deserialization because bar1.Foo2 is of type Foo?
+      string s = JsonConvert.SerializeObject(nullableStructPropertyClass);
+      NullableStructPropertyClass deserialized = deserialize(s);
+      Assert.AreEqual(deserialized.Foo1.Name, "foo 1");
+      Assert.AreEqual(deserialized.Foo2.Value.Name, "foo 2");
+
+      //no error Foo2 is null
+      s = JsonConvert.SerializeObject(barWithNull);
+      deserialized = deserialize(s);
+      Assert.AreEqual(deserialized.Foo1.Name, "foo 1");
+      Assert.AreEqual(deserialized.Foo2, null);
+    }
+
+
+    static NullableStructPropertyClass deserialize(string serStr)
+    {
+      return JsonConvert.DeserializeObject<NullableStructPropertyClass>(
+        serStr,
+        new JsonSerializerSettings
+        {
+          NullValueHandling = NullValueHandling.Ignore,
+          MissingMemberHandling = MissingMemberHandling.Ignore
+        });
+    }
+#endif
   }
 }

@@ -906,6 +906,92 @@ namespace Newtonsoft.Json.Tests.Converters
 
       Assert.AreEqual(expectedXmlJson, xmlJson);
     }
+
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "XmlNodeConverter cannot convert JSON with an empty property name to XML.")]
+    public void EmptyPropertyName()
+    {
+      string json = @"{
+  ""8452309520V2"": {
+    """": {
+      ""CLIENT"": {
+        ""ID_EXPIRATION_1"": {
+          ""VALUE"": ""12/12/2000"",
+          ""DATATYPE"": ""D"",
+          ""MSG"": ""Missing Identification Exp. Date 1""
+        },
+        ""ID_ISSUEDATE_1"": {
+          ""VALUE"": """",
+          ""DATATYPE"": ""D"",
+          ""MSG"": ""Missing Identification Issue Date 1""
+        }
+      }
+    },
+    ""457463534534"": {
+      ""ACCOUNT"": {
+        ""FUNDING_SOURCE"": {
+          ""VALUE"": ""FS0"",
+          ""DATATYPE"": ""L"",
+          ""MSG"": ""Missing Source of Funds""
+        }
+      }
+    }
+  }
+}{
+  ""34534634535345"": {
+    """": {
+      ""CLIENT"": {
+        ""ID_NUMBER_1"": {
+          ""VALUE"": """",
+          ""DATATYPE"": ""S"",
+          ""MSG"": ""Missing Picture ID""
+        },
+        ""ID_EXPIRATION_1"": {
+          ""VALUE"": ""12/12/2000"",
+          ""DATATYPE"": ""D"",
+          ""MSG"": ""Missing Picture ID""
+        },
+        ""WALK_IN"": {
+          ""VALUE"": """",
+          ""DATATYPE"": ""L"",
+          ""MSG"": ""Missing Walk in""
+        },
+        ""PERSONAL_MEETING"": {
+          ""VALUE"": ""PM1"",
+          ""DATATYPE"": ""L"",
+          ""MSG"": ""Missing Met Client in Person""
+        },
+        ""ID_ISSUEDATE_1"": {
+          ""VALUE"": """",
+          ""DATATYPE"": ""D"",
+          ""MSG"": ""Missing Picture ID""
+        },
+        ""PHOTO_ID"": {
+          ""VALUE"": """",
+          ""DATATYPE"": ""L"",
+          ""MSG"": ""Missing Picture ID""
+        },
+        ""ID_TYPE_1"": {
+          ""VALUE"": """",
+          ""DATATYPE"": ""L"",
+          ""MSG"": ""Missing Picture ID""
+        }
+      }
+    },
+    ""45635624523"": {
+      ""ACCOUNT"": {
+        ""FUNDING_SOURCE"": {
+          ""VALUE"": ""FS1"",
+          ""DATATYPE"": ""L"",
+          ""MSG"": ""Missing Source of Funds""
+        }
+      }
+    }
+  }
+}";
+
+      DeserializeXmlNode(json);
+    }
   }
 }
 #endif

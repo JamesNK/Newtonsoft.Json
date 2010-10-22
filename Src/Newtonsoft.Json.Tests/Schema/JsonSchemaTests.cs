@@ -340,5 +340,42 @@ namespace Newtonsoft.Json.Tests.Schema
   ]
 }", json);
     }
+
+    [Test]
+    public void ReadOptions()
+    {
+      JsonSchema schema = JsonSchema.Parse(@"{
+  ""type"": ""object"",
+  ""properties"": {
+    ""x"": {
+      ""type"": ""integer"",
+      ""enum"": [
+        0,
+        1,
+        -1
+      ],
+      ""options"": [
+        {
+          ""value"": 0,
+          ""label"": ""No""
+        },
+        {
+          ""value"": 1,
+          ""label"": ""Asc""
+        },
+        {
+          ""value"": -1,
+          ""label"": ""Desc""
+        }
+      ]
+    }
+  }
+}");
+
+      Assert.AreEqual(schema.Properties["x"].Options.Count, 3);
+      Assert.AreEqual(schema.Properties["x"].Options[0], "No");
+      Assert.AreEqual(schema.Properties["x"].Options[1], "Asc");
+      Assert.AreEqual(schema.Properties["x"].Options[-1], "Desc");
+    }
   }
 }

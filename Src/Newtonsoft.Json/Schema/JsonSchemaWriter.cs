@@ -136,7 +136,7 @@ namespace Newtonsoft.Json.Schema
           option.Key.WriteTo(_writer);
           if (option.Value != null)
           {
-            _writer.WritePropertyName(JsonSchemaConstants.OptionValuePropertyName);
+            _writer.WritePropertyName(JsonSchemaConstants.OptionLabelPropertyName);
             _writer.WriteValue(option.Value);
           }
           _writer.WriteEndObject();

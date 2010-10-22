@@ -169,6 +169,13 @@ namespace Newtonsoft.Json.Utilities
       return (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>));
     }
 
+    public static Type EnsureNotNullableType(Type t)
+    {
+      return (IsNullableType(t))
+        ? Nullable.GetUnderlyingType(t)
+        : t;
+    }
+
     //public static bool IsValueTypeUnitializedValue(ValueType value)
     //{
     //  if (value == null)

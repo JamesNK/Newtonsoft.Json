@@ -512,15 +512,15 @@ namespace Newtonsoft.Json.Tests.Schema
       ""options"": [
         {
           ""value"": 0,
-          ""value"": ""No""
+          ""label"": ""No""
         },
         {
           ""value"": 1,
-          ""value"": ""Asc""
+          ""label"": ""Asc""
         },
         {
           ""value"": -1,
-          ""value"": ""Desc""
+          ""label"": ""Desc""
         }
       ]
     }
