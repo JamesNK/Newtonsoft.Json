@@ -77,19 +77,40 @@ namespace Newtonsoft.Json.Serialization
 
       if (_genericCollectionDefinitionType != null)
       {
-        if (_genericWrapperType == null)
-        {
-          _genericWrapperType = ReflectionUtils.MakeGenericType(typeof (CollectionWrapper<>), CollectionItemType);
-
-          ConstructorInfo genericWrapperConstructor = _genericWrapperType.GetConstructor(new[] {_genericCollectionDefinitionType});
-          _genericWrapperCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(genericWrapperConstructor);
-        }
-
+        EnsureGenericWrapperCreator();
         return (IWrappedCollection) _genericWrapperCreator(null, list);
       }
       else
       {
-        return new CollectionWrapper<object>((IList<object>)((IEnumerable)list).Cast<object>().ToList());
+        IList values = ((IEnumerable) list).Cast<object>().ToList();
+
+        if (CollectionItemType != null)
+        {
+          Array array = Array.CreateInstance(CollectionItemType, values.Count);
+          for (int i = 0; i < values.Count; i++)
+          {
+            array.SetValue(values[i], i);
+          }
+
+          values = array;
+        }
+
+        return new CollectionWrapper<object>(values);
+      }
+    }
+
+    private void EnsureGenericWrapperCreator()
+    {
+      if (_genericWrapperType == null)
+      {
+        _genericWrapperType = ReflectionUtils.MakeGenericType(typeof (CollectionWrapper<>), CollectionItemType);
+
+        Type constructorArgument = (ReflectionUtils.InheritsGenericDefinition(_genericCollectionDefinitionType, typeof (List<>)))
+                                     ? ReflectionUtils.MakeGenericType(typeof (ICollection<>), CollectionItemType)
+                                     : _genericCollectionDefinitionType;
+
+        ConstructorInfo genericWrapperConstructor = _genericWrapperType.GetConstructor(new[] { constructorArgument });
+        _genericWrapperCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(genericWrapperConstructor);
       }
     }
 

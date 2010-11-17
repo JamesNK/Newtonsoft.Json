@@ -3795,11 +3795,11 @@ keyword such as type of business.""
     public void DeserializeNullableStruct()
     {
       NullableStructPropertyClass nullableStructPropertyClass = new NullableStructPropertyClass();
-      nullableStructPropertyClass.Foo1 = new StructISerializable() {Name = "foo 1"};
-      nullableStructPropertyClass.Foo2 = new StructISerializable() {Name = "foo 2"};
+      nullableStructPropertyClass.Foo1 = new StructISerializable() { Name = "foo 1" };
+      nullableStructPropertyClass.Foo2 = new StructISerializable() { Name = "foo 2" };
 
       NullableStructPropertyClass barWithNull = new NullableStructPropertyClass();
-      barWithNull.Foo1 = new StructISerializable() {Name = "foo 1"};
+      barWithNull.Foo1 = new StructISerializable() { Name = "foo 1" };
       barWithNull.Foo2 = null;
 
       //throws error on deserialization because bar1.Foo2 is of type Foo?
@@ -3827,5 +3827,63 @@ keyword such as type of business.""
         });
     }
 #endif
+
+    [Test]
+    public void SerializingIEnumerableOfTShouldRetainGenericTypeInfo()
+    {
+      CustomEnumerable<Product> products = new CustomEnumerable<Product>();
+
+      string json = JsonConvert.SerializeObject(products, Formatting.Indented, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+
+      Assert.AreEqual(@"{
+  ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Product[], Newtonsoft.Json.Tests"",
+  ""$values"": []
+}", json);
+    }
+
+    public class CustomEnumerable<T> : IEnumerable<T>
+    {
+      //NOTE: a simple linked list
+      private readonly T value;
+      private readonly CustomEnumerable<T> next;
+      private readonly int count;
+
+      private CustomEnumerable(T value, CustomEnumerable<T> next)
+      {
+        this.value = value;
+        this.next = next;
+        count = this.next.count + 1;
+      }
+
+      public CustomEnumerable()
+      {
+        count = 0;
+      }
+
+      public CustomEnumerable<T> AddFirst(T newVal)
+      {
+        return new CustomEnumerable<T>(newVal, this);
+      }
+
+      public IEnumerator<T> GetEnumerator()
+      {
+        if (count == 0) // last node
+          yield break;
+        yield return value;
+
+        var nextInLine = next;
+        while (nextInLine != null)
+        {
+          if (nextInLine.count != 0)
+            yield return nextInLine.value;
+          nextInLine = nextInLine.next;
+        }
+      }
+
+      IEnumerator IEnumerable.GetEnumerator()
+      {
+        return GetEnumerator();
+      }
+    }
   }
 }
