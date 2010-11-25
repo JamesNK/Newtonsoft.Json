@@ -119,6 +119,18 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(2, memberNames.Count);
       Assert.AreEqual("ChildValue", memberNames[0]);
       Assert.AreEqual("Hello Joe", memberNames[1]);
+
+      o = new JObject(
+        new JProperty("ChildValue1", "blah blah"),
+        new JProperty("Hello Joe1", null));
+
+      d = o;
+
+      memberNames = o.GetDynamicMemberNames().ToList();
+
+      Assert.AreEqual(2, memberNames.Count);
+      Assert.AreEqual("ChildValue1", memberNames[0]);
+      Assert.AreEqual("Hello Joe1", memberNames[1]);
     }
 
     [Test]
@@ -126,11 +138,15 @@ namespace Newtonsoft.Json.Tests.Linq
     {
       AssertValueConverted<bool>(true);
       AssertValueConverted<bool?>(true);
+      AssertValueConverted<bool?>(false);
+      AssertValueConverted<byte[]>(null);
       AssertValueConverted<byte[]>(Encoding.UTF8.GetBytes("blah"));
       AssertValueConverted<DateTime>(new DateTime(2000, 12, 20, 23, 59, 2, DateTimeKind.Utc));
       AssertValueConverted<DateTime?>(new DateTime(2000, 12, 20, 23, 59, 2, DateTimeKind.Utc));
+      AssertValueConverted<DateTime?>(null);
       AssertValueConverted<DateTimeOffset>(new DateTimeOffset(2000, 12, 20, 23, 59, 2, TimeSpan.FromHours(1)));
       AssertValueConverted<DateTimeOffset?>(new DateTimeOffset(2000, 12, 20, 23, 59, 2, TimeSpan.FromHours(1)));
+      AssertValueConverted<DateTimeOffset?>(null);
       AssertValueConverted<decimal>(99.9m);
       AssertValueConverted<decimal?>(99.9m);
       AssertValueConverted<double>(99.9);
@@ -150,6 +166,7 @@ namespace Newtonsoft.Json.Tests.Linq
       AssertValueConverted<ulong?>(ulong.MaxValue);
       AssertValueConverted<ushort>(ushort.MinValue);
       AssertValueConverted<ushort?>(ushort.MinValue);
+      AssertValueConverted<ushort?>(null);
     }
 
     private static void AssertValueConverted<T>(T value)
@@ -157,7 +174,8 @@ namespace Newtonsoft.Json.Tests.Linq
       JValue v = new JValue(value);
       dynamic d = v;
 
-      Assert.AreEqual(value, (T)d);
+      T t = d;
+      Assert.AreEqual(value, t);
     }
   }
 }

@@ -346,7 +346,7 @@ namespace Newtonsoft.Json
           _currentState = State.Finished;
           break;
         default:
-          throw new JsonReaderException("While setting the reader state back to current object an unexpected JsonType was encountered: " + currentObject);
+          throw new JsonReaderException("While setting the reader state back to current object an unexpected JsonType was encountered: {0}".FormatWith(CultureInfo.InvariantCulture, currentObject));
       }
     }
 
@@ -408,7 +408,7 @@ namespace Newtonsoft.Json
         case JsonToken.EndConstructor:
           return JTokenType.Constructor;
         default:
-          throw new JsonReaderException("Not a valid close JsonToken: " + token);
+          throw new JsonReaderException("Not a valid close JsonToken: {0}".FormatWith(CultureInfo.InvariantCulture, token));
       }
     }
 

@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization.Formatters;
@@ -640,6 +641,68 @@ namespace Newtonsoft.Json.Tests.Serialization
       List<UrlStatus> statues = (List<UrlStatus>) newCollection["List"];
       Assert.AreEqual(2, statues.Count);
     }
+
+
+    [Test]
+    public void SerializingIEnumerableOfTShouldRetainGenericTypeInfo()
+    {
+      string productClassRef = ReflectionUtils.GetTypeName(typeof(Product[]), FormatterAssemblyStyle.Simple);
+
+      CustomEnumerable<Product> products = new CustomEnumerable<Product>();
+
+      string json = JsonConvert.SerializeObject(products, Formatting.Indented, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+
+      Assert.AreEqual(@"{
+  ""$type"": """ + productClassRef + @""",
+  ""$values"": []
+}", json);
+    }
+
+    public class CustomEnumerable<T> : IEnumerable<T>
+    {
+      //NOTE: a simple linked list
+      private readonly T value;
+      private readonly CustomEnumerable<T> next;
+      private readonly int count;
+
+      private CustomEnumerable(T value, CustomEnumerable<T> next)
+      {
+        this.value = value;
+        this.next = next;
+        count = this.next.count + 1;
+      }
+
+      public CustomEnumerable()
+      {
+        count = 0;
+      }
+
+      public CustomEnumerable<T> AddFirst(T newVal)
+      {
+        return new CustomEnumerable<T>(newVal, this);
+      }
+
+      public IEnumerator<T> GetEnumerator()
+      {
+        if (count == 0) // last node
+          yield break;
+        yield return value;
+
+        var nextInLine = next;
+        while (nextInLine != null)
+        {
+          if (nextInLine.count != 0)
+            yield return nextInLine.value;
+          nextInLine = nextInLine.next;
+        }
+      }
+
+      IEnumerator IEnumerable.GetEnumerator()
+      {
+        return GetEnumerator();
+      }
+    }
+
   }
 
   public class Message

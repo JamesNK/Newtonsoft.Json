@@ -267,7 +267,6 @@
     <Compile Include="Utilities\ReflectionUtilsTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.Config" />
     <None Include="LinqToSql\LinqToSqlClasses.dbml">
       <Generator>MSLinqToSQLGenerator</Generator>
       <LastGenOutput>LinqToSqlClasses.designer.cs</LastGenOutput>

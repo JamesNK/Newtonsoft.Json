@@ -13,8 +13,8 @@ namespace Newtonsoft.Json.Utilities
     private readonly DynamicProxy<T> _proxy;
     private readonly bool _dontFallbackFirst;
 
-    internal DynamicProxyMetaObject(Expression expression, DynamicProxy<T> proxy, bool dontFallbackFirst)
-      : base(expression, BindingRestrictions.Empty, proxy.Value)
+    internal DynamicProxyMetaObject(Expression expression, T value, DynamicProxy<T> proxy, bool dontFallbackFirst)
+      : base(expression, BindingRestrictions.Empty, value)
     {
       _proxy = proxy;
       _dontFallbackFirst = dontFallbackFirst;
@@ -218,11 +218,11 @@ namespace Newtonsoft.Json.Utilities
       //
       ParameterExpression result = Expression.Parameter(typeof(object), null);
 
-
-      Expression[] callArgs = new Expression[args.Length + 2];
-      Array.Copy(args, 0, callArgs, 1, args.Length);
-      callArgs[0] = Constant(binder);
-      callArgs[callArgs.Length - 1] = result;
+      IList<Expression> callArgs = new List<Expression>();
+      callArgs.Add(Expression.Convert(Expression, typeof(T)));
+      callArgs.Add(Constant(binder));
+      callArgs.AddRange(args);
+      callArgs.Add(result);
 
       DynamicMetaObject resultMO = new DynamicMetaObject(result, BindingRestrictions.Empty);
 
@@ -279,8 +279,12 @@ namespace Newtonsoft.Json.Utilities
       // }
       //
       ParameterExpression result = Expression.Parameter(typeof(object), null);
-      Expression[] callArgs = AddFirst(args, Constant(binder));
-      callArgs[args.Length] = Expression.Assign(result, callArgs[args.Length]);
+
+      IList<Expression> callArgs = new List<Expression>();
+      callArgs.Add(Expression.Convert(Expression, typeof (T)));
+      callArgs.Add(Constant(binder));
+      callArgs.AddRange(args);
+      callArgs[args.Length + 1] = Expression.Assign(result, callArgs[args.Length + 1]);
 
       DynamicMetaObject callDynamic = new DynamicMetaObject(
           Expression.Block(
@@ -310,14 +314,6 @@ namespace Newtonsoft.Json.Utilities
       return _dontFallbackFirst ? callDynamic : fallback(callDynamic);
     }
 
-    internal static TItem[] AddFirst<TItem>(IList<TItem> list, TItem item)
-    {
-      TItem[] res = new TItem[list.Count + 1];
-      res[0] = item;
-      list.CopyTo(res, 1);
-      return res;
-    }
-
     /// <summary>
     /// Helper method for generating a MetaObject which calls a
     /// specific method on Dynamic, but uses one of the arguments for
@@ -331,6 +327,11 @@ namespace Newtonsoft.Json.Utilities
       //
       DynamicMetaObject fallbackResult = fallback(null);
 
+      IList<Expression> callArgs = new List<Expression>();
+      callArgs.Add(Expression.Convert(Expression, typeof(T)));
+      callArgs.Add(Constant(binder));
+      callArgs.AddRange(args);
+
       //
       // Build a new expression like:
       //   if (TryDeleteMember(payload)) { } else { fallbackResult }
@@ -340,7 +341,7 @@ namespace Newtonsoft.Json.Utilities
           Expression.Call(
             Expression.Constant(_proxy),
             typeof(DynamicProxy<T>).GetMethod(methodName),
-            AddFirst(args, Constant(binder))
+            callArgs
             ),
           Expression.Empty(),
           fallbackResult.Expression,
@@ -366,15 +367,14 @@ namespace Newtonsoft.Json.Utilities
     /// </summary>
     private BindingRestrictions GetRestrictions()
     {
-      // ReSharper disable CompareNonConstrainedGenericWithNull
-      return Value == null && HasValue // ReSharper restore CompareNonConstrainedGenericWithNull
+      return (Value == null && HasValue)
            ? BindingRestrictions.GetInstanceRestriction(Expression, null)
            : BindingRestrictions.GetTypeRestriction(Expression, LimitType);
     }
 
     public override IEnumerable<string> GetDynamicMemberNames()
     {
-      return _proxy.GetDynamicMemberNames();
+      return _proxy.GetDynamicMemberNames(Value);
     }
 
     // It is okay to throw NotSupported from this binder. This object

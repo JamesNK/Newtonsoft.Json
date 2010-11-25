@@ -29,6 +29,11 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
+using System.ComponentModel;
+#if !(NET35 || NET20 || SILVERLIGHT)
+using System.Dynamic;
+using System.Linq.Expressions;
+#endif
 
 namespace Newtonsoft.Json.Linq
 {
@@ -335,13 +340,13 @@ namespace Newtonsoft.Json.Linq
     internal override int GetDeepHashCode()
     {
       int valueHashCode = (_value != null) ? _value.GetHashCode() : 0;
-      
+
       return _valueType.GetHashCode() ^ valueHashCode;
     }
 
     private static bool ValuesEquals(JValue v1, JValue v2)
     {
-      return (v1 == v2|| (v1._valueType == v2._valueType && Compare(v1._valueType, v1._value, v2._value)));
+      return (v1 == v2 || (v1._valueType == v2._valueType && Compare(v1._valueType, v1._value, v2._value)));
     }
 
     /// <summary>
@@ -394,5 +399,51 @@ namespace Newtonsoft.Json.Linq
 
       return _value.GetHashCode();
     }
+
+#if !(NET35 || NET20 || SILVERLIGHT)
+    /// <summary>
+    /// Returns the <see cref="T:System.Dynamic.DynamicMetaObject"/> responsible for binding operations performed on this object.
+    /// </summary>
+    /// <param name="parameter">The expression tree representation of the runtime value.</param>
+    /// <returns>
+    /// The <see cref="T:System.Dynamic.DynamicMetaObject"/> to bind this object.
+    /// </returns>
+    protected override DynamicMetaObject GetMetaObject(Expression parameter)
+    {
+      return new DynamicProxyMetaObject<JValue>(parameter, this, new JValueDynamicProxy(), true);
+    }
+
+    private class JValueDynamicProxy : DynamicProxy<JValue>
+    {
+      public override bool TryConvert(JValue instance, ConvertBinder binder, out object result)
+      {
+        if (binder.Type == typeof(JValue))
+        {
+          result = instance;
+          return true;
+        }
+
+        object value = instance.Value;
+
+        if (value == null)
+        {
+          result = null;
+          return ReflectionUtils.IsNullable(binder.Type);
+        }
+
+        Type t = binder.Type;
+        if (ReflectionUtils.IsNullableType(t))
+          t = Nullable.GetUnderlyingType(t);
+
+        TypeConverter converter = TypeDescriptor.GetConverter(instance.Value);
+        if (converter != null && converter.CanConvertTo(t))
+          result = converter.ConvertTo(instance.Value, t);
+        else
+          result = Convert.ChangeType(instance.Value, t, CultureInfo.InvariantCulture);
+
+        return true;
+      }
+    }
+#endif
   }
 }

@@ -666,23 +666,19 @@ namespace Newtonsoft.Json.Linq
     /// </returns>
     protected override DynamicMetaObject GetMetaObject(Expression parameter)
     {
-      return new DynamicProxyMetaObject<JObject>(parameter, new JObjectDynamicProxy(this), true);
+      return new DynamicProxyMetaObject<JObject>(parameter, this, new JObjectDynamicProxy(), true);
     }
 
     private class JObjectDynamicProxy : DynamicProxy<JObject>
     {
-      public JObjectDynamicProxy(JObject value) : base(value)
-      {
-      }
-
-      public override bool TryGetMember(GetMemberBinder binder, out object result)
+      public override bool TryGetMember(JObject instance, GetMemberBinder binder, out object result)
       {
         // result can be null
-        result = Value[binder.Name];
+        result = instance[binder.Name];
         return true;
       }
 
-      public override bool TrySetMember(SetMemberBinder binder, object value)
+      public override bool TrySetMember(JObject instance, SetMemberBinder binder, object value)
       {
         JToken v = value as JToken;
 
@@ -690,13 +686,13 @@ namespace Newtonsoft.Json.Linq
         if (v == null)
           v = new JValue(value);
 
-        Value[binder.Name] = v;
+        instance[binder.Name] = v;
         return true;
       }
 
-      public override IEnumerable<string> GetDynamicMemberNames()
+      public override IEnumerable<string> GetDynamicMemberNames(JObject instance)
       {
-        return Value.Properties().Select(p => p.Name);
+        return instance.Properties().Select(p => p.Name);
       }
     }
 #endif
