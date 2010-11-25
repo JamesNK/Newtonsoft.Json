@@ -35,6 +35,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
+using System.Xml.Serialization;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Linq;
@@ -717,6 +718,8 @@ namespace Newtonsoft.Json.Serialization
 
       property.ShouldSerialize = CreateShouldSerializeTest(member);
 
+      SetIsSpecifiedActions(property, member);
+
       return property;
     }
 
@@ -731,6 +734,25 @@ namespace Newtonsoft.Json.Serialization
         JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(shouldSerializeMethod);
 
       return o => (bool) shouldSerializeCall(o);
+    }
+
+    private void SetIsSpecifiedActions(JsonProperty property, MemberInfo member)
+    {
+      MemberInfo specifiedMember = member.DeclaringType.GetProperty(member.Name + JsonTypeReflector.SpecifiedPostfix);
+      if (specifiedMember == null)
+        specifiedMember = member.DeclaringType.GetField(member.Name + JsonTypeReflector.SpecifiedPostfix);
+
+      if (specifiedMember == null || ReflectionUtils.GetMemberUnderlyingType(specifiedMember) != typeof(bool)
+        || (ReflectionUtils.GetAttribute<XmlIgnoreAttribute>(specifiedMember) != null
+        && ReflectionUtils.GetAttribute<JsonIgnoreAttribute>(specifiedMember) != null))
+      {
+        return;
+      }
+
+      Func<object, object> specifiedPropertyGet = JsonTypeReflector.ReflectionDelegateFactory.CreateGet<object>(specifiedMember);
+
+      property.GetIsSpecified = o => (bool)specifiedPropertyGet(o);
+      property.SetIsSpecified = JsonTypeReflector.ReflectionDelegateFactory.CreateSet<object>(specifiedMember);
     }
 
     /// <summary>

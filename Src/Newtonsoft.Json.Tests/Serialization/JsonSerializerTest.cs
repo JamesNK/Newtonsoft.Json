@@ -3378,6 +3378,138 @@ keyword such as type of business.""
       Console.WriteLine(json);
     }
 
+    public class SpecifiedTestClass
+    {
+      private bool _nameSpecified;
+
+      public string Name { get; set; }
+      public int Age { get; set; }
+      public int Weight { get; set; }
+
+      // dummy. should never be used because it isn't of type bool
+      [JsonIgnore]
+      public long AgeSpecified { get; set; }
+
+      [JsonIgnore]
+      public bool NameSpecified
+      {
+        get { return _nameSpecified; }
+        set { _nameSpecified = value; }
+      }
+
+      [JsonIgnore]
+      public bool WeightSpecified;
+    }
+
+    [Test]
+    public void SpecifiedTest()
+    {
+      SpecifiedTestClass c = new SpecifiedTestClass();
+      c.Name = "James";
+      c.Age = 27;
+      c.NameSpecified = false;
+
+      string json = JsonConvert.SerializeObject(c, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""Age"": 27
+}", json);
+
+      SpecifiedTestClass deserialized = JsonConvert.DeserializeObject<SpecifiedTestClass>(json);
+      Assert.IsNull(deserialized.Name);
+      Assert.IsFalse(deserialized.NameSpecified);
+      Assert.IsFalse(deserialized.WeightSpecified);
+      Assert.AreEqual(27, deserialized.Age);
+
+      c.NameSpecified = true;
+      c.WeightSpecified = true;
+      json = JsonConvert.SerializeObject(c, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""Name"": ""James"",
+  ""Age"": 27,
+  ""Weight"": 0
+}", json);
+
+      deserialized = JsonConvert.DeserializeObject<SpecifiedTestClass>(json);
+      Assert.AreEqual("James", deserialized.Name);
+      Assert.IsTrue(deserialized.NameSpecified);
+      Assert.IsTrue(deserialized.WeightSpecified);
+      Assert.AreEqual(27, deserialized.Age);
+
+//      XmlSerializer s = new XmlSerializer(typeof(OptionalOrder));
+
+//      StringWriter sw = new StringWriter();
+//      s.Serialize(sw, new OptionalOrder() { FirstOrder = "First", FirstOrderSpecified = true});
+
+//      Console.WriteLine(sw.ToString());
+
+//      string xml = @"<?xml version=""1.0"" encoding=""utf-16""?>
+//<OptionalOrder xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+//  <FirstOrder>First</FirstOrder>
+//</OptionalOrder>";
+
+//      OptionalOrder o = (OptionalOrder)s.Deserialize(new StringReader(xml));
+//      Console.WriteLine(o.FirstOrder);
+//      Console.WriteLine(o.FirstOrderSpecified);
+    }
+
+    //public class OptionalOrder
+    //{
+    //  // This field shouldn't be serialized 
+    //  // if it is uninitialized.
+    //  public string FirstOrder;
+    //  // Use the XmlIgnoreAttribute to ignore the 
+    //  // special field named "FirstOrderSpecified".
+    //  [System.Xml.Serialization.XmlIgnoreAttribute]
+    //  public bool FirstOrderSpecified;
+    //}
+
+    public class FamilyDetails
+    {
+        public string Name { get; set; }
+        public int NumberOfChildren { get; set; }
+
+        [JsonIgnore]
+        public bool NumberOfChildrenSpecified  { get; set; }
+    }
+
+    [Test]
+    public void SpecifiedExample()
+    {
+        FamilyDetails joe = new FamilyDetails();
+        joe.Name = "Joe Family Details";
+        joe.NumberOfChildren = 4;
+        joe.NumberOfChildrenSpecified = true;
+
+        FamilyDetails martha = new FamilyDetails();
+        martha.Name = "Martha Family Details";
+        martha.NumberOfChildren = 3;
+        martha.NumberOfChildrenSpecified = false;
+
+        string json = JsonConvert.SerializeObject(new[] { joe, martha }, Formatting.Indented);
+        //[
+        //  {
+        //    "Name": "Joe Family Details",
+        //    "NumberOfChildren": 4
+        //  },
+        //  {
+        //    "Name": "Martha Family Details"
+        //  }
+        //]
+        Console.WriteLine(json);
+
+        string mikeString = "{\"Name\": \"Mike Person\"}";
+        FamilyDetails mike = JsonConvert.DeserializeObject<FamilyDetails>(mikeString);
+
+        Console.WriteLine("mikeString specifies number of children: {0}", mike.NumberOfChildrenSpecified);
+
+        string mikeFullDisclosureString = "{\"Name\": \"Mike Person\", \"NumberOfChildren\": \"0\"}";
+        mike = JsonConvert.DeserializeObject<FamilyDetails>(mikeFullDisclosureString);
+
+        Console.WriteLine("mikeString specifies number of children: {0}", mike.NumberOfChildrenSpecified);
+    }
+
     public class DictionaryKey
     {
       public string Value { get; set; }

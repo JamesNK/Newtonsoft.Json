@@ -57,7 +57,8 @@ namespace Newtonsoft.Json.Serialization
       }
     }
 
-    public JsonSerializerInternalWriter(JsonSerializer serializer) : base(serializer)
+    public JsonSerializerInternalWriter(JsonSerializer serializer)
+      : base(serializer)
     {
     }
 
@@ -109,7 +110,7 @@ namespace Newtonsoft.Json.Serialization
       }
       else if (valueContract is JsonStringContract)
       {
-        SerializeString(writer, value, (JsonStringContract) valueContract);
+        SerializeString(writer, value, (JsonStringContract)valueContract);
       }
       else if (valueContract is JsonObjectContract)
       {
@@ -117,12 +118,12 @@ namespace Newtonsoft.Json.Serialization
       }
       else if (valueContract is JsonDictionaryContract)
       {
-        JsonDictionaryContract dictionaryContract = (JsonDictionaryContract) valueContract;
+        JsonDictionaryContract dictionaryContract = (JsonDictionaryContract)valueContract;
         SerializeDictionary(writer, dictionaryContract.CreateWrapper(value), dictionaryContract, member, collectionValueContract);
       }
       else if (valueContract is JsonArrayContract)
       {
-        JsonArrayContract arrayContract = (JsonArrayContract) valueContract;
+        JsonArrayContract arrayContract = (JsonArrayContract)valueContract;
         SerializeList(writer, arrayContract.CreateWrapper(value), arrayContract, member, collectionValueContract);
       }
       else if (valueContract is JsonLinqContract)
@@ -132,13 +133,13 @@ namespace Newtonsoft.Json.Serialization
 #if !SILVERLIGHT && !PocketPC
       else if (valueContract is JsonISerializableContract)
       {
-        SerializeISerializable(writer, (ISerializable) value, (JsonISerializableContract) valueContract);
+        SerializeISerializable(writer, (ISerializable)value, (JsonISerializableContract)valueContract);
       }
 #endif
 #if !(NET35 || NET20 || SILVERLIGHT)
       else if (valueContract is JsonDynamicContract)
       {
-        SerializeDynamic(writer, (IDynamicMetaObjectProvider) value, (JsonDynamicContract) valueContract);
+        SerializeDynamic(writer, (IDynamicMetaObjectProvider)value, (JsonDynamicContract)valueContract);
       }
 #endif
     }
@@ -242,9 +243,9 @@ namespace Newtonsoft.Json.Serialization
       // use the objectType's TypeConverter if it has one and can convert to a string
       if (converter != null
 #if !SILVERLIGHT
-        && !(converter is ComponentConverter)
+ && !(converter is ComponentConverter)
 #endif
-        && converter.GetType() != typeof(TypeConverter))
+ && converter.GetType() != typeof(TypeConverter))
       {
         if (converter.CanConvertTo(typeof(string)))
         {
@@ -311,7 +312,7 @@ namespace Newtonsoft.Json.Serialization
       {
         try
         {
-          if (!property.Ignored && property.Readable && ShouldSerialize(property, value))
+          if (!property.Ignored && property.Readable && ShouldSerialize(property, value) && IsSpecified(property, value))
           {
             object memberValue = property.ValueProvider.GetValue(value);
             JsonContract memberContract = GetContractSafe(memberValue);
@@ -609,6 +610,14 @@ namespace Newtonsoft.Json.Serialization
         return true;
 
       return property.ShouldSerialize(target);
+    }
+
+    private bool IsSpecified(JsonProperty property, object target)
+    {
+      if (property.GetIsSpecified == null)
+        return true;
+
+      return property.GetIsSpecified(target);
     }
   }
 }

@@ -552,7 +552,12 @@ namespace Newtonsoft.Json.Serialization
       // this could happen because of a JsonConverter against the type
       if ((!useExistingValue || value != currentValue)
         && ShouldSetPropertyValue(property, value))
+      {
         property.ValueProvider.SetValue(target, value);
+
+        if (property.SetIsSpecified != null)
+          property.SetIsSpecified(target, true);
+      }
     }
 
     private bool ShouldSetPropertyValue(JsonProperty property, object value)

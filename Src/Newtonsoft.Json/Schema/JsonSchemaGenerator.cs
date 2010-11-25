@@ -361,7 +361,8 @@ namespace Newtonsoft.Json.Schema
         {
           bool optional = property.NullValueHandling == NullValueHandling.Ignore ||
                           property.DefaultValueHandling == DefaultValueHandling.Ignore ||
-                          property.ShouldSerialize != null;
+                          property.ShouldSerialize != null ||
+                          property.GetIsSpecified != null;
 
           JsonSchema propertySchema = GenerateInternal(property.PropertyType, property.Required, optional);
 
