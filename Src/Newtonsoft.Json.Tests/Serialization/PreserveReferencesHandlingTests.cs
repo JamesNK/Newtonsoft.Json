@@ -87,7 +87,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Self referencing loop")]
+    [ExpectedException(typeof(JsonSerializationException))]
     public void SerializeCircularListsError()
     {
       CircularList circularList = new CircularList();
@@ -239,7 +239,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Self referencing loop")]
+    [ExpectedException(typeof(JsonSerializationException))]
     public void SerializeCircularDictionarysError()
     {
       CircularDictionary circularDictionary = new CircularDictionary();

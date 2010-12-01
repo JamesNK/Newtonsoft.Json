@@ -214,7 +214,7 @@ namespace Newtonsoft.Json.Serialization
         switch (referenceLoopHandling.GetValueOrDefault(Serializer.ReferenceLoopHandling))
         {
           case ReferenceLoopHandling.Error:
-            throw new JsonSerializationException("Self referencing loop");
+            throw new JsonSerializationException("Self referencing loop detected for type '{0}'.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
           case ReferenceLoopHandling.Ignore:
             return false;
           case ReferenceLoopHandling.Serialize:

@@ -1322,7 +1322,7 @@ keyword such as type of business.""
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Self referencing loop")]
+    [ExpectedException(typeof(JsonSerializationException))]
     public void JsonPropertyWithHandlingValues_ReferenceLoopError()
     {
       JsonPropertyWithHandlingValues o = new JsonPropertyWithHandlingValues();
@@ -3959,5 +3959,28 @@ keyword such as type of business.""
         });
     }
 #endif
+
+    public class Response
+    {
+      public string Name { get; set; }
+      public JToken Data { get; set; }
+    }
+
+    [Test]
+    public void DeserializeJToken()
+    {
+      Response response = new Response
+        {
+          Name = "Success",
+          Data = new JObject(new JProperty("First", "Value1"), new JProperty("Second", "Value2"))
+        };
+
+      string json = JsonConvert.SerializeObject(response, Formatting.Indented);
+
+      Response deserializedResponse = JsonConvert.DeserializeObject<Response>(json);
+
+      Assert.AreEqual("Success", deserializedResponse.Name);
+      Assert.IsTrue(deserializedResponse.Data.DeepEquals(response.Data));
+    }
   }
 }
