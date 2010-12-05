@@ -3,10 +3,9 @@
   <metadata>
     <id>Newtonsoft.Json</id>
     <version>3.5.8</version>
-    <authors>
-      <author>James Newton-King</author> 
-    </authors>
+    <authors>James Newton-King</authors>
     <description>Json.NET is a popular high-performance JSON framework for .NET</description>
     <language>en-US</language>
+    <projectUrl>http://james.newtonking.com/projects/json-net.aspx</projectUrl>
   </metadata>
 </package>

@@ -4,7 +4,7 @@
   $signAssemblies = $false
   $signKeyPath = "D:\Development\Releases\newtonsoft.snk"
   $buildDocumentation = $false
-  $buildNuPackage = $true
+  $buildNuGet = $true
   
   $baseDir  = resolve-path ..
   $buildDir = "$baseDir\Build"
@@ -14,11 +14,11 @@
   $releaseDir = "$baseDir\Release"
   $workingDir = "$baseDir\Working"
   $builds = @(
-    @{Name = "Newtonsoft.Json"; TestsName = "Newtonsoft.Json.Tests"; Constants=""; FinalDir="Net"; NuPackDir = "40"; Framework="net-4.0"},
-    @{Name = "Newtonsoft.Json.WindowsPhone"; TestsName = $null; Constants="SILVERLIGHT;WINDOWS_PHONE"; FinalDir="WindowsPhone"; NuPackDir = "WP"; Framework="net-4.0"},
-    @{Name = "Newtonsoft.Json.Silverlight"; TestsName = "Newtonsoft.Json.Tests.Silverlight"; Constants="SILVERLIGHT"; FinalDir="Silverlight"; NuPackDir = "SL"; Framework="net-2.0"},
-    @{Name = "Newtonsoft.Json.Net35"; TestsName = "Newtonsoft.Json.Tests.Net35"; Constants="NET35"; FinalDir="Net35"; NuPackDir = "35"; Framework="net-2.0"},
-    @{Name = "Newtonsoft.Json.Net20"; TestsName = "Newtonsoft.Json.Tests.Net20"; Constants="NET20"; FinalDir="Net20"; NuPackDir = "20"; Framework="net-2.0"}
+    @{Name = "Newtonsoft.Json"; TestsName = "Newtonsoft.Json.Tests"; Constants=""; FinalDir="Net"; NuGetDir = "40"; Framework="net-4.0"},
+    @{Name = "Newtonsoft.Json.WindowsPhone"; TestsName = $null; Constants="SILVERLIGHT;WINDOWS_PHONE"; FinalDir="WindowsPhone"; NuGetDir = "WP"; Framework="net-4.0"},
+    @{Name = "Newtonsoft.Json.Silverlight"; TestsName = "Newtonsoft.Json.Tests.Silverlight"; Constants="SILVERLIGHT"; FinalDir="Silverlight"; NuGetDir = "SL"; Framework="net-2.0"},
+    @{Name = "Newtonsoft.Json.Net35"; TestsName = "Newtonsoft.Json.Tests.Net35"; Constants="NET35"; FinalDir="Net35"; NuGetDir = "35"; Framework="net-2.0"},
+    @{Name = "Newtonsoft.Json.Net20"; TestsName = "Newtonsoft.Json.Tests.Net20"; Constants="NET20"; FinalDir="Net20"; NuGetDir = "20"; Framework="net-2.0"}
   )
 }
 
@@ -83,22 +83,22 @@ task Package -depends Merge {
     move -Path $workingDir\Documentation\Documentation.chm -Destination $workingDir\Package\Documentation.chm
     move -Path $workingDir\Documentation\LastBuild.log -Destination $workingDir\Documentation.log
   }
-  if ($buildNuPackage)
+  if ($buildNuGet)
   {
-    New-Item -Path $workingDir\NuPack -ItemType Directory
-    Copy-Item -Path "$buildDir\Newtonsoft.Json.nuspec" -Destination $workingDir\NuPack\Newtonsoft.Json.nuspec -recurse
+    New-Item -Path $workingDir\NuGet -ItemType Directory
+    Copy-Item -Path "$buildDir\Newtonsoft.Json.nuspec" -Destination $workingDir\NuGet\Newtonsoft.Json.nuspec -recurse
     
     foreach ($build in $builds)
     {
         $name = $build.TestsName
         $finalDir = $build.FinalDir
-        $frameworkDir = $build.NuPackDir
+        $frameworkDir = $build.NuGetDir
         
-        Copy-Item -Path "$sourceDir\Newtonsoft.Json\bin\Release\$finalDir" -Destination $workingDir\NuPack\lib\$frameworkDir -recurse
+        Copy-Item -Path "$sourceDir\Newtonsoft.Json\bin\Release\$finalDir" -Destination $workingDir\NuGet\lib\$frameworkDir -recurse
     }
   
-    exec { .\Tools\NuPack\NuPack.exe $workingDir\NuPack\Newtonsoft.Json.nuspec }
-    move -Path .\*.nupkg -Destination $workingDir\NuPack
+    exec { .\Tools\NuGet\NuGet.exe pack $workingDir\NuGet\Newtonsoft.Json.nuspec }
+    move -Path .\*.nupkg -Destination $workingDir\NuGet
   }
   
   Copy-Item -Path $docDir\readme.txt -Destination $workingDir\Package\
