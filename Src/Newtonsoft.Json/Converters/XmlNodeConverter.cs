@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !SILVERLIGHT
+#if !SILVERLIGHT || WINDOWS_PHONE
 using System;
 using System.Collections.Generic;
 using System.Xml;
@@ -35,7 +35,8 @@ using System.Linq;
 
 namespace Newtonsoft.Json.Converters
 {
-  #region Wrappers
+  #region XmlNodeWrappers
+#if !SILVERLIGHT
   internal class XmlDocumentWrapper : XmlNodeWrapper, IXmlDocument
   {
     private XmlDocument _document;
@@ -262,7 +263,10 @@ namespace Newtonsoft.Json.Converters
       get { return _node.NamespaceURI; }
     }
   }
+#endif
+  #endregion
 
+  #region Interfaces
   internal interface IXmlDocument : IXmlNode
   {
     IXmlNode CreateComment(string text);
@@ -304,8 +308,10 @@ namespace Newtonsoft.Json.Converters
     string NamespaceURI { get; }
     object WrappedNode { get; }
   }
+  #endregion
 
-  #if !NET20
+  #region XNodeWrappers
+#if !NET20
   internal class XDeclarationWrapper : XObjectWrapper, IXmlDeclaration
   {
     internal readonly XDeclaration _declaration;
@@ -725,7 +731,7 @@ namespace Newtonsoft.Json.Converters
   #endregion
 
   /// <summary>
-  /// Converts an <see cref="XmlNode"/> to and from JSON.
+  /// Converts XML to and from JSON.
   /// </summary>
   public class XmlNodeConverter : JsonConverter
   {
@@ -752,16 +758,7 @@ namespace Newtonsoft.Json.Converters
     /// <param name="value">The value.</param>
     public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {
-      IXmlNode node;
-
-      if (value is XmlNode)
-        node = new XmlNodeWrapper((XmlNode)value);
-#if !NET20
-      else if (value is XObject)
-        node = XContainerWrapper.WrapNode((XObject)value);
-#endif
-      else
-        throw new ArgumentException("Value must be an XmlNode", "value");
+      IXmlNode node = WrapXml(value);
 
       XmlNamespaceManager manager = new XmlNamespaceManager(new NameTable());
       PushParentNamespaces(node, manager);
@@ -769,6 +766,20 @@ namespace Newtonsoft.Json.Converters
       writer.WriteStartObject();
       SerializeNode(writer, node, manager, true);
       writer.WriteEndObject();
+    }
+
+    private IXmlNode WrapXml(object value)
+    {
+#if !NET20
+      if (value is XObject)
+        return XContainerWrapper.WrapNode((XObject)value);
+#endif
+#if !SILVERLIGHT
+      if (value is XmlNode)
+        return new XmlNodeWrapper((XmlNode)value);
+#endif
+      
+      throw new ArgumentException("Value must be an XML object.", "value");
     }
 
     private void PushParentNamespaces(IXmlNode node, XmlNamespaceManager manager)
@@ -1022,20 +1033,11 @@ namespace Newtonsoft.Json.Converters
     public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
     {
       XmlNamespaceManager manager = new XmlNamespaceManager(new NameTable());
-      IXmlDocument document;
-      IXmlNode rootNode;
+      IXmlDocument document = null;
+      IXmlNode rootNode = null;
 
-      if (typeof (XmlNode).IsAssignableFrom(objectType))
-      {
-        if (objectType != typeof (XmlDocument))
-          throw new JsonSerializationException("XmlNodeConverter only supports deserializing XmlDocuments");
-
-        XmlDocument d = new XmlDocument();
-        document = new XmlDocumentWrapper(d);
-        rootNode = document;
-      }
 #if !NET20
-      else if (typeof(XObject).IsAssignableFrom(objectType))
+      if (typeof(XObject).IsAssignableFrom(objectType))
       {
         if (objectType != typeof (XDocument) && objectType != typeof (XElement))
           throw new JsonSerializationException("XmlNodeConverter only supports deserializing XDocument or XElement.");
@@ -1045,10 +1047,20 @@ namespace Newtonsoft.Json.Converters
         rootNode = document;
       }
 #endif
-      else
+#if !SILVERLIGHT
+      if (typeof(XmlNode).IsAssignableFrom(objectType))
       {
-        throw new JsonSerializationException("Unexpected type when converting XML: " + objectType);
+        if (objectType != typeof (XmlDocument))
+          throw new JsonSerializationException("XmlNodeConverter only supports deserializing XmlDocuments");
+
+        XmlDocument d = new XmlDocument();
+        document = new XmlDocumentWrapper(d);
+        rootNode = document;
       }
+#endif
+      
+      if (document == null || rootNode == null)
+        throw new JsonSerializationException("Unexpected type when converting XML: " + objectType);
 
       if (reader.TokenType != JsonToken.StartObject)
         throw new JsonSerializationException("XmlNodeConverter can only convert JSON that begins with an object.");
@@ -1414,10 +1426,12 @@ namespace Newtonsoft.Json.Converters
     /// </returns>
     public override bool CanConvert(Type valueType)
     {
-      if (typeof(XmlNode).IsAssignableFrom(valueType))
-        return true;
 #if !NET20
       if (typeof(XObject).IsAssignableFrom(valueType))
+        return true;
+#endif
+#if !SILVERLIGHT
+      if (typeof(XmlNode).IsAssignableFrom(valueType))
         return true;
 #endif
 
