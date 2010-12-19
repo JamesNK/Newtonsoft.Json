@@ -3385,6 +3385,7 @@ keyword such as type of business.""
       public string Name { get; set; }
       public int Age { get; set; }
       public int Weight { get; set; }
+      public int Height { get; set; }
 
       // dummy. should never be used because it isn't of type bool
       [JsonIgnore]
@@ -3399,6 +3400,10 @@ keyword such as type of business.""
 
       [JsonIgnore]
       public bool WeightSpecified;
+
+      [JsonIgnore]
+      [System.Xml.Serialization.XmlIgnoreAttribute]
+      public bool HeightSpecified;
     }
 
     [Test]
@@ -3419,28 +3424,36 @@ keyword such as type of business.""
       Assert.IsNull(deserialized.Name);
       Assert.IsFalse(deserialized.NameSpecified);
       Assert.IsFalse(deserialized.WeightSpecified);
+      Assert.IsFalse(deserialized.HeightSpecified);
       Assert.AreEqual(27, deserialized.Age);
 
       c.NameSpecified = true;
       c.WeightSpecified = true;
+      c.HeightSpecified = true;
       json = JsonConvert.SerializeObject(c, Formatting.Indented);
 
       Assert.AreEqual(@"{
   ""Name"": ""James"",
   ""Age"": 27,
-  ""Weight"": 0
+  ""Weight"": 0,
+  ""Height"": 0
 }", json);
 
       deserialized = JsonConvert.DeserializeObject<SpecifiedTestClass>(json);
       Assert.AreEqual("James", deserialized.Name);
       Assert.IsTrue(deserialized.NameSpecified);
       Assert.IsTrue(deserialized.WeightSpecified);
+      Assert.IsTrue(deserialized.HeightSpecified);
       Assert.AreEqual(27, deserialized.Age);
+    }
 
+//    [Test]
+//    public void XmlSerializerSpecifiedTrueTest()
+//    {
 //      XmlSerializer s = new XmlSerializer(typeof(OptionalOrder));
 
 //      StringWriter sw = new StringWriter();
-//      s.Serialize(sw, new OptionalOrder() { FirstOrder = "First", FirstOrderSpecified = true});
+//      s.Serialize(sw, new OptionalOrder() { FirstOrder = "First", FirstOrderSpecified = true });
 
 //      Console.WriteLine(sw.ToString());
 
@@ -3452,18 +3465,38 @@ keyword such as type of business.""
 //      OptionalOrder o = (OptionalOrder)s.Deserialize(new StringReader(xml));
 //      Console.WriteLine(o.FirstOrder);
 //      Console.WriteLine(o.FirstOrderSpecified);
-    }
+//    }
 
-    //public class OptionalOrder
-    //{
-    //  // This field shouldn't be serialized 
-    //  // if it is uninitialized.
-    //  public string FirstOrder;
-    //  // Use the XmlIgnoreAttribute to ignore the 
-    //  // special field named "FirstOrderSpecified".
-    //  [System.Xml.Serialization.XmlIgnoreAttribute]
-    //  public bool FirstOrderSpecified;
-    //}
+//    [Test]
+//    public void XmlSerializerSpecifiedFalseTest()
+//    {
+//      XmlSerializer s = new XmlSerializer(typeof(OptionalOrder));
+
+//      StringWriter sw = new StringWriter();
+//      s.Serialize(sw, new OptionalOrder() { FirstOrder = "First", FirstOrderSpecified = false });
+
+//      Console.WriteLine(sw.ToString());
+
+////      string xml = @"<?xml version=""1.0"" encoding=""utf-16""?>
+////<OptionalOrder xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+////  <FirstOrder>First</FirstOrder>
+////</OptionalOrder>";
+
+////      OptionalOrder o = (OptionalOrder)s.Deserialize(new StringReader(xml));
+////      Console.WriteLine(o.FirstOrder);
+////      Console.WriteLine(o.FirstOrderSpecified);
+//    }
+
+    public class OptionalOrder
+    {
+      // This field shouldn't be serialized 
+      // if it is uninitialized.
+      public string FirstOrder;
+      // Use the XmlIgnoreAttribute to ignore the 
+      // special field named "FirstOrderSpecified".
+      [System.Xml.Serialization.XmlIgnoreAttribute]
+      public bool FirstOrderSpecified;
+    }
 
     public class FamilyDetails
     {

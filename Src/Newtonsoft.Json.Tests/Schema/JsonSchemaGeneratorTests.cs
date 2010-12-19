@@ -94,10 +94,12 @@ namespace Newtonsoft.Json.Tests.Schema
   ""additionalProperties"": false,
   ""properties"": {
     ""TestField1"": {
+      ""required"": true,
       ""type"": ""integer"",
       ""default"": 21
     },
     ""TestProperty1"": {
+      ""required"": true,
       ""type"": [
         ""string"",
         ""null""
@@ -124,15 +126,18 @@ namespace Newtonsoft.Json.Tests.Schema
   ""type"": ""object"",
   ""properties"": {
     ""Name"": {
+      ""required"": true,
       ""type"": [
         ""string"",
         ""null""
       ]
     },
     ""BirthDate"": {
+      ""required"": true,
       ""type"": ""string""
     },
     ""LastModified"": {
+      ""required"": true,
       ""type"": ""string""
     }
   }
@@ -151,36 +156,43 @@ namespace Newtonsoft.Json.Tests.Schema
   ""type"": ""object"",
   ""properties"": {
     ""Id"": {
+      ""required"": true,
       ""type"": ""string""
     },
     ""FName"": {
+      ""required"": true,
       ""type"": [
         ""string"",
         ""null""
       ]
     },
     ""LName"": {
+      ""required"": true,
       ""type"": [
         ""string"",
         ""null""
       ]
     },
     ""RoleId"": {
+      ""required"": true,
       ""type"": ""integer""
     },
     ""NullableRoleId"": {
+      ""required"": true,
       ""type"": [
         ""integer"",
         ""null""
       ]
     },
     ""NullRoleId"": {
+      ""required"": true,
       ""type"": [
         ""integer"",
         ""null""
       ]
     },
     ""Active"": {
+      ""required"": true,
       ""type"": [
         ""boolean"",
         ""null""
@@ -370,6 +382,7 @@ namespace Newtonsoft.Json.Tests.Schema
       
       Assert.AreEqual(@"{
   ""id"": ""System.IO.DirectoryInfo"",
+  ""required"": true,
   ""type"": [
     ""object"",
     ""null""
@@ -377,6 +390,7 @@ namespace Newtonsoft.Json.Tests.Schema
   ""additionalProperties"": false,
   ""properties"": {
     ""Name"": {
+      ""required"": true,
       ""type"": [
         ""string"",
         ""null""
@@ -386,39 +400,49 @@ namespace Newtonsoft.Json.Tests.Schema
       ""$ref"": ""System.IO.DirectoryInfo""
     },
     ""Exists"": {
+      ""required"": true,
       ""type"": ""boolean""
     },
     ""FullName"": {
+      ""required"": true,
       ""type"": [
         ""string"",
         ""null""
       ]
     },
     ""Extension"": {
+      ""required"": true,
       ""type"": [
         ""string"",
         ""null""
       ]
     },
     ""CreationTime"": {
+      ""required"": true,
       ""type"": ""string""
     },
     ""CreationTimeUtc"": {
+      ""required"": true,
       ""type"": ""string""
     },
     ""LastAccessTime"": {
+      ""required"": true,
       ""type"": ""string""
     },
     ""LastAccessTimeUtc"": {
+      ""required"": true,
       ""type"": ""string""
     },
     ""LastWriteTime"": {
+      ""required"": true,
       ""type"": ""string""
     },
     ""LastWriteTimeUtc"": {
+      ""required"": true,
       ""type"": ""string""
     },
     ""Attributes"": {
+      ""required"": true,
       ""type"": ""integer""
     }
   }
@@ -458,21 +482,27 @@ namespace Newtonsoft.Json.Tests.Schema
   ""additionalProperties"": false,
   ""properties"": {
     ""major"": {
+      ""required"": true,
       ""type"": ""integer""
     },
     ""minor"": {
+      ""required"": true,
       ""type"": ""integer""
     },
     ""build"": {
+      ""required"": true,
       ""type"": ""integer""
     },
     ""revision"": {
+      ""required"": true,
       ""type"": ""integer""
     },
     ""majorRevision"": {
+      ""required"": true,
       ""type"": ""integer""
     },
     ""minorRevision"": {
+      ""required"": true,
       ""type"": ""integer""
     }
   }
@@ -503,6 +533,7 @@ namespace Newtonsoft.Json.Tests.Schema
   ""type"": ""object"",
   ""properties"": {
     ""x"": {
+      ""required"": true,
       ""type"": ""integer"",
       ""enum"": [
         0,
@@ -552,13 +583,13 @@ namespace Newtonsoft.Json.Tests.Schema
 
       Assert.AreEqual(@"{
   ""id"": ""Newtonsoft.Json.Tests.TestObjects.CircularReferenceClass"",
-  ""optional"": true,
   ""type"": [
     ""object"",
     ""null""
   ],
   ""properties"": {
     ""Name"": {
+      ""required"": true,
       ""type"": ""string""
     },
     ""Child"": {
@@ -579,13 +610,13 @@ namespace Newtonsoft.Json.Tests.Schema
 
       Assert.AreEqual(@"{
   ""id"": ""Newtonsoft.Json.Tests.TestObjects.JsonPropertyWithHandlingValues"",
+  ""required"": true,
   ""type"": [
     ""object"",
     ""null""
   ],
   ""properties"": {
     ""DefaultValueHandlingIgnoreProperty"": {
-      ""optional"": true,
       ""type"": [
         ""string"",
         ""null""
@@ -593,6 +624,7 @@ namespace Newtonsoft.Json.Tests.Schema
       ""default"": ""Default!""
     },
     ""DefaultValueHandlingIncludeProperty"": {
+      ""required"": true,
       ""type"": [
         ""string"",
         ""null""
@@ -600,13 +632,13 @@ namespace Newtonsoft.Json.Tests.Schema
       ""default"": ""Default!""
     },
     ""NullValueHandlingIgnoreProperty"": {
-      ""optional"": true,
       ""type"": [
         ""string"",
         ""null""
       ]
     },
     ""NullValueHandlingIncludeProperty"": {
+      ""required"": true,
       ""type"": [
         ""string"",
         ""null""

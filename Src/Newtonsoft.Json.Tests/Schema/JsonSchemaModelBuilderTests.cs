@@ -139,7 +139,7 @@ namespace Newtonsoft.Json.Tests.Schema
     }
 
     [Test]
-    public void Optional()
+    public void Required()
     {
       string schemaJson = @"{
   ""description"":""A person"",
@@ -147,8 +147,8 @@ namespace Newtonsoft.Json.Tests.Schema
   ""properties"":
   {
     ""name"":{""type"":""string""},
-    ""hobbies"":{""type"":""string"",optional:true},
-    ""age"":{""type"":""integer"",optional:true}
+    ""hobbies"":{""type"":""string"",required:true},
+    ""age"":{""type"":""integer"",required:true}
   }
 }";
 
@@ -158,9 +158,9 @@ namespace Newtonsoft.Json.Tests.Schema
 
       Assert.AreEqual(JsonSchemaType.Object, model.Type);
       Assert.AreEqual(3, model.Properties.Count);
-      Assert.AreEqual(false, model.Properties["name"].Optional);
-      Assert.AreEqual(true, model.Properties["hobbies"].Optional);
-      Assert.AreEqual(true, model.Properties["age"].Optional);
+      Assert.AreEqual(false, model.Properties["name"].Required);
+      Assert.AreEqual(true, model.Properties["hobbies"].Required);
+      Assert.AreEqual(true, model.Properties["age"].Required);
     }
   }
 }

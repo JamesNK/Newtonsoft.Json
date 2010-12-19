@@ -743,8 +743,8 @@ namespace Newtonsoft.Json.Serialization
         specifiedMember = member.DeclaringType.GetField(member.Name + JsonTypeReflector.SpecifiedPostfix);
 
       if (specifiedMember == null || ReflectionUtils.GetMemberUnderlyingType(specifiedMember) != typeof(bool)
-        || (ReflectionUtils.GetAttribute<XmlIgnoreAttribute>(specifiedMember) != null
-        && ReflectionUtils.GetAttribute<JsonIgnoreAttribute>(specifiedMember) != null))
+        || (ReflectionUtils.GetAttribute<XmlIgnoreAttribute>(specifiedMember) == null
+        && ReflectionUtils.GetAttribute<JsonIgnoreAttribute>(specifiedMember) == null))
       {
         return;
       }

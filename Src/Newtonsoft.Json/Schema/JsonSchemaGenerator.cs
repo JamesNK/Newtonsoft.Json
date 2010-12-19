@@ -205,7 +205,7 @@ namespace Newtonsoft.Json.Schema
       }
     }
 
-    private JsonSchema GenerateInternal(Type type, Required valueRequired, bool optional)
+    private JsonSchema GenerateInternal(Type type, Required valueRequired, bool required)
     {
       ValidationUtils.ArgumentNotNull(type, "type");
 
@@ -221,8 +221,8 @@ namespace Newtonsoft.Json.Schema
           // change resolved schema to allow nulls. hacky but what are ya gonna do?
           if (valueRequired != Required.Always && !HasFlag(resolvedSchema.Type, JsonSchemaType.Null))
             resolvedSchema.Type |= JsonSchemaType.Null;
-          if (optional && resolvedSchema.Optional != true)
-            resolvedSchema.Optional = true;
+          if (required && resolvedSchema.Required != true)
+            resolvedSchema.Required = true;
 
           return resolvedSchema;
         }
@@ -248,8 +248,8 @@ namespace Newtonsoft.Json.Schema
       if (explicitId != null)
         CurrentSchema.Id = explicitId;
 
-      if (optional)
-        CurrentSchema.Optional = true;
+      if (required)
+        CurrentSchema.Required = true;
       CurrentSchema.Title = GetTitle(type);
       CurrentSchema.Description = GetDescription(type);
 
@@ -364,7 +364,7 @@ namespace Newtonsoft.Json.Schema
                           property.ShouldSerialize != null ||
                           property.GetIsSpecified != null;
 
-          JsonSchema propertySchema = GenerateInternal(property.PropertyType, property.Required, optional);
+          JsonSchema propertySchema = GenerateInternal(property.PropertyType, property.Required, !optional);
 
           if (property.DefaultValue != null)
             propertySchema.Default = JToken.FromObject(property.DefaultValue);

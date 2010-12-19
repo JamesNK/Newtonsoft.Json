@@ -146,8 +146,8 @@ namespace Newtonsoft.Json.Schema
         case JsonSchemaConstants.AdditionalPropertiesPropertyName:
           ProcessAdditionalProperties();
           break;
-        case JsonSchemaConstants.OptionalPropertyName:
-          CurrentSchema.Optional = (bool)_reader.Value;
+        case JsonSchemaConstants.RequiredPropertyName:
+          CurrentSchema.Required = (bool)_reader.Value;
           break;
         case JsonSchemaConstants.RequiresPropertyName:
           CurrentSchema.Requires = (string) _reader.Value;
@@ -173,8 +173,8 @@ namespace Newtonsoft.Json.Schema
         case JsonSchemaConstants.MinimumItemsPropertyName:
           CurrentSchema.MinimumItems = Convert.ToInt32(_reader.Value, CultureInfo.InvariantCulture);
           break;
-        case JsonSchemaConstants.MaximumDecimalsPropertyName:
-          CurrentSchema.MaximumDecimals = Convert.ToInt32(_reader.Value, CultureInfo.InvariantCulture);
+        case JsonSchemaConstants.DivisibleByPropertyName:
+          CurrentSchema.DivisibleBy = Convert.ToDouble(_reader.Value, CultureInfo.InvariantCulture);
           break;
         case JsonSchemaConstants.DisallowPropertyName:
           CurrentSchema.Disallow = ProcessType();

@@ -116,18 +116,18 @@ namespace Newtonsoft.Json.Tests.Schema
     }
 
     [Test]
-    public void Optional()
+    public void Required()
     {
       string json = @"{
-  ""description"":""Optional"",
-  ""optional"":true
+  ""description"":""Required"",
+  ""required"":true
 }";
 
       JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
       JsonSchema schema = builder.Parse(new JsonTextReader(new StringReader(json)));
 
-      Assert.AreEqual("Optional", schema.Description);
-      Assert.AreEqual(true, schema.Optional);
+      Assert.AreEqual("Required", schema.Description);
+      Assert.AreEqual(true, schema.Required);
     }
 
     [Test]
@@ -279,7 +279,7 @@ namespace Newtonsoft.Json.Tests.Schema
   ""maxItems"":2,
   ""minLength"":5,
   ""maxLength"":50,
-  ""maxDecimal"":3,
+  ""divisibleBy"":3,
 }";
 
       JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
@@ -292,7 +292,7 @@ namespace Newtonsoft.Json.Tests.Schema
       Assert.AreEqual(2, schema.MaximumItems);
       Assert.AreEqual(5, schema.MinimumLength);
       Assert.AreEqual(50, schema.MaximumLength);
-      Assert.AreEqual(3, schema.MaximumDecimals);
+      Assert.AreEqual(3, schema.DivisibleBy);
     }
 
     [Test]

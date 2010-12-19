@@ -35,7 +35,7 @@ namespace Newtonsoft.Json.Schema
     public const string TypePropertyName = "type";
     public const string PropertiesPropertyName = "properties";
     public const string ItemsPropertyName = "items";
-    public const string OptionalPropertyName = "optional";
+    public const string RequiredPropertyName = "required";
     public const string AdditionalPropertiesPropertyName = "additionalProperties";
     public const string RequiresPropertyName = "requires";
     public const string IdentityPropertyName = "identity";
@@ -54,7 +54,7 @@ namespace Newtonsoft.Json.Schema
     public const string FormatPropertyName = "format";
     public const string DefaultPropertyName = "default";
     public const string TransientPropertyName = "transient";
-    public const string MaximumDecimalsPropertyName = "maxDecimal";
+    public const string DivisibleByPropertyName = "divisibleBy";
     public const string HiddenPropertyName = "hidden";
     public const string DisallowPropertyName = "disallow";
     public const string ExtendsPropertyName = "extends";

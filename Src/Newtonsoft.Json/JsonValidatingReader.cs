@@ -77,7 +77,7 @@ namespace Newtonsoft.Json
 
       private IEnumerable<string> GetRequiredProperties(JsonSchemaModel schema)
       {
-        return schema.Properties.Where(p => !p.Value.Optional).Select(p => p.Key);
+        return schema.Properties.Where(p => p.Value.Required).Select(p => p.Key);
       }
     }
 
@@ -448,7 +448,7 @@ namespace Newtonsoft.Json
           requiredProperties.Where(kv => !kv.Value).Select(kv => kv.Key).ToList();
 
         if (unmatchedRequiredProperties.Count > 0)
-          RaiseError("Non-optional properties are missing from object: {0}.".FormatWith(CultureInfo.InvariantCulture, string.Join(", ", unmatchedRequiredProperties.ToArray())), schema);
+          RaiseError("Required properties are missing from object: {0}.".FormatWith(CultureInfo.InvariantCulture, string.Join(", ", unmatchedRequiredProperties.ToArray())), schema);
       }
     }
 
@@ -564,8 +564,15 @@ namespace Newtonsoft.Json
       if (schema.Minimum != null && value < schema.Minimum)
         RaiseError("Float {0} is less than minimum value of {1}.".FormatWith(CultureInfo.InvariantCulture, JsonConvert.ToString(value), schema.Minimum), schema);
 
-      if (schema.MaximumDecimals != null && MathUtils.GetDecimalPlaces(value) > schema.MaximumDecimals)
-        RaiseError("Float {0} exceeds the maximum allowed number decimal places of {1}.".FormatWith(CultureInfo.InvariantCulture, JsonConvert.ToString(value), schema.MaximumDecimals), schema);
+      if (schema.DivisibleBy != null && !IsZero(value % schema.DivisibleBy.Value))
+        RaiseError("Float {0} is not evenly divisible by {1}.".FormatWith(CultureInfo.InvariantCulture, JsonConvert.ToString(value), schema.DivisibleBy), schema);
+    }
+
+    private static bool IsZero(double value)
+    {
+      double epsilon = 2.2204460492503131e-016;
+
+      return Math.Abs(value) < 10.0 * epsilon;
     }
 
     private void ValidatePropertyName(JsonSchemaModel schema)

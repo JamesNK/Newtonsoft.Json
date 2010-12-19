@@ -33,11 +33,11 @@ namespace Newtonsoft.Json.Schema
 {
   internal class JsonSchemaModel
   {
-    public bool Optional { get; set; }
+    public bool Required { get; set; }
     public JsonSchemaType Type { get; set; }
     public int? MinimumLength { get; set; }
     public int? MaximumLength { get; set; }
-    public int? MaximumDecimals { get; set; }
+    public double? DivisibleBy { get; set; }
     public double? Minimum { get; set; }
     public double? Maximum { get; set; }
     public int? MinimumItems { get; set; }
@@ -54,7 +54,7 @@ namespace Newtonsoft.Json.Schema
     {
       Type = JsonSchemaType.Any;
       AllowAdditionalProperties = true;
-      Optional = true;
+      Required = false;
     }
 
     public static JsonSchemaModel Create(IList<JsonSchema> schemata)
@@ -71,12 +71,16 @@ namespace Newtonsoft.Json.Schema
 
     private static void Combine(JsonSchemaModel model, JsonSchema schema)
     {
-      model.Optional = model.Optional && (schema.Optional ?? false);
+      // Version 3 of the Draft JSON Schema has the default value of Not Required
+      model.Required = model.Required || (schema.Required ?? false);
       model.Type = model.Type & (schema.Type ?? JsonSchemaType.Any);
 
       model.MinimumLength = MathUtils.Max(model.MinimumLength, schema.MinimumLength);
       model.MaximumLength = MathUtils.Min(model.MaximumLength, schema.MaximumLength);
-      model.MaximumDecimals = MathUtils.Min(model.MaximumDecimals, schema.MaximumDecimals);
+
+      // not sure what is the best way to combine divisibleBy
+      model.DivisibleBy = MathUtils.Max(model.DivisibleBy, schema.DivisibleBy);
+
       model.Minimum = MathUtils.Max(model.Minimum, schema.Minimum);
       model.Maximum = MathUtils.Max(model.Maximum, schema.Maximum);
       model.MinimumItems = MathUtils.Max(model.MinimumItems, schema.MinimumItems);

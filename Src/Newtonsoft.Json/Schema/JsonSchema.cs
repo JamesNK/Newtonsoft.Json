@@ -49,9 +49,9 @@ namespace Newtonsoft.Json.Schema
     /// </summary>
     public string Title { get; set; }
     /// <summary>
-    /// Gets or sets whether the object is optional.
+    /// Gets or sets whether the object is required.
     /// </summary>
-    public bool? Optional { get; set; }
+    public bool? Required { get; set; }
     /// <summary>
     /// Gets or sets whether the object is read only.
     /// </summary>
@@ -92,7 +92,7 @@ namespace Newtonsoft.Json.Schema
     /// Gets or sets the maximum decimals.
     /// </summary>
     /// <value>The maximum decimals.</value>
-    public int? MaximumDecimals { get; set; }
+    public double? DivisibleBy { get; set; }
     /// <summary>
     /// Gets or sets the minimum.
     /// </summary>

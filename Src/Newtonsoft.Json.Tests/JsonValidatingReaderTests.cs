@@ -470,7 +470,7 @@ namespace Newtonsoft.Json.Tests
   ""type"":""array"",
   ""items"":{
     ""type"":""number"",
-    ""maxDecimal"":2
+    ""divisibleBy"":0.1
   }
 }";
 
@@ -494,7 +494,7 @@ namespace Newtonsoft.Json.Tests
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Float, reader.TokenType);
-      Assert.AreEqual(@"Float 4.001 exceeds the maximum allowed number decimal places of 2. Line 1, position 15.", validationEventArgs.Message);
+      Assert.AreEqual(@"Float 4.001 is not evenly divisible by 0.1. Line 1, position 15.", validationEventArgs.Message);
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
@@ -700,7 +700,7 @@ namespace Newtonsoft.Json.Tests
     }
 
     [Test]
-    public void MissingNonoptionalProperties()
+    public void MissingRequiredProperties()
     {
       string schemaJson = @"{
   ""description"":""A person"",
@@ -708,8 +708,8 @@ namespace Newtonsoft.Json.Tests
   ""properties"":
   {
     ""name"":{""type"":""string""},
-    ""hobbies"":{""type"":""string""},
-    ""age"":{""type"":""integer""}
+    ""hobbies"":{""type"":""string"",""required"":true},
+    ""age"":{""type"":""integer"",""required"":true}
   }
 }";
 
@@ -735,22 +735,22 @@ namespace Newtonsoft.Json.Tests
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
-      Assert.AreEqual("Non-optional properties are missing from object: hobbies, age. Line 1, position 16.", validationEventArgs.Message);
+      Assert.AreEqual("Required properties are missing from object: hobbies, age. Line 1, position 16.", validationEventArgs.Message);
 
       Assert.IsNotNull(validationEventArgs);
     }
 
     [Test]
-    public void MissingOptionalProperties()
+    public void MissingNonRequiredProperties()
     {
       string schemaJson = @"{
   ""description"":""A person"",
   ""type"":""object"",
   ""properties"":
   {
-    ""name"":{""type"":""string""},
-    ""hobbies"":{""type"":""string"",optional:true},
-    ""age"":{""type"":""integer"",optional:true}
+    ""name"":{""type"":""string"",""required"":true},
+    ""hobbies"":{""type"":""string"",""required"":false},
+    ""age"":{""type"":""integer""}
   }
 }";
 
@@ -873,7 +873,7 @@ namespace Newtonsoft.Json.Tests
   ""type"":""object"",
   ""properties"":
   {
-    ""firstproperty"":{""type"":""string""}
+    ""firstproperty"":{""type"":""string"",""required"":true}
   },
   ""additionalProperties"":{}
 }";
@@ -884,7 +884,7 @@ namespace Newtonsoft.Json.Tests
   ""extends"":{""$ref"":""first""},
   ""properties"":
   {
-    ""secondproperty"":{""type"":""string""}
+    ""secondproperty"":{""type"":""string"",""required"":true}
   },
   ""additionalProperties"":false
 }";
@@ -955,7 +955,7 @@ namespace Newtonsoft.Json.Tests
     }
 
     [Test]
-    public void ExtendsMissingNonoptionalProperties()
+    public void ExtendsMissingRequiredProperties()
     {
       string json = "{}";
 
@@ -972,7 +972,7 @@ namespace Newtonsoft.Json.Tests
       Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
 
       Assert.AreEqual(1, errors.Count);
-      Assert.AreEqual("Non-optional properties are missing from object: secondproperty, firstproperty. Line 1, position 2.", errors[0]);
+      Assert.AreEqual("Required properties are missing from object: secondproperty, firstproperty. Line 1, position 2.", errors[0]);
     }
 
     [Test]

@@ -134,7 +134,7 @@ namespace Newtonsoft.Json.Bson
 
             byte[] data = (byte[])value.Value;
             _writer.Write(data.Length);
-            _writer.Write((byte)BsonBinaryType.Data);
+            _writer.Write((byte)BsonBinaryType.Binary);
             _writer.Write(data);
           }
           break;
