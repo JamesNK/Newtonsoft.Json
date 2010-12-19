@@ -34,6 +34,11 @@ namespace Newtonsoft.Json.Converters
   /// </summary>
   public class StringEnumConverter : JsonConverter
   {
+    /// <summary>
+    /// Gets or sets a value indicating whether the written enum text should be camel case.
+    /// </summary>
+    /// <value><c>true</c> if the written enum text will be camel case; otherwise, <c>false</c>.</value>
+    public bool CamelCaseText { get; set; }
 
     /// <summary>
     /// Writes the JSON representation of the object.
@@ -53,9 +58,18 @@ namespace Newtonsoft.Json.Converters
       string enumName = e.ToString("G");
 
       if (char.IsNumber(enumName[0]) || enumName[0] == '-')
+      {
+        // enum value didn't have an option against it
+        // fallback to writing number value
         writer.WriteValue(value);
+      }
       else
+      {
+        if (CamelCaseText)
+          enumName = StringUtils.ToCamelCase(enumName);
+
         writer.WriteValue(enumName);
+      }
     }
 
     /// <summary>

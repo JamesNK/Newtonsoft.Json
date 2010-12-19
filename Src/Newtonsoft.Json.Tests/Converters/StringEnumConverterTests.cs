@@ -48,6 +48,23 @@ namespace Newtonsoft.Json.Tests.Converters
     }
 
     [Test]
+    public void SerializeEnumClassWithCamelCase()
+    {
+      EnumClass enumClass = new EnumClass();
+      enumClass.StoreColor = StoreColor.Red;
+      enumClass.NullableStoreColor1 = StoreColor.DarkGoldenrod;
+      enumClass.NullableStoreColor2 = null;
+
+      string json = JsonConvert.SerializeObject(enumClass, Formatting.Indented, new StringEnumConverter { CamelCaseText = true });
+
+      Assert.AreEqual(@"{
+  ""StoreColor"": ""red"",
+  ""NullableStoreColor1"": ""darkGoldenrod"",
+  ""NullableStoreColor2"": null
+}", json);
+    }
+
+    [Test]
     public void SerializeEnumClassUndefined()
     {
       EnumClass enumClass = new EnumClass();
@@ -116,7 +133,7 @@ namespace Newtonsoft.Json.Tests.Converters
       string json = @"{
   ""StoreColor"": ""Red, White"",
   ""NullableStoreColor1"": 0,
-  ""NullableStoreColor2"": ""Black, Red, White""
+  ""NullableStoreColor2"": ""black, Red, White""
 }";
 
       EnumClass enumClass = JsonConvert.DeserializeObject<EnumClass>(json, new StringEnumConverter());

@@ -33,6 +33,7 @@ namespace Newtonsoft.Json.Tests.TestObjects
     Black = 1,
     Red = 2,
     Yellow = 4,
-    White = 8
+    White = 8,
+    DarkGoldenrod = 16
   }
 }

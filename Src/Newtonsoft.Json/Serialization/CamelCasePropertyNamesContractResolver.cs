@@ -24,6 +24,7 @@
 #endregion
 
 using System.Globalization;
+using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Serialization
 {
@@ -48,17 +49,7 @@ namespace Newtonsoft.Json.Serialization
     protected override string ResolvePropertyName(string propertyName)
     {
       // lower case the first letter of the passed in name
-      if (string.IsNullOrEmpty(propertyName))
-        return propertyName;
-
-      if (!char.IsUpper(propertyName[0]))
-        return propertyName;
-
-      string camelCaseName = char.ToLower(propertyName[0], CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture);
-      if (propertyName.Length > 1)
-        camelCaseName += propertyName.Substring(1);
-
-      return camelCaseName;
+      return StringUtils.ToCamelCase(propertyName);
     }
   }
 }
