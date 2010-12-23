@@ -55,7 +55,7 @@ namespace Newtonsoft.Json.Bson
     private ContainerContext _currentContext;
 
     private bool _readRootValueAsArray;
-    private bool _jsonNet35BinaryCompadibility;
+    private bool _jsonNet35BinaryCompatibility;
     private DateTimeKind _dateTimeKindHandling;
 
     private enum BsonReaderState
@@ -89,10 +89,10 @@ namespace Newtonsoft.Json.Bson
     /// <value>
     /// 	<c>true</c> if binary data reading will be compatible with incorrect Json.NET 3.5 written binary; otherwise, <c>false</c>.
     /// </value>
-    public bool JsonNet35BinaryCompadibility
+    public bool JsonNet35BinaryCompatibility
     {
-      get { return _jsonNet35BinaryCompadibility; }
-      set { _jsonNet35BinaryCompadibility = value; }
+      get { return _jsonNet35BinaryCompatibility; }
+      set { _jsonNet35BinaryCompatibility = value; }
     }
 
     /// <summary>
@@ -543,7 +543,7 @@ namespace Newtonsoft.Json.Bson
 
 #pragma warning disable 612,618
       // the old binary type has the data length repeated in the data for some reason
-      if (binaryType == BsonBinaryType.Data && !_jsonNet35BinaryCompadibility)
+      if (binaryType == BsonBinaryType.Data && !_jsonNet35BinaryCompatibility)
       {
         dataLength = ReadInt32();
       }

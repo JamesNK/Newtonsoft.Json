@@ -3477,14 +3477,14 @@ keyword such as type of business.""
 
 //      Console.WriteLine(sw.ToString());
 
-////      string xml = @"<?xml version=""1.0"" encoding=""utf-16""?>
-////<OptionalOrder xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
-////  <FirstOrder>First</FirstOrder>
-////</OptionalOrder>";
+//      //      string xml = @"<?xml version=""1.0"" encoding=""utf-16""?>
+//      //<OptionalOrder xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+//      //  <FirstOrder>First</FirstOrder>
+//      //</OptionalOrder>";
 
-////      OptionalOrder o = (OptionalOrder)s.Deserialize(new StringReader(xml));
-////      Console.WriteLine(o.FirstOrder);
-////      Console.WriteLine(o.FirstOrderSpecified);
+//      //      OptionalOrder o = (OptionalOrder)s.Deserialize(new StringReader(xml));
+//      //      Console.WriteLine(o.FirstOrder);
+//      //      Console.WriteLine(o.FirstOrderSpecified);
 //    }
 
     public class OptionalOrder
