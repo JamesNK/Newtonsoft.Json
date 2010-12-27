@@ -43,10 +43,13 @@ namespace Newtonsoft.Json.Linq
   /// Represents an abstract JSON token.
   /// </summary>
   public abstract class JToken : IJEnumerable<JToken>, IJsonLineInfo
-#if !(NET35 || NET20 || SILVERLIGHT)
-    , IDynamicMetaObjectProvider
+#if !SILVERLIGHT
+, ICloneable
 #endif
-    {
+#if !(NET35 || NET20 || SILVERLIGHT)
+, IDynamicMetaObjectProvider
+#endif
+  {
     private JContainer _parent;
     internal JToken _next;
     private static JTokenEqualityComparer _equalityComparer;
@@ -1298,5 +1301,21 @@ namespace Newtonsoft.Json.Linq
       return GetMetaObject(parameter);
     }
 #endif
+
+#if !SILVERLIGHT
+    object ICloneable.Clone()
+    {
+      return DeepClone();
+    }
+#endif
+
+    /// <summary>
+    /// Creates a new instance of the <see cref="JToken"/>. All child tokens are recursively cloned.
+    /// </summary>
+    /// <returns>A new instance of the <see cref="JToken"/>.</returns>
+    public JToken DeepClone()
+    {
+      return CloneToken();
+    }
   }
 }

@@ -646,5 +646,81 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual("secondlastpie", (string)a[5]);
       Assert.AreEqual(7, a.Count());
     }
+
+    [Test]
+    public void DeepClone()
+    {
+      JArray a =
+        new JArray(
+          5,
+          new JArray(1),
+          new JArray(1, 2),
+          new JArray(1, 2, 3),
+          new JObject(
+            new JProperty("First", new JValue(Encoding.UTF8.GetBytes("Hi"))),
+            new JProperty("Second", 1),
+            new JProperty("Third", null),
+            new JProperty("Fourth", new JConstructor("Date", 12345)),
+            new JProperty("Fifth", double.PositiveInfinity),
+            new JProperty("Sixth", double.NaN)
+            )
+        );
+
+      JArray a2 = (JArray)a.DeepClone();
+
+      Console.WriteLine(a2.ToString(Formatting.Indented));
+
+      Assert.IsTrue(a.DeepEquals(a2));
+    }
+
+#if !SILVERLIGHT
+    [Test]
+    public void Clone()
+    {
+      JArray a =
+        new JArray(
+          5,
+          new JArray(1),
+          new JArray(1, 2),
+          new JArray(1, 2, 3),
+          new JObject(
+            new JProperty("First", new JValue(Encoding.UTF8.GetBytes("Hi"))),
+            new JProperty("Second", 1),
+            new JProperty("Third", null),
+            new JProperty("Fourth", new JConstructor("Date", 12345)),
+            new JProperty("Fifth", double.PositiveInfinity),
+            new JProperty("Sixth", double.NaN)
+            )
+        );
+
+      ICloneable c = a;
+
+      JArray a2 = (JArray) c.Clone();
+
+      Assert.IsTrue(a.DeepEquals(a2));
+    }
+#endif
+
+    [Test]
+    public void DoubleDeepEquals()
+    {
+      JArray a =
+        new JArray(
+          double.NaN,
+          double.PositiveInfinity,
+          double.NegativeInfinity
+        );
+
+      JArray a2 = (JArray)a.DeepClone();
+
+      Assert.IsTrue(a.DeepEquals(a2));
+
+      double d = 1 + 0.1 + 0.1 + 0.1;
+
+      JValue v1 = new JValue(d);
+      JValue v2 = new JValue(1.3);
+
+      Assert.IsTrue(v1.DeepEquals(v2));
+    }
   }
 }

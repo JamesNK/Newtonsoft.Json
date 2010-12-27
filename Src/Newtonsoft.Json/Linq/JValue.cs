@@ -159,7 +159,13 @@ namespace Newtonsoft.Json.Linq
           else
             return Convert.ToInt64(objA, CultureInfo.InvariantCulture).Equals(Convert.ToInt64(objB, CultureInfo.InvariantCulture));
         case JTokenType.Float:
-          return Convert.ToDouble(objA, CultureInfo.InvariantCulture).Equals(Convert.ToDouble(objB, CultureInfo.InvariantCulture));
+          double d1 = Convert.ToDouble(objA, CultureInfo.InvariantCulture);
+          double d2 = Convert.ToDouble(objB, CultureInfo.InvariantCulture);
+          if (d1.Equals(d2))
+            return true;
+
+          // take into account possible floating point errors
+          return MathUtils.ApproxEquals(d1, d2);
         case JTokenType.Comment:
         case JTokenType.String:
         case JTokenType.Boolean:
