@@ -80,8 +80,6 @@ namespace Newtonsoft.Json.Converters
         ds.Tables.Add(dt);
       }
 
-      reader.Read();
-
       return ds;
     }
 

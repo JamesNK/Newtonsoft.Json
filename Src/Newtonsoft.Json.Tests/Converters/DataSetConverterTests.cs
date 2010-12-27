@@ -240,6 +240,71 @@ namespace Newtonsoft.Json.Tests.Converters
 
       return myTable;
     }
+
+    public class DataSetTestClass
+    {
+      public string Before { get; set; }
+      public DataSet Data { get; set; }
+      public string After { get; set; }
+    }
+
+    [Test]
+    public void Blah()
+    {
+      DataSet ds = new DataSet();
+      ds.Tables.Add(CreateDataTable("FirstTable", 2));
+      ds.Tables.Add(CreateDataTable("SecondTable", 1));
+
+      DataSetTestClass c = new DataSetTestClass
+        {
+          Before = "Before",
+          Data = ds,
+          After = "After"
+        };
+
+      string json = JsonConvert.SerializeObject(c, Formatting.Indented, new IsoDateTimeConverter());
+
+      Assert.AreEqual(@"{
+  ""Before"": ""Before"",
+  ""Data"": {
+    ""FirstTable"": [
+      {
+        ""StringCol"": ""Item Name"",
+        ""Int32Col"": 1,
+        ""BooleanCol"": true,
+        ""TimeSpanCol"": ""10.22:10:15.1000000"",
+        ""DateTimeCol"": ""2000-12-29T00:00:00Z"",
+        ""DecimalCol"": 64.0021
+      },
+      {
+        ""StringCol"": ""Item Name"",
+        ""Int32Col"": 2,
+        ""BooleanCol"": true,
+        ""TimeSpanCol"": ""10.22:10:15.1000000"",
+        ""DateTimeCol"": ""2000-12-29T00:00:00Z"",
+        ""DecimalCol"": 64.0021
+      }
+    ],
+    ""SecondTable"": [
+      {
+        ""StringCol"": ""Item Name"",
+        ""Int32Col"": 1,
+        ""BooleanCol"": true,
+        ""TimeSpanCol"": ""10.22:10:15.1000000"",
+        ""DateTimeCol"": ""2000-12-29T00:00:00Z"",
+        ""DecimalCol"": 64.0021
+      }
+    ]
+  },
+  ""After"": ""After""
+}", json);
+
+      DataSetTestClass c2 = JsonConvert.DeserializeObject<DataSetTestClass>(json, new IsoDateTimeConverter());
+
+      Assert.AreEqual(c.Before, c2.Before);
+      Assert.AreEqual(c.Data.Tables.Count, c2.Data.Tables.Count);
+      Assert.AreEqual(c.After, c2.After);
+    }
   }
 }
 #endif
