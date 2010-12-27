@@ -257,6 +257,7 @@ namespace Newtonsoft.Json.Linq
         if (!reader.Read())
           throw new Exception("Error reading JObject from JsonReader.");
       }
+
       if (reader.TokenType != JsonToken.StartObject)
         throw new Exception(
           "Error reading JObject from JsonReader. Current JsonReader item is not an object: {0}".FormatWith(
@@ -265,10 +266,7 @@ namespace Newtonsoft.Json.Linq
       JObject o = new JObject();
       o.SetLineInfo(reader as IJsonLineInfo);
       
-      if (!reader.Read())
-        throw new Exception("Error reading JObject from JsonReader.");
-
-      o.ReadContentFrom(reader);
+      o.ReadTokenFrom(reader);
 
       return o;
     }

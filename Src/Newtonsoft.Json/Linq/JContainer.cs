@@ -668,6 +668,21 @@ namespace Newtonsoft.Json.Linq
       ClearItems();
     }
 
+    internal void ReadTokenFrom(JsonReader r)
+    {
+      int startDepth = r.Depth;
+
+      if (!r.Read())
+        throw new Exception("Error reading {0} from JsonReader.".FormatWith(CultureInfo.InvariantCulture, GetType().Name));
+
+      ReadContentFrom(r);
+
+      int endDepth = r.Depth;
+
+      if (endDepth > startDepth)
+        throw new Exception("Unexpected end of content while loading {0}.".FormatWith(CultureInfo.InvariantCulture, GetType().Name));
+    }
+
     internal void ReadContentFrom(JsonReader r)
     {
       ValidationUtils.ArgumentNotNull(r, "r");

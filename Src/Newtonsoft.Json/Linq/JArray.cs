@@ -111,10 +111,7 @@ namespace Newtonsoft.Json.Linq
       JArray a = new JArray();
       a.SetLineInfo(reader as IJsonLineInfo);
 
-      if (!reader.Read())
-        throw new Exception("Error reading JArray from JsonReader.");
-
-      a.ReadContentFrom(reader);
+      a.ReadTokenFrom(reader);
 
       return a;
     }

@@ -429,5 +429,12 @@ Parameter name: index")]
       Assert.AreEqual(1, a.Count);
       Assert.AreEqual(1, (int)a[0]);
     }
+
+    [Test]
+    [ExpectedException(typeof(Exception), ExpectedMessage = "Unexpected end of content while loading JArray.")]
+    public void ParseIncomplete()
+    {
+      JArray.Parse("[1");
+    }
   }
 }

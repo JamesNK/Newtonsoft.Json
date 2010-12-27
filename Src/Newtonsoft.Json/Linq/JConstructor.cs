@@ -185,10 +185,7 @@ namespace Newtonsoft.Json.Linq
       JConstructor c = new JConstructor((string)reader.Value);
       c.SetLineInfo(reader as IJsonLineInfo);
 
-      if (!reader.Read())
-        throw new Exception("Error reading JConstructor from JsonReader.");
-
-      c.ReadContentFrom(reader);
+      c.ReadTokenFrom(reader);
 
       return c;
     }

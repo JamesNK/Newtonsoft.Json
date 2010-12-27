@@ -464,13 +464,17 @@ Parameter name: arrayIndex")]
     public void DeserializeClassManually()
     {
       string jsonText = @"{
-	      ""short"":{
-		      ""original"":""http://www.foo.com/"",
-		      ""short"":""krehqk"",
-		      ""error"":{
-			      ""code"":0,
-			      ""msg"":""No action taken""}
-		  }";
+  ""short"":
+  {
+    ""original"":""http://www.foo.com/"",
+    ""short"":""krehqk"",
+    ""error"":
+    {
+      ""code"":0,
+      ""msg"":""No action taken""
+    }
+  }
+}";
 
       JObject json = JObject.Parse(jsonText);
 
@@ -1488,6 +1492,63 @@ Parameter name: arrayIndex")]
       string json = @"{""code"": 307953220000517141511}";
 
       JObject.Parse(json);
+    }
+
+    [Test]
+    [ExpectedException(typeof(Exception), ExpectedMessage = "Unexpected end of content while loading JObject.")]
+    public void ParseIncomplete()
+    {
+      JObject.Parse("{ foo:");
+    }
+
+    [Test]
+    public void LoadFromNestedObject()
+    {
+      string jsonText = @"{
+  ""short"":
+  {
+    ""error"":
+    {
+      ""code"":0,
+      ""msg"":""No action taken""
+    }
+  }
+}";
+
+      JsonReader reader = new JsonTextReader(new StringReader(jsonText));
+      reader.Read();
+      reader.Read();
+      reader.Read();
+      reader.Read();
+      reader.Read();
+
+      JObject o = (JObject)JToken.ReadFrom(reader);
+      Assert.IsNotNull(o);
+      Assert.AreEqual(@"{
+  ""code"": 0,
+  ""msg"": ""No action taken""
+}", o.ToString(Formatting.Indented));
+    }
+
+    [Test]
+    [ExpectedException(typeof(Exception), ExpectedMessage = "Unexpected end of content while loading JObject.")]
+    public void LoadFromNestedObjectIncomplete()
+    {
+      string jsonText = @"{
+  ""short"":
+  {
+    ""error"":
+    {
+      ""code"":0";
+
+      JsonReader reader = new JsonTextReader(new StringReader(jsonText));
+      reader.Read();
+      reader.Read();
+      reader.Read();
+      reader.Read();
+      reader.Read();
+
+      JToken.ReadFrom(reader);
     }
 
 #if !SILVERLIGHT
