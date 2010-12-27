@@ -25,7 +25,9 @@
 
 #if !SILVERLIGHT
 using System;
+using System.Collections.Generic;
 using Newtonsoft.Json.Tests.Serialization;
+using Newtonsoft.Json.Tests.TestObjects;
 using NUnit.Framework;
 using Newtonsoft.Json;
 using System.IO;
@@ -423,12 +425,12 @@ namespace Newtonsoft.Json.Tests.Converters
       string xml = @"<?xml version=""1.0"" standalone=""no""?>
 			<root>
 			  <person id=""1"">
-				<name>Alan</name>
-				<url>http://www.google.com</url>
+	  			<name>Alan</name>
+		  		<url>http://www.google.com</url>
 			  </person>
 			  <person id=""2"">
-				<name>Louis</name>
-				<url>http://www.yahoo.com</url>
+			  	<name>Louis</name>
+				  <url>http://www.yahoo.com</url>
 			  </person>
 			</root>";
 
@@ -651,19 +653,110 @@ namespace Newtonsoft.Json.Tests.Converters
     [
       ""assets/images/resized/0001/1070/11070v1-max-250x250.jpg"",
       ""assets/images/resized/0001/1070/11070v1-max-250x250.jpg""
+    ],
+    [
+      ""assets/images/resized/0001/1070/11070v1-max-250x250.jpg""
     ]
   ]
 }";
 
       XmlDocument newDoc = JsonConvert.DeserializeXmlNode(json, "myRoot");
 
-      Assert.AreEqual(@"<myRoot><available_sizes><available_sizes>assets/images/resized/0001/1070/11070v1-max-150x150.jpg</available_sizes><available_sizes>assets/images/resized/0001/1070/11070v1-max-150x150.jpg</available_sizes></available_sizes><available_sizes><available_sizes>assets/images/resized/0001/1070/11070v1-max-250x250.jpg</available_sizes><available_sizes>assets/images/resized/0001/1070/11070v1-max-250x250.jpg</available_sizes></available_sizes></myRoot>", newDoc.InnerXml);
+      string xml = IndentXml(newDoc.InnerXml);
+
+      Assert.AreEqual(@"<myRoot>
+  <available_sizes>
+    <available_sizes>assets/images/resized/0001/1070/11070v1-max-150x150.jpg</available_sizes>
+    <available_sizes>assets/images/resized/0001/1070/11070v1-max-150x150.jpg</available_sizes>
+  </available_sizes>
+  <available_sizes>
+    <available_sizes>assets/images/resized/0001/1070/11070v1-max-250x250.jpg</available_sizes>
+    <available_sizes>assets/images/resized/0001/1070/11070v1-max-250x250.jpg</available_sizes>
+  </available_sizes>
+  <available_sizes>
+    <available_sizes>assets/images/resized/0001/1070/11070v1-max-250x250.jpg</available_sizes>
+  </available_sizes>
+</myRoot>", IndentXml(newDoc.InnerXml));
 
 #if !NET20
       XDocument newXDoc = JsonConvert.DeserializeXNode(json, "myRoot");
 
-      Assert.AreEqual(@"<myRoot><available_sizes><available_sizes>assets/images/resized/0001/1070/11070v1-max-150x150.jpg</available_sizes><available_sizes>assets/images/resized/0001/1070/11070v1-max-150x150.jpg</available_sizes></available_sizes><available_sizes><available_sizes>assets/images/resized/0001/1070/11070v1-max-250x250.jpg</available_sizes><available_sizes>assets/images/resized/0001/1070/11070v1-max-250x250.jpg</available_sizes></available_sizes></myRoot>", newXDoc.ToString(SaveOptions.DisableFormatting));
+      Assert.AreEqual(@"<myRoot>
+  <available_sizes>
+    <available_sizes>assets/images/resized/0001/1070/11070v1-max-150x150.jpg</available_sizes>
+    <available_sizes>assets/images/resized/0001/1070/11070v1-max-150x150.jpg</available_sizes>
+  </available_sizes>
+  <available_sizes>
+    <available_sizes>assets/images/resized/0001/1070/11070v1-max-250x250.jpg</available_sizes>
+    <available_sizes>assets/images/resized/0001/1070/11070v1-max-250x250.jpg</available_sizes>
+  </available_sizes>
+  <available_sizes>
+    <available_sizes>assets/images/resized/0001/1070/11070v1-max-250x250.jpg</available_sizes>
+  </available_sizes>
+</myRoot>", IndentXml(newXDoc.ToString(SaveOptions.DisableFormatting)));
 #endif
+
+      string newJson = JsonConvert.SerializeXmlNode(newDoc, Formatting.Indented);
+      Console.WriteLine(newJson);
+    }
+
+    [Test]
+    public void RoundTripNestedArrays()
+    {
+      string json = @"{
+  ""available_sizes"": [
+    [
+      ""assets/images/resized/0001/1070/11070v1-max-150x150.jpg"",
+      ""assets/images/resized/0001/1070/11070v1-max-150x150.jpg""
+    ],
+    [
+      ""assets/images/resized/0001/1070/11070v1-max-250x250.jpg"",
+      ""assets/images/resized/0001/1070/11070v1-max-250x250.jpg""
+    ],
+    [
+      ""assets/images/resized/0001/1070/11070v1-max-250x250.jpg""
+    ]
+  ]
+}";
+
+      XmlDocument newDoc = JsonConvert.DeserializeXmlNode(json, "myRoot", true);
+
+      Assert.AreEqual(@"<myRoot>
+  <available_sizes json:Array=""true"" xmlns:json=""http://james.newtonking.com/projects/json"">
+    <available_sizes>assets/images/resized/0001/1070/11070v1-max-150x150.jpg</available_sizes>
+    <available_sizes>assets/images/resized/0001/1070/11070v1-max-150x150.jpg</available_sizes>
+  </available_sizes>
+  <available_sizes json:Array=""true"" xmlns:json=""http://james.newtonking.com/projects/json"">
+    <available_sizes>assets/images/resized/0001/1070/11070v1-max-250x250.jpg</available_sizes>
+    <available_sizes>assets/images/resized/0001/1070/11070v1-max-250x250.jpg</available_sizes>
+  </available_sizes>
+  <available_sizes json:Array=""true"" xmlns:json=""http://james.newtonking.com/projects/json"">
+    <available_sizes json:Array=""true"">assets/images/resized/0001/1070/11070v1-max-250x250.jpg</available_sizes>
+  </available_sizes>
+</myRoot>", IndentXml(newDoc.InnerXml));
+
+#if !NET20
+      XDocument newXDoc = JsonConvert.DeserializeXNode(json, "myRoot", true);
+
+      Console.WriteLine(IndentXml(newXDoc.ToString(SaveOptions.DisableFormatting)));
+
+      Assert.AreEqual(@"<myRoot>
+  <available_sizes json:Array=""true"" xmlns:json=""http://james.newtonking.com/projects/json"">
+    <available_sizes>assets/images/resized/0001/1070/11070v1-max-150x150.jpg</available_sizes>
+    <available_sizes>assets/images/resized/0001/1070/11070v1-max-150x150.jpg</available_sizes>
+  </available_sizes>
+  <available_sizes json:Array=""true"" xmlns:json=""http://james.newtonking.com/projects/json"">
+    <available_sizes>assets/images/resized/0001/1070/11070v1-max-250x250.jpg</available_sizes>
+    <available_sizes>assets/images/resized/0001/1070/11070v1-max-250x250.jpg</available_sizes>
+  </available_sizes>
+  <available_sizes json:Array=""true"" xmlns:json=""http://james.newtonking.com/projects/json"">
+    <available_sizes json:Array=""true"">assets/images/resized/0001/1070/11070v1-max-250x250.jpg</available_sizes>
+  </available_sizes>
+</myRoot>", IndentXml(newXDoc.ToString(SaveOptions.DisableFormatting)));
+#endif
+
+      string newJson = JsonConvert.SerializeXmlNode(newDoc, Formatting.Indented, true);
+      Assert.AreEqual(json, newJson);
     }
 
     [Test]
@@ -991,6 +1084,140 @@ namespace Newtonsoft.Json.Tests.Converters
 }";
 
       DeserializeXmlNode(json);
+    }
+
+    [Test]
+    public void SingleItemArrayPropertySerialization()
+    {
+      Product product = new Product();
+
+      product.Name = "Apple";
+      product.ExpiryDate = new DateTime(2008, 12, 28, 0, 0, 0, DateTimeKind.Utc);
+      product.Price = 3.99M;
+      product.Sizes = new string[] { "Small" };
+
+      string output = JsonConvert.SerializeObject(product, new IsoDateTimeConverter());
+
+      XmlDocument xmlProduct = JsonConvert.DeserializeXmlNode(output, "product", true);
+
+      Assert.AreEqual(@"<product>
+  <Name>Apple</Name>
+  <ExpiryDate>2008-12-28T00:00:00Z</ExpiryDate>
+  <Price>3.99</Price>
+  <Sizes json:Array=""true"" xmlns:json=""http://james.newtonking.com/projects/json"">Small</Sizes>
+</product>", IndentXml(xmlProduct.InnerXml));
+
+      string output2 = JsonConvert.SerializeXmlNode(xmlProduct.DocumentElement, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""product"": {
+    ""Name"": ""Apple"",
+    ""ExpiryDate"": ""2008-12-28T00:00:00Z"",
+    ""Price"": ""3.99"",
+    ""Sizes"": [
+      ""Small""
+    ]
+  }
+}", output2);
+    }
+
+    public class TestComplexArrayClass
+    {
+      public string Name { get; set; }
+      public IList<Product> Products { get; set; }
+    }
+
+    [Test]
+    public void ComplexSingleItemArrayPropertySerialization()
+    {
+      TestComplexArrayClass o = new TestComplexArrayClass
+        {
+          Name = "Hi",
+          Products = new List<Product>
+            {
+              new Product { Name = "First" }
+            }
+        };
+
+      string output = JsonConvert.SerializeObject(o, new IsoDateTimeConverter());
+
+      XmlDocument xmlProduct = JsonConvert.DeserializeXmlNode(output, "test", true);
+
+      Assert.AreEqual(@"<test>
+  <Name>Hi</Name>
+  <Products json:Array=""true"" xmlns:json=""http://james.newtonking.com/projects/json"">
+    <Name>First</Name>
+    <ExpiryDate>2000-01-01T00:00:00Z</ExpiryDate>
+    <Price>0</Price>
+    <Sizes />
+  </Products>
+</test>", IndentXml(xmlProduct.InnerXml));
+
+      string output2 = JsonConvert.SerializeXmlNode(xmlProduct.DocumentElement, Formatting.Indented, true);
+
+      Assert.AreEqual(@"{
+  ""Name"": ""Hi"",
+  ""Products"": [
+    {
+      ""Name"": ""First"",
+      ""ExpiryDate"": ""2000-01-01T00:00:00Z"",
+      ""Price"": ""0"",
+      ""Sizes"": null
+    }
+  ]
+}", output2);
+    }
+
+    private string IndentXml(string xml)
+    {
+      XmlReader reader = XmlReader.Create(new StringReader(xml));
+
+      StringWriter sw = new StringWriter();
+      XmlWriter writer = XmlWriter.Create(sw, new XmlWriterSettings { Indent = true, OmitXmlDeclaration = true });
+
+      while (reader.Read())
+      {
+        writer.WriteNode(reader, false);
+      }
+
+      writer.Flush();
+
+      return sw.ToString();
+    }
+
+    [Test]
+    public void OmitRootObject()
+    {
+      string xml = @"<test>
+  <Name>Hi</Name>
+  <Name>Hi</Name>
+  <Products json:Array=""true"" xmlns:json=""http://james.newtonking.com/projects/json"">
+    <Name>First</Name>
+    <ExpiryDate>2000-01-01T00:00:00Z</ExpiryDate>
+    <Price>0</Price>
+    <Sizes />
+  </Products>
+</test>";
+
+      XmlDocument d = new XmlDocument();
+      d.LoadXml(xml);
+
+      string output = JsonConvert.SerializeXmlNode(d, Formatting.Indented, true);
+
+      Assert.AreEqual(@"{
+  ""Name"": [
+    ""Hi"",
+    ""Hi""
+  ],
+  ""Products"": [
+    {
+      ""Name"": ""First"",
+      ""ExpiryDate"": ""2000-01-01T00:00:00Z"",
+      ""Price"": ""0"",
+      ""Sizes"": null
+    }
+  ]
+}", output);
     }
   }
 }

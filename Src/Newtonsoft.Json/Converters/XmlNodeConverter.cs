@@ -136,6 +136,11 @@ namespace Newtonsoft.Json.Converters
 
       _element.SetAttributeNode((XmlAttribute) xmlAttributeWrapper.WrappedNode);
     }
+
+    public string GetPrefixOfNamespace(string namespaceURI)
+    {
+      return _element.GetPrefixOfNamespace(namespaceURI);
+    }
   }
 
   internal class XmlDeclarationWrapper : XmlNodeWrapper, IXmlDeclaration
@@ -294,6 +299,7 @@ namespace Newtonsoft.Json.Converters
   internal interface IXmlElement : IXmlNode
   {
     void SetAttributeNode(IXmlNode attribute);
+    string GetPrefixOfNamespace(string namespaceURI);
   }
 
   internal interface IXmlNode
@@ -726,6 +732,11 @@ namespace Newtonsoft.Json.Converters
     {
       get { return Element.Name.NamespaceName; }
     }
+
+    public string GetPrefixOfNamespace(string namespaceURI)
+    {
+      return Element.GetPrefixOfNamespace(namespaceURI);
+    }
   }
 #endif
   #endregion
@@ -749,6 +760,19 @@ namespace Newtonsoft.Json.Converters
     /// <value>The name of the deserialize root element.</value>
     public string DeserializeRootElementName { get; set; }
 
+    /// <summary>
+    /// Gets or sets a flag to indicate whether to write the Json.NET array attribute.
+    /// This attribute helps preserve arrays when converting the written XML back to JSON.
+    /// </summary>
+    /// <value><c>true</c> if the array attibute is written to the XML; otherwise, <c>false</c>.</value>
+    public bool WriteArrayAttribute { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to write the root JSON object.
+    /// </summary>
+    /// <value><c>true</c> if the JSON root object is omitted; otherwise, <c>false</c>.</value>
+    public bool OmitRootObject { get; set; }
+
     #region Writing
     /// <summary>
     /// Writes the JSON representation of the object.
@@ -763,9 +787,13 @@ namespace Newtonsoft.Json.Converters
       XmlNamespaceManager manager = new XmlNamespaceManager(new NameTable());
       PushParentNamespaces(node, manager);
 
-      writer.WriteStartObject();
-      SerializeNode(writer, node, manager, true);
-      writer.WriteEndObject();
+      if (!OmitRootObject)
+        writer.WriteStartObject();
+
+      SerializeNode(writer, node, manager, !OmitRootObject);
+      
+      if (!OmitRootObject)
+        writer.WriteEndObject();
     }
 
     private IXmlNode WrapXml(object value)
@@ -856,7 +884,16 @@ namespace Newtonsoft.Json.Converters
       }
     }
 
-    private void SerializeGroupedNodes(JsonWriter writer, IXmlNode node, XmlNamespaceManager manager)
+    private bool IsArray(IXmlNode node)
+    {
+      IXmlNode jsonArrayAttribute = (node.Attributes != null)
+                                      ? node.Attributes.SingleOrDefault(a => a.LocalName == "Array" && a.NamespaceURI == JsonNamespaceUri)
+                                      : null;
+      
+      return (jsonArrayAttribute != null && XmlConvert.ToBoolean(jsonArrayAttribute.Value));
+    }
+
+    private void SerializeGroupedNodes(JsonWriter writer, IXmlNode node, XmlNamespaceManager manager, bool writePropertyName)
     {
       // group nodes together by name
       Dictionary<string, List<IXmlNode>> nodesGroupedByName = new Dictionary<string, List<IXmlNode>>();
@@ -885,14 +922,7 @@ namespace Newtonsoft.Json.Converters
 
         if (groupedNodes.Count == 1)
         {
-          IXmlNode singleNode = groupedNodes[0];
-          IXmlNode jsonArrayAttribute = (singleNode.Attributes != null)
-            ? singleNode.Attributes.SingleOrDefault(a => a.LocalName == "Array" && a.NamespaceURI == JsonNamespaceUri)
-            : null;
-          if (jsonArrayAttribute != null)
-            writeArray = XmlConvert.ToBoolean(jsonArrayAttribute.Value);
-          else
-            writeArray = false;
+          writeArray = IsArray(groupedNodes[0]);
         }
         else
         {
@@ -901,12 +931,15 @@ namespace Newtonsoft.Json.Converters
 
         if (!writeArray)
         {
-          SerializeNode(writer, groupedNodes[0], manager, true);
+          SerializeNode(writer, groupedNodes[0], manager, writePropertyName);
         }
         else
         {
           string elementNames = nodeNameGroup.Key;
-          writer.WritePropertyName(elementNames);
+
+          if (writePropertyName)
+            writer.WritePropertyName(elementNames);
+
           writer.WriteStartArray();
 
           for (int i = 0; i < groupedNodes.Count; i++)
@@ -925,47 +958,54 @@ namespace Newtonsoft.Json.Converters
       {
         case XmlNodeType.Document:
         case XmlNodeType.DocumentFragment:
-          SerializeGroupedNodes(writer, node, manager);
+          SerializeGroupedNodes(writer, node, manager, writePropertyName);
           break;
         case XmlNodeType.Element:
-          foreach (IXmlNode attribute in node.Attributes)
+          if (IsArray(node) && node.ChildNodes.All(n => n.LocalName == node.LocalName))
           {
-            if (attribute.NamespaceURI == "http://www.w3.org/2000/xmlns/")
-            {
-              string prefix = (attribute.LocalName != "xmlns")
-                                ? attribute.LocalName
-                                : string.Empty;
-
-              manager.AddNamespace(prefix, attribute.Value);
-            }
-          }
-
-          if (writePropertyName)
-            writer.WritePropertyName(GetPropertyName(node, manager));
-
-          if (ValueAttributes(node.Attributes).Count() == 0 && node.ChildNodes.Count == 1
-                  && node.ChildNodes[0].NodeType == XmlNodeType.Text)
-          {
-            // write elements with a single text child as a name value pair
-            writer.WriteValue(node.ChildNodes[0].Value);
-          }
-          else if (node.ChildNodes.Count == 0 && CollectionUtils.IsNullOrEmpty(node.Attributes))
-          {
-            // empty element
-            writer.WriteNull();
+            SerializeGroupedNodes(writer, node, manager, false);
           }
           else
           {
-            writer.WriteStartObject();
-
-            for (int i = 0; i < node.Attributes.Count; i++)
+            foreach (IXmlNode attribute in node.Attributes)
             {
-              SerializeNode(writer, node.Attributes[i], manager, true);
+              if (attribute.NamespaceURI == "http://www.w3.org/2000/xmlns/")
+              {
+                string prefix = (attribute.LocalName != "xmlns")
+                                  ? attribute.LocalName
+                                  : string.Empty;
+
+                manager.AddNamespace(prefix, attribute.Value);
+              }
             }
 
-            SerializeGroupedNodes(writer, node, manager);
+            if (writePropertyName)
+              writer.WritePropertyName(GetPropertyName(node, manager));
 
-            writer.WriteEndObject();
+            if (ValueAttributes(node.Attributes).Count() == 0 && node.ChildNodes.Count == 1
+                && node.ChildNodes[0].NodeType == XmlNodeType.Text)
+            {
+              // write elements with a single text child as a name value pair
+              writer.WriteValue(node.ChildNodes[0].Value);
+            }
+            else if (node.ChildNodes.Count == 0 && CollectionUtils.IsNullOrEmpty(node.Attributes))
+            {
+              // empty element
+              writer.WriteNull();
+            }
+            else
+            {
+              writer.WriteStartObject();
+
+              for (int i = 0; i < node.Attributes.Count; i++)
+              {
+                SerializeNode(writer, node.Attributes[i], manager, true);
+              }
+
+              SerializeGroupedNodes(writer, node, manager, true);
+
+              writer.WriteEndObject();
+            }
           }
 
           break;
@@ -1116,6 +1156,7 @@ namespace Newtonsoft.Json.Converters
           {
             if (reader.TokenType == JsonToken.StartArray)
             {
+              // handle nested arrays
               ReadArrayElements(reader, document, propertyName, currentNode, manager);
               return;
             }
@@ -1200,10 +1241,39 @@ namespace Newtonsoft.Json.Converters
 
       currentNode.AppendChild(nestedArrayElement);
 
+      int count = 0;
       while (reader.Read() && reader.TokenType != JsonToken.EndArray)
       {
         DeserializeValue(reader, document, manager, propertyName, nestedArrayElement);
+        count++;
       }
+
+      if (WriteArrayAttribute)
+      {
+        AddJsonArrayAttribute(nestedArrayElement, document);
+      }
+
+      if (count == 1 && WriteArrayAttribute)
+      {
+        IXmlElement arrayElement = nestedArrayElement.ChildNodes.CastValid<IXmlElement>().Single(n => n.LocalName == propertyName);
+        AddJsonArrayAttribute(arrayElement, document);
+      }
+    }
+
+    private void AddJsonArrayAttribute(IXmlElement element, IXmlDocument document)
+    {
+      element.SetAttributeNode(document.CreateAttribute("json:Array", JsonNamespaceUri, "true"));
+
+#if !NET20
+      // linq to xml doesn't automatically include prefixes via the namespace manager
+      if (element is XElementWrapper)
+      {
+        if (element.GetPrefixOfNamespace(JsonNamespaceUri) == null)
+        {
+          element.SetAttributeNode(document.CreateAttribute("xmlns:json", "http://www.w3.org/2000/xmlns/", JsonNamespaceUri));
+        }
+      }
+#endif
     }
 
     private Dictionary<string, string> ReadAttributeElements(JsonReader reader, XmlNamespaceManager manager)
@@ -1355,9 +1425,17 @@ namespace Newtonsoft.Json.Converters
 
             if (reader.TokenType == JsonToken.StartArray)
             {
+              int count = 0;
               while (reader.Read() && reader.TokenType != JsonToken.EndArray)
               {
                 DeserializeValue(reader, document, manager, propertyName, currentNode);
+                count++;
+              }
+
+              if (count == 1 && WriteArrayAttribute)
+              {
+                IXmlElement arrayElement = currentNode.ChildNodes.CastValid<IXmlElement>().Single(n => n.LocalName == propertyName);
+                AddJsonArrayAttribute(arrayElement, document);
               }
             }
             else

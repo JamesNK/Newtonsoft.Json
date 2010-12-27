@@ -786,6 +786,20 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
+    /// Serializes the XML node to a JSON string.
+    /// </summary>
+    /// <param name="node">The node to serialize.</param>
+    /// <param name="formatting">Indicates how the output is formatted.</param>
+    /// <param name="omitRootObject">Omits writing the root object.</param>
+    /// <returns>A JSON string of the XmlNode.</returns>
+    public static string SerializeXmlNode(XmlNode node, Formatting formatting, bool omitRootObject)
+    {
+      XmlNodeConverter converter = new XmlNodeConverter { OmitRootObject = omitRootObject };
+
+      return SerializeObject(node, formatting, converter);
+    }
+
+    /// <summary>
     /// Deserializes the XmlNode from a JSON string.
     /// </summary>
     /// <param name="value">The JSON string.</param>
@@ -803,8 +817,24 @@ namespace Newtonsoft.Json
     /// <returns>The deserialized XmlNode</returns>
     public static XmlDocument DeserializeXmlNode(string value, string deserializeRootElementName)
     {
+      return DeserializeXmlNode(value, deserializeRootElementName, false);
+    }
+
+    /// <summary>
+    /// Deserializes the XmlNode from a JSON string nested in a root elment.
+    /// </summary>
+    /// <param name="value">The JSON string.</param>
+    /// <param name="deserializeRootElementName">The name of the root element to append when deserializing.</param>
+    /// <param name="writeArrayAttribute">
+    /// A flag to indicate whether to write the Json.NET array attribute.
+    /// This attribute helps preserve arrays when converting the written XML back to JSON.
+    /// </param>
+    /// <returns>The deserialized XmlNode</returns>
+    public static XmlDocument DeserializeXmlNode(string value, string deserializeRootElementName, bool writeArrayAttribute)
+    {
       XmlNodeConverter converter = new XmlNodeConverter();
       converter.DeserializeRootElementName = deserializeRootElementName;
+      converter.WriteArrayAttribute = writeArrayAttribute;
 
       return (XmlDocument)DeserializeObject(value, typeof(XmlDocument), converter);
     }
@@ -829,7 +859,19 @@ namespace Newtonsoft.Json
     /// <returns>A JSON string of the XNode.</returns>
     public static string SerializeXNode(XObject node, Formatting formatting)
     {
-      XmlNodeConverter converter = new XmlNodeConverter();
+      return SerializeXNode(node, formatting, false);
+    }
+
+    /// <summary>
+    /// Serializes the <see cref="XNode"/> to a JSON string.
+    /// </summary>
+    /// <param name="node">The node to serialize.</param>
+    /// <param name="formatting">Indicates how the output is formatted.</param>
+    /// <param name="omitRootObject">Omits writing the root object.</param>
+    /// <returns>A JSON string of the XNode.</returns>
+    public static string SerializeXNode(XObject node, Formatting formatting, bool omitRootObject)
+    {
+      XmlNodeConverter converter = new XmlNodeConverter { OmitRootObject = omitRootObject };
 
       return SerializeObject(node, formatting, converter);
     }
@@ -852,8 +894,24 @@ namespace Newtonsoft.Json
     /// <returns>The deserialized XNode</returns>
     public static XDocument DeserializeXNode(string value, string deserializeRootElementName)
     {
+      return DeserializeXNode(value, deserializeRootElementName, false);
+    }
+
+    /// <summary>
+    /// Deserializes the <see cref="XNode"/> from a JSON string nested in a root elment.
+    /// </summary>
+    /// <param name="value">The JSON string.</param>
+    /// <param name="deserializeRootElementName">The name of the root element to append when deserializing.</param>
+    /// <param name="writeArrayAttribute">
+    /// A flag to indicate whether to write the Json.NET array attribute.
+    /// This attribute helps preserve arrays when converting the written XML back to JSON.
+    /// </param>
+    /// <returns>The deserialized XNode</returns>
+    public static XDocument DeserializeXNode(string value, string deserializeRootElementName, bool writeArrayAttribute)
+    {
       XmlNodeConverter converter = new XmlNodeConverter();
       converter.DeserializeRootElementName = deserializeRootElementName;
+      converter.WriteArrayAttribute = writeArrayAttribute;
 
       return (XDocument)DeserializeObject(value, typeof(XDocument), converter);
     }
