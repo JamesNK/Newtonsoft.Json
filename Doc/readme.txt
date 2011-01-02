@@ -21,7 +21,10 @@ Versions:
 Json.NET comes in different versions for the various .NET frameworks.
 
 -DotNet:
-  .NET latest (3.5 SP1)
+  .NET latest (4.0)
+
+-DotNet35:
+  .NET 3.5 SP1, Mono
 
 -DotNet20:
   .NET 2.0
@@ -29,9 +32,11 @@ Json.NET comes in different versions for the various .NET frameworks.
 -Silverlight:
   Silverlight 3.0
 
--Compact:
-  Compact Framework 3.5
+-WindowsPhone:
+  Windows Phone 7
 
+Microsoft stopped support for the Compact Framework in Visual Studio 2010.
+For a Compact Framework 3.5 build download Json.NET 3.5.
 
 
 Instructions:
