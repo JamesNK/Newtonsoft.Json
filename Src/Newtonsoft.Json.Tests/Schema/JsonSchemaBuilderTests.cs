@@ -131,6 +131,21 @@ namespace Newtonsoft.Json.Tests.Schema
     }
 
     [Test]
+    public void ExclusiveMinimum_ExclusiveMaximum()
+    {
+      string json = @"{
+  ""exclusiveMinimum"":true,
+  ""exclusiveMaximum"":true
+}";
+
+      JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
+      JsonSchema schema = builder.Parse(new JsonTextReader(new StringReader(json)));
+
+      Assert.AreEqual(true, schema.ExclusiveMinimum);
+      Assert.AreEqual(true, schema.ExclusiveMaximum);
+    }
+
+    [Test]
     public void ReadOnly()
     {
       string json = @"{
@@ -432,6 +447,23 @@ namespace Newtonsoft.Json.Tests.Schema
 
       JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
       JsonSchema schema = builder.Parse(new JsonTextReader(new StringReader(json)));
+    }
+
+    [Test]
+    public void PatternProperties()
+    {
+      string json = @"{
+  ""patternProperties"": {
+    ""[abc]"": { ""id"":""Blah"" }
+  }
+}";
+
+      JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
+      JsonSchema schema = builder.Parse(new JsonTextReader(new StringReader(json)));
+
+      Assert.IsNotNull(schema.PatternProperties);
+      Assert.AreEqual(1, schema.PatternProperties.Count);
+      Assert.AreEqual("Blah", schema.PatternProperties["[abc]"].Id);
     }
   }
 }

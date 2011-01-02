@@ -146,6 +146,9 @@ namespace Newtonsoft.Json.Schema
         case JsonSchemaConstants.AdditionalPropertiesPropertyName:
           ProcessAdditionalProperties();
           break;
+        case JsonSchemaConstants.PatternPropertiesPropertyName:
+          ProcessPatternProperties();
+          break;
         case JsonSchemaConstants.RequiredPropertyName:
           CurrentSchema.Required = (bool)_reader.Value;
           break;
@@ -160,6 +163,12 @@ namespace Newtonsoft.Json.Schema
           break;
         case JsonSchemaConstants.MaximumPropertyName:
           CurrentSchema.Maximum = Convert.ToDouble(_reader.Value, CultureInfo.InvariantCulture);
+          break;
+        case JsonSchemaConstants.ExclusiveMinimumPropertyName:
+          CurrentSchema.ExclusiveMinimum = (bool)_reader.Value;
+          break;
+        case JsonSchemaConstants.ExclusiveMaximumPropertyName:
+          CurrentSchema.ExclusiveMaximum = (bool)_reader.Value;
           break;
         case JsonSchemaConstants.MaximumLengthPropertyName:
           CurrentSchema.MaximumLength = Convert.ToInt32(_reader.Value, CultureInfo.InvariantCulture);
@@ -309,6 +318,27 @@ namespace Newtonsoft.Json.Schema
         CurrentSchema.AllowAdditionalProperties = (bool)_reader.Value;
       else
         CurrentSchema.AdditionalProperties = BuildSchema();
+    }
+
+    private void ProcessPatternProperties()
+    {
+      Dictionary<string, JsonSchema> patternProperties = new Dictionary<string, JsonSchema>();
+
+      if (_reader.TokenType != JsonToken.StartObject)
+        throw new Exception("Expected start object token.");
+
+      while (_reader.Read() && _reader.TokenType != JsonToken.EndObject)
+      {
+        string propertyName = Convert.ToString(_reader.Value, CultureInfo.InvariantCulture);
+        _reader.Read();
+
+        if (patternProperties.ContainsKey(propertyName))
+          throw new Exception("Property {0} has already been defined in schema.".FormatWith(CultureInfo.InvariantCulture, propertyName));
+
+        patternProperties.Add(propertyName, BuildSchema());
+      }
+
+      CurrentSchema.PatternProperties = patternProperties;
     }
 
     private void ProcessItems()

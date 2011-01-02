@@ -976,7 +976,7 @@ namespace Newtonsoft.Json.Tests
     }
 
     [Test]
-    public void sdfsdf()
+    public void NoAdditionalProperties()
     {
       string schemaJson = @"{
   ""type"":""array"",
@@ -1009,6 +1009,69 @@ namespace Newtonsoft.Json.Tests
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+
+      Assert.IsFalse(reader.Read());
+    }
+
+    [Test]
+    public void PatternPropertiesNoAdditionalProperties()
+    {
+      string schemaJson = @"{
+  ""type"":""object"",
+  ""patternProperties"": {
+     ""hi"": {""type"":""string""},
+     ""ho"": {""type"":""string""}
+  },
+  ""additionalProperties"": false
+}";
+
+      string json = @"{
+  ""hi"": ""A string!"",
+  ""hide"": ""A string!"",
+  ""ho"": 1,
+  ""hey"": ""A string!""
+}";
+
+      Json.Schema.ValidationEventArgs validationEventArgs = null;
+
+      JsonValidatingReader reader = new JsonValidatingReader(new JsonTextReader(new StringReader(json)));
+      reader.ValidationEventHandler += (sender, args) => { validationEventArgs = args; };
+      reader.Schema = JsonSchema.Parse(schemaJson);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+      Assert.AreEqual(null, validationEventArgs);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.String, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+      Assert.AreEqual(null, validationEventArgs);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.String, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+      Assert.AreEqual(null, validationEventArgs);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+      Assert.AreEqual("Invalid type. Expected String but got Integer. Line 4, position 10.", validationEventArgs.Message);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+      Assert.AreEqual("Property 'hey' has not been defined and the schema does not allow additional properties. Line 5, position 8.", validationEventArgs.Message);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.String, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
 
       Assert.IsFalse(reader.Read());
     }

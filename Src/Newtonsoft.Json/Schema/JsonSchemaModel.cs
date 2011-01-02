@@ -40,11 +40,14 @@ namespace Newtonsoft.Json.Schema
     public double? DivisibleBy { get; set; }
     public double? Minimum { get; set; }
     public double? Maximum { get; set; }
+    public bool ExclusiveMinimum { get; set; }
+    public bool ExclusiveMaximum { get; set; }
     public int? MinimumItems { get; set; }
     public int? MaximumItems { get; set; }
     public IList<string> Patterns { get; set; }
     public IList<JsonSchemaModel> Items { get; set; }
     public IDictionary<string, JsonSchemaModel> Properties { get; set; }
+    public IDictionary<string, JsonSchemaModel> PatternProperties { get; set; }
     public JsonSchemaModel AdditionalProperties { get; set; }
     public bool AllowAdditionalProperties { get; set; }
     public IList<JToken> Enum { get; set; }
@@ -83,6 +86,9 @@ namespace Newtonsoft.Json.Schema
 
       model.Minimum = MathUtils.Max(model.Minimum, schema.Minimum);
       model.Maximum = MathUtils.Max(model.Maximum, schema.Maximum);
+      model.ExclusiveMinimum = model.ExclusiveMinimum || (schema.ExclusiveMinimum ?? false);
+      model.ExclusiveMaximum = model.ExclusiveMaximum || (schema.ExclusiveMaximum ?? false);
+
       model.MinimumItems = MathUtils.Max(model.MinimumItems, schema.MinimumItems);
       model.MaximumItems = MathUtils.Min(model.MaximumItems, schema.MaximumItems);
       model.AllowAdditionalProperties = model.AllowAdditionalProperties && schema.AllowAdditionalProperties;

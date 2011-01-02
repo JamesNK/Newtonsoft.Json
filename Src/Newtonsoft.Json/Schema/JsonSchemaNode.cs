@@ -35,6 +35,7 @@ namespace Newtonsoft.Json.Schema
     public string Id { get; private set; }
     public ReadOnlyCollection<JsonSchema> Schemas { get; private set; }
     public Dictionary<string, JsonSchemaNode> Properties { get; private set; }
+    public Dictionary<string, JsonSchemaNode> PatternProperties { get; private set; }
     public List<JsonSchemaNode> Items { get; private set; }
     public JsonSchemaNode AdditionalProperties { get; set; }
 
@@ -42,6 +43,7 @@ namespace Newtonsoft.Json.Schema
     {
       Schemas = new ReadOnlyCollection<JsonSchema>(new []{ schema });
       Properties = new Dictionary<string, JsonSchemaNode>();
+      PatternProperties = new Dictionary<string, JsonSchemaNode>();
       Items = new List<JsonSchemaNode>();
 
       Id = GetId(Schemas);
@@ -51,6 +53,7 @@ namespace Newtonsoft.Json.Schema
     {
       Schemas = new ReadOnlyCollection<JsonSchema>(source.Schemas.Union(new[] { schema }).ToList());
       Properties = new Dictionary<string, JsonSchemaNode>(source.Properties);
+      PatternProperties = new Dictionary<string, JsonSchemaNode>(source.PatternProperties);
       Items = new List<JsonSchemaNode>(source.Items);
       AdditionalProperties = source.AdditionalProperties;
 

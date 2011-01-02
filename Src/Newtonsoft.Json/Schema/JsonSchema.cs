@@ -89,9 +89,9 @@ namespace Newtonsoft.Json.Schema
     /// <value>The maximum length.</value>
     public int? MaximumLength { get; set; }
     /// <summary>
-    /// Gets or sets the maximum decimals.
+    /// Gets or sets a number that the value should be divisble by.
     /// </summary>
-    /// <value>The maximum decimals.</value>
+    /// <value>A number that the value should be divisble by.</value>
     public double? DivisibleBy { get; set; }
     /// <summary>
     /// Gets or sets the minimum.
@@ -103,6 +103,16 @@ namespace Newtonsoft.Json.Schema
     /// </summary>
     /// <value>The maximum.</value>
     public double? Maximum { get; set; }
+    /// <summary>
+    /// Gets or sets a flag indicating whether the value can not equal the number defined by the "minimum" attribute.
+    /// </summary>
+    /// <value>A flag indicating whether the value can not equal the number defined by the "minimum" attribute.</value>
+    public bool? ExclusiveMinimum { get; set; }
+    /// <summary>
+    /// Gets or sets a flag indicating whether the value can not equal the number defined by the "maximum" attribute.
+    /// </summary>
+    /// <value>A flag indicating whether the value can not equal the number defined by the "maximum" attribute.</value>
+    public bool? ExclusiveMaximum { get; set; }
     /// <summary>
     /// Gets or sets the minimum number of items.
     /// </summary>
@@ -128,6 +138,11 @@ namespace Newtonsoft.Json.Schema
     /// </summary>
     /// <value>The <see cref="JsonSchema"/> of additional properties.</value>
     public JsonSchema AdditionalProperties { get; set; }
+    /// <summary>
+    /// Gets or sets the pattern properties.
+    /// </summary>
+    /// <value>The pattern properties.</value>
+    public IDictionary<string, JsonSchema> PatternProperties { get; set; }
     /// <summary>
     /// Gets or sets a value indicating whether additional properties are allowed.
     /// </summary>

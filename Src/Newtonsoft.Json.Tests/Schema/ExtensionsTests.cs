@@ -217,5 +217,64 @@ namespace Newtonsoft.Json.Tests.Schema
       Assert.AreEqual(1, errors.Count);
       Assert.AreEqual("Property 'g' has not been defined and the schema does not allow additional properties. Line 1, position 5.", errors[0]);
     }
+
+    [Test]
+    [ExpectedException(typeof(JsonSchemaException), ExpectedMessage = "Integer 10 equals maximum value of 10 and exclusive maximum is true.")]
+    public void ExclusiveMaximum_Int()
+    {
+      JsonSchema schema = new JsonSchema();
+      schema.Maximum = 10;
+      schema.ExclusiveMaximum = true;
+
+      JValue v = new JValue(10);
+      v.Validate(schema);
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonSchemaException), ExpectedMessage = "Float 10.1 equals maximum value of 10.1 and exclusive maximum is true.")]
+    public void ExclusiveMaximum_Float()
+    {
+      JsonSchema schema = new JsonSchema();
+      schema.Maximum = 10.1;
+      schema.ExclusiveMaximum = true;
+
+      JValue v = new JValue(10.1);
+      v.Validate(schema);
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonSchemaException), ExpectedMessage = "Integer 10 equals minimum value of 10 and exclusive minimum is true.")]
+    public void ExclusiveMinimum_Int()
+    {
+      JsonSchema schema = new JsonSchema();
+      schema.Minimum = 10;
+      schema.ExclusiveMinimum = true;
+
+      JValue v = new JValue(10);
+      v.Validate(schema);
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonSchemaException), ExpectedMessage = "Float 10.1 equals minimum value of 10.1 and exclusive minimum is true.")]
+    public void ExclusiveMinimum_Float()
+    {
+      JsonSchema schema = new JsonSchema();
+      schema.Minimum = 10.1;
+      schema.ExclusiveMinimum = true;
+
+      JValue v = new JValue(10.1);
+      v.Validate(schema);
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonSchemaException), ExpectedMessage = "Integer 10 is not evenly divisible by 3.")]
+    public void DivisibleBy_Int()
+    {
+      JsonSchema schema = new JsonSchema();
+      schema.DivisibleBy = 3;
+
+      JValue v = new JValue(10);
+      v.Validate(schema);
+    }
   }
 }

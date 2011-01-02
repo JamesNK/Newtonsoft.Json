@@ -377,5 +377,50 @@ namespace Newtonsoft.Json.Tests.Schema
       Assert.AreEqual(schema.Properties["x"].Options[1], "Asc");
       Assert.AreEqual(schema.Properties["x"].Options[-1], "Desc");
     }
+
+    [Test]
+    public void WriteTo_ExclusiveMinimum_ExclusiveMaximum()
+    {
+      JsonSchema schema = new JsonSchema();
+      schema.ExclusiveMinimum = true;
+      schema.ExclusiveMaximum = true;
+
+      StringWriter writer = new StringWriter();
+      JsonTextWriter jsonWriter = new JsonTextWriter(writer);
+      jsonWriter.Formatting = Formatting.Indented;
+
+      schema.WriteTo(jsonWriter);
+
+      string json = writer.ToString();
+
+      Assert.AreEqual(@"{
+  ""exclusiveMinimum"": true,
+  ""exclusiveMaximum"": true
+}", json);
+    }
+
+    [Test]
+    public void WriteTo_PatternProperties()
+    {
+      JsonSchema schema = new JsonSchema();
+      schema.PatternProperties = new Dictionary<string, JsonSchema>
+        {
+          { "[abc]", new JsonSchema() }
+        };
+
+      StringWriter writer = new StringWriter();
+      JsonTextWriter jsonWriter = new JsonTextWriter(writer);
+      jsonWriter.Formatting = Formatting.Indented;
+
+      schema.WriteTo(jsonWriter);
+
+      string json = writer.ToString();
+
+      Assert.AreEqual(@"{
+  ""patternProperties"": {
+    ""[abc]"": {}
+  }
+}", json);
+    }
   }
 }

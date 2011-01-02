@@ -89,20 +89,13 @@ namespace Newtonsoft.Json.Schema
           ReferenceOrWriteSchema(schema.AdditionalProperties);
         }
       }
-      if (schema.Properties != null)
-      {
-        _writer.WritePropertyName(JsonSchemaConstants.PropertiesPropertyName);
-        _writer.WriteStartObject();
-        foreach (KeyValuePair<string, JsonSchema> property in schema.Properties)
-        {
-          _writer.WritePropertyName(property.Key);
-          ReferenceOrWriteSchema(property.Value);
-        }
-        _writer.WriteEndObject();
-      }
+      WriteSchemaDictionaryIfNotNull(_writer, JsonSchemaConstants.PropertiesPropertyName, schema.Properties);
+      WriteSchemaDictionaryIfNotNull(_writer, JsonSchemaConstants.PatternPropertiesPropertyName, schema.PatternProperties);
       WriteItems(schema);
       WritePropertyIfNotNull(_writer, JsonSchemaConstants.MinimumPropertyName, schema.Minimum);
       WritePropertyIfNotNull(_writer, JsonSchemaConstants.MaximumPropertyName, schema.Maximum);
+      WritePropertyIfNotNull(_writer, JsonSchemaConstants.ExclusiveMinimumPropertyName, schema.ExclusiveMinimum);
+      WritePropertyIfNotNull(_writer, JsonSchemaConstants.ExclusiveMaximumPropertyName, schema.ExclusiveMaximum);
       WritePropertyIfNotNull(_writer, JsonSchemaConstants.MinimumLengthPropertyName, schema.MinimumLength);
       WritePropertyIfNotNull(_writer, JsonSchemaConstants.MaximumLengthPropertyName, schema.MaximumLength);
       WritePropertyIfNotNull(_writer, JsonSchemaConstants.MinimumItemsPropertyName, schema.MinimumItems);
@@ -151,6 +144,21 @@ namespace Newtonsoft.Json.Schema
         ReferenceOrWriteSchema(schema.Extends);
       }
       _writer.WriteEndObject();
+    }
+
+    private void WriteSchemaDictionaryIfNotNull(JsonWriter writer, string propertyName, IDictionary<string, JsonSchema> properties)
+    {
+      if (properties != null)
+      {
+        writer.WritePropertyName(propertyName);
+        writer.WriteStartObject();
+        foreach (KeyValuePair<string, JsonSchema> property in properties)
+        {
+          writer.WritePropertyName(property.Key);
+          ReferenceOrWriteSchema(property.Value);
+        }
+        writer.WriteEndObject();
+      }
     }
 
     private void WriteItems(JsonSchema schema)

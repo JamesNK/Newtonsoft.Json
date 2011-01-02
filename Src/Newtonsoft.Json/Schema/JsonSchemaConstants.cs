@@ -36,11 +36,14 @@ namespace Newtonsoft.Json.Schema
     public const string PropertiesPropertyName = "properties";
     public const string ItemsPropertyName = "items";
     public const string RequiredPropertyName = "required";
+    public const string PatternPropertiesPropertyName = "patternProperties";
     public const string AdditionalPropertiesPropertyName = "additionalProperties";
     public const string RequiresPropertyName = "requires";
     public const string IdentityPropertyName = "identity";
     public const string MinimumPropertyName = "minimum";
     public const string MaximumPropertyName = "maximum";
+    public const string ExclusiveMinimumPropertyName = "exclusiveMinimum";
+    public const string ExclusiveMaximumPropertyName = "exclusiveMaximum";
     public const string MinimumItemsPropertyName = "minItems";
     public const string MaximumItemsPropertyName = "maxItems";
     public const string PatternPropertyName = "pattern";
