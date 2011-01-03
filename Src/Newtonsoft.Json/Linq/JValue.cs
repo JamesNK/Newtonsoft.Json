@@ -30,7 +30,7 @@ using System.Text;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
 using System.ComponentModel;
-#if !(NET35 || NET20 || SILVERLIGHT)
+#if !(NET35 || NET20 || WINDOWS_PHONE)
 using System.Dynamic;
 using System.Linq.Expressions;
 #endif
@@ -406,7 +406,7 @@ namespace Newtonsoft.Json.Linq
       return _value.GetHashCode();
     }
 
-#if !(NET35 || NET20 || SILVERLIGHT)
+#if !(NET35 || NET20 || WINDOWS_PHONE)
     /// <summary>
     /// Returns the <see cref="T:System.Dynamic.DynamicMetaObject"/> responsible for binding operations performed on this object.
     /// </summary>
@@ -437,16 +437,7 @@ namespace Newtonsoft.Json.Linq
           return ReflectionUtils.IsNullable(binder.Type);
         }
 
-        Type t = binder.Type;
-        if (ReflectionUtils.IsNullableType(t))
-          t = Nullable.GetUnderlyingType(t);
-
-        TypeConverter converter = TypeDescriptor.GetConverter(instance.Value);
-        if (converter != null && converter.CanConvertTo(t))
-          result = converter.ConvertTo(instance.Value, t);
-        else
-          result = Convert.ChangeType(instance.Value, t, CultureInfo.InvariantCulture);
-
+        result = ConvertUtils.Convert(instance.Value, CultureInfo.InvariantCulture, binder.Type);
         return true;
       }
     }

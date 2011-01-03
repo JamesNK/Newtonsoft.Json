@@ -1,4 +1,4 @@
-﻿#if !(NET35 || NET20 || SILVERLIGHT)
+﻿#if !(NET35 || NET20)
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -147,15 +147,17 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       string json = JsonConvert.SerializeObject(o, Formatting.Indented, new JsonSerializerSettings
         {
-          TypeNameHandling = TypeNameHandling.All
+          TypeNameHandling = TypeNameHandling.All,
+          TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
         });
 
       Console.WriteLine(json);
 
-      string dynamicChildObjectTypeName = ReflectionUtils.GetTypeName(typeof(DynamicChildObject), FormatterAssemblyStyle.Simple);
+      string dynamicChildObjectTypeName = ReflectionUtils.GetTypeName(typeof(DynamicChildObject), FormatterAssemblyStyle.Full);
+      string expandoObjectTypeName = ReflectionUtils.GetTypeName(typeof(ExpandoObject), FormatterAssemblyStyle.Full);
 
       Assert.AreEqual(@"{
-  ""$type"": ""System.Dynamic.ExpandoObject, System.Core"",
+  ""$type"": """ + expandoObjectTypeName + @""",
   ""Text"": ""Text!"",
   ""Integer"": 2147483647,
   ""DynamicChildObject"": {
@@ -167,7 +169,8 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       dynamic n = JsonConvert.DeserializeObject(json, null, new JsonSerializerSettings
         {
-          TypeNameHandling = TypeNameHandling.All
+          TypeNameHandling = TypeNameHandling.All,
+          TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
         });
 
       Assert.IsInstanceOfType(typeof(ExpandoObject), n);

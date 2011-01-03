@@ -1,4 +1,4 @@
-﻿#if !(NET35 || NET20 || SILVERLIGHT)
+﻿#if !(NET35 || NET20 || WINDOWS_PHONE)
 using System;
 using System.Collections.Generic;
 using System.Dynamic;

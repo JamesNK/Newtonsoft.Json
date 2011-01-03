@@ -13,8 +13,8 @@ namespace Newtonsoft.Json.Tests
     public void SystemVersion()
     {
       Assembly systemAssembly = typeof(Uri).Assembly;
-      StringAssert.Contains("=2.0.5.0,", systemAssembly.FullName,
-          "Check we're testing a Silverlight 2.0 assembly");
+      StringAssert.Contains("=4.0.0.0,", systemAssembly.FullName,
+          "Check we're testing a Silverlight 4.0 assembly");
     }
   }
 #endif

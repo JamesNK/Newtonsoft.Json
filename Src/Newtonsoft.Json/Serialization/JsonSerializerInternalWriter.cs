@@ -27,7 +27,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-#if !(NET35 || NET20 || SILVERLIGHT)
+#if !(NET35 || NET20 || WINDOWS_PHONE)
 using System.Dynamic;
 #endif
 using System.Globalization;
@@ -136,7 +136,7 @@ namespace Newtonsoft.Json.Serialization
         SerializeISerializable(writer, (ISerializable)value, (JsonISerializableContract)valueContract);
       }
 #endif
-#if !(NET35 || NET20 || SILVERLIGHT)
+#if !(NET35 || NET20 || WINDOWS_PHONE)
       else if (valueContract is JsonDynamicContract)
       {
         SerializeDynamic(writer, (IDynamicMetaObjectProvider)value, (JsonDynamicContract)valueContract);
@@ -474,7 +474,7 @@ namespace Newtonsoft.Json.Serialization
     }
 #endif
 
-#if !(NET35 || NET20 || SILVERLIGHT)
+#if !(NET35 || NET20 || WINDOWS_PHONE)
     private void SerializeDynamic(JsonWriter writer, IDynamicMetaObjectProvider value, JsonDynamicContract contract)
     {
       contract.InvokeOnSerializing(value, Serializer.Context);

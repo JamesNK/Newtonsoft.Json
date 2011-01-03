@@ -1,6 +1,7 @@
-﻿#if !(NET35 || NET20 || SILVERLIGHT)
+﻿#if !(NET35 || NET20)
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
@@ -176,6 +177,74 @@ namespace Newtonsoft.Json.Tests.Linq
 
       T t = d;
       Assert.AreEqual(value, t);
+    }
+
+    [Test]
+    public void DynamicSerializerExample()
+    {
+      dynamic value = new DynamicDictionary();
+
+      value.Name = "Arine Admin";
+      value.Enabled = true;
+      value.Roles = new[] {"Admin", "User"};
+
+      string json = JsonConvert.SerializeObject(value, Formatting.Indented);
+      // {
+      //   "Name": "Arine Admin",
+      //   "Enabled": true,
+      //   "Roles": [
+      //     "Admin",
+      //     "User"
+      //   ]
+      // }
+
+      dynamic newValue = JsonConvert.DeserializeObject<DynamicDictionary>(json);
+
+      string role = newValue.Roles[0];
+      // Admin
+    }
+
+    [Test]
+    public void DynamicLinqExample()
+    {
+      JObject oldAndBusted = new JObject();
+      oldAndBusted["Name"] = "Arnie Admin";
+      oldAndBusted["Enabled"] = true;
+      oldAndBusted["Roles"] = new JArray(new[] { "Admin", "User" });
+
+      string oldRole = (string) oldAndBusted["Roles"][0];
+      // Admin
+
+
+      dynamic newHotness = new JObject();
+      newHotness.Name = "Arnie Admin";
+      newHotness.Enabled = true;
+      newHotness.Roles = new JArray(new[] { "Admin", "User" });
+
+      string newRole = newHotness.Roles[0];
+      // Admin
+    }
+
+    public class DynamicDictionary : DynamicObject
+    {
+      private readonly IDictionary<string, object> _values = new Dictionary<string, object>();
+
+      public override IEnumerable<string> GetDynamicMemberNames()
+      {
+        return _values.Keys;
+      }
+
+      public override bool TryGetMember(GetMemberBinder binder, out object result)
+      {
+        result = _values[binder.Name];
+        return true;
+      }
+
+      public override bool TrySetMember(SetMemberBinder binder, object value)
+      {
+        _values[binder.Name] = value;
+        return true;
+      }
     }
   }
 }

@@ -14,7 +14,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Newtonsoft.Json.Tests.Silverlight</RootNamespace>
     <AssemblyName>Newtonsoft.Json.Tests.Silverlight</AssemblyName>
-    <TargetFrameworkVersion>v3.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SilverlightApplication>false</SilverlightApplication>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -65,9 +65,16 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="nunit.framework, Version=2.4.7.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\NUnit\Silverlight\nunit.framework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net">
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Runtime.Serialization">
       <Private>True</Private>
@@ -106,6 +113,7 @@
     <Compile Include="JsonArrayAttributeTests.cs" />
     <Compile Include="Linq\ComponentModel\BindingTests.cs" />
     <Compile Include="Linq\ComponentModel\JPropertyDescriptorTests.cs" />
+    <Compile Include="Linq\DynamicTests.cs" />
     <Compile Include="Linq\JPathTests.cs" />
     <Compile Include="Linq\JRawTests.cs" />
     <Compile Include="Linq\JTokenReaderTest.cs" />
@@ -116,6 +124,7 @@
     <Compile Include="Schema\JsonSchemaNodeTests.cs" />
     <Compile Include="Serialization\CamelCasePropertyNamesContractResolverTests.cs" />
     <Compile Include="Serialization\ConstructorHandlingTests.cs" />
+    <Compile Include="Serialization\DynamicTests.cs" />
     <Compile Include="Serialization\EntitiesSerializationTests.cs" />
     <Compile Include="Serialization\JsonSerializerTest.cs" />
     <Compile Include="Serialization\MissingMemberHandlingTests.cs" />
@@ -243,6 +252,7 @@
     <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.Silverlight.csproj">
       <Project>{DC3C6F3D-2CA1-4278-9B79-63770FB3EA2D}</Project>
       <Name>Newtonsoft.Json.Silverlight</Name>
+      <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

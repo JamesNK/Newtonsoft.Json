@@ -27,7 +27,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-#if !(NET35 || NET20 || SILVERLIGHT)
+#if !(NET35 || NET20 || WINDOWS_PHONE)
 using System.Dynamic;
 #endif
 using System.Globalization;
@@ -406,7 +406,7 @@ namespace Newtonsoft.Json.Serialization
       }
 #endif
 
-#if !(NET35 || NET20 || SILVERLIGHT)
+#if !(NET35 || NET20 || WINDOWS_PHONE)
       JsonDynamicContract dynamicContract = contract as JsonDynamicContract;
       if (dynamicContract != null)
       {
@@ -456,7 +456,11 @@ namespace Newtonsoft.Json.Serialization
 
     private bool HasDefinedType(Type type)
     {
-      return (type != null && type != typeof (object) && !type.IsSubclassOf(typeof(JToken)));
+      return (type != null && type != typeof (object) && !typeof(JToken).IsAssignableFrom(type)
+#if !(NET35 || NET20 || WINDOWS_PHONE)
+        && type != typeof(IDynamicMetaObjectProvider)
+#endif
+        );
     }
 
     private object EnsureType(object value, Type targetType)
@@ -762,7 +766,7 @@ namespace Newtonsoft.Json.Serialization
     }
 #endif
 
-#if !(NET35 || NET20 || SILVERLIGHT)
+#if !(NET35 || NET20 || WINDOWS_PHONE)
     private object CreateDynamic(JsonReader reader, JsonDynamicContract contract, string id)
     {
       IDynamicMetaObjectProvider newObject = null;
@@ -799,9 +803,9 @@ namespace Newtonsoft.Json.Serialization
             }
             else
             {
-              object value = (JsonReader.IsPrimitiveToken(reader.TokenType))
-                ? reader.Value
-                : CreateObject(reader, typeof(IDynamicMetaObjectProvider), GetContractSafe(typeof(IDynamicMetaObjectProvider), null), null, null);
+              Type t = (JsonReader.IsPrimitiveToken(reader.TokenType)) ? reader.ValueType : typeof (IDynamicMetaObjectProvider);
+
+              object value = CreateValueNonProperty(reader, t, GetContractSafe(t, null));
 
               newObject.TrySetMember(memberName, value);
             }

@@ -1,4 +1,4 @@
-﻿#if !(NET35 || NET20 || SILVERLIGHT)
+﻿#if !(NET35 || NET20 || WINDOWS_PHONE)
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Globalization;
+using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Utilities
 {
@@ -70,10 +71,10 @@ namespace Newtonsoft.Json.Utilities
         Type csharpArgumentInfoTypeEnumerableType = typeof(IEnumerable<>).MakeGenericType(csharpArgumentInfoType);
 
         MethodInfo getMemberMethod = binderType.GetMethod("GetMember", BindingFlags.Public | BindingFlags.Static, null, new[] { csharpBinderFlagsType, typeof(string), typeof(Type), csharpArgumentInfoTypeEnumerableType }, null);
-        _getMemberCall = DynamicReflectionDelegateFactory.Instance.CreateMethodCall<object>(getMemberMethod);
+        _getMemberCall = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(getMemberMethod);
 
         MethodInfo setMemberMethod = binderType.GetMethod("SetMember", BindingFlags.Public | BindingFlags.Static, null, new[] { csharpBinderFlagsType, typeof(string), typeof(Type), csharpArgumentInfoTypeEnumerableType }, null);
-        _setMemberCall = DynamicReflectionDelegateFactory.Instance.CreateMethodCall<object>(setMemberMethod);
+        _setMemberCall = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(setMemberMethod);
       }
 
       public static CallSiteBinder GetMember(string name, Type context)

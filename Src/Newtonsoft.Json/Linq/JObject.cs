@@ -27,7 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-#if !(NET35 || NET20 || SILVERLIGHT)
+#if !(NET35 || NET20 || WINDOWS_PHONE)
 using System.Dynamic;
 using System.Linq.Expressions;
 #endif
@@ -654,7 +654,7 @@ namespace Newtonsoft.Json.Linq
     #endregion
 #endif
 
-#if !(NET35 || NET20 || SILVERLIGHT)
+#if !(NET35 || NET20 || WINDOWS_PHONE)
     /// <summary>
     /// Returns the <see cref="T:System.Dynamic.DynamicMetaObject"/> responsible for binding operations performed on this object.
     /// </summary>

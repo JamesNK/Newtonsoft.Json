@@ -55,7 +55,7 @@ using System.Text.RegularExpressions;
 using System.Collections.Specialized;
 using System.Linq.Expressions;
 #endif
-#if !(NET35 || NET20 || SILVERLIGHT)
+#if !(NET35 || NET20 || WINDOWS_PHONE)
 using System.Dynamic;
 #endif
 
@@ -3753,7 +3753,7 @@ keyword such as type of business.""
 }", json);
     }
 
-#if !(NET35 || NET20 || SILVERLIGHT)
+#if !(NET35 || NET20 || WINDOWS_PHONE)
     [Test]
     public void SerializeExpandoObject()
     {
