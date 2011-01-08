@@ -1215,6 +1215,32 @@ namespace Newtonsoft.Json.Linq
       throw new Exception("Error reading JToken from JsonReader. Unexpected token: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
     }
 
+    /// <summary>
+    /// Load a <see cref="JToken"/> from a string that contains JSON.
+    /// </summary>
+    /// <param name="json">A <see cref="String"/> that contains JSON.</param>
+    /// <returns>A <see cref="JToken"/> populated from the string that contains JSON.</returns>
+    public static JToken Parse(string json)
+    {
+      JsonReader jsonReader = new JsonTextReader(new StringReader(json));
+
+      return Load(jsonReader);
+    }
+
+    /// <summary>
+    /// Creates a <see cref="JToken"/> from a <see cref="JsonReader"/>.
+    /// </summary>
+    /// <param name="reader">An <see cref="JsonReader"/> positioned at the token to read into this <see cref="JToken"/>.</param>
+    /// <returns>
+    /// An <see cref="JToken"/> that contains the token and its descendant tokens
+    /// that were read from the reader. The runtime type of the token is determined
+    /// by the token type of the first token encountered in the reader.
+    /// </returns>
+    public static JToken Load(JsonReader reader)
+    {
+      return ReadFrom(reader);
+    }
+
     internal void SetLineInfo(IJsonLineInfo lineInfo)
     {
       if (lineInfo == null || !lineInfo.HasLineInfo())

@@ -245,7 +245,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="reader">A <see cref="JsonReader"/> that will be read for the content of the <see cref="JProperty"/>.</param>
     /// <returns>A <see cref="JProperty"/> that contains the JSON that was read from the specified <see cref="JsonReader"/>.</returns>
-    public static JProperty Load(JsonReader reader)
+    public static new JProperty Load(JsonReader reader)
     {
       if (reader.TokenType == JsonToken.None)
       {

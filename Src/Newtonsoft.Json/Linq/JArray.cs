@@ -98,7 +98,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="reader">A <see cref="JsonReader"/> that will be read for the content of the <see cref="JArray"/>.</param>
     /// <returns>A <see cref="JArray"/> that contains the JSON that was read from the specified <see cref="JsonReader"/>.</returns>
-    public static JArray Load(JsonReader reader)
+    public static new JArray Load(JsonReader reader)
     {
       if (reader.TokenType == JsonToken.None)
       {
@@ -121,7 +121,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="json">A <see cref="String"/> that contains JSON.</param>
     /// <returns>A <see cref="JArray"/> populated from the string that contains JSON.</returns>
-    public static JArray Parse(string json)
+    public static new JArray Parse(string json)
     {
       JsonReader jsonReader = new JsonTextReader(new StringReader(json));
 

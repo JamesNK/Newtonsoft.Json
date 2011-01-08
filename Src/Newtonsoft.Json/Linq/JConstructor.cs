@@ -171,7 +171,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="reader">A <see cref="JsonReader"/> that will be read for the content of the <see cref="JConstructor"/>.</param>
     /// <returns>A <see cref="JConstructor"/> that contains the JSON that was read from the specified <see cref="JsonReader"/>.</returns>
-    public static JConstructor Load(JsonReader reader)
+    public static new JConstructor Load(JsonReader reader)
     {
       if (reader.TokenType == JsonToken.None)
       {

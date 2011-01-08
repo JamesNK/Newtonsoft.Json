@@ -4015,5 +4015,33 @@ keyword such as type of business.""
       Assert.AreEqual("Success", deserializedResponse.Name);
       Assert.IsTrue(deserializedResponse.Data.DeepEquals(response.Data));
     }
+
+    public abstract class Test<T>
+    {
+      public abstract T Value { get; set; }
+    }
+
+    [JsonObject(MemberSerialization.OptIn)]
+    public class DecimalTest : Test<decimal>
+    {
+      protected DecimalTest() { }
+      public DecimalTest(decimal val)
+      {
+        Value = val;
+      }
+
+      [JsonProperty]
+      public override decimal Value { get; set; }
+    }
+
+    [Test]
+    public void OnError()
+    {
+      var data = new DecimalTest(decimal.MinValue);
+      var json = JsonConvert.SerializeObject(data);
+      var obj = JsonConvert.DeserializeObject<DecimalTest>(json);
+
+      Assert.AreEqual(decimal.MinValue, obj.Value);
+    }
   }
 }

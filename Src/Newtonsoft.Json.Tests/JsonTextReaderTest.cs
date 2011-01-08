@@ -203,7 +203,7 @@ Parameter name: reader")]
     {
       new JsonTextReader(null);
     }
-    
+
     [Test]
     [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unterminated string. Expected delimiter: '. Line 1, position 3.")]
     public void UnexpectedEndOfString()
@@ -220,7 +220,7 @@ Parameter name: reader")]
 
       Assert.AreEqual("h\0i", reader.Value);
     }
-    
+
     [Test]
     [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end while parsing unicode character. Line 1, position 7.")]
     public void UnexpectedEndOfHex()
@@ -228,7 +228,7 @@ Parameter name: reader")]
       JsonReader reader = new JsonTextReader(new StringReader(@"'h\u006"));
       reader.Read();
     }
-    
+
     [Test]
     [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unterminated string. Expected delimiter: '. Line 1, position 3.")]
     public void UnexpectedEndOfControlCharacter()
@@ -494,10 +494,10 @@ bye", reader.Value);
       string json = @"[""\u003c"",""\u5f20""]";
 
       JsonTextReader reader = new JsonTextReader(new StringReader(json));
-  
+
       reader.Read();
       Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
-      
+
       reader.Read();
       Assert.AreEqual("<", reader.Value);
 
@@ -782,5 +782,27 @@ bye", reader.Value);
       Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
     }
 #endif
+
+    [Test]
+    public void ReadAsDecimal()
+    {
+      string json = @"{""decimal"":-7.92281625142643E+28}";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      decimal? d = reader.ReadAsDecimal();
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+      Assert.AreEqual(typeof(decimal), reader.ValueType);
+      Assert.AreEqual(-79228162514264300000000000000m, d);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
+    }
   }
 }

@@ -863,8 +863,6 @@ namespace Newtonsoft.Json.Serialization
         {
           case JsonToken.PropertyName:
             string memberName = reader.Value.ToString();
-            if (!reader.Read())
-              throw new JsonSerializationException("Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
 
             // attempt exact case match first
             // then try match ignoring case
@@ -872,6 +870,9 @@ namespace Newtonsoft.Json.Serialization
 
             if (property != null)
             {
+              if (!ReadForType(reader, property.PropertyType, property.Converter))
+                throw new JsonSerializationException("Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
+
               if (!property.Ignored)
                 propertyValues[property] = CreateValueProperty(reader, property, null, true, null);
               else
@@ -879,6 +880,9 @@ namespace Newtonsoft.Json.Serialization
             }
             else
             {
+              if (!reader.Read())
+                throw new JsonSerializationException("Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
+
               if (Serializer.MissingMemberHandling == MissingMemberHandling.Error)
                 throw new JsonSerializationException("Could not find member '{0}' on object of type '{1}'".FormatWith(CultureInfo.InvariantCulture, memberName, objectType.Name));
 

@@ -248,7 +248,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="reader">A <see cref="JsonReader"/> that will be read for the content of the <see cref="JObject"/>.</param>
     /// <returns>A <see cref="JObject"/> that contains the JSON that was read from the specified <see cref="JsonReader"/>.</returns>
-    public static JObject Load(JsonReader reader)
+    public static new JObject Load(JsonReader reader)
     {
       ValidationUtils.ArgumentNotNull(reader, "reader");
 
@@ -276,7 +276,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="json">A <see cref="String"/> that contains JSON.</param>
     /// <returns>A <see cref="JObject"/> populated from the string that contains JSON.</returns>
-    public static JObject Parse(string json)
+    public static new JObject Parse(string json)
     {
       JsonReader jsonReader = new JsonTextReader(new StringReader(json));
 

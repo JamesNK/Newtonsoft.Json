@@ -60,7 +60,7 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.IsTrue(JToken.DeepEquals(new JValue(1), c.Values().ElementAt(0)));
 
       JValue v;
-      
+
       v = (JValue)JToken.ReadFrom(new JsonTextReader(new StringReader(@"""stringvalue""")));
       Assert.AreEqual("stringvalue", (string)v);
 
@@ -69,6 +69,20 @@ namespace Newtonsoft.Json.Tests.Linq
 
       v = (JValue)JToken.ReadFrom(new JsonTextReader(new StringReader(@"1.1")));
       Assert.AreEqual(1.1, (double)v);
+    }
+
+    [Test]
+    public void Load()
+    {
+      JObject o = (JObject)JToken.Load(new JsonTextReader(new StringReader("{'pie':true}")));
+      Assert.AreEqual(true, (bool)o["pie"]);
+    }
+
+    [Test]
+    public void Parse()
+    {
+      JObject o = (JObject)JToken.Parse("{'pie':true}");
+      Assert.AreEqual(true, (bool)o["pie"]);
     }
 
     [Test]
