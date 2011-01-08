@@ -2,11 +2,12 @@
 <package>
   <metadata>
     <id>Newtonsoft.Json</id>
-    <title>Newtonsoft.Json</title>
+    <title>Json.NET</title>
     <version>4.0.1</version>
     <authors>James Newton-King</authors>
     <description>Json.NET is a popular high-performance JSON framework for .NET</description>
     <language>en-US</language>
     <projectUrl>http://james.newtonking.com/projects/json-net.aspx</projectUrl>
+    <tags>json</tags>
   </metadata>
 </package>
