@@ -29,6 +29,7 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using Newtonsoft.Json.Linq;
+using System.Globalization;
 
 namespace Newtonsoft.Json.Tests.Linq
 {
@@ -90,6 +91,30 @@ namespace Newtonsoft.Json.Tests.Linq
       JValue stringValue = JValue.CreateString(null);
       Assert.AreEqual(null, stringValue.Value);
       Assert.AreEqual(JTokenType.String, stringValue.Type);
+    }
+
+    [Test]
+    public void ToString()
+    {
+      JValue v;
+
+      v = new JValue(true);
+      Assert.AreEqual("True", v.ToString());
+
+      v = new JValue(Encoding.UTF8.GetBytes("Blah"));
+      Assert.AreEqual("System.Byte[]", v.ToString(null, CultureInfo.InvariantCulture));
+
+      v = new JValue("I am a string!");
+      Assert.AreEqual("I am a string!", v.ToString());
+
+      v = new JValue(null, JTokenType.Null);
+      Assert.AreEqual("", v.ToString());
+
+      v = new JValue(null, JTokenType.Null);
+      Assert.AreEqual("", v.ToString(null, CultureInfo.InvariantCulture));
+
+      v = new JValue(new DateTime(2000, 12, 12, 20, 59, 59, DateTimeKind.Utc), JTokenType.Date);
+      Assert.AreEqual("12/12/2000 20:59:59", v.ToString(null, CultureInfo.InvariantCulture));
     }
 
     [Test]

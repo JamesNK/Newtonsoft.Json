@@ -7,6 +7,7 @@ using System.Text;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Newtonsoft.Json.Utilities;
+using System.Globalization;
 
 namespace Newtonsoft.Json.Tests.Linq
 {
@@ -104,6 +105,56 @@ namespace Newtonsoft.Json.Tests.Linq
       JToken v;
       Assert.IsTrue(d.TryGetValue("ChildValue", out v));
       Assert.AreEqual("blah blah", (string)v);
+    }
+
+    //[Test]
+    //public void JValueEquals()
+    //{
+    //  JObject o = new JObject(
+    //    new JProperty("Null", new JValue(null, JTokenType.Null)),
+    //    new JProperty("Integer", new JValue(1)),
+    //    new JProperty("Float", new JValue(1.1)),
+    //    new JProperty("DateTime", new JValue(new DateTime(2000, 12, 29, 23, 51, 10, DateTimeKind.Utc))),
+    //    new JProperty("Boolean", new JValue(true)),
+    //    new JProperty("String", new JValue("A string lol!")),
+    //    new JProperty("Bytes", new JValue(Encoding.UTF8.GetBytes("A string lol!")))
+    //    );
+
+    //  dynamic d = o;
+
+    //  Assert.IsTrue(d.Null == null);
+    //  Assert.IsTrue(d.Null == new JValue(null, JTokenType.Null));
+
+    //  //if (d.NullValue == null)
+    //  //  Console.WriteLine("Null");
+    //  //else
+    //  //  Console.WriteLine("Not null");
+
+    //  //Console.WriteLine(d.IntValue == 1);
+    //}
+
+    [Test]
+    public void JValueToString()
+    {
+      JObject o = new JObject(
+        new JProperty("Null", new JValue(null, JTokenType.Null)),
+        new JProperty("Integer", new JValue(1)),
+        new JProperty("Float", new JValue(1.1)),
+        new JProperty("DateTime", new JValue(new DateTime(2000, 12, 29, 23, 51, 10, DateTimeKind.Utc))),
+        new JProperty("Boolean", new JValue(true)),
+        new JProperty("String", new JValue("A string lol!")),
+        new JProperty("Bytes", new JValue(Encoding.UTF8.GetBytes("A string lol!")))
+        );
+
+      dynamic d = o;
+
+      Assert.AreEqual("", d.Null.ToString());
+      Assert.AreEqual("1", d.Integer.ToString());
+      Assert.AreEqual("1.1", d.Float.ToString());
+      Assert.AreEqual("12/29/2000 23:51:10", d.DateTime.ToString(null, CultureInfo.InvariantCulture));
+      Assert.AreEqual("True", d.Boolean.ToString());
+      Assert.AreEqual("A string lol!", d.String.ToString());
+      Assert.AreEqual("System.Byte[]", d.Bytes.ToString());
     }
 
     [Test]

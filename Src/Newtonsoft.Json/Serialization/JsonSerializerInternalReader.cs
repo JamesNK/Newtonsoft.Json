@@ -831,27 +831,35 @@ namespace Newtonsoft.Json.Serialization
       if (contract.UnderlyingType.IsInterface || contract.UnderlyingType.IsAbstract)
         throw new JsonSerializationException("Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantated.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
-      if (contract.DefaultCreator != null &&
+      if (contract.OverrideConstructor != null)
+      {
+        if (contract.OverrideConstructor.GetParameters().Length > 0)
+          return CreateObjectFromNonDefaultConstructor(reader, contract, contract.OverrideConstructor, id);
+
+        newObject = contract.OverrideConstructor.Invoke(null);
+      }
+      else if (contract.DefaultCreator != null &&
         (!contract.DefaultCreatorNonPublic || Serializer.ConstructorHandling == ConstructorHandling.AllowNonPublicDefaultConstructor))
       {
         newObject = contract.DefaultCreator();
       }
-
-      if (newObject != null)
+      else if (contract.ParametrizedConstructor != null)
       {
-        PopulateObject(newObject, reader, contract, id);
-        return newObject;
+        return CreateObjectFromNonDefaultConstructor(reader, contract, contract.ParametrizedConstructor, id);
       }
 
-      return CreateObjectFromNonDefaultConstructor(reader, contract, id);
+      if (newObject == null)
+        throw new JsonSerializationException("Unable to find a constructor to use for type {0}. A class should either have a default constructor, one constructor with arguments or a constructor marked with the JsonConstructor attribute.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+
+      PopulateObject(newObject, reader, contract, id);
+      return newObject;
     }
 
-    private object CreateObjectFromNonDefaultConstructor(JsonReader reader, JsonObjectContract contract, string id)
+    private object CreateObjectFromNonDefaultConstructor(JsonReader reader, JsonObjectContract contract, ConstructorInfo constructorInfo, string id)
     {
-      Type objectType = contract.UnderlyingType;
+      ValidationUtils.ArgumentNotNull(constructorInfo, "constructorInfo");
 
-      if (contract.ParametrizedConstructor == null)
-        throw new JsonSerializationException("Unable to find a constructor to use for type {0}. A class should either have a default constructor or only one constructor with arguments.".FormatWith(CultureInfo.InvariantCulture, objectType));
+      Type objectType = contract.UnderlyingType;
 
       // create a dictionary to put retrieved values into
       IDictionary<JsonProperty, object> propertyValues = contract.Properties.Where(p => !p.Ignored).ToDictionary(kv => kv, kv => (object)null);
@@ -897,7 +905,7 @@ namespace Newtonsoft.Json.Serialization
         }
       } while (!exit && reader.Read());
 
-      IDictionary<ParameterInfo, object> constructorParameters = contract.ParametrizedConstructor.GetParameters().ToDictionary(p => p, p => (object)null);
+      IDictionary<ParameterInfo, object> constructorParameters = constructorInfo.GetParameters().ToDictionary(p => p, p => (object)null);
       IDictionary<JsonProperty, object> remainingPropertyValues = new Dictionary<JsonProperty, object>();
 
       foreach (KeyValuePair<JsonProperty, object> propertyValue in propertyValues)
@@ -909,7 +917,7 @@ namespace Newtonsoft.Json.Serialization
           remainingPropertyValues.Add(propertyValue);
       }
 
-      object createdObject = contract.ParametrizedConstructor.Invoke(constructorParameters.Values.ToArray());
+      object createdObject = constructorInfo.Invoke(constructorParameters.Values.ToArray());
 
       if (id != null)
         Serializer.ReferenceResolver.AddReference(id, createdObject);

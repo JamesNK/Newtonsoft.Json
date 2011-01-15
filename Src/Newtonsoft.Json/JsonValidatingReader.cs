@@ -32,6 +32,7 @@ using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using System.IO;
 
 namespace Newtonsoft.Json
 {
@@ -300,8 +301,11 @@ namespace Newtonsoft.Json
 
       if (schema.Enum != null)
       {
+        StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
+        value.WriteTo(new JsonTextWriter(sw));
+ 
         if (!schema.Enum.ContainsValue(value, new JTokenEqualityComparer()))
-          RaiseError("Value {0} is not defined in enum.".FormatWith(CultureInfo.InvariantCulture, value),
+          RaiseError("Value {0} is not defined in enum.".FormatWith(CultureInfo.InvariantCulture, sw.ToString()),
                      schema);
       }
 

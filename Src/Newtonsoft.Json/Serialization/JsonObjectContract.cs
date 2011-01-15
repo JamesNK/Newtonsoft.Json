@@ -46,6 +46,14 @@ namespace Newtonsoft.Json.Serialization
     public JsonPropertyCollection Properties { get; private set; }
 
     /// <summary>
+    /// Gets or sets the override constructor used to create the object.
+    /// This is set when a constructor is marked up using the
+    /// JsonConstructor attribute.
+    /// </summary>
+    /// <value>The override constructor.</value>
+    public ConstructorInfo OverrideConstructor { get; set; }
+
+    /// <summary>
     /// Gets or sets the parametrized constructor used to create the object.
     /// </summary>
     /// <value>The parametrized constructor.</value>

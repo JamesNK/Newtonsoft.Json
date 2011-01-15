@@ -40,7 +40,7 @@ namespace Newtonsoft.Json.Linq
   /// <summary>
   /// Represents a value in JSON (string, integer, date, etc).
   /// </summary>
-  public class JValue : JToken, IEquatable<JValue>
+  public class JValue : JToken, IEquatable<JValue>, IFormattable
   {
     private JTokenType _valueType;
     private object _value;
@@ -406,6 +406,40 @@ namespace Newtonsoft.Json.Linq
       return _value.GetHashCode();
     }
 
+    /// <summary>
+    /// Returns a <see cref="System.String"/> that represents this instance.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="System.String"/> that represents this instance.
+    /// </returns>
+    public override string ToString()
+    {
+      if (_value == null)
+        return string.Empty;
+
+      return _value.ToString();
+    }
+
+    /// <summary>
+    /// Returns a <see cref="System.String"/> that represents this instance.
+    /// </summary>
+    /// <param name="format">The format.</param>
+    /// <param name="formatProvider">The format provider.</param>
+    /// <returns>
+    /// A <see cref="System.String"/> that represents this instance.
+    /// </returns>
+    public string ToString(string format, IFormatProvider formatProvider)
+    {
+      if (_value == null)
+        return string.Empty;
+
+      IFormattable formattable = _value as IFormattable;
+      if (formattable != null)
+        return formattable.ToString(format, formatProvider);
+      else
+        return _value.ToString();
+    }
+
 #if !(NET35 || NET20 || WINDOWS_PHONE)
     /// <summary>
     /// Returns the <see cref="T:System.Dynamic.DynamicMetaObject"/> responsible for binding operations performed on this object.
@@ -440,6 +474,26 @@ namespace Newtonsoft.Json.Linq
         result = ConvertUtils.Convert(instance.Value, CultureInfo.InvariantCulture, binder.Type);
         return true;
       }
+
+      //public override bool TryBinaryOperation(JValue instance, BinaryOperationBinder binder, object arg, out object result)
+      //{
+      //  dynamic d1 = arg;
+      //  dynamic d2 = instance._value;
+      //  //// use built in JValue equals
+      //  //if (arg is JValue)
+      //  //{
+      //  //  result = null;
+      //  //  return false;
+      //  //}
+
+      //  //if (binder.Operation == ExpressionType.Equal)
+      //  //{
+      //  //  result = Compare(instance.Type, instance.Value, arg);
+      //  //  return true;
+      //  //}
+        
+      //  //return base.TryBinaryOperation(instance, binder, arg, out result);
+      //}
     }
 #endif
   }

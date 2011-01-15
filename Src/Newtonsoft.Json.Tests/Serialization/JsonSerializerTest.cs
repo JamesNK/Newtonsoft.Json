@@ -1802,7 +1802,7 @@ keyword such as type of business.""
 #endif
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Unable to find a constructor to use for type Newtonsoft.Json.Tests.TestObjects.Event. A class should either have a default constructor or only one constructor with arguments.")]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Unable to find a constructor to use for type Newtonsoft.Json.Tests.TestObjects.Event. A class should either have a default constructor, one constructor with arguments or a constructor marked with the JsonConstructor attribute.")]
     public void FailWhenClassWithNoDefaultConstructorHasMultipleConstructorsWithArguments()
     {
       string json = @"{""sublocation"":""AlertEmailSender.Program.Main"",""userId"":0,""type"":0,""summary"":""Loading settings variables"",""details"":null,""stackTrace"":""   at System.Environment.GetStackTrace(Exception e, Boolean needFileInfo)\r\n   at System.Environment.get_StackTrace()\r\n   at mr.Logging.Event..ctor(String summary) in C:\\Projects\\MRUtils\\Logging\\Event.vb:line 71\r\n   at AlertEmailSender.Program.Main(String[] args) in C:\\Projects\\AlertEmailSender\\AlertEmailSender\\Program.cs:line 25"",""tag"":null,""time"":""\/Date(1249591032026-0400)\/""}";
@@ -4042,6 +4042,87 @@ keyword such as type of business.""
       var obj = JsonConvert.DeserializeObject<DecimalTest>(json);
 
       Assert.AreEqual(decimal.MinValue, obj.Value);
+    }
+
+    public class NonPublicConstructorWithJsonConstructor
+    {
+      public string Value { get; private set; }
+      public string Constructor { get; private set; }
+
+      [JsonConstructor]
+      private NonPublicConstructorWithJsonConstructor()
+      {
+        Constructor = "NonPublic";
+      }
+
+      public NonPublicConstructorWithJsonConstructor(string value)
+      {
+        Value = value;
+        Constructor = "Public Paramatized";
+      }
+    }
+
+    [Test]
+    public void NonPublicConstructorWithJsonConstructorTest()
+    {
+      NonPublicConstructorWithJsonConstructor c = JsonConvert.DeserializeObject<NonPublicConstructorWithJsonConstructor>("{}");
+      Assert.AreEqual("NonPublic", c.Constructor);
+    }
+
+    public class PublicConstructorOverridenByJsonConstructor
+    {
+      public string Value { get; private set; }
+      public string Constructor { get; private set; }
+      
+      public PublicConstructorOverridenByJsonConstructor()
+      {
+        Constructor = "NonPublic";
+      }
+
+      [JsonConstructor]
+      public PublicConstructorOverridenByJsonConstructor(string value)
+      {
+        Value = value;
+        Constructor = "Public Paramatized";
+      }
+    }
+
+    [Test]
+    public void PublicConstructorOverridenByJsonConstructorTest()
+    {
+      PublicConstructorOverridenByJsonConstructor c = JsonConvert.DeserializeObject<PublicConstructorOverridenByJsonConstructor>("{Value:'value!'}");
+      Assert.AreEqual("Public Paramatized", c.Constructor);
+      Assert.AreEqual("value!", c.Value);
+    }
+
+    public class MultipleParamatrizedConstructorsJsonConstructor
+    {
+      public string Value { get; private set; }
+      public int Age { get; private set; }
+      public string Constructor { get; private set; }
+
+      public MultipleParamatrizedConstructorsJsonConstructor(string value)
+      {
+        Value = value;
+        Constructor = "Public Paramatized 1";
+      }
+      
+      [JsonConstructor]
+      public MultipleParamatrizedConstructorsJsonConstructor(string value, int age)
+      {
+        Value = value;
+        Age = age;
+        Constructor = "Public Paramatized 2";
+      }
+    }
+
+    [Test]
+    public void MultipleParamatrizedConstructorsJsonConstructorTest()
+    {
+      MultipleParamatrizedConstructorsJsonConstructor c = JsonConvert.DeserializeObject<MultipleParamatrizedConstructorsJsonConstructor>("{Value:'value!', Age:1}");
+      Assert.AreEqual("Public Paramatized 2", c.Constructor);
+      Assert.AreEqual("value!", c.Value);
+      Assert.AreEqual(1, c.Age);
     }
   }
 }

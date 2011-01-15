@@ -39,8 +39,58 @@ namespace Newtonsoft.Json.Tests.Serialization
     public string AuthorCountry { get; set; }
   }
 
+  public interface IPerson
+  {
+    string FirstName { get; set; }
+    string LastName { get; set; }
+    DateTime BirthDate { get; set; }
+  }
+
+  public class Employee : IPerson
+  {
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public DateTime BirthDate { get; set; }
+
+    public string Department { get; set; }
+    public string JobTitle { get; set; }
+  }
+
+  public class IPersonContractResolver : DefaultContractResolver
+  {
+    protected override JsonContract CreateContract(Type objectType)
+    {
+      if (objectType == typeof(Employee))
+        objectType = typeof(IPerson);
+
+      return base.CreateContract(objectType);
+    }
+  }
+
   public class ContractResolverTests : TestFixtureBase
   {
+    [Test]
+    public void SerializeInterface()
+    {
+      Employee employee = new Employee
+         {
+           BirthDate = new DateTime(1977, 12, 30, 1, 1, 1, DateTimeKind.Utc),
+           FirstName = "Maurice",
+           LastName = "Moss",
+           Department = "IT",
+           JobTitle = "Support"
+         };
+
+      string iPersonJson = JsonConvert.SerializeObject(employee, Formatting.Indented,
+        new JsonSerializerSettings { ContractResolver = new IPersonContractResolver() });
+
+      Assert.AreEqual(@"{
+  ""FirstName"": ""Maurice"",
+  ""LastName"": ""Moss"",
+  ""BirthDate"": ""\/Date(252291661000)\/""
+}", iPersonJson);
+    }
+
     [Test]
     public void SingleTypeWithMultipleContractResolvers()
     {

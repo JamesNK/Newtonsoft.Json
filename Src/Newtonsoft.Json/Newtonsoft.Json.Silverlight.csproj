@@ -106,6 +106,7 @@
     <Compile Include="DefaultValueHandling.cs" />
     <Compile Include="IJsonLineInfo.cs" />
     <Compile Include="JsonArrayAttribute.cs" />
+    <Compile Include="JsonConstructorAttribute.cs" />
     <Compile Include="JsonContainerAttribute.cs" />
     <Compile Include="JsonConvert.cs" />
     <Compile Include="JsonConverter.cs" />

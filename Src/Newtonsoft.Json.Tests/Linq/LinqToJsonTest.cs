@@ -287,7 +287,7 @@ keyword such as type of business.""
       Assert.AreEqual(@"""Width"": 1.1", o.Property("Width").ToString());
       Assert.AreEqual(@"1.1", o.Property("Width").Value.ToString());
       Assert.AreEqual(@"""Open"": false", o.Property("Open").ToString());
-      Assert.AreEqual(@"false", o.Property("Open").Value.ToString());
+      Assert.AreEqual(@"False", o.Property("Open").Value.ToString());
 
       json = @"[null,undefined]";
 
@@ -296,8 +296,8 @@ keyword such as type of business.""
   null,
   undefined
 ]", a.ToString());
-      Assert.AreEqual(@"null", a.Children().ElementAt(0).ToString());
-      Assert.AreEqual(@"undefined", a.Children().ElementAt(1).ToString());
+      Assert.AreEqual(@"", a.Children().ElementAt(0).ToString());
+      Assert.AreEqual(@"", a.Children().ElementAt(1).ToString());
     }
 
     [Test]

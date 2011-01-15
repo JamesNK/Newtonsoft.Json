@@ -64,7 +64,7 @@ namespace Newtonsoft.Json.Serialization
       if (!(obj is ResolverContractKey))
         return false;
 
-      return Equals((ResolverContractKey) obj);
+      return Equals((ResolverContractKey)obj);
     }
 
     public bool Equals(ResolverContractKey other)
@@ -277,17 +277,31 @@ namespace Newtonsoft.Json.Serialization
 
       contract.MemberSerialization = JsonTypeReflector.GetObjectMemberSerialization(objectType);
       contract.Properties.AddRange(CreateProperties(contract.UnderlyingType, contract.MemberSerialization));
-      if (contract.DefaultCreator == null || contract.DefaultCreatorNonPublic)
+      if (objectType.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Any(c => c.IsDefined(typeof(JsonConstructorAttribute), true)))
+        contract.OverrideConstructor = GetAttributeConstructor(objectType);
+      else if (contract.DefaultCreator == null || contract.DefaultCreatorNonPublic)
         contract.ParametrizedConstructor = GetParametrizedConstructor(objectType);
 
       return contract;
     }
 
+    private ConstructorInfo GetAttributeConstructor(Type objectType)
+    {
+      IList<ConstructorInfo> markedConstructors = objectType.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Where(c => c.IsDefined(typeof(JsonConstructorAttribute), true)).ToList();
+
+      if (markedConstructors.Count > 1)
+        throw new Exception("Multiple constructors with the JsonConstructorAttribute.");
+      else if (markedConstructors.Count == 1)
+        return markedConstructors[0];
+
+      return null;
+    }
+
     private ConstructorInfo GetParametrizedConstructor(Type objectType)
     {
-      ConstructorInfo[] constructors = objectType.GetConstructors(BindingFlags.Public | BindingFlags.Instance);
+      IList<ConstructorInfo> constructors = objectType.GetConstructors(BindingFlags.Public | BindingFlags.Instance);
 
-      if (constructors.Length == 1)
+      if (constructors.Count == 1)
         return constructors[0];
       else
         return null;
@@ -309,7 +323,7 @@ namespace Newtonsoft.Json.Serialization
     }
 
 #if !PocketPC && !NET20
-   [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.Runtime.Serialization.DataContractAttribute.#get_IsReference()")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.Runtime.Serialization.DataContractAttribute.#get_IsReference()")]
 #endif
     private void InitializeContract(JsonContract contract)
     {
@@ -412,7 +426,7 @@ namespace Newtonsoft.Json.Serialization
     {
       JsonPrimitiveContract contract = new JsonPrimitiveContract(objectType);
       InitializeContract(contract);
-      
+
       return contract;
     }
 
@@ -440,7 +454,7 @@ namespace Newtonsoft.Json.Serialization
       JsonISerializableContract contract = new JsonISerializableContract(objectType);
       InitializeContract(contract);
 
-      ConstructorInfo constructorInfo = objectType.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new [] {typeof (SerializationInfo), typeof (StreamingContext)}, null);
+      ConstructorInfo constructorInfo = objectType.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(SerializationInfo), typeof(StreamingContext) }, null);
       if (constructorInfo != null)
       {
         MethodCall<object, object> methodCall = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(constructorInfo);
@@ -574,7 +588,7 @@ namespace Newtonsoft.Json.Serialization
       if (attributeType == typeof(OnErrorAttribute))
       {
         if (parameters == null || parameters.Length != 2 || parameters[0].ParameterType != typeof(StreamingContext) || parameters[1].ParameterType != typeof(ErrorContext))
-          throw new Exception("Serialization Error Callback '{1}' in type '{0}' must have two parameters of type '{2}' and '{3}'.".FormatWith(CultureInfo.InvariantCulture, GetClrTypeFullName(method.DeclaringType), method, typeof (StreamingContext), typeof(ErrorContext)));
+          throw new Exception("Serialization Error Callback '{1}' in type '{0}' must have two parameters of type '{2}' and '{3}'.".FormatWith(CultureInfo.InvariantCulture, GetClrTypeFullName(method.DeclaringType), method, typeof(StreamingContext), typeof(ErrorContext)));
       }
       else
       {
@@ -646,7 +660,7 @@ namespace Newtonsoft.Json.Serialization
       JsonProperty property = new JsonProperty();
       property.PropertyType = ReflectionUtils.GetMemberUnderlyingType(member);
       property.ValueProvider = CreateMemberValueProvider(member);
-      
+
       // resolve converter for property
       // the class type might have a converter but the property converter takes presidence
       property.Converter = JsonTypeReflector.GetJsonConverter(member, property.PropertyType);
@@ -689,7 +703,7 @@ namespace Newtonsoft.Json.Serialization
                       (memberSerialization == MemberSerialization.OptIn
                        && propertyAttribute == null
 #if !PocketPC && !NET20
-                       && dataMemberAttribute == null
+ && dataMemberAttribute == null
 #endif
 ));
 
@@ -735,7 +749,7 @@ namespace Newtonsoft.Json.Serialization
       MethodCall<object, object> shouldSerializeCall =
         JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(shouldSerializeMethod);
 
-      return o => (bool) shouldSerializeCall(o);
+      return o => (bool)shouldSerializeCall(o);
     }
 
     private void SetIsSpecifiedActions(JsonProperty property, MemberInfo member)
