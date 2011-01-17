@@ -40,7 +40,7 @@ namespace Newtonsoft.Json.Linq
   /// <summary>
   /// Represents a value in JSON (string, integer, date, etc).
   /// </summary>
-  public class JValue : JToken, IEquatable<JValue>, IFormattable
+  public class JValue : JToken, IEquatable<JValue>, IFormattable, IComparable, IComparable<JValue>
   {
     private JTokenType _valueType;
     private object _value;
@@ -144,45 +144,83 @@ namespace Newtonsoft.Json.Linq
       get { return false; }
     }
 
-    private static bool Compare(JTokenType valueType, object objA, object objB)
+    private static int Compare(JTokenType valueType, object objA, object objB)
     {
       if (objA == null && objB == null)
-        return true;
-      if (objA == null || objB == null)
-        return false;
+        return 0;
+      if (objA != null && objB == null)
+        return 1;
+      if (objA == null && objB != null)
+        return -1;
 
       switch (valueType)
       {
         case JTokenType.Integer:
-          if (objA is ulong || objB is ulong)
-            return Convert.ToDecimal(objA, CultureInfo.InvariantCulture).Equals(Convert.ToDecimal(objB, CultureInfo.InvariantCulture));
+          if (objA is ulong || objB is ulong || objA is decimal || objB is decimal)
+            return Convert.ToDecimal(objA, CultureInfo.InvariantCulture).CompareTo(Convert.ToDecimal(objB, CultureInfo.InvariantCulture));
+          else if (objA is float || objB is float || objA is double || objB is double)
+            return CompareFloat(objA, objB);
           else
-            return Convert.ToInt64(objA, CultureInfo.InvariantCulture).Equals(Convert.ToInt64(objB, CultureInfo.InvariantCulture));
+            return Convert.ToInt64(objA, CultureInfo.InvariantCulture).CompareTo(Convert.ToInt64(objB, CultureInfo.InvariantCulture));
         case JTokenType.Float:
-          double d1 = Convert.ToDouble(objA, CultureInfo.InvariantCulture);
-          double d2 = Convert.ToDouble(objB, CultureInfo.InvariantCulture);
-          if (d1.Equals(d2))
-            return true;
-
-          // take into account possible floating point errors
-          return MathUtils.ApproxEquals(d1, d2);
+          return CompareFloat(objA, objB);
         case JTokenType.Comment:
         case JTokenType.String:
-        case JTokenType.Boolean:
         case JTokenType.Raw:
-          return objA.Equals(objB);
-        case JTokenType.Date:
-          return objA.Equals(objB);
-        case JTokenType.Bytes:
-          byte[] b1 = objA as byte[];
-          byte[] b2 = objB as byte[];
-          if (b1 == null || b2 == null)
-            return false;
+          string s1 = Convert.ToString(objA);
+          string s2 = Convert.ToString(objB);
 
-          return MiscellaneousUtils.ByteArrayCompare(b1, b2);
+          return s1.CompareTo(s2);
+        case JTokenType.Boolean:
+          bool b1 = Convert.ToBoolean(objA);
+          bool b2 = Convert.ToBoolean(objB);
+
+          return b1.CompareTo(b2);
+        case JTokenType.Date:
+          if (objA is DateTime)
+          {
+            DateTime date1 = Convert.ToDateTime(objA);
+            DateTime date2 = Convert.ToDateTime(objB);
+
+            return date1.CompareTo(date2);
+          }
+          else
+          {
+            if (!(objB is DateTimeOffset))
+              throw new ArgumentException("Object must be of type DateTimeOffset.");
+
+            DateTimeOffset date1 = (DateTimeOffset)objA;
+            DateTimeOffset date2 = (DateTimeOffset)objB;
+
+            return date1.CompareTo(date2);
+          }
+        case JTokenType.Bytes:
+          if (!(objB is byte[]))
+              throw new ArgumentException("Object must be of type byte[].");
+
+          byte[] bytes1 = objA as byte[];
+          byte[] bytes2 = objB as byte[];
+          if (bytes1 == null)
+            return -1;
+          if (bytes2 == null)
+            return 1;
+
+          return MiscellaneousUtils.ByteArrayCompare(bytes1, bytes2);
         default:
           throw MiscellaneousUtils.CreateArgumentOutOfRangeException("valueType", valueType, "Unexpected value type: {0}".FormatWith(CultureInfo.InvariantCulture, valueType));
       }
+    }
+
+    private static int CompareFloat(object objA, object objB)
+    {
+      double d1 = Convert.ToDouble(objA, CultureInfo.InvariantCulture);
+      double d2 = Convert.ToDouble(objB, CultureInfo.InvariantCulture);
+
+      // take into account possible floating point errors
+      if (MathUtils.ApproxEquals(d1, d2))
+        return 0;
+
+      return d1.CompareTo(d2);
     }
 
     internal override JToken CloneToken()
@@ -352,7 +390,7 @@ namespace Newtonsoft.Json.Linq
 
     private static bool ValuesEquals(JValue v1, JValue v2)
     {
-      return (v1 == v2 || (v1._valueType == v2._valueType && Compare(v1._valueType, v1._value, v2._value)));
+      return (v1 == v2 || (v1._valueType == v2._valueType && Compare(v1._valueType, v1._value, v2._value) == 0));
     }
 
     /// <summary>
@@ -475,26 +513,54 @@ namespace Newtonsoft.Json.Linq
         return true;
       }
 
-      //public override bool TryBinaryOperation(JValue instance, BinaryOperationBinder binder, object arg, out object result)
-      //{
-      //  dynamic d1 = arg;
-      //  dynamic d2 = instance._value;
-      //  //// use built in JValue equals
-      //  //if (arg is JValue)
-      //  //{
-      //  //  result = null;
-      //  //  return false;
-      //  //}
+      public override bool TryBinaryOperation(JValue instance, BinaryOperationBinder binder, object arg, out object result)
+      {
+        object compareValue = (arg is JValue) ? ((JValue) arg).Value : arg;
 
-      //  //if (binder.Operation == ExpressionType.Equal)
-      //  //{
-      //  //  result = Compare(instance.Type, instance.Value, arg);
-      //  //  return true;
-      //  //}
-        
-      //  //return base.TryBinaryOperation(instance, binder, arg, out result);
-      //}
+        switch (binder.Operation)
+        {
+          case ExpressionType.Equal:
+            result = (Compare(instance.Type, instance.Value, compareValue) == 0);
+            return true;
+          case ExpressionType.NotEqual:
+            result = (Compare(instance.Type, instance.Value, compareValue) != 0);
+            return true;
+          case ExpressionType.GreaterThan:
+            result = (Compare(instance.Type, instance.Value, compareValue) > 0);
+            return true;
+          case ExpressionType.GreaterThanOrEqual:
+            result = (Compare(instance.Type, instance.Value, compareValue) >= 0);
+            return true;
+          case ExpressionType.LessThan:
+            result = (Compare(instance.Type, instance.Value, compareValue) < 0);
+            return true;
+          case ExpressionType.LessThanOrEqual:
+            result = (Compare(instance.Type, instance.Value, compareValue) <= 0);
+            return true;
+        }
+
+        result = null;
+        return false;
+      }
     }
 #endif
+
+    int IComparable.CompareTo(object obj)
+    {
+      if (obj == null)
+        return 1;
+
+      object otherValue = (obj is JValue) ? ((JValue) obj).Value : obj;
+
+      return Compare(_valueType, _value, otherValue);
+    }
+
+    public int CompareTo(JValue other)
+    {
+      if (other == null)
+        return 1;
+
+      return Compare(_valueType, _value, other._value);
+    }
   }
 }

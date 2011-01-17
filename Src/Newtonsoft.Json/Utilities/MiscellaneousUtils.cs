@@ -85,18 +85,20 @@ namespace Newtonsoft.Json.Utilities
       return hex;
     }
 
-    public static bool ByteArrayCompare(byte[] a1, byte[] a2)
+    public static int ByteArrayCompare(byte[] a1, byte[] a2)
     {
-      if (a1.Length != a2.Length)
-        return false;
+      int lengthCompare = a1.Length.CompareTo(a2.Length);
+      if (lengthCompare != 0)
+        return lengthCompare;
 
       for (int i = 0; i < a1.Length; i++)
       {
-        if (a1[i] != a2[i])
-          return false;
+        int valueCompare = a1[i].CompareTo(a2[i]);
+        if (valueCompare != 0)
+          return valueCompare;
       }
 
-      return true;
+      return 0;
     }
 
     public static string GetPrefix(string qualifiedName)

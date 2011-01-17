@@ -222,5 +222,21 @@ namespace Newtonsoft.Json.Tests.Linq
       IComparable c = (new JValue(1).Value<IComparable>());
       Assert.AreEqual(1, c);
     }
+
+    [Test]
+    public void Ordering()
+    {
+      JObject o = new JObject(
+        new JProperty("Integer", new JValue(1)),
+        new JProperty("Float", new JValue(1.2d)),
+        new JProperty("Decimal", new JValue(1.1m))
+        );
+
+      IList<object> orderedValues = o.Values().Cast<JValue>().OrderBy(v => v).Select(v => v.Value).ToList();
+
+      Assert.AreEqual(1, orderedValues[0]);
+      Assert.AreEqual(1.1, orderedValues[1]);
+      Assert.AreEqual(1.2, orderedValues[2]);
+    }
   }
 }

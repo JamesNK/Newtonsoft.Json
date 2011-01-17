@@ -107,31 +107,66 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual("blah blah", (string)v);
     }
 
-    //[Test]
-    //public void JValueEquals()
-    //{
-    //  JObject o = new JObject(
-    //    new JProperty("Null", new JValue(null, JTokenType.Null)),
-    //    new JProperty("Integer", new JValue(1)),
-    //    new JProperty("Float", new JValue(1.1)),
-    //    new JProperty("DateTime", new JValue(new DateTime(2000, 12, 29, 23, 51, 10, DateTimeKind.Utc))),
-    //    new JProperty("Boolean", new JValue(true)),
-    //    new JProperty("String", new JValue("A string lol!")),
-    //    new JProperty("Bytes", new JValue(Encoding.UTF8.GetBytes("A string lol!")))
-    //    );
+    [Test]
+    public void JValueEquals()
+    {
+      JObject o = new JObject(
+        new JProperty("Null", new JValue(null, JTokenType.Null)),
+        new JProperty("Integer", new JValue(1)),
+        new JProperty("Float", new JValue(1.1d)),
+        new JProperty("Decimal", new JValue(1.1m)),
+        new JProperty("DateTime", new JValue(new DateTime(2000, 12, 29, 23, 51, 10, DateTimeKind.Utc))),
+        new JProperty("Boolean", new JValue(true)),
+        new JProperty("String", new JValue("A string lol!")),
+        new JProperty("Bytes", new JValue(Encoding.UTF8.GetBytes("A string lol!")))
+        );
 
-    //  dynamic d = o;
+      dynamic d = o;
 
-    //  Assert.IsTrue(d.Null == null);
-    //  Assert.IsTrue(d.Null == new JValue(null, JTokenType.Null));
+      Assert.IsTrue(d.Null == d.Null);
+      Assert.IsTrue(d.Null == null);
+      Assert.IsTrue(d.Null == new JValue(null, JTokenType.Null));
+      Assert.IsFalse(d.Null == 1);
 
-    //  //if (d.NullValue == null)
-    //  //  Console.WriteLine("Null");
-    //  //else
-    //  //  Console.WriteLine("Not null");
+      Assert.IsTrue(d.Integer == d.Integer);
+      Assert.IsTrue(d.Integer > 0);
+      Assert.IsTrue(d.Integer > 0.0m);
+      Assert.IsTrue(d.Integer > 0.0f);
+      Assert.IsTrue(d.Integer > null);
+      Assert.IsTrue(d.Integer >= null);
+      Assert.IsTrue(d.Integer == 1);
+      Assert.IsTrue(d.Integer == 1m);
+      Assert.IsTrue(d.Integer != 1.1f);
+      Assert.IsTrue(d.Integer != 1.1d);
 
-    //  //Console.WriteLine(d.IntValue == 1);
-    //}
+      Assert.IsTrue(d.Decimal == d.Decimal);
+      Assert.IsTrue(d.Decimal > 0);
+      Assert.IsTrue(d.Decimal > 0.0m);
+      Assert.IsTrue(d.Decimal > 0.0f);
+      Assert.IsTrue(d.Decimal > null);
+      Assert.IsTrue(d.Decimal >= null);
+      Assert.IsTrue(d.Decimal == 1.1);
+      Assert.IsTrue(d.Decimal == 1.1m);
+      Assert.IsTrue(d.Decimal != 1.0f);
+      Assert.IsTrue(d.Decimal != 1.0d);
+
+      Assert.IsTrue(d.Float == d.Float);
+      Assert.IsTrue(d.Float > 0);
+      Assert.IsTrue(d.Float > 0.0m);
+      Assert.IsTrue(d.Float > 0.0f);
+      Assert.IsTrue(d.Float > null);
+      Assert.IsTrue(d.Float >= null);
+      Assert.IsTrue(d.Float < 2);
+      Assert.IsTrue(d.Float <= 1.1);
+      Assert.IsTrue(d.Float == 1.1);
+      Assert.IsTrue(d.Float == 1.1m);
+      Assert.IsTrue(d.Float != 1.0f);
+      Assert.IsTrue(d.Float != 1.0d);
+
+      Assert.IsTrue(d.Bytes == d.Bytes);
+      Assert.IsTrue(d.Bytes == Encoding.UTF8.GetBytes("A string lol!"));
+      Assert.IsTrue(d.Bytes == new JValue(Encoding.UTF8.GetBytes("A string lol!")));
+    }
 
     [Test]
     public void JValueToString()
@@ -191,6 +226,8 @@ namespace Newtonsoft.Json.Tests.Linq
       AssertValueConverted<bool>(true);
       AssertValueConverted<bool?>(true);
       AssertValueConverted<bool?>(false);
+      AssertValueConverted<bool?>(null);
+      AssertValueConverted<bool?>("true", true);
       AssertValueConverted<byte[]>(null);
       AssertValueConverted<byte[]>(Encoding.UTF8.GetBytes("blah"));
       AssertValueConverted<DateTime>(new DateTime(2000, 12, 20, 23, 59, 2, DateTimeKind.Utc));
@@ -201,7 +238,11 @@ namespace Newtonsoft.Json.Tests.Linq
       AssertValueConverted<DateTimeOffset?>(null);
       AssertValueConverted<decimal>(99.9m);
       AssertValueConverted<decimal?>(99.9m);
+      AssertValueConverted<decimal>(1);
+      AssertValueConverted<decimal>(1.1f, 1.1m);
+      AssertValueConverted<decimal>("1.1", 1.1m);
       AssertValueConverted<double>(99.9);
+      AssertValueConverted<double>(99.9m);
       AssertValueConverted<double?>(99.9);
       AssertValueConverted<float>(99.9f);
       AssertValueConverted<float?>(99.9f);
@@ -212,8 +253,11 @@ namespace Newtonsoft.Json.Tests.Linq
       AssertValueConverted<short>(short.MaxValue);
       AssertValueConverted<short?>(short.MaxValue);
       AssertValueConverted<string>("blah");
+      AssertValueConverted<string>(null);
+      AssertValueConverted<string>(1, "1");
       AssertValueConverted<uint>(uint.MinValue);
       AssertValueConverted<uint?>(uint.MinValue);
+      AssertValueConverted<uint?>("1", 1);
       AssertValueConverted<ulong>(ulong.MaxValue);
       AssertValueConverted<ulong?>(ulong.MaxValue);
       AssertValueConverted<ushort>(ushort.MinValue);
@@ -221,13 +265,18 @@ namespace Newtonsoft.Json.Tests.Linq
       AssertValueConverted<ushort?>(null);
     }
 
-    private static void AssertValueConverted<T>(T value)
+    private static void AssertValueConverted<T>(object value)
+    {
+      AssertValueConverted<T>(value, value);
+    }
+
+    private static void AssertValueConverted<T>(object value, object expected)
     {
       JValue v = new JValue(value);
       dynamic d = v;
 
       T t = d;
-      Assert.AreEqual(value, t);
+      Assert.AreEqual(expected, t);
     }
 
     [Test]
