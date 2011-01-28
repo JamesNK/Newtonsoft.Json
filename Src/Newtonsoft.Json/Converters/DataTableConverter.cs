@@ -111,8 +111,6 @@ namespace Newtonsoft.Json.Converters
         reader.Read();
       }
 
-      reader.Read();
-
       return dt;
     }
 

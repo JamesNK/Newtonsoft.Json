@@ -78,6 +78,8 @@ namespace Newtonsoft.Json.Converters
       {
         DataTable dt = (DataTable)converter.ReadJson(reader, typeof (DataTable), null, serializer);
         ds.Tables.Add(dt);
+
+        reader.Read();
       }
 
       return ds;

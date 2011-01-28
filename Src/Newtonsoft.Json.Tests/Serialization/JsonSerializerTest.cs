@@ -4124,5 +4124,35 @@ keyword such as type of business.""
       Assert.AreEqual("value!", c.Value);
       Assert.AreEqual(1, c.Age);
     }
+
+    public class EnumerableClass
+    {
+      public IEnumerable<string> Enumerable { get; set; }
+    }
+
+    [Test]
+    public void DeserializeEnumerable()
+    {
+      EnumerableClass c = new EnumerableClass
+        {
+          Enumerable = new List<string> { "One", "Two", "Three" }
+        };
+
+      string json = JsonConvert.SerializeObject(c, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""Enumerable"": [
+    ""One"",
+    ""Two"",
+    ""Three""
+  ]
+}", json);
+
+      EnumerableClass c2 = JsonConvert.DeserializeObject<EnumerableClass>(json);
+
+      Assert.AreEqual("One", c2.Enumerable.ElementAt(0));
+      Assert.AreEqual("Two", c2.Enumerable.ElementAt(1));
+      Assert.AreEqual("Three", c2.Enumerable.ElementAt(2));
+    }
   }
 }

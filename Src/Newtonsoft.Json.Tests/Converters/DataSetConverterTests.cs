@@ -241,10 +241,12 @@ namespace Newtonsoft.Json.Tests.Converters
       return myTable;
     }
 
-    public class DataSetTestClass
+    public class DataSetAndTableTestClass
     {
       public string Before { get; set; }
-      public DataSet Data { get; set; }
+      public DataSet Set { get; set; }
+      public string Middle { get; set; }
+      public DataTable Table { get; set; }
       public string After { get; set; }
     }
 
@@ -255,10 +257,12 @@ namespace Newtonsoft.Json.Tests.Converters
       ds.Tables.Add(CreateDataTable("FirstTable", 2));
       ds.Tables.Add(CreateDataTable("SecondTable", 1));
 
-      DataSetTestClass c = new DataSetTestClass
+      DataSetAndTableTestClass c = new DataSetAndTableTestClass
         {
           Before = "Before",
-          Data = ds,
+          Set = ds,
+          Middle = "Middle",
+          Table = CreateDataTable("LoneTable", 2),
           After = "After"
         };
 
@@ -266,7 +270,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
       Assert.AreEqual(@"{
   ""Before"": ""Before"",
-  ""Data"": {
+  ""Set"": {
     ""FirstTable"": [
       {
         ""StringCol"": ""Item Name"",
@@ -296,13 +300,34 @@ namespace Newtonsoft.Json.Tests.Converters
       }
     ]
   },
+  ""Middle"": ""Middle"",
+  ""Table"": [
+    {
+      ""StringCol"": ""Item Name"",
+      ""Int32Col"": 1,
+      ""BooleanCol"": true,
+      ""TimeSpanCol"": ""10.22:10:15.1000000"",
+      ""DateTimeCol"": ""2000-12-29T00:00:00Z"",
+      ""DecimalCol"": 64.0021
+    },
+    {
+      ""StringCol"": ""Item Name"",
+      ""Int32Col"": 2,
+      ""BooleanCol"": true,
+      ""TimeSpanCol"": ""10.22:10:15.1000000"",
+      ""DateTimeCol"": ""2000-12-29T00:00:00Z"",
+      ""DecimalCol"": 64.0021
+    }
+  ],
   ""After"": ""After""
 }", json);
 
-      DataSetTestClass c2 = JsonConvert.DeserializeObject<DataSetTestClass>(json, new IsoDateTimeConverter());
+      DataSetAndTableTestClass c2 = JsonConvert.DeserializeObject<DataSetAndTableTestClass>(json, new IsoDateTimeConverter());
 
       Assert.AreEqual(c.Before, c2.Before);
-      Assert.AreEqual(c.Data.Tables.Count, c2.Data.Tables.Count);
+      Assert.AreEqual(c.Set.Tables.Count, c2.Set.Tables.Count);
+      Assert.AreEqual(c.Middle, c2.Middle);
+      Assert.AreEqual(c.Table.Rows.Count, c2.Table.Rows.Count);
       Assert.AreEqual(c.After, c2.After);
     }
   }

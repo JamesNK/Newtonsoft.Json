@@ -70,7 +70,7 @@ namespace Newtonsoft.Json
         _tokenType = tokenType;
         _schemas = schemas;
 
-        _requiredProperties = schemas.SelectMany(GetRequiredProperties).Distinct().ToDictionary(p => p, p => false);
+        _requiredProperties = schemas.SelectMany<JsonSchemaModel, string>(GetRequiredProperties).Distinct().ToDictionary(p => p, p => false);
       }
 
       private IEnumerable<string> GetRequiredProperties(JsonSchemaModel schema)
