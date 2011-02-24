@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Formatters;
 using System.Text;
+using Newtonsoft.Json.Tests.TestObjects;
 using Newtonsoft.Json.Utilities;
 using NUnit.Framework;
 

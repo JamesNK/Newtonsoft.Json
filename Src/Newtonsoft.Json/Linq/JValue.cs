@@ -167,20 +167,20 @@ namespace Newtonsoft.Json.Linq
         case JTokenType.Comment:
         case JTokenType.String:
         case JTokenType.Raw:
-          string s1 = Convert.ToString(objA);
-          string s2 = Convert.ToString(objB);
+          string s1 = Convert.ToString(objA, CultureInfo.InvariantCulture);
+          string s2 = Convert.ToString(objB, CultureInfo.InvariantCulture);
 
           return s1.CompareTo(s2);
         case JTokenType.Boolean:
-          bool b1 = Convert.ToBoolean(objA);
-          bool b2 = Convert.ToBoolean(objB);
+          bool b1 = Convert.ToBoolean(objA, CultureInfo.InvariantCulture);
+          bool b2 = Convert.ToBoolean(objB, CultureInfo.InvariantCulture);
 
           return b1.CompareTo(b2);
         case JTokenType.Date:
           if (objA is DateTime)
           {
-            DateTime date1 = Convert.ToDateTime(objA);
-            DateTime date2 = Convert.ToDateTime(objB);
+            DateTime date1 = Convert.ToDateTime(objA, CultureInfo.InvariantCulture);
+            DateTime date2 = Convert.ToDateTime(objB, CultureInfo.InvariantCulture);
 
             return date1.CompareTo(date2);
           }
@@ -555,12 +555,30 @@ namespace Newtonsoft.Json.Linq
       return Compare(_valueType, _value, otherValue);
     }
 
-    public int CompareTo(JValue other)
+    /// <summary>
+    /// Compares the current instance with another object of the same type and returns an integer that indicates whether the current instance precedes, follows, or occurs in the same position in the sort order as the other object.
+    /// </summary>
+    /// <param name="obj">An object to compare with this instance.</param>
+    /// <returns>
+    /// A 32-bit signed integer that indicates the relative order of the objects being compared. The return value has these meanings:
+    /// Value
+    /// Meaning
+    /// Less than zero
+    /// This instance is less than <paramref name="obj"/>.
+    /// Zero
+    /// This instance is equal to <paramref name="obj"/>.
+    /// Greater than zero
+    /// This instance is greater than <paramref name="obj"/>.
+    /// </returns>
+    /// <exception cref="T:System.ArgumentException">
+    /// 	<paramref name="obj"/> is not the same type as this instance.
+    /// </exception>
+    public int CompareTo(JValue obj)
     {
-      if (other == null)
+      if (obj == null)
         return 1;
 
-      return Compare(_valueType, _value, other._value);
+      return Compare(_valueType, _value, obj._value);
     }
   }
 }

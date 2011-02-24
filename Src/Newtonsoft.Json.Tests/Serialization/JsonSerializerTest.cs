@@ -4154,5 +4154,29 @@ keyword such as type of business.""
       Assert.AreEqual("Two", c2.Enumerable.ElementAt(1));
       Assert.AreEqual("Three", c2.Enumerable.ElementAt(2));
     }
+
+    [JsonObject(MemberSerialization.OptIn)]
+    public class ItemBase
+    {
+      [JsonProperty]
+      public string Name { get; set; }
+    }
+
+    public class ComplexItem : ItemBase
+    {
+      public Stream Source { get; set; }
+    }
+
+    [Test]
+    public void SerializeAttributesOnBase()
+    {
+      ComplexItem i = new ComplexItem();
+
+      string json = JsonConvert.SerializeObject(i, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""Name"": null
+}", json);
+    }
   }
 }

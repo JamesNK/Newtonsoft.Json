@@ -79,8 +79,16 @@ namespace Newtonsoft.Json.Utilities
 
       if (wrapperType == null)
       {
-        wrapperType = GenerateWrapperType(interfaceType, realObjectType);
-        _wrapperDictionary.SetType(interfaceType, realObjectType, wrapperType);
+        lock (_lock)
+        {
+          wrapperType = _wrapperDictionary.GetType(interfaceType, realObjectType);
+
+          if (wrapperType == null)
+          {
+            wrapperType = GenerateWrapperType(interfaceType, realObjectType);
+            _wrapperDictionary.SetType(interfaceType, realObjectType, wrapperType);
+          }
+        }
       }
 
       return wrapperType;
