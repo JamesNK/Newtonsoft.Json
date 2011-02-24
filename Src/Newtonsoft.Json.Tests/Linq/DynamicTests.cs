@@ -185,7 +185,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
       Assert.AreEqual("", d.Null.ToString());
       Assert.AreEqual("1", d.Integer.ToString());
-      Assert.AreEqual("1.1", d.Float.ToString());
+      Assert.AreEqual("1.1", d.Float.ToString(CultureInfo.InvariantCulture));
       Assert.AreEqual("12/29/2000 23:51:10", d.DateTime.ToString(null, CultureInfo.InvariantCulture));
       Assert.AreEqual("True", d.Boolean.ToString());
       Assert.AreEqual("A string lol!", d.String.ToString());

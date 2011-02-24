@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
@@ -285,7 +286,7 @@ keyword such as type of business.""
   1264118400000
 )", o.Property("Establised").Value.ToString());
       Assert.AreEqual(@"""Width"": 1.1", o.Property("Width").ToString());
-      Assert.AreEqual(@"1.1", o.Property("Width").Value.ToString());
+      Assert.AreEqual(@"1.1", ((JValue)o.Property("Width").Value).ToString(CultureInfo.InvariantCulture));
       Assert.AreEqual(@"""Open"": false", o.Property("Open").ToString());
       Assert.AreEqual(@"False", o.Property("Open").Value.ToString());
 

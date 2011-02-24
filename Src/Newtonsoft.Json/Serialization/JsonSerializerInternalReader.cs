@@ -228,7 +228,7 @@ namespace Newtonsoft.Json.Serialization
           case JsonToken.Boolean:
           case JsonToken.Date:
           case JsonToken.Bytes:
-            return EnsureType(reader.Value, objectType);
+            return EnsureType(reader.Value, CultureInfo.InvariantCulture, objectType);
           case JsonToken.String:
             // convert empty string to null automatically for nullable types
             if (string.IsNullOrEmpty((string)reader.Value) &&
@@ -240,7 +240,7 @@ namespace Newtonsoft.Json.Serialization
             if (objectType == typeof(byte[]))
               return Convert.FromBase64String((string)reader.Value);
 
-            return EnsureType(reader.Value, objectType);
+            return EnsureType(reader.Value, CultureInfo.InvariantCulture, objectType);
           case JsonToken.StartConstructor:
           case JsonToken.EndConstructor:
             string constructorName = reader.Value.ToString();
@@ -251,7 +251,7 @@ namespace Newtonsoft.Json.Serialization
             if (objectType == typeof (DBNull))
               return DBNull.Value;
 
-            return EnsureType(reader.Value, objectType);
+            return EnsureType(reader.Value, CultureInfo.InvariantCulture, objectType);
           case JsonToken.Raw:
             return new JRaw((string)reader.Value);
           case JsonToken.Comment:
@@ -463,7 +463,7 @@ namespace Newtonsoft.Json.Serialization
         );
     }
 
-    private object EnsureType(object value, Type targetType)
+    private object EnsureType(object value, CultureInfo culture, Type targetType)
     {
       if (targetType == null)
         return value;
@@ -476,7 +476,7 @@ namespace Newtonsoft.Json.Serialization
       {
         try
         {
-          return ConvertUtils.ConvertOrCast(value, CultureInfo.InvariantCulture, targetType);
+          return ConvertUtils.ConvertOrCast(value, culture, targetType);
         }
         catch (Exception ex)
         {
@@ -612,7 +612,7 @@ namespace Newtonsoft.Json.Serialization
             object keyValue;
             try
             {
-              keyValue = EnsureType(reader.Value, contract.DictionaryKeyType);
+              keyValue = EnsureType(reader.Value, CultureInfo.InvariantCulture, contract.DictionaryKeyType);
             }
             catch (Exception ex)
             {
@@ -776,9 +776,9 @@ namespace Newtonsoft.Json.Serialization
 
       if (contract.DefaultCreator != null &&
         (!contract.DefaultCreatorNonPublic || Serializer.ConstructorHandling == ConstructorHandling.AllowNonPublicDefaultConstructor))
-      {
         newObject = (IDynamicMetaObjectProvider)contract.DefaultCreator();
-      }
+      else
+        throw new JsonSerializationException("Unable to find a default constructor to use for type {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
       if (id != null)
         Serializer.ReferenceResolver.AddReference(id, newObject);

@@ -28,6 +28,7 @@ using System.Collections.Generic;
 #if !SILVERLIGHT && !PocketPC && !NET20
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Web.Script.Serialization;
 #endif
 using System.Text;
@@ -4177,6 +4178,30 @@ keyword such as type of business.""
       Assert.AreEqual(@"{
   ""Name"": null
 }", json);
+    }
+
+    public class DeserializeStringConvert
+    {
+      public string Name { get; set; }
+      public int Age { get; set; }
+      public double Height { get; set; }
+      public decimal Price { get; set; }
+    }
+
+    [Test]
+    public void DeserializeStringEnglish()
+    {
+      string json = @"{
+  'Name': 'James Hughes',
+  'Age': '40',
+  'Height': '44.4',
+  'Price': '4'
+}";
+
+      DeserializeStringConvert p = JsonConvert.DeserializeObject<DeserializeStringConvert>(json);
+      Assert.AreEqual(40, p.Age);
+      Assert.AreEqual(44.4, p.Height);
+      Assert.AreEqual(4d, p.Price);
     }
   }
 }

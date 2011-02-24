@@ -348,6 +348,13 @@ namespace Newtonsoft.Json
       if (TokenType == JsonToken.Float)
         return (decimal?)Value;
 
+      decimal d;
+      if (TokenType == JsonToken.String && decimal.TryParse((string)Value, NumberStyles.Number, CultureInfo.InvariantCulture, out d))
+      {
+        SetToken(JsonToken.Float, d);
+        return d;
+      }
+
       throw CreateJsonReaderException("Unexpected token when reading decimal: {0}. Line {1}, position {2}.", TokenType, _currentLineNumber, _currentLinePosition);
     }
 

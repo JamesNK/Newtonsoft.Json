@@ -98,6 +98,8 @@ namespace Newtonsoft.Json.Utilities
 
     public static bool TryGetMember(this IDynamicMetaObjectProvider dynamicProvider, string name, out object value)
     {
+      ValidationUtils.ArgumentNotNull(dynamicProvider, "dynamicProvider");
+
       GetMemberBinder getMemberBinder = (GetMemberBinder) BinderWrapper.GetMember(name, typeof (DynamicUtils));
 
       CallSite<Func<CallSite, object, object>> callSite = CallSite<Func<CallSite, object, object>>.Create(new NoThrowGetBinderMember(getMemberBinder));
@@ -118,7 +120,9 @@ namespace Newtonsoft.Json.Utilities
 
     public static bool TrySetMember(this IDynamicMetaObjectProvider dynamicProvider, string name, object value)
     {
-      SetMemberBinder binder = (SetMemberBinder) BinderWrapper.SetMember(name, value.GetType());
+      ValidationUtils.ArgumentNotNull(dynamicProvider, "dynamicProvider");
+
+      SetMemberBinder binder = (SetMemberBinder)BinderWrapper.SetMember(name, typeof(DynamicUtils));
 
       var setterSite = CallSite<Func<CallSite, object, object, object>>.Create(new NoThrowSetBinderMember(binder));
 
