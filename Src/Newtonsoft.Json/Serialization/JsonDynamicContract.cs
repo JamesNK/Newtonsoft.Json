@@ -44,6 +44,12 @@ namespace Newtonsoft.Json.Serialization
     public JsonPropertyCollection Properties { get; private set; }
 
     /// <summary>
+    /// Gets or sets the property name resolver.
+    /// </summary>
+    /// <value>The property name resolver.</value>
+    public Func<string, string> PropertyNameResolver { get; set; }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="JsonDynamicContract"/> class.
     /// </summary>
     /// <param name="underlyingType">The underlying type for the contract.</param>

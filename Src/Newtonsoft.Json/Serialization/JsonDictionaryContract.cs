@@ -36,6 +36,12 @@ namespace Newtonsoft.Json.Serialization
   /// </summary>
   public class JsonDictionaryContract : JsonContract
   {
+    /// <summary>
+    /// Gets or sets the property name resolver.
+    /// </summary>
+    /// <value>The property name resolver.</value>
+    public Func<string, string> PropertyNameResolver { get; set; }
+
     internal Type DictionaryKeyType { get; private set; }
     internal Type DictionaryValueType { get; private set; }
 

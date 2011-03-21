@@ -169,5 +169,49 @@ namespace Newtonsoft.Json.Tests.Serialization
   ]
 }", json);
     }
+
+#if !(NET35 || NET20 || WINDOWS_PHONE)
+    [Test]
+    public void DynamicCamelCasePropertyNames()
+    {
+      dynamic o = new DynamicTests.TestDynamicObject();
+      o.Text = "Text!";
+      o.Integer = int.MaxValue;
+
+      string json = JsonConvert.SerializeObject(o, Formatting.Indented,
+        new JsonSerializerSettings
+        {
+          ContractResolver = new CamelCasePropertyNamesContractResolver()
+        });
+
+      Assert.AreEqual(@"{
+  ""text"": ""Text!"",
+  ""integer"": 2147483647,
+  ""int"": 0,
+  ""childObject"": null
+}", json);
+    }
+#endif
+
+    [Test]
+    public void DictionaryCamelCasePropertyNames()
+    {
+      Dictionary<string, string> values = new Dictionary<string, string>
+        {
+          {"First", "Value1!"},
+          {"Second", "Value2!"}
+        };
+
+      string json = JsonConvert.SerializeObject(values, Formatting.Indented,
+        new JsonSerializerSettings
+        {
+          ContractResolver = new CamelCasePropertyNamesContractResolver()
+        });
+
+      Assert.AreEqual(@"{
+  ""first"": ""Value1!"",
+  ""second"": ""Value2!""
+}", json);
+    }
   }
 }

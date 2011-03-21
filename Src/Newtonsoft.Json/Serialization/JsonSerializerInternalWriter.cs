@@ -475,6 +475,12 @@ namespace Newtonsoft.Json.Serialization
 #endif
 
 #if !(NET35 || NET20 || WINDOWS_PHONE)
+    /// <summary>
+    /// Serializes the dynamic.
+    /// </summary>
+    /// <param name="writer">The writer.</param>
+    /// <param name="value">The value.</param>
+    /// <param name="contract">The contract.</param>
     private void SerializeDynamic(JsonWriter writer, IDynamicMetaObjectProvider value, JsonDynamicContract contract)
     {
       contract.InvokeOnSerializing(value, Serializer.Context);
@@ -487,7 +493,11 @@ namespace Newtonsoft.Json.Serialization
         object memberValue;
         if (DynamicUtils.TryGetMember(value, memberName, out memberValue))
         {
-          writer.WritePropertyName(memberName);
+          string resolvedPropertyName = (contract.PropertyNameResolver != null)
+            ? contract.PropertyNameResolver(memberName)
+            : memberName;
+          
+          writer.WritePropertyName(resolvedPropertyName);
           SerializeValue(writer, memberValue, GetContractSafe(memberValue), null, null);
         }
       }
@@ -546,6 +556,10 @@ namespace Newtonsoft.Json.Serialization
       foreach (DictionaryEntry entry in d)
       {
         string propertyName = GetPropertyName(entry);
+
+        propertyName = (contract.PropertyNameResolver != null)
+                         ? contract.PropertyNameResolver(propertyName)
+                         : propertyName;
 
         try
         {

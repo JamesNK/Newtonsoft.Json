@@ -401,6 +401,8 @@ namespace Newtonsoft.Json.Serialization
       JsonDictionaryContract contract = new JsonDictionaryContract(objectType);
       InitializeContract(contract);
 
+      contract.PropertyNameResolver = ResolvePropertyName;
+
       return contract;
     }
 
@@ -477,6 +479,7 @@ namespace Newtonsoft.Json.Serialization
       JsonDynamicContract contract = new JsonDynamicContract(objectType);
       InitializeContract(contract);
 
+      contract.PropertyNameResolver = ResolvePropertyName;
       contract.Properties.AddRange(CreateProperties(objectType, MemberSerialization.OptOut));
 
       return contract;
