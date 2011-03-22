@@ -171,7 +171,7 @@ namespace Newtonsoft.Json.Serialization
       if (!isReference.Value)
         return false;
 
-      return Serializer.ReferenceResolver.IsReferenced(value);
+      return Serializer.ReferenceResolver.IsReferenced(this, value);
     }
 
     private void WriteMemberInfoProperty(JsonWriter writer, object memberValue, JsonProperty property, JsonContract contract)
@@ -231,7 +231,7 @@ namespace Newtonsoft.Json.Serialization
     {
       writer.WriteStartObject();
       writer.WritePropertyName(JsonTypeReflector.RefPropertyName);
-      writer.WriteValue(Serializer.ReferenceResolver.GetReference(value));
+      writer.WriteValue(Serializer.ReferenceResolver.GetReference(this, value));
       writer.WriteEndObject();
     }
 
@@ -299,7 +299,7 @@ namespace Newtonsoft.Json.Serialization
       if (isReference)
       {
         writer.WritePropertyName(JsonTypeReflector.IdPropertyName);
-        writer.WriteValue(Serializer.ReferenceResolver.GetReference(value));
+        writer.WriteValue(Serializer.ReferenceResolver.GetReference(this, value));
       }
       if (ShouldWriteType(TypeNameHandling.Objects, contract, member, collectionValueContract))
       {
@@ -386,7 +386,7 @@ namespace Newtonsoft.Json.Serialization
         if (isReference)
         {
           writer.WritePropertyName(JsonTypeReflector.IdPropertyName);
-          writer.WriteValue(Serializer.ReferenceResolver.GetReference(values.UnderlyingCollection));
+          writer.WriteValue(Serializer.ReferenceResolver.GetReference(this, values.UnderlyingCollection));
         }
         if (includeTypeDetails)
         {
@@ -539,7 +539,7 @@ namespace Newtonsoft.Json.Serialization
       if (isReference)
       {
         writer.WritePropertyName(JsonTypeReflector.IdPropertyName);
-        writer.WriteValue(Serializer.ReferenceResolver.GetReference(values.UnderlyingDictionary));
+        writer.WriteValue(Serializer.ReferenceResolver.GetReference(this, values.UnderlyingDictionary));
       }
       if (ShouldWriteType(TypeNameHandling.Objects, contract, member, collectionValueContract))
       {

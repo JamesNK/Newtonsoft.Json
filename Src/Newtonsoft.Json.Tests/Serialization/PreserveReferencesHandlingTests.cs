@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
@@ -283,7 +284,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       {
         CircularReferenceClass circularReferenceClass = (CircularReferenceClass)value;
 
-        string reference = serializer.ReferenceResolver.GetReference(circularReferenceClass);
+        string reference = serializer.ReferenceResolver.GetReference(serializer, circularReferenceClass);
 
         JObject me = new JObject();
         me["$id"] = new JValue(reference);
@@ -309,7 +310,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         else
         {
           string reference = (string)o["$ref"];
-          return serializer.ReferenceResolver.ResolveReference(reference);
+          return serializer.ReferenceResolver.ResolveReference(serializer, reference);
         }
       }
 
@@ -801,6 +802,62 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       User deserializedUser = JsonConvert.DeserializeObject<User>(json, serializerSettings);
       Assert.IsNotNull(deserializedUser);
+    }
+
+    [Test]
+    public void PreserveReferencesHandlingWithReusedJsonSerializer()
+    {
+      MyClass c = new MyClass();
+
+      IList<MyClass> myClasses1 = new List<MyClass>
+        {
+          c,
+          c
+        };
+
+      var ser = new JsonSerializer()
+      {
+        PreserveReferencesHandling = PreserveReferencesHandling.All
+      };
+
+      MemoryStream ms = new MemoryStream();
+
+      using (var sw = new StreamWriter(ms))
+      using (var writer = new JsonTextWriter(sw) { Formatting = Formatting.Indented })
+      {
+        ser.Serialize(writer, myClasses1);
+      }
+
+      byte[] data = ms.ToArray();
+      string json = Encoding.UTF8.GetString(data, 0, data.Length);
+
+      Assert.AreEqual(@"{
+  ""$id"": ""1"",
+  ""$values"": [
+    {
+      ""$id"": ""2"",
+      ""PreProperty"": 0,
+      ""PostProperty"": 0
+    },
+    {
+      ""$ref"": ""2""
+    }
+  ]
+}", json);
+
+      ms = new MemoryStream(data);
+      IList<MyClass> myClasses2;
+
+      using (var sr = new StreamReader(ms))
+      using (var reader = new JsonTextReader(sr))
+      {
+        myClasses2 = ser.Deserialize<IList<MyClass>>(reader);
+      }
+
+      Assert.AreEqual(2, myClasses2.Count);
+      Assert.AreEqual(myClasses2[0], myClasses2[1]);
+
+      Assert.AreNotEqual(myClasses1[0], myClasses2[0]);
     }
   }
 }

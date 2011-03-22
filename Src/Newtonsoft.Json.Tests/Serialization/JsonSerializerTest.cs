@@ -4203,5 +4203,20 @@ keyword such as type of business.""
       Assert.AreEqual(44.4, p.Height);
       Assert.AreEqual(4d, p.Price);
     }
+
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Error converting value {null} to type 'System.DateTime'.")]
+    public void DeserializeNullDateTimeValueTest()
+    {
+      JsonConvert.DeserializeObject("null", typeof(DateTime));
+    }
+
+    [Test]
+    public void DeserializeNullNullableDateTimeValueTest()
+    {
+      object dateTime = JsonConvert.DeserializeObject("null", typeof(DateTime?));
+
+      Assert.IsNull(dateTime);
+    }
   }
 }

@@ -35,72 +35,53 @@ namespace Newtonsoft.Json.Serialization
 {
   internal class DefaultReferenceResolver : IReferenceResolver
   {
-    private class ReferenceEqualsEqualityComparer : IEqualityComparer<object>
-    {
-      bool IEqualityComparer<object>.Equals(object x, object y)
-      {
-        return ReferenceEquals(x, y);
-      }
-
-      int IEqualityComparer<object>.GetHashCode(object obj)
-      {
-#if !PocketPC
-        // put objects in a bucket based on their reference
-        return RuntimeHelpers.GetHashCode(obj);
-#else
-        // put all objects in the same bucket so ReferenceEquals is called on all
-        return -1;
-#endif
-      }
-    }
-
     private int _referenceCount;
-    private BidirectionalDictionary<string, object> _mappings;
 
-    private BidirectionalDictionary<string, object> Mappings
+    private BidirectionalDictionary<string, object> GetMappings(object context)
     {
-      get
-      {
-        // override equality comparer for object key dictionary
-        // object will be modified as it deserializes and might have mutable hashcode
-        if (_mappings == null)
-          _mappings = new BidirectionalDictionary<string, object>(
-            EqualityComparer<string>.Default,
-            new ReferenceEqualsEqualityComparer());
+      JsonSerializerInternalBase internalSerializer;
 
-        return _mappings;
-      }
+      if (context is JsonSerializerInternalBase)
+        internalSerializer = (JsonSerializerInternalBase) context;
+      else if (context is JsonSerializerProxy)
+        internalSerializer = ((JsonSerializerProxy) context).GetInternalSerializer();
+      else
+        throw new Exception("The DefaultReferenceResolver can only be used internally.");
+
+      return internalSerializer.DefaultReferenceMappings;
     }
 
-    public object ResolveReference(string reference)
+    public object ResolveReference(object context, string reference)
     {
       object value;
-      Mappings.TryGetByFirst(reference, out value);
+      GetMappings(context).TryGetByFirst(reference, out value);
       return value;
     }
 
-    public string GetReference(object value)
+    public string GetReference(object context, object value)
     {
+      var mappings = GetMappings(context);
+
       string reference;
-      if (!Mappings.TryGetBySecond(value, out reference))
+      if (!mappings.TryGetBySecond(value, out reference))
       {
         _referenceCount++;
         reference = _referenceCount.ToString(CultureInfo.InvariantCulture);
-        Mappings.Add(reference, value);
+        mappings.Add(reference, value);
       }
 
       return reference;
     }
 
-    public void AddReference(string reference, object value)
+    public void AddReference(object context, string reference, object value)
     {
-      Mappings.Add(reference, value);
+      GetMappings(context).Add(reference, value);
     }
 
-    public bool IsReferenced(object value)
+    public bool IsReferenced(object context, object value)
     {
       string reference;
-      return Mappings.TryGetBySecond(value, out reference);
+      return GetMappings(context).TryGetBySecond(value, out reference);
     }
   }
 }

@@ -125,6 +125,14 @@ namespace Newtonsoft.Json.Serialization
       set { _serializer.Context = value; }
     }
 
+    internal JsonSerializerInternalBase GetInternalSerializer()
+    {
+      if (_serializerReader != null)
+        return _serializerReader;
+      else
+        return _serializerWriter;
+    }
+
     public JsonSerializerProxy(JsonSerializerInternalReader serializerReader)
     {
       ValidationUtils.ArgumentNotNull(serializerReader, "serializerReader");

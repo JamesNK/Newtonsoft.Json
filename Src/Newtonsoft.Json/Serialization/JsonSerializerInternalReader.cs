@@ -315,7 +315,7 @@ namespace Newtonsoft.Json.Serialization
             if (reader.TokenType == JsonToken.PropertyName)
               throw new JsonSerializationException("Additional content found in JSON reference object. A JSON reference object should only have a {0} property.".FormatWith(CultureInfo.InvariantCulture, JsonTypeReflector.RefPropertyName));
 
-            return Serializer.ReferenceResolver.ResolveReference(reference);
+            return Serializer.ReferenceResolver.ResolveReference(this, reference);
           }
           else if (string.Equals(propertyName, JsonTypeReflector.TypePropertyName, StringComparison.Ordinal))
           {
@@ -598,7 +598,7 @@ namespace Newtonsoft.Json.Serialization
     private object PopulateDictionary(IWrappedDictionary dictionary, JsonReader reader, JsonDictionaryContract contract, string id)
     {
       if (id != null)
-        Serializer.ReferenceResolver.AddReference(id, dictionary.UnderlyingDictionary);
+        Serializer.ReferenceResolver.AddReference(this, id, dictionary.UnderlyingDictionary);
 
       contract.InvokeOnDeserializing(dictionary.UnderlyingDictionary, Serializer.Context);
 
@@ -686,7 +686,7 @@ namespace Newtonsoft.Json.Serialization
       object list = wrappedList.UnderlyingCollection;
 
       if (reference != null)
-        Serializer.ReferenceResolver.AddReference(reference, list);
+        Serializer.ReferenceResolver.AddReference(this, reference, list);
 
       contract.InvokeOnDeserializing(list, Serializer.Context);
 
@@ -756,7 +756,7 @@ namespace Newtonsoft.Json.Serialization
       object createdObject = contract.ISerializableCreator(serializationInfo, Serializer.Context);
 
       if (id != null)
-        Serializer.ReferenceResolver.AddReference(id, createdObject);
+        Serializer.ReferenceResolver.AddReference(this, id, createdObject);
 
       // these are together because OnDeserializing takes an object but for an ISerializable the object is full created in the constructor
       contract.InvokeOnDeserializing(createdObject, Serializer.Context);
@@ -781,7 +781,7 @@ namespace Newtonsoft.Json.Serialization
         throw new JsonSerializationException("Unable to find a default constructor to use for type {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
       if (id != null)
-        Serializer.ReferenceResolver.AddReference(id, newObject);
+        Serializer.ReferenceResolver.AddReference(this, id, newObject);
 
       contract.InvokeOnDeserializing(newObject, Serializer.Context);
       
@@ -920,7 +920,7 @@ namespace Newtonsoft.Json.Serialization
       object createdObject = constructorInfo.Invoke(constructorParameters.Values.ToArray());
 
       if (id != null)
-        Serializer.ReferenceResolver.AddReference(id, createdObject);
+        Serializer.ReferenceResolver.AddReference(this, id, createdObject);
 
       contract.InvokeOnDeserializing(createdObject, Serializer.Context);
 
@@ -976,7 +976,7 @@ namespace Newtonsoft.Json.Serialization
         contract.Properties.Where(m => m.Required != Required.Default).ToDictionary(m => m, m => RequiredValue.None);
 
       if (id != null)
-        Serializer.ReferenceResolver.AddReference(id, newObject);
+        Serializer.ReferenceResolver.AddReference(this, id, newObject);
 
       int initialDepth = reader.Depth;
 
