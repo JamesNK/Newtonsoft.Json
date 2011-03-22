@@ -134,7 +134,8 @@ namespace Newtonsoft.Json
     {
       base.Close();
 
-      _writer.Close();
+      if (CloseOutput && _writer != null)
+        _writer.Close();
     }
 
     /// <summary>

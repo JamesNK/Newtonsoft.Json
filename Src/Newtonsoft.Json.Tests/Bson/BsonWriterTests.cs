@@ -39,6 +39,24 @@ namespace Newtonsoft.Json.Tests.Bson
   public class BsonWriterTests : TestFixtureBase
   {
     [Test]
+    public void CloseOutput()
+    {
+      MemoryStream ms = new MemoryStream();
+      BsonWriter writer = new BsonWriter(ms);
+
+      Assert.IsTrue(ms.CanRead);
+      writer.Close();
+      Assert.IsFalse(ms.CanRead);
+
+      ms = new MemoryStream();
+      writer = new BsonWriter(ms) { CloseOutput = false };
+
+      Assert.IsTrue(ms.CanRead);
+      writer.Close();
+      Assert.IsTrue(ms.CanRead);
+    }
+
+    [Test]
     public void WriteSingleObject()
     {
       MemoryStream ms = new MemoryStream();

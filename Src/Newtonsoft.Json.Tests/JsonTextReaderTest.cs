@@ -36,6 +36,24 @@ namespace Newtonsoft.Json.Tests
   public class JsonTextReaderTest : TestFixtureBase
   {
     [Test]
+    public void CloseInput()
+    {
+      MemoryStream ms = new MemoryStream();
+      JsonTextReader reader = new JsonTextReader(new StreamReader(ms));
+
+      Assert.IsTrue(ms.CanRead);
+      reader.Close();
+      Assert.IsFalse(ms.CanRead);
+
+      ms = new MemoryStream();
+      reader = new JsonTextReader(new StreamReader(ms)) { CloseInput = false };
+
+      Assert.IsTrue(ms.CanRead);
+      reader.Close();
+      Assert.IsTrue(ms.CanRead);
+    }
+    
+    [Test]
     public void YahooFinance()
     {
       string input = @"{

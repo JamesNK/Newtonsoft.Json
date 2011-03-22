@@ -118,6 +118,16 @@ namespace Newtonsoft.Json
     private readonly List<JTokenType> _stack;
 
     /// <summary>
+    /// Gets or sets a value indicating whether the underlying stream or
+    /// <see cref="TextReader"/> should be closed when the reader is closed.
+    /// </summary>
+    /// <value>
+    /// true to close the underlying stream or <see cref="TextReader"/> when
+    /// the reader is closed; otherwise false. The default is true.
+    /// </value>
+    public bool CloseInput { get; set; }
+
+    /// <summary>
     /// Gets the quotation mark character used to enclose the value of a string.
     /// </summary>
     public virtual char QuoteChar
@@ -173,6 +183,9 @@ namespace Newtonsoft.Json
     {
       _currentState = State.Start;
       _stack = new List<JTokenType>();
+
+      CloseInput = true;
+      
       Push(JTokenType.None);
     }
 

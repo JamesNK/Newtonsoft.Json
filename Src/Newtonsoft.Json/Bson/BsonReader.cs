@@ -242,6 +242,14 @@ namespace Newtonsoft.Json.Bson
       }
     }
 
+    public override void Close()
+    {
+      base.Close();
+
+      if (CloseInput && _reader != null)
+        _reader.Close();
+    }
+
     private bool ReadCodeWScope()
     {
       switch (_bsonReaderState)

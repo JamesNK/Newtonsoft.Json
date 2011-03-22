@@ -41,6 +41,24 @@ namespace Newtonsoft.Json.Tests.Bson
     private const char Euro = '\u20ac';
 
     [Test]
+    public void CloseInput()
+    {
+      MemoryStream ms = new MemoryStream();
+      BsonReader reader = new BsonReader(ms);
+
+      Assert.IsTrue(ms.CanRead);
+      reader.Close();
+      Assert.IsFalse(ms.CanRead);
+
+      ms = new MemoryStream();
+      reader = new BsonReader(ms) { CloseInput = false };
+
+      Assert.IsTrue(ms.CanRead);
+      reader.Close();
+      Assert.IsTrue(ms.CanRead);
+    }
+
+    [Test]
     public void ReadSingleObject()
     {
       byte[] data = MiscellaneousUtils.HexToBytes("0F-00-00-00-10-42-6C-61-68-00-01-00-00-00-00");

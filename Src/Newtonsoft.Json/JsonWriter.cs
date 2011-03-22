@@ -127,6 +127,16 @@ namespace Newtonsoft.Json
     private Formatting _formatting;
 
     /// <summary>
+    /// Gets or sets a value indicating whether the underlying stream or
+    /// <see cref="TextReader"/> should be closed when the writer is closed.
+    /// </summary>
+    /// <value>
+    /// true to close the underlying stream or <see cref="TextReader"/> when
+    /// the writer is closed; otherwise false. The default is true.
+    /// </value>
+    public bool CloseOutput { get; set; }
+
+    /// <summary>
     /// Gets the top.
     /// </summary>
     /// <value>The top.</value>
@@ -179,12 +189,14 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Creates an instance of the <c>JsonWriter</c> class. 
     /// </summary>
-    public JsonWriter()
+    protected JsonWriter()
     {
       _stack = new List<JTokenType>(8);
       _stack.Add(JTokenType.None);
       _currentState = State.Start;
       _formatting = Formatting.None;
+
+      CloseOutput = true;
     }
 
     private void Push(JTokenType value)

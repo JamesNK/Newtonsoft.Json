@@ -30,6 +30,11 @@ namespace Newtonsoft.Json.Bson
       _writer.Flush();
     }
 
+    public void Close()
+    {
+      _writer.Close();
+    }
+
     public void WriteToken(BsonToken t)
     {
       CalculateSize(t);

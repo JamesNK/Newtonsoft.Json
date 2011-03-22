@@ -991,7 +991,7 @@ namespace Newtonsoft.Json
     {
       base.Close();
 
-      if (_reader != null)
+      if (CloseInput && _reader != null)
         _reader.Close();
 
       if (_buffer != null)

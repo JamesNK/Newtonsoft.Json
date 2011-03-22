@@ -156,6 +156,14 @@ namespace Newtonsoft.Json.Bson
       _propertyName = name;
     }
 
+    public override void Close()
+    {
+      base.Close();
+
+      if (CloseOutput && _writer != null)
+        _writer.Close();
+    }
+
     private void AddParent(BsonToken container)
     {
       AddToken(container);

@@ -35,6 +35,24 @@ namespace Newtonsoft.Json.Tests
   public class JsonTextWriterTest : TestFixtureBase
   {
     [Test]
+    public void CloseOutput()
+    {
+      MemoryStream ms = new MemoryStream();
+      JsonTextWriter writer = new JsonTextWriter(new StreamWriter(ms));
+
+      Assert.IsTrue(ms.CanRead);
+      writer.Close();
+      Assert.IsFalse(ms.CanRead);
+
+      ms = new MemoryStream();
+      writer = new JsonTextWriter(new StreamWriter(ms)) { CloseOutput = false };
+
+      Assert.IsTrue(ms.CanRead);
+      writer.Close();
+      Assert.IsTrue(ms.CanRead);
+    }
+    
+    [Test]
     public void ValueFormatting()
     {
       StringBuilder sb = new StringBuilder();
