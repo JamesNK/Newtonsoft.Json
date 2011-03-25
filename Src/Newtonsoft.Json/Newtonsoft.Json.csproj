@@ -96,6 +96,7 @@
     <Compile Include="Converters\CustomCreationConverter.cs" />
     <Compile Include="Converters\DateTimeConverterBase.cs" />
     <Compile Include="Converters\EntityKeyMemberConverter.cs" />
+    <Compile Include="Converters\ExpandoObjectConverter.cs" />
     <Compile Include="Converters\KeyValuePairConverter.cs" />
     <Compile Include="Converters\BsonObjectIdConverter.cs" />
     <Compile Include="Converters\RegexConverter.cs" />

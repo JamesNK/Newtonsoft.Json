@@ -84,6 +84,9 @@ namespace Newtonsoft.Json.Serialization
 #if !PocketPC && !SILVERLIGHT && !NET20
         new EntityKeyMemberConverter(),
 #endif
+#if !(NET35 || NET20 || WINDOWS_PHONE)
+        new ExpandoObjectConverter(),
+#endif
         new BinaryConverter(),
         new KeyValuePairConverter(),
 #if !SILVERLIGHT || WINDOWS_PHONE

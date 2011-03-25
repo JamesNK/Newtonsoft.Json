@@ -70,6 +70,7 @@
     <Compile Include="Converters\CustomCreationConverterTests.cs" />
     <Compile Include="Converters\DataSetConverterTests.cs" />
     <Compile Include="Converters\DataTableConverterTests.cs" />
+    <Compile Include="Converters\ExpandoObjectConverterTests.cs" />
     <Compile Include="Converters\ObjectIdConverterTests.cs" />
     <Compile Include="Converters\RegexConverterTests.cs" />
     <Compile Include="Converters\StringEnumConverterTests.cs" />

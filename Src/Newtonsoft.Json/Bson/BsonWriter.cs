@@ -156,6 +156,9 @@ namespace Newtonsoft.Json.Bson
       _propertyName = name;
     }
 
+    /// <summary>
+    /// Closes this stream and the underlying stream.
+    /// </summary>
     public override void Close()
     {
       base.Close();

@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 #if !SILVERLIGHT && !PocketPC && !NET20
 using System.ComponentModel.DataAnnotations;
+using System.Configuration;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Web.Script.Serialization;
@@ -3448,45 +3449,45 @@ keyword such as type of business.""
       Assert.AreEqual(27, deserialized.Age);
     }
 
-//    [Test]
-//    public void XmlSerializerSpecifiedTrueTest()
-//    {
-//      XmlSerializer s = new XmlSerializer(typeof(OptionalOrder));
+    //    [Test]
+    //    public void XmlSerializerSpecifiedTrueTest()
+    //    {
+    //      XmlSerializer s = new XmlSerializer(typeof(OptionalOrder));
 
-//      StringWriter sw = new StringWriter();
-//      s.Serialize(sw, new OptionalOrder() { FirstOrder = "First", FirstOrderSpecified = true });
+    //      StringWriter sw = new StringWriter();
+    //      s.Serialize(sw, new OptionalOrder() { FirstOrder = "First", FirstOrderSpecified = true });
 
-//      Console.WriteLine(sw.ToString());
+    //      Console.WriteLine(sw.ToString());
 
-//      string xml = @"<?xml version=""1.0"" encoding=""utf-16""?>
-//<OptionalOrder xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
-//  <FirstOrder>First</FirstOrder>
-//</OptionalOrder>";
+    //      string xml = @"<?xml version=""1.0"" encoding=""utf-16""?>
+    //<OptionalOrder xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+    //  <FirstOrder>First</FirstOrder>
+    //</OptionalOrder>";
 
-//      OptionalOrder o = (OptionalOrder)s.Deserialize(new StringReader(xml));
-//      Console.WriteLine(o.FirstOrder);
-//      Console.WriteLine(o.FirstOrderSpecified);
-//    }
+    //      OptionalOrder o = (OptionalOrder)s.Deserialize(new StringReader(xml));
+    //      Console.WriteLine(o.FirstOrder);
+    //      Console.WriteLine(o.FirstOrderSpecified);
+    //    }
 
-//    [Test]
-//    public void XmlSerializerSpecifiedFalseTest()
-//    {
-//      XmlSerializer s = new XmlSerializer(typeof(OptionalOrder));
+    //    [Test]
+    //    public void XmlSerializerSpecifiedFalseTest()
+    //    {
+    //      XmlSerializer s = new XmlSerializer(typeof(OptionalOrder));
 
-//      StringWriter sw = new StringWriter();
-//      s.Serialize(sw, new OptionalOrder() { FirstOrder = "First", FirstOrderSpecified = false });
+    //      StringWriter sw = new StringWriter();
+    //      s.Serialize(sw, new OptionalOrder() { FirstOrder = "First", FirstOrderSpecified = false });
 
-//      Console.WriteLine(sw.ToString());
+    //      Console.WriteLine(sw.ToString());
 
-//      //      string xml = @"<?xml version=""1.0"" encoding=""utf-16""?>
-//      //<OptionalOrder xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
-//      //  <FirstOrder>First</FirstOrder>
-//      //</OptionalOrder>";
+    //      //      string xml = @"<?xml version=""1.0"" encoding=""utf-16""?>
+    //      //<OptionalOrder xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+    //      //  <FirstOrder>First</FirstOrder>
+    //      //</OptionalOrder>";
 
-//      //      OptionalOrder o = (OptionalOrder)s.Deserialize(new StringReader(xml));
-//      //      Console.WriteLine(o.FirstOrder);
-//      //      Console.WriteLine(o.FirstOrderSpecified);
-//    }
+    //      //      OptionalOrder o = (OptionalOrder)s.Deserialize(new StringReader(xml));
+    //      //      Console.WriteLine(o.FirstOrder);
+    //      //      Console.WriteLine(o.FirstOrderSpecified);
+    //    }
 
     public class OptionalOrder
     {
@@ -3501,47 +3502,47 @@ keyword such as type of business.""
 
     public class FamilyDetails
     {
-        public string Name { get; set; }
-        public int NumberOfChildren { get; set; }
+      public string Name { get; set; }
+      public int NumberOfChildren { get; set; }
 
-        [JsonIgnore]
-        public bool NumberOfChildrenSpecified  { get; set; }
+      [JsonIgnore]
+      public bool NumberOfChildrenSpecified { get; set; }
     }
 
     [Test]
     public void SpecifiedExample()
     {
-        FamilyDetails joe = new FamilyDetails();
-        joe.Name = "Joe Family Details";
-        joe.NumberOfChildren = 4;
-        joe.NumberOfChildrenSpecified = true;
+      FamilyDetails joe = new FamilyDetails();
+      joe.Name = "Joe Family Details";
+      joe.NumberOfChildren = 4;
+      joe.NumberOfChildrenSpecified = true;
 
-        FamilyDetails martha = new FamilyDetails();
-        martha.Name = "Martha Family Details";
-        martha.NumberOfChildren = 3;
-        martha.NumberOfChildrenSpecified = false;
+      FamilyDetails martha = new FamilyDetails();
+      martha.Name = "Martha Family Details";
+      martha.NumberOfChildren = 3;
+      martha.NumberOfChildrenSpecified = false;
 
-        string json = JsonConvert.SerializeObject(new[] { joe, martha }, Formatting.Indented);
-        //[
-        //  {
-        //    "Name": "Joe Family Details",
-        //    "NumberOfChildren": 4
-        //  },
-        //  {
-        //    "Name": "Martha Family Details"
-        //  }
-        //]
-        Console.WriteLine(json);
+      string json = JsonConvert.SerializeObject(new[] { joe, martha }, Formatting.Indented);
+      //[
+      //  {
+      //    "Name": "Joe Family Details",
+      //    "NumberOfChildren": 4
+      //  },
+      //  {
+      //    "Name": "Martha Family Details"
+      //  }
+      //]
+      Console.WriteLine(json);
 
-        string mikeString = "{\"Name\": \"Mike Person\"}";
-        FamilyDetails mike = JsonConvert.DeserializeObject<FamilyDetails>(mikeString);
+      string mikeString = "{\"Name\": \"Mike Person\"}";
+      FamilyDetails mike = JsonConvert.DeserializeObject<FamilyDetails>(mikeString);
 
-        Console.WriteLine("mikeString specifies number of children: {0}", mike.NumberOfChildrenSpecified);
+      Console.WriteLine("mikeString specifies number of children: {0}", mike.NumberOfChildrenSpecified);
 
-        string mikeFullDisclosureString = "{\"Name\": \"Mike Person\", \"NumberOfChildren\": \"0\"}";
-        mike = JsonConvert.DeserializeObject<FamilyDetails>(mikeFullDisclosureString);
+      string mikeFullDisclosureString = "{\"Name\": \"Mike Person\", \"NumberOfChildren\": \"0\"}";
+      mike = JsonConvert.DeserializeObject<FamilyDetails>(mikeFullDisclosureString);
 
-        Console.WriteLine("mikeString specifies number of children: {0}", mike.NumberOfChildrenSpecified);
+      Console.WriteLine("mikeString specifies number of children: {0}", mike.NumberOfChildrenSpecified);
     }
 
     public class DictionaryKey
@@ -3783,14 +3784,14 @@ keyword such as type of business.""
       Assert.IsInstanceOfType(typeof(double), newExpando["Decimal"]);
       Assert.AreEqual(expando.Decimal, newExpando["Decimal"]);
 
-      Assert.IsInstanceOfType(typeof(JObject), newExpando["Complex"]);
-      JObject o = (JObject)newExpando["Complex"];
+      Assert.IsInstanceOfType(typeof(ExpandoObject), newExpando["Complex"]);
+      IDictionary<string, object> o = (ExpandoObject)newExpando["Complex"];
 
-      Assert.IsInstanceOfType(typeof(string), ((JValue)o["String"]).Value);
-      Assert.AreEqual(expando.Complex.String, (string)o["String"]);
+      Assert.IsInstanceOfType(typeof(string), o["String"]);
+      Assert.AreEqual(expando.Complex.String, o["String"]);
 
-      Assert.IsInstanceOfType(typeof(DateTime), ((JValue)o["DateTime"]).Value);
-      Assert.AreEqual(expando.Complex.DateTime, (DateTime)o["DateTime"]);
+      Assert.IsInstanceOfType(typeof(DateTime), o["DateTime"]);
+      Assert.AreEqual(expando.Complex.DateTime, o["DateTime"]);
     }
 #endif
 
@@ -4074,7 +4075,7 @@ keyword such as type of business.""
     {
       public string Value { get; private set; }
       public string Constructor { get; private set; }
-      
+
       public PublicConstructorOverridenByJsonConstructor()
       {
         Constructor = "NonPublic";
@@ -4107,7 +4108,7 @@ keyword such as type of business.""
         Value = value;
         Constructor = "Public Paramatized 1";
       }
-      
+
       [JsonConstructor]
       public MultipleParamatrizedConstructorsJsonConstructor(string value, int age)
       {
@@ -4217,6 +4218,35 @@ keyword such as type of business.""
       object dateTime = JsonConvert.DeserializeObject("null", typeof(DateTime?));
 
       Assert.IsNull(dateTime);
+    }
+
+    [Test]
+    public void MultiIndexSuperTest()
+    {
+      MultiIndexSuper e = new MultiIndexSuper();
+
+      string json = JsonConvert.SerializeObject(e, Formatting.Indented);
+
+      Assert.AreEqual(@"{}", json);
+    }
+
+    public class MultiIndexSuper : MultiIndexBase
+    {
+      
+    }
+
+    public abstract class MultiIndexBase
+    {
+      protected internal object this[string propertyName]
+      {
+        get { return null; }
+        set { }
+      }
+      protected internal object this[object property]
+      {
+        get { return null; }
+        set { }
+      }
     }
   }
 }
