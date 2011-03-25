@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using Newtonsoft.Json.Converters;
 using NUnit.Framework;
@@ -17,6 +18,11 @@ namespace Newtonsoft.Json.Tests.Converters
       public StoreColor? NullableStoreColor2 { get; set; }
     }
 
+    public class EnumContainer<T>
+    {
+      public T Enum { get; set; }
+    }
+
     public enum NegativeEnum
     {
       Negative = -1,
@@ -24,11 +30,87 @@ namespace Newtonsoft.Json.Tests.Converters
       Positive = 1
     }
 
+#if !NET20
+    public enum NamedEnum
+    {
+      [EnumMember(Value = "@first")]
+      First,
+      [EnumMember(Value = "@second")]
+      Second,
+      Third
+    }
+
+    public enum NamedEnumDuplicate
+    {
+      [EnumMember(Value = "Third")]
+      First,
+      [EnumMember(Value = "@second")]
+      Second,
+      Third
+    }
+#endif
+
     public class NegativeEnumClass
     {
       public NegativeEnum Value1 { get; set; }
       public NegativeEnum Value2 { get; set; }
     }
+
+#if !NET20
+    [Test]
+    [ExpectedException(typeof(Exception), ExpectedMessage = "Enum name 'Third' already exists on enum 'NamedEnumDuplicate'.")]
+    public void NamedEnumDuplicateTest()
+    {
+      EnumContainer<NamedEnumDuplicate> c = new EnumContainer<NamedEnumDuplicate>
+      {
+        Enum = NamedEnumDuplicate.First
+      };
+
+      JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter());
+    }
+
+    [Test]
+    public void SerializeNameEnumTest()
+    {
+      EnumContainer<NamedEnum> c = new EnumContainer<NamedEnum>
+        {
+          Enum = NamedEnum.First
+        };
+
+      string json = JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter());
+      Assert.AreEqual(@"{
+  ""Enum"": ""@first""
+}", json);
+
+      c = new EnumContainer<NamedEnum>
+      {
+        Enum = NamedEnum.Third
+      };
+
+      json = JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter());
+      Assert.AreEqual(@"{
+  ""Enum"": ""Third""
+}", json);
+    }
+
+    [Test]
+    public void DeserializeNameEnumTest()
+    {
+      string json = @"{
+  ""Enum"": ""@first""
+}";
+
+      EnumContainer<NamedEnum> c = JsonConvert.DeserializeObject<EnumContainer<NamedEnum>>(json, new StringEnumConverter());
+      Assert.AreEqual(NamedEnum.First, c.Enum);
+
+      json = @"{
+  ""Enum"": ""Third""
+}";
+
+      c = JsonConvert.DeserializeObject<EnumContainer<NamedEnum>>(json, new StringEnumConverter());
+      Assert.AreEqual(NamedEnum.Third, c.Enum);
+    }
+#endif
 
     [Test]
     public void SerializeEnumClass()

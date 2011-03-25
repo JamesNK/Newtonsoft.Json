@@ -177,12 +177,15 @@ namespace Newtonsoft.Json.Linq
 
           return b1.CompareTo(b2);
         case JTokenType.Date:
+#if !NET20
           if (objA is DateTime)
           {
+#endif
             DateTime date1 = Convert.ToDateTime(objA, CultureInfo.InvariantCulture);
             DateTime date2 = Convert.ToDateTime(objB, CultureInfo.InvariantCulture);
 
             return date1.CompareTo(date2);
+#if !NET20
           }
           else
           {
@@ -194,6 +197,7 @@ namespace Newtonsoft.Json.Linq
 
             return date1.CompareTo(date2);
           }
+#endif
         case JTokenType.Bytes:
           if (!(objB is byte[]))
               throw new ArgumentException("Object must be of type byte[].");
