@@ -4248,5 +4248,33 @@ keyword such as type of business.""
         set { }
       }
     }
+
+    public class CommentTestClass
+    {
+      public bool Indexed { get; set; }
+      public int StartYear { get; set; }
+      public IList<decimal> Values { get; set; }
+    }
+
+    [Test]
+    public void CommentTestClassTest()
+    {
+      string json = @"{""indexed"":true, ""startYear"":1939, ""values"":
+                            [  3000,  /* 1940-1949 */
+                               3000,   3600,   3600,   3600,   3600,   4200,   4200,   4200,   4200,   4800,  /* 1950-1959 */
+                               4800,   4800,   4800,   4800,   4800,   4800,   6600,   6600,   7800,   7800,  /* 1960-1969 */
+                               7800,   7800,   9000,  10800,  13200,  14100,  15300,  16500,  17700,  22900,  /* 1970-1979 */
+                              25900,  29700,  32400,  35700,  37800,  39600,  42000,  43800,  45000,  48000,  /* 1980-1989 */
+                              51300,  53400,  55500,  57600,  60600,  61200,  62700,  65400,  68400,  72600,  /* 1990-1999 */
+                              76200,  80400,  84900,  87000,  87900,  90000,  94200,  97500, 102000, 106800,  /* 2000-2009 */
+                             106800, 106800]  /* 2010-2011 */
+                                }";
+
+      CommentTestClass commentTestClass = JsonConvert.DeserializeObject<CommentTestClass>(json);
+
+      Assert.AreEqual(true, commentTestClass.Indexed);
+      Assert.AreEqual(1939, commentTestClass.StartYear);
+      Assert.AreEqual(63, commentTestClass.Values.Count);
+    }
   }
 }

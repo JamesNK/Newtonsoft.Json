@@ -634,6 +634,8 @@ namespace Newtonsoft.Json.Serialization
                 throw;
             }
             break;
+          case JsonToken.Comment:
+            break;
           case JsonToken.EndObject:
             contract.InvokeOnDeserialized(dictionary.UnderlyingDictionary, Serializer.Context);
             
@@ -741,6 +743,8 @@ namespace Newtonsoft.Json.Serialization
               throw new JsonSerializationException("Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
 
             serializationInfo.AddValue(memberName, JToken.ReadFrom(reader));
+            break;
+          case JsonToken.Comment:
             break;
           case JsonToken.EndObject:
             exit = true;
@@ -897,6 +901,8 @@ namespace Newtonsoft.Json.Serialization
               reader.Skip();
             }
             break;
+          case JsonToken.Comment:
+            break;
           case JsonToken.EndObject:
             exit = true;
             break;
@@ -964,8 +970,14 @@ namespace Newtonsoft.Json.Serialization
         return true;
       }
 #endif
-      
-      return reader.Read();
+
+      do
+      {
+        if (!reader.Read())
+          return false;
+      } while (reader.TokenType == JsonToken.Comment);
+
+      return true;
     }
 
     private object PopulateObject(object newObject, JsonReader reader, JsonObjectContract contract, string id)

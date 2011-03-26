@@ -322,8 +322,12 @@ namespace Newtonsoft.Json
     public override byte[] ReadAsBytes()
     {
       _readType = ReadType.ReadAsBytes;
-      if (!ReadInternal())
+
+      do
+      {
+        if (!ReadInternal())
         throw CreateJsonReaderException("Unexpected end when reading bytes: Line {0}, position {1}.", _currentLineNumber, _currentLinePosition);
+      } while (TokenType == JsonToken.Comment);
 
       if (TokenType == JsonToken.Null)
         return null;
@@ -340,9 +344,13 @@ namespace Newtonsoft.Json
     public override decimal? ReadAsDecimal()
     {
       _readType = ReadType.ReadAsDecimal;
-      if (!ReadInternal())
-        throw CreateJsonReaderException("Unexpected end when reading decimal: Line {0}, position {1}.", _currentLineNumber, _currentLinePosition);
-
+      
+      do
+      {
+        if (!ReadInternal())
+          throw CreateJsonReaderException("Unexpected end when reading decimal: Line {0}, position {1}.", _currentLineNumber, _currentLinePosition);
+      } while (TokenType == JsonToken.Comment);
+ 
       if (TokenType == JsonToken.Null)
         return null;
       if (TokenType == JsonToken.Float)
@@ -366,8 +374,12 @@ namespace Newtonsoft.Json
     public override DateTimeOffset? ReadAsDateTimeOffset()
     {
       _readType = ReadType.ReadAsDateTimeOffset;
-      if (!ReadInternal())
-        throw CreateJsonReaderException("Unexpected end when reading date: Line {0}, position {1}.", _currentLineNumber, _currentLinePosition);
+
+      do
+      {
+        if (!ReadInternal())
+          throw CreateJsonReaderException("Unexpected end when reading date: Line {0}, position {1}.", _currentLineNumber, _currentLinePosition);
+      } while (TokenType == JsonToken.Comment);
 
       if (TokenType == JsonToken.Null)
         return null;
