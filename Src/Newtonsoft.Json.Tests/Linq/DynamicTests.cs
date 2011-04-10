@@ -169,6 +169,282 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
+    public void JValueAddition()
+    {
+      JObject o = new JObject(
+        new JProperty("Null", new JValue(null, JTokenType.Null)),
+        new JProperty("Integer", new JValue(1)),
+        new JProperty("Float", new JValue(1.1d)),
+        new JProperty("Decimal", new JValue(1.1m)),
+        new JProperty("DateTime", new JValue(new DateTime(2000, 12, 29, 23, 51, 10, DateTimeKind.Utc))),
+        new JProperty("Boolean", new JValue(true)),
+        new JProperty("String", new JValue("A string lol!")),
+        new JProperty("Bytes", new JValue(Encoding.UTF8.GetBytes("A string lol!")))
+        );
+
+      dynamic d = o;
+      dynamic r;
+
+      #region Add
+      r = d.String + " LAMO!";
+      Assert.AreEqual("A string lol! LAMO!", (string)r);
+      r += " gg";
+      Assert.AreEqual("A string lol! LAMO! gg", (string)r);
+
+      r = d.String + null;
+      Assert.AreEqual("A string lol!", (string)r);
+      r += null;
+      Assert.AreEqual("A string lol!", (string)r);
+
+      r = d.Integer + 1;
+      Assert.AreEqual(2, (int)r);
+      r += 2;
+      Assert.AreEqual(4, (int)r);
+
+      r = d.Integer + 1.1;
+      Assert.AreEqual(2.1, (double)r);
+      r += 2;
+      Assert.AreEqual(4.1, (double)r);
+
+      r = d.Integer + 1.1d;
+      Assert.AreEqual(2.1, (decimal)r);
+      r += 2;
+      Assert.AreEqual(4.1, (decimal)r);
+
+      r = d.Integer + null;
+      Assert.AreEqual(null, r.Value);
+      r += 2;
+      Assert.AreEqual(null, r.Value);
+
+      r = d.Float + 1;
+      Assert.AreEqual(2.1, (double)r);
+      r += 2;
+      Assert.AreEqual(4.1, (double)r);
+
+      r = d.Float + 1.1;
+      Assert.AreEqual(2.2, (double)r);
+      r += 2;
+      Assert.AreEqual(4.2, (double)r);
+
+      r = d.Float + 1.1d;
+      Assert.AreEqual(2.2, (decimal)r);
+      r += 2;
+      Assert.AreEqual(4.2, (decimal)r);
+
+      r = d.Float + null;
+      Assert.AreEqual(null, r.Value);
+      r += 2;
+      Assert.AreEqual(null, r.Value);
+
+      r = d.Decimal + 1;
+      Assert.AreEqual(2.1, (decimal)r);
+      r += 2;
+      Assert.AreEqual(4.1, (decimal)r);
+
+      r = d.Decimal + 1.1;
+      Assert.AreEqual(2.2, (decimal)r);
+      r += 2;
+      Assert.AreEqual(4.2, (decimal)r);
+
+      r = d.Decimal + 1.1d;
+      Assert.AreEqual(2.2, (decimal)r);
+      r += 2;
+      Assert.AreEqual(4.2, (decimal)r);
+
+      r = d.Decimal + null;
+      Assert.AreEqual(null, r.Value);
+      r += 2;
+      Assert.AreEqual(null, r.Value);
+      #endregion
+
+      #region Subtract
+      r = d.Integer - 1;
+      Assert.AreEqual(0, (int)r);
+      r -= 2;
+      Assert.AreEqual(-2, (int)r);
+
+      r = d.Integer - 1.1;
+      Assert.AreEqual(-0.1, (double)r, 0.00001);
+      r -= 2;
+      Assert.AreEqual(-2.1, (double)r);
+
+      r = d.Integer - 1.1d;
+      Assert.AreEqual(-0.1, (decimal)r);
+      r -= 2;
+      Assert.AreEqual(-2.1, (decimal)r);
+
+      r = d.Integer - null;
+      Assert.AreEqual(null, r.Value);
+      r -= 2;
+      Assert.AreEqual(null, r.Value);
+
+      r = d.Float - 1;
+      Assert.AreEqual(0.1, (double)r, 0.00001);
+      r -= 2;
+      Assert.AreEqual(-1.9, (double)r);
+
+      r = d.Float - 1.1;
+      Assert.AreEqual(0, (double)r);
+      r -= 2;
+      Assert.AreEqual(-2, (double)r);
+
+      r = d.Float - 1.1d;
+      Assert.AreEqual(0, (decimal)r);
+      r -= 2;
+      Assert.AreEqual(-2, (decimal)r);
+
+      r = d.Float - null;
+      Assert.AreEqual(null, r.Value);
+      r -= 2;
+      Assert.AreEqual(null, r.Value);
+
+      r = d.Decimal - 1;
+      Assert.AreEqual(0.1, (decimal)r);
+      r -= 2;
+      Assert.AreEqual(-1.9, (decimal)r);
+
+      r = d.Decimal - 1.1;
+      Assert.AreEqual(0, (decimal)r);
+      r -= 2;
+      Assert.AreEqual(-2, (decimal)r);
+
+      r = d.Decimal - 1.1d;
+      Assert.AreEqual(0, (decimal)r);
+      r -= 2;
+      Assert.AreEqual(-2, (decimal)r);
+
+      r = d.Decimal - null;
+      Assert.AreEqual(null, r.Value);
+      r -= 2;
+      Assert.AreEqual(null, r.Value);
+      #endregion
+
+      #region Multiply
+      r = d.Integer * 1;
+      Assert.AreEqual(1, (int)r);
+      r *= 2;
+      Assert.AreEqual(2, (int)r);
+
+      r = d.Integer * 1.1;
+      Assert.AreEqual(1.1, (double)r);
+      r *= 2;
+      Assert.AreEqual(2.2, (double)r);
+
+      r = d.Integer * 1.1d;
+      Assert.AreEqual(1.1, (decimal)r);
+      r *= 2;
+      Assert.AreEqual(2.2, (decimal)r);
+
+      r = d.Integer * null;
+      Assert.AreEqual(null, r.Value);
+      r *= 2;
+      Assert.AreEqual(null, r.Value);
+
+      r = d.Float * 1;
+      Assert.AreEqual(1.1, (double)r);
+      r *= 2;
+      Assert.AreEqual(2.2, (double)r);
+
+      r = d.Float * 1.1;
+      Assert.AreEqual(1.21, (double)r, 0.00001);
+      r *= 2;
+      Assert.AreEqual(2.42, (double)r, 0.00001);
+
+      r = d.Float * 1.1d;
+      Assert.AreEqual(1.21, (decimal)r);
+      r *= 2;
+      Assert.AreEqual(2.42, (decimal)r);
+
+      r = d.Float * null;
+      Assert.AreEqual(null, r.Value);
+      r *= 2;
+      Assert.AreEqual(null, r.Value);
+
+      r = d.Decimal * 1;
+      Assert.AreEqual(1.1, (decimal)r);
+      r *= 2;
+      Assert.AreEqual(2.2, (decimal)r);
+
+      r = d.Decimal * 1.1;
+      Assert.AreEqual(1.21, (decimal)r);
+      r *= 2;
+      Assert.AreEqual(2.42, (decimal)r);
+
+      r = d.Decimal * 1.1d;
+      Assert.AreEqual(1.21, (decimal)r);
+      r *= 2;
+      Assert.AreEqual(2.42, (decimal)r);
+
+      r = d.Decimal * null;
+      Assert.AreEqual(null, r.Value);
+      r *= 2;
+      Assert.AreEqual(null, r.Value);
+      #endregion
+
+      #region Divide
+      r = d.Integer / 1;
+      Assert.AreEqual(1, (int)r);
+      r /= 2;
+      Assert.AreEqual(0, (int)r);
+
+      r = d.Integer / 1.1;
+      Assert.AreEqual(0.9090909090909091, (double)r);
+      r /= 2;
+      Assert.AreEqual(0.454545454545455, (double)r, 0.00001);
+
+      r = d.Integer / 1.1d;
+      Assert.AreEqual(0.909090909090909m, (decimal)r);
+      r /= 2;
+      Assert.AreEqual(0.454545454545454m, (decimal)r);
+
+      r = d.Integer / null;
+      Assert.AreEqual(null, r.Value);
+      r /= 2;
+      Assert.AreEqual(null, r.Value);
+
+      r = d.Float / 1;
+      Assert.AreEqual(1.1, (double)r);
+      r /= 2;
+      Assert.AreEqual(0.55, (double)r);
+
+      r = d.Float / 1.1;
+      Assert.AreEqual(1, (double)r, 0.00001);
+      r /= 2;
+      Assert.AreEqual(0.5, (double)r, 0.00001);
+
+      r = d.Float / 1.1d;
+      Assert.AreEqual(1m, (decimal)r);
+      r /= 2;
+      Assert.AreEqual(0.5m, (decimal)r);
+
+      r = d.Float / null;
+      Assert.AreEqual(null, r.Value);
+      r /= 2;
+      Assert.AreEqual(null, r.Value);
+
+      r = d.Decimal / 1;
+      Assert.AreEqual(1.1d, (decimal)r);
+      r /= 2;
+      Assert.AreEqual(0.55d, (decimal)r);
+
+      r = d.Decimal / 1.1;
+      Assert.AreEqual(1d, (decimal)r);
+      r /= 2;
+      Assert.AreEqual(0.5d, (decimal)r);
+
+      r = d.Decimal / 1.1d;
+      Assert.AreEqual(1d, (decimal)r);
+      r /= 2;
+      Assert.AreEqual(0.5d, (decimal)r);
+
+      r = d.Decimal / null;
+      Assert.AreEqual(null, r.Value);
+      r /= 2;
+      Assert.AreEqual(null, r.Value);
+      #endregion
+    }
+
+    [Test]
     public void JValueToString()
     {
       JObject o = new JObject(

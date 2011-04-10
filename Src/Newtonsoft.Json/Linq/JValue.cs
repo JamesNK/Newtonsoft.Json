@@ -227,6 +227,118 @@ namespace Newtonsoft.Json.Linq
       return d1.CompareTo(d2);
     }
 
+#if !(NET35 || NET20 || WINDOWS_PHONE)
+    private static bool Operation(ExpressionType operation, object objA, object objB, out object result)
+    {
+      if (objA is string || objB is string)
+      {
+        if (operation == ExpressionType.Add || operation == ExpressionType.AddAssign)
+        {
+          result = ((objA != null) ? objA.ToString() : null) + ((objB != null) ? objB.ToString() : null);
+          return true;
+        }
+      }
+
+      if (objA is ulong || objB is ulong || objA is decimal || objB is decimal)
+      {
+        if (objA == null || objB == null)
+        {
+          result = null;
+          return true;
+        }
+
+        decimal d1 = Convert.ToDecimal(objA, CultureInfo.InvariantCulture);
+        decimal d2 = Convert.ToDecimal(objB, CultureInfo.InvariantCulture);
+
+        switch (operation)
+        {
+          case ExpressionType.Add:
+          case ExpressionType.AddAssign:
+            result = d1 + d2;
+            return true;
+          case ExpressionType.Subtract:
+          case ExpressionType.SubtractAssign:
+            result = d1 - d2;
+            return true;
+          case ExpressionType.Multiply:
+          case ExpressionType.MultiplyAssign:
+            result = d1 * d2;
+            return true;
+          case ExpressionType.Divide:
+          case ExpressionType.DivideAssign:
+            result = d1 / d2;
+            return true;
+        }
+      }
+      else if (objA is float || objB is float || objA is double || objB is double)
+      {
+        if (objA == null || objB == null)
+        {
+          result = null;
+          return true;
+        }
+
+        double d1 = Convert.ToDouble(objA, CultureInfo.InvariantCulture);
+        double d2 = Convert.ToDouble(objB, CultureInfo.InvariantCulture);
+
+        switch (operation)
+        {
+          case ExpressionType.Add:
+          case ExpressionType.AddAssign:
+            result = d1 + d2;
+            return true;
+          case ExpressionType.Subtract:
+          case ExpressionType.SubtractAssign:
+            result = d1 - d2;
+            return true;
+          case ExpressionType.Multiply:
+          case ExpressionType.MultiplyAssign:
+            result = d1 * d2;
+            return true;
+          case ExpressionType.Divide:
+          case ExpressionType.DivideAssign:
+            result = d1 / d2;
+            return true;
+        }
+      }
+      else if (objA is int || objA is uint || objA is long || objA is short || objA is ushort || objA is sbyte || objA is byte ||
+        objB is int || objB is uint || objB is long || objB is short || objB is ushort || objB is sbyte || objB is byte)
+      {
+        if (objA == null || objB == null)
+        {
+          result = null;
+          return true;
+        }
+
+        long l1 = Convert.ToInt64(objA, CultureInfo.InvariantCulture);
+        long l2 = Convert.ToInt64(objB, CultureInfo.InvariantCulture);
+
+        switch (operation)
+        {
+          case ExpressionType.Add:
+          case ExpressionType.AddAssign:
+            result = l1 + l2;
+            return true;
+          case ExpressionType.Subtract:
+          case ExpressionType.SubtractAssign:
+            result = l1 - l2;
+            return true;
+          case ExpressionType.Multiply:
+          case ExpressionType.MultiplyAssign:
+            result = l1 * l2;
+            return true;
+          case ExpressionType.Divide:
+          case ExpressionType.DivideAssign:
+            result = l1 / l2;
+            return true;
+        }
+      }
+
+      result = null;
+      return false;
+    }
+#endif
+
     internal override JToken CloneToken()
     {
       return new JValue(this);
@@ -565,6 +677,20 @@ namespace Newtonsoft.Json.Linq
           case ExpressionType.LessThanOrEqual:
             result = (Compare(instance.Type, instance.Value, compareValue) <= 0);
             return true;
+          case ExpressionType.Add:
+          case ExpressionType.AddAssign:
+          case ExpressionType.Subtract:
+          case ExpressionType.SubtractAssign:
+          case ExpressionType.Multiply:
+          case ExpressionType.MultiplyAssign:
+          case ExpressionType.Divide:
+          case ExpressionType.DivideAssign:
+            if (Operation(binder.Operation, instance.Value, compareValue, out result))
+            {
+              result = new JValue(result);
+              return true;
+            }
+            break;
         }
 
         result = null;
