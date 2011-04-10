@@ -1,6 +1,7 @@
 ﻿properties { 
- 
   $zipFileName = "Json40r2.zip"
+  $majorVersion = "4.2"
+  $version = GetVersion $majorVersion
   $signAssemblies = $false
   $signKeyPath = "D:\Development\Releases\newtonsoft.snk"
   $buildDocumentation = $false
@@ -42,7 +43,10 @@ task Clean {
 
 # Build each solution, optionally signed
 task Build -depends Clean { 
-  
+  Write-Host -ForegroundColor Green "Updating assembly version"
+  Write-Host
+  Update-AssemblyInfoFiles $sourceDir ($majorVersion + '.0.0') $version
+
   foreach ($build in $builds)
   {
     $name = $build.Name
@@ -168,4 +172,41 @@ function GetConstants($constants, $includeSigned)
   $signed = switch($includeSigned) { $true { ";SIGNED" } default { "" } }
 
   return "/p:DefineConstants=`"TRACE;$constants$signed`""
+}
+
+function GetVersion($majorVersion)
+{
+    $now = [DateTime]::Now
+    
+    $year = $now.Year - 2000
+    $month = $now.Month
+    $totalMonthsSince2000 = ($year * 12) + $month
+    $day = $now.Day
+    $minor = "{0}{1:00}" -f $totalMonthsSince2000, $day
+    
+    $hour = $now.Hour
+    $minute = $now.Minute
+    $revision = "{0:00}{1:00}" -f $hour, $minute
+    
+    return $majorVersion + "." + $minor + "." + $revision
+}
+
+function Update-AssemblyInfoFiles ([string] $sourceDir, [string] $assemblyVersionNumber, [string] $fileVersionNumber)
+{
+    $assemblyVersionPattern = 'AssemblyVersion\("[0-9]+(\.([0-9]+|\*)){1,3}"\)'
+    $fileVersionPattern = 'AssemblyFileVersion\("[0-9]+(\.([0-9]+|\*)){1,3}"\)'
+    $assemblyVersion = 'AssemblyVersion("' + $assemblyVersionNumber + '")';
+    $fileVersion = 'AssemblyFileVersion("' + $fileVersionNumber + '")';
+    
+    Get-ChildItem -Path $sourceDir -r -filter AssemblyInfo.cs | ForEach-Object {
+        
+        $filename = $_.Directory.ToString() + '\' + $_.Name
+        Write-Host $filename
+        $filename + ' -> ' + $version
+    
+        (Get-Content $filename) | ForEach-Object {
+            % {$_ -replace $assemblyVersionPattern, $assemblyVersion } |
+            % {$_ -replace $fileVersionPattern, $fileVersion }
+        } | Set-Content $filename
+    }
 }
