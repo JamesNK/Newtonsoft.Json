@@ -59,6 +59,7 @@ using System.Linq.Expressions;
 #endif
 #if !(NET35 || NET20 || WINDOWS_PHONE)
 using System.Dynamic;
+using System.ComponentModel;
 #endif
 
 namespace Newtonsoft.Json.Tests.Serialization

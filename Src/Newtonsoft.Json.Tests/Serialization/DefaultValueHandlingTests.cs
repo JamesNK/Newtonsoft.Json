@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Tests.TestObjects;
@@ -66,6 +67,42 @@ namespace Newtonsoft.Json.Tests.Serialization
       json = JsonConvert.SerializeObject(new DefaultValueAttributeTestClass { TestField1 = 21, TestProperty1 = "TestProperty1Value" },
         Formatting.None, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
       Assert.AreEqual(@"{}", json);
+    }
+
+    [JsonObject]
+    public class NetworkUser
+    {
+      [JsonProperty(PropertyName = "userId")]
+      [DefaultValue(-1)]
+      public long GlobalId { get; set; }
+
+      [JsonProperty(PropertyName = "floatUserId")]
+      [DefaultValue(-1.0d)]
+      public float FloatGlobalId { get; set; }
+
+      [JsonProperty(PropertyName = "firstName")]
+      public string Firstname { get; set; }
+      [JsonProperty(PropertyName = "lastName")]
+      public string Lastname { get; set; }
+
+      public NetworkUser()
+      {
+        GlobalId = -1;
+        FloatGlobalId = -1.0f;
+      }
+    }
+
+    [Test]
+    public void IgnoreNumberTypeDifferencesWithDefaultValue()
+    {
+      NetworkUser user = new NetworkUser
+      {
+        Firstname = "blub"
+      };
+
+      string json = JsonConvert.SerializeObject(user, Formatting.None, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore });
+
+      Assert.AreEqual(@"{""firstName"":""blub""}", json);
     }
   }
 }

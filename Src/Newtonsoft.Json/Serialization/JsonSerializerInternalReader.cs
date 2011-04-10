@@ -569,7 +569,7 @@ namespace Newtonsoft.Json.Serialization
       if (property.NullValueHandling.GetValueOrDefault(Serializer.NullValueHandling) == NullValueHandling.Ignore && value == null)
         return false;
 
-      if (property.DefaultValueHandling.GetValueOrDefault(Serializer.DefaultValueHandling) == DefaultValueHandling.Ignore && Equals(value, property.DefaultValue))
+      if (property.DefaultValueHandling.GetValueOrDefault(Serializer.DefaultValueHandling) == DefaultValueHandling.Ignore && MiscellaneousUtils.ValueEquals(value, property.DefaultValue))
         return false;
 
       if (!property.Writable)

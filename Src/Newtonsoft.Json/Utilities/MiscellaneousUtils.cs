@@ -12,6 +12,28 @@ namespace Newtonsoft.Json.Utilities
 
   internal static class MiscellaneousUtils
   {
+    public static bool ValueEquals(object objA, object objB)
+    {
+      if (objA == null && objB == null)
+        return true;
+      if (objA != null && objB == null)
+        return false;
+      if (objA == null && objB != null)
+        return false;
+
+      if (objA.GetType() != objB.GetType())
+      {
+        if (ConvertUtils.IsInteger(objA) && ConvertUtils.IsInteger(objB))
+          return Convert.ToDecimal(objA).Equals(Convert.ToDecimal(objB));
+        else if ((objA is double || objA is float || objA is decimal) && (objB is double || objB is float || objB is decimal))
+          return MathUtils.ApproxEquals(Convert.ToDouble(objA), Convert.ToDouble(objB));
+        else
+          return false;
+      }
+
+      return objA.Equals(objB);
+    }
+
     public static ArgumentOutOfRangeException CreateArgumentOutOfRangeException(string paramName, object actualValue, string message)
     {
       string newMessage = message + Environment.NewLine + @"Actual value was {0}.".FormatWith(CultureInfo.InvariantCulture, actualValue);

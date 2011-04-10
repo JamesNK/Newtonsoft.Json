@@ -184,7 +184,7 @@ namespace Newtonsoft.Json.Serialization
         return;
 
       if (property.DefaultValueHandling.GetValueOrDefault(Serializer.DefaultValueHandling) ==
-          DefaultValueHandling.Ignore && Equals(memberValue, defaultValue))
+          DefaultValueHandling.Ignore && MiscellaneousUtils.ValueEquals(memberValue, defaultValue))
         return;
 
       if (ShouldWriteReference(memberValue, property, contract))
