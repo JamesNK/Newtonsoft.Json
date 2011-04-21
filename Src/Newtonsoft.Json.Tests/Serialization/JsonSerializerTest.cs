@@ -4277,5 +4277,38 @@ keyword such as type of business.""
       Assert.AreEqual(1939, commentTestClass.StartYear);
       Assert.AreEqual(63, commentTestClass.Values.Count);
     }
+
+    class DTOWithParameterisedConstructor
+    {
+      public DTOWithParameterisedConstructor(string A)
+      {
+        this.A = A;
+        B = 2;
+      }
+
+      public string A { get; set; }
+      public int? B { get; set; }
+    }
+
+    class DTOWithoutParameterisedConstructor
+    {
+      public DTOWithoutParameterisedConstructor()
+      {
+        B = 2;
+      }
+
+      public string A { get; set; }
+      public int? B { get; set; }
+    }
+
+    [Test]
+    public void PopulationBehaviourForOmittedPropertiesIsTheSameForParameterisedConstructorAsForDefaultConstructor()
+    {
+      string json = @"{A:""Test""}";
+
+      var withoutParameterisedConstructor = JsonConvert.DeserializeObject<DTOWithoutParameterisedConstructor>(json);
+      var withParameterisedConstructor = JsonConvert.DeserializeObject<DTOWithParameterisedConstructor>(json);
+      Assert.AreEqual(withoutParameterisedConstructor.B, withParameterisedConstructor.B);
+    }
   }
 }

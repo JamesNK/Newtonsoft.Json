@@ -865,8 +865,7 @@ namespace Newtonsoft.Json.Serialization
 
       Type objectType = contract.UnderlyingType;
 
-      // create a dictionary to put retrieved values into
-      IDictionary<JsonProperty, object> propertyValues = contract.Properties.Where(p => !p.Ignored).ToDictionary(kv => kv, kv => (object)null);
+      IDictionary<JsonProperty, object> propertyValues = new Dictionary<JsonProperty, object>();
 
       bool exit = false;
       do
