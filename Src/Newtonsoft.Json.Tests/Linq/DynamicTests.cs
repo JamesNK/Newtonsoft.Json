@@ -601,6 +601,41 @@ namespace Newtonsoft.Json.Tests.Linq
       // Admin
     }
 
+    [Test]
+    public void ImprovedDynamicLinqExample()
+    {
+      dynamic product = new JObject();
+      product.ProductName = "Elbow Grease";
+      product.Enabled = true;
+      product.Price = 4.90m;
+      product.StockCount = 9000;
+      product.StockValue = 44100;
+
+      // All Elbow Grease must go sale!
+      // 50% off price
+
+      product.Price = product.Price / 2;
+      product.StockValue = product.StockCount * product.Price;
+      product.ProductName = product.ProductName + " (SALE)";
+
+      string json = product.ToString();
+      // {
+      //   "ProductName": "Elbow Grease (SALE)",
+      //   "Enabled": true,
+      //   "Price": 2.45,
+      //   "StockCount": 9000,
+      //   "StockValue": 22050.0
+      // }
+
+      Assert.AreEqual(@"{
+  ""ProductName"": ""Elbow Grease (SALE)"",
+  ""Enabled"": true,
+  ""Price"": 2.45,
+  ""StockCount"": 9000,
+  ""StockValue"": 22050.0
+}", json);
+    }
+
     public class DynamicDictionary : DynamicObject
     {
       private readonly IDictionary<string, object> _values = new Dictionary<string, object>();

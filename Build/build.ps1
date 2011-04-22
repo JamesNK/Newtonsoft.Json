@@ -1,10 +1,10 @@
 ﻿properties { 
   $zipFileName = "Json40r2.zip"
-  $majorVersion = "4.2"
+  $majorVersion = "4.0.2"
   $version = GetVersion $majorVersion
   $signAssemblies = $false
   $signKeyPath = "D:\Development\Releases\newtonsoft.snk"
-  $buildDocumentation = $false
+  $buildDocumentation = $true
   $buildNuGet = $true
   
   $baseDir  = resolve-path ..
@@ -15,10 +15,10 @@
   $releaseDir = "$baseDir\Release"
   $workingDir = "$baseDir\Working"
   $builds = @(
-    @{Name = "Newtonsoft.Json"; TestsName = "Newtonsoft.Json.Tests"; Constants=""; FinalDir="Net"; NuGetDir = "net40-client"; Framework="net-4.0"},
+    @{Name = "Newtonsoft.Json"; TestsName = "Newtonsoft.Json.Tests"; Constants=""; FinalDir="Net"; NuGetDir = "net40-client,net40-full"; Framework="net-4.0"},
     @{Name = "Newtonsoft.Json.WindowsPhone"; TestsName = $null; Constants="SILVERLIGHT;WINDOWS_PHONE"; FinalDir="WindowsPhone"; NuGetDir = "sl3-wp"; Framework="net-4.0"},
     @{Name = "Newtonsoft.Json.Silverlight"; TestsName = "Newtonsoft.Json.Tests.Silverlight"; Constants="SILVERLIGHT"; FinalDir="Silverlight"; NuGetDir = "sl4"; Framework="net-4.0"},
-    @{Name = "Newtonsoft.Json.Net35"; TestsName = "Newtonsoft.Json.Tests.Net35"; Constants="NET35"; FinalDir="Net35"; NuGetDir = "net35-client"; Framework="net-2.0"},
+    @{Name = "Newtonsoft.Json.Net35"; TestsName = "Newtonsoft.Json.Tests.Net35"; Constants="NET35"; FinalDir="Net35"; NuGetDir = "net35-client,net35-full"; Framework="net-2.0"},
     @{Name = "Newtonsoft.Json.Net20"; TestsName = "Newtonsoft.Json.Tests.Net20"; Constants="NET20"; FinalDir="Net20"; NuGetDir = "net20"; Framework="net-2.0"}
   )
 }
@@ -45,7 +45,7 @@ task Clean {
 task Build -depends Clean { 
   Write-Host -ForegroundColor Green "Updating assembly version"
   Write-Host
-  Update-AssemblyInfoFiles $sourceDir ($majorVersion + '.0.0') $version
+  Update-AssemblyInfoFiles $sourceDir ($majorVersion + '.0') $version
 
   foreach ($build in $builds)
   {
@@ -80,14 +80,6 @@ task Package -depends Merge {
     Copy-Item -Path "$sourceDir\Newtonsoft.Json\bin\Release\$finalDir" -Destination $workingDir\Package\Bin\$finalDir -recurse
   }
   
-  if ($buildDocumentation)
-  {
-    # Sandcastle has issues when compiling with .NET 4 MSBuild - http://shfb.codeplex.com/Thread/View.aspx?ThreadId=50652
-    exec { .$env:windir\Microsoft.NET\Framework\v3.5\MSBuild.exe "/t:Clean;Rebuild" /p:Configuration=Release "/p:DocumentationSourcePath=$workingDir\Package\Bin\Net" $docDir\doc.shfbproj } "Error building documentation. Check that you have Sandcastle, Sandcastle Help File Builder and HTML Help Workshop installed."
-    
-    move -Path $workingDir\Documentation\Documentation.chm -Destination $workingDir\Package\Documentation.chm
-    move -Path $workingDir\Documentation\LastBuild.log -Destination $workingDir\Documentation.log
-  }
   if ($buildNuGet)
   {
     New-Item -Path $workingDir\NuGet -ItemType Directory
@@ -97,13 +89,25 @@ task Package -depends Merge {
     {
         $name = $build.TestsName
         $finalDir = $build.FinalDir
-        $frameworkDir = $build.NuGetDir
+        $frameworkDirs = $build.NuGetDir.Split(",")
         
-        Copy-Item -Path "$sourceDir\Newtonsoft.Json\bin\Release\$finalDir" -Destination $workingDir\NuGet\lib\$frameworkDir -recurse
+        foreach ($frameworkDir in $frameworkDirs)
+        {
+            Copy-Item -Path "$sourceDir\Newtonsoft.Json\bin\Release\$finalDir" -Destination $workingDir\NuGet\lib\$frameworkDir -recurse
+        }
     }
   
     exec { .\Tools\NuGet\NuGet.exe pack $workingDir\NuGet\Newtonsoft.Json.nuspec }
     move -Path .\*.nupkg -Destination $workingDir\NuGet
+  }
+  
+  if ($buildDocumentation)
+  {
+    # Sandcastle has issues when compiling with .NET 4 MSBuild - http://shfb.codeplex.com/Thread/View.aspx?ThreadId=50652
+    exec { .$env:windir\Microsoft.NET\Framework\v3.5\MSBuild.exe "/t:Clean;Rebuild" /p:Configuration=Release "/p:DocumentationSourcePath=$workingDir\Package\Bin\Net" $docDir\doc.shfbproj } "Error building documentation. Check that you have Sandcastle, Sandcastle Help File Builder and HTML Help Workshop installed."
+    
+    move -Path $workingDir\Documentation\Documentation.chm -Destination $workingDir\Package\Documentation.chm
+    move -Path $workingDir\Documentation\LastBuild.log -Destination $workingDir\Documentation.log
   }
   
   Copy-Item -Path $docDir\readme.txt -Destination $workingDir\Package\
@@ -188,7 +192,7 @@ function GetVersion($majorVersion)
     $minute = $now.Minute
     $revision = "{0:00}{1:00}" -f $hour, $minute
     
-    return $majorVersion + "." + $minor + "." + $revision
+    return $majorVersion + "." + $minor
 }
 
 function Update-AssemblyInfoFiles ([string] $sourceDir, [string] $assemblyVersionNumber, [string] $fileVersionNumber)

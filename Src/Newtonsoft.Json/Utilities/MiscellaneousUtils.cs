@@ -21,12 +21,14 @@ namespace Newtonsoft.Json.Utilities
       if (objA == null && objB != null)
         return false;
 
+      // comparing an Int32 and Int64 both of the same value returns false
+      // make types the same then compare
       if (objA.GetType() != objB.GetType())
       {
         if (ConvertUtils.IsInteger(objA) && ConvertUtils.IsInteger(objB))
-          return Convert.ToDecimal(objA).Equals(Convert.ToDecimal(objB));
+          return Convert.ToDecimal(objA, CultureInfo.CurrentCulture).Equals(Convert.ToDecimal(objB, CultureInfo.CurrentCulture));
         else if ((objA is double || objA is float || objA is decimal) && (objB is double || objB is float || objB is decimal))
-          return MathUtils.ApproxEquals(Convert.ToDouble(objA), Convert.ToDouble(objB));
+          return MathUtils.ApproxEquals(Convert.ToDouble(objA, CultureInfo.CurrentCulture), Convert.ToDouble(objB, CultureInfo.CurrentCulture));
         else
           return false;
       }
