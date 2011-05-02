@@ -961,7 +961,7 @@ namespace Newtonsoft.Json.Converters
           SerializeGroupedNodes(writer, node, manager, writePropertyName);
           break;
         case XmlNodeType.Element:
-          if (IsArray(node) && node.ChildNodes.All(n => n.LocalName == node.LocalName))
+          if (IsArray(node) && node.ChildNodes.All(n => n.LocalName == node.LocalName) && node.ChildNodes.Count > 0)
           {
             SerializeGroupedNodes(writer, node, manager, false);
           }

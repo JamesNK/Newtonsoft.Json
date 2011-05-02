@@ -1219,6 +1219,44 @@ namespace Newtonsoft.Json.Tests.Converters
   ]
 }", output);
     }
+
+    [Test]
+    public void EmtpyElementWithArrayAttributeShouldWriteAttributes()
+    {
+      string xml = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<root xmlns:json=""http://james.newtonking.com/projects/json"">
+<A>
+<B name=""sample"" json:Array=""true""/>
+<C></C>
+<C></C>
+</A>
+</root>";
+
+      XmlDocument d = new XmlDocument();
+      d.LoadXml(xml);
+
+      string json = JsonConvert.SerializeXmlNode(d, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""?xml"": {
+    ""@version"": ""1.0"",
+    ""@encoding"": ""utf-8""
+  },
+  ""root"": {
+    ""A"": {
+      ""B"": [
+        {
+          ""@name"": ""sample""
+        }
+      ],
+      ""C"": [
+        null,
+        null
+      ]
+    }
+  }
+}", json);
+    }
   }
 }
 #endif
