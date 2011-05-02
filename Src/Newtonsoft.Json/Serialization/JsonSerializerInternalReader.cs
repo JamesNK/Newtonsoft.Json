@@ -938,6 +938,8 @@ namespace Newtonsoft.Json.Serialization
               reader.Skip();
             }
             break;
+          case JsonToken.Comment:
+            break; 
           case JsonToken.EndObject:
             exit = true;
             break;
