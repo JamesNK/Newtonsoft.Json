@@ -28,15 +28,21 @@ using System;
 namespace Newtonsoft.Json.Serialization
 {
   /// <summary>
-  /// Maps a JSON property to a .NET member.
+  /// Maps a JSON property to a .NET member or constructor parameter.
   /// </summary>
   public class JsonProperty
   {
     /// <summary>
-    /// Gets the name of the property.
+    /// Gets or sets the name of the property.
     /// </summary>
     /// <value>The name of the property.</value>
     public string PropertyName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name of the underlying member or parameter.
+    /// </summary>
+    /// <value>The name of the underlying member or parameter.</value>
+    public string UnderlyingName { get; set; }
 
     /// <summary>
     /// Gets the <see cref="IValueProvider"/> that will get and set the <see cref="JsonProperty"/> during serialization.
@@ -58,6 +64,12 @@ namespace Newtonsoft.Json.Serialization
     public JsonConverter Converter { get; set; }
 
     /// <summary>
+    /// Gets the member converter.
+    /// </summary>
+    /// <value>The member converter.</value>
+    public JsonConverter MemberConverter { get; set; }
+
+    /// <summary>
     /// Gets a value indicating whether this <see cref="JsonProperty"/> is ignored.
     /// </summary>
     /// <value><c>true</c> if ignored; otherwise, <c>false</c>.</value>
@@ -74,12 +86,6 @@ namespace Newtonsoft.Json.Serialization
     /// </summary>
     /// <value><c>true</c> if writable; otherwise, <c>false</c>.</value>
     public bool Writable { get; set; }
-
-    /// <summary>
-    /// Gets the member converter.
-    /// </summary>
-    /// <value>The member converter.</value>
-    public JsonConverter MemberConverter { get; set; }
 
     /// <summary>
     /// Gets the default value.

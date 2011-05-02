@@ -154,6 +154,10 @@
     <Compile Include="TestObjects\PrivateConstructorWithPublicParametizedConstructorTestClass.cs" />
     <Compile Include="TestObjects\PrivateMembersClass.cs" />
     <Compile Include="TestObjects\PropertyCase.cs" />
+    <Compile Include="TestObjects\PublicParametizedConstructorRequiringConverterTestClass.cs" />
+    <Compile Include="TestObjects\PublicParametizedConstructorTestClass.cs" />
+    <Compile Include="TestObjects\PublicParametizedConstructorWithNonPropertyParameterTestClass.cs" />
+    <Compile Include="TestObjects\PublicParametizedConstructorWithPropertyNameConflict.cs" />
     <Compile Include="TestObjects\RequestOnly.cs" />
     <Compile Include="TestObjects\RequiredMembersClass.cs" />
     <Compile Include="TestObjects\RoleTransfer.cs" />

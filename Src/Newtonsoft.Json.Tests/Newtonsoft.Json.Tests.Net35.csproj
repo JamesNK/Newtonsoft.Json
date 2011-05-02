@@ -149,6 +149,8 @@
     <Compile Include="TestObjects\HolderClass.cs" />
     <Compile Include="TestObjects\ListOfIds.cs" />
     <Compile Include="TestObjects\Movie.cs" />
+    <Compile Include="TestObjects\PublicParametizedConstructorRequiringConverterTestClass.cs" />
+    <Compile Include="TestObjects\PublicParametizedConstructorTestClass.cs" />
     <Compile Include="TestObjects\PersonError.cs" />
     <Compile Include="TestObjects\PersonPropertyClass.cs" />
     <Compile Include="TestObjects\PrivateConstructorTestClass.cs" />
@@ -177,6 +179,8 @@
     <Compile Include="TestObjects\LogEntry.cs" />
     <Compile Include="TestObjects\NonRequest.cs" />
     <Compile Include="TestObjects\ObjectArrayPropertyTest.cs" />
+    <Compile Include="TestObjects\PublicParametizedConstructorWithNonPropertyParameterTestClass.cs" />
+    <Compile Include="TestObjects\PublicParametizedConstructorWithPropertyNameConflict.cs" />
     <Compile Include="TestObjects\SearchResult.cs" />
     <Compile Include="TestObjects\StructTest.cs" />
     <Compile Include="TestObjects\WagePerson.cs" />

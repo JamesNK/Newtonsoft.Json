@@ -44,6 +44,11 @@ namespace Newtonsoft.Json.Serialization
     /// </summary>
     /// <value>The object's properties.</value>
     public JsonPropertyCollection Properties { get; private set; }
+    
+      /// <summary>
+      /// Gets the constructor parameters required for any non-default constructor
+      /// </summary>
+    public JsonPropertyCollection ConstructorParameters { get; private set; }
 
     /// <summary>
     /// Gets or sets the override constructor used to create the object.
@@ -66,7 +71,8 @@ namespace Newtonsoft.Json.Serialization
     public JsonObjectContract(Type underlyingType)
       : base(underlyingType)
     {
-      Properties = new JsonPropertyCollection(UnderlyingType);
+        Properties = new JsonPropertyCollection(UnderlyingType);
+        ConstructorParameters = new JsonPropertyCollection(UnderlyingType);
     }
   }
 }

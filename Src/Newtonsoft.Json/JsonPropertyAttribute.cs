@@ -5,7 +5,7 @@ namespace Newtonsoft.Json
   /// <summary>
   /// Instructs the <see cref="JsonSerializer"/> to always serialize the member with the specified name.
   /// </summary>
-  [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
+  [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property | AttributeTargets.Parameter, AllowMultiple = false)]
   public sealed class JsonPropertyAttribute : Attribute
   {
     // yuck. can't set nullable properties on an attribute in C#

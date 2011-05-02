@@ -280,11 +280,26 @@ namespace Newtonsoft.Json.Serialization
 
       contract.MemberSerialization = JsonTypeReflector.GetObjectMemberSerialization(objectType);
       contract.Properties.AddRange(CreateProperties(contract.UnderlyingType, contract.MemberSerialization));
-      if (objectType.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Any(c => c.IsDefined(typeof(JsonConstructorAttribute), true)))
-        contract.OverrideConstructor = GetAttributeConstructor(objectType);
-      else if (contract.DefaultCreator == null || contract.DefaultCreatorNonPublic)
-        contract.ParametrizedConstructor = GetParametrizedConstructor(objectType);
 
+      // check if a JsonConstructorAttribute has been defined and use that
+      if (objectType.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Any(c => c.IsDefined(typeof(JsonConstructorAttribute), true)))
+      {
+        ConstructorInfo constructor = GetAttributeConstructor(objectType);
+        if (constructor != null)
+        {
+          contract.OverrideConstructor = constructor;
+          contract.ConstructorParameters.AddRange(CreateConstructorParameters(constructor, contract.Properties));
+        }
+      }
+      else if (contract.DefaultCreator == null || contract.DefaultCreatorNonPublic)
+      {
+        ConstructorInfo constructor = GetParametrizedConstructor(objectType);
+        if (constructor != null)
+        {
+          contract.ParametrizedConstructor = constructor;
+          contract.ConstructorParameters.AddRange(CreateConstructorParameters(constructor, contract.Properties));
+        }
+      }
       return contract;
     }
 
@@ -308,6 +323,72 @@ namespace Newtonsoft.Json.Serialization
         return constructors[0];
       else
         return null;
+    }
+
+    /// <summary>
+    /// Creates the constructor parameters.
+    /// </summary>
+    /// <param name="constructor">The constructor to create properties for.</param>
+    /// <param name="memberProperties">The type's member properties.</param>
+    /// <returns>Properties for the given <see cref="ConstructorInfo"/>.</returns>
+    protected virtual IList<JsonProperty> CreateConstructorParameters(ConstructorInfo constructor, JsonPropertyCollection memberProperties)
+    {
+      var constructorParameters = constructor.GetParameters();
+
+      JsonPropertyCollection parameterCollection = new JsonPropertyCollection(constructor.DeclaringType);
+
+      foreach (ParameterInfo parameterInfo in constructorParameters)
+      {
+        JsonProperty matchingMemberProperty = memberProperties.GetClosestMatchProperty(parameterInfo.Name);
+        // type must match as well as name
+        if (matchingMemberProperty != null && matchingMemberProperty.PropertyType != parameterInfo.ParameterType)
+          matchingMemberProperty = null;
+
+        JsonProperty property = CreatePropertyFromConstructorParameter(matchingMemberProperty, parameterInfo);
+
+        if (property != null)
+        {
+          parameterCollection.AddProperty(property);
+        }
+      }
+
+      return parameterCollection;
+    }
+
+    /// <summary>
+    /// Creates a <see cref="JsonProperty"/> for the given <see cref="ParameterInfo"/>.
+    /// </summary>
+    /// <param name="matchingMemberProperty">The matching member property.</param>
+    /// <param name="parameterInfo">The constructor parameter.</param>
+    /// <returns>A created <see cref="JsonProperty"/> for the given <see cref="ParameterInfo"/>.</returns>
+    protected virtual JsonProperty CreatePropertyFromConstructorParameter(JsonProperty matchingMemberProperty, ParameterInfo parameterInfo)
+    {
+      JsonProperty property = new JsonProperty();
+      property.PropertyType = parameterInfo.ParameterType;
+
+      bool allowNonPublicAccess;
+      SetPropertySettingsFromAttributes(property, parameterInfo, parameterInfo.Name, parameterInfo.Member.DeclaringType, MemberSerialization.OptOut, out allowNonPublicAccess);
+
+      property.Readable = false;
+      property.Writable = true;
+
+      // "inherit" values from matching member property if unset on parameter
+      if (matchingMemberProperty != null)
+      {
+        property.PropertyName = (property.PropertyName != parameterInfo.Name) ? property.PropertyName : matchingMemberProperty.PropertyName;
+        property.Converter = property.Converter ?? matchingMemberProperty.Converter;
+        property.MemberConverter = property.MemberConverter ?? matchingMemberProperty.MemberConverter;
+        property.DefaultValue = property.DefaultValue ?? matchingMemberProperty.DefaultValue;
+        property.Required = (property.Required != Required.Default) ? property.Required : matchingMemberProperty.Required;
+        property.IsReference = property.IsReference ?? matchingMemberProperty.IsReference;
+        property.NullValueHandling = property.NullValueHandling ?? matchingMemberProperty.NullValueHandling;
+        property.DefaultValueHandling = property.DefaultValueHandling ?? matchingMemberProperty.DefaultValueHandling;
+        property.ReferenceLoopHandling = property.ReferenceLoopHandling ?? matchingMemberProperty.ReferenceLoopHandling;
+        property.ObjectCreationHandling = property.ObjectCreationHandling ?? matchingMemberProperty.ObjectCreationHandling;
+        property.TypeNameHandling = property.TypeNameHandling ?? matchingMemberProperty.TypeNameHandling;
+      }
+
+      return property;
     }
 
     /// <summary>
@@ -667,22 +748,32 @@ namespace Newtonsoft.Json.Serialization
       property.PropertyType = ReflectionUtils.GetMemberUnderlyingType(member);
       property.ValueProvider = CreateMemberValueProvider(member);
 
-      // resolve converter for property
-      // the class type might have a converter but the property converter takes presidence
-      property.Converter = JsonTypeReflector.GetJsonConverter(member, property.PropertyType);
+      bool allowNonPublicAccess;
+      SetPropertySettingsFromAttributes(property, member, member.Name, member.DeclaringType, memberSerialization, out allowNonPublicAccess);
 
+      property.Readable = ReflectionUtils.CanReadMemberValue(member, allowNonPublicAccess);
+      property.Writable = ReflectionUtils.CanSetMemberValue(member, allowNonPublicAccess);
+      property.ShouldSerialize = CreateShouldSerializeTest(member);
+
+      SetIsSpecifiedActions(property, member);
+
+      return property;
+    }
+
+    private void SetPropertySettingsFromAttributes(JsonProperty property, ICustomAttributeProvider attributeProvider, string name, Type declaringType, MemberSerialization memberSerialization, out bool allowNonPublicAccess)
+    {
 #if !PocketPC && !NET20
-      DataContractAttribute dataContractAttribute = JsonTypeReflector.GetDataContractAttribute(member.DeclaringType);
+      DataContractAttribute dataContractAttribute = JsonTypeReflector.GetDataContractAttribute(declaringType);
 
       DataMemberAttribute dataMemberAttribute;
       if (dataContractAttribute != null)
-        dataMemberAttribute = JsonTypeReflector.GetAttribute<DataMemberAttribute>(member);
+        dataMemberAttribute = JsonTypeReflector.GetAttribute<DataMemberAttribute>(attributeProvider);
       else
         dataMemberAttribute = null;
 #endif
 
-      JsonPropertyAttribute propertyAttribute = JsonTypeReflector.GetAttribute<JsonPropertyAttribute>(member);
-      bool hasIgnoreAttribute = (JsonTypeReflector.GetAttribute<JsonIgnoreAttribute>(member) != null);
+      JsonPropertyAttribute propertyAttribute = JsonTypeReflector.GetAttribute<JsonPropertyAttribute>(attributeProvider);
+      bool hasIgnoreAttribute = (JsonTypeReflector.GetAttribute<JsonIgnoreAttribute>(attributeProvider) != null);
 
       string mappedName;
       if (propertyAttribute != null && propertyAttribute.PropertyName != null)
@@ -692,9 +783,10 @@ namespace Newtonsoft.Json.Serialization
         mappedName = dataMemberAttribute.Name;
 #endif
       else
-        mappedName = member.Name;
+        mappedName = name;
 
       property.PropertyName = ResolvePropertyName(mappedName);
+      property.UnderlyingName = name;
 
       if (propertyAttribute != null)
         property.Required = propertyAttribute.Required;
@@ -713,22 +805,12 @@ namespace Newtonsoft.Json.Serialization
 #endif
 ));
 
-      bool allowNonPublicAccess = false;
-      if ((DefaultMembersSearchFlags & BindingFlags.NonPublic) == BindingFlags.NonPublic)
-        allowNonPublicAccess = true;
-      if (propertyAttribute != null)
-        allowNonPublicAccess = true;
-#if !PocketPC && !NET20
-      if (dataMemberAttribute != null)
-        allowNonPublicAccess = true;
-#endif
+      // resolve converter for property
+      // the class type might have a converter but the property converter takes presidence
+      property.Converter = JsonTypeReflector.GetJsonConverter(attributeProvider, property.PropertyType);
+      property.MemberConverter = JsonTypeReflector.GetJsonConverter(attributeProvider, property.PropertyType);
 
-      property.Readable = ReflectionUtils.CanReadMemberValue(member, allowNonPublicAccess);
-      property.Writable = ReflectionUtils.CanSetMemberValue(member, allowNonPublicAccess);
-
-      property.MemberConverter = JsonTypeReflector.GetJsonConverter(member, ReflectionUtils.GetMemberUnderlyingType(member));
-
-      DefaultValueAttribute defaultValueAttribute = JsonTypeReflector.GetAttribute<DefaultValueAttribute>(member);
+      DefaultValueAttribute defaultValueAttribute = JsonTypeReflector.GetAttribute<DefaultValueAttribute>(attributeProvider);
       property.DefaultValue = (defaultValueAttribute != null) ? defaultValueAttribute.Value : null;
 
       property.NullValueHandling = (propertyAttribute != null) ? propertyAttribute._nullValueHandling : null;
@@ -738,11 +820,15 @@ namespace Newtonsoft.Json.Serialization
       property.TypeNameHandling = (propertyAttribute != null) ? propertyAttribute._typeNameHandling : null;
       property.IsReference = (propertyAttribute != null) ? propertyAttribute._isReference : null;
 
-      property.ShouldSerialize = CreateShouldSerializeTest(member);
-
-      SetIsSpecifiedActions(property, member);
-
-      return property;
+      allowNonPublicAccess = false;
+      if ((DefaultMembersSearchFlags & BindingFlags.NonPublic) == BindingFlags.NonPublic)
+        allowNonPublicAccess = true;
+      if (propertyAttribute != null)
+        allowNonPublicAccess = true;
+#if !PocketPC && !NET20
+      if (dataMemberAttribute != null)
+        allowNonPublicAccess = true;
+#endif
     }
 
     private Predicate<object> CreateShouldSerializeTest(MemberInfo member)
