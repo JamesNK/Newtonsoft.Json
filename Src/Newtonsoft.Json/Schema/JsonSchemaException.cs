@@ -30,6 +30,9 @@ namespace Newtonsoft.Json.Schema
   /// <summary>
   /// Returns detailed information about the schema exception.
   /// </summary>
+#if (!SILVERLIGHT && !WINDOWS_PHONE)
+  [Serializable]
+#endif
   public class JsonSchemaException : Exception
   {
     /// <summary>

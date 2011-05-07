@@ -86,6 +86,25 @@ namespace Newtonsoft.Json.Serialization
       return Serializer.ContractResolver.ResolveContract(value.GetType());
     }
 
+    private void SerializePrimitive(JsonWriter writer, object value, JsonPrimitiveContract contract, JsonProperty member, JsonContract collectionValueContract)
+    {
+      if (contract.UnderlyingType == typeof (byte[]))
+      {
+        bool includeTypeDetails = ShouldWriteType(TypeNameHandling.Objects, contract, member, collectionValueContract);
+        if (includeTypeDetails)
+        {
+          writer.WriteStartObject();
+          WriteTypeProperty(writer, contract.CreatedType);
+          writer.WritePropertyName(JsonTypeReflector.ValuePropertyName);
+          writer.WriteValue(value);
+          writer.WriteEndObject();
+          return;
+        }
+      }
+
+      writer.WriteValue(value);
+    }
+
     private void SerializeValue(JsonWriter writer, object value, JsonContract valueContract, JsonProperty member, JsonContract collectionValueContract)
     {
       JsonConverter converter = (member != null) ? member.Converter : null;
@@ -106,7 +125,7 @@ namespace Newtonsoft.Json.Serialization
       }
       else if (valueContract is JsonPrimitiveContract)
       {
-        writer.WriteValue(value);
+        SerializePrimitive(writer, value, (JsonPrimitiveContract)valueContract, member, collectionValueContract);
       }
       else if (valueContract is JsonStringContract)
       {

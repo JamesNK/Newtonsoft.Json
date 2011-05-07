@@ -32,6 +32,9 @@ namespace Newtonsoft.Json
   /// <summary>
   /// The exception thrown when an error occurs while reading Json text.
   /// </summary>
+#if (!SILVERLIGHT && !WINDOWS_PHONE)
+  [Serializable]
+#endif
   public class JsonWriterException : Exception
   {
     /// <summary>

@@ -4310,5 +4310,24 @@ keyword such as type of business.""
       var withParameterisedConstructor = JsonConvert.DeserializeObject<DTOWithParameterisedConstructor>(json);
       Assert.AreEqual(withoutParameterisedConstructor.B, withParameterisedConstructor.B);
     }
+
+    public class EnumerableArrayPropertyClass
+    {
+      public IEnumerable<int> Numbers
+      {
+        get
+        {
+          return new[] { 1, 2, 3 }; //fails
+          //return new List<int>(new[] { 1, 2, 3 }); //works
+        }
+      }
+    }
+
+    [Test]
+    public void SkipPopulatingArrayPropertyClass()
+    {
+      string json = JsonConvert.SerializeObject(new EnumerableArrayPropertyClass());
+      JsonConvert.DeserializeObject<EnumerableArrayPropertyClass>(json);
+    }
   }
 }

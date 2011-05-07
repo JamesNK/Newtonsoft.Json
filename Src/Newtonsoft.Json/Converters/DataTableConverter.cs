@@ -101,7 +101,7 @@ namespace Newtonsoft.Json.Converters
             dt.Columns.Add(new DataColumn(columnName, columnType));
           }
 
-          dr[columnName] = reader.Value;
+          dr[columnName] = reader.Value ?? DBNull.Value;
           reader.Read();
         }
 

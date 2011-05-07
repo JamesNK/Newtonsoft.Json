@@ -107,7 +107,7 @@ namespace Newtonsoft.Json.Tests.Converters
     {
       public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
       {
-        DataTable d = (DataTable) value;
+        DataTable d = (DataTable)value;
         writer.WriteValue(d.TableName);
       }
 
@@ -121,7 +121,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
       public override bool CanConvert(Type objectType)
       {
-        return (objectType == typeof (DataTable));
+        return (objectType == typeof(DataTable));
       }
     }
 
@@ -135,6 +135,55 @@ namespace Newtonsoft.Json.Tests.Converters
 
       DataTable t2 = JsonConvert.DeserializeObject<DataTable>(json, new TestDataTableConverter());
       Assert.AreEqual(t1.TableName, t2.TableName);
+    }
+
+    [Test]
+    public void SerializeDataTableWithNull()
+    {
+      var table = new DataTable();
+      table.Columns.Add("item");
+      table.Columns.Add("price", typeof(double));
+      table.Rows.Add("shirt", 49.99);
+      table.Rows.Add("pants", 54.99);
+      table.Rows.Add("shoes"); // no price
+
+      var json = JsonConvert.SerializeObject(table);
+      Assert.AreEqual(@"["
+      + @"{""item"":""shirt"",""price"":49.99},"
+      + @"{""item"":""pants"",""price"":54.99},"
+      + @"{""item"":""shoes"",""price"":null}]", json);
+    }
+
+    [Test]
+    public void DerializeDataTableWithImplicitNull()
+    {
+      const string json = @"["
+      + @"{""item"":""shirt"",""price"":49.99},"
+      + @"{""item"":""pants"",""price"":54.99},"
+      + @"{""item"":""shoes""}]";
+      var table = JsonConvert.DeserializeObject<DataTable>(json);
+      Assert.AreEqual("shirt", table.Rows[0]["item"]);
+      Assert.AreEqual("pants", table.Rows[1]["item"]);
+      Assert.AreEqual("shoes", table.Rows[2]["item"]);
+      Assert.AreEqual(49.99, (double)table.Rows[0]["price"], 0.01);
+      Assert.AreEqual(54.99, (double)table.Rows[1]["price"], 0.01);
+      Assert.IsInstanceOfType(typeof(System.DBNull), table.Rows[2]["price"]);
+    }
+
+    [Test]
+    public void DerializeDataTableWithExplicitNull()
+    {
+      const string json = @"["
+      + @"{""item"":""shirt"",""price"":49.99},"
+      + @"{""item"":""pants"",""price"":54.99},"
+      + @"{""item"":""shoes"",""price"":null}]";
+      var table = JsonConvert.DeserializeObject<DataTable>(json);
+      Assert.AreEqual("shirt", table.Rows[0]["item"]);
+      Assert.AreEqual("pants", table.Rows[1]["item"]);
+      Assert.AreEqual("shoes", table.Rows[2]["item"]);
+      Assert.AreEqual(49.99, (double)table.Rows[0]["price"], 0.01);
+      Assert.AreEqual(54.99, (double)table.Rows[1]["price"], 0.01);
+      Assert.IsInstanceOfType(typeof(System.DBNull), table.Rows[2]["price"]);
     }
   }
 }

@@ -399,6 +399,20 @@ namespace Newtonsoft.Json.Serialization
         return PopulateObject(existingValue, reader, objectContract, id);
       }
 
+      JsonPrimitiveContract primitiveContract = contract as JsonPrimitiveContract;
+      if (primitiveContract != null)
+      {
+        // if the content is inside $value then read past it
+        if (reader.TokenType == JsonToken.PropertyName && string.Equals(reader.Value.ToString(), JsonTypeReflector.ValuePropertyName, StringComparison.Ordinal))
+        {
+          CheckedRead(reader);
+          object value = CreateValueInternal(reader, objectType, primitiveContract, member, existingValue);
+
+          CheckedRead(reader);
+          return value;
+        }
+      }
+
 #if !SILVERLIGHT && !PocketPC
       JsonISerializableContract serializableContract = contract as JsonISerializableContract;
       if (serializableContract != null)
@@ -687,6 +701,13 @@ namespace Newtonsoft.Json.Serialization
     private object PopulateList(IWrappedCollection wrappedList, JsonReader reader, string reference, JsonArrayContract contract)
     {
       object list = wrappedList.UnderlyingCollection;
+
+      // can't populate an existing array
+      if (wrappedList.IsFixedSize)
+      {
+        reader.Skip();
+        return wrappedList.UnderlyingCollection;
+      }
 
       if (reference != null)
         Serializer.ReferenceResolver.AddReference(this, reference, list);

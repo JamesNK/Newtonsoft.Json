@@ -703,6 +703,56 @@ namespace Newtonsoft.Json.Tests.Serialization
       }
     }
 
+    public class Car
+    {
+      // included in JSON
+      public string Model { get; set; }
+      public DateTime Year { get; set; }
+      public List<string> Features { get; set; }
+      public object[] Objects { get; set; }
+
+      // ignored
+      [JsonIgnore]
+      public DateTime LastModified { get; set; }
+    }
+
+    [Test]
+    public void ByteArrays()
+    {
+      Car testerObject = new Car();
+      byte[] data = new byte[] {75, 65, 82, 73, 82, 65};
+      testerObject.Objects = new object[] { data, "prueba" };
+
+      JsonSerializerSettings jsonSettings = new JsonSerializerSettings();
+      jsonSettings.NullValueHandling = NullValueHandling.Ignore;
+      jsonSettings.TypeNameHandling = TypeNameHandling.All;
+
+      string output = JsonConvert.SerializeObject(testerObject, Formatting.Indented, jsonSettings);
+
+      string carClassRef = ReflectionUtils.GetTypeName(typeof(Car), FormatterAssemblyStyle.Simple);
+
+      Assert.AreEqual(output, @"{
+  ""$type"": """ + carClassRef + @""",
+  ""Year"": ""\/Date(-62135596800000+1300)\/"",
+  ""Objects"": {
+    ""$type"": ""System.Object[], mscorlib"",
+    ""$values"": [
+      {
+        ""$type"": ""System.Byte[], mscorlib"",
+        ""$value"": ""S0FSSVJB""
+      },
+      ""prueba""
+    ]
+  }
+}");
+      Car obj = JsonConvert.DeserializeObject<Car>(output, jsonSettings);
+
+      Assert.IsNotNull(obj);
+
+      Assert.IsTrue(obj.Objects[0] is byte[]);
+
+      Assert.AreEqual(data, obj.Objects[0]);
+    }
   }
 
   public class Message

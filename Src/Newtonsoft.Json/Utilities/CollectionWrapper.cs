@@ -194,7 +194,14 @@ namespace Newtonsoft.Json.Utilities
 
     bool IList.IsFixedSize
     {
-      get { return false; }
+      get
+      {
+        if (_genericCollection != null)
+          // ICollection<T> only has IsReadOnly
+          return _genericCollection.IsReadOnly;
+        else
+          return _list.IsFixedSize;
+      }
     }
 
     void IList.Remove(object value)
