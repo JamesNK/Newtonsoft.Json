@@ -766,8 +766,8 @@ namespace Newtonsoft.Json.Serialization
       DataContractAttribute dataContractAttribute = JsonTypeReflector.GetDataContractAttribute(declaringType);
 
       DataMemberAttribute dataMemberAttribute;
-      if (dataContractAttribute != null)
-        dataMemberAttribute = JsonTypeReflector.GetAttribute<DataMemberAttribute>(attributeProvider);
+      if (dataContractAttribute != null && attributeProvider is MemberInfo)
+        dataMemberAttribute = JsonTypeReflector.GetDataMemberAttribute((MemberInfo)attributeProvider);
       else
         dataMemberAttribute = null;
 #endif

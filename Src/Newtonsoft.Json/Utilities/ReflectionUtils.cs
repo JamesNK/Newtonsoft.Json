@@ -37,6 +37,21 @@ namespace Newtonsoft.Json.Utilities
 {
   internal static class ReflectionUtils
   {
+    public static bool IsVirtual(this PropertyInfo propertyInfo)
+    {
+      ValidationUtils.ArgumentNotNull(propertyInfo, "propertyInfo");
+
+      MethodInfo m = propertyInfo.GetGetMethod();
+      if (m != null && m.IsVirtual)
+        return true;
+
+      m = propertyInfo.GetSetMethod();
+      if (m != null && m.IsVirtual)
+        return true;
+
+      return false;
+    }
+
     public static Type GetObjectType(object v)
     {
       return (v != null) ? v.GetType() : null;
@@ -706,6 +721,9 @@ namespace Newtonsoft.Json.Utilities
       // http://hyperthink.net/blog/getcustomattributes-gotcha/
       // ICustomAttributeProvider doesn't do inheritance
 
+      if (attributeProvider is Type)
+        return (T[])((Type)attributeProvider).GetCustomAttributes(typeof(T), inherit);
+
       if (attributeProvider is Assembly)
         return (T[])Attribute.GetCustomAttributes((Assembly)attributeProvider, typeof(T), inherit);
 
@@ -851,6 +869,23 @@ namespace Newtonsoft.Json.Utilities
       return null;
     }
 
+    public static MemberInfo GetMemberInfoFromType(Type targetType, MemberInfo memberInfo)
+    {
+      BindingFlags bindingAttr = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+
+      switch (memberInfo.MemberType)
+      {
+        case MemberTypes.Property:
+          PropertyInfo propertyInfo = (PropertyInfo) memberInfo;
+
+          Type[] types = propertyInfo.GetIndexParameters().Select(p => p.ParameterType).ToArray();
+
+          return targetType.GetProperty(propertyInfo.Name, bindingAttr, null, propertyInfo.PropertyType, types, null);
+        default:
+          return targetType.GetMember(memberInfo.Name, memberInfo.MemberType, bindingAttr).SingleOrDefault();
+      }
+    }
+
     public static IEnumerable<FieldInfo> GetFields(Type targetType, BindingFlags bindingAttr)
     {
       ValidationUtils.ArgumentNotNull(targetType, "targetType");
@@ -896,9 +931,7 @@ namespace Newtonsoft.Json.Utilities
         PropertyInfo member = propertyInfos[i];
         if (member.DeclaringType != targetType)
         {
-          Type[] types = member.GetIndexParameters().Select(p => p.ParameterType).ToArray();
-
-          PropertyInfo declaredMember = member.DeclaringType.GetProperty(member.Name, bindingAttr, null, member.PropertyType, types, null);
+          PropertyInfo declaredMember = (PropertyInfo)GetMemberInfoFromType(member.DeclaringType, member);
           propertyInfos[i] = declaredMember;
         }
       }

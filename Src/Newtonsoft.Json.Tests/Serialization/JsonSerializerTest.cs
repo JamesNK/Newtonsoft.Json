@@ -4329,5 +4329,117 @@ keyword such as type of business.""
       string json = JsonConvert.SerializeObject(new EnumerableArrayPropertyClass());
       JsonConvert.DeserializeObject<EnumerableArrayPropertyClass>(json);
     }
+
+#if !NET20
+    [DataContract]
+    public class BaseDataContract
+    {
+      [DataMember(Name = "virtualMember")]
+      public virtual string VirtualMember { get; set; }
+
+      [DataMember(Name = "nonVirtualMember")]
+      public string NonVirtualMember { get; set; }
+    }
+
+    public class ChildDataContract : BaseDataContract
+    {
+      public override string VirtualMember { get; set; }
+      public string NewMember { get; set; }
+    }
+
+    [Test]
+    public void ChildDataContractTest()
+    {
+      ChildDataContract cc = new ChildDataContract
+        {
+          VirtualMember = "VirtualMember!",
+          NonVirtualMember = "NonVirtualMember!"
+        };
+
+      string result = JsonConvert.SerializeObject(cc);
+      Assert.AreEqual(@"{""virtualMember"":""VirtualMember!"",""nonVirtualMember"":""NonVirtualMember!""}", result);
+    }
+#endif
+
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
+    public class BaseObject
+    {
+      [JsonProperty(PropertyName = "virtualMember")]
+      public virtual string VirtualMember { get; set; }
+
+      [JsonProperty(PropertyName = "nonVirtualMember")]
+      public string NonVirtualMember { get; set; }
+    }
+
+    public class ChildObject : BaseObject
+    {
+      public override string VirtualMember { get; set; }
+      public string NewMember { get; set; }
+    }
+
+    public class ChildWithDifferentOverrideObject : BaseObject
+    {
+      [JsonProperty(PropertyName = "differentVirtualMember")]
+      public override string VirtualMember { get; set; }
+    }
+
+    [Test]
+    public void ChildObjectTest()
+    {
+      ChildObject cc = new ChildObject
+        {
+          VirtualMember = "VirtualMember!",
+          NonVirtualMember = "NonVirtualMember!"
+        };
+
+      string result = JsonConvert.SerializeObject(cc);
+      Assert.AreEqual(@"{""virtualMember"":""VirtualMember!"",""nonVirtualMember"":""NonVirtualMember!""}", result);
+    }
+
+    [Test]
+    public void ChildWithDifferentOverrideObjectTest()
+    {
+      ChildWithDifferentOverrideObject cc = new ChildWithDifferentOverrideObject
+      {
+        VirtualMember = "VirtualMember!",
+        NonVirtualMember = "NonVirtualMember!"
+      };
+
+      string result = JsonConvert.SerializeObject(cc);
+      Assert.AreEqual(@"{""differentVirtualMember"":""VirtualMember!"",""nonVirtualMember"":""NonVirtualMember!""}", result);
+    }
+
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
+    public interface IInterfaceObject
+    {
+      [JsonProperty(PropertyName = "virtualMember")]
+      [JsonConverter(typeof(IsoDateTimeConverter))]
+      DateTime InterfaceMember { get; set; }
+    }
+
+    public class ImplementInterfaceObject : IInterfaceObject
+    {
+      public DateTime InterfaceMember { get; set; }
+      public string NewMember { get; set; }
+      [JsonProperty(PropertyName = "newMemberWithProperty")]
+      public string NewMemberWithProperty { get; set; }
+    }
+
+    [Test]
+    public void ImplementInterfaceObjectTest()
+    {
+      ImplementInterfaceObject cc = new ImplementInterfaceObject
+      {
+        InterfaceMember = new DateTime(2010, 12, 31, 0, 0, 0, DateTimeKind.Utc),
+        NewMember = "NewMember!"
+      };
+
+      string result = JsonConvert.SerializeObject(cc, Formatting.Indented);
+      
+      Assert.AreEqual(@"{
+  ""virtualMember"": ""2010-12-31T00:00:00Z"",
+  ""newMemberWithProperty"": null
+}", result);
+    }
   }
 }

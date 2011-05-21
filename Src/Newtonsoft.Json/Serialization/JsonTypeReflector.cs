@@ -96,7 +96,48 @@ namespace Newtonsoft.Json.Serialization
 #if !PocketPC && !NET20
     public static DataContractAttribute GetDataContractAttribute(Type type)
     {
-      return CachedAttributeGetter<DataContractAttribute>.GetAttribute(type);
+      // DataContractAttribute does not have inheritance
+      DataContractAttribute result = null;
+      Type currentType = type;
+      while (result == null && currentType != null)
+      {
+        result = CachedAttributeGetter<DataContractAttribute>.GetAttribute(currentType);
+        currentType = currentType.BaseType;
+      }
+
+      return result;
+    }
+
+    public static DataMemberAttribute GetDataMemberAttribute(MemberInfo memberInfo)
+    {
+      // DataMemberAttribute does not have inheritance
+
+      // can't override a field
+      if (memberInfo.MemberType == MemberTypes.Field)
+        return CachedAttributeGetter<DataMemberAttribute>.GetAttribute(memberInfo);
+
+      // search property and then search base properties if nothing is returned and the property is virtual
+      PropertyInfo propertyInfo = (PropertyInfo) memberInfo;
+      DataMemberAttribute result = CachedAttributeGetter<DataMemberAttribute>.GetAttribute(propertyInfo);
+      if (result == null)
+      {
+        if (propertyInfo.IsVirtual())
+        {
+          Type currentType = propertyInfo.DeclaringType;
+          Type[] types = propertyInfo.GetIndexParameters().Select(p => p.ParameterType).ToArray();
+
+          while (result == null && currentType != null)
+          {
+            PropertyInfo baseProperty = (PropertyInfo)ReflectionUtils.GetMemberInfoFromType(currentType, propertyInfo);
+            if (baseProperty != null && baseProperty.IsVirtual())
+              result = CachedAttributeGetter<DataMemberAttribute>.GetAttribute(baseProperty);
+
+            currentType = currentType.BaseType;
+          }
+        }
+      }
+
+      return result;
     }
 #endif
 
@@ -204,38 +245,72 @@ namespace Newtonsoft.Json.Serialization
       
       return _cachedMetadataTypeAttributeType;
     }
+#endif
 
     private static T GetAttribute<T>(Type type) where T : Attribute
     {
+      T attribute;
+
+#if !SILVERLIGHT && !PocketPC && !NET20
       Type metadataType = GetAssociatedMetadataType(type);
       if (metadataType != null)
       {
-        T attribute = ReflectionUtils.GetAttribute<T>(metadataType, true);
+        attribute = ReflectionUtils.GetAttribute<T>(metadataType, true);
+        if (attribute != null)
+          return attribute;
+      }
+#endif
+
+      attribute = ReflectionUtils.GetAttribute<T>(type, true);
+      if (attribute != null)
+        return attribute;
+
+      foreach (Type typeInterface in type.GetInterfaces())
+      {
+        attribute = ReflectionUtils.GetAttribute<T>(typeInterface, true);
         if (attribute != null)
           return attribute;
       }
 
-      return ReflectionUtils.GetAttribute<T>(type, true);
+      return null;
     }
 
     private static T GetAttribute<T>(MemberInfo memberInfo) where T : Attribute
     {
+      T attribute;
+
+#if !SILVERLIGHT && !PocketPC && !NET20
       Type metadataType = GetAssociatedMetadataType(memberInfo.DeclaringType);
       if (metadataType != null)
       {
-        MemberInfo metadataTypeMemberInfo = metadataType.GetMember(memberInfo.Name,
-          memberInfo.MemberType,
-          BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance).SingleOrDefault();
+        MemberInfo metadataTypeMemberInfo = ReflectionUtils.GetMemberInfoFromType(metadataType, memberInfo);
 
         if (metadataTypeMemberInfo != null)
         {
-          T attribute = ReflectionUtils.GetAttribute<T>(metadataTypeMemberInfo, true);
+          attribute = ReflectionUtils.GetAttribute<T>(metadataTypeMemberInfo, true);
+          if (attribute != null)
+            return attribute;
+        }
+      }
+#endif
+
+      attribute = ReflectionUtils.GetAttribute<T>(memberInfo, true);
+      if (attribute != null)
+        return attribute;
+
+      foreach (Type typeInterface in memberInfo.DeclaringType.GetInterfaces())
+      {
+        MemberInfo interfaceTypeMemberInfo = ReflectionUtils.GetMemberInfoFromType(typeInterface, memberInfo);
+
+        if (interfaceTypeMemberInfo != null)
+        {
+          attribute = ReflectionUtils.GetAttribute<T>(interfaceTypeMemberInfo, true);
           if (attribute != null)
             return attribute;
         }
       }
 
-      return ReflectionUtils.GetAttribute<T>(memberInfo, true);
+      return null;
     }
 
     public static T GetAttribute<T>(ICustomAttributeProvider attributeProvider) where T : Attribute
@@ -250,12 +325,6 @@ namespace Newtonsoft.Json.Serialization
 
       return ReflectionUtils.GetAttribute<T>(attributeProvider, true);
     }
-#else
-    public static T GetAttribute<T>(ICustomAttributeProvider attributeProvider) where T : Attribute
-    {
-      return ReflectionUtils.GetAttribute<T>(attributeProvider, true);
-    }
-#endif
 
     private static bool? _dynamicCodeGeneration;
 
