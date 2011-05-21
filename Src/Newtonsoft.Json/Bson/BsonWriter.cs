@@ -199,6 +199,9 @@ namespace Newtonsoft.Json.Bson
       }
       else
       {
+        if (token.Type != BsonType.Object && token.Type != BsonType.Array)
+          throw new JsonWriterException("Error writing {0} value. BSON must start with an Object or Array.".FormatWith(CultureInfo.InvariantCulture, token.Type));
+
         _parent = token;
         _root = token;
       }

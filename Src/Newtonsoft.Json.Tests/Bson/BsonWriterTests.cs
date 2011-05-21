@@ -625,5 +625,18 @@ namespace Newtonsoft.Json.Tests.Bson
 
       Assert.IsFalse(reader.Read());
     }
+
+    [Test]
+    [ExpectedException(typeof(JsonWriterException), ExpectedMessage = "Error writing String value. BSON must start with an Object or Array.")]
+    public void WriteValueOutsideOfObjectOrArray()
+    {
+      MemoryStream stream = new MemoryStream();
+
+      using (BsonWriter writer = new BsonWriter(stream))
+      {
+        writer.WriteValue("test");
+        writer.Flush();
+      }
+    }
   }
 }
