@@ -170,7 +170,7 @@ namespace Newtonsoft.Json.Linq
     {
       writer.WriteStartArray();
 
-      foreach (JToken token in Children())
+      foreach (JToken token in ChildrenTokens)
       {
         token.WriteTo(writer, converters);
       }
@@ -291,16 +291,6 @@ namespace Newtonsoft.Json.Linq
     void ICollection<JToken>.CopyTo(JToken[] array, int arrayIndex)
     {
       CopyItemsTo(array, arrayIndex);
-    }
-
-    /// <summary>
-    /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
-    /// </summary>
-    /// <value></value>
-    /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.</returns>
-    public int Count
-    {
-      get { return CountItems(); }
     }
 
     bool ICollection<JToken>.IsReadOnly

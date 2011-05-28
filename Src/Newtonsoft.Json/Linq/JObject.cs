@@ -386,6 +386,9 @@ namespace Newtonsoft.Json.Linq
 
     bool IDictionary<string, JToken>.ContainsKey(string key)
     {
+      if (_properties.Dictionary == null)
+        return false;
+
       return _properties.Dictionary.ContainsKey(key);
     }
 
@@ -482,7 +485,7 @@ namespace Newtonsoft.Json.Linq
     /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.</returns>
     public int Count
     {
-      get { return Children().Count(); }
+      get { return ChildrenTokens.Count; }
     }
 
     bool ICollection<KeyValuePair<string,JToken>>.IsReadOnly

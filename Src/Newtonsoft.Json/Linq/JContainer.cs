@@ -479,7 +479,7 @@ namespace Newtonsoft.Json.Linq
         throw new ArgumentOutOfRangeException("arrayIndex", "arrayIndex is less than 0.");
       if (arrayIndex >= array.Length)
         throw new ArgumentException("arrayIndex is equal to or greater than the length of array.");
-      if (CountItems() > array.Length - arrayIndex)
+      if (Count > array.Length - arrayIndex)
         throw new ArgumentException("The number of elements in the source JObject is greater than the available space from arrayIndex to the end of the destination array.");
 
       int index = 0;
@@ -488,11 +488,6 @@ namespace Newtonsoft.Json.Linq
         array.SetValue(token, arrayIndex + index);
         index++;
       }
-    }
-
-    internal virtual int CountItems()
-    {
-      return ChildrenTokens.Count;
     }
 
     internal static bool IsTokenUnchanged(JToken currentValue, JToken newValue)
@@ -784,11 +779,6 @@ namespace Newtonsoft.Json.Linq
       CopyItemsTo(array, arrayIndex);
     }
 
-    int ICollection<JToken>.Count
-    {
-      get { return CountItems(); }
-    }
-
     bool ICollection<JToken>.IsReadOnly
     {
       get { return false; }
@@ -817,7 +807,7 @@ namespace Newtonsoft.Json.Linq
     int IList.Add(object value)
     {
       Add(EnsureValue(value));
-      return CountItems() - 1;
+      return Count - 1;
     }
 
     void IList.Clear()
@@ -875,9 +865,9 @@ namespace Newtonsoft.Json.Linq
       CopyItemsTo(array, index);
     }
 
-    int ICollection.Count
+    public int Count
     {
-      get { return CountItems(); }
+      get { return ChildrenTokens.Count; }
     }
 
     bool ICollection.IsSynchronized
