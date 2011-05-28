@@ -104,6 +104,7 @@
     <Compile Include="Converters\StringEnumConverter.cs" />
     <Compile Include="ConstructorHandling.cs" />
     <Compile Include="JsonConstructorAttribute.cs" />
+    <Compile Include="Linq\JPropertyDescriptor.cs" />
     <Compile Include="Utilities\DynamicProxy.cs" />
     <Compile Include="Linq\JPath.cs" />
     <Compile Include="Linq\JRaw.cs" />
@@ -115,7 +116,6 @@
     <Compile Include="Serialization\JsonPrimitiveContract.cs" />
     <Compile Include="Serialization\DynamicValueProvider.cs" />
     <Compile Include="Serialization\ErrorEventArgs.cs" />
-    <Compile Include="Linq\ComponentModel\JPropertyDescriptor.cs" />
     <Compile Include="Serialization\DefaultReferenceResolver.cs" />
     <Compile Include="PreserveReferencesHandling.cs" />
     <Compile Include="IJsonLineInfo.cs" />

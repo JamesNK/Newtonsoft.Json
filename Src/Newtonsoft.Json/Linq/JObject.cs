@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 #if !(NET35 || NET20 || WINDOWS_PHONE)
@@ -35,9 +36,6 @@ using System.Linq;
 using System.IO;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
-#if !PocketPC && !SILVERLIGHT
-using Newtonsoft.Json.Linq.ComponentModel;
-#endif
 
 namespace Newtonsoft.Json.Linq
 {
@@ -52,6 +50,46 @@ namespace Newtonsoft.Json.Linq
     , INotifyPropertyChanging
 #endif
   {
+    private class JPropertKeyedCollection : KeyedCollection<string, JToken>
+    {
+      public JPropertKeyedCollection(IEqualityComparer<string> comparer)
+        : base(comparer)
+      {
+      }
+
+      protected override string GetKeyForItem(JToken item)
+      {
+        return ((JProperty) item).Name;
+      }
+
+      protected override void InsertItem(int index, JToken item)
+      {
+        if (Dictionary == null)
+        {
+          base.InsertItem(index, item);
+        }
+        else
+        {
+          // need to override so that the dictionary key is always set rather than added
+          string keyForItem = GetKeyForItem(item);
+          Dictionary[keyForItem] = item;
+          Items.Insert(index, item);
+        }
+      }
+
+      public new IDictionary<string, JToken> Dictionary
+      {
+        get { return base.Dictionary; }
+      }
+    }
+
+    private JPropertKeyedCollection _properties = new JPropertKeyedCollection(StringComparer.Ordinal);
+
+    protected override IList<JToken> ChildrenTokens
+    {
+      get { return _properties; }
+    }
+
     /// <summary>
     /// Occurs when a property value changes.
     /// </summary>
@@ -111,14 +149,18 @@ namespace Newtonsoft.Json.Linq
       if (o.Type != JTokenType.Property)
         throw new ArgumentException("Can not add {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, o.GetType(), GetType()));
 
-      // looping over all properties every time isn't good
-      // need to think about performance here
-      JProperty property = (JProperty)o;
-      foreach (JProperty childProperty in Children())
+      JProperty newProperty = (JProperty) o;
+
+      if (existing != null)
       {
-        if (childProperty != existing && string.Equals(childProperty.Name, property.Name, StringComparison.Ordinal))
-          throw new ArgumentException("Can not add property {0} to {1}. Property with the same name already exists on object.".FormatWith(CultureInfo.InvariantCulture, property.Name, GetType()));
+        JProperty existingProperty = (JProperty) existing;
+
+        if (newProperty.Name == existingProperty.Name)
+          return;
       }
+
+      if (_properties.Dictionary != null && _properties.Dictionary.TryGetValue(newProperty.Name, out existing))
+        throw new ArgumentException("Can not add property {0} to {1}. Property with the same name already exists on object.".FormatWith(CultureInfo.InvariantCulture, newProperty.Name, GetType()));
     }
 
     internal void InternalPropertyChanged(JProperty childProperty)
@@ -159,7 +201,7 @@ namespace Newtonsoft.Json.Linq
     /// <returns>An <see cref="IEnumerable{JProperty}"/> of this object's properties.</returns>
     public IEnumerable<JProperty> Properties()
     {
-      return Children().Cast<JProperty>();
+      return ChildrenTokens.Cast<JProperty>();
     }
 
     /// <summary>
@@ -169,9 +211,14 @@ namespace Newtonsoft.Json.Linq
     /// <returns>A <see cref="JProperty"/> with the specified name or null.</returns>
     public JProperty Property(string name)
     {
-      return Properties()
-        .Where(p => string.Equals(p.Name, name, StringComparison.Ordinal))
-        .SingleOrDefault();
+      if (_properties.Dictionary == null)
+        return null;
+      if (name == null)
+        return null;
+
+      JToken property;
+      _properties.Dictionary.TryGetValue(name, out property);
+      return (JProperty)property;
     }
 
     /// <summary>
@@ -318,7 +365,7 @@ namespace Newtonsoft.Json.Linq
     {
       writer.WriteStartObject();
 
-      foreach (JProperty property in ChildrenInternal())
+      foreach (JProperty property in ChildrenTokens)
       {
         property.WriteTo(writer, converters);
       }
@@ -339,12 +386,12 @@ namespace Newtonsoft.Json.Linq
 
     bool IDictionary<string, JToken>.ContainsKey(string key)
     {
-      return (Property(key) != null);
+      return _properties.Dictionary.ContainsKey(key);
     }
 
     ICollection<string> IDictionary<string, JToken>.Keys
     {
-      get { throw new NotImplementedException(); }
+      get { return _properties.Dictionary.Keys; }
     }
 
     /// <summary>
@@ -383,7 +430,7 @@ namespace Newtonsoft.Json.Linq
 
     ICollection<JToken> IDictionary<string, JToken>.Values
     {
-      get { throw new NotImplementedException(); }
+      get { return _properties.Dictionary.Values; }
     }
 
     #endregion
@@ -421,7 +468,7 @@ namespace Newtonsoft.Json.Linq
         throw new ArgumentException("The number of elements in the source JObject is greater than the available space from arrayIndex to the end of the destination array.");
 
       int index = 0;
-      foreach (JProperty property in Properties())
+      foreach (JProperty property in ChildrenTokens)
       {
         array[arrayIndex + index] = new KeyValuePair<string, JToken>(property.Name, property.Value);
         index++;
@@ -467,7 +514,7 @@ namespace Newtonsoft.Json.Linq
     /// </returns>
     public IEnumerator<KeyValuePair<string, JToken>> GetEnumerator()
     {
-      foreach (JProperty property in Properties())
+      foreach (JProperty property in ChildrenTokens)
       {
         yield return new KeyValuePair<string, JToken>(property.Name, property.Value);
       }

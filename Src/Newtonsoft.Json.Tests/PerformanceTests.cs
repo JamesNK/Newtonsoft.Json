@@ -121,6 +121,31 @@ namespace Newtonsoft.Json.Tests
       return result;
     }
 
+    [Test]
+    public void BuildJObject()
+    {
+      JObject o = new JObject();
+      for (int i = 0; i < 200; i++)
+      {
+        o[i.ToString()] = i;
+      }
+      string jsonText = o.ToString();
+
+      // this is extremely slow with 5000 interations
+      int interations = 100;
+
+      TimeOperation(() =>
+      {
+        JObject oo = null;
+        for (int i = 0; i < interations; i++)
+        {
+          oo = JObject.Parse(jsonText);
+        }
+
+        return oo;
+      }, "JObject");
+    }
+
     private void SerializeSize(object value)
     {
       // this is extremely slow with 5000 interations

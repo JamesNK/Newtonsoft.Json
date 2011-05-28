@@ -38,6 +38,12 @@ namespace Newtonsoft.Json.Linq
   public class JConstructor : JContainer
   {
     private string _name;
+    private IList<JToken> _values = new List<JToken>();
+
+    protected override IList<JToken> ChildrenTokens
+    {
+      get { return _values; }
+    }
 
     /// <summary>
     /// Gets or sets the name of this constructor.

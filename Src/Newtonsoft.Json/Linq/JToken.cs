@@ -51,7 +51,8 @@ namespace Newtonsoft.Json.Linq
 #endif
   {
     private JContainer _parent;
-    internal JToken _next;
+    private JToken _previous;
+    private JToken _next;
     private static JTokenEqualityComparer _equalityComparer;
 
     private int? _lineNumber;
@@ -138,13 +139,7 @@ namespace Newtonsoft.Json.Linq
     /// <value>The <see cref="JToken"/> that contains the next sibling token.</value>
     public JToken Next
     {
-      get
-      {
-        if (_parent != null && _next != _parent.First)
-          return _next;
-
-        return null;
-      }
+      get { return _next; }
       internal set { _next = value; }
     }
 
@@ -154,20 +149,8 @@ namespace Newtonsoft.Json.Linq
     /// <value>The <see cref="JToken"/> that contains the previous sibling token.</value>
     public JToken Previous
     {
-      get
-      {
-        if (_parent == null)
-          return null;
-
-        JToken parentNext = _parent.Content._next;
-        JToken parentNextBefore = null;
-        while (parentNext != this)
-        {
-          parentNextBefore = parentNext;
-          parentNext = parentNext.Next;
-        }
-        return parentNextBefore;
-      }
+      get { return _previous; }
+      internal set { _previous = value; }
     }
 
     internal JToken()
@@ -183,7 +166,8 @@ namespace Newtonsoft.Json.Linq
       if (_parent == null)
         throw new InvalidOperationException("The parent is missing.");
 
-      _parent.AddInternal((Next == null), this, content);
+      int index = _parent.IndexOfItem(this);
+      _parent.AddInternal(index + 1, content);
     }
 
     /// <summary>
@@ -195,11 +179,8 @@ namespace Newtonsoft.Json.Linq
       if (_parent == null)
         throw new InvalidOperationException("The parent is missing.");
 
-      JToken previous = Previous;
-      if (previous == null)
-        previous = _parent.Last;
-
-      _parent.AddInternal(false, previous, content);
+      int index = _parent.IndexOfItem(this);
+      _parent.AddInternal(index, content);
     }
 
     /// <summary>

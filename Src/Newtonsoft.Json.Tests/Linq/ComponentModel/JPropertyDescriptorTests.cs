@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
-using Newtonsoft.Json.Linq.ComponentModel;
 using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Tests.Linq.ComponentModel

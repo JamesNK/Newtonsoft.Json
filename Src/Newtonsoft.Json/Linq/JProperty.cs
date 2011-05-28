@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -39,7 +40,13 @@ namespace Newtonsoft.Json.Linq
   /// </summary>
   public class JProperty : JContainer
   {
+    private readonly List<JToken> _content = new List<JToken>();
     private readonly string _name;
+
+    protected override IList<JToken> ChildrenTokens
+    {
+      get { return _content; }
+    }
 
     /// <summary>
     /// Gets the property name.
@@ -58,40 +65,22 @@ namespace Newtonsoft.Json.Linq
     public JToken Value
     {
       [DebuggerStepThrough]
-      get { return Content; }
+      get { return (ChildrenTokens.Count > 0) ? ChildrenTokens[0] : null; }
       set
       {
         CheckReentrancy();
 
         JToken newValue = value ?? new JValue((object) null);
 
-        if (Content == null)
+        if (ChildrenTokens.Count == 0)
         {
-          newValue = EnsureParentToken(newValue);
-
-          Content = newValue;
-          Content.Parent = this;
-          Content.Next = Content;
+          InsertItem(0, newValue);
         }
         else
         {
-          Content.Replace(newValue);
+          SetItem(0, newValue);
         }
       }
-    }
-
-    internal override void ReplaceItem(JToken existing, JToken replacement)
-    {
-      if (IsTokenUnchanged(existing, replacement))
-        return;
-
-      if (Parent != null)
-        ((JObject)Parent).InternalPropertyChanging(this);
-
-      base.ReplaceItem(existing, replacement);
-
-      if (Parent != null)
-        ((JObject)Parent).InternalPropertyChanged(this);
     }
 
     /// <summary>
@@ -102,14 +91,6 @@ namespace Newtonsoft.Json.Linq
       : base(other)
     {
       _name = other.Name;
-    }
-
-    internal override void AddItem(bool isLast, JToken previous, JToken item)
-    {
-      if (Value != null)
-        throw new Exception("{0} cannot have multiple values.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
-
-      Value = item;
     }
 
     internal override JToken GetItem(int index)
@@ -124,8 +105,17 @@ namespace Newtonsoft.Json.Linq
     {
       if (index != 0)
         throw new ArgumentOutOfRangeException();
-      
-      Value = item;
+
+      if (IsTokenUnchanged(Value, item))
+        return;
+
+      if (Parent != null)
+        ((JObject)Parent).InternalPropertyChanging(this);
+
+      base.SetItem(0, item);
+
+      if (Parent != null)
+        ((JObject)Parent).InternalPropertyChanged(this);
     }
 
     internal override bool RemoveItem(JToken item)
@@ -140,7 +130,10 @@ namespace Newtonsoft.Json.Linq
 
     internal override void InsertItem(int index, JToken item)
     {
-      throw new Exception("Cannot add or remove items from {0}.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
+      if (Value != null)
+        throw new Exception("{0} cannot have multiple values.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
+
+      base.InsertItem(0, item);
     }
 
     internal override bool ContainsItem(JToken item)
@@ -151,22 +144,6 @@ namespace Newtonsoft.Json.Linq
     internal override void ClearItems()
     {
       throw new Exception("Cannot add or remove items from {0}.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
-    }
-
-    /// <summary>
-    /// Returns a collection of the child tokens of this token, in document order.
-    /// </summary>
-    /// <returns>
-    /// An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> containing the child tokens of this <see cref="JToken"/>, in document order.
-    /// </returns>
-    public override JEnumerable<JToken> Children()
-    {
-      return new JEnumerable<JToken>(GetValueEnumerable());
-    }
-
-    private IEnumerable<JToken> GetValueEnumerable()
-    {
-      yield return Value;
     }
 
     internal override bool DeepEquals(JToken node)

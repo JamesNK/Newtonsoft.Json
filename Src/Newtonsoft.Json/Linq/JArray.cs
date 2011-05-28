@@ -39,6 +39,13 @@ namespace Newtonsoft.Json.Linq
   /// </summary>
   public class JArray : JContainer, IList<JToken>
   {
+    private IList<JToken> _values = new List<JToken>();
+
+    protected override IList<JToken> ChildrenTokens
+    {
+      get { return _values; }
+    }
+
     /// <summary>
     /// Gets the node type for this <see cref="JToken"/>.
     /// </summary>

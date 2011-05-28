@@ -165,7 +165,7 @@ Parameter name: arrayIndex")]
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentOutOfRangeException), ExpectedMessage = @"index is equal to or greater than Count.
+    [ExpectedException(typeof(ArgumentOutOfRangeException), ExpectedMessage = @"Index is equal to or greater than Count.
 Parameter name: index")]
     public void RemoveAtOutOfRangeIndexShouldError()
     {
@@ -174,7 +174,7 @@ Parameter name: index")]
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentOutOfRangeException), ExpectedMessage = @"index is less than 0.
+    [ExpectedException(typeof(ArgumentOutOfRangeException), ExpectedMessage = @"Index is less than 0.
 Parameter name: index")]
     public void RemoveAtNegativeIndexShouldError()
     {
@@ -253,7 +253,7 @@ Parameter name: index")]
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentOutOfRangeException), ExpectedMessage = @"Specified argument was out of the range of valid values.
+    [ExpectedException(typeof(ArgumentOutOfRangeException), ExpectedMessage = @"Index was out of range. Must be non-negative and less than the size of the collection.
 Parameter name: index")]
     public void InsertNegativeIndexShouldThrow()
     {
@@ -262,7 +262,7 @@ Parameter name: index")]
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentOutOfRangeException), ExpectedMessage = @"Specified argument was out of the range of valid values.
+    [ExpectedException(typeof(ArgumentOutOfRangeException), ExpectedMessage = @"Index must be within the bounds of the List.
 Parameter name: index")]
     public void InsertOutOfRangeIndexShouldThrow()
     {

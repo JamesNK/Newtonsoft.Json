@@ -124,7 +124,6 @@ namespace Newtonsoft.Json.Serialization
         if (propertyInfo.IsVirtual())
         {
           Type currentType = propertyInfo.DeclaringType;
-          Type[] types = propertyInfo.GetIndexParameters().Select(p => p.ParameterType).ToArray();
 
           while (result == null && currentType != null)
           {
