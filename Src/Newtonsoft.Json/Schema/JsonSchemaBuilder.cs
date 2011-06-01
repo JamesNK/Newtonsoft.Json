@@ -97,7 +97,15 @@ namespace Newtonsoft.Json.Schema
       if (propertyName == JsonSchemaConstants.ReferencePropertyName)
       {
         string id = (string)_reader.Value;
-        _reader.Read();
+
+        // skip to the end of the current object
+        while (_reader.Read() && _reader.TokenType != JsonToken.EndObject)
+        {
+            if (_reader.TokenType == JsonToken.StartObject)
+                throw new Exception("Found StartObject within the schema reference with the Id '{0}'"
+                                            .FormatWith(CultureInfo.InvariantCulture, id));
+        }
+
         JsonSchema referencedSchema = _resolver.GetSchema(id);
         if (referencedSchema == null)
           throw new Exception("Could not resolve schema reference for Id '{0}'.".FormatWith(CultureInfo.InvariantCulture, id));
