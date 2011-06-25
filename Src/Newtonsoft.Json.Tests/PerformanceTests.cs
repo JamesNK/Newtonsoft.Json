@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Web.Script.Serialization;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 using Newtonsoft.Json.Utilities;
 using NUnit.Framework;
@@ -144,6 +145,71 @@ namespace Newtonsoft.Json.Tests
 
         return oo;
       }, "JObject");
+    }
+
+    [Test]
+    public void BuildJObjectComparedToXml()
+    {
+      const long totalIterations = 100000;
+
+      const String xml =
+      @"<?xml  version=""1.0"" encoding=""ISO-8859-1""?>
+                <root>
+                    <property name=""Property1"">1</property>
+                    <property name=""Property2"">2</property>
+                    <property name=""Property3"">3</property>
+                    <property name=""Property4"">4</property>
+                    <property name=""Property5"">5</property>
+                </root>";
+
+      const String json =
+          @"{
+                    ""Property1"":""1"",
+                    ""Property2"":""2"",
+                    ""Property3"":""3"",
+                    ""Property4"":""4"",
+                    ""Property5"":""5""
+                }";
+
+
+      var watch = new Stopwatch();
+      watch.Start();
+      for (long iteration = 0; iteration < totalIterations; ++iteration)
+      {
+        var obj = JObject.Parse(json);
+        obj["Property1"].Value<Int32>();
+        obj["Property2"].Value<Int32>();
+        obj["Property3"].Value<Int32>();
+        obj["Property4"].Value<Int32>();
+        obj["Property5"].Value<Int32>();
+      }
+      watch.Stop();
+      var performance1 = (totalIterations / watch.ElapsedMilliseconds) * 1000;
+      Console.WriteLine("JSON: " + watch.Elapsed.TotalSeconds);
+
+      watch.Reset();
+      watch.Start();
+      for (long iteration = 0; iteration < totalIterations; ++iteration)
+      {
+        var doc = XDocument.Parse(xml);
+        var alarmProperties = doc.Descendants("property");
+        foreach (var property in alarmProperties)
+        {
+          var attr = property.Attribute("name");
+          var name = attr.Value;
+          switch (name)
+          {
+            case "Property1": Int32.Parse(property.Value); break;
+            case "Property2": Int32.Parse(property.Value); break;
+            case "Property3": Int32.Parse(property.Value); break;
+            case "Property4": Int32.Parse(property.Value); break;
+            case "Property5": Int32.Parse(property.Value); break;
+          }
+        }
+      }
+      watch.Stop();
+      var performance2 = (totalIterations / watch.ElapsedMilliseconds) * 1000;
+      Console.WriteLine("XML: " + watch.Elapsed.TotalSeconds);
     }
 
     private void SerializeSize(object value)
@@ -547,7 +613,7 @@ namespace Newtonsoft.Json.Tests
     {
       JObject test = JObject.Parse(JsonText);
       IsoDateTimeConverter isoDateTimeConverter = null;// = new IsoDateTimeConverter();
-          MemoryStream ms = new MemoryStream();
+      MemoryStream ms = new MemoryStream();
 
       TimeOperation<object>(() =>
       {
@@ -559,7 +625,7 @@ namespace Newtonsoft.Json.Tests
           test.WriteTo(jsonTextWriter);
           jsonTextWriter.Flush();
           ms.ToArray();
-          
+
           //Encoding.UTF8.GetBytes(test.ToString(Formatting.None));
         }
         return null;

@@ -236,33 +236,26 @@ namespace Newtonsoft.Json.Linq
     {
       ValidationUtils.ArgumentNotNull(source, "source");
 
-      bool cast = typeof(JToken).IsAssignableFrom(typeof(U));
-
       foreach (JToken token in source)
       {
-        yield return Convert<JToken, U>(token, cast);
+        yield return Convert<JToken, U>(token);
       }
     }
 
     internal static U Convert<T, U>(this T token) where T : JToken
     {
-      bool cast = typeof(JToken).IsAssignableFrom(typeof(U));
+      if (token == null)
+        return default(U);
 
-      return Convert<T, U>(token, cast);
-    }
-
-    internal static U Convert<T, U>(this T token, bool cast) where T : JToken
-    {
-      if (cast)
+      if (token is U
+        // don't want to cast JValue to its interfaces, want to get the internal value
+        && typeof(U) != typeof(IComparable) && typeof(U) != typeof(IFormattable))
       {
         // HACK
         return (U)(object)token;
       }
       else
       {
-        if (token == null)
-          return default(U);
-
         JValue value = token as JValue;
         if (value == null)
           throw new InvalidCastException("Cannot cast {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, token.GetType(), typeof(T)));

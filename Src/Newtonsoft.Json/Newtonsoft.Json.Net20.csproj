@@ -68,10 +68,6 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="LinqBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c2b14eb747628076, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\LinqBridge.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -96,6 +92,7 @@
     <Compile Include="Converters\RegexConverter.cs" />
     <Compile Include="Converters\StringEnumConverter.cs" />
     <Compile Include="JsonConstructorAttribute.cs" />
+    <Compile Include="Utilities\LinqBridge.cs" />
     <Compile Include="Linq\JPath.cs" />
     <Compile Include="Linq\JPropertyDescriptor.cs" />
     <Compile Include="Linq\JRaw.cs" />

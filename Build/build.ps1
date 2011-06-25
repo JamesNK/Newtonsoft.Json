@@ -58,20 +58,8 @@ task Build -depends Clean {
   }
 }
 
-# Merge LinqBridge into .NET 2.0 build
-task Merge -depends Build {
-  $binaryDir = "$sourceDir\Newtonsoft.Json\bin\Release\Net20"
-  MergeAssembly "$binaryDir\Newtonsoft.Json.Net20.dll" $signKeyPath "$binaryDir\LinqBridge.dll"
-  del $binaryDir\LinqBridge.dll
-
-  $binaryDir = "$sourceDir\Newtonsoft.Json.Tests\bin\Release\Net20"
-  MergeAssembly "$binaryDir\Newtonsoft.Json.Tests.Net20.dll" $signKeyPath "$binaryDir\LinqBridge.dll"
-  MergeAssembly "$binaryDir\Newtonsoft.Json.Net20.dll" $signKeyPath "$binaryDir\LinqBridge.dll"
-  del $binaryDir\LinqBridge.dll
-}
-
 # Optional build documentation, add files to final zip
-task Package -depends Merge {
+task Package -depends Build {
   foreach ($build in $builds)
   {
     $name = $build.TestsName

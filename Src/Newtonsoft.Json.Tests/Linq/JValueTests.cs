@@ -224,6 +224,15 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
+    public void ConvertValueToFormattableType()
+    {
+      IFormattable f = (new JValue(1).Value<IFormattable>());
+      Assert.AreEqual(1, f);
+
+      Assert.AreEqual("01", f.ToString("00", CultureInfo.InvariantCulture));
+    }
+
+    [Test]
     public void Ordering()
     {
       JObject o = new JObject(

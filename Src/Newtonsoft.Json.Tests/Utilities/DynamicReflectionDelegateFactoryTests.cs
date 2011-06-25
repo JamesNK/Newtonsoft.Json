@@ -28,7 +28,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Text;
+using Newtonsoft.Json.Tests.Linq;
 using NUnit.Framework;
 using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Tests.TestObjects;
@@ -107,6 +109,42 @@ namespace Newtonsoft.Json.Tests.Utilities
       JsonSerializerTest.DictionaryKey key = (JsonSerializerTest.DictionaryKey) result;
       Assert.AreEqual("First!", key.Value);
     }
+
+    //[Test]
+    //public void sdfsdf()
+    //{
+    //  string name = "MyAssembly";
+    //  string filename = name + ".dll";
+
+    //  AssemblyName s = new AssemblyName(name);
+
+    //  AssemblyBuilder assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(s, AssemblyBuilderAccess.RunAndSave);
+    //  ModuleBuilder moduleBuilder = assemblyBuilder.DefineDynamicModule(filename, filename);
+    //  TypeBuilder typeBuilder = moduleBuilder.DefineType("MyType", TypeAttributes.Class, typeof(object));
+    //  MethodBuilder methodBuilder = typeBuilder.DefineMethod("TestSet", MethodAttributes.Public | MethodAttributes.Static, typeof(void), new[] { typeof(object), typeof(object) });
+
+    //  DynamicReflectionDelegateFactory.GenerateCreateSetFieldIL(typeof(ClassWithGuid).GetField("GuidField"), methodBuilder.GetILGenerator());
+    //  typeBuilder.CreateType();
+    //  assemblyBuilder.Save(filename);
+    //}
+
+    //[Test]
+    //public void sdfsdf1()
+    //{
+    //  string name = "MyAssembly1";
+    //  string filename = name + ".dll";
+
+    //  AssemblyName s = new AssemblyName(name);
+
+    //  AssemblyBuilder assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(s, AssemblyBuilderAccess.RunAndSave);
+    //  ModuleBuilder moduleBuilder = assemblyBuilder.DefineDynamicModule(filename, filename);
+    //  TypeBuilder typeBuilder = moduleBuilder.DefineType("MyType", TypeAttributes.Class, typeof(object));
+    //  MethodBuilder methodBuilder = typeBuilder.DefineMethod("TestSet", MethodAttributes.Public | MethodAttributes.Static, typeof(void), new[] { typeof(object), typeof(object) });
+
+    //  DynamicReflectionDelegateFactory.GenerateCreateSetPropertyIL(typeof(Car).GetProperty("Model"), methodBuilder.GetILGenerator());
+    //  typeBuilder.CreateType();
+    //  assemblyBuilder.Save(filename);
+    //}
   }
 }
 #endif
