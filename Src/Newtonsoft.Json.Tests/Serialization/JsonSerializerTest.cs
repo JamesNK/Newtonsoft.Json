@@ -4441,5 +4441,75 @@ keyword such as type of business.""
   ""newMemberWithProperty"": null
 }", result);
     }
+
+    public class NonDefaultConstructorWithReadOnlyCollectionProperty
+    {
+      public string Title { get; set; }
+      public IList<string> Categories { get; private set; }
+
+      public NonDefaultConstructorWithReadOnlyCollectionProperty(string title)
+      {
+        Title = title;
+        Categories = new List<string>();
+      }
+    }
+
+    [Test]
+    public void NonDefaultConstructorWithReadOnlyCollectionPropertyTest()
+    {
+      NonDefaultConstructorWithReadOnlyCollectionProperty c1 = new NonDefaultConstructorWithReadOnlyCollectionProperty("blah");
+      c1.Categories.Add("one");
+      c1.Categories.Add("two");
+
+      string json = JsonConvert.SerializeObject(c1, Formatting.Indented);
+      Assert.AreEqual(@"{
+  ""Title"": ""blah"",
+  ""Categories"": [
+    ""one"",
+    ""two""
+  ]
+}", json);
+
+      NonDefaultConstructorWithReadOnlyCollectionProperty c2 = JsonConvert.DeserializeObject<NonDefaultConstructorWithReadOnlyCollectionProperty>(json);
+      Assert.AreEqual(c1.Title, c2.Title);
+      Assert.AreEqual(c1.Categories.Count, c2.Categories.Count);
+      Assert.AreEqual("one", c2.Categories[0]);
+      Assert.AreEqual("two", c2.Categories[1]);
+    }
+
+    public class NonDefaultConstructorWithReadOnlyDictionaryProperty
+    {
+      public string Title { get; set; }
+      public IDictionary<string, int> Categories { get; private set; }
+
+      public NonDefaultConstructorWithReadOnlyDictionaryProperty(string title)
+      {
+        Title = title;
+        Categories = new Dictionary<string, int>();
+      }
+    }
+
+    [Test]
+    public void NonDefaultConstructorWithReadOnlyDictionaryPropertyTest()
+    {
+      NonDefaultConstructorWithReadOnlyDictionaryProperty c1 = new NonDefaultConstructorWithReadOnlyDictionaryProperty("blah");
+      c1.Categories.Add("one", 1);
+      c1.Categories.Add("two", 2);
+
+      string json = JsonConvert.SerializeObject(c1, Formatting.Indented);
+      Assert.AreEqual(@"{
+  ""Title"": ""blah"",
+  ""Categories"": {
+    ""one"": 1,
+    ""two"": 2
+  }
+}", json);
+
+      NonDefaultConstructorWithReadOnlyDictionaryProperty c2 = JsonConvert.DeserializeObject<NonDefaultConstructorWithReadOnlyDictionaryProperty>(json);
+      Assert.AreEqual(c1.Title, c2.Title);
+      Assert.AreEqual(c1.Categories.Count, c2.Categories.Count);
+      Assert.AreEqual(1, c2.Categories["one"]);
+      Assert.AreEqual(2, c2.Categories["two"]);
+    }
   }
 }

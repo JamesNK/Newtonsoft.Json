@@ -915,7 +915,47 @@ namespace Newtonsoft.Json.Serialization
         object value = remainingPropertyValue.Value;
 
         if (ShouldSetPropertyValue(remainingPropertyValue.Key, remainingPropertyValue.Value))
+        {
           property.ValueProvider.SetValue(createdObject, value);
+        }
+        else if (!property.Writable && value != null)
+        {
+          // handle readonly collection/dictionary properties
+          JsonContract propertyContract = Serializer.ContractResolver.ResolveContract(property.PropertyType);
+
+          if (propertyContract is JsonArrayContract)
+          {
+            JsonArrayContract propertyArrayContract = propertyContract as JsonArrayContract;
+
+            object createdObjectCollection = property.ValueProvider.GetValue(createdObject);
+            if (createdObjectCollection != null)
+            {
+              IWrappedCollection createdObjectCollectionWrapper = propertyArrayContract.CreateWrapper(createdObjectCollection);
+              IWrappedCollection newValues = propertyArrayContract.CreateWrapper(value);
+
+              foreach (object newValue in newValues)
+              {
+                createdObjectCollectionWrapper.Add(newValue);
+              }
+            }
+          }
+          else if (propertyContract is JsonDictionaryContract)
+          {
+            JsonDictionaryContract jsonDictionaryContract = propertyContract as JsonDictionaryContract;
+
+            object createdObjectDictionary = property.ValueProvider.GetValue(createdObject);
+            if (createdObjectDictionary != null)
+            {
+              IWrappedDictionary createdObjectDictionaryWrapper = jsonDictionaryContract.CreateWrapper(createdObjectDictionary);
+              IWrappedDictionary newValues = jsonDictionaryContract.CreateWrapper(value);
+
+              foreach (DictionaryEntry newValue in newValues)
+              {
+                createdObjectDictionaryWrapper.Add(newValue.Key, newValue.Value);
+              }
+            }
+          }
+        }
       }
 
       contract.InvokeOnDeserialized(createdObject, Serializer.Context);
