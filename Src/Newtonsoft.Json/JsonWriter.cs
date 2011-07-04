@@ -246,7 +246,7 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Writes the end of a Json object.
     /// </summary>
-    public void WriteEndObject()
+    public virtual void WriteEndObject()
     {
       AutoCompleteClose(JsonToken.EndObject);
     }
@@ -263,7 +263,7 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Writes the end of an array.
     /// </summary>
-    public void WriteEndArray()
+    public virtual void WriteEndArray()
     {
       AutoCompleteClose(JsonToken.EndArray);
     }
@@ -281,7 +281,7 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Writes the end constructor.
     /// </summary>
-    public void WriteEndConstructor()
+    public virtual void WriteEndConstructor()
     {
       AutoCompleteClose(JsonToken.EndConstructor);
     }
@@ -298,7 +298,7 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Writes the end of the current Json object or array.
     /// </summary>
-    public void WriteEnd()
+    public virtual void WriteEnd()
     {
       WriteEnd(Peek());
     }

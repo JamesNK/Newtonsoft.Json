@@ -440,7 +440,43 @@ namespace Newtonsoft.Json.Serialization
                                             ReflectionUtils.GetDefaultConstructor(contract.CreatedType) == null);
       }
 
-      foreach (MethodInfo method in contract.UnderlyingType.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+      ResolveCallbackMethods(contract, contract.UnderlyingType);
+    }
+
+    private void ResolveCallbackMethods(JsonContract contract, Type t)
+    {
+      if (t.BaseType != null)
+        ResolveCallbackMethods(contract, t.BaseType);
+
+      MethodInfo onSerializing;
+      MethodInfo onSerialized;
+      MethodInfo onDeserializing;
+      MethodInfo onDeserialized;
+      MethodInfo onError;
+
+      GetCallbackMethodsForType(t, out onSerializing, out onSerialized, out onDeserializing, out onDeserialized, out onError);
+
+      if (onSerializing != null)
+        contract.OnSerializing = onSerializing;
+      if (onSerialized != null)
+        contract.OnSerialized = onSerialized;
+      if (onDeserializing != null)
+        contract.OnDeserializing = onDeserializing;
+      if (onDeserialized != null)
+        contract.OnDeserialized = onDeserialized;
+      if (onError != null)
+        contract.OnError = onError;
+    }
+
+    private void GetCallbackMethodsForType(Type type, out MethodInfo onSerializing, out MethodInfo onSerialized, out MethodInfo onDeserializing, out MethodInfo onDeserialized, out MethodInfo onError)
+    {
+      onSerializing = null;
+      onSerialized = null;
+      onDeserializing = null;
+      onDeserialized = null;
+      onError = null;
+
+      foreach (MethodInfo method in type.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
       {
         // compact framework errors when getting parameters for a generic method
         // lame, but generic methods should not be callbacks anyway
@@ -450,27 +486,25 @@ namespace Newtonsoft.Json.Serialization
         Type prevAttributeType = null;
         ParameterInfo[] parameters = method.GetParameters();
 
-#if !PocketPC
-        if (IsValidCallback(method, parameters, typeof(OnSerializingAttribute), contract.OnSerializing, ref prevAttributeType))
+        if (IsValidCallback(method, parameters, typeof(OnSerializingAttribute), onSerializing, ref prevAttributeType))
         {
-          contract.OnSerializing = method;
+          onSerializing = method;
         }
-        if (IsValidCallback(method, parameters, typeof(OnSerializedAttribute), contract.OnSerialized, ref prevAttributeType))
+        if (IsValidCallback(method, parameters, typeof(OnSerializedAttribute), onSerialized, ref prevAttributeType))
         {
-          contract.OnSerialized = method;
+          onSerialized = method;
         }
-        if (IsValidCallback(method, parameters, typeof(OnDeserializingAttribute), contract.OnDeserializing, ref prevAttributeType))
+        if (IsValidCallback(method, parameters, typeof(OnDeserializingAttribute), onDeserializing, ref prevAttributeType))
         {
-          contract.OnDeserializing = method;
+          onDeserializing = method;
         }
-        if (IsValidCallback(method, parameters, typeof(OnDeserializedAttribute), contract.OnDeserialized, ref prevAttributeType))
+        if (IsValidCallback(method, parameters, typeof(OnDeserializedAttribute), onDeserialized, ref prevAttributeType))
         {
-          contract.OnDeserialized = method;
+          onDeserialized = method;
         }
-#endif
-        if (IsValidCallback(method, parameters, typeof(OnErrorAttribute), contract.OnError, ref prevAttributeType))
+        if (IsValidCallback(method, parameters, typeof(OnErrorAttribute), onError, ref prevAttributeType))
         {
-          contract.OnError = method;
+          onError = method;
         }
       }
     }

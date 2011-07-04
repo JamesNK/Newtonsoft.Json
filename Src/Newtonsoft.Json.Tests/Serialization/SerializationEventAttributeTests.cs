@@ -232,6 +232,32 @@ namespace Newtonsoft.Json.Tests.Serialization
       // This value was set after deserialization.
     }
 
+    public class SerializationEventBaseTestObject
+    {
+      public string TestMember { get; set; }
+
+      [OnSerializing]
+      internal void OnSerializingMethod(StreamingContext context)
+      {
+        TestMember = "Set!";
+      }
+    }
+
+    public class SerializationEventContextSubClassTestObject : SerializationEventBaseTestObject
+    {
+    }
+
+    [Test]
+    public void SerializationEventContextTestObjectSubClassTest()
+    {
+      SerializationEventContextSubClassTestObject obj = new SerializationEventContextSubClassTestObject();
+
+      string json = JsonConvert.SerializeObject(obj, Formatting.Indented);
+      Assert.AreEqual(@"{
+  ""TestMember"": ""Set!""
+}", json);
+    }
+
 #if !SILVERLIGHT
     public class SerializationEventContextTestObject
     {
