@@ -1,7 +1,7 @@
 <html>
   
   <head>
-    <title>Serializing and deserializing JSON</title>
+    <title>Serializing and Deserializing JSON</title>
     <link href="styles.css" rel="stylesheet" type="text/css" />
     <link href="custom.css" rel="stylesheet" type="text/css" />
   </head>
@@ -10,7 +10,7 @@
     
     <div id="control">
       <span class="productTitle">Json.NET - Quick Starts & API Documentation</span><br />
-        <span class="topicTitle">Serializing and deserializing JSON</span></div>
+        <span class="topicTitle">Serializing and Deserializing JSON</span></div>
 
     <div id="content">
       <span style="color: DarkGray"> </span>
@@ -51,6 +51,11 @@
 
 </div></div>
 
+<p>
+    SerializeObject and DeserializeObject both have overloads that take a 
+    <a href="html/T_Newtonsoft_Json_JsonSerializerSettings.htm">JsonSerializerSettings</a> object. JsonSerializerSettings lets you use many of the JsonSerializer settings listed below while still using the simple serialization methods.
+</p>
+
 	<h3>JsonSerializer</h3>
 
 
@@ -83,56 +88,8 @@
 <p>JsonSerializer has a number of properties on it to customize how it serializes JSON. 
     These can also be used with the methods on JsonConvert via the 
     JsonSerializerSettings overloads.</p>
-
-<h5>ReferenceLoopHandling</h5>
-<p>Controls how circular referencing objects are serialized. Error, ignore or 
-    serialize.</p>
-    <h5>MissingMemberHandling</h5>
-<p>Controls how missing members (e.g. JSON contains a property that isn&#39;t a member 
-    on the object) are handled during deserialization. Ignore or error.</p>
-    <h5>NullValueHandling</h5>
-<p>Controls how null values are handled during serialization and deserialization. 
-    Include or ignore.</p>
-<h5>DefaultValueHandling</h5>
-<p>Controls whether a value will be written to JSON or not if it matches the value specified in
-the member's DefaultValueAttribute. Include or ignore.</p>
-    <h5>ObjectCreationHandling</h5>
-<p>Controls how objects are created during deserialization. Auto, reuse, replace.</p>
-    <h5>TypeNameHandling</h5>
-<p>Controls whether .NET type names are included in serialized JSON and read during deserialization when creating objects. None, Objects, Arrays or All.</p>
-    <h5>ConstructorHandling</h5>
-<p>Controls how constructors are used when initializing objects during deserialization. Default or AllowNonPublicDefaultConstructor.</p>
-    <h5>Converters</h5>
-<p>A collection of JsonConverters that will be used during serialization and 
-    deserialization.</p>
-
-
-    <h3>JsonConverters</h3>
-<p>JsonConverters allows JSON to be manually written during serialization and read during deserialization. This is useful for particularly complex JSON structures or for when you want to change how a type is serialized.</p>
-<p>To create your own custom converter inherit from the JsonConverter class. Json.NET also comes with a number of JsonConverters:</p>
-
-
-
-	<h5>DateTime JSON Converters</h5>
-	<p>Json.NET comes with a number of JsonConverters for serializing and deserializing DateTimes. Read 
-        more about dates and Json.NET <a href="DatesInJSON.html">here</a>.</p>
-
-	<h5>XmlNodeConverter</h5>
-	<p>Converts an XmlNode to and from JSON. Note that to convert a JSON object it must have only a single property 
-        or you must define a root node name to be inserted when using this converter. This is required because properties are converted into nodes and 
-        well formed XML can only have one root node. XmlNodeConverter has an option to 
-        insert a root node for you.</p>
-
-    
-	<h5>BinaryConverter</h5>
-	<p>Converts binary data like the SqlBinary object to JSON. The binary 
-        data is written as a string in JSON and is encoded in Base64.</p>
-
-	<h5>CustomCreationConverter</h5>
-	<p>An abstract JsonConverter for customizing how an object is create during deserialization.
-	 Inherit from this class and implement the Create method with your own code to create and return an object.
-	 The object will then be populated with JSON values by the serializer.</p>
-	 <p>A possible example of using this converter would be to call out to a dependency injection framework to resolve what object should be created.</p>
+        <p>Read more about the available JsonSerializer settings here:
+            <a href="SerializationSettings.html">Serialization Settings</a></p>
     
       <div id="footer">
 
