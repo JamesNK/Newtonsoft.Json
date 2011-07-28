@@ -66,6 +66,8 @@
     <Content Include="ContractResolver.html" />
     <Content Include="custom.css" />
     <Content Include="ConvertingJSONandXML.html" />
+    <Content Include="SerializationSettings.html" />
+    <Content Include="SerializationGuide.html" />
     <Content Include="SerializingJSONFragments.html" />
     <Content Include="SelectToken.html" />
     <Content Include="ReducingSerializedJSONSize.html" />

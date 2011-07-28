@@ -18,6 +18,16 @@
           <p>JsonSerializer has a number of properties on it to customize how it serializes 
               JSON. These can also be used with the methods on JsonConvert via the 
               JsonSerializerSettings overloads.</p>
+
+    <h3>MissingMemberHandling</h3>
+<p>MissingMemberHandling controls how missing members, e.g. JSON contains a property 
+    that isn&#39;t a member on the object, are handled during deserialization.</p>
+        <ul>
+            <li><strong>Ignore</strong> - By default Json.NET ignores JSON if there is no field 
+                or property for its value to be set to during deserialization.</li>
+            <li><strong>Error</strong> - Json.NET errors when there is a missing member during 
+                deserialization.</li>
+        </ul>
           <h3>ReferenceLoopHandling</h3>
         <p>ReferenceLoopHandling controls how circular referencing objects, e.g. a Person 
             object referencing itself via a Manager property, are serialized.</p>
@@ -32,16 +42,7 @@
                 reference loops. This is useful if objects are nested but not indefinitely.
             </li>
         </ul>
-
-    <h3>MissingMemberHandling</h3>
-<p>MissingMemberHandling controls how missing members, e.g. JSON contains a property 
-    that isn&#39;t a member on the object, are handled during deserialization.</p>
-        <ul>
-            <li><strong>Ignore</strong> - By default Json.NET ignores JSON if there is no field 
-                or property for its value to be set to during deserialization.</li>
-            <li><strong>Error</strong> - Json.NET errors when there is a missing member during 
-                deserialization </li>
-        </ul>
+        <p>ReferenceLoopHandling can also be customized on individual properties with JsonPropertyAttribute.</p>
     <h3>NullValueHandling</h3>
 <p>NullValueHandling controls how null values on .NET objects are handled during 
     serialization and how null values in JSON are handled during deserialization.</p>
@@ -52,10 +53,11 @@
                 value is null when serializing and will skip setting fields/properties if the 
                 JSON property is null when deserializing. </li>
         </ul>
+        <p>NullValueHandling can also be customized on individual properties with JsonPropertyAttribute.</p>
         <h3>
             DefaultValueHandling</h3>
         <p>
-&nbsp;DefaultValueHandling controls how Json.NET uses default values set using the .NET 
+DefaultValueHandling controls how Json.NET uses default values set using the .NET 
             DefaultValueAttribute when serializing and deserializing.</p>
         <ul>
             <li><strong>Include</strong> - By default Json.NET will write a field/property value 
@@ -67,6 +69,7 @@
                 Json.NET deserializer will skip setting a .NET object’s field/property if the 
                 JSON value is the same as the default value. </li>
         </ul>
+        <p>DefaultValueHandling can also be customized on individual properties with JsonPropertyAttribute.</p>
 <h3>ObjectCreationHandling</h3>
         <p>ObjectCreationHandling controls how objects are created and deserialized to 
             during deserialization.</p>
@@ -78,6 +81,7 @@
             <li><strong>Replace</strong> - Json.NET will always recreate objects and collections 
                 before setting values to them during deserialization. </li>
         </ul>
+        <p>ObjectCreationHandling can also be customized on individual properties with JsonPropertyAttribute.</p>
 <h3>TypeNameHandling</h3>
         <p>TypeNameHandling controls whether Json.NET includes .NET type names during 
             serialization with a $type property and reads .NET type names from that property 
@@ -97,6 +101,7 @@
             <li><strong>All</strong> - Json.NET will write and use type names for objects and 
                 collections. </li>
         </ul>
+        <p>TypeNameHandling can also be customized on individual properties with JsonPropertyAttribute.</p>
         <h3>TypeNameAssemblyFormat</h3>
         <p>TypeNameAssemblyFormat controls how type names are written during serialization.</p>
         <ul>
