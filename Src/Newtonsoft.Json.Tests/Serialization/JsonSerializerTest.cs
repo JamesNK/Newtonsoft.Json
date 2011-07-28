@@ -4511,5 +4511,98 @@ keyword such as type of business.""
       Assert.AreEqual(1, c2.Categories["one"]);
       Assert.AreEqual(2, c2.Categories["two"]);
     }
+
+    [JsonObject(MemberSerialization.OptIn)]
+    public class ClassAttributeBase
+    {
+      [JsonProperty]
+      public string BaseClassValue { get; set; }
+    }
+
+    public class ClassAttributeDerived : ClassAttributeBase
+    {
+      [JsonProperty]
+      public string DerivedClassValue { get; set; }
+
+      public string NonSerialized { get; set; }
+    }
+
+    public class CollectionClassAttributeDerived : ClassAttributeBase, ICollection<object>
+    {
+      [JsonProperty]
+      public string CollectionDerivedClassValue { get; set; }
+
+      public void Add(object item)
+      {
+        throw new NotImplementedException();
+      }
+
+      public void Clear()
+      {
+        throw new NotImplementedException();
+      }
+
+      public bool Contains(object item)
+      {
+        throw new NotImplementedException();
+      }
+
+      public void CopyTo(object[] array, int arrayIndex)
+      {
+        throw new NotImplementedException();
+      }
+
+      public int Count
+      {
+        get { throw new NotImplementedException(); }
+      }
+
+      public bool IsReadOnly
+      {
+        get { throw new NotImplementedException(); }
+      }
+
+      public bool Remove(object item)
+      {
+        throw new NotImplementedException();
+      }
+
+      public IEnumerator<object> GetEnumerator()
+      {
+        throw new NotImplementedException();
+      }
+
+      IEnumerator IEnumerable.GetEnumerator()
+      {
+        throw new NotImplementedException();
+      }
+    }
+
+    [Test]
+    public void ClassAttributesInheritance()
+    {
+      string json = JsonConvert.SerializeObject(new ClassAttributeDerived
+        {
+          BaseClassValue = "BaseClassValue!",
+          DerivedClassValue = "DerivedClassValue!",
+          NonSerialized = "NonSerialized!"
+        }, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""DerivedClassValue"": ""DerivedClassValue!"",
+  ""BaseClassValue"": ""BaseClassValue!""
+}", json);
+
+      json = JsonConvert.SerializeObject(new CollectionClassAttributeDerived
+      {
+        BaseClassValue = "BaseClassValue!",
+        CollectionDerivedClassValue = "CollectionDerivedClassValue!"
+      }, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""CollectionDerivedClassValue"": ""CollectionDerivedClassValue!"",
+  ""BaseClassValue"": ""BaseClassValue!""
+}", json);
+    }
   }
 }

@@ -430,7 +430,6 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual(5, nested[4]);
     }
 
-#if !SILVERLIGHT && !PocketPC
     [Test]
     public void DeserializeUsingCustomBinder()
     {
@@ -458,6 +457,89 @@ namespace Newtonsoft.Json.Tests.Serialization
       public override Type BindToType(string assemblyName, string typeName)
       {
         return typeof (Person);
+      }
+    }
+
+#if !(NET20 || NET35)
+    [Test]
+    public void SerializeUsingCustomBinder()
+    {
+      IList<object> values = new List<object>
+        {
+          new Person
+            {
+              BirthDate = new DateTime(2000, 10, 23, 1, 1, 1, DateTimeKind.Utc),
+              LastModified = new DateTime(2000, 10, 23, 1, 1, 1, DateTimeKind.Utc),
+              Name = "Name!",
+              Department = "Department!"
+            },
+            new Employee
+              {
+              BirthDate = new DateTime(2000, 10, 23, 1, 1, 1, DateTimeKind.Utc),
+              FirstName = "FirstName!",
+              LastName = "LastName!",
+              Department = "Department!",
+              JobTitle = "JobTitle!"
+              }
+        };
+
+      string json = JsonConvert.SerializeObject(values, Formatting.Indented, new JsonSerializerSettings
+      {
+        TypeNameHandling = TypeNameHandling.Auto,
+        Binder = new CompleteSerializationBinder()
+      });
+      
+      Assert.AreEqual(@"[
+  {
+    ""$type"": ""Person"",
+    ""Name"": ""Name!"",
+    ""BirthDate"": ""\/Date(972262861000)\/"",
+    ""LastModified"": ""\/Date(972262861000)\/""
+  },
+  {
+    ""$type"": ""Employee"",
+    ""FirstName"": ""FirstName!"",
+    ""LastName"": ""LastName!"",
+    ""BirthDate"": ""\/Date(972262861000)\/"",
+    ""Department"": ""Department!"",
+    ""JobTitle"": ""JobTitle!""
+  }
+]", json);
+
+      IList<object> newValues = JsonConvert.DeserializeObject<IList<object>>(json, new JsonSerializerSettings
+        {
+          TypeNameHandling = TypeNameHandling.Auto,
+          Binder = new CompleteSerializationBinder()
+        });
+
+      Assert.IsInstanceOfType(typeof(Person), newValues[0]);
+      Person person = (Person)newValues[0];
+      Assert.AreEqual("Name!", person.Name);
+
+      Assert.IsInstanceOfType(typeof(Employee), newValues[1]);
+      Employee employee = (Employee)newValues[1];
+      Assert.AreEqual("FirstName!", employee.FirstName);
+    }
+
+    public class CompleteSerializationBinder : SerializationBinder
+    {
+      public override void BindToName(Type serializedType, out string assemblyName, out string typeName)
+      {
+        assemblyName = null;
+        typeName = serializedType.Name;
+      }
+
+      public override Type BindToType(string assemblyName, string typeName)
+      {
+        switch (typeName)
+        {
+          case "Employee":
+            return typeof (Employee);
+          case "Person":
+            return typeof (Person);
+          default:
+            throw new ArgumentException();
+        }
       }
     }
 #endif

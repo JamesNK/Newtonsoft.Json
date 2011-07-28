@@ -357,7 +357,7 @@ namespace Newtonsoft.Json.Serialization
     private void WriteTypeProperty(JsonWriter writer, Type type)
     {
       writer.WritePropertyName(JsonTypeReflector.TypePropertyName);
-      writer.WriteValue(ReflectionUtils.GetTypeName(type, Serializer.TypeNameAssemblyFormat));
+      writer.WriteValue(ReflectionUtils.GetTypeName(type, Serializer.TypeNameAssemblyFormat, Serializer.Binder));
     }
 
     private bool HasFlag(PreserveReferencesHandling value, PreserveReferencesHandling flag)

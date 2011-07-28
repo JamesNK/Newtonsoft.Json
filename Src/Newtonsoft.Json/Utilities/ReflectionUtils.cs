@@ -29,6 +29,7 @@ using System.Reflection;
 using System.Collections;
 using System.Linq;
 using System.Globalization;
+using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -59,10 +60,31 @@ namespace Newtonsoft.Json.Utilities
 
     public static string GetTypeName(Type t, FormatterAssemblyStyle assemblyFormat)
     {
+      return GetTypeName(t, assemblyFormat, null);
+    }
+
+    public static string GetTypeName(Type t, FormatterAssemblyStyle assemblyFormat, SerializationBinder binder)
+    {
+      string fullyQualifiedTypeName;
+#if !(NET20 || NET35)
+      if (binder != null)
+      {
+        string assemblyName, typeName;
+        binder.BindToName(t, out assemblyName, out typeName);
+        fullyQualifiedTypeName = typeName + (assemblyName == null ? "" : ", " + assemblyName);
+      }
+      else
+      {
+        fullyQualifiedTypeName = t.AssemblyQualifiedName;
+      }
+#else
+      fullyQualifiedTypeName = t.AssemblyQualifiedName;
+#endif
+
       switch (assemblyFormat)
       {
         case FormatterAssemblyStyle.Simple:
-          return GetSimpleTypeName(t);
+          return RemoveAssemblyDetails(fullyQualifiedTypeName);
         case FormatterAssemblyStyle.Full:
           return t.AssemblyQualifiedName;
         default:
@@ -70,19 +92,8 @@ namespace Newtonsoft.Json.Utilities
       }
     }
 
-    private static string GetSimpleTypeName(Type type)
+    private static string RemoveAssemblyDetails(string fullyQualifiedTypeName)
     {
-#if !SILVERLIGHT
-      string fullyQualifiedTypeName = type.FullName + ", " + type.Assembly.GetName().Name;
-
-      // for type names with no nested type names then return
-      if (!type.IsGenericType || type.IsGenericTypeDefinition)
-        return fullyQualifiedTypeName;
-#else
-      // Assembly.GetName() is marked SecurityCritical
-      string fullyQualifiedTypeName = type.AssemblyQualifiedName;
-#endif
-
       StringBuilder builder = new StringBuilder();
 
       // loop through the type name and filter out qualified assembly details from nested type names

@@ -16,6 +16,12 @@ namespace Newtonsoft.Json
     /// <param name="typeName">Specifies the <see cref="Type"/> name of the serialized object</param>
     /// <returns></returns>
     public abstract Type BindToType(string assemblyName, string typeName);
+
+    public virtual void BindToName(Type serializedType, out string assemblyName, out string typeName)
+    {
+      assemblyName = null;
+      typeName = null;
+    }
   }
 }
 #endif

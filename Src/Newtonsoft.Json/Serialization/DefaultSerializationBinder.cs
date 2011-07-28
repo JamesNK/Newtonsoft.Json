@@ -116,5 +116,18 @@ namespace Newtonsoft.Json.Serialization
     {
       return _typeCache.Get(new TypeNameKey(assemblyName, typeName));
     }
+
+#if !(NET35 || NET20)
+    public override void BindToName(Type serializedType, out string assemblyName, out string typeName)
+    {
+#if !SILVERLIGHT
+      assemblyName = serializedType.Assembly.FullName;
+      typeName = serializedType.FullName;
+#else
+      assemblyName = null;
+      typeName = serializedType.AssemblyQualifiedName;
+#endif
+    }
+#endif
   }
 }
