@@ -1,7 +1,7 @@
 <html>
   
   <head>
-    <title>Customizing JSON serialization with attributes</title>
+    <title>Serialization Settings</title>
     <link href="styles.css" rel="stylesheet" type="text/css" />
     <link href="custom.css" rel="stylesheet" type="text/css" />
   </head>
@@ -22,95 +22,361 @@
     <h3>MissingMemberHandling</h3>
 <p>MissingMemberHandling controls how missing members, e.g. JSON contains a property 
     that isn&#39;t a member on the object, are handled during deserialization.</p>
-        <ul>
-            <li><strong>Ignore</strong> - By default Json.NET ignores JSON if there is no field 
-                or property for its value to be set to during deserialization.</li>
-            <li><strong>Error</strong> - Json.NET errors when there is a missing member during 
-                deserialization.</li>
-        </ul>
+    <table class="members">
+      <tbody>
+        <tr>
+          <th class="nameColumn">
+            Member
+          </th>
+          <th class="descriptionColumn">
+            Description
+          </th>
+        </tr>
+        <tr>
+          <td>
+            <b>Ignore</b>
+          </td>
+          <td>
+            <div class="summary">
+              By default Json.NET ignores JSON if there is no field 
+                or property for its value to be set to during deserialization.
+            </div>
+            <br>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>Error</b>
+          </td>
+          <td>
+            <div class="summary">
+              Json.NET errors when there is a missing member during 
+                deserialization.
+            </div>
+            <br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
           <h3>ReferenceLoopHandling</h3>
         <p>ReferenceLoopHandling controls how circular referencing objects, e.g. a Person 
             object referencing itself via a Manager property, are serialized.</p>
-        <ul>
-            <li><strong>Error</strong> - By default Json.NET will error if a reference loop is 
-                encountered (otherwise the serializer will get into an infinite loop).</li>
-            <li><strong>Ignore</strong> - Json.NET will ignore objects in reference loops and 
+    <table class="members">
+      <tbody>
+        <tr>
+          <th class="nameColumn">
+            Member
+          </th>
+          <th class="descriptionColumn">
+            Description
+          </th>
+        </tr>
+        <tr>
+          <td>
+            <b>Error</b>
+          </td>
+          <td>
+            <div class="summary">
+             By default Json.NET will error if a reference loop is 
+                encountered (otherwise the serializer will get into an infinite loop).
+            </div>
+            <br>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>Ignore</b>
+          </td>
+          <td>
+            <div class="summary">
+              Json.NET will ignore objects in reference loops and 
                 not serialize them. The first time an object is encountered it will be 
                 serialized as usual but if the object is encountered as a child object of itself 
-                the serializer will skip serializing it.</li>
-            <li><strong>Serialize</strong> - This option forces Json.NET to serialize objects in 
+                the serializer will skip serializing it.
+            </div>
+            <br>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>Serialize</b>
+          </td>
+          <td>
+            <div class="summary">
+              This option forces Json.NET to serialize objects in 
                 reference loops. This is useful if objects are nested but not indefinitely.
-            </li>
-        </ul>
+            </div>
+            <br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
         <p>ReferenceLoopHandling can also be customized on individual properties with JsonPropertyAttribute.</p>
     <h3>NullValueHandling</h3>
 <p>NullValueHandling controls how null values on .NET objects are handled during 
     serialization and how null values in JSON are handled during deserialization.</p>
-        <ul>
-            <li><strong>Include</strong> - By default Json.NET writes null values to JSON when 
-                serializing and sets null values to fields/properties when deserializing.</li>
-            <li><strong>Ignore</strong> - Json.NET will skip writing JSON properties if the .NET 
+    <table class="members">
+      <tbody>
+        <tr>
+          <th class="nameColumn">
+            Member
+          </th>
+          <th class="descriptionColumn">
+            Description
+          </th>
+        </tr>
+        <tr>
+          <td>
+            <b>Include</b>
+          </td>
+          <td>
+            <div class="summary">
+             By default Json.NET writes null values to JSON when 
+                serializing and sets null values to fields/properties when deserializing.
+            </div>
+            <br>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>Ignore</b>
+          </td>
+          <td>
+            <div class="summary">
+              Json.NET will skip writing JSON properties if the .NET 
                 value is null when serializing and will skip setting fields/properties if the 
-                JSON property is null when deserializing. </li>
-        </ul>
+                JSON property is null when deserializing.
+            </div>
+            <br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
         <p>NullValueHandling can also be customized on individual properties with JsonPropertyAttribute.</p>
         <h3>
             DefaultValueHandling</h3>
         <p>
 DefaultValueHandling controls how Json.NET uses default values set using the .NET 
             DefaultValueAttribute when serializing and deserializing.</p>
-        <ul>
-            <li><strong>Include</strong> - By default Json.NET will write a field/property value 
+    <table class="members">
+      <tbody>
+        <tr>
+          <th class="nameColumn">
+            Member
+          </th>
+          <th class="descriptionColumn">
+            Description
+          </th>
+        </tr>
+        <tr>
+          <td>
+            <b>Include</b>
+          </td>
+          <td>
+            <div class="summary">
+             By default Json.NET will write a field/property value 
                 to JSON when serializing if the value is the same as the field/property’s 
                 default value. The Json.NET deserializer will continue setting a field/property 
-                if the JSON value is the same as the default value.</li>
-            <li><strong>Ignore</strong> - Json.NET will skip writing a field/property value to 
+                if the JSON value is the same as the default value.
+            </div>
+            <br>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>Ignore</b>
+          </td>
+          <td>
+            <div class="summary">
+             Json.NET will skip writing a field/property value to 
                 JSON if the value is the same as the field/property’s default value. The 
                 Json.NET deserializer will skip setting a .NET object’s field/property if the 
-                JSON value is the same as the default value. </li>
-        </ul>
+                JSON value is the same as the default value.
+            </div>
+            <br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
         <p>DefaultValueHandling can also be customized on individual properties with JsonPropertyAttribute.</p>
 <h3>ObjectCreationHandling</h3>
         <p>ObjectCreationHandling controls how objects are created and deserialized to 
             during deserialization.</p>
-        <ul>
-            <li><strong>Auto</strong> - By default Json.NET will attempt to set JSON values onto 
+    <table class="members">
+      <tbody>
+        <tr>
+          <th class="nameColumn">
+            Member
+          </th>
+          <th class="descriptionColumn">
+            Description
+          </th>
+        </tr>
+        <tr>
+          <td>
+            <b>Auto</b>
+          </td>
+          <td>
+            <div class="summary">
+             By default Json.NET will attempt to set JSON values onto 
                 existing objects and add JSON values to existing collections during 
-                deserialization.</li>
-            <li><strong>Reuse</strong> - Same behaviour as auto.</li>
-            <li><strong>Replace</strong> - Json.NET will always recreate objects and collections 
-                before setting values to them during deserialization. </li>
-        </ul>
+                deserialization.
+            </div>
+            <br>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>Reuse</b>
+          </td>
+          <td>
+            <div class="summary">
+             Same behaviour as auto.
+            </div>
+            <br>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>Replace</b>
+          </td>
+          <td>
+            <div class="summary">
+             Json.NET will always recreate objects and collections 
+                before setting values to them during deserialization.
+            </div>
+            <br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
         <p>ObjectCreationHandling can also be customized on individual properties with JsonPropertyAttribute.</p>
 <h3>TypeNameHandling</h3>
         <p>TypeNameHandling controls whether Json.NET includes .NET type names during 
             serialization with a $type property and reads .NET type names from that property 
             to determine what type to create during deserialization.</p>
-        <ul>
-            <li><strong>None</strong> - By default Json.NET does not read or write type names 
-                during deserialization.</li>
-            <li><strong>Objects</strong> - Json.NET will write and use type names for objects 
-                but not collections.</li>
-            <li><strong>Arrays</strong> - Json.NET will write and use type names for collections 
-                but not objects.</li>
-            <li><strong>Auto</strong> - Json.NET will check whether an object/collection matches 
+    <table class="members">
+      <tbody>
+        <tr>
+          <th class="nameColumn">
+            Member
+          </th>
+          <th class="descriptionColumn">
+            Description
+          </th>
+        </tr>
+        <tr>
+          <td>
+            <b>None</b>
+          </td>
+          <td>
+            <div class="summary">
+             By default Json.NET does not read or write type names 
+                during deserialization.
+            </div>
+            <br>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>Objects</b>
+          </td>
+          <td>
+            <div class="summary">
+             Json.NET will write and use type names for objects 
+                but not collections.
+            </div>
+            <br>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>Arrays</b>
+          </td>
+          <td>
+            <div class="summary">
+             Json.NET will write and use type names for collections 
+                but not objects.
+            </div>
+            <br>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>Auto</b>
+          </td>
+          <td>
+            <div class="summary">
+             Json.NET will check whether an object/collection matches 
                 its declared property and writes the type name if they do not match, e.g. a 
                 property with a type of Mammal has a derived instance of Dog assigned. Auto will 
                 ensure that type information isn’t lost when serializing/deserializing 
-                automatically without having to write type names for every object.</li>
-            <li><strong>All</strong> - Json.NET will write and use type names for objects and 
-                collections. </li>
-        </ul>
+                automatically without having to write type names for every object.
+            </div>
+            <br>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>All</b>
+          </td>
+          <td>
+            <div class="summary">
+             Json.NET will write and use type names for objects and 
+                collections.
+            </div>
+            <br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
         <p>TypeNameHandling can also be customized on individual properties with JsonPropertyAttribute.</p>
         <h3>TypeNameAssemblyFormat</h3>
         <p>TypeNameAssemblyFormat controls how type names are written during serialization.</p>
-        <ul>
-            <li><strong>Simple</strong> - By default Json.NET writes the partial assembly name 
+    <table class="members">
+      <tbody>
+        <tr>
+          <th class="nameColumn">
+            Member
+          </th>
+          <th class="descriptionColumn">
+            Description
+          </th>
+        </tr>
+        <tr>
+          <td>
+            <b>Simple</b>
+          </td>
+          <td>
+            <div class="summary">
+             By default Json.NET writes the partial assembly name 
                 with the type, e.g. System.Data.DataSet, System.Data. Note that Silverlight and 
-                Windows Phone are not able to use this format.</li>
-            <li><strong>Full</strong> - Json.NET will write the full assembly name, including 
-                version number, culture and public key token.</li>
-        </ul>
+                Windows Phone are not able to use this format.
+            </div>
+            <br>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>Full</b>
+          </td>
+          <td>
+            <div class="summary">
+             Json.NET will write the full assembly name, including 
+                version number, culture and public key token.
+            </div>
+            <br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
         <p>Read more about the valid values at
             <a href="http://msdn.microsoft.com/en-us/library/tt9xha1h" target="_blank">
             FormatterAssemblyStyle</a>. </p>
@@ -121,16 +387,47 @@ DefaultValueHandling controls how Json.NET uses default values set using the .NE
         <h3>ConstructorHandling</h3>
         <p>ConstructorHandling controls how constructors are used when initializing objects 
             during deserialization.</p>
-        <ul>
-            <li><strong>Default</strong> - By default Json.NET will first look for a constructor 
+    <table class="members">
+      <tbody>
+        <tr>
+          <th class="nameColumn">
+            Member
+          </th>
+          <th class="descriptionColumn">
+            Description
+          </th>
+        </tr>
+        <tr>
+          <td>
+            <b>Default</b>
+          </td>
+          <td>
+            <div class="summary">
+             By default Json.NET will first look for a constructor 
                 marked with the JsonConstructorAttribute, then look for a public default 
                 constructor (a constructor that doesn’t take any arguments) and finally check if 
                 the class has a single public constructor with arguments. If the class has 
                 multiple public constructors with arguments an error will be thrown. This can be 
-                fixed by marking one of the constructors with the JsonConstructorAttribute.</li>
-            <li><strong>AllowNonPublicDefaultConstructor</strong> - Json.NET will fallback to 
-                using a classes private default constructor if available. </li>
-        </ul>
+                fixed by marking one of the constructors with the JsonConstructorAttribute.
+            </div>
+            <br>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>AllowNonPublicDefaultConstructor</b>
+          </td>
+          <td>
+            <div class="summary">
+             Json.NET will fallback to 
+                using a classes private default constructor if available.
+            </div>
+            <br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
         <h3>Converters</h3>
         <p>This is the collection of JsonConverters that will be used during serialization 
             and deserialization. </p>
