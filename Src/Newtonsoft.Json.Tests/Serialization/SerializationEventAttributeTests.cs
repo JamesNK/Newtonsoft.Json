@@ -25,11 +25,13 @@
 
 #if !PocketPC
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
+using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Tests;
 using Newtonsoft.Json.Tests.TestObjects;
 using NUnit.Framework;
@@ -288,6 +290,47 @@ namespace Newtonsoft.Json.Tests.Serialization
 }", json);
     }
 #endif
+
+    public void WhenSerializationErrorDetectedBySerializer_ThenCallbackIsCalled()
+    {
+      // Verify contract is properly finding our callback
+      var resolver = new DefaultContractResolver().ResolveContract(typeof(FooEvent));
+
+      Debug.Assert(resolver.OnError != null);
+      Debug.Assert(resolver.OnError == typeof(FooEvent).GetMethod("OnError", BindingFlags.Instance | BindingFlags.NonPublic));
+
+      var serializer = JsonSerializer.Create(new JsonSerializerSettings
+      {
+        // If I don't specify Error here, the callback isn't called
+        // either, but no exception is thrown.
+        MissingMemberHandling = MissingMemberHandling.Error,
+      });
+
+      // This throws with missing member exception, rather than calling my callback.
+      var foo = serializer.Deserialize<FooEvent>(new JsonTextReader(new StringReader("{ Id: 25 }")));
+
+      // When fixed, this would pass.
+      Debug.Assert(foo.Identifier == 25);
+    }
+
+    public class FooEvent
+    {
+      public int Identifier { get; set; }
+
+      [OnError]
+      private void OnError(StreamingContext context, ErrorContext error)
+      {
+        this.Identifier = 25;
+
+        // Here we could for example manually copy the
+        // persisted "Id" value into the renamed "Identifier"
+        // property, etc.
+        error.Handled = true;
+
+        // We never get here :(
+        Console.WriteLine("Error has been fixed");
+      }
+    }
   }
 }
 #endif
