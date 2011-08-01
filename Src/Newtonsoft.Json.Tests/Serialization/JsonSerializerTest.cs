@@ -3272,7 +3272,7 @@ keyword such as type of business.""
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "JSON reference $ref property must have a string value.")]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "JSON reference $ref property must have a string or null value.")]
     public void SerializeRefBadType()
     {
       //Additional text found in JSON string after finishing deserializing object.
@@ -3288,6 +3288,27 @@ keyword such as type of business.""
 
       var json = JsonConvert.SerializeObject(child);
       JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+    }
+
+    [Test]
+    public void SerializeRefNull()
+    {
+      var reference = new Dictionary<string, object>();
+      reference.Add("$ref", null);
+      reference.Add("$id", null);
+      reference.Add("blah", "blah!");
+
+      var child = new Dictionary<string, object>();
+      child.Add("_id", 2);
+      child.Add("Name", "Isabell");
+      child.Add("Father", reference);
+
+      var json = JsonConvert.SerializeObject(child);
+      Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+
+      Assert.AreEqual(3, result.Count);
+      Assert.AreEqual(1, ((JObject) result["Father"]).Count);
+      Assert.AreEqual("blah!", (string)((JObject)result["Father"])["blah"]);
     }
 
     public class ConstructorCompexIgnoredProperty
