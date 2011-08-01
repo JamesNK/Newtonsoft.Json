@@ -631,6 +631,21 @@ namespace Newtonsoft.Json.Tests.Schema
       ],
       ""default"": ""Default!""
     },
+    ""DefaultValueHandlingPopulateProperty"": {
+      ""required"": true,
+      ""type"": [
+        ""string"",
+        ""null""
+      ],
+      ""default"": ""Default!""
+    },
+    ""DefaultValueHandlingIgnoreAndPopulateProperty"": {
+      ""type"": [
+        ""string"",
+        ""null""
+      ],
+      ""default"": ""Default!""
+    },
     ""NullValueHandlingIgnoreProperty"": {
       ""type"": [
         ""string"",

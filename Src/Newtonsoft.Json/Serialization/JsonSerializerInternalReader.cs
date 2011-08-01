@@ -555,9 +555,9 @@ namespace Newtonsoft.Json.Serialization
       }
 
       // test tokentype here because default value might not be convertable to actual type, e.g. default of "" for DateTime
-      if (property.DefaultValueHandling.GetValueOrDefault(Serializer.DefaultValueHandling) == DefaultValueHandling.Ignore
+      if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer.DefaultValueHandling), DefaultValueHandling.Ignore)
         && JsonReader.IsPrimitiveToken(reader.TokenType)
-          && Equals(reader.Value, property.DefaultValue))
+          && MiscellaneousUtils.ValueEquals(reader.Value, property.DefaultValue))
       {
         reader.Skip();
         return;
@@ -579,12 +579,18 @@ namespace Newtonsoft.Json.Serialization
       }
     }
 
+    private bool HasFlag(DefaultValueHandling value, DefaultValueHandling flag)
+    {
+      return ((value & flag) == flag);
+    }
+
     private bool ShouldSetPropertyValue(JsonProperty property, object value)
     {
       if (property.NullValueHandling.GetValueOrDefault(Serializer.NullValueHandling) == NullValueHandling.Ignore && value == null)
         return false;
 
-      if (property.DefaultValueHandling.GetValueOrDefault(Serializer.DefaultValueHandling) == DefaultValueHandling.Ignore && MiscellaneousUtils.ValueEquals(value, property.DefaultValue))
+      if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer.DefaultValueHandling), DefaultValueHandling.Ignore)
+        && MiscellaneousUtils.ValueEquals(value, property.DefaultValue))
         return false;
 
       if (!property.Writable)
@@ -1065,8 +1071,8 @@ namespace Newtonsoft.Json.Serialization
     {
       contract.InvokeOnDeserializing(newObject, Serializer.Context);
 
-      Dictionary<JsonProperty, RequiredValue> requiredProperties =
-        contract.Properties.Where(m => m.Required != Required.Default).ToDictionary(m => m, m => RequiredValue.None);
+      Dictionary<JsonProperty, PropertyPresence> propertiesPresence =
+        contract.Properties.ToDictionary(m => m, m => PropertyPresence.None);
 
       if (id != null)
         Serializer.ReferenceResolver.AddReference(this, id, newObject);
@@ -1098,7 +1104,7 @@ namespace Newtonsoft.Json.Serialization
               if (!ReadForType(reader, property.PropertyType, property.Converter))
                 throw new JsonSerializationException("Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
 
-              SetRequiredProperty(reader, property, requiredProperties);
+              SetPropertyPresence(reader, property, propertiesPresence);
 
               SetPropertyValue(property, reader, newObject);
             }
@@ -1111,12 +1117,26 @@ namespace Newtonsoft.Json.Serialization
             }
             break;
           case JsonToken.EndObject:
-            foreach (KeyValuePair<JsonProperty, RequiredValue> requiredProperty in requiredProperties)
+            foreach (KeyValuePair<JsonProperty, PropertyPresence> propertyPresence in propertiesPresence)
             {
-              if (requiredProperty.Value == RequiredValue.None)
-                throw new JsonSerializationException("Required property '{0}' not found in JSON.".FormatWith(CultureInfo.InvariantCulture, requiredProperty.Key.PropertyName));
-              if (requiredProperty.Key.Required == Required.Always && requiredProperty.Value == RequiredValue.Null)
-                throw new JsonSerializationException("Required property '{0}' expects a value but got null.".FormatWith(CultureInfo.InvariantCulture, requiredProperty.Key.PropertyName));
+              JsonProperty property = propertyPresence.Key;
+              PropertyPresence presence = propertyPresence.Value;
+
+              switch (presence)
+              {
+                case PropertyPresence.None:
+                  if (property.Required == Required.AllowNull || property.Required == Required.Always)
+                    throw new JsonSerializationException("Required property '{0}' not found in JSON.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName));
+
+                  if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer.DefaultValueHandling), DefaultValueHandling.Populate)
+                    && property.Writable)
+                    property.ValueProvider.SetValue(newObject, EnsureType(property.DefaultValue, CultureInfo.InvariantCulture, property.PropertyType));
+                  break;
+                case PropertyPresence.Null:
+                  if (property.Required == Required.Always)
+                    throw new JsonSerializationException("Required property '{0}' expects a value but got null.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName));
+                  break;
+              }
             }
 
             contract.InvokeOnDeserialized(newObject, Serializer.Context);
@@ -1132,13 +1152,13 @@ namespace Newtonsoft.Json.Serialization
       throw new JsonSerializationException("Unexpected end when deserializing object.");
     }
 
-    private void SetRequiredProperty(JsonReader reader, JsonProperty property, Dictionary<JsonProperty, RequiredValue> requiredProperties)
+    private void SetPropertyPresence(JsonReader reader, JsonProperty property, Dictionary<JsonProperty, PropertyPresence> requiredProperties)
     {
       if (property != null)
       {
         requiredProperties[property] = (reader.TokenType == JsonToken.Null || reader.TokenType == JsonToken.Undefined)
-          ? RequiredValue.Null
-          : RequiredValue.Value;
+          ? PropertyPresence.Null
+          : PropertyPresence.Value;
       }
     }
 
@@ -1154,7 +1174,7 @@ namespace Newtonsoft.Json.Serialization
       }
     }
 
-    internal enum RequiredValue
+    internal enum PropertyPresence
     {
       None,
       Null,

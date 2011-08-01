@@ -37,6 +37,14 @@ namespace Newtonsoft.Json.Tests.TestObjects
     [DefaultValue("Default!")]
     public string DefaultValueHandlingIncludeProperty { get; set; }
 
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+    [DefaultValue("Default!")]
+    public string DefaultValueHandlingPopulateProperty { get; set; }
+
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [DefaultValue("Default!")]
+    public string DefaultValueHandlingIgnoreAndPopulateProperty { get; set; }
+
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public string NullValueHandlingIgnoreProperty { get; set; }
 

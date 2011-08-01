@@ -202,8 +202,8 @@ namespace Newtonsoft.Json.Serialization
           memberValue == null)
         return;
 
-      if (property.DefaultValueHandling.GetValueOrDefault(Serializer.DefaultValueHandling) ==
-          DefaultValueHandling.Ignore && MiscellaneousUtils.ValueEquals(memberValue, defaultValue))
+      if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer.DefaultValueHandling), DefaultValueHandling.Ignore)
+        && MiscellaneousUtils.ValueEquals(memberValue, defaultValue))
         return;
 
       if (ShouldWriteReference(memberValue, property, contract))
@@ -358,6 +358,11 @@ namespace Newtonsoft.Json.Serialization
     {
       writer.WritePropertyName(JsonTypeReflector.TypePropertyName);
       writer.WriteValue(ReflectionUtils.GetTypeName(type, Serializer.TypeNameAssemblyFormat, Serializer.Binder));
+    }
+
+    private bool HasFlag(DefaultValueHandling value, DefaultValueHandling flag)
+    {
+      return ((value & flag) == flag);
     }
 
     private bool HasFlag(PreserveReferencesHandling value, PreserveReferencesHandling flag)

@@ -1300,16 +1300,19 @@ keyword such as type of business.""
     }
 
     [Test]
-    public void JsonPropertyWithHandlingValues()
+    public void SerializeJsonPropertyWithHandlingValues()
     {
       JsonPropertyWithHandlingValues o = new JsonPropertyWithHandlingValues();
       o.DefaultValueHandlingIgnoreProperty = "Default!";
       o.DefaultValueHandlingIncludeProperty = "Default!";
+      o.DefaultValueHandlingPopulateProperty = "Default!";
+      o.DefaultValueHandlingIgnoreAndPopulateProperty = "Default!";
 
       string json = JsonConvert.SerializeObject(o, Formatting.Indented);
 
       Assert.AreEqual(@"{
   ""DefaultValueHandlingIncludeProperty"": ""Default!"",
+  ""DefaultValueHandlingPopulateProperty"": ""Default!"",
   ""NullValueHandlingIncludeProperty"": null,
   ""ReferenceLoopHandlingErrorProperty"": null,
   ""ReferenceLoopHandlingIgnoreProperty"": null,
@@ -1320,8 +1323,21 @@ keyword such as type of business.""
 
       Assert.AreEqual(@"{
   ""DefaultValueHandlingIncludeProperty"": ""Default!"",
+  ""DefaultValueHandlingPopulateProperty"": ""Default!"",
   ""NullValueHandlingIncludeProperty"": null
 }", json);
+    }
+
+    [Test]
+    public void DeserializeJsonPropertyWithHandlingValues()
+    {
+      string json = "{}";
+
+      JsonPropertyWithHandlingValues o = JsonConvert.DeserializeObject<JsonPropertyWithHandlingValues>(json);
+      Assert.AreEqual("Default!", o.DefaultValueHandlingIgnoreAndPopulateProperty);
+      Assert.AreEqual("Default!", o.DefaultValueHandlingPopulateProperty);
+      Assert.AreEqual(null, o.DefaultValueHandlingIgnoreProperty);
+      Assert.AreEqual(null, o.DefaultValueHandlingIncludeProperty);
     }
 
     [Test]

@@ -352,6 +352,11 @@ namespace Newtonsoft.Json.Schema
       return type;
     }
 
+    private bool HasFlag(DefaultValueHandling value, DefaultValueHandling flag)
+    {
+      return ((value & flag) == flag);
+    }
+
     private void GenerateObjectSchema(Type type, JsonObjectContract contract)
     {
       CurrentSchema.Properties = new Dictionary<string, JsonSchema>();
@@ -360,7 +365,7 @@ namespace Newtonsoft.Json.Schema
         if (!property.Ignored)
         {
           bool optional = property.NullValueHandling == NullValueHandling.Ignore ||
-                          property.DefaultValueHandling == DefaultValueHandling.Ignore ||
+                          HasFlag(property.DefaultValueHandling.GetValueOrDefault(), DefaultValueHandling.Ignore) ||
                           property.ShouldSerialize != null ||
                           property.GetIsSpecified != null;
 

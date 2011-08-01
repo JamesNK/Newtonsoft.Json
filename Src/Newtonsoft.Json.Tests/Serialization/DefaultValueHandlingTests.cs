@@ -50,7 +50,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 
     [Test]
-    public void DefaultValueAttributeTest()
+    public void SerializeDefaultValueAttributeTest()
     {
       string json = JsonConvert.SerializeObject(new DefaultValueAttributeTestClass(),
         Formatting.None, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
@@ -67,6 +67,24 @@ namespace Newtonsoft.Json.Tests.Serialization
       json = JsonConvert.SerializeObject(new DefaultValueAttributeTestClass { TestField1 = 21, TestProperty1 = "TestProperty1Value" },
         Formatting.None, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
       Assert.AreEqual(@"{}", json);
+    }
+
+    [Test]
+    public void DeserializeDefaultValueAttributeTest()
+    {
+      string json = "{}";
+
+      DefaultValueAttributeTestClass c = JsonConvert.DeserializeObject<DefaultValueAttributeTestClass>(json, new JsonSerializerSettings
+        {
+          DefaultValueHandling = DefaultValueHandling.Populate
+        });
+      Assert.AreEqual("TestProperty1Value", c.TestProperty1);
+
+      c = JsonConvert.DeserializeObject<DefaultValueAttributeTestClass>(json, new JsonSerializerSettings
+      {
+        DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate
+      });
+      Assert.AreEqual("TestProperty1Value", c.TestProperty1);
     }
 
     [JsonObject]
