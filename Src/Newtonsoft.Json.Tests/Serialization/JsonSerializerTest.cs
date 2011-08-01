@@ -4641,5 +4641,48 @@ keyword such as type of business.""
   ""BaseClassValue"": ""BaseClassValue!""
 }", json);
     }
+
+    public class PrivateMembersClassWithAttributes
+    {
+      public PrivateMembersClassWithAttributes(string privateString, string internalString, string readonlyString)
+      {
+        _privateString = privateString;
+        _readonlyString = readonlyString;
+        _internalString = internalString;
+      }
+
+      public PrivateMembersClassWithAttributes()
+      {
+        _readonlyString = "default!";
+      }
+
+      [JsonProperty]
+      private string _privateString;
+      [JsonProperty]
+      private readonly string _readonlyString;
+      [JsonProperty]
+      internal string _internalString;
+
+      public string UseValue()
+      {
+        return _readonlyString;
+      }
+    }
+
+    [Test]
+    public void PrivateMembersClassWithAttributesTest()
+    {
+      PrivateMembersClassWithAttributes c1 = new PrivateMembersClassWithAttributes("privateString!", "internalString!", "readonlyString!");
+
+      string json = JsonConvert.SerializeObject(c1, Formatting.Indented);
+      Assert.AreEqual(@"{
+  ""_privateString"": ""privateString!"",
+  ""_readonlyString"": ""readonlyString!"",
+  ""_internalString"": ""internalString!""
+}", json);
+
+      PrivateMembersClassWithAttributes c2 = JsonConvert.DeserializeObject<PrivateMembersClassWithAttributes>(json);
+      Assert.AreEqual("readonlyString!", c2.UseValue());
+    }
   }
 }

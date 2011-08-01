@@ -626,17 +626,18 @@ namespace Newtonsoft.Json.Utilities
     /// </summary>
     /// <param name="member">The MemberInfo to determine whether can be set.</param>
     /// <param name="nonPublic">if set to <c>true</c> then allow the member to be set non-publicly.</param>
+    /// <param name="canSetReadOnly">if set to <c>true</c> then allow the member to be set if read-only.</param>
     /// <returns>
     /// 	<c>true</c> if the specified MemberInfo can be set; otherwise, <c>false</c>.
     /// </returns>
-    public static bool CanSetMemberValue(MemberInfo member, bool nonPublic)
+    public static bool CanSetMemberValue(MemberInfo member, bool nonPublic, bool canSetReadOnly)
     {
       switch (member.MemberType)
       {
         case MemberTypes.Field:
           FieldInfo fieldInfo = (FieldInfo)member;
 
-          if (fieldInfo.IsInitOnly)
+          if (fieldInfo.IsInitOnly && !canSetReadOnly)
             return false;
           if (nonPublic)
             return true;

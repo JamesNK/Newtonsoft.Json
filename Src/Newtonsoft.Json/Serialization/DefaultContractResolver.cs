@@ -367,7 +367,8 @@ namespace Newtonsoft.Json.Serialization
       property.PropertyType = parameterInfo.ParameterType;
 
       bool allowNonPublicAccess;
-      SetPropertySettingsFromAttributes(property, parameterInfo, parameterInfo.Name, parameterInfo.Member.DeclaringType, MemberSerialization.OptOut, out allowNonPublicAccess);
+      bool hasExplicitAttribute;
+      SetPropertySettingsFromAttributes(property, parameterInfo, parameterInfo.Name, parameterInfo.Member.DeclaringType, MemberSerialization.OptOut, out allowNonPublicAccess, out hasExplicitAttribute);
 
       property.Readable = false;
       property.Writable = true;
@@ -783,10 +784,11 @@ namespace Newtonsoft.Json.Serialization
       property.ValueProvider = CreateMemberValueProvider(member);
 
       bool allowNonPublicAccess;
-      SetPropertySettingsFromAttributes(property, member, member.Name, member.DeclaringType, memberSerialization, out allowNonPublicAccess);
+      bool hasExplicitAttribute;
+      SetPropertySettingsFromAttributes(property, member, member.Name, member.DeclaringType, memberSerialization, out allowNonPublicAccess, out hasExplicitAttribute);
 
       property.Readable = ReflectionUtils.CanReadMemberValue(member, allowNonPublicAccess);
-      property.Writable = ReflectionUtils.CanSetMemberValue(member, allowNonPublicAccess);
+      property.Writable = ReflectionUtils.CanSetMemberValue(member, allowNonPublicAccess, hasExplicitAttribute);
       property.ShouldSerialize = CreateShouldSerializeTest(member);
 
       SetIsSpecifiedActions(property, member);
@@ -794,8 +796,10 @@ namespace Newtonsoft.Json.Serialization
       return property;
     }
 
-    private void SetPropertySettingsFromAttributes(JsonProperty property, ICustomAttributeProvider attributeProvider, string name, Type declaringType, MemberSerialization memberSerialization, out bool allowNonPublicAccess)
+    private void SetPropertySettingsFromAttributes(JsonProperty property, ICustomAttributeProvider attributeProvider, string name, Type declaringType, MemberSerialization memberSerialization, out bool allowNonPublicAccess, out bool hasExplicitAttribute)
     {
+      hasExplicitAttribute = false;
+
 #if !PocketPC && !NET20
       DataContractAttribute dataContractAttribute = JsonTypeReflector.GetDataContractAttribute(declaringType);
 
@@ -807,6 +811,9 @@ namespace Newtonsoft.Json.Serialization
 #endif
 
       JsonPropertyAttribute propertyAttribute = JsonTypeReflector.GetAttribute<JsonPropertyAttribute>(attributeProvider);
+      if (propertyAttribute != null)
+        hasExplicitAttribute = true;
+
       bool hasIgnoreAttribute = (JsonTypeReflector.GetAttribute<JsonIgnoreAttribute>(attributeProvider) != null);
 
       string mappedName;
@@ -859,9 +866,13 @@ namespace Newtonsoft.Json.Serialization
         allowNonPublicAccess = true;
       if (propertyAttribute != null)
         allowNonPublicAccess = true;
+
 #if !PocketPC && !NET20
       if (dataMemberAttribute != null)
+      {
         allowNonPublicAccess = true;
+        hasExplicitAttribute = true;
+      }
 #endif
     }
 
