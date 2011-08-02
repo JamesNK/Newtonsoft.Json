@@ -4691,6 +4691,7 @@ keyword such as type of business.""
       public Boolean WheelchairAccessible { get; set; }
     }
 
+    [Test]
     public void DeserializeGenericEnumerableProperty()
     {
       BusRun r = JsonConvert.DeserializeObject<BusRun>("{\"Departures\":[\"\\/Date(1309874148734-0400)\\/\",\"\\/Date(1309874148739-0400)\\/\",null],\"WheelchairAccessible\":true}");
@@ -4700,5 +4701,52 @@ keyword such as type of business.""
       Assert.IsNotNull(r.Departures.ElementAt(1));
       Assert.IsNull(r.Departures.ElementAt(2));
     }
+
+#if !(NET20)
+    [DataContract]
+    public class BaseType
+    {
+
+      [DataMember]
+      public string zebra;
+    }
+
+    [DataContract]
+    public class DerivedType : BaseType
+    {
+      [DataMember(Order = 0)]
+      public string bird;
+      [DataMember(Order = 1)]
+      public string parrot;
+      [DataMember]
+      public string dog;
+      [DataMember(Order = 3)]
+      public string antelope;
+      [DataMember]
+      public string cat;
+      [JsonProperty(Order = 1)]
+      public string albatross;
+      [JsonProperty(Order = -2)]
+      public string dinosaur;
+    }
+
+    [Test]
+    public void JsonPropertyDataMemberOrder()
+    {
+      DerivedType d = new DerivedType();
+      string json = JsonConvert.SerializeObject(d, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""dinosaur"": null,
+  ""dog"": null,
+  ""cat"": null,
+  ""zebra"": null,
+  ""bird"": null,
+  ""parrot"": null,
+  ""albatross"": null,
+  ""antelope"": null
+}", json);
+    }
+#endif
   }
 }

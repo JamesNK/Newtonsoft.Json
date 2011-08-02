@@ -39,6 +39,12 @@ namespace Newtonsoft.Json.Serialization
     public string PropertyName { get; set; }
 
     /// <summary>
+    /// Gets or sets the order of serialization and deserialization of a member.
+    /// </summary>
+    /// <value>The numeric order of serialization or deserialization.</value>
+    public int? Order { get; set; }
+
+    /// <summary>
     /// Gets or sets the name of the underlying member or parameter.
     /// </summary>
     /// <value>The name of the underlying member or parameter.</value>

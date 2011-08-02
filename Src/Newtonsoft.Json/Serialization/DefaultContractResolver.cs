@@ -753,7 +753,8 @@ namespace Newtonsoft.Json.Serialization
           properties.AddProperty(property);
       }
 
-      return properties;
+      IList<JsonProperty> orderedProperties = properties.OrderBy(p => p.Order ?? -1).ToList();
+      return orderedProperties;
     }
 
     /// <summary>
@@ -830,13 +831,21 @@ namespace Newtonsoft.Json.Serialization
       property.UnderlyingName = name;
 
       if (propertyAttribute != null)
+      {
         property.Required = propertyAttribute.Required;
+        property.Order = propertyAttribute._order;
+      }
 #if !PocketPC && !NET20
       else if (dataMemberAttribute != null)
+      {
         property.Required = (dataMemberAttribute.IsRequired) ? Required.AllowNull : Required.Default;
+        property.Order = (dataMemberAttribute.Order != -1) ? (int?) dataMemberAttribute.Order : null;
+      }
 #endif
       else
+      {
         property.Required = Required.Default;
+      }
 
       property.Ignored = (hasIgnoreAttribute ||
                       (memberSerialization == MemberSerialization.OptIn

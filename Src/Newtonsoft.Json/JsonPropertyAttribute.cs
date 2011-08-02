@@ -16,6 +16,7 @@ namespace Newtonsoft.Json
     internal ObjectCreationHandling? _objectCreationHandling;
     internal TypeNameHandling? _typeNameHandling;
     internal bool? _isReference;
+    internal int? _order;
 
     /// <summary>
     /// Gets or sets the null value handling used when serializing this property.
@@ -75,6 +76,16 @@ namespace Newtonsoft.Json
     {
       get { return _isReference ?? default(bool); }
       set { _isReference = value; }
+    }
+
+    /// <summary>
+    /// Gets or sets the order of serialization and deserialization of a member.
+    /// </summary>
+    /// <value>The numeric order of serialization or deserialization.</value>
+    public int Order
+    {
+      get { return _order ?? default(int); }
+      set { _order = value; }
     }
 
     /// <summary>
