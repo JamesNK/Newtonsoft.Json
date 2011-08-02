@@ -4684,5 +4684,21 @@ keyword such as type of business.""
       PrivateMembersClassWithAttributes c2 = JsonConvert.DeserializeObject<PrivateMembersClassWithAttributes>(json);
       Assert.AreEqual("readonlyString!", c2.UseValue());
     }
+
+    public partial class BusRun
+    {
+      public IEnumerable<Nullable<DateTime>> Departures { get; set; }
+      public Boolean WheelchairAccessible { get; set; }
+    }
+
+    public void DeserializeGenericEnumerableProperty()
+    {
+      BusRun r = JsonConvert.DeserializeObject<BusRun>("{\"Departures\":[\"\\/Date(1309874148734-0400)\\/\",\"\\/Date(1309874148739-0400)\\/\",null],\"WheelchairAccessible\":true}");
+
+      Assert.AreEqual(3, r.Departures.Count());
+      Assert.IsNotNull(r.Departures.ElementAt(0));
+      Assert.IsNotNull(r.Departures.ElementAt(1));
+      Assert.IsNull(r.Departures.ElementAt(2));
+    }
   }
 }
