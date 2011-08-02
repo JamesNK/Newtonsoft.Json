@@ -39,6 +39,20 @@ namespace Newtonsoft.Json.Tests.Converters
       Assert.AreEqual(null, binaryClass.NullBinary);
     }
 
+    [Test]
+    public void DeserializeBinaryClassFromJsonArray()
+    {
+      string json = @"{
+  ""Binary"": [0, 1, 2, 3],
+  ""NullBinary"": null
+}";
+
+      BinaryClass binaryClass = JsonConvert.DeserializeObject<BinaryClass>(json, new BinaryConverter());
+
+      Assert.AreEqual(new byte[] { 0, 1, 2, 3 }, binaryClass.Binary.ToArray());
+      Assert.AreEqual(null, binaryClass.NullBinary);
+    }
+
     public class BinaryClass
     {
       public Binary Binary { get; set; }
@@ -132,5 +146,18 @@ namespace Newtonsoft.Json.Tests.Converters
       Assert.AreEqual(null, byteArrayClass.NullByteArray);
     }
 
+    [Test]
+    public void DeserializeByteArrayFromJsonArray()
+    {
+      string json = @"{
+  ""ByteArray"": [0, 1, 2, 3],
+  ""NullByteArray"": null
+}";
+
+      ByteArrayClass c = JsonConvert.DeserializeObject<ByteArrayClass>(json);
+      Assert.IsNotNull(c.ByteArray);
+      Assert.AreEqual(4, c.ByteArray.Length);
+      Assert.AreEqual(new byte[] { 0, 1, 2, 3 }, c.ByteArray);
+    }
   }
 }

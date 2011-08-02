@@ -333,16 +333,42 @@ namespace Newtonsoft.Json
     {
       _readType = ReadType.ReadAsBytes;
 
-      do
-      {
-        if (!ReadInternal())
-        throw CreateJsonReaderException("Unexpected end when reading bytes: Line {0}, position {1}.", _currentLineNumber, _currentLinePosition);
-      } while (TokenType == JsonToken.Comment);
+        do
+        {
+          if (!ReadInternal())
+            throw CreateJsonReaderException("Unexpected end when reading bytes: Line {0}, position {1}.", _currentLineNumber, _currentLinePosition);
+        } while (TokenType == JsonToken.Comment);
 
       if (TokenType == JsonToken.Null)
         return null;
       if (TokenType == JsonToken.Bytes)
         return (byte[]) Value;
+      if (TokenType == JsonToken.StartArray)
+      {
+        List<byte> data = new List<byte>();
+
+        while (ReadInternal())
+        {
+          switch (TokenType)
+          {
+            case JsonToken.Integer:
+              data.Add(Convert.ToByte(Value, CultureInfo.InvariantCulture));
+              break;
+            case JsonToken.EndArray:
+              byte[] d = data.ToArray();
+              SetToken(JsonToken.Bytes, d);
+              return d;
+            case JsonToken.Comment:
+              // skip
+              break;
+            default:
+              throw CreateJsonReaderException("Unexpected token when reading bytes: {0}. Line {1}, position {2}.", TokenType, _currentLineNumber, _currentLinePosition);
+          }
+        }
+
+        throw CreateJsonReaderException("Unexpected end when reading bytes: Line {0}, position {1}.", _currentLineNumber, _currentLinePosition);
+      }
+
 
       throw CreateJsonReaderException("Unexpected token when reading bytes: {0}. Line {1}, position {2}.", TokenType, _currentLineNumber, _currentLinePosition);
     }
