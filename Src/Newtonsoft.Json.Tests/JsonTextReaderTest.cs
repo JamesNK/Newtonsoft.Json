@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using NUnit.Framework;
 using Newtonsoft.Json;
@@ -799,6 +800,78 @@ bye", reader.Value);
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
     }
+
+    [Test]
+    public void ReadAsDateTimeOffsetIsoDate()
+    {
+      string json = @"{""Offset"":""2011-08-01T21:25Z""}";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      reader.ReadAsDateTimeOffset();
+      Assert.AreEqual(JsonToken.Date, reader.TokenType);
+      Assert.AreEqual(typeof(DateTimeOffset), reader.ValueType);
+      Assert.AreEqual(new DateTimeOffset(new DateTime(2011, 8, 1, 21, 25, 0, DateTimeKind.Utc), TimeSpan.Zero), reader.Value);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
+    }
+
+    [Test]
+    public void ReadAsDateTimeOffsetUnitedStatesDate()
+    {
+      string json = @"{""Offset"":""1/30/2011""}";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+      reader.Culture = new CultureInfo("en-US");
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      reader.ReadAsDateTimeOffset();
+      Assert.AreEqual(JsonToken.Date, reader.TokenType);
+      Assert.AreEqual(typeof(DateTimeOffset), reader.ValueType);
+
+      DateTimeOffset dt = (DateTimeOffset)reader.Value;
+      Assert.AreEqual(new DateTime(2011, 1, 30, 0, 0, 0, DateTimeKind.Unspecified), dt.DateTime);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
+    }
+
+    [Test]
+    public void ReadAsDateTimeOffsetNewZealandDate()
+    {
+      string json = @"{""Offset"":""30/1/2011""}";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+      reader.Culture = new CultureInfo("en-NZ");
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      reader.ReadAsDateTimeOffset();
+      Assert.AreEqual(JsonToken.Date, reader.TokenType);
+      Assert.AreEqual(typeof(DateTimeOffset), reader.ValueType);
+
+      DateTimeOffset dt = (DateTimeOffset)reader.Value;
+      Assert.AreEqual(new DateTime(2011, 1, 30, 0, 0, 0, DateTimeKind.Unspecified), dt.DateTime);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
+    }
 #endif
 
     [Test]
@@ -818,6 +891,29 @@ bye", reader.Value);
       Assert.AreEqual(JsonToken.Float, reader.TokenType);
       Assert.AreEqual(typeof(decimal), reader.ValueType);
       Assert.AreEqual(-79228162514264300000000000000m, d);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
+    }
+
+    [Test]
+    public void ReadAsDecimalFrench()
+    {
+      string json = @"{""decimal"":""9,99""}";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+      reader.Culture = new CultureInfo("fr-FR");
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      decimal? d = reader.ReadAsDecimal();
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+      Assert.AreEqual(typeof(decimal), reader.ValueType);
+      Assert.AreEqual(9.99m, d);
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.EndObject, reader.TokenType);

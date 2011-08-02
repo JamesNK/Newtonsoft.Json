@@ -55,6 +55,16 @@ namespace Newtonsoft.Json
     private int _currentLineNumber;
     private bool _end;
     private ReadType _readType;
+    private CultureInfo _culture;
+
+    /// <summary>
+    /// Gets or sets the culture used when reading JSON. Defaults to <see cref="CultureInfo.CurrentCulture"/>.
+    /// </summary>
+    public CultureInfo Culture
+    {
+      get { return _culture ?? CultureInfo.CurrentCulture; }
+      set { _culture = value; }
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonReader"/> class with the specified <see cref="TextReader"/>.
@@ -357,7 +367,7 @@ namespace Newtonsoft.Json
         return (decimal?)Value;
 
       decimal d;
-      if (TokenType == JsonToken.String && decimal.TryParse((string)Value, NumberStyles.Number, CultureInfo.InvariantCulture, out d))
+      if (TokenType == JsonToken.String && decimal.TryParse((string)Value, NumberStyles.Number, Culture, out d))
       {
         SetToken(JsonToken.Float, d);
         return d;
@@ -385,6 +395,13 @@ namespace Newtonsoft.Json
         return null;
       if (TokenType == JsonToken.Date)
         return (DateTimeOffset)Value;
+
+      DateTimeOffset dt;
+      if (TokenType == JsonToken.String && DateTimeOffset.TryParse((string)Value, Culture, DateTimeStyles.None, out dt))
+      {
+        SetToken(JsonToken.Date, dt);
+        return dt;
+      }
 
       throw CreateJsonReaderException("Unexpected token when reading date: {0}. Line {1}, position {2}.", TokenType, _currentLineNumber, _currentLinePosition);
     }
