@@ -75,6 +75,10 @@ namespace Newtonsoft.Json.Serialization
       {
         CreatedType = ReflectionUtils.MakeGenericType(typeof(Dictionary<,>), keyType, valueType);
       }
+      else if (UnderlyingType == typeof(IDictionary))
+      {
+        CreatedType = typeof (Dictionary<object, object>);
+      }
     }
 
     internal IWrappedDictionary CreateWrapper(object dictionary)

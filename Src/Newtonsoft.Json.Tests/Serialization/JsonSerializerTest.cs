@@ -4748,5 +4748,52 @@ keyword such as type of business.""
 }", json);
     }
 #endif
+
+    public class ClassWithException
+    {
+      public IList<Exception> Exceptions { get; set; }
+
+      public ClassWithException()
+      {
+        Exceptions = new List<Exception>();
+      }
+    }
+
+#if !(SILVERLIGHT || WINDOWS_PHONE)
+    [Test]
+    public void SerializeException1()
+    {
+      ClassWithException classWithException = new ClassWithException();
+      try
+      {
+        throw new Exception("Test Exception");
+      }
+      catch (Exception ex)
+      {
+        classWithException.Exceptions.Add(ex);
+      }
+      string sex = JsonConvert.SerializeObject(classWithException);
+      ClassWithException dex = JsonConvert.DeserializeObject<ClassWithException>(sex);
+      Assert.AreEqual(dex.Exceptions[0].ToString(), dex.Exceptions[0].ToString());
+
+      sex = JsonConvert.SerializeObject(classWithException, Formatting.Indented);
+
+      dex = JsonConvert.DeserializeObject<ClassWithException>(sex); // this fails!
+      Assert.AreEqual(dex.Exceptions[0].ToString(), dex.Exceptions[0].ToString());
+    }
+#endif
+
+    public void DeserializeIDictionary()
+    {
+      IDictionary dictionary = JsonConvert.DeserializeObject<IDictionary>("{'name':'value!'}");
+      Assert.AreEqual(1, dictionary.Count);
+      Assert.AreEqual("value!", dictionary["name"]);
+    }
+
+    public void DeserializeIList()
+    {
+      IList list = JsonConvert.DeserializeObject<IList>("['1', 'two', 'III']");
+      Assert.AreEqual(3, list.Count);
+    }
   }
 }
