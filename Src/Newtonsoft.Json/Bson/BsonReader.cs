@@ -501,7 +501,7 @@ namespace Newtonsoft.Json.Bson
           switch (DateTimeKindHandling)
           {
             case DateTimeKind.Unspecified:
-              dateTime = DateTime.SpecifyKind(utcDateTime.ToLocalTime(), DateTimeKind.Unspecified);
+              dateTime = DateTime.SpecifyKind(utcDateTime, DateTimeKind.Unspecified);
               break;
             case DateTimeKind.Local:
               dateTime = utcDateTime.ToLocalTime();

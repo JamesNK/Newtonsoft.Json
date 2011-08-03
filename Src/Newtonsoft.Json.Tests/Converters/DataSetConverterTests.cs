@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Converters;
 using NUnit.Framework;
+using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
 using System.Data;
 
@@ -251,7 +252,51 @@ namespace Newtonsoft.Json.Tests.Converters
     }
 
     [Test]
-    public void Blah()
+    public void SerializeWithCamelCaseResolver()
+    {
+      DataSet ds = new DataSet();
+      ds.Tables.Add(CreateDataTable("FirstTable", 2));
+      ds.Tables.Add(CreateDataTable("SecondTable", 1));
+
+      string json = JsonConvert.SerializeObject(ds, Formatting.Indented, new JsonSerializerSettings
+        {
+          ContractResolver = new CamelCasePropertyNamesContractResolver()
+        });
+
+      Assert.AreEqual(@"{
+  ""firstTable"": [
+    {
+      ""stringCol"": ""Item Name"",
+      ""int32Col"": 1,
+      ""booleanCol"": true,
+      ""timeSpanCol"": ""10.22:10:15.1000000"",
+      ""dateTimeCol"": ""\/Date(978048000000)\/"",
+      ""decimalCol"": 64.0021
+    },
+    {
+      ""stringCol"": ""Item Name"",
+      ""int32Col"": 2,
+      ""booleanCol"": true,
+      ""timeSpanCol"": ""10.22:10:15.1000000"",
+      ""dateTimeCol"": ""\/Date(978048000000)\/"",
+      ""decimalCol"": 64.0021
+    }
+  ],
+  ""secondTable"": [
+    {
+      ""stringCol"": ""Item Name"",
+      ""int32Col"": 1,
+      ""booleanCol"": true,
+      ""timeSpanCol"": ""10.22:10:15.1000000"",
+      ""dateTimeCol"": ""\/Date(978048000000)\/"",
+      ""decimalCol"": 64.0021
+    }
+  ]
+}", json);
+    }
+
+    [Test]
+    public void SerializeDataSetProperty()
     {
       DataSet ds = new DataSet();
       ds.Tables.Add(CreateDataTable("FirstTable", 2));

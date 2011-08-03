@@ -920,7 +920,7 @@ namespace Newtonsoft.Json.Serialization
     /// </summary>
     /// <param name="propertyName">Name of the property.</param>
     /// <returns>Name of the property.</returns>
-    protected virtual string ResolvePropertyName(string propertyName)
+    protected internal virtual string ResolvePropertyName(string propertyName)
     {
       return propertyName;
     }

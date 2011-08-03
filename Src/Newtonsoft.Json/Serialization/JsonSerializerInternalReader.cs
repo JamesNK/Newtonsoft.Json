@@ -792,7 +792,7 @@ namespace Newtonsoft.Json.Serialization
       } while (!exit && reader.Read());
 
       if (contract.ISerializableCreator == null)
-        throw new JsonSerializationException("ISerializable type '{0}' does not have a valid constructor.".FormatWith(CultureInfo.InvariantCulture, objectType));
+        throw new JsonSerializationException("ISerializable type '{0}' does not have a valid constructor. To correctly implement ISerializable a constructor that takes SerializationInfo and StreamingContext parameters should be present.".FormatWith(CultureInfo.InvariantCulture, objectType));
 
       object createdObject = contract.ISerializableCreator(serializationInfo, Serializer.Context);
 

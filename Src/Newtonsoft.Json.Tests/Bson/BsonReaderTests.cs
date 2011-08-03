@@ -801,7 +801,54 @@ namespace Newtonsoft.Json.Tests.Bson
 
       reader = new BsonReader(new MemoryStream(bson), false, DateTimeKind.Unspecified);
       o = (JObject)JToken.ReadFrom(reader);
-      Assert.AreEqual(DateTime.SpecifyKind(value.ToLocalTime(), DateTimeKind.Unspecified), (DateTime)o["DateTime"]);
+      Assert.AreEqual(DateTime.SpecifyKind(value, DateTimeKind.Unspecified), (DateTime)o["DateTime"]);
+    }
+
+    [Test]
+    public void UnspecifiedDateTimeKindHandling()
+    {
+      DateTime value = new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Unspecified);
+
+      MemoryStream ms = new MemoryStream();
+      BsonWriter writer = new BsonWriter(ms);
+      writer.DateTimeKindHandling = DateTimeKind.Unspecified;
+
+      writer.WriteStartObject();
+      writer.WritePropertyName("DateTime");
+      writer.WriteValue(value);
+      writer.WriteEndObject();
+
+      byte[] bson = ms.ToArray();
+
+      JObject o;
+      BsonReader reader;
+
+      reader = new BsonReader(new MemoryStream(bson), false, DateTimeKind.Unspecified);
+      o = (JObject)JToken.ReadFrom(reader);
+      Assert.AreEqual(value, (DateTime)o["DateTime"]);
+    }
+
+    [Test]
+    public void LocalDateTimeKindHandling()
+    {
+      DateTime value = new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Local);
+
+      MemoryStream ms = new MemoryStream();
+      BsonWriter writer = new BsonWriter(ms);
+
+      writer.WriteStartObject();
+      writer.WritePropertyName("DateTime");
+      writer.WriteValue(value);
+      writer.WriteEndObject();
+
+      byte[] bson = ms.ToArray();
+
+      JObject o;
+      BsonReader reader;
+
+      reader = new BsonReader(new MemoryStream(bson), false, DateTimeKind.Local);
+      o = (JObject)JToken.ReadFrom(reader);
+      Assert.AreEqual(value, (DateTime)o["DateTime"]);
     }
 
     private string WriteAndReadStringValue(string val)
