@@ -376,6 +376,26 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
+    /// Converts the <see cref="TimeSpan"/> to its JSON string representation.
+    /// </summary>
+    /// <param name="value">The value to convert.</param>
+    /// <returns>A JSON string representation of the <see cref="TimeSpan"/>.</returns>
+    public static string ToString(TimeSpan value)
+    {
+      return '"' + value.ToString() + '"';
+    }
+
+    /// <summary>
+    /// Converts the <see cref="Uri"/> to its JSON string representation.
+    /// </summary>
+    /// <param name="value">The value to convert.</param>
+    /// <returns>A JSON string representation of the <see cref="Uri"/>.</returns>
+    public static string ToString(Uri value)
+    {
+      return '"' + value.ToString() + '"';
+    }
+
+    /// <summary>
     /// Converts the <see cref="String"/> to its JSON string representation.
     /// </summary>
     /// <param name="value">The value to convert.</param>
@@ -452,6 +472,18 @@ namespace Newtonsoft.Json
         return ToString((DateTimeOffset)value);
       }
 #endif
+      else if (value is Guid)
+      {
+        return ToString((Guid) value);
+      }
+      else if (value is Uri)
+      {
+        return ToString((Uri) value);
+      }
+      else if (value is TimeSpan)
+      {
+        return ToString((TimeSpan) value);
+      }
 
       throw new ArgumentException("Unsupported type: {0}. Use the JsonSerializer class to get the object's JSON representation.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
     }
@@ -493,6 +525,12 @@ namespace Newtonsoft.Json
 #endif
       if (type == typeof(byte[]))
         return true;
+      if (type == typeof(Uri))
+        return true;
+      if (type == typeof(TimeSpan))
+        return true;
+      if (type == typeof(Guid))
+        return true;
 
       return IsJsonPrimitiveTypeCode(Type.GetTypeCode(type));
     }
@@ -511,8 +549,13 @@ namespace Newtonsoft.Json
       if (value is DateTimeOffset)
         return true;
 #endif
-
       if (value is byte[])
+        return true;
+      if (value is Uri)
+        return true;
+      if (value is TimeSpan)
+        return true;
+      if (value is Guid)
         return true;
 
       return false;

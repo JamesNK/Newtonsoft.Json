@@ -461,6 +461,36 @@ namespace Newtonsoft.Json
       WriteValueInternal(JsonConvert.ToString(value), JsonToken.Date);
     }
 #endif
+
+    /// <summary>
+    /// Writes a <see cref="Guid"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Guid"/> value to write.</param>
+    public override void WriteValue(Guid value)
+    {
+      base.WriteValue(value);
+      WriteValueInternal(JsonConvert.ToString(value), JsonToken.String);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="TimeSpan"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="TimeSpan"/> value to write.</param>
+    public override void WriteValue(TimeSpan value)
+    {
+      base.WriteValue(value);
+      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Date);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Uri"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Uri"/> value to write.</param>
+    public override void WriteValue(Uri value)
+    {
+      base.WriteValue(value);
+      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Date);
+    }
     #endregion
 
     /// <summary>

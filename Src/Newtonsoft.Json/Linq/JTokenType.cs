@@ -89,6 +89,18 @@ namespace Newtonsoft.Json.Linq
     /// <summary>
     /// A collection of bytes value.
     /// </summary>
-    Bytes
+    Bytes,
+    /// <summary>
+    /// A Guid value.
+    /// </summary>
+    Guid,
+    /// <summary>
+    /// A Uri value.
+    /// </summary>
+    Uri,
+    /// <summary>
+    /// A TimeSpan value.
+    /// </summary>
+    TimeSpan
   }
 }

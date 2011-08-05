@@ -119,6 +119,33 @@ namespace Newtonsoft.Json.Linq
     /// Initializes a new instance of the <see cref="JValue"/> class with the given value.
     /// </summary>
     /// <param name="value">The value.</param>
+    public JValue(Guid value)
+      : this(value, JTokenType.String)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JValue"/> class with the given value.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JValue(Uri value)
+      : this(value, JTokenType.String)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JValue"/> class with the given value.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JValue(TimeSpan value)
+      : this(value, JTokenType.String)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JValue"/> class with the given value.
+    /// </summary>
+    /// <param name="value">The value.</param>
     public JValue(object value)
       : this(value, GetValueType(null, value))
     {
@@ -192,15 +219,15 @@ namespace Newtonsoft.Json.Linq
             if (!(objB is DateTimeOffset))
               throw new ArgumentException("Object must be of type DateTimeOffset.");
 
-            DateTimeOffset date1 = (DateTimeOffset)objA;
-            DateTimeOffset date2 = (DateTimeOffset)objB;
+            DateTimeOffset date1 = (DateTimeOffset) objA;
+            DateTimeOffset date2 = (DateTimeOffset) objB;
 
             return date1.CompareTo(date2);
           }
 #endif
         case JTokenType.Bytes:
           if (!(objB is byte[]))
-              throw new ArgumentException("Object must be of type byte[].");
+            throw new ArgumentException("Object must be of type byte[].");
 
           byte[] bytes1 = objA as byte[];
           byte[] bytes2 = objB as byte[];
@@ -210,6 +237,30 @@ namespace Newtonsoft.Json.Linq
             return 1;
 
           return MiscellaneousUtils.ByteArrayCompare(bytes1, bytes2);
+        case JTokenType.Guid:
+          if (!(objB is Guid))
+            throw new ArgumentException("Object must be of type Guid.");
+
+          Guid guid1 = (Guid) objA;
+          Guid guid2 = (Guid) objB;
+
+          return guid1.CompareTo(guid2);
+        case JTokenType.Uri:
+          if (!(objB is Uri))
+            throw new ArgumentException("Object must be of type Uri.");
+
+          Uri uri1 = (Uri)objA;
+          Uri uri2 = (Uri)objB;
+
+          return Comparer<string>.Default.Compare(uri1.ToString(), uri2.ToString());
+        case JTokenType.TimeSpan:
+          if (!(objB is TimeSpan))
+            throw new ArgumentException("Object must be of type TimeSpan.");
+
+          TimeSpan ts1 = (TimeSpan)objA;
+          TimeSpan ts2 = (TimeSpan)objB;
+
+          return ts1.CompareTo(ts2);
         default:
           throw MiscellaneousUtils.CreateArgumentOutOfRangeException("valueType", valueType, "Unexpected value type: {0}".FormatWith(CultureInfo.InvariantCulture, valueType));
       }
@@ -389,6 +440,12 @@ namespace Newtonsoft.Json.Linq
         return JTokenType.Bytes;
       else if (value is bool)
         return JTokenType.Boolean;
+      else if (value is Guid)
+        return JTokenType.Guid;
+      else if (value is Uri)
+        return JTokenType.Uri;
+      else if (value is TimeSpan)
+        return JTokenType.TimeSpan;
 
       throw new ArgumentException("Could not determine JSON object type for type {0}.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
     }
@@ -491,6 +548,11 @@ namespace Newtonsoft.Json.Linq
           return;
         case JTokenType.Bytes:
           writer.WriteValue((byte[])_value);
+          return;
+        case JTokenType.Guid:
+        case JTokenType.Uri:
+        case JTokenType.TimeSpan:
+          writer.WriteValue((_value != null) ? _value.ToString() : null);
           return;
       }
 

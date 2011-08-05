@@ -815,6 +815,24 @@ namespace Newtonsoft.Json
 #endif
 
     /// <summary>
+    /// Writes a <see cref="Guid"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Guid"/> value to write.</param>
+    public virtual void WriteValue(Guid value)
+    {
+      AutoComplete(JsonToken.String);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="TimeSpan"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="TimeSpan"/> value to write.</param>
+    public virtual void WriteValue(TimeSpan value)
+    {
+      AutoComplete(JsonToken.String);
+    }
+
+    /// <summary>
     /// Writes a <see cref="Nullable{Int32}"/> value.
     /// </summary>
     /// <param name="value">The <see cref="Nullable{Int32}"/> value to write.</param>
@@ -1001,6 +1019,30 @@ namespace Newtonsoft.Json
 #endif
 
     /// <summary>
+    /// Writes a <see cref="Nullable{Guid}"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Nullable{Guid}"/> value to write.</param>
+    public virtual void WriteValue(Guid? value)
+    {
+      if (value == null)
+        WriteNull();
+      else
+        WriteValue(value.Value);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Nullable{TimeSpan}"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Nullable{TimeSpan}"/> value to write.</param>
+    public virtual void WriteValue(TimeSpan? value)
+    {
+      if (value == null)
+        WriteNull();
+      else
+        WriteValue(value.Value);
+    }
+
+    /// <summary>
     /// Writes a <see cref="T:Byte[]"/> value.
     /// </summary>
     /// <param name="value">The <see cref="T:Byte[]"/> value to write.</param>
@@ -1010,6 +1052,18 @@ namespace Newtonsoft.Json
         WriteNull();
       else
         AutoComplete(JsonToken.Bytes);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Uri"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Uri"/> value to write.</param>
+    public virtual void WriteValue(Uri value)
+    {
+      if (value == null)
+        WriteNull();
+      else
+        AutoComplete(JsonToken.String);
     }
 
     /// <summary>
@@ -1090,6 +1144,21 @@ namespace Newtonsoft.Json
       else if (value is byte[])
       {
         WriteValue((byte[])value);
+        return;
+      }
+      else if (value is Guid)
+      {
+        WriteValue((Guid)value);
+        return;
+      }
+      else if (value is Uri)
+      {
+        WriteValue((Uri)value);
+        return;
+      }
+      else if (value is TimeSpan)
+      {
+        WriteValue((TimeSpan)value);
         return;
       }
 

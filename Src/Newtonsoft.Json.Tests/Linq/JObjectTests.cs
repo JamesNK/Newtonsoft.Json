@@ -1591,5 +1591,32 @@ Parameter name: arrayIndex")]
       Assert.AreEqual(false, prop4.ShouldSerializeValue(o));
     }
 #endif
+
+    [Test]
+    public void FromObjectTimeSpan()
+    {
+      JValue v = (JValue)JToken.FromObject(TimeSpan.FromDays(1));
+      Assert.AreEqual(v.Value, TimeSpan.FromDays(1));
+
+      Assert.AreEqual("1.00:00:00", v.ToString());
+    }
+
+    [Test]
+    public void FromObjectUri()
+    {
+      JValue v = (JValue)JToken.FromObject(new Uri("http://www.stuff.co.nz"));
+      Assert.AreEqual(v.Value, new Uri("http://www.stuff.co.nz"));
+
+      Assert.AreEqual("http://www.stuff.co.nz/", v.ToString());
+    }
+
+    [Test]
+    public void FromObjectGuid()
+    {
+      JValue v = (JValue)JToken.FromObject(new Guid("9065ACF3-C820-467D-BE50-8D4664BEAF35"));
+      Assert.AreEqual(v.Value, new Guid("9065ACF3-C820-467D-BE50-8D4664BEAF35"));
+
+      Assert.AreEqual("9065acf3-c820-467d-be50-8d4664beaf35", v.ToString());
+    }
   }
 }

@@ -368,6 +368,36 @@ namespace Newtonsoft.Json.Linq
       base.WriteValue(value);
       AddValue(value, JsonToken.Bytes);
     }
+
+    /// <summary>
+    /// Writes a <see cref="TimeSpan"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="TimeSpan"/> value to write.</param>
+    public override void WriteValue(TimeSpan value)
+    {
+      base.WriteValue(value);
+      AddValue(value, JsonToken.String);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Guid"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Guid"/> value to write.</param>
+    public override void WriteValue(Guid value)
+    {
+      base.WriteValue(value);
+      AddValue(value, JsonToken.String);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Uri"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Uri"/> value to write.</param>
+    public override void WriteValue(Uri value)
+    {
+      base.WriteValue(value);
+      AddValue(value, JsonToken.String);
+    }
     #endregion
   }
 }

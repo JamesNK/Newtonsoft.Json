@@ -242,9 +242,23 @@ namespace Newtonsoft.Json.Linq
         case JTokenType.Bytes:
           SetToken(JsonToken.Bytes, ((JValue)token).Value);
           break;
+        case JTokenType.Guid:
+          SetToken(JsonToken.String, SafeToString(((JValue)token).Value));
+          break;
+        case JTokenType.Uri:
+          SetToken(JsonToken.String, SafeToString(((JValue)token).Value));
+          break;
+        case JTokenType.TimeSpan:
+          SetToken(JsonToken.String, SafeToString(((JValue)token).Value));
+          break;
         default:
           throw MiscellaneousUtils.CreateArgumentOutOfRangeException("Type", token.Type, "Unexpected JTokenType.");
       }
+    }
+
+    private string SafeToString(object value)
+    {
+      return (value != null) ? value.ToString() : null;
     }
 
     bool IJsonLineInfo.HasLineInfo()

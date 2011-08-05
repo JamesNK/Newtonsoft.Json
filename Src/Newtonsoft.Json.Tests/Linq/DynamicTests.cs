@@ -118,7 +118,10 @@ namespace Newtonsoft.Json.Tests.Linq
         new JProperty("DateTime", new JValue(new DateTime(2000, 12, 29, 23, 51, 10, DateTimeKind.Utc))),
         new JProperty("Boolean", new JValue(true)),
         new JProperty("String", new JValue("A string lol!")),
-        new JProperty("Bytes", new JValue(Encoding.UTF8.GetBytes("A string lol!")))
+        new JProperty("Bytes", new JValue(Encoding.UTF8.GetBytes("A string lol!"))),
+        new JProperty("Uri", new Uri("http://json.codeplex.com/")),
+        new JProperty("Guid", new Guid("EA27FE1D-0D80-44F2-BF34-4654156FA7AF")),
+        new JProperty("TimeSpan", TimeSpan.FromDays(1))
         );
 
       dynamic d = o;
@@ -166,6 +169,27 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.IsTrue(d.Bytes == d.Bytes);
       Assert.IsTrue(d.Bytes == Encoding.UTF8.GetBytes("A string lol!"));
       Assert.IsTrue(d.Bytes == new JValue(Encoding.UTF8.GetBytes("A string lol!")));
+
+      Assert.IsTrue(d.Uri == d.Uri);
+      Assert.IsTrue(d.Uri == new Uri("http://json.codeplex.com/"));
+      Assert.IsTrue(d.Uri > new Uri("http://abc.org/"));
+      Assert.IsTrue(d.Uri >= new Uri("http://abc.com/"));
+      Assert.IsTrue(d.Uri > null);
+      Assert.IsTrue(d.Uri >= null);
+
+      Assert.IsTrue(d.Guid == d.Guid);
+      Assert.IsTrue(d.Guid == new Guid("EA27FE1D-0D80-44F2-BF34-4654156FA7AF"));
+      Assert.IsTrue(d.Guid > new Guid("AAAAAAAA-0D80-44F2-BF34-4654156FA7AF"));
+      Assert.IsTrue(d.Guid >= new Guid("AAAAAAAA-0D80-44F2-BF34-4654156FA7AF"));
+      Assert.IsTrue(d.Guid > null);
+      Assert.IsTrue(d.Guid >= null);
+
+      Assert.IsTrue(d.TimeSpan == d.TimeSpan);
+      Assert.IsTrue(d.TimeSpan == TimeSpan.FromDays(1));
+      Assert.IsTrue(d.TimeSpan > TimeSpan.FromHours(1));
+      Assert.IsTrue(d.TimeSpan >= TimeSpan.FromHours(1));
+      Assert.IsTrue(d.TimeSpan > null);
+      Assert.IsTrue(d.TimeSpan >= null);
     }
 
     [Test]
@@ -179,7 +203,10 @@ namespace Newtonsoft.Json.Tests.Linq
         new JProperty("DateTime", new JValue(new DateTime(2000, 12, 29, 23, 51, 10, DateTimeKind.Utc))),
         new JProperty("Boolean", new JValue(true)),
         new JProperty("String", new JValue("A string lol!")),
-        new JProperty("Bytes", new JValue(Encoding.UTF8.GetBytes("A string lol!")))
+        new JProperty("Bytes", new JValue(Encoding.UTF8.GetBytes("A string lol!"))),
+        new JProperty("Uri", new Uri("http://json.codeplex.com/")),
+        new JProperty("Guid", new Guid("EA27FE1D-0D80-44F2-BF34-4654156FA7AF")),
+        new JProperty("TimeSpan", TimeSpan.FromDays(1))
         );
 
       dynamic d = o;
@@ -454,7 +481,10 @@ namespace Newtonsoft.Json.Tests.Linq
         new JProperty("DateTime", new JValue(new DateTime(2000, 12, 29, 23, 51, 10, DateTimeKind.Utc))),
         new JProperty("Boolean", new JValue(true)),
         new JProperty("String", new JValue("A string lol!")),
-        new JProperty("Bytes", new JValue(Encoding.UTF8.GetBytes("A string lol!")))
+        new JProperty("Bytes", new JValue(Encoding.UTF8.GetBytes("A string lol!"))),
+        new JProperty("Uri", new Uri("http://json.codeplex.com/")),
+        new JProperty("Guid", new Guid("EA27FE1D-0D80-44F2-BF34-4654156FA7AF")),
+        new JProperty("TimeSpan", TimeSpan.FromDays(1))
         );
 
       dynamic d = o;
@@ -466,6 +496,9 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual("True", d.Boolean.ToString());
       Assert.AreEqual("A string lol!", d.String.ToString());
       Assert.AreEqual("System.Byte[]", d.Bytes.ToString());
+      Assert.AreEqual("http://json.codeplex.com/", d.Uri.ToString());
+      Assert.AreEqual("ea27fe1d-0d80-44f2-bf34-4654156fa7af", d.Guid.ToString());
+      Assert.AreEqual("1.00:00:00", d.TimeSpan.ToString());
     }
 
     [Test]
@@ -539,6 +572,14 @@ namespace Newtonsoft.Json.Tests.Linq
       AssertValueConverted<ushort>(ushort.MinValue);
       AssertValueConverted<ushort?>(ushort.MinValue);
       AssertValueConverted<ushort?>(null);
+      AssertValueConverted<TimeSpan>(TimeSpan.FromDays(1));
+      AssertValueConverted<TimeSpan?>(TimeSpan.FromDays(1));
+      AssertValueConverted<TimeSpan?>(null);
+      AssertValueConverted<Guid>(new Guid("60304274-CD13-4060-B38C-057C8557AB54"));
+      AssertValueConverted<Guid?>(new Guid("60304274-CD13-4060-B38C-057C8557AB54"));
+      AssertValueConverted<Guid?>(null);
+      AssertValueConverted<Uri>(new Uri("http://json.codeplex.com/"));
+      AssertValueConverted<Uri>(null);
     }
 
     private static void AssertValueConverted<T>(object value)

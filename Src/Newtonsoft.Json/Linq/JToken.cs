@@ -1158,6 +1158,30 @@ namespace Newtonsoft.Json.Linq
     }
 
     /// <summary>
+    /// Creates the specified .NET type from the <see cref="JToken"/>.
+    /// </summary>
+    /// <returns>The new object created from the JSON value.</returns>
+    public T ToObject<T>()
+    {
+      return ToObject<T>(new JsonSerializer());
+    }
+
+    /// <summary>
+    /// Creates the specified .NET type from the <see cref="JToken"/> using the specified <see cref="JsonSerializer"/>.
+    /// </summary>
+    /// <param name="jsonSerializer">The <see cref="JsonSerializer"/> that will be used when creating the object.</param>
+    /// <returns>The new object created from the JSON value.</returns>
+    public T ToObject<T>(JsonSerializer jsonSerializer)
+    {
+      ValidationUtils.ArgumentNotNull(jsonSerializer, "jsonSerializer");
+
+      using (JTokenReader jsonReader = new JTokenReader(this))
+      {
+        return jsonSerializer.Deserialize<T>(jsonReader);
+      }
+    }
+
+    /// <summary>
     /// Creates a <see cref="JToken"/> from a <see cref="JsonReader"/>.
     /// </summary>
     /// <param name="reader">An <see cref="JsonReader"/> positioned at the token to read into this <see cref="JToken"/>.</param>

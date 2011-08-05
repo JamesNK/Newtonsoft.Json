@@ -71,6 +71,19 @@ namespace Newtonsoft.Json.Tests.Linq
       v.Value = StringComparison.OrdinalIgnoreCase;
       Assert.AreEqual(StringComparison.OrdinalIgnoreCase, v.Value);
       Assert.AreEqual(JTokenType.Integer, v.Type);
+
+      v.Value = new Uri("http://json.codeplex.com/");
+      Assert.AreEqual(new Uri("http://json.codeplex.com/"), v.Value);
+      Assert.AreEqual(JTokenType.Uri, v.Type);
+
+      v.Value = TimeSpan.FromDays(1);
+      Assert.AreEqual(TimeSpan.FromDays(1), v.Value);
+      Assert.AreEqual(JTokenType.TimeSpan, v.Type);
+
+      Guid g = Guid.NewGuid();
+      v.Value = g;
+      Assert.AreEqual(g, v.Value);
+      Assert.AreEqual(JTokenType.Guid, v.Type);
     }
 
     [Test]
@@ -115,6 +128,15 @@ namespace Newtonsoft.Json.Tests.Linq
 
       v = new JValue(new DateTime(2000, 12, 12, 20, 59, 59, DateTimeKind.Utc), JTokenType.Date);
       Assert.AreEqual("12/12/2000 20:59:59", v.ToString(null, CultureInfo.InvariantCulture));
+
+      v = new JValue(new Uri("http://json.codeplex.com/"));
+      Assert.AreEqual("http://json.codeplex.com/", v.ToString(null, CultureInfo.InvariantCulture));
+
+      v = new JValue(TimeSpan.FromDays(1));
+      Assert.AreEqual("1.00:00:00", v.ToString(null, CultureInfo.InvariantCulture));
+
+      v = new JValue(new Guid("B282ADE7-C520-496C-A448-4084F6803DE5"));
+      Assert.AreEqual("b282ade7-c520-496c-a448-4084f6803de5", v.ToString(null, CultureInfo.InvariantCulture));
     }
 
     [Test]

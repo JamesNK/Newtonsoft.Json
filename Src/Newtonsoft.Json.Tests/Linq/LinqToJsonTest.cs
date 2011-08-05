@@ -33,6 +33,7 @@ using Newtonsoft.Json.Linq;
 using System.Xml;
 using System.IO;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Tests.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
 
 namespace Newtonsoft.Json.Tests.Linq
@@ -781,6 +782,55 @@ keyword such as type of business.""
           "LINQ to JSON beta"
         },
         o.Children()["item"].Children()["title"].Values<string>().ToArray());
+    }
+
+    public void UriGuidTimeSpanTestClassEmptyTest()
+    {
+      UriGuidTimeSpanTestClass c1 = new UriGuidTimeSpanTestClass();
+      JObject o = JObject.FromObject(c1);
+
+      Assert.AreEqual(@"{
+  ""Guid"": ""00000000-0000-0000-0000-000000000000"",
+  ""NullableGuid"": null,
+  ""TimeSpan"": ""00:00:00"",
+  ""NullableTimeSpan"": null,
+  ""Uri"": null
+}", o.ToString());
+
+      UriGuidTimeSpanTestClass c2 = o.ToObject<UriGuidTimeSpanTestClass>();
+      Assert.AreEqual(c1.Guid, c2.Guid);
+      Assert.AreEqual(c1.NullableGuid, c2.NullableGuid);
+      Assert.AreEqual(c1.TimeSpan, c2.TimeSpan);
+      Assert.AreEqual(c1.NullableTimeSpan, c2.NullableTimeSpan);
+      Assert.AreEqual(c1.Uri, c2.Uri);
+    }
+
+    public void UriGuidTimeSpanTestClassValuesTest()
+    {
+      UriGuidTimeSpanTestClass c1 = new UriGuidTimeSpanTestClass
+      {
+        Guid = new Guid("1924129C-F7E0-40F3-9607-9939C531395A"),
+        NullableGuid = new Guid("9E9F3ADF-E017-4F72-91E0-617EBE85967D"),
+        TimeSpan = TimeSpan.FromDays(1),
+        NullableTimeSpan = TimeSpan.FromHours(1),
+        Uri = new Uri("http://testuri.com")
+      };
+      JObject o = JObject.FromObject(c1);
+
+      Assert.AreEqual(@"{
+  ""Guid"": ""1924129c-f7e0-40f3-9607-9939c531395a"",
+  ""NullableGuid"": ""9e9f3adf-e017-4f72-91e0-617ebe85967d"",
+  ""TimeSpan"": ""1.00:00:00"",
+  ""NullableTimeSpan"": ""01:00:00"",
+  ""Uri"": ""http://testuri.com/""
+}", o.ToString());
+
+      UriGuidTimeSpanTestClass c2 = o.ToObject<UriGuidTimeSpanTestClass>();
+      Assert.AreEqual(c1.Guid, c2.Guid);
+      Assert.AreEqual(c1.NullableGuid, c2.NullableGuid);
+      Assert.AreEqual(c1.TimeSpan, c2.TimeSpan);
+      Assert.AreEqual(c1.NullableTimeSpan, c2.NullableTimeSpan);
+      Assert.AreEqual(c1.Uri, c2.Uri);
     }
   }
 }

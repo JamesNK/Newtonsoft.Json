@@ -410,6 +410,36 @@ namespace Newtonsoft.Json.Bson
       base.WriteValue(value);
       AddValue(value, BsonType.Binary);
     }
+
+    /// <summary>
+    /// Writes a <see cref="Guid"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Guid"/> value to write.</param>
+    public override void WriteValue(Guid value)
+    {
+      base.WriteValue(value);
+      AddToken(new BsonString(value.ToString(), true));
+    }
+
+    /// <summary>
+    /// Writes a <see cref="TimeSpan"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="TimeSpan"/> value to write.</param>
+    public override void WriteValue(TimeSpan value)
+    {
+      base.WriteValue(value);
+      AddToken(new BsonString(value.ToString(), true));
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Uri"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Uri"/> value to write.</param>
+    public override void WriteValue(Uri value)
+    {
+      base.WriteValue(value);
+      AddToken(new BsonString(value.ToString(), true));
+    }
     #endregion
 
     /// <summary>
