@@ -353,16 +353,16 @@ namespace Newtonsoft.Json
             WriteComment(reader.Value.ToString());
             break;
           case JsonToken.Integer:
-            WriteValue((long)reader.Value);
+            WriteValue(Convert.ToInt64(reader.Value));
             break;
           case JsonToken.Float:
-            WriteValue((double)reader.Value);
+            WriteValue(Convert.ToDouble(reader.Value));
             break;
           case JsonToken.String:
             WriteValue(reader.Value.ToString());
             break;
           case JsonToken.Boolean:
-            WriteValue((bool)reader.Value);
+            WriteValue(Convert.ToBoolean(reader.Value));
             break;
           case JsonToken.Null:
             WriteNull();
