@@ -41,6 +41,52 @@ namespace Newtonsoft.Json.Tests.Serialization
 {
   public class TypeNameHandlingTests : TestFixtureBase
   {
+    public class Wrapper
+    {
+      public IList<EmployeeReference> Array { get; set; }
+      public IDictionary<string, EmployeeReference> Dictionary { get; set; }
+    }
+
+    [Test]
+    public void sdfsdf()
+    {
+      Wrapper wrapper = new Wrapper();
+      wrapper.Array = new List<EmployeeReference>
+        {
+          new EmployeeReference()
+        };
+      wrapper.Dictionary = new Dictionary<string, EmployeeReference>
+        {
+          { "First", new EmployeeReference() }
+        };
+
+      string json = JsonConvert.SerializeObject(wrapper, Formatting.Indented, new JsonSerializerSettings
+        {
+          TypeNameHandling = TypeNameHandling.Auto
+        });
+
+      Assert.AreEqual(@"{
+  ""Array"": [
+    {
+      ""$id"": ""1"",
+      ""Name"": null,
+      ""Manager"": null
+    }
+  ],
+  ""Dictionary"": {
+    ""First"": {
+      ""$id"": ""2"",
+      ""Name"": null,
+      ""Manager"": null
+    }
+  }
+}", json);
+
+      Wrapper w2 = JsonConvert.DeserializeObject<Wrapper>(json);
+      Assert.IsInstanceOfType(typeof(List<EmployeeReference>), w2.Array);
+      Assert.IsInstanceOfType(typeof(Dictionary<string, EmployeeReference>), w2.Dictionary);
+    }
+
     [Test]
     public void WriteTypeNameForObjects()
     {

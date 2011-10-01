@@ -540,8 +540,15 @@ namespace Newtonsoft.Json.Serialization
 
       if (member != null)
       {
-        if ((member.TypeNameHandling ?? Serializer.TypeNameHandling) == TypeNameHandling.Auto && contract.UnderlyingType != member.PropertyType)
-          return true;
+        if ((member.TypeNameHandling ?? Serializer.TypeNameHandling) == TypeNameHandling.Auto
+          // instance and property type are different
+          && contract.UnderlyingType != member.PropertyType)
+        {
+          JsonContract memberTypeContract = Serializer.ContractResolver.ResolveContract(member.PropertyType);
+          // instance type and the property's type's contract default type are different (no need to put the type in JSON because the type will be created by default)
+          if (contract.UnderlyingType != memberTypeContract.CreatedType)
+            return true;
+        }
       }
       else if (collectionValueContract != null)
       {

@@ -66,5 +66,5 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 [assembly: AssemblyVersion("4.0.3.0")]
 #if !PocketPC
-[assembly: AssemblyFileVersion("4.0.3.14201")]
+[assembly: AssemblyFileVersion("4.0.3.14202")]
 #endif
