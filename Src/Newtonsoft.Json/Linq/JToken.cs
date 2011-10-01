@@ -265,7 +265,7 @@ namespace Newtonsoft.Json.Linq
     /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> containing the child tokens of this <see cref="JToken"/>, in document order.</returns>
     public virtual JEnumerable<JToken> Children()
     {
-      throw new InvalidOperationException("Cannot access child value on {0}.".FormatWith(CultureInfo.InvariantCulture, GetType()));
+      return JEnumerable<JToken>.Empty;
     }
 
     /// <summary>

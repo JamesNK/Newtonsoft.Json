@@ -148,11 +148,11 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(InvalidOperationException), ExpectedMessage = "Cannot access child value on Newtonsoft.Json.Linq.JValue.")]
     public void Children()
     {
       JValue v = new JValue(true);
       var c = v.Children();
+      Assert.AreEqual(JEnumerable<JToken>.Empty, c);
     }
 
     [Test]
