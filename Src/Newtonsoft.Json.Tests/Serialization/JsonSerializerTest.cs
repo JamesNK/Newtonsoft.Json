@@ -3426,6 +3426,7 @@ keyword such as type of business.""
       public int Age { get; set; }
       public int Weight { get; set; }
       public int Height { get; set; }
+      public int FavoriteNumber { get; set; }
 
       // dummy. should never be used because it isn't of type bool
       [JsonIgnore]
@@ -3444,6 +3445,14 @@ keyword such as type of business.""
       [JsonIgnore]
       [System.Xml.Serialization.XmlIgnoreAttribute]
       public bool HeightSpecified;
+
+      [JsonIgnore]
+
+      public bool FavoriteNumberSpecified
+      {
+        // get only example
+        get { return FavoriteNumber != 0; }
+      }
     }
 
     [Test]
@@ -3465,18 +3474,21 @@ keyword such as type of business.""
       Assert.IsFalse(deserialized.NameSpecified);
       Assert.IsFalse(deserialized.WeightSpecified);
       Assert.IsFalse(deserialized.HeightSpecified);
+      Assert.IsFalse(deserialized.FavoriteNumberSpecified);
       Assert.AreEqual(27, deserialized.Age);
 
       c.NameSpecified = true;
       c.WeightSpecified = true;
       c.HeightSpecified = true;
+      c.FavoriteNumber = 23;
       json = JsonConvert.SerializeObject(c, Formatting.Indented);
 
       Assert.AreEqual(@"{
   ""Name"": ""James"",
   ""Age"": 27,
   ""Weight"": 0,
-  ""Height"": 0
+  ""Height"": 0,
+  ""FavoriteNumber"": 23
 }", json);
 
       deserialized = JsonConvert.DeserializeObject<SpecifiedTestClass>(json);
@@ -3484,7 +3496,9 @@ keyword such as type of business.""
       Assert.IsTrue(deserialized.NameSpecified);
       Assert.IsTrue(deserialized.WeightSpecified);
       Assert.IsTrue(deserialized.HeightSpecified);
+      Assert.IsTrue(deserialized.FavoriteNumberSpecified);
       Assert.AreEqual(27, deserialized.Age);
+      Assert.AreEqual(23, deserialized.FavoriteNumber);
     }
 
     //    [Test]
@@ -4843,6 +4857,31 @@ keyword such as type of business.""
       Assert.AreEqual(c1.TimeSpan, c2.TimeSpan);
       Assert.AreEqual(c1.NullableTimeSpan, c2.NullableTimeSpan);
       Assert.AreEqual(c1.Uri, c2.Uri);
+    }
+
+    [Test]
+    public void NullableValueGenericDictionary()
+    {
+      IDictionary<string, int?> v1 = new Dictionary<string, int?>
+        {
+          { "First", 1 },
+          { "Second", null },
+          { "Third", 3 }
+        };
+
+      string json = JsonConvert.SerializeObject(v1, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""First"": 1,
+  ""Second"": null,
+  ""Third"": 3
+}", json);
+
+      IDictionary<string, int?> v2 = JsonConvert.DeserializeObject<IDictionary<string, int?>>(json);
+      Assert.AreEqual(3, v2.Count);
+      Assert.AreEqual(1, v2["First"]);
+      Assert.AreEqual(null, v2["Second"]);
+      Assert.AreEqual(3, v2["Third"]);
     }
   }
 

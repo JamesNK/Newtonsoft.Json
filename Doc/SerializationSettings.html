@@ -178,7 +178,7 @@ DefaultValueHandling controls how Json.NET uses default values set using the .NE
           <td>
             <div class="summary">
              By default Json.NET will write a field/property value 
-                to JSON when serializing if the value is the same as the field/property’s 
+                to JSON when serializing if the value is the same as the field/property's 
                 default value. The Json.NET deserializer will continue setting a field/property 
                 if the JSON value is the same as the default value.
             </div>
@@ -192,8 +192,8 @@ DefaultValueHandling controls how Json.NET uses default values set using the .NE
           <td>
             <div class="summary">
              Json.NET will skip writing a field/property value to 
-                JSON if the value is the same as the field/property’s default value. The 
-                Json.NET deserializer will skip setting a .NET object’s field/property if the 
+                JSON if the value is the same as the field/property's default value. The 
+                Json.NET deserializer will skip setting a .NET object's field/property if the 
                 JSON value is the same as the default value.
             </div>
             <br>
@@ -315,7 +315,7 @@ DefaultValueHandling controls how Json.NET uses default values set using the .NE
              Json.NET will check whether an object/collection matches 
                 its declared property and writes the type name if they do not match, e.g. a 
                 property with a type of Mammal has a derived instance of Dog assigned. Auto will 
-                ensure that type information isn’t lost when serializing/deserializing 
+                ensure that type information isn't lost when serializing/deserializing 
                 automatically without having to write type names for every object.
             </div>
             <br>
@@ -405,7 +405,7 @@ DefaultValueHandling controls how Json.NET uses default values set using the .NE
             <div class="summary">
              By default Json.NET will first look for a constructor 
                 marked with the JsonConstructorAttribute, then look for a public default 
-                constructor (a constructor that doesn’t take any arguments) and finally check if 
+                constructor (a constructor that doesn't take any arguments) and finally check if 
                 the class has a single public constructor with arguments. If the class has 
                 multiple public constructors with arguments an error will be thrown. This can be 
                 fixed by marking one of the constructors with the JsonConstructorAttribute.

@@ -78,7 +78,11 @@ namespace Newtonsoft.Json.Serialization
   /// </summary>
   public class DefaultContractResolver : IContractResolver
   {
-    internal static readonly IContractResolver Instance = new DefaultContractResolver(true);
+    private static readonly IContractResolver _instance = new DefaultContractResolver(true);
+    internal static IContractResolver Instance
+    {
+        get { return _instance; }
+    }
     private static readonly IList<JsonConverter> BuiltInConverters = new List<JsonConverter>
       {
 #if !PocketPC && !SILVERLIGHT && !NET20
@@ -792,7 +796,7 @@ namespace Newtonsoft.Json.Serialization
       property.Writable = ReflectionUtils.CanSetMemberValue(member, allowNonPublicAccess, hasExplicitAttribute);
       property.ShouldSerialize = CreateShouldSerializeTest(member);
 
-      SetIsSpecifiedActions(property, member);
+      SetIsSpecifiedActions(property, member, allowNonPublicAccess);
 
       return property;
     }
@@ -898,7 +902,7 @@ namespace Newtonsoft.Json.Serialization
       return o => (bool)shouldSerializeCall(o);
     }
 
-    private void SetIsSpecifiedActions(JsonProperty property, MemberInfo member)
+    private void SetIsSpecifiedActions(JsonProperty property, MemberInfo member, bool allowNonPublicAccess)
     {
       MemberInfo specifiedMember = member.DeclaringType.GetProperty(member.Name + JsonTypeReflector.SpecifiedPostfix);
       if (specifiedMember == null)
@@ -912,7 +916,9 @@ namespace Newtonsoft.Json.Serialization
       Func<object, object> specifiedPropertyGet = JsonTypeReflector.ReflectionDelegateFactory.CreateGet<object>(specifiedMember);
 
       property.GetIsSpecified = o => (bool)specifiedPropertyGet(o);
-      property.SetIsSpecified = JsonTypeReflector.ReflectionDelegateFactory.CreateSet<object>(specifiedMember);
+
+      if (ReflectionUtils.CanSetMemberValue(specifiedMember, allowNonPublicAccess, false))
+        property.SetIsSpecified = JsonTypeReflector.ReflectionDelegateFactory.CreateSet<object>(specifiedMember);
     }
 
     /// <summary>

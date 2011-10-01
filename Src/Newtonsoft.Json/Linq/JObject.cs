@@ -142,6 +142,15 @@ namespace Newtonsoft.Json.Linq
       return (t != null && ContentsEqual(t));
     }
 
+    internal override void InsertItem(int index, JToken item)
+    {
+      // don't add comments to JObject, no name to reference comment by
+      if (item != null && item.Type == JTokenType.Comment)
+        return;
+
+      base.InsertItem(index, item);
+    }
+
     internal override void ValidateToken(JToken o, JToken existing)
     {
       ValidationUtils.ArgumentNotNull(o, "o");
@@ -478,16 +487,6 @@ namespace Newtonsoft.Json.Linq
         array[arrayIndex + index] = new KeyValuePair<string, JToken>(property.Name, property.Value);
         index++;
       }
-    }
-
-    /// <summary>
-    /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
-    /// </summary>
-    /// <value></value>
-    /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.</returns>
-    public int Count
-    {
-      get { return ChildrenTokens.Count; }
     }
 
     bool ICollection<KeyValuePair<string,JToken>>.IsReadOnly

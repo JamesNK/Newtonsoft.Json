@@ -45,6 +45,7 @@ namespace Newtonsoft.Json.Serialization
     internal Type DictionaryKeyType { get; private set; }
     internal Type DictionaryValueType { get; private set; }
 
+    private readonly bool _isDictionaryValueTypeNullableType;
     private readonly Type _genericCollectionDefinitionType;
     private Type _genericWrapperType;
     private MethodCall<object, object> _genericWrapperCreator;
@@ -71,6 +72,9 @@ namespace Newtonsoft.Json.Serialization
       DictionaryKeyType = keyType;
       DictionaryValueType = valueType;
 
+      if (DictionaryValueType != null)
+        _isDictionaryValueTypeNullableType = ReflectionUtils.IsNullableType(DictionaryValueType);
+      
       if (IsTypeGenericDictionaryInterface(UnderlyingType))
       {
         CreatedType = ReflectionUtils.MakeGenericType(typeof(Dictionary<,>), keyType, valueType);
@@ -83,7 +87,7 @@ namespace Newtonsoft.Json.Serialization
 
     internal IWrappedDictionary CreateWrapper(object dictionary)
     {
-      if (dictionary is IDictionary)
+      if (dictionary is IDictionary && (DictionaryValueType == null || !_isDictionaryValueTypeNullableType))
         return new DictionaryWrapper<object, object>((IDictionary)dictionary);
 
       if (_genericWrapperType == null)

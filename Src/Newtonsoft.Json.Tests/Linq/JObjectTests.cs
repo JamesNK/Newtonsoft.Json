@@ -1591,6 +1591,12 @@ Parameter name: arrayIndex")]
       Assert.AreEqual(false, prop4.ShouldSerializeValue(o));
     }
 #endif
+    [Test]
+    public void ParseEmptyObjectWithComment()
+    {
+      JObject o = JObject.Parse("{ /* A Comment */ }");
+      Assert.AreEqual(0, o.Count);
+    }
 
     [Test]
     public void FromObjectTimeSpan()
