@@ -67,6 +67,10 @@ namespace Newtonsoft.Json.Linq
     public event NotifyCollectionChangedEventHandler CollectionChanged;
 #endif
 
+    /// <summary>
+    /// Gets the container's children tokens.
+    /// </summary>
+    /// <value>The container's children tokens.</value>
     protected abstract IList<JToken> ChildrenTokens { get; }
 
     private object _syncRoot;
@@ -865,6 +869,10 @@ namespace Newtonsoft.Json.Linq
       CopyItemsTo(array, index);
     }
 
+    /// <summary>
+    /// Gets the count of child JSON tokens.
+    /// </summary>
+    /// <value>The count of child JSON tokens</value>
     public int Count
     {
       get { return ChildrenTokens.Count; }

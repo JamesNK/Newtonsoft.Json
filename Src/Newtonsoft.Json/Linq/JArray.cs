@@ -41,6 +41,10 @@ namespace Newtonsoft.Json.Linq
   {
     private IList<JToken> _values = new List<JToken>();
 
+    /// <summary>
+    /// Gets the container's children tokens.
+    /// </summary>
+    /// <value>The container's children tokens.</value>
     protected override IList<JToken> ChildrenTokens
     {
       get { return _values; }

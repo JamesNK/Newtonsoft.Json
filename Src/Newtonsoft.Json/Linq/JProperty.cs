@@ -43,6 +43,10 @@ namespace Newtonsoft.Json.Linq
     private readonly List<JToken> _content = new List<JToken>();
     private readonly string _name;
 
+    /// <summary>
+    /// Gets the container's children tokens.
+    /// </summary>
+    /// <value>The container's children tokens.</value>
     protected override IList<JToken> ChildrenTokens
     {
       get { return _content; }

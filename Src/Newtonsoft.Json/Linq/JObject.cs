@@ -85,6 +85,10 @@ namespace Newtonsoft.Json.Linq
 
     private JPropertKeyedCollection _properties = new JPropertKeyedCollection(StringComparer.Ordinal);
 
+    /// <summary>
+    /// Gets the container's children tokens.
+    /// </summary>
+    /// <value>The container's children tokens.</value>
     protected override IList<JToken> ChildrenTokens
     {
       get { return _properties; }
