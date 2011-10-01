@@ -1,6 +1,6 @@
 ﻿properties { 
-  $zipFileName = "Json40r2.zip"
-  $majorVersion = "4.0.2"
+  $zipFileName = "Json40r3.zip"
+  $majorVersion = "4.0.3"
   $version = GetVersion $majorVersion
   $signAssemblies = $false
   $signKeyPath = "D:\Development\Releases\newtonsoft.snk"
@@ -128,11 +128,11 @@ task Test -depends Deploy {
         Write-Host
         robocopy ".\Src\Newtonsoft.Json.Tests\bin\Release\$finalDir" $workingDir\Deployed\Bin\$finalDir /NP /XO /XF LinqBridge.dll
         
-        Copy-Item -Path ".\Src\Newtonsoft.Json.Tests\bin\Release\$finalDir\$name.dll" -Destination $workingDir\Deployed\Bin\$finalDir\
+        Copy-Item -Path ".\Src\Newtonsoft.Json.Tests\bin\Release\$finalDir\Newtonsoft.Json.Tests.dll" -Destination $workingDir\Deployed\Bin\$finalDir\
 
         Write-Host -ForegroundColor Green "Running tests " $name
         Write-Host
-        exec { .\Tools\NUnit\nunit-console.exe "$workingDir\Deployed\Bin\$finalDir\$name.dll" /framework=$framework /xml:$workingDir\$name.xml } "Error running $name tests"
+        exec { .\Tools\NUnit\nunit-console.exe "$workingDir\Deployed\Bin\$finalDir\Newtonsoft.Json.Tests.dll" /framework=$framework /xml:$workingDir\$name.xml } "Error running $name tests"
     }
   }
 }

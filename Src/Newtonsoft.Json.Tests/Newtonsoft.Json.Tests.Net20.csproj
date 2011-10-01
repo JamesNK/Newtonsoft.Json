@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Newtonsoft.Json.Tests</RootNamespace>
-    <AssemblyName>Newtonsoft.Json.Tests.Net20</AssemblyName>
+    <AssemblyName>Newtonsoft.Json.Tests</AssemblyName>
     <SccProjectName>
     </SccProjectName>
     <SccLocalPath>

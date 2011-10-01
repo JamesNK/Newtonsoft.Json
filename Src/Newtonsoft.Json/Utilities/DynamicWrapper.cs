@@ -53,17 +53,12 @@ namespace Newtonsoft.Json.Utilities
 
     private static byte[] GetStrongKey()
     {
-      string name;
-#if NET35
-      name = "Newtonsoft.Json.Net35.Dynamic.snk";
-#else
-      name = "Newtonsoft.Json.Dynamic.snk";
-#endif
+      string name ="Newtonsoft.Json.Dynamic.snk";
 
       using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(name))
       {
         if (stream == null)
-          throw new MissingManifestResourceException("Should have a Newtonsoft.Json.Dynamic.snk as an embedded resource.");
+          throw new MissingManifestResourceException("Should have " + name + " as an embedded resource.");
 
         int length = (int)stream.Length;
         byte[] buffer = new byte[length];

@@ -1,20 +1,26 @@
 #region License
-// Copyright 2006 James Newton-King
-// http://www.newtonsoft.com
+// Copyright (c) 2007 James Newton-King
 //
-// This work is licensed under the Creative Commons Attribution 2.5 License
-// http://creativecommons.org/licenses/by/2.5/
+// Permission is hereby granted, free of charge, to any person
+// obtaining a copy of this software and associated documentation
+// files (the "Software"), to deal in the Software without
+// restriction, including without limitation the rights to use,
+// copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following
+// conditions:
 //
-// You are free:
-//    * to copy, distribute, display, and perform the work
-//    * to make derivative works
-//    * to make commercial use of the work
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
 //
-// Under the following conditions:
-//    * You must attribute the work in the manner specified by the author or licensor:
-//          - If you find this component useful a link to http://www.newtonsoft.com would be appreciated.
-//    * For any reuse or distribution, you must make clear to others the license terms of this work.
-//    * Any of these conditions can be waived if you get permission from the copyright holder.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+// OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
 using System;
@@ -44,37 +50,9 @@ using System.Security;
 #endif
 
 #if !SIGNED
-
-#if WINDOWS_PHONE
-[assembly: InternalsVisibleTo("Newtonsoft.Json.Tests.WindowsPhone")]
-#elif SILVERLIGHT
-[assembly: InternalsVisibleTo("Newtonsoft.Json.Tests.Silverlight")]
-#elif PocketPC
-[assembly: InternalsVisibleTo("Newtonsoft.Json.Tests.Compact")]
-#elif NET20
-[assembly: InternalsVisibleTo("Newtonsoft.Json.Tests.Net20")]
-#elif NET35
-[assembly: InternalsVisibleTo("Newtonsoft.Json.Tests.Net35")]
-#else
 [assembly: InternalsVisibleTo("Newtonsoft.Json.Tests")]
-#endif
-
-#else
-
-#if WINDOWS_PHONE
-[assembly: InternalsVisibleTo("Newtonsoft.Json.Tests.WindowsPhone, PublicKey=0024000004800000940000000602000000240000525341310004000001000100f561df277c6c0b497d629032b410cdcf286e537c054724f7ffa0164345f62b3e642029d7a80cc351918955328c4adc8a048823ef90b0cf38ea7db0d729caf2b633c3babe08b0310198c1081995c19029bc675193744eab9d7345b8a67258ec17d112cebdbbb2a281487dceeafb9d83aa930f32103fbe1d2911425bc5744002c7")]
-#elif SILVERLIGHT
-[assembly: InternalsVisibleTo("Newtonsoft.Json.Tests.Silverlight, PublicKey=0024000004800000940000000602000000240000525341310004000001000100f561df277c6c0b497d629032b410cdcf286e537c054724f7ffa0164345f62b3e642029d7a80cc351918955328c4adc8a048823ef90b0cf38ea7db0d729caf2b633c3babe08b0310198c1081995c19029bc675193744eab9d7345b8a67258ec17d112cebdbbb2a281487dceeafb9d83aa930f32103fbe1d2911425bc5744002c7")]
-#elif PocketPC
-[assembly: InternalsVisibleTo("Newtonsoft.Json.Tests.Compact, PublicKey=0024000004800000940000000602000000240000525341310004000001000100f561df277c6c0b497d629032b410cdcf286e537c054724f7ffa0164345f62b3e642029d7a80cc351918955328c4adc8a048823ef90b0cf38ea7db0d729caf2b633c3babe08b0310198c1081995c19029bc675193744eab9d7345b8a67258ec17d112cebdbbb2a281487dceeafb9d83aa930f32103fbe1d2911425bc5744002c7")]
-#elif NET20
-[assembly: InternalsVisibleTo("Newtonsoft.Json.Tests.Net20, PublicKey=0024000004800000940000000602000000240000525341310004000001000100f561df277c6c0b497d629032b410cdcf286e537c054724f7ffa0164345f62b3e642029d7a80cc351918955328c4adc8a048823ef90b0cf38ea7db0d729caf2b633c3babe08b0310198c1081995c19029bc675193744eab9d7345b8a67258ec17d112cebdbbb2a281487dceeafb9d83aa930f32103fbe1d2911425bc5744002c7")]
-#elif NET35
-[assembly: InternalsVisibleTo("Newtonsoft.Json.Tests.Net35, PublicKey=0024000004800000940000000602000000240000525341310004000001000100f561df277c6c0b497d629032b410cdcf286e537c054724f7ffa0164345f62b3e642029d7a80cc351918955328c4adc8a048823ef90b0cf38ea7db0d729caf2b633c3babe08b0310198c1081995c19029bc675193744eab9d7345b8a67258ec17d112cebdbbb2a281487dceeafb9d83aa930f32103fbe1d2911425bc5744002c7")]
 #else
 [assembly: InternalsVisibleTo("Newtonsoft.Json.Tests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100f561df277c6c0b497d629032b410cdcf286e537c054724f7ffa0164345f62b3e642029d7a80cc351918955328c4adc8a048823ef90b0cf38ea7db0d729caf2b633c3babe08b0310198c1081995c19029bc675193744eab9d7345b8a67258ec17d112cebdbbb2a281487dceeafb9d83aa930f32103fbe1d2911425bc5744002c7")]
-#endif
-
 #endif
 
 
@@ -108,9 +86,9 @@ using System.Security;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("4.0.2.0")]
+[assembly: AssemblyVersion("4.0.3.0")]
 #if !PocketPC
-[assembly: AssemblyFileVersion("4.0.2.14201")]
+[assembly: AssemblyFileVersion("4.0.3.14201")]
 #endif
 
 [assembly: CLSCompliant(true)]

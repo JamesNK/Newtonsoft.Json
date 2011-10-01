@@ -13,7 +13,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Newtonsoft.Json</RootNamespace>
-    <AssemblyName>Newtonsoft.Json.Silverlight</AssemblyName>
+    <AssemblyName>Newtonsoft.Json</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SilverlightApplication>false</SilverlightApplication>
     <ValidateXaml>true</ValidateXaml>
@@ -53,7 +53,7 @@
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>Bin\Debug\Silverlight\Newtonsoft.Json.Silverlight.xml</DocumentationFile>
+    <DocumentationFile>Bin\Debug\Silverlight\Newtonsoft.Json.xml</DocumentationFile>
     <CodeAnalysisRuleSet>Newtonsoft.Json.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
@@ -66,7 +66,7 @@
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>Bin\Release\Silverlight\Newtonsoft.Json.Silverlight.xml</DocumentationFile>
+    <DocumentationFile>Bin\Release\Silverlight\Newtonsoft.Json.xml</DocumentationFile>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>

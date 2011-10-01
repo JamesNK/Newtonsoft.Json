@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Newtonsoft.Json</RootNamespace>
-    <AssemblyName>Newtonsoft.Json.Net20</AssemblyName>
+    <AssemblyName>Newtonsoft.Json</AssemblyName>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>
     </AssemblyOriginatorKeyFile>
@@ -51,7 +51,7 @@
     <DefineConstants>TRACE;DEBUG;NET20</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\Net20\Newtonsoft.Json.Net20.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\Net20\Newtonsoft.Json.xml</DocumentationFile>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisRules>
     </CodeAnalysisRules>
@@ -64,7 +64,7 @@
     <DefineConstants>TRACE;NET20</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Net20\Newtonsoft.Json.Net20.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\Net20\Newtonsoft.Json.xml</DocumentationFile>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>

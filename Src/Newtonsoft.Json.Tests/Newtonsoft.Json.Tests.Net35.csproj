@@ -8,8 +8,8 @@
     <ProjectGuid>{3E6E2335-B079-4B5B-A65A-9D586914BCBB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Newtonsoft.Json.Tests.Net35</RootNamespace>
-    <AssemblyName>Newtonsoft.Json.Tests.Net35</AssemblyName>
+    <RootNamespace>Newtonsoft.Json.Tests</RootNamespace>
+    <AssemblyName>Newtonsoft.Json.Tests</AssemblyName>
     <SccProjectName>
     </SccProjectName>
     <SccLocalPath>
