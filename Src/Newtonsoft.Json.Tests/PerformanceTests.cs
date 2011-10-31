@@ -126,14 +126,14 @@ namespace Newtonsoft.Json.Tests
     public void BuildJObject()
     {
       JObject o = new JObject();
-      for (int i = 0; i < 200; i++)
+      for (int i = 0; i < 50; i++)
       {
         o[i.ToString()] = i;
       }
       string jsonText = o.ToString();
 
       // this is extremely slow with 5000 interations
-      int interations = 100;
+      int interations = 1000;
 
       TimeOperation(() =>
       {

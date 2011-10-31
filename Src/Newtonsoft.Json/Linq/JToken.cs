@@ -418,7 +418,7 @@ namespace Newtonsoft.Json.Linq
       if (v == null || !ValidateBoolean(v, false))
         throw new ArgumentException("Can not convert {0} to Boolean.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
-      return (bool)v.Value;
+      return Convert.ToBoolean(v.Value, CultureInfo.InvariantCulture);
     }
 
 #if !PocketPC && !NET20
@@ -451,7 +451,7 @@ namespace Newtonsoft.Json.Linq
       if (v == null || !ValidateBoolean(v, true))
         throw new ArgumentException("Can not convert {0} to Boolean.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
-      return (bool?)v.Value;
+      return (v.Value != null) ? (bool?)Convert.ToBoolean(v.Value, CultureInfo.InvariantCulture) : null;
     }
 
     /// <summary>
@@ -465,7 +465,7 @@ namespace Newtonsoft.Json.Linq
       if (v == null || !ValidateInteger(v, false))
         throw new ArgumentException("Can not convert {0} to Int64.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
-      return (long)v.Value;
+      return Convert.ToInt64(v.Value, CultureInfo.InvariantCulture);
     }
 
     /// <summary>
@@ -482,7 +482,7 @@ namespace Newtonsoft.Json.Linq
       if (v == null || !ValidateDate(v, true))
         throw new ArgumentException("Can not convert {0} to DateTime.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
-      return (DateTime?)v.Value;
+      return (v.Value != null) ? (DateTime?)Convert.ToDateTime(v.Value, CultureInfo.InvariantCulture) : null;
     }
 
 #if !PocketPC && !NET20
@@ -644,7 +644,7 @@ namespace Newtonsoft.Json.Linq
       if (v == null || !ValidateDate(v, false))
         throw new ArgumentException("Can not convert {0} to DateTime.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
-      return (DateTime)v.Value;
+      return Convert.ToDateTime(v.Value, CultureInfo.InvariantCulture);
     }
 
     /// <summary>
@@ -661,7 +661,7 @@ namespace Newtonsoft.Json.Linq
       if (v == null || !ValidateInteger(v, true))
         throw new ArgumentException("Can not convert {0} to Int64.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
-      return (long?)v.Value;
+      return (v.Value != null) ? (long?)Convert.ToInt64(v.Value, CultureInfo.InvariantCulture) : null;
     }
 
     /// <summary>
@@ -710,7 +710,7 @@ namespace Newtonsoft.Json.Linq
       if (v == null || !ValidateInteger(v, true))
         throw new ArgumentException("Can not convert {0} to UInt32.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
-      return (uint?)v.Value;
+      return (v.Value != null) ? (uint?)Convert.ToUInt32(v.Value, CultureInfo.InvariantCulture) : null;
     }
 
     /// <summary>
@@ -728,7 +728,7 @@ namespace Newtonsoft.Json.Linq
       if (v == null || !ValidateInteger(v, true))
         throw new ArgumentException("Can not convert {0} to UInt64.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
-      return (ulong?)v.Value;
+      return (v.Value != null) ? (ulong?)Convert.ToUInt64(v.Value, CultureInfo.InvariantCulture) : null;
     }
 
     /// <summary>
@@ -742,7 +742,7 @@ namespace Newtonsoft.Json.Linq
       if (v == null || !ValidateFloat(v, false))
         throw new ArgumentException("Can not convert {0} to Double.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
-      return (double)v.Value;
+      return Convert.ToDouble(v.Value, CultureInfo.InvariantCulture);
     }
 
     /// <summary>
@@ -773,7 +773,7 @@ namespace Newtonsoft.Json.Linq
       if (v == null || !ValidateString(v))
         throw new ArgumentException("Can not convert {0} to String.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
-      return (string)v.Value;
+      return (v.Value != null) ? Convert.ToString(v.Value) : null;
     }
 
     /// <summary>

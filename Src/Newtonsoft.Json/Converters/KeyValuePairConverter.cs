@@ -42,19 +42,50 @@ namespace Newtonsoft.Json.Converters
     /// <returns>The object value.</returns>
     public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
     {
-      IList<Type> genericArguments = objectType.GetGenericArguments();
+      bool isNullable = ReflectionUtils.IsNullableType(objectType);
+
+      if (reader.TokenType == JsonToken.Null)
+      {
+        if (!isNullable)
+          throw new Exception("Could not deserialize Null to KeyValuePair.");
+
+        return null;
+      }
+
+      Type t = (isNullable)
+       ? Nullable.GetUnderlyingType(objectType)
+       : objectType;
+
+      IList<Type> genericArguments = t.GetGenericArguments();
       Type keyType = genericArguments[0];
       Type valueType = genericArguments[1];
 
-      reader.Read();
-      reader.Read();
-      object key = serializer.Deserialize(reader, keyType);
-      reader.Read();
-      reader.Read();
-      object value = serializer.Deserialize(reader, valueType);
+      object key = null;
+      object value = null;
+
       reader.Read();
 
-      return ReflectionUtils.CreateInstance(objectType, key, value);
+      while (reader.TokenType == JsonToken.PropertyName)
+      {
+        switch (reader.Value.ToString())
+        {
+          case "Key":
+            reader.Read();
+            key = serializer.Deserialize(reader, keyType);
+            break;
+          case "Value":
+            reader.Read();
+            value = serializer.Deserialize(reader, valueType);
+            break;
+          default:
+            reader.Skip();
+            break;
+        }
+
+        reader.Read();
+      }
+
+      return ReflectionUtils.CreateInstance(t, key, value);
     }
 
     /// <summary>
@@ -66,8 +97,12 @@ namespace Newtonsoft.Json.Converters
     /// </returns>
     public override bool CanConvert(Type objectType)
     {
-      if (objectType.IsValueType && objectType.IsGenericType)
-        return (objectType.GetGenericTypeDefinition() == typeof (KeyValuePair<,>));
+      Type t = (ReflectionUtils.IsNullableType(objectType))
+        ? Nullable.GetUnderlyingType(objectType)
+        : objectType;
+
+      if (t.IsValueType && t.IsGenericType)
+        return (t.GetGenericTypeDefinition() == typeof(KeyValuePair<,>));
 
       return false;
     }

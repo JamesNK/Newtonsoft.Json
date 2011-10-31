@@ -436,5 +436,17 @@ Parameter name: index")]
     {
       JArray.Parse("[1");
     }
+
+    [Test]
+    public void InsertAddEnd()
+    {
+      JArray array = new JArray();
+      array.Insert(0, 123);
+      array.Insert(1, 456);
+
+      Assert.AreEqual(2, array.Count);
+      Assert.AreEqual(123, (int)array[0]);
+      Assert.AreEqual(456, (int)array[1]);
+    }
   }
 }

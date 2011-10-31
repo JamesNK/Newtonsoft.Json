@@ -392,7 +392,10 @@ namespace Newtonsoft.Json
     /// <returns>A JSON string representation of the <see cref="Uri"/>.</returns>
     public static string ToString(Uri value)
     {
-      return '"' + value.ToString() + '"';
+      if (value == null)
+        return Null;
+
+      return ToString(value.ToString());
     }
 
     /// <summary>

@@ -1,4 +1,4 @@
-#region License
+﻿#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -1256,6 +1256,50 @@ namespace Newtonsoft.Json.Tests.Converters
     }
   }
 }", json);
+    }
+
+    [Test]
+    public void DeserializeNonInt64IntegerValues()
+    {
+      var dict = new Dictionary<string, object> { { "Int16", (short)1 }, { "Float", 2f }, { "Int32", 3 } };
+      var obj = JObject.FromObject(dict);
+      var serializer = JsonSerializer.Create(new JsonSerializerSettings { Converters = { new XmlNodeConverter() { DeserializeRootElementName = "root" } } });
+      using (var reader = obj.CreateReader())
+      {
+        var value = (XmlDocument)serializer.Deserialize(reader, typeof(XmlDocument));
+
+        Assert.AreEqual(@"<root><Int16>1</Int16><Float>2</Float><Int32>3</Int32></root>", value.InnerXml);
+      }
+    }
+
+    [Test]
+    public void DeserializingBooleanValues()
+    {
+      MemoryStream ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(@"{root:{""@booleanType"":true}}"));
+      MemoryStream xml = new MemoryStream();
+
+      JsonBodyToSoapXml(ms, xml);
+
+      string xmlString = System.Text.Encoding.UTF8.GetString(xml.ToArray());
+
+      Assert.AreEqual(@"﻿<?xml version=""1.0"" encoding=""utf-8""?><root booleanType=""true"" />", xmlString);
+    }
+
+    static void JsonBodyToSoapXml(Stream json, Stream xml)
+    {
+      Newtonsoft.Json.JsonSerializerSettings settings = new Newtonsoft.Json.JsonSerializerSettings();
+      settings.Converters.Add(new Newtonsoft.Json.Converters.XmlNodeConverter());
+      Newtonsoft.Json.JsonSerializer serializer = Newtonsoft.Json.JsonSerializer.Create(settings);
+      using (Newtonsoft.Json.JsonTextReader reader = new Newtonsoft.Json.JsonTextReader(new System.IO.StreamReader(json)))
+      {
+        XmlDocument doc = (XmlDocument)serializer.Deserialize(reader, typeof(XmlDocument));
+        if (reader.Read() && reader.TokenType != JsonToken.Comment)
+          throw new JsonSerializationException("Additional text found in JSON string after finishing deserializing object.");
+        using (XmlWriter writer = XmlWriter.Create(xml))
+        {
+          doc.Save(writer);
+        }
+      }
     }
   }
 }

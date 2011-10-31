@@ -25,6 +25,9 @@
 
 using System;
 using System.Collections;
+#if !(NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE)
+using System.Collections.Concurrent;
+#endif
 using System.Collections.Generic;
 using System.ComponentModel;
 #if !(NET35 || NET20 || WINDOWS_PHONE)
@@ -463,12 +466,24 @@ namespace Newtonsoft.Json.Serialization
 
       if (onSerializing != null)
         contract.OnSerializing = onSerializing;
+
       if (onSerialized != null)
         contract.OnSerialized = onSerialized;
+
       if (onDeserializing != null)
         contract.OnDeserializing = onDeserializing;
+
       if (onDeserialized != null)
+      {
+        // ConcurrentDictionary throws an error here so don't use its OnDeserialized - http://json.codeplex.com/discussions/257093
+#if !(NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE)
+        if (!t.IsGenericType || (t.GetGenericTypeDefinition() != typeof(ConcurrentDictionary<,>)))
+          contract.OnDeserialized = onDeserialized;
+#else
         contract.OnDeserialized = onDeserialized;
+#endif
+      }
+
       if (onError != null)
         contract.OnError = onError;
     }

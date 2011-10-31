@@ -209,6 +209,9 @@ namespace Newtonsoft.Json.Tests.Linq
     [Test]
     public void Casting()
     {
+      Assert.AreEqual(1L, (long)(new JValue(1)));
+      Assert.AreEqual(2L, (long) new JArray(1, 2, 3)[1]);
+
       Assert.AreEqual(new DateTime(2000, 12, 20), (DateTime)new JValue(new DateTime(2000, 12, 20)));
 #if !PocketPC && !NET20
       Assert.AreEqual(new DateTimeOffset(2000, 12, 20, 23, 50, 10, TimeSpan.Zero), (DateTimeOffset)new JValue(new DateTimeOffset(2000, 12, 20, 23, 50, 10, TimeSpan.Zero)));

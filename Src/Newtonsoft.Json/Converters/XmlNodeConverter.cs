@@ -26,6 +26,7 @@
 #if !SILVERLIGHT || WINDOWS_PHONE
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Xml;
 #if !NET20
 using System.Xml.Linq;
@@ -1194,26 +1195,13 @@ namespace Newtonsoft.Json.Converters
         element.SetAttributeNode(attribute);
       }
 
-      if (reader.TokenType == JsonToken.String)
+      if (reader.TokenType == JsonToken.String
+        || reader.TokenType == JsonToken.Integer
+        || reader.TokenType == JsonToken.Float
+        || reader.TokenType == JsonToken.Boolean
+        || reader.TokenType == JsonToken.Date)
       {
-        element.AppendChild(document.CreateTextNode(reader.Value.ToString()));
-      }
-      else if (reader.TokenType == JsonToken.Integer)
-      {
-        element.AppendChild(document.CreateTextNode(XmlConvert.ToString((long)reader.Value)));
-      }
-      else if (reader.TokenType == JsonToken.Float)
-      {
-        element.AppendChild(document.CreateTextNode(XmlConvert.ToString((double)reader.Value)));
-      }
-      else if (reader.TokenType == JsonToken.Boolean)
-      {
-        element.AppendChild(document.CreateTextNode(XmlConvert.ToString((bool)reader.Value)));
-      }
-      else if (reader.TokenType == JsonToken.Date)
-      {
-        DateTime d = (DateTime)reader.Value;
-        element.AppendChild(document.CreateTextNode(XmlConvert.ToString(d, DateTimeUtils.ToSerializationMode(d.Kind))));
+        element.AppendChild(document.CreateTextNode(ConvertTokenToXmlValue(reader)));
       }
       else if (reader.TokenType == JsonToken.Null)
       {
@@ -1230,6 +1218,39 @@ namespace Newtonsoft.Json.Converters
 
           manager.PopScope();
         }
+      }
+    }
+
+    private string ConvertTokenToXmlValue(JsonReader reader)
+    {
+      if (reader.TokenType == JsonToken.String)
+      {
+        return reader.Value.ToString();
+      }
+      else if (reader.TokenType == JsonToken.Integer)
+      {
+        return XmlConvert.ToString(Convert.ToInt64(reader.Value, CultureInfo.InvariantCulture));
+      }
+      else if (reader.TokenType == JsonToken.Float)
+      {
+        return XmlConvert.ToString(Convert.ToDouble(reader.Value, CultureInfo.InvariantCulture));
+      }
+      else if (reader.TokenType == JsonToken.Boolean)
+      {
+        return XmlConvert.ToString(Convert.ToBoolean(reader.Value, CultureInfo.InvariantCulture));
+      }
+      else if (reader.TokenType == JsonToken.Date)
+      {
+        DateTime d = Convert.ToDateTime(reader.Value, CultureInfo.InvariantCulture);
+        return XmlConvert.ToString(d, DateTimeUtils.ToSerializationMode(d.Kind));
+      }
+      else if (reader.TokenType == JsonToken.Null)
+      {
+        return null;
+      }
+      else
+      {
+        throw new Exception("Cannot get an XML string value from token type '{0}'.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
       }
     }
 
@@ -1309,7 +1330,7 @@ namespace Newtonsoft.Json.Converters
                   case '@':
                     attributeName = attributeName.Substring(1);
                     reader.Read();
-                    attributeValue = reader.Value.ToString();
+                    attributeValue = ConvertTokenToXmlValue(reader);
                     attributeNameValues.Add(attributeName, attributeValue);
 
                     string namespacePrefix;

@@ -24,11 +24,15 @@
 #endregion
 
 using System;
+#if !(NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE)
+using System.Collections.Concurrent;
+#endif
 using System.Collections.Generic;
 #if !SILVERLIGHT && !PocketPC && !NET20
 using System.ComponentModel.DataAnnotations;
 using System.Configuration;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization.Formatters;
 using System.Threading;
 using System.Web.Script.Serialization;
 #endif
@@ -4910,6 +4914,107 @@ keyword such as type of business.""
         Assert.AreEqual(@"{""p"":1}", result);
       }
     }
+
+#if !(NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE)
+    [Test]
+    public void DeserializeConcurrentDictionary()
+    {
+      IDictionary<string, Component> components = new Dictionary<string, Component>
+        {
+          {"Key!", new Component()}
+        };
+      GameObject go = new GameObject
+        {
+          Components = new ConcurrentDictionary<string, Component>(components),
+          Id = "Id!",
+          Name = "Name!"
+        };
+
+      string originalJson = JsonConvert.SerializeObject(go, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""Components"": {
+    ""Key!"": {}
+  },
+  ""Id"": ""Id!"",
+  ""Name"": ""Name!""
+}", originalJson);
+
+      GameObject newObject = JsonConvert.DeserializeObject<GameObject>(originalJson);
+
+      Assert.AreEqual(1, newObject.Components.Count);
+      Assert.AreEqual("Id!", newObject.Id);
+      Assert.AreEqual("Name!", newObject.Name);
+    }
+#endif
+
+    [Test]
+    public void DeserializeKeyValuePairArray()
+    {
+      string json = @"[ { ""Value"": [ ""1"", ""2"" ], ""Key"": ""aaa"", ""BadContent"": [ 0 ] }, { ""Value"": [ ""3"", ""4"" ], ""Key"": ""bbb"" } ]";
+
+      IList<KeyValuePair<string, IList<string>>> values = JsonConvert.DeserializeObject<IList<KeyValuePair<string, IList<string>>>>(json);
+
+      Assert.AreEqual(2, values.Count);
+      Assert.AreEqual("aaa", values[0].Key);
+      Assert.AreEqual(2, values[0].Value.Count);
+      Assert.AreEqual("1", values[0].Value[0]);
+      Assert.AreEqual("2", values[0].Value[1]);
+      Assert.AreEqual("bbb", values[1].Key);
+      Assert.AreEqual(2, values[1].Value.Count);
+      Assert.AreEqual("3", values[1].Value[0]);
+      Assert.AreEqual("4", values[1].Value[1]);
+    }
+
+    [Test]
+    public void DeserializeNullableKeyValuePairArray()
+    {
+      string json = @"[ { ""Value"": [ ""1"", ""2"" ], ""Key"": ""aaa"", ""BadContent"": [ 0 ] }, null, { ""Value"": [ ""3"", ""4"" ], ""Key"": ""bbb"" } ]";
+
+      IList<KeyValuePair<string, IList<string>>?> values = JsonConvert.DeserializeObject<IList<KeyValuePair<string, IList<string>>?>>(json);
+
+      Assert.AreEqual(3, values.Count);
+      Assert.AreEqual("aaa", values[0].Value.Key);
+      Assert.AreEqual(2, values[0].Value.Value.Count);
+      Assert.AreEqual("1", values[0].Value.Value[0]);
+      Assert.AreEqual("2", values[0].Value.Value[1]);
+      Assert.AreEqual(null, values[1]);
+      Assert.AreEqual("bbb", values[2].Value.Key);
+      Assert.AreEqual(2, values[2].Value.Value.Count);
+      Assert.AreEqual("3", values[2].Value.Value[0]);
+      Assert.AreEqual("4", values[2].Value.Value[1]);
+    }
+
+    [Test]
+    [ExpectedException(typeof (Exception), ExpectedMessage = "Could not deserialize Null to KeyValuePair.")]
+    public void DeserializeNullToNonNullableKeyValuePairArray()
+    {
+      string json = @"[ null ]";
+
+      JsonConvert.DeserializeObject<IList<KeyValuePair<string, IList<string>>>>(json);
+    }
+
+    [Test]
+    public void SerializeUriWithQuotes()
+    {
+      string input = "http://test.com/%22foo+bar%22";
+      Uri uri = new Uri(input);
+      string json = JsonConvert.SerializeObject(uri);
+      Uri output = JsonConvert.DeserializeObject<Uri>(json);
+
+      Assert.AreEqual(uri, output);
+    }
+
+    [Test]
+    public void SerializeUriWithSlashes()
+    {
+      string input = @"http://tes/?a=b\\c&d=e\";
+      Uri uri = new Uri(input);
+      string json = JsonConvert.SerializeObject(uri);
+      Uri output = JsonConvert.DeserializeObject<Uri>(json);
+
+      Assert.AreEqual(uri, output);
+    }
   }
 
   public class UriGuidTimeSpanTestClass
@@ -4920,4 +5025,47 @@ keyword such as type of business.""
     public TimeSpan? NullableTimeSpan { get; set; }
     public Uri Uri { get; set; }
   }
+
+#if !(NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE)
+  [JsonObject(MemberSerialization.OptIn)]
+  public class GameObject
+  {
+    [JsonProperty]
+    public string Id { get; set; }
+
+    [JsonProperty]
+    public string Name { get; set; }
+
+    [JsonProperty]
+    public ConcurrentDictionary<string, Component> Components;
+
+    public GameObject()
+    {
+      Components = new ConcurrentDictionary<string, Component>();
+    }
+
+  }
+
+  [JsonObject(MemberSerialization.OptIn)]
+  public class Component
+  {
+    [JsonIgnore] // Ignore circular reference 
+    public GameObject GameObject { get; set; }
+
+    public Component()
+    {
+    }
+  }
+
+  [JsonObject(MemberSerialization.OptIn)]
+  public class TestComponent : Component
+  {
+    [JsonProperty]
+    public int MyProperty { get; set; }
+
+    public TestComponent()
+    {
+    }
+  }
+#endif
 }
