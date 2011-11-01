@@ -87,7 +87,7 @@ namespace Newtonsoft.Json
     {
       using (StringWriter writer = StringUtils.CreateStringWriter(64))
       {
-        WriteDateTimeString(writer, value, GetUtcOffset(value), value.Kind);
+        WriteDateTimeString(writer, value, value.GetUtcOffset(), value.Kind);
         return writer.ToString();
       }
     }
@@ -108,18 +108,9 @@ namespace Newtonsoft.Json
     }
 #endif
 
-    private static TimeSpan GetUtcOffset(DateTime dateTime)
-    {
-#if SILVERLIGHT
-      return TimeZoneInfo.Local.GetUtcOffset(dateTime);
-#else
-      return TimeZone.CurrentTimeZone.GetUtcOffset(dateTime);
-#endif
-    }
-
     internal static void WriteDateTimeString(TextWriter writer, DateTime value)
     {
-      WriteDateTimeString(writer, value, GetUtcOffset(value), value.Kind);
+      WriteDateTimeString(writer, value, value.GetUtcOffset(), value.Kind);
     }
 
     internal static void WriteDateTimeString(TextWriter writer, DateTime value, TimeSpan offset, DateTimeKind kind)
@@ -154,7 +145,7 @@ namespace Newtonsoft.Json
       if (dateTime.Kind == DateTimeKind.Utc)
         return dateTime.Ticks;
 
-      return ToUniversalTicks(dateTime, GetUtcOffset(dateTime));
+      return ToUniversalTicks(dateTime, dateTime.GetUtcOffset());
     }
 
     private static long ToUniversalTicks(DateTime dateTime, TimeSpan offset)

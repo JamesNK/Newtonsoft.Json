@@ -73,7 +73,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
       d = new DateTime(2000, 12, 15, 22, 11, 3, 55, DateTimeKind.Local);
       result = JsonConvert.SerializeObject(d, converter);
-      Assert.AreEqual(@"""2000-12-15T22:11:03.055" + d.GetLocalOffset() + @"""", result);
+      Assert.AreEqual(@"""2000-12-15T22:11:03.055" + d.GetUtcOffsetText() + @"""", result);
     }
 
     [Test]
@@ -272,13 +272,7 @@ namespace Newtonsoft.Json.Tests.Converters
       c.DateTimeField = new DateTime(2008, 1, 1, 1, 1, 1, 0, DateTimeKind.Utc);
       string json2 = JsonConvert.SerializeObject(c, new IsoDateTimeConverter() { DateTimeStyles = DateTimeStyles.AssumeUniversal });
 
-      TimeSpan offset;
-
-#if SILVERLIGHT
-      offset = TimeZoneInfo.Local.GetUtcOffset(localDateTime);
-#else
-      offset = TimeZone.CurrentTimeZone.GetUtcOffset(localDateTime);
-#endif
+      TimeSpan offset = localDateTime.GetUtcOffset();
 
       // if the current timezone is utc then local already equals utc
       if (offset == TimeSpan.Zero)

@@ -9,16 +9,20 @@ namespace Newtonsoft.Json.Utilities
 {
   internal static class DateTimeUtils
   {
-    public static string GetLocalOffset(this DateTime d)
+    public static string GetUtcOffsetText(this DateTime d)
     {
-      TimeSpan utcOffset;
-#if PocketPC || NET20
-      utcOffset = TimeZone.CurrentTimeZone.GetUtcOffset(d);
-#else
-      utcOffset = TimeZoneInfo.Local.GetUtcOffset(d);
-#endif
+      TimeSpan utcOffset = d.GetUtcOffset();
 
       return utcOffset.Hours.ToString("+00;-00", CultureInfo.InvariantCulture) + ":" + utcOffset.Minutes.ToString("00;00", CultureInfo.InvariantCulture);
+    }
+
+    public static TimeSpan GetUtcOffset(this DateTime d)
+    {
+#if PocketPC || NET20
+      return TimeZone.CurrentTimeZone.GetUtcOffset(d);
+#else
+      return TimeZoneInfo.Local.GetUtcOffset(d);
+#endif
     }
 
     public static XmlDateTimeSerializationMode ToSerializationMode(DateTimeKind kind)

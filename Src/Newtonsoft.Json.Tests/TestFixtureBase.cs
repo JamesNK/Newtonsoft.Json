@@ -44,13 +44,6 @@ namespace Newtonsoft.Json.Tests
       //Thread.CurrentThread.CurrentUICulture = turkey;
     }
 
-    //public string GetOffset(DateTime value)
-    //{
-    //  TimeSpan utcOffset = TimeZone.CurrentTimeZone.GetUtcOffset(value.ToLocalTime());
-
-    //  return utcOffset.Hours.ToString("+00;-00") + utcOffset.Minutes.ToString("00;00");
-    //}
-
     protected void WriteEscapedJson(string json)
     {
       Console.WriteLine(EscapeJson(json));
