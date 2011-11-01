@@ -38,6 +38,14 @@ namespace Newtonsoft.Json.Linq
     {
       Read();
 
+      if (IsWrappedInTypeObject())
+      {
+        byte[] data = ReadAsBytes();
+        Read();
+        SetToken(JsonToken.Bytes, data);
+        return data;
+      }
+
       // attempt to convert possible base 64 string to bytes
       if (TokenType == JsonToken.String)
       {
@@ -52,6 +60,30 @@ namespace Newtonsoft.Json.Linq
         return (byte[])Value;
 
       throw new JsonReaderException("Error reading bytes. Expected bytes but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+    }
+
+    private bool IsWrappedInTypeObject()
+    {
+      if (TokenType == JsonToken.StartObject)
+      {
+        Read();
+        if (Value.ToString() == "$type")
+        {
+          Read();
+          if (Value != null && Value.ToString().StartsWith("System.Byte[]"))
+          {
+            Read();
+            if (Value.ToString() == "$value")
+            {
+              return true;
+            }
+          }
+        }
+
+        throw new JsonReaderException("Unexpected token when reading bytes: {0}.".FormatWith(CultureInfo.InvariantCulture, JsonToken.StartObject));
+      }
+
+      return false;
     }
 
     /// <summary>

@@ -323,6 +323,35 @@ namespace Newtonsoft.Json
       return ReadInternal();
     }
 
+    private bool IsWrappedInTypeObject()
+    {
+      _readType = ReadType.Read;
+
+      if (TokenType == JsonToken.StartObject)
+      {
+        int startObjectLineNumber = _currentLineNumber;
+        int startObjectLinePosition = _currentLinePosition;
+
+        ReadInternal();
+        if (Value.ToString() == "$type")
+        {
+          ReadInternal();
+          if (Value != null && Value.ToString().StartsWith("System.Byte[]"))
+          {
+            ReadInternal();
+            if (Value.ToString() == "$value")
+            {
+              return true;
+            }
+          }
+        }
+
+        throw CreateJsonReaderException("Unexpected token when reading bytes: {0}. Line {1}, position {2}.", JsonToken.StartObject, startObjectLineNumber, startObjectLinePosition);
+      }
+
+      return false;
+    }
+
     /// <summary>
     /// Reads the next JSON token from the stream as a <see cref="T:Byte[]"/>.
     /// </summary>
@@ -333,11 +362,19 @@ namespace Newtonsoft.Json
     {
       _readType = ReadType.ReadAsBytes;
 
-        do
-        {
-          if (!ReadInternal())
-            throw CreateJsonReaderException("Unexpected end when reading bytes: Line {0}, position {1}.", _currentLineNumber, _currentLinePosition);
-        } while (TokenType == JsonToken.Comment);
+      do
+      {
+        if (!ReadInternal())
+          throw CreateJsonReaderException("Unexpected end when reading bytes: Line {0}, position {1}.", _currentLineNumber, _currentLinePosition);
+      } while (TokenType == JsonToken.Comment);
+
+      if (IsWrappedInTypeObject())
+      {
+        byte[] data = ReadAsBytes();
+        ReadInternal();
+        SetToken(JsonToken.Bytes, data);
+        return data;
+      }
 
       if (TokenType == JsonToken.Null)
         return null;

@@ -44,6 +44,7 @@ using System.Collections;
 using System.Xml;
 using System.Xml.Serialization;
 using System.Collections.ObjectModel;
+using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Linq;
 using System.Linq;
 using Newtonsoft.Json.Converters;
@@ -5015,6 +5016,52 @@ keyword such as type of business.""
 
       Assert.AreEqual(uri, output);
     }
+
+    [Test]
+    public void DeserializeByteArrayWithTypeNameHandling()
+    {
+      TestObject test = new TestObject("Test", new byte[] { 72, 63, 62, 71, 92, 55 });
+
+      JsonSerializer serializer = new JsonSerializer();
+      serializer.TypeNameHandling = TypeNameHandling.All;
+
+      byte[] objectBytes;
+      using (MemoryStream bsonStream = new MemoryStream())
+      using (JsonWriter bsonWriter = new JsonTextWriter(new StreamWriter(bsonStream)))
+      {
+        serializer.Serialize(bsonWriter, test);
+        bsonWriter.Flush();
+
+        objectBytes = bsonStream.ToArray();
+      }
+
+      using (MemoryStream bsonStream = new MemoryStream(objectBytes))
+      using (JsonReader bsonReader = new JsonTextReader(new StreamReader(bsonStream)))
+      {
+        // Get exception here
+        TestObject newObject = (TestObject) serializer.Deserialize(bsonReader);
+
+        Assert.AreEqual("Test", newObject.Name);
+        Assert.AreEqual(new byte[] { 72, 63, 62, 71, 92, 55 }, newObject.Data);
+      }
+    }
+  }
+
+  public class TestObject
+  {
+    public TestObject()
+    {
+      
+    }
+
+    public TestObject(string name, byte[] data)
+    {
+      Name = name;
+      Data = data;
+    }
+
+    public string Name { get; set; }
+    public byte[] Data { get; set; }
   }
 
   public class UriGuidTimeSpanTestClass

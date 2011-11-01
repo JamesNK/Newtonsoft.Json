@@ -30,6 +30,7 @@ using NUnit.Framework;
 using Newtonsoft.Json;
 using System.IO;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Tests.Serialization;
 
 namespace Newtonsoft.Json.Tests.Linq
 {
@@ -304,6 +305,31 @@ namespace Newtonsoft.Json.Tests.Linq
       JToken nullToken = JToken.ReadFrom(new JsonTextReader(new StringReader("{ Data: null }")));
       ReadAsBytesTestObject x = s.Deserialize<ReadAsBytesTestObject>(new JTokenReader(nullToken));
       Assert.IsNull(x.Data);
+    }
+
+    [Test]
+    public void DeserializeByteArrayWithTypeNameHandling()
+    {
+      TestObject test = new TestObject("Test", new byte[] { 72, 63, 62, 71, 92, 55 });
+
+      string json = JsonConvert.SerializeObject(test, Formatting.Indented, new JsonSerializerSettings
+        {
+          TypeNameHandling = TypeNameHandling.All
+        });
+
+      JObject o = JObject.Parse(json);
+
+      JsonSerializer serializer = new JsonSerializer();
+      serializer.TypeNameHandling = TypeNameHandling.All;
+
+      using (JsonReader nodeReader = o.CreateReader())
+      {
+        // Get exception here
+        TestObject newObject = (TestObject)serializer.Deserialize(nodeReader);
+
+        Assert.AreEqual("Test", newObject.Name);
+        Assert.AreEqual(new byte[] { 72, 63, 62, 71, 92, 55 }, newObject.Data);
+      }
     }
   }
 }

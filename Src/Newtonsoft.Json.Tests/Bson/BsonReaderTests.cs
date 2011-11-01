@@ -1214,5 +1214,34 @@ namespace Newtonsoft.Json.Tests.Bson
       Assert.AreEqual(c1.NullableTimeSpan, c2.NullableTimeSpan);
       Assert.AreEqual(c1.Uri, c2.Uri);
     }
+
+    [Test]
+    public void DeserializeByteArrayWithTypeNameHandling()
+    {
+      TestObject test = new TestObject("Test", new byte[] { 72, 63, 62, 71, 92, 55 });
+
+      JsonSerializer serializer = new JsonSerializer();
+      serializer.TypeNameHandling = TypeNameHandling.All;
+
+      byte[] objectBytes;
+      using (MemoryStream bsonStream = new MemoryStream())
+      using (JsonWriter bsonWriter = new BsonWriter(bsonStream))
+      {
+        serializer.Serialize(bsonWriter, test);
+        bsonWriter.Flush();
+
+        objectBytes = bsonStream.ToArray();
+      }
+
+      using (MemoryStream bsonStream = new MemoryStream(objectBytes))
+      using (JsonReader bsonReader = new BsonReader(bsonStream))
+      {
+        // Get exception here
+        TestObject newObject = (TestObject)serializer.Deserialize(bsonReader);
+
+        Assert.AreEqual("Test", newObject.Name);
+        Assert.AreEqual(new byte[] { 72, 63, 62, 71, 92, 55 }, newObject.Data);
+      }
+    }
   }
 }

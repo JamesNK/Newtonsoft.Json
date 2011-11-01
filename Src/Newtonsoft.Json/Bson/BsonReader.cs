@@ -158,12 +158,44 @@ namespace Newtonsoft.Json.Bson
     {
       Read();
 
+      if (IsWrappedInTypeObject())
+      {
+        byte[] data = ReadAsBytes();
+        Read();
+        SetToken(JsonToken.Bytes, data);
+        return data;
+      }
+
       if (TokenType == JsonToken.Null)
         return null;
       if (TokenType == JsonToken.Bytes)
         return (byte[])Value;
 
       throw new JsonReaderException("Error reading bytes. Expected bytes but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+    }
+
+    private bool IsWrappedInTypeObject()
+    {
+      if (TokenType == JsonToken.StartObject)
+      {
+        Read();
+        if (Value.ToString() == "$type")
+        {
+          Read();
+          if (Value != null && Value.ToString().StartsWith("System.Byte[]"))
+          {
+            Read();
+            if (Value.ToString() == "$value")
+            {
+              return true;
+            }
+          }
+        }
+
+        throw new JsonReaderException("Unexpected token when reading bytes: {0}.".FormatWith(CultureInfo.InvariantCulture, JsonToken.StartObject));
+      }
+
+      return false;
     }
 
     /// <summary>
