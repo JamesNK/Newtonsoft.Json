@@ -395,7 +395,15 @@ namespace Newtonsoft.Json.Schema
       if (value == null)
         return true;
 
-      return ((value & flag) == flag);
+      bool match = ((value & flag) == flag);
+      if (match)
+        return true;
+
+      // integer is a subset of float
+      if (value == JsonSchemaType.Float && flag == JsonSchemaType.Integer)
+        return true;
+
+      return false;
     }
 
     private JsonSchemaType GetJsonSchemaType(Type type, Required valueRequired)

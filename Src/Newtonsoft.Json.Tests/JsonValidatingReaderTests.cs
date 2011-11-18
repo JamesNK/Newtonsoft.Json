@@ -7,6 +7,8 @@ using NUnit.Framework;
 using System.Xml;
 using System.Xml.Schema;
 using Newtonsoft.Json.Schema;
+using Newtonsoft.Json.Utilities;
+using ValidationEventArgs = Newtonsoft.Json.Schema.ValidationEventArgs;
 
 namespace Newtonsoft.Json.Tests
 {
@@ -500,6 +502,36 @@ namespace Newtonsoft.Json.Tests
       Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
 
       Assert.IsNotNull(validationEventArgs);
+    }
+
+    [Test]
+    public void IntValidForNumber()
+    {
+      string schemaJson = @"{
+  ""type"":""array"",
+  ""items"":{
+    ""type"":""number""
+  }
+}";
+
+      string json = "[1]";
+
+      Json.Schema.ValidationEventArgs validationEventArgs = null;
+
+      JsonValidatingReader reader = new JsonValidatingReader(new JsonTextReader(new StringReader(json)));
+      reader.ValidationEventHandler += (sender, args) => { validationEventArgs = args; };
+      reader.Schema = JsonSchema.Parse(schemaJson);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+
+      Assert.IsNull(validationEventArgs);
     }
 
     [Test]
@@ -1208,6 +1240,125 @@ namespace Newtonsoft.Json.Tests
       Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
 
       Assert.IsFalse(reader.Read());
+    }
+
+    [Test]
+    public void DuplicateErrorsTest()
+    {
+      string schema = @"{
+  ""id"":""ErrorDemo.Database"",
+  ""properties"":{
+    ""ErrorDemoDatabase"":{
+      ""type"":""object"",
+      ""required"":true,
+      ""properties"":{
+        ""URL"":{
+          ""type"":""string"",
+          ""required"":true
+        },
+        ""Version"":{
+          ""type"":""string"",
+          ""required"":true
+        },
+        ""Date"":{
+          ""type"":""string"",
+          ""format"":""date-time"",
+          ""required"":true
+        },
+        ""MACLevels"":{
+          ""type"":""object"",
+          ""required"":true,
+          ""properties"":{
+            ""MACLevel"":{
+              ""type"":""array"",
+              ""required"":true,
+              ""items"":[
+                {
+                  ""required"":true,
+                  ""properties"":{
+                    ""IDName"":{
+                      ""type"":""string"",
+                      ""required"":true
+                    },
+                    ""Order"":{
+                      ""type"":""string"",
+                      ""required"":true
+                    },
+                    ""IDDesc"":{
+                      ""type"":""string"",
+                      ""required"":true
+                    },
+                    ""IsActive"":{
+                      ""type"":""string"",
+                      ""required"":true
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}";
+
+      string json = @"{
+  ""ErrorDemoDatabase"":{
+    ""URL"":""localhost:3164"",
+    ""Version"":""1.0"",
+    ""Date"":""6.23.2010, 9:35:18.121"",
+    ""MACLevels"":{
+      ""MACLevel"":[
+        {
+          ""@IDName"":""Developer"",
+          ""Order"":""0"",
+          ""IDDesc"":""DeveloperDesc"",
+          ""IsActive"":""True""
+        },
+        {
+          ""IDName"":""Technician"",
+          ""Order"":""1"",
+          ""IDDesc"":""TechnicianDesc"",
+          ""IsActive"":""True""
+        },
+        {
+          ""IDName"":""Administrator"",
+          ""Order"":""2"",
+          ""IDDesc"":""AdministratorDesc"",
+          ""IsActive"":""True""
+        },
+        {
+          ""IDName"":""PowerUser"",
+          ""Order"":""3"",
+          ""IDDesc"":""PowerUserDesc"",
+          ""IsActive"":""True""
+        },
+        {
+          ""IDName"":""Operator"",
+          ""Order"":""4"",
+          ""IDDesc"":""OperatorDesc"",
+          ""IsActive"":""True""
+        }
+      ]
+    }
+  }
+}";
+
+      IList<ValidationEventArgs> validationEventArgs = new List<ValidationEventArgs>();
+
+      JsonValidatingReader reader = new JsonValidatingReader(new JsonTextReader(new StringReader(json)));
+      reader.ValidationEventHandler += (sender, args) =>
+        {
+          validationEventArgs.Add(args);
+        };
+      reader.Schema = JsonSchema.Parse(schema);
+
+      while (reader.Read())
+      {
+      }
+
+      Assert.AreEqual(1, validationEventArgs.Count);
     }
   }
 }

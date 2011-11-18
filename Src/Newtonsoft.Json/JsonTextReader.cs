@@ -58,11 +58,11 @@ namespace Newtonsoft.Json
     private CultureInfo _culture;
 
     /// <summary>
-    /// Gets or sets the culture used when reading JSON. Defaults to <see cref="CultureInfo.CurrentCulture"/>.
+    /// Gets or sets the culture used when reading JSON. Defaults to <see cref="CultureInfo.InvariantCulture"/>.
     /// </summary>
     public CultureInfo Culture
     {
-      get { return _culture ?? CultureInfo.CurrentCulture; }
+      get { return _culture ?? CultureInfo.InvariantCulture; }
       set { _culture = value; }
     }
 

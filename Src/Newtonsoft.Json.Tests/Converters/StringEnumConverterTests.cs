@@ -23,6 +23,14 @@ namespace Newtonsoft.Json.Tests.Converters
       public T Enum { get; set; }
     }
 
+    [Flags]
+    public enum FlagsTestEnum
+    {
+      Default = 0,
+      First = 1,
+      Second = 2
+    }
+
     public enum NegativeEnum
     {
       Negative = -1,
@@ -255,6 +263,31 @@ namespace Newtonsoft.Json.Tests.Converters
       Assert.AreEqual((StoreColor)1000, enumClass.StoreColor);
       Assert.AreEqual((StoreColor)1000, enumClass.NullableStoreColor1);
       Assert.AreEqual(null, enumClass.NullableStoreColor2);
+    }
+
+    [Test]
+    public void CamelCaseTextFlagEnumSerialization()
+    {
+      EnumContainer<FlagsTestEnum> c = new EnumContainer<FlagsTestEnum>
+      {
+        Enum = FlagsTestEnum.First | FlagsTestEnum.Second
+      };
+
+      string json = JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter { CamelCaseText = true });
+      Assert.AreEqual(@"{
+  ""Enum"": ""first, second""
+}", json);
+    }
+
+    [Test]
+    public void CamelCaseTextFlagEnumDeserialization()
+    {
+      string json = @"{
+  ""Enum"": ""first, second""
+}";
+
+      EnumContainer<FlagsTestEnum> c = JsonConvert.DeserializeObject<EnumContainer<FlagsTestEnum>>(json, new StringEnumConverter { CamelCaseText = true });
+      Assert.AreEqual(FlagsTestEnum.First | FlagsTestEnum.Second, c.Enum);
     }
   }
 }

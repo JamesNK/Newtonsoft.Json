@@ -479,7 +479,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(TimeSpan value)
     {
       base.WriteValue(value);
-      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Date);
+      WriteValueInternal(JsonConvert.ToString(value), JsonToken.String);
     }
 
     /// <summary>
@@ -489,7 +489,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(Uri value)
     {
       base.WriteValue(value);
-      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Date);
+      WriteValueInternal(JsonConvert.ToString(value), JsonToken.String);
     }
     #endregion
 

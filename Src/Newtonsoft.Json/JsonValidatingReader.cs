@@ -214,10 +214,14 @@ namespace Newtonsoft.Json
                 if (!CollectionUtils.IsNullOrEmpty(schema.Items))
                 {
                   if (schema.Items.Count == 1)
+                  {
                     schemas.Add(schema.Items[0]);
-
-                  if (schema.Items.Count > (_currentScope.ArrayItemCount - 1))
-                    schemas.Add(schema.Items[_currentScope.ArrayItemCount - 1]);
+                  }
+                  else
+                  {
+                    if (schema.Items.Count > (_currentScope.ArrayItemCount - 1))
+                      schemas.Add(schema.Items[_currentScope.ArrayItemCount - 1]);
+                  }
                 }
 
                 if (schema.AllowAdditionalProperties && schema.AdditionalProperties != null)

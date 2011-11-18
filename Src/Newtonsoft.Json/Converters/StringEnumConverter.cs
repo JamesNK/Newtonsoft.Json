@@ -80,7 +80,10 @@ namespace Newtonsoft.Json.Converters
         resolvedEnumName = resolvedEnumName ?? enumName;
 
         if (CamelCaseText)
-          resolvedEnumName = StringUtils.ToCamelCase(resolvedEnumName);
+        {
+          var names = resolvedEnumName.Split(',').Select(item => StringUtils.ToCamelCase(item.Trim()));
+          resolvedEnumName = string.Join(", ", names);
+        }
 
         writer.WriteValue(resolvedEnumName);
       }

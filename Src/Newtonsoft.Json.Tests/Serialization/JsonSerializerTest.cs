@@ -5045,6 +5045,38 @@ keyword such as type of business.""
         Assert.AreEqual(new byte[] { 72, 63, 62, 71, 92, 55 }, newObject.Data);
       }
     }
+
+    [Test]
+    public void DeserializeDecimalsWithCulture()
+    {
+      CultureInfo initialCulture = Thread.CurrentThread.CurrentCulture;
+
+      try
+      {
+        CultureInfo testCulture = CultureInfo.CreateSpecificCulture("nb-NO");
+
+        Thread.CurrentThread.CurrentCulture = testCulture;
+        Thread.CurrentThread.CurrentUICulture = testCulture;
+
+        string json = @"{ 'Quantity': '1.5', 'OptionalQuantity': '2.2' }";
+
+        DecimalTestClass c = JsonConvert.DeserializeObject<DecimalTestClass>(json);
+
+        Assert.AreEqual(1.5m, c.Quantity);
+        Assert.AreEqual(2.2d, c.OptionalQuantity);
+      }
+      finally 
+      {
+        Thread.CurrentThread.CurrentCulture = initialCulture;
+        Thread.CurrentThread.CurrentUICulture = initialCulture;
+      }
+    }
+  }
+
+  public class DecimalTestClass
+  {
+    public decimal Quantity { get; set; }
+    public double OptionalQuantity { get; set; }
   }
 
   public class TestObject
