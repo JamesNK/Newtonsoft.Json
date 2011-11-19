@@ -155,6 +155,26 @@ namespace Newtonsoft.Json.Tests.Converters
     }
 
     [Test]
+    public void SerializeDataTableWithNullAndIgnoreNullHandling()
+    {
+      var table = new DataTable();
+      table.Columns.Add("item");
+      table.Columns.Add("price", typeof(double));
+      table.Rows.Add("shirt", 49.99);
+      table.Rows.Add("pants", 54.99);
+      table.Rows.Add("shoes"); // no price
+
+      var json = JsonConvert.SerializeObject(table, Formatting.None, new JsonSerializerSettings
+        {
+          NullValueHandling = NullValueHandling.Ignore
+        });
+      Assert.AreEqual(@"["
+      + @"{""item"":""shirt"",""price"":49.99},"
+      + @"{""item"":""pants"",""price"":54.99},"
+      + @"{""item"":""shoes""}]", json);
+    }
+
+    [Test]
     public void DerializeDataTableWithImplicitNull()
     {
       const string json = @"["

@@ -152,7 +152,7 @@ namespace Newtonsoft.Json.Serialization
 #if !SILVERLIGHT && !PocketPC
       else if (valueContract is JsonISerializableContract)
       {
-        SerializeISerializable(writer, (ISerializable)value, (JsonISerializableContract)valueContract);
+        SerializeISerializable(writer, (ISerializable)value, (JsonISerializableContract)valueContract, member, collectionValueContract);
       }
 #endif
 #if !(NET35 || NET20 || WINDOWS_PHONE)
@@ -475,12 +475,17 @@ namespace Newtonsoft.Json.Serialization
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.Security.SecuritySafeCriticalAttribute")]
     [SecuritySafeCritical]
 #endif
-    private void SerializeISerializable(JsonWriter writer, ISerializable value, JsonISerializableContract contract)
+    private void SerializeISerializable(JsonWriter writer, ISerializable value, JsonISerializableContract contract, JsonProperty member, JsonContract collectionValueContract)
     {
       contract.InvokeOnSerializing(value, Serializer.Context);
       SerializeStack.Add(value);
 
       writer.WriteStartObject();
+
+      if (ShouldWriteType(TypeNameHandling.Objects, contract, member, collectionValueContract))
+      {
+          WriteTypeProperty(writer, contract.UnderlyingType);
+      }
 
       SerializationInfo serializationInfo = new SerializationInfo(contract.UnderlyingType, new FormatterConverter());
       value.GetObjectData(serializationInfo, Serializer.Context);

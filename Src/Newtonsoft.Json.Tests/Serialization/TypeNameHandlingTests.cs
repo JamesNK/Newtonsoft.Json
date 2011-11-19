@@ -881,6 +881,55 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       Assert.AreEqual(data, obj.Objects[0]);
     }
+
+#if !(WINDOWS_PHONE || SILVERLIGHT)
+    [Test]
+    public void ISerializableTypeNameHandlingTest()
+    {
+      //Create an instance of our example type
+      IExample e = new Example("Rob");
+
+      SerializableWrapper w = new SerializableWrapper
+        {
+          Content = e
+        };
+
+      //Test Binary Serialization Round Trip
+      //This will work find because the Binary Formatter serializes type names
+      //this.TestBinarySerializationRoundTrip(e);
+
+      //Test Json Serialization
+      //This fails because the JsonSerializer doesn't serialize type names correctly for ISerializable objects
+      //Type Names should be serialized for All, Auto and Object modes
+      this.TestJsonSerializationRoundTrip(w, TypeNameHandling.All);
+      this.TestJsonSerializationRoundTrip(w, TypeNameHandling.Auto);
+      this.TestJsonSerializationRoundTrip(w, TypeNameHandling.Objects);
+    }
+
+    private void TestJsonSerializationRoundTrip(SerializableWrapper e, TypeNameHandling flag)
+    {
+      Console.WriteLine("Type Name Handling: " + flag.ToString());
+      StringWriter writer = new StringWriter();
+
+      //Create our serializer and set Type Name Handling appropriately
+      JsonSerializer serializer = new JsonSerializer();
+      serializer.TypeNameHandling = flag;
+
+      //Do the actual serialization and dump to Console for inspection
+      serializer.Serialize(new JsonTextWriter(writer), e);
+      Console.WriteLine(writer.ToString());
+      Console.WriteLine();
+
+      //Now try to deserialize
+      //Json.Net will cause an error here as it will try and instantiate
+      //the interface directly because it failed to respect the
+      //TypeNameHandling property on serialization
+      SerializableWrapper f = serializer.Deserialize<SerializableWrapper>(new JsonTextReader(new StringReader(writer.ToString())));
+
+      //Check Round Trip
+      Assert.AreEqual(e, f, "Objects should be equal after round trip json serialization");
+    }
+#endif
   }
 
   public class Message
@@ -896,4 +945,66 @@ namespace Newtonsoft.Json.Tests.Serialization
     public string Query { get; set; }
     public string Language { get; set; }
   }
+
+#if !(WINDOWS_PHONE || SILVERLIGHT)
+  public class SerializableWrapper
+  {
+    public object Content { get; set; }
+
+    public override bool Equals(object obj)
+    {
+      SerializableWrapper w = obj as SerializableWrapper;
+
+      if (w == null)
+        return false;
+
+      return Equals(w.Content, Content);
+    }
+  }
+
+  public interface IExample
+    : ISerializable
+  {
+    String Name
+    {
+      get;
+    }
+  }
+
+  [Serializable]
+  public class Example
+      : IExample
+  {
+    public Example(String name)
+    {
+      this.Name = name;
+    }
+
+    protected Example(SerializationInfo info, StreamingContext context)
+    {
+      this.Name = info.GetString("name");
+    }
+
+    public void GetObjectData(SerializationInfo info, StreamingContext context)
+    {
+      info.AddValue("name", this.Name);
+    }
+
+    public String Name { get; set; }
+
+    public override bool Equals(object obj)
+    {
+      if (obj == null) return false;
+      if (ReferenceEquals(this, obj)) return true;
+      if (obj is IExample)
+      {
+        return this.Name.Equals(((IExample)obj).Name);
+      }
+      else
+      {
+        return false;
+      }
+    }
+  }
+#endif
 }
