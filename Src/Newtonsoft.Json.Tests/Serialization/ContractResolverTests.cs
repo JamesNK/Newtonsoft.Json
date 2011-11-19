@@ -39,23 +39,6 @@ namespace Newtonsoft.Json.Tests.Serialization
     public string AuthorCountry { get; set; }
   }
 
-  public interface IPerson
-  {
-    string FirstName { get; set; }
-    string LastName { get; set; }
-    DateTime BirthDate { get; set; }
-  }
-
-  public class Employee : IPerson
-  {
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public DateTime BirthDate { get; set; }
-
-    public string Department { get; set; }
-    public string JobTitle { get; set; }
-  }
-
   public class IPersonContractResolver : DefaultContractResolver
   {
     protected override JsonContract CreateContract(Type objectType)

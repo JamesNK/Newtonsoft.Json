@@ -510,65 +510,79 @@ namespace Newtonsoft.Json.Tests.Serialization
     [Test]
     public void SerializeUsingCustomBinder()
     {
+      TypeNameSerializationBinder binder = new TypeNameSerializationBinder("Newtonsoft.Json.Tests.Serialization.{0}, Newtonsoft.Json.Tests");
+
       IList<object> values = new List<object>
         {
-          new Person
+          new Customer
             {
-              BirthDate = new DateTime(2000, 10, 23, 1, 1, 1, DateTimeKind.Utc),
-              LastModified = new DateTime(2000, 10, 23, 1, 1, 1, DateTimeKind.Utc),
-              Name = "Name!",
-              Department = "Department!"
+              Name = "Caroline Customer"
             },
-            new Employee
-              {
-              BirthDate = new DateTime(2000, 10, 23, 1, 1, 1, DateTimeKind.Utc),
-              FirstName = "FirstName!",
-              LastName = "LastName!",
-              Department = "Department!",
-              JobTitle = "JobTitle!"
-              }
+          new Purchase
+            {
+              ProductName = "Elbow Grease",
+              Price = 5.99m,
+              Quantity = 1
+            }
         };
 
       string json = JsonConvert.SerializeObject(values, Formatting.Indented, new JsonSerializerSettings
       {
         TypeNameHandling = TypeNameHandling.Auto,
-        Binder = new CompleteSerializationBinder()
+        Binder = binder
       });
       
+      //[
+      //  {
+      //    "$type": "Customer",
+      //    "Name": "Caroline Customer"
+      //  },
+      //  {
+      //    "$type": "Purchase",
+      //    "ProductName": "Elbow Grease",
+      //    "Price": 5.99,
+      //    "Quantity": 1
+      //  }
+      //]
+
+
       Assert.AreEqual(@"[
   {
-    ""$type"": ""Person"",
-    ""Name"": ""Name!"",
-    ""BirthDate"": ""\/Date(972262861000)\/"",
-    ""LastModified"": ""\/Date(972262861000)\/""
+    ""$type"": ""Customer"",
+    ""Name"": ""Caroline Customer""
   },
   {
-    ""$type"": ""Employee"",
-    ""FirstName"": ""FirstName!"",
-    ""LastName"": ""LastName!"",
-    ""BirthDate"": ""\/Date(972262861000)\/"",
-    ""Department"": ""Department!"",
-    ""JobTitle"": ""JobTitle!""
+    ""$type"": ""Purchase"",
+    ""ProductName"": ""Elbow Grease"",
+    ""Price"": 5.99,
+    ""Quantity"": 1
   }
 ]", json);
 
       IList<object> newValues = JsonConvert.DeserializeObject<IList<object>>(json, new JsonSerializerSettings
         {
           TypeNameHandling = TypeNameHandling.Auto,
-          Binder = new CompleteSerializationBinder()
+          Binder = new TypeNameSerializationBinder("Newtonsoft.Json.Tests.Serialization.{0}, Newtonsoft.Json.Tests")
         });
 
-      Assert.IsInstanceOfType(typeof(Person), newValues[0]);
-      Person person = (Person)newValues[0];
-      Assert.AreEqual("Name!", person.Name);
+      Assert.IsInstanceOfType(typeof(Customer), newValues[0]);
+      Customer customer = (Customer)newValues[0];
+      Assert.AreEqual("Caroline Customer", customer.Name);
 
-      Assert.IsInstanceOfType(typeof(Employee), newValues[1]);
-      Employee employee = (Employee)newValues[1];
-      Assert.AreEqual("FirstName!", employee.FirstName);
+      Assert.IsInstanceOfType(typeof(Purchase), newValues[1]);
+      Purchase purchase = (Purchase)newValues[1];
+      Assert.AreEqual("Elbow Grease", purchase.ProductName);
     }
 
-    public class CompleteSerializationBinder : SerializationBinder
+    public class TypeNameSerializationBinder : SerializationBinder
     {
+      public string TypeFormat { get; private set; }
+
+      public TypeNameSerializationBinder(string typeFormat)
+      {
+        TypeFormat = typeFormat;
+      }
+
       public override void BindToName(Type serializedType, out string assemblyName, out string typeName)
       {
         assemblyName = null;
@@ -577,15 +591,9 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       public override Type BindToType(string assemblyName, string typeName)
       {
-        switch (typeName)
-        {
-          case "Employee":
-            return typeof (Employee);
-          case "Person":
-            return typeof (Person);
-          default:
-            throw new ArgumentException();
-        }
+        string resolvedTypeName = string.Format(TypeFormat, typeName);
+
+        return Type.GetType(resolvedTypeName, true);
       }
     }
 #endif
@@ -944,6 +952,18 @@ namespace Newtonsoft.Json.Tests.Serialization
   {
     public string Query { get; set; }
     public string Language { get; set; }
+  }
+
+  public class Customer
+  {
+    public string Name { get; set; }
+  }
+
+  public class Purchase
+  {
+    public string ProductName { get; set; }
+    public decimal Price { get; set; }
+    public int Quantity { get; set; }
   }
 
 #if !(WINDOWS_PHONE || SILVERLIGHT)
