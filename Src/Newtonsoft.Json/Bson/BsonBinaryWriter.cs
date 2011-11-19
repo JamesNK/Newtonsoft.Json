@@ -10,7 +10,7 @@ namespace Newtonsoft.Json.Bson
 {
   internal class BsonBinaryWriter
   {
-    private static readonly Encoding Encoding = Encoding.UTF8;
+    private static readonly Encoding Encoding = new UTF8Encoding(false);
 
     private readonly BinaryWriter _writer;
 
@@ -169,12 +169,19 @@ namespace Newtonsoft.Json.Bson
       if (calculatedlengthPrefix != null)
         _writer.Write(calculatedlengthPrefix.Value);
 
+      WriteUtf8Bytes(s, byteCount);
+
+      _writer.Write((byte)0);
+    }
+
+    public void WriteUtf8Bytes(string s, int byteCount)
+    {
       if (s != null)
       {
         if (_largeByteBuffer == null)
         {
           _largeByteBuffer = new byte[256];
-          _maxChars = 256/Encoding.GetMaxByteCount(1);
+          _maxChars = 256 / Encoding.GetMaxByteCount(1);
         }
         if (byteCount <= 256)
         {
@@ -183,19 +190,10 @@ namespace Newtonsoft.Json.Bson
         }
         else
         {
-          int charCount;
-          int totalCharsWritten = 0;
-          for (int i = s.Length; i > 0; i -= charCount)
-          {
-            charCount = (i > _maxChars) ? _maxChars : i;
-            int count = Encoding.GetBytes(s, totalCharsWritten, charCount, _largeByteBuffer, 0);
-            _writer.Write(_largeByteBuffer, 0, count);
-            totalCharsWritten += charCount;
-          }
+          byte[] bytes = Encoding.GetBytes(s);
+          _writer.Write(bytes);
         }
       }
-
-      _writer.Write((byte)0);
     }
 
     private int CalculateSize(int stringByteCount)

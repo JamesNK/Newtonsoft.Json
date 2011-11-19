@@ -136,7 +136,12 @@ namespace Newtonsoft.Json.Linq
     {
       JsonReader jsonReader = new JsonTextReader(new StringReader(json));
 
-      return Load(jsonReader);
+      JArray a = Load(jsonReader);
+
+      if (jsonReader.Read() && jsonReader.TokenType != JsonToken.Comment)
+        throw new Exception("Additional text found in JSON string after parsing content.");
+
+      return a;
     }
 
     /// <summary>

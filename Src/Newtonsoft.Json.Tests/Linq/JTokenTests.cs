@@ -739,5 +739,18 @@ namespace Newtonsoft.Json.Tests.Linq
 
       Assert.IsTrue(v1.DeepEquals(v2));
     }
+
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected state: Finished. Line 5, position 3.")]
+    public void ParseAdditionalContent()
+    {
+      string json = @"[
+""Small"",
+""Medium"",
+""Large""
+], 987987";
+
+      JToken.Parse(json);
+    }
   }
 }

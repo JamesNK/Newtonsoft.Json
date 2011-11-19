@@ -448,5 +448,18 @@ Parameter name: index")]
       Assert.AreEqual(123, (int)array[0]);
       Assert.AreEqual(456, (int)array[1]);
     }
+
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected state: Finished. Line 5, position 3.")]
+    public void ParseAdditionalContent()
+    {
+      string json = @"[
+""Small"",
+""Medium"",
+""Large""
+], 987987";
+
+      JArray.Parse(json);
+    }
   }
 }

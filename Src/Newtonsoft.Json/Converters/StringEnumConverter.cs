@@ -81,7 +81,7 @@ namespace Newtonsoft.Json.Converters
 
         if (CamelCaseText)
         {
-          var names = resolvedEnumName.Split(',').Select(item => StringUtils.ToCamelCase(item.Trim()));
+          string[] names = resolvedEnumName.Split(',').Select(item => StringUtils.ToCamelCase(item.Trim())).ToArray();
           resolvedEnumName = string.Join(", ", names);
         }
 

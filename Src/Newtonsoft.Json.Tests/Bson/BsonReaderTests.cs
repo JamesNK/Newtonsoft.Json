@@ -1243,5 +1243,24 @@ namespace Newtonsoft.Json.Tests.Bson
         Assert.AreEqual(new byte[] { 72, 63, 62, 71, 92, 55 }, newObject.Data);
       }
     }
+
+#if !(WINDOWS_PHONE || SILVERLIGHT || NET20 || NET35)
+    public void Utf8Text()
+    {
+      string badText =System.IO.File.ReadAllText(@"PoisonText.txt");
+      var j = new JObject();
+      j["test"] = badText;
+
+      var memoryStream = new MemoryStream();
+      var bsonWriter = new BsonWriter(memoryStream);
+      j.WriteTo(bsonWriter);
+      bsonWriter.Flush();
+
+      memoryStream.Position = 0;
+      JObject o = JObject.Load(new BsonReader(memoryStream));
+
+      Assert.AreEqual(badText, (string)o["test"]);
+    }
+#endif
   }
 }

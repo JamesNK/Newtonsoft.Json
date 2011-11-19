@@ -5046,6 +5046,7 @@ keyword such as type of business.""
       }
     }
 
+#if !(SILVERLIGHT || WINDOWS_PHONE || NET20)
     [Test]
     public void DeserializeDecimalsWithCulture()
     {
@@ -5071,6 +5072,7 @@ keyword such as type of business.""
         Thread.CurrentThread.CurrentUICulture = initialCulture;
       }
     }
+#endif
   }
 
   public class DecimalTestClass

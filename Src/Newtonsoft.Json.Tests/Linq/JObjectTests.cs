@@ -1624,5 +1624,23 @@ Parameter name: arrayIndex")]
 
       Assert.AreEqual("9065acf3-c820-467d-be50-8d4664beaf35", v.ToString());
     }
+
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected state: Finished. Line 10, position 3.")]
+    public void ParseAdditionalContent()
+    {
+      string json = @"{
+""Name"": ""Apple"",
+""Expiry"": new Date(1230422400000),
+""Price"": 3.99,
+""Sizes"": [
+""Small"",
+""Medium"",
+""Large""
+]
+}, 987987";
+
+      JObject o = JObject.Parse(json);
+    }
   }
 }
