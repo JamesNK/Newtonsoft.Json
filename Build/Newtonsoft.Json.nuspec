@@ -3,7 +3,7 @@
   <metadata>
     <id>Newtonsoft.Json</id>
     <title>Json.NET</title>
-    <version>4.0.4</version>
+    <version>4.0.5</version>
     <authors>James Newton-King</authors>
     <description>Json.NET is a popular high-performance JSON framework for .NET</description>
     <language>en-US</language>

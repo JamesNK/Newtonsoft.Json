@@ -1,6 +1,6 @@
 ﻿properties { 
-  $zipFileName = "Json40r4.zip"
-  $majorVersion = "4.0.4"
+  $zipFileName = "Json40r5.zip"
+  $majorVersion = "4.0.5"
   $version = GetVersion $majorVersion
   $signAssemblies = $false
   $signKeyPath = "D:\Development\Releases\newtonsoft.snk"
@@ -16,7 +16,7 @@
   $workingDir = "$baseDir\Working"
   $builds = @(
     @{Name = "Newtonsoft.Json"; TestsName = "Newtonsoft.Json.Tests"; Constants=""; FinalDir="Net"; NuGetDir = "net40"; Framework="net-4.0"},
-    @{Name = "Newtonsoft.Json.WindowsPhone"; TestsName = $null; Constants="SILVERLIGHT;WINDOWS_PHONE"; FinalDir="WindowsPhone"; NuGetDir = "sl3-wp"; Framework="net-4.0"},
+    @{Name = "Newtonsoft.Json.WindowsPhone"; TestsName = $null; Constants="SILVERLIGHT;WINDOWS_PHONE"; FinalDir="WindowsPhone"; NuGetDir = "sl3-wp,sl4-windowsphone71"; Framework="net-4.0"},
     @{Name = "Newtonsoft.Json.Silverlight"; TestsName = "Newtonsoft.Json.Tests.Silverlight"; Constants="SILVERLIGHT"; FinalDir="Silverlight"; NuGetDir = "sl4"; Framework="net-4.0"},
     @{Name = "Newtonsoft.Json.Net35"; TestsName = "Newtonsoft.Json.Tests.Net35"; Constants="NET35"; FinalDir="Net35"; NuGetDir = "net35"; Framework="net-2.0"},
     @{Name = "Newtonsoft.Json.Net20"; TestsName = "Newtonsoft.Json.Tests.Net20"; Constants="NET20"; FinalDir="Net20"; NuGetDir = "net20"; Framework="net-2.0"}
@@ -92,7 +92,7 @@ task Package -depends Build {
   if ($buildDocumentation)
   {
     # Sandcastle has issues when compiling with .NET 4 MSBuild - http://shfb.codeplex.com/Thread/View.aspx?ThreadId=50652
-    exec { .$env:windir\Microsoft.NET\Framework\v3.5\MSBuild.exe "/t:Clean;Rebuild" /p:Configuration=Release "/p:DocumentationSourcePath=$workingDir\Package\Bin\Net" $docDir\doc.shfbproj } "Error building documentation. Check that you have Sandcastle, Sandcastle Help File Builder and HTML Help Workshop installed."
+    exec { msbuild "/t:Clean;Rebuild" /p:Configuration=Release "/p:DocumentationSourcePath=$workingDir\Package\Bin\Net" $docDir\doc.shfbproj } "Error building documentation. Check that you have Sandcastle, Sandcastle Help File Builder and HTML Help Workshop installed."
     
     move -Path $workingDir\Documentation\Documentation.chm -Destination $workingDir\Package\Documentation.chm
     move -Path $workingDir\Documentation\LastBuild.log -Destination $workingDir\Documentation.log
