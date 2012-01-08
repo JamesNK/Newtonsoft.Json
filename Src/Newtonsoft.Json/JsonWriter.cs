@@ -522,8 +522,11 @@ namespace Newtonsoft.Json
       {
         JsonToken token = GetCloseTokenForType(Pop());
 
-        if (_currentState != State.ObjectStart && _currentState != State.ArrayStart)
-          WriteIndent();
+        if (_formatting == Formatting.Indented)
+        {
+          if (_currentState != State.ObjectStart && _currentState != State.ArrayStart)
+            WriteIndent();
+        }
 
         WriteEnd(token);
       }
@@ -616,13 +619,16 @@ namespace Newtonsoft.Json
           WriteIndentSpace();
       }
 
-      WriteState writeState = WriteState;
-
-      // don't indent a property when it is the first token to be written (i.e. at the start)
-      if ((tokenBeingWritten == JsonToken.PropertyName && writeState != WriteState.Start) ||
-        writeState == WriteState.Array || writeState == WriteState.Constructor)
+      if (_formatting == Formatting.Indented)
       {
-        WriteIndent();
+        WriteState writeState = WriteState;
+
+        // don't indent a property when it is the first token to be written (i.e. at the start)
+        if ((tokenBeingWritten == JsonToken.PropertyName && writeState != WriteState.Start) ||
+            writeState == WriteState.Array || writeState == WriteState.Constructor)
+        {
+          WriteIndent();
+        }
       }
 
       _currentState = newState;
@@ -1196,7 +1202,7 @@ namespace Newtonsoft.Json
 
     private void Dispose(bool disposing)
     {
-      if (WriteState != WriteState.Closed)
+      if (_currentState != State.Closed)
         Close();
     }
   }

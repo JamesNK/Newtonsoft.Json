@@ -43,7 +43,7 @@ namespace Newtonsoft.Json.Serialization
     /// Initializes a new instance of the <see cref="JsonPropertyCollection"/> class.
     /// </summary>
     /// <param name="type">The type.</param>
-    public JsonPropertyCollection(Type type)
+    public JsonPropertyCollection(Type type) : base(StringComparer.Ordinal)
     {
       ValidationUtils.ArgumentNotNull(type, "type");
       _type = type;
@@ -100,6 +100,18 @@ namespace Newtonsoft.Json.Serialization
       return property;
     }
 
+    private bool TryGetValue(string key, out JsonProperty item)
+    {
+      if (Dictionary == null)
+      {
+        item = default(JsonProperty);
+        return false;
+      }
+
+      return Dictionary.TryGetValue(key, out item);
+    }
+
+
     /// <summary>
     /// Gets a property by property name.
     /// </summary>
@@ -108,6 +120,16 @@ namespace Newtonsoft.Json.Serialization
     /// <returns>A matching property if found.</returns>
     public JsonProperty GetProperty(string propertyName, StringComparison comparisonType)
     {
+      // KeyedCollection has an ordinal comparer
+      if (comparisonType == StringComparison.Ordinal)
+      {
+        JsonProperty property;
+        if (TryGetValue(propertyName, out property))
+          return property;
+
+        return null;
+      }
+
       foreach (JsonProperty property in this)
       {
         if (string.Equals(propertyName, property.PropertyName, comparisonType))

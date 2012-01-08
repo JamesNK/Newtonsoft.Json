@@ -480,7 +480,7 @@ namespace Newtonsoft.Json.Serialization
 
     private bool HasDefinedType(Type type)
     {
-      return (type != null && type != typeof (object) && !typeof (JToken).IsAssignableFrom(type)
+      return (type != null && type != typeof (object) && !typeof (JToken).IsSubclassOf(type)
 #if !(NET35 || NET20 || WINDOWS_PHONE)
         && type != typeof (IDynamicMetaObjectProvider)
 #endif

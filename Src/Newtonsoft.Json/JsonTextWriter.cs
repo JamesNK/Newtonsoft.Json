@@ -211,17 +211,14 @@ namespace Newtonsoft.Json
     /// </summary>
     protected override void WriteIndent()
     {
-      if (Formatting == Formatting.Indented)
+      _writer.Write(Environment.NewLine);
+
+      // levels of indentation multiplied by the indent count
+      int currentIndentCount = Top*_indentation;
+
+      for (int i = 0; i < currentIndentCount; i++)
       {
-        _writer.Write(Environment.NewLine);
-
-        // levels of indentation multiplied by the indent count
-        int currentIndentCount = Top * _indentation;
-
-        for (int i = 0; i < currentIndentCount; i++)
-        {
-          _writer.Write(_indentChar);
-        }
+        _writer.Write(_indentChar);
       }
     }
 

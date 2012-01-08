@@ -119,7 +119,7 @@ namespace Newtonsoft.Json
 
       writer.Write(@"""\/Date(");
       writer.Write(javaScriptTicks);
-      
+
       switch (kind)
       {
         case DateTimeKind.Local:
@@ -184,14 +184,14 @@ namespace Newtonsoft.Json
 
     private static long UniversialTicksToJavaScriptTicks(long universialTicks)
     {
-      long javaScriptTicks = (universialTicks - InitialJavaScriptDateTicks) / 10000;
+      long javaScriptTicks = (universialTicks - InitialJavaScriptDateTicks)/10000;
 
       return javaScriptTicks;
     }
 
     internal static DateTime ConvertJavaScriptTicksToDateTime(long javaScriptTicks)
     {
-      DateTime dateTime = new DateTime((javaScriptTicks * 10000) + InitialJavaScriptDateTicks, DateTimeKind.Utc);
+      DateTime dateTime = new DateTime((javaScriptTicks*10000) + InitialJavaScriptDateTicks, DateTimeKind.Utc);
 
       return dateTime;
     }
@@ -311,7 +311,7 @@ namespace Newtonsoft.Json
 
     private static string EnsureDecimalPlace(double value, string text)
     {
-      if (double.IsNaN(value) || double.IsInfinity(value) || text.IndexOf('.') != -1 || text.IndexOf('E') != -1)
+      if (double.IsNaN(value) || double.IsInfinity(value) || text.IndexOf('.') != -1 || text.IndexOf('E') != -1 || text.IndexOf('e') != -1)
         return text;
 
       return text + ".0";
@@ -463,7 +463,7 @@ namespace Newtonsoft.Json
 #if !PocketPC && !NET20
       else if (value is DateTimeOffset)
       {
-        return ToString((DateTimeOffset)value);
+        return ToString((DateTimeOffset) value);
       }
 #endif
       else if (value is Guid)
@@ -514,16 +514,16 @@ namespace Newtonsoft.Json
         type = Nullable.GetUnderlyingType(type);
 
 #if !PocketPC && !NET20
-     if (type == typeof(DateTimeOffset))
+      if (type == typeof (DateTimeOffset))
         return true;
 #endif
-      if (type == typeof(byte[]))
+      if (type == typeof (byte[]))
         return true;
-      if (type == typeof(Uri))
+      if (type == typeof (Uri))
         return true;
-      if (type == typeof(TimeSpan))
+      if (type == typeof (TimeSpan))
         return true;
-      if (type == typeof(Guid))
+      if (type == typeof (Guid))
         return true;
 
       return IsJsonPrimitiveTypeCode(Type.GetTypeCode(type));
@@ -562,7 +562,7 @@ namespace Newtonsoft.Json
     /// <returns>A JSON string representation of the object.</returns>
     public static string SerializeObject(object value)
     {
-      return SerializeObject(value, Formatting.None, (JsonSerializerSettings)null);
+      return SerializeObject(value, Formatting.None, (JsonSerializerSettings) null);
     }
 
     /// <summary>
@@ -575,7 +575,7 @@ namespace Newtonsoft.Json
     /// </returns>
     public static string SerializeObject(object value, Formatting formatting)
     {
-      return SerializeObject(value, formatting, (JsonSerializerSettings)null);
+      return SerializeObject(value, formatting, (JsonSerializerSettings) null);
     }
 
     /// <summary>
@@ -599,8 +599,8 @@ namespace Newtonsoft.Json
     public static string SerializeObject(object value, Formatting formatting, params JsonConverter[] converters)
     {
       JsonSerializerSettings settings = (converters != null && converters.Length > 0)
-        ? new JsonSerializerSettings { Converters = converters }
-        : null;
+                                          ? new JsonSerializerSettings {Converters = converters}
+                                          : null;
 
       return SerializeObject(value, formatting, settings);
     }
@@ -638,7 +638,7 @@ namespace Newtonsoft.Json
     /// <returns>The deserialized object from the Json string.</returns>
     public static object DeserializeObject(string value)
     {
-      return DeserializeObject(value, null, (JsonSerializerSettings)null);
+      return DeserializeObject(value, null, (JsonSerializerSettings) null);
     }
 
     /// <summary>
@@ -663,7 +663,7 @@ namespace Newtonsoft.Json
     /// <returns>The deserialized object from the Json string.</returns>
     public static object DeserializeObject(string value, Type type)
     {
-      return DeserializeObject(value, type, (JsonSerializerSettings)null);
+      return DeserializeObject(value, type, (JsonSerializerSettings) null);
     }
 
     /// <summary>
@@ -674,7 +674,7 @@ namespace Newtonsoft.Json
     /// <returns>The deserialized object from the Json string.</returns>
     public static T DeserializeObject<T>(string value)
     {
-      return DeserializeObject<T>(value, (JsonSerializerSettings)null);
+      return DeserializeObject<T>(value, (JsonSerializerSettings) null);
     }
 
     /// <summary>
@@ -702,7 +702,7 @@ namespace Newtonsoft.Json
     /// <returns>The deserialized object from the JSON string.</returns>
     public static T DeserializeObject<T>(string value, params JsonConverter[] converters)
     {
-      return (T)DeserializeObject(value, typeof(T), converters);
+      return (T) DeserializeObject(value, typeof (T), converters);
     }
 
     /// <summary>
@@ -717,7 +717,7 @@ namespace Newtonsoft.Json
     /// <returns>The deserialized object from the JSON string.</returns>
     public static T DeserializeObject<T>(string value, JsonSerializerSettings settings)
     {
-      return (T)DeserializeObject(value, typeof(T), settings);
+      return (T) DeserializeObject(value, typeof (T), settings);
     }
 
     /// <summary>
@@ -730,8 +730,8 @@ namespace Newtonsoft.Json
     public static object DeserializeObject(string value, Type type, params JsonConverter[] converters)
     {
       JsonSerializerSettings settings = (converters != null && converters.Length > 0)
-        ? new JsonSerializerSettings { Converters = converters }
-        : null;
+                                          ? new JsonSerializerSettings {Converters = converters}
+                                          : null;
 
       return DeserializeObject(value, type, settings);
     }
@@ -831,7 +831,7 @@ namespace Newtonsoft.Json
     /// <returns>A JSON string of the XmlNode.</returns>
     public static string SerializeXmlNode(XmlNode node, Formatting formatting, bool omitRootObject)
     {
-      XmlNodeConverter converter = new XmlNodeConverter { OmitRootObject = omitRootObject };
+      XmlNodeConverter converter = new XmlNodeConverter {OmitRootObject = omitRootObject};
 
       return SerializeObject(node, formatting, converter);
     }
@@ -873,7 +873,7 @@ namespace Newtonsoft.Json
       converter.DeserializeRootElementName = deserializeRootElementName;
       converter.WriteArrayAttribute = writeArrayAttribute;
 
-      return (XmlDocument)DeserializeObject(value, typeof(XmlDocument), converter);
+      return (XmlDocument) DeserializeObject(value, typeof (XmlDocument), converter);
     }
 #endif
 
@@ -908,7 +908,7 @@ namespace Newtonsoft.Json
     /// <returns>A JSON string of the XNode.</returns>
     public static string SerializeXNode(XObject node, Formatting formatting, bool omitRootObject)
     {
-      XmlNodeConverter converter = new XmlNodeConverter { OmitRootObject = omitRootObject };
+      XmlNodeConverter converter = new XmlNodeConverter {OmitRootObject = omitRootObject};
 
       return SerializeObject(node, formatting, converter);
     }
@@ -950,7 +950,7 @@ namespace Newtonsoft.Json
       converter.DeserializeRootElementName = deserializeRootElementName;
       converter.WriteArrayAttribute = writeArrayAttribute;
 
-      return (XDocument)DeserializeObject(value, typeof(XDocument), converter);
+      return (XDocument) DeserializeObject(value, typeof (XDocument), converter);
     }
 #endif
   }

@@ -35,21 +35,29 @@ namespace Newtonsoft.Json.Utilities
 {
   internal static class JavaScriptUtils
   {
-    public static void WriteEscapedJavaScriptString(TextWriter writer, string value, char delimiter, bool appendDelimiters)
+    public static void WriteEscapedJavaScriptString(TextWriter writer, string s, char delimiter, bool appendDelimiters)
     {
       // leading delimiter
       if (appendDelimiters)
         writer.Write(delimiter);
 
-      if (value != null)
+      if (s != null)
       {
-        int lastWritePosition = 0;
-        int skipped = 0;
         char[] chars = null;
+        int lastWritePosition = -1;
 
-        for (int i = 0; i < value.Length; i++)
+        for (var index = 0; index < s.Length; ++index)
         {
-          char c = value[i];
+          var c = s[index];
+
+          if (c >= ' ' && c < 128 && c != '\"' && c != '\\' && c != '\'')
+          {
+            if (lastWritePosition == -1)
+              lastWritePosition = index;
+
+            continue;
+          }
+
           string escapedValue;
 
           switch (c)
@@ -94,35 +102,39 @@ namespace Newtonsoft.Json.Utilities
               break;
           }
 
-          if (escapedValue != null)
+          if (escapedValue == null)
+          {
+            if (lastWritePosition == -1)
+              lastWritePosition = index;
+
+            continue;
+          }
+
+          if (lastWritePosition != -1)
           {
             if (chars == null)
-              chars = value.ToCharArray();
+              chars = s.ToCharArray();
 
-            // write skipped text
-            if (skipped > 0)
-            {
-              writer.Write(chars, lastWritePosition, skipped);
-              skipped = 0;
-            }
+            writer.Write(chars, lastWritePosition, index - lastWritePosition);
+            lastWritePosition = -1;
+          }
 
-            // write escaped value and note position
-            writer.Write(escapedValue);
-            lastWritePosition = i + 1;
+          writer.Write(escapedValue);
+        }
+
+        if (lastWritePosition != -1)
+        {
+          if (lastWritePosition == 0)
+          {
+            writer.Write(s);
           }
           else
           {
-            skipped++;
-          }
-        }
+            if (chars == null)
+              chars = s.ToCharArray();
 
-        // write any remaining skipped text
-        if (skipped > 0)
-        {
-          if (lastWritePosition == 0)
-            writer.Write(value);
-          else
-            writer.Write(chars, lastWritePosition, skipped);
+            writer.Write(chars, lastWritePosition, s.Length - lastWritePosition);
+          }
         }
       }
 

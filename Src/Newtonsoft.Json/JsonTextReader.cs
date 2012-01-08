@@ -112,7 +112,7 @@ namespace Newtonsoft.Json
         {
           SetToken(JsonToken.String, text);
           QuoteChar = quote;
-        } 
+        }
       }
     }
 
@@ -216,7 +216,7 @@ namespace Newtonsoft.Json
       TimeSpan offset = TimeSpan.FromHours(hours) + TimeSpan.FromMinutes(minutes);
       if (negative)
         offset = offset.Negate();
-      
+
       return offset;
     }
 
@@ -298,7 +298,7 @@ namespace Newtonsoft.Json
           break;
       }
 
-      return (char)value;
+      return (char) value;
     }
 
     private bool HasNext()
@@ -417,20 +417,20 @@ namespace Newtonsoft.Json
     public override decimal? ReadAsDecimal()
     {
       _readType = ReadType.ReadAsDecimal;
-      
+
       do
       {
         if (!ReadInternal())
           throw CreateJsonReaderException("Unexpected end when reading decimal: Line {0}, position {1}.", _currentLineNumber, _currentLinePosition);
       } while (TokenType == JsonToken.Comment);
- 
+
       if (TokenType == JsonToken.Null)
         return null;
       if (TokenType == JsonToken.Float)
-        return (decimal?)Value;
+        return (decimal?) Value;
 
       decimal d;
-      if (TokenType == JsonToken.String && decimal.TryParse((string)Value, NumberStyles.Number, Culture, out d))
+      if (TokenType == JsonToken.String && decimal.TryParse((string) Value, NumberStyles.Number, Culture, out d))
       {
         SetToken(JsonToken.Float, d);
         return d;
@@ -457,10 +457,10 @@ namespace Newtonsoft.Json
       if (TokenType == JsonToken.Null)
         return null;
       if (TokenType == JsonToken.Date)
-        return (DateTimeOffset)Value;
+        return (DateTimeOffset) Value;
 
       DateTimeOffset dt;
-      if (TokenType == JsonToken.String && DateTimeOffset.TryParse((string)Value, Culture, DateTimeStyles.None, out dt))
+      if (TokenType == JsonToken.String && DateTimeOffset.TryParse((string) Value, Culture, DateTimeStyles.None, out dt))
       {
         SetToken(JsonToken.Date, dt);
         return dt;
@@ -685,7 +685,7 @@ namespace Newtonsoft.Json
           case 'n':
             if (HasNext())
             {
-              char next = (char)PeekNext();
+              char next = (char) PeekNext();
 
               if (next == 'u')
                 ParseNull();
@@ -828,16 +828,22 @@ namespace Newtonsoft.Json
       object numberValue;
       JsonToken numberType;
 
-      bool nonBase10 = (firstChar == '0' && !number.StartsWith("0.", StringComparison.OrdinalIgnoreCase));
+      bool singleDigit = (char.IsDigit(firstChar) && number.Length == 1);
+      bool nonBase10 = (firstChar == '0' && number.Length > 1 && number[1] != '.');
 
       if (_readType == ReadType.ReadAsDecimal)
       {
-        if (nonBase10)
+        if (singleDigit)
+        {
+          // digit char values start at 48
+          numberValue = (decimal)firstChar - 48;
+        }
+        else if (nonBase10)
         {
           // decimal.Parse doesn't support parsing hexadecimal values
           long integer = number.StartsWith("0x", StringComparison.OrdinalIgnoreCase)
-            ? Convert.ToInt64(number, 16)
-            : Convert.ToInt64(number, 8);
+                           ? Convert.ToInt64(number, 16)
+                           : Convert.ToInt64(number, 8);
 
           numberValue = Convert.ToDecimal(integer);
         }
@@ -850,14 +856,21 @@ namespace Newtonsoft.Json
       }
       else
       {
-        if (nonBase10)
+        if (singleDigit)
         {
-          numberValue = number.StartsWith("0x", StringComparison.OrdinalIgnoreCase)
-            ? Convert.ToInt64(number, 16)
-            : Convert.ToInt64(number, 8);
+          // digit char values start at 48
+          numberValue = (long)firstChar - 48;
           numberType = JsonToken.Integer;
         }
-        else if (number.IndexOf(".", StringComparison.OrdinalIgnoreCase) != -1 || number.IndexOf("e", StringComparison.OrdinalIgnoreCase) != -1)
+        else if (nonBase10)
+        {
+          numberValue = number.StartsWith("0x", StringComparison.OrdinalIgnoreCase)
+                          ? Convert.ToInt64(number, 16)
+                          : Convert.ToInt64(number, 8);
+          numberType = JsonToken.Integer;
+        }
+          // it's faster to do 3 indexof with single characters than an indexofany
+        else if (number.IndexOf('.') != -1 || number.IndexOf('E') != -1 || number.IndexOf('e') != -1)
         {
           numberValue = Convert.ToDouble(number, CultureInfo.InvariantCulture);
           numberType = JsonToken.Float;
@@ -935,8 +948,7 @@ namespace Newtonsoft.Json
           break;
         }
         i++;
-      }
-      while (i < value.Length && ((currentChar = MoveNext()) != '\0' || !_end));
+      } while (i < value.Length && ((currentChar = MoveNext()) != '\0' || !_end));
 
       return (i == value.Length);
     }

@@ -458,7 +458,9 @@ namespace Newtonsoft.Json
 
     internal static JsonConverter GetMatchingConverter(IList<JsonConverter> converters, Type objectType)
     {
+#if DEBUG
       ValidationUtils.ArgumentNotNull(objectType, "objectType");
+#endif
 
       if (converters != null)
       {
