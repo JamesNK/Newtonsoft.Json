@@ -783,12 +783,19 @@ namespace Newtonsoft.Json.Serialization
     /// <returns>The <see cref="IValueProvider"/> used by the serializer to get and set values from a member.</returns>
     protected virtual IValueProvider CreateMemberValueProvider(MemberInfo member)
     {
+      // warning - this method use to cause errors with Intellitrace. Retest in VS Ultimate after changes
+      IValueProvider valueProvider;
+
 #if !PocketPC && !SILVERLIGHT
       if (DynamicCodeGeneration)
-        return new DynamicValueProvider(member);
+        valueProvider = new DynamicValueProvider(member);
+      else
+        valueProvider = new ReflectionValueProvider(member);
+#else
+      valueProvider = new ReflectionValueProvider(member);
 #endif
 
-      return new ReflectionValueProvider(member);
+      return valueProvider;
     }
 
     /// <summary>
