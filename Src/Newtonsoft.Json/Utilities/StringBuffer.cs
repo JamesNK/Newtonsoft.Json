@@ -57,12 +57,20 @@ namespace Newtonsoft.Json.Utilities
     {
       // test if the buffer array is large enough to take the value
       if (_position == _buffer.Length)
-      {
         EnsureSize(1);
-      }
 
       // set value and increment poisition
       _buffer[_position++] = value;
+    }
+
+    public void Append(char[] buffer, int startIndex, int count)
+    {
+      if (_position + count >= _buffer.Length)
+        EnsureSize(count);
+
+      Array.Copy(buffer, startIndex, _buffer, _position, count);
+
+      _position += count;
     }
 
     public void Clear()

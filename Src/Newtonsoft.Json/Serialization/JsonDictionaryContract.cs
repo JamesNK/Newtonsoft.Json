@@ -45,6 +45,8 @@ namespace Newtonsoft.Json.Serialization
     internal Type DictionaryKeyType { get; private set; }
     internal Type DictionaryValueType { get; private set; }
 
+    internal JsonContract DictionaryValueContract { get; set; }
+
     private readonly bool _isDictionaryValueTypeNullableType;
     private readonly Type _genericCollectionDefinitionType;
     private Type _genericWrapperType;

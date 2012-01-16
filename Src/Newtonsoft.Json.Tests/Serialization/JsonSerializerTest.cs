@@ -3263,7 +3263,7 @@ keyword such as type of business.""
           Converters = new List<JsonConverter> {new StringAppenderConverter()}
         });
 
-      Assert.AreEqual(p.Name, "Existing,Appended");
+      Assert.AreEqual("Existing,Appended", p.Name);
     }
 
     [Test]
@@ -5073,6 +5073,45 @@ keyword such as type of business.""
       }
     }
 #endif
+
+    [Test]
+    public void ReadForTypeHackFixDecimal()
+    {
+      IList<decimal> d1 = new List<decimal> { 1.1m};
+
+      string json = JsonConvert.SerializeObject(d1);
+
+      IList<decimal> d2 = JsonConvert.DeserializeObject<IList<decimal>>(json);
+
+      Assert.AreEqual(d1.Count, d2.Count);
+      Assert.AreEqual(d1[0], d2[0]);
+    }
+
+    [Test]
+    public void ReadForTypeHackFixDateTimeOffset()
+    {
+      IList<DateTimeOffset?> d1 = new List<DateTimeOffset?> { null };
+
+      string json = JsonConvert.SerializeObject(d1);
+
+      IList<DateTimeOffset?> d2 = JsonConvert.DeserializeObject<IList<DateTimeOffset?>>(json);
+
+      Assert.AreEqual(d1.Count, d2.Count);
+      Assert.AreEqual(d1[0], d2[0]);
+    }
+
+    [Test]
+    public void ReadForTypeHackFixByteArray()
+    {
+      IList<byte[]> d1 = new List<byte[]> { null };
+
+      string json = JsonConvert.SerializeObject(d1);
+
+      IList<byte[]> d2 = JsonConvert.DeserializeObject<IList<byte[]>>(json);
+
+      Assert.AreEqual(d1.Count, d2.Count);
+      Assert.AreEqual(d1[0], d2[0]);
+    }
   }
 
   public class DecimalTestClass

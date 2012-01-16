@@ -40,7 +40,7 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Specifies the state of the reader.
     /// </summary>
-    protected enum State
+    protected internal enum State
     {
       /// <summary>
       /// The Read method has not been called.
@@ -99,10 +99,15 @@ namespace Newtonsoft.Json
     // current Token data
     private JsonToken _token;
     private object _value;
-    private Type _valueType;
     private char _quoteChar;
-    private State _currentState;
+    internal State _currentState;
     private JTokenType _currentTypeContext;
+    private bool _serializerInArray;
+
+    internal void SetSerializeInArray(bool serializerInArray)
+    {
+      _serializerInArray = serializerInArray;
+    }
 
     /// <summary>
     /// Gets the current reader state.
@@ -157,7 +162,7 @@ namespace Newtonsoft.Json
     /// </summary>
     public virtual Type ValueType
     {
-      get { return _valueType; }
+      get { return (_value != null) ? _value.GetType() : null; }
     }
 
     /// <summary>
@@ -242,6 +247,9 @@ namespace Newtonsoft.Json
     /// </summary>
     public void Skip()
     {
+      if (TokenType == JsonToken.PropertyName)
+        Read();
+
       if (IsStartToken(TokenType))
       {
         int depth = Depth;
@@ -266,7 +274,7 @@ namespace Newtonsoft.Json
     /// </summary>
     /// <param name="newToken">The new token.</param>
     /// <param name="value">The value.</param>
-    protected virtual void SetToken(JsonToken newToken, object value)
+    protected void SetToken(JsonToken newToken, object value)
     {
       _token = newToken;
 
@@ -286,19 +294,15 @@ namespace Newtonsoft.Json
           break;
         case JsonToken.EndObject:
           ValidateEnd(JsonToken.EndObject);
-          _currentState = State.PostValue;
           break;
         case JsonToken.EndArray:
           ValidateEnd(JsonToken.EndArray);
-          _currentState = State.PostValue;
           break;
         case JsonToken.EndConstructor:
           ValidateEnd(JsonToken.EndConstructor);
-          _currentState = State.PostValue;
           break;
         case JsonToken.PropertyName:
           _currentState = State.Property;
-          Push(JTokenType.Property);
           break;
         case JsonToken.Undefined:
         case JsonToken.Integer:
@@ -309,24 +313,11 @@ namespace Newtonsoft.Json
         case JsonToken.String:
         case JsonToken.Raw:
         case JsonToken.Bytes:
-          _currentState = State.PostValue;
+          _currentState = (Peek() != JTokenType.None) ? State.PostValue : State.Finished;
           break;
       }
 
-      JTokenType current = Peek();
-      if (current == JTokenType.Property && _currentState == State.PostValue)
-        Pop();
-
-      if (value != null)
-      {
-        _value = value;
-        _valueType = value.GetType();
-      }
-      else
-      {
-        _value = null;
-        _valueType = null;
-      }
+      _value = value;
     }
 
     private void ValidateEnd(JsonToken endToken)
@@ -335,6 +326,8 @@ namespace Newtonsoft.Json
 
       if (GetTypeForCloseToken(endToken) != currentObject)
         throw new JsonReaderException("JsonToken {0} is not valid for closing JsonType {1}.".FormatWith(CultureInfo.InvariantCulture, endToken, currentObject));
+
+      _currentState = (Peek() != JTokenType.None) ? State.PostValue : State.Finished;
     }
 
     /// <summary>
@@ -388,8 +381,8 @@ namespace Newtonsoft.Json
         case JsonToken.StartObject:
         case JsonToken.StartArray:
         case JsonToken.StartConstructor:
-        case JsonToken.PropertyName:
           return true;
+        case JsonToken.PropertyName:
         case JsonToken.None:
         case JsonToken.Comment:
         case JsonToken.Integer:
@@ -425,6 +418,11 @@ namespace Newtonsoft.Json
       }
     }
 
+    internal bool ReaderIsSerializerInArray()
+    {
+      return (TokenType == JsonToken.EndArray && _serializerInArray);
+    }
+
     /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
@@ -451,7 +449,6 @@ namespace Newtonsoft.Json
       _currentState = State.Closed;
       _token = JsonToken.None;
       _value = null;
-      _valueType = null;
     }
   }
 }

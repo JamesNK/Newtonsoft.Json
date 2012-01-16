@@ -619,7 +619,7 @@ namespace Newtonsoft.Json
     {
       JsonSerializer jsonSerializer = JsonSerializer.Create(settings);
 
-      StringBuilder sb = new StringBuilder(128);
+      StringBuilder sb = new StringBuilder(256);
       StringWriter sw = new StringWriter(sb, CultureInfo.InvariantCulture);
       using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
       {

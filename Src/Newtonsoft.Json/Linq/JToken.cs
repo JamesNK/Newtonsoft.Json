@@ -1212,7 +1212,6 @@ namespace Newtonsoft.Json.Linq
       if (reader.TokenType == JsonToken.StartConstructor)
         return JConstructor.Load(reader);
 
-      // hack. change to look at TokenType rather than using value
       if (!JsonReader.IsStartToken(reader.TokenType))
         return new JValue(reader.Value);
 

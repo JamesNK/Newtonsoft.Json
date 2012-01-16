@@ -59,6 +59,9 @@ namespace Newtonsoft.Json.Linq
       if (TokenType == JsonToken.Bytes)
         return (byte[])Value;
 
+      if (ReaderIsSerializerInArray())
+        return null;
+
       throw new JsonReaderException("Error reading bytes. Expected bytes but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
     }
 
@@ -102,6 +105,9 @@ namespace Newtonsoft.Json.Linq
         return (decimal) Value;
       }
 
+      if (ReaderIsSerializerInArray())
+        return null;
+
       throw new JsonReaderException("Error reading decimal. Expected a number but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
     }
 
@@ -121,6 +127,9 @@ namespace Newtonsoft.Json.Linq
         SetToken(JsonToken.Date, new DateTimeOffset((DateTime)Value));
         return (DateTimeOffset)Value;
       }
+
+      if (ReaderIsSerializerInArray())
+        return null;
 
       throw new JsonReaderException("Error reading date. Expected bytes but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
     }

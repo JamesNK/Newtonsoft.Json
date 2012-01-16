@@ -131,7 +131,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Gets The Common Language Runtime (CLR) type for the current Json token.
+    /// Gets the Common Language Runtime (CLR) type for the current Json token.
     /// </summary>
     /// <value></value>
     public override Type ValueType

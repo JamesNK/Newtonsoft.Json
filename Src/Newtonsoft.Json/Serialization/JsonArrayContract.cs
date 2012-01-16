@@ -38,6 +38,7 @@ namespace Newtonsoft.Json.Serialization
   public class JsonArrayContract : JsonContract
   {
     internal Type CollectionItemType { get; private set; }
+    internal JsonContract CollectionItemContract { get; set; }
 
     private readonly bool _isCollectionItemTypeNullableType;
     private readonly Type _genericCollectionDefinitionType;

@@ -123,13 +123,13 @@ namespace Newtonsoft.Json.Serialization
       {
         SerializeConvertable(writer, converter, value, valueContract);
       }
-      else if (valueContract is JsonPrimitiveContract)
-      {
-        SerializePrimitive(writer, value, (JsonPrimitiveContract)valueContract, member, collectionValueContract);
-      }
       else if (valueContract is JsonStringContract)
       {
         SerializeString(writer, value, (JsonStringContract)valueContract);
+      }
+      else if (valueContract is JsonPrimitiveContract)
+      {
+        SerializePrimitive(writer, value, (JsonPrimitiveContract)valueContract, member, collectionValueContract);
       }
       else if (valueContract is JsonObjectContract)
       {
@@ -333,8 +333,11 @@ namespace Newtonsoft.Json.Serialization
         {
           if (!property.Ignored && property.Readable && ShouldSerialize(property, value) && IsSpecified(property, value))
           {
+            if (property.PropertyContract == null)
+              property.PropertyContract = Serializer.ContractResolver.ResolveContract(property.PropertyType);
+
             object memberValue = property.ValueProvider.GetValue(value);
-            JsonContract memberContract = GetContractSafe(memberValue);
+            JsonContract memberContract = (property.PropertyContract.UnderlyingType.IsSealed) ? property.PropertyContract : GetContractSafe(memberValue);
 
             WriteMemberInfoProperty(writer, memberValue, property, memberContract);
           }
@@ -419,7 +422,10 @@ namespace Newtonsoft.Json.Serialization
         writer.WritePropertyName(JsonTypeReflector.ArrayValuesPropertyName);
       }
 
-      JsonContract childValuesContract = Serializer.ContractResolver.ResolveContract(contract.CollectionItemType ?? typeof(object));
+      if (contract.CollectionItemContract == null)
+        contract.CollectionItemContract = Serializer.ContractResolver.ResolveContract(contract.CollectionItemType ?? typeof(object));
+
+      JsonContract collectionItemValueContract = (contract.CollectionItemContract.UnderlyingType.IsSealed) ? contract.CollectionItemContract : null;
 
       writer.WriteStartArray();
 
@@ -431,7 +437,7 @@ namespace Newtonsoft.Json.Serialization
       {
         try
         {
-          JsonContract valueContract = GetContractSafe(value);
+          JsonContract valueContract = collectionItemValueContract ?? GetContractSafe(value);
 
           if (ShouldWriteReference(value, null, valueContract))
           {
@@ -441,7 +447,7 @@ namespace Newtonsoft.Json.Serialization
           {
             if (CheckForCircularReference(value, null, contract))
             {
-              SerializeValue(writer, value, valueContract, null, childValuesContract);
+              SerializeValue(writer, value, valueContract, null, contract.CollectionItemContract);
             }
           }
         }
@@ -582,7 +588,10 @@ namespace Newtonsoft.Json.Serialization
         WriteTypeProperty(writer, values.UnderlyingDictionary.GetType());
       }
 
-      JsonContract childValuesContract = Serializer.ContractResolver.ResolveContract(contract.DictionaryValueType ?? typeof(object));
+      if (contract.DictionaryValueContract == null)
+        contract.DictionaryValueContract = Serializer.ContractResolver.ResolveContract(contract.DictionaryValueType ?? typeof(object));
+
+      JsonContract dictionaryValueContract = (contract.DictionaryValueContract.UnderlyingType.IsSealed) ? contract.DictionaryValueContract : null;
 
       int initialDepth = writer.Top;
 
@@ -600,7 +609,7 @@ namespace Newtonsoft.Json.Serialization
         try
         {
           object value = entry.Value;
-          JsonContract valueContract = GetContractSafe(value);
+          JsonContract valueContract = dictionaryValueContract ?? GetContractSafe(value);
 
           if (ShouldWriteReference(value, null, valueContract))
           {
@@ -614,7 +623,7 @@ namespace Newtonsoft.Json.Serialization
 
             writer.WritePropertyName(propertyName);
 
-            SerializeValue(writer, value, valueContract, null, childValuesContract);
+            SerializeValue(writer, value, valueContract, null, contract.DictionaryValueContract);
           }
         }
         catch (Exception ex)

@@ -32,6 +32,9 @@ namespace Newtonsoft.Json.Serialization
   /// </summary>
   public class JsonProperty
   {
+    // use to cache contract during deserialization
+    internal JsonContract PropertyContract { get; set; }
+    
     /// <summary>
     /// Gets or sets the name of the property.
     /// </summary>

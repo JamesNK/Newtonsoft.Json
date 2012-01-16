@@ -195,6 +195,7 @@
     <Compile Include="Utilities\LateBoundReflectionDelegateFactory.cs" />
     <Compile Include="Utilities\MethodCall.cs" />
     <Compile Include="Utilities\ReflectionDelegateFactory.cs" />
+    <Compile Include="Utilities\StringReference.cs" />
     <Compile Include="Utilities\ThreadSafeStore.cs" />
     <Compile Include="TypeNameHandling.cs" />
     <Compile Include="Utilities\BidirectionalDictionary.cs" />

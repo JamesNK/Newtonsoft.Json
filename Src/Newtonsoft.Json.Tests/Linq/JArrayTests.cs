@@ -450,7 +450,7 @@ Parameter name: index")]
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected state: Finished. Line 5, position 3.")]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Additional text encountered after finished reading JSON content: ,. Line 5, position 2.")]
     public void ParseAdditionalContent()
     {
       string json = @"[

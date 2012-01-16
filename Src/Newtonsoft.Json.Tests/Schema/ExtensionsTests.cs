@@ -108,7 +108,7 @@ namespace Newtonsoft.Json.Tests.Schema
       List<string> errors = new List<string>();
       o.Validate(schema, (sender, args) => errors.Add(args.Message));
 
-      Assert.AreEqual("Invalid type. Expected String but got Integer. Line 1, position 9.", errors[0]);
+      Assert.AreEqual("Invalid type. Expected String but got Integer. Line 1, position 8.", errors[0]);
       Assert.AreEqual(1, errors.Count);
     }
 

@@ -291,6 +291,14 @@ namespace Newtonsoft.Json.Schema
           CurrentSchema.Items.Add(GenerateInternal(collectionItemType, (!allowNullItem) ? Required.Always : Required.Default, false));
         }
       }
+      else if (contract is JsonStringContract)
+      {
+        JsonSchemaType schemaType = (!ReflectionUtils.IsNullable(contract.UnderlyingType))
+                                      ? JsonSchemaType.String
+                                      : AddNullType(JsonSchemaType.String, valueRequired);
+
+        CurrentSchema.Type = schemaType;
+      }
       else if (contract is JsonPrimitiveContract)
       {
         CurrentSchema.Type = GetJsonSchemaType(type, valueRequired);
@@ -324,14 +332,6 @@ namespace Newtonsoft.Json.Schema
         GenerateISerializableContract(type, (JsonISerializableContract) contract);
       }
 #endif
-      else if (contract is JsonStringContract)
-      {
-        JsonSchemaType schemaType = (!ReflectionUtils.IsNullable(contract.UnderlyingType))
-                                      ? JsonSchemaType.String
-                                      : AddNullType(JsonSchemaType.String, valueRequired);
-
-        CurrentSchema.Type = schemaType;
-      }
       else if (contract is JsonLinqContract)
       {
         CurrentSchema.Type = JsonSchemaType.Any;
