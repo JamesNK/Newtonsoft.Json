@@ -92,7 +92,7 @@ namespace Newtonsoft.Json.Serialization
       if (dictionary is IDictionary && (DictionaryValueType == null || !_isDictionaryValueTypeNullableType))
         return new DictionaryWrapper<object, object>((IDictionary)dictionary);
 
-      if (_genericWrapperType == null)
+      if (_genericWrapperCreator == null)
       {
         _genericWrapperType = ReflectionUtils.MakeGenericType(typeof(DictionaryWrapper<,>), DictionaryKeyType, DictionaryValueType);
 

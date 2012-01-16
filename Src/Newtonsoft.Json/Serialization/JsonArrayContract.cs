@@ -107,7 +107,7 @@ namespace Newtonsoft.Json.Serialization
 
     private void EnsureGenericWrapperCreator()
     {
-      if (_genericWrapperType == null)
+      if (_genericWrapperCreator == null)
       {
         _genericWrapperType = ReflectionUtils.MakeGenericType(typeof (CollectionWrapper<>), CollectionItemType);
 
