@@ -42,6 +42,12 @@ namespace Newtonsoft.Json.Serialization
     public string PropertyName { get; set; }
 
     /// <summary>
+    /// Gets or sets the type that declared this property.
+    /// </summary>
+    /// <value>The type that declared this property.</value>
+    public Type DeclaringType { get; set; }
+
+    /// <summary>
     /// Gets or sets the order of serialization and deserialization of a member.
     /// </summary>
     /// <value>The numeric order of serialization or deserialization.</value>

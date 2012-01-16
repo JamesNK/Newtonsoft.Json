@@ -5112,6 +5112,23 @@ keyword such as type of business.""
       Assert.AreEqual(d1.Count, d2.Count);
       Assert.AreEqual(d1[0], d2[0]);
     }
+
+    [Test]
+    public void SerializeInheritanceHierarchyWithDuplicateProperty()
+    {
+      Bb b = new Bb();
+      b.no = true;
+      Aa a = b;
+      a.no = int.MaxValue;
+
+      string json = JsonConvert.SerializeObject(b);
+
+      Assert.AreEqual(@"{""no"":true}", json);
+
+      Bb b2 = JsonConvert.DeserializeObject<Bb>(json);
+
+      Assert.AreEqual(true, b2.no);
+    }
   }
 
   public class DecimalTestClass
@@ -5144,6 +5161,16 @@ keyword such as type of business.""
     public TimeSpan TimeSpan { get; set; }
     public TimeSpan? NullableTimeSpan { get; set; }
     public Uri Uri { get; set; }
+  }
+
+  class Aa
+  {
+    public int no;
+  }
+
+  class Bb : Aa
+  {
+    public bool no;
   }
 
 #if !(NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE)

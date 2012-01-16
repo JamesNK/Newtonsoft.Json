@@ -808,6 +808,7 @@ namespace Newtonsoft.Json.Serialization
     {
       JsonProperty property = new JsonProperty();
       property.PropertyType = ReflectionUtils.GetMemberUnderlyingType(member);
+      property.DeclaringType = member.DeclaringType;
       property.ValueProvider = CreateMemberValueProvider(member);
 
       bool allowNonPublicAccess;
