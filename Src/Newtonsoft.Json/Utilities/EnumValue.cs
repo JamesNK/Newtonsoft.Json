@@ -32,8 +32,8 @@ namespace Newtonsoft.Json.Utilities
 {
   internal class EnumValue<T> where T : struct
   {
-    private string _name;
-    private T _value;
+    private readonly string _name;
+    private readonly T _value;
 
     public string Name
     {

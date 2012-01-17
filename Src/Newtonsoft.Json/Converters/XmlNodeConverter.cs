@@ -40,7 +40,7 @@ namespace Newtonsoft.Json.Converters
 #if !SILVERLIGHT
   internal class XmlDocumentWrapper : XmlNodeWrapper, IXmlDocument
   {
-    private XmlDocument _document;
+    private readonly XmlDocument _document;
 
     public XmlDocumentWrapper(XmlDocument document)
       : base(document)
@@ -123,7 +123,7 @@ namespace Newtonsoft.Json.Converters
 
   internal class XmlElementWrapper : XmlNodeWrapper, IXmlElement
   {
-    private XmlElement _element;
+    private readonly XmlElement _element;
 
     public XmlElementWrapper(XmlElement element)
       : base(element)
@@ -146,7 +146,7 @@ namespace Newtonsoft.Json.Converters
 
   internal class XmlDeclarationWrapper : XmlNodeWrapper, IXmlDeclaration
   {
-    private XmlDeclaration _declaration;
+    private readonly XmlDeclaration _declaration;
 
     public XmlDeclarationWrapper(XmlDeclaration declaration)
       : base(declaration)
@@ -983,7 +983,7 @@ namespace Newtonsoft.Json.Converters
             if (writePropertyName)
               writer.WritePropertyName(GetPropertyName(node, manager));
 
-            if (ValueAttributes(node.Attributes).Count() == 0 && node.ChildNodes.Count == 1
+            if (!ValueAttributes(node.Attributes).Any() && node.ChildNodes.Count == 1
                 && node.ChildNodes[0].NodeType == XmlNodeType.Text)
             {
               // write elements with a single text child as a name value pair
@@ -1319,11 +1319,11 @@ namespace Newtonsoft.Json.Converters
           {
             case JsonToken.PropertyName:
               string attributeName = reader.Value.ToString();
-              string attributeValue;
 
               if (!string.IsNullOrEmpty(attributeName))
               {
                 char firstChar = attributeName[0];
+                string attributeValue;
 
                 switch (firstChar)
                 {

@@ -345,7 +345,7 @@ namespace Newtonsoft.Json.Bson
     public override void WriteValue(char value)
     {
       base.WriteValue(value);
-      AddToken(new BsonString(value.ToString(), true));
+      AddToken(new BsonString(value.ToString(CultureInfo.InvariantCulture), true));
     }
 
     /// <summary>

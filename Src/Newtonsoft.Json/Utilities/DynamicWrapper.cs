@@ -53,7 +53,7 @@ namespace Newtonsoft.Json.Utilities
 
     private static byte[] GetStrongKey()
     {
-      string name ="Newtonsoft.Json.Dynamic.snk";
+      const string name = "Newtonsoft.Json.Dynamic.snk";
 
       using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(name))
       {

@@ -39,7 +39,7 @@ namespace Newtonsoft.Json.Linq
   /// </summary>
   public class JArray : JContainer, IList<JToken>
   {
-    private IList<JToken> _values = new List<JToken>();
+    private readonly IList<JToken> _values = new List<JToken>();
 
     /// <summary>
     /// Gets the container's children tokens.

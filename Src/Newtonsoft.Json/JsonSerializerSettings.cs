@@ -23,7 +23,7 @@ namespace Newtonsoft.Json
     internal const ConstructorHandling DefaultConstructorHandling = ConstructorHandling.Default;
     internal const TypeNameHandling DefaultTypeNameHandling = TypeNameHandling.None;
     internal const FormatterAssemblyStyle DefaultTypeNameAssemblyFormat = FormatterAssemblyStyle.Simple;
-    internal static readonly StreamingContext DefaultContext = new StreamingContext();
+    internal static readonly StreamingContext DefaultContext;
 
     /// <summary>
     /// Gets or sets how reference loops (e.g. a class referencing itself) is handled.
@@ -115,6 +115,11 @@ namespace Newtonsoft.Json
     /// </summary>
     /// <value>The context.</value>
     public StreamingContext Context { get; set; }
+
+    static JsonSerializerSettings()
+    {
+      DefaultContext = new StreamingContext();
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonSerializerSettings"/> class.

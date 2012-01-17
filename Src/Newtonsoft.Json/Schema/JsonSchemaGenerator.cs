@@ -77,7 +77,7 @@ namespace Newtonsoft.Json.Schema
     }
 
     private JsonSchemaResolver _resolver;
-    private IList<TypeSchema> _stack = new List<TypeSchema>();
+    private readonly IList<TypeSchema> _stack = new List<TypeSchema>();
     private JsonSchema _currentSchema;
 
     private JsonSchema CurrentSchema
@@ -282,7 +282,7 @@ namespace Newtonsoft.Json.Schema
         CurrentSchema.Id = GetTypeId(type, false);
 
         JsonArrayAttribute arrayAttribute = JsonTypeReflector.GetJsonContainerAttribute(type) as JsonArrayAttribute;
-        bool allowNullItem = (arrayAttribute != null) ? arrayAttribute.AllowNullItems : true;
+        bool allowNullItem = (arrayAttribute == null || arrayAttribute.AllowNullItems);
 
         Type collectionItemType = ReflectionUtils.GetCollectionItemType(type);
         if (collectionItemType != null)

@@ -83,7 +83,7 @@ namespace Newtonsoft.Json.Linq
       }
     }
 
-    private JPropertKeyedCollection _properties = new JPropertKeyedCollection(StringComparer.Ordinal);
+    private readonly JPropertKeyedCollection _properties = new JPropertKeyedCollection(StringComparer.Ordinal);
 
     /// <summary>
     /// Gets the container's children tokens.

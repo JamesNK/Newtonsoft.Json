@@ -18,7 +18,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     public static readonly JEnumerable<T> Empty = new JEnumerable<T>(Enumerable.Empty<T>());
 
-    private IEnumerable<T> _enumerable;
+    private readonly IEnumerable<T> _enumerable;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JEnumerable{T}"/> struct.

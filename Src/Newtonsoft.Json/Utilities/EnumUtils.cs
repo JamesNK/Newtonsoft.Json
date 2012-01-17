@@ -33,36 +33,6 @@ namespace Newtonsoft.Json.Utilities
 {
   internal static class EnumUtils
   {
-    /// <summary>
-    /// Parses the specified enum member name, returning it's value.
-    /// </summary>
-    /// <param name="enumMemberName">Name of the enum member.</param>
-    /// <returns></returns>
-    public static T Parse<T>(string enumMemberName) where T : struct
-    {
-      return Parse<T>(enumMemberName, false);
-    }
-
-    /// <summary>
-    /// Parses the specified enum member name, returning it's value.
-    /// </summary>
-    /// <param name="enumMemberName">Name of the enum member.</param>
-    /// <param name="ignoreCase">If set to <c>true</c> ignore case.</param>
-    /// <returns></returns>
-    public static T Parse<T>(string enumMemberName, bool ignoreCase) where T : struct
-    {
-      ValidationUtils.ArgumentTypeIsEnum(typeof(T), "T");
-
-      return (T)Enum.Parse(typeof(T), enumMemberName, ignoreCase);
-    }
-
-    public static bool TryParse<T>(string enumMemberName, bool ignoreCase, out T value) where T : struct
-    {
-      ValidationUtils.ArgumentTypeIsEnum(typeof(T), "T");
-
-      return MiscellaneousUtils.TryAction(() => Parse<T>(enumMemberName, ignoreCase), out value);
-    }
-
     public static IList<T> GetFlagsValues<T>(T value) where T : struct
     {
       Type enumType = typeof(T);
@@ -100,17 +70,6 @@ namespace Newtonsoft.Json.Utilities
     /// <summary>
     /// Gets a dictionary of the names and values of an Enum type.
     /// </summary>
-    /// <returns></returns>
-    public static EnumValues<TUnderlyingType> GetNamesAndValues<TEnum, TUnderlyingType>()
-      where TEnum : struct
-      where TUnderlyingType : struct
-    {
-      return GetNamesAndValues<TUnderlyingType>(typeof(TEnum));
-    }
-
-    /// <summary>
-    /// Gets a dictionary of the names and values of an Enum type.
-    /// </summary>
     /// <param name="enumType">The enum type to get names and values for.</param>
     /// <returns></returns>
     public static EnumValues<TUnderlyingType> GetNamesAndValues<TUnderlyingType>(Type enumType) where TUnderlyingType : struct
@@ -142,11 +101,6 @@ namespace Newtonsoft.Json.Utilities
       return nameValues;
     }
 
-    public static IList<T> GetValues<T>()
-    {
-      return GetValues(typeof(T)).Cast<T>().ToList();
-    }
-
     public static IList<object> GetValues(Type enumType)
     {
       if (!enumType.IsEnum)
@@ -167,11 +121,6 @@ namespace Newtonsoft.Json.Utilities
       return values;
     }
 
-    public static IList<string> GetNames<T>()
-    {
-      return GetNames(typeof(T));
-    }
-
     public static IList<string> GetNames(Type enumType)
     {
       if (!enumType.IsEnum)
@@ -189,48 +138,6 @@ namespace Newtonsoft.Json.Utilities
       }
 
       return values;
-    }
-
-
-    /// <summary>
-    /// Gets the maximum valid value of an Enum type. Flags enums are ORed.
-    /// </summary>
-    /// <typeparam name="TEnumType">The type of the returned value. Must be assignable from the enum's underlying value type.</typeparam>
-    /// <param name="enumType">The enum type to get the maximum value for.</param>
-    /// <returns></returns>
-    public static TEnumType GetMaximumValue<TEnumType>(Type enumType) where TEnumType : IConvertible, IComparable<TEnumType>
-    {
-      if (enumType == null)
-        throw new ArgumentNullException("enumType");
-
-      Type enumUnderlyingType = Enum.GetUnderlyingType(enumType);
-
-      if (!typeof(TEnumType).IsAssignableFrom(enumUnderlyingType))
-        throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, "TEnumType is not assignable from the enum's underlying type of {0}.", enumUnderlyingType.Name));
-
-      ulong maximumValue = 0;
-      IList<object> enumValues = GetValues(enumType);
-
-      if (enumType.IsDefined(typeof(FlagsAttribute), false))
-      {
-        foreach (TEnumType value in enumValues)
-        {
-          maximumValue = maximumValue | value.ToUInt64(CultureInfo.InvariantCulture);
-        }
-      }
-      else
-      {
-        foreach (TEnumType value in enumValues)
-        {
-          ulong tempValue = value.ToUInt64(CultureInfo.InvariantCulture);
-
-          // maximumValue is smaller than the enum value
-          if (maximumValue.CompareTo(tempValue) == -1)
-            maximumValue = tempValue;
-        }
-      }
-
-      return (TEnumType)Convert.ChangeType(maximumValue, typeof(TEnumType), CultureInfo.InvariantCulture);
     }
   }
 }

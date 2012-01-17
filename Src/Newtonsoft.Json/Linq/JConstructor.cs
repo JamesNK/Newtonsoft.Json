@@ -38,7 +38,7 @@ namespace Newtonsoft.Json.Linq
   public class JConstructor : JContainer
   {
     private string _name;
-    private IList<JToken> _values = new List<JToken>();
+    private readonly IList<JToken> _values = new List<JToken>();
 
     /// <summary>
     /// Gets the container's children tokens.

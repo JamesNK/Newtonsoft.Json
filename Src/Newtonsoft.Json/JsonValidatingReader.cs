@@ -658,7 +658,7 @@ namespace Newtonsoft.Json
 
     private static bool IsZero(double value)
     {
-      double epsilon = 2.2204460492503131e-016;
+      const double epsilon = 2.2204460492503131e-016;
 
       return Math.Abs(value) < 10.0 * epsilon;
     }
@@ -731,7 +731,7 @@ namespace Newtonsoft.Json
     bool IJsonLineInfo.HasLineInfo()
     {
       IJsonLineInfo lineInfo = _reader as IJsonLineInfo;
-      return (lineInfo != null) ? lineInfo.HasLineInfo() : false;
+      return lineInfo != null && lineInfo.HasLineInfo();
     }
 
     int IJsonLineInfo.LineNumber

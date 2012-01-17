@@ -773,7 +773,7 @@ namespace Newtonsoft.Json.Linq
       if (v == null || !ValidateString(v))
         throw new ArgumentException("Can not convert {0} to String.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
-      return (v.Value != null) ? Convert.ToString(v.Value) : null;
+      return (v.Value != null) ? Convert.ToString(v.Value, CultureInfo.InvariantCulture) : null;
     }
 
     /// <summary>

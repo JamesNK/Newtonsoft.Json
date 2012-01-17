@@ -182,7 +182,7 @@ namespace Newtonsoft.Json.Linq
           {
             foreach (JToken t in token.Children())
             {
-              yield return t.Convert<JToken, U>(); ;
+              yield return t.Convert<JToken, U>();
             }
           }
         }
@@ -236,7 +236,7 @@ namespace Newtonsoft.Json.Linq
     {
       ValidationUtils.ArgumentNotNull(source, "source");
 
-      foreach (JToken token in source)
+      foreach (T token in source)
       {
         yield return Convert<JToken, U>(token);
       }

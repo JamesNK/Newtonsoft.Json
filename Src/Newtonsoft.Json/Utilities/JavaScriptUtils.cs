@@ -44,19 +44,15 @@ namespace Newtonsoft.Json.Utilities
       if (s != null)
       {
         char[] chars = null;
-        int lastWritePosition = -1;
+        int lastWritePosition = 0;
 
-        for (var index = 0; index < s.Length; ++index)
+        for (int i = 0; i < s.Length; i++)
         {
-          var c = s[index];
+          var c = s[i];
 
-          if (c >= ' ' && c < 128 && c != '\"' && c != '\\' && c != '\'')
-          {
-            if (lastWritePosition == -1)
-              lastWritePosition = index;
-
+          // don't escape standard text/numbers except '\' and the text delimiter
+          if (c >= ' ' && c < 128 && c != '\\' && c != '\'' && c != '"')
             continue;
-          }
 
           string escapedValue;
 
@@ -103,38 +99,33 @@ namespace Newtonsoft.Json.Utilities
           }
 
           if (escapedValue == null)
-          {
-            if (lastWritePosition == -1)
-              lastWritePosition = index;
-
             continue;
-          }
 
-          if (lastWritePosition != -1)
+          if (i > lastWritePosition)
           {
             if (chars == null)
               chars = s.ToCharArray();
 
-            writer.Write(chars, lastWritePosition, index - lastWritePosition);
-            lastWritePosition = -1;
+            // write unchanged chars before writing escaped text
+            writer.Write(chars, lastWritePosition, i - lastWritePosition);
           }
 
+          lastWritePosition = i + 1;
           writer.Write(escapedValue);
         }
 
-        if (lastWritePosition != -1)
+        if (lastWritePosition == 0)
         {
-          if (lastWritePosition == 0)
-          {
-            writer.Write(s);
-          }
-          else
-          {
-            if (chars == null)
-              chars = s.ToCharArray();
+          // no escaped text, write entire string
+          writer.Write(s);
+        }
+        else
+        {
+          if (chars == null)
+            chars = s.ToCharArray();
 
-            writer.Write(chars, lastWritePosition, s.Length - lastWritePosition);
-          }
+          // write remaining text
+          writer.Write(chars, lastWritePosition, s.Length - lastWritePosition);
         }
       }
 

@@ -15,7 +15,6 @@ namespace Newtonsoft.Json.Bson
     private readonly BinaryWriter _writer;
 
     private byte[] _largeByteBuffer;
-    private int _maxChars;
 
     public DateTimeKind DateTimeKindHandling { get; set; }
 
@@ -181,7 +180,6 @@ namespace Newtonsoft.Json.Bson
         if (_largeByteBuffer == null)
         {
           _largeByteBuffer = new byte[256];
-          _maxChars = 256 / Encoding.GetMaxByteCount(1);
         }
         if (byteCount <= 256)
         {

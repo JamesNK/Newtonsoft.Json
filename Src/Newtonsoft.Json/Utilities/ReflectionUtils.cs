@@ -202,27 +202,6 @@ namespace Newtonsoft.Json.Utilities
         : t;
     }
 
-    //public static bool IsValueTypeUnitializedValue(ValueType value)
-    //{
-    //  if (value == null)
-    //    return true;
-
-    //  return value.Equals(CreateUnitializedValue(value.GetType()));
-    //}
-
-    public static bool IsUnitializedValue(object value)
-    {
-      if (value == null)
-      {
-        return true;
-      }
-      else
-      {
-        object unitializedValue = CreateUnitializedValue(value.GetType());
-        return value.Equals(unitializedValue);
-      }
-    }
-
     public static object CreateUnitializedValue(Type type)
     {
       ValidationUtils.ArgumentNotNull(type, "type");
@@ -236,13 +215,6 @@ namespace Newtonsoft.Json.Utilities
         return Activator.CreateInstance(type);
       else
         throw new ArgumentException("Type {0} cannot be instantiated.".FormatWith(CultureInfo.InvariantCulture, type), "type");
-    }
-
-    public static bool IsPropertyIndexed(PropertyInfo property)
-    {
-      ValidationUtils.ArgumentNotNull(property, "property");
-
-      return !CollectionUtils.IsNullOrEmpty<ParameterInfo>(property.GetIndexParameters());
     }
 
     public static bool ImplementsGenericDefinition(Type type, Type genericInterfaceDefinition)
@@ -442,45 +414,6 @@ namespace Newtonsoft.Json.Utilities
     }
 
     /// <summary>
-    /// Tests whether the list's items are their unitialized value.
-    /// </summary>
-    /// <param name="list">The list.</param>
-    /// <returns>Whether the list's items are their unitialized value</returns>
-    public static bool ItemsUnitializedValue<T>(IList<T> list)
-    {
-      ValidationUtils.ArgumentNotNull(list, "list");
-
-      Type elementType = GetCollectionItemType(list.GetType());
-
-      if (elementType.IsValueType)
-      {
-        object unitializedValue = CreateUnitializedValue(elementType);
-
-        for (int i = 0; i < list.Count; i++)
-        {
-          if (!list[i].Equals(unitializedValue))
-            return false;
-        }
-      }
-      else if (elementType.IsClass)
-      {
-        for (int i = 0; i < list.Count; i++)
-        {
-          object value = list[i];
-
-          if (value != null)
-            return false;
-        }
-      }
-      else
-      {
-        throw new Exception("Type {0} is neither a ValueType or a Class.".FormatWith(CultureInfo.InvariantCulture, elementType));
-      }
-
-      return true;
-    }
-
-    /// <summary>
     /// Gets the member's underlying type.
     /// </summary>
     /// <param name="member">The member.</param>
@@ -657,11 +590,6 @@ namespace Newtonsoft.Json.Utilities
       }
     }
 
-    public static List<MemberInfo> GetFieldsAndProperties<T>(BindingFlags bindingAttr)
-    {
-      return GetFieldsAndProperties(typeof(T), bindingAttr);
-    }
-
     public static List<MemberInfo> GetFieldsAndProperties(Type type, BindingFlags bindingAttr)
     {
       List<MemberInfo> targetMembers = new List<MemberInfo>();
@@ -723,7 +651,7 @@ namespace Newtonsoft.Json.Utilities
     {
       T[] attributes = GetAttributes<T>(attributeProvider, inherit);
 
-      return CollectionUtils.GetSingleItem(attributes, true);
+      return attributes.SingleOrDefault();
     }
 
     public static T[] GetAttributes<T>(ICustomAttributeProvider attributeProvider, bool inherit) where T : Attribute
@@ -749,13 +677,6 @@ namespace Newtonsoft.Json.Utilities
         return (T[])Attribute.GetCustomAttributes((ParameterInfo)attributeProvider, typeof(T), inherit);
 
       return (T[])attributeProvider.GetCustomAttributes(typeof(T), inherit);
-    }
-
-    public static string GetNameAndAssessmblyName(Type t)
-    {
-      ValidationUtils.ArgumentNotNull(t, "t");
-
-      return t.FullName + ", " + t.Assembly.GetName().Name;
     }
 
     public static Type MakeGenericType(Type genericTypeDefinition, params Type[] innerTypes)
@@ -786,17 +707,6 @@ namespace Newtonsoft.Json.Utilities
       Type specificType = MakeGenericType(genericTypeDefinition, innerTypes.ToArray());
 
       return instanceCreator(specificType, args);
-    }
-
-    public static bool IsCompatibleValue(object value, Type type)
-    {
-      if (value == null)
-        return IsNullable(type);
-
-      if (type.IsAssignableFrom(value.GetType()))
-        return true;
-
-      return false;
     }
 
      public static object CreateInstance(Type type, params object[] args)
@@ -883,7 +793,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static MemberInfo GetMemberInfoFromType(Type targetType, MemberInfo memberInfo)
     {
-      BindingFlags bindingAttr = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+      const BindingFlags bindingAttr = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 
       switch (memberInfo.MemberType)
       {

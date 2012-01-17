@@ -341,7 +341,7 @@ namespace Newtonsoft.Json
           case JsonToken.StartConstructor:
             string constructorName = reader.Value.ToString();
             // write a JValue date when the constructor is for a date
-            if (string.Compare(constructorName, "Date", StringComparison.Ordinal) == 0)
+            if (string.Equals(constructorName, "Date", StringComparison.Ordinal))
               WriteConstructorDate(reader);
             else
               WriteStartConstructor(reader.Value.ToString());

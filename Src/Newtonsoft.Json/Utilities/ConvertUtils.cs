@@ -97,92 +97,7 @@ namespace Newtonsoft.Json.Utilities
       return o => call(null, o);
     }
 
-    public static bool CanConvertType(Type initialType, Type targetType, bool allowTypeNameToString)
-    {
-      ValidationUtils.ArgumentNotNull(initialType, "initialType");
-      ValidationUtils.ArgumentNotNull(targetType, "targetType");
-
-      if (ReflectionUtils.IsNullableType(targetType))
-        targetType = Nullable.GetUnderlyingType(targetType);
-
-      if (targetType == initialType)
-        return true;
-
-      if (typeof(IConvertible).IsAssignableFrom(initialType) && typeof(IConvertible).IsAssignableFrom(targetType))
-      {
-        return true;
-      }
-
-#if !PocketPC && !NET20
-      if (initialType == typeof(DateTime) && targetType == typeof(DateTimeOffset))
-        return true;
-#endif
-
-      if (initialType == typeof(Guid) && (targetType == typeof(Guid) || targetType == typeof(string)))
-        return true;
-
-      if (initialType == typeof(Type) && targetType == typeof(string))
-        return true;
-
-#if !PocketPC
-      // see if source or target types have a TypeConverter that converts between the two
-      TypeConverter toConverter = GetConverter(initialType);
-
-      if (toConverter != null && !IsComponentConverter(toConverter) && toConverter.CanConvertTo(targetType))
-      {
-        if (allowTypeNameToString || toConverter.GetType() != typeof(TypeConverter))
-          return true;
-      }
-
-      TypeConverter fromConverter = GetConverter(targetType);
-
-      if (fromConverter != null && !IsComponentConverter(fromConverter) && fromConverter.CanConvertFrom(initialType))
-        return true;
-#endif
-
-      // handle DBNull and INullable
-      if (initialType == typeof(DBNull))
-      {
-        if (ReflectionUtils.IsNullable(targetType))
-          return true;
-      }
-
-      return false;
-    }
-
-    private static bool IsComponentConverter(TypeConverter converter)
-    {
-#if !SILVERLIGHT && !PocketPC
-      return (converter is ComponentConverter);
-#else
-      return false;
-#endif
-    }
-
     #region Convert
-    /// <summary>
-    /// Converts the value to the specified type.
-    /// </summary>
-    /// <typeparam name="T">The type to convert the value to.</typeparam>
-    /// <param name="initialValue">The value to convert.</param>
-    /// <returns>The converted type.</returns>
-    public static T Convert<T>(object initialValue)
-    {
-      return Convert<T>(initialValue, CultureInfo.CurrentCulture);
-    }
-
-    /// <summary>
-    /// Converts the value to the specified type.
-    /// </summary>
-    /// <typeparam name="T">The type to convert the value to.</typeparam>
-    /// <param name="initialValue">The value to convert.</param>
-    /// <param name="culture">The culture to use when converting.</param>
-    /// <returns>The converted type.</returns>
-    public static T Convert<T>(object initialValue, CultureInfo culture)
-    {
-      return (T)Convert(initialValue, culture, typeof(T));
-    }
-
     /// <summary>
     /// Converts the value to the specified type.
     /// </summary>
@@ -288,41 +203,6 @@ namespace Newtonsoft.Json.Utilities
     /// <summary>
     /// Converts the value to the specified type.
     /// </summary>
-    /// <typeparam name="T">The type to convert the value to.</typeparam>
-    /// <param name="initialValue">The value to convert.</param>
-    /// <param name="convertedValue">The converted value if the conversion was successful or the default value of <c>T</c> if it failed.</param>
-    /// <returns>
-    /// 	<c>true</c> if <c>initialValue</c> was converted successfully; otherwise, <c>false</c>.
-    /// </returns>
-    public static bool TryConvert<T>(object initialValue, out T convertedValue)
-    {
-      return TryConvert(initialValue, CultureInfo.CurrentCulture, out convertedValue);
-    }
-
-    /// <summary>
-    /// Converts the value to the specified type.
-    /// </summary>
-    /// <typeparam name="T">The type to convert the value to.</typeparam>
-    /// <param name="initialValue">The value to convert.</param>
-    /// <param name="culture">The culture to use when converting.</param>
-    /// <param name="convertedValue">The converted value if the conversion was successful or the default value of <c>T</c> if it failed.</param>
-    /// <returns>
-    /// 	<c>true</c> if <c>initialValue</c> was converted successfully; otherwise, <c>false</c>.
-    /// </returns>
-    public static bool TryConvert<T>(object initialValue, CultureInfo culture, out T convertedValue)
-    {
-      return MiscellaneousUtils.TryAction<T>(delegate
-      {
-        object tempConvertedValue;
-        TryConvert(initialValue, CultureInfo.CurrentCulture, typeof(T), out tempConvertedValue);
-
-        return (T)tempConvertedValue;
-      }, out convertedValue);
-    }
-
-    /// <summary>
-    /// Converts the value to the specified type.
-    /// </summary>
     /// <param name="initialValue">The value to convert.</param>
     /// <param name="culture">The culture to use when converting.</param>
     /// <param name="targetType">The type to convert the value to.</param>
@@ -337,31 +217,6 @@ namespace Newtonsoft.Json.Utilities
     #endregion
 
     #region ConvertOrCast
-    /// <summary>
-    /// Converts the value to the specified type. If the value is unable to be converted, the
-    /// value is checked whether it assignable to the specified type.
-    /// </summary>
-    /// <typeparam name="T">The type to convert or cast the value to.</typeparam>
-    /// <param name="initialValue">The value to convert.</param>
-    /// <returns>The converted type. If conversion was unsuccessful, the initial value is returned if assignable to the target type</returns>
-    public static T ConvertOrCast<T>(object initialValue)
-    {
-      return ConvertOrCast<T>(initialValue, CultureInfo.CurrentCulture);
-    }
-
-    /// <summary>
-    /// Converts the value to the specified type. If the value is unable to be converted, the
-    /// value is checked whether it assignable to the specified type.
-    /// </summary>
-    /// <typeparam name="T">The type to convert or cast the value to.</typeparam>
-    /// <param name="initialValue">The value to convert.</param>
-    /// <param name="culture">The culture to use when converting.</param>
-    /// <returns>The converted type. If conversion was unsuccessful, the initial value is returned if assignable to the target type</returns>
-    public static T ConvertOrCast<T>(object initialValue, CultureInfo culture)
-    {
-      return (T)ConvertOrCast(initialValue, culture, typeof(T));
-    }
-
     /// <summary>
     /// Converts the value to the specified type. If the value is unable to be converted, the
     /// value is checked whether it assignable to the specified type.
@@ -387,61 +242,6 @@ namespace Newtonsoft.Json.Utilities
         return convertedValue;
 
       return EnsureTypeAssignable(initialValue, ReflectionUtils.GetObjectType(initialValue), targetType);
-    }
-    #endregion
-
-    #region TryConvertOrCast
-    /// <summary>
-    /// Converts the value to the specified type. If the value is unable to be converted, the
-    /// value is checked whether it assignable to the specified type.
-    /// </summary>
-    /// <typeparam name="T">The type to convert the value to.</typeparam>
-    /// <param name="initialValue">The value to convert.</param>
-    /// <param name="convertedValue">The converted value if the conversion was successful or the default value of <c>T</c> if it failed.</param>
-    /// <returns>
-    /// 	<c>true</c> if <c>initialValue</c> was converted successfully or is assignable; otherwise, <c>false</c>.
-    /// </returns>
-    public static bool TryConvertOrCast<T>(object initialValue, out T convertedValue)
-    {
-      return TryConvertOrCast<T>(initialValue, CultureInfo.CurrentCulture, out convertedValue);
-    }
-
-    /// <summary>
-    /// Converts the value to the specified type. If the value is unable to be converted, the
-    /// value is checked whether it assignable to the specified type.
-    /// </summary>
-    /// <typeparam name="T">The type to convert the value to.</typeparam>
-    /// <param name="initialValue">The value to convert.</param>
-    /// <param name="culture">The culture to use when converting.</param>
-    /// <param name="convertedValue">The converted value if the conversion was successful or the default value of <c>T</c> if it failed.</param>
-    /// <returns>
-    /// 	<c>true</c> if <c>initialValue</c> was converted successfully or is assignable; otherwise, <c>false</c>.
-    /// </returns>
-    public static bool TryConvertOrCast<T>(object initialValue, CultureInfo culture, out T convertedValue)
-    {
-      return MiscellaneousUtils.TryAction<T>(delegate
-      {
-        object tempConvertedValue;
-        TryConvertOrCast(initialValue, CultureInfo.CurrentCulture, typeof(T), out tempConvertedValue);
-
-        return (T)tempConvertedValue;
-      }, out convertedValue);
-    }
-
-    /// <summary>
-    /// Converts the value to the specified type. If the value is unable to be converted, the
-    /// value is checked whether it assignable to the specified type.
-    /// </summary>
-    /// <param name="initialValue">The value to convert.</param>
-    /// <param name="culture">The culture to use when converting.</param>
-    /// <param name="targetType">The type to convert the value to.</param>
-    /// <param name="convertedValue">The converted value if the conversion was successful or the default value of <c>T</c> if it failed.</param>
-    /// <returns>
-    /// 	<c>true</c> if <c>initialValue</c> was converted successfully or is assignable; otherwise, <c>false</c>.
-    /// </returns>
-    public static bool TryConvertOrCast(object initialValue, CultureInfo culture, Type targetType, out object convertedValue)
-    {
-      return MiscellaneousUtils.TryAction<object>(delegate { return ConvertOrCast(initialValue, culture, targetType); }, out convertedValue);
     }
     #endregion
 
