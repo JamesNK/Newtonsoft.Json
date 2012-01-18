@@ -1811,5 +1811,31 @@ bye", reader.Value);
       Assert.AreEqual(JsonToken.Float, reader.TokenType);
       Assert.AreEqual(32m, reader.Value);
     }
+
+    [Test]
+    public void ParseNumbers()
+    {
+      string json = @"[0,1,2 , 3]";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+      reader.Read();
+      Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+      reader.Read();
+      Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+
+      reader.Read();
+      Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+
+      reader.Read();
+      Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+
+      reader.Read();
+      Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+
+      reader.Read();
+      Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+    }
   }
 }

@@ -118,12 +118,6 @@ namespace Newtonsoft.Json.Utilities
       if (targetType == initialType)
         return initialValue;
 
-      if (initialValue is string && typeof(Type).IsAssignableFrom(targetType))
-        return Type.GetType((string) initialValue, true);
-
-      if (targetType.IsInterface || targetType.IsGenericTypeDefinition || targetType.IsAbstract)
-        throw new ArgumentException("Target type {0} is not a value type or a non-abstract class.".FormatWith(CultureInfo.InvariantCulture, targetType), "targetType");
-
       // use Convert.ChangeType if both types are IConvertible
       if (initialValue is IConvertible && typeof(IConvertible).IsAssignableFrom(targetType))
       {
@@ -134,9 +128,15 @@ namespace Newtonsoft.Json.Utilities
           else if (IsInteger(initialValue))
             return Enum.ToObject(targetType, initialValue);
         }
-        
+
         return System.Convert.ChangeType(initialValue, targetType, culture);
       }
+
+      if (initialValue is string && typeof(Type).IsAssignableFrom(targetType))
+        return Type.GetType((string) initialValue, true);
+
+      if (targetType.IsInterface || targetType.IsGenericTypeDefinition || targetType.IsAbstract)
+        throw new ArgumentException("Target type {0} is not a value type or a non-abstract class.".FormatWith(CultureInfo.InvariantCulture, targetType), "targetType");
 
 #if !PocketPC && !NET20
       if (initialValue is DateTime && targetType == typeof(DateTimeOffset))

@@ -35,6 +35,16 @@ namespace Newtonsoft.Json.Serialization
   /// </summary>
   public abstract class JsonContract
   {
+    internal enum ReadType
+    {
+      Read,
+      ReadAsDecimal,
+      ReadAsBytes,
+#if !NET20
+      ReadAsDateTimeOffset
+#endif
+    }
+
     /// <summary>
     /// Gets the underlying type for the contract.
     /// </summary>
@@ -63,22 +73,30 @@ namespace Newtonsoft.Json.Serialization
     // checked for after passed in converters and attribute specified converters
     internal JsonConverter InternalConverter { get; set; }
 
+    internal ReadType InternalReadType;
+    internal bool IsNullable;
+    internal bool IsConvertable;
+    internal Type NonNullableUnderlyingType;
+
 #if !PocketPC
     /// <summary>
     /// Gets or sets the method called immediately after deserialization of the object.
     /// </summary>
     /// <value>The method called immediately after deserialization of the object.</value>
     public MethodInfo OnDeserialized { get; set; }
+
     /// <summary>
     /// Gets or sets the method called during deserialization of the object.
     /// </summary>
     /// <value>The method called during deserialization of the object.</value>
     public MethodInfo OnDeserializing { get; set; }
+
     /// <summary>
     /// Gets or sets the method called after serialization of the object graph.
     /// </summary>
     /// <value>The method called after serialization of the object graph.</value>
     public MethodInfo OnSerialized { get; set; }
+
     /// <summary>
     /// Gets or sets the method called before serialization of the object.
     /// </summary>
@@ -108,7 +126,7 @@ namespace Newtonsoft.Json.Serialization
     {
 #if !PocketPC
       if (OnSerializing != null)
-        OnSerializing.Invoke(o, new object[] { context });
+        OnSerializing.Invoke(o, new object[] {context});
 #endif
     }
 
@@ -116,7 +134,7 @@ namespace Newtonsoft.Json.Serialization
     {
 #if !PocketPC
       if (OnSerialized != null)
-        OnSerialized.Invoke(o, new object[] { context });
+        OnSerialized.Invoke(o, new object[] {context});
 #endif
     }
 
@@ -124,7 +142,7 @@ namespace Newtonsoft.Json.Serialization
     {
 #if !PocketPC
       if (OnDeserializing != null)
-        OnDeserializing.Invoke(o, new object[] { context });
+        OnDeserializing.Invoke(o, new object[] {context});
 #endif
     }
 
@@ -132,14 +150,14 @@ namespace Newtonsoft.Json.Serialization
     {
 #if !PocketPC
       if (OnDeserialized != null)
-        OnDeserialized.Invoke(o, new object[] { context });
+        OnDeserialized.Invoke(o, new object[] {context});
 #endif
     }
 
     internal void InvokeOnError(object o, StreamingContext context, ErrorContext errorContext)
     {
       if (OnError != null)
-        OnError.Invoke(o, new object[] { context, errorContext });
+        OnError.Invoke(o, new object[] {context, errorContext});
     }
 
     internal JsonContract(Type underlyingType)
@@ -148,6 +166,31 @@ namespace Newtonsoft.Json.Serialization
 
       UnderlyingType = underlyingType;
       CreatedType = underlyingType;
+
+      IsNullable = ReflectionUtils.IsNullable(underlyingType);
+
+      NonNullableUnderlyingType = (IsNullable && ReflectionUtils.IsNullableType(underlyingType)) ? Nullable.GetUnderlyingType(underlyingType) : underlyingType;
+
+      IsConvertable = typeof(IConvertible).IsAssignableFrom(NonNullableUnderlyingType);
+
+      if (NonNullableUnderlyingType == typeof(byte[]))
+      {
+        InternalReadType = ReadType.ReadAsBytes;
+      }
+      else if (NonNullableUnderlyingType == typeof(decimal))
+      {
+        InternalReadType = ReadType.ReadAsDecimal;
+      }
+#if !NET20
+      else if (NonNullableUnderlyingType == typeof(DateTimeOffset))
+      {
+        InternalReadType = ReadType.ReadAsDateTimeOffset;
+      }
+#endif
+      else
+      {
+        InternalReadType = ReadType.Read;
+      }
     }
   }
 }

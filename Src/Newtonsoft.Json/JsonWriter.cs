@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.IO;
 using System.Xml;
@@ -91,7 +92,7 @@ namespace Newtonsoft.Json
   /// </summary>
   public abstract class JsonWriter : IDisposable
   {
-    private enum State
+    internal enum State
     {
       Start,
       Property,
@@ -107,18 +108,57 @@ namespace Newtonsoft.Json
     }
 
     // array that gives a new state based on the current state an the token being written
-    private static readonly State[][] stateArray = new[] {
-//                      Start                   PropertyName            ObjectStart         Object            ArrayStart              Array                   ConstructorStart        Constructor             Closed          Error
+    private static readonly State[][] StateArray;
+
+    internal static readonly State[][] StateArrayTempate = new[] {
+//                                      Start                   PropertyName            ObjectStart         Object            ArrayStart              Array                   ConstructorStart        Constructor             Closed          Error
 //                        
-/* None             */new[]{ State.Error,            State.Error,            State.Error,        State.Error,      State.Error,            State.Error,            State.Error,            State.Error,            State.Error,    State.Error },
-/* StartObject      */new[]{ State.ObjectStart,      State.ObjectStart,      State.Error,        State.Error,      State.ObjectStart,      State.ObjectStart,      State.ObjectStart,      State.ObjectStart,      State.Error,    State.Error },
-/* StartArray       */new[]{ State.ArrayStart,       State.ArrayStart,       State.Error,        State.Error,      State.ArrayStart,       State.ArrayStart,       State.ArrayStart,       State.ArrayStart,       State.Error,    State.Error },
-/* StartConstructor */new[]{ State.ConstructorStart, State.ConstructorStart, State.Error,        State.Error,      State.ConstructorStart, State.ConstructorStart, State.ConstructorStart, State.ConstructorStart, State.Error,    State.Error },
-/* StartProperty    */new[]{ State.Property,         State.Error,            State.Property,     State.Property,   State.Error,            State.Error,            State.Error,            State.Error,            State.Error,    State.Error },
-/* Comment          */new[]{ State.Start,            State.Property,         State.ObjectStart,  State.Object,     State.ArrayStart,       State.Array,            State.Constructor,      State.Constructor,      State.Error,    State.Error },
-/* Raw              */new[]{ State.Start,            State.Property,         State.ObjectStart,  State.Object,     State.ArrayStart,       State.Array,            State.Constructor,      State.Constructor,      State.Error,    State.Error },
-/* Value            */new[]{ State.Start,            State.Object,           State.Error,        State.Error,      State.Array,            State.Array,            State.Constructor,      State.Constructor,      State.Error,    State.Error },
+/* None                        */new[]{ State.Error,            State.Error,            State.Error,        State.Error,      State.Error,            State.Error,            State.Error,            State.Error,            State.Error,    State.Error },
+/* StartObject                 */new[]{ State.ObjectStart,      State.ObjectStart,      State.Error,        State.Error,      State.ObjectStart,      State.ObjectStart,      State.ObjectStart,      State.ObjectStart,      State.Error,    State.Error },
+/* StartArray                  */new[]{ State.ArrayStart,       State.ArrayStart,       State.Error,        State.Error,      State.ArrayStart,       State.ArrayStart,       State.ArrayStart,       State.ArrayStart,       State.Error,    State.Error },
+/* StartConstructor            */new[]{ State.ConstructorStart, State.ConstructorStart, State.Error,        State.Error,      State.ConstructorStart, State.ConstructorStart, State.ConstructorStart, State.ConstructorStart, State.Error,    State.Error },
+/* StartProperty               */new[]{ State.Property,         State.Error,            State.Property,     State.Property,   State.Error,            State.Error,            State.Error,            State.Error,            State.Error,    State.Error },
+/* Comment                     */new[]{ State.Start,            State.Property,         State.ObjectStart,  State.Object,     State.ArrayStart,       State.Array,            State.Constructor,      State.Constructor,      State.Error,    State.Error },
+/* Raw                         */new[]{ State.Start,            State.Property,         State.ObjectStart,  State.Object,     State.ArrayStart,       State.Array,            State.Constructor,      State.Constructor,      State.Error,    State.Error },
+/* Value (this will be copied) */new[]{ State.Start,            State.Object,           State.Error,        State.Error,      State.Array,            State.Array,            State.Constructor,      State.Constructor,      State.Error,    State.Error }
 		};
+
+    internal static State[][] BuildStateArray()
+    {
+      var allStates = StateArrayTempate.ToList();
+      var errorStates = StateArrayTempate[0];
+      var valueStates = StateArrayTempate[7];
+
+      foreach (JsonToken valueToken in EnumUtils.GetValues(typeof(JsonToken)))
+      {
+        if (allStates.Count <= (int)valueToken)
+        {
+          switch (valueToken)
+          {
+            case JsonToken.Integer:
+            case JsonToken.Float:
+            case JsonToken.String:
+            case JsonToken.Boolean:
+            case JsonToken.Null:
+            case JsonToken.Undefined:
+            case JsonToken.Date:
+            case JsonToken.Bytes:
+              allStates.Add(valueStates);
+              break;
+            default:
+              allStates.Add(errorStates);
+              break;
+          }
+        }
+      }
+
+      return allStates.ToArray();
+    }
+
+    static JsonWriter()
+    {
+      StateArray = BuildStateArray();
+    }
 
     private int _top;
 
@@ -583,31 +623,11 @@ namespace Newtonsoft.Json
 
     internal void AutoComplete(JsonToken tokenBeingWritten)
     {
-      int token;
-
-      switch (tokenBeingWritten)
-      {
-        default:
-          token = (int)tokenBeingWritten;
-          break;
-        case JsonToken.Integer:
-        case JsonToken.Float:
-        case JsonToken.String:
-        case JsonToken.Boolean:
-        case JsonToken.Null:
-        case JsonToken.Undefined:
-        case JsonToken.Date:
-        case JsonToken.Bytes:
-          // a value is being written
-          token = 7;
-          break;
-      }
-
       // gets new state based on the current state and what is being written
-      State newState = stateArray[token][(int)_currentState];
+      State newState = StateArray[(int)tokenBeingWritten][(int)_currentState];
 
       if (newState == State.Error)
-        throw new JsonWriterException("Token {0} in state {1} would result in an invalid JavaScript object.".FormatWith(CultureInfo.InvariantCulture, tokenBeingWritten.ToString(), _currentState.ToString()));
+        throw new JsonWriterException("Token {0} in state {1} would result in an invalid JSON object.".FormatWith(CultureInfo.InvariantCulture, tokenBeingWritten.ToString(), _currentState.ToString()));
 
       if ((_currentState == State.Object || _currentState == State.Array || _currentState == State.Constructor) && tokenBeingWritten != JsonToken.Comment)
       {

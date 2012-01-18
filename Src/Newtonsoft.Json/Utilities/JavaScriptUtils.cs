@@ -51,7 +51,7 @@ namespace Newtonsoft.Json.Utilities
           var c = s[i];
 
           // don't escape standard text/numbers except '\' and the text delimiter
-          if (c >= ' ' && c < 128 && c != '\\' && c != '\'' && c != '"')
+          if (c >= ' ' && c < 128 && c != '\\' && c != delimiter)
             continue;
 
           string escapedValue;
@@ -86,12 +86,12 @@ namespace Newtonsoft.Json.Utilities
               escapedValue = @"\u2029";
               break;
             case '\'':
-              // only escape if this charater is being used as the delimiter
-              escapedValue = (delimiter == '\'') ? @"\'" : null;
+              // this charater is being used as the delimiter
+              escapedValue = @"\'";
               break;
             case '"':
-              // only escape if this charater is being used as the delimiter
-              escapedValue = (delimiter == '"') ? "\\\"" : null;
+              // this charater is being used as the delimiter
+              escapedValue = "\\\"";
               break;
             default:
               escapedValue = (c <= '\u001f') ? StringUtils.ToCharAsUnicode(c) : null;

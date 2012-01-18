@@ -161,7 +161,7 @@ namespace Newtonsoft.Json
       // once in the last 10% of the buffer shift the remainling content to the start to avoid
       // unnessesarly increasing the buffer size when reading numbers/strings
       int length = _chars.Length;
-      if (length - _charPos <= length*0.1)
+      if (length - _charPos <= length * 0.1)
       {
         int count = _charsUsed - _charPos;
         if (count > 0)
@@ -403,7 +403,7 @@ namespace Newtonsoft.Json
       if (TokenType == JsonToken.Null)
         return null;
       if (TokenType == JsonToken.Bytes)
-        return (byte[]) Value;
+        return (byte[])Value;
       if (TokenType == JsonToken.StartArray)
       {
         List<byte> data = new List<byte>();
@@ -453,10 +453,10 @@ namespace Newtonsoft.Json
       if (TokenType == JsonToken.Null)
         return null;
       if (TokenType == JsonToken.Float)
-        return (decimal?) Value;
+        return (decimal?)Value;
 
       decimal d;
-      if (TokenType == JsonToken.String && decimal.TryParse((string) Value, NumberStyles.Number, Culture, out d))
+      if (TokenType == JsonToken.String && decimal.TryParse((string)Value, NumberStyles.Number, Culture, out d))
       {
         SetToken(JsonToken.Float, d);
         return d;
@@ -486,10 +486,10 @@ namespace Newtonsoft.Json
       if (TokenType == JsonToken.Null)
         return null;
       if (TokenType == JsonToken.Date)
-        return (DateTimeOffset) Value;
+        return (DateTimeOffset)Value;
 
       DateTimeOffset dt;
-      if (TokenType == JsonToken.String && DateTimeOffset.TryParse((string) Value, Culture, DateTimeStyles.None, out dt))
+      if (TokenType == JsonToken.String && DateTimeOffset.TryParse((string)Value, Culture, DateTimeStyles.None, out dt))
       {
         SetToken(JsonToken.Date, dt);
         return dt;
@@ -506,12 +506,6 @@ namespace Newtonsoft.Json
     {
       while (true)
       {
-        if (_charPos >= _charsUsed)
-        {
-          if (!ReadChars(0, false))
-            return false;
-        }
-
         switch (_currentState)
         {
           case State.Start:
@@ -706,6 +700,58 @@ namespace Newtonsoft.Json
       }
     }
 
+    private void ReadNumberIntoBuffer()
+    {
+      int charPos = _charPos;
+
+      while (true)
+      {
+        switch (_chars[charPos++])
+        {
+          case '\0':
+            if (_charsUsed == charPos - 1)
+            {
+              charPos--;
+              _charPos = charPos;
+              if (ReadData(true) == 0)
+                return;
+            }
+            break;
+          case '-':
+          case '+':
+          case 'a':
+          case 'A':
+          case 'b':
+          case 'B':
+          case 'c':
+          case 'C':
+          case 'd':
+          case 'D':
+          case 'e':
+          case 'E':
+          case 'f':
+          case 'F':
+          case 'x':
+          case 'X':
+          case '.':
+          case '0':
+          case '1':
+          case '2':
+          case '3':
+          case '4':
+          case '5':
+          case '6':
+          case '7':
+          case '8':
+          case '9':
+            break;
+          default:
+            _charPos = charPos - 1;
+            return;
+        }
+      }
+    }
+
     private void ClearRecentString()
     {
       if (_buffer != null)
@@ -726,7 +772,10 @@ namespace Newtonsoft.Json
             if (_charsUsed == _charPos)
             {
               if (ReadData(false) == 0)
+              {
+                _currentState = State.Finished;
                 return false;
+              }
             }
             else
             {
@@ -890,7 +939,7 @@ namespace Newtonsoft.Json
             {
               if (ReadData(true) == 0)
                 throw CreateJsonReaderException("Unexpected end when parsing unquoted property name. Line {0}, position {1}.", LineNumber, LinePosition);
-              
+
               break;
             }
 
@@ -909,7 +958,7 @@ namespace Newtonsoft.Json
               _stringReference = new StringReference(_chars, initialPosition, _charPos - initialPosition);
               return;
             }
-            
+
             throw CreateJsonReaderException("Invalid JavaScript property identifier character: {0}. Line {1}, position {2}.", currentChar, LineNumber, LinePosition);
         }
       }
@@ -1173,32 +1222,7 @@ namespace Newtonsoft.Json
       char firstChar = _chars[_charPos];
       int initialPosition = _charPos;
 
-      // parse until seperator character or end
-      while (true)
-      {
-        char currentChar = _chars[_charPos];
-
-        if (currentChar == '\0')
-        {
-          if (_charsUsed == _charPos)
-          {
-            if (ReadData(true) == 0)
-              break;
-          }
-          else
-          {
-            _charPos++;
-          }
-        }
-        else if (IsSeperator(currentChar))
-        {
-          break;
-        }
-        else
-        {
-          _charPos++;
-        }
-      }
+      ReadNumberIntoBuffer();
 
       _stringReference = new StringReference(_chars, initialPosition, _charPos - initialPosition);
 
@@ -1240,7 +1264,7 @@ namespace Newtonsoft.Json
         if (singleDigit)
         {
           // digit char values start at 48
-          numberValue = (long) firstChar - 48;
+          numberValue = (long)firstChar - 48;
           numberType = JsonToken.Integer;
         }
         else if (nonBase10)
@@ -1531,7 +1555,7 @@ namespace Newtonsoft.Json
       {
         if (CurrentState == State.Start && LinePosition == 0)
           return 0;
-        
+
         return _lineNumber;
       }
     }

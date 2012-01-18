@@ -88,9 +88,9 @@ namespace Newtonsoft.Json.Converters
       return new XmlElementWrapper(_document.CreateElement(elementName));
     }
 
-    public IXmlElement CreateElement(string qualifiedName, string namespaceURI)
+    public IXmlElement CreateElement(string qualifiedName, string namespaceUri)
     {
-      return new XmlElementWrapper(_document.CreateElement(qualifiedName, namespaceURI));
+      return new XmlElementWrapper(_document.CreateElement(qualifiedName, namespaceUri));
     }
 
     public IXmlNode CreateAttribute(string name, string value)
@@ -101,9 +101,9 @@ namespace Newtonsoft.Json.Converters
       return attribute;
     }
 
-    public IXmlNode CreateAttribute(string qualifiedName, string namespaceURI, string value)
+    public IXmlNode CreateAttribute(string qualifiedName, string namespaceUri, string value)
     {
-      XmlNodeWrapper attribute = new XmlNodeWrapper(_document.CreateAttribute(qualifiedName, namespaceURI));
+      XmlNodeWrapper attribute = new XmlNodeWrapper(_document.CreateAttribute(qualifiedName, namespaceUri));
       attribute.Value = value;
 
       return attribute;
@@ -138,9 +138,9 @@ namespace Newtonsoft.Json.Converters
       _element.SetAttributeNode((XmlAttribute) xmlAttributeWrapper.WrappedNode);
     }
 
-    public string GetPrefixOfNamespace(string namespaceURI)
+    public string GetPrefixOfNamespace(string namespaceUri)
     {
-      return _element.GetPrefixOfNamespace(namespaceURI);
+      return _element.GetPrefixOfNamespace(namespaceUri);
     }
   }
 
@@ -264,7 +264,7 @@ namespace Newtonsoft.Json.Converters
       get { return _node.Prefix; }
     }
 
-    public string NamespaceURI
+    public string NamespaceUri
     {
       get { return _node.NamespaceURI; }
     }
@@ -283,9 +283,9 @@ namespace Newtonsoft.Json.Converters
     IXmlNode CreateXmlDeclaration(string version, string encoding, string standalone);
     IXmlNode CreateProcessingInstruction(string target, string data);
     IXmlElement CreateElement(string elementName);
-    IXmlElement CreateElement(string qualifiedName, string namespaceURI);
+    IXmlElement CreateElement(string qualifiedName, string namespaceUri);
     IXmlNode CreateAttribute(string name, string value);
-    IXmlNode CreateAttribute(string qualifiedName, string namespaceURI, string value);
+    IXmlNode CreateAttribute(string qualifiedName, string namespaceUri, string value);
 
     IXmlElement DocumentElement { get; }
   }
@@ -300,7 +300,7 @@ namespace Newtonsoft.Json.Converters
   internal interface IXmlElement : IXmlNode
   {
     void SetAttributeNode(IXmlNode attribute);
-    string GetPrefixOfNamespace(string namespaceURI);
+    string GetPrefixOfNamespace(string namespaceUri);
   }
 
   internal interface IXmlNode
@@ -312,7 +312,7 @@ namespace Newtonsoft.Json.Converters
     IXmlNode ParentNode { get; }
     string Value { get; set; }
     IXmlNode AppendChild(IXmlNode newChild);
-    string NamespaceURI { get; }
+    string NamespaceUri { get; }
     object WrappedNode { get; }
   }
   #endregion
@@ -321,12 +321,12 @@ namespace Newtonsoft.Json.Converters
 #if !NET20
   internal class XDeclarationWrapper : XObjectWrapper, IXmlDeclaration
   {
-    internal readonly XDeclaration _declaration;
+    internal XDeclaration Declaration { get; private set; }
 
     public XDeclarationWrapper(XDeclaration declaration)
       : base(null)
     {
-      _declaration = declaration;
+      Declaration = declaration;
     }
 
     public override XmlNodeType NodeType
@@ -336,19 +336,19 @@ namespace Newtonsoft.Json.Converters
 
     public string Version
     {
-      get { return _declaration.Version; }
+      get { return Declaration.Version; }
     }
 
     public string Encoding
     {
-      get { return _declaration.Encoding; }
-      set { _declaration.Encoding = value; }
+      get { return Declaration.Encoding; }
+      set { Declaration.Encoding = value; }
     }
 
     public string Standalone
     {
-      get { return _declaration.Standalone; }
-      set { _declaration.Standalone = value; }
+      get { return Declaration.Standalone; }
+      set { Declaration.Standalone = value; }
     }
   }
 
@@ -417,10 +417,10 @@ namespace Newtonsoft.Json.Converters
       return new XElementWrapper(new XElement(elementName));
     }
 
-    public IXmlElement CreateElement(string qualifiedName, string namespaceURI)
+    public IXmlElement CreateElement(string qualifiedName, string namespaceUri)
     {
       string localName = MiscellaneousUtils.GetLocalName(qualifiedName);
-      return new XElementWrapper(new XElement(XName.Get(localName, namespaceURI)));
+      return new XElementWrapper(new XElement(XName.Get(localName, namespaceUri)));
     }
 
     public IXmlNode CreateAttribute(string name, string value)
@@ -428,10 +428,10 @@ namespace Newtonsoft.Json.Converters
       return new XAttributeWrapper(new XAttribute(name, value));
     }
 
-    public IXmlNode CreateAttribute(string qualifiedName, string namespaceURI, string value)
+    public IXmlNode CreateAttribute(string qualifiedName, string namespaceUri, string value)
     {
       string localName = MiscellaneousUtils.GetLocalName(qualifiedName);
-      return new XAttributeWrapper(new XAttribute(XName.Get(localName, namespaceURI), value));
+      return new XAttributeWrapper(new XAttribute(XName.Get(localName, namespaceUri), value));
     }
 
     public IXmlElement DocumentElement
@@ -450,7 +450,7 @@ namespace Newtonsoft.Json.Converters
       XDeclarationWrapper declarationWrapper = newChild as XDeclarationWrapper;
       if (declarationWrapper != null)
       {
-        Document.Declaration = declarationWrapper._declaration;
+        Document.Declaration = declarationWrapper.Declaration;
         return declarationWrapper;
       }
       else
@@ -649,7 +649,7 @@ namespace Newtonsoft.Json.Converters
       throw new InvalidOperationException();
     }
 
-    public virtual string NamespaceURI
+    public virtual string NamespaceUri
     {
       get { return null; }
     }
@@ -678,7 +678,7 @@ namespace Newtonsoft.Json.Converters
       get { return Attribute.Name.LocalName; }
     }
 
-    public override string NamespaceURI
+    public override string NamespaceUri
     {
       get { return Attribute.Name.NamespaceName; }
     }
@@ -729,14 +729,14 @@ namespace Newtonsoft.Json.Converters
       get { return Element.Name.LocalName; }
     }
 
-    public override string NamespaceURI
+    public override string NamespaceUri
     {
       get { return Element.Name.NamespaceName; }
     }
 
-    public string GetPrefixOfNamespace(string namespaceURI)
+    public string GetPrefixOfNamespace(string namespaceUri)
     {
-      return Element.GetPrefixOfNamespace(namespaceURI);
+      return Element.GetPrefixOfNamespace(namespaceUri);
     }
   }
 #endif
@@ -836,7 +836,7 @@ namespace Newtonsoft.Json.Converters
           manager.PushScope();
           foreach (IXmlNode attribute in parentElement.Attributes)
           {
-            if (attribute.NamespaceURI == "http://www.w3.org/2000/xmlns/" && attribute.LocalName != "xmlns")
+            if (attribute.NamespaceUri == "http://www.w3.org/2000/xmlns/" && attribute.LocalName != "xmlns")
               manager.AddNamespace(attribute.LocalName, attribute.Value);
           }
         }
@@ -845,9 +845,9 @@ namespace Newtonsoft.Json.Converters
 
     private string ResolveFullName(IXmlNode node, XmlNamespaceManager manager)
     {
-      string prefix = (node.NamespaceURI == null || (node.LocalName == "xmlns" && node.NamespaceURI == "http://www.w3.org/2000/xmlns/"))
+      string prefix = (node.NamespaceUri == null || (node.LocalName == "xmlns" && node.NamespaceUri == "http://www.w3.org/2000/xmlns/"))
                         ? null
-                        : manager.LookupPrefix(node.NamespaceURI);
+                        : manager.LookupPrefix(node.NamespaceUri);
 
       if (!string.IsNullOrEmpty(prefix))
         return prefix + ":" + node.LocalName;
@@ -860,7 +860,7 @@ namespace Newtonsoft.Json.Converters
       switch (node.NodeType)
       {
         case XmlNodeType.Attribute:
-          if (node.NamespaceURI == JsonNamespaceUri)
+          if (node.NamespaceUri == JsonNamespaceUri)
             return "$" + node.LocalName;
           else
             return "@" + ResolveFullName(node, manager);
@@ -888,7 +888,7 @@ namespace Newtonsoft.Json.Converters
     private bool IsArray(IXmlNode node)
     {
       IXmlNode jsonArrayAttribute = (node.Attributes != null)
-                                      ? node.Attributes.SingleOrDefault(a => a.LocalName == "Array" && a.NamespaceURI == JsonNamespaceUri)
+                                      ? node.Attributes.SingleOrDefault(a => a.LocalName == "Array" && a.NamespaceUri == JsonNamespaceUri)
                                       : null;
       
       return (jsonArrayAttribute != null && XmlConvert.ToBoolean(jsonArrayAttribute.Value));
@@ -970,7 +970,7 @@ namespace Newtonsoft.Json.Converters
           {
             foreach (IXmlNode attribute in node.Attributes)
             {
-              if (attribute.NamespaceURI == "http://www.w3.org/2000/xmlns/")
+              if (attribute.NamespaceUri == "http://www.w3.org/2000/xmlns/")
               {
                 string prefix = (attribute.LocalName != "xmlns")
                                   ? attribute.LocalName
@@ -1020,10 +1020,10 @@ namespace Newtonsoft.Json.Converters
         case XmlNodeType.ProcessingInstruction:
         case XmlNodeType.Whitespace:
         case XmlNodeType.SignificantWhitespace:
-          if (node.NamespaceURI == "http://www.w3.org/2000/xmlns/" && node.Value == JsonNamespaceUri)
+          if (node.NamespaceUri == "http://www.w3.org/2000/xmlns/" && node.Value == JsonNamespaceUri)
             return;
 
-          if (node.NamespaceURI == JsonNamespaceUri)
+          if (node.NamespaceUri == JsonNamespaceUri)
           {
             if (node.LocalName == "Array")
               return;
@@ -1512,7 +1512,7 @@ namespace Newtonsoft.Json.Converters
 
     private IEnumerable<IXmlNode> ValueAttributes(IEnumerable<IXmlNode> c)
     {
-      return c.Where(a => a.NamespaceURI != JsonNamespaceUri);
+      return c.Where(a => a.NamespaceUri != JsonNamespaceUri);
     }
     #endregion
 

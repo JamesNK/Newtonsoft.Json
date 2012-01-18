@@ -43,19 +43,8 @@ namespace Newtonsoft.Json.Serialization
 {
   internal class JsonSerializerInternalWriter : JsonSerializerInternalBase
   {
+    private readonly List<object> _serializeStack = new List<object>();
     private JsonSerializerProxy _internalSerializer;
-    private List<object> _serializeStack;
-
-    private List<object> SerializeStack
-    {
-      get
-      {
-        if (_serializeStack == null)
-          _serializeStack = new List<object>();
-
-        return _serializeStack;
-      }
-    }
 
     public JsonSerializerInternalWriter(JsonSerializer serializer)
       : base(serializer)
@@ -228,7 +217,7 @@ namespace Newtonsoft.Json.Serialization
       if (value == null || contract is JsonPrimitiveContract)
         return true;
 
-      if (SerializeStack.IndexOf(value) != -1)
+      if (_serializeStack.IndexOf(value) != -1)
       {
         switch (referenceLoopHandling.GetValueOrDefault(Serializer.ReferenceLoopHandling))
         {
@@ -311,7 +300,7 @@ namespace Newtonsoft.Json.Serialization
     {
       contract.InvokeOnSerializing(value, Serializer.Context);
 
-      SerializeStack.Add(value);
+      _serializeStack.Add(value);
       writer.WriteStartObject();
 
       bool isReference = contract.IsReference ?? HasFlag(Serializer.PreserveReferencesHandling, PreserveReferencesHandling.Objects);
@@ -352,7 +341,7 @@ namespace Newtonsoft.Json.Serialization
       }
 
       writer.WriteEndObject();
-      SerializeStack.RemoveAt(SerializeStack.Count - 1);
+      _serializeStack.RemoveAt(_serializeStack.Count - 1);
 
       contract.InvokeOnSerialized(value, Serializer.Context);
     }
@@ -389,11 +378,11 @@ namespace Newtonsoft.Json.Serialization
         if (!CheckForCircularReference(value, null, contract))
           return;
 
-        SerializeStack.Add(value);
+        _serializeStack.Add(value);
 
         converter.WriteJson(writer, value, GetInternalSerializer());
 
-        SerializeStack.RemoveAt(SerializeStack.Count - 1);
+        _serializeStack.RemoveAt(_serializeStack.Count - 1);
       }
     }
 
@@ -401,7 +390,7 @@ namespace Newtonsoft.Json.Serialization
     {
       contract.InvokeOnSerializing(values.UnderlyingCollection, Serializer.Context);
 
-      SerializeStack.Add(values.UnderlyingCollection);
+      _serializeStack.Add(values.UnderlyingCollection);
 
       bool isReference = contract.IsReference ?? HasFlag(Serializer.PreserveReferencesHandling, PreserveReferencesHandling.Arrays);
       bool includeTypeDetails = ShouldWriteType(TypeNameHandling.Arrays, contract, member, collectionValueContract);
@@ -471,7 +460,7 @@ namespace Newtonsoft.Json.Serialization
         writer.WriteEndObject();
       }
 
-      SerializeStack.RemoveAt(SerializeStack.Count - 1);
+      _serializeStack.RemoveAt(_serializeStack.Count - 1);
 
       contract.InvokeOnSerialized(values.UnderlyingCollection, Serializer.Context);
     }
@@ -484,7 +473,7 @@ namespace Newtonsoft.Json.Serialization
     private void SerializeISerializable(JsonWriter writer, ISerializable value, JsonISerializableContract contract, JsonProperty member, JsonContract collectionValueContract)
     {
       contract.InvokeOnSerializing(value, Serializer.Context);
-      SerializeStack.Add(value);
+      _serializeStack.Add(value);
 
       writer.WriteStartObject();
 
@@ -504,7 +493,7 @@ namespace Newtonsoft.Json.Serialization
 
       writer.WriteEndObject();
 
-      SerializeStack.RemoveAt(SerializeStack.Count - 1);
+      _serializeStack.RemoveAt(_serializeStack.Count - 1);
       contract.InvokeOnSerialized(value, Serializer.Context);
     }
 #endif
@@ -519,7 +508,7 @@ namespace Newtonsoft.Json.Serialization
     private void SerializeDynamic(JsonWriter writer, IDynamicMetaObjectProvider value, JsonDynamicContract contract)
     {
       contract.InvokeOnSerializing(value, Serializer.Context);
-      SerializeStack.Add(value);
+      _serializeStack.Add(value);
 
       writer.WriteStartObject();
 
@@ -539,7 +528,7 @@ namespace Newtonsoft.Json.Serialization
 
       writer.WriteEndObject();
 
-      SerializeStack.RemoveAt(SerializeStack.Count - 1);
+      _serializeStack.RemoveAt(_serializeStack.Count - 1);
       contract.InvokeOnSerialized(value, Serializer.Context);
     }
 #endif
@@ -574,7 +563,7 @@ namespace Newtonsoft.Json.Serialization
     {
       contract.InvokeOnSerializing(values.UnderlyingDictionary, Serializer.Context);
 
-      SerializeStack.Add(values.UnderlyingDictionary);
+      _serializeStack.Add(values.UnderlyingDictionary);
       writer.WriteStartObject();
 
       bool isReference = contract.IsReference ?? HasFlag(Serializer.PreserveReferencesHandling, PreserveReferencesHandling.Objects);
@@ -636,7 +625,7 @@ namespace Newtonsoft.Json.Serialization
       }
 
       writer.WriteEndObject();
-      SerializeStack.RemoveAt(SerializeStack.Count - 1);
+      _serializeStack.RemoveAt(_serializeStack.Count - 1);
 
       contract.InvokeOnSerialized(values.UnderlyingDictionary, Serializer.Context);
     }

@@ -594,7 +594,7 @@ namespace Newtonsoft.Json.Serialization
       JsonISerializableContract contract = new JsonISerializableContract(objectType);
       InitializeContract(contract);
 
-      ConstructorInfo constructorInfo = objectType.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(SerializationInfo), typeof(StreamingContext) }, null);
+      ConstructorInfo constructorInfo = contract.NonNullableUnderlyingType.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(SerializationInfo), typeof(StreamingContext) }, null);
       if (constructorInfo != null)
       {
         MethodCall<object, object> methodCall = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(constructorInfo);
@@ -647,37 +647,37 @@ namespace Newtonsoft.Json.Serialization
       Type t = ReflectionUtils.EnsureNotNullableType(objectType);
 
       if (JsonConvert.IsJsonPrimitiveType(t))
-        return CreatePrimitiveContract(t);
+        return CreatePrimitiveContract(objectType);
 
       if (JsonTypeReflector.GetJsonObjectAttribute(t) != null)
-        return CreateObjectContract(t);
+        return CreateObjectContract(objectType);
 
       if (JsonTypeReflector.GetJsonArrayAttribute(t) != null)
-        return CreateArrayContract(t);
+        return CreateArrayContract(objectType);
 
       if (t == typeof(JToken) || t.IsSubclassOf(typeof(JToken)))
-        return CreateLinqContract(t);
+        return CreateLinqContract(objectType);
 
       if (CollectionUtils.IsDictionaryType(t))
-        return CreateDictionaryContract(t);
+        return CreateDictionaryContract(objectType);
 
       if (typeof(IEnumerable).IsAssignableFrom(t))
-        return CreateArrayContract(t);
+        return CreateArrayContract(objectType);
 
       if (CanConvertToString(t))
-        return CreateStringContract(t);
+        return CreateStringContract(objectType);
 
 #if !SILVERLIGHT && !PocketPC
       if (typeof(ISerializable).IsAssignableFrom(t))
-        return CreateISerializableContract(t);
+        return CreateISerializableContract(objectType);
 #endif
 
 #if !(NET35 || NET20 || WINDOWS_PHONE)
       if (typeof(IDynamicMetaObjectProvider).IsAssignableFrom(t))
-        return CreateDynamicContract(t);
+        return CreateDynamicContract(objectType);
 #endif
 
-      return CreateObjectContract(t);
+      return CreateObjectContract(objectType);
     }
 
     internal static bool CanConvertToString(Type type)

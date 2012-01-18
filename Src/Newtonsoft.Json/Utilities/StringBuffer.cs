@@ -35,7 +35,7 @@ namespace Newtonsoft.Json.Utilities
     private char[] _buffer;
     private int _position;
 
-    private static readonly char[] _emptyBuffer = new char[0];
+    private static readonly char[] EmptyBuffer = new char[0];
 
     public int Position
     {
@@ -45,7 +45,7 @@ namespace Newtonsoft.Json.Utilities
 
     public StringBuffer()
     {
-      _buffer = _emptyBuffer;
+      _buffer = EmptyBuffer;
     }
 
     public StringBuffer(int initalSize)
@@ -75,7 +75,7 @@ namespace Newtonsoft.Json.Utilities
 
     public void Clear()
     {
-      _buffer = _emptyBuffer;
+      _buffer = EmptyBuffer;
       _position = 0;
     }
 

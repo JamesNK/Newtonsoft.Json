@@ -29,6 +29,7 @@ using System.Text;
 using NUnit.Framework;
 using Newtonsoft.Json;
 using System.IO;
+using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Tests
 {
@@ -617,6 +618,31 @@ _____'propertyName': NaN
       string result = sb.ToString();
 
       Assert.AreEqual(expected, result);
+    }
+
+    [Test]
+    public void BuildStateArray()
+    {
+      JsonWriter.State[][] stateArray = JsonWriter.BuildStateArray();
+
+      var valueStates = JsonWriter.StateArrayTempate[7];
+
+      foreach (JsonToken valueToken in EnumUtils.GetValues(typeof(JsonToken)))
+      {
+        switch (valueToken)
+        {
+          case JsonToken.Integer:
+          case JsonToken.Float:
+          case JsonToken.String:
+          case JsonToken.Boolean:
+          case JsonToken.Null:
+          case JsonToken.Undefined:
+          case JsonToken.Date:
+          case JsonToken.Bytes:
+            Assert.AreEqual(valueStates, stateArray[(int)valueToken], "Error for " + valueToken + " states.");
+            break;
+        }
+      }
     }
   }
 }

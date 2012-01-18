@@ -157,12 +157,12 @@ namespace Newtonsoft.Json.Schema
 
         model.PatternProperties[property.Key] = BuildNodeModel(property.Value);
       }
-      for (int i = 0; i < node.Items.Count; i++)
+      foreach (JsonSchemaNode t in node.Items)
       {
         if (model.Items == null)
           model.Items = new List<JsonSchemaModel>();
 
-        model.Items.Add(BuildNodeModel(node.Items[i]));
+        model.Items.Add(BuildNodeModel(t));
       }
       if (node.AdditionalProperties != null)
         model.AdditionalProperties = BuildNodeModel(node.AdditionalProperties);

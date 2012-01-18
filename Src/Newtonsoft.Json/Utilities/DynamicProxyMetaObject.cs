@@ -224,19 +224,19 @@ namespace Newtonsoft.Json.Utilities
       callArgs.AddRange(args);
       callArgs.Add(result);
 
-      DynamicMetaObject resultMO = new DynamicMetaObject(result, BindingRestrictions.Empty);
+      DynamicMetaObject resultMetaObject = new DynamicMetaObject(result, BindingRestrictions.Empty);
 
       // Need to add a conversion if calling TryConvert
       if (binder.ReturnType != typeof (object))
       {
-        UnaryExpression convert = Expression.Convert(resultMO.Expression, binder.ReturnType);
+        UnaryExpression convert = Expression.Convert(resultMetaObject.Expression, binder.ReturnType);
         // will always be a cast or unbox
 
-        resultMO = new DynamicMetaObject(convert, resultMO.Restrictions);
+        resultMetaObject = new DynamicMetaObject(convert, resultMetaObject.Restrictions);
       }
 
       if (fallbackInvoke != null)
-        resultMO = fallbackInvoke(resultMO);
+        resultMetaObject = fallbackInvoke(resultMetaObject);
 
       DynamicMetaObject callDynamic = new DynamicMetaObject(
         Expression.Block(
@@ -247,12 +247,12 @@ namespace Newtonsoft.Json.Utilities
               typeof(DynamicProxy<T>).GetMethod(methodName),
               callArgs
               ),
-            resultMO.Expression,
+            resultMetaObject.Expression,
             fallbackResult.Expression,
             binder.ReturnType
             )
           ),
-        GetRestrictions().Merge(resultMO.Restrictions).Merge(fallbackResult.Restrictions)
+        GetRestrictions().Merge(resultMetaObject.Restrictions).Merge(fallbackResult.Restrictions)
         );
 
       return callDynamic;

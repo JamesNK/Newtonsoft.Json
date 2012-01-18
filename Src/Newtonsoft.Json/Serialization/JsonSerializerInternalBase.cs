@@ -55,7 +55,7 @@ namespace Newtonsoft.Json.Serialization
     private ErrorContext _currentErrorContext;
     private BidirectionalDictionary<string, object> _mappings;
 
-    internal JsonSerializer Serializer { get; private set; }
+    internal readonly JsonSerializer Serializer;
 
     protected JsonSerializerInternalBase(JsonSerializer serializer)
     {

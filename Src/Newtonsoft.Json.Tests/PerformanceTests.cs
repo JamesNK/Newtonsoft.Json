@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Web.Script.Serialization;
 using System.Xml.Linq;
@@ -35,8 +36,19 @@ namespace Newtonsoft.Json.Tests
 
   public class PerformanceTests : TestFixtureBase
   {
-    private const int Iterations = 100;
-    //private const int Iterations = 5000;
+    //private const int Iterations = 100;
+    private const int Iterations = 5000;
+
+        private static SimpleObject CreateSimpleObject()
+        {
+            return new SimpleObject
+            {
+                Name = "Simple-1",
+                Id = 2311,
+                Address = "Planet Earth",
+                Scores = new int[] { 82,96,49,40,38,38,78,96,2,39 }
+            };
+        }
 
     #region Data
     private const string BsonHex =
@@ -51,6 +63,9 @@ namespace Newtonsoft.Json.Tests
     private const string JsonText =
       @"{""strings"":[null,""Markus egger ]><[, (2nd)"",null],""dictionary"":{""Val & asd1"":1,""Val2 & asd1"":3,""Val3 & asd1"":4},""Name"":""Rick"",""Now"":""\/Date(1262301136080+1300)\/"",""BigNumber"":34123123123.121,""Address1"":{""Street"":""fff Street"",""Phone"":""(503) 814-6335"",""Entered"":""\/Date(1264025536080+1300)\/""},""Addresses"":[{""Street"":""\u001farray<address"",""Phone"":""(503) 814-6335"",""Entered"":""\/Date(1262211136080+1300)\/""},{""Street"":""array 2 address"",""Phone"":""(503) 814-6335"",""Entered"":""\/Date(1262124736080+1300)\/""}]}";
 
+    private const string SimpleJsonText =
+      @"{""Id"":2311,""Name"":""Simple-1"",""Address"":""Planet Earth"",""Scores"":[82,96,49,40,38,38,78,96,2,39]}";
+
     public enum SerializeMethod
     {
       JsonNet,
@@ -63,16 +78,35 @@ namespace Newtonsoft.Json.Tests
     #endregion
 
     [Test]
+    public void SerializeSimpleObject()
+    {
+      var value = CreateSimpleObject();
+
+      SerializeTests(value);
+    }
+
+    [Test]
+    public void DeserializeSimpleObject()
+    {
+      DeserializeTests<SimpleObject>(SimpleJsonText);
+    }
+
+    [Test]
     public void Serialize()
     {
       TestClass test = CreateSerializationObject();
 
-      BenchmarkSerializeMethod(SerializeMethod.DataContractSerializer, test);
-      BenchmarkSerializeMethod(SerializeMethod.BinaryFormatter, test);
-      BenchmarkSerializeMethod(SerializeMethod.JavaScriptSerializer, test);
-      BenchmarkSerializeMethod(SerializeMethod.DataContractJsonSerializer, test);
-      BenchmarkSerializeMethod(SerializeMethod.JsonNet, test);
-      BenchmarkSerializeMethod(SerializeMethod.JsonNetBinary, test);
+      SerializeTests(test);
+    }
+
+    private void SerializeTests(object value)
+    {
+      //BenchmarkSerializeMethod(SerializeMethod.DataContractSerializer, value);
+      ////BenchmarkSerializeMethod(SerializeMethod.BinaryFormatter, value);
+      //BenchmarkSerializeMethod(SerializeMethod.JavaScriptSerializer, value);
+      //BenchmarkSerializeMethod(SerializeMethod.DataContractJsonSerializer, value);
+      BenchmarkSerializeMethod(SerializeMethod.JsonNet, value);
+      //BenchmarkSerializeMethod(SerializeMethod.JsonNetBinary, value);
     }
 
     [Test]
@@ -80,10 +114,15 @@ namespace Newtonsoft.Json.Tests
     {
       BenchmarkDeserializeMethod<TestClass>(SerializeMethod.DataContractSerializer, XmlText);
       BenchmarkDeserializeMethod<TestClass>(SerializeMethod.BinaryFormatter, MiscellaneousUtils.HexToBytes(BinaryFormatterHex));
-      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JavaScriptSerializer, JsonText);
-      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.DataContractJsonSerializer, JsonText);
-      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JsonNet, JsonText);
+      DeserializeTests<TestClass>(JsonText);
       BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JsonNetBinary, MiscellaneousUtils.HexToBytes(BsonHex));
+    }
+
+    public void DeserializeTests<T>(string json)
+    {
+      BenchmarkDeserializeMethod<T>(SerializeMethod.JavaScriptSerializer, json);
+      BenchmarkDeserializeMethod<T>(SerializeMethod.DataContractJsonSerializer, json);
+      BenchmarkDeserializeMethod<T>(SerializeMethod.JsonNet, json);
     }
 
     [Test]
@@ -721,6 +760,22 @@ namespace Newtonsoft.Json.Tests
       set { _Entered = value; }
     }
     private DateTime _Entered = DateTime.Parse("01/01/2007", CultureInfo.CurrentCulture.DateTimeFormat);
+  }
+
+  [DataContract]
+  public class SimpleObject
+  {
+    [DataMember]
+    public int Id { get; set; }
+
+    [DataMember]
+    public string Name { get; set; }
+
+    [DataMember]
+    public string Address { get; set; }
+
+    [DataMember]
+    public int[] Scores { get; set; }
   }
   #endregion
 }

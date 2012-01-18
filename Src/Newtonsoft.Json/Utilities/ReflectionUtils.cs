@@ -202,21 +202,6 @@ namespace Newtonsoft.Json.Utilities
         : t;
     }
 
-    public static object CreateUnitializedValue(Type type)
-    {
-      ValidationUtils.ArgumentNotNull(type, "type");
-
-      if (type.IsGenericTypeDefinition)
-        throw new ArgumentException("Type {0} is a generic type definition and cannot be instantiated.".FormatWith(CultureInfo.InvariantCulture, type), "type");
-
-      if (type.IsClass || type.IsInterface || type == typeof(void))
-        return null;
-      else if (type.IsValueType)
-        return Activator.CreateInstance(type);
-      else
-        throw new ArgumentException("Type {0} cannot be instantiated.".FormatWith(CultureInfo.InvariantCulture, type), "type");
-    }
-
     public static bool ImplementsGenericDefinition(Type type, Type genericInterfaceDefinition)
     {
       Type implementingType;
