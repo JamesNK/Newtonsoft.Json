@@ -260,12 +260,6 @@ namespace Newtonsoft.Json
       return true;
     }
 
-    private JsonReaderException CreateJsonReaderException(string format, params object[] args)
-    {
-      string message = format.FormatWith(CultureInfo.InvariantCulture, args);
-      return new JsonReaderException(message, null, LineNumber, LinePosition);
-    }
-
     private static TimeSpan ReadOffset(string offsetText)
     {
       bool negative = (offsetText[0] == '-');
@@ -351,11 +345,8 @@ namespace Newtonsoft.Json
 
       if (TokenType == JsonToken.StartObject)
       {
-        int startObjectLineNumber = LineNumber;
-        int startObjectLinePosition = LinePosition;
-
         if (!ReadInternal())
-          throw CreateJsonReaderException("Unexpected end when reading bytes: Line {0}, position {1}.", LineNumber, LinePosition);
+          throw CreateReaderException(this, "Unexpected end when reading bytes.");
 
         if (Value.ToString() == "$type")
         {
@@ -370,7 +361,7 @@ namespace Newtonsoft.Json
           }
         }
 
-        throw CreateJsonReaderException("Unexpected token when reading bytes: {0}. Line {1}, position {2}.", JsonToken.StartObject, startObjectLineNumber, startObjectLinePosition);
+        throw CreateReaderException(this, "Unexpected token when reading bytes: {0}.".FormatWith(CultureInfo.InvariantCulture, JsonToken.StartObject));
       }
 
       return false;
@@ -389,7 +380,7 @@ namespace Newtonsoft.Json
       do
       {
         if (!ReadInternal())
-          throw CreateJsonReaderException("Unexpected end when reading bytes: Line {0}, position {1}.", LineNumber, LinePosition);
+          throw CreateReaderException(this, "Unexpected end when reading bytes.");
       } while (TokenType == JsonToken.Comment);
 
       if (IsWrappedInTypeObject())
@@ -423,17 +414,17 @@ namespace Newtonsoft.Json
               // skip
               break;
             default:
-              throw CreateJsonReaderException("Unexpected token when reading bytes: {0}. Line {1}, position {2}.", TokenType, LineNumber, LinePosition);
+              throw CreateReaderException(this, "Unexpected token when reading bytes: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
           }
         }
 
-        throw CreateJsonReaderException("Unexpected end when reading bytes: Line {0}, position {1}.", LineNumber, LinePosition);
+        throw CreateReaderException(this, "Unexpected end when reading bytes.");
       }
 
       if (ReaderIsSerializerInArray())
         return null;
 
-      throw CreateJsonReaderException("Unexpected token when reading bytes: {0}. Line {1}, position {2}.", TokenType, LineNumber, LinePosition);
+      throw CreateReaderException(this, "Unexpected token when reading bytes: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
     }
 
     /// <summary>
@@ -447,7 +438,7 @@ namespace Newtonsoft.Json
       do
       {
         if (!ReadInternal())
-          throw CreateJsonReaderException("Unexpected end when reading decimal: Line {0}, position {1}.", LineNumber, LinePosition);
+          throw CreateReaderException(this, "Unexpected end when reading decimal.");
       } while (TokenType == JsonToken.Comment);
 
       if (TokenType == JsonToken.Null)
@@ -465,7 +456,7 @@ namespace Newtonsoft.Json
       if (ReaderIsSerializerInArray())
         return null;
 
-      throw CreateJsonReaderException("Unexpected token when reading decimal: {0}. Line {1}, position {2}.", TokenType, LineNumber, LinePosition);
+      throw CreateReaderException(this, "Unexpected token when reading decimal: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
     }
 
 #if !NET20
@@ -480,7 +471,7 @@ namespace Newtonsoft.Json
       do
       {
         if (!ReadInternal())
-          throw CreateJsonReaderException("Unexpected end when reading date: Line {0}, position {1}.", LineNumber, LinePosition);
+          throw CreateReaderException(this, "Unexpected end when reading date.");
       } while (TokenType == JsonToken.Comment);
 
       if (TokenType == JsonToken.Null)
@@ -498,7 +489,7 @@ namespace Newtonsoft.Json
       if (ReaderIsSerializerInArray())
         return null;
 
-      throw CreateJsonReaderException("Unexpected token when reading date: {0}. Line {1}, position {2}.", TokenType, LineNumber, LinePosition);
+      throw CreateReaderException(this, "Unexpected token when reading date: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
     }
 #endif
 
@@ -541,7 +532,7 @@ namespace Newtonsoft.Json
               }
               else
               {
-                throw CreateJsonReaderException("Additional text encountered after finished reading JSON content: {0}. Line {1}, position {2}.", _chars[_charPos], LineNumber, LinePosition);
+                throw CreateReaderException(this, "Additional text encountered after finished reading JSON content: {0}.".FormatWith(CultureInfo.InvariantCulture, _chars[_charPos]));
               }
             }
             return false;
@@ -550,7 +541,7 @@ namespace Newtonsoft.Json
           case State.Error:
             break;
           default:
-            throw CreateJsonReaderException("Unexpected state: {0}. Line {1}, position {2}.", CurrentState, LineNumber, LinePosition);
+            throw CreateReaderException(this, "Unexpected state: {0}.".FormatWith(CultureInfo.InvariantCulture, CurrentState));
         }
       }
     }
@@ -574,7 +565,7 @@ namespace Newtonsoft.Json
               if (ReadData(true) == 0)
               {
                 _charPos = charPos;
-                throw CreateJsonReaderException("Unterminated string. Expected delimiter: {0}. Line {1}, position {2}.", quote, LineNumber, LinePosition);
+                throw CreateReaderException(this, "Unterminated string. Expected delimiter: {0}.".FormatWith(CultureInfo.InvariantCulture, quote));
               }
             }
             break;
@@ -583,7 +574,7 @@ namespace Newtonsoft.Json
             if (!EnsureChars(0, true))
             {
               _charPos = charPos;
-              throw CreateJsonReaderException("Unterminated string. Expected delimiter: {0}. Line {1}, position {2}.", quote, LineNumber, LinePosition);
+              throw CreateReaderException(this, "Unterminated string. Expected delimiter: {0}.".FormatWith(CultureInfo.InvariantCulture, quote));
             }
 
             // start of escape sequence
@@ -639,13 +630,13 @@ namespace Newtonsoft.Json
                 else
                 {
                   _charPos = charPos;
-                  throw CreateJsonReaderException("Unexpected end while parsing unicode character. Line {0}, position {1}.", LineNumber, LinePosition);
+                  throw CreateReaderException(this, "Unexpected end while parsing unicode character.");
                 }
                 break;
               default:
                 charPos++;
                 _charPos = charPos;
-                throw CreateJsonReaderException("Bad JSON escape sequence: {0}. Line {1}, position {2}.", @"\" + currentChar, LineNumber, LinePosition);
+                throw CreateReaderException(this, "Bad JSON escape sequence: {0}.".FormatWith(CultureInfo.InvariantCulture, @"\" + currentChar));
             }
 
             if (buffer == null)
@@ -822,7 +813,7 @@ namespace Newtonsoft.Json
             }
             else
             {
-              throw CreateJsonReaderException("After parsing a value an unexpected character was encountered: {0}. Line {1}, position {2}.", currentChar, LineNumber, LinePosition);
+              throw CreateReaderException(this, "After parsing a value an unexpected character was encountered: {0}.".FormatWith(CultureInfo.InvariantCulture, currentChar));
             }
             break;
         }
@@ -901,7 +892,7 @@ namespace Newtonsoft.Json
       }
       else
       {
-        throw CreateJsonReaderException("Invalid property identifier character: {0}. Line {1}, position {2}.", _chars[_charPos], LineNumber, LinePosition);
+        throw CreateReaderException(this, "Invalid property identifier character: {0}.".FormatWith(CultureInfo.InvariantCulture, _chars[_charPos]));
       }
 
       string propertyName = _stringReference.ToString();
@@ -909,7 +900,7 @@ namespace Newtonsoft.Json
       EatWhitespace(false);
 
       if (_chars[_charPos] != ':')
-        throw CreateJsonReaderException("Invalid character after parsing property name. Expected ':' but got: {0}. Line {1}, position {2}.", _chars[_charPos], LineNumber, LinePosition);
+        throw CreateReaderException(this, "Invalid character after parsing property name. Expected ':' but got: {0}.".FormatWith(CultureInfo.InvariantCulture, _chars[_charPos]));
 
       _charPos++;
 
@@ -938,7 +929,7 @@ namespace Newtonsoft.Json
             if (_charsUsed == _charPos)
             {
               if (ReadData(true) == 0)
-                throw CreateJsonReaderException("Unexpected end when parsing unquoted property name. Line {0}, position {1}.", LineNumber, LinePosition);
+                throw CreateReaderException(this, "Unexpected end while parsing unquoted property name.");
 
               break;
             }
@@ -959,7 +950,7 @@ namespace Newtonsoft.Json
               return;
             }
 
-            throw CreateJsonReaderException("Invalid JavaScript property identifier character: {0}. Line {1}, position {2}.", currentChar, LineNumber, LinePosition);
+            throw CreateReaderException(this, "Invalid JavaScript property identifier character: {0}.".FormatWith(CultureInfo.InvariantCulture, currentChar));
         }
       }
     }
@@ -1003,11 +994,11 @@ namespace Newtonsoft.Json
               else if (next == 'e')
                 ParseConstructor();
               else
-                throw CreateJsonReaderException("Unexpected character encountered while parsing value: {0}. Line {1}, position {2}.", _chars[_charPos], LineNumber, LinePosition);
+                throw CreateReaderException(this, "Unexpected character encountered while parsing value: {0}.".FormatWith(CultureInfo.InvariantCulture, _chars[_charPos]));
             }
             else
             {
-              throw CreateJsonReaderException("Unexpected end. Line {0}, position {1}.", LineNumber, LinePosition);
+              throw CreateReaderException(this, "Unexpected end.");
             }
             return true;
           case 'N':
@@ -1074,7 +1065,7 @@ namespace Newtonsoft.Json
             }
             else
             {
-              throw CreateJsonReaderException("Unexpected character encountered while parsing value: {0}. Line {1}, position {2}.", currentChar, LineNumber, LinePosition);
+              throw CreateReaderException(this, "Unexpected character encountered while parsing value: {0}.".FormatWith(CultureInfo.InvariantCulture, currentChar));
             }
         }
       }
@@ -1157,7 +1148,7 @@ namespace Newtonsoft.Json
             if (_charsUsed == _charPos)
             {
               if (ReadData(true) == 0)
-                throw CreateJsonReaderException("Unexpected end while parsing constructor.");
+                throw CreateReaderException(this, "Unexpected end while parsing constructor.");
             }
             else
             {
@@ -1195,7 +1186,7 @@ namespace Newtonsoft.Json
           }
           else
           {
-            throw CreateJsonReaderException("Unexpected character while parsing constructor: {0}. Line {1}, position {2}.", currentChar, LineNumber, LinePosition);
+            throw CreateReaderException(this, "Unexpected character while parsing constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, currentChar));
           }
         }
 
@@ -1205,7 +1196,7 @@ namespace Newtonsoft.Json
         EatWhitespace(false);
 
         if (_chars[_charPos] != '(')
-          throw CreateJsonReaderException("Unexpected character while parsing constructor: {0}. Line {1}, position {2}.", _chars[_charPos], LineNumber, LinePosition);
+          throw CreateReaderException(this, "Unexpected character while parsing constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, _chars[_charPos]));
 
         _charPos++;
 
@@ -1313,7 +1304,7 @@ namespace Newtonsoft.Json
       _charPos++;
 
       if (!EnsureChars(1, false) || _chars[_charPos] != '*')
-        throw CreateJsonReaderException("Error parsing comment. Expected: *, got {0}. Line {1}, position {2}.", _chars[_charPos], LineNumber, LinePosition);
+        throw CreateReaderException(this, "Error parsing comment. Expected: *, got {0}.".FormatWith(CultureInfo.InvariantCulture, _chars[_charPos]));
       else
         _charPos++;
 
@@ -1329,7 +1320,7 @@ namespace Newtonsoft.Json
             if (_charsUsed == _charPos)
             {
               if (ReadData(true) == 0)
-                throw CreateJsonReaderException("Unexpected end while parsing comment.");
+                throw CreateReaderException(this, "Unexpected end while parsing comment.");
             }
             else
             {
@@ -1442,7 +1433,7 @@ namespace Newtonsoft.Json
       }
       else
       {
-        throw CreateJsonReaderException("Error parsing boolean value. Line {0}, position {1}.", LineNumber, LinePosition);
+        throw CreateReaderException(this, "Error parsing boolean value.");
       }
     }
 
@@ -1454,7 +1445,7 @@ namespace Newtonsoft.Json
       }
       else
       {
-        throw CreateJsonReaderException("Error parsing null value. Line {0}, position {1}.", LineNumber, LinePosition);
+        throw CreateReaderException(this, "Error parsing null value.");
       }
     }
 
@@ -1466,7 +1457,7 @@ namespace Newtonsoft.Json
       }
       else
       {
-        throw CreateJsonReaderException("Error parsing undefined value. Line {0}, position {1}.", LineNumber, LinePosition);
+        throw CreateReaderException(this, "Error parsing undefined value.");
       }
     }
 
@@ -1478,7 +1469,7 @@ namespace Newtonsoft.Json
       }
       else
       {
-        throw CreateJsonReaderException("Error parsing boolean value. Line {0}, position {1}.", LineNumber, LinePosition);
+        throw CreateReaderException(this, "Error parsing boolean value.");
       }
     }
 
@@ -1490,7 +1481,7 @@ namespace Newtonsoft.Json
       }
       else
       {
-        throw CreateJsonReaderException("Error parsing negative infinity value. Line {0}, position {1}.", LineNumber, LinePosition);
+        throw CreateReaderException(this, "Error parsing negative infinity value.");
       }
     }
 
@@ -1502,7 +1493,7 @@ namespace Newtonsoft.Json
       }
       else
       {
-        throw CreateJsonReaderException("Error parsing positive infinity value. Line {0}, position {1}.", LineNumber, LinePosition);
+        throw CreateReaderException(this, "Error parsing positive infinity value.");
       }
     }
 
@@ -1514,7 +1505,7 @@ namespace Newtonsoft.Json
       }
       else
       {
-        throw CreateJsonReaderException("Error parsing NaN value. Line {0}, position {1}.", LineNumber, LinePosition);
+        throw CreateReaderException(this, "Error parsing NaN value.");
       }
     }
 

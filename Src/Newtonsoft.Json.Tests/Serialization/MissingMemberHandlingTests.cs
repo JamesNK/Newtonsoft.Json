@@ -34,7 +34,7 @@ namespace Newtonsoft.Json.Tests.Serialization
   public class MissingMemberHandlingTests : TestFixtureBase
   {
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Could not find member 'Price' on object of type 'ProductShort'")]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Could not find member 'Price' on object of type 'ProductShort'. Line 4, position 11.")]
     public void MissingMemberDeserialize()
     {
       Product product = new Product();
@@ -44,7 +44,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       product.Price = 3.99M;
       product.Sizes = new string[] { "Small", "Medium", "Large" };
 
-      string output = JsonConvert.SerializeObject(product);
+      string output = JsonConvert.SerializeObject(product, Formatting.Indented);
       //{
       //  "Name": "Apple",
       //  "ExpiryDate": new Date(1230422400000),
@@ -115,7 +115,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Could not find member 'Missing' on object of type 'DoubleClass'")]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Could not find member 'Missing' on object of type 'DoubleClass'. Line 1, position 11.")]
     public void MissingMemeber()
     {
       string json = @"{""Missing"":1}";

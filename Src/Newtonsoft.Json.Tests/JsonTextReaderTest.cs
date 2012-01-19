@@ -553,7 +553,7 @@ Parameter name: reader")]
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end when reading bytes: Line 1, position 3.")]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end when reading bytes. Line 1, position 3.")]
     public void ReadBytesNoStartWithUnexpectedEnd()
     {
       JsonReader reader = new JsonTextReader(new StringReader(@"[  "));
@@ -562,7 +562,7 @@ Parameter name: reader")]
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end when parsing unquoted property name. Line 1, position 4.")]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end while parsing unquoted property name. Line 1, position 4.")]
     public void UnexpectedEndWhenParsingUnquotedProperty()
     {
       JsonReader reader = new JsonTextReader(new StringReader(@"{aww"));
@@ -1086,7 +1086,7 @@ bye", reader.Value);
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end when reading decimal: Line 0, position 0.")]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end when reading decimal. Line 0, position 0.")]
     public void ReadAsDecimalNoContent()
     {
       JsonTextReader reader = new JsonTextReader(new StringReader(@""));
@@ -1095,7 +1095,7 @@ bye", reader.Value);
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end when reading bytes: Line 0, position 0.")]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end when reading bytes. Line 0, position 0.")]
     public void ReadAsBytesNoContent()
     {
       JsonTextReader reader = new JsonTextReader(new StringReader(@""));
@@ -1104,7 +1104,7 @@ bye", reader.Value);
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end when reading bytes: Line 1, position 1.")]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end when reading bytes. Line 1, position 1.")]
     public void ReadAsBytesNoContentWrappedObject()
     {
       JsonTextReader reader = new JsonTextReader(new StringReader(@"{"));
@@ -1114,7 +1114,7 @@ bye", reader.Value);
 
 #if !NET20
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end when reading date: Line 0, position 0.")]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end when reading date. Line 0, position 0.")]
     public void ReadAsDateTimeOffsetNoContent()
     {
       JsonTextReader reader = new JsonTextReader(new StringReader(@""));
@@ -1164,7 +1164,7 @@ bye", reader.Value);
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end when reading bytes: Line 1, position 2.")]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end when reading bytes. Line 1, position 2.")]
     public void ReadAsBytesIntegerArrayWithNoEnd()
     {
       JsonTextReader reader = new JsonTextReader(new StringReader(@"[1"));
@@ -1341,7 +1341,7 @@ bye", reader.Value);
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end while parsing comment.")]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end while parsing comment. Line 1, position 6.")]
     public void UnclosedComment()
     {
       JsonTextReader reader = new JsonTextReader(new StringReader(@"/* sdf"));
@@ -1598,7 +1598,7 @@ bye", reader.Value);
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end while parsing constructor.")]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end while parsing constructor. Line 1, position 7.")]
     public void ParseConstructorWithUnexpectedEnd()
     {
       string json = "new Dat";

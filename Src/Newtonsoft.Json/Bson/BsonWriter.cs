@@ -63,7 +63,17 @@ namespace Newtonsoft.Json.Bson
     public BsonWriter(Stream stream)
     {
       ValidationUtils.ArgumentNotNull(stream, "stream");
-      _writer = new BsonBinaryWriter(stream);
+      _writer = new BsonBinaryWriter(new BinaryWriter(stream));
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BsonWriter"/> class.
+    /// </summary>
+    /// <param name="writer">The writer.</param>
+    public BsonWriter(BinaryWriter writer)
+    {
+      ValidationUtils.ArgumentNotNull(writer, "writer");
+      _writer = new BsonBinaryWriter(writer);
     }
 
     /// <summary>
@@ -189,12 +199,12 @@ namespace Newtonsoft.Json.Bson
       {
         if (_parent is BsonObject)
         {
-          ((BsonObject)_parent).Add(_propertyName, token);
+          ((BsonObject) _parent).Add(_propertyName, token);
           _propertyName = null;
         }
         else
         {
-          ((BsonArray)_parent).Add(token);
+          ((BsonArray) _parent).Add(token);
         }
       }
       else
@@ -208,6 +218,7 @@ namespace Newtonsoft.Json.Bson
     }
 
     #region WriteValue methods
+
     /// <summary>
     /// Writes a null value.
     /// </summary>
@@ -440,6 +451,7 @@ namespace Newtonsoft.Json.Bson
       base.WriteValue(value);
       AddToken(new BsonString(value.ToString(), true));
     }
+
     #endregion
 
     /// <summary>

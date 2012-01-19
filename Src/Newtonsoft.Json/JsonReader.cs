@@ -450,5 +450,46 @@ namespace Newtonsoft.Json
       _token = JsonToken.None;
       _value = null;
     }
+
+    internal JsonReaderException CreateReaderException(JsonReader reader, string message)
+    {
+      return CreateReaderException(reader, message, null);
+    }
+
+    internal JsonReaderException CreateReaderException(JsonReader reader, string message, Exception ex)
+    {
+      return CreateReaderException(reader as IJsonLineInfo, message, ex);
+    }
+
+    internal JsonReaderException CreateReaderException(IJsonLineInfo lineInfo, string message, Exception ex)
+    {
+      message = FormatExceptionMessage(lineInfo, message);
+
+      int lineNumber;
+      int linePosition;
+      if (lineInfo != null)
+      {
+        lineNumber = lineInfo.LineNumber;
+        linePosition = lineInfo.LinePosition;
+      }
+      else
+      {
+        lineNumber = 0;
+        linePosition = 0;
+      }
+
+      return new JsonReaderException(message, ex, lineNumber, linePosition);
+    }
+
+    internal static string FormatExceptionMessage(IJsonLineInfo lineInfo, string message)
+    {
+      if (!message.EndsWith("."))
+        message += ".";
+
+      if (lineInfo != null)
+        message += " Line {0}, position {1}.".FormatWith(CultureInfo.InvariantCulture, lineInfo.LineNumber, lineInfo.LinePosition);
+
+      return message;
+    }
   }
 }

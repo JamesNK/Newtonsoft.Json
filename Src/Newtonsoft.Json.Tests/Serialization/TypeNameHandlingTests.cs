@@ -291,7 +291,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Type specified in JSON 'Newtonsoft.Json.Tests.TestObjects.Employee' was not resolved.")]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Type specified in JSON 'Newtonsoft.Json.Tests.TestObjects.Employee' was not resolved. Line 3, position 56.")]
     public void DeserializeTypeNameOnly()
     {
       string json = @"{

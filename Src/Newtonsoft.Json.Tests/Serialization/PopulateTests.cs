@@ -134,7 +134,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Unexpected initial token 'Integer' when populating object. Expected JSON object or array.")]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Unexpected initial token 'Integer' when populating object. Expected JSON object or array. Line 1, position 1.")]
     public void PopulateWithBadJson()
     {
       JsonConvert.PopulateObject("1", new Person());

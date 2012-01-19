@@ -288,7 +288,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       }
 
       Assert.AreEqual(1, errors.Count);
-      Assert.AreEqual(@"Error converting value ""kjhkjhkjhkjh"" to type 'System.DateTime'.", errors[0]);
+      Assert.AreEqual(@"Error converting value ""kjhkjhkjhkjh"" to type 'System.DateTime'. Line 1, position 16.", errors[0]);
     }
   }
 }

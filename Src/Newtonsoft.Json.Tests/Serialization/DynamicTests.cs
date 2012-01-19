@@ -185,7 +185,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Unable to find a default constructor to use for type System.Dynamic.DynamicObject.")]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Unable to find a default constructor to use for type System.Dynamic.DynamicObject. Line 2, position 18.")]
     public void NoPublicDefaultConstructor()
     {
       var settings = new JsonSerializerSettings();

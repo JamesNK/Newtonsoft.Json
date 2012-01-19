@@ -18,10 +18,10 @@ namespace Newtonsoft.Json.Bson
 
     public DateTimeKind DateTimeKindHandling { get; set; }
 
-    public BsonBinaryWriter(Stream stream)
+    public BsonBinaryWriter(BinaryWriter writer)
     {
       DateTimeKindHandling = DateTimeKind.Utc;
-      _writer = new BinaryWriter(stream);
+      _writer = writer;
     }
 
     public void Flush()
@@ -46,7 +46,7 @@ namespace Newtonsoft.Json.Bson
       {
         case BsonType.Object:
           {
-            BsonObject value = (BsonObject) t;
+            BsonObject value = (BsonObject)t;
             _writer.Write(value.CalculatedSize);
             foreach (BsonProperty property in value)
             {
@@ -59,7 +59,7 @@ namespace Newtonsoft.Json.Bson
           break;
         case BsonType.Array:
           {
-            BsonArray value = (BsonArray) t;
+            BsonArray value = (BsonArray)t;
             _writer.Write(value.CalculatedSize);
             int index = 0;
             foreach (BsonToken c in value)
@@ -74,7 +74,7 @@ namespace Newtonsoft.Json.Bson
           break;
         case BsonType.Integer:
           {
-            BsonValue value = (BsonValue) t;
+            BsonValue value = (BsonValue)t;
             _writer.Write(Convert.ToInt32(value.Value, CultureInfo.InvariantCulture));
           }
           break;
@@ -113,7 +113,7 @@ namespace Newtonsoft.Json.Bson
 
             if (value.Value is DateTime)
             {
-              DateTime dateTime = (DateTime) value.Value;
+              DateTime dateTime = (DateTime)value.Value;
               if (DateTimeKindHandling == DateTimeKind.Utc)
                 dateTime = dateTime.ToUniversalTime();
               else if (DateTimeKindHandling == DateTimeKind.Local)
@@ -124,7 +124,7 @@ namespace Newtonsoft.Json.Bson
 #if !PocketPC && !NET20
             else
             {
-              DateTimeOffset dateTimeOffset = (DateTimeOffset) value.Value;
+              DateTimeOffset dateTimeOffset = (DateTimeOffset)value.Value;
               ticks = JsonConvert.ConvertDateTimeToJavaScriptTicks(dateTimeOffset.UtcDateTime, dateTimeOffset.Offset);
             }
 #endif
@@ -152,7 +152,7 @@ namespace Newtonsoft.Json.Bson
           break;
         case BsonType.Regex:
           {
-            BsonRegex value = (BsonRegex) t;
+            BsonRegex value = (BsonRegex)t;
 
             WriteString((string)value.Pattern.Value, value.Pattern.ByteCount, null);
             WriteString((string)value.Options.Value, value.Options.ByteCount, null);
@@ -214,7 +214,7 @@ namespace Newtonsoft.Json.Bson
       {
         case BsonType.Object:
           {
-            BsonObject value = (BsonObject) t;
+            BsonObject value = (BsonObject)t;
 
             int bases = 4;
             foreach (BsonProperty p in value)
@@ -256,7 +256,7 @@ namespace Newtonsoft.Json.Bson
         case BsonType.String:
           {
             BsonString value = (BsonString)t;
-            string s = (string) value.Value;
+            string s = (string)value.Value;
             value.ByteCount = (s != null) ? Encoding.GetByteCount(s) : 0;
             value.CalculatedSize = CalculateSizeWithLength(value.ByteCount, value.IncludeLength);
 
@@ -271,7 +271,7 @@ namespace Newtonsoft.Json.Bson
           return 8;
         case BsonType.Binary:
           {
-            BsonValue value = (BsonValue) t;
+            BsonValue value = (BsonValue)t;
 
             byte[] data = (byte[])value.Value;
             value.CalculatedSize = 4 + 1 + data.Length;
@@ -282,7 +282,7 @@ namespace Newtonsoft.Json.Bson
           return 12;
         case BsonType.Regex:
           {
-            BsonRegex value = (BsonRegex) t;
+            BsonRegex value = (BsonRegex)t;
             int size = 0;
             size += CalculateSize(value.Pattern);
             size += CalculateSize(value.Options);

@@ -202,7 +202,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Cannot preserve reference to array or readonly list: System.String[][]")]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Cannot preserve reference to array or readonly list: System.String[][]. Line 3, position 15.")]
     public void DeserializeArraysWithPreserveObjectReferences()
     {
       string json = @"{
@@ -268,7 +268,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Unexpected end when deserializing object.")]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Unexpected end when deserializing object. Line 2, position 9.")]
     public void UnexpectedEnd()
     {
       string json = @"{
