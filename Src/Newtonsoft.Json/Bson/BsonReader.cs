@@ -721,7 +721,7 @@ namespace Newtonsoft.Json.Bson
                       ? MaxCharBytesSize - offset
                       : length - totalBytesRead;
 
-        int byteCount = _reader.BaseStream.Read(_byteBuffer, offset, count);
+        int byteCount = _reader.Read(_byteBuffer, offset, count);
 
         if (byteCount == 0)
           throw new EndOfStreamException("Unable to read beyond the end of the stream.");
