@@ -96,7 +96,7 @@ namespace Newtonsoft.Json.Converters
 
         while (reader.TokenType == JsonToken.PropertyName)
         {
-          string columnName = (string) reader.Value;
+          string columnName = (string)reader.Value;
 
           reader.Read();
 

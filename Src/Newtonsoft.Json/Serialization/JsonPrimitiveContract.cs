@@ -39,6 +39,7 @@ namespace Newtonsoft.Json.Serialization
     public JsonPrimitiveContract(Type underlyingType)
       : base(underlyingType)
     {
+      ContractType = JsonContractType.Primitive;
     }
   }
 }

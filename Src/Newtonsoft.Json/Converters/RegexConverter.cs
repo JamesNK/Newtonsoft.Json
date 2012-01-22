@@ -93,7 +93,7 @@ namespace Newtonsoft.Json.Converters
 
     private object ReadBson(BsonReader reader)
     {
-      string regexText = (string) reader.Value;
+      string regexText = (string)reader.Value;
       int patternOptionDelimiterIndex = regexText.LastIndexOf('/');
 
       string patternText = regexText.Substring(1, patternOptionDelimiterIndex - 1);
@@ -126,7 +126,7 @@ namespace Newtonsoft.Json.Converters
     {
       reader.Read();
       reader.Read();
-      string pattern = (string) reader.Value;
+      string pattern = (string)reader.Value;
 
       reader.Read();
       reader.Read();

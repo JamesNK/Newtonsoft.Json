@@ -258,87 +258,85 @@ namespace Newtonsoft.Json.Schema
         // todo: Add GetSchema to JsonConverter and use here?
         CurrentSchema.Type = JsonSchemaType.Any;
       }
-      else if (contract is JsonDictionaryContract)
-      {
-        CurrentSchema.Type = AddNullType(JsonSchemaType.Object, valueRequired);
-
-        Type keyType;
-        Type valueType;
-        ReflectionUtils.GetDictionaryKeyValueTypes(type, out keyType, out valueType);
-
-        if (keyType != null)
-        {
-          // can be converted to a string
-          if (typeof (IConvertible).IsAssignableFrom(keyType))
-          {
-            CurrentSchema.AdditionalProperties = GenerateInternal(valueType, Required.Default, false);
-          }
-        }
-      }
-      else if (contract is JsonArrayContract)
-      {
-        CurrentSchema.Type = AddNullType(JsonSchemaType.Array, valueRequired);
-
-        CurrentSchema.Id = GetTypeId(type, false);
-
-        JsonArrayAttribute arrayAttribute = JsonTypeReflector.GetJsonContainerAttribute(type) as JsonArrayAttribute;
-        bool allowNullItem = (arrayAttribute == null || arrayAttribute.AllowNullItems);
-
-        Type collectionItemType = ReflectionUtils.GetCollectionItemType(type);
-        if (collectionItemType != null)
-        {
-          CurrentSchema.Items = new List<JsonSchema>();
-          CurrentSchema.Items.Add(GenerateInternal(collectionItemType, (!allowNullItem) ? Required.Always : Required.Default, false));
-        }
-      }
-      else if (contract is JsonStringContract)
-      {
-        JsonSchemaType schemaType = (!ReflectionUtils.IsNullable(contract.UnderlyingType))
-                                      ? JsonSchemaType.String
-                                      : AddNullType(JsonSchemaType.String, valueRequired);
-
-        CurrentSchema.Type = schemaType;
-      }
-      else if (contract is JsonPrimitiveContract)
-      {
-        CurrentSchema.Type = GetJsonSchemaType(type, valueRequired);
-
-        if (CurrentSchema.Type == JsonSchemaType.Integer && type.IsEnum && !type.IsDefined(typeof(FlagsAttribute), true))
-        {
-          CurrentSchema.Enum = new List<JToken>();
-          CurrentSchema.Options = new Dictionary<JToken, string>();
-
-          EnumValues<long> enumValues = EnumUtils.GetNamesAndValues<long>(type);
-          foreach (EnumValue<long> enumValue in enumValues)
-          {
-            JToken value = JToken.FromObject(enumValue.Value);
-
-            CurrentSchema.Enum.Add(value);
-            CurrentSchema.Options.Add(value, enumValue.Name);
-          }
-        }
-      }
-      else if (contract is JsonObjectContract)
-      {
-        CurrentSchema.Type = AddNullType(JsonSchemaType.Object, valueRequired);
-        CurrentSchema.Id = GetTypeId(type, false);
-        GenerateObjectSchema(type, (JsonObjectContract)contract);
-      }
-#if !SILVERLIGHT && !PocketPC
-      else if (contract is JsonISerializableContract)
-      {
-        CurrentSchema.Type = AddNullType(JsonSchemaType.Object, valueRequired);
-        CurrentSchema.Id = GetTypeId(type, false);
-        GenerateISerializableContract(type, (JsonISerializableContract) contract);
-      }
-#endif
-      else if (contract is JsonLinqContract)
-      {
-        CurrentSchema.Type = JsonSchemaType.Any;
-      }
       else
       {
-        throw new Exception("Unexpected contract type: {0}".FormatWith(CultureInfo.InvariantCulture, contract));
+        switch (contract.ContractType)
+        {
+          case JsonContractType.Object:
+            CurrentSchema.Type = AddNullType(JsonSchemaType.Object, valueRequired);
+            CurrentSchema.Id = GetTypeId(type, false);
+            GenerateObjectSchema(type, (JsonObjectContract) contract);
+            break;
+          case JsonContractType.Array:
+            CurrentSchema.Type = AddNullType(JsonSchemaType.Array, valueRequired);
+
+            CurrentSchema.Id = GetTypeId(type, false);
+
+            JsonArrayAttribute arrayAttribute = JsonTypeReflector.GetJsonContainerAttribute(type) as JsonArrayAttribute;
+            bool allowNullItem = (arrayAttribute == null || arrayAttribute.AllowNullItems);
+
+            Type collectionItemType = ReflectionUtils.GetCollectionItemType(type);
+            if (collectionItemType != null)
+            {
+              CurrentSchema.Items = new List<JsonSchema>();
+              CurrentSchema.Items.Add(GenerateInternal(collectionItemType, (!allowNullItem) ? Required.Always : Required.Default, false));
+            }
+            break;
+          case JsonContractType.Primitive:
+            CurrentSchema.Type = GetJsonSchemaType(type, valueRequired);
+
+            if (CurrentSchema.Type == JsonSchemaType.Integer && type.IsEnum && !type.IsDefined(typeof (FlagsAttribute), true))
+            {
+              CurrentSchema.Enum = new List<JToken>();
+              CurrentSchema.Options = new Dictionary<JToken, string>();
+
+              EnumValues<long> enumValues = EnumUtils.GetNamesAndValues<long>(type);
+              foreach (EnumValue<long> enumValue in enumValues)
+              {
+                JToken value = JToken.FromObject(enumValue.Value);
+
+                CurrentSchema.Enum.Add(value);
+                CurrentSchema.Options.Add(value, enumValue.Name);
+              }
+            }
+            break;
+          case JsonContractType.String:
+            JsonSchemaType schemaType = (!ReflectionUtils.IsNullable(contract.UnderlyingType))
+                                          ? JsonSchemaType.String
+                                          : AddNullType(JsonSchemaType.String, valueRequired);
+
+            CurrentSchema.Type = schemaType;
+            break;
+          case JsonContractType.Dictionary:
+            CurrentSchema.Type = AddNullType(JsonSchemaType.Object, valueRequired);
+
+            Type keyType;
+            Type valueType;
+            ReflectionUtils.GetDictionaryKeyValueTypes(type, out keyType, out valueType);
+
+            if (keyType != null)
+            {
+              // can be converted to a string
+              if (typeof (IConvertible).IsAssignableFrom(keyType))
+              {
+                CurrentSchema.AdditionalProperties = GenerateInternal(valueType, Required.Default, false);
+              }
+            }
+            break;
+#if !SILVERLIGHT && !PocketPC
+          case JsonContractType.Serializable:
+            CurrentSchema.Type = AddNullType(JsonSchemaType.Object, valueRequired);
+            CurrentSchema.Id = GetTypeId(type, false);
+            GenerateISerializableContract(type, (JsonISerializableContract) contract);
+            break;
+#endif
+          case JsonContractType.Dynamic:
+          case JsonContractType.Linq:
+            CurrentSchema.Type = JsonSchemaType.Any;
+            break;
+          default:
+            throw new Exception("Unexpected contract type: {0}".FormatWith(CultureInfo.InvariantCulture, contract));
+        }
       }
 
       return Pop().Schema;

@@ -64,7 +64,7 @@ namespace Newtonsoft.Json.Serialization
 
       if (reader.TokenType == JsonToken.StartArray)
       {
-        if (contract is JsonArrayContract)
+        if (contract.ContractType == JsonContractType.Array)
           PopulateList(CollectionUtils.CreateCollectionWrapper(target), reader, null, (JsonArrayContract) contract);
         else
           throw CreateSerializationException(reader, "Cannot populate JSON array onto type '{0}'.".FormatWith(CultureInfo.InvariantCulture, objectType));
@@ -81,9 +81,9 @@ namespace Newtonsoft.Json.Serialization
           CheckedRead(reader);
         }
 
-        if (contract is JsonDictionaryContract)
+        if (contract.ContractType == JsonContractType.Dictionary)
           PopulateDictionary(CollectionUtils.CreateDictionaryWrapper(target), reader, (JsonDictionaryContract) contract, id);
-        else if (contract is JsonObjectContract)
+        else if (contract.ContractType == JsonContractType.Object)
           PopulateObject(target, reader, (JsonObjectContract) contract, id);
         else
           throw CreateSerializationException(reader, "Cannot populate JSON object onto type '{0}'.".FormatWith(CultureInfo.InvariantCulture, objectType));
@@ -223,7 +223,7 @@ namespace Newtonsoft.Json.Serialization
 
     private object CreateValueInternal(JsonReader reader, Type objectType, JsonContract contract, JsonProperty member, object existingValue)
     {
-      if (contract is JsonLinqContract)
+      if (contract != null && contract.ContractType == JsonContractType.Linq)
         return CreateJToken(reader, contract);
 
       do
@@ -425,53 +425,43 @@ namespace Newtonsoft.Json.Serialization
       if (contract == null)
         throw CreateSerializationException(reader, "Could not resolve type '{0}' to a JsonContract.".FormatWith(CultureInfo.InvariantCulture, objectType));
 
-      JsonDictionaryContract dictionaryContract = contract as JsonDictionaryContract;
-      if (dictionaryContract != null)
+      switch (contract.ContractType)
       {
-        if (existingValue == null)
-          return CreateAndPopulateDictionary(reader, dictionaryContract, id);
+        case JsonContractType.Object:
+          JsonObjectContract objectContract = (JsonObjectContract) contract;
+          if (existingValue == null)
+            return CreateAndPopulateObject(reader, objectContract, id);
 
-        return PopulateDictionary(dictionaryContract.CreateWrapper(existingValue), reader, dictionaryContract, id);
-      }
+          return PopulateObject(existingValue, reader, objectContract, id);
+        case JsonContractType.Primitive:
+          JsonPrimitiveContract primitiveContract = (JsonPrimitiveContract) contract;
+          // if the content is inside $value then read past it
+          if (reader.TokenType == JsonToken.PropertyName && string.Equals(reader.Value.ToString(), JsonTypeReflector.ValuePropertyName, StringComparison.Ordinal))
+          {
+            CheckedRead(reader);
+            object value = CreateValueInternal(reader, objectType, primitiveContract, member, existingValue);
 
-      JsonObjectContract objectContract = contract as JsonObjectContract;
-      if (objectContract != null)
-      {
-        if (existingValue == null)
-          return CreateAndPopulateObject(reader, objectContract, id);
+            CheckedRead(reader);
+            return value;
+          }
+          break;
+        case JsonContractType.Dictionary:
+          JsonDictionaryContract dictionaryContract = (JsonDictionaryContract) contract;
+          if (existingValue == null)
+            return CreateAndPopulateDictionary(reader, dictionaryContract, id);
 
-        return PopulateObject(existingValue, reader, objectContract, id);
-      }
-
-      JsonPrimitiveContract primitiveContract = contract as JsonPrimitiveContract;
-      if (primitiveContract != null)
-      {
-        // if the content is inside $value then read past it
-        if (reader.TokenType == JsonToken.PropertyName && string.Equals(reader.Value.ToString(), JsonTypeReflector.ValuePropertyName, StringComparison.Ordinal))
-        {
-          CheckedRead(reader);
-          object value = CreateValueInternal(reader, objectType, primitiveContract, member, existingValue);
-
-          CheckedRead(reader);
-          return value;
-        }
-      }
-
-#if !SILVERLIGHT && !PocketPC
-      JsonISerializableContract serializableContract = contract as JsonISerializableContract;
-      if (serializableContract != null)
-      {
-        return CreateISerializable(reader, serializableContract, id);
-      }
-#endif
-
+          return PopulateDictionary(dictionaryContract.CreateWrapper(existingValue), reader, dictionaryContract, id);
 #if !(NET35 || NET20 || WINDOWS_PHONE)
-      JsonDynamicContract dynamicContract = contract as JsonDynamicContract;
-      if (dynamicContract != null)
-      {
-        return CreateDynamic(reader, dynamicContract, id);
-      }
+        case JsonContractType.Dynamic:
+          JsonDynamicContract dynamicContract = (JsonDynamicContract) contract;
+          return CreateDynamic(reader, dynamicContract, id);
 #endif
+#if !SILVERLIGHT && !PocketPC
+        case JsonContractType.Serializable:
+          JsonISerializableContract serializableContract = (JsonISerializableContract) contract;
+          return CreateISerializable(reader, serializableContract, id);
+#endif
+      }
 
       throw CreateSerializationException(reader, "Cannot deserialize JSON object into type '{0}'.".FormatWith(CultureInfo.InvariantCulture, objectType));
     }
@@ -1009,7 +999,7 @@ namespace Newtonsoft.Json.Serialization
           // handle readonly collection/dictionary properties
           JsonContract propertyContract = Serializer.ContractResolver.ResolveContract(property.PropertyType);
 
-          if (propertyContract is JsonArrayContract)
+          if (propertyContract.ContractType == JsonContractType.Array)
           {
             JsonArrayContract propertyArrayContract = propertyContract as JsonArrayContract;
 
@@ -1025,7 +1015,7 @@ namespace Newtonsoft.Json.Serialization
               }
             }
           }
-          else if (propertyContract is JsonDictionaryContract)
+          else if (propertyContract.ContractType == JsonContractType.Dictionary)
           {
             JsonDictionaryContract jsonDictionaryContract = propertyContract as JsonDictionaryContract;
 
@@ -1116,11 +1106,11 @@ namespace Newtonsoft.Json.Serialization
       if (hasConverter)
         return reader.Read();
 
-      JsonContract.ReadType t = (contract != null) ? contract.InternalReadType : JsonContract.ReadType.Read;
+      ReadType t = (contract != null) ? contract.InternalReadType : ReadType.Read;
 
       switch (t)
       {
-        case JsonContract.ReadType.Read:
+        case ReadType.Read:
           do
           {
             if (!reader.Read())
@@ -1128,20 +1118,26 @@ namespace Newtonsoft.Json.Serialization
           } while (reader.TokenType == JsonToken.Comment);
 
           return true;
-        case JsonContract.ReadType.ReadAsDecimal:
+        case ReadType.ReadAsInt32:
+          SetSerializeInArray(reader, inArray, true);
+          reader.ReadAsInt32();
+          SetSerializeInArray(reader, inArray, false);
+
+          return true;
+        case ReadType.ReadAsDecimal:
           SetSerializeInArray(reader, inArray, true);
           reader.ReadAsDecimal();
           SetSerializeInArray(reader, inArray, false);
 
           return true;
-        case JsonContract.ReadType.ReadAsBytes:
+        case ReadType.ReadAsBytes:
           SetSerializeInArray(reader, inArray, true);
           reader.ReadAsBytes();
           SetSerializeInArray(reader, inArray, false);
 
           return true;
 #if !NET20
-        case JsonContract.ReadType.ReadAsDateTimeOffset:
+        case ReadType.ReadAsDateTimeOffset:
           SetSerializeInArray(reader, inArray, true);
           reader.ReadAsDateTimeOffset();
           SetSerializeInArray(reader, inArray, false);

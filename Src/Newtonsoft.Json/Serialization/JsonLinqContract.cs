@@ -17,6 +17,7 @@ namespace Newtonsoft.Json.Serialization
     public JsonLinqContract(Type underlyingType)
       : base(underlyingType)
     {
+      ContractType = JsonContractType.Linq;
     }
   }
 }

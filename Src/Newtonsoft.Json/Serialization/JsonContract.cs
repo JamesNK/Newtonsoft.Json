@@ -30,20 +30,44 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Serialization
 {
+  internal enum JsonContractType
+  {
+    None,
+    Object,
+    Array,
+    Primitive,
+    String,
+    Dictionary,
+#if !(NET35 || NET20 || WINDOWS_PHONE)
+    Dynamic,
+#endif
+#if !SILVERLIGHT && !PocketPC
+    Serializable,
+#endif
+    Linq
+  }
+
+  internal enum ReadType
+  {
+    Read,
+    ReadAsInt32,
+    ReadAsDecimal,
+    ReadAsBytes,
+#if !NET20
+    ReadAsDateTimeOffset
+#endif
+  }
+
   /// <summary>
   /// Contract details for a <see cref="Type"/> used by the <see cref="JsonSerializer"/>.
   /// </summary>
   public abstract class JsonContract
   {
-    internal enum ReadType
-    {
-      Read,
-      ReadAsDecimal,
-      ReadAsBytes,
-#if !NET20
-      ReadAsDateTimeOffset
-#endif
-    }
+    internal bool IsNullable;
+    internal bool IsConvertable;
+    internal Type NonNullableUnderlyingType;
+    internal ReadType InternalReadType;
+    internal JsonContractType ContractType;
 
     /// <summary>
     /// Gets the underlying type for the contract.
@@ -72,11 +96,6 @@ namespace Newtonsoft.Json.Serialization
     // internally specified JsonConverter's to override default behavour
     // checked for after passed in converters and attribute specified converters
     internal JsonConverter InternalConverter { get; set; }
-
-    internal ReadType InternalReadType;
-    internal bool IsNullable;
-    internal bool IsConvertable;
-    internal Type NonNullableUnderlyingType;
 
 #if !PocketPC
     /// <summary>
@@ -176,6 +195,10 @@ namespace Newtonsoft.Json.Serialization
       if (NonNullableUnderlyingType == typeof(byte[]))
       {
         InternalReadType = ReadType.ReadAsBytes;
+      }
+      else if (NonNullableUnderlyingType == typeof(int))
+      {
+        InternalReadType = ReadType.ReadAsInt32;
       }
       else if (NonNullableUnderlyingType == typeof(decimal))
       {

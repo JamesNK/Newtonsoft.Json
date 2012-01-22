@@ -529,32 +529,6 @@ namespace Newtonsoft.Json
       return IsJsonPrimitiveTypeCode(Type.GetTypeCode(type));
     }
 
-    internal static bool IsJsonPrimitive(object value)
-    {
-      if (value == null)
-        return true;
-
-      IConvertible convertible = value as IConvertible;
-
-      if (convertible != null)
-        return IsJsonPrimitiveTypeCode(convertible.GetTypeCode());
-
-#if !PocketPC && !NET20
-      if (value is DateTimeOffset)
-        return true;
-#endif
-      if (value is byte[])
-        return true;
-      if (value is Uri)
-        return true;
-      if (value is TimeSpan)
-        return true;
-      if (value is Guid)
-        return true;
-
-      return false;
-    }
-
     /// <summary>
     /// Serializes the specified object to a JSON string.
     /// </summary>

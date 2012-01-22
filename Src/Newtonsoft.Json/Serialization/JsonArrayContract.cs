@@ -52,6 +52,8 @@ namespace Newtonsoft.Json.Serialization
     public JsonArrayContract(Type underlyingType)
       : base(underlyingType)
     {
+      ContractType = JsonContractType.Array;
+      
       if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof(ICollection<>), out _genericCollectionDefinitionType))
       {
         CollectionItemType = _genericCollectionDefinitionType.GetGenericArguments()[0];

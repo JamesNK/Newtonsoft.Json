@@ -50,6 +50,7 @@ namespace Newtonsoft.Json.Serialization
     public JsonISerializableContract(Type underlyingType)
       : base(underlyingType)
     {
+      ContractType = JsonContractType.Serializable;
     }
   }
 }

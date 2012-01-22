@@ -36,8 +36,8 @@ namespace Newtonsoft.Json.Tests
 
   public class PerformanceTests : TestFixtureBase
   {
-    private const int Iterations = 100;
-    //private const int Iterations = 5000;
+    //private const int Iterations = 100;
+    private const int Iterations = 5000;
 
         private static SimpleObject CreateSimpleObject()
         {
@@ -101,12 +101,12 @@ namespace Newtonsoft.Json.Tests
 
     private void SerializeTests(object value)
     {
-      //BenchmarkSerializeMethod(SerializeMethod.DataContractSerializer, value);
-      ////BenchmarkSerializeMethod(SerializeMethod.BinaryFormatter, value);
-      //BenchmarkSerializeMethod(SerializeMethod.JavaScriptSerializer, value);
-      //BenchmarkSerializeMethod(SerializeMethod.DataContractJsonSerializer, value);
+      BenchmarkSerializeMethod(SerializeMethod.DataContractSerializer, value);
+      BenchmarkSerializeMethod(SerializeMethod.BinaryFormatter, value);
+      BenchmarkSerializeMethod(SerializeMethod.JavaScriptSerializer, value);
+      BenchmarkSerializeMethod(SerializeMethod.DataContractJsonSerializer, value);
       BenchmarkSerializeMethod(SerializeMethod.JsonNet, value);
-      //BenchmarkSerializeMethod(SerializeMethod.JsonNetBinary, value);
+      BenchmarkSerializeMethod(SerializeMethod.JsonNetBinary, value);
     }
 
     [Test]
@@ -763,6 +763,7 @@ namespace Newtonsoft.Json.Tests
   }
 
   [DataContract]
+  [Serializable]
   public class SimpleObject
   {
     [DataMember]

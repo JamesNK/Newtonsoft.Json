@@ -193,7 +193,7 @@ namespace Newtonsoft.Json.Bson
       if (TokenType == JsonToken.Null)
         return null;
       if (TokenType == JsonToken.Bytes)
-        return (byte[]) Value;
+        return (byte[])Value;
 
       if (ReaderIsSerializerInArray())
         return null;
@@ -238,13 +238,35 @@ namespace Newtonsoft.Json.Bson
       if (TokenType == JsonToken.Integer || TokenType == JsonToken.Float)
       {
         SetToken(JsonToken.Float, Convert.ToDecimal(Value, CultureInfo.InvariantCulture));
-        return (decimal) Value;
+        return (decimal)Value;
       }
 
       if (ReaderIsSerializerInArray())
         return null;
 
       throw new JsonReaderException("Error reading decimal. Expected a number but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+    }
+
+    /// <summary>
+    /// Reads the next JSON token from the stream as a <see cref="Nullable{Int32}"/>.
+    /// </summary>
+    /// <returns>A <see cref="Nullable{Int32}"/>.</returns>
+    public override int? ReadAsInt32()
+    {
+      Read();
+
+      if (TokenType == JsonToken.Integer || TokenType == JsonToken.Float)
+      {
+        SetToken(JsonToken.Float, Convert.ToInt32(Value, CultureInfo.InvariantCulture));
+        return (int)Value;
+      }
+      if (TokenType == JsonToken.Null)
+        return null;
+
+      if (ReaderIsSerializerInArray())
+        return null;
+
+      throw new JsonReaderException("Error reading integer. Expected a number but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
     }
 
 #if !NET20

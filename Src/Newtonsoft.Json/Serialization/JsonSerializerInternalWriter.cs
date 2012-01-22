@@ -105,58 +105,55 @@ namespace Newtonsoft.Json.Serialization
       }
 
       if ((converter != null
-          || ((converter = valueContract.Converter) != null)
-          || ((converter = Serializer.GetMatchingConverter(valueContract.UnderlyingType)) != null)
-          || ((converter = valueContract.InternalConverter) != null))
-        && converter.CanWrite)
+           || ((converter = valueContract.Converter) != null)
+           || ((converter = Serializer.GetMatchingConverter(valueContract.UnderlyingType)) != null)
+           || ((converter = valueContract.InternalConverter) != null))
+          && converter.CanWrite)
       {
         SerializeConvertable(writer, converter, value, valueContract);
+        return;
       }
-      else if (valueContract is JsonStringContract)
+
+      switch (valueContract.ContractType)
       {
-        SerializeString(writer, value, (JsonStringContract)valueContract);
-      }
-      else if (valueContract is JsonPrimitiveContract)
-      {
-        SerializePrimitive(writer, value, (JsonPrimitiveContract)valueContract, member, collectionValueContract);
-      }
-      else if (valueContract is JsonObjectContract)
-      {
-        SerializeObject(writer, value, (JsonObjectContract)valueContract, member, collectionValueContract);
-      }
-      else if (valueContract is JsonDictionaryContract)
-      {
-        JsonDictionaryContract dictionaryContract = (JsonDictionaryContract)valueContract;
-        SerializeDictionary(writer, dictionaryContract.CreateWrapper(value), dictionaryContract, member, collectionValueContract);
-      }
-      else if (valueContract is JsonArrayContract)
-      {
-        JsonArrayContract arrayContract = (JsonArrayContract)valueContract;
-        SerializeList(writer, arrayContract.CreateWrapper(value), arrayContract, member, collectionValueContract);
-      }
-      else if (valueContract is JsonLinqContract)
-      {
-        ((JToken)value).WriteTo(writer, (Serializer.Converters != null) ? Serializer.Converters.ToArray() : null);
-      }
-#if !SILVERLIGHT && !PocketPC
-      else if (valueContract is JsonISerializableContract)
-      {
-        SerializeISerializable(writer, (ISerializable)value, (JsonISerializableContract)valueContract, member, collectionValueContract);
-      }
-#endif
+        case JsonContractType.Object:
+          SerializeObject(writer, value, (JsonObjectContract) valueContract, member, collectionValueContract);
+          break;
+        case JsonContractType.Array:
+          JsonArrayContract arrayContract = (JsonArrayContract) valueContract;
+          SerializeList(writer, arrayContract.CreateWrapper(value), arrayContract, member, collectionValueContract);
+          break;
+        case JsonContractType.Primitive:
+          SerializePrimitive(writer, value, (JsonPrimitiveContract) valueContract, member, collectionValueContract);
+          break;
+        case JsonContractType.String:
+          SerializeString(writer, value, (JsonStringContract) valueContract);
+          break;
+        case JsonContractType.Dictionary:
+          JsonDictionaryContract dictionaryContract = (JsonDictionaryContract) valueContract;
+          SerializeDictionary(writer, dictionaryContract.CreateWrapper(value), dictionaryContract, member, collectionValueContract);
+          break;
 #if !(NET35 || NET20 || WINDOWS_PHONE)
-      else if (valueContract is JsonDynamicContract)
-      {
-        SerializeDynamic(writer, (IDynamicMetaObjectProvider)value, (JsonDynamicContract)valueContract);
-      }
+        case JsonContractType.Dynamic:
+          SerializeDynamic(writer, (IDynamicMetaObjectProvider) value, (JsonDynamicContract) valueContract);
+          break;
 #endif
+#if !SILVERLIGHT && !PocketPC
+        case JsonContractType.Serializable:
+          SerializeISerializable(writer, (ISerializable) value, (JsonISerializableContract) valueContract, member, collectionValueContract);
+          break;
+#endif
+        case JsonContractType.Linq:
+          ((JToken) value).WriteTo(writer, (Serializer.Converters != null) ? Serializer.Converters.ToArray() : null);
+          break;
+      }
     }
 
     private bool ShouldWriteReference(object value, JsonProperty property, JsonContract contract)
     {
       if (value == null)
         return false;
-      if (contract is JsonPrimitiveContract)
+      if (contract.ContractType == JsonContractType.Primitive || contract.ContractType == JsonContractType.String)
         return false;
 
       bool? isReference = null;
@@ -170,7 +167,7 @@ namespace Newtonsoft.Json.Serialization
 
       if (isReference == null)
       {
-        if (contract is JsonArrayContract)
+        if (contract.ContractType == JsonContractType.Array)
           isReference = HasFlag(Serializer.PreserveReferencesHandling, PreserveReferencesHandling.Arrays);
         else
           isReference = HasFlag(Serializer.PreserveReferencesHandling, PreserveReferencesHandling.Objects);
@@ -214,7 +211,7 @@ namespace Newtonsoft.Json.Serialization
 
     private bool CheckForCircularReference(object value, ReferenceLoopHandling? referenceLoopHandling, JsonContract contract)
     {
-      if (value == null || contract is JsonPrimitiveContract)
+      if (value == null || contract.ContractType == JsonContractType.Primitive || contract.ContractType == JsonContractType.String)
         return true;
 
       if (_serializeStack.IndexOf(value) != -1)

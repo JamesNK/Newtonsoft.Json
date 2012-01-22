@@ -345,6 +345,18 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
+    /// Reads the next JSON token from the stream as a <see cref="Nullable{Int32}"/>.
+    /// </summary>
+    /// <returns>A <see cref="Nullable{Int32}"/>.</returns>
+    public override int? ReadAsInt32()
+    {
+      int? i = _reader.ReadAsInt32();
+
+      ValidateCurrentToken();
+      return i;
+    }
+
+    /// <summary>
     /// Reads the next JSON token from the stream as a <see cref="T:Byte[]"/>.
     /// </summary>
     /// <returns>

@@ -97,7 +97,7 @@ namespace Newtonsoft.Json
     }
 
     // current Token data
-    private JsonToken _token;
+    private JsonToken _tokenType;
     private object _value;
     private char _quoteChar;
     internal State _currentState;
@@ -146,7 +146,7 @@ namespace Newtonsoft.Json
     /// </summary>
     public virtual JsonToken TokenType
     {
-      get { return _token; }
+      get { return _tokenType; }
     }
 
     /// <summary>
@@ -223,6 +223,12 @@ namespace Newtonsoft.Json
     public abstract bool Read();
 
     /// <summary>
+    /// Reads the next JSON token from the stream as a <see cref="Nullable{Int32}"/>.
+    /// </summary>
+    /// <returns>A <see cref="Nullable{Int32}"/>.</returns>
+    public abstract int? ReadAsInt32();
+
+    /// <summary>
     /// Reads the next JSON token from the stream as a <see cref="T:Byte[]"/>.
     /// </summary>
     /// <returns>A <see cref="T:Byte[]"/> or a null reference if the next JSON token is null.</returns>
@@ -276,7 +282,7 @@ namespace Newtonsoft.Json
     /// <param name="value">The value.</param>
     protected void SetToken(JsonToken newToken, object value)
     {
-      _token = newToken;
+      _tokenType = newToken;
 
       switch (newToken)
       {
@@ -447,7 +453,7 @@ namespace Newtonsoft.Json
     public virtual void Close()
     {
       _currentState = State.Closed;
-      _token = JsonToken.None;
+      _tokenType = JsonToken.None;
       _value = null;
     }
 

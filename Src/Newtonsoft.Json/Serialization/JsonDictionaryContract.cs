@@ -60,6 +60,8 @@ namespace Newtonsoft.Json.Serialization
     public JsonDictionaryContract(Type underlyingType)
       : base(underlyingType)
     {
+      ContractType = JsonContractType.Dictionary;
+
       Type keyType;
       Type valueType;
       if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof(IDictionary<,>), out _genericCollectionDefinitionType))

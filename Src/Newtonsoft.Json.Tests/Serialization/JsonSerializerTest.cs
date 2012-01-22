@@ -1931,7 +1931,7 @@ keyword such as type of business.""
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Error converting value """" to type 'System.Int32'. Line 1, position 15.")]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = @"Could not convert string to integer: . Line 1, position 15.")]
     public void DeserializeEnsureTypeEmptyStringToIntError()
     {
       JsonConvert.DeserializeObject<MemoryStream>("{ReadTimeout:''}");

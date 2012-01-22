@@ -42,6 +42,7 @@ namespace Newtonsoft.Json
     private enum ReadType
     {
       Read,
+      ReadAsInt32,
       ReadAsBytes,
       ReadAsDecimal,
 #if !NET20
@@ -457,6 +458,45 @@ namespace Newtonsoft.Json
         return null;
 
       throw CreateReaderException(this, "Unexpected token when reading decimal: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+    }
+
+    /// <summary>
+    /// Reads the next JSON token from the stream as a <see cref="Nullable{Int32}"/>.
+    /// </summary>
+    /// <returns>A <see cref="Nullable{Int32}"/>.</returns>
+    public override int? ReadAsInt32()
+    {
+      _readType = ReadType.ReadAsInt32;
+
+      do
+      {
+        if (!ReadInternal())
+          throw CreateReaderException(this, "Unexpected end when reading integer.");
+      } while (TokenType == JsonToken.Comment);
+
+      if (TokenType == JsonToken.Integer)
+        return (int?)Value;
+      if (TokenType == JsonToken.Null)
+        return null;
+
+      int i;
+      if (TokenType == JsonToken.String)
+      {
+        if (int.TryParse((string)Value, NumberStyles.Integer, Culture, out i))
+        {
+          SetToken(JsonToken.Integer, i);
+          return i;
+        }
+        else
+        {
+          throw CreateReaderException(this, "Could not convert string to integer: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
+        }
+      }
+
+      if (ReaderIsSerializerInArray())
+        return null;
+
+      throw CreateReaderException(this, "Unexpected token when reading integer: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
     }
 
 #if !NET20
@@ -1223,7 +1263,34 @@ namespace Newtonsoft.Json
       bool singleDigit = (char.IsDigit(firstChar) && _stringReference.Length == 1);
       bool nonBase10 = (firstChar == '0' && _stringReference.Length > 1 && _stringReference.Chars[_stringReference.StartIndex + 1] != '.');
 
-      if (_readType == ReadType.ReadAsDecimal)
+      if (_readType == ReadType.ReadAsInt32)
+      {
+        if (singleDigit)
+        {
+          // digit char values start at 48
+          numberValue = firstChar - 48;
+        }
+        else if (nonBase10)
+        {
+          string number = _stringReference.ToString();
+
+          // decimal.Parse doesn't support parsing hexadecimal values
+          int integer = number.StartsWith("0x", StringComparison.OrdinalIgnoreCase)
+                           ? Convert.ToInt32(number, 16)
+                           : Convert.ToInt32(number, 8);
+
+          numberValue = integer;
+        }
+        else
+        {
+          string number = _stringReference.ToString();
+
+          numberValue = Convert.ToInt32(number, CultureInfo.InvariantCulture);
+        }
+
+        numberType = JsonToken.Integer;
+      }
+      else if (_readType == ReadType.ReadAsDecimal)
       {
         if (singleDigit)
         {

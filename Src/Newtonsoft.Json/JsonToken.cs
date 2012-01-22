@@ -63,7 +63,7 @@ namespace Newtonsoft.Json
     /// </summary>
     Raw,
     /// <summary>
-    /// An interger.
+    /// An integer.
     /// </summary>
     Integer,
     /// <summary>

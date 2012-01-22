@@ -56,6 +56,8 @@ namespace Newtonsoft.Json.Serialization
     public JsonDynamicContract(Type underlyingType)
       : base(underlyingType)
     {
+      ContractType = JsonContractType.Dynamic;
+
       Properties = new JsonPropertyCollection(UnderlyingType);
     }
   }
