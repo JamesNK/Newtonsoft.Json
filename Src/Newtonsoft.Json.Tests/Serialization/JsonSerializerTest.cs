@@ -5131,6 +5131,7 @@ keyword such as type of business.""
     }
 
     [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Error converting value {null} to type 'System.Int32'. Line 5, position 7.")]
     public void DeserializeNullInt()
     {
       string json = @"[
