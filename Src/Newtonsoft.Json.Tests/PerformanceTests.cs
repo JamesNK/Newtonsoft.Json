@@ -26,10 +26,13 @@ namespace Newtonsoft.Json.Tests
   {
     [DataMember]
     public string FileName { get; set; }
+
     [DataMember]
     public string Author { get; set; }
+
     [DataMember]
     public string Caption { get; set; }
+
     [DataMember]
     public byte[] Data { get; set; }
   }
@@ -39,18 +42,8 @@ namespace Newtonsoft.Json.Tests
     //private const int Iterations = 100;
     private const int Iterations = 5000;
 
-        private static SimpleObject CreateSimpleObject()
-        {
-            return new SimpleObject
-            {
-                Name = "Simple-1",
-                Id = 2311,
-                Address = "Planet Earth",
-                Scores = new int[] { 82,96,49,40,38,38,78,96,2,39 }
-            };
-        }
-
     #region Data
+
     private const string BsonHex =
       @"A9-01-00-00-04-73-74-72-69-6E-67-73-00-2B-00-00-00-0A-30-00-02-31-00-19-00-00-00-4D-61-72-6B-75-73-20-65-67-67-65-72-20-5D-3E-3C-5B-2C-20-28-32-6E-64-29-00-0A-32-00-00-03-64-69-63-74-69-6F-6E-61-72-79-00-37-00-00-00-10-56-61-6C-20-26-20-61-73-64-31-00-01-00-00-00-10-56-61-6C-32-20-26-20-61-73-64-31-00-03-00-00-00-10-56-61-6C-33-20-26-20-61-73-64-31-00-04-00-00-00-00-02-4E-61-6D-65-00-05-00-00-00-52-69-63-6B-00-09-4E-6F-77-00-EF-BD-69-EC-25-01-00-00-01-42-69-67-4E-75-6D-62-65-72-00-E7-7B-CC-26-96-C7-1F-42-03-41-64-64-72-65-73-73-31-00-47-00-00-00-02-53-74-72-65-65-74-00-0B-00-00-00-66-66-66-20-53-74-72-65-65-74-00-02-50-68-6F-6E-65-00-0F-00-00-00-28-35-30-33-29-20-38-31-34-2D-36-33-33-35-00-09-45-6E-74-65-72-65-64-00-6F-FF-31-53-26-01-00-00-00-04-41-64-64-72-65-73-73-65-73-00-A2-00-00-00-03-30-00-4B-00-00-00-02-53-74-72-65-65-74-00-0F-00-00-00-1F-61-72-72-61-79-3C-61-64-64-72-65-73-73-00-02-50-68-6F-6E-65-00-0F-00-00-00-28-35-30-33-29-20-38-31-34-2D-36-33-33-35-00-09-45-6E-74-65-72-65-64-00-6F-73-0C-E7-25-01-00-00-00-03-31-00-4C-00-00-00-02-53-74-72-65-65-74-00-10-00-00-00-61-72-72-61-79-20-32-20-61-64-64-72-65-73-73-00-02-50-68-6F-6E-65-00-0F-00-00-00-28-35-30-33-29-20-38-31-34-2D-36-33-33-35-00-09-45-6E-74-65-72-65-64-00-6F-17-E6-E1-25-01-00-00-00-00-00";
 
@@ -75,6 +68,7 @@ namespace Newtonsoft.Json.Tests
       DataContractSerializer,
       DataContractJsonSerializer
     }
+
     #endregion
 
     [Test]
@@ -175,15 +169,15 @@ namespace Newtonsoft.Json.Tests
       int interations = 1000;
 
       TimeOperation(() =>
-      {
-        JObject oo = null;
-        for (int i = 0; i < interations; i++)
         {
-          oo = JObject.Parse(jsonText);
-        }
+          JObject oo = null;
+          for (int i = 0; i < interations; i++)
+          {
+            oo = JObject.Parse(jsonText);
+          }
 
-        return oo;
-      }, "JObject");
+          return oo;
+        }, "JObject");
     }
 
     [Test]
@@ -192,7 +186,7 @@ namespace Newtonsoft.Json.Tests
       const long totalIterations = 100000;
 
       const String xml =
-      @"<?xml  version=""1.0"" encoding=""ISO-8859-1""?>
+        @"<?xml  version=""1.0"" encoding=""ISO-8859-1""?>
                 <root>
                     <property name=""Property1"">1</property>
                     <property name=""Property2"">2</property>
@@ -202,7 +196,7 @@ namespace Newtonsoft.Json.Tests
                 </root>";
 
       const String json =
-          @"{
+        @"{
                     ""Property1"":""1"",
                     ""Property2"":""2"",
                     ""Property3"":""3"",
@@ -223,7 +217,7 @@ namespace Newtonsoft.Json.Tests
         obj["Property5"].Value<Int32>();
       }
       watch.Stop();
-      var performance1 = (totalIterations / watch.ElapsedMilliseconds) * 1000;
+      var performance1 = (totalIterations/watch.ElapsedMilliseconds)*1000;
       Console.WriteLine("JSON: " + watch.Elapsed.TotalSeconds);
 
       watch.Reset();
@@ -238,16 +232,26 @@ namespace Newtonsoft.Json.Tests
           var name = attr.Value;
           switch (name)
           {
-            case "Property1": Int32.Parse(property.Value); break;
-            case "Property2": Int32.Parse(property.Value); break;
-            case "Property3": Int32.Parse(property.Value); break;
-            case "Property4": Int32.Parse(property.Value); break;
-            case "Property5": Int32.Parse(property.Value); break;
+            case "Property1":
+              Int32.Parse(property.Value);
+              break;
+            case "Property2":
+              Int32.Parse(property.Value);
+              break;
+            case "Property3":
+              Int32.Parse(property.Value);
+              break;
+            case "Property4":
+              Int32.Parse(property.Value);
+              break;
+            case "Property5":
+              Int32.Parse(property.Value);
+              break;
           }
         }
       }
       watch.Stop();
-      var performance2 = (totalIterations / watch.ElapsedMilliseconds) * 1000;
+      var performance2 = (totalIterations/watch.ElapsedMilliseconds)*1000;
       Console.WriteLine("XML: " + watch.Elapsed.TotalSeconds);
     }
 
@@ -257,70 +261,70 @@ namespace Newtonsoft.Json.Tests
       int interations = 100;
 
       byte[] jsonBytes = TimeOperation(() =>
-      {
-        string json = null;
-        for (int i = 0; i < interations; i++)
         {
-          json = JsonConvert.SerializeObject(value, Formatting.None);
-        }
+          string json = null;
+          for (int i = 0; i < interations; i++)
+          {
+            json = JsonConvert.SerializeObject(value, Formatting.None);
+          }
 
-        return Encoding.UTF8.GetBytes(json);
-      }, "Json.NET");
+          return Encoding.UTF8.GetBytes(json);
+        }, "Json.NET");
 
       byte[] bsonBytes = TimeOperation(() =>
-      {
-        MemoryStream ms = null;
-        for (int i = 0; i < interations; i++)
         {
-          ms = new MemoryStream();
-          JsonSerializer serializer = new JsonSerializer();
-          BsonWriter writer = new BsonWriter(ms);
+          MemoryStream ms = null;
+          for (int i = 0; i < interations; i++)
+          {
+            ms = new MemoryStream();
+            JsonSerializer serializer = new JsonSerializer();
+            BsonWriter writer = new BsonWriter(ms);
 
-          serializer.Serialize(writer, value);
-          writer.Flush();
-        }
+            serializer.Serialize(writer, value);
+            writer.Flush();
+          }
 
-        return ms.ToArray();
-      }, "Json.NET BSON");
+          return ms.ToArray();
+        }, "Json.NET BSON");
 
       byte[] xmlBytes = TimeOperation(() =>
-      {
-        MemoryStream ms = null;
-        for (int i = 0; i < interations; i++)
         {
-          ms = new MemoryStream();
-          DataContractSerializer dataContractSerializer = new DataContractSerializer(value.GetType());
-          dataContractSerializer.WriteObject(ms, value);
-        }
+          MemoryStream ms = null;
+          for (int i = 0; i < interations; i++)
+          {
+            ms = new MemoryStream();
+            DataContractSerializer dataContractSerializer = new DataContractSerializer(value.GetType());
+            dataContractSerializer.WriteObject(ms, value);
+          }
 
-        return ms.ToArray();
-      }, "DataContractSerializer");
+          return ms.ToArray();
+        }, "DataContractSerializer");
 
       byte[] wcfJsonBytes = TimeOperation(() =>
-      {
-        MemoryStream ms = null;
-        for (int i = 0; i < interations; i++)
         {
-          ms = new MemoryStream();
-          DataContractJsonSerializer dataContractJsonSerializer = new DataContractJsonSerializer(value.GetType());
-          dataContractJsonSerializer.WriteObject(ms, value);
-        }
+          MemoryStream ms = null;
+          for (int i = 0; i < interations; i++)
+          {
+            ms = new MemoryStream();
+            DataContractJsonSerializer dataContractJsonSerializer = new DataContractJsonSerializer(value.GetType());
+            dataContractJsonSerializer.WriteObject(ms, value);
+          }
 
-        return ms.ToArray();
-      }, "DataContractJsonSerializer");
+          return ms.ToArray();
+        }, "DataContractJsonSerializer");
 
       byte[] binaryFormatterBytes = TimeOperation(() =>
-      {
-        MemoryStream ms = null;
-        for (int i = 0; i < interations; i++)
         {
-          ms = new MemoryStream();
-          BinaryFormatter formatter = new BinaryFormatter();
-          formatter.Serialize(ms, value);
-        }
+          MemoryStream ms = null;
+          for (int i = 0; i < interations; i++)
+          {
+            ms = new MemoryStream();
+            BinaryFormatter formatter = new BinaryFormatter();
+            formatter.Serialize(ms, value);
+          }
 
-        return ms.ToArray();
-      }, "BinaryFormatter");
+          return ms.ToArray();
+        }, "BinaryFormatter");
 
       Console.WriteLine("Json.NET size: {0} bytes", jsonBytes.Length);
       Console.WriteLine("BSON size: {0} bytes", bsonBytes.Length);
@@ -330,6 +334,7 @@ namespace Newtonsoft.Json.Tests
     }
 
     #region Serialize
+
     private static readonly byte[] Buffer = new byte[4096];
 
     public void BenchmarkSerializeMethod(SerializeMethod method, object value)
@@ -357,7 +362,7 @@ namespace Newtonsoft.Json.Tests
     {
       TestClass test = new TestClass();
 
-      test.dictionary = new Dictionary<string, int> { { "Val & asd1", 1 }, { "Val2 & asd1", 3 }, { "Val3 & asd1", 4 } };
+      test.dictionary = new Dictionary<string, int> {{"Val & asd1", 1}, {"Val2 & asd1", 3}, {"Val3 & asd1", 4}};
 
 
       test.Address1.Street = "fff Street";
@@ -365,7 +370,7 @@ namespace Newtonsoft.Json.Tests
 
       test.BigNumber = 34123123123.121M;
       test.Now = DateTime.Now.AddHours(1);
-      test.strings = new List<string>() { null, "Markus egger ]><[, (2nd)", null };
+      test.strings = new List<string>() {null, "Markus egger ]><[, (2nd)", null};
 
       Address address = new Address();
       address.Entered = DateTime.Now.AddDays(-1);
@@ -378,6 +383,17 @@ namespace Newtonsoft.Json.Tests
       address.Street = "array 2 address";
       test.Addresses.Add(address);
       return test;
+    }
+
+    private static SimpleObject CreateSimpleObject()
+    {
+      return new SimpleObject
+      {
+        Name = "Simple-1",
+        Id = 2311,
+        Address = "Planet Earth",
+        Scores = new [] { 82, 96, 49, 40, 38, 38, 78, 96, 2, 39 }
+      };
     }
 
     public string SerializeJsonNet(object value)
@@ -496,9 +512,11 @@ namespace Newtonsoft.Json.Tests
       //json = BitConverter.ToString(ms.ToArray(), 0, (int)ms.Position);
       return json;
     }
+
     #endregion
 
     #region Deserialize
+
     public void BenchmarkDeserializeMethod<T>(SerializeMethod method, object json)
     {
       Deserialize<T>(method, json);
@@ -522,14 +540,14 @@ namespace Newtonsoft.Json.Tests
 
     public T DeserializeJsonNet<T>(string json)
     {
-      Type type = typeof(T);
+      Type type = typeof (T);
 
       JsonSerializer serializer = new JsonSerializer();
       serializer.ObjectCreationHandling = Newtonsoft.Json.ObjectCreationHandling.Replace;
       serializer.MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore;
       serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
 
-      return (T)serializer.Deserialize(new StringReader(json), type);
+      return (T) serializer.Deserialize(new StringReader(json), type);
 
       //JsonTextReader reader = new JsonTextReader(new StringReader(JsonText));
       //while (reader.Read())
@@ -541,14 +559,14 @@ namespace Newtonsoft.Json.Tests
 
     public T DeserializeJsonNetBinary<T>(byte[] bson)
     {
-      Type type = typeof(T);
+      Type type = typeof (T);
 
       JsonSerializer serializer = new JsonSerializer();
       serializer.ObjectCreationHandling = Newtonsoft.Json.ObjectCreationHandling.Replace;
       serializer.MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore;
       serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
 
-      return (T)serializer.Deserialize(new BsonReader(new MemoryStream(bson)), type);
+      return (T) serializer.Deserialize(new BsonReader(new MemoryStream(bson)), type);
     }
 
     public T DeserializeWebExtensions<T>(string json)
@@ -561,11 +579,11 @@ namespace Newtonsoft.Json.Tests
     public T DeserializeDataContractJson<T>(string json)
     {
       DataContractJsonSerializer dataContractSerializer
-        = new DataContractJsonSerializer(typeof(T));
+        = new DataContractJsonSerializer(typeof (T));
 
       MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
 
-      return (T)dataContractSerializer.ReadObject(ms);
+      return (T) dataContractSerializer.ReadObject(ms);
     }
 
     private T Deserialize<T>(SerializeMethod method, object json)
@@ -573,17 +591,17 @@ namespace Newtonsoft.Json.Tests
       switch (method)
       {
         case SerializeMethod.JsonNet:
-          return DeserializeJsonNet<T>((string)json);
+          return DeserializeJsonNet<T>((string) json);
         case SerializeMethod.JsonNetBinary:
-          return DeserializeJsonNetBinary<T>((byte[])json);
+          return DeserializeJsonNetBinary<T>((byte[]) json);
         case SerializeMethod.BinaryFormatter:
-          return DeserializeBinaryFormatter<T>((byte[])json);
+          return DeserializeBinaryFormatter<T>((byte[]) json);
         case SerializeMethod.JavaScriptSerializer:
-          return DeserializeWebExtensions<T>((string)json);
+          return DeserializeWebExtensions<T>((string) json);
         case SerializeMethod.DataContractSerializer:
-          return DeserializeDataContract<T>((string)json);
+          return DeserializeDataContract<T>((string) json);
         case SerializeMethod.DataContractJsonSerializer:
-          return DeserializeDataContractJson<T>((string)json);
+          return DeserializeDataContractJson<T>((string) json);
         default:
           throw new ArgumentOutOfRangeException("method");
       }
@@ -593,15 +611,16 @@ namespace Newtonsoft.Json.Tests
     {
       MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(xml));
 
-      DataContractSerializer serializer = new DataContractSerializer(typeof(T));
-      return (T)serializer.ReadObject(ms);
+      DataContractSerializer serializer = new DataContractSerializer(typeof (T));
+      return (T) serializer.ReadObject(ms);
     }
 
     private T DeserializeBinaryFormatter<T>(byte[] bytes)
     {
       BinaryFormatter formatter = new BinaryFormatter();
-      return (T)formatter.Deserialize(new MemoryStream(bytes));
+      return (T) formatter.Deserialize(new MemoryStream(bytes));
     }
+
     #endregion
 
 
@@ -614,10 +633,10 @@ namespace Newtonsoft.Json.Tests
       for (int i = 0; i < 20; i++)
       {
         LargeRecursiveTestClass currentValue = new LargeRecursiveTestClass()
-        {
-          Integer = int.MaxValue,
-          Text = "The quick red fox jumped over the lazy dog."
-        };
+          {
+            Integer = int.MaxValue,
+            Text = "The quick red fox jumped over the lazy dog."
+          };
 
         if (rootValue == null)
           rootValue = currentValue;
@@ -634,7 +653,7 @@ namespace Newtonsoft.Json.Tests
     public void JObjectToString()
     {
       JObject test = JObject.Parse(JsonText);
-      IsoDateTimeConverter isoDateTimeConverter = null;// = new IsoDateTimeConverter();
+      IsoDateTimeConverter isoDateTimeConverter = null; // = new IsoDateTimeConverter();
 
       TimeOperation<object>(() =>
         {
@@ -651,24 +670,24 @@ namespace Newtonsoft.Json.Tests
     public void JObjectToString2()
     {
       JObject test = JObject.Parse(JsonText);
-      IsoDateTimeConverter isoDateTimeConverter = null;// = new IsoDateTimeConverter();
+      IsoDateTimeConverter isoDateTimeConverter = null; // = new IsoDateTimeConverter();
       MemoryStream ms = new MemoryStream();
 
       TimeOperation<object>(() =>
-      {
-        for (int i = 0; i < Iterations; i++)
         {
-          test["dummy"] = new JValue(i);
-          ms.Seek(0, SeekOrigin.Begin);
-          JsonTextWriter jsonTextWriter = new JsonTextWriter(new StreamWriter(ms));
-          test.WriteTo(jsonTextWriter);
-          jsonTextWriter.Flush();
-          ms.ToArray();
+          for (int i = 0; i < Iterations; i++)
+          {
+            test["dummy"] = new JValue(i);
+            ms.Seek(0, SeekOrigin.Begin);
+            JsonTextWriter jsonTextWriter = new JsonTextWriter(new StreamWriter(ms));
+            test.WriteTo(jsonTextWriter);
+            jsonTextWriter.Flush();
+            ms.ToArray();
 
-          //Encoding.UTF8.GetBytes(test.ToString(Formatting.None));
-        }
-        return null;
-      }, "JObject.ToString");
+            //Encoding.UTF8.GetBytes(test.ToString(Formatting.None));
+          }
+          return null;
+        }, "JObject.ToString");
     }
   }
 
@@ -680,6 +699,7 @@ namespace Newtonsoft.Json.Tests
   }
 
   #region Classes
+
   [Serializable]
   [DataContract]
   public class TestClass
@@ -690,6 +710,7 @@ namespace Newtonsoft.Json.Tests
       get { return _Name; }
       set { _Name = value; }
     }
+
     private string _Name = "Rick";
 
     [DataMember]
@@ -698,6 +719,7 @@ namespace Newtonsoft.Json.Tests
       get { return _Now; }
       set { _Now = value; }
     }
+
     private DateTime _Now = DateTime.Now;
 
     [DataMember]
@@ -706,6 +728,7 @@ namespace Newtonsoft.Json.Tests
       get { return _BigNumber; }
       set { _BigNumber = value; }
     }
+
     private decimal _BigNumber = 1212121.22M;
 
     [DataMember]
@@ -714,6 +737,7 @@ namespace Newtonsoft.Json.Tests
       get { return _Address1; }
       set { _Address1 = value; }
     }
+
     private Address _Address1 = new Address();
 
 
@@ -724,13 +748,12 @@ namespace Newtonsoft.Json.Tests
       get { return _Addresses; }
       set { _Addresses = value; }
     }
+
     private List<Address> _Addresses = new List<Address>();
 
-    [DataMember]
-    public List<string> strings = new List<string>();
+    [DataMember] public List<string> strings = new List<string>();
 
-    [DataMember]
-    public Dictionary<string, int> dictionary = new Dictionary<string, int>();
+    [DataMember] public Dictionary<string, int> dictionary = new Dictionary<string, int>();
   }
 
   [Serializable]
@@ -743,6 +766,7 @@ namespace Newtonsoft.Json.Tests
       get { return _street; }
       set { _street = value; }
     }
+
     private string _street = "32 Kaiea";
 
     [DataMember]
@@ -751,6 +775,7 @@ namespace Newtonsoft.Json.Tests
       get { return _Phone; }
       set { _Phone = value; }
     }
+
     private string _Phone = "(503) 814-6335";
 
     [DataMember]
@@ -759,6 +784,7 @@ namespace Newtonsoft.Json.Tests
       get { return _Entered; }
       set { _Entered = value; }
     }
+
     private DateTime _Entered = DateTime.Parse("01/01/2007", CultureInfo.CurrentCulture.DateTimeFormat);
   }
 
@@ -778,6 +804,8 @@ namespace Newtonsoft.Json.Tests
     [DataMember]
     public int[] Scores { get; set; }
   }
+
   #endregion
 }
+
 #endif

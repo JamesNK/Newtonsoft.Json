@@ -5129,6 +5129,20 @@ keyword such as type of business.""
 
       Assert.AreEqual(true, b2.no);
     }
+
+    [Test]
+    public void DeserializeNullInt()
+    {
+      string json = @"[
+  1,
+  2,
+  3,
+  null
+]";
+
+      List<int> numbers = JsonConvert.DeserializeObject<List<int>>(json);
+      // JsonSerializationException : Error converting value {null} to type 'System.Int32'. Line 5, position 7.
+    }
   }
 
   public class DecimalTestClass
