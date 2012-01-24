@@ -1044,7 +1044,7 @@ keyword such as type of business.""
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Required property 'FirstName' expects a value but got null. Line 6, position 2.")]
+    [ExpectedException(typeof (JsonSerializationException), ExpectedMessage = "Required property 'FirstName' expects a value but got null. Line 6, position 2.")]
     public void DeserializeRequiredMembersClassNullRequiredValueProperty()
     {
       string json = @"{
@@ -1074,7 +1074,7 @@ keyword such as type of business.""
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Required property 'LastName' not found in JSON. Line 3, position 2.")]
+    [ExpectedException(typeof (JsonSerializationException), ExpectedMessage = "Required property 'LastName' not found in JSON. Line 3, position 2.")]
     public void RequiredMembersClassMissingRequiredProperty()
     {
       string json = @"{
@@ -1160,7 +1160,7 @@ keyword such as type of business.""
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Could not create an instance of type Newtonsoft.Json.Tests.TestObjects.ICo. Type is an interface or abstract class and cannot be instantated. Line 1, position 14.")]
+    [ExpectedException(typeof (JsonSerializationException), ExpectedMessage = @"Could not create an instance of type Newtonsoft.Json.Tests.TestObjects.ICo. Type is an interface or abstract class and cannot be instantated. Line 1, position 14.")]
     public void DeserializeInterfaceProperty()
     {
       InterfacePropertyTestClass testClass = new InterfacePropertyTestClass();
@@ -1832,7 +1832,7 @@ keyword such as type of business.""
 #endif
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Unable to find a constructor to use for type Newtonsoft.Json.Tests.TestObjects.Event. A class should either have a default constructor, one constructor with arguments or a constructor marked with the JsonConstructor attribute. Line 1, position 15.")]
+    [ExpectedException(typeof (JsonSerializationException), ExpectedMessage = @"Unable to find a constructor to use for type Newtonsoft.Json.Tests.TestObjects.Event. A class should either have a default constructor, one constructor with arguments or a constructor marked with the JsonConstructor attribute. Line 1, position 15.")]
     public void FailWhenClassWithNoDefaultConstructorHasMultipleConstructorsWithArguments()
     {
       string json = @"{""sublocation"":""AlertEmailSender.Program.Main"",""userId"":0,""type"":0,""summary"":""Loading settings variables"",""details"":null,""stackTrace"":""   at System.Environment.GetStackTrace(Exception e, Boolean needFileInfo)\r\n   at System.Environment.get_StackTrace()\r\n   at mr.Logging.Event..ctor(String summary) in C:\\Projects\\MRUtils\\Logging\\Event.vb:line 71\r\n   at AlertEmailSender.Program.Main(String[] args) in C:\\Projects\\AlertEmailSender\\AlertEmailSender\\Program.cs:line 25"",""tag"":null,""time"":""\/Date(1249591032026-0400)\/""}";
@@ -1872,7 +1872,7 @@ keyword such as type of business.""
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Cannot deserialize JSON array into type 'Newtonsoft.Json.Tests.TestObjects.Person'. Line 1, position 1.")]
+    [ExpectedException(typeof (JsonSerializationException), ExpectedMessage = @"Cannot deserialize JSON array into type 'Newtonsoft.Json.Tests.TestObjects.Person'. Line 1, position 1.")]
     public void CannotDeserializeArrayIntoObject()
     {
       string json = @"[]";
@@ -1881,7 +1881,7 @@ keyword such as type of business.""
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Cannot deserialize JSON object into type 'System.Collections.Generic.List`1[Newtonsoft.Json.Tests.TestObjects.Person]'. Line 1, position 2.")]
+    [ExpectedException(typeof (JsonSerializationException), ExpectedMessage = @"Cannot deserialize JSON object into type 'System.Collections.Generic.List`1[Newtonsoft.Json.Tests.TestObjects.Person]'. Line 1, position 2.")]
     public void CannotDeserializeObjectIntoArray()
     {
       string json = @"{}";
@@ -1890,7 +1890,7 @@ keyword such as type of business.""
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Cannot populate JSON array onto type 'Newtonsoft.Json.Tests.TestObjects.Person'. Line 1, position 1.")]
+    [ExpectedException(typeof (JsonSerializationException), ExpectedMessage = @"Cannot populate JSON array onto type 'Newtonsoft.Json.Tests.TestObjects.Person'. Line 1, position 1.")]
     public void CannotPopulateArrayIntoObject()
     {
       string json = @"[]";
@@ -1899,7 +1899,7 @@ keyword such as type of business.""
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Cannot populate JSON object onto type 'System.Collections.Generic.List`1[Newtonsoft.Json.Tests.TestObjects.Person]'. Line 1, position 2.")]
+    [ExpectedException(typeof (JsonSerializationException), ExpectedMessage = @"Cannot populate JSON object onto type 'System.Collections.Generic.List`1[Newtonsoft.Json.Tests.TestObjects.Person]'. Line 1, position 2.")]
     public void CannotPopulateObjectIntoArray()
     {
       string json = @"{}";
@@ -1931,14 +1931,14 @@ keyword such as type of business.""
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = @"Could not convert string to integer: . Line 1, position 15.")]
+    [ExpectedException(typeof (JsonReaderException), ExpectedMessage = @"Could not convert string to integer: . Line 1, position 15.")]
     public void DeserializeEnsureTypeEmptyStringToIntError()
     {
       JsonConvert.DeserializeObject<MemoryStream>("{ReadTimeout:''}");
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Error converting value {null} to type 'System.Int32'. Line 1, position 17.")]
+    [ExpectedException(typeof (JsonSerializationException), ExpectedMessage = @"Error converting value {null} to type 'System.Int32'. Line 1, position 17.")]
     public void DeserializeEnsureTypeNullToIntError()
     {
       JsonConvert.DeserializeObject<MemoryStream>("{ReadTimeout:null}");
@@ -2053,7 +2053,7 @@ keyword such as type of business.""
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Could not convert string 'Newtonsoft.Json.Tests.TestObjects.Person' to dictionary key type 'Newtonsoft.Json.Tests.TestObjects.Person'. Create a TypeConverter to convert from the string to the key type object. Line 2, position 46.")]
+    [ExpectedException(typeof (JsonSerializationException), ExpectedMessage = "Could not convert string 'Newtonsoft.Json.Tests.TestObjects.Person' to dictionary key type 'Newtonsoft.Json.Tests.TestObjects.Person'. Create a TypeConverter to convert from the string to the key type object. Line 2, position 46.")]
     public void DeserializePersonKeyedDictionary()
     {
       string json =
@@ -2318,7 +2318,7 @@ keyword such as type of business.""
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Unable to find a default constructor to use for type Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+DictionaryWithNoDefaultConstructor. Line 1, position 6.")]
+    [ExpectedException(typeof (JsonSerializationException), ExpectedMessage = "Unable to find a default constructor to use for type Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+DictionaryWithNoDefaultConstructor. Line 1, position 6.")]
     public void DeserializeDictionaryWithNoDefaultConstructor()
     {
       string json = "{key1:'value',key2:'value',key3:'value'}";
@@ -3267,7 +3267,7 @@ keyword such as type of business.""
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Additional content found in JSON reference object. A JSON reference object should only have a $ref property. Line 6, position 11.")]
+    [ExpectedException(typeof (JsonSerializationException), ExpectedMessage = "Additional content found in JSON reference object. A JSON reference object should only have a $ref property. Line 6, position 11.")]
     public void SerializeRefAdditionalContent()
     {
       //Additional text found in JSON string after finishing deserializing object.
@@ -3286,7 +3286,7 @@ keyword such as type of business.""
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "JSON reference $ref property must have a string or null value. Line 5, position 14.")]
+    [ExpectedException(typeof (JsonSerializationException), ExpectedMessage = "JSON reference $ref property must have a string or null value. Line 5, position 14.")]
     public void SerializeRefBadType()
     {
       //Additional text found in JSON string after finishing deserializing object.
@@ -4280,7 +4280,7 @@ keyword such as type of business.""
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Error converting value {null} to type 'System.DateTime'. Line 1, position 4.")]
+    [ExpectedException(typeof (JsonSerializationException), ExpectedMessage = "Error converting value {null} to type 'System.DateTime'. Line 1, position 4.")]
     public void DeserializeNullDateTimeValueTest()
     {
       JsonConvert.DeserializeObject("null", typeof (DateTime));
@@ -5020,7 +5020,7 @@ keyword such as type of business.""
     [Test]
     public void DeserializeByteArrayWithTypeNameHandling()
     {
-      TestObject test = new TestObject("Test", new byte[] { 72, 63, 62, 71, 92, 55 });
+      TestObject test = new TestObject("Test", new byte[] {72, 63, 62, 71, 92, 55});
 
       JsonSerializer serializer = new JsonSerializer();
       serializer.TypeNameHandling = TypeNameHandling.All;
@@ -5042,7 +5042,7 @@ keyword such as type of business.""
         TestObject newObject = (TestObject) serializer.Deserialize(bsonReader);
 
         Assert.AreEqual("Test", newObject.Name);
-        Assert.AreEqual(new byte[] { 72, 63, 62, 71, 92, 55 }, newObject.Data);
+        Assert.AreEqual(new byte[] {72, 63, 62, 71, 92, 55}, newObject.Data);
       }
     }
 
@@ -5066,7 +5066,7 @@ keyword such as type of business.""
         Assert.AreEqual(1.5m, c.Quantity);
         Assert.AreEqual(2.2d, c.OptionalQuantity);
       }
-      finally 
+      finally
       {
         Thread.CurrentThread.CurrentCulture = initialCulture;
         Thread.CurrentThread.CurrentUICulture = initialCulture;
@@ -5077,7 +5077,7 @@ keyword such as type of business.""
     [Test]
     public void ReadForTypeHackFixDecimal()
     {
-      IList<decimal> d1 = new List<decimal> { 1.1m};
+      IList<decimal> d1 = new List<decimal> {1.1m};
 
       string json = JsonConvert.SerializeObject(d1);
 
@@ -5090,7 +5090,7 @@ keyword such as type of business.""
     [Test]
     public void ReadForTypeHackFixDateTimeOffset()
     {
-      IList<DateTimeOffset?> d1 = new List<DateTimeOffset?> { null };
+      IList<DateTimeOffset?> d1 = new List<DateTimeOffset?> {null};
 
       string json = JsonConvert.SerializeObject(d1);
 
@@ -5103,7 +5103,7 @@ keyword such as type of business.""
     [Test]
     public void ReadForTypeHackFixByteArray()
     {
-      IList<byte[]> d1 = new List<byte[]> { null };
+      IList<byte[]> d1 = new List<byte[]> {null};
 
       string json = JsonConvert.SerializeObject(d1);
 
@@ -5131,7 +5131,7 @@ keyword such as type of business.""
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Error converting value {null} to type 'System.Int32'. Line 5, position 7.")]
+    [ExpectedException(typeof (JsonSerializationException), ExpectedMessage = "Error converting value {null} to type 'System.Int32'. Line 5, position 7.")]
     public void DeserializeNullInt()
     {
       string json = @"[
@@ -5144,6 +5144,60 @@ keyword such as type of business.""
       List<int> numbers = JsonConvert.DeserializeObject<List<int>>(json);
       // JsonSerializationException : Error converting value {null} to type 'System.Int32'. Line 5, position 7.
     }
+
+    [Test]
+    public void SerializeNullableWidgetStruct()
+    {
+      Widget widget = new Widget {Id = new WidgetId {Value = "id"}};
+
+      string json = JsonConvert.SerializeObject(widget);
+
+      Assert.AreEqual(@"{""Id"":{""Value"":""id""}}", json);
+    }
+
+    [Test]
+    public void DeserializeNullableWidgetStruct()
+    {
+      string json = @"{""Id"":{""Value"":""id""}}";
+
+      Widget w = JsonConvert.DeserializeObject<Widget>(json);
+
+      Assert.AreEqual(new WidgetId { Value = "id" }, w.Id);
+      Assert.AreEqual(new WidgetId { Value = "id" }, w.Id.Value);
+      Assert.AreEqual("id", w.Id.Value.Value);
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected token when reading integer: Boolean. Line 2, position 22.")]
+    public void DeserializeBoolInt()
+    {
+      string json = @"{
+  ""PreProperty"": true,
+  ""PostProperty"": ""-1""
+}";
+
+      JsonConvert.DeserializeObject<TestObjects.MyClass>(json);
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end when reading integer. Line 2, position 18.")]
+    public void DeserializeUnexpectedEndInt()
+    {
+      string json = @"{
+  ""PreProperty"": ";
+
+      JsonConvert.DeserializeObject<TestObjects.MyClass>(json);
+    }
+  }
+
+  public class Widget
+  {
+    public WidgetId? Id { get; set; }
+  }
+
+  public struct WidgetId
+  {
+    public string Value { get; set; }
   }
 
   public class DecimalTestClass
@@ -5156,7 +5210,7 @@ keyword such as type of business.""
   {
     public TestObject()
     {
-      
+
     }
 
     public TestObject(string name, byte[] data)
@@ -5178,12 +5232,12 @@ keyword such as type of business.""
     public Uri Uri { get; set; }
   }
 
-  class Aa
+  internal class Aa
   {
     public int no;
   }
 
-  class Bb : Aa
+  internal class Bb : Aa
   {
     public bool no;
   }
@@ -5198,8 +5252,7 @@ keyword such as type of business.""
     [JsonProperty]
     public string Name { get; set; }
 
-    [JsonProperty]
-    public ConcurrentDictionary<string, Component> Components;
+    [JsonProperty] public ConcurrentDictionary<string, Component> Components;
 
     public GameObject()
     {
@@ -5212,7 +5265,7 @@ keyword such as type of business.""
   public class Component
   {
     [JsonIgnore] // Ignore circular reference 
-    public GameObject GameObject { get; set; }
+      public GameObject GameObject { get; set; }
 
     public Component()
     {

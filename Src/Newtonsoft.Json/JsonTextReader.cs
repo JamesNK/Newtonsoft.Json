@@ -51,7 +51,6 @@ namespace Newtonsoft.Json
     }
 
     private ReadType _readType;
-    private CultureInfo _culture;
 
     private readonly TextReader _reader;
 
@@ -63,15 +62,6 @@ namespace Newtonsoft.Json
     private bool _isEndOfFile;
     private StringBuffer _buffer;
     private StringReference _stringReference;
-
-    /// <summary>
-    /// Gets or sets the culture used when reading JSON. Defaults to <see cref="CultureInfo.InvariantCulture"/>.
-    /// </summary>
-    public CultureInfo Culture
-    {
-      get { return _culture ?? CultureInfo.InvariantCulture; }
-      set { _culture = value; }
-    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonReader"/> class with the specified <see cref="TextReader"/>.
@@ -394,8 +384,10 @@ namespace Newtonsoft.Json
 
       if (TokenType == JsonToken.Null)
         return null;
+
       if (TokenType == JsonToken.Bytes)
         return (byte[])Value;
+
       if (TokenType == JsonToken.StartArray)
       {
         List<byte> data = new List<byte>();
@@ -442,16 +434,24 @@ namespace Newtonsoft.Json
           throw CreateReaderException(this, "Unexpected end when reading decimal.");
       } while (TokenType == JsonToken.Comment);
 
-      if (TokenType == JsonToken.Null)
-        return null;
       if (TokenType == JsonToken.Float)
         return (decimal?)Value;
 
+      if (TokenType == JsonToken.Null)
+        return null;
+
       decimal d;
-      if (TokenType == JsonToken.String && decimal.TryParse((string)Value, NumberStyles.Number, Culture, out d))
+      if (TokenType == JsonToken.String)
       {
-        SetToken(JsonToken.Float, d);
-        return d;
+        if (decimal.TryParse((string)Value, NumberStyles.Number, Culture, out d))
+        {
+          SetToken(JsonToken.Float, d);
+          return d;
+        }
+        else
+        {
+          throw CreateReaderException(this, "Could not convert string to decimal: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
+        }
       }
 
       if (ReaderIsSerializerInArray())
@@ -476,6 +476,7 @@ namespace Newtonsoft.Json
 
       if (TokenType == JsonToken.Integer)
         return (int?)Value;
+
       if (TokenType == JsonToken.Null)
         return null;
 
@@ -514,16 +515,24 @@ namespace Newtonsoft.Json
           throw CreateReaderException(this, "Unexpected end when reading date.");
       } while (TokenType == JsonToken.Comment);
 
-      if (TokenType == JsonToken.Null)
-        return null;
       if (TokenType == JsonToken.Date)
         return (DateTimeOffset)Value;
 
+      if (TokenType == JsonToken.Null)
+        return null;
+
       DateTimeOffset dt;
-      if (TokenType == JsonToken.String && DateTimeOffset.TryParse((string)Value, Culture, DateTimeStyles.None, out dt))
+      if (TokenType == JsonToken.String)
       {
-        SetToken(JsonToken.Date, dt);
-        return dt;
+        if (DateTimeOffset.TryParse((string)Value, Culture, DateTimeStyles.None, out dt))
+        {
+          SetToken(JsonToken.Date, dt);
+          return dt;
+        }
+        else
+        {
+          throw CreateReaderException(this, "Could not convert string to DateTimeOffset: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
+        }
       }
 
       if (ReaderIsSerializerInArray())

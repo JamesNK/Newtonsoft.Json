@@ -198,7 +198,7 @@ namespace Newtonsoft.Json.Bson
       if (ReaderIsSerializerInArray())
         return null;
 
-      throw new JsonReaderException("Error reading bytes. Expected bytes but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+      throw CreateReaderException(this, "Error reading bytes. Expected bytes but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
     }
 
     private bool IsWrappedInTypeObject()
@@ -219,7 +219,7 @@ namespace Newtonsoft.Json.Bson
           }
         }
 
-        throw new JsonReaderException("Unexpected token when reading bytes: {0}.".FormatWith(CultureInfo.InvariantCulture, JsonToken.StartObject));
+        throw CreateReaderException(this, "Unexpected token when reading bytes: {0}.".FormatWith(CultureInfo.InvariantCulture, JsonToken.StartObject));
       }
 
       return false;
@@ -233,18 +233,33 @@ namespace Newtonsoft.Json.Bson
     {
       Read();
 
-      if (TokenType == JsonToken.Null)
-        return null;
       if (TokenType == JsonToken.Integer || TokenType == JsonToken.Float)
       {
         SetToken(JsonToken.Float, Convert.ToDecimal(Value, CultureInfo.InvariantCulture));
         return (decimal)Value;
       }
 
+      if (TokenType == JsonToken.Null)
+        return null;
+
+      decimal d;
+      if (TokenType == JsonToken.String)
+      {
+        if (decimal.TryParse((string)Value, NumberStyles.Number, Culture, out d))
+        {
+          SetToken(JsonToken.Float, d);
+          return d;
+        }
+        else
+        {
+          throw CreateReaderException(this, "Could not convert string to decimal: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
+        }
+      }
+
       if (ReaderIsSerializerInArray())
         return null;
 
-      throw new JsonReaderException("Error reading decimal. Expected a number but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+      throw CreateReaderException(this, "Error reading decimal. Expected a number but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
     }
 
     /// <summary>
@@ -260,13 +275,28 @@ namespace Newtonsoft.Json.Bson
         SetToken(JsonToken.Float, Convert.ToInt32(Value, CultureInfo.InvariantCulture));
         return (int)Value;
       }
+
       if (TokenType == JsonToken.Null)
         return null;
+
+      int i;
+      if (TokenType == JsonToken.String)
+      {
+        if (int.TryParse((string)Value, NumberStyles.Integer, Culture, out i))
+        {
+          SetToken(JsonToken.Integer, i);
+          return i;
+        }
+        else
+        {
+          throw CreateReaderException(this, "Could not convert string to integer: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
+        }
+      }
 
       if (ReaderIsSerializerInArray())
         return null;
 
-      throw new JsonReaderException("Error reading integer. Expected a number but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+      throw CreateReaderException(this, "Error reading integer. Expected a number but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
     }
 
 #if !NET20
@@ -280,18 +310,33 @@ namespace Newtonsoft.Json.Bson
     {
       Read();
 
-      if (TokenType == JsonToken.Null)
-        return null;
       if (TokenType == JsonToken.Date)
       {
         SetToken(JsonToken.Date, new DateTimeOffset((DateTime) Value));
         return (DateTimeOffset) Value;
       }
 
+      if (TokenType == JsonToken.Null)
+        return null;
+
+      DateTimeOffset dt;
+      if (TokenType == JsonToken.String)
+      {
+        if (DateTimeOffset.TryParse((string)Value, Culture, DateTimeStyles.None, out dt))
+        {
+          SetToken(JsonToken.Date, dt);
+          return dt;
+        }
+        else
+        {
+          throw CreateReaderException(this, "Could not convert string to DateTimeOffset: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
+        }
+      }
+
       if (ReaderIsSerializerInArray())
         return null;
 
-      throw new JsonReaderException("Error reading date. Expected bytes but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+      throw CreateReaderException(this, "Error reading date. Expected bytes but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
     }
 #endif
 
@@ -320,7 +365,7 @@ namespace Newtonsoft.Json.Bson
           case BsonReaderState.CodeWScopeScopeEnd:
             return ReadCodeWScope();
           default:
-            throw new JsonReaderException("Unexpected state: {0}".FormatWith(CultureInfo.InvariantCulture, _bsonReaderState));
+            throw CreateReaderException(this, "Unexpected state: {0}".FormatWith(CultureInfo.InvariantCulture, _bsonReaderState));
         }
       }
       catch (EndOfStreamException)
@@ -411,7 +456,7 @@ namespace Newtonsoft.Json.Bson
             }
             else
             {
-              throw new JsonReaderException("Unexpected state when reading BSON reference: " + _bsonReaderState);
+              throw CreateReaderException(this, "Unexpected state when reading BSON reference: " + _bsonReaderState);
             }
           }
         case State.PostValue:
@@ -430,11 +475,11 @@ namespace Newtonsoft.Json.Bson
             }
             else
             {
-              throw new JsonReaderException("Unexpected state when reading BSON reference: " + _bsonReaderState);
+              throw CreateReaderException(this, "Unexpected state when reading BSON reference: " + _bsonReaderState);
             }
           }
         default:
-          throw new JsonReaderException("Unexpected state when reading BSON reference: " + CurrentState);
+          throw CreateReaderException(this, "Unexpected state when reading BSON reference: " + CurrentState);
       }
     }
 
@@ -487,7 +532,7 @@ namespace Newtonsoft.Json.Bson
           else if (context.Position == lengthMinusEnd)
           {
             if (ReadByte() != 0)
-              throw new JsonReaderException("Unexpected end of object byte value.");
+              throw CreateReaderException(this, "Unexpected end of object byte value.");
 
             PopContext();
             if (_currentContext != null)
@@ -499,7 +544,7 @@ namespace Newtonsoft.Json.Bson
           }
           else
           {
-            throw new JsonReaderException("Read past end of current container context.");
+            throw CreateReaderException(this, "Read past end of current container context.");
           }
         case State.ConstructorStart:
           break;

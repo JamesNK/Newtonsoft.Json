@@ -285,13 +285,13 @@ namespace Newtonsoft.Json.Serialization
       JsonObjectContract contract = new JsonObjectContract(objectType);
       InitializeContract(contract);
 
-      contract.MemberSerialization = JsonTypeReflector.GetObjectMemberSerialization(objectType);
-      contract.Properties.AddRange(CreateProperties(contract.UnderlyingType, contract.MemberSerialization));
+      contract.MemberSerialization = JsonTypeReflector.GetObjectMemberSerialization(contract.NonNullableUnderlyingType);
+      contract.Properties.AddRange(CreateProperties(contract.NonNullableUnderlyingType, contract.MemberSerialization));
 
       // check if a JsonConstructorAttribute has been defined and use that
-      if (objectType.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Any(c => c.IsDefined(typeof(JsonConstructorAttribute), true)))
+      if (contract.NonNullableUnderlyingType.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Any(c => c.IsDefined(typeof(JsonConstructorAttribute), true)))
       {
-        ConstructorInfo constructor = GetAttributeConstructor(objectType);
+        ConstructorInfo constructor = GetAttributeConstructor(contract.NonNullableUnderlyingType);
         if (constructor != null)
         {
           contract.OverrideConstructor = constructor;
@@ -300,7 +300,7 @@ namespace Newtonsoft.Json.Serialization
       }
       else if (contract.DefaultCreator == null || contract.DefaultCreatorNonPublic)
       {
-        ConstructorInfo constructor = GetParametrizedConstructor(objectType);
+        ConstructorInfo constructor = GetParametrizedConstructor(contract.NonNullableUnderlyingType);
         if (constructor != null)
         {
           contract.ParametrizedConstructor = constructor;

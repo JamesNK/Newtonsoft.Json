@@ -31,6 +31,7 @@ using Newtonsoft.Json;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Tests.Serialization;
+using Newtonsoft.Json.Tests.TestObjects;
 
 namespace Newtonsoft.Json.Tests.Linq
 {
@@ -110,6 +111,65 @@ namespace Newtonsoft.Json.Tests.Linq
 
         Assert.IsFalse(jsonReader.Read());
       }
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Could not convert string to DateTimeOffset: blablahbla. Line 1, position 22.")]
+    public void ReadAsDateTimeOffsetBadString()
+    {
+      string json = @"{""Offset"":""blablahbla""}";
+
+      JObject o = JObject.Parse(json);
+
+      JsonReader reader = o.CreateReader();
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      reader.ReadAsDateTimeOffset();
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error reading date. Expected bytes but got Boolean. Line 1, position 14.")]
+    public void ReadAsDateTimeOffsetBoolean()
+    {
+      string json = @"{""Offset"":true}";
+
+      JObject o = JObject.Parse(json);
+
+      JsonReader reader = o.CreateReader();
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      reader.ReadAsDateTimeOffset();
+    }
+
+    [Test]
+    public void ReadAsDateTimeOffsetString()
+    {
+      string json = @"{""Offset"":""2012-01-24T03:50Z""}";
+
+      JObject o = JObject.Parse(json);
+
+      JsonReader reader = o.CreateReader();
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      reader.ReadAsDateTimeOffset();
+      Assert.AreEqual(JsonToken.Date, reader.TokenType);
+      Assert.AreEqual(typeof (DateTimeOffset), reader.ValueType);
+      Assert.AreEqual(new DateTimeOffset(2012, 1, 24, 3, 50, 0, TimeSpan.Zero), reader.Value);
     }
 #endif
 
@@ -330,6 +390,190 @@ namespace Newtonsoft.Json.Tests.Linq
         Assert.AreEqual("Test", newObject.Name);
         Assert.AreEqual(new byte[] { 72, 63, 62, 71, 92, 55 }, newObject.Data);
       }
+    }
+
+    [Test]
+    public void DeserializeStringInt()
+    {
+      string json = @"{
+  ""PreProperty"": ""99"",
+  ""PostProperty"": ""-1""
+}";
+
+      JObject o = JObject.Parse(json);
+
+      JsonSerializer serializer = new JsonSerializer();
+
+      using (JsonReader nodeReader = o.CreateReader())
+      {
+        MyClass c = serializer.Deserialize<MyClass>(nodeReader);
+
+        Assert.AreEqual(99, c.PreProperty);
+        Assert.AreEqual(-1, c.PostProperty);
+      }
+    }
+
+    [Test]
+    public void ReadAsDecimalInt()
+    {
+      string json = @"{""Name"":1}";
+
+      JObject o = JObject.Parse(json);
+      
+      JsonReader reader = o.CreateReader();
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      reader.ReadAsDecimal();
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+      Assert.AreEqual(typeof(decimal), reader.ValueType);
+      Assert.AreEqual(1, reader.Value);
+    }
+
+    [Test]
+    public void ReadAsInt32Int()
+    {
+      string json = @"{""Name"":1}";
+
+      JObject o = JObject.Parse(json);
+
+      JsonReader reader = o.CreateReader();
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      reader.ReadAsInt32();
+      Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+      Assert.AreEqual(typeof(int), reader.ValueType);
+      Assert.AreEqual(1, reader.Value);
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Could not convert string to integer: hi. Line 1, position 12.")]
+    public void ReadAsInt32BadString()
+    {
+      string json = @"{""Name"":""hi""}";
+
+      JObject o = JObject.Parse(json);
+
+      JsonReader reader = o.CreateReader();
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      reader.ReadAsInt32();
+      Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+      Assert.AreEqual(typeof(int), reader.ValueType);
+      Assert.AreEqual(1, reader.Value);
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error reading integer. Expected a number but got Boolean. Line 1, position 12.")]
+    public void ReadAsInt32Boolean()
+    {
+      string json = @"{""Name"":true}";
+
+      JObject o = JObject.Parse(json);
+
+      JsonReader reader = o.CreateReader();
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      reader.ReadAsInt32();
+    }
+
+    [Test]
+    public void ReadAsDecimalString()
+    {
+      string json = @"{""Name"":""1.1""}";
+
+      JObject o = JObject.Parse(json);
+
+      JsonReader reader = o.CreateReader();
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      reader.ReadAsDecimal();
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+      Assert.AreEqual(typeof(decimal), reader.ValueType);
+      Assert.AreEqual(1.1m, reader.Value);
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Could not convert string to decimal: blah. Line 1, position 14.")]
+    public void ReadAsDecimalBadString()
+    {
+      string json = @"{""Name"":""blah""}";
+
+      JObject o = JObject.Parse(json);
+
+      JsonReader reader = o.CreateReader();
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      reader.ReadAsDecimal();
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error reading decimal. Expected a number but got Boolean. Line 1, position 12.")]
+    public void ReadAsDecimalBoolean()
+    {
+      string json = @"{""Name"":true}";
+
+      JObject o = JObject.Parse(json);
+
+      JsonReader reader = o.CreateReader();
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      reader.ReadAsDecimal();
+    }
+
+    [Test]
+    public void ReadAsDecimalNull()
+    {
+      string json = @"{""Name"":null}";
+
+      JObject o = JObject.Parse(json);
+
+      JsonReader reader = o.CreateReader();
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      reader.ReadAsDecimal();
+      Assert.AreEqual(JsonToken.Null, reader.TokenType);
+      Assert.AreEqual(null, reader.ValueType);
+      Assert.AreEqual(null, reader.Value);
     }
   }
 }

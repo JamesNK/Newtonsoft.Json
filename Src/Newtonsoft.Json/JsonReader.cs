@@ -103,6 +103,7 @@ namespace Newtonsoft.Json
     internal State _currentState;
     private JTokenType _currentTypeContext;
     private bool _serializerInArray;
+    private CultureInfo _culture;
 
     internal void SetSerializeInArray(bool serializerInArray)
     {
@@ -179,6 +180,15 @@ namespace Newtonsoft.Json
         else
           return depth;
       }
+    }
+
+    /// <summary>
+    /// Gets or sets the culture used when reading JSON. Defaults to <see cref="CultureInfo.InvariantCulture"/>.
+    /// </summary>
+    public CultureInfo Culture
+    {
+      get { return _culture ?? CultureInfo.InvariantCulture; }
+      set { _culture = value; }
     }
 
     /// <summary>
@@ -473,7 +483,7 @@ namespace Newtonsoft.Json
 
       int lineNumber;
       int linePosition;
-      if (lineInfo != null)
+      if (lineInfo != null && lineInfo.HasLineInfo())
       {
         lineNumber = lineInfo.LineNumber;
         linePosition = lineInfo.LinePosition;
@@ -492,7 +502,7 @@ namespace Newtonsoft.Json
       if (!message.EndsWith("."))
         message += ".";
 
-      if (lineInfo != null)
+      if (lineInfo != null && lineInfo.HasLineInfo())
         message += " Line {0}, position {1}.".FormatWith(CultureInfo.InvariantCulture, lineInfo.LineNumber, lineInfo.LinePosition);
 
       return message;

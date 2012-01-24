@@ -184,11 +184,11 @@ namespace Newtonsoft.Json.Serialization
       ValidationUtils.ArgumentNotNull(underlyingType, "underlyingType");
 
       UnderlyingType = underlyingType;
-      CreatedType = underlyingType;
 
       IsNullable = ReflectionUtils.IsNullable(underlyingType);
-
       NonNullableUnderlyingType = (IsNullable && ReflectionUtils.IsNullableType(underlyingType)) ? Nullable.GetUnderlyingType(underlyingType) : underlyingType;
+
+      CreatedType = NonNullableUnderlyingType;
 
       IsConvertable = typeof(IConvertible).IsAssignableFrom(NonNullableUnderlyingType);
 

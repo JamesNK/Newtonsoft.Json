@@ -1303,6 +1303,23 @@ bye", reader.Value);
     }
 
     [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Could not convert string to DateTimeOffset: blablahbla. Line 1, position 22.")]
+    public void ReadAsDateTimeOffsetBadString()
+    {
+      string json = @"{""Offset"":""blablahbla""}";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      reader.ReadAsDateTimeOffset();
+    }
+
+    [Test]
     public void ReadAsDateTimeOffsetHoursOnly()
     {
       string json = "{\"Offset\":\"\\/Date(946663200000+06)\\/\"}";
@@ -1344,46 +1361,6 @@ bye", reader.Value);
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
-    }
-
-    [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error parsing null value. Line 0, position 0.")]
-    public void MatchWithInsufficentCharacters()
-    {
-      JsonTextReader reader = new JsonTextReader(new StringReader(@"nul"));
-      reader.Read();
-    }
-
-    [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error parsing null value. Line 0, position 0.")]
-    public void MatchWithWrongCharacters()
-    {
-      JsonTextReader reader = new JsonTextReader(new StringReader(@"nulz"));
-      reader.Read();
-    }
-
-    [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error parsing null value. Line 1, position 4.")]
-    public void MatchWithNoTrailingSeperator()
-    {
-      JsonTextReader reader = new JsonTextReader(new StringReader(@"nullz"));
-      reader.Read();
-    }
-
-    [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end while parsing comment. Line 1, position 6.")]
-    public void UnclosedComment()
-    {
-      JsonTextReader reader = new JsonTextReader(new StringReader(@"/* sdf"));
-      reader.Read();
-    }
-
-    [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error parsing comment. Expected: *, got s. Line 1, position 1.")]
-    public void BadCommentStart()
-    {
-      JsonTextReader reader = new JsonTextReader(new StringReader(@"/sdf"));
-      reader.Read();
     }
 
     [Test]
@@ -1458,6 +1435,85 @@ bye", reader.Value);
       Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
     }
 #endif
+
+    [Test]
+    public void ReadAsDecimalInt()
+    {
+      string json = @"{""Name"":1}";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      reader.ReadAsDecimal();
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+      Assert.AreEqual(typeof(decimal), reader.ValueType);
+      Assert.AreEqual(1, reader.Value);
+    }
+
+    [Test]
+    [ExpectedException(typeof(FormatException), ExpectedMessage = "Input string was not in a correct format.")]
+    public void ReadAsIntDecimal()
+    {
+      string json = @"{""Name"": 1.1}";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      reader.ReadAsInt32();
+      Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+      Assert.AreEqual(typeof(int), reader.ValueType);
+      Assert.AreEqual(1, reader.Value);
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error parsing null value. Line 0, position 0.")]
+    public void MatchWithInsufficentCharacters()
+    {
+      JsonTextReader reader = new JsonTextReader(new StringReader(@"nul"));
+      reader.Read();
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error parsing null value. Line 0, position 0.")]
+    public void MatchWithWrongCharacters()
+    {
+      JsonTextReader reader = new JsonTextReader(new StringReader(@"nulz"));
+      reader.Read();
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error parsing null value. Line 1, position 4.")]
+    public void MatchWithNoTrailingSeperator()
+    {
+      JsonTextReader reader = new JsonTextReader(new StringReader(@"nullz"));
+      reader.Read();
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end while parsing comment. Line 1, position 6.")]
+    public void UnclosedComment()
+    {
+      JsonTextReader reader = new JsonTextReader(new StringReader(@"/* sdf"));
+      reader.Read();
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error parsing comment. Expected: *, got s. Line 1, position 1.")]
+    public void BadCommentStart()
+    {
+      JsonTextReader reader = new JsonTextReader(new StringReader(@"/sdf"));
+      reader.Read();
+    }
 
     [Test]
     public void ReadAsDecimal()
