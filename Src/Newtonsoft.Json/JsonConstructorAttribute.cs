@@ -6,9 +6,9 @@ using System.Text;
 namespace Newtonsoft.Json
 {
   /// <summary>
-  /// Instructs the <see cref="JsonSerializer"/> not to serialize the public field or public read/write property value.
+  /// Instructs the <see cref="JsonSerializer"/> to use the specified constructor when deserializing that object.
   /// </summary>
-  [AttributeUsage(AttributeTargets.Constructor | AttributeTargets.Property, AllowMultiple = false)]
+  [AttributeUsage(AttributeTargets.Constructor, AllowMultiple = false)]
   public sealed class JsonConstructorAttribute : Attribute
   {
   }

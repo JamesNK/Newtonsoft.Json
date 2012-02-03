@@ -530,18 +530,18 @@ namespace Newtonsoft.Json.Serialization
 
           if (contract.IsConvertable)
           {
-              if (targetType.IsEnum)
+            if (contract.NonNullableUnderlyingType.IsEnum)
               {
                 if (value is string)
-                  return Enum.Parse(targetType, value.ToString(), true);
+                  return Enum.Parse(contract.NonNullableUnderlyingType, value.ToString(), true);
                 else if (ConvertUtils.IsInteger(value))
-                  return Enum.ToObject(targetType, value);
+                  return Enum.ToObject(contract.NonNullableUnderlyingType, value);
               }
 
               return Convert.ChangeType(value, contract.NonNullableUnderlyingType, culture);
           }
 
-          return ConvertUtils.ConvertOrCast(value, culture, targetType);
+          return ConvertUtils.ConvertOrCast(value, culture, contract.NonNullableUnderlyingType);
         }
         catch (Exception ex)
         {

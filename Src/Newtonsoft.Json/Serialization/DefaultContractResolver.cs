@@ -419,7 +419,7 @@ namespace Newtonsoft.Json.Serialization
 #endif
     private void InitializeContract(JsonContract contract)
     {
-      JsonContainerAttribute containerAttribute = JsonTypeReflector.GetJsonContainerAttribute(contract.UnderlyingType);
+      JsonContainerAttribute containerAttribute = JsonTypeReflector.GetJsonContainerAttribute(contract.NonNullableUnderlyingType);
       if (containerAttribute != null)
       {
         contract.IsReference = containerAttribute._isReference;
@@ -427,17 +427,17 @@ namespace Newtonsoft.Json.Serialization
 #if !PocketPC && !NET20
       else
       {
-        DataContractAttribute dataContractAttribute = JsonTypeReflector.GetDataContractAttribute(contract.UnderlyingType);
+        DataContractAttribute dataContractAttribute = JsonTypeReflector.GetDataContractAttribute(contract.NonNullableUnderlyingType);
         // doesn't have a null value
         if (dataContractAttribute != null && dataContractAttribute.IsReference)
           contract.IsReference = true;
       }
 #endif
 
-      contract.Converter = ResolveContractConverter(contract.UnderlyingType);
+      contract.Converter = ResolveContractConverter(contract.NonNullableUnderlyingType);
 
       // then see whether object is compadible with any of the built in converters
-      contract.InternalConverter = JsonSerializer.GetMatchingConverter(BuiltInConverters, contract.UnderlyingType);
+      contract.InternalConverter = JsonSerializer.GetMatchingConverter(BuiltInConverters, contract.NonNullableUnderlyingType);
 
       if (ReflectionUtils.HasDefaultConstructor(contract.CreatedType, true)
         || contract.CreatedType.IsValueType)
@@ -448,7 +448,7 @@ namespace Newtonsoft.Json.Serialization
                                             ReflectionUtils.GetDefaultConstructor(contract.CreatedType) == null);
       }
 
-      ResolveCallbackMethods(contract, contract.UnderlyingType);
+      ResolveCallbackMethods(contract, contract.NonNullableUnderlyingType);
     }
 
     private void ResolveCallbackMethods(JsonContract contract, Type t)

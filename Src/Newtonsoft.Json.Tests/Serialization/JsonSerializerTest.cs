@@ -5162,13 +5162,13 @@ keyword such as type of business.""
 
       Widget w = JsonConvert.DeserializeObject<Widget>(json);
 
-      Assert.AreEqual(new WidgetId { Value = "id" }, w.Id);
-      Assert.AreEqual(new WidgetId { Value = "id" }, w.Id.Value);
+      Assert.AreEqual(new WidgetId {Value = "id"}, w.Id);
+      Assert.AreEqual(new WidgetId {Value = "id"}, w.Id.Value);
       Assert.AreEqual("id", w.Id.Value.Value);
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected token when reading integer: Boolean. Line 2, position 22.")]
+    [ExpectedException(typeof (JsonReaderException), ExpectedMessage = "Unexpected token when reading integer: Boolean. Line 2, position 22.")]
     public void DeserializeBoolInt()
     {
       string json = @"{
@@ -5180,7 +5180,7 @@ keyword such as type of business.""
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end when reading integer. Line 2, position 18.")]
+    [ExpectedException(typeof (JsonReaderException), ExpectedMessage = "Unexpected end when reading integer. Line 2, position 18.")]
     public void DeserializeUnexpectedEndInt()
     {
       string json = @"{
@@ -5188,6 +5188,166 @@ keyword such as type of business.""
 
       JsonConvert.DeserializeObject<TestObjects.MyClass>(json);
     }
+
+    [Test]
+    public void DeserializeNullableGuid()
+    {
+      string json = @"{""Id"":null}";
+      var c = JsonConvert.DeserializeObject<NullableGuid>(json);
+
+      Assert.AreEqual(null, c.Id);
+
+      json = @"{""Id"":""d8220a4b-75b1-4b7a-8112-b7bdae956a45""}";
+      c = JsonConvert.DeserializeObject<NullableGuid>(json);
+
+      Assert.AreEqual(new Guid("d8220a4b-75b1-4b7a-8112-b7bdae956a45"), c.Id);
+    }
+
+    [Test]
+    public void DeserializeGuid()
+    {
+      Item expected = new Item()
+        {
+          SourceTypeID = new Guid("d8220a4b-75b1-4b7a-8112-b7bdae956a45"),
+          BrokerID = new Guid("951663c4-924e-4c86-a57a-7ed737501dbd"),
+          Latitude = 33.657145,
+          Longitude = -117.766684,
+          TimeStamp = new DateTime(2000, 3, 1, 23, 59, 59, DateTimeKind.Utc),
+          Payload = new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+        };
+
+      string jsonString = JsonConvert.SerializeObject(expected, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""SourceTypeID"": ""d8220a4b-75b1-4b7a-8112-b7bdae956a45"",
+  ""BrokerID"": ""951663c4-924e-4c86-a57a-7ed737501dbd"",
+  ""Latitude"": 33.657145,
+  ""Longitude"": -117.766684,
+  ""TimeStamp"": ""\/Date(951955199000)\/"",
+  ""Payload"": {
+    ""$type"": ""System.Byte[], mscorlib"",
+    ""$value"": ""AAECAwQFBgcICQ==""
+  }
+}", jsonString);
+
+      Item actual = JsonConvert.DeserializeObject<Item>(jsonString);
+
+      Assert.AreEqual(new Guid("d8220a4b-75b1-4b7a-8112-b7bdae956a45"), actual.SourceTypeID);
+      Assert.AreEqual(new Guid("951663c4-924e-4c86-a57a-7ed737501dbd"), actual.BrokerID);
+      Assert.AreEqual(new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, actual.Payload);
+    }
+
+    [Test]
+    public void DeserializeObjectDictionary()
+    {
+      var serializer = JsonSerializer.Create(new JsonSerializerSettings());
+      var dict = serializer.Deserialize<Dictionary<string, string>>(new JsonTextReader(new StringReader("{'k1':'','k2':'v2'}")));
+
+      Assert.AreEqual("", dict["k1"]);
+      Assert.AreEqual("v2", dict["k2"]);
+    }
+
+    [Test]
+    public void DeserializeNullableEnum()
+    {
+      string json = JsonConvert.SerializeObject(new WithEnums
+        {
+          Id = 7,
+          NullableEnum = null
+        });
+
+      Assert.AreEqual(@"{""Id"":7,""NullableEnum"":null}", json);
+
+      WithEnums e = JsonConvert.DeserializeObject<WithEnums>(json);
+
+      Assert.AreEqual(null, e.NullableEnum);
+
+      json = JsonConvert.SerializeObject(new WithEnums
+      {
+        Id = 7,
+        NullableEnum = MyEnum.Value2
+      });
+
+      Assert.AreEqual(@"{""Id"":7,""NullableEnum"":1}", json);
+
+      e = JsonConvert.DeserializeObject<WithEnums>(json);
+
+      Assert.AreEqual(MyEnum.Value2, e.NullableEnum);
+    }
+
+    [Test]
+    public void NullableStructWithConverter()
+    {
+      string json = JsonConvert.SerializeObject(new Widget1 { Id = new WidgetId1 { Value = 1234 } });
+
+      Assert.AreEqual(@"{""Id"":""1234""}", json);
+
+      Widget1 w = JsonConvert.DeserializeObject<Widget1>(@"{""Id"":""1234""}");
+
+      Assert.AreEqual(new WidgetId1 { Value = 1234 }, w.Id);
+    }
+  }
+
+  public class Widget1
+  {
+    public WidgetId1? Id { get; set; }
+  }
+
+  [JsonConverter(typeof(WidgetIdJsonConverter))]
+  public struct WidgetId1
+  {
+    public long Value { get; set; }
+  }
+
+  public class WidgetIdJsonConverter : JsonConverter
+  {
+    public override bool CanConvert(Type objectType)
+    {
+      return objectType == typeof(WidgetId1) || objectType == typeof(WidgetId1?);
+    }
+
+    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    {
+      WidgetId1 id = (WidgetId1)value;
+      writer.WriteValue(id.Value.ToString());
+    }
+
+    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+    {
+      if (reader.TokenType == JsonToken.Null)
+        return null;
+      return new WidgetId1 { Value = int.Parse(reader.Value.ToString()) };
+    }
+  }
+
+
+  public enum MyEnum
+  {
+    Value1,
+    Value2,
+    Value3
+  }
+
+  public class WithEnums
+  {
+    public int Id { get; set; }
+    public MyEnum? NullableEnum { get; set; }
+  }
+
+  public class Item
+  {
+    public Guid SourceTypeID { get; set; }
+    public Guid BrokerID { get; set; }
+    public double Latitude { get; set; }
+    public double Longitude { get; set; }
+    public DateTime TimeStamp { get; set; }
+    [JsonProperty(TypeNameHandling = TypeNameHandling.All)]
+    public object Payload { get; set; }
+  }
+
+  public class NullableGuid
+  {
+    public Guid? Id { get; set; }
   }
 
   public class Widget

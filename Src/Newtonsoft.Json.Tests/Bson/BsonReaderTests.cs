@@ -264,6 +264,30 @@ namespace Newtonsoft.Json.Tests.Bson
     }
 
     [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Could not convert string to integer: a.")]
+    public void ReadAsInt32BadString()
+    {
+      byte[] data = MiscellaneousUtils.HexToBytes("20-00-00-00-02-30-00-02-00-00-00-61-00-02-31-00-02-00-00-00-62-00-02-32-00-02-00-00-00-63-00-00");
+
+      MemoryStream ms = new MemoryStream(data);
+      BsonReader reader = new BsonReader(ms);
+
+      Assert.AreEqual(false, reader.ReadRootValueAsArray);
+      Assert.AreEqual(DateTimeKind.Local, reader.DateTimeKindHandling);
+
+      reader.ReadRootValueAsArray = true;
+      reader.DateTimeKindHandling = DateTimeKind.Utc;
+
+      Assert.AreEqual(true, reader.ReadRootValueAsArray);
+      Assert.AreEqual(DateTimeKind.Utc, reader.DateTimeKindHandling);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+      reader.ReadAsInt32();
+    }
+
+    [Test]
     public void ReadBytes()
     {
       byte[] data = MiscellaneousUtils.HexToBytes("2B-00-00-00-02-30-00-02-00-00-00-61-00-02-31-00-02-00-00-00-62-00-05-32-00-0C-00-00-00-02-48-65-6C-6C-6F-20-77-6F-72-6C-64-21-00");
