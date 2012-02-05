@@ -5286,6 +5286,18 @@ keyword such as type of business.""
 
       Assert.AreEqual(new WidgetId1 { Value = 1234 }, w.Id);
     }
+
+    [Test]
+    public void SerializeDictionaryStringStringAndStringObject()
+    {
+      var serializer = JsonSerializer.Create(new JsonSerializerSettings());
+      var dict = serializer.Deserialize<Dictionary<string, string>>(new JsonTextReader(new StringReader("{'k1':'','k2':'v2'}")));
+
+      var reader = new JsonTextReader(new StringReader("{'k1':'','k2':'v2'}"));
+      var dict2 = serializer.Deserialize<Dictionary<string, object>>(reader);
+
+      Assert.AreEqual(dict["k1"], dict2["k1"]);
+    } 
   }
 
   public class Widget1

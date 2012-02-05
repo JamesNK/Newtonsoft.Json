@@ -244,7 +244,7 @@ namespace Newtonsoft.Json.Serialization
             return EnsureType(reader, reader.Value, CultureInfo.InvariantCulture, contract, objectType);
           case JsonToken.String:
             // convert empty string to null automatically for nullable types
-            if (string.IsNullOrEmpty((string) reader.Value) && objectType != typeof(string) && contract.IsNullable)
+            if (string.IsNullOrEmpty((string)reader.Value) && objectType != typeof(string) && objectType != typeof(object) && contract.IsNullable)
               return null;
 
             // string that needs to be returned as a byte array should be base 64 decoded
