@@ -43,7 +43,8 @@ namespace Newtonsoft.Json.Serialization
     /// Initializes a new instance of the <see cref="JsonPropertyCollection"/> class.
     /// </summary>
     /// <param name="type">The type.</param>
-    public JsonPropertyCollection(Type type) : base(StringComparer.Ordinal)
+    public JsonPropertyCollection(Type type)
+      : base(StringComparer.Ordinal)
     {
       ValidationUtils.ArgumentNotNull(type, "type");
       _type = type;
@@ -72,12 +73,13 @@ namespace Newtonsoft.Json.Serialization
           return;
 
         JsonProperty existingProperty = this[property.PropertyName];
+        bool duplicateProperty = true;
 
         if (existingProperty.Ignored)
         {
           // remove ignored property so it can be replaced in collection
           Remove(existingProperty);
-          return;
+          duplicateProperty = false;
         }
 
         if (property.DeclaringType != null && existingProperty.DeclaringType != null)
@@ -86,7 +88,7 @@ namespace Newtonsoft.Json.Serialization
           {
             // current property is on a derived class and hides the existing
             Remove(existingProperty);
-            return;
+            duplicateProperty = false;
           }
           if (existingProperty.DeclaringType.IsSubclassOf(property.DeclaringType))
           {
@@ -95,8 +97,8 @@ namespace Newtonsoft.Json.Serialization
           }
         }
 
-        throw new JsonSerializationException(
-          "A member with the name '{0}' already exists on '{1}'. Use the JsonPropertyAttribute to specify another name.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName, _type));
+        if (duplicateProperty)
+          throw new JsonSerializationException("A member with the name '{0}' already exists on '{1}'. Use the JsonPropertyAttribute to specify another name.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName, _type));
       }
 
       Add(property);

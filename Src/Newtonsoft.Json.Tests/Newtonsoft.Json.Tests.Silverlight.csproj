@@ -129,6 +129,7 @@
     <Compile Include="Serialization\DefaultValueHandlingTests.cs" />
     <Compile Include="Serialization\DynamicTests.cs" />
     <Compile Include="Serialization\EntitiesSerializationTests.cs" />
+    <Compile Include="Serialization\JsonPropertyCollectionTests.cs" />
     <Compile Include="Serialization\JsonSerializerTest.cs" />
     <Compile Include="Serialization\MissingMemberHandlingTests.cs" />
     <Compile Include="Serialization\NullValueHandlingTests.cs" />
@@ -170,6 +171,9 @@
     <Compile Include="TestObjects\IncompatibleJsonAttributeClass.cs" />
     <Compile Include="TestObjects\InterfacePropertyTestClass.cs" />
     <Compile Include="TestObjects\Invoice.cs" />
+    <Compile Include="TestObjects\IPrivateImplementationA.cs" />
+    <Compile Include="TestObjects\IPrivateImplementationB.cs" />
+    <Compile Include="TestObjects\IPrivateOverriddenImplementation.cs" />
     <Compile Include="TestObjects\JaggedArray.cs" />
     <Compile Include="TestObjects\JsonIgnoreAttributeTestClass.cs" />
     <Compile Include="TestObjects\JsonPropertyClass.cs" />
@@ -193,6 +197,8 @@
     <Compile Include="TestObjects\PhoneNumber.cs" />
     <Compile Include="TestObjects\PrivateConstructorTestClass.cs" />
     <Compile Include="TestObjects\PrivateConstructorWithPublicParametizedConstructorTestClass.cs" />
+    <Compile Include="TestObjects\PrivateImplementationAClass.cs" />
+    <Compile Include="TestObjects\PrivateImplementationBClass.cs" />
     <Compile Include="TestObjects\PrivateMembersClass.cs" />
     <Compile Include="TestObjects\PropertyCase.cs" />
     <Compile Include="TestObjects\PublicParametizedConstructorRequiringConverterTestClass.cs" />
