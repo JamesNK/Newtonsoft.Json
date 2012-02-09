@@ -198,7 +198,7 @@ namespace Newtonsoft.Json.Linq
       if (ReaderIsSerializerInArray())
         return null;
 
-      throw CreateReaderException(this, "Error reading date. Expected bytes but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+      throw CreateReaderException(this, "Error reading date. Expected date but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
     }
 #endif
 

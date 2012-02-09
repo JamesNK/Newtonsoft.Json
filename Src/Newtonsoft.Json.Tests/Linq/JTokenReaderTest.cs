@@ -133,7 +133,7 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error reading date. Expected bytes but got Boolean. Line 1, position 14.")]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error reading date. Expected date but got Boolean. Line 1, position 14.")]
     public void ReadAsDateTimeOffsetBoolean()
     {
       string json = @"{""Offset"":true}";
