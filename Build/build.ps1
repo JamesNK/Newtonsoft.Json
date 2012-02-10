@@ -93,8 +93,13 @@ task Package -depends Build {
   
   if ($buildDocumentation)
   {
+    $mainBuild = $builds | where { $_.Name -eq "Newtonsoft.Json" } | select -first 1
+    $mainBuildFinalDir = $mainBuild.FinalDir
+    $documentationSourcePath = "$workingDir\Package\Bin\$mainBuildFinalDir"
+    Write-Host -ForegroundColor Green "Building documentation from $documentationSourcePath"
+
     # Sandcastle has issues when compiling with .NET 4 MSBuild - http://shfb.codeplex.com/Thread/View.aspx?ThreadId=50652
-    exec { msbuild "/t:Clean;Rebuild" /p:Configuration=Release "/p:DocumentationSourcePath=$workingDir\Package\Bin\Net" $docDir\doc.shfbproj } "Error building documentation. Check that you have Sandcastle, Sandcastle Help File Builder and HTML Help Workshop installed."
+    exec { msbuild "/t:Clean;Rebuild" /p:Configuration=Release "/p:DocumentationSourcePath=$documentationSourcePath" $docDir\doc.shfbproj } "Error building documentation. Check that you have Sandcastle, Sandcastle Help File Builder and HTML Help Workshop installed."
     
     move -Path $workingDir\Documentation\Documentation.chm -Destination $workingDir\Package\Documentation.chm
     move -Path $workingDir\Documentation\LastBuild.log -Destination $workingDir\Documentation.log
