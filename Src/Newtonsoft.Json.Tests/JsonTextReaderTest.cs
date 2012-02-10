@@ -1923,5 +1923,15 @@ bye", reader.Value);
       reader.Read();
       Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
     }
+
+    [Test]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Additional text encountered after finished reading JSON content: }. Line 1, position 2.")]
+    public void UnexpectedEndTokenWhenParsingOddEndToken()
+    {
+        JsonReader reader = new JsonTextReader(new StringReader(@"{}}"));
+        Assert.IsTrue(reader.Read());
+        Assert.IsTrue(reader.Read());
+        reader.Read();
+    }
   }
 }

@@ -24,26 +24,32 @@
 #endregion
 
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Security;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-#if SILVERLIGHT
-[assembly: AssemblyTitle("Newtonsoft Json.NET Tests Silverlight")]
+#if WINDOWS_PHONE
+[assembly: AssemblyTitle("Json.NET Tests Windows Phone")]
+#elif SILVERLIGHT
+[assembly: AssemblyTitle("Json.NET Tests Silverlight")]
 #elif PocketPC
-[assembly: AssemblyTitle("Newtonsoft Json.NET Tests Compact")]
+[assembly: AssemblyTitle("Json.NET Tests Compact")]
+#elif NET20
+[assembly: AssemblyTitle("Json.NET Tests .NET 2.0")]
+#elif NET35
+[assembly: AssemblyTitle("Json.NET Tests .NET 3.5")]
 #else
-[assembly: AssemblyTitle("Newtonsoft Json.NET Tests")]
+[assembly: AssemblyTitle("Json.NET")]
 #endif
 
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Newtonsoft")]
-[assembly: AssemblyProduct("Newtonsoft Json.NET Tests")]
-[assembly: AssemblyCopyright("Copyright © Newtonsoft 2008")]
+[assembly: AssemblyProduct("Json.NET Tests")]
+[assembly: AssemblyCopyright("Copyright © James Newton-King 2008")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -64,7 +70,7 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("4.0.7.0")]
+[assembly: AssemblyVersion("4.0.8.0")]
 #if !PocketPC
-[assembly: AssemblyFileVersion("4.0.7.14610")]
+[assembly: AssemblyFileVersion("4.0.8.14611")]
 #endif

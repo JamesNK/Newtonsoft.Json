@@ -91,6 +91,7 @@
     <Compile Include="Converters\KeyValuePairConverter.cs" />
     <Compile Include="Converters\RegexConverter.cs" />
     <Compile Include="Converters\StringEnumConverter.cs" />
+    <Compile Include="Converters\VersionConverter.cs" />
     <Compile Include="JsonConstructorAttribute.cs" />
     <Compile Include="Utilities\LinqBridge.cs" />
     <Compile Include="Linq\JPath.cs" />

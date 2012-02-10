@@ -103,6 +103,7 @@
     <Compile Include="Converters\RegexConverter.cs" />
     <Compile Include="Converters\StringEnumConverter.cs" />
     <Compile Include="ConstructorHandling.cs" />
+    <Compile Include="Converters\VersionConverter.cs" />
     <Compile Include="JsonConstructorAttribute.cs" />
     <Compile Include="Linq\JPropertyDescriptor.cs" />
     <Compile Include="Utilities\DynamicProxy.cs" />

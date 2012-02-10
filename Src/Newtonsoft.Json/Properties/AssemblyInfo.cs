@@ -33,19 +33,19 @@ using System.Security;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 #if WINDOWS_PHONE
-[assembly: AssemblyTitle("Newtonsoft Json.NET Windows Phone")]
+[assembly: AssemblyTitle("Json.NET Windows Phone")]
 #elif SILVERLIGHT
-[assembly: AssemblyTitle("Newtonsoft Json.NET Silverlight")]
+[assembly: AssemblyTitle("Json.NET Silverlight")]
 #elif PocketPC
-[assembly: AssemblyTitle("Newtonsoft Json.NET Compact")]
+[assembly: AssemblyTitle("Json.NET Compact")]
 #elif NET20
-[assembly: AssemblyTitle("Newtonsoft Json.NET .NET 2.0")]
+[assembly: AssemblyTitle("Json.NET .NET 2.0")]
 [assembly: AllowPartiallyTrustedCallers]
 #elif NET35
-[assembly: AssemblyTitle("Newtonsoft Json.NET .NET 3.5")]
+[assembly: AssemblyTitle("Json.NET .NET 3.5")]
 [assembly: AllowPartiallyTrustedCallers]
 #else
-[assembly: AssemblyTitle("Newtonsoft Json.NET")]
+[assembly: AssemblyTitle("Json.NET")]
 [assembly: AllowPartiallyTrustedCallers]
 #endif
 
@@ -57,11 +57,11 @@ using System.Security;
 
 [assembly: InternalsVisibleTo("Newtonsoft.Json.Dynamic, PublicKey=0024000004800000940000000602000000240000525341310004000001000100cbd8d53b9d7de30f1f1278f636ec462cf9c254991291e66ebb157a885638a517887633b898ccbcf0d5c5ff7be85a6abe9e765d0ac7cd33c68dac67e7e64530e8222101109f154ab14a941c490ac155cd1d4fcba0fabb49016b4ef28593b015cab5937da31172f03f67d09edda404b88a60023f062ae71d0b2e4438b74cc11dc9")]
 
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Json.NET is a popular high-performance JSON framework for .NET")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Newtonsoft")]
-[assembly: AssemblyProduct("Newtonsoft Json.NET")]
-[assembly: AssemblyCopyright("Copyright © Newtonsoft 2008")]
+[assembly: AssemblyProduct("Json.NET")]
+[assembly: AssemblyCopyright("Copyright © James Newton-King 2008")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -83,9 +83,9 @@ using System.Security;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("4.0.7.0")]
+[assembly: AssemblyVersion("4.0.8.0")]
 #if !PocketPC
-[assembly: AssemblyFileVersion("4.0.7.14610")]
+[assembly: AssemblyFileVersion("4.0.8.14611")]
 #endif
 
 [assembly: CLSCompliant(true)]

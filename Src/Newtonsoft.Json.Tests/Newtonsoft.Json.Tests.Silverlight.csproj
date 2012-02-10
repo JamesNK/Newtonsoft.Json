@@ -110,6 +110,7 @@
     <Compile Include="Converters\ObjectIdConverterTests.cs" />
     <Compile Include="Converters\RegexConverterTests.cs" />
     <Compile Include="Converters\StringEnumConverterTests.cs" />
+    <Compile Include="Converters\VersionConverterTests.cs" />
     <Compile Include="ExceptionTests.cs" />
     <Compile Include="JsonArrayAttributeTests.cs" />
     <Compile Include="Linq\ComponentModel\BindingTests.cs" />

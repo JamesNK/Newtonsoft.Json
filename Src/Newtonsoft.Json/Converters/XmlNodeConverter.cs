@@ -1426,9 +1426,11 @@ namespace Newtonsoft.Json.Converters
 
     private IXmlElement CreateElement(string elementName, IXmlDocument document, string elementPrefix, XmlNamespaceManager manager)
     {
-      return (!string.IsNullOrEmpty(elementPrefix))
-               ? document.CreateElement(elementName, manager.LookupNamespace(elementPrefix))
-               : document.CreateElement(elementName);
+      string ns = string.IsNullOrEmpty(elementPrefix) ? manager.DefaultNamespace : manager.LookupNamespace(elementPrefix);
+
+      IXmlElement element = (!string.IsNullOrEmpty(ns)) ? document.CreateElement(elementName, ns) : document.CreateElement(elementName);
+
+      return element;
     }
 
     private void DeserializeNode(JsonReader reader, IXmlDocument document, XmlNamespaceManager manager, IXmlNode currentNode)

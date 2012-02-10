@@ -102,6 +102,7 @@
     <Compile Include="Converters\RegexConverter.cs" />
     <Compile Include="Converters\StringEnumConverter.cs" />
     <Compile Include="ConstructorHandling.cs" />
+    <Compile Include="Converters\VersionConverter.cs" />
     <Compile Include="JsonConstructorAttribute.cs" />
     <Compile Include="Utilities\DynamicProxy.cs" />
     <Compile Include="Linq\JPath.cs" />
