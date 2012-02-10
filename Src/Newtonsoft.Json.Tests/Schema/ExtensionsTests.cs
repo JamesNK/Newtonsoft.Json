@@ -47,8 +47,15 @@ namespace Newtonsoft.Json.Tests.Schema
       JToken stringToken = JToken.FromObject("pie");
       JToken integerToken = JToken.FromObject(1);
 
-      Assert.AreEqual(false, stringToken.IsValid(schema));
+      IList<string> errorMessages;
       Assert.AreEqual(true, integerToken.IsValid(schema));
+      Assert.AreEqual(true, integerToken.IsValid(schema, out errorMessages));
+      Assert.AreEqual(0, errorMessages.Count);
+
+      Assert.AreEqual(false, stringToken.IsValid(schema));
+      Assert.AreEqual(false, stringToken.IsValid(schema, out errorMessages));
+      Assert.AreEqual(1, errorMessages.Count);
+      Assert.AreEqual("Invalid type. Expected Integer but got String.", errorMessages[0]);
     }
 
     [Test]

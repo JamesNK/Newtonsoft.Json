@@ -856,6 +856,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     public void ByteArrays()
     {
       Car testerObject = new Car();
+      testerObject.Year = new DateTime(2000, 10, 5, 1, 1, 1, DateTimeKind.Utc);
       byte[] data = new byte[] {75, 65, 82, 73, 82, 65};
       testerObject.Objects = new object[] { data, "prueba" };
 
@@ -869,7 +870,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       Assert.AreEqual(output, @"{
   ""$type"": """ + carClassRef + @""",
-  ""Year"": ""\/Date(-62135596800000+1300)\/"",
+  ""Year"": ""\/Date(970707661000)\/"",
   ""Objects"": {
     ""$type"": ""System.Object[], mscorlib"",
     ""$values"": [
