@@ -423,8 +423,6 @@ namespace Newtonsoft.Json
         _model = builder.Build(_schema);
       }
 
-      //ValidateValueToken();
-
       switch (_reader.TokenType)
       {
         case JsonToken.StartObject:
@@ -503,6 +501,8 @@ namespace Newtonsoft.Json
           Pop();
           break;
         case JsonToken.Date:
+        case JsonToken.Bytes:
+          // these have no equivalent in JSON schema
           break;
         default:
           throw new ArgumentOutOfRangeException();

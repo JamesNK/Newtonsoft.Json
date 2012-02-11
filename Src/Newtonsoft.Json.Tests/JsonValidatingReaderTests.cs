@@ -1360,5 +1360,77 @@ namespace Newtonsoft.Json.Tests
 
       Assert.AreEqual(1, validationEventArgs.Count);
     }
+
+    [Test]
+    public void ReadAsBytes()
+    {
+      JsonSchema s = new JsonSchemaGenerator().Generate(typeof (byte[]));
+
+      byte[] data = Encoding.UTF8.GetBytes("Hello world");
+
+      JsonReader reader = new JsonValidatingReader(new JsonTextReader(new StringReader(@"""" + Convert.ToBase64String(data) + @"""")))
+        {
+          Schema = s
+        };
+      byte[] bytes = reader.ReadAsBytes();
+
+      Assert.AreEqual(data, bytes);
+    }
+
+    [Test]
+    public void ReadAsInt32()
+    {
+      JsonSchema s = new JsonSchemaGenerator().Generate(typeof(int));
+
+      JsonReader reader = new JsonValidatingReader(new JsonTextReader(new StringReader(@"1")))
+      {
+        Schema = s
+      };
+      int? i = reader.ReadAsInt32();
+
+      Assert.AreEqual(1, i);
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonSchemaException), ExpectedMessage = "Integer 5 exceeds maximum value of 2. Line 1, position 1.")]
+    public void ReadAsInt32Failure()
+    {
+      JsonSchema s = new JsonSchemaGenerator().Generate(typeof(int));
+      s.Maximum = 2;
+
+      JsonReader reader = new JsonValidatingReader(new JsonTextReader(new StringReader(@"5")))
+      {
+        Schema = s
+      };
+      reader.ReadAsInt32();
+    }
+
+    [Test]
+    public void ReadAsDecimal()
+    {
+      JsonSchema s = new JsonSchemaGenerator().Generate(typeof(decimal));
+
+      JsonReader reader = new JsonValidatingReader(new JsonTextReader(new StringReader(@"1.5")))
+      {
+        Schema = s
+      };
+      decimal? d = reader.ReadAsDecimal();
+
+      Assert.AreEqual(1.5, d);
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonSchemaException), ExpectedMessage = "Float 5.5 is not evenly divisible by 1. Line 1, position 3.")]
+    public void ReadAsDecimalFailure()
+    {
+      JsonSchema s = new JsonSchemaGenerator().Generate(typeof(decimal));
+      s.DivisibleBy = 1;
+
+      JsonReader reader = new JsonValidatingReader(new JsonTextReader(new StringReader(@"5.5")))
+      {
+        Schema = s
+      };
+      reader.ReadAsDecimal();
+    }
   }
 }
