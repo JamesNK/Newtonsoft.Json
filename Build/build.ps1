@@ -91,7 +91,7 @@ task Package -depends Build {
         
         foreach ($frameworkDir in $frameworkDirs)
         {
-          Copy-Item -Path "$sourceDir\Newtonsoft.Json\bin\Release\$finalDir" -Destination $workingDir\NuGet\lib\$frameworkDir -recurse
+          robocopy "$sourceDir\Newtonsoft.Json\bin\Release\$finalDir" $workingDir\NuGet\lib\$frameworkDir /NP /XO
         }
       }
     }
