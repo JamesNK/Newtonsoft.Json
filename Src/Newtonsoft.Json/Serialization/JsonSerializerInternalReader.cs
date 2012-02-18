@@ -1093,12 +1093,6 @@ namespace Newtonsoft.Json.Serialization
       return propertyValues;
     }
 
-    private void SetSerializeInArray(JsonReader reader, bool inArray, bool enable)
-    {
-      if (inArray)
-        reader.SetSerializeInArray(enable);
-    }
-
     private bool ReadForType(JsonReader reader, JsonContract contract, bool hasConverter, bool inArray)
     {
       // don't read properties with converters as a specific value
@@ -1119,29 +1113,17 @@ namespace Newtonsoft.Json.Serialization
 
           return true;
         case ReadType.ReadAsInt32:
-          SetSerializeInArray(reader, inArray, true);
           reader.ReadAsInt32();
-          SetSerializeInArray(reader, inArray, false);
-
           return true;
         case ReadType.ReadAsDecimal:
-          SetSerializeInArray(reader, inArray, true);
           reader.ReadAsDecimal();
-          SetSerializeInArray(reader, inArray, false);
-
           return true;
         case ReadType.ReadAsBytes:
-          SetSerializeInArray(reader, inArray, true);
           reader.ReadAsBytes();
-          SetSerializeInArray(reader, inArray, false);
-
           return true;
 #if !NET20
         case ReadType.ReadAsDateTimeOffset:
-          SetSerializeInArray(reader, inArray, true);
           reader.ReadAsDateTimeOffset();
-          SetSerializeInArray(reader, inArray, false);
-
           return true;
 #endif
         default:

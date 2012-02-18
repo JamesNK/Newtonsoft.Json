@@ -362,7 +362,7 @@ namespace Newtonsoft.Json
     /// Reads the next JSON token from the stream as a <see cref="T:Byte[]"/>.
     /// </summary>
     /// <returns>
-    /// A <see cref="T:Byte[]"/> or a null reference if the next JSON token is null.
+    /// A <see cref="T:Byte[]"/> or a null reference if the next JSON token is null. This method will return <c>null</c> at the end of an array.
     /// </returns>
     public override byte[] ReadAsBytes()
     {
@@ -414,7 +414,7 @@ namespace Newtonsoft.Json
         throw CreateReaderException(this, "Unexpected end when reading bytes.");
       }
 
-      if (ReaderIsSerializerInArray())
+      if (TokenType == JsonToken.EndArray)
         return null;
 
       throw CreateReaderException(this, "Unexpected token when reading bytes: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
@@ -423,7 +423,7 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Reads the next JSON token from the stream as a <see cref="Nullable{Decimal}"/>.
     /// </summary>
-    /// <returns>A <see cref="Nullable{Decimal}"/>.</returns>
+    /// <returns>A <see cref="Nullable{Decimal}"/>. This method will return <c>null</c> at the end of an array.</returns>
     public override decimal? ReadAsDecimal()
     {
       _readType = ReadType.ReadAsDecimal;
@@ -454,7 +454,7 @@ namespace Newtonsoft.Json
         }
       }
 
-      if (ReaderIsSerializerInArray())
+      if (TokenType == JsonToken.EndArray)
         return null;
 
       throw CreateReaderException(this, "Unexpected token when reading decimal: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
@@ -463,7 +463,7 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Reads the next JSON token from the stream as a <see cref="Nullable{Int32}"/>.
     /// </summary>
-    /// <returns>A <see cref="Nullable{Int32}"/>.</returns>
+    /// <returns>A <see cref="Nullable{Int32}"/>. This method will return <c>null</c> at the end of an array.</returns>
     public override int? ReadAsInt32()
     {
       _readType = ReadType.ReadAsInt32;
@@ -494,7 +494,7 @@ namespace Newtonsoft.Json
         }
       }
 
-      if (ReaderIsSerializerInArray())
+      if (TokenType == JsonToken.EndArray)
         return null;
 
       throw CreateReaderException(this, "Unexpected token when reading integer: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
@@ -504,7 +504,7 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Reads the next JSON token from the stream as a <see cref="Nullable{DateTimeOffset}"/>.
     /// </summary>
-    /// <returns>A <see cref="DateTimeOffset"/>.</returns>
+    /// <returns>A <see cref="DateTimeOffset"/>. This method will return <c>null</c> at the end of an array.</returns>
     public override DateTimeOffset? ReadAsDateTimeOffset()
     {
       _readType = ReadType.ReadAsDateTimeOffset;
@@ -535,7 +535,7 @@ namespace Newtonsoft.Json
         }
       }
 
-      if (ReaderIsSerializerInArray())
+      if (TokenType == JsonToken.EndArray)
         return null;
 
       throw CreateReaderException(this, "Unexpected token when reading date: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
@@ -1270,7 +1270,10 @@ namespace Newtonsoft.Json
       JsonToken numberType;
 
       bool singleDigit = (char.IsDigit(firstChar) && _stringReference.Length == 1);
-      bool nonBase10 = (firstChar == '0' && _stringReference.Length > 1 && _stringReference.Chars[_stringReference.StartIndex + 1] != '.');
+      bool nonBase10 = (firstChar == '0' && _stringReference.Length > 1
+        && _stringReference.Chars[_stringReference.StartIndex + 1] != '.'
+        && _stringReference.Chars[_stringReference.StartIndex + 1] != 'e'
+        && _stringReference.Chars[_stringReference.StartIndex + 1] != 'E');
 
       if (_readType == ReadType.ReadAsInt32)
       {

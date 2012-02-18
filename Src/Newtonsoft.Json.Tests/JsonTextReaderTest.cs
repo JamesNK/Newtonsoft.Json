@@ -941,7 +941,7 @@ bye", reader.Value);
     public void ReadFloatingPointNumber()
     {
       string json =
-        @"[0.0,0.0,0.1,1.0,1.000001,1E-06,4.94065645841247E-324,Infinity,-Infinity,NaN,1.7976931348623157E+308,-1.7976931348623157E+308,Infinity,-Infinity,NaN]";
+        @"[0.0,0.0,0.1,1.0,1.000001,1E-06,4.94065645841247E-324,Infinity,-Infinity,NaN,1.7976931348623157E+308,-1.7976931348623157E+308,Infinity,-Infinity,NaN,0e-10,0.25e-5,0.3e10]";
 
       using (JsonReader jsonReader = new JsonTextReader(new StringReader(json)))
       {
@@ -1007,6 +1007,18 @@ bye", reader.Value);
         jsonReader.Read();
         Assert.AreEqual(JsonToken.Float, jsonReader.TokenType);
         Assert.AreEqual(double.NaN, jsonReader.Value);
+
+        jsonReader.Read();
+        Assert.AreEqual(JsonToken.Float, jsonReader.TokenType);
+        Assert.AreEqual(0, jsonReader.Value);
+
+        jsonReader.Read();
+        Assert.AreEqual(JsonToken.Float, jsonReader.TokenType);
+        Assert.AreEqual(0.0000025, jsonReader.Value);
+
+        jsonReader.Read();
+        Assert.AreEqual(JsonToken.Float, jsonReader.TokenType);
+        Assert.AreEqual(3000000000, jsonReader.Value);
 
         jsonReader.Read();
         Assert.AreEqual(JsonToken.EndArray, jsonReader.TokenType);
@@ -1932,6 +1944,74 @@ bye", reader.Value);
         Assert.IsTrue(reader.Read());
         Assert.IsTrue(reader.Read());
         reader.Read();
+    }
+
+    [Test]
+    public void ScientificNotation()
+    {
+      double d;
+
+      d = Convert.ToDouble("6.0221418e23");
+      Console.WriteLine(d.ToString(new CultureInfo("fr-FR")));
+      Console.WriteLine(d.ToString("0.#############################################################################"));
+
+      //CultureInfo info = CultureInfo.GetCultureInfo("fr-FR");
+      //Console.WriteLine(info.NumberFormat.NumberDecimalSeparator);
+
+      string json = @"[0e-10,0E-10,0.25e-5,0.3e10,6.0221418e23]";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+      reader.Read();
+
+      reader.Read();
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+      Assert.AreEqual(0, reader.Value);
+
+      reader.Read();
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+      Assert.AreEqual(0, reader.Value);
+
+      reader.Read();
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+      Assert.AreEqual(0.0000025, reader.Value);
+
+      reader.Read();
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+      Assert.AreEqual(3000000000, reader.Value);
+
+      reader.Read();
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+      Assert.AreEqual(602214180000000000000000d, reader.Value);
+
+      reader.Read();
+
+
+      reader = new JsonTextReader(new StringReader(json));
+
+      reader.Read();
+
+      reader.ReadAsDecimal();
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+      Assert.AreEqual(0, reader.Value);
+
+      reader.ReadAsDecimal();
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+      Assert.AreEqual(0, reader.Value);
+
+      reader.ReadAsDecimal();
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+      Assert.AreEqual(0.0000025, reader.Value);
+
+      reader.ReadAsDecimal();
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+      Assert.AreEqual(3000000000, reader.Value);
+
+      reader.ReadAsDecimal();
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+      Assert.AreEqual(602214180000000000000000m, reader.Value);
+
+      reader.Read();
     }
   }
 }

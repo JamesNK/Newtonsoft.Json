@@ -65,7 +65,7 @@ namespace Newtonsoft.Json.Tests
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.String, reader.TokenType);
       Assert.AreEqual("James", reader.Value.ToString());
-      Assert.AreEqual(typeof(string), reader.ValueType);
+      Assert.AreEqual(typeof (string), reader.ValueType);
       Assert.AreEqual('"', reader.QuoteChar);
 
       Assert.IsTrue(reader.Read());
@@ -302,7 +302,7 @@ namespace Newtonsoft.Json.Tests
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSchemaException), ExpectedMessage = "Integer 10 exceeds maximum value of 5. Line 1, position 2.")]
+    [ExpectedException(typeof (JsonSchemaException), ExpectedMessage = "Integer 10 exceeds maximum value of 5. Line 1, position 2.")]
     public void ThrowExceptionWhenNoValidationEventHandler()
     {
       string schemaJson = @"{
@@ -597,13 +597,13 @@ namespace Newtonsoft.Json.Tests
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Boolean, reader.TokenType);
       Assert.AreEqual(@"Value false is not defined in enum. Line 1, position 11.", validationEventArgs.Message);
-      
+
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
 
       Assert.IsNotNull(validationEventArgs);
     }
-    
+
     [Test]
     public void ArrayCountGreaterThanMaximumItems()
     {
@@ -887,7 +887,11 @@ namespace Newtonsoft.Json.Tests
       Json.Schema.ValidationEventArgs validationEventArgs = null;
 
       JsonValidatingReader reader = new JsonValidatingReader(new JsonTextReader(new StringReader(json)));
-      reader.ValidationEventHandler += (sender, args) => { validationEventArgs = args; errors.Add(validationEventArgs.Message); };
+      reader.ValidationEventHandler += (sender, args) =>
+        {
+          validationEventArgs = args;
+          errors.Add(validationEventArgs.Message);
+        };
       reader.Schema = JsonSchema.Parse(schemaJson);
 
       Assert.IsTrue(reader.Read());
@@ -1175,7 +1179,11 @@ namespace Newtonsoft.Json.Tests
       List<string> errors = new List<string>();
 
       JsonValidatingReader reader = new JsonValidatingReader(new JsonTextReader(new StringReader(json)));
-      reader.ValidationEventHandler += (sender, args) => { validationEventArgs = args; errors.Add(validationEventArgs.Message); };
+      reader.ValidationEventHandler += (sender, args) =>
+        {
+          validationEventArgs = args;
+          errors.Add(validationEventArgs.Message);
+        };
       reader.Schema = secondSchema;
 
       Assert.IsTrue(reader.Read());
@@ -1232,7 +1240,7 @@ namespace Newtonsoft.Json.Tests
       Assert.AreEqual("three", reader.Value.ToString());
       Assert.AreEqual(5, errors.Count);
       Assert.AreEqual("String 'three' is less than minimum length of 6. Line 6, position 25.", errors[4]);
-      
+
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
 
@@ -1380,57 +1388,70 @@ namespace Newtonsoft.Json.Tests
     [Test]
     public void ReadAsInt32()
     {
-      JsonSchema s = new JsonSchemaGenerator().Generate(typeof(int));
+      JsonSchema s = new JsonSchemaGenerator().Generate(typeof (int));
 
       JsonReader reader = new JsonValidatingReader(new JsonTextReader(new StringReader(@"1")))
-      {
-        Schema = s
-      };
+        {
+          Schema = s
+        };
       int? i = reader.ReadAsInt32();
 
       Assert.AreEqual(1, i);
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSchemaException), ExpectedMessage = "Integer 5 exceeds maximum value of 2. Line 1, position 1.")]
+    [ExpectedException(typeof (JsonSchemaException), ExpectedMessage = "Integer 5 exceeds maximum value of 2. Line 1, position 1.")]
     public void ReadAsInt32Failure()
     {
-      JsonSchema s = new JsonSchemaGenerator().Generate(typeof(int));
+      JsonSchema s = new JsonSchemaGenerator().Generate(typeof (int));
       s.Maximum = 2;
 
       JsonReader reader = new JsonValidatingReader(new JsonTextReader(new StringReader(@"5")))
-      {
-        Schema = s
-      };
+        {
+          Schema = s
+        };
       reader.ReadAsInt32();
     }
 
     [Test]
     public void ReadAsDecimal()
     {
-      JsonSchema s = new JsonSchemaGenerator().Generate(typeof(decimal));
+      JsonSchema s = new JsonSchemaGenerator().Generate(typeof (decimal));
 
       JsonReader reader = new JsonValidatingReader(new JsonTextReader(new StringReader(@"1.5")))
-      {
-        Schema = s
-      };
+        {
+          Schema = s
+        };
       decimal? d = reader.ReadAsDecimal();
 
       Assert.AreEqual(1.5, d);
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSchemaException), ExpectedMessage = "Float 5.5 is not evenly divisible by 1. Line 1, position 3.")]
+    [ExpectedException(typeof (JsonSchemaException), ExpectedMessage = "Float 5.5 is not evenly divisible by 1. Line 1, position 3.")]
     public void ReadAsDecimalFailure()
     {
-      JsonSchema s = new JsonSchemaGenerator().Generate(typeof(decimal));
+      JsonSchema s = new JsonSchemaGenerator().Generate(typeof (decimal));
       s.DivisibleBy = 1;
 
       JsonReader reader = new JsonValidatingReader(new JsonTextReader(new StringReader(@"5.5")))
-      {
-        Schema = s
-      };
+        {
+          Schema = s
+        };
       reader.ReadAsDecimal();
+    }
+
+    [Test]
+    public void ReadAsInt32FromSerializer()
+    {
+      JsonValidatingReader reader = new JsonValidatingReader(new JsonTextReader(new StringReader("[1,2,3]")));
+      reader.Schema = new JsonSchemaGenerator().Generate(typeof(int[]));
+      int[] values = new JsonSerializer().Deserialize<int[]>(reader);
+
+      Assert.AreEqual(3, values.Length);
+      Assert.AreEqual(1, values[0]);
+      Assert.AreEqual(2, values[1]);
+      Assert.AreEqual(3, values[2]);
     }
   }
 }

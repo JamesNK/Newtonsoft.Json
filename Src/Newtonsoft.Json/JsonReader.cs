@@ -102,13 +102,7 @@ namespace Newtonsoft.Json
     private char _quoteChar;
     internal State _currentState;
     private JTokenType _currentTypeContext;
-    private bool _serializerInArray;
     private CultureInfo _culture;
-
-    internal void SetSerializeInArray(bool serializerInArray)
-    {
-      _serializerInArray = serializerInArray;
-    }
 
     /// <summary>
     /// Gets the current reader state.
@@ -235,26 +229,26 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Reads the next JSON token from the stream as a <see cref="Nullable{Int32}"/>.
     /// </summary>
-    /// <returns>A <see cref="Nullable{Int32}"/>.</returns>
+    /// <returns>A <see cref="Nullable{Int32}"/>. This method will return <c>null</c> at the end of an array.</returns>
     public abstract int? ReadAsInt32();
 
     /// <summary>
     /// Reads the next JSON token from the stream as a <see cref="T:Byte[]"/>.
     /// </summary>
-    /// <returns>A <see cref="T:Byte[]"/> or a null reference if the next JSON token is null.</returns>
+    /// <returns>A <see cref="T:Byte[]"/> or a null reference if the next JSON token is null. This method will return <c>null</c> at the end of an array.</returns>
     public abstract byte[] ReadAsBytes();
 
     /// <summary>
     /// Reads the next JSON token from the stream as a <see cref="Nullable{Decimal}"/>.
     /// </summary>
-    /// <returns>A <see cref="Nullable{Decimal}"/>.</returns>
+    /// <returns>A <see cref="Nullable{Decimal}"/>. This method will return <c>null</c> at the end of an array.</returns>
     public abstract decimal? ReadAsDecimal();
 
 #if !NET20
     /// <summary>
     /// Reads the next JSON token from the stream as a <see cref="Nullable{DateTimeOffset}"/>.
     /// </summary>
-    /// <returns>A <see cref="Nullable{DateTimeOffset}"/>.</returns>
+    /// <returns>A <see cref="Nullable{DateTimeOffset}"/>. This method will return <c>null</c> at the end of an array.</returns>
     public abstract DateTimeOffset? ReadAsDateTimeOffset();
 #endif
 
@@ -432,11 +426,6 @@ namespace Newtonsoft.Json
         default:
           throw new JsonReaderException("Not a valid close JsonToken: {0}".FormatWith(CultureInfo.InvariantCulture, token));
       }
-    }
-
-    internal bool ReaderIsSerializerInArray()
-    {
-      return (TokenType == JsonToken.EndArray && _serializerInArray);
     }
 
     /// <summary>
