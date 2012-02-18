@@ -1453,5 +1453,75 @@ namespace Newtonsoft.Json.Tests
       Assert.AreEqual(2, values[1]);
       Assert.AreEqual(3, values[2]);
     }
+
+    [Test]
+    public void ReadAsInt32InArray()
+    {
+      string schemaJson = @"{
+  ""type"":""array"",
+  ""items"":{
+    ""type"":""integer""
+  },
+  ""maxItems"":1
+}";
+
+      string json = "[1,2]";
+
+      Json.Schema.ValidationEventArgs validationEventArgs = null;
+
+      JsonValidatingReader reader = new JsonValidatingReader(new JsonTextReader(new StringReader(json)));
+      reader.ValidationEventHandler += (sender, args) => { validationEventArgs = args; };
+      reader.Schema = JsonSchema.Parse(schemaJson);
+
+      reader.Read();
+      Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+      reader.ReadAsInt32();
+      Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+      Assert.AreEqual(null, validationEventArgs);
+
+      reader.ReadAsInt32();
+      Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+      Assert.AreEqual(null, validationEventArgs);
+
+      reader.ReadAsInt32();
+      Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+      Assert.AreEqual("Array item count 2 exceeds maximum count of 1. Line 1, position 5.", validationEventArgs.Message);
+    }
+
+    [Test]
+    public void ReadAsInt32InArrayIncomplete()
+    {
+      string schemaJson = @"{
+  ""type"":""array"",
+  ""items"":{
+    ""type"":""integer""
+  },
+  ""maxItems"":1
+}";
+
+      string json = "[1,2";
+
+      Json.Schema.ValidationEventArgs validationEventArgs = null;
+
+      JsonValidatingReader reader = new JsonValidatingReader(new JsonTextReader(new StringReader(json)));
+      reader.ValidationEventHandler += (sender, args) => { validationEventArgs = args; };
+      reader.Schema = JsonSchema.Parse(schemaJson);
+
+      reader.Read();
+      Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+      reader.ReadAsInt32();
+      Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+      Assert.AreEqual(null, validationEventArgs);
+
+      reader.ReadAsInt32();
+      Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+      Assert.AreEqual(null, validationEventArgs);
+
+      reader.ReadAsInt32();
+      Assert.AreEqual(JsonToken.None, reader.TokenType);
+      Assert.AreEqual(null, validationEventArgs);
+    }
   }
 }

@@ -504,6 +504,9 @@ namespace Newtonsoft.Json
         case JsonToken.Bytes:
           // these have no equivalent in JSON schema
           break;
+        case JsonToken.None:
+          // no content, do nothing
+          break;
         default:
           throw new ArgumentOutOfRangeException();
       }

@@ -5180,7 +5180,7 @@ keyword such as type of business.""
     }
 
     [Test]
-    [ExpectedException(typeof (JsonReaderException), ExpectedMessage = "Unexpected end when reading integer. Line 2, position 18.")]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Unexpected end when setting PreProperty's value. Line 2, position 18.")]
     public void DeserializeUnexpectedEndInt()
     {
       string json = @"{
@@ -5297,6 +5297,80 @@ keyword such as type of business.""
       var dict2 = serializer.Deserialize<Dictionary<string, object>>(reader);
 
       Assert.AreEqual(dict["k1"], dict2["k1"]);
+    }
+
+    [Test]
+    public void DeserializeEmptyStrings()
+    {
+      object v = JsonConvert.DeserializeObject<double?>("");
+      Assert.IsNull(v);
+
+      v = JsonConvert.DeserializeObject<char?>("");
+      Assert.IsNull(v);
+
+      v = JsonConvert.DeserializeObject<int?>("");
+      Assert.IsNull(v);
+
+      v = JsonConvert.DeserializeObject<decimal?>("");
+      Assert.IsNull(v);
+
+      v = JsonConvert.DeserializeObject<DateTime?>("");
+      Assert.IsNull(v);
+
+      v = JsonConvert.DeserializeObject<DateTimeOffset?>("");
+      Assert.IsNull(v);
+
+      v = JsonConvert.DeserializeObject<byte[]>("");
+      Assert.IsNull(v);
+    }
+
+    public class Sdfsdf
+    {
+      public double Id { get; set; }
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "No JSON content found and type 'System.Double' is not nullable.")]
+    public void DeserializeDoubleFromEmptyString()
+    {
+      JsonConvert.DeserializeObject<double>("");
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "No JSON content found and type 'System.StringComparison' is not nullable.")]
+    public void DeserializeEnumFromEmptyString()
+    {
+      JsonConvert.DeserializeObject<StringComparison>("");
+    }
+
+    [Test]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "No JSON content found and type 'System.Int32' is not nullable.")]
+    public void DeserializeInt32FromEmptyString()
+    {
+      JsonConvert.DeserializeObject<int>("");
+    }
+
+    [Test]
+    public void DeserializeByteArrayFromEmptyString()
+    {
+      byte[] b = JsonConvert.DeserializeObject<byte[]>("");
+      Assert.IsNull(b);
+    }
+
+    [Test]
+    [ExpectedException(typeof(ArgumentNullException), ExpectedMessage = @"Value cannot be null.
+Parameter name: value")]
+    public void DeserializeDoubleFromNullString()
+    {
+      JsonConvert.DeserializeObject<double>(null);
+    }
+
+    [Test]
+    [ExpectedException(typeof(ArgumentNullException), ExpectedMessage = @"Value cannot be null.
+Parameter name: value")]
+    public void DeserializeFromNullString()
+    {
+      JsonConvert.DeserializeObject(null);
     } 
   }
 

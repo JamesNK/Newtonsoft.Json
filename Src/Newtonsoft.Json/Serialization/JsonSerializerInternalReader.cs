@@ -112,7 +112,12 @@ namespace Newtonsoft.Json.Serialization
       JsonConverter converter = GetConverter(contract, null);
 
       if (reader.TokenType == JsonToken.None && !ReadForType(reader, contract, converter != null, false))
+      {
+        if (!contract.IsNullable)
+          throw new JsonSerializationException("No JSON content found and type '{0}' is not nullable.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+
         return null;
+      }
 
       return CreateValueNonProperty(reader, objectType, contract, converter);
     }
@@ -1114,21 +1119,23 @@ namespace Newtonsoft.Json.Serialization
           return true;
         case ReadType.ReadAsInt32:
           reader.ReadAsInt32();
-          return true;
+          break;
         case ReadType.ReadAsDecimal:
           reader.ReadAsDecimal();
-          return true;
+          break;
         case ReadType.ReadAsBytes:
           reader.ReadAsBytes();
-          return true;
+          break;
 #if !NET20
         case ReadType.ReadAsDateTimeOffset:
           reader.ReadAsDateTimeOffset();
-          return true;
+          break;
 #endif
         default:
           throw new ArgumentOutOfRangeException();
       }
+
+      return (reader.TokenType != JsonToken.None);
     }
 
     private object PopulateObject(object newObject, JsonReader reader, JsonObjectContract contract, string id)

@@ -722,6 +722,8 @@ namespace Newtonsoft.Json
     /// <returns>The deserialized object from the JSON string.</returns>
     public static object DeserializeObject(string value, Type type, JsonSerializerSettings settings)
     {
+      ValidationUtils.ArgumentNotNull(value, "value");
+
       StringReader sr = new StringReader(value);
       JsonSerializer jsonSerializer = JsonSerializer.Create(settings);
 

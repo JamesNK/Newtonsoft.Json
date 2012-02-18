@@ -246,7 +246,7 @@ namespace Newtonsoft.Json.Linq
 
     private bool ReadToEnd()
     {
-      //CurrentState = State.Finished;
+      SetToken(JsonToken.None);
       return false;
     }
 

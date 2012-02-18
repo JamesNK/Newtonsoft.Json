@@ -553,12 +553,13 @@ Parameter name: reader")]
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end when reading bytes. Line 1, position 3.")]
     public void ReadBytesNoStartWithUnexpectedEnd()
     {
       JsonReader reader = new JsonTextReader(new StringReader(@"[  "));
       Assert.IsTrue(reader.Read());
-      reader.ReadAsBytes();
+
+      Assert.IsNull(reader.ReadAsBytes());
+      Assert.AreEqual(JsonToken.None, reader.TokenType);
     }
 
     [Test]
@@ -909,11 +910,11 @@ bye", reader.Value);
       Assert.AreEqual(typeof(string), reader.ValueType);
       Assert.AreEqual(20000, reader.Value.ToString().Length);
 
-      reader.Read();
+      Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
 
-      reader.Read();
-      Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+      Assert.IsFalse(reader.Read());
+      Assert.AreEqual(JsonToken.None, reader.TokenType);
     }
 
     [Test]
@@ -1128,21 +1129,21 @@ bye", reader.Value);
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end when reading decimal. Line 0, position 0.")]
     public void ReadAsDecimalNoContent()
     {
       JsonTextReader reader = new JsonTextReader(new StringReader(@""));
 
-      reader.ReadAsDecimal();
+      Assert.IsNull(reader.ReadAsDecimal());
+      Assert.AreEqual(JsonToken.None, reader.TokenType);
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end when reading bytes. Line 0, position 0.")]
     public void ReadAsBytesNoContent()
     {
       JsonTextReader reader = new JsonTextReader(new StringReader(@""));
 
-      reader.ReadAsBytes();
+      Assert.IsNull(reader.ReadAsBytes());
+      Assert.AreEqual(JsonToken.None, reader.TokenType);
     }
 
     [Test]
@@ -1156,12 +1157,12 @@ bye", reader.Value);
 
 #if !NET20
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected end when reading date. Line 0, position 0.")]
     public void ReadAsDateTimeOffsetNoContent()
     {
       JsonTextReader reader = new JsonTextReader(new StringReader(@""));
 
-      reader.ReadAsDateTimeOffset();
+      Assert.IsNull(reader.ReadAsDateTimeOffset());
+      Assert.AreEqual(JsonToken.None, reader.TokenType);
     }
 #endif
 
@@ -1171,7 +1172,8 @@ bye", reader.Value);
     {
       JsonTextReader reader = new JsonTextReader(new StringReader(@"new Date()"));
 
-      reader.ReadAsDecimal();
+      Assert.IsNull(reader.ReadAsDecimal());
+      Assert.AreEqual(JsonToken.None, reader.TokenType);
     }
 
     [Test]

@@ -327,7 +327,13 @@ namespace Newtonsoft.Json
     public override bool Read()
     {
       _readType = ReadType.Read;
-      return ReadInternal();
+      if (!ReadInternal())
+      {
+        SetToken(JsonToken.None);
+        return false;
+      }
+
+      return true;
     }
 
     private bool IsWrappedInTypeObject()
@@ -371,7 +377,10 @@ namespace Newtonsoft.Json
       do
       {
         if (!ReadInternal())
-          throw CreateReaderException(this, "Unexpected end when reading bytes.");
+        {
+          SetToken(JsonToken.None);
+          return null;
+        }
       } while (TokenType == JsonToken.Comment);
 
       if (IsWrappedInTypeObject())
@@ -431,7 +440,10 @@ namespace Newtonsoft.Json
       do
       {
         if (!ReadInternal())
-          throw CreateReaderException(this, "Unexpected end when reading decimal.");
+        {
+          SetToken(JsonToken.None);
+          return null;
+        }
       } while (TokenType == JsonToken.Comment);
 
       if (TokenType == JsonToken.Float)
@@ -471,7 +483,10 @@ namespace Newtonsoft.Json
       do
       {
         if (!ReadInternal())
-          throw CreateReaderException(this, "Unexpected end when reading integer.");
+        {
+          SetToken(JsonToken.None);
+          return null;
+        }
       } while (TokenType == JsonToken.Comment);
 
       if (TokenType == JsonToken.Integer)
@@ -512,7 +527,10 @@ namespace Newtonsoft.Json
       do
       {
         if (!ReadInternal())
-          throw CreateReaderException(this, "Unexpected end when reading date.");
+        {
+          SetToken(JsonToken.None);
+          return null;
+        }
       } while (TokenType == JsonToken.Comment);
 
       if (TokenType == JsonToken.Date)

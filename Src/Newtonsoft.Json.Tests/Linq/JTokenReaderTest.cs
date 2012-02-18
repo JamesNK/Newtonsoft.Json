@@ -97,6 +97,7 @@ namespace Newtonsoft.Json.Tests.Linq
         Assert.AreEqual(JsonToken.EndObject, jsonReader.TokenType);
 
         Assert.IsFalse(jsonReader.Read());
+        Assert.AreEqual(JsonToken.None, jsonReader.TokenType);
       }
 
       using (JsonReader jsonReader = new JTokenReader(o.Property("Test2")))
@@ -110,6 +111,7 @@ namespace Newtonsoft.Json.Tests.Linq
         Assert.AreEqual(new DateTimeOffset(2000, 10, 15, 5, 5, 5, new TimeSpan(11, 11, 0)), jsonReader.Value);
 
         Assert.IsFalse(jsonReader.Read());
+        Assert.AreEqual(JsonToken.None, jsonReader.TokenType);
       }
     }
 
@@ -255,6 +257,9 @@ namespace Newtonsoft.Json.Tests.Linq
         Assert.AreEqual(0, lineInfo.LineNumber);
         Assert.AreEqual(0, lineInfo.LinePosition);
         Assert.AreEqual(false, lineInfo.HasLineInfo());
+
+        jsonReader.Read();
+        Assert.AreEqual(jsonReader.TokenType, JsonToken.None);
       }
     }
 
@@ -284,6 +289,7 @@ namespace Newtonsoft.Json.Tests.Linq
         Assert.AreEqual(JsonToken.EndObject, jsonReader.TokenType);
 
         Assert.IsFalse(jsonReader.Read());
+        Assert.AreEqual(JsonToken.None, jsonReader.TokenType);
       }
     }
 

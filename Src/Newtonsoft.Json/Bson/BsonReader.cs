@@ -350,26 +350,40 @@ namespace Newtonsoft.Json.Bson
     {
       try
       {
+        bool success;
+
         switch (_bsonReaderState)
         {
           case BsonReaderState.Normal:
-            return ReadNormal();
+            success = ReadNormal();
+            break;
           case BsonReaderState.ReferenceStart:
           case BsonReaderState.ReferenceRef:
           case BsonReaderState.ReferenceId:
-            return ReadReference();
+            success = ReadReference();
+            break;
           case BsonReaderState.CodeWScopeStart:
           case BsonReaderState.CodeWScopeCode:
           case BsonReaderState.CodeWScopeScope:
           case BsonReaderState.CodeWScopeScopeObject:
           case BsonReaderState.CodeWScopeScopeEnd:
-            return ReadCodeWScope();
+            success = ReadCodeWScope();
+            break;
           default:
             throw CreateReaderException(this, "Unexpected state: {0}".FormatWith(CultureInfo.InvariantCulture, _bsonReaderState));
         }
+
+        if (!success)
+        {
+          SetToken(JsonToken.None);
+          return false;
+        }
+
+        return true;
       }
       catch (EndOfStreamException)
       {
+        SetToken(JsonToken.None);
         return false;
       }
     }
