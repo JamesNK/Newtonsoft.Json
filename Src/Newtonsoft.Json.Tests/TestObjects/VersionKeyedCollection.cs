@@ -50,7 +50,7 @@ namespace Newtonsoft.Json.Tests.TestObjects
     [OnError]
     internal void OnErrorMethod(StreamingContext context, ErrorContext errorContext)
     {
-      Messages.Add("Error message for member " + errorContext.Member + " = " + errorContext.Error.Message);
+      Messages.Add(errorContext.Path + " - Error message for member " + errorContext.Member + " = " + errorContext.Error.Message);
       errorContext.Handled = true;
     }
 

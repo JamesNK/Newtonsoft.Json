@@ -160,9 +160,8 @@ namespace Newtonsoft.Json
       StateArray = BuildStateArray();
     }
 
-    private int _top;
-
-    private readonly List<JTokenType> _stack;
+    private readonly List<JsonPosition> _stack;
+    private JsonPosition _currentPosition;
     private State _currentState;
     private Formatting _formatting;
 
@@ -182,9 +181,31 @@ namespace Newtonsoft.Json
     /// <value>The top.</value>
     protected internal int Top
     {
-      get { return _top; }
+      get
+      {
+        int depth = _stack.Count;
+        if (Peek() != JsonContainerType.None)
+          depth++;
+
+        return depth;
+      }
     }
 
+    internal string ContainerPath
+    {
+      get
+      {
+        if (_currentPosition.Type == JsonContainerType.None)
+          return string.Empty;
+
+        IEnumerable<JsonPosition> positions = (_currentPosition.InsideContainer())
+          ? _stack
+          : _stack.Concat(new[] { _currentPosition });
+
+        return JsonPosition.BuildPath(positions);
+      }
+    }
+    
     /// <summary>
     /// Gets the state of the writer.
     /// </summary>
@@ -218,6 +239,20 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
+    /// Gets the path of the writer. 
+    /// </summary>
+    public string Path
+    {
+      get
+      {
+        if (_currentPosition.Type == JsonContainerType.None)
+          return string.Empty;
+
+        return JsonPosition.BuildPath(_stack.Concat(new[] { _currentPosition }));
+      }
+    }
+
+    /// <summary>
     /// Indicates how the output is formatted.
     /// </summary>
     public Formatting Formatting
@@ -231,34 +266,65 @@ namespace Newtonsoft.Json
     /// </summary>
     protected JsonWriter()
     {
-      _stack = new List<JTokenType>(8);
-      _stack.Add(JTokenType.None);
+      _stack = new List<JsonPosition>(4);
       _currentState = State.Start;
       _formatting = Formatting.None;
 
       CloseOutput = true;
     }
 
-    private void Push(JTokenType value)
+    private void UpdateScopeWithFinishedValue()
     {
-      _top++;
-      if (_stack.Count <= _top)
-        _stack.Add(value);
+      if (_currentPosition.Type == JsonContainerType.Array
+        || _currentPosition.Type == JsonContainerType.Constructor)
+      {
+        if (_currentPosition.Position == null)
+          _currentPosition.Position = 0;
+        else
+          _currentPosition.Position++;
+      }
+    }
+
+    private void Push(JsonContainerType value)
+    {
+      UpdateScopeWithFinishedValue();
+
+      if (_currentPosition.Type == JsonContainerType.None)
+      {
+        _currentPosition.Type = value;
+      }
       else
-        _stack[_top] = value;
+      {
+        _stack.Add(_currentPosition);
+        var state = new JsonPosition
+        {
+          Type = value
+        };
+        _currentPosition = state;
+      }
     }
 
-    private JTokenType Pop()
+    private JsonContainerType Pop()
     {
-      JTokenType value = Peek();
-      _top--;
+      JsonPosition oldPosition;
+      if (_stack.Count > 0)
+      {
+        oldPosition = _currentPosition;
+        _currentPosition = _stack[_stack.Count - 1];
+        _stack.RemoveAt(_stack.Count - 1);
+      }
+      else
+      {
+        oldPosition = _currentPosition;
+        _currentPosition = new JsonPosition();
+      }
 
-      return value;
+      return oldPosition.Type;
     }
 
-    private JTokenType Peek()
+    private JsonContainerType Peek()
     {
-      return _stack[_top];
+      return _currentPosition.Type;
     }
 
     /// <summary>
@@ -280,7 +346,7 @@ namespace Newtonsoft.Json
     public virtual void WriteStartObject()
     {
       AutoComplete(JsonToken.StartObject);
-      Push(JTokenType.Object);
+      Push(JsonContainerType.Object);
     }
 
     /// <summary>
@@ -297,7 +363,7 @@ namespace Newtonsoft.Json
     public virtual void WriteStartArray()
     {
       AutoComplete(JsonToken.StartArray);
-      Push(JTokenType.Array);
+      Push(JsonContainerType.Array);
     }
 
     /// <summary>
@@ -315,7 +381,7 @@ namespace Newtonsoft.Json
     public virtual void WriteStartConstructor(string name)
     {
       AutoComplete(JsonToken.StartConstructor);
-      Push(JTokenType.Constructor);
+      Push(JsonContainerType.Constructor);
     }
 
     /// <summary>
@@ -332,6 +398,7 @@ namespace Newtonsoft.Json
     /// <param name="name">The name of the property.</param>
     public virtual void WritePropertyName(string name)
     {
+      _currentPosition.PropertyName = name;
       AutoComplete(JsonToken.PropertyName);
     }
 
@@ -482,17 +549,17 @@ namespace Newtonsoft.Json
       }
     }
 
-    private void WriteEnd(JTokenType type)
+    private void WriteEnd(JsonContainerType type)
     {
       switch (type)
       {
-        case JTokenType.Object:
+        case JsonContainerType.Object:
           WriteEndObject();
           break;
-        case JTokenType.Array:
+        case JsonContainerType.Array:
           WriteEndArray();
           break;
-        case JTokenType.Constructor:
+        case JsonContainerType.Constructor:
           WriteEndConstructor();
           break;
         default:
@@ -502,36 +569,36 @@ namespace Newtonsoft.Json
 
     private void AutoCompleteAll()
     {
-      while (_top > 0)
+      while (Top > 0)
       {
         WriteEnd();
       }
     }
 
-    private JTokenType GetTypeForCloseToken(JsonToken token)
+    private JsonContainerType GetTypeForCloseToken(JsonToken token)
     {
       switch (token)
       {
         case JsonToken.EndObject:
-          return JTokenType.Object;
+          return JsonContainerType.Object;
         case JsonToken.EndArray:
-          return JTokenType.Array;
+          return JsonContainerType.Array;
         case JsonToken.EndConstructor:
-          return JTokenType.Constructor;
+          return JsonContainerType.Constructor;
         default:
           throw new JsonWriterException("No type for token: " + token);
       }
     }
 
-    private JsonToken GetCloseTokenForType(JTokenType type)
+    private JsonToken GetCloseTokenForType(JsonContainerType type)
     {
       switch (type)
       {
-        case JTokenType.Object:
+        case JsonContainerType.Object:
           return JsonToken.EndObject;
-        case JTokenType.Array:
+        case JsonContainerType.Array:
           return JsonToken.EndArray;
-        case JTokenType.Constructor:
+        case JsonContainerType.Constructor:
           return JsonToken.EndConstructor;
         default:
           throw new JsonWriterException("No close token for type: " + type);
@@ -543,15 +610,24 @@ namespace Newtonsoft.Json
       // write closing symbol and calculate new state
 
       int levelsToComplete = 0;
+      JsonContainerType type = GetTypeForCloseToken(tokenBeingClosed);
 
-      for (int i = 0; i < _top; i++)
+      if (_currentPosition.Type == type)
       {
-        int currentLevel = _top - i;
-
-        if (_stack[currentLevel] == GetTypeForCloseToken(tokenBeingClosed))
+        levelsToComplete = 1;
+      }
+      else
+      {
+        int top = Top - 2;
+        for (int i = top; i >= 0; i--)
         {
-          levelsToComplete = i + 1;
-          break;
+          int currentLevel = top - i;
+
+          if (_stack[currentLevel].Type == type)
+          {
+            levelsToComplete = i + 2;
+            break;
+          }
         }
       }
 
@@ -569,26 +645,26 @@ namespace Newtonsoft.Json
         }
 
         WriteEnd(token);
-      }
 
-      JTokenType currentLevelType = Peek();
+        JsonContainerType currentLevelType = Peek();
 
-      switch (currentLevelType)
-      {
-        case JTokenType.Object:
-          _currentState = State.Object;
-          break;
-        case JTokenType.Array:
-          _currentState = State.Array;
-          break;
-        case JTokenType.Constructor:
-          _currentState = State.Array;
-          break;
-        case JTokenType.None:
-          _currentState = State.Start;
-          break;
-        default:
-          throw new JsonWriterException("Unknown JsonType: " + currentLevelType);
+        switch (currentLevelType)
+        {
+          case JsonContainerType.Object:
+            _currentState = State.Object;
+            break;
+          case JsonContainerType.Array:
+            _currentState = State.Array;
+            break;
+          case JsonContainerType.Constructor:
+            _currentState = State.Array;
+            break;
+          case JsonContainerType.None:
+            _currentState = State.Start;
+            break;
+          default:
+            throw new JsonWriterException("Unknown JsonType: " + currentLevelType);
+        }
       }
     }
 
@@ -623,11 +699,18 @@ namespace Newtonsoft.Json
 
     internal void AutoComplete(JsonToken tokenBeingWritten)
     {
+      if (tokenBeingWritten != JsonToken.StartObject
+        && tokenBeingWritten != JsonToken.StartArray
+        && tokenBeingWritten != JsonToken.StartConstructor)
+        UpdateScopeWithFinishedValue();
+
       // gets new state based on the current state and what is being written
       State newState = StateArray[(int)tokenBeingWritten][(int)_currentState];
 
       if (newState == State.Error)
+      {
         throw new JsonWriterException("Token {0} in state {1} would result in an invalid JSON object.".FormatWith(CultureInfo.InvariantCulture, tokenBeingWritten.ToString(), _currentState.ToString()));
+      }
 
       if ((_currentState == State.Object || _currentState == State.Array || _currentState == State.Constructor) && tokenBeingWritten != JsonToken.Comment)
       {

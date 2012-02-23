@@ -79,10 +79,10 @@ namespace Newtonsoft.Json.Serialization
       }
     }
 
-    protected ErrorContext GetErrorContext(object currentObject, object member, Exception error)
+    protected ErrorContext GetErrorContext(object currentObject, object member, string path, Exception error)
     {
       if (_currentErrorContext == null)
-        _currentErrorContext = new ErrorContext(currentObject, member, error);
+        _currentErrorContext = new ErrorContext(currentObject, member, path, error);
 
       if (_currentErrorContext.Error != error)
         throw new InvalidOperationException("Current error context error is different to requested error.");
@@ -98,9 +98,9 @@ namespace Newtonsoft.Json.Serialization
       _currentErrorContext = null;
     }
 
-    protected bool IsErrorHandled(object currentObject, JsonContract contract, object keyValue, Exception ex)
+    protected bool IsErrorHandled(object currentObject, JsonContract contract, object keyValue, string path, Exception ex)
     {
-      ErrorContext errorContext = GetErrorContext(currentObject, keyValue, ex);
+      ErrorContext errorContext = GetErrorContext(currentObject, keyValue, path, ex);
       contract.InvokeOnError(currentObject, Serializer.Context, errorContext);
 
       if (!errorContext.Handled)

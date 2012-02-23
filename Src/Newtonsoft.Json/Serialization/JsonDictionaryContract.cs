@@ -42,8 +42,16 @@ namespace Newtonsoft.Json.Serialization
     /// <value>The property name resolver.</value>
     public Func<string, string> PropertyNameResolver { get; set; }
 
-    internal Type DictionaryKeyType { get; private set; }
-    internal Type DictionaryValueType { get; private set; }
+    /// <summary>
+    /// Gets the <see cref="Type"/> of the dictionary keys.
+    /// </summary>
+    /// <value>The <see cref="Type"/> of the dictionary keys.</value>
+    public Type DictionaryKeyType { get; private set; }
+    /// <summary>
+    /// Gets the <see cref="Type"/> of the dictionary values.
+    /// </summary>
+    /// <value>The <see cref="Type"/> of the dictionary values.</value>
+    public Type DictionaryValueType { get; private set; }
 
     internal JsonContract DictionaryKeyContract { get; set; }
     internal JsonContract DictionaryValueContract { get; set; }

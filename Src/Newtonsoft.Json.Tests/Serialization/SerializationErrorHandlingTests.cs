@@ -57,7 +57,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       VersionKeyedCollection c = JsonConvert.DeserializeObject<VersionKeyedCollection>(json);
       Assert.AreEqual(1, c.Count);
       Assert.AreEqual(1, c.Messages.Count);
-      Assert.AreEqual("Error message for member 1 = An item with the same key has already been added.", c.Messages[0]);
+      Assert.AreEqual("[1] - Error message for member 1 = An item with the same key has already been added.", c.Messages[0]);
     }
 
     [Test]
@@ -161,7 +161,8 @@ namespace Newtonsoft.Json.Tests.Serialization
     {
       List<string> errors = new List<string>();
 
-      List<DateTime> c = JsonConvert.DeserializeObject<List<DateTime>>(@"[
+      List<DateTime> c = JsonConvert.DeserializeObject<List<DateTime>>(
+        @"[
         ""2009-09-09T00:00:00Z"",
         ""I am not a date and will error!"",
         [
@@ -175,10 +176,10 @@ namespace Newtonsoft.Json.Tests.Serialization
           {
             Error = delegate(object sender, ErrorEventArgs args)
               {
-                errors.Add(args.ErrorContext.Error.Message);
+                errors.Add(args.ErrorContext.Path + " - " + args.ErrorContext.Member + " - " + args.ErrorContext.Error.Message);
                 args.ErrorContext.Handled = true;
               },
-            Converters = { new IsoDateTimeConverter() }
+            Converters = {new IsoDateTimeConverter()}
           });
 
       // 2009-09-09T00:00:00Z
@@ -196,12 +197,12 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       Assert.AreEqual(3, errors.Count);
 #if !(NET20 || NET35 || WINDOWS_PHONE)
-      Assert.AreEqual("The string was not recognized as a valid DateTime. There is an unknown word starting at index 0.", errors[0]);
+      Assert.AreEqual("[1] - 1 - The string was not recognized as a valid DateTime. There is an unknown word starting at index 0.", errors[0]);
 #else
-      Assert.AreEqual("The string was not recognized as a valid DateTime. There is a unknown word starting at index 0.", errors[0]);
+      Assert.AreEqual("[1] - 1 - The string was not recognized as a valid DateTime. There is a unknown word starting at index 0.", errors[0]);
 #endif
-      Assert.AreEqual("Unexpected token parsing date. Expected String, got StartArray.", errors[1]);
-      Assert.AreEqual("Cannot convert null value to System.DateTime.", errors[2]);
+      Assert.AreEqual("[2] - 2 - Unexpected token parsing date. Expected String, got StartArray.", errors[1]);
+      Assert.AreEqual("[4] - 4 - Cannot convert null value to System.DateTime.", errors[2]);
     }
 
     [Test]
@@ -209,7 +210,8 @@ namespace Newtonsoft.Json.Tests.Serialization
     {
       bool eventErrorHandlerCalled = false;
 
-      DateTimeErrorObjectCollection c = JsonConvert.DeserializeObject<DateTimeErrorObjectCollection>(@"[
+      DateTimeErrorObjectCollection c = JsonConvert.DeserializeObject<DateTimeErrorObjectCollection>(
+        @"[
   ""2009-09-09T00:00:00Z"",
   ""kjhkjhkjhkjh"",
   [
@@ -220,13 +222,13 @@ namespace Newtonsoft.Json.Tests.Serialization
   ""2000-12-01T00:00:00Z""
 ]",
         new JsonSerializerSettings
-        {
-          Error = (s, a) => eventErrorHandlerCalled = true,
-          Converters =
+          {
+            Error = (s, a) => eventErrorHandlerCalled = true,
+            Converters =
               {
                 new IsoDateTimeConverter()
               }
-        });
+          });
 
       Assert.AreEqual(3, c.Count);
       Assert.AreEqual(new DateTime(2009, 9, 9, 0, 0, 0, DateTimeKind.Utc), c[0]);
@@ -270,25 +272,76 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       string json = @"[[""kjhkjhkjhkjh""]]";
 
+      Exception e = null;
       try
       {
         JsonSerializer serializer = new JsonSerializer();
         serializer.Error += delegate(object sender, ErrorEventArgs args)
-          {
-            // only log an error once
-            if (args.CurrentObject == args.ErrorContext.OriginalObject)
-              errors.Add(args.ErrorContext.Error.Message);
-          };
+        {
+          // only log an error once
+          if (args.CurrentObject == args.ErrorContext.OriginalObject)
+            errors.Add(args.ErrorContext.Path + " - " + args.ErrorContext.Member + " - " + args.ErrorContext.Error.Message);
+        };
 
         serializer.Deserialize(new StringReader(json), typeof(List<List<DateTime>>));
       }
       catch (Exception ex)
       {
-        Console.WriteLine(ex.Message);
+        e = ex;
       }
 
+      Assert.AreEqual(@"Error converting value ""kjhkjhkjhkjh"" to type 'System.DateTime'. Line 1, position 16.", e.Message);
+
       Assert.AreEqual(1, errors.Count);
-      Assert.AreEqual(@"Error converting value ""kjhkjhkjhkjh"" to type 'System.DateTime'. Line 1, position 16.", errors[0]);
+      Assert.AreEqual(@"[0][0] - 0 - Error converting value ""kjhkjhkjhkjh"" to type 'System.DateTime'. Line 1, position 16.", errors[0]);
     }
+
+    [Test]
+    public void MultipleRequiredPropertyErrors()
+    {
+      string json = "{}";
+      List<string> errors = new List<string>();
+      JsonSerializer serializer = new JsonSerializer();
+      serializer.Error += delegate(object sender, ErrorEventArgs args)
+        {
+          errors.Add(args.ErrorContext.Path + " - " + args.ErrorContext.Member + " - " + args.ErrorContext.Error.Message);
+          args.ErrorContext.Handled = true;
+        };
+      serializer.Deserialize(new JsonTextReader(new StringReader(json)), typeof (MyTypeWithRequiredMembers));
+      
+      Assert.AreEqual(2, errors.Count);
+      Assert.AreEqual(" - Required1 - Required property 'Required1' not found in JSON. Line 1, position 2.", errors[0]);
+      Assert.AreEqual(" - Required2 - Required property 'Required2' not found in JSON. Line 1, position 2.", errors[1]);
+    }
+
+    [Test]
+    public void HandlingArrayErrors()
+    {
+      string json = "[\"a\",\"b\",\"45\",34]";
+
+      List<string> errors = new List<string>();
+
+      JsonSerializer serializer = new JsonSerializer();
+      serializer.Error += delegate(object sender, ErrorEventArgs args)
+      {
+        errors.Add(args.ErrorContext.Path + " - " + args.ErrorContext.Member + " - " + args.ErrorContext.Error.Message);
+        args.ErrorContext.Handled = true;
+      };
+
+      serializer.Deserialize(new JsonTextReader(new StringReader(json)), typeof(int[]));
+
+      Assert.AreEqual(2, errors.Count);
+      Assert.AreEqual("[0] - 0 - Could not convert string to integer: a. Line 1, position 4.", errors[0]);
+      Assert.AreEqual("[1] - 1 - Could not convert string to integer: b. Line 1, position 8.", errors[1]);
+    }
+  }
+
+  [JsonObject]
+  public class MyTypeWithRequiredMembers
+  {
+    [JsonProperty(Required = Required.AllowNull)]
+    public string Required1;
+    [JsonProperty(Required = Required.AllowNull)]
+    public string Required2;
   }
 }

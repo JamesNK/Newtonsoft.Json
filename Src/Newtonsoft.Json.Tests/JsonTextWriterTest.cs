@@ -200,6 +200,85 @@ namespace Newtonsoft.Json.Tests
     }
 
     [Test]
+    public void WriteEnd()
+    {
+      StringBuilder sb = new StringBuilder();
+      StringWriter sw = new StringWriter(sb);
+
+      using (JsonWriter jsonWriter = new JsonTextWriter(sw))
+      {
+        jsonWriter.Formatting = Formatting.Indented;
+
+        jsonWriter.WriteStartObject();
+        jsonWriter.WritePropertyName("CPU");
+        jsonWriter.WriteValue("Intel");
+        jsonWriter.WritePropertyName("PSU");
+        jsonWriter.WriteValue("500W");
+        jsonWriter.WritePropertyName("Drives");
+        jsonWriter.WriteStartArray();
+        jsonWriter.WriteValue("DVD read/writer");
+        jsonWriter.WriteComment("(broken)");
+        jsonWriter.WriteValue("500 gigabyte hard drive");
+        jsonWriter.WriteValue("200 gigabype hard drive");
+        jsonWriter.WriteEndObject();
+        Assert.AreEqual(WriteState.Start, jsonWriter.WriteState);
+      }
+
+      string expected = @"{
+  ""CPU"": ""Intel"",
+  ""PSU"": ""500W"",
+  ""Drives"": [
+    ""DVD read/writer""
+    /*(broken)*/,
+    ""500 gigabyte hard drive"",
+    ""200 gigabype hard drive""
+  ]
+}";
+      string result = sb.ToString();
+
+      Assert.AreEqual(expected, result);
+    }
+
+    [Test]
+    public void CloseWithRemainingContent()
+    {
+      StringBuilder sb = new StringBuilder();
+      StringWriter sw = new StringWriter(sb);
+
+      using (JsonWriter jsonWriter = new JsonTextWriter(sw))
+      {
+        jsonWriter.Formatting = Formatting.Indented;
+
+        jsonWriter.WriteStartObject();
+        jsonWriter.WritePropertyName("CPU");
+        jsonWriter.WriteValue("Intel");
+        jsonWriter.WritePropertyName("PSU");
+        jsonWriter.WriteValue("500W");
+        jsonWriter.WritePropertyName("Drives");
+        jsonWriter.WriteStartArray();
+        jsonWriter.WriteValue("DVD read/writer");
+        jsonWriter.WriteComment("(broken)");
+        jsonWriter.WriteValue("500 gigabyte hard drive");
+        jsonWriter.WriteValue("200 gigabype hard drive");
+        jsonWriter.Close();
+      }
+
+      string expected = @"{
+  ""CPU"": ""Intel"",
+  ""PSU"": ""500W"",
+  ""Drives"": [
+    ""DVD read/writer""
+    /*(broken)*/,
+    ""500 gigabyte hard drive"",
+    ""200 gigabype hard drive""
+  ]
+}";
+      string result = sb.ToString();
+
+      Assert.AreEqual(expected, result);
+    }
+
+    [Test]
     public void Indenting()
     {
       StringBuilder sb = new StringBuilder();
@@ -222,6 +301,7 @@ namespace Newtonsoft.Json.Tests
         jsonWriter.WriteValue("200 gigabype hard drive");
         jsonWriter.WriteEnd();
         jsonWriter.WriteEndObject();
+        Assert.AreEqual(WriteState.Start, jsonWriter.WriteState);
       }
 
       // {
@@ -247,9 +327,6 @@ namespace Newtonsoft.Json.Tests
 }";
       string result = sb.ToString();
 
-      Console.WriteLine("Indenting");
-      Console.WriteLine(result);
-
       Assert.AreEqual(expected, result);
     }
 
@@ -265,27 +342,34 @@ namespace Newtonsoft.Json.Tests
 
         jsonWriter.WriteStartObject();
         Assert.AreEqual(WriteState.Object, jsonWriter.WriteState);
+        Assert.AreEqual("", jsonWriter.Path);
 
         jsonWriter.WritePropertyName("CPU");
         Assert.AreEqual(WriteState.Property, jsonWriter.WriteState);
+        Assert.AreEqual("CPU", jsonWriter.Path);
 
         jsonWriter.WriteValue("Intel");
         Assert.AreEqual(WriteState.Object, jsonWriter.WriteState);
+        Assert.AreEqual("CPU", jsonWriter.Path);
 
         jsonWriter.WritePropertyName("Drives");
         Assert.AreEqual(WriteState.Property, jsonWriter.WriteState);
+        Assert.AreEqual("Drives", jsonWriter.Path);
 
         jsonWriter.WriteStartArray();
         Assert.AreEqual(WriteState.Array, jsonWriter.WriteState);
 
         jsonWriter.WriteValue("DVD read/writer");
         Assert.AreEqual(WriteState.Array, jsonWriter.WriteState);
+        Assert.AreEqual("Drives[0]", jsonWriter.Path);
 
         jsonWriter.WriteEnd();
         Assert.AreEqual(WriteState.Object, jsonWriter.WriteState);
+        Assert.AreEqual("Drives", jsonWriter.Path);
 
         jsonWriter.WriteEndObject();
         Assert.AreEqual(WriteState.Start, jsonWriter.WriteState);
+        Assert.AreEqual("", jsonWriter.Path);
       }
     }
 
@@ -618,6 +702,79 @@ _____'propertyName': NaN
       string result = sb.ToString();
 
       Assert.AreEqual(expected, result);
+    }
+
+    [Test]
+    public void Path()
+    {
+      StringBuilder sb = new StringBuilder();
+      StringWriter sw = new StringWriter(sb);
+
+      string text = "Hello world.";
+      byte[] data = Encoding.UTF8.GetBytes(text);
+
+      using (JsonTextWriter writer = new JsonTextWriter(sw))
+      {
+        writer.Formatting = Formatting.Indented;
+
+        writer.WriteStartArray();
+        Assert.AreEqual("", writer.Path);
+        writer.WriteStartObject();
+        Assert.AreEqual("[0]", writer.Path);
+        writer.WritePropertyName("Property1");
+        Assert.AreEqual("[0].Property1", writer.Path);
+        writer.WriteStartArray();
+        Assert.AreEqual("[0].Property1", writer.Path);
+        writer.WriteValue(1);
+        Assert.AreEqual("[0].Property1[0]", writer.Path);
+        writer.WriteStartArray();
+        Assert.AreEqual("[0].Property1[1]", writer.Path);
+        writer.WriteStartArray();
+        Assert.AreEqual("[0].Property1[1][0]", writer.Path);
+        writer.WriteStartArray();
+        Assert.AreEqual("[0].Property1[1][0][0]", writer.Path);
+        writer.WriteEndObject();
+        Assert.AreEqual("[0]", writer.Path);
+        writer.WriteStartObject();
+        Assert.AreEqual("[1]", writer.Path);
+        writer.WritePropertyName("Property2");
+        Assert.AreEqual("[1].Property2", writer.Path);
+        writer.WriteStartConstructor("Constructor1");
+        Assert.AreEqual("[1].Property2", writer.Path);
+        writer.WriteNull();
+        Assert.AreEqual("[1].Property2[0]", writer.Path);
+        writer.WriteStartArray();
+        Assert.AreEqual("[1].Property2[1]", writer.Path);
+        writer.WriteValue(1);
+        Assert.AreEqual("[1].Property2[1][0]", writer.Path);
+        writer.WriteEnd();
+        Assert.AreEqual("[1].Property2[1]", writer.Path);
+        writer.WriteEndObject();
+        Assert.AreEqual("[1]", writer.Path);
+        writer.WriteEndArray();
+        Assert.AreEqual("", writer.Path);
+      }
+
+      Assert.AreEqual(@"[
+  {
+    ""Property1"": [
+      1,
+      [
+        [
+          []
+        ]
+      ]
+    ]
+  },
+  {
+    ""Property2"": new Constructor1(
+      null,
+      [
+        1
+      ]
+    )
+  }
+]", sb.ToString());
     }
 
     [Test]

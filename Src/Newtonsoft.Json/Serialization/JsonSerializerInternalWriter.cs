@@ -330,7 +330,7 @@ namespace Newtonsoft.Json.Serialization
         }
         catch (Exception ex)
         {
-          if (IsErrorHandled(value, contract, property.PropertyName, ex))
+          if (IsErrorHandled(value, contract, property.PropertyName, writer.ContainerPath, ex))
             HandleError(writer, initialDepth);
           else
             throw;
@@ -439,7 +439,7 @@ namespace Newtonsoft.Json.Serialization
         }
         catch (Exception ex)
         {
-          if (IsErrorHandled(values.UnderlyingCollection, contract, index, ex))
+          if (IsErrorHandled(values.UnderlyingCollection, contract, index, writer.ContainerPath, ex))
             HandleError(writer, initialDepth);
           else
             throw;
@@ -614,7 +614,7 @@ namespace Newtonsoft.Json.Serialization
         }
         catch (Exception ex)
         {
-          if (IsErrorHandled(values.UnderlyingDictionary, contract, propertyName, ex))
+          if (IsErrorHandled(values.UnderlyingDictionary, contract, propertyName, writer.ContainerPath, ex))
             HandleError(writer, initialDepth);
           else
             throw;

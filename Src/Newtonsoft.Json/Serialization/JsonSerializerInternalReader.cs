@@ -712,7 +712,7 @@ namespace Newtonsoft.Json.Serialization
             }
             catch (Exception ex)
             {
-              if (IsErrorHandled(dictionary, contract, keyValue, ex))
+              if (IsErrorHandled(dictionary, contract, keyValue, reader.Path, ex))
                 HandleError(reader, initialDepth);
               else
                 throw;
@@ -767,39 +767,47 @@ namespace Newtonsoft.Json.Serialization
       contract.InvokeOnDeserializing(list, Serializer.Context);
 
       int initialDepth = reader.Depth;
+      int index = 0;
 
       JsonContract collectionItemContract = GetContractSafe(contract.CollectionItemType);
       JsonConverter collectionItemConverter = GetConverter(collectionItemContract, null);
 
-      while (ReadForType(reader, collectionItemContract, collectionItemConverter != null, true))
+      while (true)
       {
-        switch (reader.TokenType)
+        try
         {
-          case JsonToken.EndArray:
-            contract.InvokeOnDeserialized(list, Serializer.Context);
-
-            return wrappedList.UnderlyingCollection;
-          case JsonToken.Comment:
-            break;
-          default:
-            try
+          if (ReadForType(reader, collectionItemContract, collectionItemConverter != null, true))
+          {
+            switch (reader.TokenType)
             {
-              object value = CreateValueNonProperty(reader, contract.CollectionItemType, collectionItemContract, collectionItemConverter);
+              case JsonToken.EndArray:
+                contract.InvokeOnDeserialized(list, Serializer.Context);
 
-              wrappedList.Add(value);
+                return wrappedList.UnderlyingCollection;
+              case JsonToken.Comment:
+                break;
+              default:
+                object value = CreateValueNonProperty(reader, contract.CollectionItemType, collectionItemContract, collectionItemConverter);
+
+                wrappedList.Add(value);
+                break;
             }
-            catch (Exception ex)
-            {
-              if (IsErrorHandled(list, contract, wrappedList.Count, ex))
-              {
-                HandleError(reader, initialDepth);
-              }
-              else
-              {
-                throw;
-              }
-            }
+          }
+          else
+          {
             break;
+          }
+        }
+        catch (Exception ex)
+        {
+          if (IsErrorHandled(list, contract, index, reader.Path, ex))
+            HandleError(reader, initialDepth);
+          else
+            throw;
+        }
+        finally
+        {
+          index++;
         }
       }
 
@@ -911,7 +919,7 @@ namespace Newtonsoft.Json.Serialization
             }
             catch (Exception ex)
             {
-              if (IsErrorHandled(newObject, contract, memberName, ex))
+              if (IsErrorHandled(newObject, contract, memberName, reader.Path, ex))
                 HandleError(reader, initialDepth);
               else
                 throw;
@@ -1155,71 +1163,88 @@ namespace Newtonsoft.Json.Serialization
         switch (reader.TokenType)
         {
           case JsonToken.PropertyName:
-            string memberName = reader.Value.ToString();
-
-            try
             {
-              // attempt exact case match first
-              // then try match ignoring case
-              JsonProperty property = contract.Properties.GetClosestMatchProperty(memberName);
+              string memberName = reader.Value.ToString();
 
-              if (property == null)
+              try
               {
-                if (Serializer.MissingMemberHandling == MissingMemberHandling.Error)
-                  throw CreateSerializationException(reader, "Could not find member '{0}' on object of type '{1}'".FormatWith(CultureInfo.InvariantCulture, memberName, contract.UnderlyingType.Name));
+                // attempt exact case match first
+                // then try match ignoring case
+                JsonProperty property = contract.Properties.GetClosestMatchProperty(memberName);
 
-                reader.Skip();
-                continue;
+                if (property == null)
+                {
+                  if (Serializer.MissingMemberHandling == MissingMemberHandling.Error)
+                    throw CreateSerializationException(reader, "Could not find member '{0}' on object of type '{1}'".FormatWith(CultureInfo.InvariantCulture, memberName, contract.UnderlyingType.Name));
+
+                  reader.Skip();
+                  continue;
+                }
+
+                if (property.PropertyContract == null)
+                  property.PropertyContract = GetContractSafe(property.PropertyType);
+
+                JsonConverter propertyConverter = GetConverter(property.PropertyContract, property.MemberConverter);
+
+                if (!ReadForType(reader, property.PropertyContract, propertyConverter != null, false))
+                  throw CreateSerializationException(reader, "Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
+
+                SetPropertyPresence(reader, property, propertiesPresence);
+
+                SetPropertyValue(property, propertyConverter, reader, newObject);
               }
-
-              if (property.PropertyContract == null)
-                property.PropertyContract = GetContractSafe(property.PropertyType);
-
-              JsonConverter propertyConverter = GetConverter(property.PropertyContract, property.MemberConverter);
-
-              if (!ReadForType(reader, property.PropertyContract, propertyConverter != null, false))
-                throw CreateSerializationException(reader, "Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
-
-              SetPropertyPresence(reader, property, propertiesPresence);
-
-              SetPropertyValue(property, propertyConverter, reader, newObject);
-            }
-            catch (Exception ex)
-            {
-              if (IsErrorHandled(newObject, contract, memberName, ex))
-                HandleError(reader, initialDepth);
-              else
-                throw;
+              catch (Exception ex)
+              {
+                if (IsErrorHandled(newObject, contract, memberName, reader.Path, ex))
+                  HandleError(reader, initialDepth);
+                else
+                  throw;
+              }
             }
             break;
           case JsonToken.EndObject:
-            foreach (KeyValuePair<JsonProperty, PropertyPresence> propertyPresence in propertiesPresence)
             {
-              JsonProperty property = propertyPresence.Key;
-              PropertyPresence presence = propertyPresence.Value;
-
-              switch (presence)
+              foreach (KeyValuePair<JsonProperty, PropertyPresence> propertyPresence in propertiesPresence)
               {
-                case PropertyPresence.None:
-                  if (property.Required == Required.AllowNull || property.Required == Required.Always)
-                    throw CreateSerializationException(reader, "Required property '{0}' not found in JSON.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName));
+                JsonProperty property = propertyPresence.Key;
+                PropertyPresence presence = propertyPresence.Value;
 
-                  if (property.PropertyContract == null)
-                    property.PropertyContract = GetContractSafe(property.PropertyType);
+                if (presence == PropertyPresence.None || presence == PropertyPresence.Null)
+                {
+                  try
+                  {
+                    switch (presence)
+                    {
+                      case PropertyPresence.None:
+                        if (property.Required == Required.AllowNull || property.Required == Required.Always)
+                          throw CreateSerializationException(reader, "Required property '{0}' not found in JSON.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName));
 
-                  if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer.DefaultValueHandling), DefaultValueHandling.Populate)
-                    && property.Writable)
-                    property.ValueProvider.SetValue(newObject, EnsureType(reader, property.DefaultValue, CultureInfo.InvariantCulture, property.PropertyContract, property.PropertyType));
-                  break;
-                case PropertyPresence.Null:
-                  if (property.Required == Required.Always)
-                    throw CreateSerializationException(reader, "Required property '{0}' expects a value but got null.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName));
-                  break;
+                        if (property.PropertyContract == null)
+                          property.PropertyContract = GetContractSafe(property.PropertyType);
+
+                        if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer.DefaultValueHandling), DefaultValueHandling.Populate)
+                            && property.Writable)
+                          property.ValueProvider.SetValue(newObject, EnsureType(reader, property.DefaultValue, CultureInfo.InvariantCulture, property.PropertyContract, property.PropertyType));
+                        break;
+                      case PropertyPresence.Null:
+                        if (property.Required == Required.Always)
+                          throw CreateSerializationException(reader, "Required property '{0}' expects a value but got null.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName));
+                        break;
+                    }
+                  }
+                  catch (Exception ex)
+                  {
+                    if (IsErrorHandled(newObject, contract, property.PropertyName, reader.Path, ex))
+                      HandleError(reader, initialDepth);
+                    else
+                      throw;
+                  }
+                }
               }
-            }
 
-            contract.InvokeOnDeserialized(newObject, Serializer.Context);
-            return newObject;
+              contract.InvokeOnDeserialized(newObject, Serializer.Context);
+              return newObject;
+            }
           case JsonToken.Comment:
             // ignore
             break;

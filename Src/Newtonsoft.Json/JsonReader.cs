@@ -27,11 +27,78 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Globalization;
+using System.Linq;
+using System.Text;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json
 {
+  internal enum JsonContainerType
+  {
+    None,
+    Object,
+    Array,
+    Constructor
+  }
+
+  internal struct JsonPosition
+  {
+    internal JsonContainerType Type;
+    internal int? Position;
+    internal string PropertyName;
+
+    internal void WriteTo(StringBuilder sb)
+    {
+      switch (Type)
+      {
+        case JsonContainerType.Object:
+          if (PropertyName != null)
+          {
+            if (sb.Length > 0)
+              sb.Append(".");
+            sb.Append(PropertyName);
+          }
+          break;
+        case JsonContainerType.Array:
+        case JsonContainerType.Constructor:
+          if (Position != null)
+          {
+            sb.Append("[");
+            sb.Append(Position);
+            sb.Append("]");
+          }
+          break;
+      }
+    }
+
+    internal bool InsideContainer()
+    {
+      switch (Type)
+      {
+        case JsonContainerType.Object:
+          return (PropertyName != null);
+        case JsonContainerType.Array:
+        case JsonContainerType.Constructor:
+          return (Position != null);
+      }
+
+      return false;
+    }
+
+    internal static string BuildPath(IEnumerable<JsonPosition> positions)
+    {
+      StringBuilder sb = new StringBuilder();
+
+      foreach (JsonPosition state in positions)
+      {
+        state.WriteTo(sb);
+      }
+
+      return sb.ToString();
+    }
+  }
+
   /// <summary>
   /// Represents a reader that provides fast, non-cached, forward-only access to serialized Json data.
   /// </summary>
@@ -101,7 +168,7 @@ namespace Newtonsoft.Json
     private object _value;
     private char _quoteChar;
     internal State _currentState;
-    private JTokenType _currentTypeContext;
+    private JsonPosition _currentPosition;
     private CultureInfo _culture;
 
     /// <summary>
@@ -113,9 +180,7 @@ namespace Newtonsoft.Json
       get { return _currentState; }
     }
 
-    private int _top;
-
-    private readonly List<JTokenType> _stack;
+    private readonly List<JsonPosition> _stack;
 
     /// <summary>
     /// Gets or sets a value indicating whether the underlying stream or
@@ -137,7 +202,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Gets the type of the current Json token. 
+    /// Gets the type of the current JSON token. 
     /// </summary>
     public virtual JsonToken TokenType
     {
@@ -145,7 +210,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Gets the text value of the current Json token.
+    /// Gets the text value of the current JSON token.
     /// </summary>
     public virtual object Value
     {
@@ -153,7 +218,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Gets The Common Language Runtime (CLR) type for the current Json token.
+    /// Gets The Common Language Runtime (CLR) type for the current JSON token.
     /// </summary>
     public virtual Type ValueType
     {
@@ -168,11 +233,11 @@ namespace Newtonsoft.Json
     {
       get
       {
-        int depth = _top - 1;
-        if (IsStartToken(TokenType))
-          return depth - 1;
-        else
+        int depth = _stack.Count;
+        if (IsStartToken(TokenType) || _currentPosition.Type == JsonContainerType.None)
           return depth;
+        else
+          return depth + 1;
       }
     }
 
@@ -186,38 +251,70 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
+    /// Gets the path of the current JSON token. 
+    /// </summary>
+    public string Path
+    {
+      get
+      {
+        if (_currentPosition.Type == JsonContainerType.None)
+          return string.Empty;
+
+        return JsonPosition.BuildPath(_stack.Concat(new[] { _currentPosition }));
+      }
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="JsonReader"/> class with the specified <see cref="TextReader"/>.
     /// </summary>
     protected JsonReader()
     {
       _currentState = State.Start;
-      _stack = new List<JTokenType>();
+      _stack = new List<JsonPosition>(4);
 
       CloseInput = true;
-      
-      Push(JTokenType.None);
     }
 
-    private void Push(JTokenType value)
+    private void Push(JsonContainerType value)
     {
-      _stack.Add(value);
-      _top++;
-      _currentTypeContext = value;
+      UpdateScopeWithFinishedValue();
+
+      if (_currentPosition.Type == JsonContainerType.None)
+      {
+        _currentPosition.Type = value;
+      }
+      else
+      {
+        _stack.Add(_currentPosition);
+        var state = new JsonPosition
+        {
+          Type = value
+        };
+        _currentPosition = state;
+      }
     }
 
-    private JTokenType Pop()
+    private JsonContainerType Pop()
     {
-      JTokenType value = Peek();
-      _stack.RemoveAt(_stack.Count - 1);
-      _top--;
-      _currentTypeContext = _stack[_top - 1];
+      JsonPosition oldPosition;
+      if (_stack.Count > 0)
+      {
+        oldPosition = _currentPosition;
+        _currentPosition = _stack[_stack.Count - 1];
+        _stack.RemoveAt(_stack.Count - 1);
+      }
+      else
+      {
+        oldPosition = _currentPosition;
+        _currentPosition = new JsonPosition();
+      }
 
-      return value;
+      return oldPosition.Type;
     }
 
-    private JTokenType Peek()
+    private JsonContainerType Peek()
     {
-      return _currentTypeContext;
+      return _currentPosition.Type;
     }
 
     /// <summary>
@@ -292,15 +389,15 @@ namespace Newtonsoft.Json
       {
         case JsonToken.StartObject:
           _currentState = State.ObjectStart;
-          Push(JTokenType.Object);
+          Push(JsonContainerType.Object);
           break;
         case JsonToken.StartArray:
           _currentState = State.ArrayStart;
-          Push(JTokenType.Array);
+          Push(JsonContainerType.Array);
           break;
         case JsonToken.StartConstructor:
           _currentState = State.ConstructorStart;
-          Push(JTokenType.Constructor);
+          Push(JsonContainerType.Constructor);
           break;
         case JsonToken.EndObject:
           ValidateEnd(JsonToken.EndObject);
@@ -313,6 +410,8 @@ namespace Newtonsoft.Json
           break;
         case JsonToken.PropertyName:
           _currentState = State.Property;
+
+          _currentPosition.PropertyName = (string) value;
           break;
         case JsonToken.Undefined:
         case JsonToken.Integer:
@@ -323,21 +422,35 @@ namespace Newtonsoft.Json
         case JsonToken.String:
         case JsonToken.Raw:
         case JsonToken.Bytes:
-          _currentState = (Peek() != JTokenType.None) ? State.PostValue : State.Finished;
+          _currentState = (Peek() != JsonContainerType.None) ? State.PostValue : State.Finished;
+
+          UpdateScopeWithFinishedValue();
           break;
       }
 
       _value = value;
     }
 
+    private void UpdateScopeWithFinishedValue()
+    {
+      if (_currentPosition.Type == JsonContainerType.Array
+        || _currentPosition.Type == JsonContainerType.Constructor)
+      {
+        if (_currentPosition.Position == null)
+          _currentPosition.Position = 0;
+        else
+          _currentPosition.Position++;
+      }
+    }
+
     private void ValidateEnd(JsonToken endToken)
     {
-      JTokenType currentObject = Pop();
+      JsonContainerType currentObject = Pop();
 
       if (GetTypeForCloseToken(endToken) != currentObject)
         throw new JsonReaderException("JsonToken {0} is not valid for closing JsonType {1}.".FormatWith(CultureInfo.InvariantCulture, endToken, currentObject));
 
-      _currentState = (Peek() != JTokenType.None) ? State.PostValue : State.Finished;
+      _currentState = (Peek() != JsonContainerType.None) ? State.PostValue : State.Finished;
     }
 
     /// <summary>
@@ -345,20 +458,20 @@ namespace Newtonsoft.Json
     /// </summary>
     protected void SetStateBasedOnCurrent()
     {
-      JTokenType currentObject = Peek();
+      JsonContainerType currentObject = Peek();
 
       switch (currentObject)
       {
-        case JTokenType.Object:
+        case JsonContainerType.Object:
           _currentState = State.Object;
           break;
-        case JTokenType.Array:
+        case JsonContainerType.Array:
           _currentState = State.Array;
           break;
-        case JTokenType.Constructor:
+        case JsonContainerType.Constructor:
           _currentState = State.Constructor;
           break;
-        case JTokenType.None:
+        case JsonContainerType.None:
           _currentState = State.Finished;
           break;
         default:
@@ -413,16 +526,16 @@ namespace Newtonsoft.Json
       }
     }
 
-    private JTokenType GetTypeForCloseToken(JsonToken token)
+    private JsonContainerType GetTypeForCloseToken(JsonToken token)
     {
       switch (token)
       {
         case JsonToken.EndObject:
-          return JTokenType.Object;
+          return JsonContainerType.Object;
         case JsonToken.EndArray:
-          return JTokenType.Array;
+          return JsonContainerType.Array;
         case JsonToken.EndConstructor:
-          return JTokenType.Constructor;
+          return JsonContainerType.Constructor;
         default:
           throw new JsonReaderException("Not a valid close JsonToken: {0}".FormatWith(CultureInfo.InvariantCulture, token));
       }
