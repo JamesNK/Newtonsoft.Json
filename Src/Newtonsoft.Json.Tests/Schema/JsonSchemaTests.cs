@@ -113,6 +113,7 @@ namespace Newtonsoft.Json.Tests.Schema
   }
 }", writtenJson);
     }
+
     [Test]
     public void WriteTo_AdditionalProperties()
     {

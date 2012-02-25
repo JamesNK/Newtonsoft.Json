@@ -59,9 +59,9 @@ namespace Newtonsoft.Json.Serialization
     /// <value>The member that caused the error.</value>
     public object Member { get; private set; }
     /// <summary>
-    /// Gets the path of the JSON location when the error occurred.
+    /// Gets the path of the JSON location where the error occurred.
     /// </summary>
-    /// <value>The path of the JSON location when the error occurred.</value>
+    /// <value>The path of the JSON location where the error occurred.</value>
     public string Path { get; private set; }
     /// <summary>
     /// Gets or sets a value indicating whether this <see cref="ErrorContext"/> is handled.

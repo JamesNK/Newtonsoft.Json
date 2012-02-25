@@ -42,16 +42,25 @@ namespace Newtonsoft.Json.Schema
     }
 
     /// <summary>
-    /// Gets the <see cref="JsonSchemaException"/> associated with the validation event.
+    /// Gets the <see cref="JsonSchemaException"/> associated with the validation error.
     /// </summary>
-    /// <value>The JsonSchemaException associated with the validation event.</value>
+    /// <value>The JsonSchemaException associated with the validation error.</value>
     public JsonSchemaException Exception
     {
       get { return _ex; }
     }
 
     /// <summary>
-    /// Gets the text description corresponding to the validation event.
+    /// Gets the path of the JSON location where the validation error occurred.
+    /// </summary>
+    /// <value>The path of the JSON location where the validation error occurred.</value>
+    public string Path
+    {
+      get { return _ex.Path; }
+    }
+
+    /// <summary>
+    /// Gets the text description corresponding to the validation error.
     /// </summary>
     /// <value>The text description.</value>
     public string Message

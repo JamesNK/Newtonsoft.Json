@@ -141,6 +141,7 @@ namespace Newtonsoft.Json.Linq
           int index = (int) part;
 
           JArray a = current as JArray;
+          JConstructor c = current as JConstructor;
 
           if (a != null)
           {
@@ -153,6 +154,18 @@ namespace Newtonsoft.Json.Linq
             }
 
             current = a[index];
+          }
+          else if (c != null)
+          {
+            if (c.Count <= index)
+            {
+              if (errorWhenNoMatch)
+                throw new IndexOutOfRangeException("Index {0} outside the bounds of JConstructor.".FormatWith(CultureInfo.InvariantCulture, index));
+
+              return null;
+            }
+
+            current = c[index];
           }
           else
           {

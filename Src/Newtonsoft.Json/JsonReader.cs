@@ -242,18 +242,9 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Gets or sets the culture used when reading JSON. Defaults to <see cref="CultureInfo.InvariantCulture"/>.
-    /// </summary>
-    public CultureInfo Culture
-    {
-      get { return _culture ?? CultureInfo.InvariantCulture; }
-      set { _culture = value; }
-    }
-
-    /// <summary>
     /// Gets the path of the current JSON token. 
     /// </summary>
-    public string Path
+    public virtual string Path
     {
       get
       {
@@ -262,6 +253,15 @@ namespace Newtonsoft.Json
 
         return JsonPosition.BuildPath(_stack.Concat(new[] { _currentPosition }));
       }
+    }
+
+    /// <summary>
+    /// Gets or sets the culture used when reading JSON. Defaults to <see cref="CultureInfo.InvariantCulture"/>.
+    /// </summary>
+    public CultureInfo Culture
+    {
+      get { return _culture ?? CultureInfo.InvariantCulture; }
+      set { _culture = value; }
     }
 
     /// <summary>
@@ -596,7 +596,7 @@ namespace Newtonsoft.Json
         linePosition = 0;
       }
 
-      return new JsonReaderException(message, ex, lineNumber, linePosition);
+      return new JsonReaderException(message, ex, Path, lineNumber, linePosition);
     }
 
     internal static string FormatExceptionMessage(IJsonLineInfo lineInfo, string message)

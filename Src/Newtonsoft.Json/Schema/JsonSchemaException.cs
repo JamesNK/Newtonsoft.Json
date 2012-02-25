@@ -50,6 +50,12 @@ namespace Newtonsoft.Json.Schema
     public int LinePosition { get; private set; }
 
     /// <summary>
+    /// Gets the path to the JSON where the error occurred.
+    /// </summary>
+    /// <value>The path to the JSON where the error occurred.</value>
+    public string Path { get; private set; }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="JsonSchemaException"/> class.
     /// </summary>
     public JsonSchemaException()
@@ -91,9 +97,10 @@ namespace Newtonsoft.Json.Schema
     }
 #endif
 
-    internal JsonSchemaException(string message, Exception innerException, int lineNumber, int linePosition)
+    internal JsonSchemaException(string message, Exception innerException, string path, int lineNumber, int linePosition)
       : base(message, innerException)
     {
+      Path = path;
       LineNumber = lineNumber;
       LinePosition = linePosition;
     }

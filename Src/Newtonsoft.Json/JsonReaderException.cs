@@ -50,6 +50,12 @@ namespace Newtonsoft.Json
     public int LinePosition { get; private set; }
 
     /// <summary>
+    /// Gets the path to the JSON where the error occurred.
+    /// </summary>
+    /// <value>The path to the JSON where the error occurred.</value>
+    public string Path { get; private set; }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="JsonReaderException"/> class.
     /// </summary>
     public JsonReaderException()
@@ -91,9 +97,10 @@ namespace Newtonsoft.Json
     }
 #endif
 
-    internal JsonReaderException(string message, Exception innerException, int lineNumber, int linePosition)
+    internal JsonReaderException(string message, Exception innerException, string path, int lineNumber, int linePosition)
       : base(message, innerException)
     {
+      Path = path;
       LineNumber = lineNumber;
       LinePosition = linePosition;
     }

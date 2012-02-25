@@ -181,8 +181,8 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(Exception), ExpectedMessage = @"Index 1 not valid on JConstructor.")]
-    public void EvaluateIndexerOnConstructorWithError()
+    [ExpectedException(typeof(IndexOutOfRangeException), ExpectedMessage = @"Index 1 outside the bounds of JConstructor.")]
+    public void EvaluateConstructorOutOfBoundsIndxerWithError()
     {
       JConstructor c = new JConstructor("Blah");
 
@@ -210,7 +210,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
     [Test]
     [ExpectedException(typeof(IndexOutOfRangeException), ExpectedMessage = "Index 1000 outside the bounds of JArray.")]
-    public void EvaluateOutOfBoundsIndxerWithError()
+    public void EvaluateArrayOutOfBoundsIndxerWithError()
     {
       JArray a = new JArray(1, 2, 3, 4, 5);
 
@@ -251,6 +251,35 @@ namespace Newtonsoft.Json.Tests.Linq
 
       Assert.AreEqual("Jeff", a2);
     }
+
+    [Test]
+    public void PathWithConstructor()
+    {
+      JArray a = JArray.Parse(@"[
+  {
+    ""Property1"": [
+      1,
+      [
+        [
+          []
+        ]
+      ]
+    ]
+  },
+  {
+    ""Property2"": new Constructor1(
+      null,
+      [
+        1
+      ]
+    )
+  }
+]");
+
+      JValue v = (JValue)a.SelectToken("[1].Property2[1][0]");
+      Assert.AreEqual(1, v.Value);
+    }
+
 
     [Test]
     public void Example()

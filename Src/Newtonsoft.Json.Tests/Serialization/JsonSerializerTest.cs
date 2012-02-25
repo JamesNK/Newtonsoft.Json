@@ -5180,7 +5180,7 @@ keyword such as type of business.""
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Unexpected end when setting PreProperty's value. Line 2, position 18.")]
+    [ExpectedException(typeof (JsonSerializationException), ExpectedMessage = "Unexpected end when setting PreProperty's value. Line 2, position 18.")]
     public void DeserializeUnexpectedEndInt()
     {
       string json = @"{
@@ -5263,10 +5263,10 @@ keyword such as type of business.""
       Assert.AreEqual(null, e.NullableEnum);
 
       json = JsonConvert.SerializeObject(new WithEnums
-      {
-        Id = 7,
-        NullableEnum = MyEnum.Value2
-      });
+        {
+          Id = 7,
+          NullableEnum = MyEnum.Value2
+        });
 
       Assert.AreEqual(@"{""Id"":7,""NullableEnum"":1}", json);
 
@@ -5278,13 +5278,13 @@ keyword such as type of business.""
     [Test]
     public void NullableStructWithConverter()
     {
-      string json = JsonConvert.SerializeObject(new Widget1 { Id = new WidgetId1 { Value = 1234 } });
+      string json = JsonConvert.SerializeObject(new Widget1 {Id = new WidgetId1 {Value = 1234}});
 
       Assert.AreEqual(@"{""Id"":""1234""}", json);
 
       Widget1 w = JsonConvert.DeserializeObject<Widget1>(@"{""Id"":""1234""}");
 
-      Assert.AreEqual(new WidgetId1 { Value = 1234 }, w.Id);
+      Assert.AreEqual(new WidgetId1 {Value = 1234}, w.Id);
     }
 
     [Test]
@@ -5330,21 +5330,21 @@ keyword such as type of business.""
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "No JSON content found and type 'System.Double' is not nullable.")]
+    [ExpectedException(typeof (JsonSerializationException), ExpectedMessage = "No JSON content found and type 'System.Double' is not nullable.")]
     public void DeserializeDoubleFromEmptyString()
     {
       JsonConvert.DeserializeObject<double>("");
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "No JSON content found and type 'System.StringComparison' is not nullable.")]
+    [ExpectedException(typeof (JsonSerializationException), ExpectedMessage = "No JSON content found and type 'System.StringComparison' is not nullable.")]
     public void DeserializeEnumFromEmptyString()
     {
       JsonConvert.DeserializeObject<StringComparison>("");
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "No JSON content found and type 'System.Int32' is not nullable.")]
+    [ExpectedException(typeof (JsonSerializationException), ExpectedMessage = "No JSON content found and type 'System.Int32' is not nullable.")]
     public void DeserializeInt32FromEmptyString()
     {
       JsonConvert.DeserializeObject<int>("");
@@ -5358,7 +5358,7 @@ keyword such as type of business.""
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentNullException), ExpectedMessage = @"Value cannot be null.
+    [ExpectedException(typeof (ArgumentNullException), ExpectedMessage = @"Value cannot be null.
 Parameter name: value")]
     public void DeserializeDoubleFromNullString()
     {
@@ -5366,12 +5366,12 @@ Parameter name: value")]
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentNullException), ExpectedMessage = @"Value cannot be null.
+    [ExpectedException(typeof (ArgumentNullException), ExpectedMessage = @"Value cannot be null.
 Parameter name: value")]
     public void DeserializeFromNullString()
     {
       JsonConvert.DeserializeObject(null);
-    } 
+    }
   }
 
   public class Widget1

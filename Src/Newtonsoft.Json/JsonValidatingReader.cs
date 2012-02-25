@@ -112,6 +112,14 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
+    /// Gets the path of the current JSON token. 
+    /// </summary>
+    public override string Path
+    {
+      get { return _reader.Path; }
+    }
+
+    /// <summary>
     /// Gets the quotation mark character used to enclose the value of a string.
     /// </summary>
     /// <value></value>
@@ -246,7 +254,7 @@ namespace Newtonsoft.Json
                                   ? message + " Line {0}, position {1}.".FormatWith(CultureInfo.InvariantCulture, lineInfo.LineNumber, lineInfo.LinePosition)
                                   : message;
 
-      OnValidationEvent(new JsonSchemaException(exceptionMessage, null, lineInfo.LineNumber, lineInfo.LinePosition));
+      OnValidationEvent(new JsonSchemaException(exceptionMessage, null, Path, lineInfo.LineNumber, lineInfo.LinePosition));
     }
 
     private void OnValidationEvent(JsonSchemaException exception)

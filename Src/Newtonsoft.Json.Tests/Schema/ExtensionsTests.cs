@@ -113,9 +113,10 @@ namespace Newtonsoft.Json.Tests.Schema
       JObject o = JObject.Parse("{'lol':1}");
 
       List<string> errors = new List<string>();
-      o.Validate(schema, (sender, args) => errors.Add(args.Message));
+      o.Validate(schema, (sender, args) => errors.Add(args.Path + " - " + args.Message));
 
-      Assert.AreEqual("Invalid type. Expected String but got Integer. Line 1, position 8.", errors[0]);
+      Assert.AreEqual("lol - Invalid type. Expected String but got Integer. Line 1, position 8.", errors[0]);
+      Assert.AreEqual("1", o.SelectToken("lol").ToString());
       Assert.AreEqual(1, errors.Count);
     }
 
