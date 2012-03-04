@@ -390,6 +390,30 @@ namespace Newtonsoft.Json
       return d;
     }
 
+    /// <summary>
+    /// Reads the next JSON token from the stream as a <see cref="String"/>.
+    /// </summary>
+    /// <returns>A <see cref="String"/>. This method will return <c>null</c> at the end of an array.</returns>
+    public override string ReadAsString()
+    {
+      string s = _reader.ReadAsString();
+
+      ValidateCurrentToken();
+      return s;
+    }
+
+    /// <summary>
+    /// Reads the next JSON token from the stream as a <see cref="Nullable{DateTime}"/>.
+    /// </summary>
+    /// <returns>A <see cref="String"/>. This method will return <c>null</c> at the end of an array.</returns>
+    public override DateTime? ReadAsDateTime()
+    {
+      DateTime? dateTime = _reader.ReadAsDateTime();
+
+      ValidateCurrentToken();
+      return dateTime;
+    }
+
 #if !NET20
     /// <summary>
     /// Reads the next JSON token from the stream as a <see cref="Nullable{DateTimeOffset}"/>.

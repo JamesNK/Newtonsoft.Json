@@ -26,10 +26,12 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using NUnit.Framework;
+using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Tests
 {
@@ -52,6 +54,15 @@ namespace Newtonsoft.Json.Tests
     protected string EscapeJson(string json)
     {
       return @"@""" + json.Replace(@"""", @"""""") + @"""";
+    }
+
+    protected string GetOffset(DateTime d, DateFormatHandling dateFormatHandling)
+    {
+      StringWriter sw = new StringWriter();
+      JsonConvert.WriteDateTimeOffset(sw, DateTime.SpecifyKind(d, DateTimeKind.Local).GetUtcOffset(), dateFormatHandling);
+      sw.Flush();
+
+      return sw.ToString();
     }
   }
 }

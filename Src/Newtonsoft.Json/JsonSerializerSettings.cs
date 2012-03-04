@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.Serialization.Formatters;
 using System.Text;
@@ -24,6 +25,16 @@ namespace Newtonsoft.Json
     internal const TypeNameHandling DefaultTypeNameHandling = TypeNameHandling.None;
     internal const FormatterAssemblyStyle DefaultTypeNameAssemblyFormat = FormatterAssemblyStyle.Simple;
     internal static readonly StreamingContext DefaultContext;
+
+    internal const Formatting DefaultFormatting = Formatting.None;
+    internal const DateFormatHandling DefaultDateFormatHandling = DateFormatHandling.IsoDateFormat;
+    internal const DateTimeZoneHandling DefaultDateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
+    internal static readonly CultureInfo DefaultCulture;
+
+    internal Formatting? _formatting;
+    internal DateFormatHandling? _dateFormatHandling;
+    internal DateTimeZoneHandling? _dateTimeZoneHandling;
+    internal CultureInfo _culture;
 
     /// <summary>
     /// Gets or sets how reference loops (e.g. a class referencing itself) is handled.
@@ -116,9 +127,34 @@ namespace Newtonsoft.Json
     /// <value>The context.</value>
     public StreamingContext Context { get; set; }
 
+    public Formatting Formatting
+    {
+      get { return _formatting ?? DefaultFormatting; }
+      set { _formatting = value; }
+    }
+
+    public DateFormatHandling DateFormatHandling
+    {
+      get { return _dateFormatHandling ?? DefaultDateFormatHandling; }
+      set { _dateFormatHandling = value; }
+    }
+
+    public DateTimeZoneHandling DateTimeZoneHandling
+    {
+      get { return _dateTimeZoneHandling ?? DefaultDateTimeZoneHandling; }
+      set { _dateTimeZoneHandling = value; }
+    }
+
+    public CultureInfo Culture
+    {
+      get { return _culture ?? DefaultCulture; }
+      set { _culture = value; }
+    }
+
     static JsonSerializerSettings()
     {
       DefaultContext = new StreamingContext();
+      DefaultCulture = CultureInfo.InvariantCulture;
     }
 
     /// <summary>
@@ -135,6 +171,7 @@ namespace Newtonsoft.Json
       TypeNameHandling = DefaultTypeNameHandling;
       TypeNameAssemblyFormat = DefaultTypeNameAssemblyFormat;
       Context = DefaultContext;
+
       Converters = new List<JsonConverter>();
     }
   }

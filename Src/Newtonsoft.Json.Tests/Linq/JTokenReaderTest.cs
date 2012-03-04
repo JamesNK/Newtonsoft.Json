@@ -135,7 +135,7 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error reading date. Expected date but got Boolean. Line 1, position 14.")]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error reading date. Unexpected token: Boolean. Line 1, position 14.")]
     public void ReadAsDateTimeOffsetBoolean()
     {
       string json = @"{""Offset"":true}";
@@ -294,7 +294,7 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error reading bytes. Expected bytes but got Integer.")]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error reading bytes. Unexpected token: Integer.")]
     public void ReadBytesFailure()
     {
       JObject o =
@@ -484,7 +484,7 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error reading integer. Expected a number but got Boolean. Line 1, position 12.")]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error reading integer. Unexpected token: Boolean. Line 1, position 12.")]
     public void ReadAsInt32Boolean()
     {
       string json = @"{""Name"":true}";
@@ -543,7 +543,7 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error reading decimal. Expected a number but got Boolean. Line 1, position 12.")]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error reading decimal. Unexpected token: Boolean. Line 1, position 12.")]
     public void ReadAsDecimalBoolean()
     {
       string json = @"{""Name"":true}";

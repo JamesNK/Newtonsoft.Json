@@ -36,58 +36,6 @@ using System.Globalization;
 namespace Newtonsoft.Json
 {
   /// <summary>
-  /// Specifies the state of the <see cref="JsonWriter"/>.
-  /// </summary>
-  public enum WriteState
-  {
-    /// <summary>
-    /// An exception has been thrown, which has left the <see cref="JsonWriter"/> in an invalid state.
-    /// You may call the <see cref="JsonWriter.Close"/> method to put the <see cref="JsonWriter"/> in the <c>Closed</c> state.
-    /// Any other <see cref="JsonWriter"/> method calls results in an <see cref="InvalidOperationException"/> being thrown. 
-    /// </summary>
-    Error,
-    /// <summary>
-    /// The <see cref="JsonWriter.Close"/> method has been called. 
-    /// </summary>
-    Closed,
-    /// <summary>
-    /// An object is being written. 
-    /// </summary>
-    Object,
-    /// <summary>
-    /// A array is being written.
-    /// </summary>
-    Array,
-    /// <summary>
-    /// A constructor is being written.
-    /// </summary>
-    Constructor,
-    /// <summary>
-    /// A property is being written.
-    /// </summary>
-    Property,
-    /// <summary>
-    /// A write method has not been called.
-    /// </summary>
-    Start
-  }
-
-  /// <summary>
-  /// Specifies formatting options for the <see cref="JsonTextWriter"/>.
-  /// </summary>
-  public enum Formatting
-  {
-    /// <summary>
-    /// No special formatting is applied. This is the default.
-    /// </summary>
-    None,
-    /// <summary>
-    /// Causes child objects to be indented according to the <see cref="JsonTextWriter.Indentation"/> and <see cref="JsonTextWriter.IndentChar"/> settings.
-    /// </summary>
-    Indented
-  }
-
-  /// <summary>
   /// Represents a writer that provides a fast, non-cached, forward-only way of generating Json data.
   /// </summary>
   public abstract class JsonWriter : IDisposable
@@ -252,6 +200,9 @@ namespace Newtonsoft.Json
       }
     }
 
+    private DateFormatHandling _dateFormatHandling;
+    private DateTimeZoneHandling _dateTimeZoneHandling;
+
     /// <summary>
     /// Indicates how the output is formatted.
     /// </summary>
@@ -259,6 +210,18 @@ namespace Newtonsoft.Json
     {
       get { return _formatting; }
       set { _formatting = value; }
+    }
+
+    public DateFormatHandling DateFormatHandling
+    {
+      get { return _dateFormatHandling; }
+      set { _dateFormatHandling = value; }
+    }
+
+    public DateTimeZoneHandling DateTimeZoneHandling
+    {
+      get { return _dateTimeZoneHandling; }
+      set { _dateTimeZoneHandling = value; }
     }
 
     /// <summary>
@@ -269,6 +232,7 @@ namespace Newtonsoft.Json
       _stack = new List<JsonPosition>(4);
       _currentState = State.Start;
       _formatting = Formatting.None;
+      _dateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
 
       CloseOutput = true;
     }

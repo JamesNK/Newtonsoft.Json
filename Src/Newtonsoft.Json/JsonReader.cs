@@ -28,77 +28,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json
 {
-  internal enum JsonContainerType
-  {
-    None,
-    Object,
-    Array,
-    Constructor
-  }
-
-  internal struct JsonPosition
-  {
-    internal JsonContainerType Type;
-    internal int? Position;
-    internal string PropertyName;
-
-    internal void WriteTo(StringBuilder sb)
-    {
-      switch (Type)
-      {
-        case JsonContainerType.Object:
-          if (PropertyName != null)
-          {
-            if (sb.Length > 0)
-              sb.Append(".");
-            sb.Append(PropertyName);
-          }
-          break;
-        case JsonContainerType.Array:
-        case JsonContainerType.Constructor:
-          if (Position != null)
-          {
-            sb.Append("[");
-            sb.Append(Position);
-            sb.Append("]");
-          }
-          break;
-      }
-    }
-
-    internal bool InsideContainer()
-    {
-      switch (Type)
-      {
-        case JsonContainerType.Object:
-          return (PropertyName != null);
-        case JsonContainerType.Array:
-        case JsonContainerType.Constructor:
-          return (Position != null);
-      }
-
-      return false;
-    }
-
-    internal static string BuildPath(IEnumerable<JsonPosition> positions)
-    {
-      StringBuilder sb = new StringBuilder();
-
-      foreach (JsonPosition state in positions)
-      {
-        state.WriteTo(sb);
-      }
-
-      return sb.ToString();
-    }
-  }
-
   /// <summary>
   /// Represents a reader that provides fast, non-cached, forward-only access to serialized Json data.
   /// </summary>
@@ -168,8 +102,10 @@ namespace Newtonsoft.Json
     private object _value;
     private char _quoteChar;
     internal State _currentState;
+    internal ReadType _readType;
     private JsonPosition _currentPosition;
     private CultureInfo _culture;
+    private DateTimeZoneHandling _dateTimeZoneHandling;
 
     /// <summary>
     /// Gets the current reader state.
@@ -199,6 +135,12 @@ namespace Newtonsoft.Json
     {
       get { return _quoteChar; }
       protected internal set { _quoteChar = value; }
+    }
+
+    public DateTimeZoneHandling DateTimeZoneHandling
+    {
+      get { return _dateTimeZoneHandling; }
+      set { _dateTimeZoneHandling = value; }
     }
 
     /// <summary>
@@ -271,6 +213,7 @@ namespace Newtonsoft.Json
     {
       _currentState = State.Start;
       _stack = new List<JsonPosition>(4);
+      _dateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
 
       CloseInput = true;
     }
@@ -330,6 +273,12 @@ namespace Newtonsoft.Json
     public abstract int? ReadAsInt32();
 
     /// <summary>
+    /// Reads the next JSON token from the stream as a <see cref="String"/>.
+    /// </summary>
+    /// <returns>A <see cref="String"/>. This method will return <c>null</c> at the end of an array.</returns>
+    public abstract string ReadAsString();
+
+    /// <summary>
     /// Reads the next JSON token from the stream as a <see cref="T:Byte[]"/>.
     /// </summary>
     /// <returns>A <see cref="T:Byte[]"/> or a null reference if the next JSON token is null. This method will return <c>null</c> at the end of an array.</returns>
@@ -341,6 +290,12 @@ namespace Newtonsoft.Json
     /// <returns>A <see cref="Nullable{Decimal}"/>. This method will return <c>null</c> at the end of an array.</returns>
     public abstract decimal? ReadAsDecimal();
 
+    /// <summary>
+    /// Reads the next JSON token from the stream as a <see cref="Nullable{DateTime}"/>.
+    /// </summary>
+    /// <returns>A <see cref="String"/>. This method will return <c>null</c> at the end of an array.</returns>
+    public abstract DateTime? ReadAsDateTime();
+
 #if !NET20
     /// <summary>
     /// Reads the next JSON token from the stream as a <see cref="Nullable{DateTimeOffset}"/>.
@@ -348,6 +303,329 @@ namespace Newtonsoft.Json
     /// <returns>A <see cref="Nullable{DateTimeOffset}"/>. This method will return <c>null</c> at the end of an array.</returns>
     public abstract DateTimeOffset? ReadAsDateTimeOffset();
 #endif
+
+    internal virtual bool ReadInternal()
+    {
+      throw new NotImplementedException();
+    }
+
+#if !NET20
+    internal DateTimeOffset? ReadAsDateTimeOffsetInternal()
+    {
+      _readType = ReadType.ReadAsDateTimeOffset;
+
+      do
+      {
+        if (!ReadInternal())
+        {
+          SetToken(JsonToken.None);
+          return null;
+        }
+      } while (TokenType == JsonToken.Comment);
+
+      if (TokenType == JsonToken.Date)
+      {
+        if (Value is DateTime)
+          SetToken(JsonToken.Date, new DateTimeOffset((DateTime)Value));
+
+        return (DateTimeOffset)Value;
+      }
+
+      if (TokenType == JsonToken.Null)
+        return null;
+
+      DateTimeOffset dt;
+      if (TokenType == JsonToken.String)
+      {
+        if (DateTimeOffset.TryParse((string)Value, Culture, DateTimeStyles.RoundtripKind, out dt))
+        {
+          SetToken(JsonToken.Date, dt);
+          return dt;
+        }
+        else
+        {
+          throw CreateReaderException(this, "Could not convert string to DateTimeOffset: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
+        }
+      }
+
+      if (TokenType == JsonToken.EndArray)
+        return null;
+
+      throw CreateReaderException(this, "Error reading date. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+    }
+#endif
+
+    internal byte[] ReadAsBytesInternal()
+    {
+      _readType = ReadType.ReadAsBytes;
+
+      do
+      {
+        if (!ReadInternal())
+        {
+          SetToken(JsonToken.None);
+          return null;
+        }
+      } while (TokenType == JsonToken.Comment);
+
+      if (IsWrappedInTypeObject())
+      {
+        byte[] data = ReadAsBytes();
+        ReadInternal();
+        SetToken(JsonToken.Bytes, data);
+        return data;
+      }
+
+      // attempt to convert possible base 64 string to bytes
+      if (TokenType == JsonToken.String)
+      {
+        string s = (string)Value;
+        byte[] data = (s.Length == 0) ? new byte[0] : Convert.FromBase64String(s);
+        SetToken(JsonToken.Bytes, data);
+      }
+
+      if (TokenType == JsonToken.Null)
+        return null;
+
+      if (TokenType == JsonToken.Bytes)
+        return (byte[])Value;
+
+      if (TokenType == JsonToken.StartArray)
+      {
+        List<byte> data = new List<byte>();
+
+        while (ReadInternal())
+        {
+          switch (TokenType)
+          {
+            case JsonToken.Integer:
+              data.Add(Convert.ToByte(Value, CultureInfo.InvariantCulture));
+              break;
+            case JsonToken.EndArray:
+              byte[] d = data.ToArray();
+              SetToken(JsonToken.Bytes, d);
+              return d;
+            case JsonToken.Comment:
+              // skip
+              break;
+            default:
+              throw CreateReaderException(this, "Unexpected token when reading bytes: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+          }
+        }
+
+        throw CreateReaderException(this, "Unexpected end when reading bytes.");
+      }
+
+      if (TokenType == JsonToken.EndArray)
+        return null;
+
+      throw CreateReaderException(this, "Error reading bytes. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+    }
+
+    internal decimal? ReadAsDecimalInternal()
+    {
+      _readType = ReadType.ReadAsDecimal;
+
+      do
+      {
+        if (!ReadInternal())
+        {
+          SetToken(JsonToken.None);
+          return null;
+        }
+      } while (TokenType == JsonToken.Comment);
+
+      if (TokenType == JsonToken.Integer || TokenType == JsonToken.Float)
+      {
+        if (!(Value is decimal))
+          SetToken(JsonToken.Float, Convert.ToDecimal(Value, CultureInfo.InvariantCulture));
+
+        return (decimal)Value;
+      }
+
+      if (TokenType == JsonToken.Null)
+        return null;
+
+      decimal d;
+      if (TokenType == JsonToken.String)
+      {
+        if (decimal.TryParse((string)Value, NumberStyles.Number, Culture, out d))
+        {
+          SetToken(JsonToken.Float, d);
+          return d;
+        }
+        else
+        {
+          throw CreateReaderException(this, "Could not convert string to decimal: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
+        }
+      }
+
+      if (TokenType == JsonToken.EndArray)
+        return null;
+
+      throw CreateReaderException(this, "Error reading decimal. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+    }
+
+    internal int? ReadAsInt32Internal()
+    {
+      _readType = ReadType.ReadAsInt32;
+
+      do
+      {
+        if (!ReadInternal())
+        {
+          SetToken(JsonToken.None);
+          return null;
+        }
+      } while (TokenType == JsonToken.Comment);
+
+      if (TokenType == JsonToken.Integer || TokenType == JsonToken.Float)
+      {
+        if (!(Value is int))
+          SetToken(JsonToken.Integer, Convert.ToInt32(Value, CultureInfo.InvariantCulture));
+
+        return (int)Value;
+      }
+
+      if (TokenType == JsonToken.Null)
+        return null;
+
+      int i;
+      if (TokenType == JsonToken.String)
+      {
+        if (int.TryParse((string)Value, NumberStyles.Integer, Culture, out i))
+        {
+          SetToken(JsonToken.Integer, i);
+          return i;
+        }
+        else
+        {
+          throw CreateReaderException(this, "Could not convert string to integer: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
+        }
+      }
+
+      if (TokenType == JsonToken.EndArray)
+        return null;
+
+      throw CreateReaderException(this, "Error reading integer. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+    }
+
+    internal string ReadAsStringInternal()
+    {
+      _readType = ReadType.ReadAsString;
+
+      do
+      {
+        if (!ReadInternal())
+        {
+          SetToken(JsonToken.None);
+          return null;
+        }
+      } while (TokenType == JsonToken.Comment);
+
+      if (TokenType == JsonToken.String)
+        return (string)Value;
+
+      if (TokenType == JsonToken.Null)
+        return null;
+
+      if (IsPrimitiveToken(TokenType))
+      {
+        if (Value != null)
+        {
+          string s;
+          if (Value is IConvertible)
+            s = ((IConvertible)Value).ToString(Culture);
+          else if (Value is IFormattable)
+            s = ((IFormattable)Value).ToString(null, Culture);
+          else
+            s = Value.ToString();
+
+          SetToken(JsonToken.String, s);
+          return s;
+        }
+      }
+
+      if (TokenType == JsonToken.EndArray)
+        return null;
+
+      throw CreateReaderException(this, "Error reading string. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+    }
+
+    internal DateTime? ReadAsDateTimeInternal()
+    {
+      _readType = ReadType.ReadAsDateTime;
+
+      do
+      {
+        if (!ReadInternal())
+        {
+          SetToken(JsonToken.None);
+          return null;
+        }
+      } while (TokenType == JsonToken.Comment);
+
+      if (TokenType == JsonToken.Date)
+        return (DateTime)Value;
+
+      if (TokenType == JsonToken.Null)
+        return null;
+
+      DateTime dt;
+      if (TokenType == JsonToken.String)
+      {
+        string s = (string)Value;
+        if (string.IsNullOrEmpty(s))
+        {
+          SetToken(JsonToken.Null);
+          return null;
+        }
+
+        if (DateTime.TryParse(s, Culture, DateTimeStyles.RoundtripKind, out dt))
+        {
+          dt = JsonConvert.EnsureDateTime(dt, DateTimeZoneHandling);
+          SetToken(JsonToken.Date, dt);
+          return dt;
+        }
+        else
+        {
+          throw CreateReaderException(this, "Could not convert string to DateTime: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
+        }
+      }
+
+      if (TokenType == JsonToken.EndArray)
+        return null;
+
+      throw CreateReaderException(this, "Error reading date. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+    }
+
+    private bool IsWrappedInTypeObject()
+    {
+      _readType = ReadType.Read;
+
+      if (TokenType == JsonToken.StartObject)
+      {
+        if (!ReadInternal())
+          throw CreateReaderException(this, "Unexpected end when reading bytes.");
+
+        if (Value.ToString() == "$type")
+        {
+          ReadInternal();
+          if (Value != null && Value.ToString().StartsWith("System.Byte[]"))
+          {
+            ReadInternal();
+            if (Value.ToString() == "$value")
+            {
+              return true;
+            }
+          }
+        }
+
+        throw CreateReaderException(this, "Error reading bytes. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, JsonToken.StartObject));
+      }
+
+      return false;
+    }
 
     /// <summary>
     /// Skips the children of the current token.

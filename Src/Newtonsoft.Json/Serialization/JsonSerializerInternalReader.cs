@@ -1134,6 +1134,12 @@ namespace Newtonsoft.Json.Serialization
         case ReadType.ReadAsBytes:
           reader.ReadAsBytes();
           break;
+        case ReadType.ReadAsString:
+          reader.ReadAsString();
+          break;
+        case ReadType.ReadAsDateTime:
+          reader.ReadAsDateTime();
+          break;
 #if !NET20
         case ReadType.ReadAsDateTimeOffset:
           reader.ReadAsDateTimeOffset();

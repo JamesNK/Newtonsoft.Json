@@ -586,7 +586,7 @@ Parameter name: reader")]
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected token when reading bytes: Boolean. Line 1, position 4.")]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error reading bytes. Unexpected token: Boolean. Line 1, position 4.")]
     public void ReadBytesWithBadCharacter()
     {
       JsonReader reader = new JsonTextReader(new StringReader(@"true"));
@@ -1219,7 +1219,7 @@ bye", reader.Value);
 #endif
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected token when reading decimal: StartConstructor. Line 1, position 9.")]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error reading decimal. Unexpected token: StartConstructor. Line 1, position 9.")]
     public void ReadAsDecimalBadContent()
     {
       JsonTextReader reader = new JsonTextReader(new StringReader(@"new Date()"));
@@ -1229,7 +1229,7 @@ bye", reader.Value);
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected token when reading bytes: StartConstructor. Line 1, position 9.")]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error reading bytes. Unexpected token: StartConstructor. Line 1, position 9.")]
     public void ReadAsBytesBadContent()
     {
       JsonTextReader reader = new JsonTextReader(new StringReader(@"new Date()"));
@@ -1239,7 +1239,7 @@ bye", reader.Value);
 
 #if !NET20
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Unexpected token when reading date: StartConstructor. Line 1, position 9.")]
+    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error reading date. Unexpected token: StartConstructor. Line 1, position 9.")]
     public void ReadAsDateTimeOffsetBadContent()
     {
       JsonTextReader reader = new JsonTextReader(new StringReader(@"new Date()"));

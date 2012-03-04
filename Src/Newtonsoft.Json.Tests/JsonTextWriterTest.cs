@@ -25,10 +25,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Runtime.Serialization;
 using System.Text;
+using System.Xml;
 using NUnit.Framework;
 using Newtonsoft.Json;
 using System.IO;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Tests
@@ -133,9 +137,9 @@ namespace Newtonsoft.Json.Tests
       string expected;
 
 #if !PocketPC && !NET20
-      expected = @"[null,""c"",null,true,null,1,null,1,null,1,null,1,null,1,null,1,null,1,null,1,null,1.1,null,1.1,null,1.1,null,""\/Date(0)\/"",null,""\/Date(0+0000)\/""]";
+      expected = @"[null,""c"",null,true,null,1,null,1,null,1,null,1,null,1,null,1,null,1,null,1,null,1.1,null,1.1,null,1.1,null,""1970-01-01T00:00:00Z"",null,""1970-01-01T00:00:00+00:00""]";
 #else
-      expected = @"[null,""c"",null,true,null,1,null,1,null,1,null,1,null,1,null,1,null,1,null,1,null,1.1,null,1.1,null,1.1,null,""\/Date(0)\/""]";
+      expected = @"[null,""c"",null,true,null,1,null,1,null,1,null,1,null,1,null,1,null,1,null,1,null,1.1,null,1.1,null,1.1,null,""1970-01-01T00:00:00Z""]";
 #endif
 
       Assert.AreEqual(expected, json);

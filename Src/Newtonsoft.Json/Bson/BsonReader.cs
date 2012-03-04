@@ -180,49 +180,7 @@ namespace Newtonsoft.Json.Bson
     /// </returns>
     public override byte[] ReadAsBytes()
     {
-      Read();
-
-      if (IsWrappedInTypeObject())
-      {
-        byte[] data = ReadAsBytes();
-        Read();
-        SetToken(JsonToken.Bytes, data);
-        return data;
-      }
-
-      if (TokenType == JsonToken.Null)
-        return null;
-      if (TokenType == JsonToken.Bytes)
-        return (byte[])Value;
-
-      if (TokenType == JsonToken.EndArray)
-        return null;
-
-      throw CreateReaderException(this, "Error reading bytes. Expected bytes but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
-    }
-
-    private bool IsWrappedInTypeObject()
-    {
-      if (TokenType == JsonToken.StartObject)
-      {
-        Read();
-        if (Value.ToString() == "$type")
-        {
-          Read();
-          if (Value != null && Value.ToString().StartsWith("System.Byte[]"))
-          {
-            Read();
-            if (Value.ToString() == "$value")
-            {
-              return true;
-            }
-          }
-        }
-
-        throw CreateReaderException(this, "Unexpected token when reading bytes: {0}.".FormatWith(CultureInfo.InvariantCulture, JsonToken.StartObject));
-      }
-
-      return false;
+      return ReadAsBytesInternal();
     }
 
     /// <summary>
@@ -231,35 +189,7 @@ namespace Newtonsoft.Json.Bson
     /// <returns>A <see cref="Nullable{Decimal}"/>. This method will return <c>null</c> at the end of an array.</returns>
     public override decimal? ReadAsDecimal()
     {
-      Read();
-
-      if (TokenType == JsonToken.Integer || TokenType == JsonToken.Float)
-      {
-        SetToken(JsonToken.Float, Convert.ToDecimal(Value, CultureInfo.InvariantCulture));
-        return (decimal)Value;
-      }
-
-      if (TokenType == JsonToken.Null)
-        return null;
-
-      decimal d;
-      if (TokenType == JsonToken.String)
-      {
-        if (decimal.TryParse((string)Value, NumberStyles.Number, Culture, out d))
-        {
-          SetToken(JsonToken.Float, d);
-          return d;
-        }
-        else
-        {
-          throw CreateReaderException(this, "Could not convert string to decimal: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
-        }
-      }
-
-      if (TokenType == JsonToken.EndArray)
-        return null;
-
-      throw CreateReaderException(this, "Error reading decimal. Expected a number but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+      return ReadAsDecimalInternal();
     }
 
     /// <summary>
@@ -268,35 +198,25 @@ namespace Newtonsoft.Json.Bson
     /// <returns>A <see cref="Nullable{Int32}"/>. This method will return <c>null</c> at the end of an array.</returns>
     public override int? ReadAsInt32()
     {
-      Read();
+      return ReadAsInt32Internal();
+    }
 
-      if (TokenType == JsonToken.Integer || TokenType == JsonToken.Float)
-      {
-        SetToken(JsonToken.Float, Convert.ToInt32(Value, CultureInfo.InvariantCulture));
-        return (int)Value;
-      }
+    /// <summary>
+    /// Reads the next JSON token from the stream as a <see cref="String"/>.
+    /// </summary>
+    /// <returns>A <see cref="String"/>. This method will return <c>null</c> at the end of an array.</returns>
+    public override string ReadAsString()
+    {
+      return ReadAsStringInternal();
+    }
 
-      if (TokenType == JsonToken.Null)
-        return null;
-
-      int i;
-      if (TokenType == JsonToken.String)
-      {
-        if (int.TryParse((string)Value, NumberStyles.Integer, Culture, out i))
-        {
-          SetToken(JsonToken.Integer, i);
-          return i;
-        }
-        else
-        {
-          throw CreateReaderException(this, "Could not convert string to integer: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
-        }
-      }
-
-      if (TokenType == JsonToken.EndArray)
-        return null;
-
-      throw CreateReaderException(this, "Error reading integer. Expected a number but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+    /// <summary>
+    /// Reads the next JSON token from the stream as a <see cref="Nullable{DateTime}"/>.
+    /// </summary>
+    /// <returns>A <see cref="String"/>. This method will return <c>null</c> at the end of an array.</returns>
+    public override DateTime? ReadAsDateTime()
+    {
+      return ReadAsDateTimeInternal();
     }
 
 #if !NET20
@@ -308,35 +228,7 @@ namespace Newtonsoft.Json.Bson
     /// </returns>
     public override DateTimeOffset? ReadAsDateTimeOffset()
     {
-      Read();
-
-      if (TokenType == JsonToken.Date)
-      {
-        SetToken(JsonToken.Date, new DateTimeOffset((DateTime) Value));
-        return (DateTimeOffset) Value;
-      }
-
-      if (TokenType == JsonToken.Null)
-        return null;
-
-      DateTimeOffset dt;
-      if (TokenType == JsonToken.String)
-      {
-        if (DateTimeOffset.TryParse((string)Value, Culture, DateTimeStyles.None, out dt))
-        {
-          SetToken(JsonToken.Date, dt);
-          return dt;
-        }
-        else
-        {
-          throw CreateReaderException(this, "Could not convert string to DateTimeOffset: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
-        }
-      }
-
-      if (TokenType == JsonToken.EndArray)
-        return null;
-
-      throw CreateReaderException(this, "Error reading date. Expected date but got {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+      return ReadAsDateTimeOffsetInternal();
     }
 #endif
 
@@ -347,6 +239,13 @@ namespace Newtonsoft.Json.Bson
     /// true if the next token was read successfully; false if there are no more tokens to read.
     /// </returns>
     public override bool Read()
+    {
+      _readType = Json.ReadType.Read;
+
+      return ReadInternal();
+    }
+
+    internal override bool ReadInternal()
     {
       try
       {

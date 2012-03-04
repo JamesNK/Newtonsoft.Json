@@ -70,7 +70,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual(@"{
   ""FirstName"": ""Maurice"",
   ""LastName"": ""Moss"",
-  ""BirthDate"": ""\/Date(252291661000)\/""
+  ""BirthDate"": ""1977-12-30T01:01:01Z""
 }", iPersonJson);
     }
 

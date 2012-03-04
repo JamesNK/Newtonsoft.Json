@@ -202,46 +202,6 @@ namespace Newtonsoft.Json.Tests.Converters
     }
 
     [Test]
-    public void DeserializeUTC()
-    {
-      DateTimeTestClass c =
-        JsonConvert.DeserializeObject<DateTimeTestClass>(@"{""PreField"":""Pre"",""DateTimeField"":""2008-12-12T12:12:12Z"",""DateTimeOffsetField"":""2008-12-12T12:12:12Z"",""PostField"":""Post""}", new IsoDateTimeConverter() { DateTimeStyles = DateTimeStyles.AssumeUniversal });
-
-      Assert.AreEqual(new DateTime(2008, 12, 12, 12, 12, 12, 0, DateTimeKind.Utc).ToLocalTime(), c.DateTimeField);
-      Assert.AreEqual(new DateTimeOffset(2008, 12, 12, 12, 12, 12, 0, TimeSpan.Zero), c.DateTimeOffsetField);
-      Assert.AreEqual("Pre", c.PreField);
-      Assert.AreEqual("Post", c.PostField);
-
-      DateTimeTestClass c2 =
-       JsonConvert.DeserializeObject<DateTimeTestClass>(@"{""PreField"":""Pre"",""DateTimeField"":""2008-01-01T01:01:01Z"",""DateTimeOffsetField"":""2008-01-01T01:01:01Z"",""PostField"":""Post""}", new IsoDateTimeConverter() { DateTimeStyles = DateTimeStyles.AssumeUniversal });
-
-      Assert.AreEqual(new DateTime(2008, 1, 1, 1, 1, 1, 0, DateTimeKind.Utc).ToLocalTime(), c2.DateTimeField);
-      Assert.AreEqual(new DateTimeOffset(2008, 1, 1, 1, 1, 1, 0, TimeSpan.Zero), c2.DateTimeOffsetField);
-      Assert.AreEqual("Pre", c2.PreField);
-      Assert.AreEqual("Post", c2.PostField);
-    }
-
-    [Test]
-    public void NullableDeserializeUTC()
-    {
-      NullableDateTimeTestClass c =
-        JsonConvert.DeserializeObject<NullableDateTimeTestClass>(@"{""PreField"":""Pre"",""DateTimeField"":""2008-12-12T12:12:12Z"",""DateTimeOffsetField"":""2008-12-12T12:12:12Z"",""PostField"":""Post""}", new IsoDateTimeConverter() { DateTimeStyles = DateTimeStyles.AssumeUniversal });
-
-      Assert.AreEqual(new DateTime(2008, 12, 12, 12, 12, 12, 0, DateTimeKind.Utc).ToLocalTime(), c.DateTimeField);
-      Assert.AreEqual(new DateTimeOffset(2008, 12, 12, 12, 12, 12, 0, TimeSpan.Zero), c.DateTimeOffsetField);
-      Assert.AreEqual("Pre", c.PreField);
-      Assert.AreEqual("Post", c.PostField);
-
-      NullableDateTimeTestClass c2 =
-       JsonConvert.DeserializeObject<NullableDateTimeTestClass>(@"{""PreField"":""Pre"",""DateTimeField"":null,""DateTimeOffsetField"":null,""PostField"":""Post""}", new IsoDateTimeConverter() { DateTimeStyles = DateTimeStyles.AssumeUniversal });
-
-      Assert.AreEqual(null, c2.DateTimeField);
-      Assert.AreEqual(null, c2.DateTimeOffsetField);
-      Assert.AreEqual("Pre", c2.PreField);
-      Assert.AreEqual("Post", c2.PostField);
-    }
-
-    [Test]
     public void NullableDeserializeEmptyString()
     {
       string json = @"{""DateTimeField"":""""}";

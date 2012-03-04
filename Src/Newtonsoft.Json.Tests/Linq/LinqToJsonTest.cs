@@ -349,13 +349,13 @@ keyword such as type of business.""
     ""Test3"": ""Test3Value"",
     ""Test4"": null
   },
-  ""\/Date(971136000000)\/"",
+  ""2000-10-10T00:00:00Z"",
   55,
   [
     ""1"",
     2,
     3.0,
-    ""\/Date(-62030076711000)\/""
+    ""0004-05-06T07:08:09Z""
   ],
   new ConstructorName(
     ""param1"",

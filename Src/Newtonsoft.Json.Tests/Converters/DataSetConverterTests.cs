@@ -170,7 +170,7 @@ namespace Newtonsoft.Json.Tests.Converters
   ]
 }";
 
-      DataSet ds = JsonConvert.DeserializeObject<DataSet>(json, new IsoDateTimeConverter());
+      DataSet ds = JsonConvert.DeserializeObject<DataSet>(json);
       Assert.IsNotNull(ds);
 
       Assert.AreEqual(2, ds.Tables.Count);
@@ -187,7 +187,7 @@ namespace Newtonsoft.Json.Tests.Converters
       Assert.AreEqual("TimeSpanCol", dt.Columns[3].ColumnName);
       Assert.AreEqual(typeof(string), dt.Columns[3].DataType);
       Assert.AreEqual("DateTimeCol", dt.Columns[4].ColumnName);
-      Assert.AreEqual(typeof(string), dt.Columns[4].DataType);
+      Assert.AreEqual(typeof(DateTime), dt.Columns[4].DataType);
       Assert.AreEqual("DecimalCol", dt.Columns[5].ColumnName);
       Assert.AreEqual(typeof(double), dt.Columns[5].DataType);
 
@@ -270,7 +270,7 @@ namespace Newtonsoft.Json.Tests.Converters
       ""int32Col"": 1,
       ""booleanCol"": true,
       ""timeSpanCol"": ""10.22:10:15.1000000"",
-      ""dateTimeCol"": ""\/Date(978048000000)\/"",
+      ""dateTimeCol"": ""2000-12-29T00:00:00Z"",
       ""decimalCol"": 64.0021
     },
     {
@@ -278,7 +278,7 @@ namespace Newtonsoft.Json.Tests.Converters
       ""int32Col"": 2,
       ""booleanCol"": true,
       ""timeSpanCol"": ""10.22:10:15.1000000"",
-      ""dateTimeCol"": ""\/Date(978048000000)\/"",
+      ""dateTimeCol"": ""2000-12-29T00:00:00Z"",
       ""decimalCol"": 64.0021
     }
   ],
@@ -288,7 +288,7 @@ namespace Newtonsoft.Json.Tests.Converters
       ""int32Col"": 1,
       ""booleanCol"": true,
       ""timeSpanCol"": ""10.22:10:15.1000000"",
-      ""dateTimeCol"": ""\/Date(978048000000)\/"",
+      ""dateTimeCol"": ""2000-12-29T00:00:00Z"",
       ""decimalCol"": 64.0021
     }
   ]

@@ -47,17 +47,6 @@ namespace Newtonsoft.Json.Serialization
     Linq
   }
 
-  internal enum ReadType
-  {
-    Read,
-    ReadAsInt32,
-    ReadAsDecimal,
-    ReadAsBytes,
-#if !NET20
-    ReadAsDateTimeOffset
-#endif
-  }
-
   /// <summary>
   /// Contract details for a <see cref="Type"/> used by the <see cref="JsonSerializer"/>.
   /// </summary>
@@ -203,6 +192,14 @@ namespace Newtonsoft.Json.Serialization
       else if (NonNullableUnderlyingType == typeof(decimal))
       {
         InternalReadType = ReadType.ReadAsDecimal;
+      }
+      else if (NonNullableUnderlyingType == typeof(string))
+      {
+        InternalReadType = ReadType.ReadAsString;
+      }
+      else if (NonNullableUnderlyingType == typeof(DateTime))
+      {
+        InternalReadType = ReadType.ReadAsDateTime;
       }
 #if !NET20
       else if (NonNullableUnderlyingType == typeof(DateTimeOffset))

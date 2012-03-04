@@ -97,7 +97,7 @@ namespace Newtonsoft.Json.Tests.Converters
     ""Int32Col"": 2147483647,
     ""BooleanCol"": true,
     ""TimeSpanCol"": ""10.22:10:15.1000000"",
-    ""DateTimeCol"": ""\/Date(978048000000)\/"",
+    ""DateTimeCol"": ""2000-12-29T00:00:00Z"",
     ""DecimalCol"": 64.0021
   }
 ]", json);

@@ -103,7 +103,11 @@
     <Compile Include="Converters\StringEnumConverter.cs" />
     <Compile Include="ConstructorHandling.cs" />
     <Compile Include="Converters\VersionConverter.cs" />
+    <Compile Include="DateFormatHandling.cs" />
+    <Compile Include="DateTimeZoneHandling.cs" />
+    <Compile Include="Formatting.cs" />
     <Compile Include="JsonConstructorAttribute.cs" />
+    <Compile Include="JsonPosition.cs" />
     <Compile Include="Utilities\DynamicProxy.cs" />
     <Compile Include="Linq\JPath.cs" />
     <Compile Include="Linq\JRaw.cs" />
@@ -132,7 +136,6 @@
     <Compile Include="ObjectCreationHandling.cs" />
     <Compile Include="Converters\IsoDateTimeConverter.cs" />
     <Compile Include="Converters\JavaScriptDateTimeConverter.cs" />
-    <Compile Include="Converters\JsonDateTimeSerializationMode.cs" />
     <Compile Include="Converters\XmlNodeConverter.cs" />
     <Compile Include="JsonTextReader.cs" />
     <Compile Include="JsonPropertyAttribute.cs" />
@@ -233,6 +236,7 @@
     <Compile Include="Utilities\ReflectionUtils.cs" />
     <Compile Include="Utilities\StringUtils.cs" />
     <Compile Include="Utilities\ValidationUtils.cs" />
+    <Compile Include="WriteState.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

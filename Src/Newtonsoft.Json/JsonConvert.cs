@@ -85,11 +85,46 @@ namespace Newtonsoft.Json
     /// <returns>A JSON string representation of the <see cref="DateTime"/>.</returns>
     public static string ToString(DateTime value)
     {
+      return ToString(value, DateFormatHandling.IsoDateFormat, DateTimeZoneHandling.RoundtripKind);
+    }
+
+    /// <summary>
+    /// Converts the <see cref="DateTime"/> to its JSON string representation using the <see cref="DateFormatHandling"/> specified.
+    /// </summary>
+    /// <param name="value">The value to convert.</param>
+    /// <param name="format">The format the date will be converted to.</param>
+    /// <returns>A JSON string representation of the <see cref="DateTime"/>.</returns>
+    public static string ToString(DateTime value, DateFormatHandling format, DateTimeZoneHandling timeZoneOption)
+    {
+      DateTime updatedDateTime = EnsureDateTime(value, timeZoneOption);
+
       using (StringWriter writer = StringUtils.CreateStringWriter(64))
       {
-        WriteDateTimeString(writer, value, value.GetUtcOffset(), value.Kind);
+        WriteDateTimeString(writer, updatedDateTime, updatedDateTime.GetUtcOffset(), updatedDateTime.Kind, format);
         return writer.ToString();
       }
+    }
+
+    internal static DateTime EnsureDateTime(DateTime value, DateTimeZoneHandling timeZone)
+    {
+      switch (timeZone)
+      {
+        case DateTimeZoneHandling.Local:
+          value = SwitchToLocalTime(value);
+          break;
+        case DateTimeZoneHandling.Utc:
+          value = SwitchToUtcTime(value);
+          break;
+        case DateTimeZoneHandling.Unspecified:
+          value = new DateTime(value.Ticks, DateTimeKind.Unspecified);
+          break;
+        case DateTimeZoneHandling.RoundtripKind:
+          break;
+        default:
+          throw new ArgumentException("Invalid date time handling value.");
+      }
+
+      return value;
     }
 
 #if !PocketPC && !NET20
@@ -100,44 +135,88 @@ namespace Newtonsoft.Json
     /// <returns>A JSON string representation of the <see cref="DateTimeOffset"/>.</returns>
     public static string ToString(DateTimeOffset value)
     {
+      return ToString(value, DateFormatHandling.IsoDateFormat);
+    }
+
+    /// <summary>
+    /// Converts the <see cref="DateTimeOffset"/> to its JSON string representation using the <see cref="DateFormatHandling"/> specified.
+    /// </summary>
+    /// <param name="value">The value to convert.</param>
+    /// <param name="format">The format the date will be converted to.</param>
+    /// <returns>A JSON string representation of the <see cref="DateTimeOffset"/>.</returns>
+    public static string ToString(DateTimeOffset value, DateFormatHandling format)
+    {
       using (StringWriter writer = StringUtils.CreateStringWriter(64))
       {
-        WriteDateTimeString(writer, value.UtcDateTime, value.Offset, DateTimeKind.Local);
+        WriteDateTimeString(writer, (format == DateFormatHandling.IsoDateFormat) ? value.DateTime : value.UtcDateTime, value.Offset, DateTimeKind.Local, format);
         return writer.ToString();
       }
     }
 #endif
 
-    internal static void WriteDateTimeString(TextWriter writer, DateTime value)
+    internal static void WriteDateTimeString(TextWriter writer, DateTime value, DateFormatHandling format)
     {
-      WriteDateTimeString(writer, value, value.GetUtcOffset(), value.Kind);
+      WriteDateTimeString(writer, value, value.GetUtcOffset(), value.Kind, format);
     }
 
-    internal static void WriteDateTimeString(TextWriter writer, DateTime value, TimeSpan offset, DateTimeKind kind)
+    internal static void WriteDateTimeString(TextWriter writer, DateTime value, TimeSpan offset, DateTimeKind kind, DateFormatHandling format)
     {
-      long javaScriptTicks = ConvertDateTimeToJavaScriptTicks(value, offset);
-
-      writer.Write(@"""\/Date(");
-      writer.Write(javaScriptTicks);
-
-      switch (kind)
+      if (format == DateFormatHandling.MicrosoftDateFormat)
       {
-        case DateTimeKind.Local:
-        case DateTimeKind.Unspecified:
-          writer.Write((offset.Ticks >= 0L) ? "+" : "-");
+        long javaScriptTicks = ConvertDateTimeToJavaScriptTicks(value, offset);
 
-          int absHours = Math.Abs(offset.Hours);
-          if (absHours < 10)
-            writer.Write(0);
-          writer.Write(absHours);
-          int absMinutes = Math.Abs(offset.Minutes);
-          if (absMinutes < 10)
-            writer.Write(0);
-          writer.Write(absMinutes);
-          break;
+        writer.Write(@"""\/Date(");
+        writer.Write(javaScriptTicks);
+
+        switch (kind)
+        {
+          case DateTimeKind.Unspecified:
+            if (value != DateTime.MaxValue && value != DateTime.MinValue)
+              WriteDateTimeOffset(writer, offset, format);
+            break;
+          case DateTimeKind.Local:
+            WriteDateTimeOffset(writer, offset, format);
+            break;
+        }
+
+        writer.Write(@")\/""");
       }
+      else
+      {
+        writer.Write(@"""");
+        writer.Write(value.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFF", CultureInfo.InvariantCulture));
 
-      writer.Write(@")\/""");
+        switch (kind)
+        {
+          case DateTimeKind.Local:
+            WriteDateTimeOffset(writer, offset, format);
+            break;
+          case DateTimeKind.Utc:
+            writer.Write("Z");
+            break;
+        }
+
+
+        writer.Write(@"""");
+      }
+    }
+
+    internal static void WriteDateTimeOffset(TextWriter writer, TimeSpan offset, DateFormatHandling format)
+    {
+      writer.Write((offset.Ticks >= 0L) ? "+" : "-");
+
+      int absHours = Math.Abs(offset.Hours);
+      if (absHours < 10)
+        writer.Write(0);
+      writer.Write(absHours);
+
+      if (format == DateFormatHandling.IsoDateFormat)
+        writer.Write(':');
+
+      int absMinutes = Math.Abs(offset.Minutes);
+      if (absMinutes < 10)
+        writer.Write(0);
+      writer.Write(absMinutes);
     }
 
     private static long ToUniversalTicks(DateTime dateTime)
@@ -150,7 +229,9 @@ namespace Newtonsoft.Json
 
     private static long ToUniversalTicks(DateTime dateTime, TimeSpan offset)
     {
-      if (dateTime.Kind == DateTimeKind.Utc)
+      // special case min and max value
+      // they never have a timezone appended to avoid issues
+      if (dateTime.Kind == DateTimeKind.Utc || dateTime == DateTime.MaxValue || dateTime == DateTime.MinValue)
         return dateTime.Ticks;
 
       long ticks = dateTime.Ticks - offset.Ticks;
@@ -194,6 +275,38 @@ namespace Newtonsoft.Json
       DateTime dateTime = new DateTime((javaScriptTicks*10000) + InitialJavaScriptDateTicks, DateTimeKind.Utc);
 
       return dateTime;
+    }
+
+    private static DateTime SwitchToLocalTime(DateTime value)
+    {
+      switch (value.Kind)
+      {
+        case DateTimeKind.Unspecified:
+          return new DateTime(value.Ticks, DateTimeKind.Local);
+
+        case DateTimeKind.Utc:
+          return value.ToLocalTime();
+
+        case DateTimeKind.Local:
+          return value;
+      }
+      return value;
+    }
+
+    private static DateTime SwitchToUtcTime(DateTime value)
+    {
+      switch (value.Kind)
+      {
+        case DateTimeKind.Unspecified:
+          return new DateTime(value.Ticks, DateTimeKind.Utc);
+
+        case DateTimeKind.Utc:
+          return value;
+
+        case DateTimeKind.Local:
+          return value.ToUniversalTime();
+      }
+      return value;
     }
 
     /// <summary>
@@ -577,6 +690,20 @@ namespace Newtonsoft.Json
                                           : null;
 
       return SerializeObject(value, formatting, settings);
+    }
+
+    /// <summary>
+    /// Serializes the specified object to a JSON string using a collection of <see cref="JsonConverter"/>.
+    /// </summary>
+    /// <param name="value">The object to serialize.</param>
+    /// <param name="settings">The <see cref="JsonSerializerSettings"/> used to serialize the object.
+    /// If this is null, default serialization settings will be is used.</param>
+    /// <returns>
+    /// A JSON string representation of the object.
+    /// </returns>
+    public static string SerializeObject(object value, JsonSerializerSettings settings)
+    {
+      return SerializeObject(value, Formatting.None, settings);
     }
 
     /// <summary>

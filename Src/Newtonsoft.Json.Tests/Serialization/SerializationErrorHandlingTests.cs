@@ -290,10 +290,10 @@ namespace Newtonsoft.Json.Tests.Serialization
         e = ex;
       }
 
-      Assert.AreEqual(@"Error converting value ""kjhkjhkjhkjh"" to type 'System.DateTime'. Line 1, position 16.", e.Message);
+      Assert.AreEqual(@"Could not convert string to DateTime: kjhkjhkjhkjh. Line 1, position 16.", e.Message);
 
       Assert.AreEqual(1, errors.Count);
-      Assert.AreEqual(@"[0][0] - 0 - Error converting value ""kjhkjhkjhkjh"" to type 'System.DateTime'. Line 1, position 16.", errors[0]);
+      Assert.AreEqual(@"[0][0] - 0 - Could not convert string to DateTime: kjhkjhkjhkjh. Line 1, position 16.", errors[0]);
     }
 
     [Test]

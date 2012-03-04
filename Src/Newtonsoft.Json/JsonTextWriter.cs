@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.IO;
 using System.Xml;
@@ -426,8 +427,10 @@ namespace Newtonsoft.Json
     /// <param name="value">The <see cref="DateTime"/> value to write.</param>
     public override void WriteValue(DateTime value)
     {
+      
+
       base.WriteValue(value);
-      JsonConvert.WriteDateTimeString(_writer, value);
+      JsonConvert.WriteDateTimeString(_writer, value, DateFormatHandling);
     }
 
     /// <summary>
@@ -455,7 +458,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(DateTimeOffset value)
     {
       base.WriteValue(value);
-      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Date);
+      WriteValueInternal(JsonConvert.ToString(value, DateFormatHandling), JsonToken.Date);
     }
 #endif
 

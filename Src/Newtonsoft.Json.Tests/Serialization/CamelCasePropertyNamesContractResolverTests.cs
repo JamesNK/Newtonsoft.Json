@@ -53,8 +53,8 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       Assert.AreEqual(@"{
   ""name"": ""Name!"",
-  ""birthDate"": ""\/Date(974764544000)\/"",
-  ""lastModified"": ""\/Date(974764544000)\/""
+  ""birthDate"": ""2000-11-20T23:55:44Z"",
+  ""lastModified"": ""2000-11-20T23:55:44Z""
 }", json);
 
       Person deserializedPerson = JsonConvert.DeserializeObject<Person>(json, new JsonSerializerSettings
@@ -69,8 +69,8 @@ namespace Newtonsoft.Json.Tests.Serialization
       json = JsonConvert.SerializeObject(person, Formatting.Indented);
       Assert.AreEqual(@"{
   ""Name"": ""Name!"",
-  ""BirthDate"": ""\/Date(974764544000)\/"",
-  ""LastModified"": ""\/Date(974764544000)\/""
+  ""BirthDate"": ""2000-11-20T23:55:44Z"",
+  ""LastModified"": ""2000-11-20T23:55:44Z""
 }", json);
 
     }
@@ -160,7 +160,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       Assert.AreEqual(@"{
   ""name"": ""Widget"",
-  ""expiryDate"": ""\/Date(1292868060000)\/"",
+  ""expiryDate"": ""2010-12-20T18:01:00Z"",
   ""price"": 9.99,
   ""sizes"": [
     ""Small"",

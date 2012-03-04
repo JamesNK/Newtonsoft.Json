@@ -107,6 +107,16 @@ namespace Newtonsoft.Json.Converters
         return null;
       }
 
+      if (reader.TokenType == JsonToken.Date)
+      {
+#if !PocketPC && !NET20
+        if (t == typeof(DateTimeOffset))
+          return new DateTimeOffset((DateTime)reader.Value);
+#endif
+
+        return reader.Value;
+      }
+
       if (reader.TokenType != JsonToken.String)
         throw new Exception("Unexpected token parsing date. Expected String, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
 

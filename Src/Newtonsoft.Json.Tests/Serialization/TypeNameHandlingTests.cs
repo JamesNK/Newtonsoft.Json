@@ -192,8 +192,8 @@ namespace Newtonsoft.Json.Tests.Serialization
   {
     ""$type"": """ + personRef + @""",
     ""Name"": null,
-    ""BirthDate"": ""\/Date(978134400000)\/"",
-    ""LastModified"": ""\/Date(978134400000)\/""
+    ""BirthDate"": ""2000-12-30T00:00:00Z"",
+    ""LastModified"": ""2000-12-30T00:00:00Z""
   },
   ""String!"",
   -2147483648
@@ -870,7 +870,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       Assert.AreEqual(output, @"{
   ""$type"": """ + carClassRef + @""",
-  ""Year"": ""\/Date(970707661000)\/"",
+  ""Year"": ""2000-10-05T01:01:01Z"",
   ""Objects"": {
     ""$type"": ""System.Object[], mscorlib"",
     ""$values"": [
