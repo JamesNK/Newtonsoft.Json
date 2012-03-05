@@ -93,10 +93,11 @@ namespace Newtonsoft.Json
     /// </summary>
     /// <param name="value">The value to convert.</param>
     /// <param name="format">The format the date will be converted to.</param>
+    /// <param name="timeZoneHandling">The time zone handling when the date is converted to a string.</param>
     /// <returns>A JSON string representation of the <see cref="DateTime"/>.</returns>
-    public static string ToString(DateTime value, DateFormatHandling format, DateTimeZoneHandling timeZoneOption)
+    public static string ToString(DateTime value, DateFormatHandling format, DateTimeZoneHandling timeZoneHandling)
     {
-      DateTime updatedDateTime = EnsureDateTime(value, timeZoneOption);
+      DateTime updatedDateTime = EnsureDateTime(value, timeZoneHandling);
 
       using (StringWriter writer = StringUtils.CreateStringWriter(64))
       {

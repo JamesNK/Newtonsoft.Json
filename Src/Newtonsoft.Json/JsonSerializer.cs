@@ -285,24 +285,36 @@ namespace Newtonsoft.Json
       set { _context = value; }
     }
 
+    /// <summary>
+    /// Indicates how JSON text output is formatted.
+    /// </summary>
     public virtual Formatting Formatting
     {
       get { return _formatting ?? JsonSerializerSettings.DefaultFormatting; }
       set { _formatting = value; }
     }
 
+    /// <summary>
+    /// Get or set how dates are written to JSON text.
+    /// </summary>
     public virtual DateFormatHandling DateFormatHandling
     {
       get { return _dateFormatHandling ?? JsonSerializerSettings.DefaultDateFormatHandling; }
       set { _dateFormatHandling = value; }
     }
 
+    /// <summary>
+    /// Get or set how <see cref="DateTime"/> time zones are handling during serialization and deserialization.
+    /// </summary>
     public virtual DateTimeZoneHandling DateTimeZoneHandling
     {
       get { return _dateTimeZoneHandling ?? JsonSerializerSettings.DefaultDateTimeZoneHandling; }
       set { _dateTimeZoneHandling = value; }
     }
 
+    /// <summary>
+    /// Gets or sets the culture used when reading JSON. Defaults to <see cref="CultureInfo.InvariantCulture"/>.
+    /// </summary>
     public virtual CultureInfo Culture
     {
       get { return _culture ?? JsonSerializerSettings.DefaultCulture; }

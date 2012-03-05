@@ -137,6 +137,9 @@ namespace Newtonsoft.Json
       protected internal set { _quoteChar = value; }
     }
 
+    /// <summary>
+    /// Get or set how <see cref="DateTime"/> time zones are handling when reading JSON.
+    /// </summary>
     public DateTimeZoneHandling DateTimeZoneHandling
     {
       get { return _dateTimeZoneHandling; }
