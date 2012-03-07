@@ -266,27 +266,16 @@ namespace Newtonsoft.Json.Linq
       if (item == null)
         return new JValue((object) null);
 
-      if (item.Parent != null)
-      {
+      if (skipParentCheck)
+        return item;
+
+      // to avoid a token having multiple parents or creating a recursive loop, create a copy if...
+      // the item already has a parent
+      // the item is being added to itself
+      // the item is being added to the root parent of itself
+      if (item.Parent != null || item == this || (item.HasValues && Root == item))
         item = item.CloneToken();
-      }
-      else
-      {
-        // check whether attempting to add a token to itself
-        // not possible with a value, only a container
-        if (item is JContainer && !skipParentCheck)
-        {
-          JContainer parent = this;
-          while (parent.Parent != null)
-          {
-            parent = parent.Parent;
-          }
-          if (item == parent)
-          {
-            item = item.CloneToken();
-          }
-        }
-      }
+
       return item;
     }
 

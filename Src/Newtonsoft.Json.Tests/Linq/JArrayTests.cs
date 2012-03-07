@@ -21,6 +21,15 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
+    public void AddToSelf()
+    {
+      JArray a = new JArray();
+      a.Add(a);
+
+      Assert.IsFalse(ReferenceEquals(a[0], a));
+    }
+
+    [Test]
     public void Contains()
     {
       JValue v = new JValue(1);
