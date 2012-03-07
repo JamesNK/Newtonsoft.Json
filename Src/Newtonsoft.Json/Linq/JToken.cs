@@ -167,7 +167,7 @@ namespace Newtonsoft.Json.Linq
         throw new InvalidOperationException("The parent is missing.");
 
       int index = _parent.IndexOfItem(this);
-      _parent.AddInternal(index + 1, content);
+      _parent.AddInternal(index + 1, content, false);
     }
 
     /// <summary>
@@ -180,7 +180,7 @@ namespace Newtonsoft.Json.Linq
         throw new InvalidOperationException("The parent is missing.");
 
       int index = _parent.IndexOfItem(this);
-      _parent.AddInternal(index, content);
+      _parent.AddInternal(index, content, false);
     }
 
     /// <summary>

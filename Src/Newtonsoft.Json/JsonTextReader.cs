@@ -159,11 +159,13 @@ namespace Newtonsoft.Json
 
     private bool ParseDateIso(string text)
     {
+      const string isoDateFormat = "yyyy-MM-ddTHH:mm:ss.FFFFFFFK";
+
 #if !NET20
       if (_readType == ReadType.ReadAsDateTimeOffset)
       {
         DateTimeOffset dateTimeOffset;
-        if (DateTimeOffset.TryParseExact(text, "yyyy-MM-ddTHH:mm:ss.FFFFFFFK", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out dateTimeOffset))
+        if (DateTimeOffset.TryParseExact(text, isoDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out dateTimeOffset))
         {
           SetToken(JsonToken.Date, dateTimeOffset);
           return true;
@@ -173,7 +175,7 @@ namespace Newtonsoft.Json
 #endif
       {
         DateTime dateTime;
-        if (DateTime.TryParseExact(text, "yyyy-MM-ddTHH:mm:ss.FFFFFFFK", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out dateTime))
+        if (DateTime.TryParseExact(text, isoDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out dateTime))
         {
           dateTime = JsonConvert.EnsureDateTime(dateTime, DateTimeZoneHandling);
 

@@ -26,6 +26,9 @@
 using System;
 using System.IO;
 using System.Globalization;
+#if !(NET20 || NET35 || SILVERLIGHT)
+using System.Threading.Tasks;
+#endif
 using Newtonsoft.Json.Utilities;
 using System.Xml;
 using Newtonsoft.Json.Converters;
@@ -643,6 +646,7 @@ namespace Newtonsoft.Json
       return IsJsonPrimitiveTypeCode(Type.GetTypeCode(type));
     }
 
+    #region Serialize
     /// <summary>
     /// Serializes the specified object to a JSON string.
     /// </summary>
@@ -733,6 +737,50 @@ namespace Newtonsoft.Json
       return sw.ToString();
     }
 
+#if !(NET20 || NET35 || SILVERLIGHT)
+    /// <summary>
+    /// Asynchronously serializes the specified object to a JSON string using a collection of <see cref="JsonConverter"/>.
+    /// </summary>
+    /// <param name="value">The object to serialize.</param>
+    /// <returns>
+    /// A task that represents the asynchronous serialize operation. The value of the <c>TResult</c> parameter contains a JSON string representation of the object.
+    /// </returns>
+    public static Task<string> SerializeObjectAsync(object value)
+    {
+      return SerializeObjectAsync(value, Formatting.None, null);
+    }
+
+    /// <summary>
+    /// Asynchronously serializes the specified object to a JSON string using a collection of <see cref="JsonConverter"/>.
+    /// </summary>
+    /// <param name="value">The object to serialize.</param>
+    /// <param name="formatting">Indicates how the output is formatted.</param>
+    /// <returns>
+    /// A task that represents the asynchronous serialize operation. The value of the <c>TResult</c> parameter contains a JSON string representation of the object.
+    /// </returns>
+    public static Task<string> SerializeObjectAsync(object value, Formatting formatting)
+    {
+      return SerializeObjectAsync(value, formatting, null);
+    }
+
+    /// <summary>
+    /// Asynchronously serializes the specified object to a JSON string using a collection of <see cref="JsonConverter"/>.
+    /// </summary>
+    /// <param name="value">The object to serialize.</param>
+    /// <param name="formatting">Indicates how the output is formatted.</param>
+    /// <param name="settings">The <see cref="JsonSerializerSettings"/> used to serialize the object.
+    /// If this is null, default serialization settings will be is used.</param>
+    /// <returns>
+    /// A task that represents the asynchronous serialize operation. The value of the <c>TResult</c> parameter contains a JSON string representation of the object.
+    /// </returns>
+    public static Task<string> SerializeObjectAsync(object value, Formatting formatting, JsonSerializerSettings settings)
+    {
+      return Task.Factory.StartNew(() => SerializeObject(value, formatting, settings));
+    }
+#endif
+    #endregion
+
+    #region Deserialize
     /// <summary>
     /// Deserializes the JSON to a .NET object.
     /// </summary>
@@ -868,6 +916,68 @@ namespace Newtonsoft.Json
       return deserializedValue;
     }
 
+#if !(NET20 || NET35 || SILVERLIGHT)
+    /// <summary>
+    /// Asynchronously deserializes the JSON to the specified .NET type.
+    /// </summary>
+    /// <typeparam name="T">The type of the object to deserialize to.</typeparam>
+    /// <param name="value">The JSON to deserialize.</param>
+    /// <returns>
+    /// A task that represents the asynchronous deserialize operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
+    /// </returns>
+    public static Task<T> DeserializeObjectAsync<T>(string value)
+    {
+      return DeserializeObjectAsync<T>(value, null);
+    }
+
+    /// <summary>
+    /// Asynchronously deserializes the JSON to the specified .NET type.
+    /// </summary>
+    /// <typeparam name="T">The type of the object to deserialize to.</typeparam>
+    /// <param name="value">The JSON to deserialize.</param>
+    /// <param name="settings">
+    /// The <see cref="JsonSerializerSettings"/> used to deserialize the object.
+    /// If this is null, default serialization settings will be is used.
+    /// </param>
+    /// <returns>
+    /// A task that represents the asynchronous deserialize operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
+    /// </returns>
+    public static Task<T> DeserializeObjectAsync<T>(string value, JsonSerializerSettings settings)
+    {
+      return Task.Factory.StartNew(() => DeserializeObject<T>(value, settings));
+    }
+
+    /// <summary>
+    /// Asynchronously deserializes the JSON to the specified .NET type.
+    /// </summary>
+    /// <param name="value">The JSON to deserialize.</param>
+    /// <returns>
+    /// A task that represents the asynchronous deserialize operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
+    /// </returns>
+    public static Task<object> DeserializeObjectAsync(string value)
+    {
+      return DeserializeObjectAsync(value, null, null);
+    }
+
+    /// <summary>
+    /// Asynchronously deserializes the JSON to the specified .NET type.
+    /// </summary>
+    /// <param name="value">The JSON to deserialize.</param>
+    /// <param name="type">The type of the object to deserialize to.</param>
+    /// <param name="settings">
+    /// The <see cref="JsonSerializerSettings"/> used to deserialize the object.
+    /// If this is null, default serialization settings will be is used.
+    /// </param>
+    /// <returns>
+    /// A task that represents the asynchronous deserialize operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
+    /// </returns>
+    public static Task<object> DeserializeObjectAsync(string value, Type type, JsonSerializerSettings settings)
+    {
+      return Task.Factory.StartNew(() => DeserializeObject(value, type, settings));
+    }
+#endif
+    #endregion
+
     /// <summary>
     /// Populates the object with values from the JSON string.
     /// </summary>
@@ -877,7 +987,6 @@ namespace Newtonsoft.Json
     {
       PopulateObject(value, target, null);
     }
-
 
     /// <summary>
     /// Populates the object with values from the JSON string.
@@ -901,6 +1010,25 @@ namespace Newtonsoft.Json
           throw new JsonSerializationException("Additional text found in JSON string after finishing deserializing object.");
       }
     }
+
+#if !(NET20 || NET35 || SILVERLIGHT)
+    /// <summary>
+    /// Asynchronously populates the object with values from the JSON string.
+    /// </summary>
+    /// <param name="value">The JSON to populate values from.</param>
+    /// <param name="target">The target object to populate values onto.</param>
+    /// <param name="settings">
+    /// The <see cref="JsonSerializerSettings"/> used to deserialize the object.
+    /// If this is null, default serialization settings will be is used.
+    /// </param>
+    /// <returns>
+    /// A task that represents the asynchronous populate operation.
+    /// </returns>
+    public static Task PopulateObjectAsync(string value, object target, JsonSerializerSettings settings)
+    {
+      return Task.Factory.StartNew(() => PopulateObject(value, target, settings));
+    }
+#endif
 
 #if !SILVERLIGHT
     /// <summary>

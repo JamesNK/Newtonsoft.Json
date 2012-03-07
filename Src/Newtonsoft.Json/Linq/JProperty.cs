@@ -78,7 +78,7 @@ namespace Newtonsoft.Json.Linq
 
         if (ChildrenTokens.Count == 0)
         {
-          InsertItem(0, newValue);
+          InsertItem(0, newValue, false);
         }
         else
         {
@@ -132,12 +132,12 @@ namespace Newtonsoft.Json.Linq
       throw new Exception("Cannot add or remove items from {0}.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
     }
 
-    internal override void InsertItem(int index, JToken item)
+    internal override void InsertItem(int index, JToken item, bool skipParentCheck)
     {
       if (Value != null)
         throw new Exception("{0} cannot have multiple values.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
 
-      base.InsertItem(0, item);
+      base.InsertItem(0, item, false);
     }
 
     internal override bool ContainsItem(JToken item)

@@ -146,13 +146,13 @@ namespace Newtonsoft.Json.Linq
       return (t != null && ContentsEqual(t));
     }
 
-    internal override void InsertItem(int index, JToken item)
+    internal override void InsertItem(int index, JToken item, bool skipParentCheck)
     {
       // don't add comments to JObject, no name to reference comment by
       if (item != null && item.Type == JTokenType.Comment)
         return;
 
-      base.InsertItem(index, item);
+      base.InsertItem(index, item, skipParentCheck);
     }
 
     internal override void ValidateToken(JToken o, JToken existing)

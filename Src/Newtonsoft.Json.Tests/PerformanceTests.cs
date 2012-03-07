@@ -704,7 +704,6 @@ namespace Newtonsoft.Json.Tests
     }
 
     [Test]
-    [Ignore]
     public void NestedJToken()
     {
       Stopwatch sw;
@@ -717,7 +716,7 @@ namespace Newtonsoft.Json.Tests
         for (int j = 0; j < i; j++)
         {
           JArray temp = new JArray();
-          ija.Add(temp);
+          ija.AddAndSkipParentCheck(temp);
           ija = temp;
         }
         ija.Add(1);
@@ -727,26 +726,21 @@ namespace Newtonsoft.Json.Tests
     }
 
     [Test]
-    [Ignore]
-    public void NestedXElement()
+    public void DeserializeNestedJToken()
     {
+      string json = (new string('[', 100000)) + "1" + ((new string(']', 100000)));
+
       Stopwatch sw;
-      for (int i = 10000; i <= 100000; i += 10000)
-      {
-        sw = new Stopwatch();
-        sw.Start();
-        XElement ija = new XElement("root");
-        XElement ijt = ija;
-        for (int j = 0; j < i; j++)
-        {
-          XElement temp = new XElement("child");
-          ija.Add(temp);
-          ija = temp;
-        }
-        ija.Add(1);
-        sw.Stop();
-        Console.WriteLine("Created a XElement of depth {0} (using OM) in {1} millis", i, sw.ElapsedMilliseconds);
-      }
+      sw = new Stopwatch();
+      sw.Start();
+
+      var a = (JArray)JsonConvert.DeserializeObject(json);
+
+      sw.Stop();
+
+      Assert.AreEqual(1, a.Count);
+      
+      Console.WriteLine("Deserialize big ass nested array in {0} millis", sw.ElapsedMilliseconds);
     }
   }
 

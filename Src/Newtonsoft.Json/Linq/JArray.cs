@@ -247,7 +247,7 @@ namespace Newtonsoft.Json.Linq
     /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.</exception>
     public void Insert(int index, JToken item)
     {
-      InsertItem(index, item);
+      InsertItem(index, item, false);
     }
 
     /// <summary>

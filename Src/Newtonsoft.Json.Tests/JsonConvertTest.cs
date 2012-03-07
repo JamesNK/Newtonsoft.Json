@@ -24,11 +24,18 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
+#if !(NET20 || NET35 || SILVERLIGHT)
+using System.Threading.Tasks;
+#endif
 using System.Xml;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Tests.Serialization;
+using Newtonsoft.Json.Tests.TestObjects;
 using Newtonsoft.Json.Utilities;
 using NUnit.Framework;
 
@@ -640,5 +647,78 @@ now brown cow?", '"', true);
 
       return (T)converter.ReadJson(reader, typeof(T), null, null);
     }
+
+#if !(NET20 || NET35 || SILVERLIGHT)
+    [Test]
+    public void Async()
+    {
+      Task<string> task = null;
+      
+      task = JsonConvert.SerializeObjectAsync(42);
+      task.Wait();
+
+      Assert.AreEqual("42", task.Result);
+
+      task = JsonConvert.SerializeObjectAsync(new[] {1, 2, 3, 4, 5}, Formatting.Indented);
+      task.Wait();
+
+      Assert.AreEqual(@"[
+  1,
+  2,
+  3,
+  4,
+  5
+]", task.Result);
+
+      task = JsonConvert.SerializeObjectAsync(DateTime.MaxValue, Formatting.None, new JsonSerializerSettings
+        {
+          DateFormatHandling = DateFormatHandling.MicrosoftDateFormat
+        });
+      task.Wait();
+
+      Assert.AreEqual(@"""\/Date(253402300799999)\/""", task.Result);
+
+      var taskObject = JsonConvert.DeserializeObjectAsync("[]");
+      taskObject.Wait();
+
+      Assert.AreEqual(new JArray(), taskObject.Result);
+
+      Task<object> taskVersionArray = JsonConvert.DeserializeObjectAsync("['2.0']", typeof(Version[]), new JsonSerializerSettings
+        {
+          Converters = {new VersionConverter()}
+        });
+      taskVersionArray.Wait();
+
+      Version[] versionArray = (Version[])taskVersionArray.Result;
+
+      Assert.AreEqual(1, versionArray.Length);
+      Assert.AreEqual(2, versionArray[0].Major);
+
+      Task<int> taskInt = JsonConvert.DeserializeObjectAsync<int>("5");
+      taskInt.Wait();
+
+      Assert.AreEqual(5, taskInt.Result);
+
+      var taskVersion = JsonConvert.DeserializeObjectAsync<Version>("'2.0'", new JsonSerializerSettings
+        {
+          Converters = {new VersionConverter()}
+        });
+      taskVersion.Wait();
+
+      Assert.AreEqual(2, taskVersion.Result.Major);
+
+      Movie p = new Movie();
+      p.Name = "Existing,";
+
+      Task taskVoid = JsonConvert.PopulateObjectAsync("{'Name':'Appended'}", p, new JsonSerializerSettings
+      {
+        Converters = new List<JsonConverter> { new JsonSerializerTest.StringAppenderConverter() }
+      });
+
+      taskVoid.Wait();
+
+      Assert.AreEqual("Existing,Appended", p.Name);
+    }
+#endif
   }
 }

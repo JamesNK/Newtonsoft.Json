@@ -261,7 +261,7 @@ namespace Newtonsoft.Json.Linq
       return (content is IEnumerable && !(content is string) && !(content is JToken) && !(content is byte[]));
     }
 
-    internal JToken EnsureParentToken(JToken item)
+    internal JToken EnsureParentToken(JToken item, bool skipParentCheck)
     {
       if (item == null)
         return new JValue((object) null);
@@ -273,14 +273,18 @@ namespace Newtonsoft.Json.Linq
       else
       {
         // check whether attempting to add a token to itself
-        JContainer parent = this;
-        while (parent.Parent != null)
+        // not possible with a value, only a container
+        if (item is JContainer && !skipParentCheck)
         {
-          parent = parent.Parent;
-        }
-        if (item == parent)
-        {
-          item = item.CloneToken();
+          JContainer parent = this;
+          while (parent.Parent != null)
+          {
+            parent = parent.Parent;
+          }
+          if (item == parent)
+          {
+            item = item.CloneToken();
+          }
         }
       }
       return item;
@@ -309,14 +313,14 @@ namespace Newtonsoft.Json.Linq
       return ChildrenTokens.IndexOf(item, JTokenReferenceEqualityComparer.Instance);
     }
 
-    internal virtual void InsertItem(int index, JToken item)
+    internal virtual void InsertItem(int index, JToken item, bool skipParentCheck)
     {
       if (index > ChildrenTokens.Count)
         throw new ArgumentOutOfRangeException("index", "Index must be within the bounds of the List.");
 
       CheckReentrancy();
 
-      item = EnsureParentToken(item);
+      item = EnsureParentToken(item, skipParentCheck);
 
       JToken previous = (index == 0) ? null : ChildrenTokens[index - 1];
       // haven't inserted new token yet so next token is still at the inserting index
@@ -409,7 +413,7 @@ namespace Newtonsoft.Json.Linq
 
       CheckReentrancy();
 
-      item = EnsureParentToken(item);
+      item = EnsureParentToken(item, false);
 
       ValidateToken(item, existing);
 
@@ -523,7 +527,12 @@ namespace Newtonsoft.Json.Linq
     /// <param name="content">The content to be added.</param>
     public virtual void Add(object content)
     {
-      AddInternal(ChildrenTokens.Count, content);
+      AddInternal(ChildrenTokens.Count, content, false);
+    }
+
+    internal void AddAndSkipParentCheck(JToken token)
+    {
+      AddInternal(ChildrenTokens.Count, token, true);
     }
 
     /// <summary>
@@ -532,10 +541,10 @@ namespace Newtonsoft.Json.Linq
     /// <param name="content">The content to be added.</param>
     public void AddFirst(object content)
     {
-      AddInternal(0, content);
+      AddInternal(0, content, false);
     }
 
-    internal void AddInternal(int index, object content)
+    internal void AddInternal(int index, object content, bool skipParentCheck)
     {
       if (IsMultiContent(content))
       {
@@ -544,7 +553,7 @@ namespace Newtonsoft.Json.Linq
         int multiIndex = index;
         foreach (object c in enumerable)
         {
-          AddInternal(multiIndex, c);
+          AddInternal(multiIndex, c, skipParentCheck);
           multiIndex++;
         }
       }
@@ -552,7 +561,7 @@ namespace Newtonsoft.Json.Linq
       {
         JToken item = CreateFromContent(content);
 
-        InsertItem(index, item);
+        InsertItem(index, item, skipParentCheck);
       }
     }
 
@@ -745,7 +754,7 @@ namespace Newtonsoft.Json.Linq
 
     void IList<JToken>.Insert(int index, JToken item)
     {
-      InsertItem(index, item);
+      InsertItem(index, item, false);
     }
 
     void IList<JToken>.RemoveAt(int index)
@@ -831,7 +840,7 @@ namespace Newtonsoft.Json.Linq
 
     void IList.Insert(int index, object value)
     {
-      InsertItem(index, EnsureValue(value));
+      InsertItem(index, EnsureValue(value), false);
     }
 
     bool IList.IsFixedSize

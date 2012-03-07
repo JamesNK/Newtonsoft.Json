@@ -81,7 +81,7 @@ namespace Newtonsoft.Json.Linq
       if (_parent == null)
         _token = container;
       else
-        _parent.Add(container);
+        _parent.AddAndSkipParentCheck(container);
 
       _parent = container;
     }
