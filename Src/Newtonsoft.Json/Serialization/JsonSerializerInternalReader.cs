@@ -468,7 +468,9 @@ namespace Newtonsoft.Json.Serialization
 #endif
       }
 
-      throw CreateSerializationException(reader, "Cannot deserialize JSON object into type '{0}'.".FormatWith(CultureInfo.InvariantCulture, objectType));
+      throw CreateSerializationException(reader, @"Cannot deserialize JSON object (i.e. {{""name"":""value""}}) into type '{0}'.
+The deserialized type should be a normal .NET type (i.e. not a primitive type like integer, not a collection type like an array or List<T>) or a dictionary type (i.e. Dictionary<TKey, TValue>).
+To force JSON objects to deserialize add the JsonObjectAttribute to the type.".FormatWith(CultureInfo.InvariantCulture, objectType));
     }
 
     private JsonArrayContract EnsureArrayContract(JsonReader reader, Type objectType, JsonContract contract)
@@ -478,7 +480,9 @@ namespace Newtonsoft.Json.Serialization
 
       JsonArrayContract arrayContract = contract as JsonArrayContract;
       if (arrayContract == null)
-        throw CreateSerializationException(reader, "Cannot deserialize JSON array into type '{0}'.".FormatWith(CultureInfo.InvariantCulture, objectType));
+        throw CreateSerializationException(reader, @"Cannot deserialize JSON array (i.e. [1,2,3]) into type '{0}'.
+The deserialized type must be an array or implement a collection interface like IEnumerable, ICollection or IList.
+To force JSON arrays to deserialize add the JsonArrayAttribute to the type.".FormatWith(CultureInfo.InvariantCulture, objectType));
 
       return arrayContract;
     }
@@ -954,8 +958,12 @@ namespace Newtonsoft.Json.Serialization
         newObject = contract.OverrideConstructor.Invoke(null);
       }
       else if (contract.DefaultCreator != null &&
-        (!contract.DefaultCreatorNonPublic || Serializer.ConstructorHandling == ConstructorHandling.AllowNonPublicDefaultConstructor))
+        (!contract.DefaultCreatorNonPublic || Serializer.ConstructorHandling == ConstructorHandling.AllowNonPublicDefaultConstructor || contract.ParametrizedConstructor == null))
       {
+        // use the default constructor if it is...
+        // public
+        // non-public and the user has change constructor handling settings
+        // non-public and there is no other constructor
         newObject = contract.DefaultCreator();
       }
       else if (contract.ParametrizedConstructor != null)

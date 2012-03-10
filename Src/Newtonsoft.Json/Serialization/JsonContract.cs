@@ -119,7 +119,7 @@ namespace Newtonsoft.Json.Serialization
     public Func<object> DefaultCreator { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether [default creator non public].
+    /// Gets or sets a value indicating whether the default creator is non public.
     /// </summary>
     /// <value><c>true</c> if the default object creator is non-public; otherwise, <c>false</c>.</value>
     public bool DefaultCreatorNonPublic { get; set; }

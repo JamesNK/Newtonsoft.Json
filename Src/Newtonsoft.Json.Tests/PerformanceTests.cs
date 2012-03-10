@@ -704,21 +704,6 @@ namespace Newtonsoft.Json.Tests
     }
 
     [Test]
-    public void RecursiveLoop()
-    {
-      JArray a1 = new JArray();
-      JArray a2 = new JArray();
-      JArray a3 = new JArray();
-      JArray a4 = new JArray();
-
-      a1.Add(a2);
-      a2.Add(a3);
-      a3.Add(a4);
-
-
-    }
-
-    [Test]
     public void NestedJToken()
     {
       Stopwatch sw;

@@ -405,10 +405,11 @@ DefaultValueHandling controls how Json.NET uses default values set using the .NE
             <div class="summary">
              By default Json.NET will first look for a constructor 
                 marked with the JsonConstructorAttribute, then look for a public default 
-                constructor (a constructor that doesn't take any arguments) and finally check if 
-                the class has a single public constructor with arguments. If the class has 
-                multiple public constructors with arguments an error will be thrown. This can be 
-                fixed by marking one of the constructors with the JsonConstructorAttribute.
+                constructor (a constructor that doesn't take any arguments), then check if 
+                the class has a single public constructor with arguments and finally check
+                for a non-public default constructor. If the class has multiple public
+                constructors with arguments an error will be thrown. This can be fixed by
+                marking one of the constructors with the JsonConstructorAttribute.
             </div>
             <br>
           </td>
@@ -419,8 +420,8 @@ DefaultValueHandling controls how Json.NET uses default values set using the .NE
           </td>
           <td>
             <div class="summary">
-             Json.NET will fallback to 
-                using a classes private default constructor if available.
+             Json.NET will use a classes private default constructor before constructors
+             with arguments if available.
             </div>
             <br>
           </td>

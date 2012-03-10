@@ -1905,7 +1905,9 @@ keyword such as type of business.""
     }
 
     [Test]
-    [ExpectedException(typeof (JsonSerializationException), ExpectedMessage = @"Cannot deserialize JSON array into type 'Newtonsoft.Json.Tests.TestObjects.Person'. Line 1, position 1.")]
+    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Cannot deserialize JSON array (i.e. [1,2,3]) into type 'Newtonsoft.Json.Tests.TestObjects.Person'.
+The deserialized type must be an array or implement a collection interface like IEnumerable, ICollection or IList.
+To force JSON arrays to deserialize add the JsonArrayAttribute to the type. Line 1, position 1.")]
     public void CannotDeserializeArrayIntoObject()
     {
       string json = @"[]";
@@ -1914,7 +1916,9 @@ keyword such as type of business.""
     }
 
     [Test]
-    [ExpectedException(typeof (JsonSerializationException), ExpectedMessage = @"Cannot deserialize JSON object into type 'System.Collections.Generic.List`1[Newtonsoft.Json.Tests.TestObjects.Person]'. Line 1, position 2.")]
+    [ExpectedException(typeof (JsonSerializationException), ExpectedMessage = @"Cannot deserialize JSON object (i.e. {""name"":""value""}) into type 'System.Collections.Generic.List`1[Newtonsoft.Json.Tests.TestObjects.Person]'.
+The deserialized type should be a normal .NET type (i.e. not a primitive type like integer, not a collection type like an array or List<T>) or a dictionary type (i.e. Dictionary<TKey, TValue>).
+To force JSON objects to deserialize add the JsonObjectAttribute to the type. Line 1, position 2.")]
     public void CannotDeserializeObjectIntoArray()
     {
       string json = @"{}";
@@ -5550,7 +5554,35 @@ Parameter name: value")]
       Assert.AreEqual("Pre", c2.PreField);
       Assert.AreEqual("Post", c2.PostField);
     }
+
+    [Test]
+    public void PrivateConstructor()
+    {
+      var person = PersonWithPrivateConstructor.CreatePerson();
+      person.Name = "John Doe";
+      person.Age = 25;
+
+      var serializedPerson = JsonConvert.SerializeObject(person);
+      var roundtrippedPerson = JsonConvert.DeserializeObject<PersonWithPrivateConstructor>(serializedPerson);
+
+      Assert.AreEqual(person.Name, roundtrippedPerson.Name);
+    }
 #endif
+  }
+
+  public class PersonWithPrivateConstructor
+  {
+    private PersonWithPrivateConstructor()
+    { }
+
+    public static PersonWithPrivateConstructor CreatePerson()
+    {
+      return new PersonWithPrivateConstructor();
+    }
+
+    public string Name { get; set; }
+
+    public int Age { get; set; }
   }
 
   public class DateTimeWrapper

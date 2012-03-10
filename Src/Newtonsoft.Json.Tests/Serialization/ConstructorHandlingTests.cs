@@ -7,12 +7,13 @@ namespace Newtonsoft.Json.Tests.Serialization
   public class ConstructorHandlingTests : TestFixtureBase
   {
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Unable to find a constructor to use for type Newtonsoft.Json.Tests.TestObjects.PrivateConstructorTestClass. A class should either have a default constructor, one constructor with arguments or a constructor marked with the JsonConstructor attribute. Line 1, position 6.")]
-    public void FailWithPrivateConstructorAndDefault()
+    public void UsePrivateConstructorIfThereAreMultipleConstructorsWithParametersAndNothingToFallbackTo()
     {
       string json = @"{Name:""Name!""}";
 
-      JsonConvert.DeserializeObject<PrivateConstructorTestClass>(json);
+      var c = JsonConvert.DeserializeObject<PrivateConstructorTestClass>(json);
+
+      Assert.AreEqual("Name!", c.Name);
     }
 
     [Test]
