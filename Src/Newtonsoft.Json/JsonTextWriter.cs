@@ -211,17 +211,13 @@ namespace Newtonsoft.Json
     /// Writes indent characters.
     /// </summary>
     protected override void WriteIndent()
-    {
+	{
       _writer.Write(Environment.NewLine);
 
       // levels of indentation multiplied by the indent count
-      int currentIndentCount = Top*_indentation;
-
-      for (int i = 0; i < currentIndentCount; i++)
-      {
-        _writer.Write(_indentChar);
-      }
-    }
+      int currentIndentCount = Top * _indentation;
+      _writer.Write("".PadRight(currentIndentCount, _indentChar));
+	}
 
     /// <summary>
     /// Writes the JSON value delimiter.
