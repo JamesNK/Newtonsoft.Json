@@ -2,11 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Tests.Linq
 {
+  [TestFixture]
   public class JRawTests : TestFixtureBase
   {
     [Test]
@@ -26,7 +33,7 @@ namespace Newtonsoft.Json.Tests.Linq
       JRaw r1 = new JRaw("raw1");
       JToken r2 = r1.CloneToken();
 
-      Assert.IsInstanceOfType(typeof(JRaw), r2);
+      CustomAssert.IsInstanceOfType(typeof(JRaw), r2);
     }
   }
 }

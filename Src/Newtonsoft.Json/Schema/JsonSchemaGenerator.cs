@@ -31,6 +31,10 @@ using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Serialization;
+using System.Reflection;
+#if NETFX_CORE
+using IConvertible = Newtonsoft.Json.Utilities.Convertible;
+#endif
 
 namespace Newtonsoft.Json.Schema
 {
@@ -175,7 +179,7 @@ namespace Newtonsoft.Json.Schema
       if (containerAttribute != null && !string.IsNullOrEmpty(containerAttribute.Description))
         return containerAttribute.Description;
 
-#if !PocketPC
+#if !PocketPC && !NETFX_CORE
       DescriptionAttribute descriptionAttribute = ReflectionUtils.GetAttribute<DescriptionAttribute>(type);
       if (descriptionAttribute != null)
         return descriptionAttribute.Description;
@@ -285,7 +289,7 @@ namespace Newtonsoft.Json.Schema
           case JsonContractType.Primitive:
             CurrentSchema.Type = GetJsonSchemaType(type, valueRequired);
 
-            if (CurrentSchema.Type == JsonSchemaType.Integer && type.IsEnum && !type.IsDefined(typeof (FlagsAttribute), true))
+            if (CurrentSchema.Type == JsonSchemaType.Integer && type.IsEnum() && !type.IsDefined(typeof (FlagsAttribute), true))
             {
               CurrentSchema.Enum = new List<JToken>();
               CurrentSchema.Options = new Dictionary<JToken, string>();
@@ -317,13 +321,13 @@ namespace Newtonsoft.Json.Schema
             if (keyType != null)
             {
               // can be converted to a string
-              if (typeof (IConvertible).IsAssignableFrom(keyType))
+              if (ConvertUtils.IsConvertible(keyType))
               {
                 CurrentSchema.AdditionalProperties = GenerateInternal(valueType, Required.Default, false);
               }
             }
             break;
-#if !SILVERLIGHT && !PocketPC
+#if !SILVERLIGHT && !PocketPC && !NETFX_CORE
           case JsonContractType.Serializable:
             CurrentSchema.Type = AddNullType(JsonSchemaType.Object, valueRequired);
             CurrentSchema.Id = GetTypeId(type, false);
@@ -378,11 +382,11 @@ namespace Newtonsoft.Json.Schema
         }
       }
 
-      if (type.IsSealed)
+      if (type.IsSealed())
         CurrentSchema.AllowAdditionalProperties = false;
     }
 
-#if !SILVERLIGHT && !PocketPC
+#if !SILVERLIGHT && !PocketPC && !NETFX_CORE
     private void GenerateISerializableContract(Type type, JsonISerializableContract contract)
     {
       CurrentSchema.AllowAdditionalProperties = true;
@@ -416,7 +420,7 @@ namespace Newtonsoft.Json.Schema
           type = Nullable.GetUnderlyingType(type);
       }
 
-      TypeCode typeCode = Type.GetTypeCode(type);
+      TypeCode typeCode = ConvertUtils.GetTypeCode(type);
 
       switch (typeCode)
       {

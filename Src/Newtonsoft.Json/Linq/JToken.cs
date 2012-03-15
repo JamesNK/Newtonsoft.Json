@@ -43,7 +43,7 @@ namespace Newtonsoft.Json.Linq
   /// Represents an abstract JSON token.
   /// </summary>
   public abstract class JToken : IJEnumerable<JToken>, IJsonLineInfo
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !NETFX_CORE
 , ICloneable
 #endif
 #if !(NET35 || NET20 || WINDOWS_PHONE)
@@ -1337,7 +1337,7 @@ namespace Newtonsoft.Json.Linq
     }
 #endif
 
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !NETFX_CORE
     object ICloneable.Clone()
     {
       return DeepClone();

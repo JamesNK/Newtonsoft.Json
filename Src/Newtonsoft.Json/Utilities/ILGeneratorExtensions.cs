@@ -38,7 +38,7 @@ namespace Newtonsoft.Json.Utilities
     public static void PushInstance(this ILGenerator generator, Type type)
     {
       generator.Emit(OpCodes.Ldarg_0);
-      if (type.IsValueType)
+      if (type.IsValueType())
         generator.Emit(OpCodes.Unbox, type);
       else
         generator.Emit(OpCodes.Castclass, type);
@@ -46,7 +46,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static void BoxIfNeeded(this ILGenerator generator, Type type)
     {
-      if (type.IsValueType)
+      if (type.IsValueType())
         generator.Emit(OpCodes.Box, type);
       else
         generator.Emit(OpCodes.Castclass, type);
@@ -54,7 +54,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static void UnboxIfNeeded(this ILGenerator generator, Type type)
     {
-      if (type.IsValueType)
+      if (type.IsValueType())
         generator.Emit(OpCodes.Unbox_Any, type);
       else
         generator.Emit(OpCodes.Castclass, type);

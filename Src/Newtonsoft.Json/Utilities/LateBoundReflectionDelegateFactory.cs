@@ -53,7 +53,7 @@ namespace Newtonsoft.Json.Utilities
     {
       ValidationUtils.ArgumentNotNull(type, "type");
 
-      if (type.IsValueType)
+      if (type.IsValueType())
         return () => (T)ReflectionUtils.CreateInstance(type);
 
       ConstructorInfo constructorInfo = ReflectionUtils.GetDefaultConstructor(type, true);

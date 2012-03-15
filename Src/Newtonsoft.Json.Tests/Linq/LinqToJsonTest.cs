@@ -28,7 +28,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 using Newtonsoft.Json.Linq;
 using System.Xml;
 using System.IO;
@@ -38,6 +44,7 @@ using Newtonsoft.Json.Tests.TestObjects;
 
 namespace Newtonsoft.Json.Tests.Linq
 {
+  [TestFixture]
   public class LinqToJsonTest : TestFixtureBase
   {
     [Test]
@@ -513,7 +520,7 @@ keyword such as type of business.""
       Assert.AreEqual(null, o["purple"]);
       Assert.AreEqual(null, o.Value<string>("purple"));
 
-      Assert.IsInstanceOfType(typeof(JArray), o["channel"]["item"]);
+      CustomAssert.IsInstanceOfType(typeof(JArray), o["channel"]["item"]);
 
       Assert.AreEqual(2, o["channel"]["item"].Children()["title"].Count());
       Assert.AreEqual(0, o["channel"]["item"].Children()["monkey"].Count());
@@ -524,27 +531,36 @@ keyword such as type of business.""
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentException), ExpectedMessage = "Accessed JObject values with invalid key value: 0. Object property name expected.")]
     public void JObjectIntIndex()
     {
-      JObject o = new JObject();
-      Assert.AreEqual(null, o[0]);
+      ExceptionAssert.Throws<ArgumentException>("Accessed JObject values with invalid key value: 0. Object property name expected.",
+      () =>
+      {
+        JObject o = new JObject();
+        Assert.AreEqual(null, o[0]);
+      });
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentException), ExpectedMessage = @"Accessed JArray values with invalid key value: ""purple"". Array position index expected.")]
     public void JArrayStringIndex()
     {
-      JArray a = new JArray();
-      Assert.AreEqual(null, a["purple"]);
+      ExceptionAssert.Throws<ArgumentException>(@"Accessed JArray values with invalid key value: ""purple"". Array position index expected.",
+      () =>
+      {
+        JArray a = new JArray();
+        Assert.AreEqual(null, a["purple"]);
+      });
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentException), ExpectedMessage = @"Accessed JConstructor values with invalid key value: ""purple"". Argument position index expected.")]
     public void JConstructorStringIndex()
     {
-      JConstructor c = new JConstructor("ConstructorValue");
-      Assert.AreEqual(null, c["purple"]);
+      ExceptionAssert.Throws<ArgumentException>(@"Accessed JConstructor values with invalid key value: ""purple"". Argument position index expected.",
+      () =>
+      {
+        JConstructor c = new JConstructor("ConstructorValue");
+        Assert.AreEqual(null, c["purple"]);
+      });
     }
 
 #if !PocketPC && !NET20
@@ -628,13 +644,13 @@ keyword such as type of business.""
       });
 
       Console.WriteLine(o.ToString());
-      Assert.IsInstanceOfType(typeof(JObject), o);
-      Assert.IsInstanceOfType(typeof(JObject), o["channel"]);
+      CustomAssert.IsInstanceOfType(typeof(JObject), o);
+      CustomAssert.IsInstanceOfType(typeof(JObject), o["channel"]);
       Assert.AreEqual("James Newton-King", (string)o["channel"]["title"]);
       Assert.AreEqual(2, o["channel"]["item"].Children().Count());
 
       JArray a = JArray.FromObject(new List<int>() { 0, 1, 2, 3, 4 });
-      Assert.IsInstanceOfType(typeof(JArray), a);
+      CustomAssert.IsInstanceOfType(typeof(JArray), a);
       Assert.AreEqual(5, a.Count());
     }
 
@@ -665,13 +681,13 @@ keyword such as type of business.""
       });
 
       Console.WriteLine(o.ToString());
-      Assert.IsInstanceOfType(typeof(JObject), o);
-      Assert.IsInstanceOfType(typeof(JObject), o["channel"]);
+      CustomAssert.IsInstanceOfType(typeof(JObject), o);
+      CustomAssert.IsInstanceOfType(typeof(JObject), o["channel"]);
       Assert.AreEqual("James Newton-King", (string)o["channel"]["title"]);
       Assert.AreEqual(2, o["channel"]["item"].Children().Count());
 
       JArray a = JArray.FromObject(new List<int>() { 0, 1, 2, 3, 4 });
-      Assert.IsInstanceOfType(typeof(JArray), a);
+      CustomAssert.IsInstanceOfType(typeof(JArray), a);
       Assert.AreEqual(5, a.Count());
     }
 

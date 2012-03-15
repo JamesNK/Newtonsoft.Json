@@ -97,8 +97,10 @@ namespace Newtonsoft.Json.Utilities
     {
       ValidationUtils.ArgumentNotNull(type, "type");
 
+#if !NETFX_CORE
       if (typeof(IDictionary).IsAssignableFrom(type))
         return true;
+#endif
       if (ReflectionUtils.ImplementsGenericDefinition(type, typeof (IDictionary<,>)))
         return true;
 
@@ -152,10 +154,12 @@ namespace Newtonsoft.Json.Utilities
 
         return (IWrappedDictionary)ReflectionUtils.CreateGeneric(typeof(DictionaryWrapper<,>), new[] { dictionaryKeyType, dictionaryValueType }, instanceCreator, dictionary);
       }
+#if !NETFX_CORE
       else if (dictionary is IDictionary)
       {
         return new DictionaryWrapper<object, object>((IDictionary)dictionary);
       }
+#endif
       else
       {
         throw new Exception("Can not create DictionaryWrapper for type {0}.".FormatWith(CultureInfo.InvariantCulture, dictionary.GetType()));

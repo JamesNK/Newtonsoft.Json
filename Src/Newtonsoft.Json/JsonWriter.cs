@@ -32,6 +32,9 @@ using System.Xml;
 using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Linq;
 using System.Globalization;
+#if NETFX_CORE
+using IConvertible = Newtonsoft.Json.Utilities.Convertible;
+#endif
 
 namespace Newtonsoft.Json
 {
@@ -1157,9 +1160,9 @@ namespace Newtonsoft.Json
         WriteNull();
         return;
       }
-      else if (value is IConvertible)
+      else if (ConvertUtils.IsConvertible(value))
       {
-        IConvertible convertible = value as IConvertible;
+        IConvertible convertible = ConvertUtils.ToConvertible(value);
 
         switch (convertible.GetTypeCode())
         {

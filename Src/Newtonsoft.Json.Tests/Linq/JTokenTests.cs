@@ -28,12 +28,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Converters;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 using Newtonsoft.Json.Linq;
 using System.IO;
 
 namespace Newtonsoft.Json.Tests.Linq
 {
+  [TestFixture]
   public class JTokenTests : TestFixtureBase
   {
     [Test]
@@ -534,15 +541,22 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentException), ExpectedMessage = "Can not add Newtonsoft.Json.Linq.JProperty to Newtonsoft.Json.Linq.JArray.")]
     public void AddPropertyToArray()
     {
-      JArray a = new JArray();
-      a.Add(new JProperty("PropertyName"));
+      ExceptionAssert.Throws<ArgumentException>("Can not add Newtonsoft.Json.Linq.JProperty to Newtonsoft.Json.Linq.JArray.",
+      () =>
+      {
+        JArray a = new JArray();
+        a.Add(new JProperty("PropertyName"));
+      });
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentException), ExpectedMessage = "Can not add Newtonsoft.Json.Linq.JValue to Newtonsoft.Json.Linq.JObject.")]
+    [ExpectedException(typeof(ArgumentException)
+#if !NETFX_CORE
+      , ExpectedMessage = "Can not add Newtonsoft.Json.Linq.JValue to Newtonsoft.Json.Linq.JObject."
+#endif
+      )]
     public void AddValueToObject()
     {
       JObject o = new JObject();
@@ -690,7 +704,7 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.IsTrue(a.DeepEquals(a2));
     }
 
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !NETFX_CORE
     [Test]
     public void Clone()
     {
@@ -741,16 +755,19 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Additional text encountered after finished reading JSON content: ,. Line 5, position 2.")]
     public void ParseAdditionalContent()
     {
-      string json = @"[
+      ExceptionAssert.Throws<JsonReaderException>("Additional text encountered after finished reading JSON content: ,. Line 5, position 2.",
+        () =>
+        {
+          string json = @"[
 ""Small"",
 ""Medium"",
 ""Large""
 ],";
 
-      JToken.Parse(json);
+          JToken.Parse(json);
+        });
     }
   }
 }

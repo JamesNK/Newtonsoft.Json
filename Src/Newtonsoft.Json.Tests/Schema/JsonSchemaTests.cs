@@ -29,10 +29,17 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Schema;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 
 namespace Newtonsoft.Json.Tests.Schema
 {
+  [TestFixture]
   public class JsonSchemaTests : TestFixtureBase
   {
     [Test]

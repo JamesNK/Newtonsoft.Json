@@ -27,7 +27,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 using Newtonsoft.Json.Bson;
 using System.IO;
 using Newtonsoft.Json.Utilities;
@@ -36,6 +42,7 @@ using System.Globalization;
 
 namespace Newtonsoft.Json.Tests.Bson
 {
+  [TestFixture]
   public class BsonWriterTests : TestFixtureBase
   {
     [Test]
@@ -150,7 +157,7 @@ namespace Newtonsoft.Json.Tests.Bson
       reader.Read();
       reader.Read();
       Assert.AreEqual(JsonToken.Bytes, reader.TokenType);
-      Assert.AreEqual(data, reader.Value);
+      CollectionAssert.AreEquivalent(data, (byte[])reader.Value);
     }
 
     [Test]
@@ -237,7 +244,7 @@ namespace Newtonsoft.Json.Tests.Bson
 
       serializer.Serialize(writer1, s1);
 
-      Assert.AreEqual(ms.ToArray(), ms1.ToArray());
+      CollectionAssert.AreEquivalent(ms.ToArray(), ms1.ToArray());
 
       string s = JsonConvert.SerializeObject(s1);
       byte[] textData = Encoding.UTF8.GetBytes(s);
@@ -365,47 +372,59 @@ namespace Newtonsoft.Json.Tests.Bson
     }
 
     [Test]
-    [ExpectedException(typeof(JsonWriterException), ExpectedMessage = "Cannot write JSON comment as BSON.")]
     public void WriteComment()
     {
-      MemoryStream ms = new MemoryStream();
-      BsonWriter writer = new BsonWriter(ms);
+      ExceptionAssert.Throws<JsonWriterException>("Cannot write JSON comment as BSON.",
+      () =>
+      {
+        MemoryStream ms = new MemoryStream();
+        BsonWriter writer = new BsonWriter(ms);
 
-      writer.WriteStartArray();
-      writer.WriteComment("fail");
+        writer.WriteStartArray();
+        writer.WriteComment("fail");
+      });
     }
 
     [Test]
-    [ExpectedException(typeof(JsonWriterException), ExpectedMessage = "Cannot write JSON constructor as BSON.")]
     public void WriteConstructor()
     {
-      MemoryStream ms = new MemoryStream();
-      BsonWriter writer = new BsonWriter(ms);
+      ExceptionAssert.Throws<JsonWriterException>("Cannot write JSON constructor as BSON.",
+      () =>
+      {
+        MemoryStream ms = new MemoryStream();
+        BsonWriter writer = new BsonWriter(ms);
 
-      writer.WriteStartArray();
-      writer.WriteStartConstructor("fail");
+        writer.WriteStartArray();
+        writer.WriteStartConstructor("fail");
+      });
     }
 
     [Test]
-    [ExpectedException(typeof(JsonWriterException), ExpectedMessage = "Cannot write raw JSON as BSON.")]
     public void WriteRaw()
     {
-      MemoryStream ms = new MemoryStream();
-      BsonWriter writer = new BsonWriter(ms);
+      ExceptionAssert.Throws<JsonWriterException>("Cannot write raw JSON as BSON.",
+      () =>
+      {
+        MemoryStream ms = new MemoryStream();
+        BsonWriter writer = new BsonWriter(ms);
 
-      writer.WriteStartArray();
-      writer.WriteRaw("fail");
+        writer.WriteStartArray();
+        writer.WriteRaw("fail");
+      });
     }
 
     [Test]
-    [ExpectedException(typeof(JsonWriterException), ExpectedMessage = "Cannot write raw JSON as BSON.")]
     public void WriteRawValue()
     {
-      MemoryStream ms = new MemoryStream();
-      BsonWriter writer = new BsonWriter(ms);
+      ExceptionAssert.Throws<JsonWriterException>("Cannot write raw JSON as BSON.",
+      () =>
+      {
+        MemoryStream ms = new MemoryStream();
+        BsonWriter writer = new BsonWriter(ms);
 
-      writer.WriteStartArray();
-      writer.WriteRawValue("fail");
+        writer.WriteStartArray();
+        writer.WriteRawValue("fail");
+      });
     }
 
     [Test]
@@ -476,7 +495,7 @@ namespace Newtonsoft.Json.Tests.Bson
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Bytes, reader.TokenType);
-      Assert.AreEqual(oid, reader.Value);
+      CollectionAssert.AreEquivalent(oid, (byte[])reader.Value);
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
@@ -497,7 +516,7 @@ namespace Newtonsoft.Json.Tests.Bson
 
       byte[] expected = MiscellaneousUtils.HexToBytes("29000000075F6964004ABBED9D1D8B0F02180000010274657374000900000031323334C2A335360000");
 
-      Assert.AreEqual(expected, ms.ToArray());
+      CollectionAssert.AreEquivalent(expected, ms.ToArray());
     }
 
     [Test]
@@ -515,7 +534,7 @@ namespace Newtonsoft.Json.Tests.Bson
 
       byte[] expected = MiscellaneousUtils.HexToBytes("1A-00-00-00-0B-72-65-67-65-78-00-61-62-63-00-69-00-0B-74-65-73-74-00-00-00-00");
 
-      Assert.AreEqual(expected, ms.ToArray());
+      CollectionAssert.AreEquivalent(expected, ms.ToArray());
     }
 
     [Test]
@@ -627,16 +646,19 @@ namespace Newtonsoft.Json.Tests.Bson
     }
 
     [Test]
-    [ExpectedException(typeof(JsonWriterException), ExpectedMessage = "Error writing String value. BSON must start with an Object or Array.")]
     public void WriteValueOutsideOfObjectOrArray()
     {
-      MemoryStream stream = new MemoryStream();
-
-      using (BsonWriter writer = new BsonWriter(stream))
+      ExceptionAssert.Throws<JsonWriterException>("Error writing String value. BSON must start with an Object or Array.",
+      () =>
       {
-        writer.WriteValue("test");
-        writer.Flush();
-      }
+        MemoryStream stream = new MemoryStream();
+
+        using (BsonWriter writer = new BsonWriter(stream))
+        {
+          writer.WriteValue("test");
+          writer.Flush();
+        }
+      });
     }
   }
 }

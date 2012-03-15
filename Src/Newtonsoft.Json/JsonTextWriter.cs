@@ -136,7 +136,11 @@ namespace Newtonsoft.Json
       base.Close();
 
       if (CloseOutput && _writer != null)
+#if !NETFX_CORE
         _writer.Close();
+#else
+        _writer.Dispose();
+#endif
     }
 
     /// <summary>

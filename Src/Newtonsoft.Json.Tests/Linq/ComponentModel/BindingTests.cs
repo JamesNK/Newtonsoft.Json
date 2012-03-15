@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !PocketPC && !SILVERLIGHT
+#if !PocketPC && !SILVERLIGHT && !NETFX_CORE
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,6 +34,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Tests.Linq.ComponentModel
 {
+  [TestFixture]
   public class BindingTests : TestFixtureBase
   {
     [Test]

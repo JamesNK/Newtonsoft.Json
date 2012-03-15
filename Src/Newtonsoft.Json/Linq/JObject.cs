@@ -43,10 +43,10 @@ namespace Newtonsoft.Json.Linq
   /// Represents a JSON object.
   /// </summary>
   public class JObject : JContainer, IDictionary<string, JToken>, INotifyPropertyChanged
-#if !(PocketPC || SILVERLIGHT)
+#if !(PocketPC || SILVERLIGHT || NETFX_CORE)
     , ICustomTypeDescriptor
 #endif
-#if !(PocketPC || SILVERLIGHT || NET20)
+#if !(PocketPC || SILVERLIGHT || NET20 || NETFX_CORE)
     , INotifyPropertyChanging
 #endif
   {
@@ -99,7 +99,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     public event PropertyChangedEventHandler PropertyChanged;
 
-#if !(PocketPC || SILVERLIGHT || NET20)
+#if !(PocketPC || SILVERLIGHT || NET20 || NETFX_CORE)
     /// <summary>
     /// Occurs when a property value is changing.
     /// </summary>
@@ -179,7 +179,7 @@ namespace Newtonsoft.Json.Linq
     internal void InternalPropertyChanged(JProperty childProperty)
     {
       OnPropertyChanged(childProperty.Name);
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !NETFX_CORE
       OnListChanged(new ListChangedEventArgs(ListChangedType.ItemChanged, IndexOfItem(childProperty)));
 #endif
 #if SILVERLIGHT || !(NET20 || NET35)
@@ -189,7 +189,7 @@ namespace Newtonsoft.Json.Linq
 
     internal void InternalPropertyChanging(JProperty childProperty)
     {
-#if !PocketPC && !SILVERLIGHT && !NET20
+#if !PocketPC && !SILVERLIGHT && !NET20 && !NETFX_CORE
       OnPropertyChanging(childProperty.Name);
 #endif
     }
@@ -294,7 +294,7 @@ namespace Newtonsoft.Json.Linq
         }
         else
         {
-#if !PocketPC && !SILVERLIGHT && !NET20
+#if !PocketPC && !SILVERLIGHT && !NET20 && !NETFX_CORE
           OnPropertyChanging(propertyName);
 #endif
           Add(new JProperty(propertyName, value));
@@ -543,7 +543,7 @@ namespace Newtonsoft.Json.Linq
         PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
     }
 
-#if !PocketPC && !SILVERLIGHT && !NET20
+#if !PocketPC && !SILVERLIGHT && !NET20 && !NETFX_CORE
     /// <summary>
     /// Raises the <see cref="PropertyChanging"/> event with the provided arguments.
     /// </summary>
@@ -555,7 +555,7 @@ namespace Newtonsoft.Json.Linq
     }
 #endif
 
-#if !PocketPC && !SILVERLIGHT
+#if !PocketPC && !SILVERLIGHT && !NETFX_CORE
     // include custom type descriptor on JObject rather than use a provider because the properties are specific to a type
     #region ICustomTypeDescriptor
     /// <summary>

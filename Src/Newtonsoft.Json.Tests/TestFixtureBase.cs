@@ -30,14 +30,31 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using TestMethod = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 using Newtonsoft.Json.Utilities;
+using System.Collections;
 
 namespace Newtonsoft.Json.Tests
 {
   [TestFixture]
   public abstract class TestFixtureBase
   {
+    protected string GetOffset(DateTime d, DateFormatHandling dateFormatHandling)
+    {
+      StringWriter sw = new StringWriter();
+      JsonConvert.WriteDateTimeOffset(sw, DateTime.SpecifyKind(d, DateTimeKind.Local).GetUtcOffset(), dateFormatHandling);
+      sw.Flush();
+
+      return sw.ToString();
+    }
+
+#if !NETFX_CORE
     [SetUp]
     protected void TestSetup()
     {
@@ -55,14 +72,59 @@ namespace Newtonsoft.Json.Tests
     {
       return @"@""" + json.Replace(@"""", @"""""") + @"""";
     }
+#endif
+  }
 
-    protected string GetOffset(DateTime d, DateFormatHandling dateFormatHandling)
+  public static class Console
+  {
+    public static void WriteLine(params object[] args)
     {
-      StringWriter sw = new StringWriter();
-      JsonConvert.WriteDateTimeOffset(sw, DateTime.SpecifyKind(d, DateTimeKind.Local).GetUtcOffset(), dateFormatHandling);
-      sw.Flush();
+    }
+  }
 
-      return sw.ToString();
+  public static class CustomAssert
+  {
+    public static void IsInstanceOfType(Type t, object instance)
+    {
+#if !NETFX_CORE
+      Assert.IsInstanceOfType(t, instance);
+#else
+      if (!instance.GetType().IsAssignableFrom(t))
+        throw new Exception("Blah");
+#endif
+    }
+
+    public static void Contains(IList collection, object value)
+    {
+#if !NETFX_CORE
+      Assert.Contains(value, collection);
+#else
+      if (!collection.Cast<object>().Any(i => i.Equals(value)))
+        throw new Exception("Value not found in collection.");
+#endif
+    }
+  }
+
+  public static class ExceptionAssert
+  {
+    public static void Throws<TException>(string message, Action action)
+        where TException : Exception
+    {
+      try
+      {
+        action();
+
+        Assert.Fail("Exception of type {0} expected; got none exception", typeof(TException).Name);
+      }
+      catch (TException ex)
+      {
+        if (message != null)
+          Assert.AreEqual(message, ex.Message);
+      }
+      catch (Exception ex)
+      {
+        throw new Exception(string.Format("Exception of type {0} expected; got exception of type {1}.", typeof(TException).Name, ex.GetType().Name), ex);
+      }
     }
   }
 }

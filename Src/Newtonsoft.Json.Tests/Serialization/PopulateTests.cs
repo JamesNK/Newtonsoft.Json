@@ -29,11 +29,18 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Tests.TestObjects;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
+  [TestFixture]
   public class PopulateTests : TestFixtureBase
   {
     [Test]
@@ -134,10 +141,13 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Unexpected initial token 'Integer' when populating object. Expected JSON object or array. Line 1, position 1.")]
     public void PopulateWithBadJson()
     {
-      JsonConvert.PopulateObject("1", new Person());
+      ExceptionAssert.Throws<JsonSerializationException>("Unexpected initial token 'Integer' when populating object. Expected JSON object or array. Line 1, position 1.",
+        () =>
+        {
+          JsonConvert.PopulateObject("1", new Person());
+        });
     }
   }
 }

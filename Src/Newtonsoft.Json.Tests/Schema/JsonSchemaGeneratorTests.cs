@@ -31,7 +31,13 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
 using Newtonsoft.Json.Utilities;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 using Newtonsoft.Json.Schema;
 using System.IO;
 using System.Linq;
@@ -41,6 +47,7 @@ using Extensions=Newtonsoft.Json.Schema.Extensions;
 
 namespace Newtonsoft.Json.Tests.Schema
 {
+  [TestFixture]
   public class JsonSchemaGeneratorTests : TestFixtureBase
   {
     [Test]
@@ -79,7 +86,7 @@ namespace Newtonsoft.Json.Tests.Schema
       Assert.IsTrue(o.IsValid(schema));
     }
 
-#if !PocketPC
+#if !PocketPC && !NETFX_CORE
     [Test]
     public void Generate_DefaultValueAttributeTestClass()
     {
@@ -267,11 +274,14 @@ namespace Newtonsoft.Json.Tests.Schema
     }
 
     [Test]
-    [ExpectedException(typeof(Exception), ExpectedMessage = @"Unresolved circular reference for type 'Newtonsoft.Json.Tests.TestObjects.CircularReferenceClass'. Explicitly define an Id for the type using a JsonObject/JsonArray attribute or automatically generate a type Id using the UndefinedSchemaIdHandling property.")]
     public void CircularReferenceError()
     {
-      JsonSchemaGenerator generator = new JsonSchemaGenerator();
-      generator.Generate(typeof(CircularReferenceClass));
+      ExceptionAssert.Throws<Exception>(@"Unresolved circular reference for type 'Newtonsoft.Json.Tests.TestObjects.CircularReferenceClass'. Explicitly define an Id for the type using a JsonObject/JsonArray attribute or automatically generate a type Id using the UndefinedSchemaIdHandling property.",
+      () =>
+      {
+        JsonSchemaGenerator generator = new JsonSchemaGenerator();
+        generator.Generate(typeof(CircularReferenceClass));
+      });
     }
 
     [Test]
@@ -317,7 +327,7 @@ namespace Newtonsoft.Json.Tests.Schema
       Assert.IsTrue(v.IsValid(schema));
     }
 
-#if !SILVERLIGHT && !PocketPC
+#if !SILVERLIGHT && !PocketPC && !NETFX_CORE
     [Test]
     public void GenerateSchemaForISerializable()
     {
@@ -332,6 +342,7 @@ namespace Newtonsoft.Json.Tests.Schema
     }
 #endif
 
+#if !NETFX_CORE
     [Test]
     public void GenerateSchemaForDBNull()
     {
@@ -461,6 +472,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
       Assert.AreEqual(0, errors.Count);
     }
+#endif
 
     [Test]
     public void GenerateSchemaCamelCase()

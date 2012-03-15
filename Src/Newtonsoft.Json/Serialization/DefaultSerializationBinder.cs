@@ -49,12 +49,14 @@ namespace Newtonsoft.Json.Serialization
       {
         Assembly assembly;
 
-#if !SILVERLIGHT && !PocketPC
+#if !SILVERLIGHT && !PocketPC && !NETFX_CORE
         // look, I don't like using obsolete methods as much as you do but this is the only way
         // Assembly.Load won't check the GAC for a partial name
 #pragma warning disable 618,612
         assembly = Assembly.LoadWithPartialName(assemblyName);
 #pragma warning restore 618,612
+#elif NETFX_CORE
+        assembly = Assembly.Load(new AssemblyName(assemblyName));
 #else
         assembly = Assembly.Load(assemblyName);
 #endif
@@ -126,7 +128,10 @@ namespace Newtonsoft.Json.Serialization
     /// <param name="typeName">Specifies the <see cref="T:System.Type"/> name of the serialized object. </param>
     public override void BindToName(Type serializedType, out string assemblyName, out string typeName)
     {
-#if !SILVERLIGHT
+#if NETFX_CORE
+      assemblyName = serializedType.GetTypeInfo().Assembly.FullName;
+      typeName = serializedType.FullName;
+#elif !SILVERLIGHT
       assemblyName = serializedType.Assembly.FullName;
       typeName = serializedType.FullName;
 #else

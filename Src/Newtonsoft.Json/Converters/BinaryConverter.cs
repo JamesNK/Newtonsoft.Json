@@ -24,7 +24,7 @@
 #endregion
 
 using System;
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !NETFX_CORE
 using System.Data.SqlTypes;
 #endif
 using System.Globalization;
@@ -70,14 +70,14 @@ namespace Newtonsoft.Json.Converters
 
     private byte[] GetByteArray(object value)
     {
-#if !SILVERLIGHT && !PocketPC && !NET20
+#if !SILVERLIGHT && !PocketPC && !NET20 && !NETFX_CORE
       if (value.GetType().AssignableToTypeName(BinaryTypeName))
       {
         IBinary binary = DynamicWrapper.CreateWrapper<IBinary>(value);
         return binary.ToArray();
       }
 #endif
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !NETFX_CORE
       if (value is SqlBinary)
         return ((SqlBinary) value).Value;
 #endif
@@ -129,7 +129,7 @@ namespace Newtonsoft.Json.Converters
       if (t.AssignableToTypeName(BinaryTypeName))
         return Activator.CreateInstance(t, data);
 #endif
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !NETFX_CORE
       if (t == typeof(SqlBinary))
         return new SqlBinary(data);
 #endif
@@ -173,7 +173,7 @@ namespace Newtonsoft.Json.Converters
       if (objectType.AssignableToTypeName(BinaryTypeName))
         return true;
 #endif
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !NETFX_CORE
       if (objectType == typeof(SqlBinary) || objectType == typeof(SqlBinary?))
         return true;
 #endif

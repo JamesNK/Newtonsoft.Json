@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Converters
 {

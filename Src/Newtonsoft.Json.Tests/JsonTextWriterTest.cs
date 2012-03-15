@@ -29,7 +29,13 @@ using System.Globalization;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Xml;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 using Newtonsoft.Json;
 using System.IO;
 using Newtonsoft.Json.Converters;
@@ -37,6 +43,7 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Tests
 {
+  [TestFixture]
   public class JsonTextWriterTest : TestFixtureBase
   {
     [Test]
@@ -165,7 +172,11 @@ namespace Newtonsoft.Json.Tests
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentException), ExpectedMessage = @"Unsupported type: System.Version. Use the JsonSerializer class to get the object's JSON representation.")]
+    [ExpectedException(typeof(ArgumentException)
+#if !NETFX_CORE
+      , ExpectedMessage = @"Unsupported type: System.Version. Use the JsonSerializer class to get the object's JSON representation."
+#endif
+      )]
     public void WriteValueObjectWithUnsupportedValue()
     {
       StringWriter sw = new StringWriter();
@@ -583,7 +594,11 @@ namespace Newtonsoft.Json.Tests
     }
 
     [Test]
-    [ExpectedException(typeof(JsonWriterException), ExpectedMessage = "No token to close.")]
+    [ExpectedException(typeof(JsonWriterException)
+#if !NETFX_CORE
+      , ExpectedMessage = "No token to close."
+#endif
+      )]
     public void BadWriteEndArray()
     {
       StringBuilder sb = new StringBuilder();
@@ -601,7 +616,11 @@ namespace Newtonsoft.Json.Tests
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentException), ExpectedMessage = @"Invalid JavaScript string quote character. Valid quote characters are ' and "".")]
+    [ExpectedException(typeof(ArgumentException)
+#if !NETFX_CORE
+      , ExpectedMessage = @"Invalid JavaScript string quote character. Valid quote characters are ' and ""."
+#endif
+      )]
     public void InvalidQuoteChar()
     {
       StringBuilder sb = new StringBuilder();

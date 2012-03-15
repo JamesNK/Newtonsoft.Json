@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !NETFX_CORE
 using System;
 using System.Data;
 using Newtonsoft.Json.Serialization;

@@ -27,6 +27,9 @@ using System;
 using System.Reflection;
 using System.Runtime.Serialization;
 using Newtonsoft.Json.Utilities;
+#if NETFX_CORE
+using IConvertible = Newtonsoft.Json.Utilities.Convertible;
+#endif
 
 namespace Newtonsoft.Json.Serialization
 {
@@ -41,7 +44,7 @@ namespace Newtonsoft.Json.Serialization
 #if !(NET35 || NET20 || WINDOWS_PHONE)
     Dynamic,
 #endif
-#if !SILVERLIGHT && !PocketPC
+#if !SILVERLIGHT && !PocketPC && !NETFX_CORE
     Serializable,
 #endif
     Linq
@@ -179,7 +182,7 @@ namespace Newtonsoft.Json.Serialization
 
       CreatedType = NonNullableUnderlyingType;
 
-      IsConvertable = typeof(IConvertible).IsAssignableFrom(NonNullableUnderlyingType);
+      IsConvertable = ConvertUtils.IsConvertible(NonNullableUnderlyingType);
 
       if (NonNullableUnderlyingType == typeof(byte[]))
       {

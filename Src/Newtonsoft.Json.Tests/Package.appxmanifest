@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
+  
+  <Identity Name="416af769-23b3-4c62-bc3f-d2f756b8f292"
+            Publisher="CN=James"
+            Version="1.0.0.0" />
+  
+  <Properties>
+    <DisplayName>UnitTestProject1</DisplayName>
+    <PublisherDisplayName>James</PublisherDisplayName>
+    <Logo>Images\UnitTestStoreLogo.png</Logo>
+    <Description>UnitTestProject1</Description>
+  </Properties>
+  
+  <Prerequisites>
+    <OSMinVersion>6.2</OSMinVersion>
+    <OSMaxVersionTested>6.2</OSMaxVersionTested>
+  </Prerequisites>
+  
+  <Resources>
+    <Resource Language="x-generate"/>
+  </Resources>
+  
+  <Applications>
+    <Application Id="vstest.executionengine.App" 
+        Executable="vstest.executionengine.appcontainer.exe" 
+        EntryPoint="vstest.executionengine.App">
+        <VisualElements 
+            DisplayName="NoUIEntryPoints"
+            Logo="Images\UnitTestLogo.png"
+            SmallLogo="Images\UnitTestSmallLogo.png"
+            Description="vstest.executionengine.App"
+            ForegroundText="light"
+            BackgroundColor="#0084FF">
+            <SplashScreen Image="Images\UnitTestSplashScreen.png" />
+        </VisualElements>
+    </Application>
+
+    <Application Id="vstest.executionengine.x86.App" 
+        Executable="vstest.executionengine.appcontainer.x86.exe" 
+        EntryPoint="vstest.executionengine.x86.App">
+        <VisualElements 
+            DisplayName="NoUIEntryPoints"
+            Logo="Images\UnitTestLogo.png"
+            SmallLogo="Images\UnitTestSmallLogo.png"
+            Description="vstest.executionengine.x86.App"
+            ForegroundText="light"
+            BackgroundColor="#0084FF">
+            <SplashScreen Image="Images\UnitTestSplashScreen.png" />
+        </VisualElements>
+    </Application>
+  </Applications>
+  
+</Package>

@@ -27,8 +27,12 @@ namespace Newtonsoft.Json.Utilities
       return _proxy.GetType().GetMember(method, MemberTypes.Method, BindingFlags.Public | BindingFlags.Instance).Cast<MethodInfo>()
         .Any(info =>
           // check that the method overrides the original on DynamicObjectProxy
-          info.DeclaringType != typeof(DynamicProxy<T>) &&
-          info.GetBaseDefinition().DeclaringType == typeof(DynamicProxy<T>));
+          info.DeclaringType != typeof(DynamicProxy<T>)
+          // todo - find out whether there is a way to do this in winrt
+#if !NETFX_CORE
+          && info.GetBaseDefinition().DeclaringType == typeof(DynamicProxy<T>)
+#endif
+          );
     }
 
     public override DynamicMetaObject BindGetMember(GetMemberBinder binder)
@@ -176,8 +180,8 @@ namespace Newtonsoft.Json.Utilities
     private static ConstantExpression Constant(DynamicMetaObjectBinder binder)
     {
       Type t = binder.GetType();
-      while (!t.IsVisible)
-        t = t.BaseType;
+      while (!t.IsVisible())
+        t = t.BaseType();
       return Expression.Constant(binder, t);
     }
 

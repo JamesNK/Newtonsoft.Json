@@ -304,7 +304,13 @@ namespace Newtonsoft.Json.Linq
     public override void WriteValue(char value)
     {
       base.WriteValue(value);
-      AddValue(value.ToString(CultureInfo.InvariantCulture), JsonToken.String);
+      string s = null;
+#if !NETFX_CORE
+      s = value.ToString(CultureInfo.InvariantCulture);
+#else
+      s = value.ToString();
+#endif
+      AddValue(s, JsonToken.String);
     }
 
     /// <summary>

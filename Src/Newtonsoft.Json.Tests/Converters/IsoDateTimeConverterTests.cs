@@ -28,7 +28,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Tests.TestObjects;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
@@ -36,6 +42,7 @@ using System.Xml;
 
 namespace Newtonsoft.Json.Tests.Converters
 {
+  [TestFixture]
   public class IsoDateTimeConverterTests : TestFixtureBase
   {
     [Test]
@@ -112,7 +119,7 @@ namespace Newtonsoft.Json.Tests.Converters
       Assert.AreEqual(2006, d.Year);
     }
 
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !NETFX_CORE
     [Test]
     public void SerializeFormattedDateTimeNewZealandCulture()
     {
@@ -212,11 +219,14 @@ namespace Newtonsoft.Json.Tests.Converters
     }
 
     [Test]
-    [ExpectedException(typeof(Exception), ExpectedMessage = "Cannot convert null value to System.DateTime.")]
     public void DeserializeNullToNonNullable()
     {
-      DateTimeTestClass c2 =
-       JsonConvert.DeserializeObject<DateTimeTestClass>(@"{""PreField"":""Pre"",""DateTimeField"":null,""DateTimeOffsetField"":null,""PostField"":""Post""}", new IsoDateTimeConverter() { DateTimeStyles = DateTimeStyles.AssumeUniversal });
+      ExceptionAssert.Throws<Exception>("Cannot convert null value to System.DateTime.",
+      () =>
+      {
+        DateTimeTestClass c2 =
+         JsonConvert.DeserializeObject<DateTimeTestClass>(@"{""PreField"":""Pre"",""DateTimeField"":null,""DateTimeOffsetField"":null,""PostField"":""Post""}", new IsoDateTimeConverter() { DateTimeStyles = DateTimeStyles.AssumeUniversal });
+      });
     }
 
     [Test]

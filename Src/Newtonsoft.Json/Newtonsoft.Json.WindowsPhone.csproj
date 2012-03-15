@@ -188,6 +188,7 @@
     <Compile Include="Utilities\StringReference.cs" />
     <Compile Include="Utilities\StringUtils.cs" />
     <Compile Include="Utilities\ThreadSafeStore.cs" />
+    <Compile Include="Utilities\TypeExtensions.cs" />
     <Compile Include="Utilities\ValidationUtils.cs" />
     <Compile Include="Schema\Extensions.cs" />
     <Compile Include="Schema\JsonSchemaException.cs" />

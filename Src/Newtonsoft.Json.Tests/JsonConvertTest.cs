@@ -37,10 +37,17 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Tests.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
 using Newtonsoft.Json.Utilities;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 
 namespace Newtonsoft.Json.Tests
 {
+  [TestFixture]
   public class JsonConvertTest : TestFixtureBase
   {
 #if Entities
@@ -185,10 +192,13 @@ now brown cow?", '"', true);
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentException), ExpectedMessage = "Unsupported type: System.Version. Use the JsonSerializer class to get the object's JSON representation.")]
     public void ToStringInvalid()
     {
-      JsonConvert.ToString(new Version(1, 0));
+      ExceptionAssert.Throws<ArgumentException>("Unsupported type: System.Version. Use the JsonSerializer class to get the object's JSON representation.",
+      () =>
+      {
+        JsonConvert.ToString(new Version(1, 0));
+      });
     }
 
     [Test]
@@ -261,8 +271,10 @@ now brown cow?", '"', true);
       value = null;
       Assert.AreEqual("null", JsonConvert.ToString(value));
 
+#if !NETFX_CORE
       value = DBNull.Value;
       Assert.AreEqual("null", JsonConvert.ToString(value));
+#endif
 
       value = "I am a string";
       Assert.AreEqual(@"""I am a string""", JsonConvert.ToString(value));
@@ -275,17 +287,20 @@ now brown cow?", '"', true);
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Additional text encountered after finished reading JSON content: t. Line 1, position 19.")]
     public void TestInvalidStrings()
     {
-      string orig = @"this is a string ""that has quotes"" ";
+      ExceptionAssert.Throws<JsonReaderException>("Additional text encountered after finished reading JSON content: t. Line 1, position 19.",
+      () =>
+      {
+        string orig = @"this is a string ""that has quotes"" ";
 
-      string serialized = JsonConvert.SerializeObject(orig);
+        string serialized = JsonConvert.SerializeObject(orig);
 
-      // *** Make string invalid by stripping \" \"
-      serialized = serialized.Replace(@"\""", "\"");
+        // *** Make string invalid by stripping \" \"
+        serialized = serialized.Replace(@"\""", "\"");
 
-      JsonConvert.DeserializeObject<string>(serialized);
+        JsonConvert.DeserializeObject<string>(serialized);
+      });
     }
 
     [Test]
@@ -541,6 +556,7 @@ now brown cow?", '"', true);
 
       TestDateTimeFormat(value, new IsoDateTimeConverter());
 
+#if !NETFX_CORE
       if (value is DateTime)
       {
         Console.WriteLine(XmlConvert.ToString((DateTime)(object)value, XmlDateTimeSerializationMode.RoundtripKind));
@@ -549,6 +565,7 @@ now brown cow?", '"', true);
       {
         Console.WriteLine(XmlConvert.ToString((DateTimeOffset)(object)value));
       }
+#endif
 
 #if !NET20
       MemoryStream ms = new MemoryStream();
@@ -681,7 +698,7 @@ now brown cow?", '"', true);
       var taskObject = JsonConvert.DeserializeObjectAsync("[]");
       taskObject.Wait();
 
-      Assert.AreEqual(new JArray(), taskObject.Result);
+      CollectionAssert.AreEquivalent(new JArray(), (JArray)taskObject.Result);
 
       Task<object> taskVersionArray = JsonConvert.DeserializeObjectAsync("['2.0']", typeof(Version[]), new JsonSerializerSettings
         {

@@ -11,10 +11,17 @@ using System.Text;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
 using Newtonsoft.Json.Utilities;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
+  [TestFixture]
   public class DynamicTests : TestFixtureBase
   {
     public class DynamicChildObject
@@ -130,12 +137,6 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 
     [Test]
-    public void sdfsdf()
-    {
-      ErrorSettingDynamicObject d = JsonConvert.DeserializeObject<ErrorSettingDynamicObject>("{'hi':5}");
-    }
-
-    [Test]
     public void SerializeDynamicObjectWithObjectTracking()
     {
       dynamic o = new ExpandoObject();
@@ -175,26 +176,29 @@ namespace Newtonsoft.Json.Tests.Serialization
           TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
         });
 
-      Assert.IsInstanceOfType(typeof(ExpandoObject), n);
+      CustomAssert.IsInstanceOfType(typeof(ExpandoObject), n);
       Assert.AreEqual("Text!", n.Text);
       Assert.AreEqual(int.MaxValue, n.Integer);
 
-      Assert.IsInstanceOfType(typeof(DynamicChildObject), n.DynamicChildObject);
+      CustomAssert.IsInstanceOfType(typeof(DynamicChildObject), n.DynamicChildObject);
       Assert.AreEqual("Child text!", n.DynamicChildObject.Text);
       Assert.AreEqual(int.MinValue, n.DynamicChildObject.Integer);
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Unable to find a default constructor to use for type System.Dynamic.DynamicObject. Line 2, position 18.")]
     public void NoPublicDefaultConstructor()
     {
-      var settings = new JsonSerializerSettings();
-      settings.NullValueHandling = NullValueHandling.Ignore;
-      var json = @"{
+      ExceptionAssert.Throws<JsonSerializationException>("Unable to find a default constructor to use for type System.Dynamic.DynamicObject. Line 2, position 18.",
+      () =>
+      {
+        var settings = new JsonSerializerSettings();
+        settings.NullValueHandling = NullValueHandling.Ignore;
+        var json = @"{
   ""contributors"": null
 }";
-      
-      JsonConvert.DeserializeObject<DynamicObject>(json, settings);
+
+        JsonConvert.DeserializeObject<DynamicObject>(json, settings);
+      });
     }
 
     public class DictionaryDynamicObject : DynamicObject

@@ -25,6 +25,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
     }
 
+#if !NETFX_CORE
     public static XmlDateTimeSerializationMode ToSerializationMode(DateTimeKind kind)
     {
       switch (kind)
@@ -39,5 +40,6 @@ namespace Newtonsoft.Json.Utilities
           throw MiscellaneousUtils.CreateArgumentOutOfRangeException("kind", kind, "Unexpected DateTimeKind value.");
       }
     }
+#endif
   }
 }

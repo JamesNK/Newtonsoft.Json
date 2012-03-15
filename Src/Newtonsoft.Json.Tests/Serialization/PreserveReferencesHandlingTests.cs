@@ -30,10 +30,17 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Tests.TestObjects;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
+  [TestFixture]
   public class PreserveReferencesHandlingTests : TestFixtureBase
   {
     [Test]
@@ -133,7 +140,6 @@ namespace Newtonsoft.Json.Tests.Serialization
       string json = JsonConvert.SerializeObject(circularList, Formatting.Indented,
         new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.All });
 
-      WriteEscapedJson(json);
       Assert.AreEqual(@"{
   ""$id"": ""1"",
   ""$values"": [
@@ -202,7 +208,11 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Cannot preserve reference to array or readonly list: System.String[][]. Line 3, position 15.")]
+    [ExpectedException(typeof(JsonSerializationException)
+#if !NETFX_CORE
+      , ExpectedMessage = @"Cannot preserve reference to array or readonly list: System.String[][]. Line 3, position 15."
+#endif
+      )]
     public void DeserializeArraysWithPreserveObjectReferences()
     {
       string json = @"{
@@ -268,7 +278,11 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Unexpected end when deserializing object. Line 2, position 9.")]
+    [ExpectedException(typeof(JsonSerializationException)
+#if !NETFX_CORE
+      , ExpectedMessage = @"Unexpected end when deserializing object. Line 2, position 9."
+#endif
+      )]
     public void UnexpectedEnd()
     {
       string json = @"{

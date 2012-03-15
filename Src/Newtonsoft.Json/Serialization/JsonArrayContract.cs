@@ -63,7 +63,7 @@ namespace Newtonsoft.Json.Serialization
       {
         CollectionItemType = _genericCollectionDefinitionType.GetGenericArguments()[0];
       }
-      else if (underlyingType.IsGenericType && underlyingType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+      else if (underlyingType.IsGenericType() && underlyingType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
       {
         _genericCollectionDefinitionType =  typeof (IEnumerable<>);
         CollectionItemType = underlyingType.GetGenericArguments()[0];
@@ -133,7 +133,7 @@ namespace Newtonsoft.Json.Serialization
 
     private bool IsTypeGenericCollectionInterface(Type type)
     {
-      if (!type.IsGenericType)
+      if (!type.IsGenericType())
         return false;
 
       Type genericDefinition = type.GetGenericTypeDefinition();

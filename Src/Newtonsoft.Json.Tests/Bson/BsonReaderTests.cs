@@ -28,7 +28,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 using Newtonsoft.Json.Bson;
 using System.IO;
 using Newtonsoft.Json.Tests.Serialization;
@@ -37,6 +43,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Tests.Bson
 {
+  [TestFixture]
   public class BsonReaderTests : TestFixtureBase
   {
     private const char Euro = '\u20ac';
@@ -76,7 +83,7 @@ namespace Newtonsoft.Json.Tests.Bson
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Integer, reader.TokenType);
-      Assert.AreEqual(1, reader.Value);
+      Assert.AreEqual(1L, reader.Value);
       Assert.AreEqual(typeof(long), reader.ValueType);
 
       Assert.IsTrue(reader.Read());
@@ -111,22 +118,22 @@ namespace Newtonsoft.Json.Tests.Bson
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Integer, reader.TokenType);
-      Assert.AreEqual(int.MaxValue, reader.Value);
+      Assert.AreEqual((long)int.MaxValue, reader.Value);
       Assert.AreEqual(typeof(long), reader.ValueType);
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Integer, reader.TokenType);
-      Assert.AreEqual(int.MaxValue, reader.Value);
+      Assert.AreEqual((long)int.MaxValue, reader.Value);
       Assert.AreEqual(typeof(long), reader.ValueType);
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Integer, reader.TokenType);
-      Assert.AreEqual(byte.MaxValue, reader.Value);
+      Assert.AreEqual((long)byte.MaxValue, reader.Value);
       Assert.AreEqual(typeof(long), reader.ValueType);
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Integer, reader.TokenType);
-      Assert.AreEqual(sbyte.MaxValue, reader.Value);
+      Assert.AreEqual((long)sbyte.MaxValue, reader.Value);
       Assert.AreEqual(typeof(long), reader.ValueType);
 
       Assert.IsTrue(reader.Read());
@@ -136,17 +143,17 @@ namespace Newtonsoft.Json.Tests.Bson
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Float, reader.TokenType);
-      Assert.AreEqual(decimal.MaxValue, reader.Value);
+      Assert.AreEqual((double)decimal.MaxValue, reader.Value);
       Assert.AreEqual(typeof(double), reader.ValueType);
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Float, reader.TokenType);
-      Assert.AreEqual(double.MaxValue, reader.Value);
+      Assert.AreEqual((double)double.MaxValue, reader.Value);
       Assert.AreEqual(typeof(double), reader.ValueType);
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Float, reader.TokenType);
-      Assert.AreEqual(float.MaxValue, reader.Value);
+      Assert.AreEqual((double)float.MaxValue, reader.Value);
       Assert.AreEqual(typeof(double), reader.ValueType);
 
       Assert.IsTrue(reader.Read());
@@ -156,7 +163,7 @@ namespace Newtonsoft.Json.Tests.Bson
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Bytes, reader.TokenType);
-      Assert.AreEqual(new byte[] { 0, 1, 2, 3, 4 }, reader.Value);
+      CollectionAssert.AreEquivalent(new byte[] { 0, 1, 2, 3, 4 }, (byte[])reader.Value);
       Assert.AreEqual(typeof(byte[]), reader.ValueType);
 
       Assert.IsTrue(reader.Read());
@@ -268,27 +275,30 @@ namespace Newtonsoft.Json.Tests.Bson
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Could not convert string to integer: a.")]
     public void ReadAsInt32BadString()
     {
-      byte[] data = MiscellaneousUtils.HexToBytes("20-00-00-00-02-30-00-02-00-00-00-61-00-02-31-00-02-00-00-00-62-00-02-32-00-02-00-00-00-63-00-00");
+      ExceptionAssert.Throws<JsonReaderException>("Could not convert string to integer: a.",
+      () =>
+      {
+        byte[] data = MiscellaneousUtils.HexToBytes("20-00-00-00-02-30-00-02-00-00-00-61-00-02-31-00-02-00-00-00-62-00-02-32-00-02-00-00-00-63-00-00");
 
-      MemoryStream ms = new MemoryStream(data);
-      BsonReader reader = new BsonReader(ms);
+        MemoryStream ms = new MemoryStream(data);
+        BsonReader reader = new BsonReader(ms);
 
-      Assert.AreEqual(false, reader.ReadRootValueAsArray);
-      Assert.AreEqual(DateTimeKind.Local, reader.DateTimeKindHandling);
+        Assert.AreEqual(false, reader.ReadRootValueAsArray);
+        Assert.AreEqual(DateTimeKind.Local, reader.DateTimeKindHandling);
 
-      reader.ReadRootValueAsArray = true;
-      reader.DateTimeKindHandling = DateTimeKind.Utc;
+        reader.ReadRootValueAsArray = true;
+        reader.DateTimeKindHandling = DateTimeKind.Utc;
 
-      Assert.AreEqual(true, reader.ReadRootValueAsArray);
-      Assert.AreEqual(DateTimeKind.Utc, reader.DateTimeKindHandling);
+        Assert.AreEqual(true, reader.ReadRootValueAsArray);
+        Assert.AreEqual(DateTimeKind.Utc, reader.DateTimeKindHandling);
 
-      Assert.IsTrue(reader.Read());
-      Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+        Assert.IsTrue(reader.Read());
+        Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
 
-      reader.ReadAsInt32();
+        reader.ReadAsInt32();
+      });
     }
 
     [Test]
@@ -349,7 +359,7 @@ namespace Newtonsoft.Json.Tests.Bson
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Bytes, reader.TokenType);
-      Assert.AreEqual(MiscellaneousUtils.HexToBytes("4ABBED9D1D8B0F0218000001"), reader.Value);
+      CollectionAssert.AreEquivalent(MiscellaneousUtils.HexToBytes("4ABBED9D1D8B0F0218000001"), (byte[])reader.Value);
       Assert.AreEqual(typeof(byte[]), reader.ValueType);
 
       Assert.IsTrue(reader.Read());
@@ -387,7 +397,7 @@ namespace Newtonsoft.Json.Tests.Bson
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Bytes, reader.TokenType);
-      Assert.AreEqual(MiscellaneousUtils.HexToBytes("4A-78-93-79-17-22-00-00-00-00-61-CF"), reader.Value);
+      CollectionAssert.AreEquivalent(MiscellaneousUtils.HexToBytes("4A-78-93-79-17-22-00-00-00-00-61-CF"), (byte[])reader.Value);
       Assert.AreEqual(typeof(byte[]), reader.ValueType);
 
       Assert.IsTrue(reader.Read());
@@ -623,7 +633,7 @@ namespace Newtonsoft.Json.Tests.Bson
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Bytes, reader.TokenType);
-      Assert.AreEqual(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 }, reader.Value);
+      CollectionAssert.AreEquivalent(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 }, (byte[])reader.Value);
       Assert.AreEqual(typeof(byte[]), reader.ValueType);
 
       Assert.IsTrue(reader.Read());
@@ -1282,11 +1292,11 @@ namespace Newtonsoft.Json.Tests.Bson
         TestObject newObject = (TestObject)serializer.Deserialize(bsonReader);
 
         Assert.AreEqual("Test", newObject.Name);
-        Assert.AreEqual(new byte[] { 72, 63, 62, 71, 92, 55 }, newObject.Data);
+        CollectionAssert.AreEquivalent(new byte[] { 72, 63, 62, 71, 92, 55 }, newObject.Data);
       }
     }
 
-#if !(WINDOWS_PHONE || SILVERLIGHT || NET20 || NET35)
+#if !(WINDOWS_PHONE || SILVERLIGHT || NET20 || NET35 || NETFX_CORE)
     public void Utf8Text()
     {
       string badText =System.IO.File.ReadAllText(@"PoisonText.txt");

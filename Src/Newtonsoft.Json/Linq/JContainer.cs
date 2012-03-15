@@ -40,16 +40,16 @@ namespace Newtonsoft.Json.Linq
   /// Represents a token that can contain other tokens.
   /// </summary>
   public abstract class JContainer : JToken, IList<JToken>
-#if !SILVERLIGHT
+#if !(SILVERLIGHT || NETFX_CORE)
     , ITypedList, IBindingList
 #else
     , IList, INotifyCollectionChanged
 #endif
-#if !(SILVERLIGHT || NET20 || NET35)
+#if !(SILVERLIGHT || NET20 || NET35 || NETFX_CORE)
     , INotifyCollectionChanged
 #endif
   {
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !NETFX_CORE
     /// <summary>
     /// Occurs when the list changes or an item in the list changes.
     /// </summary>
@@ -96,7 +96,7 @@ namespace Newtonsoft.Json.Linq
         throw new InvalidOperationException("Cannot change {0} during a collection change event.".FormatWith(CultureInfo.InvariantCulture, GetType()));
     }
 
- #if !SILVERLIGHT
+ #if !SILVERLIGHT && !NETFX_CORE
     /// <summary>
     /// Raises the <see cref="AddingNew"/> event.
     /// </summary>
@@ -329,7 +329,7 @@ namespace Newtonsoft.Json.Linq
       
       ChildrenTokens.Insert(index, item);
 
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !NETFX_CORE
       if (ListChanged != null)
         OnListChanged(new ListChangedEventArgs(ListChangedType.ItemAdded, index));
 #endif
@@ -363,7 +363,7 @@ namespace Newtonsoft.Json.Linq
 
       ChildrenTokens.RemoveAt(index);
 
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !NETFX_CORE
       OnListChanged(new ListChangedEventArgs(ListChangedType.ItemDeleted, index));
 #endif
 #if SILVERLIGHT || !(NET20 || NET35)
@@ -425,7 +425,7 @@ namespace Newtonsoft.Json.Linq
       existing.Previous = null;
       existing.Next = null;
 
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !NETFX_CORE
       OnListChanged(new ListChangedEventArgs(ListChangedType.ItemChanged, index));
 #endif
 #if SILVERLIGHT || !(NET20 || NET35)
@@ -446,7 +446,7 @@ namespace Newtonsoft.Json.Linq
 
       ChildrenTokens.Clear();
 
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !NETFX_CORE
       OnListChanged(new ListChangedEventArgs(ListChangedType.Reset, -1));
 #endif
 #if SILVERLIGHT || !(NET20 || NET35)
@@ -718,7 +718,7 @@ namespace Newtonsoft.Json.Linq
       return hashCode;
     }
 
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !NETFX_CORE
     string ITypedList.GetListName(PropertyDescriptor[] listAccessors)
     {
       return string.Empty;
@@ -897,7 +897,7 @@ namespace Newtonsoft.Json.Linq
 
     #region IBindingList Members
 
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !NETFX_CORE
     void IBindingList.AddIndex(PropertyDescriptor property)
     {
     }

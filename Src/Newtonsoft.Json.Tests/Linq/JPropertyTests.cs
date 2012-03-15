@@ -5,11 +5,18 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 using System.IO;
 
 namespace Newtonsoft.Json.Tests.Linq
 {
+  [TestFixture]
   public class JPropertyTests : TestFixtureBase
   {
     [Test]
@@ -26,7 +33,7 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(p, p.Value.Parent);
     }
 
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !NETFX_CORE
     [Test]
     public void ListChanged()
     {
@@ -59,7 +66,11 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(Exception), ExpectedMessage = "Cannot add or remove items from Newtonsoft.Json.Linq.JProperty.")]
+    [ExpectedException(typeof(Exception)
+#if !NETFX_CORE
+      , ExpectedMessage = "Cannot add or remove items from Newtonsoft.Json.Linq.JProperty."
+#endif
+      )]
     public void IListClear()
     {
       JProperty p = new JProperty("TestProperty", null);
@@ -69,7 +80,11 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(Exception), ExpectedMessage = "Newtonsoft.Json.Linq.JProperty cannot have multiple values.")]
+    [ExpectedException(typeof(Exception)
+#if !NETFX_CORE
+      , ExpectedMessage = "Newtonsoft.Json.Linq.JProperty cannot have multiple values."
+#endif
+      )]
     public void IListAdd()
     {
       JProperty p = new JProperty("TestProperty", null);
@@ -79,7 +94,11 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(Exception), ExpectedMessage = "Cannot add or remove items from Newtonsoft.Json.Linq.JProperty.")]
+    [ExpectedException(typeof(Exception)
+#if !NETFX_CORE
+      , ExpectedMessage = "Cannot add or remove items from Newtonsoft.Json.Linq.JProperty."
+#endif
+      )]
     public void IListRemove()
     {
       JProperty p = new JProperty("TestProperty", null);
@@ -128,7 +147,11 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(Exception), ExpectedMessage = "Newtonsoft.Json.Linq.JProperty cannot have multiple values.")]
+    [ExpectedException(typeof(Exception)
+#if !NETFX_CORE
+      , ExpectedMessage = "Newtonsoft.Json.Linq.JProperty cannot have multiple values."
+#endif
+      )]
     public void IListGenericAdd()
     {
       IList<JToken> t = new JProperty("error", new List<string> { "one", "two" });

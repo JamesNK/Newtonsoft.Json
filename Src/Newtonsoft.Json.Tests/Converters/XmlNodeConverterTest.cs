@@ -23,12 +23,18 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !NETFX_CORE
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Tests.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 using Newtonsoft.Json;
 using System.IO;
 using System.Xml;
@@ -41,6 +47,7 @@ using System.Xml.Linq;
 
 namespace Newtonsoft.Json.Tests.Converters
 {
+  [TestFixture]
   public class XmlNodeConverterTest : TestFixtureBase
   {
     private string SerializeXmlNode(XmlNode node)

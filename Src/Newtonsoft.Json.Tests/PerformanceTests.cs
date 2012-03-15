@@ -1,4 +1,4 @@
-﻿#if !SILVERLIGHT && !PocketPC && !NET20 && !NET35
+﻿#if !SILVERLIGHT && !PocketPC && !NET20 && !NET35 && !NETFX_CORE
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -37,12 +37,13 @@ namespace Newtonsoft.Json.Tests
     public byte[] Data { get; set; }
   }
 
+  [TestFixture]
   public class PerformanceTests : TestFixtureBase
   {
     //private const int Iterations = 100;
     private const int Iterations = 5000;
 
-    #region Data
+#region Data
 
     private const string BsonHex =
       @"A9-01-00-00-04-73-74-72-69-6E-67-73-00-2B-00-00-00-0A-30-00-02-31-00-19-00-00-00-4D-61-72-6B-75-73-20-65-67-67-65-72-20-5D-3E-3C-5B-2C-20-28-32-6E-64-29-00-0A-32-00-00-03-64-69-63-74-69-6F-6E-61-72-79-00-37-00-00-00-10-56-61-6C-20-26-20-61-73-64-31-00-01-00-00-00-10-56-61-6C-32-20-26-20-61-73-64-31-00-03-00-00-00-10-56-61-6C-33-20-26-20-61-73-64-31-00-04-00-00-00-00-02-4E-61-6D-65-00-05-00-00-00-52-69-63-6B-00-09-4E-6F-77-00-EF-BD-69-EC-25-01-00-00-01-42-69-67-4E-75-6D-62-65-72-00-E7-7B-CC-26-96-C7-1F-42-03-41-64-64-72-65-73-73-31-00-47-00-00-00-02-53-74-72-65-65-74-00-0B-00-00-00-66-66-66-20-53-74-72-65-65-74-00-02-50-68-6F-6E-65-00-0F-00-00-00-28-35-30-33-29-20-38-31-34-2D-36-33-33-35-00-09-45-6E-74-65-72-65-64-00-6F-FF-31-53-26-01-00-00-00-04-41-64-64-72-65-73-73-65-73-00-A2-00-00-00-03-30-00-4B-00-00-00-02-53-74-72-65-65-74-00-0F-00-00-00-1F-61-72-72-61-79-3C-61-64-64-72-65-73-73-00-02-50-68-6F-6E-65-00-0F-00-00-00-28-35-30-33-29-20-38-31-34-2D-36-33-33-35-00-09-45-6E-74-65-72-65-64-00-6F-73-0C-E7-25-01-00-00-00-03-31-00-4C-00-00-00-02-53-74-72-65-65-74-00-10-00-00-00-61-72-72-61-79-20-32-20-61-64-64-72-65-73-73-00-02-50-68-6F-6E-65-00-0F-00-00-00-28-35-30-33-29-20-38-31-34-2D-36-33-33-35-00-09-45-6E-74-65-72-65-64-00-6F-17-E6-E1-25-01-00-00-00-00-00";
@@ -339,7 +340,7 @@ namespace Newtonsoft.Json.Tests
       Console.WriteLine("BinaryFormatter size: {0} bytes", binaryFormatterBytes.Length);
     }
 
-    #region Serialize
+#region Serialize
 
     private static readonly byte[] Buffer = new byte[4096];
 
@@ -524,7 +525,7 @@ namespace Newtonsoft.Json.Tests
 
     #endregion
 
-    #region Deserialize
+#region Deserialize
 
     public void BenchmarkDeserializeMethod<T>(SerializeMethod method, object json)
     {
@@ -751,7 +752,7 @@ namespace Newtonsoft.Json.Tests
     public int Integer { get; set; }
   }
 
-  #region Classes
+#region Classes
 
   [Serializable]
   [DataContract]

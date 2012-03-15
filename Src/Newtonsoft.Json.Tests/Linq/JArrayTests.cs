@@ -3,11 +3,18 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Tests.Linq
 {
+  [TestFixture]
   public class JArrayTests : TestFixtureBase
   {
     [Test]
@@ -68,8 +75,12 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentNullException), ExpectedMessage = @"Value cannot be null.
-Parameter name: array")]
+    [ExpectedException(typeof(ArgumentNullException)
+#if !NETFX_CORE
+      , ExpectedMessage = @"Value cannot be null.
+Parameter name: array"
+#endif
+      )]
     public void GenericCollectionCopyToNullArrayShouldThrow()
     {
       JArray j = new JArray();
@@ -77,8 +88,12 @@ Parameter name: array")]
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentOutOfRangeException), ExpectedMessage = @"arrayIndex is less than 0.
-Parameter name: arrayIndex")]
+    [ExpectedException(typeof(ArgumentOutOfRangeException)
+#if !NETFX_CORE
+      , ExpectedMessage = @"arrayIndex is less than 0.
+Parameter name: arrayIndex"
+#endif
+      )]
     public void GenericCollectionCopyToNegativeArrayIndexShouldThrow()
     {
       JArray j = new JArray();
@@ -86,7 +101,11 @@ Parameter name: arrayIndex")]
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentException), ExpectedMessage = @"arrayIndex is equal to or greater than the length of array.")]
+    [ExpectedException(typeof(ArgumentException)
+#if !NETFX_CORE
+      , ExpectedMessage = @"arrayIndex is equal to or greater than the length of array."
+#endif
+      )]
     public void GenericCollectionCopyToArrayIndexEqualGreaterToArrayLengthShouldThrow()
     {
       JArray j = new JArray();
@@ -94,7 +113,11 @@ Parameter name: arrayIndex")]
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentException), ExpectedMessage = @"The number of elements in the source JObject is greater than the available space from arrayIndex to the end of the destination array.")]
+    [ExpectedException(typeof(ArgumentException)
+#if !NETFX_CORE
+      , ExpectedMessage = @"The number of elements in the source JObject is greater than the available space from arrayIndex to the end of the destination array."
+#endif
+      )]
     public void GenericCollectionCopyToInsufficientArrayCapacity()
     {
       JArray j = new JArray();
@@ -174,8 +197,12 @@ Parameter name: arrayIndex")]
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentOutOfRangeException), ExpectedMessage = @"Index is equal to or greater than Count.
-Parameter name: index")]
+    [ExpectedException(typeof(ArgumentOutOfRangeException)
+#if !NETFX_CORE
+      , ExpectedMessage = @"Index is equal to or greater than Count.
+Parameter name: index"
+#endif
+      )]
     public void RemoveAtOutOfRangeIndexShouldError()
     {
       JArray j = new JArray();
@@ -183,8 +210,12 @@ Parameter name: index")]
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentOutOfRangeException), ExpectedMessage = @"Index is less than 0.
-Parameter name: index")]
+    [ExpectedException(typeof(ArgumentOutOfRangeException)
+#if !NETFX_CORE
+      , ExpectedMessage = @"Index is less than 0.
+Parameter name: index"
+#endif
+      )]
     public void RemoveAtNegativeIndexShouldError()
     {
       JArray j = new JArray();
@@ -262,8 +293,12 @@ Parameter name: index")]
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentOutOfRangeException), ExpectedMessage = @"Index was out of range. Must be non-negative and less than the size of the collection.
-Parameter name: index")]
+    [ExpectedException(typeof(ArgumentOutOfRangeException)
+#if !NETFX_CORE
+      , ExpectedMessage = @"Index was out of range. Must be non-negative and less than the size of the collection.
+Parameter name: index"
+#endif
+      )]
     public void InsertNegativeIndexShouldThrow()
     {
       JArray j = new JArray();
@@ -271,8 +306,12 @@ Parameter name: index")]
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentOutOfRangeException), ExpectedMessage = @"Index must be within the bounds of the List.
-Parameter name: index")]
+    [ExpectedException(typeof(ArgumentOutOfRangeException)
+#if !NETFX_CORE
+      , ExpectedMessage = @"Index must be within the bounds of the List.
+Parameter name: index"
+#endif
+      )]
     public void InsertOutOfRangeIndexShouldThrow()
     {
       JArray j = new JArray();
@@ -302,7 +341,11 @@ Parameter name: index")]
     }
 
     [Test]
-    [ExpectedException(typeof(Exception), ExpectedMessage = "Error reading JArray from JsonReader. Current JsonReader item is not an array: StartObject")]
+    [ExpectedException(typeof(Exception)
+#if !NETFX_CORE
+      , ExpectedMessage = "Error reading JArray from JsonReader. Current JsonReader item is not an array: StartObject"
+#endif
+      )]
     public void Parse_ShouldThrowOnUnexpectedToken()
     {
       string json = @"{""prop"":""value""}";
@@ -378,7 +421,7 @@ Parameter name: index")]
     }
 
     
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !NETFX_CORE
     [Test]
     public void ITypedListGetItemProperties()
     {
@@ -407,7 +450,11 @@ Parameter name: index")]
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentException), ExpectedMessage = @"Set JArray values with invalid key value: ""badvalue"". Array position index expected.")]
+    [ExpectedException(typeof(ArgumentException)
+#if !NETFX_CORE
+      , ExpectedMessage = @"Set JArray values with invalid key value: ""badvalue"". Array position index expected."
+#endif
+      )]
     public void SetValueWithInvalidIndex()
     {
       JArray a = new JArray();
@@ -440,7 +487,11 @@ Parameter name: index")]
     }
 
     [Test]
-    [ExpectedException(typeof(Exception), ExpectedMessage = "Unexpected end of content while loading JArray.")]
+    [ExpectedException(typeof(Exception)
+#if !NETFX_CORE
+      , ExpectedMessage = "Unexpected end of content while loading JArray."
+#endif
+      )]
     public void ParseIncomplete()
     {
       JArray.Parse("[1");
@@ -459,7 +510,11 @@ Parameter name: index")]
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Additional text encountered after finished reading JSON content: ,. Line 5, position 2.")]
+    [ExpectedException(typeof(JsonReaderException)
+#if !NETFX_CORE
+      , ExpectedMessage = "Additional text encountered after finished reading JSON content: ,. Line 5, position 2."
+#endif
+      )]
     public void ParseAdditionalContent()
     {
       string json = @"[

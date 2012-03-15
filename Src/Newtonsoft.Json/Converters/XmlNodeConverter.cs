@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !SILVERLIGHT || WINDOWS_PHONE
+#if (!SILVERLIGHT || WINDOWS_PHONE)
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -37,7 +37,7 @@ using System.Linq;
 namespace Newtonsoft.Json.Converters
 {
   #region XmlNodeWrappers
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !NETFX_CORE
   internal class XmlDocumentWrapper : XmlNodeWrapper, IXmlDocument
   {
     private readonly XmlDocument _document;
@@ -803,7 +803,7 @@ namespace Newtonsoft.Json.Converters
       if (value is XObject)
         return XContainerWrapper.WrapNode((XObject)value);
 #endif
-#if !SILVERLIGHT
+#if !(SILVERLIGHT || NETFX_CORE)
       if (value is XmlNode)
         return new XmlNodeWrapper((XmlNode)value);
 #endif
@@ -1088,7 +1088,7 @@ namespace Newtonsoft.Json.Converters
         rootNode = document;
       }
 #endif
-#if !SILVERLIGHT
+#if !(SILVERLIGHT || NETFX_CORE)
       if (typeof(XmlNode).IsAssignableFrom(objectType))
       {
         if (objectType != typeof (XmlDocument))
@@ -1242,7 +1242,11 @@ namespace Newtonsoft.Json.Converters
       else if (reader.TokenType == JsonToken.Date)
       {
         DateTime d = Convert.ToDateTime(reader.Value, CultureInfo.InvariantCulture);
+#if !NETFX_CORE
         return XmlConvert.ToString(d, DateTimeUtils.ToSerializationMode(d.Kind));
+#else
+        return XmlConvert.ToString(d);
+#endif   
       }
       else if (reader.TokenType == JsonToken.Null)
       {
@@ -1531,7 +1535,7 @@ namespace Newtonsoft.Json.Converters
       if (typeof(XObject).IsAssignableFrom(valueType))
         return true;
 #endif
-#if !SILVERLIGHT
+#if !(SILVERLIGHT || NETFX_CORE)
       if (typeof(XmlNode).IsAssignableFrom(valueType))
         return true;
 #endif

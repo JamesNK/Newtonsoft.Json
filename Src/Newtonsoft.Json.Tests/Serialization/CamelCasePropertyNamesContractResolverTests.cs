@@ -28,7 +28,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Serialization;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 using Newtonsoft.Json.Tests.TestObjects;
 using Newtonsoft.Json.Linq;
 using System.Reflection;
@@ -36,6 +42,7 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
+  [TestFixture]
   public class CamelCasePropertyNamesContractResolverTests : TestFixtureBase
   {
     [Test]
@@ -97,6 +104,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       string json = o.ToString();
     }
 
+#if !NETFX_CORE
     [Test]
     public void MemberSearchFlags()
     {
@@ -128,6 +136,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       // readonly
       Assert.AreEqual(0, ReflectionUtils.GetMemberValue(typeof(PrivateMembersClass).GetField("i", BindingFlags.Instance | BindingFlags.NonPublic), deserializedPrivateMembersClass));
     }
+#endif
 
     [Test]
     public void BlogPostExample()

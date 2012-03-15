@@ -2,21 +2,28 @@
 
 using System;
 using System.Collections.Generic;
-#if !SILVERLIGHT && !PocketPC && !NET20
+#if !SILVERLIGHT && !PocketPC && !NET20 && !NETFX_CORE
 using System.Data.Linq;
 #endif
-#if !SILVERLIGHT
+#if !SILVERLIGHT && !NETFX_CORE
 using System.Data.SqlTypes;
 #endif
 using System.Dynamic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Converters;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 using Newtonsoft.Json.Tests.TestObjects;
 
 namespace Newtonsoft.Json.Tests.Converters
 {
+  [TestFixture]
   public class ExpandoObjectConverterTests : TestFixtureBase
   {
     public class ExpandoContainer
@@ -110,32 +117,32 @@ namespace Newtonsoft.Json.Tests.Converters
       Assert.IsNotNull(o.Expando);
 
       dynamic d = o.Expando;
-      Assert.IsInstanceOfType(typeof(ExpandoObject), d);
+      CustomAssert.IsInstanceOfType(typeof(ExpandoObject), d);
 
       Assert.AreEqual("String!", d.String);
-      Assert.IsInstanceOfType(typeof(string), d.String);
+      CustomAssert.IsInstanceOfType(typeof(string), d.String);
 
       Assert.AreEqual(234, d.Integer);
-      Assert.IsInstanceOfType(typeof(long), d.Integer);
+      CustomAssert.IsInstanceOfType(typeof(long), d.Integer);
 
       Assert.AreEqual(1.23, d.Float);
-      Assert.IsInstanceOfType(typeof(double), d.Float);
+      CustomAssert.IsInstanceOfType(typeof(double), d.Float);
 
       Assert.IsNotNull(d.List);
       Assert.AreEqual(3, d.List.Count);
-      Assert.IsInstanceOfType(typeof(List<object>), d.List);
+      CustomAssert.IsInstanceOfType(typeof(List<object>), d.List);
 
       Assert.AreEqual("First", d.List[0]);
-      Assert.IsInstanceOfType(typeof(string), d.List[0]);
+      CustomAssert.IsInstanceOfType(typeof(string), d.List[0]);
 
       Assert.AreEqual("Second", d.List[1]);
       Assert.AreEqual("Third", d.List[2]);
 
       Assert.IsNotNull(d.Object);
-      Assert.IsInstanceOfType(typeof(ExpandoObject), d.Object);
+      CustomAssert.IsInstanceOfType(typeof(ExpandoObject), d.Object);
 
       Assert.AreEqual(1, d.Object.First);
-      Assert.IsInstanceOfType(typeof(long), d.Object.First);
+      CustomAssert.IsInstanceOfType(typeof(long), d.Object.First);
     }
 
     [Test]

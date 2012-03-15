@@ -26,7 +26,13 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 using Newtonsoft.Json;
 using System.IO;
 using Newtonsoft.Json.Linq;
@@ -35,6 +41,7 @@ using Newtonsoft.Json.Tests.TestObjects;
 
 namespace Newtonsoft.Json.Tests.Linq
 {
+  [TestFixture]
   public class JTokenReaderTest : TestFixtureBase
   {
 #if !PocketPC && !NET20
@@ -116,7 +123,11 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Could not convert string to DateTimeOffset: blablahbla. Line 1, position 22.")]
+    [ExpectedException(typeof(JsonReaderException)
+#if !NETFX_CORE
+      , ExpectedMessage = "Could not convert string to DateTimeOffset: blablahbla. Line 1, position 22."
+#endif
+      )]
     public void ReadAsDateTimeOffsetBadString()
     {
       string json = @"{""Offset"":""blablahbla""}";
@@ -135,7 +146,11 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error reading date. Unexpected token: Boolean. Line 1, position 14.")]
+    [ExpectedException(typeof(JsonReaderException)
+#if !NETFX_CORE
+      , ExpectedMessage = "Error reading date. Unexpected token: Boolean. Line 1, position 14."
+#endif
+      )]
     public void ReadAsDateTimeOffsetBoolean()
     {
       string json = @"{""Offset"":true}";
@@ -294,25 +309,28 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error reading bytes. Unexpected token: Integer.")]
     public void ReadBytesFailure()
     {
-      JObject o =
-        new JObject(
-          new JProperty("Test1", 1)
-        );
-
-      using (JTokenReader jsonReader = new JTokenReader(o))
+      ExceptionAssert.Throws<JsonReaderException>("Error reading bytes. Unexpected token: Integer.",
+      () =>
       {
-        jsonReader.Read();
-        Assert.AreEqual(JsonToken.StartObject, jsonReader.TokenType);
+        JObject o =
+          new JObject(
+            new JProperty("Test1", 1)
+          );
 
-        jsonReader.Read();
-        Assert.AreEqual(JsonToken.PropertyName, jsonReader.TokenType);
-        Assert.AreEqual("Test1", jsonReader.Value);
+        using (JTokenReader jsonReader = new JTokenReader(o))
+        {
+          jsonReader.Read();
+          Assert.AreEqual(JsonToken.StartObject, jsonReader.TokenType);
 
-        jsonReader.ReadAsBytes();
-      }
+          jsonReader.Read();
+          Assert.AreEqual(JsonToken.PropertyName, jsonReader.TokenType);
+          Assert.AreEqual("Test1", jsonReader.Value);
+
+          jsonReader.ReadAsBytes();
+        }
+      });
     }
 
     public class HasBytes
@@ -336,7 +354,7 @@ namespace Newtonsoft.Json.Tests.Linq
       var result2 = (HasBytes)JsonSerializer.Create(null)
                  .Deserialize(jsonReader, typeof(HasBytes));
 
-      Assert.AreEqual(new byte[] { 1, 2, 3, 4 }, result2.Bytes);
+      CollectionAssert.AreEqual(new byte[] { 1, 2, 3, 4 }, result2.Bytes);
     }
 
     [Test]
@@ -355,7 +373,7 @@ namespace Newtonsoft.Json.Tests.Linq
       var result2 = (HasBytes)JsonSerializer.Create(null)
                  .Deserialize(jsonReader, typeof(HasBytes));
 
-      Assert.AreEqual(new byte[0], result2.Bytes);
+      CollectionAssert.AreEquivalent(new byte[0], result2.Bytes);
     }
 
     public class ReadAsBytesTestObject
@@ -394,7 +412,7 @@ namespace Newtonsoft.Json.Tests.Linq
         TestObject newObject = (TestObject)serializer.Deserialize(nodeReader);
 
         Assert.AreEqual("Test", newObject.Name);
-        Assert.AreEqual(new byte[] { 72, 63, 62, 71, 92, 55 }, newObject.Data);
+        CollectionAssert.AreEquivalent(new byte[] { 72, 63, 62, 71, 92, 55 }, newObject.Data);
       }
     }
 
@@ -437,7 +455,7 @@ namespace Newtonsoft.Json.Tests.Linq
       reader.ReadAsDecimal();
       Assert.AreEqual(JsonToken.Float, reader.TokenType);
       Assert.AreEqual(typeof(decimal), reader.ValueType);
-      Assert.AreEqual(1, reader.Value);
+      Assert.AreEqual(1m, reader.Value);
     }
 
     [Test]
@@ -462,7 +480,11 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Could not convert string to integer: hi. Line 1, position 12.")]
+    [ExpectedException(typeof(JsonReaderException)
+#if !NETFX_CORE
+      , ExpectedMessage = "Could not convert string to integer: hi. Line 1, position 12."
+#endif
+      )]
     public void ReadAsInt32BadString()
     {
       string json = @"{""Name"":""hi""}";
@@ -484,7 +506,11 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error reading integer. Unexpected token: Boolean. Line 1, position 12.")]
+    [ExpectedException(typeof(JsonReaderException)
+#if !NETFX_CORE
+      , ExpectedMessage = "Error reading integer. Unexpected token: Boolean. Line 1, position 12."
+#endif
+      )]
     public void ReadAsInt32Boolean()
     {
       string json = @"{""Name"":true}";
@@ -524,7 +550,11 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Could not convert string to decimal: blah. Line 1, position 14.")]
+    [ExpectedException(typeof(JsonReaderException)
+#if !NETFX_CORE
+      , ExpectedMessage = "Could not convert string to decimal: blah. Line 1, position 14."
+#endif
+      )]
     public void ReadAsDecimalBadString()
     {
       string json = @"{""Name"":""blah""}";
@@ -543,7 +573,11 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException), ExpectedMessage = "Error reading decimal. Unexpected token: Boolean. Line 1, position 12.")]
+    [ExpectedException(typeof(JsonReaderException)
+#if !NETFX_CORE
+      , ExpectedMessage = "Error reading decimal. Unexpected token: Boolean. Line 1, position 12."
+#endif
+      )]
     public void ReadAsDecimalBoolean()
     {
       string json = @"{""Name"":true}";

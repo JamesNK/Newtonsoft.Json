@@ -191,7 +191,7 @@ namespace Newtonsoft.Json.Converters
       ? Nullable.GetUnderlyingType(objectType)
       : objectType;
 
-      return t.IsEnum;
+      return t.IsEnum();
     }
   }
 }

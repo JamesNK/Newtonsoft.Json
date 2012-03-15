@@ -27,14 +27,25 @@ using System;
 using System.IO;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Tests.TestObjects;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
+  [TestFixture]
   public class MissingMemberHandlingTests : TestFixtureBase
   {
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = @"Could not find member 'Price' on object of type 'ProductShort'. Line 4, position 11.")]
+    [ExpectedException(typeof(JsonSerializationException)
+#if !NETFX_CORE
+      , ExpectedMessage = @"Could not find member 'Price' on object of type 'ProductShort'. Line 4, position 11."
+#endif
+      )]
     public void MissingMemberDeserialize()
     {
       Product product = new Product();
@@ -115,7 +126,11 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException), ExpectedMessage = "Could not find member 'Missing' on object of type 'DoubleClass'. Line 1, position 11.")]
+    [ExpectedException(typeof(JsonSerializationException)
+#if !NETFX_CORE
+      , ExpectedMessage = "Could not find member 'Missing' on object of type 'DoubleClass'. Line 1, position 11."
+#endif
+      )]
     public void MissingMemeber()
     {
       string json = @"{""Missing"":1}";

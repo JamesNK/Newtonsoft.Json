@@ -28,7 +28,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Converters;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 using Newtonsoft.Json.Tests.TestObjects;
 
 namespace Newtonsoft.Json.Tests.Converters
@@ -53,6 +59,7 @@ namespace Newtonsoft.Json.Tests.Converters
     public string StringProperty2 { get; set; }
   }
 
+  [TestFixture]
   public class VersionConverterTests : TestFixtureBase
   {
     private void SerializeVersionClass(string version1, string version2)

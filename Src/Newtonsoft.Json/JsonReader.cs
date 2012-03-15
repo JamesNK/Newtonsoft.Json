@@ -537,8 +537,8 @@ namespace Newtonsoft.Json
         if (Value != null)
         {
           string s;
-          if (Value is IConvertible)
-            s = ((IConvertible)Value).ToString(Culture);
+          if (ConvertUtils.IsConvertible(Value))
+            s = ConvertUtils.ToConvertible(Value).ToString(Culture);
           else if (Value is IFormattable)
             s = ((IFormattable)Value).ToString(null, Culture);
           else

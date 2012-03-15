@@ -1,19 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-#if !SILVERLIGHT && !PocketPC && !NET20
+#if !SILVERLIGHT && !PocketPC && !NET20 && !NETFX_CORE
 using System.Data.Linq;
 #endif
-#if !SILVERLIGHT
+#if !(SILVERLIGHT || NETFX_CORE)
 using System.Data.SqlTypes;
 #endif
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Converters;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 using Newtonsoft.Json.Tests.TestObjects;
 
 namespace Newtonsoft.Json.Tests.Converters
 {
+  [TestFixture]
   public class BinaryConverterTests : TestFixtureBase
   {
     private static readonly byte[] TestData = Encoding.UTF8.GetBytes("This is some test data!!!");
@@ -24,7 +31,7 @@ namespace Newtonsoft.Json.Tests.Converters
       public byte[] NullByteArray { get; set; }
     }
 
-#if !SILVERLIGHT && !PocketPC && !NET20
+#if !SILVERLIGHT && !PocketPC && !NET20 && !NETFX_CORE
     [Test]
     public void DeserializeBinaryClass()
     {
@@ -90,7 +97,7 @@ namespace Newtonsoft.Json.Tests.Converters
 }", json);
     }
 
-#if !SILVERLIGHT
+#if !(SILVERLIGHT || NETFX_CORE)
     public class SqlBinaryClass
     {
       public SqlBinary SqlBinary { get; set; }
@@ -142,7 +149,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
       ByteArrayClass byteArrayClass = JsonConvert.DeserializeObject<ByteArrayClass>(json, new BinaryConverter());
 
-      Assert.AreEqual(TestData, byteArrayClass.ByteArray);
+      CollectionAssert.AreEquivalent(TestData, byteArrayClass.ByteArray);
       Assert.AreEqual(null, byteArrayClass.NullByteArray);
     }
 
@@ -157,7 +164,7 @@ namespace Newtonsoft.Json.Tests.Converters
       ByteArrayClass c = JsonConvert.DeserializeObject<ByteArrayClass>(json);
       Assert.IsNotNull(c.ByteArray);
       Assert.AreEqual(4, c.ByteArray.Length);
-      Assert.AreEqual(new byte[] { 0, 1, 2, 3 }, c.ByteArray);
+      CollectionAssert.AreEquivalent(new byte[] { 0, 1, 2, 3 }, c.ByteArray);
     }
   }
 }

@@ -3,11 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 using System.IO;
 
 namespace Newtonsoft.Json.Tests.Linq
 {
+  [TestFixture]
   public class JConstructorTests : TestFixtureBase
   {
     [Test]
@@ -46,11 +53,14 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentException), ExpectedMessage = @"Set JConstructor values with invalid key value: ""badvalue"". Argument position index expected.")]
     public void SetValueWithInvalidIndex()
     {
-      JConstructor c = new JConstructor();
-      c["badvalue"] = new JValue(3);
+      ExceptionAssert.Throws<ArgumentException>(@"Set JConstructor values with invalid key value: ""badvalue"". Argument position index expected.",
+      () =>
+      {
+        JConstructor c = new JConstructor();
+        c["badvalue"] = new JValue(3);
+      }); 
     }
 
     [Test]

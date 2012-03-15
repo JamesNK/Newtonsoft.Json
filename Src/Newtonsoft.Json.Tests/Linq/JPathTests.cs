@@ -4,7 +4,13 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Tests.TestObjects;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Converters;
 using System.IO;
@@ -12,6 +18,7 @@ using System.Collections;
 
 namespace Newtonsoft.Json.Tests.Linq
 {
+  [TestFixture]
   public class JPathTests : TestFixtureBase
   {
     [Test]
@@ -54,14 +61,22 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(Exception), ExpectedMessage = @"Unexpected character while parsing path indexer: [")]
+    [ExpectedException(typeof(Exception)
+#if !NETFX_CORE
+      , ExpectedMessage = @"Unexpected character while parsing path indexer: ["
+#endif
+      )]
     public void BadCharactersInIndexer()
     {
       new JPath("Blah[[0]].Two.Three[1].Four");
     }
 
     [Test]
-    [ExpectedException(typeof(Exception), ExpectedMessage = @"Path ended with open indexer. Expected ]")]
+    [ExpectedException(typeof(Exception)
+#if !NETFX_CORE
+      , ExpectedMessage = @"Path ended with open indexer. Expected ]"
+#endif
+      )]
     public void UnclosedIndexer()
     {
       new JPath("Blah[0");
@@ -89,14 +104,22 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(Exception), ExpectedMessage = "Empty path indexer.")]
+    [ExpectedException(typeof(Exception)
+#if !NETFX_CORE
+      , ExpectedMessage = "Empty path indexer."
+#endif
+      )]
     public void EmptyIndexer()
     {
       new JPath("[]");
     }
 
     [Test]
-    [ExpectedException(typeof(Exception), ExpectedMessage = "Unexpected character while parsing path: ]")]
+    [ExpectedException(typeof(Exception)
+#if !NETFX_CORE
+      , ExpectedMessage = "Unexpected character while parsing path: ]"
+#endif
+      )]
     public void IndexerCloseInProperty()
     {
       new JPath("]");
@@ -114,7 +137,11 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(Exception), ExpectedMessage = "Unexpected character following indexer: B")]
+    [ExpectedException(typeof(Exception)
+#if !NETFX_CORE
+      , ExpectedMessage = "Unexpected character following indexer: B"
+#endif
+      )]
     public void MissingDotAfterIndexer()
     {
       new JPath("[1]Blah");
@@ -153,7 +180,11 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(Exception), ExpectedMessage = @"Index 1 not valid on JObject.")]
+    [ExpectedException(typeof(Exception)
+#if !NETFX_CORE
+      , ExpectedMessage = @"Index 1 not valid on JObject."
+#endif
+      )]
     public void EvaluateIndexerOnObjectWithError()
     {
       JObject o = new JObject(
@@ -172,7 +203,11 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(Exception), ExpectedMessage = @"Property 'BlahBlah' not valid on JArray.")]
+    [ExpectedException(typeof(Exception)
+#if !NETFX_CORE
+      , ExpectedMessage = @"Property 'BlahBlah' not valid on JArray."
+#endif
+      )]
     public void EvaluatePropertyOnArrayWithError()
     {
       JArray a = new JArray(1, 2, 3, 4, 5);
@@ -181,7 +216,11 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(IndexOutOfRangeException), ExpectedMessage = @"Index 1 outside the bounds of JConstructor.")]
+    [ExpectedException(typeof(IndexOutOfRangeException)
+#if !NETFX_CORE
+      , ExpectedMessage = @"Index 1 outside the bounds of JConstructor."
+#endif
+      )]
     public void EvaluateConstructorOutOfBoundsIndxerWithError()
     {
       JConstructor c = new JConstructor("Blah");
@@ -190,7 +229,11 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(Exception), ExpectedMessage = "Property 'Missing' does not exist on JObject.")]
+    [ExpectedException(typeof(Exception)
+#if !NETFX_CORE
+      , ExpectedMessage = "Property 'Missing' does not exist on JObject."
+#endif
+      )]
     public void EvaluateMissingPropertyWithError()
     {
       JObject o = new JObject(
@@ -209,7 +252,11 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(IndexOutOfRangeException), ExpectedMessage = "Index 1000 outside the bounds of JArray.")]
+    [ExpectedException(typeof(IndexOutOfRangeException)
+#if !NETFX_CORE
+      , ExpectedMessage = "Index 1000 outside the bounds of JArray."
+#endif
+      )]
     public void EvaluateArrayOutOfBoundsIndxerWithError()
     {
       JArray a = new JArray(1, 2, 3, 4, 5);
@@ -277,7 +324,7 @@ namespace Newtonsoft.Json.Tests.Linq
 ]");
 
       JValue v = (JValue)a.SelectToken("[1].Property2[1][0]");
-      Assert.AreEqual(1, v.Value);
+      Assert.AreEqual(1L, v.Value);
     }
 
 

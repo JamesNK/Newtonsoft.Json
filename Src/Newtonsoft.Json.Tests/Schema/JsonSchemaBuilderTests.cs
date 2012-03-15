@@ -27,13 +27,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 using Newtonsoft.Json.Schema;
 using System.IO;
 using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Tests.Schema
 {
+  [TestFixture]
   public class JsonSchemaBuilderTests : TestFixtureBase
   {
     [Test]
@@ -435,18 +442,21 @@ namespace Newtonsoft.Json.Tests.Schema
     }
 
     [Test]
-    [ExpectedException(typeof(Exception), ExpectedMessage = @"Could not resolve schema reference for Id 'MyUnresolvedReference'.")]
     public void UnresolvedReference()
     {
-      string json = @"{
+      ExceptionAssert.Throws<Exception>(@"Could not resolve schema reference for Id 'MyUnresolvedReference'.",
+      () =>
+      {
+        string json = @"{
   ""id"":""CircularReferenceArray"",
   ""description"":""CircularReference"",
   ""type"":[""array""],
   ""items"":{""$ref"":""MyUnresolvedReference""}
 }";
 
-      JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
-      JsonSchema schema = builder.Parse(new JsonTextReader(new StringReader(json)));
+        JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
+        JsonSchema schema = builder.Parse(new JsonTextReader(new StringReader(json)));
+      });
     }
 
     [Test]

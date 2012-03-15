@@ -27,12 +27,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 using Newtonsoft.Json.Linq;
 using System.Globalization;
 
 namespace Newtonsoft.Json.Tests.Linq
 {
+  [TestFixture]
   public class JValueTests : TestFixtureBase
   {
     [Test]
@@ -58,9 +65,11 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual("Pie", v.Value);
       Assert.AreEqual(JTokenType.String, v.Type);
 
+#if !NETFX_CORE
       v.Value = DBNull.Value;
       Assert.AreEqual(DBNull.Value, v.Value);
       Assert.AreEqual(JTokenType.Null, v.Type);
+#endif
 
       byte[] data = new byte[0];
       v.Value = data;
@@ -140,11 +149,14 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(InvalidOperationException), ExpectedMessage = "Cannot access child value on Newtonsoft.Json.Linq.JValue.")]
     public void Last()
     {
-      JValue v = new JValue(true);
-      JToken last = v.Last;
+      ExceptionAssert.Throws<InvalidOperationException>("Cannot access child value on Newtonsoft.Json.Linq.JValue.",
+      () =>
+      {
+        JValue v = new JValue(true);
+        JToken last = v.Last;
+      });
     }
 
     [Test]
@@ -156,35 +168,47 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(InvalidOperationException), ExpectedMessage = "Cannot access child value on Newtonsoft.Json.Linq.JValue.")]
     public void First()
     {
-      JValue v = new JValue(true);
-      JToken first = v.First;
+      ExceptionAssert.Throws<InvalidOperationException>("Cannot access child value on Newtonsoft.Json.Linq.JValue.",
+      () =>
+      {
+        JValue v = new JValue(true);
+        JToken first = v.First;
+      });
     }
 
     [Test]
-    [ExpectedException(typeof(InvalidOperationException), ExpectedMessage = "Cannot access child value on Newtonsoft.Json.Linq.JValue.")]
     public void Item()
     {
-      JValue v = new JValue(true);
-      JToken first = v[0];
+      ExceptionAssert.Throws<InvalidOperationException>("Cannot access child value on Newtonsoft.Json.Linq.JValue.",
+      () =>
+      {
+        JValue v = new JValue(true);
+        JToken first = v[0];
+      });
     }
 
     [Test]
-    [ExpectedException(typeof(InvalidOperationException), ExpectedMessage = "Cannot access child value on Newtonsoft.Json.Linq.JValue.")]
     public void Values()
     {
-      JValue v = new JValue(true);
-      v.Values<int>();
+      ExceptionAssert.Throws<InvalidOperationException>("Cannot access child value on Newtonsoft.Json.Linq.JValue.",
+      () =>
+      {
+        JValue v = new JValue(true);
+        v.Values<int>();
+      });
     }
 
     [Test]
-    [ExpectedException(typeof(InvalidOperationException), ExpectedMessage = "The parent is missing.")]
     public void RemoveParentNull()
     {
-      JValue v = new JValue(true);
-      v.Remove();
+      ExceptionAssert.Throws<InvalidOperationException>("The parent is missing.",
+      () =>
+      {
+        JValue v = new JValue(true);
+        v.Remove();
+      });
     }
 
     [Test]
@@ -223,33 +247,39 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(InvalidOperationException), ExpectedMessage = "Cannot set child value on Newtonsoft.Json.Linq.JValue.")]
     public void SetValue()
     {
-      JToken t = new JValue(5L);
-      t[0] = new JValue(3);
+      ExceptionAssert.Throws<InvalidOperationException>("Cannot set child value on Newtonsoft.Json.Linq.JValue.",
+      () =>
+      {
+        JToken t = new JValue(5L);
+        t[0] = new JValue(3);
+      });
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentException), ExpectedMessage = "Can not convert Null to Int32.")]
     public void CastNullValueToNonNullable()
     {
-      JValue v = new JValue((object)null);
-      int i = (int) v;
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Null to Int32.",
+      () =>
+      {
+        JValue v = new JValue((object)null);
+        int i = (int)v;
+      });
     }
 
     [Test]
     public void ConvertValueToCompatibleType()
     {
       IComparable c = (new JValue(1).Value<IComparable>());
-      Assert.AreEqual(1, c);
+      Assert.AreEqual(1L, c);
     }
 
     [Test]
     public void ConvertValueToFormattableType()
     {
       IFormattable f = (new JValue(1).Value<IFormattable>());
-      Assert.AreEqual(1, f);
+      Assert.AreEqual(1L, f);
 
       Assert.AreEqual("01", f.ToString("00", CultureInfo.InvariantCulture));
     }
@@ -265,9 +295,9 @@ namespace Newtonsoft.Json.Tests.Linq
 
       IList<object> orderedValues = o.Values().Cast<JValue>().OrderBy(v => v).Select(v => v.Value).ToList();
 
-      Assert.AreEqual(1, orderedValues[0]);
-      Assert.AreEqual(1.1, orderedValues[1]);
-      Assert.AreEqual(1.2, orderedValues[2]);
+      Assert.AreEqual(1L, orderedValues[0]);
+      Assert.AreEqual(1.1m, orderedValues[1]);
+      Assert.AreEqual(1.2d, orderedValues[2]);
     }
   }
 }

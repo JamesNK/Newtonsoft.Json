@@ -92,16 +92,20 @@ namespace Newtonsoft.Json.Serialization
       {
         CreatedType = ReflectionUtils.MakeGenericType(typeof(Dictionary<,>), keyType, valueType);
       }
+#if !NETFX_CORE
       else if (UnderlyingType == typeof(IDictionary))
       {
         CreatedType = typeof (Dictionary<object, object>);
       }
+#endif
     }
 
     internal IWrappedDictionary CreateWrapper(object dictionary)
     {
+#if !NETFX_CORE
       if (dictionary is IDictionary && (DictionaryValueType == null || !_isDictionaryValueTypeNullableType))
         return new DictionaryWrapper<object, object>((IDictionary)dictionary);
+#endif
 
       if (_genericWrapperCreator == null)
       {
@@ -116,7 +120,7 @@ namespace Newtonsoft.Json.Serialization
 
     private bool IsTypeGenericDictionaryInterface(Type type)
     {
-      if (!type.IsGenericType)
+      if (!type.IsGenericType())
         return false;
 
       Type genericDefinition = type.GetGenericTypeDefinition();

@@ -5,12 +5,19 @@ using System.Dynamic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
 
 namespace Newtonsoft.Json.Tests.Linq
 {
+  [TestFixture]
   public class DynamicTests : TestFixtureBase
   {
     [Test]
@@ -79,7 +86,11 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentException), ExpectedMessage = "Could not determine JSON object type for type System.String[].")]
+    [ExpectedException(typeof(ArgumentException)
+#if !NETFX_CORE
+      , ExpectedMessage = "Could not determine JSON object type for type System.String[]."
+#endif
+      )]
     public void JObjectPropertyNameWithNonToken()
     {
       dynamic d = new JObject();
@@ -234,9 +245,9 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(4.1, (double)r);
 
       r = d.Integer + 1.1d;
-      Assert.AreEqual(2.1, (decimal)r);
+      Assert.AreEqual(2.1m, (decimal)r);
       r += 2;
-      Assert.AreEqual(4.1, (decimal)r);
+      Assert.AreEqual(4.1m, (decimal)r);
 
       r = d.Integer + null;
       Assert.AreEqual(null, r.Value);
@@ -244,19 +255,19 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(null, r.Value);
 
       r = d.Float + 1;
-      Assert.AreEqual(2.1, (double)r);
+      Assert.AreEqual(2.1d, (double)r);
       r += 2;
-      Assert.AreEqual(4.1, (double)r);
+      Assert.AreEqual(4.1d, (double)r);
 
       r = d.Float + 1.1;
-      Assert.AreEqual(2.2, (double)r);
+      Assert.AreEqual(2.2d, (double)r);
       r += 2;
-      Assert.AreEqual(4.2, (double)r);
+      Assert.AreEqual(4.2d, (double)r);
 
       r = d.Float + 1.1d;
-      Assert.AreEqual(2.2, (decimal)r);
+      Assert.AreEqual(2.2m, (decimal)r);
       r += 2;
-      Assert.AreEqual(4.2, (decimal)r);
+      Assert.AreEqual(4.2m, (decimal)r);
 
       r = d.Float + null;
       Assert.AreEqual(null, r.Value);
@@ -264,19 +275,19 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(null, r.Value);
 
       r = d.Decimal + 1;
-      Assert.AreEqual(2.1, (decimal)r);
+      Assert.AreEqual(2.1m, (decimal)r);
       r += 2;
-      Assert.AreEqual(4.1, (decimal)r);
+      Assert.AreEqual(4.1m, (decimal)r);
 
       r = d.Decimal + 1.1;
-      Assert.AreEqual(2.2, (decimal)r);
+      Assert.AreEqual(2.2m, (decimal)r);
       r += 2;
-      Assert.AreEqual(4.2, (decimal)r);
+      Assert.AreEqual(4.2m, (decimal)r);
 
       r = d.Decimal + 1.1d;
-      Assert.AreEqual(2.2, (decimal)r);
+      Assert.AreEqual(2.2m, (decimal)r);
       r += 2;
-      Assert.AreEqual(4.2, (decimal)r);
+      Assert.AreEqual(4.2m, (decimal)r);
 
       r = d.Decimal + null;
       Assert.AreEqual(null, r.Value);
@@ -291,14 +302,14 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(-2, (int)r);
 
       r = d.Integer - 1.1;
-      Assert.AreEqual(-0.1, (double)r, 0.00001);
+      Assert.AreEqual(-0.1d, (double)r, 0.00001);
       r -= 2;
-      Assert.AreEqual(-2.1, (double)r);
+      Assert.AreEqual(-2.1d, (double)r);
 
       r = d.Integer - 1.1d;
-      Assert.AreEqual(-0.1, (decimal)r);
+      Assert.AreEqual(-0.1m, (decimal)r);
       r -= 2;
-      Assert.AreEqual(-2.1, (decimal)r);
+      Assert.AreEqual(-2.1m, (decimal)r);
 
       r = d.Integer - null;
       Assert.AreEqual(null, r.Value);
@@ -306,19 +317,19 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(null, r.Value);
 
       r = d.Float - 1;
-      Assert.AreEqual(0.1, (double)r, 0.00001);
+      Assert.AreEqual(0.1d, (double)r, 0.00001);
       r -= 2;
-      Assert.AreEqual(-1.9, (double)r);
+      Assert.AreEqual(-1.9d, (double)r);
 
       r = d.Float - 1.1;
-      Assert.AreEqual(0, (double)r);
+      Assert.AreEqual(0d, (double)r);
       r -= 2;
-      Assert.AreEqual(-2, (double)r);
+      Assert.AreEqual(-2d, (double)r);
 
       r = d.Float - 1.1d;
-      Assert.AreEqual(0, (decimal)r);
+      Assert.AreEqual(0m, (decimal)r);
       r -= 2;
-      Assert.AreEqual(-2, (decimal)r);
+      Assert.AreEqual(-2m, (decimal)r);
 
       r = d.Float - null;
       Assert.AreEqual(null, r.Value);
@@ -326,19 +337,19 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(null, r.Value);
 
       r = d.Decimal - 1;
-      Assert.AreEqual(0.1, (decimal)r);
+      Assert.AreEqual(0.1m, (decimal)r);
       r -= 2;
-      Assert.AreEqual(-1.9, (decimal)r);
+      Assert.AreEqual(-1.9m, (decimal)r);
 
       r = d.Decimal - 1.1;
-      Assert.AreEqual(0, (decimal)r);
+      Assert.AreEqual(0m, (decimal)r);
       r -= 2;
-      Assert.AreEqual(-2, (decimal)r);
+      Assert.AreEqual(-2m, (decimal)r);
 
       r = d.Decimal - 1.1d;
-      Assert.AreEqual(0, (decimal)r);
+      Assert.AreEqual(0m, (decimal)r);
       r -= 2;
-      Assert.AreEqual(-2, (decimal)r);
+      Assert.AreEqual(-2m, (decimal)r);
 
       r = d.Decimal - null;
       Assert.AreEqual(null, r.Value);
@@ -353,14 +364,14 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(2, (int)r);
 
       r = d.Integer * 1.1;
-      Assert.AreEqual(1.1, (double)r);
+      Assert.AreEqual(1.1d, (double)r);
       r *= 2;
-      Assert.AreEqual(2.2, (double)r);
+      Assert.AreEqual(2.2d, (double)r);
 
       r = d.Integer * 1.1d;
-      Assert.AreEqual(1.1, (decimal)r);
+      Assert.AreEqual(1.1m, (decimal)r);
       r *= 2;
-      Assert.AreEqual(2.2, (decimal)r);
+      Assert.AreEqual(2.2m, (decimal)r);
 
       r = d.Integer * null;
       Assert.AreEqual(null, r.Value);
@@ -368,19 +379,19 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(null, r.Value);
 
       r = d.Float * 1;
-      Assert.AreEqual(1.1, (double)r);
+      Assert.AreEqual(1.1d, (double)r);
       r *= 2;
-      Assert.AreEqual(2.2, (double)r);
+      Assert.AreEqual(2.2d, (double)r);
 
       r = d.Float * 1.1;
-      Assert.AreEqual(1.21, (double)r, 0.00001);
+      Assert.AreEqual(1.21d, (double)r, 0.00001);
       r *= 2;
-      Assert.AreEqual(2.42, (double)r, 0.00001);
+      Assert.AreEqual(2.42d, (double)r, 0.00001);
 
       r = d.Float * 1.1d;
-      Assert.AreEqual(1.21, (decimal)r);
+      Assert.AreEqual(1.21m, (decimal)r);
       r *= 2;
-      Assert.AreEqual(2.42, (decimal)r);
+      Assert.AreEqual(2.42m, (decimal)r);
 
       r = d.Float * null;
       Assert.AreEqual(null, r.Value);
@@ -388,19 +399,19 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(null, r.Value);
 
       r = d.Decimal * 1;
-      Assert.AreEqual(1.1, (decimal)r);
+      Assert.AreEqual(1.1m, (decimal)r);
       r *= 2;
-      Assert.AreEqual(2.2, (decimal)r);
+      Assert.AreEqual(2.2m, (decimal)r);
 
       r = d.Decimal * 1.1;
-      Assert.AreEqual(1.21, (decimal)r);
+      Assert.AreEqual(1.21m, (decimal)r);
       r *= 2;
-      Assert.AreEqual(2.42, (decimal)r);
+      Assert.AreEqual(2.42m, (decimal)r);
 
       r = d.Decimal * 1.1d;
-      Assert.AreEqual(1.21, (decimal)r);
+      Assert.AreEqual(1.21m, (decimal)r);
       r *= 2;
-      Assert.AreEqual(2.42, (decimal)r);
+      Assert.AreEqual(2.42m, (decimal)r);
 
       r = d.Decimal * null;
       Assert.AreEqual(null, r.Value);
@@ -415,9 +426,9 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(0, (int)r);
 
       r = d.Integer / 1.1;
-      Assert.AreEqual(0.9090909090909091, (double)r);
+      Assert.AreEqual(0.9090909090909091d, (double)r);
       r /= 2;
-      Assert.AreEqual(0.454545454545455, (double)r, 0.00001);
+      Assert.AreEqual(0.454545454545455d, (double)r, 0.00001);
 
       r = d.Integer / 1.1d;
       Assert.AreEqual(0.909090909090909m, (decimal)r);
@@ -430,14 +441,14 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(null, r.Value);
 
       r = d.Float / 1;
-      Assert.AreEqual(1.1, (double)r);
+      Assert.AreEqual(1.1d, (double)r);
       r /= 2;
-      Assert.AreEqual(0.55, (double)r);
+      Assert.AreEqual(0.55d, (double)r);
 
       r = d.Float / 1.1;
-      Assert.AreEqual(1, (double)r, 0.00001);
+      Assert.AreEqual(1d, (double)r, 0.00001);
       r /= 2;
-      Assert.AreEqual(0.5, (double)r, 0.00001);
+      Assert.AreEqual(0.5d, (double)r, 0.00001);
 
       r = d.Float / 1.1d;
       Assert.AreEqual(1m, (decimal)r);
@@ -450,19 +461,19 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(null, r.Value);
 
       r = d.Decimal / 1;
-      Assert.AreEqual(1.1d, (decimal)r);
+      Assert.AreEqual(1.1m, (decimal)r);
       r /= 2;
-      Assert.AreEqual(0.55d, (decimal)r);
+      Assert.AreEqual(0.55m, (decimal)r);
 
       r = d.Decimal / 1.1;
-      Assert.AreEqual(1d, (decimal)r);
+      Assert.AreEqual(1m, (decimal)r);
       r /= 2;
-      Assert.AreEqual(0.5d, (decimal)r);
+      Assert.AreEqual(0.5m, (decimal)r);
 
       r = d.Decimal / 1.1d;
-      Assert.AreEqual(1d, (decimal)r);
+      Assert.AreEqual(1m, (decimal)r);
       r /= 2;
-      Assert.AreEqual(0.5d, (decimal)r);
+      Assert.AreEqual(0.5m, (decimal)r);
 
       r = d.Decimal / null;
       Assert.AreEqual(null, r.Value);
@@ -547,12 +558,12 @@ namespace Newtonsoft.Json.Tests.Linq
       AssertValueConverted<DateTimeOffset?>(null);
       AssertValueConverted<decimal>(99.9m);
       AssertValueConverted<decimal?>(99.9m);
-      AssertValueConverted<decimal>(1);
+      AssertValueConverted<decimal>(1m);
       AssertValueConverted<decimal>(1.1f, 1.1m);
       AssertValueConverted<decimal>("1.1", 1.1m);
       AssertValueConverted<double>(99.9);
-      AssertValueConverted<double>(99.9m);
-      AssertValueConverted<double?>(99.9);
+      AssertValueConverted<double>(99.9d);
+      AssertValueConverted<double?>(99.9d);
       AssertValueConverted<float>(99.9f);
       AssertValueConverted<float?>(99.9f);
       AssertValueConverted<int>(int.MinValue);
@@ -566,7 +577,7 @@ namespace Newtonsoft.Json.Tests.Linq
       AssertValueConverted<string>(1, "1");
       AssertValueConverted<uint>(uint.MinValue);
       AssertValueConverted<uint?>(uint.MinValue);
-      AssertValueConverted<uint?>("1", 1);
+      AssertValueConverted<uint?>("1", (uint)1);
       AssertValueConverted<ulong>(ulong.MaxValue);
       AssertValueConverted<ulong?>(ulong.MaxValue);
       AssertValueConverted<ushort>(ushort.MinValue);

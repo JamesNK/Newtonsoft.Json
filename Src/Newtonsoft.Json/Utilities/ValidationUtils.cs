@@ -46,7 +46,7 @@ namespace Newtonsoft.Json.Utilities
     {
       ArgumentNotNull(enumType, "enumType");
 
-      if (!enumType.IsEnum)
+      if (!enumType.IsEnum())
         throw new ArgumentException("Type {0} is not an Enum.".FormatWith(CultureInfo.InvariantCulture, enumType), parameterName);
     }
 

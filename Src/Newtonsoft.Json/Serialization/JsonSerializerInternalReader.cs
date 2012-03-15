@@ -42,7 +42,7 @@ namespace Newtonsoft.Json.Serialization
   internal class JsonSerializerInternalReader : JsonSerializerInternalBase
   {
     private JsonSerializerProxy _internalSerializer;
-#if !SILVERLIGHT && !PocketPC
+#if !SILVERLIGHT && !PocketPC && !NETFX_CORE
     private JsonFormatterConverter _formatterConverter;
 #endif
 
@@ -130,7 +130,7 @@ namespace Newtonsoft.Json.Serialization
       return _internalSerializer;
     }
 
-#if !SILVERLIGHT && !PocketPC
+#if !SILVERLIGHT && !PocketPC && !NETFX_CORE
     private JsonFormatterConverter GetFormatterConverter()
     {
       if (_formatterConverter == null)
@@ -264,8 +264,10 @@ namespace Newtonsoft.Json.Serialization
             return constructorName;
           case JsonToken.Null:
           case JsonToken.Undefined:
+#if !NETFX_CORE
             if (objectType == typeof (DBNull))
               return DBNull.Value;
+#endif
 
             return EnsureType(reader, reader.Value, CultureInfo.InvariantCulture, contract, objectType);
           case JsonToken.Raw:
@@ -461,7 +463,7 @@ namespace Newtonsoft.Json.Serialization
           JsonDynamicContract dynamicContract = (JsonDynamicContract) contract;
           return CreateDynamic(reader, dynamicContract, id);
 #endif
-#if !SILVERLIGHT && !PocketPC
+#if !SILVERLIGHT && !PocketPC && !NETFX_CORE
         case JsonContractType.Serializable:
           JsonISerializableContract serializableContract = (JsonISerializableContract) contract;
           return CreateISerializable(reader, serializableContract, id);
@@ -539,7 +541,7 @@ To force JSON arrays to deserialize add the JsonArrayAttribute to the type.".For
 
           if (contract.IsConvertable)
           {
-            if (contract.NonNullableUnderlyingType.IsEnum)
+            if (contract.NonNullableUnderlyingType.IsEnum())
               {
                 if (value is string)
                   return Enum.Parse(contract.NonNullableUnderlyingType, value.ToString(), true);
@@ -597,7 +599,7 @@ To force JSON arrays to deserialize add the JsonArrayAttribute to the type.".For
         useExistingValue = (currentValue != null
           && !property.PropertyType.IsArray
             && !ReflectionUtils.InheritsGenericDefinition(property.PropertyType, typeof (ReadOnlyCollection<>))
-              && !property.PropertyType.IsValueType);
+              && !property.PropertyType.IsValueType());
       }
 
       if (!property.Writable && !useExistingValue)
@@ -818,7 +820,7 @@ To force JSON arrays to deserialize add the JsonArrayAttribute to the type.".For
       throw CreateSerializationException(reader, "Unexpected end when deserializing array.");
     }
 
-#if !SILVERLIGHT && !PocketPC
+#if !SILVERLIGHT && !PocketPC && !NETFX_CORE
     private object CreateISerializable(JsonReader reader, JsonISerializableContract contract, string id)
     {
       Type objectType = contract.UnderlyingType;
@@ -868,7 +870,7 @@ To force JSON arrays to deserialize add the JsonArrayAttribute to the type.".For
     {
       IDynamicMetaObjectProvider newObject = null;
 
-      if (contract.UnderlyingType.IsInterface || contract.UnderlyingType.IsAbstract)
+      if (contract.UnderlyingType.IsInterface() || contract.UnderlyingType.IsAbstract())
         throw CreateSerializationException(reader, "Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantated.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
       if (contract.DefaultCreator != null &&
@@ -947,7 +949,7 @@ To force JSON arrays to deserialize add the JsonArrayAttribute to the type.".For
     {
       object newObject = null;
 
-      if (contract.UnderlyingType.IsInterface || contract.UnderlyingType.IsAbstract)
+      if (contract.UnderlyingType.IsInterface() || contract.UnderlyingType.IsAbstract())
         throw CreateSerializationException(reader, "Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantated.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
       if (contract.OverrideConstructor != null)

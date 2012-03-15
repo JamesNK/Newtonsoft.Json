@@ -40,9 +40,9 @@ namespace Newtonsoft.Json.Utilities
 
     private static DynamicMethod CreateDynamicMethod(string name, Type returnType, Type[] parameterTypes, Type owner)
     {
-      DynamicMethod dynamicMethod = !owner.IsInterface
+      DynamicMethod dynamicMethod = !owner.IsInterface()
         ? new DynamicMethod(name, returnType, parameterTypes, owner, true)
-        : new DynamicMethod(name, returnType, parameterTypes, owner.Module, true);
+        : new DynamicMethod(name, returnType, parameterTypes, owner.Module(), true);
 
       return dynamicMethod;
     }
@@ -68,7 +68,7 @@ namespace Newtonsoft.Json.Utilities
       generator.Emit(OpCodes.Ldc_I4, args.Length);
       generator.Emit(OpCodes.Beq, argsOk);
 
-      generator.Emit(OpCodes.Newobj, typeof(TargetParameterCountException).GetConstructor(Type.EmptyTypes));
+      generator.Emit(OpCodes.Newobj, typeof(TargetParameterCountException).GetConstructor(ReflectionUtils.EmptyTypes));
       generator.Emit(OpCodes.Throw);
 
       generator.MarkLabel(argsOk);
@@ -104,7 +104,7 @@ namespace Newtonsoft.Json.Utilities
 
     public override Func<T> CreateDefaultConstructor<T>(Type type)
     {
-      DynamicMethod dynamicMethod = CreateDynamicMethod("Create" + type.FullName, typeof(T), Type.EmptyTypes, type);
+      DynamicMethod dynamicMethod = CreateDynamicMethod("Create" + type.FullName, typeof(T), ReflectionUtils.EmptyTypes, type);
       dynamicMethod.InitLocals = true;
       ILGenerator generator = dynamicMethod.GetILGenerator();
 
@@ -115,7 +115,7 @@ namespace Newtonsoft.Json.Utilities
 
     private void GenerateCreateDefaultConstructorIL(Type type, ILGenerator generator)
     {
-      if (type.IsValueType)
+      if (type.IsValueType())
       {
         generator.DeclareLocal(type);
         generator.Emit(OpCodes.Ldloc_0);
@@ -125,7 +125,7 @@ namespace Newtonsoft.Json.Utilities
       {
         ConstructorInfo constructorInfo =
           type.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null,
-                              Type.EmptyTypes, null);
+                              ReflectionUtils.EmptyTypes, null);
 
         if (constructorInfo == null)
           throw new Exception("Could not get constructor for {0}.".FormatWith(CultureInfo.InvariantCulture, type));

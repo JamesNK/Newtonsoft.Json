@@ -2,10 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
 using System.Reflection;
+using Newtonsoft.Json.Utilities;
+using System.Globalization;
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
@@ -50,8 +58,18 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
   }
 
+  [TestFixture]
   public class ContractResolverTests : TestFixtureBase
   {
+    [Test]
+    public void ResolveProperties_IgnoreStatic()
+    {
+      var resolver = new DefaultContractResolver();
+      var contract = (JsonObjectContract)resolver.ResolveContract(typeof(NumberFormatInfo));
+
+      Assert.IsFalse(contract.Properties.Any(c => c.PropertyName == "InvariantInfo"));
+    }
+
     [Test]
     public void SerializeInterface()
     {
@@ -115,6 +133,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 }", startingWithB);
     }
 
+#if !NETFX_CORE
     [Test]
     public void SerializeCompilerGeneratedMembers()
     {
@@ -159,5 +178,6 @@ namespace Newtonsoft.Json.Tests.Serialization
   ""IntProperty"": 2
 }", includeCompilerGeneratedJson);
     }
+#endif
   }
 }

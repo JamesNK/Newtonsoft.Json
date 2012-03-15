@@ -41,7 +41,9 @@ namespace Newtonsoft.Json.Tests.TestObjects
     public ulong ULong = long.MaxValue;
     public double Double = double.MaxValue;
     public float Float = float.MaxValue;
+#if !NETFX_CORE
     public DBNull DBNull = DBNull.Value;
+#endif
     public bool Bool = true;
     public char Char = '\0';
   }

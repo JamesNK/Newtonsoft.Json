@@ -31,7 +31,11 @@ namespace Newtonsoft.Json.Bson
 
     public void Close()
     {
+#if !NETFX_CORE
       _writer.Close();
+#else
+      _writer.Dispose();
+#endif
     }
 
     public void WriteToken(BsonToken t)

@@ -138,7 +138,7 @@ namespace Newtonsoft.Json.Serialization
           SerializeDynamic(writer, (IDynamicMetaObjectProvider) value, (JsonDynamicContract) valueContract);
           break;
 #endif
-#if !SILVERLIGHT && !PocketPC
+#if !SILVERLIGHT && !PocketPC && !NETFX_CORE
         case JsonContractType.Serializable:
           SerializeISerializable(writer, (ISerializable) value, (JsonISerializableContract) valueContract, member, collectionValueContract);
           break;
@@ -242,7 +242,7 @@ namespace Newtonsoft.Json.Serialization
 
     internal static bool TryConvertToString(object value, Type type, out string s)
     {
-#if !PocketPC
+#if !(PocketPC || NETFX_CORE)
       TypeConverter converter = ConvertUtils.GetConverter(type);
 
       // use the objectType's TypeConverter if it has one and can convert to a string
@@ -264,7 +264,7 @@ namespace Newtonsoft.Json.Serialization
       }
 #endif
 
-#if SILVERLIGHT || PocketPC
+#if SILVERLIGHT || PocketPC || NETFX_CORE
       if (value is Guid || value is Uri || value is TimeSpan)
       {
         s = value.ToString();
@@ -323,7 +323,7 @@ namespace Newtonsoft.Json.Serialization
               property.PropertyContract = Serializer.ContractResolver.ResolveContract(property.PropertyType);
 
             object memberValue = property.ValueProvider.GetValue(value);
-            JsonContract memberContract = (property.PropertyContract.UnderlyingType.IsSealed) ? property.PropertyContract : GetContractSafe(memberValue);
+            JsonContract memberContract = (property.PropertyContract.UnderlyingType.IsSealed()) ? property.PropertyContract : GetContractSafe(memberValue);
 
             WriteMemberInfoProperty(writer, memberValue, property, memberContract);
           }
@@ -411,7 +411,7 @@ namespace Newtonsoft.Json.Serialization
       if (contract.CollectionItemContract == null)
         contract.CollectionItemContract = Serializer.ContractResolver.ResolveContract(contract.CollectionItemType ?? typeof(object));
 
-      JsonContract collectionItemValueContract = (contract.CollectionItemContract.UnderlyingType.IsSealed) ? contract.CollectionItemContract : null;
+      JsonContract collectionItemValueContract = (contract.CollectionItemContract.UnderlyingType.IsSealed()) ? contract.CollectionItemContract : null;
 
       writer.WriteStartArray();
 
@@ -462,7 +462,7 @@ namespace Newtonsoft.Json.Serialization
       contract.InvokeOnSerialized(values.UnderlyingCollection, Serializer.Context);
     }
 
-#if !SILVERLIGHT && !PocketPC
+#if !SILVERLIGHT && !PocketPC && !NETFX_CORE
 #if !NET20
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.Security.SecuritySafeCriticalAttribute")]
     [SecuritySafeCritical]
@@ -577,12 +577,16 @@ namespace Newtonsoft.Json.Serialization
       if (contract.DictionaryValueContract == null)
         contract.DictionaryValueContract = Serializer.ContractResolver.ResolveContract(contract.DictionaryValueType ?? typeof(object));
 
-      JsonContract dictionaryValueContract = (contract.DictionaryValueContract.UnderlyingType.IsSealed) ? contract.DictionaryValueContract : null;
+      JsonContract dictionaryValueContract = (contract.DictionaryValueContract.UnderlyingType.IsSealed()) ? contract.DictionaryValueContract : null;
 
       int initialDepth = writer.Top;
 
+#if !NETFX_CORE
       // Mono Unity 3.0 fix
       IDictionary d = values;
+#else
+      IWrappedDictionary d = values;
+#endif
 
       foreach (DictionaryEntry entry in d)
       {
@@ -631,7 +635,7 @@ namespace Newtonsoft.Json.Serialization
     {
       string propertyName;
 
-      if (entry.Key is IConvertible)
+      if (ConvertUtils.IsConvertible(entry.Key))
         return Convert.ToString(entry.Key, CultureInfo.InvariantCulture);
       else if (TryConvertToString(entry.Key, entry.Key.GetType(), out propertyName))
         return propertyName;

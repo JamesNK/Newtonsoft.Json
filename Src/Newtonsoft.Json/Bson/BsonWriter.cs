@@ -356,7 +356,13 @@ namespace Newtonsoft.Json.Bson
     public override void WriteValue(char value)
     {
       base.WriteValue(value);
-      AddToken(new BsonString(value.ToString(CultureInfo.InvariantCulture), true));
+      string s = null;
+#if !NETFX_CORE
+      s = value.ToString(CultureInfo.InvariantCulture);
+#else
+      s = value.ToString();
+#endif
+      AddToken(new BsonString(s, true));
     }
 
     /// <summary>

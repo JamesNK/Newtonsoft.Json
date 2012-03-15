@@ -26,7 +26,13 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 using Newtonsoft.Json;
 using System.IO;
 using Newtonsoft.Json.Linq;
@@ -34,6 +40,7 @@ using System.Linq;
 
 namespace Newtonsoft.Json.Tests.Linq
 {
+  [TestFixture]
   public class JTokenWriterTest : TestFixtureBase
   {
     [Test]
@@ -63,7 +70,7 @@ namespace Newtonsoft.Json.Tests.Linq
         root = jsonWriter.Token;
       }
 
-      Assert.IsInstanceOfType(typeof(JArray), root);
+      CustomAssert.IsInstanceOfType(typeof(JArray), root);
       Assert.AreEqual(13, root.Children().Count());
       Assert.AreEqual("@", (string)root[0]);
       Assert.AreEqual("\r\n\t\f\b?{\\r\\n\"\'", (string)root[1]);

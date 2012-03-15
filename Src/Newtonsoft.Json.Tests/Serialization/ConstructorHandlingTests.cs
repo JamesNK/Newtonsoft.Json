@@ -1,9 +1,16 @@
 ﻿using System.Reflection;
 using Newtonsoft.Json.Tests.TestObjects;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
+  [TestFixture]
   public class ConstructorHandlingTests : TestFixtureBase
   {
     [Test]
@@ -31,12 +38,16 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 
     [Test]
-    [ExpectedException(typeof(TargetInvocationException))]
     public void FailWithPrivateConstructorPlusParametizedAndDefault()
     {
-      string json = @"{Name:""Name!""}";
+      ExceptionAssert.Throws<TargetInvocationException>(
+        null,
+        () =>
+        {
+          string json = @"{Name:""Name!""}";
 
-      PrivateConstructorWithPublicParametizedConstructorTestClass c = JsonConvert.DeserializeObject<PrivateConstructorWithPublicParametizedConstructorTestClass>(json);
+          PrivateConstructorWithPublicParametizedConstructorTestClass c = JsonConvert.DeserializeObject<PrivateConstructorWithPublicParametizedConstructorTestClass>(json);
+        });
     }
 
     [Test]

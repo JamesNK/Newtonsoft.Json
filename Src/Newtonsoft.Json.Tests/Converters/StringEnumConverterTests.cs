@@ -4,11 +4,18 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using Newtonsoft.Json.Converters;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 using Newtonsoft.Json.Tests.TestObjects;
 
 namespace Newtonsoft.Json.Tests.Converters
 {
+  [TestFixture]
   public class StringEnumConverterTests : TestFixtureBase
   {
     public class EnumClass
@@ -66,15 +73,18 @@ namespace Newtonsoft.Json.Tests.Converters
 
 #if !NET20
     [Test]
-    [ExpectedException(typeof(Exception), ExpectedMessage = "Enum name 'Third' already exists on enum 'NamedEnumDuplicate'.")]
     public void NamedEnumDuplicateTest()
     {
-      EnumContainer<NamedEnumDuplicate> c = new EnumContainer<NamedEnumDuplicate>
+      ExceptionAssert.Throws<Exception>("Enum name 'Third' already exists on enum 'NamedEnumDuplicate'.",
+      () =>
       {
-        Enum = NamedEnumDuplicate.First
-      };
+        EnumContainer<NamedEnumDuplicate> c = new EnumContainer<NamedEnumDuplicate>
+        {
+          Enum = NamedEnumDuplicate.First
+        };
 
-      JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter());
+        JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter());
+      });
     }
 
     [Test]

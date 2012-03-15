@@ -36,6 +36,9 @@ using System.Text;
 #if !NET20 && (!SILVERLIGHT || WINDOWS_PHONE)
 using System.Xml.Linq;
 #endif
+#if NETFX_CORE
+using IConvertible = Newtonsoft.Json.Utilities.Convertible;
+#endif
 
 namespace Newtonsoft.Json
 {
@@ -480,7 +483,15 @@ namespace Newtonsoft.Json
     /// <returns>A JSON string representation of the <see cref="Guid"/>.</returns>
     public static string ToString(Guid value)
     {
-      return '"' + value.ToString("D", CultureInfo.InvariantCulture) + '"';
+      string text = null;
+
+#if !NETFX_CORE
+      text = value.ToString("D", CultureInfo.InvariantCulture);
+#else
+      text = value.ToString("D");
+#endif
+
+      return '"' + text + '"';
     }
 
     /// <summary>
@@ -537,7 +548,7 @@ namespace Newtonsoft.Json
       if (value == null)
         return Null;
 
-      IConvertible convertible = value as IConvertible;
+      IConvertible convertible = ConvertUtils.ToConvertible(value);
 
       if (convertible != null)
       {
@@ -643,7 +654,7 @@ namespace Newtonsoft.Json
       if (type == typeof (Guid))
         return true;
 
-      return IsJsonPrimitiveTypeCode(Type.GetTypeCode(type));
+      return IsJsonPrimitiveTypeCode(ConvertUtils.GetTypeCode(type));
     }
 
     #region Serialize
@@ -1030,7 +1041,7 @@ namespace Newtonsoft.Json
     }
 #endif
 
-#if !SILVERLIGHT
+#if !(SILVERLIGHT || NETFX_CORE)
     /// <summary>
     /// Serializes the XML node to a JSON string.
     /// </summary>
