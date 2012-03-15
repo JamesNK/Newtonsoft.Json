@@ -427,8 +427,10 @@ namespace Newtonsoft.Json.Schema
         case TypeCode.Empty:
         case TypeCode.Object:
           return schemaType | JsonSchemaType.String;
+#if !NETFX_CORE
         case TypeCode.DBNull:
           return schemaType | JsonSchemaType.Null;
+#endif
         case TypeCode.Boolean:
           return schemaType | JsonSchemaType.Boolean;
         case TypeCode.Char:

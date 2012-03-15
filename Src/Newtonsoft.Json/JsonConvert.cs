@@ -584,8 +584,10 @@ namespace Newtonsoft.Json
             return ToString(convertible.ToDateTime(CultureInfo.InvariantCulture));
           case TypeCode.Decimal:
             return ToString(convertible.ToDecimal(CultureInfo.InvariantCulture));
+#if !NETFX_CORE
           case TypeCode.DBNull:
             return Null;
+#endif
         }
       }
 #if !PocketPC && !NET20
@@ -629,7 +631,9 @@ namespace Newtonsoft.Json
         case TypeCode.Double:
         case TypeCode.DateTime:
         case TypeCode.Decimal:
+#if !NETFX_CORE
         case TypeCode.DBNull:
+#endif
           return true;
         default:
           return false;

@@ -1211,9 +1211,11 @@ namespace Newtonsoft.Json
           case TypeCode.Decimal:
             WriteValue(convertible.ToDecimal(CultureInfo.InvariantCulture));
             return;
+#if !NETFX_CORE
           case TypeCode.DBNull:
             WriteNull();
             return;
+#endif
         }
       }
 #if !PocketPC && !NET20

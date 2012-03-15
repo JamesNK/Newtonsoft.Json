@@ -189,7 +189,7 @@ namespace Newtonsoft.Json.Utilities
         {
           if (name != null && name != m.Name)
             return false;
-          if (m.GetMemberType() != memberType)
+          if (m.MemberType() != memberType)
             return false;
           if (!TestAccessibility(m, bindingFlags))
             return false;
