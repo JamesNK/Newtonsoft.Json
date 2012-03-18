@@ -43,6 +43,7 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
 #endif
+using System.IO;
 
 namespace Newtonsoft.Json.Tests.Linq
 {

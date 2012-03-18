@@ -28,7 +28,6 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
 #if !NETFX_CORE
-using System.Runtime.Serialization;
 using System.Security.Permissions;
 #endif
 using Newtonsoft.Json.Utilities;
@@ -40,6 +39,7 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
 #endif
+using System.Runtime.Serialization;
 
 namespace Newtonsoft.Json.Serialization
 {
@@ -403,7 +403,7 @@ namespace Newtonsoft.Json.Serialization
       {
         if (_fullyTrusted == null)
         {
-#if !(NET20 || NET35 || SILVERLIGHT)
+#if !(NET20 || NET35 || SILVERLIGHT || NETFX_CORE)
           AppDomain appDomain = AppDomain.CurrentDomain;
 
           _fullyTrusted = appDomain.IsHomogenous && appDomain.IsFullyTrusted;

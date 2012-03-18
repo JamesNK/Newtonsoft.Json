@@ -212,6 +212,7 @@
     <Compile Include="Serialization\IContractResolver.cs" />
     <Compile Include="Serialization\IReferenceResolver.cs" />
     <Compile Include="Serialization\IValueProvider.cs" />
+    <Compile Include="Serialization\JPropertyKeyedCollection.cs" />
     <Compile Include="Serialization\JsonArrayContract.cs" />
     <Compile Include="Serialization\JsonContract.cs" />
     <Compile Include="Serialization\JsonDictionaryContract.cs" />
