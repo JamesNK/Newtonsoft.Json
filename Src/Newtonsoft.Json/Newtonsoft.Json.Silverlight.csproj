@@ -141,6 +141,7 @@
     <Compile Include="Linq\JPath.cs" />
     <Compile Include="Linq\JProperty.cs" />
     <Compile Include="Linq\JPropertyDescriptor.cs" />
+    <Compile Include="Linq\JPropertyKeyedCollection.cs" />
     <Compile Include="Linq\JRaw.cs" />
     <Compile Include="Linq\JToken.cs" />
     <Compile Include="Linq\JTokenEqualityComparer.cs" />

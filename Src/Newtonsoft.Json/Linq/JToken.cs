@@ -29,13 +29,16 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq.Expressions;
 #endif
-using System.Linq;
 using System.IO;
 using Newtonsoft.Json.Utilities;
 using System.Diagnostics;
 using System.Globalization;
 using System.Collections;
-using System.ComponentModel;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
+#endif
 
 namespace Newtonsoft.Json.Linq
 {

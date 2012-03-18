@@ -34,7 +34,6 @@ using System.ComponentModel;
 using System.Dynamic;
 #endif
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 #if !NETFX_CORE
@@ -47,6 +46,11 @@ using Newtonsoft.Json.Linq;
 using System.Runtime.CompilerServices;
 #if NETFX_CORE
 using ICustomAttributeProvider = Newtonsoft.Json.Utilities.CustomAttributeProvider;
+#endif
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
 #endif
 
 namespace Newtonsoft.Json.Serialization
@@ -146,6 +150,16 @@ namespace Newtonsoft.Json.Serialization
     /// 	<c>true</c> if serialized compiler generated members; otherwise, <c>false</c>.
     /// </value>
     public bool SerializeCompilerGeneratedMembers { get; set; }
+
+#if !SILVERLIGHT && !PocketPC && !NETFX_CORE
+    /// <summary>
+    /// Gets or sets a value indicating whether to ignore the ISerializable interface when serializing and deserializing types.
+    /// </summary>
+    /// <value>
+    /// 	<c>true</c> if the ISerializable interface will be ignored when serializing and deserializing types; otherwise, <c>false</c>.
+    /// </value>
+    public bool IgnoreSerializableInterface { get; set; }
+#endif
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DefaultContractResolver"/> class.
@@ -686,7 +700,7 @@ namespace Newtonsoft.Json.Serialization
         return CreateStringContract(objectType);
 
 #if !SILVERLIGHT && !PocketPC && !NETFX_CORE
-      if (typeof(ISerializable).IsAssignableFrom(t))
+      if (!IgnoreSerializableInterface && typeof(ISerializable).IsAssignableFrom(t))
         return CreateISerializableContract(objectType);
 #endif
 

@@ -25,10 +25,6 @@
 
 #if !SILVERLIGHT && !PocketPC && !NETFX_CORE
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Serialization
 {

@@ -6,7 +6,6 @@ using System.Data.Linq;
 #if !(SILVERLIGHT || NETFX_CORE)
 using System.Data.SqlTypes;
 #endif
-using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Converters;
 #if !NETFX_CORE
@@ -16,7 +15,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
 #endif
-using Newtonsoft.Json.Tests.TestObjects;
 
 namespace Newtonsoft.Json.Tests.Converters
 {

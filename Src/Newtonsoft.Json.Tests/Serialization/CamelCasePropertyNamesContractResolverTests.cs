@@ -25,8 +25,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Newtonsoft.Json.Serialization;
 #if !NETFX_CORE
 using NUnit.Framework;

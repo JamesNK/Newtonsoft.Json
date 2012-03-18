@@ -25,15 +25,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
-using System.Xml;
 using Newtonsoft.Json.Utilities;
-using Newtonsoft.Json.Linq;
 using System.Globalization;
 #if NETFX_CORE
 using IConvertible = Newtonsoft.Json.Utilities.Convertible;
+#endif
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
 #endif
 
 namespace Newtonsoft.Json

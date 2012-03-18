@@ -24,16 +24,19 @@
 #endregion
 
 using System;
-using System.Linq;
 using System.Globalization;
 using System.ComponentModel;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Serialization;
-using System.Reflection;
 #if NETFX_CORE
 using IConvertible = Newtonsoft.Json.Utilities.Convertible;
+#endif
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
 #endif
 
 namespace Newtonsoft.Json.Schema

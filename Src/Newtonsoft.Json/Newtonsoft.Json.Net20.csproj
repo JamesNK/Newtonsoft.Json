@@ -98,6 +98,7 @@
     <Compile Include="Formatting.cs" />
     <Compile Include="JsonConstructorAttribute.cs" />
     <Compile Include="JsonPosition.cs" />
+    <Compile Include="Linq\JPropertyKeyedCollection.cs" />
     <Compile Include="SerializationBinder.cs" />
     <Compile Include="StreamingContext.cs" />
     <Compile Include="Utilities\LinqBridge.cs" />

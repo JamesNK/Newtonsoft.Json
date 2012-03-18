@@ -1,7 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
 using System.Linq;
-using System.Text;
+#endif
 using Newtonsoft.Json.Utilities;
 using System.Collections;
 

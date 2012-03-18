@@ -31,11 +31,15 @@ using System.Collections.ObjectModel;
 using System.Dynamic;
 #endif
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
+#endif
 
 namespace Newtonsoft.Json.Serialization
 {
@@ -824,6 +828,12 @@ To force JSON arrays to deserialize add the JsonArrayAttribute to the type.".For
     private object CreateISerializable(JsonReader reader, JsonISerializableContract contract, string id)
     {
       Type objectType = contract.UnderlyingType;
+
+      if (!JsonTypeReflector.FullyTrusted)
+      {
+        throw new JsonSerializationException(@"Type '{0}' implements ISerializable but cannot be deserialized using the ISerializable interface because the current application is not fully trusted and ISerializable can expose secure data.
+To fix this error either change the environment to be fully trusted, change the application to not deserialize the type, add to JsonObjectAttribute to the type or change the JsonSerializer setting ContractResolver to use a new DefaultContractResolver with IgnoreSerializableInterface set to true.".FormatWith(CultureInfo.InvariantCulture, objectType));
+      }
 
       SerializationInfo serializationInfo = new SerializationInfo(contract.UnderlyingType, GetFormatterConverter());
 

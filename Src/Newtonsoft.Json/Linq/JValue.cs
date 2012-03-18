@@ -25,11 +25,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
-using System.ComponentModel;
 #if !(NET35 || NET20 || WINDOWS_PHONE)
 using System.Dynamic;
 using System.Linq.Expressions;

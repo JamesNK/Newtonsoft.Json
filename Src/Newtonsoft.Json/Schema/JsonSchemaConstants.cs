@@ -23,10 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Newtonsoft.Json.Schema
 {
@@ -68,7 +65,7 @@ namespace Newtonsoft.Json.Schema
 
     public const string ReferencePropertyName = "$ref";
 
-    public static readonly IDictionary<string, JsonSchemaType> JsonSchemaTypeMapping = new Dictionary<string, JsonSchemaType>()
+    public static readonly IDictionary<string, JsonSchemaType> JsonSchemaTypeMapping = new Dictionary<string, JsonSchemaType>
     {
       {"string", JsonSchemaType.String},
       {"object", JsonSchemaType.Object},

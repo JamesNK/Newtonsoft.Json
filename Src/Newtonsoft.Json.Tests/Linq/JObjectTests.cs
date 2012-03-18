@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using Newtonsoft.Json.Tests.TestObjects;
 #if !NETFX_CORE
 using NUnit.Framework;
@@ -12,12 +11,15 @@ using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttrib
 using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
 #endif
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Converters;
 using System.IO;
 using System.Collections;
-using System.Collections.Specialized;
 #if !PocketPC && !SILVERLIGHT && !NETFX_CORE
 using System.Web.UI;
+#endif
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
 #endif
 
 namespace Newtonsoft.Json.Tests.Linq
@@ -25,6 +27,19 @@ namespace Newtonsoft.Json.Tests.Linq
   [TestFixture]
   public class JObjectTests : TestFixtureBase
   {
+    [Test]
+    public void Keys()
+    {
+      var o = new JObject();
+      var d = (IDictionary<string, JToken>) o;
+
+      Assert.AreEqual(0, d.Keys.Count);
+
+      o["value"] = true;
+
+      Assert.AreEqual(1, d.Keys.Count);
+    }
+
     [Test]
     public void TryGetValue()
     {

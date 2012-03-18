@@ -31,13 +31,15 @@ using System.ComponentModel;
 using System.Dynamic;
 #endif
 using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.Serialization.Formatters;
+using System.Security;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities;
 using System.Runtime.Serialization;
-using System.Security;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
+#endif
 
 namespace Newtonsoft.Json.Serialization
 {
@@ -469,6 +471,12 @@ namespace Newtonsoft.Json.Serialization
 #endif
     private void SerializeISerializable(JsonWriter writer, ISerializable value, JsonISerializableContract contract, JsonProperty member, JsonContract collectionValueContract)
     {
+      if (!JsonTypeReflector.FullyTrusted)
+      {
+        throw new JsonSerializationException(@"Type '{0}' implements ISerializable but cannot be serialized using the ISerializable interface because the current application is not fully trusted and ISerializable can expose secure data.
+To fix this error either change the environment to be fully trusted, change the application to not deserialize the type, add to JsonObjectAttribute to the type or change the JsonSerializer setting ContractResolver to use a new DefaultContractResolver with IgnoreSerializableInterface set to true.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
+      }
+
       contract.InvokeOnSerializing(value, Serializer.Context);
       _serializeStack.Add(value);
 

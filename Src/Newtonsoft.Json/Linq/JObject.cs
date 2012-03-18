@@ -32,10 +32,14 @@ using System.ComponentModel;
 using System.Dynamic;
 using System.Linq.Expressions;
 #endif
-using System.Linq;
 using System.IO;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
+#endif
 
 namespace Newtonsoft.Json.Linq
 {
@@ -50,40 +54,7 @@ namespace Newtonsoft.Json.Linq
     , INotifyPropertyChanging
 #endif
   {
-    private class JPropertKeyedCollection : KeyedCollection<string, JToken>
-    {
-      public JPropertKeyedCollection(IEqualityComparer<string> comparer)
-        : base(comparer)
-      {
-      }
-
-      protected override string GetKeyForItem(JToken item)
-      {
-        return ((JProperty) item).Name;
-      }
-
-      protected override void InsertItem(int index, JToken item)
-      {
-        if (Dictionary == null)
-        {
-          base.InsertItem(index, item);
-        }
-        else
-        {
-          // need to override so that the dictionary key is always set rather than added
-          string keyForItem = GetKeyForItem(item);
-          Dictionary[keyForItem] = item;
-          Items.Insert(index, item);
-        }
-      }
-
-      public new IDictionary<string, JToken> Dictionary
-      {
-        get { return base.Dictionary; }
-      }
-    }
-
-    private readonly JPropertKeyedCollection _properties = new JPropertKeyedCollection(StringComparer.Ordinal);
+    private readonly JPropertyKeyedCollection _properties = new JPropertyKeyedCollection();
 
     /// <summary>
     /// Gets the container's children tokens.
@@ -172,7 +143,7 @@ namespace Newtonsoft.Json.Linq
           return;
       }
 
-      if (_properties.Dictionary != null && _properties.Dictionary.TryGetValue(newProperty.Name, out existing))
+      if (_properties.TryGetValue(newProperty.Name, out existing))
         throw new ArgumentException("Can not add property {0} to {1}. Property with the same name already exists on object.".FormatWith(CultureInfo.InvariantCulture, newProperty.Name, GetType()));
     }
 
@@ -224,13 +195,11 @@ namespace Newtonsoft.Json.Linq
     /// <returns>A <see cref="JProperty"/> with the specified name or null.</returns>
     public JProperty Property(string name)
     {
-      if (_properties.Dictionary == null)
-        return null;
       if (name == null)
         return null;
 
       JToken property;
-      _properties.Dictionary.TryGetValue(name, out property);
+      _properties.TryGetValue(name, out property);
       return (JProperty)property;
     }
 
@@ -406,15 +375,13 @@ namespace Newtonsoft.Json.Linq
 
     bool IDictionary<string, JToken>.ContainsKey(string key)
     {
-      if (_properties.Dictionary == null)
-        return false;
-
-      return _properties.Dictionary.ContainsKey(key);
+      return _properties.Contains(key);
     }
 
     ICollection<string> IDictionary<string, JToken>.Keys
     {
-      get { return _properties.Dictionary.Keys; }
+      // todo: make order the collection returned match JObject order
+      get { return _properties.Keys; }
     }
 
     /// <summary>
@@ -453,7 +420,11 @@ namespace Newtonsoft.Json.Linq
 
     ICollection<JToken> IDictionary<string, JToken>.Values
     {
-      get { return _properties.Dictionary.Values; }
+      get
+      {
+        // todo: need to wrap _properties.Values with a collection to get the JProperty value
+        throw new NotImplementedException();
+      }
     }
 
     #endregion

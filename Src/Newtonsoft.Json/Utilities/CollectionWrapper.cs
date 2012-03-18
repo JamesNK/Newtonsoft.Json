@@ -27,9 +27,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
-using Newtonsoft.Json.Utilities;
-using System.Linq;
 using System.Globalization;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
+#endif
 
 namespace Newtonsoft.Json.Utilities
 {

@@ -108,6 +108,7 @@
     <Compile Include="Formatting.cs" />
     <Compile Include="JsonConstructorAttribute.cs" />
     <Compile Include="JsonPosition.cs" />
+    <Compile Include="Linq\JPropertyKeyedCollection.cs" />
     <Compile Include="Utilities\DynamicProxy.cs" />
     <Compile Include="Linq\JPath.cs" />
     <Compile Include="Linq\JRaw.cs" />

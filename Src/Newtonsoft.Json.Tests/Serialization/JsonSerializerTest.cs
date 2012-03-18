@@ -52,11 +52,11 @@ using System.Xml.Serialization;
 using System.Collections.ObjectModel;
 using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Linq;
-using System.Linq;
 using Newtonsoft.Json.Converters;
 #if !PocketPC && !NET20 && !WINDOWS_PHONE
 using System.Runtime.Serialization.Json;
 #endif
+using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
 using System.Runtime.Serialization;
 using System.Globalization;
@@ -71,6 +71,11 @@ using System.Linq.Expressions;
 #if !(NET35 || NET20 || WINDOWS_PHONE)
 using System.Dynamic;
 using System.ComponentModel;
+#endif
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
 #endif
 
 namespace Newtonsoft.Json.Tests.Serialization
@@ -2788,6 +2793,86 @@ To force JSON objects to deserialize add the JsonObjectAttribute to the type. Li
         info.AddValue("ulongValue", _ulongValue);
       }
     }
+
+#if DEBUG
+    [Test]
+    public void SerializeISerializableInPartialTrustWithIgnoreInterface()
+    {
+      try
+      {
+        JsonTypeReflector.SetFullyTrusted(false);
+        ISerializableTestObject value = new ISerializableTestObject("string!", 0, default(DateTimeOffset), null);
+
+        string json = JsonConvert.SerializeObject(value, new JsonSerializerSettings
+          {
+            ContractResolver = new DefaultContractResolver(false)
+              {
+                IgnoreSerializableInterface = true
+              }
+          });
+
+        Assert.AreEqual("{}", json);
+
+        value = JsonConvert.DeserializeObject<ISerializableTestObject>("{booleanValue:true}", new JsonSerializerSettings
+          {
+            ContractResolver = new DefaultContractResolver(false)
+              {
+                IgnoreSerializableInterface = true
+              }
+          });
+
+        Assert.IsNotNull(value);
+        Assert.AreEqual(false, value._booleanValue);
+      }
+      finally
+      {
+        JsonTypeReflector.SetFullyTrusted(true);
+      }
+    }
+
+    [Test]
+    public void SerializeISerializableInPartialTrust()
+    {
+      try
+      {
+        ExceptionAssert.Throws<JsonSerializationException>(
+          @"Type 'Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+ISerializableTestObject' implements ISerializable but cannot be deserialized using the ISerializable interface because the current application is not fully trusted and ISerializable can expose secure data.
+To fix this error either change the environment to be fully trusted, change the application to not deserialize the type, add to JsonObjectAttribute to the type or change the JsonSerializer setting ContractResolver to use a new DefaultContractResolver with IgnoreSerializableInterface set to true.",
+          () =>
+            {
+              JsonTypeReflector.SetFullyTrusted(false);
+
+              JsonConvert.DeserializeObject<ISerializableTestObject>("{booleanValue:true}");
+            });
+      }
+      finally
+      {
+        JsonTypeReflector.SetFullyTrusted(true);
+      }
+    }
+
+    [Test]
+    public void DeserializeISerializableInPartialTrust()
+    {
+      try
+      {
+        ExceptionAssert.Throws<JsonSerializationException>(
+          @"Type 'Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+ISerializableTestObject' implements ISerializable but cannot be serialized using the ISerializable interface because the current application is not fully trusted and ISerializable can expose secure data.
+To fix this error either change the environment to be fully trusted, change the application to not deserialize the type, add to JsonObjectAttribute to the type or change the JsonSerializer setting ContractResolver to use a new DefaultContractResolver with IgnoreSerializableInterface set to true.",
+          () =>
+          {
+            JsonTypeReflector.SetFullyTrusted(false);
+            ISerializableTestObject value = new ISerializableTestObject("string!", 0, default(DateTimeOffset), null);
+
+            JsonConvert.SerializeObject(value);
+          });
+      }
+      finally
+      {
+        JsonTypeReflector.SetFullyTrusted(true);
+      }
+    }
+#endif
 
     [Test]
     public void SerializeISerializableTestObject_IsoDate()

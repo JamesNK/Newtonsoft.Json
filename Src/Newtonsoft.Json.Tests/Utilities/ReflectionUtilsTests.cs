@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization.Formatters;
-using System.Text;
 #if !NETFX_CORE
 using NUnit.Framework;
 #else

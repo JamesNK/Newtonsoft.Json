@@ -24,6 +24,9 @@
 #endregion
 
 using System;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#endif
 
 namespace Newtonsoft.Json.Serialization
 {

@@ -26,15 +26,19 @@
 using System;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
 #if !NETFX_CORE
+using System.Runtime.Serialization;
 using System.Security.Permissions;
 #endif
 using Newtonsoft.Json.Utilities;
 #if NETFX_CORE
 using ICustomAttributeProvider = Newtonsoft.Json.Utilities.CustomAttributeProvider;
+#endif
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
 #endif
 
 namespace Newtonsoft.Json.Serialization
@@ -350,6 +354,19 @@ namespace Newtonsoft.Json.Serialization
     }
 
     private static bool? _dynamicCodeGeneration;
+    private static bool? _fullyTrusted;
+
+#if DEBUG
+    internal static void SetFullyTrusted(bool fullyTrusted)
+    {
+      _fullyTrusted = fullyTrusted;
+    }
+
+    internal static void SetDynamicCodeGeneration(bool dynamicCodeGeneration)
+    {
+      _dynamicCodeGeneration = dynamicCodeGeneration;
+    }
+#endif
 
     public static bool DynamicCodeGeneration
     {
@@ -377,6 +394,25 @@ namespace Newtonsoft.Json.Serialization
         }
 
         return _dynamicCodeGeneration.Value;
+      }
+    }
+
+    public static bool FullyTrusted
+    {
+      get
+      {
+        if (_fullyTrusted == null)
+        {
+#if !(NET20 || NET35 || SILVERLIGHT)
+          AppDomain appDomain = AppDomain.CurrentDomain;
+
+          _fullyTrusted = appDomain.IsHomogenous && appDomain.IsFullyTrusted;
+#else
+          _fullyTrusted = true;
+#endif
+        }
+
+        return _fullyTrusted.Value;
       }
     }
 

@@ -27,16 +27,20 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Collections;
-using System.Linq;
 using System.Globalization;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
 using System.Text;
-using System.Text.RegularExpressions;
 #if NETFX_CORE
 using IConvertible = Newtonsoft.Json.Utilities.Convertible;
 using ICustomAttributeProvider = Newtonsoft.Json.Utilities.CustomAttributeProvider;
 #endif
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
+#endif
+using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Utilities
 {

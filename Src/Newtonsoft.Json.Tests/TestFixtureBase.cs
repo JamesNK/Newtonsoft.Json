@@ -27,7 +27,10 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
+#if NET20
+using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json.Utilities.LinqBridge;
+#endif
 using System.Text;
 using System.Threading;
 #if !NETFX_CORE
@@ -75,12 +78,14 @@ namespace Newtonsoft.Json.Tests
 #endif
   }
 
+#if NETFX_CORE
   public static class Console
   {
     public static void WriteLine(params object[] args)
     {
     }
   }
+#endif
 
   public static class CustomAssert
   {

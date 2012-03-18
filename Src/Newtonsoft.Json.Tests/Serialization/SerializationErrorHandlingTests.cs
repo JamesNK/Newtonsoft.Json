@@ -25,8 +25,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Tests.TestObjects;
 #if !NETFX_CORE
@@ -36,7 +34,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
 #endif
-using Newtonsoft.Json.Serialization;
 using System.IO;
 using ErrorEventArgs=Newtonsoft.Json.Serialization.ErrorEventArgs;
 

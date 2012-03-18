@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#endif
 using System.Text;
 #if !NETFX_CORE
 using NUnit.Framework;

@@ -40,10 +40,14 @@ using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
 #endif
 using Newtonsoft.Json.Schema;
 using System.IO;
-using System.Linq;
 using Newtonsoft.Json.Linq;
 using System.Text;
 using Extensions=Newtonsoft.Json.Schema.Extensions;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
+#endif
 
 namespace Newtonsoft.Json.Tests.Schema
 {

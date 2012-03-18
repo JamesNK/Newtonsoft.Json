@@ -24,14 +24,13 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Globalization;
 using System.ComponentModel;
 using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json.Utilities;
 using System.Reflection;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#endif
 
 #if !(SILVERLIGHT || NETFX_CORE)
 using System.Data.SqlTypes;

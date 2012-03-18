@@ -7,8 +7,6 @@ using System.Data.Linq;
 using System.Data.SqlTypes;
 #endif
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Converters;

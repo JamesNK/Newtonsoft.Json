@@ -24,9 +24,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Newtonsoft.Json.Tests.TestObjects;
 #if !NETFX_CORE
 using NUnit.Framework;
@@ -38,7 +35,6 @@ using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
-using System.Xml;
 
 namespace Newtonsoft.Json.Tests.Converters
 {
