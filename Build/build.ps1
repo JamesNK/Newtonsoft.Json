@@ -119,7 +119,7 @@ task Package -depends Build {
   Copy-Item -Path $docDir\readme.txt -Destination $workingDir\Package\
   Copy-Item -Path $docDir\versions.txt -Destination $workingDir\Package\Bin\
 
-  robocopy $sourceDir $workingDir\Package\Source\Src /MIR /NP /XD .svn bin obj TestResults /XF *.suo *.user
+  robocopy $sourceDir $workingDir\Package\Source\Src /MIR /NP /XD .svn bin obj TestResults AppPackage /XF *.suo *.user *.pri
   robocopy $buildDir $workingDir\Package\Source\Build /MIR /NP /XD .svn
   robocopy $docDir $workingDir\Package\Source\Doc /MIR /NP /XD .svn
   robocopy $toolsDir $workingDir\Package\Source\Tools /MIR /NP /XD .svn

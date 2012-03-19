@@ -38,6 +38,9 @@ using System.Security;
 [assembly: AssemblyTitle("Json.NET Silverlight")]
 #elif PocketPC
 [assembly: AssemblyTitle("Json.NET Compact")]
+#elif NETFX_CORE
+[assembly: AssemblyTitle("Json.NET Metro")]
+[assembly: AllowPartiallyTrustedCallers]
 #elif NET20
 [assembly: AssemblyTitle("Json.NET .NET 2.0")]
 [assembly: AllowPartiallyTrustedCallers]
