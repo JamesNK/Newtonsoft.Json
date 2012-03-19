@@ -17,7 +17,12 @@
         <p>DateTimes in JSON are hard.</p>
         <p>
             The problem comes from the <a href="http://www.ietf.org/rfc/rfc4627.txt" target="_blank">JSON spec</a> itself, there is no literal syntax for dates in JSON. The spec has objects, arrays, strings, integers and floats, but it defines no standard for what a date looks like.</p>
-<p>The default format used by <a href="http://james.newtonking.com/projects/json-net.aspx" target="_blank">Json.NET</a> for dates is the same one used by Microsoft: "\/Date(1198908717056)\/". You can read more about it <a href="http://weblogs.asp.net/bleroy/archive/2008/01/18/dates-and-json.aspx" target="_blank">here</a>.</p>
+<p>The default format used by <a href="http://james.newtonking.com/projects/json-net.aspx" target="_blank">Json.NET</a> 
+  is the ISO 8601 standard: 2012-03-19T07:22Z. You can read more about it <a href="http://en.wikipedia.org/wiki/ISO_8601" target="_blank">here</a>.</p>
+      <p>Prior to Json.NET 4.5 dates were written using the Microsoft format: 
+        &quot;\/Date(1198908717056)\/&quot;. If you want to use this format, or you want to 
+        maintain compatibility with Microsoft JSON serializers or older versions of 
+        Json.NET then change the DateFormatHandling setting to MicrosoftDateFormat.</p>
 
 <h3>DateTime JsonConverters</h3>
 <p>With no standard for dates in JSON, the number of possible different formats when interoping with other systems is endless. Fortunately Json.NET has a solution to deal with reading and writing custom dates: JsonConverters. A JsonConverter is used to override how a type is serialized.</p>
@@ -72,7 +77,9 @@
 </div>
 <p>Technically this is invalid JSON according to the spec but all browsers, and some JSON frameworks including Json.NET, support it. </p>
 <h4>IsoDateTimeConverter</h4>
-<p>IsoDateTimeConverter seralizes a DateTime to an <a href="http://en.wikipedia.org/wiki/ISO_8601" target="_blank">ISO 8601</a> formatted string.</p>
+<p>IsoDateTimeConverter seralizes a DateTime to an <a href="http://en.wikipedia.org/wiki/ISO_8601" target="_blank">ISO 8601</a> formatted string. 
+  Note that since Json.NET 4.5 dates are written using the ISO 8601 format by 
+  default and using this converter is unnecessary.</p>
 <div class="overflowpanel">
 <div class="code">
 <div style="font-size: 10pt; color: black; font-family: courier new;">

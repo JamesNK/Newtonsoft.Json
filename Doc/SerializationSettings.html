@@ -19,7 +19,43 @@
               JSON. These can also be used with the methods on JsonConvert via the 
               JsonSerializerSettings overloads.</p>
 
-    <h3>MissingMemberHandling</h3>
+    <h3>DateFormatHandling</h3>
+<p>DateFormatHandling controls how dates are serialized.</p>
+    <table class="members">
+      <tbody>
+        <tr>
+          <th class="nameColumn">
+            Member
+          </th>
+          <th class="descriptionColumn">
+            Description
+          </th>
+        </tr>
+        <tr>
+          <td>
+            <b>IsoDateFormat</b>
+          </td>
+          <td>
+            <div class="summary">
+              By default Json.NET writes dates in the ISO 8601 format, e.g. "2012-03-21T05:40Z".
+            </div>
+            <br>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>MicrosoftDateFormat</b>
+          </td>
+          <td>
+            <div class="summary">
+              Dates are written in the Microsoft JSON format, e.g. "\/Date(1198908717056)\/".
+            </div>
+            <br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+<h3>MissingMemberHandling</h3>
 <p>MissingMemberHandling controls how missing members, e.g. JSON contains a property 
     that isn&#39;t a member on the object, are handled during deserialization.</p>
     <table class="members">
