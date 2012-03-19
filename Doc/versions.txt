@@ -3,7 +3,7 @@ Versions:
 Json.NET comes in different versions for the various .NET frameworks.
 
 -Net40:
-  .NET latest (4.0)
+  .NET latest (4.0 & 4.5)
 
 -Net35:
   .NET 3.5 SP1, Mono
@@ -16,6 +16,9 @@ Json.NET comes in different versions for the various .NET frameworks.
 
 -WindowsPhone:
   Windows Phone 7 & 7.1
+
+-Metro
+  Windows 8 Metro, WinRT 4.5
 
 
 Notes:

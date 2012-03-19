@@ -70,7 +70,7 @@ using System.Security;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("4.0.8.0")]
+[assembly: AssemblyVersion("4.5.0.0")]
 #if !PocketPC
-[assembly: AssemblyFileVersion("4.0.8.14718")]
+[assembly: AssemblyFileVersion("4.5.1.14719")]
 #endif
