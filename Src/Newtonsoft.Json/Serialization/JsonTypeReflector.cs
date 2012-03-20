@@ -403,7 +403,9 @@ namespace Newtonsoft.Json.Serialization
       {
         if (_fullyTrusted == null)
         {
-#if !(NET20 || NET35 || SILVERLIGHT || NETFX_CORE)
+#if (NETFX_CORE || SILVERLIGHT)
+          _fullyTrusted = false;
+#elif !(NET20 || NET35)
           AppDomain appDomain = AppDomain.CurrentDomain;
 
           _fullyTrusted = appDomain.IsHomogenous && appDomain.IsFullyTrusted;
