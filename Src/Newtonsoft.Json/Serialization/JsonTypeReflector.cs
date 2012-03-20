@@ -408,7 +408,15 @@ namespace Newtonsoft.Json.Serialization
 
           _fullyTrusted = appDomain.IsHomogenous && appDomain.IsFullyTrusted;
 #else
-          _fullyTrusted = true;
+          try
+          {
+            new SecurityPermission(PermissionState.Unrestricted).Demand();
+            _fullyTrusted = true;
+          }
+          catch (Exception)
+          {
+            _fullyTrusted = false;
+          }
 #endif
         }
 
