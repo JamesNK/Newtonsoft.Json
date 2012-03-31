@@ -21,12 +21,12 @@ namespace Newtonsoft.Json
     /// </summary>
     Arrays = 2,
     /// <summary>
-    /// Include the .NET type name when the type of the object being serialized is not the same as its declared type.
-    /// </summary>
-    Auto = 4,
-    /// <summary>
     /// Always include the .NET type name when serializing.
     /// </summary>
-    All = Objects | Arrays
+    All = Objects | Arrays,
+    /// <summary>
+    /// Include the .NET type name when the type of the object being serialized is not the same as its declared type.
+    /// </summary>
+    Auto = 4
   }
 }

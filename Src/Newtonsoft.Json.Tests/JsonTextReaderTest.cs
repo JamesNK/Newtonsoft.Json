@@ -100,7 +100,7 @@ namespace Newtonsoft.Json.Tests
     {
       string json = @"{""DefaultConverter"":new Date(0, ""hi""),""MemberConverter"":""1970-01-01T00:00:00Z""}";
 
-      JsonReader reader = new JsonTextReader(new StringReader(json));
+      JsonReader reader = new JsonTextReader(new StreamReader(new SlowStream(json, new UTF8Encoding(false), 1)));
 
       Assert.IsTrue(reader.Read());
       Assert.IsTrue(reader.Read());
@@ -479,7 +479,7 @@ Parameter name: reader"
     public void NullCharReading()
     {
       string json = "\0{\0'\0h\0i\0'\0:\0[\01\0,\0'\0'\0\0,\0null\0]\0,\0do\0:true\0}\0\0/*\0sd\0f\0*/\0/*\0sd\0f\0*/ \0";
-      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+      JsonTextReader reader = new JsonTextReader(new StreamReader(new SlowStream(json, new UTF8Encoding(false), 1)));
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
@@ -710,7 +710,7 @@ Parameter name: reader"
         count++;
       }
 
-      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+      JsonTextReader reader = new JsonTextReader(new StreamReader(new SlowStream(json, new UTF8Encoding(false), 1)));
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(7, reader.LineNumber);
 
@@ -1966,7 +1966,7 @@ bye", reader.Value);
     public void ParseContentDelimitedByNonStandardWhitespace()
     {
       string json = "\x00a0{\x00a0'h\x00a0i\x00a0'\x00a0:\x00a0[\x00a0true\x00a0,\x00a0new\x00a0Date\x00a0(\x00a0)\x00a0]\x00a0/*\x00a0comment\x00a0*/\x00a0}\x00a0";
-      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+      JsonTextReader reader = new JsonTextReader(new StreamReader(new SlowStream(json, new UTF8Encoding(false), 1)));
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
@@ -2010,7 +2010,7 @@ bye", reader.Value);
         ""Sizes"":/*comment*/[/*comment*/
           ""Small""/*comment*/]/*comment*/}/*comment*/";
 
-      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+      JsonTextReader reader = new JsonTextReader(new StreamReader(new SlowStream(json, new UTF8Encoding(false), 1)));
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Comment, reader.TokenType);
@@ -2193,6 +2193,142 @@ bye", reader.Value);
       Assert.AreEqual(602214180000000000000000m, reader.Value);
 
       reader.Read();
+    }
+
+    [Test]
+    public void ReadingFromSlowStream()
+    {
+      string json = "[false, true, true, false, 'test!', 1.11, 0e-10, 0E-10, 0.25e-5, 0.3e10, 6.0221418e23, 'Purple\\r \\n monkey\\'s:\\tdishwasher']";
+
+      JsonTextReader reader = new JsonTextReader(new StreamReader(new SlowStream(json, new UTF8Encoding(false), 1)));
+
+      Assert.IsTrue(reader.Read());
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(false, reader.Value);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Boolean, reader.TokenType);
+      Assert.AreEqual(true, reader.Value);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Boolean, reader.TokenType);
+      Assert.AreEqual(true, reader.Value);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Boolean, reader.TokenType);
+      Assert.AreEqual(false, reader.Value);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.String, reader.TokenType);
+      Assert.AreEqual("test!", reader.Value);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+      Assert.AreEqual(1.11d, reader.Value);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+      Assert.AreEqual(0d, reader.Value);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+      Assert.AreEqual(0d, reader.Value);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+      Assert.AreEqual(0.0000025d, reader.Value);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+      Assert.AreEqual(3000000000d, reader.Value);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+      Assert.AreEqual(602214180000000000000000d, reader.Value);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.String, reader.TokenType);
+      Assert.AreEqual(reader.Value, "Purple\r \n monkey's:\tdishwasher");
+
+      Assert.IsTrue(reader.Read());
+    }
+  }
+
+  public class SlowStream : Stream
+  {
+    byte[] bytes;
+    int totalBytesRead;
+    int bytesPerRead;
+
+    public SlowStream(byte[] content, int bytesPerRead)
+    {
+      this.bytes = content;
+      this.totalBytesRead = 0;
+      this.bytesPerRead = bytesPerRead;
+    }
+
+    public SlowStream(string content, Encoding encoding, int bytesPerRead)
+      : this(encoding.GetBytes(content), bytesPerRead)
+    {
+    }
+
+    public override bool CanRead
+    {
+      get { return true; }
+    }
+
+    public override bool CanSeek
+    {
+      get { return false; }
+    }
+
+    public override bool CanWrite
+    {
+      get { return false; }
+    }
+
+    public override void Flush()
+    {
+    }
+
+    public override long Length
+    {
+      get { throw new NotSupportedException(); }
+    }
+
+    public override long Position
+    {
+      get { throw new NotSupportedException(); }
+      set { throw new NotSupportedException(); }
+    }
+
+    public override int Read(byte[] buffer, int offset, int count)
+    {
+      int toReturn = Math.Min(count, this.bytesPerRead);
+      toReturn = Math.Min(toReturn, this.bytes.Length - this.totalBytesRead);
+      if (toReturn > 0)
+      {
+        Array.Copy(this.bytes, this.totalBytesRead, buffer, offset, toReturn);
+      }
+
+      this.totalBytesRead += toReturn;
+      return toReturn;
+    }
+
+    public override long Seek(long offset, SeekOrigin origin)
+    {
+      throw new NotSupportedException();
+    }
+
+    public override void SetLength(long value)
+    {
+      throw new NotSupportedException();
+    }
+
+    public override void Write(byte[] buffer, int offset, int count)
+    {
+      throw new NotSupportedException();
     }
   }
 }

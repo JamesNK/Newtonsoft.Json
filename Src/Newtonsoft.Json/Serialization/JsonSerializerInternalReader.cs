@@ -117,7 +117,7 @@ namespace Newtonsoft.Json.Serialization
 
       if (reader.TokenType == JsonToken.None && !ReadForType(reader, contract, converter != null, false))
       {
-        if (!contract.IsNullable)
+        if (contract != null && !contract.IsNullable)
           throw new JsonSerializationException("No JSON content found and type '{0}' is not nullable.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
         return null;

@@ -28,7 +28,6 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
 #if !NETFX_CORE
-using System.Runtime.Serialization;
 using System.Security.Permissions;
 #endif
 using Newtonsoft.Json.Utilities;
@@ -40,6 +39,7 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
 #endif
+using System.Runtime.Serialization;
 
 namespace Newtonsoft.Json.Serialization
 {
@@ -102,7 +102,7 @@ namespace Newtonsoft.Json.Serialization
       return GetJsonContainerAttribute(type) as JsonArrayAttribute;
     }
 
-#if !PocketPC && !NET20 
+#if !PocketPC && !NET20
     public static DataContractAttribute GetDataContractAttribute(Type type)
     {
       // DataContractAttribute does not have inheritance
@@ -126,7 +126,7 @@ namespace Newtonsoft.Json.Serialization
         return CachedAttributeGetter<DataMemberAttribute>.GetAttribute(memberInfo.GetCustomAttributeProvider());
 
       // search property and then search base properties if nothing is returned and the property is virtual
-      PropertyInfo propertyInfo = (PropertyInfo) memberInfo;
+      PropertyInfo propertyInfo = (PropertyInfo)memberInfo;
       DataMemberAttribute result = CachedAttributeGetter<DataMemberAttribute>.GetAttribute(propertyInfo.GetCustomAttributeProvider());
       if (result == null)
       {
@@ -259,7 +259,7 @@ namespace Newtonsoft.Json.Serialization
         else
           return null;
       }
-      
+
       return _cachedMetadataTypeAttributeType;
     }
 #endif
@@ -403,12 +403,22 @@ namespace Newtonsoft.Json.Serialization
       {
         if (_fullyTrusted == null)
         {
-#if !(NET20 || NET35 || SILVERLIGHT)
+#if (NETFX_CORE || SILVERLIGHT)
+          _fullyTrusted = false;
+#elif !(NET20 || NET35)
           AppDomain appDomain = AppDomain.CurrentDomain;
 
           _fullyTrusted = appDomain.IsHomogenous && appDomain.IsFullyTrusted;
 #else
-          _fullyTrusted = true;
+          try
+          {
+            new SecurityPermission(PermissionState.Unrestricted).Demand();
+            _fullyTrusted = true;
+          }
+          catch (Exception)
+          {
+            _fullyTrusted = false;
+          }
 #endif
         }
 

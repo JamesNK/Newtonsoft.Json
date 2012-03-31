@@ -85,7 +85,7 @@ using System.Security;
 // by using the '*' as shown below:
 [assembly: AssemblyVersion("4.0.8.0")]
 #if !PocketPC
-[assembly: AssemblyFileVersion("4.0.8.14718")]
+[assembly: AssemblyFileVersion("4.0.8.14731")]
 #endif
 
 [assembly: CLSCompliant(true)]

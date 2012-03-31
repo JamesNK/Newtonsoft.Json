@@ -343,9 +343,23 @@ namespace Newtonsoft.Json
 
       int charsRequired = _charPos + relativePosition - _charsUsed + 1;
 
-      int charsRead = ReadData(append, charsRequired);
+      int totalCharsRead = 0;
 
-      if (charsRead < charsRequired)
+      // it is possible that the TextReader doesn't return all data at once
+      // repeat read until the required text is returned or the reader is out of content
+      do
+      {
+        int charsRead = ReadData(append, charsRequired - totalCharsRead);
+
+        // no more content
+        if (charsRead == 0)
+          break;
+
+        totalCharsRead += charsRead;
+      }
+      while (totalCharsRead < charsRequired);
+
+      if (totalCharsRead < charsRequired)
         return false;
       return true;
     }

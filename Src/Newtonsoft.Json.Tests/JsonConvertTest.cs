@@ -115,6 +115,20 @@ namespace Newtonsoft.Json.Tests
 #endif
 
     [Test]
+    public void DeserializeObject_EmptyString()
+    {
+      object result = JsonConvert.DeserializeObject(string.Empty);
+      Assert.IsNull(result);
+    }
+
+    [Test]
+    public void DeserializeObject_Integer()
+    {
+      object result = JsonConvert.DeserializeObject("1");
+      Assert.AreEqual(1L, result);
+    }
+
+    [Test]
     public void EscapeJavaScriptString()
     {
       string result;

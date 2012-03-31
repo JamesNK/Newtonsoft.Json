@@ -221,9 +221,14 @@ namespace Newtonsoft.Json
       // levels of indentation multiplied by the indent count
       int currentIndentCount = Top*_indentation;
 
-      for (int i = 0; i < currentIndentCount; i++)
+      while (currentIndentCount > 0)
       {
-        _writer.Write(_indentChar);
+        // write up to a max of 10 characters at once to avoid creating too many new strings
+        int writeCount = Math.Min(currentIndentCount, 10);
+
+        _writer.Write(new string(_indentChar, writeCount));
+
+        currentIndentCount -= writeCount;
       }
     }
 

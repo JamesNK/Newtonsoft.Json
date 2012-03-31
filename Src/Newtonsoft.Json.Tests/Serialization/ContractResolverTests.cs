@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 #if !NETFX_CORE
 using NUnit.Framework;
@@ -58,9 +59,25 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
   }
 
+  public class AddressWithDataMember
+  {
+    [DataMember(Name = "CustomerAddress1")]
+    public string AddressLine1 { get; set; }
+
+  }
+
   [TestFixture]
   public class ContractResolverTests : TestFixtureBase
   {
+    [Test]
+    public void DeserializeDataMemberClassWithNoDataContract()
+    {
+      var resolver = new DefaultContractResolver();
+      var contract = (JsonObjectContract)resolver.ResolveContract(typeof(AddressWithDataMember));
+
+      Assert.AreEqual("AddressLine1", contract.Properties[0].PropertyName);
+    }
+
     [Test]
     public void ResolveProperties_IgnoreStatic()
     {
