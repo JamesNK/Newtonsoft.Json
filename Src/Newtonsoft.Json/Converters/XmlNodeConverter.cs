@@ -1183,44 +1183,60 @@ namespace Newtonsoft.Json.Converters
 
       string elementPrefix = MiscellaneousUtils.GetPrefix(propertyName);
 
-      IXmlElement element = CreateElement(propertyName, document, elementPrefix, manager);
-
-      currentNode.AppendChild(element);
-
-      // add attributes to newly created element
-      foreach (KeyValuePair<string, string> nameValue in attributeNameValues)
+      if (propertyName.StartsWith("@"))
       {
-        string attributePrefix = MiscellaneousUtils.GetPrefix(nameValue.Key);
+        var attributeName = propertyName.Substring(1);
+        var attributeValue = reader.Value.ToString();
 
-        IXmlNode attribute = (!string.IsNullOrEmpty(attributePrefix))
-                               ? document.CreateAttribute(nameValue.Key, manager.LookupNamespace(attributePrefix), nameValue.Value)
-                               : document.CreateAttribute(nameValue.Key, nameValue.Value);
+        var attributePrefix = MiscellaneousUtils.GetPrefix(attributeName);
 
-        element.SetAttributeNode(attribute);
-      }
+        var attribute = (!string.IsNullOrEmpty(attributePrefix))
+                                 ? document.CreateAttribute(attributeName, manager.LookupNamespace(attributePrefix), attributeValue)
+                                 : document.CreateAttribute(attributeName, attributeValue);
 
-      if (reader.TokenType == JsonToken.String
-        || reader.TokenType == JsonToken.Integer
-        || reader.TokenType == JsonToken.Float
-        || reader.TokenType == JsonToken.Boolean
-        || reader.TokenType == JsonToken.Date)
-      {
-        element.AppendChild(document.CreateTextNode(ConvertTokenToXmlValue(reader)));
-      }
-      else if (reader.TokenType == JsonToken.Null)
-      {
-        // empty element. do nothing
+        ((IXmlElement)currentNode).SetAttributeNode(attribute);
       }
       else
       {
-        // finished element will have no children to deserialize
-        if (reader.TokenType != JsonToken.EndObject)
+        IXmlElement element = CreateElement(propertyName, document, elementPrefix, manager);
+
+        currentNode.AppendChild(element);
+
+        // add attributes to newly created element
+        foreach (KeyValuePair<string, string> nameValue in attributeNameValues)
         {
-          manager.PushScope();
+          string attributePrefix = MiscellaneousUtils.GetPrefix(nameValue.Key);
 
-          DeserializeNode(reader, document, manager, element);
+          IXmlNode attribute = (!string.IsNullOrEmpty(attributePrefix))
+                                 ? document.CreateAttribute(nameValue.Key, manager.LookupNamespace(attributePrefix), nameValue.Value)
+                                 : document.CreateAttribute(nameValue.Key, nameValue.Value);
 
-          manager.PopScope();
+          element.SetAttributeNode(attribute);
+        }
+
+        if (reader.TokenType == JsonToken.String
+            || reader.TokenType == JsonToken.Integer
+            || reader.TokenType == JsonToken.Float
+            || reader.TokenType == JsonToken.Boolean
+            || reader.TokenType == JsonToken.Date)
+        {
+          element.AppendChild(document.CreateTextNode(ConvertTokenToXmlValue(reader)));
+        }
+        else if (reader.TokenType == JsonToken.Null)
+        {
+          // empty element. do nothing
+        }
+        else
+        {
+          // finished element will have no children to deserialize
+          if (reader.TokenType != JsonToken.EndObject)
+          {
+            manager.PushScope();
+
+            DeserializeNode(reader, document, manager, element);
+
+            manager.PopScope();
+          }
         }
       }
     }

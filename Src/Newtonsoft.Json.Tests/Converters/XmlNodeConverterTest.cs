@@ -383,12 +383,12 @@ namespace Newtonsoft.Json.Tests.Converters
     ""@class"": ""vevent"",
     ""a"": {
       ""@class"": ""url"",
-      ""@href"": ""http://www.web2con.com/"",
       ""span"": {
         ""@class"": ""summary"",
         ""#text"": ""Web 2.0 Conference"",
         ""#cdata-section"": ""my escaped text""
-      }
+      },
+      ""@href"": ""http://www.web2con.com/""
     }
   }
 }";
@@ -481,7 +481,7 @@ namespace Newtonsoft.Json.Tests.Converters
     [Test]
     public void OtherElementDataTypes()
     {
-      string jsonText = @"{""?xml"":{""@version"":""1.0"",""@standalone"":""no""},""root"":{""person"":[{""@id"":""1"",""Float"":2.5,""Integer"":99},{""@id"":""2"",""Boolean"":true,""date"":""\/Date(954374400000)\/""}]}}";
+      string jsonText = @"{""?xml"":{""@version"":""1.0"",""@standalone"":""no""},""root"":{""person"":[{""@id"":""1"",""Float"":2.5,""Integer"":99},{""Boolean"":true,""@id"":""2"",""date"":""\/Date(954374400000)\/""}]}}";
 
       XmlDocument newDoc = (XmlDocument)DeserializeXmlNode(jsonText);
 
@@ -1795,6 +1795,16 @@ namespace Newtonsoft.Json.Tests.Converters
 </Grid>";
 
       Assert.AreEqual(expectedXaml, xaml2);
+    }
+
+    [Test]
+    public void DeserializeAttributePropertyNotAtStart()
+    {
+      string json = @"{""item"": {""@action"": ""update"", ""@itemid"": ""1"", ""elements"": [{""@action"": ""none"", ""@id"": ""2""},{""@action"": ""none"", ""@id"": ""3""}],""@description"": ""temp""}}";
+
+      XmlDocument xmldoc = JsonConvert.DeserializeXmlNode(json);
+
+      Assert.AreEqual(@"<item action=""update"" itemid=""1"" description=""temp""><elements action=""none"" id=""2"" /><elements action=""none"" id=""3"" /></item>", xmldoc.InnerXml);
     }
   }
 }
