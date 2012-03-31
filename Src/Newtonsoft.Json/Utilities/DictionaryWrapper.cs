@@ -18,14 +18,14 @@ namespace Newtonsoft.Json.Utilities
     new IDictionaryEnumerator GetEnumerator();
   }
 
-  public interface IDictionaryEnumerator : IEnumerator
+  internal interface IDictionaryEnumerator : IEnumerator
   {
     DictionaryEntry Entry { get; }
     object Key { get; }
     object Value { get; }
   }
 
-  public struct DictionaryEntry
+  internal struct DictionaryEntry
   {
     private readonly object _key;
     private readonly object _value;

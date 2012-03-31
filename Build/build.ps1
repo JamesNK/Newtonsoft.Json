@@ -1,7 +1,8 @@
 ﻿properties { 
-  $zipFileName = "Json40r8.zip"
-  $majorVersion = "4.0.8"
-  $version = GetVersion $majorVersion
+  $zipFileName = "Json45r1.zip"
+  $majorVersion = "4.5"
+  $majorWithReleaseVersion = "4.5.1"
+  $version = GetVersion $majorWithReleaseVersion
   $signAssemblies = $false
   $signKeyPath = "D:\Development\Releases\newtonsoft.snk"
   $buildDocumentation = $false
@@ -16,6 +17,7 @@
   $workingDir = "$baseDir\Working"
   $builds = @(
     @{Name = "Newtonsoft.Json"; TestsName = "Newtonsoft.Json.Tests"; Constants=""; FinalDir="Net40"; NuGetDir = "net40"; Framework="net-4.0"; Sign=$true},
+    @{Name = "Newtonsoft.Json.Metro"; TestsName = $null; Constants="NETFX_CORE"; FinalDir="Metro"; NuGetDir = "winrt45"; Framework="net-4.5"; Sign=$true},
     
     # unsigned SL/WP
     @{Name = "Newtonsoft.Json.WindowsPhone"; TestsName = $null; Constants="SILVERLIGHT;WINDOWS_PHONE"; FinalDir="WindowsPhone"; NuGetDir = "sl3-wp,sl4-windowsphone71"; Framework="net-4.0"; Sign=$false},
@@ -51,7 +53,7 @@ task Clean {
 task Build -depends Clean { 
   Write-Host -ForegroundColor Green "Updating assembly version"
   Write-Host
-  Update-AssemblyInfoFiles $sourceDir ($majorVersion + '.0') $version
+  Update-AssemblyInfoFiles $sourceDir ($majorVersion + '.0.0') $version
 
   foreach ($build in $builds)
   {
@@ -62,7 +64,7 @@ task Build -depends Clean {
     Write-Host -ForegroundColor Green "Building " $name
     Write-Host -ForegroundColor Green "Signed " $sign
     Write-Host
-    exec { msbuild "/t:Clean;Rebuild" /p:Configuration=Release /p:OutputPath=bin\Release\$finalDir\ /p:AssemblyOriginatorKeyFile=$signKeyPath "/p:SignAssembly=$sign" (GetConstants $build.Constants $sign) ".\Src\$name.sln" } "Error building $name"
+    exec { msbuild "/t:Clean;Rebuild" /p:Configuration=Release "/p:Platform=Any CPU" /p:OutputPath=bin\Release\$finalDir\ /p:AssemblyOriginatorKeyFile=$signKeyPath "/p:SignAssembly=$sign" (GetConstants $build.Constants $sign) ".\Src\$name.sln" } "Error building $name"
   }
 }
 
@@ -73,7 +75,7 @@ task Package -depends Build {
     $name = $build.TestsName
     $finalDir = $build.FinalDir
     
-    robocopy "$sourceDir\Newtonsoft.Json\bin\Release\$finalDir" $workingDir\Package\Bin\$finalDir /NP /XO
+    robocopy "$sourceDir\Newtonsoft.Json\bin\Release\$finalDir" $workingDir\Package\Bin\$finalDir /NP /XO /XF *.pri
   }
   
   if ($buildNuGet)
@@ -91,7 +93,7 @@ task Package -depends Build {
         
         foreach ($frameworkDir in $frameworkDirs)
         {
-          robocopy "$sourceDir\Newtonsoft.Json\bin\Release\$finalDir" $workingDir\NuGet\lib\$frameworkDir /NP /XO
+          robocopy "$sourceDir\Newtonsoft.Json\bin\Release\$finalDir" $workingDir\NuGet\lib\$frameworkDir /NP /XO /XF *.pri
         }
       }
     }
@@ -117,7 +119,7 @@ task Package -depends Build {
   Copy-Item -Path $docDir\readme.txt -Destination $workingDir\Package\
   Copy-Item -Path $docDir\versions.txt -Destination $workingDir\Package\Bin\
 
-  robocopy $sourceDir $workingDir\Package\Source\Src /MIR /NP /XD .svn bin obj /XF *.suo *.user
+  robocopy $sourceDir $workingDir\Package\Source\Src /MIR /NP /XD .svn bin obj TestResults AppPackages /XF *.suo *.user
   robocopy $buildDir $workingDir\Package\Source\Build /MIR /NP /XD .svn
   robocopy $docDir $workingDir\Package\Source\Doc /MIR /NP /XD .svn
   robocopy $toolsDir $workingDir\Package\Source\Tools /MIR /NP /XD .svn

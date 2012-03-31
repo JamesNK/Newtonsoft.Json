@@ -38,6 +38,9 @@ using System.Security;
 [assembly: AssemblyTitle("Json.NET Silverlight")]
 #elif PocketPC
 [assembly: AssemblyTitle("Json.NET Compact")]
+#elif NETFX_CORE
+[assembly: AssemblyTitle("Json.NET Metro")]
+[assembly: AllowPartiallyTrustedCallers]
 #elif NET20
 [assembly: AssemblyTitle("Json.NET .NET 2.0")]
 [assembly: AllowPartiallyTrustedCallers]
@@ -83,9 +86,9 @@ using System.Security;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("4.0.8.0")]
+[assembly: AssemblyVersion("4.5.0.0")]
 #if !PocketPC
-[assembly: AssemblyFileVersion("4.0.8.14731")]
+[assembly: AssemblyFileVersion("4.5.1.14719")]
 #endif
 
 [assembly: CLSCompliant(true)]
