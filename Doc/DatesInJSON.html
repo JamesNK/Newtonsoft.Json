@@ -49,16 +49,21 @@
 <pre style="margin: 0px;">&nbsp; };</pre>
 <pre style="margin: 0px;">&nbsp;</pre>
 
-<pre style="margin: 0px;">&nbsp; <span style="color: blue;">string</span> defaultJson = <span style="color: rgb(43, 145, 175);">JsonConvert</span>.SerializeObject(entry);</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: green;">// Default as of Json.NET 4.5</span></pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">string</span> isoJson = <span style="color: rgb(43, 145, 175);">JsonConvert</span>.SerializeObject(entry);</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: green;">// {"Details":"Application started.","LogDate":"2009-02-15T00:00:00Z"}</span></pre>
+
+<pre style="margin: 0px;">&nbsp;</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: rgb(43, 145, 175);">JsonSerializerSettings</span> settingsWithMicrosoftDateFormat = <span style="color: blue;">new</span> <span style="color: rgb(43, 145, 175);">JsonSerializerSettings</span></pre>
+<pre style="margin: 0px;">&nbsp; {</pre>
+<pre style="margin: 0px;">&nbsp;&nbsp;&nbsp; DateFormatHandling = <span style="color: rgb(43, 145, 175);">DateFormatHandling</span>.MicrosoftDateFormat</pre>
+<pre style="margin: 0px;">&nbsp; };</pre>
+<pre style="margin: 0px;">&nbsp; <span style="color: blue;">string</span> microsoftJson = <span style="color: rgb(43, 145, 175);">JsonConvert</span>.SerializeObject(entry, settingsWithMicrosoftDateFormat);</pre>
 <pre style="margin: 0px;">&nbsp; <span style="color: green;">// {"Details":"Application started.","LogDate":"\/Date(1234656000000)\/"}</span></pre>
-<pre style="margin: 0px;"></pre>
+
 <pre style="margin: 0px;">&nbsp;</pre>
 <pre style="margin: 0px;">&nbsp; <span style="color: blue;">string</span> javascriptJson = <span style="color: rgb(43, 145, 175);">JsonConvert</span>.SerializeObject(entry, <span style="color: blue;">new</span> <span style="color: rgb(43, 145, 175);">JavaScriptDateTimeConverter</span>());</pre>
-
 <pre style="margin: 0px;">&nbsp; <span style="color: green;">// {"Details":"Application started.","LogDate":new Date(1234656000000)}</span></pre>
-<pre style="margin: 0px;">&nbsp;</pre>
-<pre style="margin: 0px;">&nbsp; <span style="color: blue;">string</span> isoJson = <span style="color: rgb(43, 145, 175);">JsonConvert</span>.SerializeObject(entry, <span style="color: blue;">new</span> <span style="color: rgb(43, 145, 175);">IsoDateTimeConverter</span>());</pre>
-<pre style="margin: 0px;">&nbsp; <span style="color: green;">// {"Details":"Application started.","LogDate":"2009-02-15T00:00:00Z"}</span></pre>
 
 <pre style="margin: 0px;">}</pre>
 </div>
