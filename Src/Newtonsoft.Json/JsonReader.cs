@@ -109,6 +109,7 @@ namespace Newtonsoft.Json
     private JsonPosition _currentPosition;
     private CultureInfo _culture;
     private DateTimeZoneHandling _dateTimeZoneHandling;
+    private int? _maxDepth;
 
     /// <summary>
     /// Gets the current reader state.
@@ -147,6 +148,18 @@ namespace Newtonsoft.Json
     {
       get { return _dateTimeZoneHandling; }
       set { _dateTimeZoneHandling = value; }
+    }
+
+    public int? MaxDepth
+    {
+      get { return _maxDepth; }
+      set
+      {
+        if (value <= 0)
+          throw new ArgumentException("Value must be positive.", "value");
+
+        _maxDepth = value;
+      }
     }
 
     /// <summary>
@@ -235,11 +248,15 @@ namespace Newtonsoft.Json
       else
       {
         _stack.Add(_currentPosition);
-        var state = new JsonPosition
+        JsonPosition state = new JsonPosition
         {
           Type = value
         };
         _currentPosition = state;
+
+        // this is a little hacky because Depth increases when first property/value is written but only testing here is faster/simpler
+        if (_maxDepth != null && Depth + 1 > _maxDepth)
+          throw new JsonReaderException("This reader's MaxDepth of {0} has been exceeded.".FormatWith(CultureInfo.InvariantCulture, _maxDepth));
       }
     }
 
@@ -667,7 +684,10 @@ namespace Newtonsoft.Json
     /// <param name="value">The value.</param>
     protected void SetToken(JsonToken newToken, object value)
     {
+      JsonToken previousToken = _tokenType;
+
       _tokenType = newToken;
+      _value = value;
 
       switch (newToken)
       {
@@ -711,8 +731,6 @@ namespace Newtonsoft.Json
           UpdateScopeWithFinishedValue();
           break;
       }
-
-      _value = value;
     }
 
     private void UpdateScopeWithFinishedValue()
@@ -789,24 +807,8 @@ namespace Newtonsoft.Json
         case JsonToken.StartArray:
         case JsonToken.StartConstructor:
           return true;
-        case JsonToken.PropertyName:
-        case JsonToken.None:
-        case JsonToken.Comment:
-        case JsonToken.Integer:
-        case JsonToken.Float:
-        case JsonToken.String:
-        case JsonToken.Boolean:
-        case JsonToken.Null:
-        case JsonToken.Undefined:
-        case JsonToken.EndObject:
-        case JsonToken.EndArray:
-        case JsonToken.EndConstructor:
-        case JsonToken.Date:
-        case JsonToken.Raw:
-        case JsonToken.Bytes:
-          return false;
         default:
-          throw MiscellaneousUtils.CreateArgumentOutOfRangeException("token", token, "Unexpected JsonToken value.");
+          return false;
       }
     }
 

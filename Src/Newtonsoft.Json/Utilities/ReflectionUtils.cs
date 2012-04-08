@@ -978,5 +978,20 @@ namespace Newtonsoft.Json.Utilities
         }
       }
     }
+
+    public static bool IsMethodOverridden(Type currentType, Type methodDeclaringType, string method)
+    {
+      bool isMethodOverriden = currentType.GetMember(method, MemberTypes.Method, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Cast<MethodInfo>()
+        .Any(info =>
+             // check that the method overrides the original on DynamicObjectProxy
+             info.DeclaringType != methodDeclaringType
+             // todo - find out whether there is a way to do this in winrt
+#if !NETFX_CORE
+             && info.GetBaseDefinition().DeclaringType == methodDeclaringType
+#endif
+        );
+
+      return isMethodOverriden;
+    }
   }
 }

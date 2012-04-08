@@ -139,6 +139,7 @@
     <Compile Include="Serialization\DefaultValueHandlingTests.cs" />
     <Compile Include="Serialization\DynamicTests.cs" />
     <Compile Include="Serialization\NullValueHandlingTests.cs" />
+    <Compile Include="Serialization\WebApiIntegrationTests.cs" />
     <Compile Include="TestObjects\Bar.cs" />
     <Compile Include="TestObjects\Car.cs" />
     <Compile Include="TestObjects\Computer.cs" />

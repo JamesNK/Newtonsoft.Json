@@ -32,6 +32,8 @@ namespace Newtonsoft.Json
     internal DateFormatHandling? _dateFormatHandling;
     internal DateTimeZoneHandling? _dateTimeZoneHandling;
     internal CultureInfo _culture;
+    internal int? _maxDepth;
+    internal bool _maxDepthSet;
 
     /// <summary>
     /// Gets or sets how reference loops (e.g. a class referencing itself) is handled.
@@ -123,6 +125,19 @@ namespace Newtonsoft.Json
     /// </summary>
     /// <value>The context.</value>
     public StreamingContext Context { get; set; }
+
+    public int? MaxDepth
+    {
+      get { return _maxDepth; }
+      set
+      {
+        if (value <= 0)
+          throw new ArgumentException("Value must be positive.", "value");
+
+        _maxDepth = value;
+        _maxDepthSet = true;
+      }
+    }
 
     /// <summary>
     /// Indicates how JSON text output is formatted.

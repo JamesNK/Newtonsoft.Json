@@ -150,6 +150,12 @@ namespace Newtonsoft.Json.Serialization
       set { _serializer.Culture = value; }
     }
 
+    public override int? MaxDepth
+    {
+      get { return _serializer.MaxDepth; }
+      set { _serializer.MaxDepth = value; }
+    }
+
     internal JsonSerializerInternalBase GetInternalSerializer()
     {
       if (_serializerReader != null)

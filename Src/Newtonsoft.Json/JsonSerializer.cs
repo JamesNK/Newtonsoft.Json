@@ -61,6 +61,8 @@ namespace Newtonsoft.Json
     private DateFormatHandling? _dateFormatHandling;
     private DateTimeZoneHandling? _dateTimeZoneHandling;
     private CultureInfo _culture;
+    private int? _maxDepth;
+    private bool _maxDepthSet;
 
     /// <summary>
     /// Occurs when the <see cref="JsonSerializer"/> errors during serialization and deserialization.
@@ -320,6 +322,19 @@ namespace Newtonsoft.Json
       get { return _culture ?? JsonSerializerSettings.DefaultCulture; }
       set { _culture = value; }
     }
+
+    public virtual int? MaxDepth
+    {
+      get { return _maxDepth; }
+      set
+      {
+        if (value <= 0)
+          throw new ArgumentException("Value must be positive.", "value");
+
+        _maxDepth = value;
+        _maxDepthSet = true;
+      }
+    }
     #endregion
 
     /// <summary>
@@ -371,6 +386,8 @@ namespace Newtonsoft.Json
         jsonSerializer._dateFormatHandling = settings._dateFormatHandling;
         jsonSerializer._dateTimeZoneHandling = settings._dateTimeZoneHandling;
         jsonSerializer._culture = settings._culture;
+        jsonSerializer._maxDepth = settings._maxDepth;
+        jsonSerializer._maxDepthSet = settings._maxDepthSet;
 
         if (settings.Error != null)
           jsonSerializer.Error += settings.Error;
@@ -478,6 +495,12 @@ namespace Newtonsoft.Json
         previousDateTimeZoneHandling = reader.DateTimeZoneHandling;
         reader.DateTimeZoneHandling = _dateTimeZoneHandling.Value;
       }
+      int? previousMaxDepth = null;
+      if (_maxDepthSet && reader.MaxDepth != _maxDepth)
+      {
+        previousMaxDepth = reader.MaxDepth;
+        reader.MaxDepth = _maxDepth;
+      }
 
       JsonSerializerInternalReader serializerReader = new JsonSerializerInternalReader(this);
       object value = serializerReader.Deserialize(reader, objectType);
@@ -487,6 +510,8 @@ namespace Newtonsoft.Json
         reader.Culture = previousCulture;
       if (previousDateTimeZoneHandling != null)
         reader.DateTimeZoneHandling = previousDateTimeZoneHandling.Value;
+      if (_maxDepthSet)
+        reader.MaxDepth = previousMaxDepth;
 
       return value;
     }

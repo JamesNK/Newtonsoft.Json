@@ -139,6 +139,7 @@
     <Compile Include="Serialization\SerializationErrorHandlingTests.cs" />
     <Compile Include="Serialization\SerializationEventAttributeTests.cs" />
     <Compile Include="Serialization\TypeNameHandlingTests.cs" />
+    <Compile Include="Serialization\WebApiIntegrationTests.cs" />
     <Compile Include="TestObjects\AbstractGenericBase.cs" />
     <Compile Include="TestObjects\ArgumentConverterPrecedenceClassConverter.cs" />
     <Compile Include="TestObjects\BadJsonPropertyClass.cs" />

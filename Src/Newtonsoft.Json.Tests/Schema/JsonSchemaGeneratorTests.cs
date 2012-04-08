@@ -257,27 +257,6 @@ namespace Newtonsoft.Json.Tests.Schema
     }
 
     [Test]
-    public void Generate_NumberFormatInfo()
-    {
-      JsonSchemaGenerator generator = new JsonSchemaGenerator();
-      JsonSchema schema = generator.Generate(typeof(NumberFormatInfo));
-
-      string json = schema.ToString();
-
-      Console.WriteLine(json);
-
-      //      Assert.AreEqual(@"{
-      //  ""type"": ""object"",
-      //  ""additionalProperties"": {
-      //    ""type"": ""array"",
-      //    ""items"": {
-      //      ""type"": ""string""
-      //    }
-      //  }
-      //}", json);
-    }
-
-    [Test]
     public void CircularReferenceError()
     {
       ExceptionAssert.Throws<Exception>(@"Unresolved circular reference for type 'Newtonsoft.Json.Tests.TestObjects.CircularReferenceClass'. Explicitly define an Id for the type using a JsonObject/JsonArray attribute or automatically generate a type Id using the UndefinedSchemaIdHandling property.",
@@ -389,7 +368,12 @@ namespace Newtonsoft.Json.Tests.Schema
     {
       JsonSchemaGenerator generator = new JsonSchemaGenerator();
       generator.UndefinedSchemaIdHandling = UndefinedSchemaIdHandling.UseTypeName;
-      generator.ContractResolver = new CustomDirectoryInfoMapper();
+      generator.ContractResolver = new CustomDirectoryInfoMapper
+        {
+#if !(SILVERLIGHT || NETFX_CORE)
+          IgnoreSerializableAttribute = true
+#endif
+        };
 
       JsonSchema schema = generator.Generate(typeof(DirectoryInfo), true);
 
@@ -468,7 +452,12 @@ namespace Newtonsoft.Json.Tests.Schema
       JTokenWriter jsonWriter = new JTokenWriter();
       JsonSerializer serializer = new JsonSerializer();
       serializer.Converters.Add(new IsoDateTimeConverter());
-      serializer.ContractResolver = new CustomDirectoryInfoMapper();
+      serializer.ContractResolver = new CustomDirectoryInfoMapper
+        {
+#if !(SILVERLIGHT || NETFX_CORE)
+          IgnoreSerializableInterface = true
+#endif
+        };
       serializer.Serialize(jsonWriter, temp);
 
       List<string> errors = new List<string>();
@@ -483,9 +472,14 @@ namespace Newtonsoft.Json.Tests.Schema
     {
       JsonSchemaGenerator generator = new JsonSchemaGenerator();
       generator.UndefinedSchemaIdHandling = UndefinedSchemaIdHandling.UseTypeName;
-      generator.ContractResolver = new CamelCasePropertyNamesContractResolver();
+      generator.ContractResolver = new CamelCasePropertyNamesContractResolver()
+        {
+#if !(SILVERLIGHT || NETFX_CORE)
+          IgnoreSerializableAttribute = true
+#endif
+        };
 
-      JsonSchema schema = generator.Generate(typeof (Version), true);
+      JsonSchema schema = generator.Generate(typeof(Version), true);
 
       string json = schema.ToString();
 
@@ -524,6 +518,68 @@ namespace Newtonsoft.Json.Tests.Schema
   }
 }", json);
     }
+
+#if !SILVERLIGHT
+    [Test]
+    public void GenerateSchemaSerializable()
+    {
+      JsonSchemaGenerator generator = new JsonSchemaGenerator();
+      generator.UndefinedSchemaIdHandling = UndefinedSchemaIdHandling.UseTypeName;
+
+      JsonSchema schema = generator.Generate(typeof (Version), true);
+
+      string json = schema.ToString();
+
+      Assert.AreEqual(@"{
+  ""id"": ""System.Version"",
+  ""type"": [
+    ""object"",
+    ""null""
+  ],
+  ""additionalProperties"": false,
+  ""properties"": {
+    ""_Major"": {
+      ""required"": true,
+      ""type"": ""integer""
+    },
+    ""_Minor"": {
+      ""required"": true,
+      ""type"": ""integer""
+    },
+    ""_Build"": {
+      ""required"": true,
+      ""type"": ""integer""
+    },
+    ""_Revision"": {
+      ""required"": true,
+      ""type"": ""integer""
+    }
+  }
+}", json);
+
+      JTokenWriter jsonWriter = new JTokenWriter();
+      JsonSerializer serializer = new JsonSerializer();
+      serializer.Serialize(jsonWriter, new Version(1, 2, 3, 4));
+
+      List<string> errors = new List<string>();
+      jsonWriter.Token.Validate(schema, (sender, args) => errors.Add(args.Message));
+
+      Assert.AreEqual(0, errors.Count);
+
+      Assert.AreEqual(@"{
+  ""_Major"": 1,
+  ""_Minor"": 2,
+  ""_Build"": 3,
+  ""_Revision"": 4
+}", jsonWriter.Token.ToString());
+
+      Version version = jsonWriter.Token.ToObject<Version>();
+      Assert.AreEqual(1, version.Major);
+      Assert.AreEqual(2, version.Minor);
+      Assert.AreEqual(3, version.Build);
+      Assert.AreEqual(4, version.Revision);
+    }
+#endif
 
     public enum SortTypeFlag
     {

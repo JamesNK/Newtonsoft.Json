@@ -77,6 +77,9 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
 #endif
+#if !(SILVERLIGHT || NETFX_CORE)
+using System.Drawing;
+#endif
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
@@ -490,8 +493,6 @@ keyword such as type of business.""
           new DateTime(2000, 1, 1, 1, 1, 1, DateTimeKind.Unspecified),
           new DateTime(2000, 1, 1, 1, 1, 1, DateTimeKind.Utc),
         };
-      string result;
-
 
       MemoryStream ms = new MemoryStream();
       DataContractJsonSerializer s = new DataContractJsonSerializer(typeof (List<DateTime>));
@@ -501,7 +502,7 @@ keyword such as type of business.""
 
       string expected = sr.ReadToEnd();
 
-      result = JsonConvert.SerializeObject(testDates, new JsonSerializerSettings { DateFormatHandling = DateFormatHandling.MicrosoftDateFormat });
+      string result = JsonConvert.SerializeObject(testDates, new JsonSerializerSettings { DateFormatHandling = DateFormatHandling.MicrosoftDateFormat });
       Assert.AreEqual(expected, result);
     }
 
@@ -1582,8 +1583,10 @@ keyword such as type of business.""
   }
 }";
 
-      DictionaryInterfaceClass c = JsonConvert.DeserializeObject<DictionaryInterfaceClass>(json,
-                                                                                           new JsonSerializerSettings {ObjectCreationHandling = ObjectCreationHandling.Replace});
+      DictionaryInterfaceClass c = JsonConvert.DeserializeObject<DictionaryInterfaceClass>(
+        json,
+        new JsonSerializerSettings {ObjectCreationHandling = ObjectCreationHandling.Replace});
+
       Assert.AreEqual("Name!", c.Name);
       Assert.AreEqual(1, c.Dictionary.Count);
       Assert.AreEqual(11, c.Dictionary["Item"]);
@@ -2029,7 +2032,15 @@ To force JSON objects to deserialize add the JsonObjectAttribute to the type. Li
       )]
     public void SerializePropertyGetError()
     {
-      JsonConvert.SerializeObject(new MemoryStream());
+      JsonConvert.SerializeObject(new MemoryStream(), new JsonSerializerSettings
+      {
+        ContractResolver = new DefaultContractResolver
+          {
+#if !(SILVERLIGHT || NETFX_CORE)
+            IgnoreSerializableAttribute = true
+#endif
+          }
+      });
     }
 
     [Test]
@@ -2040,7 +2051,15 @@ To force JSON objects to deserialize add the JsonObjectAttribute to the type. Li
       )]
     public void DeserializePropertySetError()
     {
-      JsonConvert.DeserializeObject<MemoryStream>("{ReadTimeout:0}");
+      JsonConvert.DeserializeObject<MemoryStream>("{ReadTimeout:0}", new JsonSerializerSettings
+        {
+        ContractResolver = new DefaultContractResolver
+          {
+#if !(SILVERLIGHT || NETFX_CORE)
+            IgnoreSerializableAttribute = true
+#endif
+          }
+        });
     }
 
     [Test]
@@ -2051,7 +2070,15 @@ To force JSON objects to deserialize add the JsonObjectAttribute to the type. Li
       )]
     public void DeserializeEnsureTypeEmptyStringToIntError()
     {
-      JsonConvert.DeserializeObject<MemoryStream>("{ReadTimeout:''}");
+      JsonConvert.DeserializeObject<MemoryStream>("{ReadTimeout:''}", new JsonSerializerSettings
+      {
+        ContractResolver = new DefaultContractResolver
+          {
+#if !(SILVERLIGHT || NETFX_CORE)
+            IgnoreSerializableAttribute = true
+#endif
+          }
+      });
     }
 
     [Test]
@@ -2062,7 +2089,15 @@ To force JSON objects to deserialize add the JsonObjectAttribute to the type. Li
       )]
     public void DeserializeEnsureTypeNullToIntError()
     {
-      JsonConvert.DeserializeObject<MemoryStream>("{ReadTimeout:null}");
+      JsonConvert.DeserializeObject<MemoryStream>("{ReadTimeout:null}", new JsonSerializerSettings
+      {
+        ContractResolver = new DefaultContractResolver
+          {
+#if !(SILVERLIGHT || NETFX_CORE)
+            IgnoreSerializableAttribute = true
+#endif
+          }
+      });
     }
 
     [Test]
@@ -5783,6 +5818,119 @@ Parameter name: value"
       var roundtrippedPerson = JsonConvert.DeserializeObject<PersonWithPrivateConstructor>(serializedPerson);
 
       Assert.AreEqual(person.Name, roundtrippedPerson.Name);
+    }
+#endif
+
+#if !(SILVERLIGHT || NETFX_CORE)
+    [Test]
+    public void MetroBlogPost()
+    {
+      Product product = new Product();
+      product.Name = "Apple";
+      product.ExpiryDate = new DateTime(2012, 4, 1);
+      product.Price = 3.99M;
+      product.Sizes = new []{"Small", "Medium", "Large"};
+
+      string json = JsonConvert.SerializeObject(product);
+      //{
+      //  "Name": "Apple",
+      //  "ExpiryDate": "2012-04-01T00:00:00",
+      //  "Price": 3.99,
+      //  "Sizes": [ "Small", "Medium", "Large" ]
+      //}
+
+      string metroJson = JsonConvert.SerializeObject(product, new JsonSerializerSettings
+        {
+          ContractResolver = new MetroPropertyNameResolver(),
+          Converters = { new MetroStringConverter() },
+          Formatting = Formatting.Indented
+        });
+      Assert.AreEqual(metroJson, @"{
+  "":::NAME:::"": "":::APPLE:::"",
+  "":::EXPIRYDATE:::"": ""2012-04-01T00:00:00"",
+  "":::PRICE:::"": 3.99,
+  "":::SIZES:::"": [
+    "":::SMALL:::"",
+    "":::MEDIUM:::"",
+    "":::LARGE:::""
+  ]
+}");
+      //{
+      //  ":::NAME:::": ":::APPLE:::",
+      //  ":::EXPIRYDATE:::": "2012-04-01T00:00:00",
+      //  ":::PRICE:::": 3.99,
+      //  ":::SIZES:::": [ ":::SMALL:::", ":::MEDIUM:::", ":::LARGE:::" ]
+      //}
+
+      Color[] colors = new []{ Color.Blue, Color.Red, Color.Yellow, Color.Green, Color.Black, Color.Brown };
+
+      string json1 = JsonConvert.SerializeObject(colors);
+      //[":::GRAY:::", ":::GRAY:::", ":::GRAY:::", ":::GRAY:::", ":::BLACK:::", ":::GRAY:::"]
+
+      Assert.AreEqual(json1, @"[""Blue"",""Red"",""Yellow"",""Green"",""Black"",""Brown""]");
+
+      string json2 = JsonConvert.SerializeObject(colors, new JsonSerializerSettings
+      {
+        ContractResolver = new MetroPropertyNameResolver(),
+        Converters = { new MetroStringConverter(), new MetroColorConverter() },
+        Formatting = Formatting.Indented
+      });
+      
+      Assert.AreEqual(json2, @"[
+  "":::GRAY:::"",
+  "":::GRAY:::"",
+  "":::GRAY:::"",
+  "":::GRAY:::"",
+  "":::BLACK:::"",
+  "":::GRAY:::""
+]");
+    }
+
+    public class MetroStringConverter : JsonConverter
+    {
+      public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+      {
+        writer.WriteValue(":::" + value.ToString().ToUpper() + ":::");
+      }
+
+      public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+      {
+        return existingValue;
+      }
+
+      public override bool CanConvert(Type objectType)
+      {
+        return objectType == typeof (string);
+      }
+    }
+
+    public class MetroPropertyNameResolver : DefaultContractResolver
+    {
+      protected internal override string ResolvePropertyName(string propertyName)
+      {
+        return ":::" + propertyName.ToUpper() + ":::";
+      }
+    }
+
+    public class MetroColorConverter : JsonConverter
+    {
+      public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+      {
+        Color color = (Color) value;
+        Color fixedColor = (color == Color.White || color == Color.Black) ? color : Color.Gray;
+
+        writer.WriteValue(":::" + fixedColor.ToKnownColor().ToString().ToUpper() + ":::");
+      }
+
+      public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+      {
+        return Enum.Parse(typeof (Color), reader.Value.ToString());
+      }
+
+      public override bool CanConvert(Type objectType)
+      {
+        return objectType == typeof (Color);
+      }
     }
 #endif
   }

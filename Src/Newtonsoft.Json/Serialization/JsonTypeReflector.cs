@@ -102,19 +102,29 @@ namespace Newtonsoft.Json.Serialization
       return GetJsonContainerAttribute(type) as JsonArrayAttribute;
     }
 
+#if !(SILVERLIGHT || NETFX_CORE)
+    public static SerializableAttribute GetSerializableAttribute(Type type)
+    {
+      return CachedAttributeGetter<SerializableAttribute>.GetAttribute(type.GetCustomAttributeProvider());
+    }
+#endif
+
 #if !PocketPC && !NET20
     public static DataContractAttribute GetDataContractAttribute(Type type)
     {
       // DataContractAttribute does not have inheritance
-      DataContractAttribute result = null;
       Type currentType = type;
-      while (result == null && currentType != null)
+
+      while (currentType != null)
       {
-        result = CachedAttributeGetter<DataContractAttribute>.GetAttribute(currentType.GetCustomAttributeProvider());
+        DataContractAttribute result = CachedAttributeGetter<DataContractAttribute>.GetAttribute(currentType.GetCustomAttributeProvider());
+        if (result != null)
+          return result;
+
         currentType = currentType.BaseType();
       }
 
-      return result;
+      return null;
     }
 
     public static DataMemberAttribute GetDataMemberAttribute(MemberInfo memberInfo)
@@ -149,23 +159,29 @@ namespace Newtonsoft.Json.Serialization
     }
 #endif
 
-    public static MemberSerialization GetObjectMemberSerialization(Type objectType)
+    public static MemberSerialization GetObjectMemberSerialization(Type objectType, bool ignoreSerializableAttribute)
     {
       JsonObjectAttribute objectAttribute = GetJsonObjectAttribute(objectType);
+      if (objectAttribute != null)
+        return objectAttribute.MemberSerialization;
 
-      if (objectAttribute == null)
-      {
 #if !PocketPC && !NET20
-        DataContractAttribute dataContractAttribute = GetDataContractAttribute(objectType);
-
-        if (dataContractAttribute != null)
-          return MemberSerialization.OptIn;
+      DataContractAttribute dataContractAttribute = GetDataContractAttribute(objectType);
+      if (dataContractAttribute != null)
+        return MemberSerialization.OptIn;
 #endif
 
-        return MemberSerialization.OptOut;
+#if !(SILVERLIGHT || NETFX_CORE)
+      if (!ignoreSerializableAttribute)
+      {
+        SerializableAttribute serializableAttribute = GetSerializableAttribute(objectType);
+        if (serializableAttribute != null)
+          return MemberSerialization.Fields;
       }
+#endif
 
-      return objectAttribute.MemberSerialization;
+      // the default
+      return MemberSerialization.OptOut;
     }
 
     private static Type GetJsonConverterType(ICustomAttributeProvider attributeProvider)

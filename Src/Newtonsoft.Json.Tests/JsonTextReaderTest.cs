@@ -45,6 +45,25 @@ namespace Newtonsoft.Json.Tests
   public class JsonTextReaderTest : TestFixtureBase
   {
     [Test]
+    public void SurrogatePairValid()
+    {
+      string json = @"{ ""MATHEMATICAL ITALIC CAPITAL ALPHA"": ""\uD835\uDEE2"" }";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+      Assert.IsTrue(reader.Read());
+      Assert.IsTrue(reader.Read());
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.String, reader.TokenType);
+
+      string s = reader.Value.ToString();
+
+      StringInfo stringInfo = new StringInfo(s);
+      Assert.AreEqual(1, stringInfo.LengthInTextElements);
+    }
+
+    [Test]
     public void CloseInput()
     {
       MemoryStream ms = new MemoryStream();
@@ -2193,6 +2212,26 @@ bye", reader.Value);
       Assert.AreEqual(602214180000000000000000m, reader.Value);
 
       reader.Read();
+    }
+
+    [Test]
+    public void MaxDepth()
+    {
+      string json = "[[]]";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json))
+        {
+          MaxDepth = 1
+        };
+
+      Assert.IsTrue(reader.Read());
+
+      ExceptionAssert.Throws<JsonReaderException>(
+        "This reader's MaxDepth of 1 has been exceeded.",
+        () =>
+          {
+            Assert.IsTrue(reader.Read());
+          });
     }
 
     [Test]

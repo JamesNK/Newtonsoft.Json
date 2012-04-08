@@ -24,15 +24,7 @@ namespace Newtonsoft.Json.Utilities
 
     private bool IsOverridden(string method)
     {
-      return _proxy.GetType().GetMember(method, MemberTypes.Method, BindingFlags.Public | BindingFlags.Instance).Cast<MethodInfo>()
-        .Any(info =>
-          // check that the method overrides the original on DynamicObjectProxy
-          info.DeclaringType != typeof(DynamicProxy<T>)
-          // todo - find out whether there is a way to do this in winrt
-#if !NETFX_CORE
-          && info.GetBaseDefinition().DeclaringType == typeof(DynamicProxy<T>)
-#endif
-          );
+      return ReflectionUtils.IsMethodOverridden(_proxy.GetType(), typeof (DynamicProxy<T>), method);
     }
 
     public override DynamicMetaObject BindGetMember(GetMemberBinder binder)
