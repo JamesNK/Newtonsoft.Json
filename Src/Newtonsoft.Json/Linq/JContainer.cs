@@ -170,28 +170,22 @@ namespace Newtonsoft.Json.Linq
 
     internal bool ContentsEqual(JContainer container)
     {
-      JToken t1 = First;
-      JToken t2 = container.First;
-
-      if (t1 == t2)
+      if (container == this)
         return true;
 
-      do
-      {
-        if (t1 == null && t2 == null)
-          return true;
+      IList<JToken> t1 = ChildrenTokens;
+      IList<JToken> t2 = container.ChildrenTokens;
 
-        if (t1 != null && t2 != null && t1.DeepEquals(t2))
-        {
-          t1 = (t1 != Last) ? t1.Next : null;
-          t2 = (t2 != container.Last) ? t2.Next : null;
-        }
-        else
-        {
+      if (t1.Count != t2.Count)
+        return false;
+
+      for (int i = 0; i < t1.Count; i++)
+      {
+        if (!t1[i].DeepEquals(t2[i]))
           return false;
-        }
       }
-      while (true);
+
+      return true;
     }
 
     /// <summary>

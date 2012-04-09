@@ -153,6 +153,8 @@ namespace Newtonsoft.Json.Linq
       JValue other = node as JValue;
       if (other == null)
         return false;
+      if (other == this)
+        return true;
 
       return ValuesEquals(this, other);
     }

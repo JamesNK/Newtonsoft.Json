@@ -1746,5 +1746,55 @@ Parameter name: arrayIndex"
         JObject o = JObject.Parse(json);
       });
     }
+
+    [Test]
+    public void DeepEqualsIgnoreOrder()
+    {
+      JObject o1 = new JObject(
+        new JProperty("null", null),
+        new JProperty("integer", 1),
+        new JProperty("string", "string!"),
+        new JProperty("decimal", 0.5m),
+        new JProperty("array", new JArray(1, 2)));
+
+      Assert.IsTrue(o1.DeepEquals(o1));
+
+      JObject o2 = new JObject(
+        new JProperty("null", null),
+        new JProperty("string", "string!"),
+        new JProperty("decimal", 0.5m),
+        new JProperty("integer", 1),
+        new JProperty("array", new JArray(1, 2)));
+
+      Assert.IsTrue(o1.DeepEquals(o2));
+
+      JObject o3 = new JObject(
+        new JProperty("null", null),
+        new JProperty("string", "string!"),
+        new JProperty("decimal", 0.5m),
+        new JProperty("integer", 2),
+        new JProperty("array", new JArray(1, 2)));
+
+      Assert.IsFalse(o1.DeepEquals(o3));
+
+      JObject o4 = new JObject(
+        new JProperty("null", null),
+        new JProperty("string", "string!"),
+        new JProperty("decimal", 0.5m),
+        new JProperty("integer", 1),
+        new JProperty("array", new JArray(2, 1)));
+
+      Assert.IsFalse(o1.DeepEquals(o4));
+
+      JObject o5 = new JObject(
+        new JProperty("null", null),
+        new JProperty("string", "string!"),
+        new JProperty("decimal", 0.5m),
+        new JProperty("integer", 1));
+
+      Assert.IsFalse(o1.DeepEquals(o5));
+
+      Assert.IsFalse(o1.DeepEquals(null));
+    }
   }
 }

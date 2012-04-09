@@ -114,7 +114,10 @@ namespace Newtonsoft.Json.Linq
     internal override bool DeepEquals(JToken node)
     {
       JObject t = node as JObject;
-      return (t != null && ContentsEqual(t));
+      if (t == null)
+        return false;
+
+      return _properties.Compare(t._properties);
     }
 
     internal override void InsertItem(int index, JToken item, bool skipParentCheck)

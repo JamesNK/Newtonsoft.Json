@@ -164,5 +164,34 @@ namespace Newtonsoft.Json.Linq
         return _dictionary.Values;
       }
     }
+
+    public bool Compare(JPropertyKeyedCollection other)
+    {
+      if (this == other)
+        return true;
+
+      // dictionaries in JavaScript aren't ordered
+      // ignore order when comparing properties
+      Dictionary<string, JToken> d1 = _dictionary;
+      Dictionary<string, JToken> d2 = other._dictionary;
+
+      if (d1.Count != d2.Count)
+        return false;
+
+      foreach (KeyValuePair<string, JToken> keyAndProperty in d1)
+      {
+        JToken secondValue;
+        if (!d2.TryGetValue(keyAndProperty.Key, out secondValue))
+          return false;
+
+        JProperty p1 = (JProperty)keyAndProperty.Value;
+        JProperty p2 = (JProperty)secondValue;
+
+        if (!p1.Value.DeepEquals(p2.Value))
+          return false;
+      }
+
+      return true;
+    }
   }
 }

@@ -208,7 +208,9 @@ namespace Newtonsoft.Json.Linq
         yield break;
 
       for (JToken o = Next; o != null; o = o.Next)
+      {
         yield return o;
+      }
     }
 
     /// <summary>
@@ -218,7 +220,9 @@ namespace Newtonsoft.Json.Linq
     public IEnumerable<JToken> BeforeSelf()
     {
       for (JToken o = Parent.First; o != this; o = o.Next)
+      {
         yield return o;
+      }
     }
 
     /// <summary>
