@@ -152,5 +152,23 @@ namespace Newtonsoft.Json.Utilities
 
       return camelCase;
     }
+
+    public static bool IsHighSurrogate(char c)
+    {
+#if !SILVERLIGHT
+      return char.IsHighSurrogate(c);
+#else
+      return (c >= 55296 && c <= 56319);
+#endif
+    }
+
+    public static bool IsLowSurrogate(char c)
+    {
+#if !SILVERLIGHT
+      return char.IsLowSurrogate(c);
+#else
+      return (c >= 56320 && c <= 57343);
+#endif
+    }
   }
 }

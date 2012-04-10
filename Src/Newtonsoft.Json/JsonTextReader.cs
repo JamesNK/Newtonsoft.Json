@@ -52,6 +52,8 @@ namespace Newtonsoft.Json
   /// </summary>
   public class JsonTextReader : JsonReader, IJsonLineInfo
   {
+    private const char UnicodeReplacementChar = '\uFFFD';
+
     private readonly TextReader _reader;
 
     private char[] _chars;
@@ -583,19 +585,62 @@ namespace Newtonsoft.Json
               case 'u':
                 charPos++;
                 _charPos = charPos;
-                if (EnsureChars(4, true))
+                writeChar = ParseUnicode();
+                
+                if (StringUtils.IsLowSurrogate(writeChar))
                 {
-                  string hexValues = new string(_chars, charPos, 4);
-                  char hexChar = Convert.ToChar(int.Parse(hexValues, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo));
-                  writeChar = hexChar;
+                  // low surrogate with no preceding high surrogate; this char is replaced
+                  writeChar = UnicodeReplacementChar;
+                }
+                else if (StringUtils.IsHighSurrogate(writeChar))
+                {
+                  bool anotherHighSurrogate;
 
-                  charPos += 4;
+                  // loop for handling situations where there are multiple consecutive high surrogates
+                  do
+                  {
+                    anotherHighSurrogate = false;
+
+                    // potential start of a surrogate pair
+                    if (EnsureChars(2, true) && _chars[_charPos] == '\\' && _chars[_charPos + 1] == 'u')
+                    {
+                      char highSurrogate = writeChar;
+
+                      _charPos += 2;
+                      writeChar = ParseUnicode();
+
+                      if (StringUtils.IsLowSurrogate(writeChar))
+                      {
+                        // a valid surrogate pair!
+                      }
+                      else if (StringUtils.IsHighSurrogate(writeChar))
+                      {
+                        // another high surrogate; replace current and start check over
+                        highSurrogate = UnicodeReplacementChar;
+                        anotherHighSurrogate = true;
+                      }
+                      else
+                      {
+                        // high surrogate not followed by low surrogate; original char is replaced
+                        highSurrogate = UnicodeReplacementChar;
+                      }
+
+                      if (buffer == null)
+                        buffer = GetBuffer();
+
+                      WriteCharToBuffer(buffer, highSurrogate, lastWritePosition, escapeStartPos);
+                      lastWritePosition = _charPos;
+                    }
+                    else
+                    {
+                      // there are not enough remaining chars for the low surrogate or is not follow by unicode sequence
+                      // replace high surrogate and continue on as usual
+                      writeChar = UnicodeReplacementChar;
+                    }
+                  } while (anotherHighSurrogate);
                 }
-                else
-                {
-                  _charPos = charPos;
-                  throw CreateReaderException(this, "Unexpected end while parsing unicode character.");
-                }
+
+                charPos = _charPos;
                 break;
               default:
                 charPos++;
@@ -606,12 +651,7 @@ namespace Newtonsoft.Json
             if (buffer == null)
               buffer = GetBuffer();
 
-            if (escapeStartPos > lastWritePosition)
-            {
-              buffer.Append(_chars, lastWritePosition, escapeStartPos - lastWritePosition);
-            }
-
-            buffer.Append(writeChar);
+            WriteCharToBuffer(buffer, writeChar, lastWritePosition, escapeStartPos);
 
             lastWritePosition = charPos;
             break;
@@ -653,6 +693,34 @@ namespace Newtonsoft.Json
             break;
         }
       }
+    }
+
+    private void WriteCharToBuffer(StringBuffer buffer, char writeChar, int lastWritePosition, int writeToPosition)
+    {
+      if (writeToPosition > lastWritePosition)
+      {
+        buffer.Append(_chars, lastWritePosition, writeToPosition - lastWritePosition);
+      }
+
+      buffer.Append(writeChar);
+    }
+
+    private char ParseUnicode()
+    {
+      char writeChar;
+      if (EnsureChars(4, true))
+      {
+        string hexValues = new string(_chars, _charPos, 4);
+        char hexChar = Convert.ToChar(int.Parse(hexValues, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo));
+        writeChar = hexChar;
+
+        _charPos += 4;
+      }
+      else
+      {
+        throw CreateReaderException(this, "Unexpected end while parsing unicode character.");
+      }
+      return writeChar;
     }
 
     private void ReadNumberIntoBuffer()
@@ -1279,7 +1347,7 @@ namespace Newtonsoft.Json
             }
             catch (OverflowException ex)
             {
-              throw new JsonReaderException("JSON integer {0} is too large or small for an Int64.".FormatWith(CultureInfo.InvariantCulture, number), ex);
+              throw CreateReaderException((JsonReader)this, "JSON integer {0} is too large or small for an Int64.".FormatWith(CultureInfo.InvariantCulture, number), ex);
             }
 
             numberType = JsonToken.Integer;

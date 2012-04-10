@@ -256,7 +256,7 @@ namespace Newtonsoft.Json
 
         // this is a little hacky because Depth increases when first property/value is written but only testing here is faster/simpler
         if (_maxDepth != null && Depth + 1 > _maxDepth)
-          throw new JsonReaderException("This reader's MaxDepth of {0} has been exceeded.".FormatWith(CultureInfo.InvariantCulture, _maxDepth));
+          throw CreateReaderException(this, "The reader's MaxDepth of {0} has been exceeded.".FormatWith(CultureInfo.InvariantCulture, _maxDepth));
       }
     }
 
@@ -750,7 +750,7 @@ namespace Newtonsoft.Json
       JsonContainerType currentObject = Pop();
 
       if (GetTypeForCloseToken(endToken) != currentObject)
-        throw new JsonReaderException("JsonToken {0} is not valid for closing JsonType {1}.".FormatWith(CultureInfo.InvariantCulture, endToken, currentObject));
+        throw CreateReaderException(this, "JsonToken {0} is not valid for closing JsonType {1}.".FormatWith(CultureInfo.InvariantCulture, endToken, currentObject));
 
       _currentState = (Peek() != JsonContainerType.None) ? State.PostValue : State.Finished;
     }
@@ -777,7 +777,7 @@ namespace Newtonsoft.Json
           _currentState = State.Finished;
           break;
         default:
-          throw new JsonReaderException("While setting the reader state back to current object an unexpected JsonType was encountered: {0}".FormatWith(CultureInfo.InvariantCulture, currentObject));
+          throw CreateReaderException(this, "While setting the reader state back to current object an unexpected JsonType was encountered: {0}".FormatWith(CultureInfo.InvariantCulture, currentObject));
       }
     }
 
@@ -823,7 +823,7 @@ namespace Newtonsoft.Json
         case JsonToken.EndConstructor:
           return JsonContainerType.Constructor;
         default:
-          throw new JsonReaderException("Not a valid close JsonToken: {0}".FormatWith(CultureInfo.InvariantCulture, token));
+          throw CreateReaderException(this, "Not a valid close JsonToken: {0}".FormatWith(CultureInfo.InvariantCulture, token));
       }
     }
 

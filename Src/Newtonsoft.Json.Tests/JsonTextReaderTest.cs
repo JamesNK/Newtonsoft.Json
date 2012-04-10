@@ -58,9 +58,57 @@ namespace Newtonsoft.Json.Tests
       Assert.AreEqual(JsonToken.String, reader.TokenType);
 
       string s = reader.Value.ToString();
+      Assert.AreEqual(2, s.Length);
 
       StringInfo stringInfo = new StringInfo(s);
       Assert.AreEqual(1, stringInfo.LengthInTextElements);
+    }
+
+    [Test]
+    public void SurrogatePairReplacement()
+    {
+      // existing good surrogate pair
+      Assert.AreEqual("ABC \ud800\udc00 DEF", ReadString("ABC \\ud800\\udc00 DEF"));
+
+      // invalid surrogates (two high back-to-back)
+      Assert.AreEqual("ABC \ufffd\ufffd DEF", ReadString("ABC \\ud800\\ud800 DEF"));
+
+      // invalid surrogates (two high back-to-back)
+      Assert.AreEqual("ABC \ufffd\ufffd\u1234 DEF", ReadString("ABC \\ud800\\ud800\\u1234 DEF"));
+
+      // invalid surrogates (three high back-to-back)
+      Assert.AreEqual("ABC \ufffd\ufffd\ufffd DEF", ReadString("ABC \\ud800\\ud800\\ud800 DEF"));
+
+      // invalid surrogates (high followed by a good surrogate pair)
+      Assert.AreEqual("ABC \ufffd\ud800\udc00 DEF", ReadString("ABC \\ud800\\ud800\\udc00 DEF"));
+
+      // invalid high surrogate at end of string
+      Assert.AreEqual("ABC \ufffd", ReadString("ABC \\ud800"));
+
+      // high surrogate not followed by low surrogate
+      Assert.AreEqual("ABC \ufffd DEF", ReadString("ABC \\ud800 DEF"));
+
+      // low surrogate not preceded by high surrogate
+      Assert.AreEqual("ABC \ufffd\ufffd DEF", ReadString("ABC \\udc00\\ud800 DEF"));
+
+      // make sure unencoded invalid surrogate characters don't make it through
+      Assert.AreEqual("\ufffd\ufffd\ufffd", ReadString("\udc00\ud800\ud800"));
+
+      Assert.AreEqual("ABC \ufffd\b", ReadString("ABC \\ud800\\b"));
+      Assert.AreEqual("ABC \ufffd ", ReadString("ABC \\ud800 "));
+      Assert.AreEqual("ABC \b\ufffd", ReadString("ABC \\b\\ud800"));
+    }
+
+    private string ReadString(string input)
+    {
+      MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(@"""" + input + @""""));
+
+      JsonTextReader reader = new JsonTextReader(new StreamReader(ms));
+      reader.Read();
+
+      string s = (string)reader.Value;
+
+      return s;
     }
 
     [Test]
@@ -2227,7 +2275,7 @@ bye", reader.Value);
       Assert.IsTrue(reader.Read());
 
       ExceptionAssert.Throws<JsonReaderException>(
-        "This reader's MaxDepth of 1 has been exceeded.",
+        "The reader's MaxDepth of 1 has been exceeded. Line 1, position 2.",
         () =>
           {
             Assert.IsTrue(reader.Read());

@@ -1580,7 +1580,7 @@ Parameter name: arrayIndex"
     [Test]
     public void NumberTooBigForInt64()
     {
-      ExceptionAssert.Throws<JsonReaderException>("JSON integer 307953220000517141511 is too large or small for an Int64.",
+      ExceptionAssert.Throws<JsonReaderException>("JSON integer 307953220000517141511 is too large or small for an Int64. Line 1, position 30.",
         () =>
         {
           string json = @"{""code"": 307953220000517141511}";

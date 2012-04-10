@@ -2872,7 +2872,7 @@ To force JSON objects to deserialize add the JsonObjectAttribute to the type. Li
       {
         ExceptionAssert.Throws<JsonSerializationException>(
           @"Type 'Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+ISerializableTestObject' implements ISerializable but cannot be deserialized using the ISerializable interface because the current application is not fully trusted and ISerializable can expose secure data.
-To fix this error either change the environment to be fully trusted, change the application to not deserialize the type, add to JsonObjectAttribute to the type or change the JsonSerializer setting ContractResolver to use a new DefaultContractResolver with IgnoreSerializableInterface set to true.",
+To fix this error either change the environment to be fully trusted, change the application to not deserialize the type, add to JsonObjectAttribute to the type or change the JsonSerializer setting ContractResolver to use a new DefaultContractResolver with IgnoreSerializableInterface set to true. Line 1, position 14.",
           () =>
             {
               JsonTypeReflector.SetFullyTrusted(false);
@@ -5679,7 +5679,7 @@ To fix this error either change the environment to be fully trusted, change the 
     [Test]
     [ExpectedException(typeof (JsonSerializationException)
 #if !NETFX_CORE
-      , ExpectedMessage = "No JSON content found and type 'System.Double' is not nullable."
+      , ExpectedMessage = "No JSON content found and type 'System.Double' is not nullable. Line 0, position 0."
 #endif
       )]
     public void DeserializeDoubleFromEmptyString()
@@ -5690,7 +5690,7 @@ To fix this error either change the environment to be fully trusted, change the 
     [Test]
     [ExpectedException(typeof (JsonSerializationException)
 #if !NETFX_CORE
-      , ExpectedMessage = "No JSON content found and type 'System.StringComparison' is not nullable."
+      , ExpectedMessage = "No JSON content found and type 'System.StringComparison' is not nullable. Line 0, position 0."
 #endif
       )]
     public void DeserializeEnumFromEmptyString()
@@ -5701,7 +5701,7 @@ To fix this error either change the environment to be fully trusted, change the 
     [Test]
     [ExpectedException(typeof (JsonSerializationException)
 #if !NETFX_CORE
-      , ExpectedMessage = "No JSON content found and type 'System.Int32' is not nullable."
+      , ExpectedMessage = "No JSON content found and type 'System.Int32' is not nullable. Line 0, position 0."
 #endif
       )]
     public void DeserializeInt32FromEmptyString()

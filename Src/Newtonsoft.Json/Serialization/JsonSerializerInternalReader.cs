@@ -118,7 +118,7 @@ namespace Newtonsoft.Json.Serialization
       if (reader.TokenType == JsonToken.None && !ReadForType(reader, contract, converter != null, false))
       {
         if (contract != null && !contract.IsNullable)
-          throw new JsonSerializationException("No JSON content found and type '{0}' is not nullable.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+          throw CreateSerializationException(reader, "No JSON content found and type '{0}' is not nullable.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
         return null;
       }
@@ -831,7 +831,7 @@ To force JSON arrays to deserialize add the JsonArrayAttribute to the type.".For
 
       if (!JsonTypeReflector.FullyTrusted)
       {
-        throw new JsonSerializationException(@"Type '{0}' implements ISerializable but cannot be deserialized using the ISerializable interface because the current application is not fully trusted and ISerializable can expose secure data.
+        throw CreateSerializationException(reader, @"Type '{0}' implements ISerializable but cannot be deserialized using the ISerializable interface because the current application is not fully trusted and ISerializable can expose secure data.
 To fix this error either change the environment to be fully trusted, change the application to not deserialize the type, add to JsonObjectAttribute to the type or change the JsonSerializer setting ContractResolver to use a new DefaultContractResolver with IgnoreSerializableInterface set to true.".FormatWith(CultureInfo.InvariantCulture, objectType));
       }
 
