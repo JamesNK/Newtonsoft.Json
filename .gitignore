@@ -1,5 +1,6 @@
 [Bb]in/
 [Oo]bj/
 [Ww]orking/
+TestResults/
 *.suo
 *.user
