@@ -5890,7 +5890,7 @@ Parameter name: value"
     {
       public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
       {
-        writer.WriteValue(":::" + value.ToString().ToUpper() + ":::");
+        writer.WriteValue(":::" + value.ToString().ToUpper(CultureInfo.InvariantCulture) + ":::");
       }
 
       public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -5908,7 +5908,7 @@ Parameter name: value"
     {
       protected internal override string ResolvePropertyName(string propertyName)
       {
-        return ":::" + propertyName.ToUpper() + ":::";
+        return ":::" + propertyName.ToUpper(CultureInfo.InvariantCulture) + ":::";
       }
     }
 

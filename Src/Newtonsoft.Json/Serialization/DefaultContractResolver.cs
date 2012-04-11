@@ -153,13 +153,19 @@ namespace Newtonsoft.Json.Serialization
 
 #if !(SILVERLIGHT || NETFX_CORE)
     /// <summary>
-    /// Gets or sets a value indicating whether to ignore the ISerializable interface when serializing and deserializing types.
+    /// Gets or sets a value indicating whether to ignore the <see cref="ISerializable"/> interface when serializing and deserializing types.
     /// </summary>
     /// <value>
-    /// 	<c>true</c> if the ISerializable interface will be ignored when serializing and deserializing types; otherwise, <c>false</c>.
+    /// 	<c>true</c> if the <see cref="ISerializable"/> interface will be ignored when serializing and deserializing types; otherwise, <c>false</c>.
     /// </value>
     public bool IgnoreSerializableInterface { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether to ignore the <see cref="SerializableAttribute"/> attribute when serializing and deserializing types.
+    /// </summary>
+    /// <value>
+    /// 	<c>true</c> if the <see cref="SerializableAttribute"/> attribute will be ignored when serializing and deserializing types; otherwise, <c>false</c>.
+    /// </value>
     public bool IgnoreSerializableAttribute { get; set; }
 #endif
 

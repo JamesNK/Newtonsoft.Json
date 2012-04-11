@@ -150,6 +150,9 @@ namespace Newtonsoft.Json
       set { _dateTimeZoneHandling = value; }
     }
 
+    /// <summary>
+    /// Gets or sets the maximum depth allowed when reading JSON. Reading past this depth will throw a <see cref="JsonReaderException"/>.
+    /// </summary>
     public int? MaxDepth
     {
       get { return _maxDepth; }

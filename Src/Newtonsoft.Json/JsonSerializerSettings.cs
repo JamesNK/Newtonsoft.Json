@@ -126,6 +126,9 @@ namespace Newtonsoft.Json
     /// <value>The context.</value>
     public StreamingContext Context { get; set; }
 
+    /// <summary>
+    /// Gets or sets the maximum depth allowed when reading JSON. Reading past this depth will throw a <see cref="JsonReaderException"/>.
+    /// </summary>
     public int? MaxDepth
     {
       get { return _maxDepth; }
