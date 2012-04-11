@@ -1,5 +1,5 @@
 ﻿properties { 
-  $zipFileName = "Json45r1.zip"
+  $zipFileName = "Json45r2.zip"
   $majorVersion = "4.5"
   $majorWithReleaseVersion = "4.5.2"
   $version = GetVersion $majorWithReleaseVersion
