@@ -2,5 +2,6 @@
 [Oo]bj/
 [Ww]orking/
 TestResults/
+AppPackages/
 *.suo
 *.user
