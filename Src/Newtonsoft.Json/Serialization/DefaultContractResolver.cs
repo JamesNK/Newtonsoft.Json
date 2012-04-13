@@ -191,6 +191,10 @@ namespace Newtonsoft.Json.Serialization
 #if !NETFX_CORE
       DefaultMembersSearchFlags = BindingFlags.Public | BindingFlags.Instance;
 #endif
+#if !(SILVERLIGHT || NETFX_CORE)
+      IgnoreSerializableAttribute = true;
+#endif
+
       _sharedCache = shareCache;
     }
 

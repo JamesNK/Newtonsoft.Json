@@ -2283,6 +2283,65 @@ bye", reader.Value);
     }
 
     [Test]
+    public void MaxDepthDoesNotRecursivelyError()
+    {
+      string json = "[[[[]]],[[]]]";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json))
+      {
+        MaxDepth = 1
+      };
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(0, reader.Depth);
+
+      ExceptionAssert.Throws<JsonReaderException>(
+        "The reader's MaxDepth of 1 has been exceeded. Line 1, position 2.",
+        () =>
+        {
+          Assert.IsTrue(reader.Read());
+        });
+      Assert.AreEqual(1, reader.Depth);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(2, reader.Depth);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(3, reader.Depth);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(3, reader.Depth);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(2, reader.Depth);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(1, reader.Depth);
+
+      ExceptionAssert.Throws<JsonReaderException>(
+        "The reader's MaxDepth of 1 has been exceeded. Line 1, position 9.",
+        () =>
+        {
+          Assert.IsTrue(reader.Read());
+        });
+      Assert.AreEqual(1, reader.Depth);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(2, reader.Depth);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(2, reader.Depth);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(1, reader.Depth);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(0, reader.Depth);
+
+      Assert.IsFalse(reader.Read());
+    }
+
+    [Test]
     public void ReadingFromSlowStream()
     {
       string json = "[false, true, true, false, 'test!', 1.11, 0e-10, 0E-10, 0.25e-5, 0.3e10, 6.0221418e23, 'Purple\\r \\n monkey\\'s:\\tdishwasher']";

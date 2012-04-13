@@ -524,6 +524,10 @@ namespace Newtonsoft.Json.Tests.Schema
     public void GenerateSchemaSerializable()
     {
       JsonSchemaGenerator generator = new JsonSchemaGenerator();
+      generator.ContractResolver = new DefaultContractResolver
+        {
+          IgnoreSerializableAttribute = false
+        };
       generator.UndefinedSchemaIdHandling = UndefinedSchemaIdHandling.UseTypeName;
 
       JsonSchema schema = generator.Generate(typeof (Version), true);
@@ -559,6 +563,10 @@ namespace Newtonsoft.Json.Tests.Schema
 
       JTokenWriter jsonWriter = new JTokenWriter();
       JsonSerializer serializer = new JsonSerializer();
+      serializer.ContractResolver  = new DefaultContractResolver
+        {
+          IgnoreSerializableAttribute = false
+        };
       serializer.Serialize(jsonWriter, new Version(1, 2, 3, 4));
 
       List<string> errors = new List<string>();
@@ -573,7 +581,7 @@ namespace Newtonsoft.Json.Tests.Schema
   ""_Revision"": 4
 }", jsonWriter.Token.ToString());
 
-      Version version = jsonWriter.Token.ToObject<Version>();
+      Version version = jsonWriter.Token.ToObject<Version>(serializer);
       Assert.AreEqual(1, version.Major);
       Assert.AreEqual(2, version.Minor);
       Assert.AreEqual(3, version.Build);

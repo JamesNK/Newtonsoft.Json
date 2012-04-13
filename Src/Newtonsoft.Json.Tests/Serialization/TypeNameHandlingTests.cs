@@ -26,8 +26,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Runtime.Serialization.Formatters;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
 #if !NETFX_CORE
 using NUnit.Framework;
@@ -947,6 +949,59 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       //Check Round Trip
       Assert.AreEqual(e, f, "Objects should be equal after round trip json serialization");
+    }
+#endif
+
+#if !(NET20 || NET35)
+    [Test]
+    public void SerializationBinderWithFullName()
+    {
+      Message message = new Message
+        {
+          Address = "jamesnk@testtown.com",
+          Body = new Version(1, 2, 3, 4)
+        };
+
+      string json = JsonConvert.SerializeObject(message, Formatting.Indented, new JsonSerializerSettings
+        {
+          TypeNameHandling = TypeNameHandling.All,
+          TypeNameAssemblyFormat = FormatterAssemblyStyle.Full,
+          Binder = new MetroBinder(),
+          ContractResolver = new DefaultContractResolver
+            {
+#if !(SILVERLIGHT || NETFX_CORE)
+              IgnoreSerializableAttribute = true
+#endif
+            }
+        });
+
+      Assert.AreEqual(@"{
+  ""$type"": "":::MESSAGE:::, AssemblyName"",
+  ""Address"": ""jamesnk@testtown.com"",
+  ""Body"": {
+    ""$type"": "":::VERSION:::, AssemblyName"",
+    ""Major"": 1,
+    ""Minor"": 2,
+    ""Build"": 3,
+    ""Revision"": 4,
+    ""MajorRevision"": 0,
+    ""MinorRevision"": 4
+  }
+}", json);
+    }
+
+    public class MetroBinder : SerializationBinder
+    {
+      public override Type BindToType(string assemblyName, string typeName)
+      {
+        return null;
+      }
+
+      public override void BindToName(Type serializedType, out string assemblyName, out string typeName)
+      {
+        assemblyName = "AssemblyName";
+        typeName = ":::" + serializedType.Name.ToUpper(CultureInfo.InvariantCulture) + ":::";
+      }
     }
 #endif
   }

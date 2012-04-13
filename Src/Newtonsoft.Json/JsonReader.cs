@@ -110,6 +110,7 @@ namespace Newtonsoft.Json
     private CultureInfo _culture;
     private DateTimeZoneHandling _dateTimeZoneHandling;
     private int? _maxDepth;
+    private bool _hasExceededMaxDepth;
 
     /// <summary>
     /// Gets the current reader state.
@@ -258,8 +259,11 @@ namespace Newtonsoft.Json
         _currentPosition = state;
 
         // this is a little hacky because Depth increases when first property/value is written but only testing here is faster/simpler
-        if (_maxDepth != null && Depth + 1 > _maxDepth)
+        if (_maxDepth != null && Depth + 1 > _maxDepth && !_hasExceededMaxDepth)
+        {
+          _hasExceededMaxDepth = true;
           throw CreateReaderException(this, "The reader's MaxDepth of {0} has been exceeded.".FormatWith(CultureInfo.InvariantCulture, _maxDepth));
+        }
       }
     }
 
@@ -277,6 +281,9 @@ namespace Newtonsoft.Json
         oldPosition = _currentPosition;
         _currentPosition = new JsonPosition();
       }
+
+      if (_maxDepth != null && Depth <= _maxDepth)
+        _hasExceededMaxDepth = false;
 
       return oldPosition.Type;
     }

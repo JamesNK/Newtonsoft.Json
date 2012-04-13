@@ -186,7 +186,7 @@ namespace Newtonsoft.Json.Utilities
         case FormatterAssemblyStyle.Simple:
           return RemoveAssemblyDetails(fullyQualifiedTypeName);
         case FormatterAssemblyStyle.Full:
-          return t.AssemblyQualifiedName;
+          return fullyQualifiedTypeName;
         default:
           throw new ArgumentOutOfRangeException();
       }

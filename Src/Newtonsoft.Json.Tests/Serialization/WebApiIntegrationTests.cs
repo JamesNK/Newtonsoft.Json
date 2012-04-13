@@ -9,6 +9,7 @@ using NUnit.Framework;
 #if !(SILVERLIGHT || NETFX_CORE || NET20)
 using System.Runtime.Serialization.Json;
 #endif
+using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
@@ -39,7 +40,15 @@ namespace Newtonsoft.Json.Tests.Serialization
 #endif
 
       string expected = "{\"publicField\":\"public\",\"internalField\":\"internal\",\"protectedInternalField\":\"protected internal\",\"protectedField\":\"protected\",\"privateField\":\"private\"}";
-      string json = JsonConvert.SerializeObject(serializableType);
+      string json = JsonConvert.SerializeObject(serializableType, new JsonSerializerSettings
+        {
+          ContractResolver = new DefaultContractResolver
+            {
+#if !(SILVERLIGHT || NETFX_CORE)
+              IgnoreSerializableAttribute = false
+#endif
+            }
+        });
 
       Assert.AreEqual(expected, json);
     }
