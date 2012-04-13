@@ -1000,7 +1000,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       public override void BindToName(Type serializedType, out string assemblyName, out string typeName)
       {
         assemblyName = "AssemblyName";
-        typeName = ":::" + serializedType.Name.ToUpper(CultureInfo.InvariantCulture) + ":::";
+        typeName = ":::" + serializedType.Name.ToUpper() + ":::";
       }
     }
 #endif
