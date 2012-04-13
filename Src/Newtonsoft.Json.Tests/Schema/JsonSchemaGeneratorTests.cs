@@ -519,7 +519,7 @@ namespace Newtonsoft.Json.Tests.Schema
 }", json);
     }
 
-#if !SILVERLIGHT
+#if !(SILVERLIGHT || NETFX_CORE)
     [Test]
     public void GenerateSchemaSerializable()
     {

@@ -5,7 +5,13 @@ using System.IO;
 using System.Linq;
 #endif
 using System.Text;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
 #if !(SILVERLIGHT || NETFX_CORE || NET20)
 using System.Runtime.Serialization.Json;
 #endif
@@ -53,7 +59,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual(expected, json);
     }
 
-#if !SILVERLIGHT
+#if !(SILVERLIGHT || NETFX_CORE)
     [Test]
     public void SerializeInheritedType()
     {
