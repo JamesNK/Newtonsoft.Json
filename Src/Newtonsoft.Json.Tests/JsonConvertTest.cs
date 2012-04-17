@@ -751,5 +751,18 @@ now brown cow?", '"', true);
       Assert.AreEqual("Existing,Appended", p.Name);
     }
 #endif
+
+    [Test]
+    public void SerializeObjectDateTimeZoneHandling()
+    {
+      string json = JsonConvert.SerializeObject(
+        new DateTime(2000, 1, 1, 1, 1, 1, DateTimeKind.Unspecified),
+        new JsonSerializerSettings
+        {
+          DateTimeZoneHandling = DateTimeZoneHandling.Utc
+        });
+
+      Assert.AreEqual(@"""2000-01-01T01:01:01Z""", json);
+    }
   }
 }

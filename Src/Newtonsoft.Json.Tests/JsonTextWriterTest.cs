@@ -824,5 +824,19 @@ _____'propertyName': NaN
         }
       }
     }
+
+    [Test]
+    public void DateTimeZoneHandling()
+    {
+      StringWriter sw = new StringWriter();
+      JsonTextWriter writer = new JsonTextWriter(sw)
+        {
+          DateTimeZoneHandling = Json.DateTimeZoneHandling.Utc
+        };
+
+      writer.WriteValue(new DateTime(2000, 1, 1, 1, 1, 1, DateTimeKind.Unspecified));
+
+      Assert.AreEqual(@"""2000-01-01T01:01:01Z""", sw.ToString());
+    }
   }
 }

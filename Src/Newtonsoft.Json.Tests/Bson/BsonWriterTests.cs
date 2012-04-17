@@ -664,5 +664,21 @@ namespace Newtonsoft.Json.Tests.Bson
         }
       });
     }
+
+    [Test]
+    public void DateTimeZoneHandling()
+    {
+      MemoryStream ms = new MemoryStream();
+      JsonWriter writer = new BsonWriter(ms)
+      {
+        DateTimeZoneHandling = Json.DateTimeZoneHandling.Utc
+      };
+
+      writer.WriteStartArray();
+      writer.WriteValue(new DateTime(2000, 1, 1, 1, 1, 1, DateTimeKind.Unspecified));
+      writer.WriteEndArray();
+
+      Assert.AreEqual("10-00-00-00-09-30-00-C8-88-07-6B-DC-00-00-00-00", (BitConverter.ToString(ms.ToArray())));
+    }
   }
 }

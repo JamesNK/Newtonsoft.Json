@@ -436,9 +436,8 @@ namespace Newtonsoft.Json
     /// <param name="value">The <see cref="DateTime"/> value to write.</param>
     public override void WriteValue(DateTime value)
     {
-      
-
       base.WriteValue(value);
+      value = JsonConvert.EnsureDateTime(value, DateTimeZoneHandling);
       JsonConvert.WriteDateTimeString(_writer, value, DateFormatHandling);
     }
 

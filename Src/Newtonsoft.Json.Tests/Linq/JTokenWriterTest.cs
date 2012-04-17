@@ -174,5 +174,21 @@ namespace Newtonsoft.Json.Tests.Linq
   fail
 ]", writer.Token.ToString());
     }
+
+    [Test]
+    public void DateTimeZoneHandling()
+    {
+      JTokenWriter writer = new JTokenWriter
+      {
+        DateTimeZoneHandling = Json.DateTimeZoneHandling.Utc
+      };
+
+      writer.WriteValue(new DateTime(2000, 1, 1, 1, 1, 1, DateTimeKind.Unspecified));
+
+      JValue value = (JValue) writer.Token;
+      DateTime dt = (DateTime)value.Value;
+
+      Assert.AreEqual(new DateTime(2000, 1, 1, 1, 1, 1, DateTimeKind.Utc), dt);
+    }
   }
 }

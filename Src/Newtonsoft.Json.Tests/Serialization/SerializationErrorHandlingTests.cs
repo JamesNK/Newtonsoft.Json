@@ -338,6 +338,29 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual("[0] - 0 - Could not convert string to integer: a. Line 1, position 4.", errors[0]);
       Assert.AreEqual("[1] - 1 - Could not convert string to integer: b. Line 1, position 8.", errors[1]);
     }
+
+    [Test]
+    public void ErrorHandlingAndAvoidingRecursiveDepthError()
+    {
+      string json = "{'A':{'A':{'A':{'A':{'A':{}}}}}}";
+      JsonSerializer serializer = new JsonSerializer() { };
+      IList<string> errors = new List<string>();
+      serializer.Error += (sender, e) =>
+      {
+        e.ErrorContext.Handled = true;
+        errors.Add(e.ErrorContext.Path);
+      };
+
+      serializer.Deserialize<Nest>(new JsonTextReader(new StringReader(json)) { MaxDepth = 3 });
+
+      Assert.AreEqual(1, errors.Count);
+      Assert.AreEqual("A.A.A", errors[0]);
+    }
+
+    public class Nest
+    {
+      public Nest A { get; set; }
+    }
   }
 
   [JsonObject]
