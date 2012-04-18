@@ -182,7 +182,7 @@ namespace Newtonsoft.Json.Schema
       if (containerAttribute != null && !string.IsNullOrEmpty(containerAttribute.Description))
         return containerAttribute.Description;
 
-#if !PocketPC && !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       DescriptionAttribute descriptionAttribute = ReflectionUtils.GetAttribute<DescriptionAttribute>(type);
       if (descriptionAttribute != null)
         return descriptionAttribute.Description;
@@ -330,14 +330,14 @@ namespace Newtonsoft.Json.Schema
               }
             }
             break;
-#if !SILVERLIGHT && !PocketPC && !NETFX_CORE
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
           case JsonContractType.Serializable:
             CurrentSchema.Type = AddNullType(JsonSchemaType.Object, valueRequired);
             CurrentSchema.Id = GetTypeId(type, false);
             GenerateISerializableContract(type, (JsonISerializableContract) contract);
             break;
 #endif
-#if !(NET35 || NET20 || WINDOWS_PHONE)
+#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
           case JsonContractType.Dynamic:
 #endif
           case JsonContractType.Linq:
@@ -389,7 +389,7 @@ namespace Newtonsoft.Json.Schema
         CurrentSchema.AllowAdditionalProperties = false;
     }
 
-#if !SILVERLIGHT && !PocketPC && !NETFX_CORE
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
     private void GenerateISerializableContract(Type type, JsonISerializableContract contract)
     {
       CurrentSchema.AllowAdditionalProperties = true;
@@ -430,7 +430,7 @@ namespace Newtonsoft.Json.Schema
         case TypeCode.Empty:
         case TypeCode.Object:
           return schemaType | JsonSchemaType.String;
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
         case TypeCode.DBNull:
           return schemaType | JsonSchemaType.Null;
 #endif

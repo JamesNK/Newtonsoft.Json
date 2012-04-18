@@ -42,7 +42,7 @@ namespace Newtonsoft.Json.Serialization
 
       int IEqualityComparer<object>.GetHashCode(object obj)
       {
-#if !PocketPC && !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
         // put objects in a bucket based on their reference
         return RuntimeHelpers.GetHashCode(obj);
 #else

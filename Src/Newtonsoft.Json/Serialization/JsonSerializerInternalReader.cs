@@ -27,7 +27,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-#if !(NET35 || NET20 || WINDOWS_PHONE)
+#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
 using System.Dynamic;
 #endif
 using System.Globalization;
@@ -46,7 +46,7 @@ namespace Newtonsoft.Json.Serialization
   internal class JsonSerializerInternalReader : JsonSerializerInternalBase
   {
     private JsonSerializerProxy _internalSerializer;
-#if !SILVERLIGHT && !PocketPC && !NETFX_CORE
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
     private JsonFormatterConverter _formatterConverter;
 #endif
 
@@ -134,7 +134,7 @@ namespace Newtonsoft.Json.Serialization
       return _internalSerializer;
     }
 
-#if !SILVERLIGHT && !PocketPC && !NETFX_CORE
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
     private JsonFormatterConverter GetFormatterConverter()
     {
       if (_formatterConverter == null)
@@ -268,7 +268,7 @@ namespace Newtonsoft.Json.Serialization
             return constructorName;
           case JsonToken.Null:
           case JsonToken.Undefined:
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
             if (objectType == typeof (DBNull))
               return DBNull.Value;
 #endif
@@ -462,12 +462,12 @@ namespace Newtonsoft.Json.Serialization
             return CreateAndPopulateDictionary(reader, dictionaryContract, id);
 
           return PopulateDictionary(dictionaryContract.CreateWrapper(existingValue), reader, dictionaryContract, id);
-#if !(NET35 || NET20 || WINDOWS_PHONE)
+#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
         case JsonContractType.Dynamic:
           JsonDynamicContract dynamicContract = (JsonDynamicContract) contract;
           return CreateDynamic(reader, dynamicContract, id);
 #endif
-#if !SILVERLIGHT && !PocketPC && !NETFX_CORE
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
         case JsonContractType.Serializable:
           JsonISerializableContract serializableContract = (JsonISerializableContract) contract;
           return CreateISerializable(reader, serializableContract, id);
@@ -521,7 +521,7 @@ To force JSON arrays to deserialize add the JsonArrayAttribute to the type.".For
     private bool HasDefinedType(Type type)
     {
       return (type != null && type != typeof (object) && !typeof (JToken).IsSubclassOf(type)
-#if !(NET35 || NET20 || WINDOWS_PHONE)
+#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
         && type != typeof (IDynamicMetaObjectProvider)
 #endif
         );
@@ -824,7 +824,7 @@ To force JSON arrays to deserialize add the JsonArrayAttribute to the type.".For
       throw CreateSerializationException(reader, "Unexpected end when deserializing array.");
     }
 
-#if !SILVERLIGHT && !PocketPC && !NETFX_CORE
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
     private object CreateISerializable(JsonReader reader, JsonISerializableContract contract, string id)
     {
       Type objectType = contract.UnderlyingType;
@@ -875,7 +875,7 @@ To fix this error either change the environment to be fully trusted, change the 
     }
 #endif
 
-#if !(NET35 || NET20 || WINDOWS_PHONE)
+#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
     private object CreateDynamic(JsonReader reader, JsonDynamicContract contract, string id)
     {
       IDynamicMetaObjectProvider newObject = null;

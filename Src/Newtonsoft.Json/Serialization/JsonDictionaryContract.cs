@@ -105,7 +105,7 @@ namespace Newtonsoft.Json.Serialization
 
     internal IWrappedDictionary CreateWrapper(object dictionary)
     {
-#if !NETFX_CORE
+#if !(NETFX_CORE)
       if (dictionary is IDictionary && (DictionaryValueType == null || !_isDictionaryValueTypeNullableType))
         return new DictionaryWrapper<object, object>((IDictionary)dictionary);
 #endif

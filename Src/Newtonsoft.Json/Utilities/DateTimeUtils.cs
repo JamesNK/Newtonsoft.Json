@@ -15,14 +15,14 @@ namespace Newtonsoft.Json.Utilities
 
     public static TimeSpan GetUtcOffset(this DateTime d)
     {
-#if PocketPC || NET20
+#if NET20
       return TimeZone.CurrentTimeZone.GetUtcOffset(d);
 #else
       return TimeZoneInfo.Local.GetUtcOffset(d);
 #endif
     }
 
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
     public static XmlDateTimeSerializationMode ToSerializationMode(DateTimeKind kind)
     {
       switch (kind)

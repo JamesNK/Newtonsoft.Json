@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if (!SILVERLIGHT || WINDOWS_PHONE)
+#if (!(SILVERLIGHT || PORTABLE) || WINDOWS_PHONE)
 using System;
 using System.Collections.Generic;
 using System.Globalization;

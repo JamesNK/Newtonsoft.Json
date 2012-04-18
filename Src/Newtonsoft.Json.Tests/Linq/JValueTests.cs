@@ -69,7 +69,7 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual("Pie", v.Value);
       Assert.AreEqual(JTokenType.String, v.Type);
 
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       v.Value = DBNull.Value;
       Assert.AreEqual(DBNull.Value, v.Value);
       Assert.AreEqual(JTokenType.Null, v.Type);

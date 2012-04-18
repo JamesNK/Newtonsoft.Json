@@ -55,7 +55,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static MemberTypes MemberType(this MemberInfo memberInfo)
     {
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       return memberInfo.MemberType;
 #else
       if (memberInfo is PropertyInfo)
@@ -71,6 +71,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
     }
 
+#if !PORTABLE
     public static Module Module(this Type type)
     {
 #if !NETFX_CORE
@@ -79,6 +80,7 @@ namespace Newtonsoft.Json.Utilities
       return type.GetTypeInfo().Module;
 #endif
     }
+#endif
 
     public static bool ContainsGenericParameters(this Type type)
     {
@@ -152,6 +154,41 @@ namespace Newtonsoft.Json.Utilities
 #endif
     }
 
+#if PORTABLE
+    public static PropertyInfo GetProperty(this Type type, string name, BindingFlags bindingFlags, object placeholder1, Type propertyType, IList<Type> indexParameters, object placeholder2)
+    {
+      IList<PropertyInfo> propertyInfos = type.GetProperties(bindingFlags);
+
+      return propertyInfos.Where(p =>
+      {
+        if (name != null && name != p.Name)
+          return false;
+        if (propertyType != null && propertyType != p.PropertyType)
+          return false;
+        if (indexParameters != null)
+        {
+          if (!p.GetIndexParameters().Select(ip => ip.ParameterType).SequenceEqual(indexParameters))
+            return false;
+        }
+
+        return true;
+      }).SingleOrDefault();
+    }
+
+    public static IEnumerable<MemberInfo> GetMember(this Type type, string name, MemberTypes memberType, BindingFlags bindingFlags)
+    {
+      return type.GetMembers(bindingFlags).Where(m =>
+        {
+          if (name != null && name != m.Name)
+            return false;
+          if (m.MemberType() != memberType)
+            return false;
+
+          return true;
+        });
+    }
+#endif
+
 #if NETFX_CORE
     public static bool IsDefined(this Type type, Type attributeType, bool inherit)
     {
@@ -166,39 +203,6 @@ namespace Newtonsoft.Json.Utilities
     public static MethodInfo GetMethod(this Type type, string name, BindingFlags bindingFlags)
     {
       return type.GetTypeInfo().GetDeclaredMethod(name);
-    }
-
-    public static PropertyInfo GetProperty(this Type type, string name, BindingFlags bindingFlags, object placeholder1, Type propertyType, IList<Type> indexParameters, object placeholder2)
-    {
-      return type.GetTypeInfo().DeclaredProperties.Where(p =>
-        {
-          if (name != null && name != p.Name)
-            return false;
-          if (propertyType != null && propertyType != p.PropertyType)
-            return false;
-          if (indexParameters != null)
-          {
-            if (!p.GetIndexParameters().Select(ip => ip.ParameterType).SequenceEqual(indexParameters))
-              return false;
-          }
-
-          return true;
-        }).SingleOrDefault();
-    }
-
-    public static IEnumerable<MemberInfo> GetMember(this Type type, string name, MemberTypes memberType, BindingFlags bindingFlags)
-    {
-      return type.GetTypeInfo().GetMembersRecursive().Where(m =>
-        {
-          if (name != null && name != m.Name)
-            return false;
-          if (m.MemberType() != memberType)
-            return false;
-          if (!TestAccessibility(m, bindingFlags))
-            return false;
-
-          return true;
-        });
     }
 
     public static MethodInfo GetMethod(this Type type, IList<Type> parameterTypes)
@@ -223,6 +227,39 @@ namespace Newtonsoft.Json.Utilities
 
         return m.GetParameters().Select(p => p.ParameterType).SequenceEqual(parameterTypes);
       }).SingleOrDefault();
+    }
+
+    public static PropertyInfo GetProperty(this Type type, string name, BindingFlags bindingFlags, object placeholder1, Type propertyType, IList<Type> indexParameters, object placeholder2)
+    {
+      return type.GetTypeInfo().DeclaredProperties.Where(p =>
+      {
+        if (name != null && name != p.Name)
+          return false;
+        if (propertyType != null && propertyType != p.PropertyType)
+          return false;
+        if (indexParameters != null)
+        {
+          if (!p.GetIndexParameters().Select(ip => ip.ParameterType).SequenceEqual(indexParameters))
+            return false;
+        }
+
+        return true;
+      }).SingleOrDefault();
+    }
+
+    public static IEnumerable<MemberInfo> GetMember(this Type type, string name, MemberTypes memberType, BindingFlags bindingFlags)
+    {
+      return type.GetTypeInfo().GetMembersRecursive().Where(m =>
+      {
+        if (name != null && name != m.Name)
+          return false;
+        if (m.MemberType() != memberType)
+          return false;
+        if (!TestAccessibility(m, bindingFlags))
+          return false;
+
+        return true;
+      });
     }
 
     public static IEnumerable<ConstructorInfo> GetConstructors(this Type type)

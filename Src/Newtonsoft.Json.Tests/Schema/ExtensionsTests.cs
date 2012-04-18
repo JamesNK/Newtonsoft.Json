@@ -202,7 +202,7 @@ namespace Newtonsoft.Json.Tests.Schema
 #if !NET20 && !PocketPC
       GenerateSchemaAndSerializeFromType(new NullableDateTimeTestClass());
 #endif
-#if !(SILVERLIGHT || NETFX_CORE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
       GenerateSchemaAndSerializeFromType(new DataSet());
 #endif
       GenerateSchemaAndSerializeFromType(new object());
@@ -210,7 +210,7 @@ namespace Newtonsoft.Json.Tests.Schema
       GenerateSchemaAndSerializeFromType("Hi");
       GenerateSchemaAndSerializeFromType(new DateTime(2000, 12, 29, 23, 59, 0, DateTimeKind.Utc));
       GenerateSchemaAndSerializeFromType(TimeSpan.FromTicks(1000000));
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       GenerateSchemaAndSerializeFromType(DBNull.Value);
 #endif
       GenerateSchemaAndSerializeFromType(new JsonPropertyWithHandlingValues());

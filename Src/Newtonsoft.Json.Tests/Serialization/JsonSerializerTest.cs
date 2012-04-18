@@ -688,7 +688,7 @@ keyword such as type of business.""
       string json = JsonConvert.SerializeObject(new ConverableMembers(), Formatting.Indented);
 
       string expected = null;
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       expected = @"{
   ""String"": ""string"",
   ""Int32"": 2147483647,
@@ -728,7 +728,7 @@ keyword such as type of business.""
       ConverableMembers c = JsonConvert.DeserializeObject<ConverableMembers>(json);
       Assert.AreEqual("string", c.String);
       Assert.AreEqual(double.MaxValue, c.Double);
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       Assert.AreEqual(DBNull.Value, c.DBNull);
 #endif
     }
@@ -1471,7 +1471,7 @@ keyword such as type of business.""
       Assert.AreEqual("titleId", n.FidOrder[n.FidOrder.Count - 1]);
     }
 
-#if !SILVERLIGHT && !PocketPC && !NET20 && !NETFX_CORE
+#if !(SILVERLIGHT || NET20 || NETFX_CORE || PORTABLE)
     [MetadataType(typeof (OptInClassMetadata))]
     public class OptInClass
     {
@@ -2036,7 +2036,7 @@ To force JSON objects to deserialize add the JsonObjectAttribute to the type. Li
       {
         ContractResolver = new DefaultContractResolver
           {
-#if !(SILVERLIGHT || NETFX_CORE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
             IgnoreSerializableAttribute = true
 #endif
           }
@@ -2054,11 +2054,11 @@ To force JSON objects to deserialize add the JsonObjectAttribute to the type. Li
       JsonConvert.DeserializeObject<MemoryStream>("{ReadTimeout:0}", new JsonSerializerSettings
         {
         ContractResolver = new DefaultContractResolver
-          {
-#if !(SILVERLIGHT || NETFX_CORE)
+        {
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
             IgnoreSerializableAttribute = true
 #endif
-          }
+        }
         });
     }
 
@@ -2073,11 +2073,11 @@ To force JSON objects to deserialize add the JsonObjectAttribute to the type. Li
       JsonConvert.DeserializeObject<MemoryStream>("{ReadTimeout:''}", new JsonSerializerSettings
       {
         ContractResolver = new DefaultContractResolver
-          {
-#if !(SILVERLIGHT || NETFX_CORE)
+        {
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
             IgnoreSerializableAttribute = true
 #endif
-          }
+        }
       });
     }
 
@@ -2092,11 +2092,11 @@ To force JSON objects to deserialize add the JsonObjectAttribute to the type. Li
       JsonConvert.DeserializeObject<MemoryStream>("{ReadTimeout:null}", new JsonSerializerSettings
       {
         ContractResolver = new DefaultContractResolver
-          {
-#if !(SILVERLIGHT || NETFX_CORE)
+        {
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
             IgnoreSerializableAttribute = true
 #endif
-          }
+        }
       });
     }
 
@@ -2751,7 +2751,7 @@ To force JSON objects to deserialize add the JsonObjectAttribute to the type. Li
       Assert.AreEqual("value", newModelStateDictionary["key"]);
     }
 
-#if !SILVERLIGHT && !PocketPC && !NETFX_CORE
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
     public class ISerializableTestObject : ISerializable
     {
       internal string _stringValue;
@@ -3243,7 +3243,7 @@ To fix this error either change the environment to be fully trusted, change the 
     }
 #endif
 
-#if !NET20 && !SILVERLIGHT
+#if !(NET20 || SILVERLIGHT || PORTABLE)
     [Test]
     public void SerializeDeserializeXNodeProperties()
     {
@@ -3274,7 +3274,7 @@ To fix this error either change the environment to be fully trusted, change the 
     }
 #endif
 
-#if !SILVERLIGHT && !NETFX_CORE
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
     [Test]
     public void SerializeDeserializeXmlNodeProperties()
     {
@@ -4150,7 +4150,7 @@ To fix this error either change the environment to be fully trusted, change the 
 }", json);
     }
 
-#if !(NET35 || NET20 || WINDOWS_PHONE)
+#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
     [Test]
     public void SerializeExpandoObject()
     {
@@ -5118,7 +5118,7 @@ To fix this error either change the environment to be fully trusted, change the 
       }
     }
 
-#if !(SILVERLIGHT || WINDOWS_PHONE || NETFX_CORE)
+#if !(SILVERLIGHT || WINDOWS_PHONE || NETFX_CORE || PORTABLE)
     [Test]
     public void SerializeException1()
     {
@@ -5248,7 +5248,7 @@ To fix this error either change the environment to be fully trusted, change the 
       }
     }
 
-#if !(NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE)
+#if !(NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE)
     [Test]
     public void DeserializeConcurrentDictionary()
     {
@@ -5845,7 +5845,7 @@ Parameter name: value"
           Converters = { new MetroStringConverter() },
           Formatting = Formatting.Indented
         });
-      Assert.AreEqual(metroJson, @"{
+      Assert.AreEqual(@"{
   "":::NAME:::"": "":::APPLE:::"",
   "":::EXPIRYDATE:::"": ""2012-04-01T00:00:00"",
   "":::PRICE:::"": 3.99,
@@ -5854,7 +5854,7 @@ Parameter name: value"
     "":::MEDIUM:::"",
     "":::LARGE:::""
   ]
-}");
+}", metroJson);
       //{
       //  ":::NAME:::": ":::APPLE:::",
       //  ":::EXPIRYDATE:::": "2012-04-01T00:00:00",
@@ -5864,11 +5864,6 @@ Parameter name: value"
 
       Color[] colors = new []{ Color.Blue, Color.Red, Color.Yellow, Color.Green, Color.Black, Color.Brown };
 
-      string json1 = JsonConvert.SerializeObject(colors);
-      //[":::GRAY:::", ":::GRAY:::", ":::GRAY:::", ":::GRAY:::", ":::BLACK:::", ":::GRAY:::"]
-
-      Assert.AreEqual(json1, @"[""Blue"",""Red"",""Yellow"",""Green"",""Black"",""Brown""]");
-
       string json2 = JsonConvert.SerializeObject(colors, new JsonSerializerSettings
       {
         ContractResolver = new MetroPropertyNameResolver(),
@@ -5876,14 +5871,14 @@ Parameter name: value"
         Formatting = Formatting.Indented
       });
       
-      Assert.AreEqual(json2, @"[
+      Assert.AreEqual(@"[
   "":::GRAY:::"",
   "":::GRAY:::"",
   "":::GRAY:::"",
   "":::GRAY:::"",
   "":::BLACK:::"",
   "":::GRAY:::""
-]");
+]", json2);
     }
 
     public class MetroStringConverter : JsonConverter
@@ -5933,6 +5928,32 @@ Parameter name: value"
       }
     }
 #endif
+
+    private class FooBar
+    {
+      public DateTimeOffset Foo { get; set; }
+    }
+
+    [Test]
+    public void TokenFromBson()
+    {
+      MemoryStream ms = new MemoryStream();
+      BsonWriter writer = new BsonWriter(ms);
+      writer.WriteStartArray();
+      writer.WriteValue("2000-01-02T03:04:05+06:00");
+      writer.WriteEndArray();
+
+      byte[] data = ms.ToArray();
+      BsonReader reader = new BsonReader(new MemoryStream(data))
+        {
+          ReadRootValueAsArray = true
+        };
+
+      JArray a = (JArray)JArray.ReadFrom(reader);
+      JValue v = (JValue)a[0];
+      Console.WriteLine(v.Value.GetType());
+      Console.WriteLine(a.ToString());
+    }
   }
 
   public class PersonWithPrivateConstructor

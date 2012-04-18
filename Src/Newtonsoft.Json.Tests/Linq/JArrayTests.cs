@@ -424,7 +424,7 @@ Parameter name: index"
     }
 
     
-#if !SILVERLIGHT && !NETFX_CORE
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
     [Test]
     public void ITypedListGetItemProperties()
     {

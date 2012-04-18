@@ -29,7 +29,7 @@ namespace Newtonsoft.Json.Tests.Converters
       public byte[] NullByteArray { get; set; }
     }
 
-#if !SILVERLIGHT && !PocketPC && !NET20 && !NETFX_CORE
+#if !(SILVERLIGHT || NET20 || NETFX_CORE || PORTABLE)
     [Test]
     public void DeserializeBinaryClass()
     {
@@ -87,7 +87,7 @@ namespace Newtonsoft.Json.Tests.Converters
       byteArrayClass.ByteArray = TestData;
       byteArrayClass.NullByteArray = null;
 
-      string json = JsonConvert.SerializeObject(byteArrayClass, Formatting.Indented, new BinaryConverter());
+      string json = JsonConvert.SerializeObject(byteArrayClass, Formatting.Indented);
 
       Assert.AreEqual(@"{
   ""ByteArray"": ""VGhpcyBpcyBzb21lIHRlc3QgZGF0YSEhIQ=="",
@@ -95,7 +95,7 @@ namespace Newtonsoft.Json.Tests.Converters
 }", json);
     }
 
-#if !(SILVERLIGHT || NETFX_CORE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
     public class SqlBinaryClass
     {
       public SqlBinary SqlBinary { get; set; }
@@ -145,7 +145,7 @@ namespace Newtonsoft.Json.Tests.Converters
   ""NullByteArray"": null
 }";
 
-      ByteArrayClass byteArrayClass = JsonConvert.DeserializeObject<ByteArrayClass>(json, new BinaryConverter());
+      ByteArrayClass byteArrayClass = JsonConvert.DeserializeObject<ByteArrayClass>(json);
 
       CollectionAssert.AreEquivalent(TestData, byteArrayClass.ByteArray);
       Assert.AreEqual(null, byteArrayClass.NullByteArray);

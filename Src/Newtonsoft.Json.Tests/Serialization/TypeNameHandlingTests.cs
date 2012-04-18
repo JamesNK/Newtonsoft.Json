@@ -23,6 +23,10 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if PORTABLE
+extern alias NewtonsoftJson;
+using FormatterAssemblyStyle = NewtonsoftJson::System.Runtime.Serialization.Formatters.FormatterAssemblyStyle;
+#endif
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -135,7 +139,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual("Name!", ((EmployeeReference)employee).Name);
     }
 
-#if !SILVERLIGHT && !PocketPC && !NETFX_CORE
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
     [Test]
     public void DeserializeTypeNameFromGacAssembly()
     {
@@ -969,7 +973,7 @@ namespace Newtonsoft.Json.Tests.Serialization
           Binder = new MetroBinder(),
           ContractResolver = new DefaultContractResolver
             {
-#if !(SILVERLIGHT || NETFX_CORE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
               IgnoreSerializableAttribute = true
 #endif
             }

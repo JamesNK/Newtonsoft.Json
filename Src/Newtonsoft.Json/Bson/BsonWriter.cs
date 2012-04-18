@@ -357,7 +357,7 @@ namespace Newtonsoft.Json.Bson
     {
       base.WriteValue(value);
       string s = null;
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       s = value.ToString(CultureInfo.InvariantCulture);
 #else
       s = value.ToString();

@@ -25,7 +25,9 @@
 
 using System;
 using System.Collections.Generic;
+#if !PORTABLE
 using System.Collections.Specialized;
+#endif
 using System.Threading;
 using Newtonsoft.Json.Utilities;
 using System.Collections;
@@ -43,16 +45,17 @@ namespace Newtonsoft.Json.Linq
   /// Represents a token that can contain other tokens.
   /// </summary>
   public abstract class JContainer : JToken, IList<JToken>
-#if !(SILVERLIGHT || NETFX_CORE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
     , ITypedList, IBindingList
-#else
-    , IList, INotifyCollectionChanged
+#elif !PORTABLE
+    , INotifyCollectionChanged
 #endif
-#if !(SILVERLIGHT || NET20 || NET35 || NETFX_CORE)
+    , IList
+#if !(SILVERLIGHT || NET20 || NET35 || NETFX_CORE || PORTABLE)
     , INotifyCollectionChanged
 #endif
   {
-#if !SILVERLIGHT && !NETFX_CORE
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
     /// <summary>
     /// Occurs when the list changes or an item in the list changes.
     /// </summary>
@@ -63,7 +66,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     public event AddingNewEventHandler AddingNew;
 #endif
-#if SILVERLIGHT || !(NET20 || NET35)
+#if SILVERLIGHT || !(NET20 || NET35 || PORTABLE)
     /// <summary>
     /// Occurs when the items list of the collection has changed, or the collection is reset.
     /// </summary>
@@ -99,7 +102,7 @@ namespace Newtonsoft.Json.Linq
         throw new InvalidOperationException("Cannot change {0} during a collection change event.".FormatWith(CultureInfo.InvariantCulture, GetType()));
     }
 
- #if !SILVERLIGHT && !NETFX_CORE
+ #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
     /// <summary>
     /// Raises the <see cref="AddingNew"/> event.
     /// </summary>
@@ -133,7 +136,7 @@ namespace Newtonsoft.Json.Linq
       }
     }
 #endif
-#if SILVERLIGHT || !(NET20 || NET35)
+#if SILVERLIGHT || !(NET20 || NET35 || PORTABLE)
     /// <summary>
     /// Raises the <see cref="CollectionChanged"/> event.
     /// </summary>
@@ -326,11 +329,11 @@ namespace Newtonsoft.Json.Linq
       
       ChildrenTokens.Insert(index, item);
 
-#if !SILVERLIGHT && !NETFX_CORE
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
       if (ListChanged != null)
         OnListChanged(new ListChangedEventArgs(ListChangedType.ItemAdded, index));
 #endif
-#if SILVERLIGHT || !(NET20 || NET35)
+#if SILVERLIGHT || !(NET20 || NET35 || PORTABLE)
       if (CollectionChanged != null)
         OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
 #endif
@@ -360,10 +363,10 @@ namespace Newtonsoft.Json.Linq
 
       ChildrenTokens.RemoveAt(index);
 
-#if !SILVERLIGHT && !NETFX_CORE
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
       OnListChanged(new ListChangedEventArgs(ListChangedType.ItemDeleted, index));
 #endif
-#if SILVERLIGHT || !(NET20 || NET35)
+#if SILVERLIGHT || !(NET20 || NET35 || PORTABLE)
       OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
 #endif
     }
@@ -422,10 +425,10 @@ namespace Newtonsoft.Json.Linq
       existing.Previous = null;
       existing.Next = null;
 
-#if !SILVERLIGHT && !NETFX_CORE
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
       OnListChanged(new ListChangedEventArgs(ListChangedType.ItemChanged, index));
 #endif
-#if SILVERLIGHT || !(NET20 || NET35)
+#if SILVERLIGHT || !(NET20 || NET35 || PORTABLE)
       OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, item, existing, index));
 #endif
     }
@@ -443,10 +446,10 @@ namespace Newtonsoft.Json.Linq
 
       ChildrenTokens.Clear();
 
-#if !SILVERLIGHT && !NETFX_CORE
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
       OnListChanged(new ListChangedEventArgs(ListChangedType.Reset, -1));
 #endif
-#if SILVERLIGHT || !(NET20 || NET35)
+#if SILVERLIGHT || !(NET20 || NET35 || PORTABLE)
       OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 #endif
     }
@@ -715,7 +718,7 @@ namespace Newtonsoft.Json.Linq
       return hashCode;
     }
 
-#if !SILVERLIGHT && !NETFX_CORE
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
     string ITypedList.GetListName(PropertyDescriptor[] listAccessors)
     {
       return string.Empty;
@@ -894,7 +897,7 @@ namespace Newtonsoft.Json.Linq
 
     #region IBindingList Members
 
-#if !SILVERLIGHT && !NETFX_CORE
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
     void IBindingList.AddIndex(PropertyDescriptor property)
     {
     }

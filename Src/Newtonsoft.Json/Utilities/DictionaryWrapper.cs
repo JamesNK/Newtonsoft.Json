@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace Newtonsoft.Json.Utilities
 {
-#if NETFX_CORE
+#if (NETFX_CORE)
   internal interface IDictionary : ICollection
   {
     object this[object key] { get; set; }
@@ -85,7 +85,7 @@ namespace Newtonsoft.Json.Utilities
         _dictionary.Add(key, value);
       else
 #endif
-        _genericDictionary.Add(key, value);
+      _genericDictionary.Add(key, value);
     }
 
     public bool ContainsKey(TKey key)
@@ -95,7 +95,7 @@ namespace Newtonsoft.Json.Utilities
         return _dictionary.Contains(key);
       else
 #endif
-        return _genericDictionary.ContainsKey(key);
+      return _genericDictionary.ContainsKey(key);
     }
 
     public ICollection<TKey> Keys
@@ -107,7 +107,7 @@ namespace Newtonsoft.Json.Utilities
           return _dictionary.Keys.Cast<TKey>().ToList();
         else
 #endif
-          return _genericDictionary.Keys;
+        return _genericDictionary.Keys;
       }
     }
 
@@ -182,7 +182,7 @@ namespace Newtonsoft.Json.Utilities
           _dictionary[key] = value;
         else
 #endif
-          _genericDictionary[key] = value;
+        _genericDictionary[key] = value;
       }
     }
 
@@ -193,7 +193,7 @@ namespace Newtonsoft.Json.Utilities
         ((IList)_dictionary).Add(item);
       else
 #endif
-        _genericDictionary.Add(item);
+      _genericDictionary.Add(item);
     }
 
     public void Clear()
@@ -203,7 +203,7 @@ namespace Newtonsoft.Json.Utilities
         _dictionary.Clear();
       else
 #endif
-        _genericDictionary.Clear();
+      _genericDictionary.Clear();
     }
 
     public bool Contains(KeyValuePair<TKey, TValue> item)
@@ -213,7 +213,7 @@ namespace Newtonsoft.Json.Utilities
         return ((IList)_dictionary).Contains(item);
       else
 #endif
-        return _genericDictionary.Contains(item);
+      return _genericDictionary.Contains(item);
     }
 
     public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
@@ -242,7 +242,7 @@ namespace Newtonsoft.Json.Utilities
           return _dictionary.Count;
         else
 #endif
-          return _genericDictionary.Count;
+        return _genericDictionary.Count;
       }
     }
 
@@ -255,7 +255,7 @@ namespace Newtonsoft.Json.Utilities
           return _dictionary.IsReadOnly;
         else
 #endif
-          return _genericDictionary.IsReadOnly;
+        return _genericDictionary.IsReadOnly;
       }
     }
 
@@ -297,7 +297,7 @@ namespace Newtonsoft.Json.Utilities
         return _dictionary.Cast<DictionaryEntry>().Select(de => new KeyValuePair<TKey, TValue>((TKey)de.Key, (TValue)de.Value)).GetEnumerator();
       else
 #endif
-        return _genericDictionary.GetEnumerator();
+      return _genericDictionary.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
@@ -312,7 +312,7 @@ namespace Newtonsoft.Json.Utilities
         _dictionary.Add(key, value);
       else
 #endif
-        _genericDictionary.Add((TKey)key, (TValue)value);
+      _genericDictionary.Add((TKey)key, (TValue)value);
     }
 
     object IDictionary.this[object key]
@@ -324,7 +324,7 @@ namespace Newtonsoft.Json.Utilities
           return _dictionary[key];
         else
 #endif
-          return _genericDictionary[(TKey)key];
+        return _genericDictionary[(TKey)key];
       }
       set
       {
@@ -333,7 +333,7 @@ namespace Newtonsoft.Json.Utilities
           _dictionary[key] = value;
         else
 #endif
-          _genericDictionary[(TKey)key] = (TValue)value;
+        _genericDictionary[(TKey)key] = (TValue)value;
       }
     }
 
@@ -385,7 +385,7 @@ namespace Newtonsoft.Json.Utilities
         return _dictionary.GetEnumerator();
       else
 #endif
-        return new DictionaryEnumerator<TKey, TValue>(_genericDictionary.GetEnumerator());
+      return new DictionaryEnumerator<TKey, TValue>(_genericDictionary.GetEnumerator());
     }
 
 #if !NETFX_CORE
@@ -427,7 +427,7 @@ namespace Newtonsoft.Json.Utilities
         _dictionary.Remove(key);
       else
 #endif
-        _genericDictionary.Remove((TKey)key);
+      _genericDictionary.Remove((TKey)key);
     }
 
 #if !NETFX_CORE
@@ -450,7 +450,7 @@ namespace Newtonsoft.Json.Utilities
         _dictionary.CopyTo(array, index);
       else
 #endif
-        _genericDictionary.CopyTo((KeyValuePair<TKey, TValue>[])array, index);
+      _genericDictionary.CopyTo((KeyValuePair<TKey, TValue>[])array, index);
     }
 
     bool ICollection.IsSynchronized
@@ -462,7 +462,7 @@ namespace Newtonsoft.Json.Utilities
           return _dictionary.IsSynchronized;
         else
 #endif
-          return false;
+        return false;
       }
     }
 
@@ -486,7 +486,7 @@ namespace Newtonsoft.Json.Utilities
           return _dictionary;
         else
 #endif
-          return _genericDictionary;
+        return _genericDictionary;
       }
     }
   }

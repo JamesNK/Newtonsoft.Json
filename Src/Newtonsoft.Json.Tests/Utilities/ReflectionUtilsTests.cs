@@ -1,4 +1,8 @@
-﻿using System;
+﻿#if PORTABLE
+extern alias NewtonsoftJson;
+using FormatterAssemblyStyle = NewtonsoftJson::System.Runtime.Serialization.Formatters.FormatterAssemblyStyle;
+#endif
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters;
 #if !NETFX_CORE

@@ -1,4 +1,4 @@
-﻿#if !(NET35 || NET20)
+﻿#if !(NET35 || NET20 || PORTABLE)
 using System;
 using System.Collections.Generic;
 using System.Dynamic;

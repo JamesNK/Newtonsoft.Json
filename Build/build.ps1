@@ -17,6 +17,7 @@
   $workingDir = "$baseDir\Working"
   $builds = @(
     @{Name = "Newtonsoft.Json"; TestsName = "Newtonsoft.Json.Tests"; Constants=""; FinalDir="Net40"; NuGetDir = "net40"; Framework="net-4.0"; Sign=$true},
+    @{Name = "Newtonsoft.Json.Portable"; TestsName = "Newtonsoft.Json.Tests.Portable"; Constants="PORTABLE"; FinalDir="Portable"; NuGetDir = $null; Framework="net-4.0"; Sign=$true},
     @{Name = "Newtonsoft.Json.Metro"; TestsName = $null; Constants="NETFX_CORE"; FinalDir="Metro"; NuGetDir = "winrt45"; Framework="net-4.5"; Sign=$true},
     
     # unsigned SL/WP

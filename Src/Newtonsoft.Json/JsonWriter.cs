@@ -1212,7 +1212,7 @@ namespace Newtonsoft.Json
           case TypeCode.Decimal:
             WriteValue(convertible.ToDecimal(CultureInfo.InvariantCulture));
             return;
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
           case TypeCode.DBNull:
             WriteNull();
             return;

@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !PocketPC && !SILVERLIGHT
+#if !(SILVERLIGHT || PORTABLE)
 using System;
 using System.Reflection;
 #if !NETFX_CORE

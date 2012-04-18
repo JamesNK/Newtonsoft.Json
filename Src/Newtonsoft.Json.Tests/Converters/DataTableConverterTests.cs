@@ -1,4 +1,4 @@
-﻿#if !(SILVERLIGHT || NETFX_CORE)
+﻿#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
 using System;
 #if !NETFX_CORE
 using NUnit.Framework;

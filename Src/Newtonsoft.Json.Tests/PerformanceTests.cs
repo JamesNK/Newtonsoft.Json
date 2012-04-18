@@ -1,4 +1,4 @@
-﻿#if !SILVERLIGHT && !PocketPC && !NET20 && !NET35 && !NETFX_CORE
+﻿#if !(SILVERLIGHT || PocketPC || NET20 || NET35 || NETFX_CORE || PORTABLE)
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -40,8 +40,8 @@ namespace Newtonsoft.Json.Tests
   [TestFixture]
   public class PerformanceTests : TestFixtureBase
   {
-    //private const int Iterations = 100;
-    private const int Iterations = 5000;
+    private const int Iterations = 100;
+    //private const int Iterations = 5000;
 
 #region Data
 

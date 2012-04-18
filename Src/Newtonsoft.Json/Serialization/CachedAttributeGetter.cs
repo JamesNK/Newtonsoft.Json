@@ -26,7 +26,7 @@
 using System;
 using System.Reflection;
 using Newtonsoft.Json.Utilities;
-#if NETFX_CORE
+#if NETFX_CORE || PORTABLE
 using ICustomAttributeProvider = Newtonsoft.Json.Utilities.CustomAttributeProvider;
 #endif
 

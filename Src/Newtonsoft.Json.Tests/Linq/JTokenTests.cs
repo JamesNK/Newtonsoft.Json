@@ -708,7 +708,7 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.IsTrue(a.DeepEquals(a2));
     }
 
-#if !SILVERLIGHT && !NETFX_CORE
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
     [Test]
     public void Clone()
     {

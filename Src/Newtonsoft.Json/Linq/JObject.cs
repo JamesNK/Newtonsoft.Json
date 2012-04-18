@@ -26,9 +26,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+#if !PORTABLE
 using System.Collections.Specialized;
+#endif
 using System.ComponentModel;
-#if !(NET35 || NET20 || WINDOWS_PHONE)
+#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
 using System.Dynamic;
 using System.Linq.Expressions;
 #endif
@@ -47,10 +49,10 @@ namespace Newtonsoft.Json.Linq
   /// Represents a JSON object.
   /// </summary>
   public class JObject : JContainer, IDictionary<string, JToken>, INotifyPropertyChanged
-#if !(PocketPC || SILVERLIGHT || NETFX_CORE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
     , ICustomTypeDescriptor
 #endif
-#if !(PocketPC || SILVERLIGHT || NET20 || NETFX_CORE)
+#if !(SILVERLIGHT || NET20 || NETFX_CORE || PORTABLE)
     , INotifyPropertyChanging
 #endif
   {
@@ -70,7 +72,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     public event PropertyChangedEventHandler PropertyChanged;
 
-#if !(PocketPC || SILVERLIGHT || NET20 || NETFX_CORE)
+#if !(SILVERLIGHT || NET20 || NETFX_CORE || PORTABLE)
     /// <summary>
     /// Occurs when a property value is changing.
     /// </summary>
@@ -153,17 +155,17 @@ namespace Newtonsoft.Json.Linq
     internal void InternalPropertyChanged(JProperty childProperty)
     {
       OnPropertyChanged(childProperty.Name);
-#if !SILVERLIGHT && !NETFX_CORE
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
       OnListChanged(new ListChangedEventArgs(ListChangedType.ItemChanged, IndexOfItem(childProperty)));
 #endif
-#if SILVERLIGHT || !(NET20 || NET35)
+#if SILVERLIGHT || !(NET20 || NET35 || PORTABLE)
       OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, childProperty, childProperty, IndexOfItem(childProperty)));
 #endif
     }
 
     internal void InternalPropertyChanging(JProperty childProperty)
     {
-#if !PocketPC && !SILVERLIGHT && !NET20 && !NETFX_CORE
+#if !(SILVERLIGHT || NET20 || NETFX_CORE || PORTABLE)
       OnPropertyChanging(childProperty.Name);
 #endif
     }
@@ -266,7 +268,7 @@ namespace Newtonsoft.Json.Linq
         }
         else
         {
-#if !PocketPC && !SILVERLIGHT && !NET20 && !NETFX_CORE
+#if !(SILVERLIGHT || NET20 || NETFX_CORE || PORTABLE)
           OnPropertyChanging(propertyName);
 #endif
           Add(new JProperty(propertyName, value));
@@ -517,7 +519,7 @@ namespace Newtonsoft.Json.Linq
         PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
     }
 
-#if !PocketPC && !SILVERLIGHT && !NET20 && !NETFX_CORE
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || NET20)
     /// <summary>
     /// Raises the <see cref="PropertyChanging"/> event with the provided arguments.
     /// </summary>
@@ -529,7 +531,7 @@ namespace Newtonsoft.Json.Linq
     }
 #endif
 
-#if !PocketPC && !SILVERLIGHT && !NETFX_CORE
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
     // include custom type descriptor on JObject rather than use a provider because the properties are specific to a type
     #region ICustomTypeDescriptor
     /// <summary>
@@ -688,7 +690,7 @@ namespace Newtonsoft.Json.Linq
     #endregion
 #endif
 
-#if !(NET35 || NET20 || WINDOWS_PHONE)
+#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
     /// <summary>
     /// Returns the <see cref="T:System.Dynamic.DynamicMetaObject"/> responsible for binding operations performed on this object.
     /// </summary>

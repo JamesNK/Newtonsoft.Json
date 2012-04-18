@@ -26,14 +26,14 @@
 using System;
 using System.IO;
 using System.Globalization;
-#if !(NET20 || NET35 || SILVERLIGHT)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
 using System.Threading.Tasks;
 #endif
 using Newtonsoft.Json.Utilities;
 using System.Xml;
 using Newtonsoft.Json.Converters;
 using System.Text;
-#if !NET20 && (!SILVERLIGHT || WINDOWS_PHONE)
+#if !NET20 && (!SILVERLIGHT || WINDOWS_PHONE) && !PORTABLE
 using System.Xml.Linq;
 #endif
 #if NETFX_CORE
@@ -485,7 +485,7 @@ namespace Newtonsoft.Json
     {
       string text = null;
 
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       text = value.ToString("D", CultureInfo.InvariantCulture);
 #else
       text = value.ToString("D");
@@ -584,7 +584,7 @@ namespace Newtonsoft.Json
             return ToString(convertible.ToDateTime(CultureInfo.InvariantCulture));
           case TypeCode.Decimal:
             return ToString(convertible.ToDecimal(CultureInfo.InvariantCulture));
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
           case TypeCode.DBNull:
             return Null;
 #endif
@@ -631,7 +631,7 @@ namespace Newtonsoft.Json
         case TypeCode.Double:
         case TypeCode.DateTime:
         case TypeCode.Decimal:
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
         case TypeCode.DBNull:
 #endif
           return true;
@@ -752,7 +752,7 @@ namespace Newtonsoft.Json
       return sw.ToString();
     }
 
-#if !(NET20 || NET35 || SILVERLIGHT)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
     /// <summary>
     /// Asynchronously serializes the specified object to a JSON string using a collection of <see cref="JsonConverter"/>.
     /// </summary>
@@ -931,7 +931,7 @@ namespace Newtonsoft.Json
       return deserializedValue;
     }
 
-#if !(NET20 || NET35 || SILVERLIGHT)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
     /// <summary>
     /// Asynchronously deserializes the JSON to the specified .NET type.
     /// </summary>
@@ -1026,7 +1026,7 @@ namespace Newtonsoft.Json
       }
     }
 
-#if !(NET20 || NET35 || SILVERLIGHT)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
     /// <summary>
     /// Asynchronously populates the object with values from the JSON string.
     /// </summary>
@@ -1045,7 +1045,7 @@ namespace Newtonsoft.Json
     }
 #endif
 
-#if !(SILVERLIGHT || NETFX_CORE)
+#if !(SILVERLIGHT || PORTABLE || NETFX_CORE)
     /// <summary>
     /// Serializes the XML node to a JSON string.
     /// </summary>
@@ -1124,7 +1124,7 @@ namespace Newtonsoft.Json
     }
 #endif
 
-#if !NET20 && (!SILVERLIGHT || WINDOWS_PHONE)
+#if !NET20 && (!(SILVERLIGHT || PORTABLE) || WINDOWS_PHONE)
     /// <summary>
     /// Serializes the <see cref="XNode"/> to a JSON string.
     /// </summary>

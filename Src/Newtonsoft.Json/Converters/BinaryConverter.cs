@@ -23,17 +23,16 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
 using System;
-#if !SILVERLIGHT && !NETFX_CORE
 using System.Data.SqlTypes;
-#endif
 using System.Globalization;
 using Newtonsoft.Json.Utilities;
 using System.Collections.Generic;
 
 namespace Newtonsoft.Json.Converters
 {
-#if !SILVERLIGHT && !PocketPC && !NET20
+#if !NET20
   internal interface IBinary
   {
     byte[] ToArray();
@@ -45,7 +44,7 @@ namespace Newtonsoft.Json.Converters
   /// </summary>
   public class BinaryConverter : JsonConverter
   {
-#if !SILVERLIGHT && !PocketPC && !NET20
+#if !NET20
     private const string BinaryTypeName = "System.Data.Linq.Binary";
 #endif
 
@@ -70,17 +69,16 @@ namespace Newtonsoft.Json.Converters
 
     private byte[] GetByteArray(object value)
     {
-#if !SILVERLIGHT && !PocketPC && !NET20 && !NETFX_CORE
+#if !(NET20)
       if (value.GetType().AssignableToTypeName(BinaryTypeName))
       {
         IBinary binary = DynamicWrapper.CreateWrapper<IBinary>(value);
         return binary.ToArray();
       }
 #endif
-#if !SILVERLIGHT && !NETFX_CORE
       if (value is SqlBinary)
         return ((SqlBinary) value).Value;
-#endif
+
       throw new Exception("Unexpected value type when writing binary: {0}".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
     }
 
@@ -125,14 +123,14 @@ namespace Newtonsoft.Json.Converters
       }
 
       
-#if !SILVERLIGHT && !PocketPC && !NET20
+#if !NET20
       if (t.AssignableToTypeName(BinaryTypeName))
         return Activator.CreateInstance(t, data);
 #endif
-#if !SILVERLIGHT && !NETFX_CORE
+
       if (t == typeof(SqlBinary))
         return new SqlBinary(data);
-#endif
+
       throw new Exception("Unexpected object type when writing binary: {0}".FormatWith(CultureInfo.InvariantCulture, objectType));
     }
 
@@ -169,15 +167,16 @@ namespace Newtonsoft.Json.Converters
     /// </returns>
     public override bool CanConvert(Type objectType)
     {
-#if !SILVERLIGHT && !PocketPC && !NET20
+#if !NET20
       if (objectType.AssignableToTypeName(BinaryTypeName))
         return true;
 #endif
-#if !SILVERLIGHT && !NETFX_CORE
+
       if (objectType == typeof(SqlBinary) || objectType == typeof(SqlBinary?))
         return true;
-#endif
+
       return false;
     }
   }
 }
+#endif

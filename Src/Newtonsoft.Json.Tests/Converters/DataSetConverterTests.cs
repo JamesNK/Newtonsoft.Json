@@ -1,4 +1,4 @@
-﻿#if !(SILVERLIGHT || NETFX_CORE)
+﻿#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
 using System;
 using Newtonsoft.Json.Converters;
 #if !NETFX_CORE

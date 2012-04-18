@@ -90,7 +90,7 @@ namespace Newtonsoft.Json.Tests.Schema
       Assert.IsTrue(o.IsValid(schema));
     }
 
-#if !PocketPC && !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
     [Test]
     public void Generate_DefaultValueAttributeTestClass()
     {
@@ -310,7 +310,7 @@ namespace Newtonsoft.Json.Tests.Schema
       Assert.IsTrue(v.IsValid(schema));
     }
 
-#if !SILVERLIGHT && !PocketPC && !NETFX_CORE
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
     [Test]
     public void GenerateSchemaForISerializable()
     {
@@ -325,7 +325,7 @@ namespace Newtonsoft.Json.Tests.Schema
     }
 #endif
 
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
     [Test]
     public void GenerateSchemaForDBNull()
     {
@@ -370,7 +370,7 @@ namespace Newtonsoft.Json.Tests.Schema
       generator.UndefinedSchemaIdHandling = UndefinedSchemaIdHandling.UseTypeName;
       generator.ContractResolver = new CustomDirectoryInfoMapper
         {
-#if !(SILVERLIGHT || NETFX_CORE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
           IgnoreSerializableAttribute = true
 #endif
         };
@@ -454,7 +454,7 @@ namespace Newtonsoft.Json.Tests.Schema
       serializer.Converters.Add(new IsoDateTimeConverter());
       serializer.ContractResolver = new CustomDirectoryInfoMapper
         {
-#if !(SILVERLIGHT || NETFX_CORE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
           IgnoreSerializableInterface = true
 #endif
         };
@@ -474,7 +474,7 @@ namespace Newtonsoft.Json.Tests.Schema
       generator.UndefinedSchemaIdHandling = UndefinedSchemaIdHandling.UseTypeName;
       generator.ContractResolver = new CamelCasePropertyNamesContractResolver()
         {
-#if !(SILVERLIGHT || NETFX_CORE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
           IgnoreSerializableAttribute = true
 #endif
         };
@@ -519,7 +519,7 @@ namespace Newtonsoft.Json.Tests.Schema
 }", json);
     }
 
-#if !(SILVERLIGHT || NETFX_CORE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
     [Test]
     public void GenerateSchemaSerializable()
     {

@@ -31,7 +31,7 @@ using System.Globalization;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
 using System.Text;
-#if NETFX_CORE
+#if NETFX_CORE || PORTABLE
 using IConvertible = Newtonsoft.Json.Utilities.Convertible;
 using ICustomAttributeProvider = Newtonsoft.Json.Utilities.CustomAttributeProvider;
 #endif
@@ -44,6 +44,32 @@ using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Utilities
 {
+#if NETFX_CORE || PORTABLE
+  internal enum MemberTypes
+  {
+    Property,
+    Field,
+    Event,
+    Method,
+    Other
+  }
+
+  internal class CustomAttributeProvider
+  {
+    private readonly object _underlyingObject;
+
+    public CustomAttributeProvider(object o)
+    {
+      _underlyingObject = o;
+    }
+
+    public object UnderlyingObject
+    {
+      get { return _underlyingObject; }
+    }
+  }
+#endif
+
 #if NETFX_CORE
   internal enum TypeCode
   {
@@ -66,15 +92,6 @@ namespace Newtonsoft.Json.Utilities
     Decimal
   }
 
-  internal enum MemberTypes
-  {
-    Property,
-    Field,
-    Event,
-    Method,
-    Other
-  }
-  
   [Flags]
   internal enum BindingFlags
   {
@@ -99,21 +116,6 @@ namespace Newtonsoft.Json.Utilities
     OptionalParamBinding = 262144,
     IgnoreReturn = 16777216
   }
-
-  internal class CustomAttributeProvider
-  {
-    private readonly object _underlyingObject;
-
-    public CustomAttributeProvider(object o)
-    {
-      _underlyingObject = o;
-    }
-
-    public object UnderlyingObject
-    {
-      get { return _underlyingObject; }
-    }
-  }
 #endif
 
   internal static class ReflectionUtils
@@ -122,7 +124,7 @@ namespace Newtonsoft.Json.Utilities
 
     static ReflectionUtils()
     {
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       EmptyTypes = Type.EmptyTypes;
 #else
       EmptyTypes = new Type[0];
@@ -131,7 +133,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static ICustomAttributeProvider GetCustomAttributeProvider(this object o)
     {
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       return (ICustomAttributeProvider)o;
 #else
       return new ICustomAttributeProvider(o);
@@ -274,7 +276,7 @@ namespace Newtonsoft.Json.Utilities
       if (nonPublic)
         bindingFlags = bindingFlags | BindingFlags.NonPublic;
 
-      return t.GetConstructor(bindingFlags, null, ReflectionUtils.EmptyTypes, null);
+      return t.GetConstructors(bindingFlags).SingleOrDefault(c => !c.GetParameters().Any());
     }
 
     public static bool IsNullable(Type t)
@@ -705,30 +707,44 @@ namespace Newtonsoft.Json.Utilities
       return attributes.SingleOrDefault();
     }
 
-#if !NETFX_CORE
+#if !(NETFX_CORE)
     public static T[] GetAttributes<T>(ICustomAttributeProvider attributeProvider, bool inherit) where T : Attribute
     {
       ValidationUtils.ArgumentNotNull(attributeProvider, "attributeProvider");
 
+      object provider;
+
+#if !PORTABLE
+      provider = attributeProvider;
+#else
+      provider = attributeProvider.UnderlyingObject;
+#endif
+
       // http://hyperthink.net/blog/getcustomattributes-gotcha/
       // ICustomAttributeProvider doesn't do inheritance
 
-      if (attributeProvider is Type)
-        return (T[])((Type)attributeProvider).GetCustomAttributes(typeof(T), inherit);
+      if (provider is Type)
+        return (T[])((Type)provider).GetCustomAttributes(typeof(T), inherit);
 
-      if (attributeProvider is Assembly)
-        return (T[])Attribute.GetCustomAttributes((Assembly)attributeProvider, typeof(T), inherit);
+      if (provider is Assembly)
+        return (T[])Attribute.GetCustomAttributes((Assembly)provider, typeof(T));
 
-      if (attributeProvider is MemberInfo)
-        return (T[])Attribute.GetCustomAttributes((MemberInfo)attributeProvider, typeof(T), inherit);
+      if (provider is MemberInfo)
+        return (T[])Attribute.GetCustomAttributes((MemberInfo)provider, typeof(T), inherit);
 
-      if (attributeProvider is Module)
-        return (T[])Attribute.GetCustomAttributes((Module)attributeProvider, typeof(T), inherit);
+#if !PORTABLE
+      if (provider is Module)
+        return (T[])Attribute.GetCustomAttributes((Module)provider, typeof(T), inherit);
+#endif
 
-      if (attributeProvider is ParameterInfo)
-        return (T[])Attribute.GetCustomAttributes((ParameterInfo)attributeProvider, typeof(T), inherit);
+      if (provider is ParameterInfo)
+        return (T[])Attribute.GetCustomAttributes((ParameterInfo)provider, typeof(T), inherit);
 
+#if !PORTABLE
       return (T[])attributeProvider.GetCustomAttributes(typeof(T), inherit);
+#else
+      throw new Exception("Cannot get attributes from '{0}'.".FormatWith(CultureInfo.InvariantCulture, provider));
+#endif
     }
 #else
     public static T[] GetAttributes<T>(ICustomAttributeProvider attributeProvider, bool inherit) where T : Attribute
@@ -981,8 +997,9 @@ namespace Newtonsoft.Json.Utilities
 
     public static bool IsMethodOverridden(Type currentType, Type methodDeclaringType, string method)
     {
-      bool isMethodOverriden = currentType.GetMember(method, MemberTypes.Method, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Cast<MethodInfo>()
+      bool isMethodOverriden = currentType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
         .Any(info =>
+             info.Name == method &&
              // check that the method overrides the original on DynamicObjectProxy
              info.DeclaringType != methodDeclaringType
              // todo - find out whether there is a way to do this in winrt

@@ -141,7 +141,7 @@ namespace Newtonsoft.Json.Utilities
         return s;
 
       string camelCase = null;
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       camelCase = char.ToLower(s[0], CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture);
 #else
       camelCase = char.ToLower(s[0]).ToString();
@@ -155,7 +155,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static bool IsHighSurrogate(char c)
     {
-#if !SILVERLIGHT
+#if !(SILVERLIGHT || PORTABLE)
       return char.IsHighSurrogate(c);
 #else
       return (c >= 55296 && c <= 56319);
@@ -164,7 +164,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static bool IsLowSurrogate(char c)
     {
-#if !SILVERLIGHT
+#if !(SILVERLIGHT || PORTABLE)
       return char.IsLowSurrogate(c);
 #else
       return (c >= 56320 && c <= 57343);

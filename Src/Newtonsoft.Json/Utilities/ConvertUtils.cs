@@ -32,7 +32,7 @@ using System.Reflection;
 using Newtonsoft.Json.Utilities.LinqBridge;
 #endif
 
-#if !(SILVERLIGHT || NETFX_CORE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
 using System.Data.SqlTypes;
 #endif
 #if NETFX_CORE
@@ -134,7 +134,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static TypeCode GetTypeCode(object o)
     {
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       return System.Convert.GetTypeCode(o);
 #else
       return GetTypeCode(o.GetType());
@@ -330,14 +330,14 @@ namespace Newtonsoft.Json.Utilities
         if (targetType == typeof (Uri))
           return new Uri((string) initialValue);
         if (targetType == typeof (TimeSpan))
-#if !(NET35 || NET20 || SILVERLIGHT)
+#if !(NET35 || NET20 || SILVERLIGHT || PORTABLE)
           return TimeSpan.Parse((string) initialValue, CultureInfo.InvariantCulture);
 #else
           return TimeSpan.Parse((string)initialValue);
 #endif
       }
 
-#if !PocketPC && !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       // see if source or target types have a TypeConverter that converts between the two
       TypeConverter toConverter = GetConverter(initialType);
 
@@ -361,7 +361,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
       }
 #endif
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       // handle DBNull and INullable
       if (initialValue == DBNull.Value)
       {
@@ -371,7 +371,7 @@ namespace Newtonsoft.Json.Utilities
         throw new Exception("Can not convert null {0} into non-nullable {1}.".FormatWith(CultureInfo.InvariantCulture, initialType, targetType));
       }
 #endif
-#if !SILVERLIGHT && !NETFX_CORE
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
       if (initialValue is INullable)
         return EnsureTypeAssignable(ToValue((INullable)initialValue), initialType, targetType);
 #endif
@@ -448,7 +448,7 @@ namespace Newtonsoft.Json.Utilities
       throw new Exception("Could not cast or convert from {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, (initialType != null) ? initialType.ToString() : "{null}", targetType));
     }
 
-#if !SILVERLIGHT && !NETFX_CORE
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
     public static object ToValue(INullable nullableValue)
     {
       if (nullableValue == null)
@@ -468,7 +468,7 @@ namespace Newtonsoft.Json.Utilities
     }
 #endif
 
-#if !PocketPC && !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
     internal static TypeConverter GetConverter(Type t)
     {
       return JsonTypeReflector.GetTypeConverter(t);

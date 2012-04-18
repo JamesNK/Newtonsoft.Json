@@ -1,4 +1,4 @@
-﻿#if !SILVERLIGHT && !PocketPC && !NETFX_CORE
+﻿#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
 using System;
 using System.Collections.Generic;
 using System.IO;

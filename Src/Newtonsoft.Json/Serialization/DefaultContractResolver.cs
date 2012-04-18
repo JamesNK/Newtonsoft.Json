@@ -25,18 +25,18 @@
 
 using System;
 using System.Collections;
-#if !(NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE)
+#if !(NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE)
 using System.Collections.Concurrent;
 #endif
 using System.Collections.Generic;
 using System.ComponentModel;
-#if !(NET35 || NET20 || WINDOWS_PHONE)
+#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
 using System.Dynamic;
 #endif
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.Serialization;
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
 using System.Security.Permissions;
 #endif
 using System.Xml.Serialization;
@@ -44,7 +44,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Linq;
 using System.Runtime.CompilerServices;
-#if NETFX_CORE
+#if NETFX_CORE || PORTABLE
 using ICustomAttributeProvider = Newtonsoft.Json.Utilities.CustomAttributeProvider;
 #endif
 #if NET20
@@ -97,21 +97,21 @@ namespace Newtonsoft.Json.Serialization
     }
     private static readonly IList<JsonConverter> BuiltInConverters = new List<JsonConverter>
       {
-#if !PocketPC && !SILVERLIGHT && !NET20 && !NETFX_CORE
+#if !(SILVERLIGHT || NET20 || NETFX_CORE || PORTABLE)
         new EntityKeyMemberConverter(),
 #endif
-#if !(NET35 || NET20 || WINDOWS_PHONE)
+#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
         new ExpandoObjectConverter(),
 #endif
-        new BinaryConverter(),
-        new KeyValuePairConverter(),
-#if (!SILVERLIGHT || WINDOWS_PHONE)
+#if (!(SILVERLIGHT || PORTABLE) || WINDOWS_PHONE)
         new XmlNodeConverter(),
 #endif
-#if !SILVERLIGHT && !NETFX_CORE
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+        new BinaryConverter(),
         new DataSetConverter(),
         new DataTableConverter(),
 #endif
+        new KeyValuePairConverter(),
         new BsonObjectIdConverter()
       };
 
@@ -151,7 +151,7 @@ namespace Newtonsoft.Json.Serialization
     /// </value>
     public bool SerializeCompilerGeneratedMembers { get; set; }
 
-#if !(SILVERLIGHT || NETFX_CORE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
     /// <summary>
     /// Gets or sets a value indicating whether to ignore the <see cref="ISerializable"/> interface when serializing and deserializing types.
     /// </summary>
@@ -191,7 +191,7 @@ namespace Newtonsoft.Json.Serialization
 #if !NETFX_CORE
       DefaultMembersSearchFlags = BindingFlags.Public | BindingFlags.Instance;
 #endif
-#if !(SILVERLIGHT || NETFX_CORE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
       IgnoreSerializableAttribute = true;
 #endif
 
@@ -256,7 +256,7 @@ namespace Newtonsoft.Json.Serialization
     protected virtual List<MemberInfo> GetSerializableMembers(Type objectType)
     {
       bool ignoreSerializableAttribute;
-#if !(SILVERLIGHT || NETFX_CORE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
       ignoreSerializableAttribute = IgnoreSerializableAttribute;
 #else
       ignoreSerializableAttribute = true;
@@ -349,7 +349,7 @@ namespace Newtonsoft.Json.Serialization
       InitializeContract(contract);
 
       bool ignoreSerializableAttribute;
-#if !(SILVERLIGHT || NETFX_CORE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
       ignoreSerializableAttribute = IgnoreSerializableAttribute;
 #else
       ignoreSerializableAttribute = true;
@@ -553,7 +553,7 @@ namespace Newtonsoft.Json.Serialization
       if (onDeserialized != null)
       {
         // ConcurrentDictionary throws an error here so don't use its OnDeserialized - http://json.codeplex.com/discussions/257093
-#if !(NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE)
+#if !(NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE)
         if (!t.IsGenericType() || (t.GetGenericTypeDefinition() != typeof(ConcurrentDictionary<,>)))
           contract.OnDeserialized = onDeserialized;
 #else
@@ -660,7 +660,7 @@ namespace Newtonsoft.Json.Serialization
       return contract;
     }
 
-#if !SILVERLIGHT && !PocketPC && !NETFX_CORE
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
     /// <summary>
     /// Creates a <see cref="JsonISerializableContract"/> for the given type.
     /// </summary>
@@ -683,7 +683,7 @@ namespace Newtonsoft.Json.Serialization
     }
 #endif
 
-#if !(NET35 || NET20 || WINDOWS_PHONE)
+#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
     /// <summary>
     /// Creates a <see cref="JsonDynamicContract"/> for the given type.
     /// </summary>
@@ -744,12 +744,12 @@ namespace Newtonsoft.Json.Serialization
       if (CanConvertToString(t))
         return CreateStringContract(objectType);
 
-#if !SILVERLIGHT && !PocketPC && !NETFX_CORE
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
       if (!IgnoreSerializableInterface && typeof(ISerializable).IsAssignableFrom(t))
         return CreateISerializableContract(objectType);
 #endif
 
-#if !(NET35 || NET20 || WINDOWS_PHONE)
+#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
       if (typeof(IDynamicMetaObjectProvider).IsAssignableFrom(t))
         return CreateDynamicContract(objectType);
 #endif
@@ -759,7 +759,7 @@ namespace Newtonsoft.Json.Serialization
 
     internal static bool CanConvertToString(Type type)
     {
-#if !PocketPC && !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       TypeConverter converter = ConvertUtils.GetConverter(type);
 
       // use the objectType's TypeConverter if it has one and can convert to a string
@@ -863,7 +863,7 @@ namespace Newtonsoft.Json.Serialization
       // warning - this method use to cause errors with Intellitrace. Retest in VS Ultimate after changes
       IValueProvider valueProvider;
 
-#if !PocketPC && !SILVERLIGHT
+#if !(SILVERLIGHT || PORTABLE)
       if (DynamicCodeGeneration)
         valueProvider = new DynamicValueProvider(member);
       else
@@ -909,7 +909,7 @@ namespace Newtonsoft.Json.Serialization
       DataContractAttribute dataContractAttribute = JsonTypeReflector.GetDataContractAttribute(declaringType);
 
       MemberInfo memberInfo = null;
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       memberInfo = attributeProvider as MemberInfo;
 #else
       memberInfo = attributeProvider.UnderlyingObject as MemberInfo;
@@ -957,7 +957,7 @@ namespace Newtonsoft.Json.Serialization
       }
 
       bool hasJsonIgnoreAttribute = JsonTypeReflector.GetAttribute<JsonIgnoreAttribute>(attributeProvider) != null
-#if !(SILVERLIGHT || NETFX_CORE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
         || JsonTypeReflector.GetAttribute<NonSerializedAttribute>(attributeProvider) != null
 #endif
         ;
