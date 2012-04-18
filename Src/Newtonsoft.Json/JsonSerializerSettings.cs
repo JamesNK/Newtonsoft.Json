@@ -26,11 +26,13 @@ namespace Newtonsoft.Json
     internal const Formatting DefaultFormatting = Formatting.None;
     internal const DateFormatHandling DefaultDateFormatHandling = DateFormatHandling.IsoDateFormat;
     internal const DateTimeZoneHandling DefaultDateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
+    internal const DateParseHandling DefaultDateParseHandling = DateParseHandling.DateTime;
     internal static readonly CultureInfo DefaultCulture;
 
     internal Formatting? _formatting;
     internal DateFormatHandling? _dateFormatHandling;
     internal DateTimeZoneHandling? _dateTimeZoneHandling;
+    internal DateParseHandling? _dateParseHandling;
     internal CultureInfo _culture;
     internal int? _maxDepth;
     internal bool _maxDepthSet;
@@ -167,6 +169,15 @@ namespace Newtonsoft.Json
     {
       get { return _dateTimeZoneHandling ?? DefaultDateTimeZoneHandling; }
       set { _dateTimeZoneHandling = value; }
+    }
+
+    /// <summary>
+    /// Get or set how date formatted strings, e.g. "\/Date(1198908717056)\/" and "2012-03-21T05:40Z", are parsed when reading JSON.
+    /// </summary>
+    public DateParseHandling DateParseHandling
+    {
+      get { return _dateParseHandling ?? DefaultDateParseHandling; }
+      set { _dateParseHandling = value; }
     }
 
     /// <summary>

@@ -77,6 +77,7 @@
     <Compile Include="Converters\VersionConverter.cs" />
     <Compile Include="Converters\XmlNodeConverter.cs" />
     <Compile Include="DateFormatHandling.cs" />
+    <Compile Include="DateParseHandling.cs" />
     <Compile Include="DateTimeZoneHandling.cs" />
     <Compile Include="FormatterAssemblyStyle.cs" />
     <Compile Include="DefaultValueHandling.cs" />

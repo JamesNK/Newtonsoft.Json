@@ -105,6 +105,7 @@
     <Compile Include="ConstructorHandling.cs" />
     <Compile Include="Converters\VersionConverter.cs" />
     <Compile Include="DateFormatHandling.cs" />
+    <Compile Include="DateParseHandling.cs" />
     <Compile Include="DateTimeZoneHandling.cs" />
     <Compile Include="FormatterAssemblyStyle.cs" />
     <Compile Include="Formatting.cs" />

@@ -921,6 +921,47 @@ keyword such as type of business.""
     }
 
     [Test]
+    public void SerializerShouldUseMemberConverter_MsDate_DateParseNone()
+    {
+      DateTime testDate = new DateTime(JsonConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc);
+      MemberConverterClass m1 = new MemberConverterClass { DefaultConverter = testDate, MemberConverter = testDate };
+
+      string json = JsonConvert.SerializeObject(m1, new JsonSerializerSettings
+      {
+        DateFormatHandling = DateFormatHandling.MicrosoftDateFormat,
+      });
+      Assert.AreEqual(@"{""DefaultConverter"":""\/Date(0)\/"",""MemberConverter"":""1970-01-01T00:00:00Z""}", json);
+
+      ExceptionAssert.Throws<JsonReaderException>(
+       "Could not convert string to DateTime: /Date(0)/. Line 1, position 33.",
+       () =>
+       {
+         JsonConvert.DeserializeObject<MemberConverterClass>(json, new JsonSerializerSettings
+         {
+           DateParseHandling = DateParseHandling.None
+         });
+       });
+    }
+
+    [Test]
+    public void SerializerShouldUseMemberConverter_IsoDate_DateParseNone()
+    {
+      DateTime testDate = new DateTime(JsonConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc);
+      MemberConverterClass m1 = new MemberConverterClass { DefaultConverter = testDate, MemberConverter = testDate };
+
+      string json = JsonConvert.SerializeObject(m1, new JsonSerializerSettings
+      {
+        DateFormatHandling = DateFormatHandling.IsoDateFormat,
+      });
+      Assert.AreEqual(@"{""DefaultConverter"":""1970-01-01T00:00:00Z"",""MemberConverter"":""1970-01-01T00:00:00Z""}", json);
+
+      MemberConverterClass m2 = JsonConvert.DeserializeObject<MemberConverterClass>(json);
+
+      Assert.AreEqual(testDate, m2.DefaultConverter);
+      Assert.AreEqual(testDate, m2.MemberConverter);
+    }
+
+    [Test]
     public void SerializerShouldUseMemberConverterOverArgumentConverter()
     {
       DateTime testDate = new DateTime(JsonConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc);

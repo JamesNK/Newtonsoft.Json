@@ -2399,6 +2399,77 @@ bye", reader.Value);
 
       Assert.IsTrue(reader.Read());
     }
+
+    [Test]
+    public void DateParseHandling()
+    {
+      string json = @"[""1970-01-01T00:00:00Z"",""\/Date(0)\/""]";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+      reader.DateParseHandling = Json.DateParseHandling.DateTime;
+
+      Assert.IsTrue(reader.Read());
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(new DateTime(JsonConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc), reader.Value);
+      Assert.AreEqual(typeof(DateTime), reader.ValueType);
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(new DateTime(JsonConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc), reader.Value);
+      Assert.AreEqual(typeof(DateTime), reader.ValueType);
+      Assert.IsTrue(reader.Read());
+
+#if !NET20
+      reader = new JsonTextReader(new StringReader(json));
+      reader.DateParseHandling = Json.DateParseHandling.DateTimeOffset;
+
+      Assert.IsTrue(reader.Read());
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(new DateTimeOffset(JsonConvert.InitialJavaScriptDateTicks, TimeSpan.Zero), reader.Value);
+      Assert.AreEqual(typeof(DateTimeOffset), reader.ValueType);
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(new DateTimeOffset(JsonConvert.InitialJavaScriptDateTicks, TimeSpan.Zero), reader.Value);
+      Assert.AreEqual(typeof(DateTimeOffset), reader.ValueType);
+      Assert.IsTrue(reader.Read());
+#endif
+
+      reader = new JsonTextReader(new StringReader(json));
+      reader.DateParseHandling = Json.DateParseHandling.None;
+
+      Assert.IsTrue(reader.Read());
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(@"1970-01-01T00:00:00Z", reader.Value);
+      Assert.AreEqual(typeof(string), reader.ValueType);
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(@"/Date(0)/", reader.Value);
+      Assert.AreEqual(typeof(string), reader.ValueType);
+      Assert.IsTrue(reader.Read());
+
+#if !NET20
+      reader = new JsonTextReader(new StringReader(json));
+      reader.DateParseHandling = Json.DateParseHandling.DateTime;
+
+      Assert.IsTrue(reader.Read());
+      reader.ReadAsDateTimeOffset();
+      Assert.AreEqual(new DateTimeOffset(JsonConvert.InitialJavaScriptDateTicks, TimeSpan.Zero), reader.Value);
+      Assert.AreEqual(typeof(DateTimeOffset), reader.ValueType);
+      reader.ReadAsDateTimeOffset();
+      Assert.AreEqual(new DateTimeOffset(JsonConvert.InitialJavaScriptDateTicks, TimeSpan.Zero), reader.Value);
+      Assert.AreEqual(typeof(DateTimeOffset), reader.ValueType);
+      Assert.IsTrue(reader.Read());
+
+
+      reader = new JsonTextReader(new StringReader(json));
+      reader.DateParseHandling = Json.DateParseHandling.DateTimeOffset;
+
+      Assert.IsTrue(reader.Read());
+      reader.ReadAsDateTime();
+      Assert.AreEqual(new DateTime(JsonConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc), reader.Value);
+      Assert.AreEqual(typeof(DateTime), reader.ValueType);
+      reader.ReadAsDateTime();
+      Assert.AreEqual(new DateTime(JsonConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc), reader.Value);
+      Assert.AreEqual(typeof(DateTime), reader.ValueType);
+      Assert.IsTrue(reader.Read());
+#endif
+    }
   }
 
   public class SlowStream : Stream

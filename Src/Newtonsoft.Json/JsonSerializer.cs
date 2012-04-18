@@ -60,6 +60,7 @@ namespace Newtonsoft.Json
     private Formatting? _formatting;
     private DateFormatHandling? _dateFormatHandling;
     private DateTimeZoneHandling? _dateTimeZoneHandling;
+    private DateParseHandling? _dateParseHandling;
     private CultureInfo _culture;
     private int? _maxDepth;
     private bool _maxDepthSet;
@@ -315,6 +316,15 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
+    /// Get or set how date formatted strings, e.g. "\/Date(1198908717056)\/" and "2012-03-21T05:40Z", are parsed when reading JSON.
+    /// </summary>
+    public virtual DateParseHandling DateParseHandling
+    {
+      get { return _dateParseHandling ?? JsonSerializerSettings.DefaultDateParseHandling; }
+      set { _dateParseHandling = value; }
+    }
+
+    /// <summary>
     /// Gets or sets the culture used when reading JSON. Defaults to <see cref="CultureInfo.InvariantCulture"/>.
     /// </summary>
     public virtual CultureInfo Culture
@@ -383,11 +393,12 @@ namespace Newtonsoft.Json
         jsonSerializer.ConstructorHandling = settings.ConstructorHandling;
         jsonSerializer.Context = settings.Context;
 
-        // reader specific
-        // unset values won't override reader set values
+        // reader/writer specific
+        // unset values won't override reader/writer set values
         jsonSerializer._formatting = settings._formatting;
         jsonSerializer._dateFormatHandling = settings._dateFormatHandling;
         jsonSerializer._dateTimeZoneHandling = settings._dateTimeZoneHandling;
+        jsonSerializer._dateParseHandling = settings._dateParseHandling;
         jsonSerializer._culture = settings._culture;
         jsonSerializer._maxDepth = settings._maxDepth;
         jsonSerializer._maxDepthSet = settings._maxDepthSet;
@@ -498,6 +509,12 @@ namespace Newtonsoft.Json
         previousDateTimeZoneHandling = reader.DateTimeZoneHandling;
         reader.DateTimeZoneHandling = _dateTimeZoneHandling.Value;
       }
+      DateParseHandling? previousDateParseHandling = null;
+      if (_dateParseHandling != null && reader.DateTimeZoneHandling != _dateTimeZoneHandling)
+      {
+        previousDateParseHandling = reader.DateParseHandling;
+        reader.DateParseHandling = _dateParseHandling.Value;
+      }
       int? previousMaxDepth = null;
       if (_maxDepthSet && reader.MaxDepth != _maxDepth)
       {
@@ -513,6 +530,8 @@ namespace Newtonsoft.Json
         reader.Culture = previousCulture;
       if (previousDateTimeZoneHandling != null)
         reader.DateTimeZoneHandling = previousDateTimeZoneHandling.Value;
+      if (previousDateParseHandling != null)
+        reader.DateParseHandling = previousDateParseHandling.Value;
       if (_maxDepthSet)
         reader.MaxDepth = previousMaxDepth;
 

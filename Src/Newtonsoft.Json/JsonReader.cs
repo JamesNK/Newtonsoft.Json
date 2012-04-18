@@ -111,6 +111,7 @@ namespace Newtonsoft.Json
     private DateTimeZoneHandling _dateTimeZoneHandling;
     private int? _maxDepth;
     private bool _hasExceededMaxDepth;
+    internal DateParseHandling _dateParseHandling;
 
     /// <summary>
     /// Gets the current reader state.
@@ -149,6 +150,15 @@ namespace Newtonsoft.Json
     {
       get { return _dateTimeZoneHandling; }
       set { _dateTimeZoneHandling = value; }
+    }
+
+    /// <summary>
+    /// Get or set how date formatted strings, e.g. "\/Date(1198908717056)\/" and "2012-03-21T05:40Z", are parsed when reading JSON.
+    /// </summary>
+    public DateParseHandling DateParseHandling
+    {
+      get { return _dateParseHandling; }
+      set { _dateParseHandling = value; }
     }
 
     /// <summary>
@@ -237,6 +247,7 @@ namespace Newtonsoft.Json
       _currentState = State.Start;
       _stack = new List<JsonPosition>(4);
       _dateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
+      _dateParseHandling = DateParseHandling.DateTime;
 
       CloseInput = true;
     }
