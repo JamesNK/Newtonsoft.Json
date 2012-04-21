@@ -188,7 +188,7 @@ namespace Newtonsoft.Json
           case JTokenType.Object:
             {
               if (_currentScope.CurrentPropertyName == null)
-                throw new Exception("CurrentPropertyName has not been set on scope.");
+                throw new JsonReaderException("CurrentPropertyName has not been set on scope.");
 
               IList<JsonSchemaModel> schemas = new List<JsonSchemaModel>();
 
@@ -291,7 +291,7 @@ namespace Newtonsoft.Json
       set
       {
         if (TokenType != JsonToken.None)
-          throw new Exception("Cannot change schema while validating JSON.");
+          throw new InvalidOperationException("Cannot change schema while validating JSON.");
 
         _schema = value;
         _model = null;

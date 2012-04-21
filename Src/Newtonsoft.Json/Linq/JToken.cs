@@ -1204,7 +1204,7 @@ namespace Newtonsoft.Json.Linq
       if (reader.TokenType == JsonToken.None)
       {
         if (!reader.Read())
-          throw new Exception("Error reading JToken from JsonReader.");
+          throw JsonReaderException.Create(reader, "Error reading JToken from JsonReader.");
       }
 
       if (reader.TokenType == JsonToken.StartObject)
@@ -1223,7 +1223,7 @@ namespace Newtonsoft.Json.Linq
         return new JValue(reader.Value);
 
       // TODO: loading constructor and parameters?
-      throw new Exception("Error reading JToken from JsonReader. Unexpected token: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
+      throw JsonReaderException.Create(reader, "Error reading JToken from JsonReader. Unexpected token: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
     }
 
     /// <summary>
@@ -1233,12 +1233,12 @@ namespace Newtonsoft.Json.Linq
     /// <returns>A <see cref="JToken"/> populated from the string that contains JSON.</returns>
     public static JToken Parse(string json)
     {
-      JsonReader jsonReader = new JsonTextReader(new StringReader(json));
+      JsonReader reader = new JsonTextReader(new StringReader(json));
 
-      JToken t = Load(jsonReader);
+      JToken t = Load(reader);
 
-      if (jsonReader.Read() && jsonReader.TokenType != JsonToken.Comment)
-        throw new Exception("Additional text found in JSON string after parsing content.");
+      if (reader.Read() && reader.TokenType != JsonToken.Comment)
+        throw JsonReaderException.Create(reader, "Additional text found in JSON string after parsing content.");
 
       return t;
     }

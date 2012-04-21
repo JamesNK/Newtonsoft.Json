@@ -130,7 +130,7 @@ namespace Newtonsoft.Json.Utilities
                               ReflectionUtils.EmptyTypes, null);
 
         if (constructorInfo == null)
-          throw new Exception("Could not get constructor for {0}.".FormatWith(CultureInfo.InvariantCulture, type));
+          throw new ArgumentException("Could not get constructor for {0}.".FormatWith(CultureInfo.InvariantCulture, type));
 
         generator.Emit(OpCodes.Newobj, constructorInfo);
       }
@@ -152,7 +152,7 @@ namespace Newtonsoft.Json.Utilities
     {
       MethodInfo getMethod = propertyInfo.GetGetMethod(true);
       if (getMethod == null)
-        throw new Exception("Property '{0}' does not have a getter.".FormatWith(CultureInfo.InvariantCulture, propertyInfo.Name));
+        throw new ArgumentException("Property '{0}' does not have a getter.".FormatWith(CultureInfo.InvariantCulture, propertyInfo.Name));
 
       if (!getMethod.IsStatic)
         generator.PushInstance(propertyInfo.DeclaringType);

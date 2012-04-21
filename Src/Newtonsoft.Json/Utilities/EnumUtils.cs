@@ -42,7 +42,7 @@ namespace Newtonsoft.Json.Utilities
       Type enumType = typeof(T);
 
       if (!enumType.IsDefined(typeof(FlagsAttribute), false))
-        throw new Exception("Enum type {0} is not a set of flags.".FormatWith(CultureInfo.InvariantCulture, enumType));
+        throw new ArgumentException("Enum type {0} is not a set of flags.".FormatWith(CultureInfo.InvariantCulture, enumType));
 
       Type underlyingType = Enum.GetUnderlyingType(value.GetType());
 
@@ -96,7 +96,7 @@ namespace Newtonsoft.Json.Utilities
         }
         catch (OverflowException e)
         {
-          throw new Exception(
+          throw new InvalidOperationException(
             string.Format(CultureInfo.InvariantCulture, "Value from enum with the underlying type of {0} cannot be added to dictionary with a value type of {1}. Value was too large: {2}",
               Enum.GetUnderlyingType(enumType), typeof(TUnderlyingType), Convert.ToUInt64(enumValues[i], CultureInfo.InvariantCulture)), e);
         }

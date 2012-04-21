@@ -36,7 +36,7 @@ namespace Newtonsoft.Json
 #if !(SILVERLIGHT || WINDOWS_PHONE || NETFX_CORE || PORTABLE)
   [Serializable]
 #endif
-  public class JsonWriterException : Exception
+  public class JsonWriterException : JsonException
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonWriterException"/> class.

@@ -275,28 +275,29 @@ namespace Newtonsoft.Json.Tests.Bson
     [Test]
     public void ReadAsInt32BadString()
     {
-      ExceptionAssert.Throws<JsonReaderException>("Could not convert string to integer: a.",
-      () =>
-      {
-        byte[] data = MiscellaneousUtils.HexToBytes("20-00-00-00-02-30-00-02-00-00-00-61-00-02-31-00-02-00-00-00-62-00-02-32-00-02-00-00-00-63-00-00");
+      ExceptionAssert.Throws<JsonReaderException>(
+        "Could not convert string to integer: a. Path '[0]'.",
+        () =>
+          {
+            byte[] data = MiscellaneousUtils.HexToBytes("20-00-00-00-02-30-00-02-00-00-00-61-00-02-31-00-02-00-00-00-62-00-02-32-00-02-00-00-00-63-00-00");
 
-        MemoryStream ms = new MemoryStream(data);
-        BsonReader reader = new BsonReader(ms);
+            MemoryStream ms = new MemoryStream(data);
+            BsonReader reader = new BsonReader(ms);
 
-        Assert.AreEqual(false, reader.ReadRootValueAsArray);
-        Assert.AreEqual(DateTimeKind.Local, reader.DateTimeKindHandling);
+            Assert.AreEqual(false, reader.ReadRootValueAsArray);
+            Assert.AreEqual(DateTimeKind.Local, reader.DateTimeKindHandling);
 
-        reader.ReadRootValueAsArray = true;
-        reader.DateTimeKindHandling = DateTimeKind.Utc;
+            reader.ReadRootValueAsArray = true;
+            reader.DateTimeKindHandling = DateTimeKind.Utc;
 
-        Assert.AreEqual(true, reader.ReadRootValueAsArray);
-        Assert.AreEqual(DateTimeKind.Utc, reader.DateTimeKindHandling);
+            Assert.AreEqual(true, reader.ReadRootValueAsArray);
+            Assert.AreEqual(DateTimeKind.Utc, reader.DateTimeKindHandling);
 
-        Assert.IsTrue(reader.Read());
-        Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
 
-        reader.ReadAsInt32();
-      });
+            reader.ReadAsInt32();
+          });
     }
 
     [Test]

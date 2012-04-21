@@ -41,11 +41,6 @@ namespace Newtonsoft.Json.Tests.Serialization
   public class MissingMemberHandlingTests : TestFixtureBase
   {
     [Test]
-    [ExpectedException(typeof(JsonSerializationException)
-#if !NETFX_CORE
-      , ExpectedMessage = @"Could not find member 'Price' on object of type 'ProductShort'. Line 4, position 11."
-#endif
-      )]
     public void MissingMemberDeserialize()
     {
       Product product = new Product();
@@ -67,7 +62,12 @@ namespace Newtonsoft.Json.Tests.Serialization
       //  ]
       //}
 
-      ProductShort deserializedProductShort = (ProductShort)JsonConvert.DeserializeObject(output, typeof(ProductShort), new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error });
+      ExceptionAssert.Throws<JsonSerializationException>(
+        @"Could not find member 'Price' on object of type 'ProductShort'. Path 'Price', line 4, position 11.",
+        () =>
+          {
+            ProductShort deserializedProductShort = (ProductShort)JsonConvert.DeserializeObject(output, typeof(ProductShort), new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error });
+          });
     }
 
     [Test]
@@ -126,16 +126,16 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException)
-#if !NETFX_CORE
-      , ExpectedMessage = "Could not find member 'Missing' on object of type 'DoubleClass'. Line 1, position 11."
-#endif
-      )]
     public void MissingMemeber()
     {
       string json = @"{""Missing"":1}";
 
-      JsonConvert.DeserializeObject<DoubleClass>(json, new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error });
+      ExceptionAssert.Throws<JsonSerializationException>(
+        "Could not find member 'Missing' on object of type 'DoubleClass'. Path 'Missing', line 1, position 11.",
+        () =>
+          {
+            JsonConvert.DeserializeObject<DoubleClass>(json, new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error });
+          });
     }
 
     [Test]

@@ -217,7 +217,7 @@ namespace Newtonsoft.Json.Tests.Converters
     [Test]
     public void DeserializeNullToNonNullable()
     {
-      ExceptionAssert.Throws<Exception>("Cannot convert null value to System.DateTime.",
+      ExceptionAssert.Throws<JsonSerializationException>("Cannot convert null value to System.DateTime. Path 'DateTimeField', line 1, position 38.",
       () =>
       {
         DateTimeTestClass c2 =

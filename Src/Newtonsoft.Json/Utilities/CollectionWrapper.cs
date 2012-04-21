@@ -170,7 +170,7 @@ namespace Newtonsoft.Json.Utilities
     int IList.IndexOf(object value)
     {
       if (_genericCollection != null)
-        throw new Exception("Wrapped ICollection<T> does not support IndexOf.");
+        throw new InvalidOperationException("Wrapped ICollection<T> does not support IndexOf.");
 
       if (IsCompatibleObject(value))
         return _list.IndexOf((T)value);
@@ -181,7 +181,7 @@ namespace Newtonsoft.Json.Utilities
     void IList.RemoveAt(int index)
     {
       if (_genericCollection != null)
-        throw new Exception("Wrapped ICollection<T> does not support RemoveAt.");
+        throw new InvalidOperationException("Wrapped ICollection<T> does not support RemoveAt.");
 
       _list.RemoveAt(index);
     }
@@ -189,7 +189,7 @@ namespace Newtonsoft.Json.Utilities
     void IList.Insert(int index, object value)
     {
       if (_genericCollection != null)
-        throw new Exception("Wrapped ICollection<T> does not support Insert.");
+        throw new InvalidOperationException("Wrapped ICollection<T> does not support Insert.");
 
       VerifyValueType(value);
       _list.Insert(index, (T)value);
@@ -218,14 +218,14 @@ namespace Newtonsoft.Json.Utilities
       get
       {
         if (_genericCollection != null)
-          throw new Exception("Wrapped ICollection<T> does not support indexer.");
+          throw new InvalidOperationException("Wrapped ICollection<T> does not support indexer.");
 
         return _list[index];
       }
       set
       {
         if (_genericCollection != null)
-          throw new Exception("Wrapped ICollection<T> does not support indexer.");
+          throw new InvalidOperationException("Wrapped ICollection<T> does not support indexer.");
 
         VerifyValueType(value);
         _list[index] = (T)value;

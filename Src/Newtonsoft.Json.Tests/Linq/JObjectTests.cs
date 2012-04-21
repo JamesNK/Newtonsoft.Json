@@ -113,16 +113,16 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentException)
-#if !NETFX_CORE
-      , ExpectedMessage = "Can not add property PropertyNameValue to Newtonsoft.Json.Linq.JObject. Property with the same name already exists on object."
-#endif
-      )]
     public void DuplicatePropertyNameShouldThrow()
     {
-      JObject o = new JObject();
-      o.Add("PropertyNameValue", null);
-      o.Add("PropertyNameValue", null);
+      ExceptionAssert.Throws<ArgumentException>(
+        "Can not add property PropertyNameValue to Newtonsoft.Json.Linq.JObject. Property with the same name already exists on object.",
+        () =>
+        {
+          JObject o = new JObject();
+          o.Add("PropertyNameValue", null);
+          o.Add("PropertyNameValue", null);
+        });
     }
 
     [Test]
@@ -227,57 +227,57 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentNullException)
-#if !NETFX_CORE
-      , ExpectedMessage = @"Value cannot be null.
-Parameter name: array"
-#endif
-      )]
     public void GenericCollectionCopyToNullArrayShouldThrow()
     {
-      JObject o = new JObject();
-      ((ICollection<KeyValuePair<string, JToken>>)o).CopyTo(null, 0);
+      ExceptionAssert.Throws<ArgumentException>(
+        @"Value cannot be null.
+Parameter name: array",
+        () =>
+        {
+          JObject o = new JObject();
+          ((ICollection<KeyValuePair<string, JToken>>)o).CopyTo(null, 0);
+        });
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentOutOfRangeException)
-#if !NETFX_CORE
-      , ExpectedMessage = @"arrayIndex is less than 0.
-Parameter name: arrayIndex"
-#endif
-      )]
     public void GenericCollectionCopyToNegativeArrayIndexShouldThrow()
     {
-      JObject o = new JObject();
-      ((ICollection<KeyValuePair<string, JToken>>)o).CopyTo(new KeyValuePair<string, JToken>[1], -1);
+      ExceptionAssert.Throws<ArgumentOutOfRangeException>(
+        @"arrayIndex is less than 0.
+Parameter name: arrayIndex",
+        () =>
+        {
+          JObject o = new JObject();
+          ((ICollection<KeyValuePair<string, JToken>>)o).CopyTo(new KeyValuePair<string, JToken>[1], -1);
+        });
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentException)
-#if !NETFX_CORE
-      , ExpectedMessage = @"arrayIndex is equal to or greater than the length of array."
-#endif
-      )]
     public void GenericCollectionCopyToArrayIndexEqualGreaterToArrayLengthShouldThrow()
     {
-      JObject o = new JObject();
-      ((ICollection<KeyValuePair<string, JToken>>)o).CopyTo(new KeyValuePair<string, JToken>[1], 1);
+      ExceptionAssert.Throws<ArgumentException>(
+        @"arrayIndex is equal to or greater than the length of array.",
+        () =>
+        {
+          JObject o = new JObject();
+          ((ICollection<KeyValuePair<string, JToken>>)o).CopyTo(new KeyValuePair<string, JToken>[1], 1);
+        });
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentException)
-#if !NETFX_CORE
-      , ExpectedMessage = @"The number of elements in the source JObject is greater than the available space from arrayIndex to the end of the destination array."
-#endif
-      )]
     public void GenericCollectionCopyToInsufficientArrayCapacity()
     {
-      JObject o = new JObject();
-      o.Add("PropertyNameValue", new JValue(1));
-      o.Add("PropertyNameValue2", new JValue(2));
-      o.Add("PropertyNameValue3", new JValue(3));
+      ExceptionAssert.Throws<ArgumentException>(
+        @"The number of elements in the source JObject is greater than the available space from arrayIndex to the end of the destination array.",
+        () =>
+        {
+          JObject o = new JObject();
+          o.Add("PropertyNameValue", new JValue(1));
+          o.Add("PropertyNameValue2", new JValue(2));
+          o.Add("PropertyNameValue3", new JValue(3));
 
-      ((ICollection<KeyValuePair<string, JToken>>)o).CopyTo(new KeyValuePair<string, JToken>[3], 1);
+          ((ICollection<KeyValuePair<string, JToken>>)o).CopyTo(new KeyValuePair<string, JToken>[3], 1);
+        });
     }
 
     [Test]
@@ -363,7 +363,7 @@ Parameter name: arrayIndex"
     [Test]
     public void Parse_ShouldThrowOnUnexpectedToken()
     {
-      ExceptionAssert.Throws<Exception>("Error reading JObject from JsonReader. Current JsonReader item is not an object: StartArray",
+      ExceptionAssert.Throws<JsonReaderException>("Error reading JObject from JsonReader. Current JsonReader item is not an object: StartArray. Path '', line 1, position 1.",
         () =>
         {
           string json = @"[""prop""]";
@@ -400,15 +400,13 @@ Parameter name: arrayIndex"
     public void Blog()
     {
       ExceptionAssert.Throws<JsonReaderException>(
-        "Invalid property identifier character: ]. Line 3, position 5.",
+        "Invalid property identifier character: ]. Path 'name', line 3, position 5.",
         () =>
         {
-          JObject person = JObject.Parse(@"{
+          JObject.Parse(@"{
     ""name"": ""James"",
     ]!#$THIS IS: BAD JSON![{}}}}]
   }");
-
-          // Invalid property identifier character: ]. Line 3, position 9.
         });
     }
 
@@ -1271,19 +1269,27 @@ Parameter name: arrayIndex"
     }
 
     [Test]
-    [ExpectedException(typeof(NotSupportedException))]
     public void IBindingListApplySort()
     {
-      IBindingList l = new JObject();
-      l.ApplySort(null, ListSortDirection.Ascending);
+      ExceptionAssert.Throws<NotSupportedException>(
+        "Specified method is not supported.",
+        () =>
+        {
+          IBindingList l = new JObject();
+          l.ApplySort(null, ListSortDirection.Ascending);
+        });
     }
 
     [Test]
-    [ExpectedException(typeof(NotSupportedException))]
     public void IBindingListRemoveSort()
     {
-      IBindingList l = new JObject();
-      l.RemoveSort();
+      ExceptionAssert.Throws<NotSupportedException>(
+        "Specified method is not supported.",
+        () =>
+        {
+          IBindingList l = new JObject();
+          l.RemoveSort();
+        });
     }
 
     [Test]
@@ -1295,11 +1301,15 @@ Parameter name: arrayIndex"
     }
 
     [Test]
-    [ExpectedException(typeof(NotSupportedException))]
     public void IBindingListFind()
     {
-      IBindingList l = new JObject();
-      l.Find(null, null);
+      ExceptionAssert.Throws<NotSupportedException>(
+        "Specified method is not supported.",
+        () =>
+        {
+          IBindingList l = new JObject();
+          l.Find(null, null);
+        });
     }
 
     [Test]
@@ -1310,11 +1320,15 @@ Parameter name: arrayIndex"
     }
 
     [Test]
-    [ExpectedException(typeof(Exception), ExpectedMessage = "Could not determine new value to add to 'Newtonsoft.Json.Linq.JObject'.")]
     public void IBindingListAddNew()
     {
-      IBindingList l = new JObject();
-      l.AddNew();
+      ExceptionAssert.Throws<JsonException>(
+        "Could not determine new value to add to 'Newtonsoft.Json.Linq.JObject'.",
+        () =>
+        {
+          IBindingList l = new JObject();
+          l.AddNew();
+        });
     }
 
     [Test]
@@ -1580,7 +1594,7 @@ Parameter name: arrayIndex"
     [Test]
     public void NumberTooBigForInt64()
     {
-      ExceptionAssert.Throws<JsonReaderException>("JSON integer 307953220000517141511 is too large or small for an Int64. Line 1, position 30.",
+      ExceptionAssert.Throws<JsonReaderException>("JSON integer 307953220000517141511 is too large or small for an Int64. Path 'code', line 1, position 30.",
         () =>
         {
           string json = @"{""code"": 307953220000517141511}";
@@ -1592,7 +1606,7 @@ Parameter name: arrayIndex"
     [Test]
     public void ParseIncomplete()
     {
-      ExceptionAssert.Throws<Exception>("Unexpected end of content while loading JObject.",
+      ExceptionAssert.Throws<Exception>("Unexpected end of content while loading JObject. Path 'foo', line 1, position 6.",
         () =>
         {
           JObject.Parse("{ foo:");
@@ -1631,7 +1645,7 @@ Parameter name: arrayIndex"
     [Test]
     public void LoadFromNestedObjectIncomplete()
     {
-      ExceptionAssert.Throws<Exception>("Unexpected end of content while loading JObject.",
+      ExceptionAssert.Throws<JsonReaderException>("Unexpected end of content while loading JObject. Path 'short.error.code', line 6, position 15.",
       () =>
       {
         string jsonText = @"{
@@ -1729,7 +1743,7 @@ Parameter name: arrayIndex"
     [Test]
     public void ParseAdditionalContent()
     {
-      ExceptionAssert.Throws<JsonReaderException>("Additional text encountered after finished reading JSON content: ,. Line 10, position 2.",
+      ExceptionAssert.Throws<JsonReaderException>("Additional text encountered after finished reading JSON content: ,. Path '', line 10, position 2.",
       () =>
       {
         string json = @"{

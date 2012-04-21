@@ -269,7 +269,7 @@ namespace Newtonsoft.Json.Bson
             success = ReadCodeWScope();
             break;
           default:
-            throw CreateReaderException(this, "Unexpected state: {0}".FormatWith(CultureInfo.InvariantCulture, _bsonReaderState));
+            throw JsonReaderException.Create(this, "Unexpected state: {0}".FormatWith(CultureInfo.InvariantCulture, _bsonReaderState));
         }
 
         if (!success)
@@ -373,7 +373,7 @@ namespace Newtonsoft.Json.Bson
             }
             else
             {
-              throw CreateReaderException(this, "Unexpected state when reading BSON reference: " + _bsonReaderState);
+              throw JsonReaderException.Create(this, "Unexpected state when reading BSON reference: " + _bsonReaderState);
             }
           }
         case State.PostValue:
@@ -392,11 +392,11 @@ namespace Newtonsoft.Json.Bson
             }
             else
             {
-              throw CreateReaderException(this, "Unexpected state when reading BSON reference: " + _bsonReaderState);
+              throw JsonReaderException.Create(this, "Unexpected state when reading BSON reference: " + _bsonReaderState);
             }
           }
         default:
-          throw CreateReaderException(this, "Unexpected state when reading BSON reference: " + CurrentState);
+          throw JsonReaderException.Create(this, "Unexpected state when reading BSON reference: " + CurrentState);
       }
     }
 
@@ -449,7 +449,7 @@ namespace Newtonsoft.Json.Bson
           else if (context.Position == lengthMinusEnd)
           {
             if (ReadByte() != 0)
-              throw CreateReaderException(this, "Unexpected end of object byte value.");
+              throw JsonReaderException.Create(this, "Unexpected end of object byte value.");
 
             PopContext();
             if (_currentContext != null)
@@ -461,7 +461,7 @@ namespace Newtonsoft.Json.Bson
           }
           else
           {
-            throw CreateReaderException(this, "Read past end of current container context.");
+            throw JsonReaderException.Create(this, "Read past end of current container context.");
           }
         case State.ConstructorStart:
           break;

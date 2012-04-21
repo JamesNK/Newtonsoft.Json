@@ -470,7 +470,7 @@ namespace Newtonsoft.Json.Bson
       ValidationUtils.ArgumentNotNull(value, "value");
 
       if (value.Length != 12)
-        throw new Exception("An object id must be 12 bytes");
+        throw new ArgumentException("An object id must be 12 bytes", "value");
 
       // hack to update the writer state
       AutoComplete(JsonToken.Undefined);

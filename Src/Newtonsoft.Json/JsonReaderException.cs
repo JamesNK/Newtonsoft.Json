@@ -24,7 +24,9 @@
 #endregion
 
 using System;
+using System.Globalization;
 using System.Runtime.Serialization;
+using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json
 {
@@ -34,7 +36,7 @@ namespace Newtonsoft.Json
 #if !(SILVERLIGHT || WINDOWS_PHONE || NETFX_CORE || PORTABLE)
   [Serializable]
 #endif
-  public class JsonReaderException : Exception
+  public class JsonReaderException : JsonException
   {
     /// <summary>
     /// Gets the line number indicating where the error occurred.
@@ -103,6 +105,53 @@ namespace Newtonsoft.Json
       Path = path;
       LineNumber = lineNumber;
       LinePosition = linePosition;
+    }
+
+    internal static JsonReaderException Create(JsonReader reader, string message)
+    {
+      return Create(reader, message, null);
+    }
+
+    internal static JsonReaderException Create(JsonReader reader, string message, Exception ex)
+    {
+      return Create(reader as IJsonLineInfo, reader.Path, message, ex);
+    }
+
+    internal static JsonReaderException Create(IJsonLineInfo lineInfo, string path, string message, Exception ex)
+    {
+      message = FormatExceptionMessage(lineInfo, path, message);
+
+      int lineNumber;
+      int linePosition;
+      if (lineInfo != null && lineInfo.HasLineInfo())
+      {
+        lineNumber = lineInfo.LineNumber;
+        linePosition = lineInfo.LinePosition;
+      }
+      else
+      {
+        lineNumber = 0;
+        linePosition = 0;
+      }
+
+      return new JsonReaderException(message, ex, path, lineNumber, linePosition);
+    }
+
+    internal static string FormatExceptionMessage(IJsonLineInfo lineInfo, string path, string message)
+    {
+      message = message.Trim();
+
+      if (!message.EndsWith("."))
+        message += ".";
+
+      message += " Path '{0}'".FormatWith(CultureInfo.InvariantCulture, path);
+
+      if (lineInfo != null && lineInfo.HasLineInfo())
+        message += ", line {0}, position {1}".FormatWith(CultureInfo.InvariantCulture, lineInfo.LineNumber, lineInfo.LinePosition);
+
+      message += ".";
+
+      return message;
     }
   }
 }

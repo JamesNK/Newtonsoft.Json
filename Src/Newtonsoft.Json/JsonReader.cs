@@ -273,7 +273,7 @@ namespace Newtonsoft.Json
         if (_maxDepth != null && Depth + 1 > _maxDepth && !_hasExceededMaxDepth)
         {
           _hasExceededMaxDepth = true;
-          throw CreateReaderException(this, "The reader's MaxDepth of {0} has been exceeded.".FormatWith(CultureInfo.InvariantCulture, _maxDepth));
+          throw JsonReaderException.Create(this, "The reader's MaxDepth of {0} has been exceeded.".FormatWith(CultureInfo.InvariantCulture, _maxDepth));
         }
       }
     }
@@ -388,14 +388,14 @@ namespace Newtonsoft.Json
         }
         else
         {
-          throw CreateReaderException(this, "Could not convert string to DateTimeOffset: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
+          throw JsonReaderException.Create(this, "Could not convert string to DateTimeOffset: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
         }
       }
 
       if (TokenType == JsonToken.EndArray)
         return null;
 
-      throw CreateReaderException(this, "Error reading date. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+      throw JsonReaderException.Create(this, "Error reading date. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
     }
 #endif
 
@@ -453,17 +453,17 @@ namespace Newtonsoft.Json
               // skip
               break;
             default:
-              throw CreateReaderException(this, "Unexpected token when reading bytes: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+              throw JsonReaderException.Create(this, "Unexpected token when reading bytes: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
           }
         }
 
-        throw CreateReaderException(this, "Unexpected end when reading bytes.");
+        throw JsonReaderException.Create(this, "Unexpected end when reading bytes.");
       }
 
       if (TokenType == JsonToken.EndArray)
         return null;
 
-      throw CreateReaderException(this, "Error reading bytes. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+      throw JsonReaderException.Create(this, "Error reading bytes. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
     }
 
     internal decimal? ReadAsDecimalInternal()
@@ -500,14 +500,14 @@ namespace Newtonsoft.Json
         }
         else
         {
-          throw CreateReaderException(this, "Could not convert string to decimal: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
+          throw JsonReaderException.Create(this, "Could not convert string to decimal: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
         }
       }
 
       if (TokenType == JsonToken.EndArray)
         return null;
 
-      throw CreateReaderException(this, "Error reading decimal. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+      throw JsonReaderException.Create(this, "Error reading decimal. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
     }
 
     internal int? ReadAsInt32Internal()
@@ -544,14 +544,14 @@ namespace Newtonsoft.Json
         }
         else
         {
-          throw CreateReaderException(this, "Could not convert string to integer: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
+          throw JsonReaderException.Create(this, "Could not convert string to integer: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
         }
       }
 
       if (TokenType == JsonToken.EndArray)
         return null;
 
-      throw CreateReaderException(this, "Error reading integer. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+      throw JsonReaderException.Create(this, "Error reading integer. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
     }
 
     internal string ReadAsStringInternal()
@@ -593,7 +593,7 @@ namespace Newtonsoft.Json
       if (TokenType == JsonToken.EndArray)
         return null;
 
-      throw CreateReaderException(this, "Error reading string. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+      throw JsonReaderException.Create(this, "Error reading string. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
     }
 
     internal DateTime? ReadAsDateTimeInternal()
@@ -633,14 +633,14 @@ namespace Newtonsoft.Json
         }
         else
         {
-          throw CreateReaderException(this, "Could not convert string to DateTime: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
+          throw JsonReaderException.Create(this, "Could not convert string to DateTime: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
         }
       }
 
       if (TokenType == JsonToken.EndArray)
         return null;
 
-      throw CreateReaderException(this, "Error reading date. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+      throw JsonReaderException.Create(this, "Error reading date. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
     }
 
     private bool IsWrappedInTypeObject()
@@ -650,7 +650,7 @@ namespace Newtonsoft.Json
       if (TokenType == JsonToken.StartObject)
       {
         if (!ReadInternal())
-          throw CreateReaderException(this, "Unexpected end when reading bytes.");
+          throw JsonReaderException.Create(this, "Unexpected end when reading bytes.");
 
         if (Value.ToString() == "$type")
         {
@@ -665,7 +665,7 @@ namespace Newtonsoft.Json
           }
         }
 
-        throw CreateReaderException(this, "Error reading bytes. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, JsonToken.StartObject));
+        throw JsonReaderException.Create(this, "Error reading bytes. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, JsonToken.StartObject));
       }
 
       return false;
@@ -771,7 +771,7 @@ namespace Newtonsoft.Json
       JsonContainerType currentObject = Pop();
 
       if (GetTypeForCloseToken(endToken) != currentObject)
-        throw CreateReaderException(this, "JsonToken {0} is not valid for closing JsonType {1}.".FormatWith(CultureInfo.InvariantCulture, endToken, currentObject));
+        throw JsonReaderException.Create(this, "JsonToken {0} is not valid for closing JsonType {1}.".FormatWith(CultureInfo.InvariantCulture, endToken, currentObject));
 
       _currentState = (Peek() != JsonContainerType.None) ? State.PostValue : State.Finished;
     }
@@ -798,7 +798,7 @@ namespace Newtonsoft.Json
           _currentState = State.Finished;
           break;
         default:
-          throw CreateReaderException(this, "While setting the reader state back to current object an unexpected JsonType was encountered: {0}".FormatWith(CultureInfo.InvariantCulture, currentObject));
+          throw JsonReaderException.Create(this, "While setting the reader state back to current object an unexpected JsonType was encountered: {0}".FormatWith(CultureInfo.InvariantCulture, currentObject));
       }
     }
 
@@ -844,7 +844,7 @@ namespace Newtonsoft.Json
         case JsonToken.EndConstructor:
           return JsonContainerType.Constructor;
         default:
-          throw CreateReaderException(this, "Not a valid close JsonToken: {0}".FormatWith(CultureInfo.InvariantCulture, token));
+          throw JsonReaderException.Create(this, "Not a valid close JsonToken: {0}".FormatWith(CultureInfo.InvariantCulture, token));
       }
     }
 
@@ -874,47 +874,6 @@ namespace Newtonsoft.Json
       _currentState = State.Closed;
       _tokenType = JsonToken.None;
       _value = null;
-    }
-
-    internal JsonReaderException CreateReaderException(JsonReader reader, string message)
-    {
-      return CreateReaderException(reader, message, null);
-    }
-
-    internal JsonReaderException CreateReaderException(JsonReader reader, string message, Exception ex)
-    {
-      return CreateReaderException(reader as IJsonLineInfo, message, ex);
-    }
-
-    internal JsonReaderException CreateReaderException(IJsonLineInfo lineInfo, string message, Exception ex)
-    {
-      message = FormatExceptionMessage(lineInfo, message);
-
-      int lineNumber;
-      int linePosition;
-      if (lineInfo != null && lineInfo.HasLineInfo())
-      {
-        lineNumber = lineInfo.LineNumber;
-        linePosition = lineInfo.LinePosition;
-      }
-      else
-      {
-        lineNumber = 0;
-        linePosition = 0;
-      }
-
-      return new JsonReaderException(message, ex, Path, lineNumber, linePosition);
-    }
-
-    internal static string FormatExceptionMessage(IJsonLineInfo lineInfo, string message)
-    {
-      if (!message.EndsWith("."))
-        message += ".";
-
-      if (lineInfo != null && lineInfo.HasLineInfo())
-        message += " Line {0}, position {1}.".FormatWith(CultureInfo.InvariantCulture, lineInfo.LineNumber, lineInfo.LinePosition);
-
-      return message;
     }
   }
 }

@@ -39,7 +39,7 @@ namespace Newtonsoft.Json.Utilities
         {
           Type binderType = Type.GetType(BinderTypeName, false);
           if (binderType == null)
-            throw new Exception("Could not resolve type '{0}'. You may need to add a reference to Microsoft.CSharp.dll to work with dynamic types.".FormatWith(CultureInfo.InvariantCulture, BinderTypeName));
+            throw new InvalidOperationException("Could not resolve type '{0}'. You may need to add a reference to Microsoft.CSharp.dll to work with dynamic types.".FormatWith(CultureInfo.InvariantCulture, BinderTypeName));
 
           // None
           _getCSharpArgumentInfoArray = CreateSharpArgumentInfoArray(0);

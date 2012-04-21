@@ -123,11 +123,6 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException)
-#if !NETFX_CORE
-      , ExpectedMessage = "Could not convert string to DateTimeOffset: blablahbla. Line 1, position 22."
-#endif
-      )]
     public void ReadAsDateTimeOffsetBadString()
     {
       string json = @"{""Offset"":""blablahbla""}";
@@ -142,15 +137,15 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
 
-      reader.ReadAsDateTimeOffset();
+      ExceptionAssert.Throws<JsonReaderException>(
+        "Could not convert string to DateTimeOffset: blablahbla. Path 'Offset', line 1, position 22.",
+        () =>
+          {
+            reader.ReadAsDateTimeOffset();
+          });
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException)
-#if !NETFX_CORE
-      , ExpectedMessage = "Error reading date. Unexpected token: Boolean. Line 1, position 14."
-#endif
-      )]
     public void ReadAsDateTimeOffsetBoolean()
     {
       string json = @"{""Offset"":true}";
@@ -165,7 +160,12 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
 
-      reader.ReadAsDateTimeOffset();
+      ExceptionAssert.Throws<JsonReaderException>(
+        "Error reading date. Unexpected token: Boolean. Path 'Offset', line 1, position 14.",
+        () =>
+        {
+          reader.ReadAsDateTimeOffset();
+        });
     }
 
     [Test]
@@ -311,26 +311,27 @@ namespace Newtonsoft.Json.Tests.Linq
     [Test]
     public void ReadBytesFailure()
     {
-      ExceptionAssert.Throws<JsonReaderException>("Error reading bytes. Unexpected token: Integer.",
-      () =>
-      {
-        JObject o =
-          new JObject(
-            new JProperty("Test1", 1)
-          );
+      ExceptionAssert.Throws<JsonReaderException>(
+        "Error reading bytes. Unexpected token: Integer. Path 'Test1'.",
+        () =>
+          {
+            JObject o =
+              new JObject(
+                new JProperty("Test1", 1)
+                );
 
-        using (JTokenReader jsonReader = new JTokenReader(o))
-        {
-          jsonReader.Read();
-          Assert.AreEqual(JsonToken.StartObject, jsonReader.TokenType);
+            using (JTokenReader jsonReader = new JTokenReader(o))
+            {
+              jsonReader.Read();
+              Assert.AreEqual(JsonToken.StartObject, jsonReader.TokenType);
 
-          jsonReader.Read();
-          Assert.AreEqual(JsonToken.PropertyName, jsonReader.TokenType);
-          Assert.AreEqual("Test1", jsonReader.Value);
+              jsonReader.Read();
+              Assert.AreEqual(JsonToken.PropertyName, jsonReader.TokenType);
+              Assert.AreEqual("Test1", jsonReader.Value);
 
-          jsonReader.ReadAsBytes();
-        }
-      });
+              jsonReader.ReadAsBytes();
+            }
+          });
     }
 
     public class HasBytes
@@ -480,11 +481,6 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException)
-#if !NETFX_CORE
-      , ExpectedMessage = "Could not convert string to integer: hi. Line 1, position 12."
-#endif
-      )]
     public void ReadAsInt32BadString()
     {
       string json = @"{""Name"":""hi""}";
@@ -499,18 +495,15 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
 
-      reader.ReadAsInt32();
-      Assert.AreEqual(JsonToken.Integer, reader.TokenType);
-      Assert.AreEqual(typeof(int), reader.ValueType);
-      Assert.AreEqual(1, reader.Value);
+      ExceptionAssert.Throws<JsonReaderException>(
+        "Could not convert string to integer: hi. Path 'Name', line 1, position 12.",
+        () =>
+          {
+            reader.ReadAsInt32();
+          });
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException)
-#if !NETFX_CORE
-      , ExpectedMessage = "Error reading integer. Unexpected token: Boolean. Line 1, position 12."
-#endif
-      )]
     public void ReadAsInt32Boolean()
     {
       string json = @"{""Name"":true}";
@@ -525,7 +518,12 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
 
-      reader.ReadAsInt32();
+      ExceptionAssert.Throws<JsonReaderException>(
+        "Error reading integer. Unexpected token: Boolean. Path 'Name', line 1, position 12.",
+        () =>
+          {
+            reader.ReadAsInt32();
+          });
     }
 
     [Test]
@@ -550,11 +548,6 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException)
-#if !NETFX_CORE
-      , ExpectedMessage = "Could not convert string to decimal: blah. Line 1, position 14."
-#endif
-      )]
     public void ReadAsDecimalBadString()
     {
       string json = @"{""Name"":""blah""}";
@@ -569,15 +562,15 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
 
-      reader.ReadAsDecimal();
+      ExceptionAssert.Throws<JsonReaderException>(
+        "Could not convert string to decimal: blah. Path 'Name', line 1, position 14.",
+        () =>
+        {
+          reader.ReadAsDecimal();
+        });
     }
 
     [Test]
-    [ExpectedException(typeof(JsonReaderException)
-#if !NETFX_CORE
-      , ExpectedMessage = "Error reading decimal. Unexpected token: Boolean. Line 1, position 12."
-#endif
-      )]
     public void ReadAsDecimalBoolean()
     {
       string json = @"{""Name"":true}";
@@ -592,7 +585,12 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
 
-      reader.ReadAsDecimal();
+      ExceptionAssert.Throws<JsonReaderException>(
+        "Error reading decimal. Unexpected token: Boolean. Path 'Name', line 1, position 12.",
+        () =>
+          {
+            reader.ReadAsDecimal();
+          });
     }
 
     [Test]

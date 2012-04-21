@@ -565,15 +565,15 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentException)
-#if !NETFX_CORE
-      , ExpectedMessage = "Can not add Newtonsoft.Json.Linq.JValue to Newtonsoft.Json.Linq.JObject."
-#endif
-      )]
     public void AddValueToObject()
     {
-      JObject o = new JObject();
-      o.Add(5);
+      ExceptionAssert.Throws<ArgumentException>(
+        "Can not add Newtonsoft.Json.Linq.JValue to Newtonsoft.Json.Linq.JObject.",
+        () =>
+        {
+          JObject o = new JObject();
+          o.Add(5);
+        });
     }
 
     [Test]
@@ -770,7 +770,7 @@ namespace Newtonsoft.Json.Tests.Linq
     [Test]
     public void ParseAdditionalContent()
     {
-      ExceptionAssert.Throws<JsonReaderException>("Additional text encountered after finished reading JSON content: ,. Line 5, position 2.",
+      ExceptionAssert.Throws<JsonReaderException>("Additional text encountered after finished reading JSON content: ,. Path '', line 5, position 2.",
         () =>
         {
           string json = @"[

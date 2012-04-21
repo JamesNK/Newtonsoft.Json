@@ -205,8 +205,8 @@ namespace Newtonsoft.Json.Tests.Serialization
 #else
       Assert.AreEqual("[1] - 1 - The string was not recognized as a valid DateTime. There is a unknown word starting at index 0.", errors[0]);
 #endif
-      Assert.AreEqual("[2] - 2 - Unexpected token parsing date. Expected String, got StartArray.", errors[1]);
-      Assert.AreEqual("[4] - 4 - Cannot convert null value to System.DateTime.", errors[2]);
+      Assert.AreEqual("[2] - 2 - Unexpected token parsing date. Expected String, got StartArray. Path '[2]', line 4, position 10.", errors[1]);
+      Assert.AreEqual("[4] - 4 - Cannot convert null value to System.DateTime. Path '[4]', line 8, position 13.", errors[2]);
     }
 
     [Test]
@@ -294,10 +294,10 @@ namespace Newtonsoft.Json.Tests.Serialization
         e = ex;
       }
 
-      Assert.AreEqual(@"Could not convert string to DateTime: kjhkjhkjhkjh. Line 1, position 16.", e.Message);
+      Assert.AreEqual(@"Could not convert string to DateTime: kjhkjhkjhkjh. Path '[0][0]', line 1, position 16.", e.Message);
 
       Assert.AreEqual(1, errors.Count);
-      Assert.AreEqual(@"[0][0] - 0 - Could not convert string to DateTime: kjhkjhkjhkjh. Line 1, position 16.", errors[0]);
+      Assert.AreEqual(@"[0][0] - 0 - Could not convert string to DateTime: kjhkjhkjhkjh. Path '[0][0]', line 1, position 16.", errors[0]);
     }
 
     [Test]
@@ -314,8 +314,8 @@ namespace Newtonsoft.Json.Tests.Serialization
       serializer.Deserialize(new JsonTextReader(new StringReader(json)), typeof (MyTypeWithRequiredMembers));
       
       Assert.AreEqual(2, errors.Count);
-      Assert.AreEqual(" - Required1 - Required property 'Required1' not found in JSON. Line 1, position 2.", errors[0]);
-      Assert.AreEqual(" - Required2 - Required property 'Required2' not found in JSON. Line 1, position 2.", errors[1]);
+      Assert.AreEqual(" - Required1 - Required property 'Required1' not found in JSON. Path '', line 1, position 2.", errors[0]);
+      Assert.AreEqual(" - Required2 - Required property 'Required2' not found in JSON. Path '', line 1, position 2.", errors[1]);
     }
 
     [Test]
@@ -335,8 +335,8 @@ namespace Newtonsoft.Json.Tests.Serialization
       serializer.Deserialize(new JsonTextReader(new StringReader(json)), typeof(int[]));
 
       Assert.AreEqual(2, errors.Count);
-      Assert.AreEqual("[0] - 0 - Could not convert string to integer: a. Line 1, position 4.", errors[0]);
-      Assert.AreEqual("[1] - 1 - Could not convert string to integer: b. Line 1, position 8.", errors[1]);
+      Assert.AreEqual("[0] - 0 - Could not convert string to integer: a. Path '[0]', line 1, position 4.", errors[0]);
+      Assert.AreEqual("[1] - 1 - Could not convert string to integer: b. Path '[1]', line 1, position 8.", errors[1]);
     }
 
     [Test]

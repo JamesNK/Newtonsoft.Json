@@ -45,7 +45,7 @@ namespace Newtonsoft.Json.Converters
       if (reader.TokenType == JsonToken.Null)
       {
         if (!isNullable)
-          throw new Exception("Could not deserialize Null to KeyValuePair.");
+          throw JsonSerializationException.Create(reader, "Cannot convert null value to KeyValuePair.");
 
         return null;
       }

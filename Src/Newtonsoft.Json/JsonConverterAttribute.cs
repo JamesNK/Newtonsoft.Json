@@ -41,7 +41,7 @@ namespace Newtonsoft.Json
       }
       catch (Exception ex)
       {
-        throw new Exception("Error creating {0}".FormatWith(CultureInfo.InvariantCulture, converterType), ex);
+        throw new JsonException("Error creating {0}".FormatWith(CultureInfo.InvariantCulture, converterType), ex);
       }
     }
   }

@@ -262,10 +262,10 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException))]
     public void DeserializeWithBadTypeName()
     {
       string employeeRef = typeof(EmployeeReference).AssemblyQualifiedName;
+      string personRef = typeof(Person).AssemblyQualifiedName;
 
       string json = @"{
   ""$id"": ""1"",
@@ -274,11 +274,16 @@ namespace Newtonsoft.Json.Tests.Serialization
   ""Manager"": null
 }";
 
-      JsonConvert.DeserializeObject(json, typeof(Person), new JsonSerializerSettings
-      {
-        TypeNameHandling = TypeNameHandling.Objects,
-        TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
-      });
+      ExceptionAssert.Throws<JsonSerializationException>(
+        @"Type specified in JSON '" + employeeRef + @"' is not compatible with '" + personRef + @"'. Path '$type', line 3, position 143.",
+        () =>
+          {
+            JsonConvert.DeserializeObject(json, typeof (Person), new JsonSerializerSettings
+              {
+                TypeNameHandling = TypeNameHandling.Objects,
+                TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
+              });
+          });
     }
 
     [Test]
@@ -302,11 +307,6 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException)
-#if !NETFX_CORE
-      , ExpectedMessage = "Type specified in JSON 'Newtonsoft.Json.Tests.TestObjects.Employee' was not resolved. Line 3, position 56."
-#endif
-      )]
     public void DeserializeTypeNameOnly()
     {
       string json = @"{
@@ -316,10 +316,15 @@ namespace Newtonsoft.Json.Tests.Serialization
   ""Manager"": null
 }";
 
-      JsonConvert.DeserializeObject(json, null, new JsonSerializerSettings
-      {
-        TypeNameHandling = TypeNameHandling.Objects
-      });
+      ExceptionAssert.Throws<JsonSerializationException>(
+        "Type specified in JSON 'Newtonsoft.Json.Tests.TestObjects.Employee' was not resolved. Path '$type', line 3, position 56.",
+        () =>
+          {
+            JsonConvert.DeserializeObject(json, null, new JsonSerializerSettings
+              {
+                TypeNameHandling = TypeNameHandling.Objects
+              });
+          });
     }
 
     public interface ICorrelatedMessage

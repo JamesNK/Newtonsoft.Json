@@ -140,7 +140,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     [Test]
     public void PopulateWithBadJson()
     {
-      ExceptionAssert.Throws<JsonSerializationException>("Unexpected initial token 'Integer' when populating object. Expected JSON object or array. Line 1, position 1.",
+      ExceptionAssert.Throws<JsonSerializationException>("Unexpected initial token 'Integer' when populating object. Expected JSON object or array. Path '', line 1, position 1.",
         () =>
         {
           JsonConvert.PopulateObject("1", new Person());

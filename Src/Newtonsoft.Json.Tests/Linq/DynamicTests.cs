@@ -86,16 +86,16 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentException)
-#if !NETFX_CORE
-      , ExpectedMessage = "Could not determine JSON object type for type System.String[]."
-#endif
-      )]
     public void JObjectPropertyNameWithNonToken()
     {
-      dynamic d = new JObject();
+      ExceptionAssert.Throws<ArgumentException>(
+        "Could not determine JSON object type for type System.String[].",
+        () =>
+        {
+          dynamic d = new JObject();
 
-      d.First = new [] {"One", "II", "3"};
+          d.First = new[] { "One", "II", "3" };
+        });
     }
 
     [Test]

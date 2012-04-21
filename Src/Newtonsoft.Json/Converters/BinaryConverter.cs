@@ -79,7 +79,7 @@ namespace Newtonsoft.Json.Converters
       if (value is SqlBinary)
         return ((SqlBinary) value).Value;
 
-      throw new Exception("Unexpected value type when writing binary: {0}".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
+      throw new JsonSerializationException("Unexpected value type when writing binary: {0}".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
     }
 
     /// <summary>
@@ -99,7 +99,7 @@ namespace Newtonsoft.Json.Converters
       if (reader.TokenType == JsonToken.Null)
       {
         if (!ReflectionUtils.IsNullable(objectType))
-          throw new Exception("Cannot convert null value to {0}.".FormatWith(CultureInfo.InvariantCulture, objectType));
+          throw JsonSerializationException.Create(reader, "Cannot convert null value to {0}.".FormatWith(CultureInfo.InvariantCulture, objectType));
 
         return null;
       }
@@ -119,7 +119,7 @@ namespace Newtonsoft.Json.Converters
       }
       else
       {
-        throw new Exception("Unexpected token parsing binary. Expected String or StartArray, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
+        throw JsonSerializationException.Create(reader, "Unexpected token parsing binary. Expected String or StartArray, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
       }
 
       
@@ -131,7 +131,7 @@ namespace Newtonsoft.Json.Converters
       if (t == typeof(SqlBinary))
         return new SqlBinary(data);
 
-      throw new Exception("Unexpected object type when writing binary: {0}".FormatWith(CultureInfo.InvariantCulture, objectType));
+      throw JsonSerializationException.Create(reader, "Unexpected object type when writing binary: {0}".FormatWith(CultureInfo.InvariantCulture, objectType));
     }
 
     private byte[] ReadByteArray(JsonReader reader)
@@ -151,11 +151,11 @@ namespace Newtonsoft.Json.Converters
             // skip
             break;
           default:
-            throw new Exception("Unexpected token when reading bytes: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
+            throw JsonSerializationException.Create(reader, "Unexpected token when reading bytes: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
         }
       }
 
-      throw new Exception("Unexpected end when reading bytes.");
+      throw JsonSerializationException.Create(reader, "Unexpected end when reading bytes.");
     }
 
     /// <summary>

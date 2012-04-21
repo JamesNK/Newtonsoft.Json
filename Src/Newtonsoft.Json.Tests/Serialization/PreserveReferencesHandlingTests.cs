@@ -94,15 +94,21 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException))]
     public void SerializeCircularListsError()
     {
+      string classRef = typeof(CircularList).FullName;
+
       CircularList circularList = new CircularList();
       circularList.Add(null);
       circularList.Add(new CircularList { null });
       circularList.Add(new CircularList { new CircularList { circularList } });
 
-      JsonConvert.SerializeObject(circularList, Formatting.Indented);
+      ExceptionAssert.Throws<JsonSerializationException>(
+        "Self referencing loop detected for type '" + classRef  + "'.",
+        () =>
+        {
+          JsonConvert.SerializeObject(circularList, Formatting.Indented);
+        });
     }
 
     [Test]
@@ -207,11 +213,6 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException)
-#if !NETFX_CORE
-      , ExpectedMessage = @"Cannot preserve reference to array or readonly list: System.String[][]. Line 3, position 15."
-#endif
-      )]
     public void DeserializeArraysWithPreserveObjectReferences()
     {
       string json = @"{
@@ -240,8 +241,13 @@ namespace Newtonsoft.Json.Tests.Serialization
   ]
 }";
 
-      JsonConvert.DeserializeObject<string[][]>(json,
-        new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.All });
+      ExceptionAssert.Throws<JsonSerializationException>(
+        @"Cannot preserve reference to array or readonly list: System.String[][]. Path '$values', line 3, position 15.",
+        () =>
+          {
+            JsonConvert.DeserializeObject<string[][]>(json,
+              new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.All });
+          });
     }
 
     public class CircularDictionary : Dictionary<string, CircularDictionary>
@@ -249,14 +255,20 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException))]
     public void SerializeCircularDictionarysError()
     {
+      string classRef = typeof(CircularDictionary).FullName;
+
       CircularDictionary circularDictionary = new CircularDictionary();
-      circularDictionary.Add("other", new CircularDictionary { { "blah", null } });
+      circularDictionary.Add("other", new CircularDictionary {{"blah", null}});
       circularDictionary.Add("self", circularDictionary);
 
-      JsonConvert.SerializeObject(circularDictionary, Formatting.Indented);
+      ExceptionAssert.Throws<JsonSerializationException>(
+        @"Self referencing loop detected for type '" + classRef + "'.",
+        () =>
+          {
+            JsonConvert.SerializeObject(circularDictionary, Formatting.Indented);
+          });
     }
 
     [Test]
@@ -277,18 +289,18 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 
     [Test]
-    [ExpectedException(typeof(JsonSerializationException)
-#if !NETFX_CORE
-      , ExpectedMessage = @"Unexpected end when deserializing object. Line 2, position 9."
-#endif
-      )]
     public void UnexpectedEnd()
     {
       string json = @"{
   ""$id"":";
 
-      JsonConvert.DeserializeObject<string[][]>(json,
-        new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.All });
+      ExceptionAssert.Throws<JsonSerializationException>(
+        @"Unexpected end when deserializing object. Path '$id', line 2, position 9.",
+        () =>
+          {
+            JsonConvert.DeserializeObject<string[][]>(json,
+              new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.All });
+          });
     }
 
     public class CircularReferenceClassConverter : JsonConverter

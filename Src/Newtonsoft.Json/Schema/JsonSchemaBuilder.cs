@@ -83,7 +83,7 @@ namespace Newtonsoft.Json.Schema
     private JsonSchema BuildSchema()
     {
       if (_reader.TokenType != JsonToken.StartObject)
-        throw new Exception("Expected StartObject while parsing schema object, got {0}.".FormatWith(CultureInfo.InvariantCulture, _reader.TokenType));
+        throw JsonReaderException.Create(_reader, "Expected StartObject while parsing schema object, got {0}.".FormatWith(CultureInfo.InvariantCulture, _reader.TokenType));
 
       _reader.Read();
       // empty schema object
@@ -105,13 +105,12 @@ namespace Newtonsoft.Json.Schema
         while (_reader.Read() && _reader.TokenType != JsonToken.EndObject)
         {
             if (_reader.TokenType == JsonToken.StartObject)
-                throw new Exception("Found StartObject within the schema reference with the Id '{0}'"
-                                            .FormatWith(CultureInfo.InvariantCulture, id));
+              throw JsonReaderException.Create(_reader, "Found StartObject within the schema reference with the Id '{0}'".FormatWith(CultureInfo.InvariantCulture, id));
         }
 
         JsonSchema referencedSchema = _resolver.GetSchema(id);
         if (referencedSchema == null)
-          throw new Exception("Could not resolve schema reference for Id '{0}'.".FormatWith(CultureInfo.InvariantCulture, id));
+          throw new JsonException("Could not resolve schema reference for Id '{0}'.".FormatWith(CultureInfo.InvariantCulture, id));
 
         return referencedSchema;
       }
@@ -237,7 +236,7 @@ namespace Newtonsoft.Json.Schema
     private void ProcessEnum()
     {
       if (_reader.TokenType != JsonToken.StartArray)
-        throw new Exception("Expected StartArray token while parsing enum values, got {0}.".FormatWith(CultureInfo.InvariantCulture, _reader.TokenType));
+        throw JsonReaderException.Create(_reader, "Expected StartArray token while parsing enum values, got {0}.".FormatWith(CultureInfo.InvariantCulture, _reader.TokenType));
 
       CurrentSchema.Enum = new List<JToken>();
 
@@ -258,7 +257,7 @@ namespace Newtonsoft.Json.Schema
           while (_reader.Read() && _reader.TokenType != JsonToken.EndArray)
           {
             if (_reader.TokenType != JsonToken.StartObject)
-              throw new Exception("Expect object token, got {0}.".FormatWith(CultureInfo.InvariantCulture, _reader.TokenType));
+              throw JsonReaderException.Create(_reader, "Expect object token, got {0}.".FormatWith(CultureInfo.InvariantCulture, _reader.TokenType));
 
             string label = null;
             JToken value = null;
@@ -277,21 +276,21 @@ namespace Newtonsoft.Json.Schema
                   label = (string) _reader.Value;
                   break;
                 default:
-                  throw new Exception("Unexpected property in JSON schema option: {0}.".FormatWith(CultureInfo.InvariantCulture, propertyName));
+                  throw JsonReaderException.Create(_reader, "Unexpected property in JSON schema option: {0}.".FormatWith(CultureInfo.InvariantCulture, propertyName));
               }
             }
 
             if (value == null)
-              throw new Exception("No value specified for JSON schema option.");
+              throw new JsonException("No value specified for JSON schema option.");
 
             if (CurrentSchema.Options.ContainsKey(value))
-              throw new Exception("Duplicate value in JSON schema option collection: {0}".FormatWith(CultureInfo.InvariantCulture, value));
+              throw new JsonException("Duplicate value in JSON schema option collection: {0}".FormatWith(CultureInfo.InvariantCulture, value));
 
             CurrentSchema.Options.Add(value, label);
           }
           break;
         default:
-          throw new Exception("Expected array token, got {0}.".FormatWith(CultureInfo.InvariantCulture, _reader.TokenType));
+          throw JsonReaderException.Create(_reader, "Expected array token, got {0}.".FormatWith(CultureInfo.InvariantCulture, _reader.TokenType));
       }
     }
 
@@ -313,13 +312,13 @@ namespace Newtonsoft.Json.Schema
           while (_reader.Read() && _reader.TokenType != JsonToken.EndArray)
           {
             if (_reader.TokenType != JsonToken.String)
-              throw new Exception("Exception JSON property name string token, got {0}.".FormatWith(CultureInfo.InvariantCulture, _reader.TokenType));
+              throw JsonReaderException.Create(_reader, "Exception JSON property name string token, got {0}.".FormatWith(CultureInfo.InvariantCulture, _reader.TokenType));
 
             CurrentSchema.Identity.Add(_reader.Value.ToString());
           }
           break;
         default:
-          throw new Exception("Expected array or JSON property name string token, got {0}.".FormatWith(CultureInfo.InvariantCulture, _reader.TokenType));
+          throw JsonReaderException.Create(_reader, "Expected array or JSON property name string token, got {0}.".FormatWith(CultureInfo.InvariantCulture, _reader.TokenType));
       }
     }
 
@@ -336,7 +335,7 @@ namespace Newtonsoft.Json.Schema
       Dictionary<string, JsonSchema> patternProperties = new Dictionary<string, JsonSchema>();
 
       if (_reader.TokenType != JsonToken.StartObject)
-        throw new Exception("Expected start object token.");
+        throw JsonReaderException.Create(_reader, "Expected StartObject token.");
 
       while (_reader.Read() && _reader.TokenType != JsonToken.EndObject)
       {
@@ -344,7 +343,7 @@ namespace Newtonsoft.Json.Schema
         _reader.Read();
 
         if (patternProperties.ContainsKey(propertyName))
-          throw new Exception("Property {0} has already been defined in schema.".FormatWith(CultureInfo.InvariantCulture, propertyName));
+          throw new JsonException("Property {0} has already been defined in schema.".FormatWith(CultureInfo.InvariantCulture, propertyName));
 
         patternProperties.Add(propertyName, BuildSchema());
       }
@@ -368,7 +367,7 @@ namespace Newtonsoft.Json.Schema
           }
           break;
         default:
-          throw new Exception("Expected array or JSON schema object token, got {0}.".FormatWith(CultureInfo.InvariantCulture, _reader.TokenType));
+          throw JsonReaderException.Create(_reader, "Expected array or JSON schema object token, got {0}.".FormatWith(CultureInfo.InvariantCulture, _reader.TokenType));
       }
     }
 
@@ -377,7 +376,7 @@ namespace Newtonsoft.Json.Schema
       IDictionary<string, JsonSchema> properties = new Dictionary<string, JsonSchema>();
 
       if (_reader.TokenType != JsonToken.StartObject)
-        throw new Exception("Expected StartObject token while parsing schema properties, got {0}.".FormatWith(CultureInfo.InvariantCulture, _reader.TokenType));
+        throw JsonReaderException.Create(_reader, "Expected StartObject token while parsing schema properties, got {0}.".FormatWith(CultureInfo.InvariantCulture, _reader.TokenType));
 
       while (_reader.Read() && _reader.TokenType != JsonToken.EndObject)
       {
@@ -385,7 +384,7 @@ namespace Newtonsoft.Json.Schema
         _reader.Read();
 
         if (properties.ContainsKey(propertyName))
-          throw new Exception("Property {0} has already been defined in schema.".FormatWith(CultureInfo.InvariantCulture, propertyName));
+          throw new JsonException("Property {0} has already been defined in schema.".FormatWith(CultureInfo.InvariantCulture, propertyName));
 
         properties.Add(propertyName, BuildSchema());
       }
@@ -406,14 +405,14 @@ namespace Newtonsoft.Json.Schema
           while (_reader.Read() && _reader.TokenType != JsonToken.EndArray)
           {
             if (_reader.TokenType != JsonToken.String)
-              throw new Exception("Exception JSON schema type string token, got {0}.".FormatWith(CultureInfo.InvariantCulture, _reader.TokenType));
+              throw JsonReaderException.Create(_reader, "Exception JSON schema type string token, got {0}.".FormatWith(CultureInfo.InvariantCulture, _reader.TokenType));
 
             type = type | MapType(_reader.Value.ToString());
           }
 
           return type;
         default:
-          throw new Exception("Expected array or JSON schema type string token, got {0}.".FormatWith(CultureInfo.InvariantCulture, _reader.TokenType));
+          throw JsonReaderException.Create(_reader, "Expected array or JSON schema type string token, got {0}.".FormatWith(CultureInfo.InvariantCulture, _reader.TokenType));
       }
     }
 
@@ -421,7 +420,7 @@ namespace Newtonsoft.Json.Schema
     {
       JsonSchemaType mappedType;
       if (!JsonSchemaConstants.JsonSchemaTypeMapping.TryGetValue(type, out mappedType))
-        throw new Exception("Invalid JSON schema type: {0}".FormatWith(CultureInfo.InvariantCulture, type));
+        throw new JsonException("Invalid JSON schema type: {0}".FormatWith(CultureInfo.InvariantCulture, type));
 
       return mappedType;
     }

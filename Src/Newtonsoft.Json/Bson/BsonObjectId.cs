@@ -47,7 +47,7 @@ namespace Newtonsoft.Json.Bson
     {
       ValidationUtils.ArgumentNotNull(value, "value");
       if (value.Length != 12)
-        throw new Exception("An ObjectId must be 12 bytes");
+        throw new ArgumentException("An ObjectId must be 12 bytes", "value");
 
       Value = value;
     }

@@ -172,20 +172,20 @@ namespace Newtonsoft.Json.Tests
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentException)
-#if !NETFX_CORE
-      , ExpectedMessage = @"Unsupported type: System.Version. Use the JsonSerializer class to get the object's JSON representation."
-#endif
-      )]
     public void WriteValueObjectWithUnsupportedValue()
     {
-      StringWriter sw = new StringWriter();
-      using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
-      {
-        jsonWriter.WriteStartArray();
-        jsonWriter.WriteValue(new Version(1, 1, 1, 1));
-        jsonWriter.WriteEndArray();
-      }
+      ExceptionAssert.Throws<ArgumentException>(
+        @"Unsupported type: System.Version. Use the JsonSerializer class to get the object's JSON representation.",
+        () =>
+        {
+          StringWriter sw = new StringWriter();
+          using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
+          {
+            jsonWriter.WriteStartArray();
+            jsonWriter.WriteValue(new Version(1, 1, 1, 1));
+            jsonWriter.WriteEndArray();
+          }
+        });
     }
 
     [Test]
@@ -594,43 +594,43 @@ namespace Newtonsoft.Json.Tests
     }
 
     [Test]
-    [ExpectedException(typeof(JsonWriterException)
-#if !NETFX_CORE
-      , ExpectedMessage = "No token to close."
-#endif
-      )]
     public void BadWriteEndArray()
     {
-      StringBuilder sb = new StringBuilder();
-      StringWriter sw = new StringWriter(sb);
+      ExceptionAssert.Throws<JsonWriterException>(
+        "No token to close.",
+        () =>
+        {
+          StringBuilder sb = new StringBuilder();
+          StringWriter sw = new StringWriter(sb);
 
-      using (JsonWriter jsonWriter = new JsonTextWriter(sw))
-      {
-        jsonWriter.WriteStartArray();
+          using (JsonWriter jsonWriter = new JsonTextWriter(sw))
+          {
+            jsonWriter.WriteStartArray();
 
-        jsonWriter.WriteValue(0.0);
+            jsonWriter.WriteValue(0.0);
 
-        jsonWriter.WriteEndArray();
-        jsonWriter.WriteEndArray();
-      }
+            jsonWriter.WriteEndArray();
+            jsonWriter.WriteEndArray();
+          }
+        });
     }
 
     [Test]
-    [ExpectedException(typeof(ArgumentException)
-#if !NETFX_CORE
-      , ExpectedMessage = @"Invalid JavaScript string quote character. Valid quote characters are ' and ""."
-#endif
-      )]
     public void InvalidQuoteChar()
     {
-      StringBuilder sb = new StringBuilder();
-      StringWriter sw = new StringWriter(sb);
+      ExceptionAssert.Throws<ArgumentException>(
+        @"Invalid JavaScript string quote character. Valid quote characters are ' and "".",
+        () =>
+        {
+          StringBuilder sb = new StringBuilder();
+          StringWriter sw = new StringWriter(sb);
 
-      using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
-      {
-        jsonWriter.Formatting = Formatting.Indented;
-        jsonWriter.QuoteChar = '*';
-      }
+          using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
+          {
+            jsonWriter.Formatting = Formatting.Indented;
+            jsonWriter.QuoteChar = '*';
+          }
+        });
     }
 
     [Test]

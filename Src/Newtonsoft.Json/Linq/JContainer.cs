@@ -589,19 +589,19 @@ namespace Newtonsoft.Json.Linq
       ClearItems();
     }
 
-    internal void ReadTokenFrom(JsonReader r)
+    internal void ReadTokenFrom(JsonReader reader)
     {
-      int startDepth = r.Depth;
+      int startDepth = reader.Depth;
 
-      if (!r.Read())
-        throw new Exception("Error reading {0} from JsonReader.".FormatWith(CultureInfo.InvariantCulture, GetType().Name));
+      if (!reader.Read())
+        throw JsonReaderException.Create(reader, "Error reading {0} from JsonReader.".FormatWith(CultureInfo.InvariantCulture, GetType().Name));
 
-      ReadContentFrom(r);
+      ReadContentFrom(reader);
 
-      int endDepth = r.Depth;
+      int endDepth = reader.Depth;
 
       if (endDepth > startDepth)
-        throw new Exception("Unexpected end of content while loading {0}.".FormatWith(CultureInfo.InvariantCulture, GetType().Name));
+        throw JsonReaderException.Create(reader, "Unexpected end of content while loading {0}.".FormatWith(CultureInfo.InvariantCulture, GetType().Name));
     }
 
     internal void ReadContentFrom(JsonReader r)
@@ -908,10 +908,10 @@ namespace Newtonsoft.Json.Linq
       OnAddingNew(args);
 
       if (args.NewObject == null)
-        throw new Exception("Could not determine new value to add to '{0}'.".FormatWith(CultureInfo.InvariantCulture, GetType()));
+        throw new JsonException("Could not determine new value to add to '{0}'.".FormatWith(CultureInfo.InvariantCulture, GetType()));
 
       if (!(args.NewObject is JToken))
-        throw new Exception("New item to be added to collection must be compatible with {0}.".FormatWith(CultureInfo.InvariantCulture, typeof (JToken)));
+        throw new JsonException("New item to be added to collection must be compatible with {0}.".FormatWith(CultureInfo.InvariantCulture, typeof(JToken)));
 
       JToken newItem = (JToken)args.NewObject;
       Add(newItem);

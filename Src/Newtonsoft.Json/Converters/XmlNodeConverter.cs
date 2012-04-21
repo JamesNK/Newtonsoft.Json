@@ -1274,7 +1274,7 @@ namespace Newtonsoft.Json.Converters
       }
       else
       {
-        throw new Exception("Cannot get an XML string value from token type '{0}'.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
+        throw JsonSerializationException.Create(reader, "Cannot get an XML string value from token type '{0}'.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
       }
     }
 

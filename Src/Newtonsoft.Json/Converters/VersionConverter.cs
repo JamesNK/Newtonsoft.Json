@@ -52,7 +52,7 @@ namespace Newtonsoft.Json.Converters
       }
       else
       {
-        throw new Exception("Expected Version object value");
+        throw new JsonSerializationException("Expected Version object value");
       }
     }
 
@@ -81,12 +81,12 @@ namespace Newtonsoft.Json.Converters
           }
           catch (Exception ex)
           {
-            throw new Exception("Error parsing version string: {0}".FormatWith(CultureInfo.InvariantCulture, reader.Value), ex);
+            throw JsonSerializationException.Create(reader, "Error parsing version string: {0}".FormatWith(CultureInfo.InvariantCulture, reader.Value), ex);
           }
         }
         else
         {
-          throw new Exception("Unexpected token or value when parsing version. Token: {0}, Value: {1}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType, reader.Value));
+          throw JsonSerializationException.Create(reader, "Unexpected token or value when parsing version. Token: {0}, Value: {1}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType, reader.Value));
         }
       }
     }

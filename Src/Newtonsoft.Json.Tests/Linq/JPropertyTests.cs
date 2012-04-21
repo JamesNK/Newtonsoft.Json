@@ -42,15 +42,15 @@ namespace Newtonsoft.Json.Tests.Linq
       int? index = null;
 
       l.ListChanged += (sender, args) =>
-      {
-        listChangedType = args.ListChangedType;
-        index = args.NewIndex;
-      };
+        {
+          listChangedType = args.ListChangedType;
+          index = args.NewIndex;
+        };
 
       p.Value = 1;
 
       Assert.AreEqual(ListChangedType.ItemChanged, listChangedType.Value);
-      Assert.AreEqual(0, index.Value); 
+      Assert.AreEqual(0, index.Value);
     }
 #endif
 
@@ -64,45 +64,45 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    [ExpectedException(typeof(Exception)
-#if !NETFX_CORE
-      , ExpectedMessage = "Cannot add or remove items from Newtonsoft.Json.Linq.JProperty."
-#endif
-      )]
     public void IListClear()
     {
       JProperty p = new JProperty("TestProperty", null);
       IList l = p;
 
-      l.Clear();
+      ExceptionAssert.Throws<JsonException>(
+        "Cannot add or remove items from Newtonsoft.Json.Linq.JProperty.",
+        () =>
+        {
+          l.Clear();
+        });
     }
 
     [Test]
-    [ExpectedException(typeof(Exception)
-#if !NETFX_CORE
-      , ExpectedMessage = "Newtonsoft.Json.Linq.JProperty cannot have multiple values."
-#endif
-      )]
     public void IListAdd()
     {
       JProperty p = new JProperty("TestProperty", null);
       IList l = p;
 
-      l.Add(null);
+      ExceptionAssert.Throws<JsonException>(
+        "Newtonsoft.Json.Linq.JProperty cannot have multiple values.",
+        () =>
+          {
+            l.Add(null);
+          });
     }
 
     [Test]
-    [ExpectedException(typeof(Exception)
-#if !NETFX_CORE
-      , ExpectedMessage = "Cannot add or remove items from Newtonsoft.Json.Linq.JProperty."
-#endif
-      )]
     public void IListRemove()
     {
       JProperty p = new JProperty("TestProperty", null);
       IList l = p;
 
-      l.Remove(p.Value);
+      ExceptionAssert.Throws<JsonException>(
+        "Cannot add or remove items from Newtonsoft.Json.Linq.JProperty.",
+        () =>
+          {
+            l.Remove(p.Value);
+          });
     }
 
     [Test]
@@ -136,25 +136,25 @@ namespace Newtonsoft.Json.Tests.Linq
     [Test]
     public void MultiContentConstructor()
     {
-      JProperty p = new JProperty("error", new List<string> { "one", "two" });
+      JProperty p = new JProperty("error", new List<string> {"one", "two"});
       JArray a = (JArray) p.Value;
 
       Assert.AreEqual(a.Count, 2);
-      Assert.AreEqual("one", (string)a[0]);
-      Assert.AreEqual("two", (string)a[1]);
+      Assert.AreEqual("one", (string) a[0]);
+      Assert.AreEqual("two", (string) a[1]);
     }
 
     [Test]
-    [ExpectedException(typeof(Exception)
-#if !NETFX_CORE
-      , ExpectedMessage = "Newtonsoft.Json.Linq.JProperty cannot have multiple values."
-#endif
-      )]
     public void IListGenericAdd()
     {
-      IList<JToken> t = new JProperty("error", new List<string> { "one", "two" });
-      t.Add(1);
-      t.Add(2);
+      IList<JToken> t = new JProperty("error", new List<string> {"one", "two"});
+
+      ExceptionAssert.Throws<JsonException>(
+        "Newtonsoft.Json.Linq.JProperty cannot have multiple values.",
+        () =>
+          {
+            t.Add(1);
+          });
     }
   }
 }

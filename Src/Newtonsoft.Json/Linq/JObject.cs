@@ -289,14 +289,12 @@ namespace Newtonsoft.Json.Linq
       if (reader.TokenType == JsonToken.None)
       {
         if (!reader.Read())
-          throw new Exception("Error reading JObject from JsonReader.");
+          throw JsonReaderException.Create(reader, "Error reading JObject from JsonReader.");
       }
 
       if (reader.TokenType != JsonToken.StartObject)
       {
-          throw new Exception(
-              "Error reading JObject from JsonReader. Current JsonReader item is not an object: {0}".FormatWith(
-                  CultureInfo.InvariantCulture, reader.TokenType));
+        throw JsonReaderException.Create(reader, "Error reading JObject from JsonReader. Current JsonReader item is not an object: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
       }
 
       JObject o = new JObject();
@@ -314,12 +312,12 @@ namespace Newtonsoft.Json.Linq
     /// <returns>A <see cref="JObject"/> populated from the string that contains JSON.</returns>
     public static new JObject Parse(string json)
     {
-      JsonReader jsonReader = new JsonTextReader(new StringReader(json));
+      JsonReader reader = new JsonTextReader(new StringReader(json));
 
-      JObject o = Load(jsonReader);
+      JObject o = Load(reader);
 
-      if (jsonReader.Read() && jsonReader.TokenType != JsonToken.Comment)
-        throw new Exception("Additional text found in JSON string after parsing content.");
+      if (reader.Read() && reader.TokenType != JsonToken.Comment)
+        throw JsonReaderException.Create(reader, "Additional text found in JSON string after parsing content.");
 
       return o;
     }

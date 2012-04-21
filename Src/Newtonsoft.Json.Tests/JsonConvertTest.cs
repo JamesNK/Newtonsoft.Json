@@ -303,7 +303,7 @@ now brown cow?", '"', true);
     [Test]
     public void TestInvalidStrings()
     {
-      ExceptionAssert.Throws<JsonReaderException>("Additional text encountered after finished reading JSON content: t. Line 1, position 19.",
+      ExceptionAssert.Throws<JsonReaderException>("Additional text encountered after finished reading JSON content: t. Path '', line 1, position 19.",
       () =>
       {
         string orig = @"this is a string ""that has quotes"" ";

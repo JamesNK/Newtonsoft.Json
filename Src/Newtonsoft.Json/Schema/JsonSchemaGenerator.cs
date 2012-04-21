@@ -238,7 +238,7 @@ namespace Newtonsoft.Json.Schema
       // test for unresolved circular reference
       if (_stack.Any(tc => tc.Type == type))
       {
-        throw new Exception("Unresolved circular reference for type '{0}'. Explicitly define an Id for the type using a JsonObject/JsonArray attribute or automatically generate a type Id using the UndefinedSchemaIdHandling property.".FormatWith(CultureInfo.InvariantCulture, type));
+        throw new JsonException("Unresolved circular reference for type '{0}'. Explicitly define an Id for the type using a JsonObject/JsonArray attribute or automatically generate a type Id using the UndefinedSchemaIdHandling property.".FormatWith(CultureInfo.InvariantCulture, type));
       }
 
       JsonContract contract = ContractResolver.ResolveContract(type);
@@ -344,7 +344,7 @@ namespace Newtonsoft.Json.Schema
             CurrentSchema.Type = JsonSchemaType.Any;
             break;
           default:
-            throw new Exception("Unexpected contract type: {0}".FormatWith(CultureInfo.InvariantCulture, contract));
+            throw new JsonException("Unexpected contract type: {0}".FormatWith(CultureInfo.InvariantCulture, contract));
         }
       }
 
@@ -457,7 +457,7 @@ namespace Newtonsoft.Json.Schema
         case TypeCode.String:
           return schemaType | JsonSchemaType.String;
         default:
-          throw new Exception("Unexpected type code '{0}' for type '{1}'.".FormatWith(CultureInfo.InvariantCulture, typeCode, type));
+          throw new JsonException("Unexpected type code '{0}' for type '{1}'.".FormatWith(CultureInfo.InvariantCulture, typeCode, type));
       }
     }
   }

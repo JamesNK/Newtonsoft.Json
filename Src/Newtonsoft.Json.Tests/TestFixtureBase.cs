@@ -129,7 +129,7 @@ namespace Newtonsoft.Json.Tests
       catch (TException ex)
       {
         if (message != null)
-          Assert.AreEqual(message, ex.Message);
+          Assert.AreEqual(message, ex.Message, "Unexpected exception message." + Environment.NewLine + "Expected: " + message + Environment.NewLine + "Got: " + ex.Message);
       }
       catch (Exception ex)
       {

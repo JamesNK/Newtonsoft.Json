@@ -136,7 +136,7 @@ namespace Newtonsoft.Json.Utilities
       }
       else
       {
-        throw new Exception("Can not create ListWrapper for type {0}.".FormatWith(CultureInfo.InvariantCulture, list.GetType()));
+        throw new ArgumentException("Can not create ListWrapper for type {0}.".FormatWith(CultureInfo.InvariantCulture, list.GetType()), "list");
       }
     }
 
@@ -167,7 +167,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
       else
       {
-        throw new Exception("Can not create DictionaryWrapper for type {0}.".FormatWith(CultureInfo.InvariantCulture, dictionary.GetType()));
+        throw new ArgumentException("Can not create DictionaryWrapper for type {0}.".FormatWith(CultureInfo.InvariantCulture, dictionary.GetType()), "dictionary");
       }
     }
 
@@ -237,7 +237,7 @@ namespace Newtonsoft.Json.Utilities
       }
 
       if (list == null)
-        throw new Exception("Cannot create and populate list type {0}.".FormatWith(CultureInfo.InvariantCulture, listType));
+        throw new InvalidOperationException("Cannot create and populate list type {0}.".FormatWith(CultureInfo.InvariantCulture, listType));
 
       populateList(list, isReadOnlyOrFixedSize);
 

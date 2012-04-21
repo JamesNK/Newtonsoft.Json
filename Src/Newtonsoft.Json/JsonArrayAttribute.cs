@@ -35,6 +35,14 @@ namespace Newtonsoft.Json
   {
     private bool _allowNullItems;
 
+    // yuck. can't set nullable properties on an attribute in C#
+    // have to use this approach to get an unset default state
+    internal NullValueHandling? _itemNullValueHandling;
+    internal DefaultValueHandling? _itemDefaultValueHandling;
+    internal ReferenceLoopHandling? _itemReferenceLoopHandling;
+    internal ObjectCreationHandling? _itemObjectCreationHandling;
+    internal TypeNameHandling? _itemTypeNameHandling;
+
     /// <summary>
     /// Gets or sets a value indicating whether null items are allowed in the collection.
     /// </summary>
@@ -43,6 +51,56 @@ namespace Newtonsoft.Json
     {
       get { return _allowNullItems; }
       set { _allowNullItems = value; }
+    }
+
+    /// <summary>
+    /// Gets or sets the null value handling used when serializing the collection's items.
+    /// </summary>
+    /// <value>The null value handling.</value>
+    public NullValueHandling ItemNullValueHandling
+    {
+      get { return _itemNullValueHandling ?? default(NullValueHandling); }
+      set { _itemNullValueHandling = value; }
+    }
+
+    /// <summary>
+    /// Gets or sets the default value handling used when serializing the collection's items.
+    /// </summary>
+    /// <value>The default value handling.</value>
+    public DefaultValueHandling ItemDefaultValueHandling
+    {
+      get { return _itemDefaultValueHandling ?? default(DefaultValueHandling); }
+      set { _itemDefaultValueHandling = value; }
+    }
+
+    /// <summary>
+    /// Gets or sets the reference loop handling used when serializing the collection's items.
+    /// </summary>
+    /// <value>The reference loop handling.</value>
+    public ReferenceLoopHandling ItemReferenceLoopHandling
+    {
+      get { return _itemReferenceLoopHandling ?? default(ReferenceLoopHandling); }
+      set { _itemReferenceLoopHandling = value; }
+    }
+
+    /// <summary>
+    /// Gets or sets the object creation handling used when deserializing the collection's items.
+    /// </summary>
+    /// <value>The object creation handling.</value>
+    public ObjectCreationHandling ItemObjectCreationHandling
+    {
+      get { return _itemObjectCreationHandling ?? default(ObjectCreationHandling); }
+      set { _itemObjectCreationHandling = value; }
+    }
+
+    /// <summary>
+    /// Gets or sets the type name handling used when serializing the collection's items.
+    /// </summary>
+    /// <value>The type name handling.</value>
+    public TypeNameHandling ItemTypeNameHandling
+    {
+      get { return _itemTypeNameHandling ?? default(TypeNameHandling); }
+      set { _itemTypeNameHandling = value; }
     }
 
     /// <summary>

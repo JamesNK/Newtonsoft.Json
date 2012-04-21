@@ -120,18 +120,18 @@ namespace Newtonsoft.Json.Linq
 
     internal override bool RemoveItem(JToken item)
     {
-      throw new Exception("Cannot add or remove items from {0}.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
+      throw new JsonException("Cannot add or remove items from {0}.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
     }
 
     internal override void RemoveItemAt(int index)
     {
-      throw new Exception("Cannot add or remove items from {0}.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
+      throw new JsonException("Cannot add or remove items from {0}.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
     }
 
     internal override void InsertItem(int index, JToken item, bool skipParentCheck)
     {
       if (Value != null)
-        throw new Exception("{0} cannot have multiple values.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
+        throw new JsonException("{0} cannot have multiple values.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
 
       base.InsertItem(0, item, false);
     }
@@ -143,7 +143,7 @@ namespace Newtonsoft.Json.Linq
 
     internal override void ClearItems()
     {
-      throw new Exception("Cannot add or remove items from {0}.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
+      throw new JsonException("Cannot add or remove items from {0}.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
     }
 
     internal override bool DeepEquals(JToken node)
@@ -227,12 +227,10 @@ namespace Newtonsoft.Json.Linq
       if (reader.TokenType == JsonToken.None)
       {
         if (!reader.Read())
-          throw new Exception("Error reading JProperty from JsonReader.");
+          throw JsonReaderException.Create(reader, "Error reading JProperty from JsonReader.");
       }
       if (reader.TokenType != JsonToken.PropertyName)
-        throw new Exception(
-          "Error reading JProperty from JsonReader. Current JsonReader item is not a property: {0}".FormatWith(
-            CultureInfo.InvariantCulture, reader.TokenType));
+        throw JsonReaderException.Create(reader, "Error reading JProperty from JsonReader. Current JsonReader item is not a property: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
 
       JProperty p = new JProperty((string)reader.Value);
       p.SetLineInfo(reader as IJsonLineInfo);

@@ -44,7 +44,7 @@ namespace Newtonsoft.Json.Converters
       while (reader.TokenType == JsonToken.Comment)
       {
         if (!reader.Read())
-          throw new Exception("Unexpected end.");
+          throw JsonSerializationException.Create(reader, "Unexpected end when reading ExpandoObject.");
       }
 
       switch (reader.TokenType)
@@ -57,7 +57,7 @@ namespace Newtonsoft.Json.Converters
           if (JsonReader.IsPrimitiveToken(reader.TokenType))
             return reader.Value;
 
-          throw new Exception("Unexpected token when converting ExpandoObject: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
+          throw JsonSerializationException.Create(reader, "Unexpected token when converting ExpandoObject: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
       }
     }
 
@@ -81,7 +81,7 @@ namespace Newtonsoft.Json.Converters
         }
       }
 
-      throw new Exception("Unexpected end.");
+      throw JsonSerializationException.Create(reader, "Unexpected end when reading ExpandoObject.");
     }
 
     private object ReadObject(JsonReader reader)
@@ -96,7 +96,7 @@ namespace Newtonsoft.Json.Converters
             string propertyName = reader.Value.ToString();
 
             if (!reader.Read())
-              throw new Exception("Unexpected end.");
+              throw JsonSerializationException.Create(reader, "Unexpected end when reading ExpandoObject.");
 
             object v = ReadValue(reader);
 
@@ -109,7 +109,7 @@ namespace Newtonsoft.Json.Converters
         }
       }
 
-      throw new Exception("Unexpected end.");
+      throw JsonSerializationException.Create(reader, "Unexpected end when reading ExpandoObject.");
     }
 
     /// <summary>

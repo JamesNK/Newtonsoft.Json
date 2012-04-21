@@ -35,7 +35,7 @@ namespace Newtonsoft.Json.Converters
 #endif
       else
       {
-        throw new Exception("Expected date object value.");
+        throw new JsonSerializationException("Expected date object value.");
       }
 
       writer.WriteStartConstructor("Date");
@@ -60,18 +60,18 @@ namespace Newtonsoft.Json.Converters
       if (reader.TokenType == JsonToken.Null)
       {
         if (!ReflectionUtils.IsNullableType(objectType))
-          throw new Exception("Cannot convert null value to {0}.".FormatWith(CultureInfo.InvariantCulture, objectType));
+          throw JsonSerializationException.Create(reader, "Cannot convert null value to {0}.".FormatWith(CultureInfo.InvariantCulture, objectType));
 
         return null;
       }
 
       if (reader.TokenType != JsonToken.StartConstructor || !string.Equals(reader.Value.ToString(), "Date", StringComparison.Ordinal))
-        throw new Exception("Unexpected token or value when parsing date. Token: {0}, Value: {1}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType, reader.Value));
+        throw JsonSerializationException.Create(reader, "Unexpected token or value when parsing date. Token: {0}, Value: {1}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType, reader.Value));
 
       reader.Read();
 
       if (reader.TokenType != JsonToken.Integer)
-        throw new Exception("Unexpected token parsing date. Expected Integer, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
+        throw JsonSerializationException.Create(reader, "Unexpected token parsing date. Expected Integer, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
 
       long ticks = (long)reader.Value;
 
@@ -80,7 +80,7 @@ namespace Newtonsoft.Json.Converters
       reader.Read();
 
       if (reader.TokenType != JsonToken.EndConstructor)
-        throw new Exception("Unexpected token parsing date. Expected EndConstructor, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
+        throw JsonSerializationException.Create(reader, "Unexpected token parsing date. Expected EndConstructor, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
 
 #if !PocketPC && !NET20
       if (t == typeof(DateTimeOffset))
