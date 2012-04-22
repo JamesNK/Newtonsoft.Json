@@ -138,7 +138,9 @@
     <Compile Include="Serialization\ContractResolverTests.cs" />
     <Compile Include="Serialization\DefaultValueHandlingTests.cs" />
     <Compile Include="Serialization\DynamicTests.cs" />
+    <Compile Include="Serialization\JsonPropertyCollectionTests.cs" />
     <Compile Include="Serialization\NullValueHandlingTests.cs" />
+    <Compile Include="Serialization\ReferenceLoopHandlingTests.cs" />
     <Compile Include="Serialization\WebApiIntegrationTests.cs" />
     <Compile Include="TestObjects\Bar.cs" />
     <Compile Include="TestObjects\Car.cs" />
@@ -149,8 +151,13 @@
     <Compile Include="TestObjects\ContentSubClass.cs" />
     <Compile Include="TestObjects\Foo.cs" />
     <Compile Include="TestObjects\HolderClass.cs" />
+    <Compile Include="TestObjects\IPrivateImplementationA.cs" />
+    <Compile Include="TestObjects\IPrivateImplementationB.cs" />
+    <Compile Include="TestObjects\IPrivateOverriddenImplementation.cs" />
     <Compile Include="TestObjects\ListOfIds.cs" />
     <Compile Include="TestObjects\Movie.cs" />
+    <Compile Include="TestObjects\PrivateImplementationAClass.cs" />
+    <Compile Include="TestObjects\PrivateImplementationBClass.cs" />
     <Compile Include="TestObjects\PublicParametizedConstructorRequiringConverterTestClass.cs" />
     <Compile Include="TestObjects\PublicParametizedConstructorTestClass.cs" />
     <Compile Include="TestObjects\PersonError.cs" />

@@ -103,6 +103,7 @@
     <Compile Include="Converters\StringEnumConverter.cs" />
     <Compile Include="ConstructorHandling.cs" />
     <Compile Include="Converters\VersionConverter.cs" />
+    <Compile Include="JsonDictionaryAttribute.cs" />
     <Compile Include="JsonException.cs" />
     <Compile Include="DateFormatHandling.cs" />
     <Compile Include="DateParseHandling.cs" />
@@ -111,6 +112,7 @@
     <Compile Include="JsonConstructorAttribute.cs" />
     <Compile Include="JsonPosition.cs" />
     <Compile Include="Linq\JPropertyKeyedCollection.cs" />
+    <Compile Include="Serialization\JsonContainerContract.cs" />
     <Compile Include="Utilities\DynamicProxy.cs" />
     <Compile Include="Linq\JPath.cs" />
     <Compile Include="Linq\JRaw.cs" />

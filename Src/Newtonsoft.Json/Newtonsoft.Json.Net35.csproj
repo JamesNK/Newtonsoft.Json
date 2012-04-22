@@ -110,11 +110,13 @@
     <Compile Include="FormatterAssemblyStyle.cs" />
     <Compile Include="Formatting.cs" />
     <Compile Include="JsonConstructorAttribute.cs" />
+    <Compile Include="JsonDictionaryAttribute.cs" />
     <Compile Include="JsonException.cs" />
     <Compile Include="JsonPosition.cs" />
     <Compile Include="Linq\JPropertyDescriptor.cs" />
     <Compile Include="Linq\JPropertyKeyedCollection.cs" />
     <Compile Include="SerializationBinder.cs" />
+    <Compile Include="Serialization\JsonContainerContract.cs" />
     <Compile Include="StreamingContext.cs" />
     <Compile Include="Utilities\DynamicProxy.cs" />
     <Compile Include="Linq\JPath.cs" />

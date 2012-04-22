@@ -58,7 +58,7 @@ namespace Newtonsoft.Json.Serialization
       if (jsonWriter == null)
         throw new ArgumentNullException("jsonWriter");
 
-      SerializeValue(jsonWriter, value, GetContractSafe(value), null, null);
+      SerializeValue(jsonWriter, value, GetContractSafe(value), null, null, null);
     }
 
     private JsonSerializerProxy GetInternalSerializer()
@@ -77,11 +77,11 @@ namespace Newtonsoft.Json.Serialization
       return Serializer.ContractResolver.ResolveContract(value.GetType());
     }
 
-    private void SerializePrimitive(JsonWriter writer, object value, JsonPrimitiveContract contract, JsonProperty member, JsonContract collectionValueContract)
+    private void SerializePrimitive(JsonWriter writer, object value, JsonPrimitiveContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonContract collectionValueContract)
     {
       if (contract.UnderlyingType == typeof (byte[]))
       {
-        bool includeTypeDetails = ShouldWriteType(TypeNameHandling.Objects, contract, member, collectionValueContract);
+        bool includeTypeDetails = ShouldWriteType(TypeNameHandling.Objects, contract, member, collectionContract, collectionValueContract);
         if (includeTypeDetails)
         {
           writer.WriteStartObject();
@@ -96,53 +96,53 @@ namespace Newtonsoft.Json.Serialization
       writer.WriteValue(value);
     }
 
-    private void SerializeValue(JsonWriter writer, object value, JsonContract valueContract, JsonProperty member, JsonContract collectionValueContract)
+    private void SerializeValue(JsonWriter writer, object value, JsonContract valueContract, JsonProperty member, JsonContainerContract collectionContract, JsonContract collectionValueContract)
     {
-      JsonConverter converter = (member != null) ? member.Converter : null;
-
       if (value == null)
       {
         writer.WriteNull();
         return;
       }
 
-      if ((converter != null
+      JsonConverter converter;
+      if ((((converter = (member != null) ? member.Converter : null) != null)
+           || ((converter = (collectionContract != null) ? collectionContract.ItemConverter : null) != null)
            || ((converter = valueContract.Converter) != null)
            || ((converter = Serializer.GetMatchingConverter(valueContract.UnderlyingType)) != null)
            || ((converter = valueContract.InternalConverter) != null))
           && converter.CanWrite)
       {
-        SerializeConvertable(writer, converter, value, valueContract);
+        SerializeConvertable(writer, converter, value, valueContract, collectionContract, collectionValueContract);
         return;
       }
 
       switch (valueContract.ContractType)
       {
         case JsonContractType.Object:
-          SerializeObject(writer, value, (JsonObjectContract) valueContract, member, collectionValueContract);
+          SerializeObject(writer, value, (JsonObjectContract) valueContract, member, collectionContract, collectionValueContract);
           break;
         case JsonContractType.Array:
           JsonArrayContract arrayContract = (JsonArrayContract) valueContract;
-          SerializeList(writer, arrayContract.CreateWrapper(value), arrayContract, member, collectionValueContract);
+          SerializeList(writer, arrayContract.CreateWrapper(value), arrayContract, member, collectionContract, collectionValueContract);
           break;
         case JsonContractType.Primitive:
-          SerializePrimitive(writer, value, (JsonPrimitiveContract) valueContract, member, collectionValueContract);
+          SerializePrimitive(writer, value, (JsonPrimitiveContract)valueContract, member, collectionContract, collectionValueContract);
           break;
         case JsonContractType.String:
           SerializeString(writer, value, (JsonStringContract) valueContract);
           break;
         case JsonContractType.Dictionary:
           JsonDictionaryContract dictionaryContract = (JsonDictionaryContract) valueContract;
-          SerializeDictionary(writer, dictionaryContract.CreateWrapper(value), dictionaryContract, member, collectionValueContract);
+          SerializeDictionary(writer, dictionaryContract.CreateWrapper(value), dictionaryContract, member, collectionContract, collectionValueContract);
           break;
 #if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
         case JsonContractType.Dynamic:
-          SerializeDynamic(writer, (IDynamicMetaObjectProvider) value, (JsonDynamicContract) valueContract, member, collectionValueContract);
+          SerializeDynamic(writer, (IDynamicMetaObjectProvider)value, (JsonDynamicContract)valueContract, member, collectionContract, collectionValueContract);
           break;
 #endif
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
         case JsonContractType.Serializable:
-          SerializeISerializable(writer, (ISerializable) value, (JsonISerializableContract) valueContract, member, collectionValueContract);
+          SerializeISerializable(writer, (ISerializable)value, (JsonISerializableContract)valueContract, member, collectionContract, collectionValueContract);
           break;
 #endif
         case JsonContractType.Linq:
@@ -151,25 +151,35 @@ namespace Newtonsoft.Json.Serialization
       }
     }
 
-    private bool ShouldWriteReference(object value, JsonProperty property, JsonContract contract)
+    private bool? ResolveIsReference(JsonContract contract, JsonProperty property, JsonContainerContract collectionContract)
     {
-      if (value == null)
-        return false;
-      if (contract.ContractType == JsonContractType.Primitive || contract.ContractType == JsonContractType.String)
-        return false;
-
       bool? isReference = null;
 
       // value could be coming from a dictionary or array and not have a property
       if (property != null)
         isReference = property.IsReference;
 
+      if (isReference == null && collectionContract != null)
+        isReference = collectionContract.ItemIsReference;
+
       if (isReference == null)
         isReference = contract.IsReference;
 
+      return isReference;
+    }
+
+    private bool ShouldWriteReference(object value, JsonProperty property, JsonContract valueContract, JsonContainerContract collectionContract)
+    {
+      if (value == null)
+        return false;
+      if (valueContract.ContractType == JsonContractType.Primitive || valueContract.ContractType == JsonContractType.String)
+        return false;
+
+      bool? isReference = ResolveIsReference(valueContract, property, collectionContract);
+
       if (isReference == null)
       {
-        if (contract.ContractType == JsonContractType.Array)
+        if (valueContract.ContractType == JsonContractType.Array)
           isReference = HasFlag(Serializer.PreserveReferencesHandling, PreserveReferencesHandling.Arrays);
         else
           isReference = HasFlag(Serializer.PreserveReferencesHandling, PreserveReferencesHandling.Objects);
@@ -181,25 +191,25 @@ namespace Newtonsoft.Json.Serialization
       return Serializer.ReferenceResolver.IsReferenced(this, value);
     }
 
-    private void WriteMemberInfoProperty(JsonWriter writer, object memberValue, JsonProperty property, JsonContract contract)
+    private void WriteMemberInfoProperty(JsonWriter writer, object memberValue, JsonProperty property, JsonContract contract, JsonContainerContract collectionContract)
     {
       string propertyName = property.PropertyName;
 
-      if (ShouldWriteReference(memberValue, property, contract))
+      if (ShouldWriteReference(memberValue, property, contract, collectionContract))
       {
         writer.WritePropertyName(propertyName);
         WriteReference(writer, memberValue);
         return;
       }
 
-      if (!CheckForCircularReference(memberValue, property.ReferenceLoopHandling, contract))
+      if (!CheckForCircularReference(memberValue, property, contract, collectionContract))
         return;
 
       if (memberValue == null && property.Required == Required.Always)
         throw new JsonSerializationException("Cannot write a null value for property '{0}'. Property requires a value.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName));
 
       writer.WritePropertyName(propertyName);
-      SerializeValue(writer, memberValue, contract, property, null);
+      SerializeValue(writer, memberValue, contract, property, collectionContract, null);
     }
 
     private bool ShouldWriteProperty(object memberValue, JsonProperty property)
@@ -215,10 +225,18 @@ namespace Newtonsoft.Json.Serialization
       return true;
     }
 
-    private bool CheckForCircularReference(object value, ReferenceLoopHandling? referenceLoopHandling, JsonContract contract)
+    private bool CheckForCircularReference(object value, JsonProperty property, JsonContract contract, JsonContainerContract collectionContract)
     {
       if (value == null || contract.ContractType == JsonContractType.Primitive || contract.ContractType == JsonContractType.String)
         return true;
+
+      ReferenceLoopHandling? referenceLoopHandling = null;
+
+      if (property != null)
+        referenceLoopHandling = property.ReferenceLoopHandling;
+
+      if (referenceLoopHandling == null && collectionContract != null)
+        referenceLoopHandling = collectionContract.ItemReferenceLoopHandling;
 
       if (_serializeStack.IndexOf(value) != -1)
       {
@@ -299,13 +317,13 @@ namespace Newtonsoft.Json.Serialization
       contract.InvokeOnSerialized(value, Serializer.Context);
     }
 
-    private void SerializeObject(JsonWriter writer, object value, JsonObjectContract contract, JsonProperty member, JsonContract collectionValueContract)
+    private void SerializeObject(JsonWriter writer, object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonContract collectionValueContract)
     {
       contract.InvokeOnSerializing(value, Serializer.Context);
 
       _serializeStack.Add(value);
 
-      WriteObjectStart(writer, value, contract, member, collectionValueContract);
+      WriteObjectStart(writer, value, contract, member, collectionContract, collectionValueContract);
 
       int initialDepth = writer.Top;
 
@@ -323,7 +341,7 @@ namespace Newtonsoft.Json.Serialization
 
             if (ShouldWriteProperty(memberValue, property))
             {
-              WriteMemberInfoProperty(writer, memberValue, property, memberContract);
+              WriteMemberInfoProperty(writer, memberValue, property, memberContract, contract);
             }
           }
         }
@@ -343,17 +361,17 @@ namespace Newtonsoft.Json.Serialization
       contract.InvokeOnSerialized(value, Serializer.Context);
     }
 
-    private void WriteObjectStart(JsonWriter writer, object value, JsonContract contract, JsonProperty member, JsonContract collectionValueContract)
+    private void WriteObjectStart(JsonWriter writer, object value, JsonContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonContract collectionValueContract)
     {
       writer.WriteStartObject();
-      
-      bool isReference = contract.IsReference ?? HasFlag(Serializer.PreserveReferencesHandling, PreserveReferencesHandling.Objects);
+
+      bool isReference = ResolveIsReference(contract, member, collectionContract) ?? HasFlag(Serializer.PreserveReferencesHandling, PreserveReferencesHandling.Objects);
       if (isReference)
       {
         writer.WritePropertyName(JsonTypeReflector.IdPropertyName);
         writer.WriteValue(Serializer.ReferenceResolver.GetReference(this, value));
       }
-      if (ShouldWriteType(TypeNameHandling.Objects, contract, member, collectionValueContract))
+      if (ShouldWriteType(TypeNameHandling.Objects, contract, member, collectionContract, collectionValueContract))
       {
         WriteTypeProperty(writer, contract.UnderlyingType);
       }
@@ -380,15 +398,15 @@ namespace Newtonsoft.Json.Serialization
       return ((value & flag) == flag);
     }
 
-    private void SerializeConvertable(JsonWriter writer, JsonConverter converter, object value, JsonContract contract)
+    private void SerializeConvertable(JsonWriter writer, JsonConverter converter, object value, JsonContract contract, JsonContainerContract collectionContract, JsonContract collectionValueContract)
     {
-      if (ShouldWriteReference(value, null, contract))
+      if (ShouldWriteReference(value, null, contract, collectionContract))
       {
         WriteReference(writer, value);
       }
       else
       {
-        if (!CheckForCircularReference(value, null, contract))
+        if (!CheckForCircularReference(value, null, contract, collectionContract))
           return;
 
         _serializeStack.Add(value);
@@ -399,13 +417,13 @@ namespace Newtonsoft.Json.Serialization
       }
     }
 
-    private void SerializeList(JsonWriter writer, IWrappedCollection values, JsonArrayContract contract, JsonProperty member, JsonContract collectionValueContract)
+    private void SerializeList(JsonWriter writer, IWrappedCollection values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonContract collectionValueContract)
     {
       contract.InvokeOnSerializing(values.UnderlyingCollection, Serializer.Context);
 
       _serializeStack.Add(values.UnderlyingCollection);
 
-      bool hasWrittenMetadataObject = WriteStartArray(writer, values, contract, member, collectionValueContract);
+      bool hasWrittenMetadataObject = WriteStartArray(writer, values, contract, member, collectionContract, collectionValueContract);
 
       writer.WriteStartArray();
 
@@ -421,15 +439,15 @@ namespace Newtonsoft.Json.Serialization
         {
           JsonContract valueContract = collectionItemValueContract ?? GetContractSafe(value);
 
-          if (ShouldWriteReference(value, null, valueContract))
+          if (ShouldWriteReference(value, null, valueContract, contract))
           {
             WriteReference(writer, value);
           }
           else
           {
-            if (CheckForCircularReference(value, null, contract))
+            if (CheckForCircularReference(value, null, valueContract, contract))
             {
-              SerializeValue(writer, value, valueContract, null, contract.CollectionItemContract);
+              SerializeValue(writer, value, valueContract, null, contract, contract.CollectionItemContract);
             }
           }
         }
@@ -456,10 +474,10 @@ namespace Newtonsoft.Json.Serialization
       contract.InvokeOnSerialized(values.UnderlyingCollection, Serializer.Context);
     }
 
-    private bool WriteStartArray(JsonWriter writer, IWrappedCollection values, JsonArrayContract contract, JsonProperty member, JsonContract collectionValueContract)
+    private bool WriteStartArray(JsonWriter writer, IWrappedCollection values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonContract collectionValueContract)
     {
-      bool isReference = contract.IsReference ?? HasFlag(Serializer.PreserveReferencesHandling, PreserveReferencesHandling.Arrays);
-      bool includeTypeDetails = ShouldWriteType(TypeNameHandling.Arrays, contract, member, collectionValueContract);
+      bool isReference = ResolveIsReference(contract, member, collectionContract) ?? HasFlag(Serializer.PreserveReferencesHandling, PreserveReferencesHandling.Arrays);
+      bool includeTypeDetails = ShouldWriteType(TypeNameHandling.Arrays, contract, member, collectionContract, collectionValueContract);
       bool writeMetadataObject = isReference || includeTypeDetails;
 
       if (writeMetadataObject)
@@ -489,7 +507,7 @@ namespace Newtonsoft.Json.Serialization
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.Security.SecuritySafeCriticalAttribute")]
     [SecuritySafeCritical]
 #endif
-    private void SerializeISerializable(JsonWriter writer, ISerializable value, JsonISerializableContract contract, JsonProperty member, JsonContract collectionValueContract)
+    private void SerializeISerializable(JsonWriter writer, ISerializable value, JsonISerializableContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonContract collectionValueContract)
     {
       if (!JsonTypeReflector.FullyTrusted)
       {
@@ -500,7 +518,7 @@ To fix this error either change the environment to be fully trusted, change the 
       contract.InvokeOnSerializing(value, Serializer.Context);
       _serializeStack.Add(value);
 
-      WriteObjectStart(writer, value, contract, member, collectionValueContract);
+      WriteObjectStart(writer, value, contract, member, collectionContract, collectionValueContract);
 
       SerializationInfo serializationInfo = new SerializationInfo(contract.UnderlyingType, new FormatterConverter());
       value.GetObjectData(serializationInfo, Serializer.Context);
@@ -508,7 +526,7 @@ To fix this error either change the environment to be fully trusted, change the 
       foreach (SerializationEntry serializationEntry in serializationInfo)
       {
         writer.WritePropertyName(serializationEntry.Name);
-        SerializeValue(writer, serializationEntry.Value, GetContractSafe(serializationEntry.Value), null, null);
+        SerializeValue(writer, serializationEntry.Value, GetContractSafe(serializationEntry.Value), null, null, null);
       }
 
       writer.WriteEndObject();
@@ -519,12 +537,12 @@ To fix this error either change the environment to be fully trusted, change the 
 #endif
 
 #if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
-    private void SerializeDynamic(JsonWriter writer, IDynamicMetaObjectProvider value, JsonDynamicContract contract, JsonProperty member, JsonContract collectionValueContract)
+    private void SerializeDynamic(JsonWriter writer, IDynamicMetaObjectProvider value, JsonDynamicContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonContract collectionValueContract)
     {
       contract.InvokeOnSerializing(value, Serializer.Context);
       _serializeStack.Add(value);
 
-      WriteObjectStart(writer, value, contract, member, collectionValueContract);
+      WriteObjectStart(writer, value, contract, member, collectionContract, collectionValueContract);
 
       foreach (string memberName in value.GetDynamicMemberNames())
       {
@@ -536,7 +554,7 @@ To fix this error either change the environment to be fully trusted, change the 
                                           : memberName;
 
           writer.WritePropertyName(resolvedPropertyName);
-          SerializeValue(writer, memberValue, GetContractSafe(memberValue), null, null);
+          SerializeValue(writer, memberValue, GetContractSafe(memberValue), null, null, null);
         }
       }
 
@@ -547,9 +565,13 @@ To fix this error either change the environment to be fully trusted, change the 
     }
 #endif
 
-    private bool ShouldWriteType(TypeNameHandling typeNameHandlingFlag, JsonContract contract, JsonProperty member, JsonContract collectionValueContract)
+    private bool ShouldWriteType(TypeNameHandling typeNameHandlingFlag, JsonContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonContract collectionValueContract)
     {
-      if (HasFlag(((member != null) ? member.TypeNameHandling : null) ?? Serializer.TypeNameHandling, typeNameHandlingFlag))
+      TypeNameHandling resolvedTypeNameHandling = ((member != null) ? member.TypeNameHandling : null)
+        ?? ((collectionContract != null) ? collectionContract.ItemTypeNameHandling : null) 
+        ?? Serializer.TypeNameHandling;
+
+      if (HasFlag(resolvedTypeNameHandling, typeNameHandlingFlag))
         return true;
 
       if (member != null)
@@ -573,13 +595,13 @@ To fix this error either change the environment to be fully trusted, change the 
       return false;
     }
 
-    private void SerializeDictionary(JsonWriter writer, IWrappedDictionary values, JsonDictionaryContract contract, JsonProperty member, JsonContract collectionValueContract)
+    private void SerializeDictionary(JsonWriter writer, IWrappedDictionary values, JsonDictionaryContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonContract collectionValueContract)
     {
       contract.InvokeOnSerializing(values.UnderlyingDictionary, Serializer.Context);
 
       _serializeStack.Add(values.UnderlyingDictionary);
 
-      WriteObjectStart(writer, values.UnderlyingDictionary, contract, member, collectionValueContract);
+      WriteObjectStart(writer, values.UnderlyingDictionary, contract, member, collectionContract, collectionValueContract);
 
       if (contract.DictionaryValueContract == null)
         contract.DictionaryValueContract = Serializer.ContractResolver.ResolveContract(contract.DictionaryValueType ?? typeof(object));
@@ -604,19 +626,19 @@ To fix this error either change the environment to be fully trusted, change the 
           object value = entry.Value;
           JsonContract valueContract = dictionaryValueContract ?? GetContractSafe(value);
 
-          if (ShouldWriteReference(value, null, valueContract))
+          if (ShouldWriteReference(value, null, valueContract, contract))
           {
             writer.WritePropertyName(propertyName);
             WriteReference(writer, value);
           }
           else
           {
-            if (!CheckForCircularReference(value, null, contract))
+            if (!CheckForCircularReference(value, null, valueContract, contract))
               continue;
 
             writer.WritePropertyName(propertyName);
 
-            SerializeValue(writer, value, valueContract, null, contract.DictionaryValueContract);
+            SerializeValue(writer, value, valueContract, null, contract, dictionaryValueContract);
           }
         }
         catch (Exception ex)

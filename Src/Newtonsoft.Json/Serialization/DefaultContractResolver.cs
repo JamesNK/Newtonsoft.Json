@@ -732,6 +732,9 @@ namespace Newtonsoft.Json.Serialization
       if (JsonTypeReflector.GetJsonArrayAttribute(t) != null)
         return CreateArrayContract(objectType);
 
+      if (JsonTypeReflector.GetJsonDictionaryAttribute(t) != null)
+        return CreateDictionaryContract(objectType);
+
       if (t == typeof(JToken) || t.IsSubclassOf(typeof(JToken)))
         return CreateLinqContract(objectType);
 

@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
 #if !NETFX_CORE
+using System.Runtime.Serialization;
 using NUnit.Framework;
 #else
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+#endif
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
 #endif
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
@@ -59,16 +62,19 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
   }
 
+#if !NET20
   public class AddressWithDataMember
   {
     [DataMember(Name = "CustomerAddress1")]
     public string AddressLine1 { get; set; }
 
   }
+#endif
 
   [TestFixture]
   public class ContractResolverTests : TestFixtureBase
   {
+#if !NET20
     [Test]
     public void DeserializeDataMemberClassWithNoDataContract()
     {
@@ -77,6 +83,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       Assert.AreEqual("AddressLine1", contract.Properties[0].PropertyName);
     }
+#endif
 
     [Test]
     public void ResolveProperties_IgnoreStatic()

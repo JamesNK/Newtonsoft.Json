@@ -884,5 +884,148 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       Assert.AreNotEqual(myClasses1[0], myClasses2[0]);
     }
+
+    [Test]
+    public void ReferencedIntList()
+    {
+      ReferencedList<int> l = new ReferencedList<int>();
+      l.Add(1);
+      l.Add(2);
+      l.Add(3);
+
+      string json = JsonConvert.SerializeObject(l, Formatting.Indented);
+      Assert.AreEqual(@"[
+  1,
+  2,
+  3
+]", json);
+    }
+
+    [Test]
+    public void ReferencedComponentList()
+    {
+      var c1 = new TestComponentSimple();
+
+      ReferencedList<TestComponentSimple> l = new ReferencedList<TestComponentSimple>();
+      l.Add(c1);
+      l.Add(new TestComponentSimple());
+      l.Add(c1);
+
+      string json = JsonConvert.SerializeObject(l, Formatting.Indented);
+      Assert.AreEqual(@"[
+  {
+    ""$id"": ""1"",
+    ""MyProperty"": 0
+  },
+  {
+    ""$id"": ""2"",
+    ""MyProperty"": 0
+  },
+  {
+    ""$ref"": ""1""
+  }
+]", json);
+    }
+
+    [Test]
+    public void ReferencedIntDictionary()
+    {
+      ReferencedDictionary<int> l = new ReferencedDictionary<int>();
+      l.Add("First", 1);
+      l.Add("Second", 2);
+      l.Add("Third", 3);
+
+      string json = JsonConvert.SerializeObject(l, Formatting.Indented);
+      Assert.AreEqual(@"{
+  ""First"": 1,
+  ""Second"": 2,
+  ""Third"": 3
+}", json);
+    }
+
+    [Test]
+    public void ReferencedComponentDictionary()
+    {
+      var c1 = new TestComponentSimple();
+
+      ReferencedDictionary<TestComponentSimple> l = new ReferencedDictionary<TestComponentSimple>();
+      l.Add("First", c1);
+      l.Add("Second", new TestComponentSimple());
+      l.Add("Third", c1);
+
+      string json = JsonConvert.SerializeObject(l, Formatting.Indented);
+      Assert.AreEqual(@"{
+  ""First"": {
+    ""$id"": ""1"",
+    ""MyProperty"": 0
+  },
+  ""Second"": {
+    ""$id"": ""2"",
+    ""MyProperty"": 0
+  },
+  ""Third"": {
+    ""$ref"": ""1""
+  }
+}", json);
+
+      ReferencedDictionary<TestComponentSimple> d = JsonConvert.DeserializeObject<ReferencedDictionary<TestComponentSimple>>(json);
+      Assert.AreEqual(3, d.Count);
+      Assert.IsTrue(ReferenceEquals(d["First"], d["Third"]));
+    }
+
+    [Test]
+    public void ReferencedObjectItems()
+    {
+      ReferenceObject o1 = new ReferenceObject();
+
+      o1.Component1 = new TestComponentSimple { MyProperty = 1 };
+      o1.Component2 = o1.Component1;
+      o1.ComponentNotReference = new TestComponentSimple();
+      o1.String = "String!";
+      o1.Integer = int.MaxValue;
+
+      string json = JsonConvert.SerializeObject(o1, Formatting.Indented);
+      string expected = @"{
+  ""Component1"": {
+    ""$id"": ""1"",
+    ""MyProperty"": 1
+  },
+  ""Component2"": {
+    ""$ref"": ""1""
+  },
+  ""ComponentNotReference"": {
+    ""MyProperty"": 0
+  },
+  ""String"": ""String!"",
+  ""Integer"": 2147483647
+}";
+      Assert.AreEqual(expected, json);
+
+      ReferenceObject referenceObject = JsonConvert.DeserializeObject<ReferenceObject>(json);
+      Assert.IsNotNull(referenceObject);
+
+      Assert.IsTrue(ReferenceEquals(referenceObject.Component1, referenceObject.Component2));
+    }
+  }
+
+  [JsonArray(ItemIsReference = true)]
+  public class ReferencedList<T> : List<T>
+  {
+  }
+
+  [JsonDictionary(ItemIsReference = true)]
+  public class ReferencedDictionary<T> : Dictionary<string, T>
+  {
+  }
+
+  [JsonObject(ItemIsReference = true)]
+  public class ReferenceObject
+  {
+    public TestComponentSimple Component1 { get; set; }
+    public TestComponentSimple Component2 { get; set; }
+    [JsonProperty(IsReference = false)]
+    public TestComponentSimple ComponentNotReference { get; set; }
+    public string String { get; set; }
+    public int Integer { get; set; }
   }
 }

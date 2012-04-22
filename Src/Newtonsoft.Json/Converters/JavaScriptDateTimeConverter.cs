@@ -59,7 +59,7 @@ namespace Newtonsoft.Json.Converters
 
       if (reader.TokenType == JsonToken.Null)
       {
-        if (!ReflectionUtils.IsNullableType(objectType))
+        if (!ReflectionUtils.IsNullable(objectType))
           throw JsonSerializationException.Create(reader, "Cannot convert null value to {0}.".FormatWith(CultureInfo.InvariantCulture, objectType));
 
         return null;

@@ -1016,7 +1016,7 @@ keyword such as type of business.""
     public void IncompatibleJsonAttributeShouldThrow()
     {
       ExceptionAssert.Throws<JsonSerializationException>(
-        "JsonConverter IsoDateTimeConverter on Newtonsoft.Json.Tests.TestObjects.IncompatibleJsonAttributeClass is not compatible with member type IncompatibleJsonAttributeClass.",
+        "Unexpected value when converting date. Expected DateTime or DateTimeOffset, got Newtonsoft.Json.Tests.TestObjects.IncompatibleJsonAttributeClass.",
         () =>
         {
           IncompatibleJsonAttributeClass c = new IncompatibleJsonAttributeClass();
@@ -6193,4 +6193,15 @@ Parameter name: value",
     }
   }
 #endif
+
+  [JsonObject(MemberSerialization.OptIn)]
+  public class TestComponentSimple
+  {
+    [JsonProperty]
+    public int MyProperty { get; set; }
+
+    public TestComponentSimple()
+    {
+    }
+  }
 }

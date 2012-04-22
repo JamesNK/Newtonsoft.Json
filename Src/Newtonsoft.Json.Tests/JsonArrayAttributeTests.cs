@@ -75,17 +75,5 @@ namespace Newtonsoft.Json.Tests
       Assert.AreEqual(DefaultValueHandling.Ignore, attribute._defaultValueHandling);
       Assert.AreEqual(DefaultValueHandling.Ignore, attribute.DefaultValueHandling);
     }
-
-    [Test]
-    public void ReferenceLoopHandlingTest()
-    {
-      JsonPropertyAttribute attribute = new JsonPropertyAttribute();
-      Assert.AreEqual(null, attribute._defaultValueHandling);
-      Assert.AreEqual(ReferenceLoopHandling.Error, attribute.ReferenceLoopHandling);
-
-      attribute.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-      Assert.AreEqual(ReferenceLoopHandling.Ignore, attribute._referenceLoopHandling);
-      Assert.AreEqual(ReferenceLoopHandling.Ignore, attribute.ReferenceLoopHandling);
-    }
   }
 }

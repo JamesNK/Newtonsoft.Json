@@ -628,7 +628,6 @@ namespace Newtonsoft.Json.Tests.Serialization
       testObject.AnotherTestMember[1].Add(new ContentSubClass("Second One"));
       testObject.AThirdTestMember = new ContentSubClass("Third One");
 
-
       JsonSerializer serializingTester = new JsonSerializer();
       serializingTester.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
 
@@ -646,29 +645,27 @@ namespace Newtonsoft.Json.Tests.Serialization
       string dictionaryRef = ReflectionUtils.GetTypeName(typeof(Dictionary<int, IList<ContentBaseClass>>), FormatterAssemblyStyle.Simple);
       string listRef = ReflectionUtils.GetTypeName(typeof(List<ContentBaseClass>), FormatterAssemblyStyle.Simple);
 
-
-      Assert.AreEqual(@"{
+      string expected = @"{
   ""TestMember"": {
     ""$type"": """ + contentSubClassRef + @""",
     ""SomeString"": ""First One""
   },
   ""AnotherTestMember"": {
     ""$type"": """ + dictionaryRef + @""",
-    ""1"": {
-      ""$type"": """ + listRef + @""",
-      ""$values"": [
-        {
-          ""$type"": """ + contentSubClassRef + @""",
-          ""SomeString"": ""Second One""
-        }
-      ]
-    }
+    ""1"": [
+      {
+        ""$type"": """ + contentSubClassRef + @""",
+        ""SomeString"": ""Second One""
+      }
+    ]
   },
   ""AThirdTestMember"": {
     ""$type"": """ + contentSubClassRef + @""",
     ""SomeString"": ""Third One""
   }
-}", json);
+}";
+
+      Assert.AreEqual(expected, json);
       Console.WriteLine(json);
 
       StringReader sr = new StringReader(json);
@@ -1013,6 +1010,129 @@ namespace Newtonsoft.Json.Tests.Serialization
       }
     }
 #endif
+
+    [Test]
+    public void TypeNameIntList()
+    {
+      TypeNameList<int> l = new TypeNameList<int>();
+      l.Add(1);
+      l.Add(2);
+      l.Add(3);
+
+      string json = JsonConvert.SerializeObject(l, Formatting.Indented);
+      Assert.AreEqual(@"[
+  1,
+  2,
+  3
+]", json);
+    }
+
+    [Test]
+    public void TypeNameComponentList()
+    {
+      var c1 = new TestComponentSimple();
+
+      TypeNameList<object> l = new TypeNameList<object>();
+      l.Add(c1);
+      l.Add(new Employee
+        {
+          BirthDate = new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Utc),
+          Department = "Department!"
+        });
+      l.Add("String!");
+      l.Add(long.MaxValue);
+
+      string json = JsonConvert.SerializeObject(l, Formatting.Indented);
+      Assert.AreEqual(@"[
+  {
+    ""$type"": ""Newtonsoft.Json.Tests.Serialization.TestComponentSimple, Newtonsoft.Json.Tests"",
+    ""MyProperty"": 0
+  },
+  {
+    ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Employee, Newtonsoft.Json.Tests"",
+    ""FirstName"": null,
+    ""LastName"": null,
+    ""BirthDate"": ""2000-12-12T12:12:12Z"",
+    ""Department"": ""Department!"",
+    ""JobTitle"": null
+  },
+  ""String!"",
+  9223372036854775807
+]", json);
+
+      TypeNameList<object> l2 = JsonConvert.DeserializeObject<TypeNameList<object>>(json);
+      Assert.AreEqual(4, l2.Count);
+
+      CustomAssert.IsInstanceOfType(typeof(TestComponentSimple), l2[0]);
+      CustomAssert.IsInstanceOfType(typeof(Employee), l2[1]);
+      CustomAssert.IsInstanceOfType(typeof(string), l2[2]);
+      CustomAssert.IsInstanceOfType(typeof(long), l2[3]);
+    }
+
+    [Test]
+    public void TypeNameDictionary()
+    {
+      TypeNameDictionary<object> l = new TypeNameDictionary<object>();
+      l.Add("First", new TestComponentSimple { MyProperty = 1 });
+      l.Add("Second", "String!");
+      l.Add("Third", long.MaxValue);
+
+      string json = JsonConvert.SerializeObject(l, Formatting.Indented);
+      Assert.AreEqual(@"{
+  ""First"": {
+    ""$type"": ""Newtonsoft.Json.Tests.Serialization.TestComponentSimple, Newtonsoft.Json.Tests"",
+    ""MyProperty"": 1
+  },
+  ""Second"": ""String!"",
+  ""Third"": 9223372036854775807
+}", json);
+
+      TypeNameDictionary<object> l2 = JsonConvert.DeserializeObject<TypeNameDictionary<object>>(json);
+      Assert.AreEqual(3, l2.Count);
+
+      CustomAssert.IsInstanceOfType(typeof(TestComponentSimple), l2["First"]);
+      Assert.AreEqual(1, ((TestComponentSimple)l2["First"]).MyProperty);
+      CustomAssert.IsInstanceOfType(typeof(string), l2["Second"]);
+      CustomAssert.IsInstanceOfType(typeof(long), l2["Third"]);
+    }
+
+    [Test]
+    public void TypeNameObjectItems()
+    {
+      TypeNameObject o1 = new TypeNameObject();
+
+      o1.Object1 = new TestComponentSimple { MyProperty = 1 };
+      o1.Object2 = 123;
+      o1.ObjectNotHandled = new TestComponentSimple { MyProperty = int.MaxValue };
+      o1.String = "String!";
+      o1.Integer = int.MaxValue;
+
+      string json = JsonConvert.SerializeObject(o1, Formatting.Indented);
+      string expected = @"{
+  ""Object1"": {
+    ""$type"": ""Newtonsoft.Json.Tests.Serialization.TestComponentSimple, Newtonsoft.Json.Tests"",
+    ""MyProperty"": 1
+  },
+  ""Object2"": 123,
+  ""ObjectNotHandled"": {
+    ""MyProperty"": 2147483647
+  },
+  ""String"": ""String!"",
+  ""Integer"": 2147483647
+}";
+      Assert.AreEqual(expected, json);
+
+      TypeNameObject o2 = JsonConvert.DeserializeObject<TypeNameObject>(json);
+      Assert.IsNotNull(o2);
+
+      CustomAssert.IsInstanceOfType(typeof(TestComponentSimple), o2.Object1);
+      Assert.AreEqual(1, ((TestComponentSimple)o2.Object1).MyProperty);
+      CustomAssert.IsInstanceOfType(typeof(long), o2.Object2);
+      CustomAssert.IsInstanceOfType(typeof(JObject), o2.ObjectNotHandled);
+      Assert.AreEqual(@"{
+  ""MyProperty"": 2147483647
+}", o2.ObjectNotHandled.ToString());
+    }
   }
 
   public class Message
@@ -1102,4 +1222,25 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
   }
 #endif
+
+  [JsonArray(ItemTypeNameHandling = TypeNameHandling.All)]
+  public class TypeNameList<T> : List<T>
+  {
+  }
+
+  [JsonDictionary(ItemTypeNameHandling = TypeNameHandling.All)]
+  public class TypeNameDictionary<T> : Dictionary<string, T>
+  {
+  }
+
+  [JsonObject(ItemTypeNameHandling = TypeNameHandling.All)]
+  public class TypeNameObject
+  {
+    public object Object1 { get; set; }
+    public object Object2 { get; set; }
+    [JsonProperty(TypeNameHandling = TypeNameHandling.None)]
+    public object ObjectNotHandled { get; set; }
+    public string String { get; set; }
+    public int Integer { get; set; }
+  }
 }

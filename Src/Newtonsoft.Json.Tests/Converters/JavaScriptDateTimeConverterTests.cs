@@ -25,6 +25,7 @@
 
 using System;
 #if !NETFX_CORE
+using System.Collections.Generic;
 using NUnit.Framework;
 #else
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -32,6 +33,7 @@ using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttrib
 using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
 #endif
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Tests.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
 
 namespace Newtonsoft.Json.Tests.Converters
@@ -128,6 +130,119 @@ namespace Newtonsoft.Json.Tests.Converters
 
       DateTime result = JsonConvert.DeserializeObject<DateTime>("new Date(976918263055)", converter);
       Assert.AreEqual(new DateTime(2000, 12, 15, 22, 11, 3, 55, DateTimeKind.Utc), result);
+    }
+
+    [Test]
+    public void ConverterList()
+    {
+      ConverterList<object> l1 = new ConverterList<object>();
+      l1.Add(new DateTime(2000, 12, 12, 20, 10, 0, DateTimeKind.Utc));
+      l1.Add(new DateTime(1983, 10, 9, 23, 10, 0, DateTimeKind.Utc));
+
+      string json = JsonConvert.SerializeObject(l1, Formatting.Indented);
+      Assert.AreEqual(@"[
+  new Date(
+    976651800000
+  ),
+  new Date(
+    434589000000
+  )
+]", json);
+
+      ConverterList<object> l2 = JsonConvert.DeserializeObject<ConverterList<object>>(json);
+      Assert.IsNotNull(l2);
+
+      Assert.AreEqual(new DateTime(2000, 12, 12, 20, 10, 0, DateTimeKind.Utc), l2[0]);
+      Assert.AreEqual(new DateTime(1983, 10, 9, 23, 10, 0, DateTimeKind.Utc), l2[1]);
+    }
+
+    [Test]
+    public void ConverterDictionary()
+    {
+      ConverterDictionary<object> l1 = new ConverterDictionary<object>();
+      l1.Add("First", new DateTime(2000, 12, 12, 20, 10, 0, DateTimeKind.Utc));
+      l1.Add("Second", new DateTime(1983, 10, 9, 23, 10, 0, DateTimeKind.Utc));
+
+      string json = JsonConvert.SerializeObject(l1, Formatting.Indented);
+      Assert.AreEqual(@"{
+  ""First"": new Date(
+    976651800000
+  ),
+  ""Second"": new Date(
+    434589000000
+  )
+}", json);
+
+      ConverterDictionary<object> l2 = JsonConvert.DeserializeObject<ConverterDictionary<object>>(json);
+      Assert.IsNotNull(l2);
+
+      Assert.AreEqual(new DateTime(2000, 12, 12, 20, 10, 0, DateTimeKind.Utc), l2["First"]);
+      Assert.AreEqual(new DateTime(1983, 10, 9, 23, 10, 0, DateTimeKind.Utc), l2["Second"]);
+    }
+
+    [Test]
+    public void ConverterObject()
+    {
+      ConverterObject l1 = new ConverterObject();
+      l1.Object1 = new DateTime(2000, 12, 12, 20, 10, 0, DateTimeKind.Utc);
+      l1.Object2 = null;
+      l1.ObjectNotHandled = new DateTime(2000, 12, 12, 20, 10, 0, DateTimeKind.Utc);
+
+      string json = JsonConvert.SerializeObject(l1, Formatting.Indented);
+      Assert.AreEqual(@"{
+  ""Object1"": new Date(
+    976651800000
+  ),
+  ""Object2"": null,
+  ""ObjectNotHandled"": 631122486000000000
+}", json);
+
+      ConverterObject l2 = JsonConvert.DeserializeObject<ConverterObject>(json);
+      Assert.IsNotNull(l2);
+
+      //Assert.AreEqual(new DateTime(2000, 12, 12, 20, 10, 0, DateTimeKind.Utc), l2["First"]);
+      //Assert.AreEqual(new DateTime(1983, 10, 9, 23, 10, 0, DateTimeKind.Utc), l2["Second"]);
+    }
+  }
+
+  [JsonArray(ItemConverterType = typeof(JavaScriptDateTimeConverter))]
+  public class ConverterList<T> : List<T>
+  {
+  }
+
+  [JsonDictionary(ItemConverterType = typeof(JavaScriptDateTimeConverter))]
+  public class ConverterDictionary<T> : Dictionary<string, T>
+  {
+  }
+
+  [JsonObject(ItemConverterType = typeof(JavaScriptDateTimeConverter))]
+  public class ConverterObject
+  {
+    public object Object1 { get; set; }
+    public object Object2 { get; set; }
+    [JsonConverter(typeof(DateIntConverter))]
+    public object ObjectNotHandled { get; set; }
+  }
+
+  public class DateIntConverter : JsonConverter
+  {
+    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    {
+      DateTime? d = (DateTime?) value;
+      if (d == null)
+        writer.WriteNull();
+      else
+        writer.WriteValue(d.Value.Ticks);
+    }
+
+    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+    {
+      return new DateTime(Convert.ToInt64(reader.Value), DateTimeKind.Utc);
+    }
+
+    public override bool CanConvert(Type objectType)
+    {
+      return objectType == typeof (DateTime) || objectType == typeof (DateTime?);
     }
   }
 }

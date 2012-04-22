@@ -102,6 +102,11 @@ namespace Newtonsoft.Json.Serialization
       return GetJsonContainerAttribute(type) as JsonArrayAttribute;
     }
 
+    public static JsonDictionaryAttribute GetJsonDictionaryAttribute(Type type)
+    {
+      return GetJsonContainerAttribute(type) as JsonDictionaryAttribute;
+    }
+
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
     public static SerializableAttribute GetSerializableAttribute(Type type)
     {
@@ -211,9 +216,6 @@ namespace Newtonsoft.Json.Serialization
       if (converterType != null)
       {
         JsonConverter memberConverter = JsonConverterAttribute.CreateJsonConverterInstance(converterType);
-
-        if (!memberConverter.CanConvert(targetConvertedType))
-          throw new JsonSerializationException("JsonConverter {0} on {1} is not compatible with member type {2}.".FormatWith(CultureInfo.InvariantCulture, memberConverter.GetType().Name, provider, targetConvertedType.Name));
 
         return memberConverter;
       }

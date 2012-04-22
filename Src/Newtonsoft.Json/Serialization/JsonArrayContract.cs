@@ -39,7 +39,7 @@ namespace Newtonsoft.Json.Serialization
   /// <summary>
   /// Contract details for a <see cref="Type"/> used by the <see cref="JsonSerializer"/>.
   /// </summary>
-  public class JsonArrayContract : JsonContract
+  public class JsonArrayContract : JsonContainerContract
   {
     /// <summary>
     /// Gets the <see cref="Type"/> of the collection items.
