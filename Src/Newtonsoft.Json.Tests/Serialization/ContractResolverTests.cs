@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-#if !NETFX_CORE
 using System.Runtime.Serialization;
+#if !NETFX_CORE
 using NUnit.Framework;
 #else
 using Microsoft.VisualStudio.TestTools.UnitTesting;

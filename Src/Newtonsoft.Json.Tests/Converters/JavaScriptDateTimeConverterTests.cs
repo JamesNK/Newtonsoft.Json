@@ -24,8 +24,8 @@
 #endregion
 
 using System;
-#if !NETFX_CORE
 using System.Collections.Generic;
+#if !NETFX_CORE
 using NUnit.Framework;
 #else
 using Microsoft.VisualStudio.TestTools.UnitTesting;
