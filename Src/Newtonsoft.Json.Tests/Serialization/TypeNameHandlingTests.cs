@@ -27,25 +27,25 @@
 extern alias NewtonsoftJson;
 using FormatterAssemblyStyle = NewtonsoftJson::System.Runtime.Serialization.Formatters.FormatterAssemblyStyle;
 #endif
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Runtime.Serialization.Formatters;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json.Tests.TestObjects;
+using global::System;
+using global::System.Collections;
+using global::System.Collections.Generic;
+using global::System.Globalization;
+using global::System.Runtime.Serialization.Formatters;
+using global::Newtonsoft.Json.Linq;
+using global::Newtonsoft.Json.Serialization;
+using global::Newtonsoft.Json.Tests.TestObjects;
 #if !NETFX_CORE
-using NUnit.Framework;
+using global::NUnit.Framework;
 #else
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
-using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+using global::Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = global::Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = global::Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
 #endif
-using Newtonsoft.Json.Utilities;
-using System.Net;
-using System.Runtime.Serialization;
-using System.IO;
+using global::Newtonsoft.Json.Utilities;
+using global::System.Net;
+using global::System.Runtime.Serialization;
+using global::System.IO;
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
@@ -72,9 +72,9 @@ namespace Newtonsoft.Json.Tests.Serialization
         };
 
       string json = JsonConvert.SerializeObject(wrapper, Formatting.Indented, new JsonSerializerSettings
-        {
-          TypeNameHandling = TypeNameHandling.Auto
-        });
+      {
+        TypeNameHandling = TypeNameHandling.Auto
+      });
 
       Assert.AreEqual(@"{
   ""Array"": [
@@ -277,13 +277,13 @@ namespace Newtonsoft.Json.Tests.Serialization
       ExceptionAssert.Throws<JsonSerializationException>(
         @"Type specified in JSON '" + employeeRef + @"' is not compatible with '" + personRef + @"'. Path '$type', line 3, position 143.",
         () =>
+        {
+          JsonConvert.DeserializeObject(json, typeof(Person), new JsonSerializerSettings
           {
-            JsonConvert.DeserializeObject(json, typeof (Person), new JsonSerializerSettings
-              {
-                TypeNameHandling = TypeNameHandling.Objects,
-                TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
-              });
+            TypeNameHandling = TypeNameHandling.Objects,
+            TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
           });
+        });
     }
 
     [Test]
@@ -319,12 +319,12 @@ namespace Newtonsoft.Json.Tests.Serialization
       ExceptionAssert.Throws<JsonSerializationException>(
         "Type specified in JSON 'Newtonsoft.Json.Tests.TestObjects.Employee' was not resolved. Path '$type', line 3, position 56.",
         () =>
+        {
+          JsonConvert.DeserializeObject(json, null, new JsonSerializerSettings
           {
-            JsonConvert.DeserializeObject(json, null, new JsonSerializerSettings
-              {
-                TypeNameHandling = TypeNameHandling.Objects
-              });
+            TypeNameHandling = TypeNameHandling.Objects
           });
+        });
     }
 
     public interface ICorrelatedMessage
@@ -369,10 +369,10 @@ namespace Newtonsoft.Json.Tests.Serialization
 }";
 
       ICorrelatedMessage message = JsonConvert.DeserializeObject<ICorrelatedMessage>(json, new JsonSerializerSettings
-        {
-          TypeNameHandling = TypeNameHandling.Objects,
-          TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
-        });
+      {
+        TypeNameHandling = TypeNameHandling.Objects,
+        TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
+      });
 
       CustomAssert.IsInstanceOfType(typeof(SendHttpRequest), message);
 
@@ -389,18 +389,18 @@ namespace Newtonsoft.Json.Tests.Serialization
       string productListTypeName = typeof(List<Product>).AssemblyQualifiedName;
 
       Container container = new Container
-                          {
-                            In = new List<Product>(),
-                            Out = new List<Product>()
-                          };
+      {
+        In = new List<Product>(),
+        Out = new List<Product>()
+      };
 
       string json = JsonConvert.SerializeObject(container, Formatting.Indented,
           new JsonSerializerSettings
-              {
-                NullValueHandling = NullValueHandling.Ignore,
-                TypeNameHandling = TypeNameHandling.All,
-                TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
-              });
+          {
+            NullValueHandling = NullValueHandling.Ignore,
+            TypeNameHandling = TypeNameHandling.All,
+            TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
+          });
 
       Assert.AreEqual(@"{
   ""$type"": """ + containerTypeName + @""",
@@ -428,13 +428,13 @@ namespace Newtonsoft.Json.Tests.Serialization
       string typeNamePropertyRef = ReflectionUtils.GetTypeName(typeof(TypeNameProperty), FormatterAssemblyStyle.Simple);
 
       TypeNameProperty typeNameProperty = new TypeNameProperty
-                                            {
-                                              Name = "Name!",
-                                              Value = new TypeNameProperty
-                                                        {
-                                                          Name = "Nested!"
-                                                        }
-                                            };
+      {
+        Name = "Name!",
+        Value = new TypeNameProperty
+        {
+          Name = "Nested!"
+        }
+      };
 
       string json = JsonConvert.SerializeObject(typeNameProperty, Formatting.Indented);
 
@@ -522,7 +522,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     {
       public override Type BindToType(string assemblyName, string typeName)
       {
-        return typeof (Person);
+        return typeof(Person);
       }
     }
 
@@ -551,7 +551,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         TypeNameHandling = TypeNameHandling.Auto,
         Binder = binder
       });
-      
+
       //[
       //  {
       //    "$type": "Customer",
@@ -580,10 +580,10 @@ namespace Newtonsoft.Json.Tests.Serialization
 ]", json);
 
       IList<object> newValues = JsonConvert.DeserializeObject<IList<object>>(json, new JsonSerializerSettings
-        {
-          TypeNameHandling = TypeNameHandling.Auto,
-          Binder = new TypeNameSerializationBinder("Newtonsoft.Json.Tests.Serialization.{0}, Newtonsoft.Json.Tests")
-        });
+      {
+        TypeNameHandling = TypeNameHandling.Auto,
+        Binder = new TypeNameSerializationBinder("Newtonsoft.Json.Tests.Serialization.{0}, Newtonsoft.Json.Tests")
+      });
 
       CustomAssert.IsInstanceOfType(typeof(Customer), newValues[0]);
       Customer customer = (Customer)newValues[0];
@@ -699,10 +699,10 @@ namespace Newtonsoft.Json.Tests.Serialization
       Message message = new Message();
       message.Address = "http://www.google.com";
       message.Body = new SearchDetails
-        {
-          Query = "Json.NET",
-          Language = "en-us"
-        };
+      {
+        Query = "Json.NET",
+        Language = "en-us"
+      };
 
       string json = JsonConvert.SerializeObject(message, Formatting.Indented);
       // {
@@ -716,7 +716,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       Message deserialized = JsonConvert.DeserializeObject<Message>(json);
 
-      SearchDetails searchDetails = (SearchDetails) deserialized.Body;
+      SearchDetails searchDetails = (SearchDetails)deserialized.Body;
       // Json.NET
     }
 
@@ -748,7 +748,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         TypeNameAssemblyFormat = FormatterAssemblyStyle.Simple
       });
 
-      string urlStatusTypeName = ReflectionUtils.GetTypeName(typeof (UrlStatus), FormatterAssemblyStyle.Simple);
+      string urlStatusTypeName = ReflectionUtils.GetTypeName(typeof(UrlStatus), FormatterAssemblyStyle.Simple);
 
       Assert.AreEqual(@"{
   ""$type"": ""System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib"",
@@ -791,7 +791,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual(3, newCollection.Count);
       Assert.AreEqual(@"http://www.bing.com", ((UrlStatus)newCollection["First"]).Url);
 
-      List<UrlStatus> statues = (List<UrlStatus>) newCollection["List"];
+      List<UrlStatus> statues = (List<UrlStatus>)newCollection["List"];
       Assert.AreEqual(2, statues.Count);
     }
 
@@ -874,7 +874,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     {
       Car testerObject = new Car();
       testerObject.Year = new DateTime(2000, 10, 5, 1, 1, 1, DateTimeKind.Utc);
-      byte[] data = new byte[] {75, 65, 82, 73, 82, 65};
+      byte[] data = new byte[] { 75, 65, 82, 73, 82, 65 };
       testerObject.Objects = new object[] { data, "prueba" };
 
       JsonSerializerSettings jsonSettings = new JsonSerializerSettings();
@@ -917,9 +917,9 @@ namespace Newtonsoft.Json.Tests.Serialization
       IExample e = new Example("Rob");
 
       SerializableWrapper w = new SerializableWrapper
-        {
-          Content = e
-        };
+      {
+        Content = e
+      };
 
       //Test Binary Serialization Round Trip
       //This will work find because the Binary Formatter serializes type names
@@ -963,23 +963,23 @@ namespace Newtonsoft.Json.Tests.Serialization
     public void SerializationBinderWithFullName()
     {
       Message message = new Message
-        {
-          Address = "jamesnk@testtown.com",
-          Body = new Version(1, 2, 3, 4)
-        };
+      {
+        Address = "jamesnk@testtown.com",
+        Body = new Version(1, 2, 3, 4)
+      };
 
       string json = JsonConvert.SerializeObject(message, Formatting.Indented, new JsonSerializerSettings
+      {
+        TypeNameHandling = TypeNameHandling.All,
+        TypeNameAssemblyFormat = FormatterAssemblyStyle.Full,
+        Binder = new MetroBinder(),
+        ContractResolver = new DefaultContractResolver
         {
-          TypeNameHandling = TypeNameHandling.All,
-          TypeNameAssemblyFormat = FormatterAssemblyStyle.Full,
-          Binder = new MetroBinder(),
-          ContractResolver = new DefaultContractResolver
-            {
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
               IgnoreSerializableAttribute = true
 #endif
-            }
-        });
+        }
+      });
 
       Assert.AreEqual(@"{
   ""$type"": "":::MESSAGE:::, AssemblyName"",
@@ -1035,10 +1035,10 @@ namespace Newtonsoft.Json.Tests.Serialization
       TypeNameList<object> l = new TypeNameList<object>();
       l.Add(c1);
       l.Add(new Employee
-        {
-          BirthDate = new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Utc),
-          Department = "Department!"
-        });
+      {
+        BirthDate = new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Utc),
+        Department = "Department!"
+      });
       l.Add("String!");
       l.Add(long.MaxValue);
 

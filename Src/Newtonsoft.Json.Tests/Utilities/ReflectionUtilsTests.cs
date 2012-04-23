@@ -2,17 +2,17 @@
 extern alias NewtonsoftJson;
 using FormatterAssemblyStyle = NewtonsoftJson::System.Runtime.Serialization.Formatters.FormatterAssemblyStyle;
 #endif
-using System;
-using System.Collections.Generic;
-using System.Runtime.Serialization.Formatters;
+using global::System;
+using global::System.Collections.Generic;
+using global::System.Runtime.Serialization.Formatters;
 #if !NETFX_CORE
-using NUnit.Framework;
+using global::NUnit.Framework;
 #else
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
-using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+using global::Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixture = global::Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Test = global::Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
 #endif
-using Newtonsoft.Json.Utilities;
+using global::Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Tests.Utilities
 {
