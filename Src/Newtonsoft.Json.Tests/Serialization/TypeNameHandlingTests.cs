@@ -271,16 +271,18 @@ namespace Newtonsoft.Json.Tests.Serialization
   ""Manager"": null
 }";
 
-      ExceptionAssert.Throws<JsonSerializationException>(
-        @"Type specified in JSON '" + employeeRef + @"' is not compatible with '" + personRef + @"'. Path '$type', line 3, position 143.",
-        () =>
+      try
+      {
+        JsonConvert.DeserializeObject(json, typeof(Person), new JsonSerializerSettings
         {
-          JsonConvert.DeserializeObject(json, typeof(Person), new JsonSerializerSettings
-          {
-            TypeNameHandling = TypeNameHandling.Objects,
-            TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
-          });
+          TypeNameHandling = TypeNameHandling.Objects,
+          TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
         });
+      }
+      catch (JsonSerializationException ex)
+      {
+        Assert.IsTrue(ex.Message.StartsWith(@"Type specified in JSON '" + employeeRef + @"' is not compatible with '" + personRef + @"'."));
+      }
     }
 
     [Test]
