@@ -19,6 +19,8 @@
           <ul>
             <li><a href="./html/T_Newtonsoft_Json_JsonObjectAttribute.htm">JsonObjectAttribute</a> - Placed on classes to control how it should be serialized as a JSON object.</li>
             <li><a href="./html/T_Newtonsoft_Json_JsonArrayAttribute.htm">JsonArrayAttribute</a> - Placed on collections to control how it should be serialized as a JSON array.</li>
+            <li><a href="./html/T_Newtonsoft_Json_JsonDictionaryAttribute.htm">JsonDictionaryAttribute</a> - Placed on 
+              dictionaries to control how it should be serialized as a JSON object.</li>
             <li><a href="./html/T_Newtonsoft_Json_JsonPropertyAttribute.htm">JsonPropertyAttribute</a> - Placed on fields and properties to control how it should be serialized as a property in a JSON object.</li>
             <li><a href="./html/T_Newtonsoft_Json_JsonConverterAttribute.htm">JsonConverterAttribute</a> - Placed on either classes or fields and properties to specify which JsonConverter should be used during serialization.</li>
           </ul>
@@ -59,12 +61,20 @@
 <p>Json.NET serializes .NET classes that implement IEnumerable as an 
     JSON array populated with the IEnumerable values. Placing the JsonPropertyAttribute overrides this 
     behavor and forces the serializer to serialize the class's fields and properties.</p>
+
+    <h5>JsonArrayAttribute/JsonDictionaryAttribute</h5>
+<p>The JsonArrayAttribute and JsonDictionaryAttributes are used to specified 
+  whether a class is serialized as that collection type.</p>
+      <p>The collection attributes have options to customize the JsonConverter, type name handling
+      and reference handling that are applied to collection items.</p>
     <h5>JsonPropertyAttribute</h5>
 <p>JsonPropertyAttribute has a number of uses:</p>
 <ul>
     <li>By default the JSON property will have the same name as the .NET property. This attribute allows the name to be customized.</li>
     <li>Indicates that a property should be serialized when member serialization is set to opt-in.</li>
     <li>Includes non-public properties in serialization and deserialization.</li>
+    <li>Customize type name, reference, null and default value handling for the 
+      property value.</li>
 </ul>
     <h5>JsonIgnoreAttribute</h5>
 <p>Excludes a field or property from serialization.</p>

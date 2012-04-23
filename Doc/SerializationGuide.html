@@ -235,6 +235,9 @@
       on a .NET type that implements IEnumerable to force the type to be serialized as
       a JSON object instead.</p>
     <p>
+      JsonArrayAttribute has options on it to customize the JsonConverter, type name handling
+      and reference handling that are applied to collection items.</p>
+    <p>
       Note that if TypeNameHandling or PreserveReferencesHandling has been enabled for
       JSON arrays on the serializer then JSON arrays are wrapped it a containing object.
       The object will have the type name/reference properties and a $values property which
@@ -254,6 +257,9 @@
       serializing and properties on the JSON object will be added to the dictionary's
       name/values when deserializing. Additional members on the .NET dictionary are ignored
       during serialization.</p>
+    <p>
+      JsonDictionaryAttribute has options on it to customize the JsonConverter, type name handling
+      and reference handling that are applied to collection items.</p>
     <p>
       When deserializing if a member is typed as the interface IDictionary&lt;TKey, TValue&gt;
       then it will be deserialized as a Dictionary&lt;TKey, TValue&gt;.</p>
