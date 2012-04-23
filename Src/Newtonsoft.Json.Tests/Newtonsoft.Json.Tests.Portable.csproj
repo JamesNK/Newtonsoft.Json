@@ -313,7 +313,7 @@
     <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.Portable.csproj">
       <Project>{959F7F85-C98B-4876-971A-9036224578E4}</Project>
       <Name>Newtonsoft.Json.Portable</Name>
-      <Aliases>global,NewtonsoftJson</Aliases>
+      <Aliases>global</Aliases>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

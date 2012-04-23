@@ -23,10 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if PORTABLE
-extern alias NewtonsoftJson;
-using FormatterAssemblyStyle = NewtonsoftJson::System.Runtime.Serialization.Formatters.FormatterAssemblyStyle;
-#endif
+#if !PORTABLE
 using global::System;
 using global::System.Collections;
 using global::System.Collections.Generic;
@@ -1244,3 +1241,4 @@ namespace Newtonsoft.Json.Tests.Serialization
     public int Integer { get; set; }
   }
 }
+#endif

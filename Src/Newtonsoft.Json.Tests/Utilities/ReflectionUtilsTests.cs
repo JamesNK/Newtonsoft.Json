@@ -1,7 +1,4 @@
-﻿#if PORTABLE
-extern alias NewtonsoftJson;
-using FormatterAssemblyStyle = NewtonsoftJson::System.Runtime.Serialization.Formatters.FormatterAssemblyStyle;
-#endif
+﻿#if !PORTABLE
 using global::System;
 using global::System.Collections.Generic;
 using global::System.Runtime.Serialization.Formatters;
@@ -38,3 +35,4 @@ namespace Newtonsoft.Json.Tests.Utilities
     }
   }
 }
+#endif
