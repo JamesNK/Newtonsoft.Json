@@ -144,6 +144,12 @@ namespace Newtonsoft.Json.Serialization
       set { _serializer.DateTimeZoneHandling = value; }
     }
 
+    public override DateParseHandling DateParseHandling
+    {
+      get { return _serializer.DateParseHandling; }
+      set { _serializer.DateParseHandling = value; }
+    }
+
     public override CultureInfo Culture
     {
       get { return _serializer.Culture; }
