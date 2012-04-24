@@ -6,7 +6,9 @@ http://www.codeplex.com/json/
 
 Description:
 
-Json.NET makes working with JSON formatted data in .NET simple. Quickly read and write JSON using LINQ to JSON or serialize your .NET objects with a single method call using the JsonSerializer.
+Json.NET makes working with JSON formatted data in .NET simple. Quickly read and write
+JSON using LINQ to JSON or serialize your .NET objects with a single method call using
+the JsonSerializer.
 
 -Flexible JSON serializer to convert .NET objects to JSON and back again 
 -LINQ to JSON for reading and writing JSON 
@@ -38,6 +40,9 @@ Json.NET comes in different versions for the various .NET frameworks.
 -Metro
   Windows 8 Metro, WinRT 4.5
 
+-Portable
+  Portable Class Library (.NET 4.0, WP7, SL4)
+
 
 Notes:
 
@@ -52,7 +57,8 @@ For a Silverlight 3.0 build download Json.NET 3.5.
 
 Instructions:
 
- 1. Extract Newtonsoft.Json.dll and Newtonsoft.Json.xml from the archive's /bin directory into your own applications.
+ 1. Extract Newtonsoft.Json.dll and Newtonsoft.Json.xml from the archive's /bin
+    directory into your own applications.
  2. Add a reference to Newtonsoft.Json.dll within Visual Studio.NET to your project.
 
 
@@ -61,8 +67,19 @@ License:
 
 Copyright (c) 2007 James Newton-King
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this
+software and associated documentation files (the "Software"), to deal in the Software
+without restriction, including without limitation the rights to use, copy, modify,
+merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to the following
+conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all copies
+or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
