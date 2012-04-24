@@ -65,6 +65,27 @@ namespace Newtonsoft.Json.Tests
     }
 
     [Test]
+    public void DeserializeObject_Integer_EmptyString()
+    {
+      int? value = JsonConvert.DeserializeObject<int?>("");
+      Assert.IsNull(value);
+    }
+
+    [Test]
+    public void DeserializeObject_Decimal_EmptyString()
+    {
+      decimal? value = JsonConvert.DeserializeObject<decimal?>("");
+      Assert.IsNull(value);
+    }
+
+    [Test]
+    public void DeserializeObject_DateTime_EmptyString()
+    {
+      DateTime? value = JsonConvert.DeserializeObject<DateTime?>("");
+      Assert.IsNull(value);
+    }
+
+    [Test]
     public void EscapeJavaScriptString()
     {
       string result;
