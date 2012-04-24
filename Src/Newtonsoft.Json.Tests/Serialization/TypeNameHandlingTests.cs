@@ -1005,7 +1005,11 @@ namespace Newtonsoft.Json.Tests.Serialization
       public override void BindToName(Type serializedType, out string assemblyName, out string typeName)
       {
         assemblyName = "AssemblyName";
+#if !NETFX_CORE
         typeName = ":::" + serializedType.Name.ToUpper(CultureInfo.InvariantCulture) + ":::";
+#else
+        typeName = ":::" + serializedType.Name.ToUpper() + ":::";
+#endif
       }
     }
 #endif
