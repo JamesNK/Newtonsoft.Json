@@ -337,7 +337,7 @@ namespace Newtonsoft.Json.Serialization
               property.PropertyContract = Serializer.ContractResolver.ResolveContract(property.PropertyType);
 
             object memberValue = property.ValueProvider.GetValue(value);
-            JsonContract memberContract = (property.PropertyContract.UnderlyingType.IsSealed()) ? property.PropertyContract : GetContractSafe(memberValue);
+            JsonContract memberContract = (property.PropertyContract.UnderlyingType.IsSealed) ? property.PropertyContract : GetContractSafe(memberValue);
 
             if (ShouldWriteProperty(memberValue, property))
             {
@@ -427,7 +427,7 @@ namespace Newtonsoft.Json.Serialization
 
       writer.WriteStartArray();
 
-      JsonContract collectionItemValueContract = (contract.CollectionItemContract.UnderlyingType.IsSealed()) ? contract.CollectionItemContract : null;
+      JsonContract collectionItemValueContract = (contract.CollectionItemContract.UnderlyingType.IsSealed) ? contract.CollectionItemContract : null;
 
       int initialDepth = writer.Top;
 
@@ -606,7 +606,7 @@ To fix this error either change the environment to be fully trusted, change the 
       if (contract.DictionaryValueContract == null)
         contract.DictionaryValueContract = Serializer.ContractResolver.ResolveContract(contract.DictionaryValueType ?? typeof(object));
 
-      JsonContract dictionaryValueContract = (contract.DictionaryValueContract.UnderlyingType.IsSealed()) ? contract.DictionaryValueContract : null;
+      JsonContract dictionaryValueContract = (contract.DictionaryValueContract.UnderlyingType.IsSealed) ? contract.DictionaryValueContract : null;
 
       int initialDepth = writer.Top;
 

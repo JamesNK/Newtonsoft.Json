@@ -10,13 +10,14 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Newtonsoft.Json.MonoTouch</RootNamespace>
     <AssemblyName>Newtonsoft.Json.MonoTouch</AssemblyName>
+    <ReleaseVersion>1.0</ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;MONOTOUCH;SILVERLIGHT</DefineConstants>
+    <DefineConstants>DEBUG;PORTABLE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -197,6 +198,10 @@
     <Compile Include="WriteState.cs" />
     <Compile Include="Utilities\StringReference.cs" />
     <Compile Include="Linq\JPropertyKeyedCollection.cs" />
+    <Compile Include="JsonException.cs" />
+    <Compile Include="Serialization\JsonContainerContract.cs" />
+    <Compile Include="DateParseHandling.cs" />
+    <Compile Include="JsonDictionaryAttribute.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

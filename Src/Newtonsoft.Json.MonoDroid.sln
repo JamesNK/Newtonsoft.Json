@@ -1,8 +1,7 @@
+﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.MonoDroid", "Newtonsoft.Json\Newtonsoft.Json.MonoDroid.csproj", "{E6C3413C-919B-486D-8B6C-225CBD921B98}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.Tests.MonoDroid", "Newtonsoft.Json.Tests\Newtonsoft.Json.Tests.MonoDroid.csproj", "{9B448EB8-F220-42B4-9292-94C8DF8C692A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,10 +13,9 @@ Global
 		{E6C3413C-919B-486D-8B6C-225CBD921B98}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6C3413C-919B-486D-8B6C-225CBD921B98}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E6C3413C-919B-486D-8B6C-225CBD921B98}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9B448EB8-F220-42B4-9292-94C8DF8C692A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9B448EB8-F220-42B4-9292-94C8DF8C692A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9B448EB8-F220-42B4-9292-94C8DF8C692A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9B448EB8-F220-42B4-9292-94C8DF8C692A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Newtonsoft.Json\Newtonsoft.Json.MonoDroid.csproj
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
