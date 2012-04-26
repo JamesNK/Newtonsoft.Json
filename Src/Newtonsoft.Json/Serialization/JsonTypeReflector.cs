@@ -126,7 +126,7 @@ namespace Newtonsoft.Json.Serialization
         if (result != null)
           return result;
 
-        currentType = currentType.BaseType();
+        currentType = currentType.BaseType;
       }
 
       return null;
@@ -137,7 +137,7 @@ namespace Newtonsoft.Json.Serialization
       // DataMemberAttribute does not have inheritance
 
       // can't override a field
-      if (memberInfo.MemberType() == MemberTypes.Field)
+      if (memberInfo.MemberType == System.Reflection.MemberTypes.Field)
         return CachedAttributeGetter<DataMemberAttribute>.GetAttribute(memberInfo.GetCustomAttributeProvider());
 
       // search property and then search base properties if nothing is returned and the property is virtual
@@ -155,7 +155,7 @@ namespace Newtonsoft.Json.Serialization
             if (baseProperty != null && baseProperty.IsVirtual())
               result = CachedAttributeGetter<DataMemberAttribute>.GetAttribute(baseProperty.GetCustomAttributeProvider());
 
-            currentType = currentType.BaseType();
+            currentType = currentType.BaseType;
           }
         }
       }

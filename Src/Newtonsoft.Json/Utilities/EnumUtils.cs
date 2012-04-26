@@ -107,7 +107,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static IList<object> GetValues(Type enumType)
     {
-      if (!enumType.IsEnum())
+      if (!enumType.IsEnum)
         throw new ArgumentException("Type '" + enumType.Name + "' is not an enum.");
 
       List<object> values = new List<object>();
@@ -127,7 +127,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static IList<string> GetNames(Type enumType)
     {
-      if (!enumType.IsEnum())
+      if (!enumType.IsEnum)
         throw new ArgumentException("Type '" + enumType.Name + "' is not an enum.");
 
       List<string> values = new List<string>();

@@ -298,13 +298,13 @@ namespace Newtonsoft.Json.Serialization
               else if (dataContractAttribute != null && JsonTypeReflector.GetAttribute<DataMemberAttribute>(member.GetCustomAttributeProvider()) != null)
                 serializableMembers.Add(member);
 #endif
-              else if (memberSerialization == MemberSerialization.Fields && member.MemberType() == MemberTypes.Field)
+              else if (memberSerialization == MemberSerialization.Fields && member.MemberType == System.Reflection.MemberTypes.Field)
                 serializableMembers.Add(member);
             }
           }
         }
 
-#if !PocketPC && !SILVERLIGHT && !NET20
+#if !PocketPC && !SILVERLIGHT && !NET20 && !PORTABLE
         Type match;
         // don't include EntityKey on entities objects... this is a bit hacky
         if (objectType.AssignableToTypeName("System.Data.Objects.DataClasses.EntityObject", out match))
@@ -316,7 +316,7 @@ namespace Newtonsoft.Json.Serialization
         // serialize all fields
         foreach (MemberInfo member in allMembers)
         {
-          if (member.MemberType() == MemberTypes.Field)
+          if (member.MemberType == System.Reflection.MemberTypes.Field)
             serializableMembers.Add(member);
         }
       }
@@ -330,7 +330,7 @@ namespace Newtonsoft.Json.Serialization
       PropertyInfo propertyInfo = memberInfo as PropertyInfo;
       if (propertyInfo != null)
       {
-        if (propertyInfo.PropertyType.IsGenericType() && propertyInfo.PropertyType.GetGenericTypeDefinition().FullName == "System.Data.Objects.DataClasses.EntityReference`1")
+        if (propertyInfo.PropertyType.IsGenericType && propertyInfo.PropertyType.GetGenericTypeDefinition().FullName == "System.Data.Objects.DataClasses.EntityReference`1")
           return false;
       }
 
@@ -510,11 +510,11 @@ namespace Newtonsoft.Json.Serialization
       contract.InternalConverter = JsonSerializer.GetMatchingConverter(BuiltInConverters, contract.NonNullableUnderlyingType);
 
       if (ReflectionUtils.HasDefaultConstructor(contract.CreatedType, true)
-        || contract.CreatedType.IsValueType())
+        || contract.CreatedType.IsValueType)
       {
         contract.DefaultCreator = GetDefaultCreator(contract.CreatedType);
 
-        contract.DefaultCreatorNonPublic = (!contract.CreatedType.IsValueType() &&
+        contract.DefaultCreatorNonPublic = (!contract.CreatedType.IsValueType &&
                                             ReflectionUtils.GetDefaultConstructor(contract.CreatedType) == null);
       }
 
@@ -523,8 +523,8 @@ namespace Newtonsoft.Json.Serialization
 
     private void ResolveCallbackMethods(JsonContract contract, Type t)
     {
-      if (t.BaseType() != null)
-        ResolveCallbackMethods(contract, t.BaseType());
+      if (t.BaseType != null)
+        ResolveCallbackMethods(contract, t.BaseType);
 
       MethodInfo onSerializing;
       MethodInfo onSerialized;
@@ -824,7 +824,7 @@ namespace Newtonsoft.Json.Serialization
 
     internal static string GetClrTypeFullName(Type type)
     {
-      if (type.IsGenericTypeDefinition() || !type.ContainsGenericParameters())
+      if (type.IsGenericTypeDefinition || !type.ContainsGenericParameters)
         return type.FullName;
 
       return string.Format(CultureInfo.InvariantCulture, "{0}.{1}", new object[] { type.Namespace, type.Name });

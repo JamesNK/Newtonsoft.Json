@@ -123,7 +123,7 @@ namespace Newtonsoft.Json.Serialization
 
     private bool IsTypeGenericDictionaryInterface(Type type)
     {
-      if (!type.IsGenericType())
+      if (!type.IsGenericType)
         return false;
 
       Type genericDefinition = type.GetGenericTypeDefinition();

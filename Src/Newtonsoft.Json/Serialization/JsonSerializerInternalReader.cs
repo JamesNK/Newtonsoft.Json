@@ -535,7 +535,7 @@ To force JSON arrays to deserialize add the JsonArrayAttribute to the type.".For
 
           if (contract.IsConvertable)
           {
-            if (contract.NonNullableUnderlyingType.IsEnum())
+            if (contract.NonNullableUnderlyingType.IsEnum)
               {
                 if (value is string)
                   return Enum.Parse(contract.NonNullableUnderlyingType, value.ToString(), true);
@@ -593,7 +593,7 @@ To force JSON arrays to deserialize add the JsonArrayAttribute to the type.".For
         useExistingValue = (currentValue != null
           && !property.PropertyType.IsArray
             && !ReflectionUtils.InheritsGenericDefinition(property.PropertyType, typeof (ReadOnlyCollection<>))
-              && !property.PropertyType.IsValueType());
+              && !property.PropertyType.IsValueType);
       }
 
       if (!property.Writable && !useExistingValue)
@@ -949,7 +949,7 @@ To fix this error either change the environment to be fully trusted, change the 
     {
       object newObject = null;
 
-      if (contract.UnderlyingType.IsInterface() || contract.UnderlyingType.IsAbstract())
+      if (contract.UnderlyingType.IsInterface || contract.UnderlyingType.IsAbstract)
         throw JsonSerializationException.Create(reader, "Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantated.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
       if (contract.OverrideConstructor != null)

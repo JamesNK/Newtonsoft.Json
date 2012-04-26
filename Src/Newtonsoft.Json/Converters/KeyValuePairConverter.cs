@@ -124,7 +124,7 @@ namespace Newtonsoft.Json.Converters
         ? Nullable.GetUnderlyingType(objectType)
         : objectType;
 
-      if (t.IsValueType() && t.IsGenericType())
+      if (t.IsValueType && t.IsGenericType)
         return (t.GetGenericTypeDefinition() == typeof(KeyValuePair<,>));
 
       return false;

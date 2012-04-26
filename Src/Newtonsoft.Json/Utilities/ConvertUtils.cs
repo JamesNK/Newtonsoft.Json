@@ -301,7 +301,7 @@ namespace Newtonsoft.Json.Utilities
       // use Convert.ChangeType if both types are IConvertible
       if (ConvertUtils.IsConvertible(initialValue) && ConvertUtils.IsConvertible(targetType))
       {
-        if (targetType.IsEnum())
+        if (targetType.IsEnum)
         {
           if (initialValue is string)
             return Enum.Parse(targetType, initialValue.ToString(), true);
@@ -315,7 +315,7 @@ namespace Newtonsoft.Json.Utilities
       if (initialValue is string && typeof(Type).IsAssignableFrom(targetType))
         return Type.GetType((string) initialValue, true);
 
-      if (targetType.IsInterface() || targetType.IsGenericTypeDefinition() || targetType.IsAbstract())
+      if (targetType.IsInterface || targetType.IsGenericTypeDefinition || targetType.IsAbstract)
         throw new ArgumentException("Target type {0} is not a value type or a non-abstract class.".FormatWith(CultureInfo.InvariantCulture, targetType), "targetType");
 
 #if !PocketPC && !NET20

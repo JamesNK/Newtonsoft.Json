@@ -292,7 +292,7 @@ namespace Newtonsoft.Json.Schema
           case JsonContractType.Primitive:
             CurrentSchema.Type = GetJsonSchemaType(type, valueRequired);
 
-            if (CurrentSchema.Type == JsonSchemaType.Integer && type.IsEnum() && !type.IsDefined(typeof (FlagsAttribute), true))
+            if (CurrentSchema.Type == JsonSchemaType.Integer && type.IsEnum && !type.IsDefined(typeof (FlagsAttribute), true))
             {
               CurrentSchema.Enum = new List<JToken>();
               CurrentSchema.Options = new Dictionary<JToken, string>();
@@ -385,7 +385,7 @@ namespace Newtonsoft.Json.Schema
         }
       }
 
-      if (type.IsSealed())
+      if (type.IsSealed)
         CurrentSchema.AllowAdditionalProperties = false;
     }
 
