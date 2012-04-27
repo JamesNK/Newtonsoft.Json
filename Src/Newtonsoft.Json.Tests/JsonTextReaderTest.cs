@@ -2481,6 +2481,76 @@ bye", reader.Value);
       Assert.IsTrue(reader.Read());
 #endif
     }
+
+    [Test]
+    public void ResetJsonTextReaderErrorCount()
+    {
+      ToggleReaderError toggleReaderError = new ToggleReaderError(new StringReader("{'first':1,'second':2,'third':3}"));
+      JsonTextReader jsonTextReader = new JsonTextReader(toggleReaderError);
+
+      Assert.IsTrue(jsonTextReader.Read());
+
+      toggleReaderError.Error = true;
+
+      ExceptionAssert.Throws<Exception>(
+        "Read error",
+        () => jsonTextReader.Read());
+      ExceptionAssert.Throws<Exception>(
+        "Read error",
+        () => jsonTextReader.Read());
+
+      toggleReaderError.Error = false;
+
+      Assert.IsTrue(jsonTextReader.Read());
+      Assert.AreEqual("first", jsonTextReader.Value);
+
+      toggleReaderError.Error = true;
+
+      ExceptionAssert.Throws<Exception>(
+        "Read error",
+        () => jsonTextReader.Read());
+
+      toggleReaderError.Error = false;
+
+      Assert.IsTrue(jsonTextReader.Read());
+      Assert.AreEqual(1, jsonTextReader.Value);
+
+      toggleReaderError.Error = true;
+
+      ExceptionAssert.Throws<Exception>(
+        "Read error",
+        () => jsonTextReader.Read());
+      ExceptionAssert.Throws<Exception>(
+        "Read error",
+        () => jsonTextReader.Read());
+      ExceptionAssert.Throws<Exception>(
+        "Read error",
+        () => jsonTextReader.Read());
+
+      toggleReaderError.Error = false;
+
+      Assert.IsFalse(jsonTextReader.Read());
+    }
+
+    public class ToggleReaderError : TextReader
+    {
+      private readonly TextReader _inner;
+
+      public bool Error { get; set; }
+
+      public ToggleReaderError(TextReader inner)
+      {
+        _inner = inner;
+      }
+
+      public override int Read(char[] buffer, int index, int count)
+      {
+        if (Error)
+          throw new Exception("Read error");
+
+        return _inner.Read(buffer, index, 1);
+      }
+    }
   }
 
   public class SlowStream : Stream

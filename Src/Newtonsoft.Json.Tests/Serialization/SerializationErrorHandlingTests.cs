@@ -361,6 +361,84 @@ namespace Newtonsoft.Json.Tests.Serialization
     {
       public Nest A { get; set; }
     }
+
+    [Test]
+    public void InfiniteErrorHandlingLoopFromInputError()
+    {
+      IList<string> errors = new List<string>();
+
+      JsonSerializer serializer = new JsonSerializer();
+      serializer.Error += (sender, e) =>
+        {
+          errors.Add(e.ErrorContext.Error.Message);
+          e.ErrorContext.Handled = true;
+        };
+
+      ErrorPerson[] result = serializer.Deserialize<ErrorPerson[]>(new JsonTextReader(new ThrowingReader()));
+
+      Assert.IsNull(result);
+      Assert.AreEqual(4, errors.Count);
+      Assert.AreEqual("too far", errors[0]);
+      Assert.AreEqual("too far", errors[1]);
+      Assert.AreEqual("too far", errors[2]);
+      Assert.AreEqual("Unexpected end when deserializing array. Path '[1023]', line 1, position 65536.", errors[3]);
+    }
+
+    public class ThrowingReader : TextReader
+    {
+      int _position = 0;
+      static string element = "{\"FirstName\":\"Din\",\"LastName\":\"Rav\",\"Item\":{\"ItemName\":\"temp\"}}";
+      bool _firstRead = true;
+      bool _readComma = false;
+
+      public ThrowingReader()
+      {
+      }
+
+      public override int Read(char[] buffer, int index, int count)
+      {
+        char[] temp = new char[buffer.Length];
+        int charsRead = 0;
+        if (_firstRead)
+        {
+          charsRead = new StringReader("[").Read(temp, index, count);
+          _firstRead = false;
+        }
+        else
+        {
+          if (_readComma)
+          {
+            charsRead = new StringReader(",").Read(temp, index, count);
+            _readComma = false;
+          }
+          else
+          {
+            charsRead = new StringReader(element).Read(temp, index, count);
+            _readComma = true;
+          }
+        }
+
+        _position += charsRead;
+        if (_position > 65536)
+        {
+          throw new Exception("too far");
+        }
+        Array.Copy(temp, index, buffer, index, charsRead);
+        return charsRead;
+      }
+    }
+  }
+
+  public class ErrorPerson
+  {
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public ErrorItem Item { get; set; }
+  }
+
+  public class ErrorItem
+  {
+    public string ItemName { get; set; }
   }
 
   [JsonObject]

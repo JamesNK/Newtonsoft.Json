@@ -101,7 +101,8 @@ namespace Newtonsoft.Json.Serialization
     protected bool IsErrorHandled(object currentObject, JsonContract contract, object keyValue, string path, Exception ex)
     {
       ErrorContext errorContext = GetErrorContext(currentObject, keyValue, path, ex);
-      contract.InvokeOnError(currentObject, Serializer.Context, errorContext);
+      if (contract != null)
+        contract.InvokeOnError(currentObject, Serializer.Context, errorContext);
 
       if (!errorContext.Handled)
         Serializer.OnError(new ErrorEventArgs(currentObject, errorContext));

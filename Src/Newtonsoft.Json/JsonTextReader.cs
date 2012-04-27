@@ -55,6 +55,7 @@ namespace Newtonsoft.Json
     private const char UnicodeReplacementChar = '\uFFFD';
 
     private readonly TextReader _reader;
+    private int _readerFailureCount;
 
     private char[] _chars;
     private int _charsUsed;
@@ -75,6 +76,8 @@ namespace Newtonsoft.Json
         throw new ArgumentNullException("reader");
 
       _reader = reader;
+      _readerFailureCount = 0;
+
       _lineNumber = 1;
 
       _chars = new char[4097];
@@ -323,7 +326,26 @@ namespace Newtonsoft.Json
 
       int attemptCharReadCount = _chars.Length - _charsUsed - 1;
 
-      int charsRead = _reader.Read(_chars, _charsUsed, attemptCharReadCount);
+      int charsRead;
+
+      try
+      {
+        charsRead = _reader.Read(_chars, _charsUsed, attemptCharReadCount);
+        _readerFailureCount = 0;
+      }
+      catch
+      {
+        // to prevent infinate loop when error handling is enabled
+        if (!_isEndOfFile)
+        {
+          _readerFailureCount++;
+          if (_readerFailureCount >= 3)
+            _isEndOfFile = true;
+        }
+
+        throw;
+      }
+
       _charsUsed += charsRead;
 
       if (charsRead == 0)

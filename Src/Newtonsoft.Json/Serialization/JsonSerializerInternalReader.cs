@@ -113,17 +113,32 @@ namespace Newtonsoft.Json.Serialization
 
       JsonContract contract = GetContractSafe(objectType);
 
-      JsonConverter converter = GetConverter(contract, null, null);
-
-      if (reader.TokenType == JsonToken.None && !ReadForType(reader, contract, converter != null, false))
+      try
       {
-        if (contract != null && !contract.IsNullable)
-          throw JsonSerializationException.Create(reader, "No JSON content found and type '{0}' is not nullable.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+        JsonConverter converter = GetConverter(contract, null, null);
 
-        return null;
+        if (reader.TokenType == JsonToken.None && !ReadForType(reader, contract, converter != null, false))
+        {
+          if (contract != null && !contract.IsNullable)
+            throw JsonSerializationException.Create(reader, "No JSON content found and type '{0}' is not nullable.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+
+          return null;
+        }
+
+        return CreateValueNonProperty(reader, objectType, contract, converter, null);
       }
-
-      return CreateValueNonProperty(reader, objectType, contract, converter, null);
+      catch (Exception ex)
+      {
+        if (IsErrorHandled(null, contract, null, reader.Path, ex))
+        {
+          HandleError(reader, 0);
+          return null;
+        }
+        else
+        {
+          throw;
+        }
+      }
     }
 
     private JsonSerializerProxy GetInternalSerializer()
