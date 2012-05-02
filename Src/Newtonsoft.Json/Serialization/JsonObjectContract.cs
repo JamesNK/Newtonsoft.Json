@@ -40,6 +40,14 @@ namespace Newtonsoft.Json.Serialization
     public MemberSerialization MemberSerialization { get; set; }
 
     /// <summary>
+    /// Gets or sets a value that indicates whether the object's properties are required.
+    /// </summary>
+    /// <value>
+    /// 	A value indicating whether the object's properties are required.
+    /// </value>
+    public Required? ItemRequired { get; set; }
+
+    /// <summary>
     /// Gets the object's properties.
     /// </summary>
     /// <value>The object's properties.</value>

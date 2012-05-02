@@ -42,6 +42,13 @@ namespace Newtonsoft.Json
     internal TypeNameHandling? _typeNameHandling;
     internal bool? _isReference;
     internal int? _order;
+    internal Required? _required;
+
+    ///// <summary>
+    ///// Gets the collection's items converter.
+    ///// </summary>
+    ///// <value>The collection's items converter.</value>
+    //public Type ItemConverterType { get; set; }
 
     /// <summary>
     /// Gets or sets the null value handling used when serializing this property.
@@ -114,18 +121,22 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Gets or sets the name of the property.
-    /// </summary>
-    /// <value>The name of the property.</value>
-    public string PropertyName { get; set; }
-
-    /// <summary>
     /// Gets or sets a value indicating whether this property is required.
     /// </summary>
     /// <value>
     /// 	A value indicating whether this property is required.
     /// </value>
-    public Required Required { get; set; }
+    public Required Required
+    {
+      get { return _required ?? Required.Default; }
+      set { _required = value; }
+    }
+
+    /// <summary>
+    /// Gets or sets the name of the property.
+    /// </summary>
+    /// <value>The name of the property.</value>
+    public string PropertyName { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonPropertyAttribute"/> class.

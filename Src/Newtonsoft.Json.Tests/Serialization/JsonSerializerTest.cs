@@ -6016,6 +6016,83 @@ Parameter name: value",
       Console.WriteLine(v.Value.GetType());
       Console.WriteLine(a.ToString());
     }
+
+    [Test]
+    public void ObjectRequiredDeserializeMissing()
+    {
+      string json = "{}";
+      IList<string> errors = new List<string>();
+
+      EventHandler<Newtonsoft.Json.Serialization.ErrorEventArgs> error = (s, e) =>
+        {
+          errors.Add(e.ErrorContext.Error.Message);
+          e.ErrorContext.Handled = true;
+        };
+
+      var o = JsonConvert.DeserializeObject<RequiredObject>(json, new JsonSerializerSettings
+        {
+          Error = error
+        });
+
+      Assert.IsNotNull(o);
+      Assert.AreEqual(4, errors.Count);
+      Assert.AreEqual("Required property 'NonAttributeProperty' not found in JSON. Path '', line 1, position 2.", errors[0]);
+      Assert.AreEqual("Required property 'UnsetProperty' not found in JSON. Path '', line 1, position 2.", errors[1]);
+      Assert.AreEqual("Required property 'AllowNullProperty' not found in JSON. Path '', line 1, position 2.", errors[2]);
+      Assert.AreEqual("Required property 'AlwaysProperty' not found in JSON. Path '', line 1, position 2.", errors[3]);
+    }
+
+    [Test]
+    public void ObjectRequiredDeserializeNull()
+    {
+      string json = "{'NonAttributeProperty':null,'UnsetProperty':null,'AllowNullProperty':null,'AlwaysProperty':null}";
+      IList<string> errors = new List<string>();
+
+      EventHandler<Newtonsoft.Json.Serialization.ErrorEventArgs> error = (s, e) =>
+      {
+        errors.Add(e.ErrorContext.Error.Message);
+        e.ErrorContext.Handled = true;
+      };
+
+      var o = JsonConvert.DeserializeObject<RequiredObject>(json, new JsonSerializerSettings
+      {
+        Error = error
+      });
+
+      Assert.IsNotNull(o);
+      Assert.AreEqual(3, errors.Count);
+      Assert.AreEqual("Required property 'NonAttributeProperty' expects a value but got null. Path '', line 1, position 97.", errors[0]);
+      Assert.AreEqual("Required property 'UnsetProperty' expects a value but got null. Path '', line 1, position 97.", errors[1]);
+      Assert.AreEqual("Required property 'AlwaysProperty' expects a value but got null. Path '', line 1, position 97.", errors[2]);
+    }
+
+    [Test]
+    public void ObjectRequiredSerialize()
+    {
+      IList<string> errors = new List<string>();
+
+      EventHandler<Newtonsoft.Json.Serialization.ErrorEventArgs> error = (s, e) =>
+      {
+        errors.Add(e.ErrorContext.Error.Message);
+        e.ErrorContext.Handled = true;
+      };
+
+      string json = JsonConvert.SerializeObject(new RequiredObject(), new JsonSerializerSettings
+      {
+        Error = error,
+        Formatting = Formatting.Indented
+      });
+
+      Assert.AreEqual(@"{
+  ""DefaultProperty"": null,
+  ""AllowNullProperty"": null
+}", json);
+
+      Assert.AreEqual(3, errors.Count);
+      Assert.AreEqual("Cannot write a null value for property 'NonAttributeProperty'. Property requires a value.", errors[0]);
+      Assert.AreEqual("Cannot write a null value for property 'UnsetProperty'. Property requires a value.", errors[1]);
+      Assert.AreEqual("Cannot write a null value for property 'AlwaysProperty'. Property requires a value.", errors[2]);
+    }
   }
 
   public class PersonWithPrivateConstructor
@@ -6203,5 +6280,19 @@ Parameter name: value",
     public TestComponentSimple()
     {
     }
+  }
+
+  [JsonObject(ItemRequired = Required.Always)]
+  public class RequiredObject
+  {
+    public int? NonAttributeProperty { get; set; }
+    [JsonProperty]
+    public int? UnsetProperty { get; set; }
+    [JsonProperty(Required = Required.Default)]
+    public int? DefaultProperty { get; set; }
+    [JsonProperty(Required = Required.AllowNull)]
+    public int? AllowNullProperty { get; set; }
+    [JsonProperty(Required = Required.Always)]
+    public int? AlwaysProperty { get; set; }
   }
 }

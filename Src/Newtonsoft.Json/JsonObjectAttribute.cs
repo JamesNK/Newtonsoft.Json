@@ -35,6 +35,10 @@ namespace Newtonsoft.Json
   {
     private MemberSerialization _memberSerialization = MemberSerialization.OptOut;
 
+    // yuck. can't set nullable properties on an attribute in C#
+    // have to use this approach to get an unset default state
+    internal Required? _itemRequired;
+
     /// <summary>
     /// Gets or sets the member serialization.
     /// </summary>
@@ -43,6 +47,18 @@ namespace Newtonsoft.Json
     {
       get { return _memberSerialization; }
       set { _memberSerialization = value; }
+    }
+
+    /// <summary>
+    /// Gets or sets a value that indicates whether the object's properties are required.
+    /// </summary>
+    /// <value>
+    /// 	A value indicating whether the object's properties are required.
+    /// </value>
+    public Required ItemRequired
+    {
+      get { return _itemRequired ?? default(Required); }
+      set { _itemRequired = value; }
     }
 
     /// <summary>

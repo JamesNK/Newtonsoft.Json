@@ -703,27 +703,27 @@ To force JSON arrays to deserialize add the JsonArrayAttribute to the type.".For
             object keyValue = reader.Value;
             try
             {
-              if (contract.DictionaryKeyContract == null)
-                contract.DictionaryKeyContract = GetContractSafe(contract.DictionaryKeyType);
+              if (contract.KeyContract == null)
+                contract.KeyContract = GetContractSafe(contract.DictionaryKeyType);
               
               try
               {
-                keyValue = EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.DictionaryKeyContract, contract.DictionaryKeyType);
+                keyValue = EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract, contract.DictionaryKeyType);
               }
               catch (Exception ex)
               {
                 throw JsonSerializationException.Create(reader, "Could not convert string '{0}' to dictionary key type '{1}'. Create a TypeConverter to convert from the string to the key type object.".FormatWith(CultureInfo.InvariantCulture, reader.Value, contract.DictionaryKeyType), ex);
               }
 
-              if (contract.DictionaryValueContract == null)
-                contract.DictionaryValueContract = GetContractSafe(contract.DictionaryValueType);
+              if (contract.ItemContract == null)
+                contract.ItemContract = GetContractSafe(contract.DictionaryValueType);
 
-              JsonConverter dictionaryValueConverter = contract.ItemConverter ?? GetConverter(contract.DictionaryValueContract, null, contract);
+              JsonConverter dictionaryValueConverter = contract.ItemConverter ?? GetConverter(contract.ItemContract, null, contract);
 
-              if (!ReadForType(reader, contract.DictionaryValueContract, dictionaryValueConverter != null, false))
+              if (!ReadForType(reader, contract.ItemContract, dictionaryValueConverter != null, false))
                 throw JsonSerializationException.Create(reader, "Unexpected end when deserializing object.");
 
-              dictionary[keyValue] = CreateValueNonProperty(reader, contract.DictionaryValueType, contract.DictionaryValueContract, dictionaryValueConverter, contract);
+              dictionary[keyValue] = CreateValueNonProperty(reader, contract.DictionaryValueType, contract.ItemContract, dictionaryValueConverter, contract);
             }
             catch (Exception ex)
             {
@@ -1244,10 +1244,12 @@ To fix this error either change the environment to be fully trusted, change the 
                 {
                   try
                   {
+                    Required resolvedRequired = property._required ?? contract.ItemRequired ?? Required.Default;
+
                     switch (presence)
                     {
                       case PropertyPresence.None:
-                        if (property.Required == Required.AllowNull || property.Required == Required.Always)
+                        if (resolvedRequired == Required.AllowNull || resolvedRequired == Required.Always)
                           throw JsonSerializationException.Create(reader, "Required property '{0}' not found in JSON.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName));
 
                         if (property.PropertyContract == null)
@@ -1258,7 +1260,7 @@ To fix this error either change the environment to be fully trusted, change the 
                           property.ValueProvider.SetValue(newObject, EnsureType(reader, property.DefaultValue, CultureInfo.InvariantCulture, property.PropertyContract, property.PropertyType));
                         break;
                       case PropertyPresence.Null:
-                        if (property.Required == Required.Always)
+                        if (resolvedRequired == Required.Always)
                           throw JsonSerializationException.Create(reader, "Required property '{0}' expects a value but got null.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName));
                         break;
                     }

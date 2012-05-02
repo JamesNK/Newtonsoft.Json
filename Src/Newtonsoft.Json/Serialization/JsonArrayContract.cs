@@ -47,8 +47,6 @@ namespace Newtonsoft.Json.Serialization
     /// <value>The <see cref="Type"/> of the collection items.</value>
     public Type CollectionItemType { get; private set; }
 
-    internal JsonContract CollectionItemContract { get; set; }
-
     private readonly bool _isCollectionItemTypeNullableType;
     private readonly Type _genericCollectionDefinitionType;
     private Type _genericWrapperType;

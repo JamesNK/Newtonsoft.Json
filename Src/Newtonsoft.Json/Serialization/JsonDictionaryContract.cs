@@ -56,8 +56,7 @@ namespace Newtonsoft.Json.Serialization
     /// <value>The <see cref="Type"/> of the dictionary values.</value>
     public Type DictionaryValueType { get; private set; }
 
-    internal JsonContract DictionaryKeyContract { get; set; }
-    internal JsonContract DictionaryValueContract { get; set; }
+    internal JsonContract KeyContract { get; set; }
 
     private readonly bool _isDictionaryValueTypeNullableType;
     private readonly Type _genericCollectionDefinitionType;

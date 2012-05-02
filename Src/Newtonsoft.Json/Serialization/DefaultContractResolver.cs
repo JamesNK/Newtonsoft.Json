@@ -358,6 +358,10 @@ namespace Newtonsoft.Json.Serialization
       contract.MemberSerialization = JsonTypeReflector.GetObjectMemberSerialization(contract.NonNullableUnderlyingType, ignoreSerializableAttribute);
       contract.Properties.AddRange(CreateProperties(contract.NonNullableUnderlyingType, contract.MemberSerialization));
 
+      JsonObjectAttribute attribute = JsonTypeReflector.GetJsonObjectAttribute(contract.NonNullableUnderlyingType);
+      if (attribute != null)
+        contract.ItemRequired = attribute._itemRequired;
+
       // check if a JsonConstructorAttribute has been defined and use that
       if (contract.NonNullableUnderlyingType.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Any(c => c.IsDefined(typeof(JsonConstructorAttribute), true)))
       {
@@ -457,7 +461,7 @@ namespace Newtonsoft.Json.Serialization
         property.Converter = property.Converter ?? matchingMemberProperty.Converter;
         property.MemberConverter = property.MemberConverter ?? matchingMemberProperty.MemberConverter;
         property.DefaultValue = property.DefaultValue ?? matchingMemberProperty.DefaultValue;
-        property.Required = (property.Required != Required.Default) ? property.Required : matchingMemberProperty.Required;
+        property._required = property._required ?? matchingMemberProperty._required;
         property.IsReference = property.IsReference ?? matchingMemberProperty.IsReference;
         property.NullValueHandling = property.NullValueHandling ?? matchingMemberProperty.NullValueHandling;
         property.DefaultValueHandling = property.DefaultValueHandling ?? matchingMemberProperty.DefaultValueHandling;
@@ -944,20 +948,16 @@ namespace Newtonsoft.Json.Serialization
 
       if (propertyAttribute != null)
       {
-        property.Required = propertyAttribute.Required;
+        property._required = propertyAttribute._required;
         property.Order = propertyAttribute._order;
       }
 #if !PocketPC && !NET20
       else if (dataMemberAttribute != null)
       {
-        property.Required = (dataMemberAttribute.IsRequired) ? Required.AllowNull : Required.Default;
+        property._required = (dataMemberAttribute.IsRequired) ? Required.AllowNull : Required.Default;
         property.Order = (dataMemberAttribute.Order != -1) ? (int?) dataMemberAttribute.Order : null;
       }
 #endif
-      else
-      {
-        property.Required = Required.Default;
-      }
 
       bool hasJsonIgnoreAttribute = JsonTypeReflector.GetAttribute<JsonIgnoreAttribute>(attributeProvider) != null
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)

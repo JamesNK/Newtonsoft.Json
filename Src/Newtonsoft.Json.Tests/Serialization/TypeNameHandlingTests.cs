@@ -665,7 +665,6 @@ namespace Newtonsoft.Json.Tests.Serialization
 }";
 
       Assert.AreEqual(expected, json);
-      Console.WriteLine(json);
 
       StringReader sr = new StringReader(json);
 
