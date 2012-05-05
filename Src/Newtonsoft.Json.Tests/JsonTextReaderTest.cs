@@ -2513,7 +2513,7 @@ bye", reader.Value);
       toggleReaderError.Error = false;
 
       Assert.IsTrue(jsonTextReader.Read());
-      Assert.AreEqual(1, jsonTextReader.Value);
+      Assert.AreEqual(1L, jsonTextReader.Value);
 
       toggleReaderError.Error = true;
 
