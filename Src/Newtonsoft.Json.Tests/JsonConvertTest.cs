@@ -721,5 +721,33 @@ now brown cow?", '"', true);
 
       Assert.AreEqual(@"""2000-01-01T01:01:01Z""", json);
     }
+
+    //[Test]
+    public void StackOverflowTest()
+    {
+      StringBuilder sb = new StringBuilder();
+
+      int depth = 700;
+      for (int i = 0; i < depth; i++)
+      {
+        sb.Append("{'A':");
+      }
+
+      // invalid json
+      sb.Append("{***}");
+      for (int i = 0; i < depth; i++)
+      {
+        sb.Append("}");
+      }
+
+      string json = sb.ToString();
+      JsonSerializer serializer = new JsonSerializer() { };
+      serializer.Deserialize<Nest>(new JsonTextReader(new StringReader(json)));
+    }
+
+    public class Nest
+    {
+      public Nest A { get; set; }
+    }
   }
 }
