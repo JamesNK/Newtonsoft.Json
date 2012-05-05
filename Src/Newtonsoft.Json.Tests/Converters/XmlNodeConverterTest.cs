@@ -114,6 +114,35 @@ namespace Newtonsoft.Json.Tests.Converters
       return node;
     }
 
+#if !NET20
+    [Test]
+    public void SerializeEmptyDocument()
+    {
+      XmlDocument doc = new XmlDocument();
+      doc.LoadXml("<root />");
+
+      string json = JsonConvert.SerializeXmlNode(doc, Formatting.Indented, true);
+      Assert.AreEqual("null", json);
+
+      doc = new XmlDocument();
+      doc.LoadXml("<root></root>");
+
+      json = JsonConvert.SerializeXmlNode(doc, Formatting.Indented, true);
+      Assert.AreEqual("null", json);
+
+
+      XDocument doc1 = XDocument.Parse("<root />");
+
+      json = JsonConvert.SerializeXNode(doc1, Formatting.Indented, true);
+      Assert.AreEqual("null", json);
+
+      doc1 = XDocument.Parse("<root></root>");
+
+      json = JsonConvert.SerializeXNode(doc1, Formatting.Indented, true);
+      Assert.AreEqual("null", json);
+    }
+#endif
+
     [Test]
     public void DocumentSerializeIndented()
     {

@@ -35,6 +35,8 @@ namespace Newtonsoft.Json.Serialization
   /// </summary>
   public class JsonProperty
   {
+    internal Required? _required;
+
     // use to cache contract during deserialization
     internal JsonContract PropertyContract { get; set; }
     
@@ -110,8 +112,6 @@ namespace Newtonsoft.Json.Serialization
     /// </summary>
     /// <value>The default value.</value>
     public object DefaultValue { get; set; }
-
-    internal Required? _required;
 
     /// <summary>
     /// Gets a value indicating whether this <see cref="JsonProperty"/> is required.
@@ -189,5 +189,10 @@ namespace Newtonsoft.Json.Serialization
     {
       return PropertyName;
     }
+
+    public JsonConverter ItemConverter { get; set; }
+    public bool? ItemIsReference { get; set; }
+    public TypeNameHandling? ItemTypeNameHandling { get; set; }
+    public ReferenceLoopHandling? ItemReferenceLoopHandling { get; set; }
   }
 }

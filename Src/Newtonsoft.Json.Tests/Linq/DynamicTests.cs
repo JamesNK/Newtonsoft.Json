@@ -712,27 +712,27 @@ namespace Newtonsoft.Json.Tests.Linq
   ""StockValue"": 22050.0
 }", json);
     }
+  }
 
-    public class DynamicDictionary : DynamicObject
+  public class DynamicDictionary : DynamicObject
+  {
+    private readonly IDictionary<string, object> _values = new Dictionary<string, object>();
+
+    public override IEnumerable<string> GetDynamicMemberNames()
     {
-      private readonly IDictionary<string, object> _values = new Dictionary<string, object>();
+      return _values.Keys;
+    }
 
-      public override IEnumerable<string> GetDynamicMemberNames()
-      {
-        return _values.Keys;
-      }
+    public override bool TryGetMember(GetMemberBinder binder, out object result)
+    {
+      result = _values[binder.Name];
+      return true;
+    }
 
-      public override bool TryGetMember(GetMemberBinder binder, out object result)
-      {
-        result = _values[binder.Name];
-        return true;
-      }
-
-      public override bool TrySetMember(SetMemberBinder binder, object value)
-      {
-        _values[binder.Name] = value;
-        return true;
-      }
+    public override bool TrySetMember(SetMemberBinder binder, object value)
+    {
+      _values[binder.Name] = value;
+      return true;
     }
   }
 }

@@ -43,12 +43,15 @@ namespace Newtonsoft.Json
     internal bool? _isReference;
     internal int? _order;
     internal Required? _required;
+    internal bool? _itemIsReference;
+    internal ReferenceLoopHandling? _itemReferenceLoopHandling;
+    internal TypeNameHandling? _itemTypeNameHandling;
 
-    ///// <summary>
-    ///// Gets the collection's items converter.
-    ///// </summary>
-    ///// <value>The collection's items converter.</value>
-    //public Type ItemConverterType { get; set; }
+    /// <summary>
+    /// Gets the collection's items converter.
+    /// </summary>
+    /// <value>The collection's items converter.</value>
+    public Type ItemConverterType { get; set; }
 
     /// <summary>
     /// Gets or sets the null value handling used when serializing this property.
@@ -137,6 +140,24 @@ namespace Newtonsoft.Json
     /// </summary>
     /// <value>The name of the property.</value>
     public string PropertyName { get; set; }
+
+    public ReferenceLoopHandling ItemReferenceLoopHandling
+    {
+      get { return _itemReferenceLoopHandling ?? default(ReferenceLoopHandling); }
+      set { _itemReferenceLoopHandling = value; }
+    }
+
+    public TypeNameHandling ItemTypeNameHandling
+    {
+      get { return _itemTypeNameHandling ?? default(TypeNameHandling); }
+      set { _itemTypeNameHandling = value; }
+    }
+
+    public bool ItemIsReference
+    {
+      get { return _itemIsReference ?? default(bool); }
+      set { _itemIsReference = value; }
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonPropertyAttribute"/> class.

@@ -961,7 +961,7 @@ namespace Newtonsoft.Json.Serialization
 
       bool hasJsonIgnoreAttribute = JsonTypeReflector.GetAttribute<JsonIgnoreAttribute>(attributeProvider) != null
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
-        || JsonTypeReflector.GetAttribute<NonSerializedAttribute>(attributeProvider) != null
+                                    || JsonTypeReflector.GetAttribute<NonSerializedAttribute>(attributeProvider) != null
 #endif
         ;
 
@@ -996,6 +996,14 @@ namespace Newtonsoft.Json.Serialization
       property.ObjectCreationHandling = (propertyAttribute != null) ? propertyAttribute._objectCreationHandling : null;
       property.TypeNameHandling = (propertyAttribute != null) ? propertyAttribute._typeNameHandling : null;
       property.IsReference = (propertyAttribute != null) ? propertyAttribute._isReference : null;
+
+      property.ItemIsReference = (propertyAttribute != null) ? propertyAttribute._itemIsReference : null;
+      property.ItemConverter =
+        (propertyAttribute != null && propertyAttribute.ItemConverterType != null)
+          ? JsonConverterAttribute.CreateJsonConverterInstance(propertyAttribute.ItemConverterType)
+          : null;
+      property.ItemReferenceLoopHandling = (propertyAttribute != null) ? propertyAttribute._itemReferenceLoopHandling : null;
+      property.ItemTypeNameHandling = (propertyAttribute != null) ? propertyAttribute._itemTypeNameHandling : null;
 
       allowNonPublicAccess = false;
       if ((DefaultMembersSearchFlags & BindingFlags.NonPublic) == BindingFlags.NonPublic)

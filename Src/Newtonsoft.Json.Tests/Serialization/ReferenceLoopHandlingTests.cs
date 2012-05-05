@@ -112,6 +112,62 @@ namespace Newtonsoft.Json.Tests.Serialization
       });
       Assert.AreEqual("{}", json);
     }
+
+    [Test]
+    public void SerializePropertyItemReferenceLoopHandling()
+    {
+      PropertyItemReferenceLoopHandling c = new PropertyItemReferenceLoopHandling();
+      c.Text = "Text!";
+      c.SetData(new List<PropertyItemReferenceLoopHandling> { c });
+
+      string json = JsonConvert.SerializeObject(c, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""Text"": ""Text!"",
+  ""Data"": [
+    {
+      ""Text"": ""Text!"",
+      ""Data"": [
+        {
+          ""Text"": ""Text!"",
+          ""Data"": [
+            {
+              ""Text"": ""Text!"",
+              ""Data"": null
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}", json);
+    }
+  }
+
+  public class PropertyItemReferenceLoopHandling
+  {
+    private IList<PropertyItemReferenceLoopHandling> _data;
+    private int _accessCount;
+
+    public string Text { get; set; }
+
+    [JsonProperty(ItemReferenceLoopHandling = ReferenceLoopHandling.Serialize)]
+    public IList<PropertyItemReferenceLoopHandling> Data
+    {
+      get
+      {
+        if (_accessCount >= 3)
+          return null;
+
+        _accessCount++;
+        return new List<PropertyItemReferenceLoopHandling>(_data);
+      }
+    }
+
+    public void SetData(IList<PropertyItemReferenceLoopHandling> data)
+    {
+      _data = data;
+    }
   }
 
   [JsonArray(ItemReferenceLoopHandling = ReferenceLoopHandling.Ignore)]

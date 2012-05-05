@@ -751,6 +751,33 @@ namespace Newtonsoft.Json.Tests.Schema
   }
 }", json);
     }
+
+    [Test]
+    public void GenerateForNullableInt32()
+    {
+      JsonSchemaGenerator jsonSchemaGenerator = new JsonSchemaGenerator();
+
+      JsonSchema jsonSchema = jsonSchemaGenerator.Generate(typeof(NullableInt32TestClass));
+      string json = jsonSchema.ToString();
+
+      Assert.AreEqual(@"{
+  ""type"": ""object"",
+  ""properties"": {
+    ""Value"": {
+      ""required"": true,
+      ""type"": [
+        ""integer"",
+        ""null""
+      ]
+    }
+  }
+}", json);
+    }
+  }
+
+  public class NullableInt32TestClass
+  {
+    public int? Value { get; set; }
   }
 
   public class DMDSLBase
