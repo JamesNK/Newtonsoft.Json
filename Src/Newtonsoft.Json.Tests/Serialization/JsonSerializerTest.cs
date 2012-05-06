@@ -6346,7 +6346,11 @@ Parameter name: value",
   {
     public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {
+#if !(SILVERLIGHT || NETFX_CORE)
       writer.WriteValue(":::" + value.ToString().ToUpper(CultureInfo.InvariantCulture) + ":::");
+#else
+      writer.WriteValue(":::" + value.ToString().ToUpper() + ":::");
+#endif
     }
 
     public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -6355,7 +6359,11 @@ Parameter name: value",
       if (s == null)
         return null;
 
+#if !(SILVERLIGHT || NETFX_CORE)
       return s.ToLower(CultureInfo.InvariantCulture).Trim(new[] { ':' });
+#else
+      return s.ToLower().Trim(new[] { ':' });
+#endif
     }
 
     public override bool CanConvert(Type objectType)
@@ -6368,7 +6376,11 @@ Parameter name: value",
   {
     protected internal override string ResolvePropertyName(string propertyName)
     {
+#if !(SILVERLIGHT || NETFX_CORE)
       return ":::" + propertyName.ToUpper(CultureInfo.InvariantCulture) + ":::";
+#else
+      return ":::" + propertyName.ToUpper() + ":::";
+#endif
     }
   }
 }
