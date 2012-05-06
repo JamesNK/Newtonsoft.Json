@@ -727,7 +727,7 @@ now brown cow?", '"', true);
     {
       StringBuilder sb = new StringBuilder();
 
-      int depth = 700;
+      int depth = 900;
       for (int i = 0; i < depth; i++)
       {
         sb.Append("{'A':");

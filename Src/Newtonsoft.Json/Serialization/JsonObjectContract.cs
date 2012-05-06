@@ -72,6 +72,36 @@ namespace Newtonsoft.Json.Serialization
     /// <value>The parametrized constructor.</value>
     public ConstructorInfo ParametrizedConstructor { get; set; }
 
+    private bool? _hasRequiredOrDefaultValueProperties;
+    internal bool HasRequiredOrDefaultValueProperties
+    {
+      get
+      {
+        if (_hasRequiredOrDefaultValueProperties == null)
+        {
+          _hasRequiredOrDefaultValueProperties = false;
+
+          if (ItemRequired.GetValueOrDefault(Required.Default) != Required.Default)
+          {
+            _hasRequiredOrDefaultValueProperties = true;
+          }
+          else
+          {
+            foreach (JsonProperty property in Properties)
+            {
+              if (property.Required != Required.Default || ((property.DefaultValueHandling & DefaultValueHandling.Populate) == DefaultValueHandling.Populate) && property.Writable)
+              {
+                _hasRequiredOrDefaultValueProperties = true;
+                break;
+              }
+            }
+          }
+        }
+
+        return _hasRequiredOrDefaultValueProperties.Value;
+      }
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonObjectContract"/> class.
     /// </summary>

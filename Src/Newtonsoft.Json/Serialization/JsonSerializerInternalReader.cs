@@ -88,7 +88,7 @@ namespace Newtonsoft.Json.Serialization
         if (contract.ContractType == JsonContractType.Dictionary)
           PopulateDictionary(CollectionUtils.CreateDictionaryWrapper(target), reader, (JsonDictionaryContract) contract, null, null, id);
         else if (contract.ContractType == JsonContractType.Object)
-          PopulateObject(target, reader, (JsonObjectContract) contract, null, null, id);
+          PopulateObject(target, reader, (JsonObjectContract) contract, null, id);
         else
           throw JsonSerializationException.Create(reader, "Cannot populate JSON object onto type '{0}'.".FormatWith(CultureInfo.InvariantCulture, objectType));
       }
@@ -317,7 +317,7 @@ namespace Newtonsoft.Json.Serialization
           else
             targetObject = CreateNewObject(reader, objectContract, member, containerMember, id);
 
-          return PopulateObject(targetObject, reader, objectContract, member, containerMember, id);
+          return PopulateObject(targetObject, reader, objectContract, member, id);
         case JsonContractType.Primitive:
           JsonPrimitiveContract primitiveContract = (JsonPrimitiveContract) contract;
           // if the content is inside $value then read past it
@@ -1245,12 +1245,14 @@ To fix this error either change the environment to be fully trusted, change the 
       return newObject;
     }
 
-    private object PopulateObject(object newObject, JsonReader reader, JsonObjectContract contract, JsonProperty member, JsonProperty containerProperty, string id)
+    private object PopulateObject(object newObject, JsonReader reader, JsonObjectContract contract, JsonProperty member, string id)
     {
       contract.InvokeOnDeserializing(newObject, Serializer.Context);
 
-      Dictionary<JsonProperty, PropertyPresence> propertiesPresence =
-        contract.Properties.ToDictionary(m => m, m => PropertyPresence.None);
+      // only need to keep a track of properies presence if they are required or a value should be defaulted if missing
+      Dictionary<JsonProperty, PropertyPresence> propertiesPresence = (contract.HasRequiredOrDefaultValueProperties || HasFlag(Serializer.DefaultValueHandling, DefaultValueHandling.Populate))
+        ? contract.Properties.ToDictionary(m => m, m => PropertyPresence.None)
+        : null;
 
       if (id != null)
         Serializer.ReferenceResolver.AddReference(this, id, newObject);
@@ -1303,45 +1305,7 @@ To fix this error either change the environment to be fully trusted, change the 
             break;
           case JsonToken.EndObject:
             {
-              foreach (KeyValuePair<JsonProperty, PropertyPresence> propertyPresence in propertiesPresence)
-              {
-                JsonProperty property = propertyPresence.Key;
-                PropertyPresence presence = propertyPresence.Value;
-
-                if (presence == PropertyPresence.None || presence == PropertyPresence.Null)
-                {
-                  try
-                  {
-                    Required resolvedRequired = property._required ?? contract.ItemRequired ?? Required.Default;
-
-                    switch (presence)
-                    {
-                      case PropertyPresence.None:
-                        if (resolvedRequired == Required.AllowNull || resolvedRequired == Required.Always)
-                          throw JsonSerializationException.Create(reader, "Required property '{0}' not found in JSON.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName));
-
-                        if (property.PropertyContract == null)
-                          property.PropertyContract = GetContractSafe(property.PropertyType);
-
-                        if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer.DefaultValueHandling), DefaultValueHandling.Populate)
-                            && property.Writable)
-                          property.ValueProvider.SetValue(newObject, EnsureType(reader, property.DefaultValue, CultureInfo.InvariantCulture, property.PropertyContract, property.PropertyType));
-                        break;
-                      case PropertyPresence.Null:
-                        if (resolvedRequired == Required.Always)
-                          throw JsonSerializationException.Create(reader, "Required property '{0}' expects a value but got null.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName));
-                        break;
-                    }
-                  }
-                  catch (Exception ex)
-                  {
-                    if (IsErrorHandled(newObject, contract, property.PropertyName, reader.Path, ex))
-                      HandleError(reader, initialDepth);
-                    else
-                      throw;
-                  }
-                }
-              }
+              EndObject(newObject, reader, contract, initialDepth, propertiesPresence);
 
               contract.InvokeOnDeserialized(newObject, Serializer.Context);
               return newObject;
@@ -1357,9 +1321,54 @@ To fix this error either change the environment to be fully trusted, change the 
       throw JsonSerializationException.Create(reader, "Unexpected end when deserializing object.");
     }
 
+    private void EndObject(object newObject, JsonReader reader, JsonObjectContract contract, int initialDepth, Dictionary<JsonProperty, PropertyPresence> propertiesPresence)
+    {
+      if (propertiesPresence != null)
+      {
+        foreach (KeyValuePair<JsonProperty, PropertyPresence> propertyPresence in propertiesPresence)
+        {
+          JsonProperty property = propertyPresence.Key;
+          PropertyPresence presence = propertyPresence.Value;
+
+          if (presence == PropertyPresence.None || presence == PropertyPresence.Null)
+          {
+            try
+            {
+              Required resolvedRequired = property._required ?? contract.ItemRequired ?? Required.Default;
+
+              switch (presence)
+              {
+                case PropertyPresence.None:
+                  if (resolvedRequired == Required.AllowNull || resolvedRequired == Required.Always)
+                    throw JsonSerializationException.Create(reader, "Required property '{0}' not found in JSON.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName));
+
+                  if (property.PropertyContract == null)
+                    property.PropertyContract = GetContractSafe(property.PropertyType);
+
+                  if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer.DefaultValueHandling), DefaultValueHandling.Populate) && property.Writable)
+                    property.ValueProvider.SetValue(newObject, EnsureType(reader, property.DefaultValue, CultureInfo.InvariantCulture, property.PropertyContract, property.PropertyType));
+                  break;
+                case PropertyPresence.Null:
+                  if (resolvedRequired == Required.Always)
+                    throw JsonSerializationException.Create(reader, "Required property '{0}' expects a value but got null.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName));
+                  break;
+              }
+            }
+            catch (Exception ex)
+            {
+              if (IsErrorHandled(newObject, contract, property.PropertyName, reader.Path, ex))
+                HandleError(reader, initialDepth);
+              else
+                throw;
+            }
+          }
+        }
+      }
+    }
+
     private void SetPropertyPresence(JsonReader reader, JsonProperty property, Dictionary<JsonProperty, PropertyPresence> requiredProperties)
     {
-      if (property != null)
+      if (property != null && requiredProperties != null)
       {
         requiredProperties[property] = (reader.TokenType == JsonToken.Null || reader.TokenType == JsonToken.Undefined)
           ? PropertyPresence.Null
