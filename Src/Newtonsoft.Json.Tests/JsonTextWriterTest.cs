@@ -174,8 +174,8 @@ namespace Newtonsoft.Json.Tests
     [Test]
     public void WriteValueObjectWithUnsupportedValue()
     {
-      ExceptionAssert.Throws<ArgumentException>(
-        @"Unsupported type: System.Version. Use the JsonSerializer class to get the object's JSON representation.",
+      ExceptionAssert.Throws<JsonWriterException>(
+        @"Unsupported type: System.Version. Use the JsonSerializer class to get the object's JSON representation. Path ''.",
         () =>
         {
           StringWriter sw = new StringWriter();
@@ -597,7 +597,7 @@ namespace Newtonsoft.Json.Tests
     public void BadWriteEndArray()
     {
       ExceptionAssert.Throws<JsonWriterException>(
-        "No token to close.",
+        "No token to close. Path ''.",
         () =>
         {
           StringBuilder sb = new StringBuilder();

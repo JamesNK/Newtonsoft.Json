@@ -208,7 +208,7 @@ namespace Newtonsoft.Json.Serialization
       return true;
     }
 
-    private bool CheckForCircularReference(object value, JsonProperty property, JsonContract contract, JsonContainerContract containerContract, JsonProperty containerProperty)
+    private bool CheckForCircularReference(JsonWriter writer, object value, JsonProperty property, JsonContract contract, JsonContainerContract containerContract, JsonProperty containerProperty)
     {
       if (value == null || contract.ContractType == JsonContractType.Primitive || contract.ContractType == JsonContractType.String)
         return true;
@@ -229,7 +229,12 @@ namespace Newtonsoft.Json.Serialization
         switch (referenceLoopHandling.GetValueOrDefault(Serializer.ReferenceLoopHandling))
         {
           case ReferenceLoopHandling.Error:
-            throw new JsonSerializationException("Self referencing loop detected for type '{0}'.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
+            string message = "Self referencing loop detected";
+            if (property != null)
+              message += " for property '{0}'".FormatWith(CultureInfo.InvariantCulture, property.PropertyName);
+            message += " with type '{0}'.".FormatWith(CultureInfo.InvariantCulture, value.GetType());
+
+            throw JsonSerializationException.Create(null, writer.ContainerPath, message, null);
           case ReferenceLoopHandling.Ignore:
             return false;
           case ReferenceLoopHandling.Serialize:
@@ -336,14 +341,14 @@ namespace Newtonsoft.Json.Serialization
                 continue;
               }
 
-              if (!CheckForCircularReference(memberValue, property, memberContract, contract, member))
+              if (!CheckForCircularReference(writer, memberValue, property, memberContract, contract, member))
                 continue;
 
               if (memberValue == null)
               {
                 Required resolvedRequired = property._required ?? contract.ItemRequired ?? Required.Default;
                 if (resolvedRequired == Required.Always)
-                  throw new JsonSerializationException("Cannot write a null value for property '{0}'. Property requires a value.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName));
+                  throw JsonSerializationException.Create(null, writer.ContainerPath, "Cannot write a null value for property '{0}'. Property requires a value.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName), null);
               }
 
               writer.WritePropertyName(propertyName);
@@ -412,7 +417,7 @@ namespace Newtonsoft.Json.Serialization
       }
       else
       {
-        if (!CheckForCircularReference(value, null, contract, collectionContract, containerProperty))
+        if (!CheckForCircularReference(writer, value, null, contract, collectionContract, containerProperty))
           return;
 
         _serializeStack.Add(value);
@@ -449,7 +454,7 @@ namespace Newtonsoft.Json.Serialization
           }
           else
           {
-            if (CheckForCircularReference(value, null, valueContract, contract, member))
+            if (CheckForCircularReference(writer, value, null, valueContract, contract, member))
             {
               SerializeValue(writer, value, valueContract, null, contract, member);
             }
@@ -515,8 +520,8 @@ namespace Newtonsoft.Json.Serialization
     {
       if (!JsonTypeReflector.FullyTrusted)
       {
-        throw new JsonSerializationException(@"Type '{0}' implements ISerializable but cannot be serialized using the ISerializable interface because the current application is not fully trusted and ISerializable can expose secure data.
-To fix this error either change the environment to be fully trusted, change the application to not deserialize the type, add to JsonObjectAttribute to the type or change the JsonSerializer setting ContractResolver to use a new DefaultContractResolver with IgnoreSerializableInterface set to true.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
+        throw JsonSerializationException.Create(null, writer.ContainerPath, @"Type '{0}' implements ISerializable but cannot be serialized using the ISerializable interface because the current application is not fully trusted and ISerializable can expose secure data.
+To fix this error either change the environment to be fully trusted, change the application to not deserialize the type, add to JsonObjectAttribute to the type or change the JsonSerializer setting ContractResolver to use a new DefaultContractResolver with IgnoreSerializableInterface set to true.".FormatWith(CultureInfo.InvariantCulture, value.GetType()), null);
       }
 
       contract.InvokeOnSerializing(value, Serializer.Context);
@@ -634,7 +639,7 @@ To fix this error either change the environment to be fully trusted, change the 
           }
           else
           {
-            if (!CheckForCircularReference(value, null, valueContract, contract, member))
+            if (!CheckForCircularReference(writer, value, null, valueContract, contract, member))
               continue;
 
             writer.WritePropertyName(propertyName);

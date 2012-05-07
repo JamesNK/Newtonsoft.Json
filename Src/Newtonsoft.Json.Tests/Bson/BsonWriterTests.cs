@@ -378,7 +378,7 @@ namespace Newtonsoft.Json.Tests.Bson
     [Test]
     public void WriteComment()
     {
-      ExceptionAssert.Throws<JsonWriterException>("Cannot write JSON comment as BSON.",
+      ExceptionAssert.Throws<JsonWriterException>("Cannot write JSON comment as BSON. Path ''.",
       () =>
       {
         MemoryStream ms = new MemoryStream();
@@ -392,7 +392,7 @@ namespace Newtonsoft.Json.Tests.Bson
     [Test]
     public void WriteConstructor()
     {
-      ExceptionAssert.Throws<JsonWriterException>("Cannot write JSON constructor as BSON.",
+      ExceptionAssert.Throws<JsonWriterException>("Cannot write JSON constructor as BSON. Path ''.",
       () =>
       {
         MemoryStream ms = new MemoryStream();
@@ -406,7 +406,7 @@ namespace Newtonsoft.Json.Tests.Bson
     [Test]
     public void WriteRaw()
     {
-      ExceptionAssert.Throws<JsonWriterException>("Cannot write raw JSON as BSON.",
+      ExceptionAssert.Throws<JsonWriterException>("Cannot write raw JSON as BSON. Path ''.",
       () =>
       {
         MemoryStream ms = new MemoryStream();
@@ -420,7 +420,7 @@ namespace Newtonsoft.Json.Tests.Bson
     [Test]
     public void WriteRawValue()
     {
-      ExceptionAssert.Throws<JsonWriterException>("Cannot write raw JSON as BSON.",
+      ExceptionAssert.Throws<JsonWriterException>("Cannot write raw JSON as BSON. Path ''.",
       () =>
       {
         MemoryStream ms = new MemoryStream();
@@ -652,7 +652,7 @@ namespace Newtonsoft.Json.Tests.Bson
     [Test]
     public void WriteValueOutsideOfObjectOrArray()
     {
-      ExceptionAssert.Throws<JsonWriterException>("Error writing String value. BSON must start with an Object or Array.",
+      ExceptionAssert.Throws<JsonWriterException>("Error writing String value. BSON must start with an Object or Array. Path ''.",
       () =>
       {
         MemoryStream stream = new MemoryStream();

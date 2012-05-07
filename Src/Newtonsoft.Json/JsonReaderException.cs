@@ -44,7 +44,6 @@ namespace Newtonsoft.Json
     /// <value>The line number indicating where the error occurred.</value>
     public int LineNumber { get; private set; }
 
-
     /// <summary>
     /// Gets the line position indicating where the error occurred.
     /// </summary>
@@ -135,23 +134,6 @@ namespace Newtonsoft.Json
       }
 
       return new JsonReaderException(message, ex, path, lineNumber, linePosition);
-    }
-
-    internal static string FormatExceptionMessage(IJsonLineInfo lineInfo, string path, string message)
-    {
-      message = message.Trim();
-
-      if (!message.EndsWith("."))
-        message += ".";
-
-      message += " Path '{0}'".FormatWith(CultureInfo.InvariantCulture, path);
-
-      if (lineInfo != null && lineInfo.HasLineInfo())
-        message += ", line {0}, position {1}".FormatWith(CultureInfo.InvariantCulture, lineInfo.LineNumber, lineInfo.LinePosition);
-
-      message += ".";
-
-      return message;
     }
   }
 }

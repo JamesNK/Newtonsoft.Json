@@ -93,6 +93,7 @@ namespace Newtonsoft.Json.Tests
       JsonNet,
       JsonNetWithIsoConverter,
       JsonNetBinary,
+      JsonNetLinq,
       BinaryFormatter,
       JavaScriptSerializer,
       DataContractSerializer,
@@ -130,6 +131,7 @@ namespace Newtonsoft.Json.Tests
       BenchmarkSerializeMethod(SerializeMethod.JavaScriptSerializer, value);
       BenchmarkSerializeMethod(SerializeMethod.DataContractJsonSerializer, value);
       BenchmarkSerializeMethod(SerializeMethod.JsonNet, value);
+      BenchmarkSerializeMethod(SerializeMethod.JsonNetLinq, value);
       BenchmarkSerializeMethod(SerializeMethod.JsonNetWithIsoConverter, value);
       BenchmarkSerializeMethod(SerializeMethod.JsonNetBinary, value);
     }
@@ -428,33 +430,6 @@ namespace Newtonsoft.Json.Tests
       };
     }
 
-    public string SerializeJsonNet(object value)
-    {
-      Type type = value.GetType();
-
-      Newtonsoft.Json.JsonSerializer json = new Newtonsoft.Json.JsonSerializer();
-
-      json.NullValueHandling = NullValueHandling.Ignore;
-
-      json.ObjectCreationHandling = Newtonsoft.Json.ObjectCreationHandling.Replace;
-      json.MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore;
-      json.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-
-
-      StringWriter sw = new StringWriter();
-      Newtonsoft.Json.JsonTextWriter writer = new JsonTextWriter(sw);
-
-      writer.Formatting = Formatting.None;
-
-      writer.QuoteChar = '"';
-      json.Serialize(writer, value);
-
-      string output = sw.ToString();
-      writer.Close();
-
-      return output;
-    }
-
     public string SerializeWebExtensions(object value)
     {
       JavaScriptSerializer ser = new JavaScriptSerializer();
@@ -506,6 +481,38 @@ namespace Newtonsoft.Json.Tests
         case SerializeMethod.JsonNetWithIsoConverter:
           json = JsonConvert.SerializeObject(value, new IsoDateTimeConverter());
           break;
+        case SerializeMethod.JsonNetLinq:
+          {
+            TestClass c = value as TestClass;
+            if (c != null)
+            {
+              JObject o = new JObject(
+                new JProperty("strings", new JArray(
+                                           c.strings
+                                           )),
+                new JProperty("dictionary", new JObject(c.dictionary.Select(d => new JProperty(d.Key, d.Value)))),
+                new JProperty("Name", c.Name),
+                new JProperty("Now", c.Now),
+                new JProperty("BigNumber", c.BigNumber),
+                new JProperty("Address1", new JObject(
+                                            new JProperty("Street", c.Address1.Street),
+                                            new JProperty("Phone", c.Address1.Phone),
+                                            new JProperty("Entered", c.Address1.Entered))),
+                new JProperty("Addresses", new JArray(c.Addresses.Select(a =>
+                                                                         new JObject(
+                                                                           new JProperty("Street", a.Street),
+                                                                           new JProperty("Phone", a.Phone),
+                                                                           new JProperty("Entered", a.Entered)))))
+                );
+
+              json = o.ToString(Formatting.None);
+            }
+            else
+            {
+              json = string.Empty;
+            }
+            break;
+          }
         case SerializeMethod.JsonNetBinary:
           {
             MemoryStream ms = new MemoryStream(Buffer);

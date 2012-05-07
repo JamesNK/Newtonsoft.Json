@@ -185,7 +185,7 @@ namespace Newtonsoft.Json
           case State.Start:
             return WriteState.Start;
           default:
-            throw new JsonWriterException("Invalid state: " + _currentState);
+            throw JsonWriterException.Create(this, "Invalid state: " + _currentState, null);
         }
       }
     }
@@ -482,17 +482,17 @@ namespace Newtonsoft.Json
     private void WriteConstructorDate(JsonReader reader)
     {
       if (!reader.Read())
-        throw new JsonWriterException("Unexpected end when reading date constructor.");
+        throw JsonWriterException.Create(this, "Unexpected end when reading date constructor.", null);
       if (reader.TokenType != JsonToken.Integer)
-        throw new JsonWriterException("Unexpected token when reading date constructor. Expected Integer, got " + reader.TokenType);
+        throw JsonWriterException.Create(this, "Unexpected token when reading date constructor. Expected Integer, got " + reader.TokenType, null);
 
       long ticks = (long)reader.Value;
       DateTime date = JsonConvert.ConvertJavaScriptTicksToDateTime(ticks);
 
       if (!reader.Read())
-        throw new JsonWriterException("Unexpected end when reading date constructor.");
+        throw JsonWriterException.Create(this, "Unexpected end when reading date constructor.", null);
       if (reader.TokenType != JsonToken.EndConstructor)
-        throw new JsonWriterException("Unexpected token when reading date constructor. Expected EndConstructor, got " + reader.TokenType);
+        throw JsonWriterException.Create(this, "Unexpected token when reading date constructor. Expected EndConstructor, got " + reader.TokenType, null);
 
       WriteValue(date);
     }
@@ -537,7 +537,7 @@ namespace Newtonsoft.Json
           WriteEndConstructor();
           break;
         default:
-          throw new JsonWriterException("Unexpected type when writing end: " + type);
+          throw JsonWriterException.Create(this, "Unexpected type when writing end: " + type, null);
       }
     }
 
@@ -560,7 +560,7 @@ namespace Newtonsoft.Json
         case JsonToken.EndConstructor:
           return JsonContainerType.Constructor;
         default:
-          throw new JsonWriterException("No type for token: " + token);
+          throw JsonWriterException.Create(this, "No type for token: " + token, null);
       }
     }
 
@@ -575,7 +575,7 @@ namespace Newtonsoft.Json
         case JsonContainerType.Constructor:
           return JsonToken.EndConstructor;
         default:
-          throw new JsonWriterException("No close token for type: " + type);
+          throw JsonWriterException.Create(this, "No close token for type: " + type, null);
       }
     }
 
@@ -606,7 +606,7 @@ namespace Newtonsoft.Json
       }
 
       if (levelsToComplete == 0)
-        throw new JsonWriterException("No token to close.");
+        throw JsonWriterException.Create(this, "No token to close.", null);
 
       for (int i = 0; i < levelsToComplete; i++)
       {
@@ -637,7 +637,7 @@ namespace Newtonsoft.Json
             _currentState = State.Start;
             break;
           default:
-            throw new JsonWriterException("Unknown JsonType: " + currentLevelType);
+            throw JsonWriterException.Create(this, "Unknown JsonType: " + currentLevelType, null);
         }
       }
     }
@@ -682,9 +682,7 @@ namespace Newtonsoft.Json
       State newState = StateArray[(int)tokenBeingWritten][(int)_currentState];
 
       if (newState == State.Error)
-      {
-        throw new JsonWriterException("Token {0} in state {1} would result in an invalid JSON object.".FormatWith(CultureInfo.InvariantCulture, tokenBeingWritten.ToString(), _currentState.ToString()));
-      }
+        throw JsonWriterException.Create(this, "Token {0} in state {1} would result in an invalid JSON object.".FormatWith(CultureInfo.InvariantCulture, tokenBeingWritten.ToString(), _currentState.ToString()), null);
 
       if ((_currentState == State.Object || _currentState == State.Array || _currentState == State.Constructor) && tokenBeingWritten != JsonToken.Comment)
       {
@@ -1247,7 +1245,7 @@ namespace Newtonsoft.Json
         return;
       }
 
-      throw new ArgumentException("Unsupported type: {0}. Use the JsonSerializer class to get the object's JSON representation.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
+      throw JsonWriterException.Create(this, "Unsupported type: {0}. Use the JsonSerializer class to get the object's JSON representation.".FormatWith(CultureInfo.InvariantCulture, value.GetType()), null);
     }
     #endregion
 
@@ -1269,7 +1267,7 @@ namespace Newtonsoft.Json
       if (ws != null)
       {
         if (!StringUtils.IsWhiteSpace(ws))
-          throw new JsonWriterException("Only white space characters should be used.");
+          throw JsonWriterException.Create(this, "Only white space characters should be used.", null);
       }
     }
 

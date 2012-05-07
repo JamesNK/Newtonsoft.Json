@@ -3,13 +3,7 @@
   <title>Serialization Guide</title>
   <link href="styles.css" rel="stylesheet" type="text/css" />
   <link href="custom.css" rel="stylesheet" type="text/css" />
-  <style type="text/css">
-    .style1
-    {
-      width: 100%;
-    }
-  </style>
-</head>
+  </head>
 <body>
   <div id="control">
     <span class="productTitle">Json.NET - Quick Starts & API Documentation</span><br />
@@ -221,12 +215,20 @@
       or the DefaultMembersSearchFlags can be changed on DefaultContractResolver to change
       how members are serialized on all types.</p>
     <p>
-      Types can also be serialized using opt-in mode. Only fields that have a JsonPropertyAttribute
+      Types can also be serialized using opt-in mode. Only 
+      properties and fields that have a JsonPropertyAttribute
       or DataMemberAttribute on them will be serialized. Opt-in mode for an object is
       specified using the JsonObjectAttribute on the class.
     </p>
+    <p>
+      Finally types can be serialized using a fields mode. All fields, both public and 
+      private, are serialized and properties are ignored. This can be specified by 
+      setting MemberSerialization.Fields on a type with the JsonObject attribute or by the .NET
+      <a href="http://msdn.microsoft.com/en-us/library/system.serializableattribute.aspx" target="_blank">
+      Serializable</a> attribute and setting IgnoreSerializableAttribute on 
+      DefaultContractResolver to false.</p>
     <h4>
-      <strong>IEnumerable, Lists and Arrays</strong></h4>
+      <strong>IEnumerable, Lists and Arrayss</strong></h4>
     <p>
       .NET lists (types that inherit from IEnumerable) and .NET arrays are converted to
       JSON arrays. Because JSON arrays only support a range of values and not properties,

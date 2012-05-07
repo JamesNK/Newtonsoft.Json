@@ -92,7 +92,7 @@ namespace Newtonsoft.Json
 
     internal static JsonSerializationException Create(IJsonLineInfo lineInfo, string path, string message, Exception ex)
     {
-      message = JsonReaderException.FormatExceptionMessage(lineInfo, path, message);
+      message = FormatExceptionMessage(lineInfo, path, message);
 
       return new JsonSerializationException(message, ex);
     }

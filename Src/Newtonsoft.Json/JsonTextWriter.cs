@@ -194,7 +194,7 @@ namespace Newtonsoft.Json
           _writer.Write(")");
           break;
         default:
-          throw new JsonWriterException("Invalid JsonToken: " + token);
+          throw JsonWriterException.Create(this, "Invalid JsonToken: " + token, null);
       }
     }
 

@@ -104,7 +104,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       circularList.Add(new CircularList { new CircularList { circularList } });
 
       ExceptionAssert.Throws<JsonSerializationException>(
-        "Self referencing loop detected for type '" + classRef  + "'.",
+        "Self referencing loop detected with type '" + classRef + "'. Path '[2][0]'.",
         () =>
         {
           JsonConvert.SerializeObject(circularList, Formatting.Indented);
@@ -264,7 +264,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       circularDictionary.Add("self", circularDictionary);
 
       ExceptionAssert.Throws<JsonSerializationException>(
-        @"Self referencing loop detected for type '" + classRef + "'.",
+        @"Self referencing loop detected with type '" + classRef + "'. Path ''.",
         () =>
           {
             JsonConvert.SerializeObject(circularDictionary, Formatting.Indented);

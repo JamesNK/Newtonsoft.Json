@@ -959,9 +959,10 @@ namespace Newtonsoft.Json.Serialization
       }
 #endif
 
-      bool hasJsonIgnoreAttribute = JsonTypeReflector.GetAttribute<JsonIgnoreAttribute>(attributeProvider) != null
+      bool hasJsonIgnoreAttribute =
+        JsonTypeReflector.GetAttribute<JsonIgnoreAttribute>(attributeProvider) != null
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
-                                    || JsonTypeReflector.GetAttribute<NonSerializedAttribute>(attributeProvider) != null
+        || JsonTypeReflector.GetAttribute<NonSerializedAttribute>(attributeProvider) != null
 #endif
         ;
 

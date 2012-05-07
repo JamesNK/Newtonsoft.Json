@@ -48,7 +48,7 @@ namespace Newtonsoft.Json
     internal TypeNameHandling? _itemTypeNameHandling;
 
     /// <summary>
-    /// Gets the collection's items converter.
+    /// Gets or sets the converter used when serializing the property's collection items.
     /// </summary>
     /// <value>The collection's items converter.</value>
     public Type ItemConverterType { get; set; }
@@ -141,18 +141,30 @@ namespace Newtonsoft.Json
     /// <value>The name of the property.</value>
     public string PropertyName { get; set; }
 
+    /// <summary>
+    /// Gets or sets the the reference loop handling used when serializing the property's collection items.
+    /// </summary>
+    /// <value>The collection's items reference loop handling.</value>
     public ReferenceLoopHandling ItemReferenceLoopHandling
     {
       get { return _itemReferenceLoopHandling ?? default(ReferenceLoopHandling); }
       set { _itemReferenceLoopHandling = value; }
     }
 
+    /// <summary>
+    /// Gets or sets the the type name handling used when serializing the property's collection items.
+    /// </summary>
+    /// <value>The collection's items type name handling.</value>
     public TypeNameHandling ItemTypeNameHandling
     {
       get { return _itemTypeNameHandling ?? default(TypeNameHandling); }
       set { _itemTypeNameHandling = value; }
     }
 
+    /// <summary>
+    /// Gets or sets whether this property's collection items are serialized as a reference.
+    /// </summary>
+    /// <value>Whether this property's collection items are serialized as a reference.</value>
     public bool ItemIsReference
     {
       get { return _itemIsReference ?? default(bool); }

@@ -190,9 +190,28 @@ namespace Newtonsoft.Json.Serialization
       return PropertyName;
     }
 
+    /// <summary>
+    /// Gets or sets the converter used when serializing the property's collection items.
+    /// </summary>
+    /// <value>The collection's items converter.</value>
     public JsonConverter ItemConverter { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether this property's collection items are serialized as a reference.
+    /// </summary>
+    /// <value>Whether this property's collection items are serialized as a reference.</value>
     public bool? ItemIsReference { get; set; }
+
+    /// <summary>
+    /// Gets or sets the the type name handling used when serializing the property's collection items.
+    /// </summary>
+    /// <value>The collection's items type name handling.</value>
     public TypeNameHandling? ItemTypeNameHandling { get; set; }
+
+    /// <summary>
+    /// Gets or sets the the reference loop handling used when serializing the property's collection items.
+    /// </summary>
+    /// <value>The collection's items reference loop handling.</value>
     public ReferenceLoopHandling? ItemReferenceLoopHandling { get; set; }
   }
 }

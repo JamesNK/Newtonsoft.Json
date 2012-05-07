@@ -1197,7 +1197,7 @@ keyword such as type of business.""
     public void SerializeRequiredMembersClassNullRequiredValueProperty()
     {
       ExceptionAssert.Throws<JsonSerializationException>(
-        "Cannot write a null value for property 'FirstName'. Property requires a value.",
+        "Cannot write a null value for property 'FirstName'. Property requires a value. Path ''.",
         () =>
         {
           RequiredMembersClass requiredMembersClass = new RequiredMembersClass
@@ -1480,7 +1480,7 @@ keyword such as type of business.""
       string classRef = typeof(JsonPropertyWithHandlingValues).FullName;
 
       ExceptionAssert.Throws<JsonSerializationException>(
-        @"Self referencing loop detected for type '" + classRef + "'.",
+        "Self referencing loop detected for property 'ReferenceLoopHandlingErrorProperty' with type '" + classRef + "'. Path ''.",
         () =>
         {
           JsonPropertyWithHandlingValues o = new JsonPropertyWithHandlingValues();
@@ -2948,7 +2948,7 @@ To fix this error either change the environment to be fully trusted, change the 
       {
         ExceptionAssert.Throws<JsonSerializationException>(
           @"Type 'Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+ISerializableTestObject' implements ISerializable but cannot be serialized using the ISerializable interface because the current application is not fully trusted and ISerializable can expose secure data.
-To fix this error either change the environment to be fully trusted, change the application to not deserialize the type, add to JsonObjectAttribute to the type or change the JsonSerializer setting ContractResolver to use a new DefaultContractResolver with IgnoreSerializableInterface set to true.",
+To fix this error either change the environment to be fully trusted, change the application to not deserialize the type, add to JsonObjectAttribute to the type or change the JsonSerializer setting ContractResolver to use a new DefaultContractResolver with IgnoreSerializableInterface set to true. Path ''.",
           () =>
           {
             JsonTypeReflector.SetFullyTrusted(false);
@@ -6083,9 +6083,9 @@ Parameter name: value",
 }", json);
 
       Assert.AreEqual(3, errors.Count);
-      Assert.AreEqual("Cannot write a null value for property 'NonAttributeProperty'. Property requires a value.", errors[0]);
-      Assert.AreEqual("Cannot write a null value for property 'UnsetProperty'. Property requires a value.", errors[1]);
-      Assert.AreEqual("Cannot write a null value for property 'AlwaysProperty'. Property requires a value.", errors[2]);
+      Assert.AreEqual("Cannot write a null value for property 'NonAttributeProperty'. Property requires a value. Path ''.", errors[0]);
+      Assert.AreEqual("Cannot write a null value for property 'UnsetProperty'. Property requires a value. Path ''.", errors[1]);
+      Assert.AreEqual("Cannot write a null value for property 'AlwaysProperty'. Property requires a value. Path ''.", errors[2]);
     }
 
     [Test]
@@ -6133,7 +6133,77 @@ Parameter name: value",
       string s = (string) new JsonSerializer().Deserialize(new JsonTextReader(new StringReader("''")));
       Assert.AreEqual("", s);
     }
+
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+    [Test]
+    public void SerializeAndDeserializeWithAttributes()
+    {
+      var testObj = new PersonSerializable() { Name = "John Doe", Age = 28 };
+      var objDeserialized = this.SerializeAndDeserialize<PersonSerializable>(testObj);
+
+      Assert.AreEqual(testObj.Name, objDeserialized.Name);
+      Assert.AreEqual(0, objDeserialized.Age);
+    }
+
+    private T SerializeAndDeserialize<T>(T obj)
+    where T : class
+    {
+      var json = Serialize(obj);
+      return Deserialize<T>(json);
+    }
+
+    private string Serialize<T>(T obj)
+    where T : class
+    {
+      var stringWriter = new StringWriter();
+      var serializer = new Newtonsoft.Json.JsonSerializer();
+      serializer.ContractResolver = new DefaultContractResolver(false)
+        {
+          IgnoreSerializableAttribute = false
+        };
+      serializer.Serialize(stringWriter, obj);
+
+      return stringWriter.ToString();
+    }
+
+    private T Deserialize<T>(string json)
+    where T : class
+    {
+      var jsonReader = new Newtonsoft.Json.JsonTextReader(new StringReader(json));
+      var serializer = new Newtonsoft.Json.JsonSerializer();
+      serializer.ContractResolver = new DefaultContractResolver(false)
+      {
+        IgnoreSerializableAttribute = false
+      };
+
+      return serializer.Deserialize(jsonReader, typeof(T)) as T;
+    }
+#endif
   }
+
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+  [Serializable]
+  public class PersonSerializable
+  {
+    public PersonSerializable()
+    { }
+
+    private string _name = "";
+    public string Name
+    {
+      get { return _name; }
+      set { _name = value; }
+    }
+
+    [NonSerialized]
+    private int _age = 0;
+    public int Age
+    {
+      get { return _age; }
+      set { _age = value; }
+    }
+  }
+#endif
 
   public class PropertyItemConverter
   {

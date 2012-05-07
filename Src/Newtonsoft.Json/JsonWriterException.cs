@@ -39,6 +39,12 @@ namespace Newtonsoft.Json
   public class JsonWriterException : JsonException
   {
     /// <summary>
+    /// Gets the path to the JSON where the error occurred.
+    /// </summary>
+    /// <value>The path to the JSON where the error occurred.</value>
+    public string Path { get; private set; }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="JsonWriterException"/> class.
     /// </summary>
     public JsonWriterException()
@@ -79,5 +85,23 @@ namespace Newtonsoft.Json
     {
     }
 #endif
+
+    internal JsonWriterException(string message, Exception innerException, string path)
+      : base(message, innerException)
+    {
+      Path = path;
+    }
+
+    internal static JsonWriterException Create(JsonWriter writer, string message, Exception ex)
+    {
+      return Create(writer.ContainerPath, message, ex);
+    }
+
+    internal static JsonWriterException Create(string path, string message, Exception ex)
+    {
+      message = FormatExceptionMessage(null, path, message);
+
+      return new JsonWriterException(message, ex, path);
+    }
   }
 }
