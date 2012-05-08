@@ -1,5 +1,5 @@
 ﻿properties { 
-  $zipFileName = "Json45r4.zip"
+  $zipFileName = "Json45r5.zip"
   $majorVersion = "4.5"
   $majorWithReleaseVersion = "4.5.5"
   $version = GetVersion $majorWithReleaseVersion
@@ -99,7 +99,7 @@ task Package -depends Build {
       }
     }
   
-    exec { .\Tools\NuGet\NuGet.exe pack $workingDir\NuGet\Newtonsoft.Json.nuspec }
+    exec { .\Tools\NuGet\NuGet.exe pack $workingDir\NuGet\Newtonsoft.Json.nuspec -Symbols }
     move -Path .\*.nupkg -Destination $workingDir\NuGet
   }
   
