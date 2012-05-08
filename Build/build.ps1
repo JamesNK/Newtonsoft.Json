@@ -1,7 +1,7 @@
 ﻿properties { 
   $zipFileName = "Json45r4.zip"
   $majorVersion = "4.5"
-  $majorWithReleaseVersion = "4.5.4"
+  $majorWithReleaseVersion = "4.5.5"
   $version = GetVersion $majorWithReleaseVersion
   $signAssemblies = $false
   $signKeyPath = "D:\Development\Releases\newtonsoft.snk"

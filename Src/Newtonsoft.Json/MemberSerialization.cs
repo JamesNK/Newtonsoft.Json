@@ -25,6 +25,7 @@
 
 using System;
 using System.Runtime.Serialization;
+using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json
 {
@@ -45,7 +46,8 @@ namespace Newtonsoft.Json
     OptIn,
     /// <summary>
     /// All public and private fields are serialized. Members can be excluded using <see cref="JsonIgnoreAttribute"/> or <see cref="NonSerializedAttribute"/>.
-    /// This member serialization mode can also be set by marking the class with <see cref="SerializableAttribute"/>.
+    /// This member serialization mode can also be set by marking the class with <see cref="SerializableAttribute"/>
+    /// and setting IgnoreSerializableAttribute on <see cref="DefaultContractResolver"/> to false.
     /// </summary>
     Fields
   }
