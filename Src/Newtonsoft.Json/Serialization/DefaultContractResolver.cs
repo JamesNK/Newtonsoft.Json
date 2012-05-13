@@ -946,16 +946,19 @@ namespace Newtonsoft.Json.Serialization
       property.PropertyName = ResolvePropertyName(mappedName);
       property.UnderlyingName = name;
 
+      bool hasMemberAttribute = false;
       if (propertyAttribute != null)
       {
         property._required = propertyAttribute._required;
         property.Order = propertyAttribute._order;
+        hasMemberAttribute = true;
       }
 #if !PocketPC && !NET20
       else if (dataMemberAttribute != null)
       {
         property._required = (dataMemberAttribute.IsRequired) ? Required.AllowNull : Required.Default;
         property.Order = (dataMemberAttribute.Order != -1) ? (int?) dataMemberAttribute.Order : null;
+        hasMemberAttribute = true;
       }
 #endif
 
@@ -968,19 +971,19 @@ namespace Newtonsoft.Json.Serialization
 
       if (memberSerialization != MemberSerialization.OptIn)
       {
-        // ignored if it has JsonIgnore or NonSerialized attributes
-        property.Ignored = hasJsonIgnoreAttribute;
+       bool hasIgnoreDataMemberAttribute = false;
+        
+#if !(NET20 || NET35)
+        hasIgnoreDataMemberAttribute = (JsonTypeReflector.GetAttribute<IgnoreDataMemberAttribute>(attributeProvider) != null);
+#endif
+
+        // ignored if it has JsonIgnore or NonSerialized or IgnoreDataMember attributes
+        property.Ignored = (hasJsonIgnoreAttribute || hasIgnoreDataMemberAttribute);
       }
       else
       {
         // ignored if it has JsonIgnore/NonSerialized or does not have DataMember or JsonProperty attributes
-        property.Ignored =
-          hasJsonIgnoreAttribute
-          || (propertyAttribute == null
-#if !PocketPC && !NET20
-              && dataMemberAttribute == null
-#endif
-             );
+        property.Ignored = (hasJsonIgnoreAttribute || !hasMemberAttribute);
       }
 
       // resolve converter for property

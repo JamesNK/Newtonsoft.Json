@@ -1976,7 +1976,7 @@ keyword such as type of business.""
         @"Unable to find a constructor to use for type Newtonsoft.Json.Tests.TestObjects.Event. A class should either have a default constructor, one constructor with arguments or a constructor marked with the JsonConstructor attribute. Path 'sublocation', line 1, position 15.",
         () =>
         {
-          Event e = JsonConvert.DeserializeObject<Event>(json);
+          JsonConvert.DeserializeObject<TestObjects.Event>(json);
         });
     }
 
@@ -6179,6 +6179,83 @@ Parameter name: value",
       return serializer.Deserialize(jsonReader, typeof(T)) as T;
     }
 #endif
+
+    [Test]
+    public void PropertyItemConverter()
+    {
+      Event e = new Event
+        {
+          EventName = "Blackadder III",
+          Venue = "Gryphon Theatre",
+          Performances = new List<DateTime>
+            {
+              DateTime.Parse("8 Tue May 2012, 6:30pm"),
+              DateTime.Parse("9 Wed May 2012, 6:30pm"),
+              DateTime.Parse("10 Thu May 2012, 8:00pm")
+            }
+        };
+
+      string json = JsonConvert.SerializeObject(e, Formatting.Indented);
+      //{
+      //  "EventName": "Blackadder III",
+      //  "Venue": "Gryphon Theatre",
+      //  "Performances": [
+      //    new Date(1336458600000),
+      //    new Date(1336545000000),
+      //    new Date(1336636800000)
+      //  ]
+      //}
+
+      Assert.AreEqual(@"{
+  ""EventName"": ""Blackadder III"",
+  ""Venue"": ""Gryphon Theatre"",
+  ""Performances"": [
+    new Date(
+      1336458600000
+    ),
+    new Date(
+      1336545000000
+    ),
+    new Date(
+      1336636800000
+    )
+  ]
+}", json);
+    }
+
+#if !(NET20 || NET35)
+    [Test]
+    public void SerializeDataContractSerializationAttributes()
+    {
+      DataContractSerializationAttributesClass dataContract = new DataContractSerializationAttributesClass
+        {
+          NoAttribute = "Value!",
+          IgnoreDataMemberAttribute = "Value!",
+          DataMemberAttribute = "Value!",
+          IgnoreDataMemberAndDataMemberAttribute = "Value!"
+        };
+
+      string json = JsonConvert.SerializeObject(dataContract, Formatting.Indented);
+      Assert.AreEqual(@"{
+  ""DataMemberAttribute"": ""Value!"",
+  ""IgnoreDataMemberAndDataMemberAttribute"": ""Value!""
+}", json);
+
+      PocoDataContractSerializationAttributesClass poco = new PocoDataContractSerializationAttributesClass
+      {
+        NoAttribute = "Value!",
+        IgnoreDataMemberAttribute = "Value!",
+        DataMemberAttribute = "Value!",
+        IgnoreDataMemberAndDataMemberAttribute = "Value!"
+      };
+
+      json = JsonConvert.SerializeObject(poco, Formatting.Indented);
+      Assert.AreEqual(@"{
+  ""NoAttribute"": ""Value!"",
+  ""DataMemberAttribute"": ""Value!""
+}", json);
+    }
+#endif
   }
 
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
@@ -6204,6 +6281,15 @@ Parameter name: value",
     }
   }
 #endif
+
+  public class Event
+  {
+    public string EventName { get; set; }
+    public string Venue { get; set; }
+
+    [JsonProperty(ItemConverterType = typeof(JavaScriptDateTimeConverter))]
+    public IList<DateTime> Performances { get; set; }
+  }
 
   public class PropertyItemConverter
   {
@@ -6453,4 +6539,31 @@ Parameter name: value",
 #endif
     }
   }
+
+#if !(NET20 || NET35)
+  [DataContract]
+  public class DataContractSerializationAttributesClass
+  {
+    public string NoAttribute { get; set; }
+    [IgnoreDataMember]
+    public string IgnoreDataMemberAttribute { get; set; }
+    [DataMember]
+    public string DataMemberAttribute { get; set; }
+    [IgnoreDataMember]
+    [DataMember]
+    public string IgnoreDataMemberAndDataMemberAttribute { get; set; }
+  }
+
+  public class PocoDataContractSerializationAttributesClass
+  {
+    public string NoAttribute { get; set; }
+    [IgnoreDataMember]
+    public string IgnoreDataMemberAttribute { get; set; }
+    [DataMember]
+    public string DataMemberAttribute { get; set; }
+    [IgnoreDataMember]
+    [DataMember]
+    public string IgnoreDataMemberAndDataMemberAttribute { get; set; }
+  }
+#endif
 }

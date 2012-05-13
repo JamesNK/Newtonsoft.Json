@@ -41,6 +41,7 @@ using IConvertible = Newtonsoft.Json.Utilities.Convertible;
 
 namespace Newtonsoft.Json.Utilities
 {
+#if NETFX_CORE
   internal class Convertible
   {
     private object _underlyingValue;
@@ -120,6 +121,7 @@ namespace Newtonsoft.Json.Utilities
       return Convert.ToUInt64(_underlyingValue, provider);
     }
   }
+#endif
 
   internal static class ConvertUtils
   {
