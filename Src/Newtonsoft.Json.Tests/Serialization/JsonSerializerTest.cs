@@ -6256,6 +6256,28 @@ Parameter name: value",
 }", json);
     }
 #endif
+
+    [Test]
+    public void CheckAdditionalContent()
+    {
+      string json = "{one:1}{}";
+
+      JsonSerializerSettings settings = new JsonSerializerSettings();
+      JsonSerializer s = JsonSerializer.Create(settings);
+      IDictionary<string, int> o = s.Deserialize<Dictionary<string, int>>(new JsonTextReader(new StringReader(json)));
+
+      Assert.IsNotNull(o);
+      Assert.AreEqual(1, o["one"]);
+
+      settings.CheckAdditionalContent = true;
+      s = JsonSerializer.Create(settings);
+      ExceptionAssert.Throws<JsonReaderException>(
+        "Additional text encountered after finished reading JSON content: {. Path '', line 1, position 7.",
+        () =>
+          {
+            s.Deserialize<Dictionary<string, int>>(new JsonTextReader(new StringReader(json)));
+          });
+    }
   }
 
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)

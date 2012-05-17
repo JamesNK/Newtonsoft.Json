@@ -64,6 +64,7 @@ namespace Newtonsoft.Json
     private CultureInfo _culture;
     private int? _maxDepth;
     private bool _maxDepthSet;
+    private bool? _checkAdditionalContent;
 
     /// <summary>
     /// Occurs when the <see cref="JsonSerializer"/> errors during serialization and deserialization.
@@ -348,6 +349,18 @@ namespace Newtonsoft.Json
         _maxDepthSet = true;
       }
     }
+
+    public virtual bool CheckAdditionalContent
+    {
+      get { return _checkAdditionalContent ?? JsonSerializerSettings.DefaultCheckAdditionalContent; }
+      set { _checkAdditionalContent = value; }
+    }
+
+    internal bool IsCheckAdditionalContentSet()
+    {
+      return (_checkAdditionalContent != null);
+    }
+
     #endregion
 
     /// <summary>
@@ -392,6 +405,7 @@ namespace Newtonsoft.Json
         jsonSerializer.DefaultValueHandling = settings.DefaultValueHandling;
         jsonSerializer.ConstructorHandling = settings.ConstructorHandling;
         jsonSerializer.Context = settings.Context;
+        jsonSerializer._checkAdditionalContent = settings._checkAdditionalContent;
 
         // reader/writer specific
         // unset values won't override reader/writer set values
@@ -523,7 +537,7 @@ namespace Newtonsoft.Json
       }
 
       JsonSerializerInternalReader serializerReader = new JsonSerializerInternalReader(this);
-      object value = serializerReader.Deserialize(reader, objectType);
+      object value = serializerReader.Deserialize(reader, objectType, CheckAdditionalContent);
 
       // reset reader back to previous options
       if (previousCulture != null)

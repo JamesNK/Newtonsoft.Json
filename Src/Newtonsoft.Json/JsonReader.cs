@@ -112,6 +112,7 @@ namespace Newtonsoft.Json
     private int? _maxDepth;
     private bool _hasExceededMaxDepth;
     internal DateParseHandling _dateParseHandling;
+    private readonly List<JsonPosition> _stack;
 
     /// <summary>
     /// Gets the current reader state.
@@ -121,8 +122,6 @@ namespace Newtonsoft.Json
     {
       get { return _currentState; }
     }
-
-    private readonly List<JsonPosition> _stack;
 
     /// <summary>
     /// Gets or sets a value indicating whether the underlying stream or
@@ -237,6 +236,14 @@ namespace Newtonsoft.Json
     {
       get { return _culture ?? CultureInfo.InvariantCulture; }
       set { _culture = value; }
+    }
+
+    internal JsonPosition GetPosition(int depth)
+    {
+      if (depth < _stack.Count)
+        return _stack[depth];
+
+      return _currentPosition;
     }
 
     /// <summary>
@@ -705,8 +712,6 @@ namespace Newtonsoft.Json
     /// <param name="value">The value.</param>
     protected void SetToken(JsonToken newToken, object value)
     {
-      JsonToken previousToken = _tokenType;
-
       _tokenType = newToken;
       _value = value;
 

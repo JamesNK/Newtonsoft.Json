@@ -918,17 +918,11 @@ namespace Newtonsoft.Json
       StringReader sr = new StringReader(value);
       JsonSerializer jsonSerializer = JsonSerializer.Create(settings);
 
-      object deserializedValue;
+      // by default DeserializeObject should check for additional content
+      if (!jsonSerializer.IsCheckAdditionalContentSet())
+        jsonSerializer.CheckAdditionalContent = true;
 
-      using (JsonReader jsonReader = new JsonTextReader(sr))
-      {
-        deserializedValue = jsonSerializer.Deserialize(jsonReader, type);
-
-        if (jsonReader.Read() && jsonReader.TokenType != JsonToken.Comment)
-          throw new JsonSerializationException("Additional text found in JSON string after finishing deserializing object.");
-      }
-
-      return deserializedValue;
+      return jsonSerializer.Deserialize(new JsonTextReader(sr), type);
     }
 
 #if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)

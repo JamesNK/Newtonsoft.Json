@@ -162,6 +162,12 @@ namespace Newtonsoft.Json.Serialization
       set { _serializer.MaxDepth = value; }
     }
 
+    public override bool CheckAdditionalContent
+    {
+      get { return _serializer.CheckAdditionalContent; }
+      set { _serializer.CheckAdditionalContent = value; }
+    }
+
     internal JsonSerializerInternalBase GetInternalSerializer()
     {
       if (_serializerReader != null)
@@ -189,7 +195,7 @@ namespace Newtonsoft.Json.Serialization
     internal override object DeserializeInternal(JsonReader reader, Type objectType)
     {
       if (_serializerReader != null)
-        return _serializerReader.Deserialize(reader, objectType);
+        return _serializerReader.Deserialize(reader, objectType, false);
       else
         return _serializer.Deserialize(reader, objectType);
     }

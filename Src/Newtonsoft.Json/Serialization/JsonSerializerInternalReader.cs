@@ -106,7 +106,7 @@ namespace Newtonsoft.Json.Serialization
       return Serializer.ContractResolver.ResolveContract(type);
     }
 
-    public object Deserialize(JsonReader reader, Type objectType)
+    public object Deserialize(JsonReader reader, Type objectType, bool checkAdditionalContent)
     {
       if (reader == null)
         throw new ArgumentNullException("reader");
@@ -125,16 +125,26 @@ namespace Newtonsoft.Json.Serialization
           return null;
         }
 
-        if (converter != null && converter.CanRead)
-          return converter.ReadJson(reader, objectType, null, GetInternalSerializer());
+        object deserializedValue;
 
-        return CreateValueInternal(reader, objectType, contract, null, null, null, null);
+        if (converter != null && converter.CanRead)
+          deserializedValue = converter.ReadJson(reader, objectType, null, GetInternalSerializer());
+        else
+          deserializedValue = CreateValueInternal(reader, objectType, contract, null, null, null, null);
+
+        if (checkAdditionalContent)
+        {
+          if (reader.Read() && reader.TokenType != JsonToken.Comment)
+            throw new JsonSerializationException("Additional text found in JSON string after finishing deserializing object.");
+        }
+
+        return deserializedValue;
       }
       catch (Exception ex)
       {
         if (IsErrorHandled(null, contract, null, reader.Path, ex))
         {
-          HandleError(reader, 0);
+          HandleError(reader, false, 0);
           return null;
         }
         else
@@ -793,7 +803,7 @@ To force JSON arrays to deserialize add the JsonArrayAttribute to the type.".For
             catch (Exception ex)
             {
               if (IsErrorHandled(dictionary, contract, keyValue, reader.Path, ex))
-                HandleError(reader, initialDepth);
+                HandleError(reader, true, initialDepth);
               else
                 throw;
             }
@@ -829,10 +839,11 @@ To force JSON arrays to deserialize add the JsonArrayAttribute to the type.".For
       contract.InvokeOnDeserializing(list, Serializer.Context);
 
       int initialDepth = reader.Depth;
-      int index = 0;
 
       JsonContract collectionItemContract = GetContractSafe(contract.CollectionItemType);
       JsonConverter collectionItemConverter = GetConverter(collectionItemContract, null, contract, containerProperty);
+
+      int? previousErrorIndex = null;
 
       while (true)
       {
@@ -867,14 +878,27 @@ To force JSON arrays to deserialize add the JsonArrayAttribute to the type.".For
         }
         catch (Exception ex)
         {
-          if (IsErrorHandled(list, contract, index, reader.Path, ex))
-            HandleError(reader, initialDepth);
+          JsonPosition errorPosition = reader.GetPosition(initialDepth);
+
+          if (IsErrorHandled(list, contract, errorPosition.Position, reader.Path, ex))
+          {
+            HandleError(reader, true, initialDepth);
+
+            if (previousErrorIndex != null && previousErrorIndex == errorPosition.Position)
+            {
+              // reader index has not moved since previous error handling
+              // break out of reading array to prevent infinite loop
+              throw JsonSerializationException.Create(reader, "Infinite loop detected from error handling.", ex);
+            }
+            else
+            {
+              previousErrorIndex = errorPosition.Position;
+            }
+          }
           else
+          {
             throw;
-        }
-        finally
-        {
-          index++;
+          }
         }
       }
 
@@ -997,7 +1021,7 @@ To fix this error either change the environment to be fully trusted, change the 
             catch (Exception ex)
             {
               if (IsErrorHandled(newObject, contract, memberName, reader.Path, ex))
-                HandleError(reader, initialDepth);
+                HandleError(reader, true, initialDepth);
               else
                 throw;
             }
@@ -1297,7 +1321,7 @@ To fix this error either change the environment to be fully trusted, change the 
               catch (Exception ex)
               {
                 if (IsErrorHandled(newObject, contract, memberName, reader.Path, ex))
-                  HandleError(reader, initialDepth);
+                  HandleError(reader, true, initialDepth);
                 else
                   throw;
               }
@@ -1357,7 +1381,7 @@ To fix this error either change the environment to be fully trusted, change the 
             catch (Exception ex)
             {
               if (IsErrorHandled(newObject, contract, property.PropertyName, reader.Path, ex))
-                HandleError(reader, initialDepth);
+                HandleError(reader, true, initialDepth);
               else
                 throw;
             }
@@ -1376,15 +1400,18 @@ To fix this error either change the environment to be fully trusted, change the 
       }
     }
 
-    private void HandleError(JsonReader reader, int initialDepth)
+    private void HandleError(JsonReader reader, bool readPasteError, int initialDepth)
     {
       ClearErrorContext();
 
-      reader.Skip();
-
-      while (reader.Depth > (initialDepth + 1))
+      if (readPasteError)
       {
-        reader.Read();
+        reader.Skip();
+
+        while (reader.Depth > (initialDepth + 1))
+        {
+          reader.Read();
+        }
       }
     }
 
