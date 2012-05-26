@@ -57,6 +57,7 @@ using Newtonsoft.Json.Converters;
 using System.Runtime.Serialization.Json;
 #endif
 using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json.Tests.Linq;
 using Newtonsoft.Json.Tests.TestObjects;
 using System.Runtime.Serialization;
 using System.Globalization;
@@ -2017,12 +2018,120 @@ keyword such as type of business.""
       string json = @"[]";
 
       ExceptionAssert.Throws<JsonSerializationException>(
-        @"Cannot deserialize JSON array (i.e. [1,2,3]) into type 'Newtonsoft.Json.Tests.TestObjects.Person'.
-The deserialized type must be an array or implement a collection interface like IEnumerable, ICollection or IList.
-To force JSON arrays to deserialize add the JsonArrayAttribute to the type. Path '', line 1, position 1.",
+        @"Cannot deserialize the current JSON array (e.g. [1,2,3]) into type 'Newtonsoft.Json.Tests.TestObjects.Person' because the type requires a JSON object (e.g. {""name"":""value""}) to deserialize correctly.
+To fix this error either change the JSON to what is required or change the deserialized type to an array or a type that implements a collection interface (e.g. IEnumerable, ICollection, IList) like List<T>.
+Another option is to add the [JsonArray] attribute to the type to force it to work with a JSON array.
+Path '', line 1, position 1.",
         () =>
         {
           JsonConvert.DeserializeObject<Person>(json);
+        });
+    }
+
+    [Test]
+    public void CannotDeserializeArrayIntoDictionary()
+    {
+      string json = @"[]";
+
+      ExceptionAssert.Throws<JsonSerializationException>(
+        @"Cannot deserialize the current JSON array (e.g. [1,2,3]) into type 'System.Collections.Generic.Dictionary`2[System.String,System.String]' because the type requires a JSON object (e.g. {""name"":""value""}) to deserialize correctly.
+To fix this error either change the JSON to what is required or change the deserialized type to an array or a type that implements a collection interface (e.g. IEnumerable, ICollection, IList) like List<T>.
+Another option is to add the [JsonArray] attribute to the type to force it to work with a JSON array.
+Path '', line 1, position 1.",
+        () =>
+        {
+          JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+        });
+    }
+
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+    [Test]
+    public void CannotDeserializeArrayIntoSerializable()
+    {
+      string json = @"[]";
+
+      ExceptionAssert.Throws<JsonSerializationException>(
+        @"Cannot deserialize the current JSON array (e.g. [1,2,3]) into type 'System.Exception' because the type requires a JSON object (e.g. {""name"":""value""}) to deserialize correctly.
+To fix this error either change the JSON to what is required or change the deserialized type to an array or a type that implements a collection interface (e.g. IEnumerable, ICollection, IList) like List<T>.
+Another option is to add the [JsonArray] attribute to the type to force it to work with a JSON array.
+Path '', line 1, position 1.",
+        () =>
+        {
+          JsonConvert.DeserializeObject<Exception>(json);
+        });
+    }
+#endif
+
+    [Test]
+    public void CannotDeserializeArrayIntoDouble()
+    {
+      string json = @"[]";
+
+      ExceptionAssert.Throws<JsonSerializationException>(
+        @"Cannot deserialize the current JSON array (e.g. [1,2,3]) into type 'System.Double' because the type requires a JSON primitive value (e.g. a string or a number) to deserialize correctly.
+To fix this error either change the JSON to what is required or change the deserialized type to an array or a type that implements a collection interface (e.g. IEnumerable, ICollection, IList) like List<T>.
+Another option is to add the [JsonArray] attribute to the type to force it to work with a JSON array.
+Path '', line 1, position 1.",
+        () =>
+        {
+          JsonConvert.DeserializeObject<double>(json);
+        });
+    }
+
+#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
+    [Test]
+    public void CannotDeserializeArrayIntoDynamic()
+    {
+      string json = @"[]";
+
+      ExceptionAssert.Throws<JsonSerializationException>(
+        @"Cannot deserialize the current JSON array (e.g. [1,2,3]) into type 'Newtonsoft.Json.Tests.Linq.DynamicDictionary' because the type requires a JSON object (e.g. {""name"":""value""}) to deserialize correctly.
+To fix this error either change the JSON to what is required or change the deserialized type to an array or a type that implements a collection interface (e.g. IEnumerable, ICollection, IList) like List<T>.
+Another option is to add the [JsonArray] attribute to the type to force it to work with a JSON array.
+Path '', line 1, position 1.",
+        () =>
+        {
+          JsonConvert.DeserializeObject<DynamicDictionary>(json);
+        });
+    }
+#endif
+
+    [Test]
+    public void CannotDeserializeArrayIntoLinqToJson()
+    {
+      string json = @"[]";
+
+      ExceptionAssert.Throws<InvalidCastException>(
+        @"Unable to cast object of type 'Newtonsoft.Json.Linq.JArray' to type 'Newtonsoft.Json.Linq.JObject'.",
+        () =>
+        {
+          JsonConvert.DeserializeObject<JObject>(json);
+        });
+    }
+
+    [Test]
+    public void CannotDeserializeConstructorIntoObject()
+    {
+      string json = @"new Constructor(123)";
+
+      ExceptionAssert.Throws<JsonSerializationException>(
+        @"Error converting value ""Constructor"" to type 'Newtonsoft.Json.Tests.TestObjects.Person'. Path '', line 1, position 16.",
+        () =>
+        {
+          JsonConvert.DeserializeObject<Person>(json);
+        });
+    }
+
+    [Test]
+    public void CannotDeserializeConstructorIntoObjectNested()
+    {
+      string json = @"[new Constructor(123)]";
+
+      ExceptionAssert.Throws<JsonSerializationException>(
+        @"Error converting value ""Constructor"" to type 'Newtonsoft.Json.Tests.TestObjects.Person'. Path '[0]', line 1, position 17.",
+        () =>
+        {
+          JsonConvert.DeserializeObject<List<Person>>(json);
         });
     }
 
@@ -2032,9 +2141,10 @@ To force JSON arrays to deserialize add the JsonArrayAttribute to the type. Path
       string json = @"{}";
 
       ExceptionAssert.Throws<JsonSerializationException>(
-        @"Cannot deserialize JSON object (i.e. {""name"":""value""}) into type 'System.Collections.Generic.List`1[Newtonsoft.Json.Tests.TestObjects.Person]'.
-The deserialized type should be a normal .NET type (i.e. not a primitive type like integer, not a collection type like an array or List<T>) or a dictionary type (i.e. Dictionary<TKey, TValue>).
-To force JSON objects to deserialize add the JsonObjectAttribute to the type. Path '', line 1, position 2.",
+        @"Cannot deserialize the current JSON object (e.g. {""name"":""value""}) into type 'System.Collections.Generic.List`1[Newtonsoft.Json.Tests.TestObjects.Person]' because the type requires a JSON array (e.g. [1,2,3]) to deserialize correctly.
+To fix this error either change the JSON to what is required or change the deserialized type so that it is a normal .NET type (e.g. not a primitive type like integer, not a collection type like an array or List<T>) or a dictionary type (e.g. Dictionary<TKey, TValue>).
+Another option is to add the [JsonObject] attribute to the type to force it to work with a JSON object.
+Path '', line 1, position 2.",
         () =>
         {
           JsonConvert.DeserializeObject<List<Person>>(json);

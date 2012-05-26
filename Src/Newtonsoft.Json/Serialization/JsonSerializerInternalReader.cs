@@ -248,7 +248,7 @@ namespace Newtonsoft.Json.Serialization
           case JsonToken.StartConstructor:
             string constructorName = reader.Value.ToString();
 
-            return constructorName;
+            return EnsureType(reader, constructorName, CultureInfo.InvariantCulture, contract, objectType);
           case JsonToken.Null:
           case JsonToken.Undefined:
 #if !(NETFX_CORE || PORTABLE)
@@ -268,6 +268,30 @@ namespace Newtonsoft.Json.Serialization
       } while (reader.Read());
 
       throw JsonSerializationException.Create(reader, "Unexpected end when deserializing object.");
+    }
+
+    internal string GetExpectedDescription(JsonContract contract)
+    {
+      switch (contract.ContractType)
+      {
+        case JsonContractType.Object:
+        case JsonContractType.Dictionary:
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+        case JsonContractType.Serializable:
+#endif
+#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
+        case JsonContractType.Dynamic:
+#endif
+          return @"JSON object (e.g. {""name"":""value""})";
+        case JsonContractType.Array:
+          return @"JSON array (e.g. [1,2,3])";
+        case JsonContractType.Primitive:
+          return @"JSON primitive value (e.g. a string or a number)";
+        case JsonContractType.String:
+          return @"JSON string value";
+        default:
+          throw new ArgumentOutOfRangeException();
+      }
     }
 
     private JsonConverter GetConverter(JsonContract contract, JsonConverter memberConverter, JsonContainerContract containerContract, JsonProperty containerProperty)
@@ -361,9 +385,10 @@ namespace Newtonsoft.Json.Serialization
 #endif
       }
 
-      throw JsonSerializationException.Create(reader, @"Cannot deserialize JSON object (i.e. {{""name"":""value""}}) into type '{0}'.
-The deserialized type should be a normal .NET type (i.e. not a primitive type like integer, not a collection type like an array or List<T>) or a dictionary type (i.e. Dictionary<TKey, TValue>).
-To force JSON objects to deserialize add the JsonObjectAttribute to the type.".FormatWith(CultureInfo.InvariantCulture, objectType));
+      throw JsonSerializationException.Create(reader, @"Cannot deserialize the current JSON object (e.g. {{""name"":""value""}}) into type '{0}' because the type requires a {1} to deserialize correctly.
+To fix this error either change the JSON to what is required or change the deserialized type so that it is a normal .NET type (e.g. not a primitive type like integer, not a collection type like an array or List<T>) or a dictionary type (e.g. Dictionary<TKey, TValue>).
+Another option is to add the [JsonObject] attribute to the type to force it to work with a JSON object.
+".FormatWith(CultureInfo.InvariantCulture, objectType, GetExpectedDescription(contract)));
     }
 
     private bool ReadSpecialProperties(JsonReader reader, ref Type objectType, ref JsonContract contract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerMember, object existingValue, out object newValue, out string id)
@@ -492,9 +517,10 @@ To force JSON objects to deserialize add the JsonObjectAttribute to the type.".F
 
       JsonArrayContract arrayContract = contract as JsonArrayContract;
       if (arrayContract == null)
-        throw JsonSerializationException.Create(reader, @"Cannot deserialize JSON array (i.e. [1,2,3]) into type '{0}'.
-The deserialized type must be an array or implement a collection interface like IEnumerable, ICollection or IList.
-To force JSON arrays to deserialize add the JsonArrayAttribute to the type.".FormatWith(CultureInfo.InvariantCulture, objectType));
+        throw JsonSerializationException.Create(reader, @"Cannot deserialize the current JSON array (e.g. [1,2,3]) into type '{0}' because the type requires a {1} to deserialize correctly.
+To fix this error either change the JSON to what is required or change the deserialized type to an array or a type that implements a collection interface (e.g. IEnumerable, ICollection, IList) like List<T>.
+Another option is to add the [JsonArray] attribute to the type to force it to work with a JSON array.
+".FormatWith(CultureInfo.InvariantCulture, objectType, GetExpectedDescription(contract)));
 
       return arrayContract;
     }
@@ -913,7 +939,8 @@ To force JSON arrays to deserialize add the JsonArrayAttribute to the type.".For
       if (!JsonTypeReflector.FullyTrusted)
       {
         throw JsonSerializationException.Create(reader, @"Type '{0}' implements ISerializable but cannot be deserialized using the ISerializable interface because the current application is not fully trusted and ISerializable can expose secure data.
-To fix this error either change the environment to be fully trusted, change the application to not deserialize the type, add to JsonObjectAttribute to the type or change the JsonSerializer setting ContractResolver to use a new DefaultContractResolver with IgnoreSerializableInterface set to true.".FormatWith(CultureInfo.InvariantCulture, objectType));
+To fix this error either change the environment to be fully trusted, change the application to not deserialize the type, add to JsonObjectAttribute to the type or change the JsonSerializer setting ContractResolver to use a new DefaultContractResolver with IgnoreSerializableInterface set to true.
+".FormatWith(CultureInfo.InvariantCulture, objectType));
       }
 
       SerializationInfo serializationInfo = new SerializationInfo(contract.UnderlyingType, GetFormatterConverter());
@@ -1400,11 +1427,11 @@ To fix this error either change the environment to be fully trusted, change the 
       }
     }
 
-    private void HandleError(JsonReader reader, bool readPasteError, int initialDepth)
+    private void HandleError(JsonReader reader, bool readPastError, int initialDepth)
     {
       ClearErrorContext();
 
-      if (readPasteError)
+      if (readPastError)
       {
         reader.Skip();
 
