@@ -1067,5 +1067,17 @@ namespace Newtonsoft.Json.Serialization
     {
       return propertyName;
     }
+
+    /// <summary>
+    /// Gets the resolved name of the property.
+    /// </summary>
+    /// <param name="propertyName">Name of the property.</param>
+    /// <returns>Name of the property.</returns>
+    public string GetResolvedPropertyName(string propertyName)
+    {
+      // this is a new method rather than changing the visibility of ResolvePropertyName to avoid
+      // a breaking change for anyone who has overidden the method
+      return ResolvePropertyName(propertyName);
+    }
   }
 }

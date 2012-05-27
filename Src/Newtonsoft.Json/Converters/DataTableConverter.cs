@@ -56,7 +56,7 @@ namespace Newtonsoft.Json.Converters
           if (serializer.NullValueHandling == NullValueHandling.Ignore && (row[column] == null || row[column] == DBNull.Value))
             continue;
 
-          writer.WritePropertyName((resolver != null) ? resolver.ResolvePropertyName(column.ColumnName) : column.ColumnName);
+          writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(column.ColumnName) : column.ColumnName);
           serializer.Serialize(writer, row[column]);
         }
         writer.WriteEndObject();

@@ -286,7 +286,7 @@ namespace Newtonsoft.Json.Serialization
         case JsonContractType.Array:
           return @"JSON array (e.g. [1,2,3])";
         case JsonContractType.Primitive:
-          return @"JSON primitive value (e.g. a string or a number)";
+          return @"JSON primitive value (e.g. string, number, boolean, null)";
         case JsonContractType.String:
           return @"JSON string value";
         default:
@@ -344,12 +344,17 @@ namespace Newtonsoft.Json.Serialization
       switch (contract.ContractType)
       {
         case JsonContractType.Object:
+          bool createdFromNonDefaultConstructor = false;
           JsonObjectContract objectContract = (JsonObjectContract) contract;
           object targetObject;
           if (existingValue != null)
             targetObject = existingValue;
           else
-            targetObject = CreateNewObject(reader, objectContract, member, containerMember, id);
+            targetObject = CreateNewObject(reader, objectContract, member, containerMember, id, out createdFromNonDefaultConstructor);
+
+          // don't populate if read from non-default constructor because the object has already been read
+          if (createdFromNonDefaultConstructor)
+            return targetObject;
 
           return PopulateObject(targetObject, reader, objectContract, member, id);
         case JsonContractType.Primitive:
@@ -386,8 +391,7 @@ namespace Newtonsoft.Json.Serialization
       }
 
       throw JsonSerializationException.Create(reader, @"Cannot deserialize the current JSON object (e.g. {{""name"":""value""}}) into type '{0}' because the type requires a {1} to deserialize correctly.
-To fix this error either change the JSON to what is required or change the deserialized type so that it is a normal .NET type (e.g. not a primitive type like integer, not a collection type like an array or List<T>) or a dictionary type (e.g. Dictionary<TKey, TValue>).
-Another option is to add the [JsonObject] attribute to the type to force it to work with a JSON object.
+To fix this error either change the JSON to a {1} or change the deserialized type so that it is a normal .NET type (e.g. not a primitive type like integer, not a collection type like an array or List<T>) that can be deserialized from a JSON object. JsonObjectAttribute can also be added to the type to force it to deserialize from a JSON object.
 ".FormatWith(CultureInfo.InvariantCulture, objectType, GetExpectedDescription(contract)));
     }
 
@@ -518,8 +522,7 @@ Another option is to add the [JsonObject] attribute to the type to force it to w
       JsonArrayContract arrayContract = contract as JsonArrayContract;
       if (arrayContract == null)
         throw JsonSerializationException.Create(reader, @"Cannot deserialize the current JSON array (e.g. [1,2,3]) into type '{0}' because the type requires a {1} to deserialize correctly.
-To fix this error either change the JSON to what is required or change the deserialized type to an array or a type that implements a collection interface (e.g. IEnumerable, ICollection, IList) like List<T>.
-Another option is to add the [JsonArray] attribute to the type to force it to work with a JSON array.
+To fix this error either change the JSON to a {1} or change the deserialized type to an array or a type that implements a collection interface (e.g. ICollection, IList) like List<T> that can be deserialized from a JSON array. JsonArrayAttribute can also be added to the type to force it to deserialize from a JSON array.
 ".FormatWith(CultureInfo.InvariantCulture, objectType, GetExpectedDescription(contract)));
 
       return arrayContract;
@@ -939,7 +942,7 @@ Another option is to add the [JsonArray] attribute to the type to force it to wo
       if (!JsonTypeReflector.FullyTrusted)
       {
         throw JsonSerializationException.Create(reader, @"Type '{0}' implements ISerializable but cannot be deserialized using the ISerializable interface because the current application is not fully trusted and ISerializable can expose secure data.
-To fix this error either change the environment to be fully trusted, change the application to not deserialize the type, add to JsonObjectAttribute to the type or change the JsonSerializer setting ContractResolver to use a new DefaultContractResolver with IgnoreSerializableInterface set to true.
+To fix this error either change the environment to be fully trusted, change the application to not deserialize the type, add JsonObjectAttribute to the type or change the JsonSerializer setting ContractResolver to use a new DefaultContractResolver with IgnoreSerializableInterface set to true.
 ".FormatWith(CultureInfo.InvariantCulture, objectType));
       }
 
@@ -1262,7 +1265,7 @@ To fix this error either change the environment to be fully trusted, change the 
       return (reader.TokenType != JsonToken.None);
     }
 
-    public object CreateNewObject(JsonReader reader, JsonObjectContract objectContract, JsonProperty containerMember, JsonProperty containerProperty, string id)
+    public object CreateNewObject(JsonReader reader, JsonObjectContract objectContract, JsonProperty containerMember, JsonProperty containerProperty, string id, out bool createdFromNonDefaultConstructor)
     {
       object newObject = null;
 
@@ -1272,7 +1275,10 @@ To fix this error either change the environment to be fully trusted, change the 
       if (objectContract.OverrideConstructor != null)
       {
         if (objectContract.OverrideConstructor.GetParameters().Length > 0)
+        {
+          createdFromNonDefaultConstructor = true;
           return CreateObjectFromNonDefaultConstructor(reader, objectContract, containerMember, objectContract.OverrideConstructor, id);
+        }
 
         newObject = objectContract.OverrideConstructor.Invoke(null);
       }
@@ -1287,12 +1293,14 @@ To fix this error either change the environment to be fully trusted, change the 
       }
       else if (objectContract.ParametrizedConstructor != null)
       {
+        createdFromNonDefaultConstructor = true;
         return CreateObjectFromNonDefaultConstructor(reader, objectContract, containerMember, objectContract.ParametrizedConstructor, id);
       }
 
       if (newObject == null)
         throw JsonSerializationException.Create(reader, "Unable to find a constructor to use for type {0}. A class should either have a default constructor, one constructor with arguments or a constructor marked with the JsonConstructor attribute.".FormatWith(CultureInfo.InvariantCulture, objectContract.UnderlyingType));
 
+      createdFromNonDefaultConstructor = false;
       return newObject;
     }
 

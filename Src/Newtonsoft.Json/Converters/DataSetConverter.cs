@@ -52,7 +52,7 @@ namespace Newtonsoft.Json.Converters
 
       foreach (DataTable table in dataSet.Tables)
       {
-        writer.WritePropertyName((resolver != null) ? resolver.ResolvePropertyName(table.TableName) : table.TableName);
+        writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(table.TableName) : table.TableName);
         
         converter.WriteJson(writer, table, serializer);
       }

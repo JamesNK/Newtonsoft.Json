@@ -350,6 +350,12 @@ namespace Newtonsoft.Json
       }
     }
 
+    /// <summary>
+    /// Gets a value indicating whether there will be a check for additional JSON content after deserializing an object.
+    /// </summary>
+    /// <value>
+    /// 	<c>true</c> if there will be a check for additional JSON content after deserializing an object; otherwise, <c>false</c>.
+    /// </value>
     public virtual bool CheckAdditionalContent
     {
       get { return _checkAdditionalContent ?? JsonSerializerSettings.DefaultCheckAdditionalContent; }

@@ -51,6 +51,22 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 
     [Test]
+    public void PopulateArray()
+    {
+      IList<Person> people = new List<Person>
+        {
+          new Person { Name = "Initial" }
+        };
+
+      JsonConvert.PopulateObject(@"[{""Name"":""James""}, null]", people);
+
+      Assert.AreEqual(3, people.Count);
+      Assert.AreEqual("Initial", people[0].Name);
+      Assert.AreEqual("James", people[1].Name);
+      Assert.AreEqual(null, people[2]);
+    }
+
+    [Test]
     public void PopulateStore()
     {
       Store s = new Store();
