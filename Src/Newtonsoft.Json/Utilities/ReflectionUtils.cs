@@ -31,8 +31,10 @@ using System.Globalization;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
 using System.Text;
-#if NETFX_CORE || PORTABLE
+#if NETFX_CORE
 using IConvertible = Newtonsoft.Json.Utilities.Convertible;
+#endif
+#if NETFX_CORE || PORTABLE
 using ICustomAttributeProvider = Newtonsoft.Json.Utilities.CustomAttributeProvider;
 #endif
 #if NET20
