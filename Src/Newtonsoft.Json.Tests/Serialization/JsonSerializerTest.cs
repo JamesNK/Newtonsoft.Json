@@ -6446,6 +6446,25 @@ Parameter name: value",
       Assert.AreEqual("Outter exception...", exception.Message);
     }
 #endif
+
+    [Test]
+    public void DeserializeRelativeUri()
+    {
+      IList<Uri> uris = JsonConvert.DeserializeObject<IList<Uri>>(@"[""http://localhost/path?query#hash""]");
+      Assert.AreEqual(1, uris.Count);
+      Assert.AreEqual(new Uri("http://localhost/path?query#hash"), uris[0]);
+
+      Uri uri = JsonConvert.DeserializeObject<Uri>(@"""http://localhost/path?query#hash""");
+      Assert.IsNotNull(uri);
+
+      Uri i1 = new Uri("http://localhost/path?query#hash", UriKind.RelativeOrAbsolute);
+      Uri i2 = new Uri("http://localhost/path?query#hash");
+      Assert.AreEqual(i1, i2);
+
+      uri = JsonConvert.DeserializeObject<Uri>(@"""/path?query#hash""");
+      Assert.IsNotNull(uri);
+      Assert.AreEqual(new Uri("/path?query#hash", UriKind.RelativeOrAbsolute), uri);
+    }
   }
 
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
