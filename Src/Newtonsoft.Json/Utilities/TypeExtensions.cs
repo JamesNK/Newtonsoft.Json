@@ -96,17 +96,6 @@ namespace Newtonsoft.Json.Utilities
 #endif
     }
 
-#if !PORTABLE
-    public static Module Module(this Type type)
-    {
-#if !NETFX_CORE
-      return type.Module;
-#else
-      return type.GetTypeInfo().Module;
-#endif
-    }
-#endif
-
     public static bool ContainsGenericParameters(this Type type)
     {
 #if !NETFX_CORE
