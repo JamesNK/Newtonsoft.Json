@@ -69,7 +69,7 @@ namespace Newtonsoft.Json.Serialization
       if (reader.TokenType == JsonToken.StartArray)
       {
         if (contract.ContractType == JsonContractType.Array)
-          PopulateList(CollectionUtils.CreateCollectionWrapper(target), reader, null, (JsonArrayContract) contract, null);
+          PopulateList(CollectionUtils.CreateCollectionWrapper(target), reader, (JsonArrayContract) contract, null, null);
         else
           throw JsonSerializationException.Create(reader, "Cannot populate JSON array onto type '{0}'.".FormatWith(CultureInfo.InvariantCulture, objectType));
       }
@@ -86,7 +86,7 @@ namespace Newtonsoft.Json.Serialization
         }
 
         if (contract.ContractType == JsonContractType.Dictionary)
-          PopulateDictionary(CollectionUtils.CreateDictionaryWrapper(target), reader, (JsonDictionaryContract) contract, null, null, id);
+          PopulateDictionary(CollectionUtils.CreateDictionaryWrapper(target), reader, (JsonDictionaryContract) contract, null, id);
         else if (contract.ContractType == JsonContractType.Object)
           PopulateObject(target, reader, (JsonObjectContract) contract, null, id);
         else
@@ -117,7 +117,7 @@ namespace Newtonsoft.Json.Serialization
       {
         JsonConverter converter = GetConverter(contract, null, null, null);
 
-        if (reader.TokenType == JsonToken.None && !ReadForType(reader, contract, converter != null, false))
+        if (reader.TokenType == JsonToken.None && !ReadForType(reader, contract, converter != null))
         {
           if (contract != null && !contract.IsNullable)
             throw JsonSerializationException.Create(reader, "No JSON content found and type '{0}' is not nullable.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
@@ -228,7 +228,7 @@ namespace Newtonsoft.Json.Serialization
           case JsonToken.StartObject:
             return CreateObject(reader, objectType, contract, member, containerContract, containerMember, existingValue);
           case JsonToken.StartArray:
-            return CreateList(reader, objectType, contract, member, containerMember, existingValue, null);
+            return CreateList(reader, objectType, contract, member, existingValue, null);
           case JsonToken.Integer:
           case JsonToken.Float:
           case JsonToken.Boolean:
@@ -377,7 +377,7 @@ namespace Newtonsoft.Json.Serialization
           else
             targetDictionary = CreateNewDictionary(reader, dictionaryContract);
 
-          return PopulateDictionary(dictionaryContract.CreateWrapper(targetDictionary), reader, dictionaryContract, member, containerMember, id);
+          return PopulateDictionary(dictionaryContract.CreateWrapper(targetDictionary), reader, dictionaryContract, member, id);
 #if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
         case JsonContractType.Dynamic:
           JsonDynamicContract dynamicContract = (JsonDynamicContract) contract;
@@ -496,12 +496,10 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
             else if (string.Equals(propertyName, JsonTypeReflector.ArrayValuesPropertyName, StringComparison.Ordinal))
             {
               CheckedRead(reader);
-              object list = CreateList(reader, objectType, contract, member, containerMember, existingValue, id);
+              object list = CreateList(reader, objectType, contract, member, existingValue, id);
               CheckedRead(reader);
-              {
-                newValue = list;
-                return true;
-              }
+              newValue = list;
+              return true;
             }
             else
             {
@@ -534,7 +532,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
         throw JsonSerializationException.Create(reader, "Unexpected end when deserializing object.");
     }
 
-    private object CreateList(JsonReader reader, Type objectType, JsonContract contract, JsonProperty member, JsonProperty containerProperty, object existingValue, string reference)
+    private object CreateList(JsonReader reader, Type objectType, JsonContract contract, JsonProperty member, object existingValue, string id)
     {
       object value;
       if (HasDefinedType(objectType))
@@ -546,7 +544,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
           bool isTemporaryListReference;
           IList list = CollectionUtils.CreateList(contract.CreatedType, out isTemporaryListReference);
 
-          if (reference != null && isTemporaryListReference)
+          if (id != null && isTemporaryListReference)
             throw JsonSerializationException.Create(reader, "Cannot preserve reference to array or readonly list: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
 #if !PocketPC
@@ -556,7 +554,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
           if (contract.OnError != null && isTemporaryListReference)
             throw JsonSerializationException.Create(reader, "Cannot call OnError on an array or readonly list: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
-          PopulateList(arrayContract.CreateWrapper(list), reader, reference, arrayContract, member);
+          PopulateList(arrayContract.CreateWrapper(list), reader, arrayContract, member, id);
 
           // create readonly and fixed sized collections using the temporary list
           if (isTemporaryListReference)
@@ -575,7 +573,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
         }
         else
         {
-          value = PopulateList(arrayContract.CreateWrapper(existingValue), reader, reference, arrayContract, member);
+          value = PopulateList(arrayContract.CreateWrapper(existingValue), reader, arrayContract, member, id);
         }
       }
       else
@@ -784,14 +782,24 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
       return dictionary;
     }
 
-    private object PopulateDictionary(IWrappedDictionary dictionary, JsonReader reader, JsonDictionaryContract contract, JsonProperty member, JsonProperty containerProperty, string id)
+    private object PopulateDictionary(IWrappedDictionary wrappedDictionary, JsonReader reader, JsonDictionaryContract contract, JsonProperty containerProperty, string id)
     {
-      if (id != null)
-        Serializer.ReferenceResolver.AddReference(this, id, dictionary.UnderlyingDictionary);
+      object dictionary = wrappedDictionary.UnderlyingDictionary;
 
-      contract.InvokeOnDeserializing(dictionary.UnderlyingDictionary, Serializer.Context);
+      if (id != null)
+        Serializer.ReferenceResolver.AddReference(this, id, dictionary);
+
+      contract.InvokeOnDeserializing(dictionary, Serializer.Context);
 
       int initialDepth = reader.Depth;
+
+      if (contract.KeyContract == null)
+        contract.KeyContract = GetContractSafe(contract.DictionaryKeyType);
+
+      if (contract.ItemContract == null)
+        contract.ItemContract = GetContractSafe(contract.DictionaryValueType);
+
+      JsonConverter dictionaryValueConverter = contract.ItemConverter ?? GetConverter(contract.ItemContract, null, contract, containerProperty);
 
       do
       {
@@ -801,9 +809,6 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
             object keyValue = reader.Value;
             try
             {
-              if (contract.KeyContract == null)
-                contract.KeyContract = GetContractSafe(contract.DictionaryKeyType);
-              
               try
               {
                 keyValue = EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract, contract.DictionaryKeyType);
@@ -813,21 +818,16 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                 throw JsonSerializationException.Create(reader, "Could not convert string '{0}' to dictionary key type '{1}'. Create a TypeConverter to convert from the string to the key type object.".FormatWith(CultureInfo.InvariantCulture, reader.Value, contract.DictionaryKeyType), ex);
               }
 
-              if (contract.ItemContract == null)
-                contract.ItemContract = GetContractSafe(contract.DictionaryValueType);
-
-              JsonConverter dictionaryValueConverter = contract.ItemConverter ?? GetConverter(contract.ItemContract, null, contract, containerProperty);
-
-              if (!ReadForType(reader, contract.ItemContract, dictionaryValueConverter != null, false))
+              if (!ReadForType(reader, contract.ItemContract, dictionaryValueConverter != null))
                 throw JsonSerializationException.Create(reader, "Unexpected end when deserializing object.");
 
               object itemValue;
               if (dictionaryValueConverter != null && dictionaryValueConverter.CanRead)
                 itemValue = dictionaryValueConverter.ReadJson(reader, contract.DictionaryValueType, null, GetInternalSerializer());
               else
-                itemValue = CreateValueInternal(reader, contract.DictionaryValueType, contract.ItemContract, null, contract, member, null);
+                itemValue = CreateValueInternal(reader, contract.DictionaryValueType, contract.ItemContract, null, contract, containerProperty, null);
 
-              dictionary[keyValue] = itemValue;
+              wrappedDictionary[keyValue] = itemValue;
             }
             catch (Exception ex)
             {
@@ -840,9 +840,9 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
           case JsonToken.Comment:
             break;
           case JsonToken.EndObject:
-            contract.InvokeOnDeserialized(dictionary.UnderlyingDictionary, Serializer.Context);
+            contract.InvokeOnDeserialized(dictionary, Serializer.Context);
 
-            return dictionary.UnderlyingDictionary;
+            return dictionary;
           default:
             throw JsonSerializationException.Create(reader, "Unexpected token when deserializing object: " + reader.TokenType);
         }
@@ -851,19 +851,19 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
       throw JsonSerializationException.Create(reader, "Unexpected end when deserializing object.");
     }
 
-    private object PopulateList(IWrappedCollection wrappedList, JsonReader reader, string reference, JsonArrayContract contract, JsonProperty containerProperty)
+    private object PopulateList(IWrappedCollection wrappedList, JsonReader reader, JsonArrayContract contract, JsonProperty containerProperty, string id)
     {
       object list = wrappedList.UnderlyingCollection;
+
+      if (id != null)
+        Serializer.ReferenceResolver.AddReference(this, id, list);
 
       // can't populate an existing array
       if (wrappedList.IsFixedSize)
       {
         reader.Skip();
-        return wrappedList.UnderlyingCollection;
+        return list;
       }
-
-      if (reference != null)
-        Serializer.ReferenceResolver.AddReference(this, reference, list);
 
       contract.InvokeOnDeserializing(list, Serializer.Context);
 
@@ -878,14 +878,14 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
       {
         try
         {
-          if (ReadForType(reader, collectionItemContract, collectionItemConverter != null, true))
+          if (ReadForType(reader, collectionItemContract, collectionItemConverter != null))
           {
             switch (reader.TokenType)
             {
               case JsonToken.EndArray:
                 contract.InvokeOnDeserialized(list, Serializer.Context);
 
-                return wrappedList.UnderlyingCollection;
+                return list;
               case JsonToken.Comment:
                 break;
               default:
@@ -978,7 +978,7 @@ To fix this error either change the environment to be fully trusted, change the 
       if (id != null)
         Serializer.ReferenceResolver.AddReference(this, id, createdObject);
 
-      // these are together because OnDeserializing takes an object but for an ISerializable the object is full created in the constructor
+      // these are together because OnDeserializing takes an object but for an ISerializable the object is fully created in the constructor
       contract.InvokeOnDeserializing(createdObject, Serializer.Context);
       contract.InvokeOnDeserialized(createdObject, Serializer.Context);
 
@@ -989,7 +989,7 @@ To fix this error either change the environment to be fully trusted, change the 
 #if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
     private object CreateDynamic(JsonReader reader, JsonDynamicContract contract, JsonProperty member, string id)
     {
-      IDynamicMetaObjectProvider newObject = null;
+      IDynamicMetaObjectProvider newObject;
 
       if (contract.UnderlyingType.IsInterface() || contract.UnderlyingType.IsAbstract())
         throw JsonSerializationException.Create(reader, "Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantated.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
@@ -1174,7 +1174,7 @@ To fix this error either change the environment to be fully trusted, change the 
 
               JsonConverter propertyConverter = GetConverter(property.PropertyContract, property.MemberConverter, contract, containerProperty);
 
-              if (!ReadForType(reader, property.PropertyContract, propertyConverter != null, false))
+              if (!ReadForType(reader, property.PropertyContract, propertyConverter != null))
                 throw JsonSerializationException.Create(reader, "Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
 
               if (!property.Ignored)
@@ -1219,7 +1219,7 @@ To fix this error either change the environment to be fully trusted, change the 
       return propertyValues;
     }
 
-    private bool ReadForType(JsonReader reader, JsonContract contract, bool hasConverter, bool inArray)
+    private bool ReadForType(JsonReader reader, JsonContract contract, bool hasConverter)
     {
       // don't read properties with converters as a specific value
       // the value might be a string which will then get converted which will error if read as date for example
@@ -1346,7 +1346,7 @@ To fix this error either change the environment to be fully trusted, change the 
 
                 JsonConverter propertyConverter = GetConverter(property.PropertyContract, property.MemberConverter, contract, member);
 
-                if (!ReadForType(reader, property.PropertyContract, propertyConverter != null, false))
+                if (!ReadForType(reader, property.PropertyContract, propertyConverter != null))
                   throw JsonSerializationException.Create(reader, "Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
 
                 SetPropertyPresence(reader, property, propertiesPresence);

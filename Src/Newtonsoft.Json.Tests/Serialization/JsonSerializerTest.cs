@@ -6465,6 +6465,37 @@ Parameter name: value",
       Assert.IsNotNull(uri);
       Assert.AreEqual(new Uri("/path?query#hash", UriKind.RelativeOrAbsolute), uri);
     }
+
+    public class MyConverter : JsonConverter
+    {
+      public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+      {
+        writer.WriteValue("X");
+      }
+
+      public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+      {
+        return "X";
+      }
+
+      public override bool CanConvert(Type objectType)
+      {
+        return true;
+      }
+    }
+
+    public class MyType
+    {
+      [JsonProperty(ItemConverterType = typeof(MyConverter))]
+      public Dictionary<string, object> MyProperty { get; set; }
+    }
+
+    [Test]
+    public void DeserializeDictionaryItemConverter()
+    {
+      var actual = JsonConvert.DeserializeObject<MyType>(@"{ ""MyProperty"":{""Key"":""Y""}}");
+      Assert.AreEqual("X", actual.MyProperty["Key"]);
+    }
   }
 
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
