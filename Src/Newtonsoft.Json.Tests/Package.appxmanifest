@@ -1,15 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
   
-  <Identity Name="416af769-23b3-4c62-bc3f-d2f756b8f292"
+  <Identity Name="c15d5e96-7d57-4336-ae9e-a1a4e6ac522a"
             Publisher="CN=James"
             Version="1.0.0.0" />
   
   <Properties>
-    <DisplayName>UnitTestProject1</DisplayName>
+    <DisplayName>Newtonsoft.Json.Tests.Metro</DisplayName>
     <PublisherDisplayName>James</PublisherDisplayName>
     <Logo>Images\UnitTestStoreLogo.png</Logo>
-    <Description>UnitTestProject1</Description>
+    <Description>Newtonsoft.Json.Tests.Metro</Description>
   </Properties>
   
   <Prerequisites>

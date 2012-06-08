@@ -40,9 +40,9 @@ using System.Text;
 #if !NETFX_CORE
 using NUnit.Framework;
 #else
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using TestFixture = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
-using Test = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
+using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
 #endif
 using Newtonsoft.Json;
 using System.IO;
@@ -6319,9 +6319,9 @@ Parameter name: value",
           Venue = "Gryphon Theatre",
           Performances = new List<DateTime>
             {
-              DateTime.Parse("8 Tue May 2012, 6:30pm"),
-              DateTime.Parse("9 Wed May 2012, 6:30pm"),
-              DateTime.Parse("10 Thu May 2012, 8:00pm")
+              JsonConvert.ConvertJavaScriptTicksToDateTime(1336458600000),
+              JsonConvert.ConvertJavaScriptTicksToDateTime(1336545000000),
+              JsonConvert.ConvertJavaScriptTicksToDateTime(1336636800000)
             }
         };
 

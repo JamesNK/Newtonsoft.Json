@@ -39,9 +39,9 @@ using global::Newtonsoft.Json.Tests.TestObjects;
 #if !NETFX_CORE
 using global::NUnit.Framework;
 #else
-using global::Microsoft.VisualStudio.TestTools.UnitTesting;
-using TestFixture = global::Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
-using Test = global::Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+using global::Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
+using TestFixture = global::Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
+using Test = global::Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
 #endif
 using global::Newtonsoft.Json.Utilities;
 using global::System.Net;
