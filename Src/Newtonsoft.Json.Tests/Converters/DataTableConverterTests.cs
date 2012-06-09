@@ -26,6 +26,7 @@
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
 using System;
 #if !NETFX_CORE
+using System.Collections.Generic;
 using NUnit.Framework;
 #else
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -232,6 +233,42 @@ namespace Newtonsoft.Json.Tests.Converters
       Assert.AreEqual(49.99, (double)table.Rows[0]["price"], 0.01);
       Assert.AreEqual(54.99, (double)table.Rows[1]["price"], 0.01);
       Assert.IsInstanceOfType(typeof(System.DBNull), table.Rows[2]["price"]);
+    }
+
+    [Test]
+    public void SerializeKeyValuePairWithDataTableKey()
+    {
+      DataTable table = new DataTable();
+      DataColumn idColumn = new DataColumn("id", typeof(int));
+      idColumn.AutoIncrement = true;
+
+      DataColumn itemColumn = new DataColumn("item");
+      table.Columns.Add(idColumn);
+      table.Columns.Add(itemColumn);
+
+      DataRow r = table.NewRow();
+      r["item"] = "item!";
+      r.EndEdit();
+      table.Rows.Add(r);
+
+      KeyValuePair<DataTable, int> pair = new KeyValuePair<DataTable, int>(table, 1);
+      string serializedpair = JsonConvert.SerializeObject(pair, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""Key"": [
+    {
+      ""id"": 0,
+      ""item"": ""item!""
+    }
+  ],
+  ""Value"": 1
+}", serializedpair);
+
+      var pair2 = (KeyValuePair<DataTable, int>)JsonConvert.DeserializeObject(serializedpair, typeof(KeyValuePair<DataTable, int>));
+
+      Assert.AreEqual(1, pair2.Value);
+      Assert.AreEqual(1, pair2.Key.Rows.Count);
+      Assert.AreEqual("item!", pair2.Key.Rows[0]["item"]);
     }
   }
 }

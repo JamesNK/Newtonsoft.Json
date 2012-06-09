@@ -1315,6 +1315,27 @@ namespace Newtonsoft.Json.Tests.Converters
     }
 
     [Test]
+    public void EmtpyElementWithArrayAttributeShouldWriteElement()
+    {
+      string xml = @"<root>
+<Reports d1p1:Array=""true"" xmlns:d1p1=""http://james.newtonking.com/projects/json"" />
+</root>";
+
+      XmlDocument d = new XmlDocument();
+      d.LoadXml(xml);
+
+      string json = JsonConvert.SerializeXmlNode(d, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""root"": {
+    ""Reports"": [
+      {}
+    ]
+  }
+}", json);
+    }
+
+    [Test]
     public void DeserializeNonInt64IntegerValues()
     {
       var dict = new Dictionary<string, object> { { "Int16", (short)1 }, { "Float", 2f }, { "Int32", 3 } };

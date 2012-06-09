@@ -33,6 +33,7 @@ using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
 #endif
+using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
@@ -123,6 +124,14 @@ namespace Newtonsoft.Json.Tests.Serialization
       [DefaultValue(-1)]
       public long GlobalId { get; set; }
 
+      [JsonProperty(PropertyName = "age")]
+      [DefaultValue(0)]
+      public int Age { get; set; }
+
+      [JsonProperty(PropertyName = "amount")]
+      [DefaultValue(0.0)]
+      public decimal Amount { get; set; }
+
       [JsonProperty(PropertyName = "floatUserId")]
       [DefaultValue(-1.0d)]
       public float FloatGlobalId { get; set; }
@@ -136,6 +145,8 @@ namespace Newtonsoft.Json.Tests.Serialization
       {
         GlobalId = -1;
         FloatGlobalId = -1.0f;
+        Amount = 0.0m;
+        Age = 0;
       }
     }
 
@@ -150,6 +161,16 @@ namespace Newtonsoft.Json.Tests.Serialization
       string json = JsonConvert.SerializeObject(user, Formatting.None, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore });
 
       Assert.AreEqual(@"{""firstName"":""blub""}", json);
+    }
+
+    [Test]
+    public void ApproxEquals()
+    {
+      Assert.IsTrue(MathUtils.ApproxEquals(0.0, 0.0));
+      Assert.IsTrue(MathUtils.ApproxEquals(1000.0, 1000.0000000000001));
+
+      Assert.IsFalse(MathUtils.ApproxEquals(1000.0, 1000.000000000001));
+      Assert.IsFalse(MathUtils.ApproxEquals(0.0, 0.00001));
     }
   }
 }
