@@ -657,23 +657,26 @@ namespace Newtonsoft.Json.Utilities
       // update: I think this is fixed in .NET 3.5 SP1 - leave this in for now...
       List<MemberInfo> distinctMembers = new List<MemberInfo>(targetMembers.Count);
 
-      var groupedMembers = targetMembers.GroupBy(m => m.Name).Select(g => new { Count = g.Count(), Members = g.Cast<MemberInfo>() });
-      foreach (var groupedMember in groupedMembers)
+      foreach (var groupedMember in targetMembers.GroupBy(m => m.Name))
       {
-        if (groupedMember.Count == 1)
+        int count = groupedMember.Count();
+        IList<MemberInfo> members = groupedMember.ToList();
+
+        if (count == 1)
         {
-          distinctMembers.Add(groupedMember.Members.First());
+          distinctMembers.Add(members.First());
         }
         else
         {
-          var members = groupedMember.Members.Where(m => !IsOverridenGenericMember(m, bindingAttr) || m.Name == "Item");
+          var resolvedMembers = members.Where(m => !IsOverridenGenericMember(m, bindingAttr) || m.Name == "Item");
 
-          distinctMembers.AddRange(members);
+          distinctMembers.AddRange(resolvedMembers);
         }
       }
 
       return distinctMembers;
     }
+
 
     private static bool IsOverridenGenericMember(MemberInfo memberInfo, BindingFlags bindingAttr)
     {
