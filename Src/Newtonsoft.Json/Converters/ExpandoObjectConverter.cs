@@ -41,6 +41,12 @@ namespace Newtonsoft.Json.Converters
   public class ExpandoObjectConverter : JsonConverter
   {
     /// <summary>
+    /// Gets or sets a value indicating whether to emit Arrays instead of IList&lt;object&gt; types
+    /// when a JSON array is encountered during parsing.
+    /// </summary>
+    public bool UseArrayTypeForCollections { get; set; }
+
+    /// <summary>
     /// Writes the JSON representation of the object.
     /// </summary>
     /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
@@ -102,7 +108,7 @@ namespace Newtonsoft.Json.Converters
             list.Add(v);
             break;
           case JsonToken.EndArray:
-            return list;
+            return UseArrayTypeForCollections ? list.ToArray() : list;
         }
       }
 
