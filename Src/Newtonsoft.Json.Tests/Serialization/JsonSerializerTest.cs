@@ -6496,6 +6496,33 @@ Parameter name: value",
       var actual = JsonConvert.DeserializeObject<MyType>(@"{ ""MyProperty"":{""Key"":""Y""}}");
       Assert.AreEqual("X", actual.MyProperty["Key"]);
     }
+
+    [Test]
+    public void DeserializeCaseInsensitiveKeyValuePairConverter()
+    {
+      KeyValuePair<int, string> result =
+        JsonConvert.DeserializeObject<KeyValuePair<int, string>>(
+          "{key: 123, \"VALUE\": \"test value\"}"
+          );
+
+      Assert.AreEqual(123, result.Key);
+      Assert.AreEqual("test value", result.Value);
+    }
+
+    [Test]
+    public void SerializeKeyValuePairConverterWithCamelCase()
+    {
+      string json =
+        JsonConvert.SerializeObject(new KeyValuePair<int, string>(123, "test value"), Formatting.Indented, new JsonSerializerSettings
+          {
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+          });
+
+      Assert.AreEqual(@"{
+  ""key"": 123,
+  ""value"": ""test value""
+}", json);
+    }
   }
 
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)

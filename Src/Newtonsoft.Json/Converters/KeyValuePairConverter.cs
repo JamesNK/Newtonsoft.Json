@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
 using System.Reflection;
 
@@ -35,6 +36,9 @@ namespace Newtonsoft.Json.Converters
   /// </summary>
   public class KeyValuePairConverter : JsonConverter
   {
+    private const string KeyName = "Key";
+    private const string ValueName = "Value";
+
     /// <summary>
     /// Writes the JSON representation of the object.
     /// </summary>
@@ -44,13 +48,16 @@ namespace Newtonsoft.Json.Converters
     public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {
       Type t = value.GetType();
-      PropertyInfo keyProperty = t.GetProperty("Key");
-      PropertyInfo valueProperty = t.GetProperty("Value");
+      PropertyInfo keyProperty = t.GetProperty(KeyName);
+      PropertyInfo valueProperty = t.GetProperty(ValueName);
+
+      DefaultContractResolver resolver = serializer.ContractResolver as DefaultContractResolver;
 
       writer.WriteStartObject();
-      writer.WritePropertyName("Key");
+
+      writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(KeyName) : KeyName);
       serializer.Serialize(writer, ReflectionUtils.GetMemberValue(keyProperty, value));
-      writer.WritePropertyName("Value");
+      writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(ValueName) : ValueName);
       serializer.Serialize(writer, ReflectionUtils.GetMemberValue(valueProperty, value));
       writer.WriteEndObject();
     }
@@ -90,19 +97,20 @@ namespace Newtonsoft.Json.Converters
 
       while (reader.TokenType == JsonToken.PropertyName)
       {
-        switch (reader.Value.ToString())
+        string propertyName = reader.Value.ToString();
+        if (string.Equals(propertyName, KeyName, StringComparison.OrdinalIgnoreCase))
         {
-          case "Key":
-            reader.Read();
-            key = serializer.Deserialize(reader, keyType);
-            break;
-          case "Value":
-            reader.Read();
-            value = serializer.Deserialize(reader, valueType);
-            break;
-          default:
-            reader.Skip();
-            break;
+          reader.Read();
+          key = serializer.Deserialize(reader, keyType);
+        }
+        else if (string.Equals(propertyName, ValueName, StringComparison.OrdinalIgnoreCase))
+        {
+          reader.Read();
+          value = serializer.Deserialize(reader, valueType);
+        }
+        else
+        {
+          reader.Skip();
         }
 
         reader.Read();
