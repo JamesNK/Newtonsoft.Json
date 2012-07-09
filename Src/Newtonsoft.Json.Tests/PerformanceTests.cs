@@ -94,6 +94,7 @@ namespace Newtonsoft.Json.Tests
       JsonNetWithIsoConverter,
       JsonNetBinary,
       JsonNetLinq,
+      JsonNetManual,
       BinaryFormatter,
       JavaScriptSerializer,
       DataContractSerializer,
@@ -132,6 +133,7 @@ namespace Newtonsoft.Json.Tests
       BenchmarkSerializeMethod(SerializeMethod.DataContractJsonSerializer, value);
       BenchmarkSerializeMethod(SerializeMethod.JsonNet, value);
       BenchmarkSerializeMethod(SerializeMethod.JsonNetLinq, value);
+      BenchmarkSerializeMethod(SerializeMethod.JsonNetManual, value);
       BenchmarkSerializeMethod(SerializeMethod.JsonNetWithIsoConverter, value);
       BenchmarkSerializeMethod(SerializeMethod.JsonNetBinary, value);
     }
@@ -513,6 +515,69 @@ namespace Newtonsoft.Json.Tests
             }
             break;
           }
+        case SerializeMethod.JsonNetManual:
+          {
+            TestClass c = value as TestClass;
+            if (c != null)
+            {
+              StringWriter sw = new StringWriter();
+              JsonTextWriter writer = new JsonTextWriter(sw);
+              writer.WriteStartObject();
+              writer.WritePropertyName("strings");
+              writer.WriteStartArray();
+              foreach (string s in c.strings)
+              {
+                writer.WriteValue(s);
+              }
+              writer.WriteEndArray();
+              writer.WritePropertyName("dictionary");
+              writer.WriteStartObject();
+              foreach (KeyValuePair<string, int> keyValuePair in c.dictionary)
+              {
+                writer.WritePropertyName(keyValuePair.Key);
+                writer.WriteValue(keyValuePair.Value);
+              }
+              writer.WriteEndObject();
+              writer.WritePropertyName("Name");
+              writer.WriteValue(c.Name);
+              writer.WritePropertyName("Now");
+              writer.WriteValue(c.Now);
+              writer.WritePropertyName("BigNumber");
+              writer.WriteValue(c.BigNumber);
+              writer.WritePropertyName("Address1");
+              writer.WriteStartObject();
+              writer.WritePropertyName("Street");
+              writer.WriteValue(c.BigNumber);
+              writer.WritePropertyName("Street");
+              writer.WriteValue(c.BigNumber);
+              writer.WritePropertyName("Street");
+              writer.WriteValue(c.BigNumber);
+              writer.WriteEndObject();
+              writer.WritePropertyName("Addresses");
+              writer.WriteStartArray();
+              foreach (Address address in c.Addresses)
+              {
+                writer.WriteStartObject();
+                writer.WritePropertyName("Street");
+                writer.WriteValue(address.Street);
+                writer.WritePropertyName("Phone");
+                writer.WriteValue(address.Phone);
+                writer.WritePropertyName("Entered");
+                writer.WriteValue(address.Entered);
+                writer.WriteEndObject();
+              }
+              writer.WriteEndArray();
+              writer.WriteEndObject();
+
+              writer.Flush();
+              json = sw.ToString();
+            }
+            else
+            {
+              json = string.Empty;
+            }
+            break;
+          }
         case SerializeMethod.JsonNetBinary:
           {
             MemoryStream ms = new MemoryStream(Buffer);
@@ -693,6 +758,14 @@ namespace Newtonsoft.Json.Tests
       }
 
       BenchmarkSerializeMethod(SerializeMethod.JsonNetBinary, rootValue);
+    }
+
+    [Test]
+    public void SerializeUnicodeChars()
+    {
+      string s = (new string('\0', 30));
+
+      BenchmarkSerializeMethod(SerializeMethod.JsonNet, s);
     }
 
     [Test]

@@ -35,6 +35,8 @@ namespace Newtonsoft.Json.Utilities
 {
   internal static class JavaScriptUtils
   {
+    private const string EscapedUnicodeText = "!";
+
     public static void WriteEscapedJavaScriptString(TextWriter writer, string s, char delimiter, bool appendDelimiters)
     {
       // leading delimiter
@@ -44,6 +46,7 @@ namespace Newtonsoft.Json.Utilities
       if (s != null)
       {
         char[] chars = null;
+        char[] unicodeBuffer = null;
         int lastWritePosition = 0;
 
         for (int i = 0; i < s.Length; i++)
@@ -94,7 +97,20 @@ namespace Newtonsoft.Json.Utilities
               escapedValue = "\\\"";
               break;
             default:
-              escapedValue = (c <= '\u001f') ? StringUtils.ToCharAsUnicode(c) : null;
+              if (c <= '\u001f')
+              {
+                if (unicodeBuffer == null)
+                  unicodeBuffer = new char[6];
+
+                StringUtils.ToCharAsUnicode(c, unicodeBuffer);
+
+                // slightly hacky but it saves multiple conditions in if test
+                escapedValue = EscapedUnicodeText;
+              }
+              else
+              {
+                escapedValue = null;
+              }
               break;
           }
 
@@ -111,7 +127,10 @@ namespace Newtonsoft.Json.Utilities
           }
 
           lastWritePosition = i + 1;
-          writer.Write(escapedValue);
+          if (!string.Equals(escapedValue, EscapedUnicodeText))
+            writer.Write(escapedValue);
+          else
+            writer.Write(unicodeBuffer);
         }
 
         if (lastWritePosition == 0)
