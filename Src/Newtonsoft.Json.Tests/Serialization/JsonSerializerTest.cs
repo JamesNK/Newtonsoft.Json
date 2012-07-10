@@ -6523,6 +6523,73 @@ Parameter name: value",
   ""value"": ""test value""
 }", json);
     }
+
+    [JsonObject(MemberSerialization.Fields)]
+    public class MyTuple<T1>
+    {
+      private readonly T1 m_Item1;
+
+      public MyTuple(T1 item1)
+      {
+        m_Item1 = item1;
+      }
+
+      public T1 Item1
+      {
+        get { return m_Item1; }
+      }
+    }
+
+    [Test]
+    public void SerializeCustomTupleWithSerializableAttribute()
+    {
+      var tuple = new MyTuple<int>(500);
+      var json = JsonConvert.SerializeObject(tuple);
+      Assert.AreEqual(@"{""m_Item1"":500}", json);
+
+      MyTuple<int> obj = null;
+
+      Action doStuff = () =>
+        {
+          obj = JsonConvert.DeserializeObject<MyTuple<int>>(json);
+        };
+
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+      doStuff();
+      Assert.AreEqual(500, obj.Item1);
+#else
+      ExceptionAssert.Throws<JsonSerializationException>(
+         "Unable to find a constructor to use for type Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+MyTuple`1[System.Int32]. A class should either have a default constructor, one constructor with arguments or a constructor marked with the JsonConstructor attribute. Path 'm_Item1', line 1, position 11.",
+         doStuff);
+#endif
+    }
+
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || NET35 || NET20)
+    [Test]
+    public void SerializeTupleWithSerializableAttribute()
+    {
+      var tuple = Tuple.Create(500);
+      var json = JsonConvert.SerializeObject(tuple, new JsonSerializerSettings
+      {
+        ContractResolver = new SerializableContractResolver()
+      });
+      Assert.AreEqual(@"{""m_Item1"":500}", json);
+
+      var obj = JsonConvert.DeserializeObject<Tuple<int>>(json, new JsonSerializerSettings
+      {
+        ContractResolver = new SerializableContractResolver()
+      });
+      Assert.AreEqual(500, obj.Item1);
+    }
+
+    public class SerializableContractResolver : DefaultContractResolver
+    {
+      public SerializableContractResolver()
+      {
+        IgnoreSerializableAttribute = false;
+      }
+    }
+#endif
   }
 
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)

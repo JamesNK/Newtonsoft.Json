@@ -372,6 +372,13 @@ namespace Newtonsoft.Json.Serialization
           contract.ConstructorParameters.AddRange(CreateConstructorParameters(constructor, contract.Properties));
         }
       }
+      else if (contract.MemberSerialization == MemberSerialization.Fields)
+      {
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+        // mimic DataContractSerializer behaviour and create uninitialized object when populating fields
+        contract.DefaultCreator = contract.GetUninitializedObject;
+#endif
+      }
       else if (contract.DefaultCreator == null || contract.DefaultCreatorNonPublic)
       {
         ConstructorInfo constructor = GetParametrizedConstructor(contract.NonNullableUnderlyingType);
@@ -899,8 +906,17 @@ namespace Newtonsoft.Json.Serialization
       bool hasExplicitAttribute;
       SetPropertySettingsFromAttributes(property, member.GetCustomAttributeProvider(), member.Name, member.DeclaringType, memberSerialization, out allowNonPublicAccess, out hasExplicitAttribute);
 
-      property.Readable = ReflectionUtils.CanReadMemberValue(member, allowNonPublicAccess);
-      property.Writable = ReflectionUtils.CanSetMemberValue(member, allowNonPublicAccess, hasExplicitAttribute);
+      if (memberSerialization != MemberSerialization.Fields)
+      {
+        property.Readable = ReflectionUtils.CanReadMemberValue(member, allowNonPublicAccess);
+        property.Writable = ReflectionUtils.CanSetMemberValue(member, allowNonPublicAccess, hasExplicitAttribute);
+      }
+      else
+      {
+        // write to readonly fields
+        property.Readable = true;
+        property.Writable = true;
+      }
       property.ShouldSerialize = CreateShouldSerializeTest(member);
 
       SetIsSpecifiedActions(property, member, allowNonPublicAccess);

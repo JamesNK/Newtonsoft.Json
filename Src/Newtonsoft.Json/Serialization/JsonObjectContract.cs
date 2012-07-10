@@ -25,6 +25,8 @@
 
 using System;
 using System.Reflection;
+using System.Runtime.Serialization;
+using System.Security;
 
 namespace Newtonsoft.Json.Serialization
 {
@@ -114,5 +116,13 @@ namespace Newtonsoft.Json.Serialization
       Properties = new JsonPropertyCollection(UnderlyingType);
       ConstructorParameters = new JsonPropertyCollection(UnderlyingType);
     }
+
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+    [SecuritySafeCritical]
+    internal object GetUninitializedObject()
+    {
+      return FormatterServices.GetUninitializedObject(NonNullableUnderlyingType);
+    }
+#endif
   }
 }
