@@ -375,8 +375,10 @@ namespace Newtonsoft.Json.Serialization
       else if (contract.MemberSerialization == MemberSerialization.Fields)
       {
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
-        // mimic DataContractSerializer behaviour and create uninitialized object when populating fields
-        contract.DefaultCreator = contract.GetUninitializedObject;
+        // mimic DataContractSerializer behaviour when populating fields by overriding default creator to create an uninitialized object
+        // note that this is only possible when the application is fully trusted so fall back to using the default constructor (if available) in partial trust
+        if (JsonTypeReflector.FullyTrusted)
+          contract.DefaultCreator = contract.GetUninitializedObject;
 #endif
       }
       else if (contract.DefaultCreator == null || contract.DefaultCreatorNonPublic)

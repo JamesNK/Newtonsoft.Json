@@ -6540,6 +6540,22 @@ Parameter name: value",
       }
     }
 
+    [JsonObject(MemberSerialization.Fields)]
+    public class MyTuplePartial<T1>
+    {
+      private readonly T1 m_Item1;
+
+      public MyTuplePartial(T1 item1)
+      {
+        m_Item1 = item1;
+      }
+
+      public T1 Item1
+      {
+        get { return m_Item1; }
+      }
+    }
+
     [Test]
     public void SerializeCustomTupleWithSerializableAttribute()
     {
@@ -6550,9 +6566,9 @@ Parameter name: value",
       MyTuple<int> obj = null;
 
       Action doStuff = () =>
-        {
-          obj = JsonConvert.DeserializeObject<MyTuple<int>>(json);
-        };
+      {
+        obj = JsonConvert.DeserializeObject<MyTuple<int>>(json);
+      };
 
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
       doStuff();
@@ -6563,6 +6579,29 @@ Parameter name: value",
          doStuff);
 #endif
     }
+
+#if DEBUG
+    [Test]
+    public void SerializeCustomTupleWithSerializableAttributeInPartialTrust()
+    {
+      try
+      {
+        JsonTypeReflector.SetFullyTrusted(false);
+
+        var tuple = new MyTuplePartial<int>(500);
+        var json = JsonConvert.SerializeObject(tuple);
+        Assert.AreEqual(@"{""m_Item1"":500}", json);
+
+        ExceptionAssert.Throws<JsonSerializationException>(
+           "Unable to find a constructor to use for type Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+MyTuplePartial`1[System.Int32]. A class should either have a default constructor, one constructor with arguments or a constructor marked with the JsonConstructor attribute. Path 'm_Item1', line 1, position 11.",
+           () => JsonConvert.DeserializeObject<MyTuplePartial<int>>(json));
+      }
+      finally
+      {
+        JsonTypeReflector.SetFullyTrusted(true);
+      }
+    }
+#endif
 
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE || NET35 || NET20)
     [Test]

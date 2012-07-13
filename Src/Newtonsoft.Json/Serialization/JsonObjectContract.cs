@@ -24,9 +24,11 @@
 #endregion
 
 using System;
+using System.Globalization;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Security;
+using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Serialization
 {
@@ -118,9 +120,15 @@ namespace Newtonsoft.Json.Serialization
     }
 
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(NET20 || NET35)
     [SecuritySafeCritical]
+#endif
     internal object GetUninitializedObject()
     {
+      // we should never get here if the environment is not fully trusted, check just in case
+      if (!JsonTypeReflector.FullyTrusted)
+        throw new JsonException("Insufficient permissions. Creating an uninitialized '{0}' type requires full trust.".FormatWith(CultureInfo.InvariantCulture, NonNullableUnderlyingType));
+
       return FormatterServices.GetUninitializedObject(NonNullableUnderlyingType);
     }
 #endif
