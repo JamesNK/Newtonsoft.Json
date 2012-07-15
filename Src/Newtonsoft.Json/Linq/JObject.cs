@@ -292,6 +292,10 @@ namespace Newtonsoft.Json.Linq
           throw JsonReaderException.Create(reader, "Error reading JObject from JsonReader.");
       }
 
+      while (reader.TokenType == JsonToken.Comment)
+        reader.Read();
+      
+
       if (reader.TokenType != JsonToken.StartObject)
       {
         throw JsonReaderException.Create(reader, "Error reading JObject from JsonReader. Current JsonReader item is not an object: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
