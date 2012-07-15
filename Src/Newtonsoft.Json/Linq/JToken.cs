@@ -1222,7 +1222,6 @@ namespace Newtonsoft.Json.Linq
       if (!JsonReader.IsStartToken(reader.TokenType))
         return new JValue(reader.Value);
 
-      // TODO: loading constructor and parameters?
       throw JsonReaderException.Create(reader, "Error reading JToken from JsonReader. Unexpected token: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
     }
 

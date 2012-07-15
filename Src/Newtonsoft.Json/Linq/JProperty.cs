@@ -229,6 +229,12 @@ namespace Newtonsoft.Json.Linq
         if (!reader.Read())
           throw JsonReaderException.Create(reader, "Error reading JProperty from JsonReader.");
       }
+
+      while (reader.TokenType == JsonToken.Comment)
+      {
+        reader.Read();
+      }
+
       if (reader.TokenType != JsonToken.PropertyName)
         throw JsonReaderException.Create(reader, "Error reading JProperty from JsonReader. Current JsonReader item is not a property: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
 

@@ -113,6 +113,12 @@ namespace Newtonsoft.Json.Linq
         if (!reader.Read())
           throw JsonReaderException.Create(reader, "Error reading JArray from JsonReader.");
       }
+
+      while (reader.TokenType == JsonToken.Comment)
+      {
+        reader.Read();
+      }
+
       if (reader.TokenType != JsonToken.StartArray)
         throw JsonReaderException.Create(reader, "Error reading JArray from JsonReader. Current JsonReader item is not an array: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
 

@@ -187,6 +187,11 @@ namespace Newtonsoft.Json.Linq
           throw JsonReaderException.Create(reader, "Error reading JConstructor from JsonReader.");
       }
 
+      while (reader.TokenType == JsonToken.Comment)
+      {
+        reader.Read();
+      }
+
       if (reader.TokenType != JsonToken.StartConstructor)
         throw JsonReaderException.Create(reader, "Error reading JConstructor from JsonReader. Current JsonReader item is not a constructor: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
 

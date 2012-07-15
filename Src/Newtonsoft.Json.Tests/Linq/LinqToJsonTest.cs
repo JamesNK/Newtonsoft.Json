@@ -803,6 +803,7 @@ keyword such as type of business.""
         o.Children()["item"].Children()["title"].Values<string>().ToArray());
     }
 
+    [Test]
     public void UriGuidTimeSpanTestClassEmptyTest()
     {
       UriGuidTimeSpanTestClass c1 = new UriGuidTimeSpanTestClass();
@@ -824,6 +825,7 @@ keyword such as type of business.""
       Assert.AreEqual(c1.Uri, c2.Uri);
     }
 
+    [Test]
     public void UriGuidTimeSpanTestClassValuesTest()
     {
       UriGuidTimeSpanTestClass c1 = new UriGuidTimeSpanTestClass
@@ -850,6 +852,18 @@ keyword such as type of business.""
       Assert.AreEqual(c1.TimeSpan, c2.TimeSpan);
       Assert.AreEqual(c1.NullableTimeSpan, c2.NullableTimeSpan);
       Assert.AreEqual(c1.Uri, c2.Uri);
+    }
+
+    [Test]
+    public void ParseWithPrecendingComments()
+    {
+      string json = @"/* blah */ {'hi':'hi!'}";
+      JObject o = JObject.Parse(json);
+      Assert.AreEqual("hi!", (string)o["hi"]);
+
+      json = @"/* blah */ ['hi!']";
+      JArray a = JArray.Parse(json);
+      Assert.AreEqual("hi!", (string)a[0]);
     }
   }
 }
