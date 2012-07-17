@@ -1243,6 +1243,19 @@ keyword such as type of business.""
     }
 
     [Test]
+    public void SerializeArray2D()
+    {
+      Array2D aa = new Array2D();
+      aa.Before = "Before!";
+      aa.After = "After!";
+      aa.Coordinates = new[,] { { 1, 1 }, { 1, 2 }, { 2, 1 }, { 2, 2 } };
+
+      string json = JsonConvert.SerializeObject(aa);
+
+      Assert.AreEqual(@"{""Before"":""Before!"",""Coordinates"":[[1,1],[1,2],[2,1],[2,2]],""After"":""After!""}", json);
+    }
+
+    [Test]
     public void DeserializeJaggedArray()
     {
       string json = @"{""Before"":""Before!"",""Coordinates"":[[1,1],[1,2],[2,1],[2,2]],""After"":""After!""}";
@@ -1255,6 +1268,25 @@ keyword such as type of business.""
       Assert.AreEqual(2, aa.Coordinates[0].Length);
       Assert.AreEqual(1, aa.Coordinates[0][0]);
       Assert.AreEqual(2, aa.Coordinates[1][1]);
+
+      string after = JsonConvert.SerializeObject(aa);
+
+      Assert.AreEqual(json, after);
+    }
+
+    [Test]
+    public void DeserializeArray2D()
+    {
+      string json = @"{""Before"":""Before!"",""Coordinates"":[[1,1],[1,2],[2,1],[2,2]],""After"":""After!""}";
+
+      Array2D aa = JsonConvert.DeserializeObject<Array2D>(json);
+
+      Assert.AreEqual("Before!", aa.Before);
+      Assert.AreEqual("After!", aa.After);
+      Assert.AreEqual(4, aa.Coordinates.GetLength(0));
+      Assert.AreEqual(2, aa.Coordinates.GetLength(1));
+      Assert.AreEqual(1, aa.Coordinates[0,0]);
+      Assert.AreEqual(2, aa.Coordinates[1,1]);
 
       string after = JsonConvert.SerializeObject(aa);
 
