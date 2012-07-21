@@ -1,0 +1,326 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="SerializationSettings" revisionNumber="1">
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!--
+    <summary>
+      <para>Optional summary abstract</para>
+    </summary>
+    -->
+    <introduction>
+      <para>JsonSerializer has a number of properties on it to customize how it serializes JSON. These can also be used with the methods on JsonConvert via the JsonSerializerSettings overloads.</para>
+    </introduction>
+
+<section>
+ <title>DateFormatHandling</title>
+ <content><para>DateFormatHandling controls how dates are serialized.</para>
+ 
+<table>
+  <tableHeader>
+    <row>
+      <entry><para>Member</para></entry>
+      <entry><para>Description</para></entry>
+    </row>
+  </tableHeader>
+  <row>
+    <entry><para><legacyBold>IsoDateFormat</legacyBold></para></entry>
+    <entry><para>By default Json.NET writes dates in the ISO 8601 format, e.g. "2012-03-21T05:40Z".</para></entry>
+  </row>
+  <row>
+    <entry><para><legacyBold>MicrosoftDateFormat</legacyBold></para></entry>
+    <entry><para>Dates are written in the Microsoft JSON format, e.g. "\/Date(1198908717056)\/".</para></entry>
+  </row>
+</table>
+
+</content>
+</section>
+
+<section>
+ <title>MissingMemberHandling</title>
+ <content><para>MissingMemberHandling controls how missing members, e.g. JSON contains a property that isn't a member on the object, are handled during deserialization.</para>
+ 
+<table>
+  <tableHeader>
+    <row>
+      <entry><para>Member</para></entry>
+      <entry><para>Description</para></entry>
+    </row>
+  </tableHeader>
+  <row>
+    <entry><para><legacyBold>Ignore</legacyBold></para></entry>
+    <entry><para>By default Json.NET ignores JSON if there is no field or property for its value to be set to during deserialization.</para></entry>
+  </row>
+  <row>
+    <entry><para><legacyBold>Error</legacyBold></para></entry>
+    <entry><para>Json.NET errors when there is a missing member during deserialization.</para></entry>
+  </row>
+</table>
+
+</content>
+</section>
+
+<section>
+ <title>ReferenceLoopHandling</title>
+ <content><para>ReferenceLoopHandling controls how circular referencing objects, e.g. a Person object referencing itself via a Manager property, are serialized.</para>
+ 
+<table>
+  <tableHeader>
+    <row>
+      <entry><para>Member</para></entry>
+      <entry><para>Description</para></entry>
+    </row>
+  </tableHeader>
+  <row>
+    <entry><para>Error</para></entry>
+    <entry><para>By default Json.NET will error if a reference loop is encountered (otherwise the serializer will get into an infinite loop).</para></entry>
+  </row>
+  <row>
+    <entry><para>Ignore</para></entry>
+    <entry><para>Json.NET will ignore objects in reference loops and not serialize them. The first time an object is encountered it will be serialized as usual but if the object is encountered as a child object of itself the serializer will skip serializing it.</para></entry>
+  </row>
+  <row>
+    <entry><para>Serialize</para></entry>
+    <entry><para>This option forces Json.NET to serialize objects in reference loops. This is useful if objects are nested but not indefinitely.</para></entry>
+  </row>
+</table>
+<para>ReferenceLoopHandling can also be customized on individual properties with JsonPropertyAttribute.</para>
+</content>
+</section>
+
+<section>
+ <title>NullValueHandling</title>
+ <content><para>NullValueHandling controls how null values on .NET objects are handled during serialization and how null values in JSON are handled during deserialization.</para>
+ 
+<table>
+  <tableHeader>
+    <row>
+      <entry><para>Member</para></entry>
+      <entry><para>Description</para></entry>
+    </row>
+  </tableHeader>
+  <row>
+    <entry><para>Include</para></entry>
+    <entry><para>By default Json.NET writes null values to JSON when serializing and sets null values to fields/properties when deserializing.</para></entry>
+  </row>
+  <row>
+    <entry><para>Ignore</para></entry>
+    <entry><para>Json.NET will skip writing JSON properties if the .NET value is null when serializing and will skip setting fields/properties if the JSON property is null when deserializing.</para></entry>
+  </row>
+</table>
+<para>NullValueHandling can also be customized on individual properties with JsonPropertyAttribute.</para>
+
+</content>
+</section>
+
+<section>
+ <title>DefaultValueHandling</title>
+ <content><para>DefaultValueHandling controls how Json.NET uses default values set using the .NET DefaultValueAttribute when serializing and deserializing.</para>
+ 
+<table>
+  <tableHeader>
+    <row>
+      <entry><para>Member</para></entry>
+      <entry><para>Description</para></entry>
+    </row>
+  </tableHeader>
+  <row>
+    <entry><para><legacyBold>Include</legacyBold></para></entry>
+    <entry><para>By default Json.NET will write a field/property value to JSON when serializing if the value is the same as the field/property's default value. The Json.NET deserializer will continue setting a field/property if the JSON value is the same as the default value.</para></entry>
+  </row>
+  <row>
+    <entry><para><legacyBold>Ignore</legacyBold></para></entry>
+    <entry><para>Json.NET will skip writing a field/property value to JSON if the value is the same as the field/property's default value. The Json.NET deserializer will skip setting a .NET object's field/property if the JSON value is the same as the default value.</para></entry>
+  </row>
+</table>
+<para>DefaultValueHandling can also be customized on individual properties with JsonPropertyAttribute.</para>
+
+</content>
+</section>
+
+<section>
+ <title>ObjectCreationHandling</title>
+ <content><para>ObjectCreationHandling controls how objects are created and deserialized to during deserialization.</para>
+ 
+<table>
+  <tableHeader>
+    <row>
+      <entry><para>Member</para></entry>
+      <entry><para>Description</para></entry>
+    </row>
+  </tableHeader>
+  <row>
+    <entry><para><legacyBold>Auto</legacyBold></para></entry>
+    <entry><para>By default Json.NET will attempt to set JSON values onto existing objects and add JSON values to existing collections during deserialization. </para></entry>
+  </row>
+  <row>
+    <entry><para><legacyBold>Reuse</legacyBold></para></entry>
+    <entry><para>Same behaviour as auto.</para></entry>
+  </row>
+  <row>
+    <entry><para><legacyBold>Replace</legacyBold></para></entry>
+    <entry><para>Json.NET will always recreate objects and collections before setting values to them during deserialization.</para></entry>
+  </row>
+</table>
+<para>ObjectCreationHandling can also be customized on individual properties with JsonPropertyAttribute.</para>
+
+</content>
+</section>
+
+<section>
+ <title>TypeNameHandling</title>
+ <content><para>TypeNameHandling controls whether Json.NET includes .NET type names during serialization with a $type property and reads .NET type names from that property to determine what type to create during deserialization.</para>
+ 
+<table>
+  <tableHeader>
+    <row>
+      <entry><para>Member</para></entry>
+      <entry><para>Description</para></entry>
+    </row>
+  </tableHeader>
+  <row>
+    <entry><para><legacyBold>None</legacyBold></para></entry>
+    <entry><para>By default Json.NET does not read or write type names during deserialization.</para></entry>
+  </row>
+  <row>
+    <entry><para><legacyBold>Objects</legacyBold></para></entry>
+    <entry><para>Json.NET will write and use type names for objects but not collections.</para></entry>
+  </row>
+  <row>
+    <entry><para><legacyBold>Arrays</legacyBold></para></entry>
+    <entry><para>Json.NET will write and use type names for collections but not objects.</para></entry>
+  </row>
+  <row>
+    <entry><para><legacyBold>Auto</legacyBold></para></entry>
+    <entry><para>Json.NET will check whether an object/collection matches its declared property and writes the type name if they do not match, e.g. a property with a type of Mammal has a derived instance of Dog assigned. Auto will ensure that type information isn't lost when serializing/deserializing automatically without having to write type names for every object.</para></entry>
+  </row>
+  <row>
+    <entry><para><legacyBold>All</legacyBold></para></entry>
+    <entry><para>Json.NET will write and use type names for objects and collections.</para></entry>
+  </row>
+</table>
+<para>TypeNameHandling can also be customized on individual properties with JsonPropertyAttribute.</para>
+
+</content>
+</section>
+
+<section>
+ <title>TypeNameAssemblyFormat</title>
+ <content><para>TypeNameAssemblyFormat controls how type names are written during serialization.</para>
+ 
+<table>
+  <tableHeader>
+    <row>
+      <entry><para>Member</para></entry>
+      <entry><para>Description</para></entry>
+    </row>
+  </tableHeader>
+  <row>
+    <entry><para><legacyBold>Simple</legacyBold></para></entry>
+    <entry><para>By default Json.NET writes the partial assembly name with the type, e.g. System.Data.DataSet, System.Data. Note that Silverlight and Windows Phone are not able to use this format.</para></entry>
+  </row>
+  <row>
+    <entry><para><legacyBold>Full</legacyBold></para></entry>
+    <entry><para>Json.NET will write the full assembly name, including version number, culture and public key token.</para></entry>
+  </row>
+</table>
+<para>Read more about the valid values at <codeEntityReference>T:System.Runtime.Serialization.Formatters.FormatterAssemblyStyle</codeEntityReference>.</para>
+
+</content>
+</section>
+
+<section>
+ <title>Binder</title>
+ <content><para>The serialization binder is used to resolve type names to a .NET type.</para>
+ <para>Read more about the serialization binder here: <codeEntityReference>T:System.Runtime.Serialization.SerializationBinder</codeEntityReference></para>
+</content>
+</section>
+
+<section>
+ <title>ConstructorHandling</title>
+ <content><para>ConstructorHandling controls how constructors are used when initializing objects during deserialization.</para>
+ 
+<table>
+  <tableHeader>
+    <row>
+      <entry><para>Member</para></entry>
+      <entry><para>Description</para></entry>
+    </row>
+  </tableHeader>
+  <row>
+    <entry><para><legacyBold>Default</legacyBold></para></entry>
+    <entry><para>By default Json.NET will first look for a constructor marked with the JsonConstructorAttribute, then look for a public default constructor
+    (a constructor that doesn't take any arguments), then check if the class has a single public constructor with arguments and finally check for a
+    non-public default constructor. If the class has multiple public constructors with arguments an error will be thrown. This can be fixed by
+    marking one of the constructors with the JsonConstructorAttribute.</para></entry>
+  </row>
+  <row>
+    <entry><para><legacyBold>AllowNonPublicDefaultConstructor</legacyBold></para></entry>
+    <entry><para>Json.NET will use a classes private default constructor before constructors with arguments if available. </para></entry>
+  </row>
+</table>
+
+</content>
+</section>
+
+<section>
+ <title>Converters</title>
+ <content><para>This is the collection of JsonConverters that will be used during serialization and deserialization.</para>
+ <para>JsonConverters allows JSON to be manually written during serialization and read during deserialization.
+ This is useful for particularly complex JSON structures or for when you want to change how a type is serialized.</para>
+ <para>When a JsonConverter has been added to a JsonSerializer it will be checked for every value that is being serialized/deserialized
+ using its CanConvert to see if it should be used. If CanConvert returns true then the JsonConverter will be used to read or write
+ the JSON for that value. Note that while a JsonConverter gives you complete control over that values JSON, many Json.NET serialization
+ features are no longer available like type name and reference handling.</para>
+ <para>To create your own custom converter inherit from the JsonConverter class. Read more about the built-in JsonConverters below:</para>
+
+
+<list class="bullet">
+  <listItem><para><externalLink>
+<linkText>Serializing Dates in JSON</linkText>
+<linkUri>DatesInJSON.htm</linkUri>
+<linkTarget>_self</linkTarget>
+</externalLink></para></listItem>
+  <listItem><para><externalLink>
+<linkText>Converting between JSON and XML</linkText>
+<linkUri>ConvertingJSONandXML.htm</linkUri>
+<linkTarget>_self</linkTarget>
+</externalLink></para></listItem>
+  <listItem><para><externalLink>
+<linkText>CustomCreationConverter</linkText>
+<linkUri>CustomCreationConverter.htm</linkUri>
+<linkTarget>_self</linkTarget>
+</externalLink></para></listItem>
+  <listItem><para><codeEntityReference>T:Newtonsoft.Json.Converters.StringEnumConverter</codeEntityReference></para></listItem>
+</list>
+
+
+</content>
+</section>
+
+<section>
+ <title>ContractResolver</title>
+ <content><para>Internally for every .NET type the JsonSerializer will create a contract of how the type should be serialized and deserialized,
+ based on type metadata and attributes applied to the class. Specifying a custom IContractResolver allows the creation of contracts to be customized.</para>
+ <para>Read more about Contract Resolvers here: <externalLink>
+<linkText>Contract Resolvers</linkText>
+<linkUri>ContractResolver.htm</linkUri>
+<linkTarget>_self</linkTarget>
+</externalLink></para>
+</content>
+</section>
+
+<section>
+ <title>Error</title>
+ <content><para>The Error event can catch errors during serialization and either handle the event and continue with
+ serialization or let the error bubble up and be thrown to the application.</para>
+ <para>Read more about error handling here: <externalLink>
+<linkText>Serialization Error Handling</linkText>
+<linkUri>SerializationErrorHandling.htm</linkUri>
+<linkTarget>_self</linkTarget>
+</externalLink>
+</para>
+</content>
+</section>
+   
+   
+  </developerConceptualDocument>
+</topic>

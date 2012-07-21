@@ -303,5 +303,16 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(1.1m, orderedValues[1]);
       Assert.AreEqual(1.2d, orderedValues[2]);
     }
+
+    [Test]
+    public void WriteSingle()
+    {
+      float f = 5.2f;
+      JValue value = new JValue(f);
+
+      string json = value.ToString(Formatting.None);
+
+      Assert.AreEqual("5.2", json);
+    }
   }
 }

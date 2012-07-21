@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="Introduction" revisionNumber="1">
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!--
+    <summary>
+      <para>Optional summary abstract</para>
+    </summary>
+    -->
+    <introduction>
+      <para>Json.NET is a popular high-performance JSON framework for .NET</para>
+    </introduction>
+    <!-- Optional procedures followed by optional code example but must have
+         at least one procedure or code example -->
+<section>
+ <title>Benefits and Features</title>
+<content>
+<list class="bullet">
+   <listItem>
+        <para>Flexible JSON serializer for converting between .NET objects and JSON</para>
+    </listItem>
+   <listItem>
+        <para>LINQ to JSON for manually reading and writing JSON </para>
+    </listItem>
+   <listItem>
+        <para>High performance, faster than .NET's built-in JSON serializers</para>
+    </listItem>
+   <listItem>
+        <para>Write indented, easy to read JSON</para>
+    </listItem>
+   <listItem>
+        <para>Convert JSON to and from XML</para>
+    </listItem>
+   <listItem>
+        <para>Supports .NET 2, .NET 3.5, .NET 4, Silverlight, Windows Phone and Windows 8 Metro</para>
+    </listItem>
+
+</list>
+<para>The JSON serializer is a good choice when the JSON you are reading or writing maps closely to a .NET class.</para>
+<para>LINQ to JSON is good for situations where you are only interested in
+getting values from JSON, you don't have a class to serialize or deserialize to, 
+or the JSON is radically different from your class and you need to manually read 
+and write from your objects.</para>
+</content>
+</section>
+
+<section>
+ <title>History</title>
+ <content><para>Json.NET grew out of projects I was working on in late 2005 involving JavaScript,
+            AJAX and .NET. At the time there were no libraries for working with JavaScript in
+            .NET so I began to grow my own.</para>
+ <para>Starting out as a couple of static methods for escaping JavaScript strings, Json.NET
+            evolved as features were added. To add support for reading JSON a major refactor
+            was required and Json.NET will split into the three major classes it still uses
+            today, JsonReader, JsonWriter and JsonSerializer.</para>
+ <para>Json.NET was first released in June 2006. Since then Json.NET has been downloaded
+            thousands of times by developers and is used in a number of major projects open
+            source projects including <externalLink>
+                <linkText>MonoRail</linkText>
+                <linkUri>http://www.castleproject.org/projects/monorail</linkUri>
+                <linkTarget>_blank</linkTarget>
+            </externalLink>,
+            Castle Project's MVC web framework, and <externalLink>
+                <linkText>Mono</linkText>
+                <linkUri>http://www.mono-project.com/</linkUri>
+                <linkTarget>_blank</linkTarget>
+            </externalLink>,
+            an open source implementation
+            of the .NET framework.</para>
+  <para><externalLink>
+                <linkText>James Newton-King</linkText>
+                <linkUri>http://twitter.com/jamesnk</linkUri>
+                <linkTarget>_blank</linkTarget>
+            </externalLink></para>
+</content>
+</section>
+
+<section>
+ <title>Donate</title>
+ <content><para>Json.NET is a free open source project developed in my own time.</para>
+ <para>I really appreciate your feedback and support for Json.NET and its future development.</para></content>
+</section>
+
+ <markup>
+ <p>
+ <a target="_blank" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=james%40newtonking%2ecom&amp;item_name=Supporting%20Json%2eNET&amp;no_shipping=0&amp;no_note=1&amp;tax=0&amp;currency_code=USD&amp;lc=US&amp;bn=PP%2dDonationsBF&amp;charset=UTF%2d8">
+            <img style="border-width:0;" alt="Donate" src="../donate.gif" />
+            </a>
+ </p>
+ </markup>
+
+  </developerConceptualDocument>
+</topic>

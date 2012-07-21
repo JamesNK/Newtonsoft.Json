@@ -464,7 +464,7 @@ namespace Newtonsoft.Json.Bson
     /// <summary>
     /// Writes a <see cref="T:Byte[]"/> value that represents a BSON object id.
     /// </summary>
-    /// <param name="value"></param>
+    /// <param name="value">The Object ID value to write.</param>
     public void WriteObjectId(byte[] value)
     {
       ValidationUtils.ArgumentNotNull(value, "value");

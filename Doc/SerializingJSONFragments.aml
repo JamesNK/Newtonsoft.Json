@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="SerializingJSONFragments" revisionNumber="1">
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <introduction>
+      <para>Often when working with large JSON documents you're only interested in a small
+      fragment of information. This scenario can be annoying when you want to serialize
+      that Json.NET into .NET objects because you have to define .NET classes for the
+      entire JSON result.</para>
+      <para>With Json.NET it is easy to get around this problem. Using LINQ to JSON you
+      can extract the pieces of JSON you want to serialize before passing them to the
+      Json.NET serializer.</para>
+
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="SerializingPartialJsonFragmentsObject" title="Fragments Object" />
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="SerializingPartialJsonFragmentsExample" title="Serializing Partial JSON Fragment Example" />
+
+    </introduction>
+  </developerConceptualDocument>
+</topic>

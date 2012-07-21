@@ -1,0 +1,288 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="SerializationGuide" revisionNumber="1">
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!--
+    <summary>
+      <para>Optional summary abstract</para>
+    </summary>
+    -->
+    <introduction>
+      <!-- Uncomment this to generate an outline of the section and sub-section
+           titles.  Specify a numeric value as the inner text to limit it to
+           a specific number of sub-topics when creating the outline.  Specify
+           zero (0) to limit it to top-level sections only.  -->
+      <!-- <autoOutline /> -->
+      <para> The Json.NET serializer can serialize a wide variety of .NET objects. This guide looks at how it works, first at a high level and then in more detail.</para>
+    </introduction>
+    <!-- Add one or more top-level section elements.  These are collapsible.
+         If using <autoOutline />, add an address attribute to identify it
+         and specify a title so that it can be jumped to with a hyperlink. -->
+    <section>
+      <title>Summary</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+        <autoOutline /> -->
+        <para>At a high level, the Json.NET serializer will convert primitive .NET values into primitive JSON values,
+        .NET arrays and collections to JSON arrays and everything else to JSON objects.</para>
+        <para>Json.NET will throw an error if it encounters incorrect JSON when deserializing a value. For example if
+        the serializer encounters a JSON property with an array of values and the type of matching .NET property is not
+        a collection then an error will be thrown, and vice-versa.</para>
+      </content>
+    </section>
+    <section>
+      <title>Complex Types</title>
+<content>
+<table>
+  <tableHeader>
+    <row>
+      <entry><para>.NET</para></entry>
+      <entry><para>JSON</para></entry>
+    </row>
+  </tableHeader>
+  <row>
+    <entry><para><legacyBold>IList, IEnumerable, IList&lt;T&gt;, Array</legacyBold></para></entry>
+    <entry><para>Array</para></entry>
+  </row>
+  <row>
+    <entry><para><legacyBold>IDictionary, IDictionary&lt;TKey, TValue&gt;</legacyBold></para></entry>
+    <entry><para>Object</para></entry>
+  </row>
+  <row>
+    <entry><para><legacyBold>Object (more detail below)</legacyBold></para></entry>
+    <entry><para>Object</para></entry>
+  </row>
+</table>
+</content>
+    </section>
+    <section>
+      <title>Primitive Types</title>
+<content>
+<table>
+  <tableHeader>
+    <row>
+      <entry><para>.NET</para></entry>
+      <entry><para>JSON</para></entry>
+    </row>
+  </tableHeader>
+  <row>
+    <entry><para><legacyBold>String</legacyBold></para></entry>
+    <entry><para>String</para></entry>
+  </row>
+  <row>
+    <entry><para><legacyBold>Byte</legacyBold></para>
+<para><legacyBold>SByte</legacyBold></para>
+<para><legacyBold>UInt16</legacyBold></para>
+<para><legacyBold>Int16</legacyBold></para>
+<para><legacyBold>UInt32</legacyBold></para>
+<para><legacyBold>Int32</legacyBold></para>
+<para><legacyBold>UInt64</legacyBold></para>
+<para><legacyBold>Int64</legacyBold></para></entry>
+    <entry><para>Integer</para></entry>
+  </row>
+  <row>
+    <entry>
+    <para><legacyBold>Float</legacyBold></para>
+    <para><legacyBold>Double</legacyBold></para>
+    <para><legacyBold>Decimal</legacyBold></para>
+    </entry>
+    <entry><para>Float</para></entry>
+  </row>
+  <row>
+    <entry>
+    <para><legacyBold>Enum</legacyBold></para>
+    </entry>
+    <entry><para>Integer (can be the enum value name with <codeEntityReference>T:Newtonsoft.Json.Converters.StringEnumConverter</codeEntityReference>)</para></entry>
+  </row>
+  <row>
+    <entry>
+    <para><legacyBold>DateTime</legacyBold></para>
+    </entry>
+    <entry><para>String (<externalLink>
+<linkText>Serializing Dates in JSON</linkText>
+<linkUri>DatesInJSON.htm</linkUri>
+<linkTarget>_self</linkTarget>
+</externalLink>)</para></entry>
+  </row>
+  <row>
+    <entry>
+    <para><legacyBold>Byte[]</legacyBold></para>
+    </entry>
+    <entry><para>String (base 64 encoded)</para></entry>
+  </row>
+  <row>
+    <entry>
+    <para><legacyBold>Type</legacyBold></para>
+    </entry>
+    <entry><para>String (type name)</para></entry>
+  </row>
+  <row>
+    <entry>
+    <para><legacyBold>Guid</legacyBold></para>
+    </entry>
+    <entry><para>String</para></entry>
+  </row>
+  <row>
+    <entry>
+    <para><legacyBold><codeEntityReference>T:System.ComponentModel.TypeConverter</codeEntityReference> (convertible to String)</legacyBold></para>
+    </entry>
+    <entry><para>String</para></entry>
+  </row>
+</table>
+</content>
+    </section>
+
+    <section>
+      <title>Breakdown of Type Serialization</title>
+      <content>
+        <autoOutline />
+		</content>
+		<sections>
+    <section address="Objects">
+      <title>Objects</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+        <autoOutline /> -->
+        <para>.NET types that don't fall into any other category listed below
+        (i.e. aren't lists, dictionaries, dynamic, implement ISerializable, etc)
+        are serialized as JSON objects.</para>
+        <para>By default types are serialized in opt-out mode. What that means is all public fields and properties with
+        getters are automatically serialized to JSON and members that shouldn't be serialized are opted-out using the
+        JsonIgnoreAttribute. To serialize private members the JsonPropertyAttribute can be placed on private fields and
+        properties or the DefaultMembersSearchFlags can be changed on DefaultContractResolver to change how members are
+        serialized on all types.</para>
+        <para>Types can also be serialized using opt-in mode. Only properties and fields that have a JsonPropertyAttribute
+        or DataMemberAttribute on them will be serialized. Opt-in mode for an object is specified using the JsonObjectAttribute
+        on the class.</para>
+        <para>Finally types can be serialized using a fields mode. All fields, both public and private, are serialized
+        and properties are ignored. This can be specified by setting MemberSerialization.Fields on a type with the JsonObject
+        attribute or by the .NET <codeEntityReference>T:System.SerializableAttribute</codeEntityReference>
+        and setting IgnoreSerializableAttribute on DefaultContractResolver to false.</para>
+      </content>
+    </section>   
+
+    <section address="Lists">
+      <title>IEnumerable, Lists and Arrays</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+        <autoOutline /> -->
+        <para> .NET lists (types that inherit from IEnumerable) and .NET arrays are converted to JSON arrays. Because JSON
+        arrays only support a range of values and not properties, any additional properties and fields declared on .NET
+        collections are not serialized. In situations where a JSON array is not wanted the JsonObjectAttribute can be placed
+        on a .NET type that implements IEnumerable to force the type to be serialized as a JSON object instead.</para>
+        <para>JsonArrayAttribute has options on it to customize the JsonConverter, type name handling and reference handling
+        that are applied to collection items.</para>
+        <para>Note that if TypeNameHandling or PreserveReferencesHandling has been enabled for JSON arrays on the serializer
+        then JSON arrays are wrapped it a containing object. The object will have the type name/reference properties and a
+        $values property which will have the collection data.</para>
+        <para>When deserializing if a member is typed as the interface IList&lt;T&gt; then it will be deserialized as a
+        List&lt;T&gt;.</para>
+        <para>Read more about serializing collections here: <externalLink>
+<linkText>Serializing Collections</linkText>
+<linkUri>SerializingCollections.htm</linkUri>
+<linkTarget>_self</linkTarget>
+</externalLink></para>
+      </content>
+    </section>   
+
+    <section address="Dictionarys">
+      <title>Dictionarys and Hashtables</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+        <autoOutline /> -->
+        <para>.NET dictionaries (types that inherit from IDictionary) are converted to JSON objects. Note that only the
+        dictionary name/values will be written to the JSON object when serializing and properties on the JSON object will
+        be added to the dictionary's name/values when deserializing. Additional members on the .NET dictionary are ignored
+        during serialization.</para>
+        <para>JsonDictionaryAttribute has options on it to customize the JsonConverter, type name handling and reference
+        handling that are applied to collection items.</para>
+        <para>When deserializing if a member is typed as the interface IDictionary&lt;TKey, TValue&gt; then it will be
+        deserialized as a Dictionary&lt;TKey, TValue&gt;.</para>
+        <para>Read more about serializing collections here: <externalLink>
+<linkText>Serializing Collections</linkText>
+<linkUri>SerializingCollections.htm</linkUri>
+<linkTarget>_self</linkTarget>
+</externalLink></para>
+      </content>
+    </section>
+
+    <section address="Untyped_Objects">
+      <title>Untyped Objects</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+        <autoOutline /> -->
+        <para>.NET properties on a class that don't specify a type (i.e. they are just object) are serialized as usual. When
+        untyped properties are deserialized the serializer has no way to know what type to create (unless type name handling
+        is enabled and the JSON contains the type names).</para>
+        <para>For these untyped properties the Json.NET serializer will read the JSON into LINQ to JSON objects and set them
+        to the property. JObject will be created for JSON objects, JArray will be created for JSON arrays and JValue for
+        primitive JSON values.</para>
+      </content>
+    </section>
+
+    <section address="Dynamic">
+      <title>Dynamic</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+        <autoOutline /> -->
+        <para>There are two different usages of dynamic (introduced in .NET 4) in .NET. The first are .NET properties with a
+        type of dynamic. Dynamic proeprties behave like properties declared as object, any value can be assigned to it, but
+        the difference being that properties and methods can be called on a dynamic property without casting. In Json.NET
+        dynamic properties are serialized and deserialized exactly the same as untyped objects: because dynamic isn't an actual
+        type Json.NET falls back to deserializing the JSON as LINQ to JSON objects.</para>
+        <para>The second usage of dynamic in .NET are classes that implement
+        <codeEntityReference>T:System.Dynamic.IDynamicMetaObjectProvider</codeEntityReference>. This interface lets
+        the implementor create dynamic objects that intercept the property and method calls on an object and use them.
+        <codeEntityReference>T:System.Dynamic.ExpandoObject</codeEntityReference>
+        is a good example of a dynamic object.</para>
+        <para>Dynamic objects are serialized as JSON objects. A property is written for every member name returned by
+        <codeEntityReference>M:System.Dynamic.DynamicMetaObject.GetDynamicMemberNames</codeEntityReference>.</para>
+        <para>When deserializing dynamic objects the serializer first attempts to set JSON property values on a normal .NET
+        member with the matching name. If no .NET member is found with the property name then the serializer will call
+        SetMember on the dynamic object. Because there is no type information for dynamic members on a dynamic object the
+        values assigned to them will be LINQ to JSON objects.</para>
+      </content>
+    </section>
+
+    <section address="ISerializable">
+      <title>ISerializable</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+        <autoOutline /> -->
+        <para>Types that implement ISerializable are serialized as JSON objects. When serializing only the values returned from
+        ISerializable.GetObjectData are used; members on the type are ignored. When deserializing the constructor with a
+        SerializationInfo and StreamingContext is called, passing the JSON object's values.</para>
+        <para>In situations where this behavior is not wanted the JsonObjectAttribute can be placed on a .NET type that
+        implements ISerializable to force it to be serialized as a normal JSON object.</para>
+      </content>
+    </section>
+
+    <section address="LINQ">
+      <title>LINQ to JSON</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+        <autoOutline /> -->
+        <para>LINQ to JSON types (e.g. JObject, JArray) are automatically serialized and deserialized to their equivalent JSON
+        when encountered by the Json.NET serializer.</para>
+      </content>
+    </section>   
+
+    <section address="JsonConverter">
+      <title>JsonConverter</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+        <autoOutline /> -->
+        <para>Serialization of values that are convertible by a JsonConverter (i.e. CanConvert returns true for its type) is
+        completely overridden by the JsonConverter. The test to see whether a value can be converted by a JsonSerializer takes
+        precedence over all other tests.</para>
+        <para> JsonConverters can be defined and specified in a number of places: in an attribute on a member, in an attribute
+        on a class and added to the JsonSerializer's converters collection. The priority of which JsonConverter is used is the
+        JsonConverter defined by attribute on a member then the JsonConverter defined by an attribute on a class and finally
+        any converters passed to the JsonSerializer.</para>
+      </content>
+    </section>
+    
+      </sections>
+    </section>    
+    
+  </developerConceptualDocument>
+</topic>

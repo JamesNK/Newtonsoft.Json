@@ -40,9 +40,6 @@ namespace Newtonsoft.Json.Converters
   /// <summary>
   /// Converts an <see cref="Enum"/> to and from its name string value.
   /// </summary>
-  /// <summary>
-  /// Converts an <see cref="Enum"/> to and from its name string value.
-  /// </summary>
   public class StringEnumConverter : JsonConverter
   {
     private readonly Dictionary<Type, BidirectionalDictionary<string, string>> _enumMemberNamesPerType = new Dictionary<Type, BidirectionalDictionary<string, string>>();

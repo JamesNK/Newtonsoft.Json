@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="ConvertingJSONandXML" revisionNumber="1">
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <introduction>
+      <para>Json.NET supports converting JSON to XML and vice versa using the
+      <codeEntityReference>T:Newtonsoft.Json.Converters.XmlNodeConverter</codeEntityReference>.</para>
+      <para>Elements, attributes, text, comments, character data, processing instructions,
+      namespaces and the XML declaration are all preserved when converting between the two. The
+      only caveat is that it is possible to lose the order of differently named nodes at the
+      same level when they are grouped together into an array.</para>
+    </introduction>
+    <section>
+      <title>Conversion Rules</title>
+      <content>
+   
+<list class="bullet">
+  <listItem><para>Elements remain unchanged.</para></listItem>
+  <listItem><para>Attributes are prefixed with an @ and should be at the start of the object.</para></listItem>
+  <listItem><para>Single child text nodes are a value directly against an element, otherwise they are accessed via #text.</para></listItem>
+  <listItem><para>The XML declaration and processing instructions are prefixed with ?.</para></listItem>
+  <listItem><para>Charater data, comments, whitespace and significate whitespace nodes are accessed via
+  #cdata-section, #comment, #whitespace and #significate-whitespace respectively. </para></listItem>
+  <listItem><para>Multiple nodes with the same name at the same level are grouped together into an array.</para></listItem>
+  <listItem><para>Empty elements are null.</para></listItem>
+</list>
+
+      </content>
+    </section>
+    <section>
+      <title>SerializeXmlNode</title>
+      <content>
+   
+       <para>The JsonConvert has two helper methods for converting between JSON and XML. The first is
+       <codeEntityReference>Overload:Newtonsoft.Json.JsonConvert.SerializeXmlNode</codeEntityReference>.
+       This method takes an XmlNode and serializes it to JSON text.</para>
+
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\ConvertingJsonAndXmlTests.cs" region="SerializeXmlNode" title="Converting XML to JSON with SerializeXmlNode" />
+
+      </content>
+    </section>
+    <section>
+      <title>DeserializeXmlNode</title>
+      <content>
+   
+       <para>The second helper method on JsonConvert is
+       <codeEntityReference>Overload:Newtonsoft.Json.JsonConvert.DeserializeXmlNode</codeEntityReference>.
+       This method takes JSON text and deserializes it into a XmlNode.</para>
+   
+       <para>Because valid XML must have one root element the JSON passed to DeserializeXmlNode should
+       have one property in the root JSON object. If the root JSON object has multiple properties then
+       the overload that also takes an element name should be used. A root element with that name will
+       be inserted into the deserialized XmlNode.</para>
+
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\ConvertingJsonAndXmlTests.cs" region="DeserializeXmlNode" title="Converting JSON to XML with DeserializeXmlNode" />
+
+      </content>
+    </section>
+  </developerConceptualDocument>
+</topic>

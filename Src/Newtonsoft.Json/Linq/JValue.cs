@@ -89,6 +89,15 @@ namespace Newtonsoft.Json.Linq
     /// Initializes a new instance of the <see cref="JValue"/> class with the given value.
     /// </summary>
     /// <param name="value">The value.</param>
+    public JValue(float value)
+      : this(value, JTokenType.Float)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JValue"/> class with the given value.
+    /// </summary>
+    /// <param name="value">The value.</param>
     public JValue(DateTime value)
       : this(value, JTokenType.Date)
     {
@@ -531,7 +540,10 @@ namespace Newtonsoft.Json.Linq
           writer.WriteValue(Convert.ToInt64(_value, CultureInfo.InvariantCulture));
           return;
         case JTokenType.Float:
-          writer.WriteValue(Convert.ToDouble(_value, CultureInfo.InvariantCulture));
+          if (_value is float)
+            writer.WriteValue(_value);
+          else
+            writer.WriteValue(Convert.ToDouble(_value, CultureInfo.InvariantCulture));
           return;
         case JTokenType.String:
           writer.WriteValue((_value != null) ? _value.ToString() : null);

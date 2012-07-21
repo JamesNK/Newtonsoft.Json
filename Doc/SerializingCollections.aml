@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="SerializingCollections" revisionNumber="1">
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!--
+    <summary>
+      <para>Optional summary abstract</para>
+    </summary>
+    -->
+    <introduction>
+      <!-- Uncomment this to generate an outline of the section and sub-section
+           titles.  Specify a numeric value as the inner text to limit it to
+           a specific number of sub-topics when creating the outline.  Specify
+           zero (0) to limit it to top-level sections only.  -->
+      <!-- <autoOutline /> -->
+      <para>Json.NET has excellent support for serializing and deserializing
+      collections of objects.</para>
+    </introduction>
+    <!-- Add one or more top-level section elements.  These are collapsible.
+         If using <autoOutline />, add an address attribute to identify it
+         and specify a title so that it can be jumped to with a hyperlink. -->
+    <section>
+      <title>Serializing Collections</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+        <autoOutline /> -->
+        <para>To serialize a collection - a generic list, array, dictionary, or
+        your own custom collection - simply call the serializer with the object
+        you want to get JSON for. Json.NET will serialize the collection and all
+        of the values it contains.</para>
+
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="SerializingCollectionsSerializing" title="Serializing Collections" />
+      </content>
+    </section>
+    <section>
+      <title>Deserializing Collections</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+        <autoOutline /> -->
+        <para>To deserialize JSON into a .NET collection just specify the collection
+        type you want to deserialize to. Json.NET supports a wide range of collection
+        types.</para>
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="SerializingCollectionsDeserializing" title="Deserializing Collections" />
+      </content>
+    </section>
+    <section>
+      <title>Deserializing Dictionaries</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+        <autoOutline /> -->
+        <para>Using Json.NET you can also deserialize a JSON object into a .NET
+        generic dictionary. The JSON object's property names and values will be
+        added to the dictionary.</para>
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="SerializingCollectionsDeserializingDictionaries" title="Deserializing Dictionaries" />
+      </content>
+    </section>
+  </developerConceptualDocument>
+</topic>

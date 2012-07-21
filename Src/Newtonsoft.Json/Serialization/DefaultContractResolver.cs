@@ -486,7 +486,7 @@ namespace Newtonsoft.Json.Serialization
     /// Resolves the default <see cref="JsonConverter" /> for the contract.
     /// </summary>
     /// <param name="objectType">Type of the object.</param>
-    /// <returns></returns>
+    /// <returns>The contract's default <see cref="JsonConverter" />.</returns>
     protected virtual JsonConverter ResolveContractConverter(Type objectType)
     {
       return JsonTypeReflector.GetJsonConverter(objectType.GetCustomAttributeProvider(), objectType);

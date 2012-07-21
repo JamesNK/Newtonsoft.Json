@@ -19,7 +19,7 @@
     <HtmlHelpName>Documentation</HtmlHelpName>
     <ProjectSummary>
     </ProjectSummary>
-    <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, Namespace, TypeParameter</MissingTags>
+    <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, Namespace, TypeParameter, AutoDocumentDispose</MissingTags>
     <VisibleItems>InheritedMembers, InheritedFrameworkMembers, Protected, SealedProtected</VisibleItems>
     <HtmlHelp1xCompilerPath>
     </HtmlHelp1xCompilerPath>
@@ -31,10 +31,10 @@
     </WorkingPath>
     <BuildLogFile>
     </BuildLogFile>
-    <HelpFileFormat>HtmlHelp1, MSHelpViewer, Website</HelpFileFormat>
-    <FrameworkVersion>.NET 3.5</FrameworkVersion>
-    <HelpTitle>Json.NET - Quick Starts &amp;amp%3b API Documentation</HelpTitle>
-    <PresentationStyle>Prototype</PresentationStyle>
+    <HelpFileFormat>Website</HelpFileFormat>
+    <FrameworkVersion>.NET 4.0.30319</FrameworkVersion>
+    <HelpTitle>Json.NET - Documentation</HelpTitle>
+    <PresentationStyle>vs2005</PresentationStyle>
     <NamingMethod>MemberName</NamingMethod>
     <DocumentationSourcePath>..\Src\Newtonsoft.Json\bin\Release</DocumentationSourcePath>
     <DocumentationSources>
@@ -52,6 +52,71 @@
       <NamespaceSummaryItem name="Newtonsoft.Json.Utilities" isDocumented="False" />
       <NamespaceSummaryItem name="Newtonsoft.Json.Bson" isDocumented="True">The &lt;b&gt;Newtonsoft.Json.Linq&lt;/b&gt; namespace provides classes that are used to implement BSON.</NamespaceSummaryItem>
     </NamespaceSummaries>
+    <RootNamespaceContainer>True</RootNamespaceContainer>
+    <RootNamespaceTitle>API Reference</RootNamespaceTitle>
+    <ComponentConfigurations>
+      <ComponentConfig id="Post-transform Component" enabled="True">
+        <component id="Post-transform Component" type="SandcastleBuilder.Components.PostTransformComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
+          <!-- Code colorizer files (required).
+					 Attributes:
+							Stylesheet file (required)
+							Script file (required)
+							"Copy" image file (required) -->
+          <colorizer stylesheet="{@SHFBFolder}Colorizer\highlight.css" scriptFile="{@SHFBFolder}Colorizer\highlight.js" copyImage="{@SHFBFolder}Colorizer\CopyCode.gif" />
+          <!-- Base output paths for the files (required).  These should match the parent folder of the output path
+					 of the HTML files (see each of the SaveComponent instances in the configuration files). -->
+          <outputPaths>
+				{@HelpFormatOutputPaths}
+			</outputPaths>
+          <!-- Logo image file (optional).  Filename is required. The height, width, altText, placement, and
+					 alignment attributes are optional. -->
+          <logoFile filename="D:\Development\Source\Json\Newtonsoft.Json\Doc\logo.jpg" height="0" width="0" altText="Json.NET" placement="left" alignment="left" />
+        </component>
+      </ComponentConfig>
+<ComponentConfig id="Code Block Component" enabled="True"><component id="Code Block Component" type="SandcastleBuilder.Components.CodeBlockComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
+  <basePath value="{@HtmlEncProjectFolder}" />
+  <languageFilter value="true" />
+  <allowMissingSource value="false" />
+  <removeRegionMarkers value="false" />
+  <colorizer syntaxFile="{@SHFBFolder}Colorizer\highlight.xml" styleFile="{@SHFBFolder}Colorizer\highlight.xsl" copyImageUrl="../icons/CopyCode.gif" language="cs" tabSize="0" numberLines="true" outlining="false" keepSeeTags="false" defaultTitle="true" />
+</component></ComponentConfig>
+<ComponentConfig id="Cached Reflection Index Data" enabled="True"><component id="Cached Reflection Index Data" type="SandcastleBuilder.Components.CachedCopyFromIndexComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
+<index name="reflection" value="/reflection/apis/api" key="@id" cache="10">
+  <cache base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" cacheFile="{@LocalDataFolder}Cache\Reflection.cache" />
+  <data files="reflection.xml" />
+</index>
+<copy name="reflection" source="*" target="/document/reference" />
+</component></ComponentConfig>
+<ComponentConfig id="Cached MSDN URL References" enabled="True"><component id="Cached MSDN URL References" type="SandcastleBuilder.Components.CachedResolveReferenceLinksComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll" locale="{@Locale}" linkTarget="{@SdkLinkTarget}">
+<helpOutput format="HtmlHelp1">
+  <cache filename="{@LocalDataFolder}Cache\MsdnUrl.cache" />
+  <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@HtmlSdkLinkType}" />
+  <targets files="reflection.xml" type="Local" />
+</helpOutput>
+<helpOutput format="MSHelp2">
+  <cache filename="{@LocalDataFolder}Cache\MsdnUrl.cache" />
+  <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@MSHelp2SdkLinkType}" />
+  <targets files="reflection.xml" type="Index" />
+</helpOutput>
+<helpOutput format="MSHelpViewer">
+  <cache filename="{@LocalDataFolder}Cache\MsdnUrl.cache" />
+  <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@MSHelpViewerSdkLinkType}" />
+  <targets files="reflection.xml" type="Id" />
+</helpOutput>
+<helpOutput format="Website">
+  <cache filename="{@LocalDataFolder}Cache\MsdnUrl.cache" />
+  <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@WebsiteSdkLinkType}" />
+  <targets files="reflection.xml" type="Local" />
+</helpOutput>
+</component></ComponentConfig>
+<ComponentConfig id="Cached Framework Comments Index Data" enabled="True"><component id="Cached Framework Comments Index Data" type="SandcastleBuilder.Components.CachedCopyFromIndexComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
+<index name="comments" value="/doc/members/member" key="@name" cache="100">
+				{@CachedFrameworkCommentList}
+				{@CommentFileList}
+			</index>
+<copy name="comments" source="*" target="/document/comments" />
+</component></ComponentConfig></ComponentConfigurations>
+    <IndentHtml>False</IndentHtml>
   </PropertyGroup>
   <!-- There are no properties for these two groups but they need to appear in
        order for Visual Studio to perform the build. -->
@@ -60,30 +125,36 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
-    <SiteMap Include="doc.sitemap" />
+    <Content Include="donate.gif" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="CustomCreationConverter.html" />
-    <Content Include="ContractResolver.html" />
-    <Content Include="custom.css" />
-    <Content Include="ConvertingJSONandXML.html" />
-    <Content Include="SerializationSettings.html" />
-    <Content Include="SerializationGuide.html" />
-    <Content Include="SerializingJSONFragments.html" />
-    <Content Include="SelectToken.html" />
-    <Content Include="ReducingSerializedJSONSize.html" />
-    <Content Include="donate.gif" />
-    <Content Include="styles.css" />
-    <Content Include="ReadingWritingJSON.html" />
-    <Content Include="LINQtoJSON.html" />
-    <Content Include="PreserveObjectReferences.html" />
-    <Content Include="SerializationErrorHandling.html" />
-    <Content Include="SerializationCallbacks.html" />
-    <Content Include="SerializingCollections.html" />
-    <Content Include="DatesInJSON.html" />
-    <Content Include="SerializationAttributes.html" />
-    <Content Include="SerializingJSON.html" />
-    <Content Include="Introduction.html" />
+    <None Include="CustomCreationConverter.aml" />
+    <None Include="ContractResolver.aml" />
+    <None Include="ConvertingJSONandXML.aml" />
+    <None Include="ReadingWritingJSON.aml" />
+    <None Include="SelectToken.aml" />
+    <None Include="LINQtoJSON.aml" />
+    <None Include="SerializingJSONFragments.aml" />
+    <None Include="ReducingSerializedJSONSize.aml" />
+    <None Include="DatesInJSON.aml" />
+    <None Include="SerializingCollections.aml" />
+    <None Include="PreserveObjectReferences.aml" />
+    <None Include="SerializationErrorHandling.aml" />
+    <None Include="SerializationCallbacks.aml" />
+    <None Include="SerializationAttributes.aml" />
+    <None Include="SerializationGuide.aml" />
+    <None Include="SerializationSettings.aml" />
+    <None Include="SerializingJSON.aml" />
+    <None Include="Introduction.aml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ContentLayout Include="doc.content" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="logo.jpg">
+      <ImageId>logo</ImageId>
+      <AlternateText>logo</AlternateText>
+    </Image>
   </ItemGroup>
   <!-- Import the SHFB build targets -->
   <Import Project="$(SHFBROOT)\SandcastleHelpFileBuilder.targets" />
