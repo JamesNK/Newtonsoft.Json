@@ -27,7 +27,7 @@
     <section>
       <title>PreserveReferencesHandling</title>
       <content>
-        <para>Settings PreserveReferencesHandling will track object references
+        <para>Setting <codeEntityReference>T:Newtonsoft.Json.PreserveReferencesHandling</codeEntityReference> will track object references
         when serializing and deserializing JSON.</para>
         
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="PreservingObjectReferencesOn" title="Preserve Object References On" />       
@@ -68,5 +68,8 @@
         the JsonSerializer.</para>
       </content>
     </section>
+    <relatedTopics>
+      <codeEntityReference>T:Newtonsoft.Json.PreserveReferencesHandling</codeEntityReference>
+    </relatedTopics>
   </developerConceptualDocument>
 </topic>

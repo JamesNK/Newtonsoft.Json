@@ -46,8 +46,7 @@
         objects are
         <codeEntityReference>M:Newtonsoft.Json.Linq.JToken.Children</codeEntityReference>
         and
-        <codeEntityReference>P:Newtonsoft.Json.Linq.JToken.Item(System.Object)</codeEntityReference>
-        .</para>
+        <codeEntityReference>P:Newtonsoft.Json.Linq.JToken.Item(System.Object)</codeEntityReference>.</para>
         
         <para>Children returns all the children of that object. If it is a
         JObject it will return a collection of properties to work with and if
@@ -68,5 +67,16 @@
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonDeserializeExample" title="Deserializing Using LINQ Example" />
       </content>
     </section>
+    <relatedTopics>
+      <externalLink>
+        <linkText>Querying LINQ to JSON with SelectToken</linkText>
+        <linkUri>SelectToken.htm</linkUri>
+        <linkTarget>_self</linkTarget>
+      </externalLink>
+
+      <codeEntityReference>T:Newtonsoft.Json.Linq.JObject</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.Linq.JArray</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.Linq.JValue</codeEntityReference>
+    </relatedTopics>
   </developerConceptualDocument>
 </topic>

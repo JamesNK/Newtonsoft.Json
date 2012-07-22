@@ -94,5 +94,14 @@
 
       </content>
     </section>
+    <relatedTopics>
+      <externalLink>
+        <linkText>Serialization Attributes</linkText>
+        <linkUri>SerializationAttributes.htm</linkUri>
+        <linkTarget>_self</linkTarget>
+      </externalLink>
+      <codeEntityReference>E:Newtonsoft.Json.JsonSerializer.Error</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.Serialization.OnErrorAttribute</codeEntityReference>
+    </relatedTopics>
   </developerConceptualDocument>
 </topic>

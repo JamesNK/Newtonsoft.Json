@@ -33,5 +33,14 @@
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="SelectTokenLinq" title="SelectToken With LINQ Example" />
       </content>
     </section>
+    <relatedTopics>
+      <externalLink>
+        <linkText>LINQ to JSON</linkText>
+        <linkUri>LINQtoJSON.htm</linkUri>
+        <linkTarget>_self</linkTarget>
+      </externalLink>
+
+      <codeEntityReference>Overload:Newtonsoft.Json.Linq.JToken.SelectToken</codeEntityReference>
+    </relatedTopics>
   </developerConceptualDocument>
 </topic>

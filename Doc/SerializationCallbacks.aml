@@ -47,22 +47,12 @@ serialization lifecycle, decorate a method with the appropraite attribute
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="SerializationCallbacksExample" title="Serialization Callback Example" />
 
       </content>
-      <!-- If a section contains a sections element, its content creates
-           sub-sections.  These are not collapsible.
-      <sections>
-          <section address="SubSection1">
-              <title>Sub-section 1</title>
-              <content>
-                  <para>Sub-section content.</para>
-              </content>
-          </section>
-          <section address="SubSection2">
-              <title>Sub-section 2</title>
-              <content>
-                  <para>Sub-section content.</para>
-              </content>
-          </section>
-      </sections> -->
     </section>
+    <relatedTopics>
+      <codeEntityReference>T:System.Runtime.Serialization.OnSerializingAttribute</codeEntityReference>
+      <codeEntityReference>T:System.Runtime.Serialization.OnSerializedAttribute</codeEntityReference>
+      <codeEntityReference>T:System.Runtime.Serialization.OnDeserializingAttribute</codeEntityReference>
+      <codeEntityReference>T:System.Runtime.Serialization.OnDeserializedAttribute</codeEntityReference>
+    </relatedTopics>
   </developerConceptualDocument>
 </topic>

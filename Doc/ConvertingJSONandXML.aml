@@ -24,6 +24,12 @@
   <listItem><para>Empty elements are null.</para></listItem>
 </list>
 
+<alert class="note">
+  <para>The version of Json.NET being used in your application will change what XML conversion methods are available.
+  SerializeXmlNode/DeserializeXmlNode are available when the framework supports XmlDocument,
+  SerializeXNode/DeserializeXNode are available when the framework supports XDocument.</para>
+</alert>
+
       </content>
     </section>
     <section>
@@ -36,7 +42,16 @@
 
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\ConvertingJsonAndXmlTests.cs" region="SerializeXmlNode" title="Converting XML to JSON with SerializeXmlNode" />
 
-      </content>
+       <para>Because multiple nodes with a the same name at the same level are grouped together into an array
+       the convernsion process can produce different JSON depending on the number of nodes. For example if some
+       XML for a user has a single <codeInline>&lt;Role&gt;</codeInline> node then that role will be text against
+       a JSON <codeInline>"Role"</codeInline> property, but if the user has multiple <codeInline>&lt;Role&gt;</codeInline>
+       nodes then the role values will be placed in a JSON array.</para>
+       
+       <para>To fix this situation a custom XML attribute can be added to force a JSON array to be created.</para>
+
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\ConvertingJsonAndXmlTests.cs" region="ForceJsonArray" title="Attribute to Force a JSON Array" />
+    </content>
     </section>
     <section>
       <title>DeserializeXmlNode</title>
@@ -55,5 +70,9 @@
 
       </content>
     </section>
+    <relatedTopics>
+      <codeEntityReference>T:Newtonsoft.Json.Converters.XmlNodeConverter</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.JsonConvert</codeEntityReference>
+    </relatedTopics>
   </developerConceptualDocument>
 </topic>

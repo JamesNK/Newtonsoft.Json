@@ -16,8 +16,8 @@
 <section>
  <title>JsonConvert</title>
  <content><para>For simple scenarios where you want to convert to and from a JSON string the
- <codeEntityReference>M:Newtonsoft.Json.JsonConvert.SerializeObject(System.Object,Newtonsoft.Json.Formatting)</codeEntityReference> and
- <codeEntityReference>M:Newtonsoft.Json.JsonConvert.DeserializeObject``1(System.String,Newtonsoft.Json.JsonSerializerSettings)</codeEntityReference>
+ <codeEntityReference>Overload:Newtonsoft.Json.JsonConvert.SerializeObject</codeEntityReference> and
+ <codeEntityReference>Overload:Newtonsoft.Json.JsonConvert.DeserializeObject</codeEntityReference>
  methods on JsonConvert provide an easy to use wrapper over JsonSerializer.</para>
  <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="SerializeObject" title="Serializing JSON with JsonConvert" />
 <para>
@@ -52,5 +52,31 @@ LINQ to JSON objects or
 </externalLink></para>
 </content>
 </section>
+    <relatedTopics>
+      <externalLink>
+        <linkText>Serialization Guide</linkText>
+        <linkUri>SerializationGuide.htm</linkUri>
+        <linkTarget>_self</linkTarget>
+      </externalLink>
+      <externalLink>
+        <linkText>Serialization Settings</linkText>
+        <linkUri>SerializationSettings.htm</linkUri>
+        <linkTarget>_self</linkTarget>
+      </externalLink>
+      <externalLink>
+        <linkText>Serialization Attributes</linkText>
+        <linkUri>SerializationAttributes.htm</linkUri>
+        <linkTarget>_self</linkTarget>
+      </externalLink>
+      <externalLink>
+        <linkText>Serializing Partial JSON Fragments</linkText>
+        <linkUri>SerializingJSONFragments.htm</linkUri>
+        <linkTarget>_self</linkTarget>
+      </externalLink>
+
+      <codeEntityReference>T:Newtonsoft.Json.JsonConvert</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.JsonSerializer</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.JsonSerializerSettings</codeEntityReference>
+    </relatedTopics>
   </developerConceptualDocument>
 </topic>

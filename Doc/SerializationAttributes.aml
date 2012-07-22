@@ -134,5 +134,12 @@
     </section>
     </sections>
     </section>
+    <relatedTopics>
+      <codeEntityReference>T:Newtonsoft.Json.JsonObjectAttribute</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.JsonArrayAttribute</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.JsonDictionaryAttribute</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.JsonPropertyAttribute</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.JsonConverterAttribute</codeEntityReference>
+    </relatedTopics>
   </developerConceptualDocument>
 </topic>

@@ -7,7 +7,7 @@
     <Topic id="SerializationAttributes" visible="True" title="Serialization Attributes" />
     <Topic id="SerializationCallbacks" visible="True" title="Serialization Callbacks" />
     <Topic id="SerializationErrorHandling" visible="True" title="Serialization Error Handling" />
-    <Topic id="PreserveObjectReferences" visible="True" isSelected="true" title="Preserving Object Referencess" />
+    <Topic id="PreserveObjectReferences" visible="True" title="Preserving Object References" />
     <Topic id="CustomCreationConverter" visible="True" />
     <Topic id="ContractResolver" visible="True" />
     <Topic id="SerializingCollections" visible="True" title="Serializing Collections" />
@@ -18,6 +18,6 @@
   <Topic id="LINQtoJSON" visible="True" isExpanded="true" title="LINQ to JSON">
     <Topic id="SelectToken" visible="True" title="Querying LINQ to JSON with SelectToken" />
   </Topic>
-  <Topic id="ReadingWritingJSON" visible="True" title="Reading and Writing JSON" />
+  <Topic id="ReadingWritingJSON" visible="True" isSelected="true" title="Basic Reading and Writing JSON" />
   <Topic id="ConvertingJSONandXML" visible="True" title="Converting between JSON and XML" />
 </Topics>

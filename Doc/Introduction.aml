@@ -44,6 +44,25 @@ and write from your objects.</para>
 </section>
 
 <section>
+ <title>Getting Started</title>
+ <content>
+
+<list class="bullet">
+  <listItem><para><externalLink>
+<linkText>Serializing and Deserializing JSON</linkText>
+<linkUri>SerializingJSON.htm</linkUri>
+<linkTarget>_self</linkTarget>
+</externalLink></para></listItem>
+  <listItem><para><externalLink>
+<linkText>LINQ to JSON</linkText>
+<linkUri>LINQtoJSON.htm</linkUri>
+<linkTarget>_self</linkTarget>
+</externalLink></para></listItem>
+</list>
+ 
+ </content>
+</section>
+<section>
  <title>History</title>
  <content><para>Json.NET grew out of projects I was working on in late 2005 involving JavaScript,
             AJAX and .NET. At the time there were no libraries for working with JavaScript in
@@ -87,6 +106,18 @@ and write from your objects.</para>
             </a>
  </p>
  </markup>
+    <relatedTopics>
+      <externalLink>
+        <linkText>Serializing and Deserializing JSON</linkText>
+        <linkUri>SerializingJSON.htm</linkUri>
+        <linkTarget>_self</linkTarget>
+      </externalLink>
+      <externalLink>
+        <linkText>LINQ to JSON</linkText>
+        <linkUri>LINQtoJSON.htm</linkUri>
+        <linkTarget>_self</linkTarget>
+      </externalLink>
+    </relatedTopics>
 
   </developerConceptualDocument>
 </topic>

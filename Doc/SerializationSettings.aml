@@ -7,7 +7,8 @@
     </summary>
     -->
     <introduction>
-      <para>JsonSerializer has a number of properties on it to customize how it serializes JSON. These can also be used with the methods on JsonConvert via the JsonSerializerSettings overloads.</para>
+      <para>JsonSerializer has a number of properties on it to customize how it serializes JSON. These can also be used
+      with the methods on JsonConvert via the <codeEntityReference>T:Newtonsoft.Json.JsonSerializerSettings</codeEntityReference> overloads.</para>
     </introduction>
 
 <section>
@@ -320,7 +321,25 @@
 </para>
 </content>
 </section>
-   
-   
+    <relatedTopics>
+      <externalLink>
+        <linkText>Serialization Guide</linkText>
+        <linkUri>SerializationGuide.htm</linkUri>
+        <linkTarget>_self</linkTarget>
+      </externalLink>
+      <externalLink>
+        <linkText>Serialization Attributes</linkText>
+        <linkUri>SerializationAttributes.htm</linkUri>
+        <linkTarget>_self</linkTarget>
+      </externalLink>
+      <externalLink>
+        <linkText>Serializing Dates in JSON</linkText>
+        <linkUri>DatesInJSON.htm</linkUri>
+        <linkTarget>_self</linkTarget>
+      </externalLink>
+
+      <codeEntityReference>T:Newtonsoft.Json.JsonSerializer</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.JsonSerializerSettings</codeEntityReference>
+    </relatedTopics>
   </developerConceptualDocument>
 </topic>

@@ -15,5 +15,13 @@
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="SerializingPartialJsonFragmentsExample" title="Serializing Partial JSON Fragment Example" />
 
     </introduction>
+    <relatedTopics>
+      <codeEntityReference>T:Newtonsoft.Json.JsonReader</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.JsonWriter</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.Linq.JTokenReader</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.Linq.JTokenWriter</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.Bson.BsonReader</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.Bson.BsonWriter</codeEntityReference>
+    </relatedTopics>
   </developerConceptualDocument>
 </topic>

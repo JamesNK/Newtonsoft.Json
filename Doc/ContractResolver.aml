@@ -7,7 +7,8 @@
     </summary>
     -->
     <introduction>
-      <para>The IContractResolver interface provides a way to customize how the
+      <para>The <codeEntityReference>T:Newtonsoft.Json.Serialization.IContractResolver</codeEntityReference>
+      interface provides a way to customize how the
       JsonSerializer serializes and deserializes .NET objects to JSON.</para>
       <para>Implementing the IContractResolver interface and then assigning an
       instance to a JsonSerializer lets you control whether the object is
@@ -44,5 +45,10 @@
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="ContractResolver" title="ContractResolver" />
       </content>
     </section>
+    <relatedTopics>
+      <codeEntityReference>T:Newtonsoft.Json.Serialization.IContractResolver</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.Serialization.DefaultContractResolver</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver</codeEntityReference>
+    </relatedTopics>
   </developerConceptualDocument>
 </topic>

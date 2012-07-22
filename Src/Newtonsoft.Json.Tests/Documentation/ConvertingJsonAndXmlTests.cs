@@ -132,6 +132,52 @@ namespace Newtonsoft.Json.Tests.Documentation
       // </root>
       #endregion
     }
+
+    public void ForceJsonArray()
+    {
+      #region ForceJsonArray
+      string xml = @"<person id='1'>
+			  <name>Alan</name>
+			  <url>http://www.google.com</url>
+			  <role>Admin1</role>
+			</person>";
+
+      XmlDocument doc = new XmlDocument();
+      doc.LoadXml(xml);
+
+      string json = JsonConvert.SerializeXmlNode(doc);
+      //{
+      //  "person": {
+      //    "@id": "1",
+      //    "name": "Alan",
+      //    "url": "http://www.google.com",
+      //    "role": "Admin1"
+      //  }
+      //}
+
+      xml = @"<person xmlns:json='http://james.newtonking.com/projects/json' id='1'>
+			  <name>Alan</name>
+			  <url>http://www.google.com</url>
+			  <role json:Array='true'>Admin</role>
+			</person>";
+
+      doc = new XmlDocument();
+      doc.LoadXml(xml);
+
+      json = JsonConvert.SerializeXmlNode(doc);
+      //{
+      //  "person": {
+      //    "@id": "1",
+      //    "name": "Alan",
+      //    "url": "http://www.google.com",
+      //    "role": [
+      //      "Admin"
+      //    ]
+      //  }
+      //}
+      #endregion
+    }
+
   }
 }
 #endif

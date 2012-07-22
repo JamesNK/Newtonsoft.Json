@@ -5,7 +5,7 @@
       <para>To manually read and write JSON Json.NET provides the
       <codeEntityReference>T:Newtonsoft.Json.JsonReader</codeEntityReference>
       and 
-      <codeEntityReference>T:Newtonsoft.Json.JsonWriter</codeEntityReference> classes.</para>
+      <codeEntityReference>T:Newtonsoft.Json.JsonWriter</codeEntityReference> classes. These are low level classes and used internally by Json.NET.</para>
     </introduction>
     <section>
       <title>JsonTextReader and JsonTextWriter</title>
@@ -33,5 +33,13 @@
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\ReadingAndWritingJsonTests.cs" region="ReadingAndWritingJsonLinq" title="Deserializing with JTokenReader" />
       </content>
     </section>
+    <relatedTopics>
+      <codeEntityReference>T:Newtonsoft.Json.JsonReader</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.JsonWriter</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.Linq.JTokenReader</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.Linq.JTokenWriter</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.Bson.BsonReader</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.Bson.BsonWriter</codeEntityReference>
+    </relatedTopics>
   </developerConceptualDocument>
 </topic>

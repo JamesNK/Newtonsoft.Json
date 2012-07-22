@@ -28,9 +28,9 @@
 <linkText>ISO 8601 standard</linkText>
 <linkUri>http://en.wikipedia.org/wiki/ISO_8601</linkUri>
 <linkTarget>_blank</linkTarget>
-</externalLink>: 2012-03-19T07:22Z.</para>
+</externalLink>: <codeInline>"2012-03-19T07:22Z"</codeInline>.</para>
         <para>Prior to Json.NET 4.5 dates were written using the Microsoft
-        format: "\/Date(1198908717056)\/". If you want to use this format, or
+        format: <codeInline>"\/Date(1198908717056)\/"</codeInline>. If you want to use this format, or
         you want to maintain compatibility with Microsoft JSON serializers or
         older versions of Json.NET then change the
         <codeEntityReference>T:Newtonsoft.Json.DateFormatHandling</codeEntityReference>
@@ -76,7 +76,7 @@
       <title>IsoDateTimeConverter</title>
       <content>
       <alert class="note">
-  <para>Since Json.NET 4.5 dates are written using the ISO 8601
+  <para>From Json.NET 4.5 and onwards dates are written using the ISO 8601
         format by default and using this converter is unnecessary.</para>
 </alert>
         <para>IsoDateTimeConverter seralizes a DateTime to an <externalLink>
@@ -89,5 +89,11 @@
         further customize the formatted string.</para>
       </content>
     </section>
+    <relatedTopics>
+      <codeEntityReference>T:Newtonsoft.Json.DateFormatHandling</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.DateTimeZoneHandling</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.Converters.JavaScriptDateTimeConverter</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.Converters.IsoDateTimeConverter</codeEntityReference>
+    </relatedTopics>
   </developerConceptualDocument>
 </topic>

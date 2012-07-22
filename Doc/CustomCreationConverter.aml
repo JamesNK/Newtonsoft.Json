@@ -7,14 +7,12 @@
     </summary>
     -->
     <introduction>
-      <para>The CustomCreationConverter is a JsonConverter that provides a way
+      <para>The <codeEntityReference>T:Newtonsoft.Json.Converters.CustomCreationConverter`1</codeEntityReference>
+      is a JsonConverter that provides a way
       to customize how an object is created during JSON deserialization. Once
       the object has been created it will then have values populated onto it by
       the serializer.</para>
     </introduction>
-    <!-- Add one or more top-level section elements.  These are collapsible.
-         If using <autoOutline />, add an address attribute to identify it
-         and specify a title so that it can be jumped to with a hyperlink. -->
     <section>
       <title>Example</title>
       <content>
@@ -25,5 +23,8 @@
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="CustomCreationConverterExample" title="CustomCreationConverter Example" />
       </content>
     </section>
+    <relatedTopics>
+      <codeEntityReference>T:Newtonsoft.Json.Converters.CustomCreationConverter`1</codeEntityReference>
+    </relatedTopics>
   </developerConceptualDocument>
 </topic>

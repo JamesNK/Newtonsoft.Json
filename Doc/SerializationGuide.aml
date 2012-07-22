@@ -282,7 +282,26 @@
     </section>
     
       </sections>
-    </section>    
-    
+    </section>
+    <relatedTopics>
+      <externalLink>
+        <linkText>Serialization Settings</linkText>
+        <linkUri>SerializationSettings.htm</linkUri>
+        <linkTarget>_self</linkTarget>
+      </externalLink>
+      <externalLink>
+        <linkText>Serialization Attributes</linkText>
+        <linkUri>SerializationAttributes.htm</linkUri>
+        <linkTarget>_self</linkTarget>
+      </externalLink>
+      <externalLink>
+        <linkText>Serializing Dates in JSON</linkText>
+        <linkUri>DatesInJSON.htm</linkUri>
+        <linkTarget>_self</linkTarget>
+      </externalLink>
+
+      <codeEntityReference>T:Newtonsoft.Json.JsonSerializer</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.JsonSerializerSettings</codeEntityReference>
+    </relatedTopics>
   </developerConceptualDocument>
 </topic>
