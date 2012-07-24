@@ -42,6 +42,7 @@ using System.Security;
 [assembly: AssemblyTitle("Json.NET Portable")]
 #elif NETFX_CORE
 [assembly: AssemblyTitle("Json.NET Metro")]
+[assembly: SecurityTransparent]
 #elif NET20
 [assembly: AssemblyTitle("Json.NET .NET 2.0")]
 [assembly: AllowPartiallyTrustedCallers]
