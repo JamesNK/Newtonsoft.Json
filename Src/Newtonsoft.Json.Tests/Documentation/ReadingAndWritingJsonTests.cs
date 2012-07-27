@@ -49,7 +49,8 @@ using ErrorEventArgs = Newtonsoft.Json.Serialization.ErrorEventArgs;
 
 namespace Newtonsoft.Json.Tests.Documentation
 {
-  public class ReadingAndWritingJsonTests
+  [TestFixture]
+  public class ReadingAndWritingJsonTests : TestFixtureBase
   {
     public void ReadingAndWritingJsonText()
     {
@@ -86,6 +87,46 @@ namespace Newtonsoft.Json.Tests.Documentation
       //     "200 gigabype hard drive"
       //   ]
       // }
+      #endregion
+    }
+
+    [Test]
+    public void ReadingJsonText()
+    {
+      #region ReadingJsonText
+      string json = @"{
+         'CPU': 'Intel',
+         'PSU': '500W',
+         'Drives': [
+           'DVD read/writer'
+           /*(broken)*/,
+           '500 gigabyte hard drive',
+           '200 gigabype hard drive'
+         ]
+      }";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+      while (reader.Read())
+      {
+        if (reader.Value != null)
+          Console.WriteLine("Token: {0}, Value: {1}", reader.TokenType, reader.Value);
+        else
+          Console.WriteLine("Token: {0}", reader.TokenType);
+      }
+
+      // Token: StartObject
+      // Token: PropertyName, Value: CPU
+      // Token: String, Value: Intel
+      // Token: PropertyName, Value: PSU
+      // Token: String, Value: 500W
+      // Token: PropertyName, Value: Drives
+      // Token: StartArray
+      // Token: String, Value: DVD read/writer
+      // Token: Comment, Value: (broken)
+      // Token: String, Value: 500 gigabyte hard drive
+      // Token: String, Value: 200 gigabype hard drive
+      // Token: EndArray
+      // Token: EndObject
       #endregion
     }
 

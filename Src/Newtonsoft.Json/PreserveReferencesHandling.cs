@@ -32,6 +32,9 @@ namespace Newtonsoft.Json
   /// <summary>
   /// Specifies reference handling options for the <see cref="JsonSerializer"/>.
   /// </summary>
+  /// <example>
+  ///   <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="PreservingObjectReferencesOn" title="Preserve Object References" />       
+  /// </example>
   [Flags]
   public enum PreserveReferencesHandling
   {

@@ -13,7 +13,7 @@
 
 <section>
  <title>DateFormatHandling</title>
- <content><para>DateFormatHandling controls how dates are serialized.</para>
+ <content><para><codeEntityReference>T:Newtonsoft.Json.DateFormatHandling</codeEntityReference> controls how dates are serialized.</para>
  
 <table>
   <tableHeader>
@@ -24,11 +24,11 @@
   </tableHeader>
   <row>
     <entry><para><legacyBold>IsoDateFormat</legacyBold></para></entry>
-    <entry><para>By default Json.NET writes dates in the ISO 8601 format, e.g. "2012-03-21T05:40Z".</para></entry>
+    <entry><para>By default Json.NET writes dates in the ISO 8601 format, e.g. <codeInline>"2012-03-21T05:40Z"</codeInline>.</para></entry>
   </row>
   <row>
     <entry><para><legacyBold>MicrosoftDateFormat</legacyBold></para></entry>
-    <entry><para>Dates are written in the Microsoft JSON format, e.g. "\/Date(1198908717056)\/".</para></entry>
+    <entry><para>Dates are written in the Microsoft JSON format, e.g. <codeInline>"\/Date(1198908717056)\/"</codeInline>.</para></entry>
   </row>
 </table>
 
@@ -37,7 +37,7 @@
 
 <section>
  <title>MissingMemberHandling</title>
- <content><para>MissingMemberHandling controls how missing members, e.g. JSON contains a property that isn't a member on the object, are handled during deserialization.</para>
+ <content><para><codeEntityReference>T:Newtonsoft.Json.MissingMemberHandling</codeEntityReference> controls how missing members, e.g. JSON contains a property that isn't a member on the object, are handled during deserialization.</para>
  
 <table>
   <tableHeader>
@@ -61,7 +61,7 @@
 
 <section>
  <title>ReferenceLoopHandling</title>
- <content><para>ReferenceLoopHandling controls how circular referencing objects, e.g. a Person object referencing itself via a Manager property, are serialized.</para>
+ <content><para><codeEntityReference>T:Newtonsoft.Json.ReferenceLoopHandling</codeEntityReference> controls how circular referencing objects, e.g. a Person object referencing itself via a Manager property, are serialized.</para>
  
 <table>
   <tableHeader>
@@ -89,7 +89,7 @@
 
 <section>
  <title>NullValueHandling</title>
- <content><para>NullValueHandling controls how null values on .NET objects are handled during serialization and how null values in JSON are handled during deserialization.</para>
+ <content><para><codeEntityReference>T:Newtonsoft.Json.NullValueHandling</codeEntityReference> controls how null values on .NET objects are handled during serialization and how null values in JSON are handled during deserialization.</para>
  
 <table>
   <tableHeader>
@@ -114,7 +114,7 @@
 
 <section>
  <title>DefaultValueHandling</title>
- <content><para>DefaultValueHandling controls how Json.NET uses default values set using the .NET DefaultValueAttribute when serializing and deserializing.</para>
+ <content><para><codeEntityReference>T:Newtonsoft.Json.DefaultValueHandling</codeEntityReference> controls how Json.NET uses default values set using the .NET <codeEntityReference>T:System.ComponentModel.DefaultValueAttribute</codeEntityReference> when serializing and deserializing.</para>
  
 <table>
   <tableHeader>
@@ -139,7 +139,7 @@
 
 <section>
  <title>ObjectCreationHandling</title>
- <content><para>ObjectCreationHandling controls how objects are created and deserialized to during deserialization.</para>
+ <content><para><codeEntityReference>T:Newtonsoft.Json.ObjectCreationHandling</codeEntityReference> controls how objects are created and deserialized to during deserialization.</para>
  
 <table>
   <tableHeader>
@@ -168,7 +168,7 @@
 
 <section>
  <title>TypeNameHandling</title>
- <content><para>TypeNameHandling controls whether Json.NET includes .NET type names during serialization with a $type property and reads .NET type names from that property to determine what type to create during deserialization.</para>
+ <content><para><codeEntityReference>T:Newtonsoft.Json.TypeNameHandling</codeEntityReference> controls whether Json.NET includes .NET type names during serialization with a $type property and reads .NET type names from that property to determine what type to create during deserialization.</para>
  
 <table>
   <tableHeader>
@@ -205,7 +205,7 @@
 
 <section>
  <title>TypeNameAssemblyFormat</title>
- <content><para>TypeNameAssemblyFormat controls how type names are written during serialization.</para>
+ <content><para><codeEntityReference>T:System.Runtime.Serialization.Formatters.FormatterAssemblyStyle</codeEntityReference> controls how type names are written during serialization.</para>
  
 <table>
   <tableHeader>
@@ -230,14 +230,14 @@
 
 <section>
  <title>Binder</title>
- <content><para>The serialization binder is used to resolve type names to a .NET type.</para>
+ <content><para>The <codeEntityReference>T:System.Runtime.Serialization.SerializationBinder</codeEntityReference> is used to resolve type names to a .NET type.</para>
  <para>Read more about the serialization binder here: <codeEntityReference>T:System.Runtime.Serialization.SerializationBinder</codeEntityReference></para>
 </content>
 </section>
 
 <section>
  <title>ConstructorHandling</title>
- <content><para>ConstructorHandling controls how constructors are used when initializing objects during deserialization.</para>
+ <content><para><codeEntityReference>T:Newtonsoft.Json.ConstructorHandling</codeEntityReference> controls how constructors are used when initializing objects during deserialization.</para>
  
 <table>
   <tableHeader>
@@ -265,7 +265,7 @@
 <section>
  <title>Converters</title>
  <content><para>This is the collection of JsonConverters that will be used during serialization and deserialization.</para>
- <para>JsonConverters allows JSON to be manually written during serialization and read during deserialization.
+ <para>A <codeEntityReference>T:Newtonsoft.Json.JsonConverter</codeEntityReference> allows JSON to be manually written during serialization and read during deserialization.
  This is useful for particularly complex JSON structures or for when you want to change how a type is serialized.</para>
  <para>When a JsonConverter has been added to a JsonSerializer it will be checked for every value that is being serialized/deserialized
  using its CanConvert to see if it should be used. If CanConvert returns true then the JsonConverter will be used to read or write
@@ -300,7 +300,8 @@
 <section>
  <title>ContractResolver</title>
  <content><para>Internally for every .NET type the JsonSerializer will create a contract of how the type should be serialized and deserialized,
- based on type metadata and attributes applied to the class. Specifying a custom IContractResolver allows the creation of contracts to be customized.</para>
+ based on type metadata and attributes applied to the class. Specifying a custom <codeEntityReference>T:Newtonsoft.Json.Serialization.IContractResolver</codeEntityReference>
+ allows the creation of contracts to be customized.</para>
  <para>Read more about Contract Resolvers here: <externalLink>
 <linkText>Contract Resolvers</linkText>
 <linkUri>ContractResolver.htm</linkUri>
@@ -311,7 +312,7 @@
 
 <section>
  <title>Error</title>
- <content><para>The Error event can catch errors during serialization and either handle the event and continue with
+ <content><para>The <codeEntityReference>E:Newtonsoft.Json.JsonSerializer.Error</codeEntityReference> event can catch errors during serialization and either handle the event and continue with
  serialization or let the error bubble up and be thrown to the application.</para>
  <para>Read more about error handling here: <externalLink>
 <linkText>Serialization Error Handling</linkText>
@@ -337,9 +338,11 @@
         <linkUri>DatesInJSON.htm</linkUri>
         <linkTarget>_self</linkTarget>
       </externalLink>
-
+      
       <codeEntityReference>T:Newtonsoft.Json.JsonSerializer</codeEntityReference>
       <codeEntityReference>T:Newtonsoft.Json.JsonSerializerSettings</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.JsonConverter</codeEntityReference>
+      <codeEntityReference>T:System.Runtime.Serialization.SerializationBinder</codeEntityReference>
     </relatedTopics>
   </developerConceptualDocument>
 </topic>

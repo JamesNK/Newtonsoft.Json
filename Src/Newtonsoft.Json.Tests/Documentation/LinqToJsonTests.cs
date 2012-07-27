@@ -64,7 +64,7 @@ namespace Newtonsoft.Json.Tests.Documentation
       string json = array.ToString();
       // [
       //   "Manual text",
-      //   "\/Date(958996800000+1200)\/"
+      //   "2000-05-23T00:00:00"
       // ]
       #endregion
     }
@@ -173,11 +173,24 @@ namespace Newtonsoft.Json.Tests.Documentation
         CPU: 'Intel',
         Drives: [
           'DVD read/writer',
-          ""500 gigabyte hard drive""
+          '500 gigabyte hard drive'
         ]
       }";
 
       JObject o = JObject.Parse(json);
+      #endregion
+    }
+
+    public void LinqToJsonCreateParseArray()
+    {
+      #region LinqToJsonCreateParseArray
+      string json = @"[
+        'Small',
+        'Medium',
+        'Large'
+      ]";
+
+      JArray a = JArray.Parse(json);
       #endregion
     }
 

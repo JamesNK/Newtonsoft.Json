@@ -10,12 +10,25 @@
     </introduction>
     
     <section>
+      <title>Reading JSON</title>
+      <content>
+        <para>JSON values can be read from a string use the
+        <codeEntityReference>M:Newtonsoft.Json.Linq.JToken.Parse(System.String)</codeEntityReference>
+        method.</para>
+
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateParse" title="Parsing a JSON Object from Text" />
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateParseArray" title="Parsing a JSON Array from Text" />
+      </content>
+    </section>
+    <section>
       <title>Creating JSON</title>
       <content>
         <!-- Uncomment this to create a sub-section outline
         <autoOutline /> -->
         <para>There are a number of different options when it comes to creating
-        JSON using LINQ to JSON. The first to create objects imperatively. You
+        JSON using LINQ to JSON.</para>
+        
+        <para>The first to create objects imperatively. You
         have total control but it is more verbose than other options.</para>
         
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateNormal" title="Creating JSON" />
@@ -24,17 +37,12 @@
 
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateDeclaratively" title="Creating JSON Declaratively" />
 
-        <para>You can create a JSON object from a non-JSON type using the
+        <para>Finally you can create a JSON object from a non-JSON type using the
         <codeEntityReference>Overload:Newtonsoft.Json.Linq.JObject.FromObject</codeEntityReference>
-        method.</para>
+        method. The example below is creating a JSON object from an anonymous object but any
+        .NET type can be used with FromObject.</para>
 
-<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateFromObject" title="Creating JSON From An Object" />
-
-        <para>Finally JSON objects can be created from a string use the
-        <codeEntityReference>M:Newtonsoft.Json.Linq.JToken.Parse(System.String)</codeEntityReference>
-        method.</para>
-
-<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateParse" title="Creating JSON From Text" />
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateFromObject" title="Creating JSON from an Object" />
       </content>
     </section>
     <section>

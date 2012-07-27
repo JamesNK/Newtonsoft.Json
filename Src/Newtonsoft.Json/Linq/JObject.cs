@@ -48,6 +48,9 @@ namespace Newtonsoft.Json.Linq
   /// <summary>
   /// Represents a JSON object.
   /// </summary>
+  /// <example>
+  ///   <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateParse" title="Parsing a JSON Object from Text" />
+  /// </example>
   public class JObject : JContainer, IDictionary<string, JToken>, INotifyPropertyChanged
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
     , ICustomTypeDescriptor
@@ -315,6 +318,9 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="json">A <see cref="String"/> that contains JSON.</param>
     /// <returns>A <see cref="JObject"/> populated from the string that contains JSON.</returns>
+    /// <example>
+    ///   <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateParse" title="Parsing a JSON Object from Text" />
+    /// </example>
     public static new JObject Parse(string json)
     {
       JsonReader reader = new JsonTextReader(new StringReader(json));

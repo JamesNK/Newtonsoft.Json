@@ -5,11 +5,29 @@
       <para>To manually read and write JSON Json.NET provides the
       <codeEntityReference>T:Newtonsoft.Json.JsonReader</codeEntityReference>
       and 
-      <codeEntityReference>T:Newtonsoft.Json.JsonWriter</codeEntityReference> classes. These are low level classes and used internally by Json.NET.</para>
+      <codeEntityReference>T:Newtonsoft.Json.JsonWriter</codeEntityReference> classes.</para>
+
     </introduction>
     <section>
       <title>JsonTextReader and JsonTextWriter</title>
       <content>
+      
+<alert class="note">
+  <para>JsonReader and JsonWriter are low level classes and used internally by Json.NET.
+    To quickly work with JSON either the serializer -
+      <externalLink>
+        <linkText>Serializing and Deserializing JSON</linkText>
+        <linkUri>SerializingJSON.htm</linkUri>
+        <linkTarget>_self</linkTarget>
+      </externalLink>
+      or using <externalLink>
+        <linkText>LINQ to JSON</linkText>
+        <linkUri>LINQtoJSON.htm</linkUri>
+        <linkTarget>_self</linkTarget>
+      </externalLink> is recommended.
+   </para>
+</alert>
+
         <para><codeEntityReference>T:Newtonsoft.Json.JsonTextReader</codeEntityReference>
         and <codeEntityReference>T:Newtonsoft.Json.JsonTextWriter</codeEntityReference>
         are used to read and write JSON text.
@@ -18,6 +36,10 @@
         count and quote character.</para>
 
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\ReadingAndWritingJsonTests.cs" region="ReadingAndWritingJsonText" title="Writing JSON with JsonTextWriter" />
+
+        <para>JsonTextReader has settings on it for reading different date formats and time zones, and
+        the culture used when reading text values.</para>
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\ReadingAndWritingJsonTests.cs" region="ReadingJsonText" title="Reading JSON with JsonTextReader" />
       </content>
     </section>
     <section>

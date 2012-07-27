@@ -19,7 +19,7 @@
  <codeEntityReference>Overload:Newtonsoft.Json.JsonConvert.SerializeObject</codeEntityReference> and
  <codeEntityReference>Overload:Newtonsoft.Json.JsonConvert.DeserializeObject</codeEntityReference>
  methods on JsonConvert provide an easy to use wrapper over JsonSerializer.</para>
- <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="SerializeObject" title="Serializing JSON with JsonConvert" />
+ <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="SerializeObject" title="Serializing and Deserializing JSON with JsonConvert" />
 <para>
 	SerializeObject and DeserializeObject both have overloads that take a <codeEntityReference>T:Newtonsoft.Json.JsonSerializerSettings</codeEntityReference> object.
 	JsonSerializerSettings lets you use many of the JsonSerializer settings listed below while still using the simple serialization methods.

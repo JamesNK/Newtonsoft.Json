@@ -193,6 +193,11 @@
         dictionary name/values will be written to the JSON object when serializing and properties on the JSON object will
         be added to the dictionary's name/values when deserializing. Additional members on the .NET dictionary are ignored
         during serialization.</para>
+        <para>When serializing a dictionary the keys of the dictionary are converted to strings and used as the
+        JSON object property names. The string written for a key can be customized by either overriding
+        <codeEntityReference>M:System.Object.ToString</codeEntityReference> for the key type or by implementing a
+        <codeEntityReference>T:System.ComponentModel.TypeConverter</codeEntityReference>. A TypeConverter will also
+        support converting a custom string back again when deserializing a dictionary.</para>
         <para>JsonDictionaryAttribute has options on it to customize the JsonConverter, type name handling and reference
         handling that are applied to collection items.</para>
         <para>When deserializing if a member is typed as the interface IDictionary&lt;TKey, TValue&gt; then it will be

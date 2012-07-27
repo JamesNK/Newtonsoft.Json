@@ -28,6 +28,10 @@ namespace Newtonsoft.Json
   /// <summary>
   /// Specifies null value handling options for the <see cref="JsonSerializer"/>.
   /// </summary>
+  /// <example>
+  ///   <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="ReducingSerializedJsonSizeNullValueHandlingObject" title="NullValueHandling Class" />
+  ///   <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="ReducingSerializedJsonSizeNullValueHandlingExample" title="NullValueHandling Ignore Example" />
+  /// </example>
   public enum NullValueHandling
   {
     /// <summary>

@@ -332,13 +332,13 @@ namespace Newtonsoft.Json.Tests.Documentation
       //[
       //  {
       //    "Name": "James",
-      //    "BirthDate": "\/Date(346377600000)\/",
-      //    "LastModified": "\/Date(1235134761000)\/"
+      //    "BirthDate": "1980-12-23T00:00:00Z",
+      //    "LastModified": "2009-02-20T12:59:21Z"
       //  },
       //  {
       //    "Name": "James",
-      //    "BirthDate": "\/Date(346377600000)\/",
-      //    "LastModified": "\/Date(1235134761000)\/"
+      //    "BirthDate": "1980-12-23T00:00:00Z",
+      //    "LastModified": "2009-02-20T12:59:21Z"
       //  }
       //]
       #endregion
@@ -356,8 +356,8 @@ namespace Newtonsoft.Json.Tests.Documentation
       //  {
       //    "$id": "1",
       //    "Name": "James",
-      //    "BirthDate": "\/Date(346377600000)\/",
-      //    "LastModified": "\/Date(1235134761000)\/"
+      //    "BirthDate": "1983-03-08T00:00Z",
+      //    "LastModified": "2012-03-21T05:40Z"
       //  },
       //  {
       //    "$ref": "1"
@@ -428,14 +428,14 @@ namespace Newtonsoft.Json.Tests.Documentation
       //  {
       //    "FirstName": "Maurice",
       //    "LastName": "Moss",
-      //    "BirthDate": "\/Date(252291661000)\/",
+      //    "BirthDate": "1981-03-08T00:00Z",
       //    "Department": "IT",
       //    "JobTitle": "Support"
       //  },
       //  {
       //    "FirstName": "Jen",
       //    "LastName": "Barber",
-      //    "BirthDate": "\/Date(258771661000)\/",
+      //    "BirthDate": "1985-12-10T00:00Z",
       //    "Department": "IT",
       //    "JobTitle": "Manager"
       //  }
@@ -478,7 +478,7 @@ namespace Newtonsoft.Json.Tests.Documentation
 
       //{
       //  "name": "Widget",
-      //  "expiryDate": "\/Date(1292868060000)\/",
+      //  "expiryDate": "2010-12-20T18:01Z",
       //  "price": 9.99,
       //  "sizes": [
       //    "Small",
@@ -513,13 +513,13 @@ namespace Newtonsoft.Json.Tests.Documentation
       //[
       //  {
       //    "Name": "Product 1",
-      //    "ExpiryDate": "\/Date(978048000000)\/",
+      //    "ExpiryDate": "2000-12-29T00:00Z",
       //    "Price": 99.95,
       //    "Sizes": null
       //  },
       //  {
       //    "Name": "Product 2",
-      //    "ExpiryDate": "\/Date(1248998400000)\/",
+      //    "ExpiryDate": "2009-07-31T00:00Z",
       //    "Price": 12.50,
       //    "Sizes": null
       //  }
@@ -533,13 +533,13 @@ namespace Newtonsoft.Json.Tests.Documentation
       string json = @"[
         {
           'Name': 'Product 1',
-          'ExpiryDate': '\/Date(978048000000)\/',
+          'ExpiryDate': '2000-12-29T00:00Z',
           'Price': 99.95,
           'Sizes': null
         },
         {
           'Name': 'Product 2',
-          'ExpiryDate': '\/Date(1248998400000)\/',
+          'ExpiryDate': '2009-07-31T00:00Z',
           'Price': 12.50,
           'Sizes': null
         }
