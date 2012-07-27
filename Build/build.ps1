@@ -1,7 +1,7 @@
 ﻿properties { 
-  $zipFileName = "Json45r7.zip"
+  $zipFileName = "Json45r8.zip"
   $majorVersion = "4.5"
-  $majorWithReleaseVersion = "4.5.7"
+  $majorWithReleaseVersion = "4.5.8"
   $version = GetVersion $majorWithReleaseVersion
   $signAssemblies = $false
   $signKeyPath = "D:\Development\Releases\newtonsoft.snk"
@@ -113,7 +113,6 @@ task Package -depends Build {
     # Sandcastle has issues when compiling with .NET 4 MSBuild - http://shfb.codeplex.com/Thread/View.aspx?ThreadId=50652
     exec { msbuild "/t:Clean;Rebuild" /p:Configuration=Release "/p:DocumentationSourcePath=$documentationSourcePath" $docDir\doc.shfbproj } "Error building documentation. Check that you have Sandcastle, Sandcastle Help File Builder and HTML Help Workshop installed."
     
-    move -Path $workingDir\Documentation\Documentation.chm -Destination $workingDir\Package\Documentation.chm
     move -Path $workingDir\Documentation\LastBuild.log -Destination $workingDir\Documentation.log
   }
   
