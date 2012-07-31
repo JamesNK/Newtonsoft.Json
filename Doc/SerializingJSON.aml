@@ -9,7 +9,8 @@
     <introduction>
       <para>The quickest method of converting between JSON text and a .NET object is using the
       <codeEntityReference>T:Newtonsoft.Json.JsonSerializer</codeEntityReference>.
-      The JsonSerializer converts .NET objects into their JSON equivalent and back again by mapping their properties to each other via name.</para>
+      The JsonSerializer converts .NET objects into their JSON equivalent and back again by mapping the .NET object property names to the JSON property names
+      and copies the values for you.</para>
     </introduction>
     <!-- Optional procedures followed by optional code example but must have
          at least one procedure or code example -->
@@ -26,10 +27,6 @@
 </para>
 </content>
 </section>
-
-
-
-
 
 <section>
  <title>JsonSerializer</title>

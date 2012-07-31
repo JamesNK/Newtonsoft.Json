@@ -146,8 +146,8 @@
         (i.e. aren't lists, dictionaries, dynamic, implement ISerializable, etc)
         are serialized as JSON objects.</para>
         <para>By default types are serialized in opt-out mode. What that means is all public fields and properties with
-        getters are automatically serialized to JSON and members that shouldn't be serialized are opted-out using the
-        JsonIgnoreAttribute. To serialize private members the JsonPropertyAttribute can be placed on private fields and
+        getters are automatically serialized to JSON and members that shouldn't be serialized are opted-out by placing
+        JsonIgnoreAttribute on the unwanted properties. To serialize private members the JsonPropertyAttribute can be placed on private fields and
         properties or the DefaultMembersSearchFlags can be changed on DefaultContractResolver to change how members are
         serialized on all types.</para>
         <para>Types can also be serialized using opt-in mode. Only properties and fields that have a JsonPropertyAttribute

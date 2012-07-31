@@ -10,7 +10,7 @@
       <para>JsonSerializer has a number of properties on it to customize how it serializes JSON. These can also be used
       with the methods on JsonConvert via the <codeEntityReference>T:Newtonsoft.Json.JsonSerializerSettings</codeEntityReference> overloads.</para>
     </introduction>
-
+<sections>
 <section>
  <title>DateFormatHandling</title>
  <content><para><codeEntityReference>T:Newtonsoft.Json.DateFormatHandling</codeEntityReference> controls how dates are serialized.</para>
@@ -322,6 +322,7 @@
 </para>
 </content>
 </section>
+</sections>
     <relatedTopics>
       <externalLink>
         <linkText>Serialization Guide</linkText>

@@ -28,19 +28,19 @@
         <para>There are a number of different options when it comes to creating
         JSON using LINQ to JSON.</para>
         
-        <para>The first to create objects imperatively. You
+        <para>The first option is to set values one at a time. You
         have total control but it is more verbose than other options.</para>
         
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateNormal" title="Creating JSON" />
         
-        <para>Another option is to create JSON objects declaratively.</para>
+        <para>Another option is to create JSON objects declaratively using LINQ.</para>
 
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateDeclaratively" title="Creating JSON Declaratively" />
 
         <para>Finally you can create a JSON object from a non-JSON type using the
         <codeEntityReference>Overload:Newtonsoft.Json.Linq.JObject.FromObject</codeEntityReference>
         method. The example below is creating a JSON object from an anonymous object but any
-        .NET type can be used with FromObject.</para>
+        .NET type can be used with FromObject to create JSON.</para>
 
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateFromObject" title="Creating JSON from an Object" />
       </content>
