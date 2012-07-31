@@ -108,6 +108,12 @@ namespace Newtonsoft.Json.Serialization
     public bool Writable { get; set; }
 
     /// <summary>
+    /// Gets a value indicating whether this <see cref="JsonProperty"/> has a member attribute.
+    /// </summary>
+    /// <value><c>true</c> if has a member attribute; otherwise, <c>false</c>.</value>
+    public bool HasMemberAttribute { get; set; }
+
+    /// <summary>
     /// Gets the default value.
     /// </summary>
     /// <value>The default value.</value>

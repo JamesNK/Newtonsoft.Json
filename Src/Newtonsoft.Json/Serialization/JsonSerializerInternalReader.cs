@@ -28,6 +28,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 #if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
+using System.ComponentModel;
 using System.Dynamic;
 #endif
 using System.Globalization;
@@ -554,15 +555,26 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
           if (contract.OnError != null && isTemporaryListReference)
             throw JsonSerializationException.Create(reader, "Cannot call OnError on an array or readonly list: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
-          PopulateList(arrayContract.CreateWrapper(list), reader, arrayContract, member, id);
+          if (!arrayContract.IsMultidimensionalArray)
+            PopulateList(arrayContract.CreateWrapper(list), reader, arrayContract, member, id);
+          else
+            PopulateMultidimensionalArray(list, reader, arrayContract, member, id);
 
           // create readonly and fixed sized collections using the temporary list
           if (isTemporaryListReference)
           {
-            if (contract.CreatedType.IsArray)
-              list = CollectionUtils.ToArray(((List<object>)list).ToArray(), ReflectionUtils.GetCollectionItemType(contract.CreatedType));
+            if (arrayContract.IsMultidimensionalArray)
+            {
+              list = CollectionUtils.ToMultidimensionalArray(list, ReflectionUtils.GetCollectionItemType(contract.CreatedType), contract.CreatedType.GetArrayRank());
+            }
+            else if (contract.CreatedType.IsArray)
+            {
+              list = CollectionUtils.ToArray(((List<object>) list).ToArray(), ReflectionUtils.GetCollectionItemType(contract.CreatedType));
+            }
             else if (ReflectionUtils.InheritsGenericDefinition(contract.CreatedType, typeof(ReadOnlyCollection<>)))
-              list = (IList)ReflectionUtils.CreateInstance(contract.CreatedType, list);
+            {
+              list = (IList) ReflectionUtils.CreateInstance(contract.CreatedType, list);
+            }
           }
           else if (list is IWrappedCollection)
           {
@@ -849,6 +861,125 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
       } while (reader.Read());
 
       throw JsonSerializationException.Create(reader, "Unexpected end when deserializing object.");
+    }
+
+    private object PopulateMultidimensionalArray(IList list, JsonReader reader, JsonArrayContract contract, JsonProperty containerProperty, string id)
+    {
+      int rank = contract.UnderlyingType.GetArrayRank();
+
+      if (id != null)
+        Serializer.ReferenceResolver.AddReference(this, id, list);
+
+      contract.InvokeOnDeserializing(list, Serializer.Context);
+
+      int initialDepth = reader.Depth;
+
+      JsonContract collectionItemContract = GetContractSafe(contract.CollectionItemType);
+      JsonConverter collectionItemConverter = GetConverter(collectionItemContract, null, contract, containerProperty);
+
+      int? previousErrorIndex = null;
+      Stack<IList> listStack = new Stack<IList>();
+      listStack.Push(list);
+      IList currentList = list;
+
+      while (true)
+      {
+        if (listStack.Count == rank)
+        {
+          try
+          {
+            if (ReadForType(reader, collectionItemContract, collectionItemConverter != null))
+            {
+              switch (reader.TokenType)
+              {
+                case JsonToken.EndArray:
+                  listStack.Pop();
+                  currentList = listStack.Peek();
+                  break;
+                case JsonToken.Comment:
+                  break;
+                default:
+                  object value;
+
+                  if (collectionItemConverter != null && collectionItemConverter.CanRead)
+                    value = collectionItemConverter.ReadJson(reader, contract.CollectionItemType, null, GetInternalSerializer());
+                  else
+                    value = CreateValueInternal(reader, contract.CollectionItemType, collectionItemContract, null, contract, containerProperty, null);
+
+                  currentList.Add(value);
+                  break;
+              }
+            }
+            else
+            {
+              break;
+            }
+          }
+          catch (Exception ex)
+          {
+            JsonPosition errorPosition = reader.GetPosition(initialDepth);
+
+            if (IsErrorHandled(list, contract, errorPosition.Position, reader.Path, ex))
+            {
+              HandleError(reader, true, initialDepth);
+
+              if (previousErrorIndex != null && previousErrorIndex == errorPosition.Position)
+              {
+                // reader index has not moved since previous error handling
+                // break out of reading array to prevent infinite loop
+                throw JsonSerializationException.Create(reader, "Infinite loop detected from error handling.", ex);
+              }
+              else
+              {
+                previousErrorIndex = errorPosition.Position;
+              }
+            }
+            else
+            {
+              throw;
+            }
+          }
+        }
+        else
+        {
+          if (reader.Read())
+          {
+            switch (reader.TokenType)
+            {
+              case JsonToken.StartArray:
+                IList newList = new List<object>();
+                currentList.Add(newList);
+                listStack.Push(newList);
+                currentList = newList;
+                break;
+              case JsonToken.EndArray:
+                listStack.Pop();
+
+                if (listStack.Count > 0)
+                {
+                  currentList = listStack.Peek();
+                }
+                else
+                {
+                  contract.InvokeOnDeserialized(list, Serializer.Context);
+
+                  return list;
+                }
+                break;
+              case JsonToken.Comment:
+                break;
+              default:
+                throw JsonSerializationException.Create(reader, "Unexpected token when deserializing multidimensional array: " + reader.TokenType);
+            }
+          }
+          else
+          {
+            break;
+          }
+        }
+      }
+
+      throw JsonSerializationException.Create(reader, "Unexpected end when deserializing array.");
     }
 
     private object PopulateList(IWrappedCollection wrappedList, JsonReader reader, JsonArrayContract contract, JsonProperty containerProperty, string id)

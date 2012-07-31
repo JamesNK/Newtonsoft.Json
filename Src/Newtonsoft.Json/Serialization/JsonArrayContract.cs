@@ -47,6 +47,8 @@ namespace Newtonsoft.Json.Serialization
     /// <value>The <see cref="Type"/> of the collection items.</value>
     public Type CollectionItemType { get; private set; }
 
+    public bool IsMultidimensionalArray { get; private set; }
+
     private readonly bool _isCollectionItemTypeNullableType;
     private readonly Type _genericCollectionDefinitionType;
     private Type _genericWrapperType;
@@ -82,6 +84,8 @@ namespace Newtonsoft.Json.Serialization
       {
         CreatedType = ReflectionUtils.MakeGenericType(typeof(List<>), CollectionItemType);
       }
+
+      IsMultidimensionalArray = (UnderlyingType.IsArray && UnderlyingType.GetArrayRank() > 1);
     }
 
     internal IWrappedCollection CreateWrapper(object list)

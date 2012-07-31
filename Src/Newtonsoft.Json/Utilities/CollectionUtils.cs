@@ -326,5 +326,83 @@ namespace Newtonsoft.Json.Utilities
       }
       return -1;
     }
+
+    private static IList<int> GetDimensions(IList values)
+    {
+      IList<int> dimensions = new List<int>();
+
+      IList currentArray = values;
+      while (true)
+      {
+        dimensions.Add(currentArray.Count);
+        if (currentArray.Count == 0)
+          break;
+
+        object v = currentArray[0];
+        if (v is IList)
+          currentArray = (IList)v;
+        else
+          break;
+      }
+
+      return dimensions;
+    }
+
+    private static void CopyFromJaggedToMultidimensionalArray(IList values, Array multidimensionalArray, int[] indices)
+    {
+      int dimension = indices.Length;
+      if (dimension == multidimensionalArray.Rank)
+      {
+        multidimensionalArray.SetValue(JaggedArrayGetValue(values, indices), indices);
+        return;
+      }
+
+      int dimensionLength = multidimensionalArray.GetLength(dimension);
+      IList list = (IList)JaggedArrayGetValue(values, indices);
+      int currentValuesLength = list.Count;
+      if (currentValuesLength != dimensionLength)
+        throw new Exception("Cannot deserialize non-cubical array as multidimensional array.");
+
+      int[] newIndices = new int[dimension + 1];
+      for (int i = 0; i < dimension; i++)
+      {
+        newIndices[i] = indices[i];
+      }
+
+      for (int i = 0; i < multidimensionalArray.GetLength(dimension); i++)
+      {
+        newIndices[dimension] = i;
+        CopyFromJaggedToMultidimensionalArray(values, multidimensionalArray, newIndices);
+      }
+    }
+
+    private static object JaggedArrayGetValue(IList values, int[] indices)
+    {
+      IList currentList = values;
+      for (int i = 0; i < indices.Length; i++)
+      {
+        int index = indices[i];
+        if (i == indices.Length - 1)
+          return currentList[index];
+        else
+          currentList = (IList)currentList[index];
+      }
+      return currentList;
+    }
+
+    public static Array ToMultidimensionalArray(IList values, Type type, int rank)
+    {
+      IList<int> dimensions = GetDimensions(values);
+
+      while (dimensions.Count < rank)
+      {
+        dimensions.Add(0);
+      }
+
+      Array multidimensionalArray = Array.CreateInstance(type, dimensions.ToArray());
+      CopyFromJaggedToMultidimensionalArray(values, multidimensionalArray, new int[0]);
+
+      return multidimensionalArray;
+    }
   }
 }

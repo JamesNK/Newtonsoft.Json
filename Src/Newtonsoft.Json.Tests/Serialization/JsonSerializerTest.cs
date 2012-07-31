@@ -6629,6 +6629,186 @@ Parameter name: value",
       }
     }
 #endif
+
+    [Test]
+    public void SerializeArray2D()
+    {
+      Array2D aa = new Array2D();
+      aa.Before = "Before!";
+      aa.After = "After!";
+      aa.Coordinates = new[,] { { 1, 1 }, { 1, 2 }, { 2, 1 }, { 2, 2 } };
+
+      string json = JsonConvert.SerializeObject(aa);
+
+      Assert.AreEqual(@"{""Before"":""Before!"",""Coordinates"":[[1,1],[1,2],[2,1],[2,2]],""After"":""After!""}", json);
+    }
+
+    [Test]
+    public void SerializeArray3D()
+    {
+      Array3D aa = new Array3D();
+      aa.Before = "Before!";
+      aa.After = "After!";
+      aa.Coordinates = new[, ,] { { { 1, 1, 1 }, { 1, 1, 2 } }, { { 1, 2, 1 }, { 1, 2, 2 } }, { { 2, 1, 1 }, { 2, 1, 2 } }, { { 2, 2, 1 }, { 2, 2, 2 } } };
+
+      string json = JsonConvert.SerializeObject(aa);
+
+      Assert.AreEqual(@"{""Before"":""Before!"",""Coordinates"":[[[1,1,1],[1,1,2]],[[1,2,1],[1,2,2]],[[2,1,1],[2,1,2]],[[2,2,1],[2,2,2]]],""After"":""After!""}", json);
+    }
+
+    [Test]
+    public void DeserializeArray2D()
+    {
+      string json = @"{""Before"":""Before!"",""Coordinates"":[[1,1],[1,2],[2,1],[2,2]],""After"":""After!""}";
+
+      Array2D aa = JsonConvert.DeserializeObject<Array2D>(json);
+
+      Assert.AreEqual("Before!", aa.Before);
+      Assert.AreEqual("After!", aa.After);
+      Assert.AreEqual(4, aa.Coordinates.GetLength(0));
+      Assert.AreEqual(2, aa.Coordinates.GetLength(1));
+      Assert.AreEqual(1, aa.Coordinates[0, 0]);
+      Assert.AreEqual(2, aa.Coordinates[1, 1]);
+
+      string after = JsonConvert.SerializeObject(aa);
+
+      Assert.AreEqual(json, after);
+    }
+
+    [Test]
+    public void DeserializeArray2D_WithTooManyItems()
+    {
+      string json = @"{""Before"":""Before!"",""Coordinates"":[[1,1],[1,2,3],[2,1],[2,2]],""After"":""After!""}";
+
+      ExceptionAssert.Throws<Exception>(
+        "Cannot deserialize non-cubical array as multidimensional array.",
+        () => JsonConvert.DeserializeObject<Array2D>(json));
+    }
+
+    [Test]
+    public void DeserializeArray2D_WithTooFewItems()
+    {
+      string json = @"{""Before"":""Before!"",""Coordinates"":[[1,1],[1],[2,1],[2,2]],""After"":""After!""}";
+
+      ExceptionAssert.Throws<Exception>(
+        "Cannot deserialize non-cubical array as multidimensional array.",
+        () => JsonConvert.DeserializeObject<Array2D>(json));
+    }
+
+    [Test]
+    public void DeserializeArray3D()
+    {
+      string json = @"{""Before"":""Before!"",""Coordinates"":[[[1,1,1],[1,1,2]],[[1,2,1],[1,2,2]],[[2,1,1],[2,1,2]],[[2,2,1],[2,2,2]]],""After"":""After!""}";
+
+      Array3D aa = JsonConvert.DeserializeObject<Array3D>(json);
+
+      Assert.AreEqual("Before!", aa.Before);
+      Assert.AreEqual("After!", aa.After);
+      Assert.AreEqual(4, aa.Coordinates.GetLength(0));
+      Assert.AreEqual(2, aa.Coordinates.GetLength(1));
+      Assert.AreEqual(3, aa.Coordinates.GetLength(2));
+      Assert.AreEqual(1, aa.Coordinates[0, 0, 0]);
+      Assert.AreEqual(2, aa.Coordinates[1, 1, 1]);
+
+      string after = JsonConvert.SerializeObject(aa);
+
+      Assert.AreEqual(json, after);
+    }
+
+    [Test]
+    public void DeserializeArray3D_WithTooManyItems()
+    {
+      string json = @"{""Before"":""Before!"",""Coordinates"":[[[1,1,1],[1,1,2,1]],[[1,2,1],[1,2,2]],[[2,1,1],[2,1,2]],[[2,2,1],[2,2,2]]],""After"":""After!""}";
+
+      ExceptionAssert.Throws<Exception>(
+        "Cannot deserialize non-cubical array as multidimensional array.",
+        () => JsonConvert.DeserializeObject<Array3D>(json));
+    }
+
+    [Test]
+    public void DeserializeArray3D_WithBadItems()
+    {
+      string json = @"{""Before"":""Before!"",""Coordinates"":[[[1,1,1],[1,1,2]],[[1,2,1],[1,2,2]],[[2,1,1],[2,1,2]],[[2,2,1],{}]],""After"":""After!""}";
+
+      ExceptionAssert.Throws<JsonSerializationException>(
+        "Unexpected token when deserializing multidimensional array: StartObject. Path 'Coordinates[3][1]', line 1, position 99.",
+        () => JsonConvert.DeserializeObject<Array3D>(json));
+    }
+
+    [Test]
+    public void DeserializeArray3D_WithTooFewItems()
+    {
+      string json = @"{""Before"":""Before!"",""Coordinates"":[[[1,1,1],[1,1]],[[1,2,1],[1,2,2]],[[2,1,1],[2,1,2]],[[2,2,1],[2,2,2]]],""After"":""After!""}";
+
+      ExceptionAssert.Throws<Exception>(
+        "Cannot deserialize non-cubical array as multidimensional array.",
+        () => JsonConvert.DeserializeObject<Array3D>(json));
+    }
+
+    [Test]
+    public void SerializeEmpty3DArray()
+    {
+      Array3D aa = new Array3D();
+      aa.Before = "Before!";
+      aa.After = "After!";
+      aa.Coordinates = new int[0, 0, 0];
+
+      string json = JsonConvert.SerializeObject(aa);
+
+      Assert.AreEqual(@"{""Before"":""Before!"",""Coordinates"":[],""After"":""After!""}", json);
+    }
+
+    [Test]
+    public void DeserializeEmpty3DArray()
+    {
+      string json = @"{""Before"":""Before!"",""Coordinates"":[],""After"":""After!""}";
+
+      Array3D aa = JsonConvert.DeserializeObject<Array3D>(json);
+
+      Assert.AreEqual("Before!", aa.Before);
+      Assert.AreEqual("After!", aa.After);
+      Assert.AreEqual(0, aa.Coordinates.GetLength(0));
+      Assert.AreEqual(0, aa.Coordinates.GetLength(1));
+      Assert.AreEqual(0, aa.Coordinates.GetLength(2));
+
+      string after = JsonConvert.SerializeObject(aa);
+
+      Assert.AreEqual(json, after);
+    }
+
+    [Test]
+    public void DeserializeNull3DArray()
+    {
+      string json = @"{""Before"":""Before!"",""Coordinates"":null,""After"":""After!""}";
+
+      Array3D aa = JsonConvert.DeserializeObject<Array3D>(json);
+
+      Assert.AreEqual("Before!", aa.Before);
+      Assert.AreEqual("After!", aa.After);
+      Assert.AreEqual(null, aa.Coordinates);
+
+      string after = JsonConvert.SerializeObject(aa);
+
+      Assert.AreEqual(json, after);
+    }
+
+    [Test]
+    public void DeserializeSemiEmpty3DArray()
+    {
+      string json = @"{""Before"":""Before!"",""Coordinates"":[[]],""After"":""After!""}";
+
+      Array3D aa = JsonConvert.DeserializeObject<Array3D>(json);
+
+      Assert.AreEqual("Before!", aa.Before);
+      Assert.AreEqual("After!", aa.After);
+      Assert.AreEqual(1, aa.Coordinates.GetLength(0));
+      Assert.AreEqual(0, aa.Coordinates.GetLength(1));
+      Assert.AreEqual(0, aa.Coordinates.GetLength(2));
+
+      string after = JsonConvert.SerializeObject(aa);
+
+      Assert.AreEqual(json, after);
+    }
   }
 
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
@@ -6939,4 +7119,18 @@ Parameter name: value",
     public string IgnoreDataMemberAndDataMemberAttribute { get; set; }
   }
 #endif
+
+  public class Array2D
+  {
+    public string Before { get; set; }
+    public int[,] Coordinates { get; set; }
+    public string After { get; set; }
+  }
+
+  public class Array3D
+  {
+    public string Before { get; set; }
+    public int[,,] Coordinates { get; set; }
+    public string After { get; set; }
+  }
 }

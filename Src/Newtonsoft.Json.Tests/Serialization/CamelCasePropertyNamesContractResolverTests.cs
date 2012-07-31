@@ -192,6 +192,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         });
 
       Assert.AreEqual(@"{
+  ""explicit"": false,
   ""text"": ""Text!"",
   ""integer"": 2147483647,
   ""int"": 0,
