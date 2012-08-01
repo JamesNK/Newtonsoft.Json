@@ -6657,6 +6657,141 @@ Parameter name: value",
     }
 
     [Test]
+    public void SerializeArray3DWithConverter()
+    {
+      Array3DWithConverter aa = new Array3DWithConverter();
+      aa.Before = "Before!";
+      aa.After = "After!";
+      aa.Coordinates = new[, ,] { { { 1, 1, 1 }, { 1, 1, 2 } }, { { 1, 2, 1 }, { 1, 2, 2 } }, { { 2, 1, 1 }, { 2, 1, 2 } }, { { 2, 2, 1 }, { 2, 2, 2 } } };
+
+      string json = JsonConvert.SerializeObject(aa, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""Before"": ""Before!"",
+  ""Coordinates"": [
+    [
+      [
+        1.0,
+        1.0,
+        1.0
+      ],
+      [
+        1.0,
+        1.0,
+        2.0
+      ]
+    ],
+    [
+      [
+        1.0,
+        2.0,
+        1.0
+      ],
+      [
+        1.0,
+        2.0,
+        2.0
+      ]
+    ],
+    [
+      [
+        2.0,
+        1.0,
+        1.0
+      ],
+      [
+        2.0,
+        1.0,
+        2.0
+      ]
+    ],
+    [
+      [
+        2.0,
+        2.0,
+        1.0
+      ],
+      [
+        2.0,
+        2.0,
+        2.0
+      ]
+    ]
+  ],
+  ""After"": ""After!""
+}", json);
+    }
+
+    [Test]
+    public void DeserializeArray3DWithConverter()
+    {
+      string json = @"{
+  ""Before"": ""Before!"",
+  ""Coordinates"": [
+    [
+      [
+        1.0,
+        1.0,
+        1.0
+      ],
+      [
+        1.0,
+        1.0,
+        2.0
+      ]
+    ],
+    [
+      [
+        1.0,
+        2.0,
+        1.0
+      ],
+      [
+        1.0,
+        2.0,
+        2.0
+      ]
+    ],
+    [
+      [
+        2.0,
+        1.0,
+        1.0
+      ],
+      [
+        2.0,
+        1.0,
+        2.0
+      ]
+    ],
+    [
+      [
+        2.0,
+        2.0,
+        1.0
+      ],
+      [
+        2.0,
+        2.0,
+        2.0
+      ]
+    ]
+  ],
+  ""After"": ""After!""
+}";
+
+      Array3DWithConverter aa = JsonConvert.DeserializeObject<Array3DWithConverter>(json);
+
+      Assert.AreEqual("Before!", aa.Before);
+      Assert.AreEqual("After!", aa.After);
+      Assert.AreEqual(4, aa.Coordinates.GetLength(0));
+      Assert.AreEqual(2, aa.Coordinates.GetLength(1));
+      Assert.AreEqual(3, aa.Coordinates.GetLength(2));
+      Assert.AreEqual(1, aa.Coordinates[0, 0, 0]);
+      Assert.AreEqual(2, aa.Coordinates[1, 1, 1]);
+    }
+
+    [Test]
     public void DeserializeArray2D()
     {
       string json = @"{""Before"":""Before!"",""Coordinates"":[[1,1],[1,2],[2,1],[2,2]],""After"":""After!""}";
@@ -6777,6 +6912,26 @@ Parameter name: value",
     }
 
     [Test]
+    public void DeserializeIncomplete3DArray()
+    {
+      string json = @"{""Before"":""Before!"",""Coordinates"":[/*hi*/[/*hi*/[1/*hi*/,/*hi*/1/*hi*/,1]/*hi*/,/*hi*/[1,1";
+
+      ExceptionAssert.Throws<JsonSerializationException>(
+        "Unexpected end when deserializing array. Path 'Coordinates[0][1][1]', line 1, position 90.",
+        () => JsonConvert.DeserializeObject<Array3D>(json));
+    }
+
+    [Test]
+    public void DeserializeIncompleteNotTopLevel3DArray()
+    {
+      string json = @"{""Before"":""Before!"",""Coordinates"":[/*hi*/[/*hi*/";
+
+      ExceptionAssert.Throws<JsonSerializationException>(
+        "Unexpected end when deserializing array. Path 'Coordinates[0]', line 1, position 48.",
+        () => JsonConvert.DeserializeObject<Array3D>(json));
+    }
+
+    [Test]
     public void DeserializeNull3DArray()
     {
       string json = @"{""Before"":""Before!"",""Coordinates"":null,""After"":""After!""}";
@@ -6808,6 +6963,161 @@ Parameter name: value",
       string after = JsonConvert.SerializeObject(aa);
 
       Assert.AreEqual(json, after);
+    }
+
+    [Test]
+    public void SerializeReferenceTracked3DArray()
+    {
+      Event e1 = new Event
+        {
+          EventName = "EventName!"
+        };
+      Event[,] array1 = new [,] { { e1, e1 }, { e1, e1 } };
+      IList<Event[,]> values1 = new List<Event[,]>
+        {
+          array1,
+          array1
+        };
+
+      string json = JsonConvert.SerializeObject(values1, new JsonSerializerSettings
+        {
+          PreserveReferencesHandling = PreserveReferencesHandling.All,
+          Formatting = Formatting.Indented
+        });
+
+      Assert.AreEqual(@"{
+  ""$id"": ""1"",
+  ""$values"": [
+    {
+      ""$id"": ""2"",
+      ""$values"": [
+        [
+          {
+            ""$id"": ""3"",
+            ""EventName"": ""EventName!"",
+            ""Venue"": null,
+            ""Performances"": null
+          },
+          {
+            ""$ref"": ""3""
+          }
+        ],
+        [
+          {
+            ""$ref"": ""3""
+          },
+          {
+            ""$ref"": ""3""
+          }
+        ]
+      ]
+    },
+    {
+      ""$ref"": ""2""
+    }
+  ]
+}", json);
+    }
+
+    [Test]
+    public void SerializeTypeName3DArray()
+    {
+      Event e1 = new Event
+      {
+        EventName = "EventName!"
+      };
+      Event[,] array1 = new[,] { { e1, e1 }, { e1, e1 } };
+      IList<Event[,]> values1 = new List<Event[,]>
+        {
+          array1,
+          array1
+        };
+
+      string json = JsonConvert.SerializeObject(values1, new JsonSerializerSettings
+      {
+        TypeNameHandling = TypeNameHandling.All,
+        Formatting = Formatting.Indented
+      });
+
+      Assert.AreEqual(@"{
+  ""$type"": ""System.Collections.Generic.List`1[[Newtonsoft.Json.Tests.Serialization.Event[,], Newtonsoft.Json.Tests]], mscorlib"",
+  ""$values"": [
+    {
+      ""$type"": ""Newtonsoft.Json.Tests.Serialization.Event[,], Newtonsoft.Json.Tests"",
+      ""$values"": [
+        [
+          {
+            ""$type"": ""Newtonsoft.Json.Tests.Serialization.Event, Newtonsoft.Json.Tests"",
+            ""EventName"": ""EventName!"",
+            ""Venue"": null,
+            ""Performances"": null
+          },
+          {
+            ""$type"": ""Newtonsoft.Json.Tests.Serialization.Event, Newtonsoft.Json.Tests"",
+            ""EventName"": ""EventName!"",
+            ""Venue"": null,
+            ""Performances"": null
+          }
+        ],
+        [
+          {
+            ""$type"": ""Newtonsoft.Json.Tests.Serialization.Event, Newtonsoft.Json.Tests"",
+            ""EventName"": ""EventName!"",
+            ""Venue"": null,
+            ""Performances"": null
+          },
+          {
+            ""$type"": ""Newtonsoft.Json.Tests.Serialization.Event, Newtonsoft.Json.Tests"",
+            ""EventName"": ""EventName!"",
+            ""Venue"": null,
+            ""Performances"": null
+          }
+        ]
+      ]
+    },
+    {
+      ""$type"": ""Newtonsoft.Json.Tests.Serialization.Event[,], Newtonsoft.Json.Tests"",
+      ""$values"": [
+        [
+          {
+            ""$type"": ""Newtonsoft.Json.Tests.Serialization.Event, Newtonsoft.Json.Tests"",
+            ""EventName"": ""EventName!"",
+            ""Venue"": null,
+            ""Performances"": null
+          },
+          {
+            ""$type"": ""Newtonsoft.Json.Tests.Serialization.Event, Newtonsoft.Json.Tests"",
+            ""EventName"": ""EventName!"",
+            ""Venue"": null,
+            ""Performances"": null
+          }
+        ],
+        [
+          {
+            ""$type"": ""Newtonsoft.Json.Tests.Serialization.Event, Newtonsoft.Json.Tests"",
+            ""EventName"": ""EventName!"",
+            ""Venue"": null,
+            ""Performances"": null
+          },
+          {
+            ""$type"": ""Newtonsoft.Json.Tests.Serialization.Event, Newtonsoft.Json.Tests"",
+            ""EventName"": ""EventName!"",
+            ""Venue"": null,
+            ""Performances"": null
+          }
+        ]
+      ]
+    }
+  ]
+}", json);
+
+      IList<Event[,]> values2 = (IList<Event[,]>)JsonConvert.DeserializeObject(json, new JsonSerializerSettings
+        {
+          TypeNameHandling = TypeNameHandling.All
+        });
+
+      Assert.AreEqual(2, values2.Count);
+      Assert.AreEqual("EventName!", values2[0][0, 0].EventName);
     }
   }
 
@@ -7132,5 +7442,31 @@ Parameter name: value",
     public string Before { get; set; }
     public int[,,] Coordinates { get; set; }
     public string After { get; set; }
+  }
+
+  public class Array3DWithConverter
+  {
+    public string Before { get; set; }
+    [JsonProperty(ItemConverterType = typeof(IntToFloatConverter))]
+    public int[, ,] Coordinates { get; set; }
+    public string After { get; set; }
+  }
+
+  public class IntToFloatConverter : JsonConverter
+  {
+    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    {
+      writer.WriteValue(Convert.ToDouble(value));
+    }
+
+    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+    {
+      return Convert.ToInt32(reader.Value);
+    }
+
+    public override bool CanConvert(Type objectType)
+    {
+      return objectType == typeof (int);
+    }
   }
 }

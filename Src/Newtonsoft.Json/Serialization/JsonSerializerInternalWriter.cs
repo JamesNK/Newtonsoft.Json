@@ -540,7 +540,7 @@ namespace Newtonsoft.Json.Serialization
 
           try
           {
-            JsonContract valueContract = contract.FinalItemContract ?? GetContractSafe(values);
+            JsonContract valueContract = contract.FinalItemContract ?? GetContractSafe(value);
 
             if (ShouldWriteReference(value, null, valueContract, contract, member))
             {
@@ -557,7 +557,7 @@ namespace Newtonsoft.Json.Serialization
           catch (Exception ex)
           {
             if (IsErrorHandled(values, contract, i, writer.ContainerPath, ex))
-              HandleError(writer, initialDepth);
+              HandleError(writer, initialDepth + 1);
             else
               throw;
           }

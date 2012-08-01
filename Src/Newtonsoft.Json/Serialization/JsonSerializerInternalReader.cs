@@ -872,8 +872,6 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
 
       contract.InvokeOnDeserializing(list, Serializer.Context);
 
-      int initialDepth = reader.Depth;
-
       JsonContract collectionItemContract = GetContractSafe(contract.CollectionItemType);
       JsonConverter collectionItemConverter = GetConverter(collectionItemContract, null, contract, containerProperty);
 
@@ -884,6 +882,8 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
 
       while (true)
       {
+        int initialDepth = reader.Depth;
+
         if (listStack.Count == rank)
         {
           try
@@ -895,6 +895,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                 case JsonToken.EndArray:
                   listStack.Pop();
                   currentList = listStack.Peek();
+                  previousErrorIndex = null;
                   break;
                 case JsonToken.Comment:
                   break;

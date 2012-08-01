@@ -98,6 +98,99 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 
     [Test]
+    public void SerializingErrorIn3DArray()
+    {
+      ListErrorObject[,,] c = new ListErrorObject[,,]
+        {
+          {
+            {
+              new ListErrorObject
+                {
+                  Member = "Value1",
+                  ThrowError = "Handle this!",
+                  Member2 = "Member1"
+                },
+              new ListErrorObject
+                {
+                  Member = "Value2",
+                  Member2 = "Member2"
+                },
+              new ListErrorObject
+                {
+                  Member = "Value3",
+                  ThrowError = "Handle that!",
+                  Member2 = "Member3"
+                }
+            },
+            {
+              new ListErrorObject
+                {
+                  Member = "Value1",
+                  ThrowError = "Handle this!",
+                  Member2 = "Member1"
+                },
+              new ListErrorObject
+                {
+                  Member = "Value2",
+                  Member2 = "Member2"
+                },
+              new ListErrorObject
+                {
+                  Member = "Value3",
+                  ThrowError = "Handle that!",
+                  Member2 = "Member3"
+                }
+            }
+          }
+        };
+
+      string json = JsonConvert.SerializeObject(c, new JsonSerializerSettings
+        {
+          Formatting = Formatting.Indented,
+          Error = (s, e) =>
+            {
+              if (e.CurrentObject.GetType().IsArray)
+                e.ErrorContext.Handled = true;
+            }
+        });
+
+      Assert.AreEqual(@"[
+  [
+    [
+      {
+        ""Member"": ""Value1"",
+        ""ThrowError"": ""Handle this!"",
+        ""Member2"": ""Member1""
+      },
+      {
+        ""Member"": ""Value2""
+      },
+      {
+        ""Member"": ""Value3"",
+        ""ThrowError"": ""Handle that!"",
+        ""Member2"": ""Member3""
+      }
+    ],
+    [
+      {
+        ""Member"": ""Value1"",
+        ""ThrowError"": ""Handle this!"",
+        ""Member2"": ""Member1""
+      },
+      {
+        ""Member"": ""Value2""
+      },
+      {
+        ""Member"": ""Value3"",
+        ""ThrowError"": ""Handle that!"",
+        ""Member2"": ""Member3""
+      }
+    ]
+  ]
+]", json);
+    }
+
+    [Test]
     public void SerializingErrorInChildObject()
     {
       ListErrorObjectCollection c = new ListErrorObjectCollection
@@ -337,6 +430,27 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual(2, errors.Count);
       Assert.AreEqual("[0] - 0 - Could not convert string to integer: a. Path '[0]', line 1, position 4.", errors[0]);
       Assert.AreEqual("[1] - 1 - Could not convert string to integer: b. Path '[1]', line 1, position 8.", errors[1]);
+    }
+
+    [Test]
+    public void HandlingMultidimensionalArrayErrors()
+    {
+      string json = "[[\"a\",\"45\"],[\"b\",34]]";
+
+      List<string> errors = new List<string>();
+
+      JsonSerializer serializer = new JsonSerializer();
+      serializer.Error += delegate(object sender, ErrorEventArgs args)
+      {
+        errors.Add(args.ErrorContext.Path + " - " + args.ErrorContext.Member + " - " + args.ErrorContext.Error.Message);
+        args.ErrorContext.Handled = true;
+      };
+
+      serializer.Deserialize(new JsonTextReader(new StringReader(json)), typeof(int[,]));
+
+      Assert.AreEqual(2, errors.Count);
+      Assert.AreEqual("[0][0] - 0 - Could not convert string to integer: a. Path '[0][0]', line 1, position 5.", errors[0]);
+      Assert.AreEqual("[1][0] - 0 - Could not convert string to integer: b. Path '[1][0]', line 1, position 16.", errors[1]);
     }
 
     [Test]
