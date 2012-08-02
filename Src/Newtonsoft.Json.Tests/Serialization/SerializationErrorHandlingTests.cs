@@ -259,14 +259,14 @@ namespace Newtonsoft.Json.Tests.Serialization
       List<string> errors = new List<string>();
 
       JsonSerializer serializer = JsonSerializer.Create(new JsonSerializerSettings
-      {
-        Error = delegate(object sender, ErrorEventArgs args)
         {
-          errors.Add(args.ErrorContext.Path + " - " + args.ErrorContext.Member + " - " + args.ErrorContext.Error.Message);
-          args.ErrorContext.Handled = true;
-        },
-        Converters = { new IsoDateTimeConverter() }
-      });
+          Error = delegate(object sender, ErrorEventArgs args)
+            {
+              errors.Add(args.ErrorContext.Path + " - " + args.ErrorContext.Member + " - " + args.ErrorContext.Error.Message);
+              args.ErrorContext.Handled = true;
+            },
+          Converters = {new IsoDateTimeConverter()}
+        });
       var c = serializer.Deserialize<List<DateTime>>(new JsonTextReader(new StringReader(@"[
         ""2009-09-09T00:00:00Z"",
         ""I am not a date and will error!"",
@@ -374,13 +374,13 @@ namespace Newtonsoft.Json.Tests.Serialization
       {
         JsonSerializer serializer = new JsonSerializer();
         serializer.Error += delegate(object sender, ErrorEventArgs args)
-        {
-          // only log an error once
-          if (args.CurrentObject == args.ErrorContext.OriginalObject)
-            errors.Add(args.ErrorContext.Path + " - " + args.ErrorContext.Member + " - " + args.ErrorContext.Error.Message);
-        };
+          {
+            // only log an error once
+            if (args.CurrentObject == args.ErrorContext.OriginalObject)
+              errors.Add(args.ErrorContext.Path + " - " + args.ErrorContext.Member + " - " + args.ErrorContext.Error.Message);
+          };
 
-        serializer.Deserialize(new StringReader(json), typeof(List<List<DateTime>>));
+        serializer.Deserialize(new StringReader(json), typeof (List<List<DateTime>>));
       }
       catch (Exception ex)
       {
@@ -405,7 +405,7 @@ namespace Newtonsoft.Json.Tests.Serialization
           args.ErrorContext.Handled = true;
         };
       serializer.Deserialize(new JsonTextReader(new StringReader(json)), typeof (MyTypeWithRequiredMembers));
-      
+
       Assert.AreEqual(2, errors.Count);
       Assert.AreEqual(" - Required1 - Required property 'Required1' not found in JSON. Path '', line 1, position 2.", errors[0]);
       Assert.AreEqual(" - Required2 - Required property 'Required2' not found in JSON. Path '', line 1, position 2.", errors[1]);
@@ -420,12 +420,12 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       JsonSerializer serializer = new JsonSerializer();
       serializer.Error += delegate(object sender, ErrorEventArgs args)
-      {
-        errors.Add(args.ErrorContext.Path + " - " + args.ErrorContext.Member + " - " + args.ErrorContext.Error.Message);
-        args.ErrorContext.Handled = true;
-      };
+        {
+          errors.Add(args.ErrorContext.Path + " - " + args.ErrorContext.Member + " - " + args.ErrorContext.Error.Message);
+          args.ErrorContext.Handled = true;
+        };
 
-      serializer.Deserialize(new JsonTextReader(new StringReader(json)), typeof(int[]));
+      serializer.Deserialize(new JsonTextReader(new StringReader(json)), typeof (int[]));
 
       Assert.AreEqual(2, errors.Count);
       Assert.AreEqual("[0] - 0 - Could not convert string to integer: a. Path '[0]', line 1, position 4.", errors[0]);
@@ -441,12 +441,12 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       JsonSerializer serializer = new JsonSerializer();
       serializer.Error += delegate(object sender, ErrorEventArgs args)
-      {
-        errors.Add(args.ErrorContext.Path + " - " + args.ErrorContext.Member + " - " + args.ErrorContext.Error.Message);
-        args.ErrorContext.Handled = true;
-      };
+        {
+          errors.Add(args.ErrorContext.Path + " - " + args.ErrorContext.Member + " - " + args.ErrorContext.Error.Message);
+          args.ErrorContext.Handled = true;
+        };
 
-      serializer.Deserialize(new JsonTextReader(new StringReader(json)), typeof(int[,]));
+      serializer.Deserialize(new JsonTextReader(new StringReader(json)), typeof (int[,]));
 
       Assert.AreEqual(2, errors.Count);
       Assert.AreEqual("[0][0] - 0 - Could not convert string to integer: a. Path '[0][0]', line 1, position 5.", errors[0]);
@@ -457,15 +457,15 @@ namespace Newtonsoft.Json.Tests.Serialization
     public void ErrorHandlingAndAvoidingRecursiveDepthError()
     {
       string json = "{'A':{'A':{'A':{'A':{'A':{}}}}}}";
-      JsonSerializer serializer = new JsonSerializer() { };
+      JsonSerializer serializer = new JsonSerializer() {};
       IList<string> errors = new List<string>();
       serializer.Error += (sender, e) =>
-      {
-        e.ErrorContext.Handled = true;
-        errors.Add(e.ErrorContext.Path);
-      };
+        {
+          e.ErrorContext.Handled = true;
+          errors.Add(e.ErrorContext.Path);
+        };
 
-      serializer.Deserialize<Nest>(new JsonTextReader(new StringReader(json)) { MaxDepth = 3 });
+      serializer.Deserialize<Nest>(new JsonTextReader(new StringReader(json)) {MaxDepth = 3});
 
       Assert.AreEqual(1, errors.Count);
       Assert.AreEqual("A.A.A", errors[0]);
@@ -515,7 +515,7 @@ namespace Newtonsoft.Json.Tests.Serialization
           });
 
       Assert.IsNull(o);
-      
+
       Assert.AreEqual(3, errors.Count);
       Assert.AreEqual("Unexpected character encountered while parsing value: x. Path '[0]', line 1, position 3.", errors[0]);
       Assert.AreEqual("Unexpected character encountered while parsing value: x. Path '[0]', line 1, position 3.", errors[1]);
@@ -530,13 +530,13 @@ namespace Newtonsoft.Json.Tests.Serialization
       Dictionary<string, int[]> o = JsonConvert.DeserializeObject<Dictionary<string, int[]>>(
         "{'badarray':[0,x,2],'goodarray':[0,1,2]}",
         new JsonSerializerSettings
-        {
-          Error = (sender, arg) =>
           {
-            errors.Add(arg.ErrorContext.Error.Message);
-            arg.ErrorContext.Handled = true;
-          }
-        });
+            Error = (sender, arg) =>
+              {
+                errors.Add(arg.ErrorContext.Error.Message);
+                arg.ErrorContext.Handled = true;
+              }
+          });
 
       Assert.IsNull(o);
 
@@ -547,48 +547,73 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual("Unexpected character encountered while parsing value: x. Path 'badarray[0]', line 1, position 15.", errors[3]);
     }
 
-    public class ThrowingReader : TextReader
+    [Test]
+    public void ErrorHandlingEndOfContent()
     {
-      int _position = 0;
-      static string element = "{\"FirstName\":\"Din\",\"LastName\":\"Rav\",\"Item\":{\"ItemName\":\"temp\"}}";
-      bool _firstRead = true;
-      bool _readComma = false;
+      IList<string> errors = new List<string>();
 
-      public ThrowingReader()
+      const string input = "{\"events\":[{\"code\":64411,\"prio";
+
+      const int maxDepth = 256;
+      using (var jsonTextReader = new JsonTextReader(new StringReader(input)) {MaxDepth = maxDepth})
       {
+        JsonSerializer jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings {MaxDepth = maxDepth});
+        jsonSerializer.Error += (sender, e) =>
+          {
+            errors.Add(e.ErrorContext.Error.Message);
+            e.ErrorContext.Handled = true;
+          };
+        
+        jsonSerializer.Deserialize(jsonTextReader, typeof (LogMessage));
       }
 
-      public override int Read(char[] buffer, int index, int count)
+      Assert.AreEqual(2, errors.Count);
+      Assert.AreEqual(@"Unterminated string. Expected delimiter: "". Path 'events[0].code', line 1, position 30.", errors[0]);
+      Assert.AreEqual(@"Unexpected end when deserializing object. Path 'events[0].code', line 1, position 30.", errors[1]);
+    }
+  }
+
+  public class ThrowingReader : TextReader
+  {
+    private int _position = 0;
+    private static string element = "{\"FirstName\":\"Din\",\"LastName\":\"Rav\",\"Item\":{\"ItemName\":\"temp\"}}";
+    private bool _firstRead = true;
+    private bool _readComma = false;
+
+    public ThrowingReader()
+    {
+    }
+
+    public override int Read(char[] buffer, int index, int count)
+    {
+      char[] temp = new char[buffer.Length];
+      int charsRead = 0;
+      if (_firstRead)
       {
-        char[] temp = new char[buffer.Length];
-        int charsRead = 0;
-        if (_firstRead)
+        charsRead = new StringReader("[").Read(temp, index, count);
+        _firstRead = false;
+      }
+      else
+      {
+        if (_readComma)
         {
-          charsRead = new StringReader("[").Read(temp, index, count);
-          _firstRead = false;
+          charsRead = new StringReader(",").Read(temp, index, count);
+          _readComma = false;
         }
         else
         {
-          if (_readComma)
-          {
-            charsRead = new StringReader(",").Read(temp, index, count);
-            _readComma = false;
-          }
-          else
-          {
-            charsRead = new StringReader(element).Read(temp, index, count);
-            _readComma = true;
-          }
+          charsRead = new StringReader(element).Read(temp, index, count);
+          _readComma = true;
         }
-
-        _position += charsRead;
-        if (_position > 65536)
-        {
-          throw new Exception("too far");
-        }
-        Array.Copy(temp, index, buffer, index, charsRead);
-        return charsRead;
       }
+
+      _position += charsRead;
+      if (_position > 65536)
+      {
+        throw new Exception("too far");
+      }
+      Array.Copy(temp, index, buffer, index, charsRead);
+      return charsRead;
     }
   }
 
@@ -607,9 +632,18 @@ namespace Newtonsoft.Json.Tests.Serialization
   [JsonObject]
   public class MyTypeWithRequiredMembers
   {
-    [JsonProperty(Required = Required.AllowNull)]
-    public string Required1;
-    [JsonProperty(Required = Required.AllowNull)]
-    public string Required2;
+    [JsonProperty(Required = Required.AllowNull)] public string Required1;
+    [JsonProperty(Required = Required.AllowNull)] public string Required2;
+  }
+
+  public class LogMessage
+  {
+    public string DeviceId { get; set; }
+  }
+
+  public class LogEvent
+  {
+    public string Code { get; set; }
+    public int Priority { get; set; }
   }
 }

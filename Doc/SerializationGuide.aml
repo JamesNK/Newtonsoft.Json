@@ -276,13 +276,20 @@
       <content>
         <!-- Uncomment this to create a sub-section outline
         <autoOutline /> -->
-        <para>Serialization of values that are convertible by a JsonConverter (i.e. CanConvert returns true for its type) is
+        <para>Serialization of values that are convertible by a <codeEntityReference>T:Newtonsoft.Json.JsonConverter</codeEntityReference>
+        (i.e. CanConvert returns true for its type) is
         completely overridden by the JsonConverter. The test to see whether a value can be converted by a JsonSerializer takes
         precedence over all other tests.</para>
-        <para> JsonConverters can be defined and specified in a number of places: in an attribute on a member, in an attribute
+        <para>JsonConverters can be defined and specified in a number of places: in an attribute on a member, in an attribute
         on a class and added to the JsonSerializer's converters collection. The priority of which JsonConverter is used is the
         JsonConverter defined by attribute on a member then the JsonConverter defined by an attribute on a class and finally
         any converters passed to the JsonSerializer.</para>
+        
+<alert class="note">
+  <para>Because a JsonConverter creates a new value a converter will not work with readonly properties because there is no way to assign the new
+  value to the property. Either change the property to have a public setter or place a JsonPropertyAttribute or DataMemberAttribute on the property.</para>
+</alert>
+
       </content>
     </section>
     

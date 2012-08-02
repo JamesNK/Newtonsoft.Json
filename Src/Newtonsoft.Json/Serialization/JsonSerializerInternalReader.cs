@@ -1577,7 +1577,8 @@ To fix this error either change the environment to be fully trusted, change the 
 
         while (reader.Depth > (initialDepth + 1))
         {
-          reader.Read();
+          if (!reader.Read())
+            break;
         }
       }
     }
