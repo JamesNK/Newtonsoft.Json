@@ -6447,6 +6447,26 @@ Parameter name: value",
     }
 #endif
 
+   [Test]
+   public void AdditionalContentAfterFinish()
+   {
+     ExceptionAssert.Throws<JsonException>(
+       "Additional text found in JSON string after finishing deserializing object.",
+       () =>
+         {
+           string json = "[{},1]";
+
+           JsonSerializer serializer = new JsonSerializer();
+           serializer.CheckAdditionalContent = true;
+
+           var reader = new JsonTextReader(new StringReader(json));
+           reader.Read();
+           reader.Read();
+
+           serializer.Deserialize(reader, typeof (MyType));
+         });
+   }
+
     [Test]
     public void DeserializeRelativeUri()
     {

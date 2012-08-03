@@ -50,77 +50,6 @@ namespace Newtonsoft.Json.Tests.Serialization
   [TestFixture]
   public class DynamicTests : TestFixtureBase
   {
-    public class DynamicChildObject
-    {
-      public string Text { get; set; }
-      public int Integer { get; set; }
-    }
-
-    public class TestDynamicObject : DynamicObject
-    {
-      private readonly Dictionary<string, object> _members;
-
-      public int Int;
-      [JsonProperty]
-      public bool Explicit;
-      public DynamicChildObject ChildObject { get; set; }
-
-      internal Dictionary<string, object> Members
-      {
-        get { return _members; }
-      }
-
-      public TestDynamicObject()
-      {
-        _members = new Dictionary<string, object>();
-      }
-
-      public override IEnumerable<string> GetDynamicMemberNames()
-      {
-        return _members.Keys.Union(new[] { "Int", "ChildObject" });
-      }
-
-      public override bool TryConvert(ConvertBinder binder, out object result)
-      {
-        Type targetType = binder.Type;
-
-        if (targetType == typeof(IDictionary<string, object>) ||
-            targetType == typeof(IDictionary))
-        {
-          result = new Dictionary<string, object>(_members);
-          return true;
-        }
-        else
-        {
-          return base.TryConvert(binder, out result);
-        }
-      }
-
-      public override bool TryDeleteMember(DeleteMemberBinder binder)
-      {
-        return _members.Remove(binder.Name);
-      }
-
-      public override bool TryGetMember(GetMemberBinder binder, out object result)
-      {
-        return _members.TryGetValue(binder.Name, out result);
-      }
-
-      public override bool TrySetMember(SetMemberBinder binder, object value)
-      {
-        _members[binder.Name] = value;
-        return true;
-      }
-    }
-
-    public class ErrorSettingDynamicObject : DynamicObject
-    {
-      public override bool TrySetMember(SetMemberBinder binder, object value)
-      {
-        return false;
-      }
-    }
-
     [Test]
     public void SerializeDynamicObject()
     {
@@ -315,6 +244,77 @@ namespace Newtonsoft.Json.Tests.Serialization
       DictionaryDynamicObject foo = JsonConvert.DeserializeObject<DictionaryDynamicObject>(json, settings);
 
       Assert.AreEqual(false, foo.Values["retweeted"]);
+    }
+  }
+
+  public class DynamicChildObject
+  {
+    public string Text { get; set; }
+    public int Integer { get; set; }
+  }
+
+  public class TestDynamicObject : DynamicObject
+  {
+    private readonly Dictionary<string, object> _members;
+
+    public int Int;
+    [JsonProperty]
+    public bool Explicit;
+    public DynamicChildObject ChildObject { get; set; }
+
+    internal Dictionary<string, object> Members
+    {
+      get { return _members; }
+    }
+
+    public TestDynamicObject()
+    {
+      _members = new Dictionary<string, object>();
+    }
+
+    public override IEnumerable<string> GetDynamicMemberNames()
+    {
+      return _members.Keys.Union(new[] { "Int", "ChildObject" });
+    }
+
+    public override bool TryConvert(ConvertBinder binder, out object result)
+    {
+      Type targetType = binder.Type;
+
+      if (targetType == typeof(IDictionary<string, object>) ||
+          targetType == typeof(IDictionary))
+      {
+        result = new Dictionary<string, object>(_members);
+        return true;
+      }
+      else
+      {
+        return base.TryConvert(binder, out result);
+      }
+    }
+
+    public override bool TryDeleteMember(DeleteMemberBinder binder)
+    {
+      return _members.Remove(binder.Name);
+    }
+
+    public override bool TryGetMember(GetMemberBinder binder, out object result)
+    {
+      return _members.TryGetValue(binder.Name, out result);
+    }
+
+    public override bool TrySetMember(SetMemberBinder binder, object value)
+    {
+      _members[binder.Name] = value;
+      return true;
+    }
+  }
+
+  public class ErrorSettingDynamicObject : DynamicObject
+  {
+    public override bool TrySetMember(SetMemberBinder binder, object value)
+    {
+      return false;
     }
   }
 }

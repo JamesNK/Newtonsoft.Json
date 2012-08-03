@@ -181,7 +181,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     [Test]
     public void DynamicCamelCasePropertyNames()
     {
-      dynamic o = new DynamicTests.TestDynamicObject();
+      dynamic o = new TestDynamicObject();
       o.Text = "Text!";
       o.Integer = int.MaxValue;
 

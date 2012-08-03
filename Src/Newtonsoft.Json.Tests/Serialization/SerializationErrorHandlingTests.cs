@@ -552,7 +552,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     {
       IList<string> errors = new List<string>();
 
-      const string input = "{\"events\":[{\"code\":64411,\"prio";
+      const string input = "{\"events\":[{\"code\":64411},{\"code\":64411,\"prio";
 
       const int maxDepth = 256;
       using (var jsonTextReader = new JsonTextReader(new StringReader(input)) {MaxDepth = maxDepth})
@@ -563,14 +563,84 @@ namespace Newtonsoft.Json.Tests.Serialization
             errors.Add(e.ErrorContext.Error.Message);
             e.ErrorContext.Handled = true;
           };
-        
-        jsonSerializer.Deserialize(jsonTextReader, typeof (LogMessage));
+
+        LogMessage logMessage = jsonSerializer.Deserialize<LogMessage>(jsonTextReader);
+
+        Assert.IsNotNull(logMessage.Events);
+        Assert.AreEqual(1, logMessage.Events.Count);
+        Assert.AreEqual("64411", logMessage.Events[0].Code);
+      }
+
+      Assert.AreEqual(3, errors.Count);
+      Assert.AreEqual(@"Unterminated string. Expected delimiter: "". Path 'events[1].code', line 1, position 45.", errors[0]);
+      Assert.AreEqual(@"Unexpected end when deserializing array. Path 'events[1].code', line 1, position 45.", errors[1]);
+      Assert.AreEqual(@"Unexpected end when deserializing object. Path 'events[1].code', line 1, position 45.", errors[2]);
+    }
+
+    [Test]
+    public void ErrorHandlingEndOfContentDictionary()
+    {
+      IList<string> errors = new List<string>();
+
+      const string input = "{\"events\":{\"code\":64411},\"events2\":{\"code\":64412,";
+
+      const int maxDepth = 256;
+      using (var jsonTextReader = new JsonTextReader(new StringReader(input)) {MaxDepth = maxDepth})
+      {
+        JsonSerializer jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings {MaxDepth = maxDepth});
+        jsonSerializer.Error += (sender, e) =>
+          {
+            errors.Add(e.ErrorContext.Error.Message);
+            e.ErrorContext.Handled = true;
+          };
+
+        IDictionary<string, LogEvent> logEvents = jsonSerializer.Deserialize<IDictionary<string, LogEvent>>(jsonTextReader);
+
+        Assert.IsNotNull(logEvents);
+        Assert.AreEqual(2, logEvents.Count);
+        Assert.AreEqual("64411", logEvents["events"].Code);
+        Assert.AreEqual("64412", logEvents["events2"].Code);
       }
 
       Assert.AreEqual(2, errors.Count);
-      Assert.AreEqual(@"Unterminated string. Expected delimiter: "". Path 'events[0].code', line 1, position 30.", errors[0]);
-      Assert.AreEqual(@"Unexpected end when deserializing object. Path 'events[0].code', line 1, position 30.", errors[1]);
+      Assert.AreEqual(@"Unexpected end when deserializing object. Path 'events2.code', line 1, position 49.", errors[0]);
+      Assert.AreEqual(@"Unexpected end when deserializing object. Path 'events2.code', line 1, position 49.", errors[1]);
     }
+
+#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
+    [Test]
+    public void ErrorHandlingEndOfContentDynamic()
+    {
+      IList<string> errors = new List<string>();
+
+      string json = @"{
+  ""Explicit"": true,
+  ""Decimal"": 99.9,
+  ""Int"": 1,
+  ""ChildObject"": {
+    ""Integer"": 123";
+
+      TestDynamicObject newDynamicObject = JsonConvert.DeserializeObject<TestDynamicObject>(json, new JsonSerializerSettings
+        {
+          Error = (sender, e) =>
+          {
+            errors.Add(e.ErrorContext.Error.Message);
+            e.ErrorContext.Handled = true;
+          }
+        });
+      Assert.AreEqual(true, newDynamicObject.Explicit);
+
+      dynamic d = newDynamicObject;
+
+      Assert.AreEqual(99.9, d.Decimal);
+      Assert.AreEqual(1, d.Int);
+      Assert.AreEqual(123, d.ChildObject.Integer);
+
+      Assert.AreEqual(2, errors.Count);
+      Assert.AreEqual(@"Unexpected end when deserializing object. Path 'ChildObject.Integer', line 6, position 19.", errors[0]);
+      Assert.AreEqual(@"Unexpected end when deserializing object. Path 'ChildObject.Integer', line 6, position 19.", errors[1]);
+    }
+#endif
   }
 
   public class ThrowingReader : TextReader
@@ -639,6 +709,7 @@ namespace Newtonsoft.Json.Tests.Serialization
   public class LogMessage
   {
     public string DeviceId { get; set; }
+    public IList<LogEvent> Events { get; set; }
   }
 
   public class LogEvent

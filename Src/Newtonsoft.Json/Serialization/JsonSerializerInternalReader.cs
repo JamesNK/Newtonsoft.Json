@@ -813,6 +813,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
 
       JsonConverter dictionaryValueConverter = contract.ItemConverter ?? GetConverter(contract.ItemContract, null, contract, containerProperty);
 
+      bool finished = false;
       do
       {
         switch (reader.TokenType)
@@ -852,15 +853,18 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
           case JsonToken.Comment:
             break;
           case JsonToken.EndObject:
-            contract.InvokeOnDeserialized(dictionary, Serializer.Context);
-
-            return dictionary;
+            finished = true;
+            break;
           default:
             throw JsonSerializationException.Create(reader, "Unexpected token when deserializing object: " + reader.TokenType);
         }
-      } while (reader.Read());
+      } while (!finished && reader.Read());
 
-      throw JsonSerializationException.Create(reader, "Unexpected end when deserializing object.");
+      if (!finished)
+        ThrowUnexpectedEndException(reader, contract, dictionary, "Unexpected end when deserializing object.");
+
+      contract.InvokeOnDeserialized(dictionary, Serializer.Context);
+      return dictionary;
     }
 
     private object PopulateMultidimensionalArray(IList list, JsonReader reader, JsonArrayContract contract, JsonProperty containerProperty, string id)
@@ -880,7 +884,8 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
       listStack.Push(list);
       IList currentList = list;
 
-      while (true)
+      bool finished = false;
+      do
       {
         int initialDepth = reader.Depth;
 
@@ -962,9 +967,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                 }
                 else
                 {
-                  contract.InvokeOnDeserialized(list, Serializer.Context);
-
-                  return list;
+                  finished = true;
                 }
                 break;
               case JsonToken.Comment:
@@ -978,9 +981,28 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
             break;
           }
         }
-      }
+      } while (!finished);
 
-      throw JsonSerializationException.Create(reader, "Unexpected end when deserializing array.");
+      if (!finished)
+        ThrowUnexpectedEndException(reader, contract, list, "Unexpected end when deserializing array.");
+
+      contract.InvokeOnDeserialized(list, Serializer.Context);
+      return list;
+    }
+
+    private void ThrowUnexpectedEndException(JsonReader reader, JsonContract contract, object currentObject, string message)
+    {
+      try
+      {
+        throw JsonSerializationException.Create(reader, message);
+      }
+      catch (Exception ex)
+      {
+        if (IsErrorHandled(currentObject, contract, null, reader.Path, ex))
+          HandleError(reader, false, 0);
+        else
+          throw;
+      }
     }
 
     private object PopulateList(IWrappedCollection wrappedList, JsonReader reader, JsonArrayContract contract, JsonProperty containerProperty, string id)
@@ -1006,7 +1028,8 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
 
       int? previousErrorIndex = null;
 
-      while (true)
+      bool finished = false;
+      do
       {
         try
         {
@@ -1015,9 +1038,8 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
             switch (reader.TokenType)
             {
               case JsonToken.EndArray:
-                contract.InvokeOnDeserialized(list, Serializer.Context);
-
-                return list;
+                finished = true;
+                break;
               case JsonToken.Comment:
                 break;
               default:
@@ -1061,9 +1083,13 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
             throw;
           }
         }
-      }
+      } while (!finished);
 
-      throw JsonSerializationException.Create(reader, "Unexpected end when deserializing array.");
+      if (!finished)
+        ThrowUnexpectedEndException(reader, contract, list, "Unexpected end when deserializing array.");
+
+      contract.InvokeOnDeserialized(list, Serializer.Context);
+      return list;
     }
 
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
@@ -1080,7 +1106,7 @@ To fix this error either change the environment to be fully trusted, change the 
 
       SerializationInfo serializationInfo = new SerializationInfo(contract.UnderlyingType, GetFormatterConverter());
 
-      bool exit = false;
+      bool finished = false;
       do
       {
         switch (reader.TokenType)
@@ -1095,12 +1121,15 @@ To fix this error either change the environment to be fully trusted, change the 
           case JsonToken.Comment:
             break;
           case JsonToken.EndObject:
-            exit = true;
+            finished = true;
             break;
           default:
             throw JsonSerializationException.Create(reader, "Unexpected token when deserializing object: " + reader.TokenType);
         }
-      } while (!exit && reader.Read());
+      } while (!finished && reader.Read());
+
+      if (!finished)
+        ThrowUnexpectedEndException(reader, contract, serializationInfo, "Unexpected end when deserializing object.");
 
       if (contract.ISerializableCreator == null)
         throw JsonSerializationException.Create(reader, "ISerializable type '{0}' does not have a valid constructor. To correctly implement ISerializable a constructor that takes SerializationInfo and StreamingContext parameters should be present.".FormatWith(CultureInfo.InvariantCulture, objectType));
@@ -1139,7 +1168,7 @@ To fix this error either change the environment to be fully trusted, change the 
 
       int initialDepth = reader.Depth;
 
-      bool exit = false;
+      bool finished = false;
       do
       {
         switch (reader.TokenType)
@@ -1189,12 +1218,15 @@ To fix this error either change the environment to be fully trusted, change the 
             }
             break;
           case JsonToken.EndObject:
-            exit = true;
+            finished = true;
             break;
           default:
             throw JsonSerializationException.Create(reader, "Unexpected token when deserializing object: " + reader.TokenType);
         }
-      } while (!exit && reader.Read());
+      } while (!finished && reader.Read());
+
+      if (!finished)
+        ThrowUnexpectedEndException(reader, contract, newObject, "Unexpected end when deserializing object.");
 
       contract.InvokeOnDeserialized(newObject, Serializer.Context);
 
@@ -1450,6 +1482,7 @@ To fix this error either change the environment to be fully trusted, change the 
 
       int initialDepth = reader.Depth;
 
+      bool finished = false;
       do
       {
         switch (reader.TokenType)
@@ -1495,21 +1528,23 @@ To fix this error either change the environment to be fully trusted, change the 
             }
             break;
           case JsonToken.EndObject:
-            {
-              EndObject(newObject, reader, contract, initialDepth, propertiesPresence);
-
-              contract.InvokeOnDeserialized(newObject, Serializer.Context);
-              return newObject;
-            }
+            finished = true;
+            break;
           case JsonToken.Comment:
             // ignore
             break;
           default:
             throw JsonSerializationException.Create(reader, "Unexpected token when deserializing object: " + reader.TokenType);
         }
-      } while (reader.Read());
+      } while (!finished && reader.Read());
 
-      throw JsonSerializationException.Create(reader, "Unexpected end when deserializing object.");
+      if (!finished)
+        ThrowUnexpectedEndException(reader, contract, newObject, "Unexpected end when deserializing object.");
+
+      EndObject(newObject, reader, contract, initialDepth, propertiesPresence);
+
+      contract.InvokeOnDeserialized(newObject, Serializer.Context);
+      return newObject;
     }
 
     private void EndObject(object newObject, JsonReader reader, JsonObjectContract contract, int initialDepth, Dictionary<JsonProperty, PropertyPresence> propertiesPresence)
