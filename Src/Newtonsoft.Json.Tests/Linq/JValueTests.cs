@@ -120,7 +120,7 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
-    public void ToString()
+    public void JValueToString()
     {
       JValue v;
 

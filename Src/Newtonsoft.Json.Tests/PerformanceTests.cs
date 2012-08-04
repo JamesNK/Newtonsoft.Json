@@ -772,7 +772,6 @@ namespace Newtonsoft.Json.Tests
     public void JObjectToString()
     {
       JObject test = JObject.Parse(JsonText);
-      IsoDateTimeConverter isoDateTimeConverter = null; // = new IsoDateTimeConverter();
 
       TimeOperation<object>(() =>
         {
@@ -789,7 +788,6 @@ namespace Newtonsoft.Json.Tests
     public void JObjectToString2()
     {
       JObject test = JObject.Parse(JsonText);
-      IsoDateTimeConverter isoDateTimeConverter = null; // = new IsoDateTimeConverter();
       MemoryStream ms = new MemoryStream();
 
       TimeOperation<object>(() =>

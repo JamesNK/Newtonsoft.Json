@@ -47,6 +47,10 @@ namespace Newtonsoft.Json.Serialization
     /// <value>The <see cref="Type"/> of the collection items.</value>
     public Type CollectionItemType { get; private set; }
 
+    /// <summary>
+    /// Gets a value indicating whether the collection type is a multidimensional array.
+    /// </summary>
+    /// <value><c>true</c> if the collection type is a multidimensional array; otherwise, <c>false</c>.</value>
     public bool IsMultidimensionalArray { get; private set; }
 
     private readonly bool _isCollectionItemTypeNullableType;

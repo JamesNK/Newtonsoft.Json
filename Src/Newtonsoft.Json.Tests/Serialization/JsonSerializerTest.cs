@@ -7311,7 +7311,7 @@ Parameter name: value",
 
   internal class Bb : Aa
   {
-    public bool no;
+    public new bool no;
   }
 
 #if !(NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE)

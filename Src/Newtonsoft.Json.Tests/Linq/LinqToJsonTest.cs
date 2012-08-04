@@ -27,7 +27,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 #if !NETFX_CORE
-using System.IO;
 using NUnit.Framework;
 #else
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;

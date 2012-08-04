@@ -575,7 +575,7 @@ now brown cow?", '"', true);
         {
           Assert.AreEqual(value, parsed);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
           long valueTicks = GetTicks(value);
           long parsedTicks = GetTicks(parsed);
@@ -601,7 +601,7 @@ now brown cow?", '"', true);
       {
         Assert.AreEqual(value, parsed);
       }
-      catch (Exception ex)
+      catch (Exception)
       {
         // JavaScript ticks aren't as precise, recheck after rounding
         long valueTicks = GetTicks(value);

@@ -1497,6 +1497,14 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       return Equals(w.Content, Content);
     }
+
+    public override int GetHashCode()
+    {
+      if (Content == null)
+        return 0;
+
+      return Content.GetHashCode();
+    }
   }
 
   public interface IExample
@@ -1541,6 +1549,14 @@ namespace Newtonsoft.Json.Tests.Serialization
       {
         return false;
       }
+    }
+
+    public override int GetHashCode()
+    {
+      if (Name == null)
+        return 0;
+
+      return Name.GetHashCode();
     }
   }
 #endif
