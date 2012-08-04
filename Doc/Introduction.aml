@@ -31,7 +31,7 @@
         <para>Convert JSON to and from XML</para>
     </listItem>
    <listItem>
-        <para>Supports .NET 2, .NET 3.5, .NET 4, Silverlight, Windows Phone and Windows 8 Metro</para>
+        <para>Supports .NET 2, .NET 3.5, .NET 4, Silverlight, Windows Phone and Windows 8</para>
     </listItem>
 
 </list>
@@ -66,25 +66,30 @@ and write from your objects.</para>
  <title>History</title>
  <content><para>Json.NET grew out of projects I was working on in late 2005 involving JavaScript,
             AJAX and .NET. At the time there were no libraries for working with JavaScript in
-            .NET so I began to grow my own.</para>
+            .NET so I made my own.</para>
  <para>Starting out as a couple of static methods for escaping JavaScript strings, Json.NET
             evolved as features were added. To add support for reading JSON a major refactor
             was required and Json.NET will split into the three major classes it still uses
             today, JsonReader, JsonWriter and JsonSerializer.</para>
  <para>Json.NET was first released in June 2006. Since then Json.NET has been downloaded
-            thousands of times by developers and is used in a number of major projects open
+            hundreds of thousands of times by developers and is used in a number of major open
             source projects including <externalLink>
-                <linkText>MonoRail</linkText>
-                <linkUri>http://www.castleproject.org/projects/monorail</linkUri>
-                <linkTarget>_blank</linkTarget>
-            </externalLink>,
-            Castle Project's MVC web framework, and <externalLink>
                 <linkText>Mono</linkText>
                 <linkUri>http://www.mono-project.com/</linkUri>
                 <linkTarget>_blank</linkTarget>
             </externalLink>,
             an open source implementation
-            of the .NET framework.</para>
+            of the .NET framework, <externalLink>
+                <linkText>RavenDB</linkText>
+                <linkUri>http://ravendb.net/</linkUri>
+                <linkTarget>_blank</linkTarget>
+            </externalLink>,
+            a JSON based documentat database, and <externalLink>
+                <linkText>ASP.NET Web API</linkText>
+                <linkUri>http://www.asp.net/web-api</linkUri>
+                <linkTarget>_blank</linkTarget>
+            </externalLink>,
+            Microsoft's HTTP service framework.</para>
   <para><externalLink>
                 <linkText>James Newton-King</linkText>
                 <linkUri>http://twitter.com/jamesnk</linkUri>
