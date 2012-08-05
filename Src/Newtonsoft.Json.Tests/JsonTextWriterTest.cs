@@ -838,5 +838,19 @@ _____'propertyName': NaN
 
       Assert.AreEqual(@"""2000-01-01T01:01:01Z""", sw.ToString());
     }
+
+    [Test]
+    public void WriteEndOnProperty()
+    {
+      StringWriter sw = new StringWriter();
+      JsonTextWriter writer = new JsonTextWriter(sw);
+      writer.QuoteChar = '\'';
+
+      writer.WriteStartObject();
+      writer.WritePropertyName("Blah");
+      writer.WriteEnd();
+
+      Assert.AreEqual("{'Blah':null}", sw.ToString());
+    }
   }
 }

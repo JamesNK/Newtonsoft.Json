@@ -582,7 +582,6 @@ namespace Newtonsoft.Json
     private void AutoCompleteClose(JsonToken tokenBeingClosed)
     {
       // write closing symbol and calculate new state
-
       int levelsToComplete = 0;
       JsonContainerType type = GetTypeForCloseToken(tokenBeingClosed);
 
@@ -611,6 +610,9 @@ namespace Newtonsoft.Json
       for (int i = 0; i < levelsToComplete; i++)
       {
         JsonToken token = GetCloseTokenForType(Pop());
+
+        if (_currentState == State.Property)
+          WriteNull();
 
         if (_formatting == Formatting.Indented)
         {

@@ -27,6 +27,11 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Tests.TestObjects;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
+#endif
 #if !NETFX_CORE
 using NUnit.Framework;
 #else
@@ -641,6 +646,61 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual(@"Unexpected end when deserializing object. Path 'ChildObject.Integer', line 6, position 19.", errors[1]);
     }
 #endif
+
+    [Test]
+    public void WriteEndOnPropertyState()
+    {
+      JsonSerializerSettings settings = new JsonSerializerSettings();
+      settings.Error += (obj, args) =>
+      {
+        args.ErrorContext.Handled = true;
+      };
+
+      var data = new List<ErrorPerson2>()
+                          {
+                              new ErrorPerson2{FirstName = "Scott", LastName = "Hanselman"},
+                              new ErrorPerson2{FirstName = "Scott", LastName = "Hunter"},
+                              new ErrorPerson2{FirstName = "Scott", LastName = "Guthrie"},
+                          };
+
+      var dictionary = data.GroupBy(person => person.FirstName).ToDictionary(group => @group.Key, group => @group.Cast<IErrorPerson2>());
+      var output = JsonConvert.SerializeObject(dictionary, Formatting.None, settings);
+      Assert.AreEqual(@"{""Scott"":null}", output);
+    }
+
+    [Test]
+    public void WriteEndOnPropertyState2()
+    {
+      JsonSerializerSettings settings = new JsonSerializerSettings();
+      settings.Error += (obj, args) =>
+        {
+          args.ErrorContext.Handled = true;
+        };
+
+      var data = new List<ErrorPerson2>
+        {
+          new ErrorPerson2 {FirstName = "Scott", LastName = "Hanselman"},
+          new ErrorPerson2 {FirstName = "Scott", LastName = "Hunter"},
+          new ErrorPerson2 {FirstName = "Scott", LastName = "Guthrie"},
+          new ErrorPerson2 {FirstName = "James", LastName = "Newton-King"},
+        };
+
+      var dictionary = data.GroupBy(person => person.FirstName).ToDictionary(group => @group.Key, group => @group.Cast<IErrorPerson2>());
+      var output = JsonConvert.SerializeObject(dictionary, Formatting.None, settings);
+
+      Assert.AreEqual(@"{""Scott"":null,""James"":null}", output);
+    }
+  }
+
+  interface IErrorPerson2
+  {
+
+  }
+
+  class ErrorPerson2//:IPerson - oops! Forgot to implement the person interface
+  {
+    public string LastName { get; set; }
+    public string FirstName { get; set; }
   }
 
   public class ThrowingReader : TextReader

@@ -804,6 +804,9 @@ To fix this error either change the environment to be fully trusted, change the 
     {
       ClearErrorContext();
 
+      if (writer.WriteState == WriteState.Property)
+        writer.WriteNull();
+
       while (writer.Top > initialDepth)
       {
         writer.WriteEnd();
