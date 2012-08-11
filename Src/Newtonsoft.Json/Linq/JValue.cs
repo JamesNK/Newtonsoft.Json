@@ -528,7 +528,10 @@ namespace Newtonsoft.Json.Linq
       }
 
       JsonConverter matchingConverter;
-      if (_value != null && ((matchingConverter = JsonSerializer.GetMatchingConverter(converters, _value.GetType())) != null))
+      if (_value != null
+        && converters != null
+        && converters.Length > 0
+        && ((matchingConverter = JsonSerializer.GetMatchingConverter(converters, _value.GetType())) != null))
       {
         matchingConverter.WriteJson(writer, _value, new JsonSerializer());
         return;

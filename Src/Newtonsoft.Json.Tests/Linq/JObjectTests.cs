@@ -53,6 +53,17 @@ namespace Newtonsoft.Json.Tests.Linq
   public class JObjectTests : TestFixtureBase
   {
     [Test]
+    public void WritePropertyWithNoValue()
+    {
+      var o = new JObject();
+      o.Add(new JProperty("novalue"));
+
+      Assert.AreEqual(@"{
+  ""novalue"": null
+}", o.ToString());
+    }
+
+    [Test]
     public void Keys()
     {
       var o = new JObject();
@@ -1360,7 +1371,7 @@ Parameter name: arrayIndex",
     public void IBindingListAddNewWithEvent()
     {
       JObject o = new JObject();
-      o.AddingNew += (s, e) => e.NewObject = new JProperty("Property!");
+      o._addingNew += (s, e) => e.NewObject = new JProperty("Property!");
 
       IBindingList l = o;
       object newObject = l.AddNew();
@@ -1441,7 +1452,7 @@ Parameter name: arrayIndex",
       NotifyCollectionChangedAction? changedType = null;
       int? index = null;
 
-      o.CollectionChanged += (s, a) =>
+      o._collectionChanged += (s, a) =>
       {
         changedType = a.Action;
         index = a.NewStartingIndex;

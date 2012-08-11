@@ -188,7 +188,7 @@ namespace Newtonsoft.Json.Linq
     {
       writer.WriteStartArray();
 
-      foreach (JToken token in ChildrenTokens)
+      foreach (JToken token in _values)
       {
         token.WriteTo(writer, converters);
       }

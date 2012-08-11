@@ -159,10 +159,12 @@ namespace Newtonsoft.Json.Linq
     {
       OnPropertyChanged(childProperty.Name);
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
-      OnListChanged(new ListChangedEventArgs(ListChangedType.ItemChanged, IndexOfItem(childProperty)));
+      if (_listChanged != null)
+        OnListChanged(new ListChangedEventArgs(ListChangedType.ItemChanged, IndexOfItem(childProperty)));
 #endif
 #if SILVERLIGHT || !(NET20 || NET35 || PORTABLE)
-      OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, childProperty, childProperty, IndexOfItem(childProperty)));
+      if (_collectionChanged != null)
+        OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, childProperty, childProperty, IndexOfItem(childProperty)));
 #endif
     }
 
@@ -193,7 +195,7 @@ namespace Newtonsoft.Json.Linq
     /// <returns>An <see cref="IEnumerable{JProperty}"/> of this object's properties.</returns>
     public IEnumerable<JProperty> Properties()
     {
-      return ChildrenTokens.Cast<JProperty>();
+      return _properties.Cast<JProperty>();
     }
 
     /// <summary>
@@ -368,7 +370,7 @@ namespace Newtonsoft.Json.Linq
     {
       writer.WriteStartObject();
 
-      foreach (JProperty property in ChildrenTokens)
+      foreach (JProperty property in _properties)
       {
         property.WriteTo(writer, converters);
       }
@@ -476,7 +478,7 @@ namespace Newtonsoft.Json.Linq
         throw new ArgumentException("The number of elements in the source JObject is greater than the available space from arrayIndex to the end of the destination array.");
 
       int index = 0;
-      foreach (JProperty property in ChildrenTokens)
+      foreach (JProperty property in _properties)
       {
         array[arrayIndex + index] = new KeyValuePair<string, JToken>(property.Name, property.Value);
         index++;
@@ -512,7 +514,7 @@ namespace Newtonsoft.Json.Linq
     /// </returns>
     public IEnumerator<KeyValuePair<string, JToken>> GetEnumerator()
     {
-      foreach (JProperty property in ChildrenTokens)
+      foreach (JProperty property in _properties)
       {
         yield return new KeyValuePair<string, JToken>(property.Name, property.Value);
       }
