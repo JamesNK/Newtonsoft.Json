@@ -511,10 +511,20 @@ namespace Newtonsoft.Json.Linq
     /// <param name="converters">A collection of <see cref="JsonConverter"/> which will be used when writing the token.</param>
     public override void WriteTo(JsonWriter writer, params JsonConverter[] converters)
     {
+      if (converters != null && converters.Length > 0 && _value != null)
+      {
+        JsonConverter matchingConverter = JsonSerializer.GetMatchingConverter(converters, _value.GetType());
+        if (matchingConverter != null)
+        {
+          matchingConverter.WriteJson(writer, _value, new JsonSerializer());
+          return;
+        }
+      }
+
       switch (_valueType)
       {
         case JTokenType.Comment:
-          writer.WriteComment(_value.ToString());
+          writer.WriteComment((_value != null) ? _value.ToString() : null);
           return;
         case JTokenType.Raw:
           writer.WriteRawValue((_value != null) ? _value.ToString() : null);
@@ -525,20 +535,6 @@ namespace Newtonsoft.Json.Linq
         case JTokenType.Undefined:
           writer.WriteUndefined();
           return;
-      }
-
-      JsonConverter matchingConverter;
-      if (_value != null
-        && converters != null
-        && converters.Length > 0
-        && ((matchingConverter = JsonSerializer.GetMatchingConverter(converters, _value.GetType())) != null))
-      {
-        matchingConverter.WriteJson(writer, _value, new JsonSerializer());
-        return;
-      }
-
-      switch (_valueType)
-      {
         case JTokenType.Integer:
           writer.WriteValue(Convert.ToInt64(_value, CultureInfo.InvariantCulture));
           return;

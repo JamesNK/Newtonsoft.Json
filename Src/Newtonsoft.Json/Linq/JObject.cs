@@ -370,9 +370,9 @@ namespace Newtonsoft.Json.Linq
     {
       writer.WriteStartObject();
 
-      foreach (JProperty property in _properties)
+      for (int i = 0; i < _properties.Count; i++)
       {
-        property.WriteTo(writer, converters);
+        _properties[i].WriteTo(writer, converters);
       }
 
       writer.WriteEndObject();

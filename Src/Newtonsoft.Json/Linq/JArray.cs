@@ -39,7 +39,7 @@ namespace Newtonsoft.Json.Linq
   /// </example>
   public class JArray : JContainer, IList<JToken>
   {
-    private readonly IList<JToken> _values = new List<JToken>();
+    private readonly List<JToken> _values = new List<JToken>();
 
     /// <summary>
     /// Gets the container's children tokens.
@@ -188,9 +188,9 @@ namespace Newtonsoft.Json.Linq
     {
       writer.WriteStartArray();
 
-      foreach (JToken token in _values)
+      for (int i = 0; i < _values.Count; i++)
       {
-        token.WriteTo(writer, converters);
+        _values[i].WriteTo(writer, converters);
       }
 
       writer.WriteEndArray();
