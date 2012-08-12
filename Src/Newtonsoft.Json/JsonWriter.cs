@@ -247,7 +247,7 @@ namespace Newtonsoft.Json
       CloseOutput = true;
     }
 
-    private void UpdateScopeWithFinishedValue()
+    internal void UpdateScopeWithFinishedValue()
     {
       if (_currentPosition.Type == JsonContainerType.Array
         || _currentPosition.Type == JsonContainerType.Constructor)
@@ -261,8 +261,6 @@ namespace Newtonsoft.Json
 
     private void Push(JsonContainerType value)
     {
-      UpdateScopeWithFinishedValue();
-
       if (_currentPosition.Type == JsonContainerType.None)
       {
         _currentPosition.Type = value;
@@ -319,6 +317,7 @@ namespace Newtonsoft.Json
     /// </summary>
     public virtual void WriteStartObject()
     {
+      UpdateScopeWithFinishedValue();
       AutoComplete(JsonToken.StartObject);
       Push(JsonContainerType.Object);
     }
@@ -328,7 +327,7 @@ namespace Newtonsoft.Json
     /// </summary>
     public virtual void WriteEndObject()
     {
-      AutoCompleteClose(JsonToken.EndObject);
+      AutoCompleteClose(JsonContainerType.Object);
     }
 
     /// <summary>
@@ -336,6 +335,7 @@ namespace Newtonsoft.Json
     /// </summary>
     public virtual void WriteStartArray()
     {
+      UpdateScopeWithFinishedValue();
       AutoComplete(JsonToken.StartArray);
       Push(JsonContainerType.Array);
     }
@@ -345,7 +345,7 @@ namespace Newtonsoft.Json
     /// </summary>
     public virtual void WriteEndArray()
     {
-      AutoCompleteClose(JsonToken.EndArray);
+      AutoCompleteClose(JsonContainerType.Array);
     }
 
     /// <summary>
@@ -354,6 +354,7 @@ namespace Newtonsoft.Json
     /// <param name="name">The name of the constructor.</param>
     public virtual void WriteStartConstructor(string name)
     {
+      UpdateScopeWithFinishedValue();
       AutoComplete(JsonToken.StartConstructor);
       Push(JsonContainerType.Constructor);
     }
@@ -363,7 +364,7 @@ namespace Newtonsoft.Json
     /// </summary>
     public virtual void WriteEndConstructor()
     {
-      AutoCompleteClose(JsonToken.EndConstructor);
+      AutoCompleteClose(JsonContainerType.Constructor);
     }
 
     /// <summary>
@@ -579,11 +580,10 @@ namespace Newtonsoft.Json
       }
     }
 
-    private void AutoCompleteClose(JsonToken tokenBeingClosed)
+    private void AutoCompleteClose(JsonContainerType type)
     {
       // write closing symbol and calculate new state
       int levelsToComplete = 0;
-      JsonContainerType type = GetTypeForCloseToken(tokenBeingClosed);
 
       if (_currentPosition.Type == type)
       {
@@ -675,11 +675,6 @@ namespace Newtonsoft.Json
 
     internal void AutoComplete(JsonToken tokenBeingWritten)
     {
-      if (tokenBeingWritten != JsonToken.StartObject
-        && tokenBeingWritten != JsonToken.StartArray
-        && tokenBeingWritten != JsonToken.StartConstructor)
-        UpdateScopeWithFinishedValue();
-
       // gets new state based on the current state and what is being written
       State newState = StateArray[(int)tokenBeingWritten][(int)_currentState];
 
@@ -717,6 +712,7 @@ namespace Newtonsoft.Json
     /// </summary>
     public virtual void WriteNull()
     {
+      UpdateScopeWithFinishedValue();
       AutoComplete(JsonToken.Null);
     }
 
@@ -725,6 +721,7 @@ namespace Newtonsoft.Json
     /// </summary>
     public virtual void WriteUndefined()
     {
+      UpdateScopeWithFinishedValue();
       AutoComplete(JsonToken.Undefined);
     }
 
@@ -743,6 +740,7 @@ namespace Newtonsoft.Json
     public virtual void WriteRawValue(string json)
     {
       // hack. want writer to change state as if a value had been written
+      UpdateScopeWithFinishedValue();
       AutoComplete(JsonToken.Undefined);
       WriteRaw(json);
     }
@@ -753,6 +751,7 @@ namespace Newtonsoft.Json
     /// <param name="value">The <see cref="String"/> value to write.</param>
     public virtual void WriteValue(string value)
     {
+      UpdateScopeWithFinishedValue();
       AutoComplete(JsonToken.String);
     }
 
@@ -762,6 +761,7 @@ namespace Newtonsoft.Json
     /// <param name="value">The <see cref="Int32"/> value to write.</param>
     public virtual void WriteValue(int value)
     {
+      UpdateScopeWithFinishedValue();
       AutoComplete(JsonToken.Integer);
     }
 
@@ -772,6 +772,7 @@ namespace Newtonsoft.Json
     [CLSCompliant(false)]
     public virtual void WriteValue(uint value)
     {
+      UpdateScopeWithFinishedValue();
       AutoComplete(JsonToken.Integer);
     }
 
@@ -781,6 +782,7 @@ namespace Newtonsoft.Json
     /// <param name="value">The <see cref="Int64"/> value to write.</param>
     public virtual void WriteValue(long value)
     {
+      UpdateScopeWithFinishedValue();
       AutoComplete(JsonToken.Integer);
     }
 
@@ -791,6 +793,7 @@ namespace Newtonsoft.Json
     [CLSCompliant(false)]
     public virtual void WriteValue(ulong value)
     {
+      UpdateScopeWithFinishedValue();
       AutoComplete(JsonToken.Integer);
     }
 
@@ -800,6 +803,7 @@ namespace Newtonsoft.Json
     /// <param name="value">The <see cref="Single"/> value to write.</param>
     public virtual void WriteValue(float value)
     {
+      UpdateScopeWithFinishedValue();
       AutoComplete(JsonToken.Float);
     }
 
@@ -809,6 +813,7 @@ namespace Newtonsoft.Json
     /// <param name="value">The <see cref="Double"/> value to write.</param>
     public virtual void WriteValue(double value)
     {
+      UpdateScopeWithFinishedValue();
       AutoComplete(JsonToken.Float);
     }
 
@@ -818,6 +823,7 @@ namespace Newtonsoft.Json
     /// <param name="value">The <see cref="Boolean"/> value to write.</param>
     public virtual void WriteValue(bool value)
     {
+      UpdateScopeWithFinishedValue();
       AutoComplete(JsonToken.Boolean);
     }
 
@@ -827,6 +833,7 @@ namespace Newtonsoft.Json
     /// <param name="value">The <see cref="Int16"/> value to write.</param>
     public virtual void WriteValue(short value)
     {
+      UpdateScopeWithFinishedValue();
       AutoComplete(JsonToken.Integer);
     }
 
@@ -837,6 +844,7 @@ namespace Newtonsoft.Json
     [CLSCompliant(false)]
     public virtual void WriteValue(ushort value)
     {
+      UpdateScopeWithFinishedValue();
       AutoComplete(JsonToken.Integer);
     }
 
@@ -846,6 +854,7 @@ namespace Newtonsoft.Json
     /// <param name="value">The <see cref="Char"/> value to write.</param>
     public virtual void WriteValue(char value)
     {
+      UpdateScopeWithFinishedValue();
       AutoComplete(JsonToken.String);
     }
 
@@ -855,6 +864,7 @@ namespace Newtonsoft.Json
     /// <param name="value">The <see cref="Byte"/> value to write.</param>
     public virtual void WriteValue(byte value)
     {
+      UpdateScopeWithFinishedValue();
       AutoComplete(JsonToken.Integer);
     }
 
@@ -865,6 +875,7 @@ namespace Newtonsoft.Json
     [CLSCompliant(false)]
     public virtual void WriteValue(sbyte value)
     {
+      UpdateScopeWithFinishedValue();
       AutoComplete(JsonToken.Integer);
     }
 
@@ -874,6 +885,7 @@ namespace Newtonsoft.Json
     /// <param name="value">The <see cref="Decimal"/> value to write.</param>
     public virtual void WriteValue(decimal value)
     {
+      UpdateScopeWithFinishedValue();
       AutoComplete(JsonToken.Float);
     }
 
@@ -883,6 +895,7 @@ namespace Newtonsoft.Json
     /// <param name="value">The <see cref="DateTime"/> value to write.</param>
     public virtual void WriteValue(DateTime value)
     {
+      UpdateScopeWithFinishedValue();
       AutoComplete(JsonToken.Date);
     }
 
@@ -893,6 +906,7 @@ namespace Newtonsoft.Json
     /// <param name="value">The <see cref="DateTimeOffset"/> value to write.</param>
     public virtual void WriteValue(DateTimeOffset value)
     {
+      UpdateScopeWithFinishedValue();
       AutoComplete(JsonToken.Date);
     }
 #endif
@@ -903,6 +917,7 @@ namespace Newtonsoft.Json
     /// <param name="value">The <see cref="Guid"/> value to write.</param>
     public virtual void WriteValue(Guid value)
     {
+      UpdateScopeWithFinishedValue();
       AutoComplete(JsonToken.String);
     }
 
@@ -912,6 +927,7 @@ namespace Newtonsoft.Json
     /// <param name="value">The <see cref="TimeSpan"/> value to write.</param>
     public virtual void WriteValue(TimeSpan value)
     {
+      UpdateScopeWithFinishedValue();
       AutoComplete(JsonToken.String);
     }
 
@@ -1132,9 +1148,14 @@ namespace Newtonsoft.Json
     public virtual void WriteValue(byte[] value)
     {
       if (value == null)
+      {
         WriteNull();
+      }
       else
+      {
+        UpdateScopeWithFinishedValue();
         AutoComplete(JsonToken.Bytes);
+      }
     }
 
     /// <summary>
@@ -1144,9 +1165,14 @@ namespace Newtonsoft.Json
     public virtual void WriteValue(Uri value)
     {
       if (value == null)
+      {
         WriteNull();
+      }
       else
+      {
+        UpdateScopeWithFinishedValue();
         AutoComplete(JsonToken.String);
+      }
     }
 
     /// <summary>
@@ -1257,6 +1283,7 @@ namespace Newtonsoft.Json
     /// <param name="text">Text to place inside the comment.</param>
     public virtual void WriteComment(string text)
     {
+      UpdateScopeWithFinishedValue();
       AutoComplete(JsonToken.Comment);
     }
 
