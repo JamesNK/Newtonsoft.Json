@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="QueryingLINQtoJSON" revisionNumber="1">
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <introduction>
+      <para>LINQ to JSON provides a number of methods for getting data from its objects. The index methods on JObject/JArray let you quickly get data by its property name
+      on an object or index in a collection, while <codeEntityReference>M:Newtonsoft.Json.Linq.JToken.Children</codeEntityReference> lets you get ranges
+      of data as <codeInline>IEnumerable&lt;JToken&gt;</codeInline> to then query using LINQ.</para>
+    </introduction>
+    
+    <section>
+      <title>Getting values by Property Name or Collection Index</title>
+      <content>
+        <!-- Uncomment this to create a sub-section outline
+        <autoOutline /> -->
+        <para>The simplest way to get a value from LINQ to JSON is to use the
+        <codeEntityReference>P:Newtonsoft.Json.Linq.JToken.Item(System.Object)</codeEntityReference> index on
+        JObject/JArray and then cast the returned <codeEntityReference>T:Newtonsoft.Json.Linq.JValue</codeEntityReference> to the type you want.
+        </para>
+
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonSimpleQuerying" title="Getting JSON Values" />
+
+      </content>
+    </section>
+    <section>
+      <title>Querying with LINQ</title>
+      <content>
+        <para>JObject/JArray can also be queried using LINQ. <codeEntityReference>M:Newtonsoft.Json.Linq.JToken.Children</codeEntityReference>
+        returns the children values of a JObject/JArray
+		as an <codeInline>IEnumerable&lt;JToken&gt;</codeInline> that can then be queried with the standard Where/OrderBy/Select LINQ operators.</para>
+        
+<alert class="note">
+        <para><codeEntityReference>M:Newtonsoft.Json.Linq.JToken.Children</codeEntityReference> returns all the children of a token. If it is a
+        JObject it will return a collection of properties to work with and if
+        it is a JArray you will get a collection of the array's values.</para>
+</alert>
+
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonQuerying" title="Querying JSON" />
+
+        <para>LINQ to JSON can also be used to manually convert JSON to a .NET object.</para>
+
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonDeserializeObject" title="Deserializing Using LINQ Objects" />
+
+        <para>Manually serializing and deserializing between .NET objects is useful when you are
+        working with JSON that doesn't closely match your .NET objects.</para>
+
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonDeserializeExample" title="Deserializing Using LINQ Example" />
+      </content>
+    </section>
+    <relatedTopics>
+      <externalLink>
+        <linkText>LINQ to JSON</linkText>
+        <linkUri>LINQtoJSON.htm</linkUri>
+        <linkTarget>_self</linkTarget>
+      </externalLink>
+
+      <codeEntityReference>P:Newtonsoft.Json.Linq.JToken.Item(System.Object)</codeEntityReference>
+      <codeEntityReference>M:Newtonsoft.Json.Linq.JToken.Children</codeEntityReference>
+    </relatedTopics>
+  </developerConceptualDocument>
+</topic>

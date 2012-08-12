@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Topics>
   <Topic id="Introduction" visible="True" isDefault="true" />
-  <Topic id="SerializingJSON" visible="True" isExpanded="true" title="Serializing and Deserializing JSON">
+  <Topic id="SerializingJSON" visible="True" title="Serializing and Deserializing JSON">
     <Topic id="SerializationSettings" visible="True" title="Serialization Settings" />
     <Topic id="SerializationGuide" visible="True" title="Serialization Guide" />
     <Topic id="SerializationAttributes" visible="True" title="Serialization Attributes" />
@@ -16,8 +16,11 @@
     <Topic id="SerializingJSONFragments" visible="True" title="Serializing Partial JSON Fragments" />
   </Topic>
   <Topic id="LINQtoJSON" visible="True" isExpanded="true" title="LINQ to JSON">
-    <Topic id="SelectToken" visible="True" title="Querying LINQ to JSON with SelectToken" />
+    <Topic id="ParsingLINQtoJSON" visible="True" isSelected="true" title="Parsing JSON" />
+    <Topic id="CreatingLINQtoJSON" visible="True" title="Creating JSON" />
+    <Topic id="QueryingLINQtoJSON" visible="True" title="Querying JSON with LINQ" />
+    <Topic id="SelectToken" visible="True" title="Querying JSON with SelectToken" />
   </Topic>
-  <Topic id="ReadingWritingJSON" visible="True" isSelected="true" title="Basic Reading and Writing JSON" />
+  <Topic id="ReadingWritingJSON" visible="True" title="Basic Reading and Writing JSON" />
   <Topic id="ConvertingJSONandXML" visible="True" title="Converting between JSON and XML" />
 </Topics>

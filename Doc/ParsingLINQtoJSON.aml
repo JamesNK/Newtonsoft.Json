@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="ParsingLINQtoJSON" revisionNumber="1">
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <introduction>
+      <para>LINQ to JSON has methods available for parsing JSON from a string or loading JSON directly from a file.</para>
+    </introduction>
+    
+    <section>
+      <title>Parsing JSON text</title>
+      <content>
+        <para>JSON values can be read from a string using 
+        <codeEntityReference>M:Newtonsoft.Json.Linq.JToken.Parse(System.String)</codeEntityReference>.</para>
+
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateParse" title="Parsing a JSON Object from text" />
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateParseArray" title="Parsing a JSON Array from text" />
+      </content>
+    </section>
+    
+    <section>
+      <title>Loading JSON from a file</title>
+      <content>
+        <para>JSON can also be loaded directly from a file using <codeEntityReference>M:Newtonsoft.Json.Linq.JToken.ReadFrom(Newtonsoft.Json.JsonReader)</codeEntityReference>.</para>
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonReadObject" title="Reading JSON from a file" />
+      </content>
+    </section>
+    <relatedTopics>
+      <externalLink>
+        <linkText>LINQ to JSON</linkText>
+        <linkUri>LINQtoJSON.htm</linkUri>
+        <linkTarget>_self</linkTarget>
+      </externalLink>
+
+      <codeEntityReference>M:Newtonsoft.Json.Linq.JToken.Parse(System.String)</codeEntityReference>
+      <codeEntityReference>M:Newtonsoft.Json.Linq.JToken.ReadFrom(Newtonsoft.Json.JsonReader)</codeEntityReference>
+    </relatedTopics>
+  </developerConceptualDocument>
+</topic>

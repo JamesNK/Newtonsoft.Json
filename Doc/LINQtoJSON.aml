@@ -2,86 +2,58 @@
 <topic id="LINQtoJSON" revisionNumber="1">
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
-      <para>LINQ to JSON is a programming API for working with JSON objects.
+      <para>LINQ to JSON is an API for working with JSON objects.
       The API has been designed with LINQ in mind to enable to quick querying
       and creation of JSON objects. LINQ to JSON sits under the
       <codeEntityReference>N:Newtonsoft.Json.Linq</codeEntityReference>
       namespace.</para>
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonBasic" title="Using LINQ for JSON" />
     </introduction>
-    
-    <section>
-      <title>Reading JSON</title>
-      <content>
-        <para>JSON values can be read from a string use the
-        <codeEntityReference>M:Newtonsoft.Json.Linq.JToken.Parse(System.String)</codeEntityReference>
-        method.</para>
-
-<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateParse" title="Parsing a JSON Object from Text" />
-<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateParseArray" title="Parsing a JSON Array from Text" />
-      </content>
-    </section>
-    <section>
-      <title>Creating JSON</title>
-      <content>
-        <!-- Uncomment this to create a sub-section outline
-        <autoOutline /> -->
-        <para>There are a number of different options when it comes to creating
-        JSON using LINQ to JSON.</para>
-        
-        <para>The first option is to set values one at a time. You
-        have total control but it is more verbose than other options.</para>
-        
-<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateNormal" title="Creating JSON" />
-        
-        <para>Another option is to create JSON objects declaratively using LINQ.</para>
-
-<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateDeclaratively" title="Creating JSON Declaratively" />
-
-        <para>Finally you can create a JSON object from a non-JSON type using the
-        <codeEntityReference>Overload:Newtonsoft.Json.Linq.JObject.FromObject</codeEntityReference>
-        method. The example below is creating a JSON object from an anonymous object but any
-        .NET type can be used with FromObject to create JSON.</para>
-
-<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateFromObject" title="Creating JSON from an Object" />
-      </content>
-    </section>
-    <section>
-      <title>Querying JSON</title>
-      <content>
-        <!-- Uncomment this to create a sub-section outline
-        <autoOutline /> -->
-        <para>The properties and methods that are the most useful when querying JSON
-        objects are
-        <codeEntityReference>M:Newtonsoft.Json.Linq.JToken.Children</codeEntityReference>
-        and
-        <codeEntityReference>P:Newtonsoft.Json.Linq.JToken.Item(System.Object)</codeEntityReference>.</para>
-        
-        <para>Children returns all the children of that object. If it is a
-        JObject it will return a collection of properties to work with and if
-        it is a JArray you will get a collection of the array's values.</para>
-
-        <para>The index property is used to get a specific child, either by
-        index position for JSON arrays or property name for JSON objects.</para>
-
-<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonQuerying" title="Querying JSON" />
-
-        <para>LINQ to JSON can also be used to manually convert from JSON to a .NET object.</para>
-
-<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonDeserializeObject" title="Deserializing Using LINQ Objects" />
-
-        <para>Manually serializing and deserializing between .NET objects is most useful when
-        working with JSON that doesn't closely match your .NET objects.</para>
-
-<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonDeserializeExample" title="Deserializing Using LINQ Example" />
-      </content>
-    </section>
+<section>
+ <title>Topics</title>
+<content>
+      <para>Select a topic below for more information:</para>
+<list class="bullet">
+   <listItem>
+     <para>
+       <externalLink>
+         <linkText>Parsing JSON</linkText>
+         <linkUri>ParsingLINQtoJSON.htm</linkUri>
+         <linkTarget>_self</linkTarget>
+       </externalLink>
+     </para>
+   </listItem>
+   <listItem>
+     <para>
+       <externalLink>
+         <linkText>Creating JSON</linkText>
+         <linkUri>CreatingLINQtoJSON.htm</linkUri>
+         <linkTarget>_self</linkTarget>
+       </externalLink>
+     </para>
+   </listItem>
+   <listItem>
+     <para>
+       <externalLink>
+         <linkText>Querying JSON with LINQ</linkText>
+         <linkUri>QueryingLINQtoJSON.htm</linkUri>
+         <linkTarget>_self</linkTarget>
+       </externalLink>
+     </para>
+   </listItem>
+   <listItem>
+     <para>
+       <externalLink>
+         <linkText>Querying JSON with SelectToken</linkText>
+         <linkUri>SelectToken.htm</linkUri>
+         <linkTarget>_self</linkTarget>
+       </externalLink>
+     </para>
+   </listItem>
+</list>
+</content>
+</section>
     <relatedTopics>
-      <externalLink>
-        <linkText>Querying LINQ to JSON with SelectToken</linkText>
-        <linkUri>SelectToken.htm</linkUri>
-        <linkTarget>_self</linkTarget>
-      </externalLink>
-
       <codeEntityReference>T:Newtonsoft.Json.Linq.JObject</codeEntityReference>
       <codeEntityReference>T:Newtonsoft.Json.Linq.JArray</codeEntityReference>
       <codeEntityReference>T:Newtonsoft.Json.Linq.JValue</codeEntityReference>

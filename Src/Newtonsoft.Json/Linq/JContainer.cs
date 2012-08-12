@@ -58,7 +58,6 @@ namespace Newtonsoft.Json.Linq
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
     internal ListChangedEventHandler _listChanged;
     internal AddingNewEventHandler _addingNew;
-    internal NotifyCollectionChangedEventHandler _collectionChanged;
 
     /// <summary>
     /// Occurs when the list changes or an item in the list changes.
@@ -79,6 +78,8 @@ namespace Newtonsoft.Json.Linq
     }
 #endif
 #if SILVERLIGHT || !(NET20 || NET35 || PORTABLE)
+    internal NotifyCollectionChangedEventHandler _collectionChanged;
+
     /// <summary>
     /// Occurs when the items list of the collection has changed, or the collection is reset.
     /// </summary>
