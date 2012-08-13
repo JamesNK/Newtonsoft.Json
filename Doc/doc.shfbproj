@@ -141,6 +141,9 @@
     <None Include="ContractResolver.aml" />
     <None Include="ConvertingJSONandXML.aml" />
     <None Include="CreatingLINQtoJSON.aml" />
+    <None Include="Copy of ContractResolver.aml" />
+    <None Include="JsonSchema.aml" />
+    <None Include="JsonSchema.aml" />
     <None Include="ParsingLINQtoJSON.aml" />
     <None Include="QueryingLINQtoJSON.aml" />
     <None Include="ReadingWritingJSON.aml" />

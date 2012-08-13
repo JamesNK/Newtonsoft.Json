@@ -50,6 +50,14 @@ using File = System.IO.File;
 
 namespace Newtonsoft.Json.Tests.Documentation
 {
+  public static class File
+  {
+    public static StreamReader OpenText(string path)
+    {
+      return null;
+    }
+  }
+
   public class LinqToJsonTests
   {
     public void LinqToJsonBasic()
@@ -216,14 +224,6 @@ namespace Newtonsoft.Json.Tests.Documentation
 
       JArray a = JArray.Parse(json);
       #endregion
-    }
-
-    public static class File
-    {
-      public static StreamReader OpenText(string path)
-      {
-        return null;
-      }
     }
 
     public void LinqToJsonReadObject()

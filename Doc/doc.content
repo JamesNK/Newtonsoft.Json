@@ -15,12 +15,13 @@
     <Topic id="ReducingSerializedJSONSize" visible="True" title="Reducing Serialized JSON Size" />
     <Topic id="SerializingJSONFragments" visible="True" title="Serializing Partial JSON Fragments" />
   </Topic>
-  <Topic id="LINQtoJSON" visible="True" isExpanded="true" title="LINQ to JSON">
-    <Topic id="ParsingLINQtoJSON" visible="True" isSelected="true" title="Parsing JSON" />
+  <Topic id="LINQtoJSON" visible="True" title="LINQ to JSON">
+    <Topic id="ParsingLINQtoJSON" visible="True" title="Parsing JSON" />
     <Topic id="CreatingLINQtoJSON" visible="True" title="Creating JSON" />
     <Topic id="QueryingLINQtoJSON" visible="True" title="Querying JSON with LINQ" />
     <Topic id="SelectToken" visible="True" title="Querying JSON with SelectToken" />
   </Topic>
+  <Topic id="JsonSchema" visible="True" isSelected="true" title="Validating JSON" />
   <Topic id="ReadingWritingJSON" visible="True" title="Basic Reading and Writing JSON" />
   <Topic id="ConvertingJSONandXML" visible="True" title="Converting between JSON and XML" />
 </Topics>
