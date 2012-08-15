@@ -3,7 +3,7 @@
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
       <para>Json.NET supports the JSON Schema standard via the <codeEntityReference>T:Newtonsoft.Json.Schema.JsonSchema</codeEntityReference>
-      and <codeEntityReference>T:Newtonsoft.Json.JsonValidatingReader</codeEntityReference> classes. Its functionality sits under
+      and <codeEntityReference>T:Newtonsoft.Json.JsonValidatingReader</codeEntityReference> classes. It sits under
       the <codeEntityReference>N:Newtonsoft.Json.Schema</codeEntityReference> namespace.</para>
       <para>JSON Schema is used to validate the structure and
       data types of a piece of JSON, similar to XML Schema for XML. Read more about JSON Schema at 
@@ -11,7 +11,7 @@
         <linkText>json-schema.org</linkText>
         <linkUri>http://json-schema.org/</linkUri>
         <linkTarget>_blank</linkTarget>
-      </externalLink>.</para>
+      </externalLink></para>
     </introduction>
     <!-- Optional procedures followed by optional code example but must have
          at least one procedure or code example -->
