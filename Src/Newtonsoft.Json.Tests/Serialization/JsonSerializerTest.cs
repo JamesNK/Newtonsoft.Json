@@ -7139,6 +7139,29 @@ Parameter name: value",
       Assert.AreEqual(2, values2.Count);
       Assert.AreEqual("EventName!", values2[0][0, 0].EventName);
     }
+
+#if NETFX_CORE
+    [Test]
+    public void SerializeWinRTJsonObject()
+    {
+      var o = Windows.Data.Json.JsonObject.Parse(@"{
+  ""CPU"": ""Intel"",
+  ""Drives"": [
+    ""DVD read/writer"",
+    ""500 gigabyte hard drive""
+  ]
+}");
+
+      string json = JsonConvert.SerializeObject(o, Formatting.Indented);
+      Assert.AreEqual(@"{
+  ""Drives"": [
+    ""DVD read/writer"",
+    ""500 gigabyte hard drive""
+  ],
+  ""CPU"": ""Intel""
+}", json);
+    }
+#endif
   }
 
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)

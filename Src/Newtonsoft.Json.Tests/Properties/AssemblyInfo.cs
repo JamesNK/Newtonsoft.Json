@@ -37,6 +37,10 @@ using System.Security;
 [assembly: AssemblyTitle("Json.NET Tests Silverlight")]
 #elif PocketPC
 [assembly: AssemblyTitle("Json.NET Tests Compact")]
+#elif PORTABLE
+[assembly: AssemblyTitle("Json.NET Tests Portable")]
+#elif NETFX_CORE
+[assembly: AssemblyTitle("Json.NET Tests Metro")]
 #elif NET20
 [assembly: AssemblyTitle("Json.NET Tests .NET 2.0")]
 #elif NET35
@@ -72,5 +76,5 @@ using System.Security;
 // by using the '*' as shown below:
 [assembly: AssemblyVersion("4.5.0.0")]
 #if !PocketPC
-[assembly: AssemblyFileVersion("4.5.8.15205")]
+[assembly: AssemblyFileVersion("4.5.8.15215")]
 #endif

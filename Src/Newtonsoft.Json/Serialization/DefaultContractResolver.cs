@@ -111,6 +111,9 @@ namespace Newtonsoft.Json.Serialization
         new DataSetConverter(),
         new DataTableConverter(),
 #endif
+#if NETFX_CORE
+        new JsonValueConverter(),
+#endif
         new KeyValuePairConverter(),
         new BsonObjectIdConverter()
       };

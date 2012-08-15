@@ -42,7 +42,6 @@ using System.Security;
 [assembly: AssemblyTitle("Json.NET Portable")]
 #elif NETFX_CORE
 [assembly: AssemblyTitle("Json.NET Metro")]
-[assembly: SecurityTransparent]
 #elif NET20
 [assembly: AssemblyTitle("Json.NET .NET 2.0")]
 [assembly: AllowPartiallyTrustedCallers]
@@ -91,7 +90,7 @@ using System.Security;
 // by using the '*' as shown below:
 [assembly: AssemblyVersion("4.5.0.0")]
 #if !PocketPC
-[assembly: AssemblyFileVersion("4.5.8.15205")]
+[assembly: AssemblyFileVersion("4.5.8.15215")]
 #endif
 
 [assembly: CLSCompliant(true)]
