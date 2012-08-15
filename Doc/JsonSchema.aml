@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="JsonSchema" revisionNumber="1">
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <introduction>
+      <para>Json.NET supports the JSON Schema standard via the <codeEntityReference>T:Newtonsoft.Json.Schema.JsonSchema</codeEntityReference>
+      and <codeEntityReference>T:Newtonsoft.Json.JsonValidatingReader</codeEntityReference> classes. It sits under
+      the <codeEntityReference>N:Newtonsoft.Json.Schema</codeEntityReference> namespace.</para>
+      <para>JSON Schema is used to validate the structure and
+      data types of a piece of JSON, similar to XML Schema for XML. Read more about JSON Schema at 
+      <externalLink>
+        <linkText>json-schema.org</linkText>
+        <linkUri>http://json-schema.org/</linkUri>
+        <linkTarget>_blank</linkTarget>
+      </externalLink></para>
+    </introduction>
+    <!-- Optional procedures followed by optional code example but must have
+         at least one procedure or code example -->
+<section>
+  <title>Validating with JSON Schema</title>
+<content>
+<para>The simplest way to check if JSON is valid is to load the JSON into a JObject or JArray and then
+use the <codeEntityReference>M:Newtonsoft.Json.Schema.Extensions.IsValid(Newtonsoft.Json.Linq.JToken,Newtonsoft.Json.Schema.JsonSchema)</codeEntityReference>
+method with the JSON Schema.</para>
+
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\JsonSchemaTests.cs" region="IsValidBasic" title="Validate JSON with IsValid" />
+
+<para>To get validation error messages use the
+<codeEntityReference>M:Newtonsoft.Json.Schema.Extensions.IsValid(Newtonsoft.Json.Linq.JToken,Newtonsoft.Json.Schema.JsonSchema,System.Collections.Generic.IList{System.String}@)</codeEntityReference>
+or
+<codeEntityReference>M:Newtonsoft.Json.Schema.Extensions.Validate(Newtonsoft.Json.Linq.JToken,Newtonsoft.Json.Schema.JsonSchema,Newtonsoft.Json.Schema.ValidationEventHandler)</codeEntityReference>
+overloads.</para>
+
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\JsonSchemaTests.cs" region="IsValidMessages" title="Validate JSON with IsValid" />
+
+<para>Internally IsValid uses <codeEntityReference>T:Newtonsoft.Json.JsonValidatingReader</codeEntityReference>
+to perform the JSON Schema validation. To skip the overhead of loading JSON into a JObject/JArray, validating
+the JSON and then deserializing the JSON into a class, JsonValidatingReader can be used with JsonSerializer to validate JSON while the object is being deserialized.</para>
+
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\JsonSchemaTests.cs" region="JsonValidatingReader" title="Validate JSON with JsonValidatingReader" />
+
+</content>
+</section>
+
+<section>
+  <title>Creating JSON Schemas</title>
+  <content>
+
+<para>The simplest way to get a <codeEntityReference>T:Newtonsoft.Json.Schema.JsonSchema</codeEntityReference> object is to load it from a string or a file.</para>
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\JsonSchemaTests.cs" region="LoadJsonSchema" title="Creating JSON Schemas from strings or files" />
+
+<para>It is also possible to create JsonSchema objects in code.</para>
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\JsonSchemaTests.cs" region="ManuallyCreateJsonSchema" title="Create new JSON Schemas in code" />
+
+  </content>
+</section>
+    <relatedTopics>
+      <codeEntityReference>T:Newtonsoft.Json.Schema.JsonSchema</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.JsonValidatingReader</codeEntityReference>
+    </relatedTopics>
+
+  </developerConceptualDocument>
+</topic>

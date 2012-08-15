@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="CreatingLINQtoJSON" revisionNumber="1">
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <introduction>
+      <para>As well as parsing JSON from existing JSON strings, LINQ to JSON objects can be created from scratch to create new JSON structures.</para>
+    </introduction>
+    
+    <section>
+      <title>Manually Creating JSON</title>
+      <content>
+        <para>Setting values and creating objects and arrays one at a time gives you
+        total control but it is more verbose than other options.</para>
+        
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateNormal" title="Creating JSON" />
+      </content>
+    </section>
+    
+    <section>
+      <title>Creating JSON with LINQ</title>
+      <content>
+        <para>Declaratively creating JSON objects using LINQ is a fast way to create JSON from collections of values.</para>
+
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateDeclaratively" title="Creating JSON Declaratively" />
+      </content>
+    </section>
+    
+    <section>
+      <title>Creating JSON from an object</title>
+      <content>
+        <para>The last option is to create a JSON object from a non-JSON type using the
+        <codeEntityReference>Overload:Newtonsoft.Json.Linq.JObject.FromObject</codeEntityReference>
+        method. Internally FromObject will use the JsonSerializer to serialize the object to LINQ to JSON objects instead of text.</para>
+        
+        <para>The example below is creating a JSON object from an anonymous object but any
+        .NET type can be used with FromObject to create JSON.</para>
+
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateFromObject" title="Creating JSON from an Object" />
+      </content>
+    </section>
+    <relatedTopics>
+      <externalLink>
+        <linkText>LINQ to JSON</linkText>
+        <linkUri>LINQtoJSON.htm</linkUri>
+        <linkTarget>_self</linkTarget>
+      </externalLink>
+
+      <codeEntityReference>Overload:Newtonsoft.Json.Linq.JObject.FromObject</codeEntityReference>
+    </relatedTopics>
+  </developerConceptualDocument>
+</topic>

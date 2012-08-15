@@ -769,6 +769,27 @@ namespace Newtonsoft.Json.Tests
     }
 
     [Test]
+    public void ParseJObject()
+    {
+      Stopwatch timer = new Stopwatch();
+      timer.Start();
+      for (int i = 0; i < 100000; i++)
+      {
+        JObject o = JObject.Parse(@"{
+  ""CPU"": ""Intel"",
+  ""Drives"": [
+    ""DVD read/writer"",
+    ""500 gigabyte hard drive""
+  ]
+}");
+      }
+      timer.Stop();
+
+      string linq = timer.Elapsed.TotalSeconds.ToString();
+      Console.WriteLine(linq);
+    }
+
+    [Test]
     public void JObjectToString()
     {
       JObject test = JObject.Parse(JsonText);
@@ -778,7 +799,7 @@ namespace Newtonsoft.Json.Tests
           for (int i = 0; i < Iterations; i++)
           {
             test["dummy"] = new JValue(i);
-            Encoding.UTF8.GetBytes(test.ToString(Formatting.None));
+            test.ToString(Formatting.None);
           }
           return null;
         }, "JObject.ToString");

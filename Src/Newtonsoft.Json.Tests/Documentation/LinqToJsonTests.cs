@@ -46,11 +46,43 @@ using Newtonsoft.Json.Tests.TestObjects;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
 using ErrorEventArgs = Newtonsoft.Json.Serialization.ErrorEventArgs;
+using File = System.IO.File;
 
 namespace Newtonsoft.Json.Tests.Documentation
 {
+  public static class File
+  {
+    public static StreamReader OpenText(string path)
+    {
+      return null;
+    }
+  }
+
   public class LinqToJsonTests
   {
+    public void LinqToJsonBasic()
+    {
+      #region LinqToJsonBasic
+      JObject o = JObject.Parse(@"{
+        'CPU': 'Intel',
+        'Drives': [
+          'DVD read/writer',
+          '500 gigabyte hard drive'
+        ]
+      }");
+
+      string cpu = (string)o["CPU"];
+      // Intel
+
+      string firstDrive = (string)o["Drives"][0];
+      // DVD read/writer
+
+      IList<string> allDrives = o["Drives"].Select(t => (string)t).ToList();
+      // DVD read/writer
+      // 500 gigabyte hard drive
+      #endregion
+    }
+
     public void LinqToJsonCreateNormal()
     {
       #region LinqToJsonCreateNormal
@@ -191,6 +223,65 @@ namespace Newtonsoft.Json.Tests.Documentation
       ]";
 
       JArray a = JArray.Parse(json);
+      #endregion
+    }
+
+    public void LinqToJsonReadObject()
+    {
+      #region LinqToJsonReadObject
+      using (StreamReader reader = File.OpenText(@"c:\person.json"))
+      {
+        JObject o = (JObject)JToken.ReadFrom(new JsonTextReader(reader));
+        // do stuff
+      }
+      #endregion
+    }
+
+    public void LinqToJsonSimpleQuerying()
+    {
+      #region LinqToJsonSimpleQuerying
+      string json = @"{
+        'channel': {
+          'title': 'James Newton-King',
+          'link': 'http://james.newtonking.com',
+          'description': 'James Newton-King's blog.',
+          'item': [
+            {
+              'title': 'Json.NET 1.3 + New license + Now on CodePlex',
+              'description': 'Annoucing the release of Json.NET 1.3, the MIT license and the source being available on CodePlex',
+              'link': 'http://james.newtonking.com/projects/json-net.aspx',
+              'categories': [
+                'Json.NET',
+                'CodePlex'
+              ]
+            },
+            {
+              'title': 'LINQ to JSON beta',
+              'description': 'Annoucing LINQ to JSON',
+              'link': 'http://james.newtonking.com/projects/json-net.aspx',
+              'categories': [
+                'Json.NET',
+                'LINQ'
+              ]
+            }
+          ]
+        }
+      }";
+
+      JObject rss = JObject.Parse(json);
+
+      string rssTitle = (string)rss["channel"]["title"];
+      // James Newton-King
+
+      string itemTitle = (string)rss["channel"]["item"][0]["title"];
+      // Json.NET 1.3 + New license + Now on CodePlex
+
+      JArray categories = (JArray)rss["channel"]["item"][0]["categories"];
+      // ["Json.NET", "CodePlex"]
+
+      IList<string> categoriesText = categories.Select(c => (string)c).ToList();
+      // Json.NET
+      // CodePlex
       #endregion
     }
 
