@@ -1018,10 +1018,10 @@ namespace Newtonsoft.Json.Utilities
 
     public static object GetDefaultValue(Type type)
     {
-      if (!type.IsValueType)
+      if (!type.IsValueType())
         return null;
 
-      switch (Type.GetTypeCode(type))
+      switch (ConvertUtils.GetTypeCode(type))
       {
         case TypeCode.Boolean:
           return false;
