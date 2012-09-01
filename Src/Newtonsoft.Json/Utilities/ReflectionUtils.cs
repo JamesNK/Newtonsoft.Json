@@ -1015,5 +1015,48 @@ namespace Newtonsoft.Json.Utilities
 
       return isMethodOverriden;
     }
+
+    public static object GetDefaultValue(Type type)
+    {
+      if (!type.IsValueType)
+        return null;
+
+      switch (Type.GetTypeCode(type))
+      {
+        case TypeCode.Boolean:
+          return false;
+        case TypeCode.Char:
+        case TypeCode.SByte:
+        case TypeCode.Byte:
+        case TypeCode.Int16:
+        case TypeCode.UInt16:
+        case TypeCode.Int32:
+        case TypeCode.UInt32:
+          return 0;
+        case TypeCode.Int64:
+        case TypeCode.UInt64:
+          return 0L;
+        case TypeCode.Single:
+          return 0f;
+        case TypeCode.Double:
+          return 0.0;
+        case TypeCode.Decimal:
+          return 0m;
+        case TypeCode.DateTime:
+          return new DateTime();
+      }
+
+      if (type == typeof(Guid))
+        return new Guid();
+
+      if (type == typeof(DateTimeOffset))
+        return new DateTimeOffset();
+
+      if (IsNullable(type))
+        return null;
+
+      // possibly use IL initobj for perf here?
+      return Activator.CreateInstance(type);
+    }
   }
 }

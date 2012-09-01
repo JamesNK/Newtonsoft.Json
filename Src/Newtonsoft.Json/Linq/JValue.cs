@@ -539,8 +539,12 @@ namespace Newtonsoft.Json.Linq
           writer.WriteValue(Convert.ToInt64(_value, CultureInfo.InvariantCulture));
           return;
         case JTokenType.Float:
-          if (_value is float)
-            writer.WriteValue(_value);
+          if (_value is decimal)
+            writer.WriteValue((decimal)_value);
+          else if (_value is double)
+            writer.WriteValue((double)_value);
+          else if (_value is float)
+            writer.WriteValue((float)_value);
           else
             writer.WriteValue(Convert.ToDouble(_value, CultureInfo.InvariantCulture));
           return;

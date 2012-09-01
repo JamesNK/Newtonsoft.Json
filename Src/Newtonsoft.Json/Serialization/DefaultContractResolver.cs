@@ -968,6 +968,7 @@ namespace Newtonsoft.Json.Serialization
       {
         property._required = propertyAttribute._required;
         property.Order = propertyAttribute._order;
+        property.DefaultValueHandling = propertyAttribute._defaultValueHandling;
         hasMemberAttribute = true;
       }
 #if !PocketPC && !NET20
@@ -975,6 +976,7 @@ namespace Newtonsoft.Json.Serialization
       {
         property._required = (dataMemberAttribute.IsRequired) ? Required.AllowNull : Required.Default;
         property.Order = (dataMemberAttribute.Order != -1) ? (int?) dataMemberAttribute.Order : null;
+        property.DefaultValueHandling = (!dataMemberAttribute.EmitDefaultValue) ? (DefaultValueHandling?) DefaultValueHandling.IgnoreAll : null;
         hasMemberAttribute = true;
       }
 #endif
@@ -1012,7 +1014,6 @@ namespace Newtonsoft.Json.Serialization
       property.DefaultValue = (defaultValueAttribute != null) ? defaultValueAttribute.Value : null;
 
       property.NullValueHandling = (propertyAttribute != null) ? propertyAttribute._nullValueHandling : null;
-      property.DefaultValueHandling = (propertyAttribute != null) ? propertyAttribute._defaultValueHandling : null;
       property.ReferenceLoopHandling = (propertyAttribute != null) ? propertyAttribute._referenceLoopHandling : null;
       property.ObjectCreationHandling = (propertyAttribute != null) ? propertyAttribute._objectCreationHandling : null;
       property.TypeNameHandling = (propertyAttribute != null) ? propertyAttribute._typeNameHandling : null;

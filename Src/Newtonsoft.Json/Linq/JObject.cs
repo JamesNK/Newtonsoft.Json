@@ -472,7 +472,7 @@ namespace Newtonsoft.Json.Linq
         throw new ArgumentNullException("array");
       if (arrayIndex < 0)
         throw new ArgumentOutOfRangeException("arrayIndex", "arrayIndex is less than 0.");
-      if (arrayIndex >= array.Length)
+      if (arrayIndex >= array.Length && arrayIndex != 0)
         throw new ArgumentException("arrayIndex is equal to or greater than the length of array.");
       if (Count > array.Length - arrayIndex)
         throw new ArgumentException("The number of elements in the source JObject is greater than the available space from arrayIndex to the end of the destination array.");

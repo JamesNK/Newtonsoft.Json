@@ -725,7 +725,7 @@ namespace Newtonsoft.Json.Tests.Documentation
 
       string ignored = JsonConvert.SerializeObject(invoice,
         Formatting.Indented,
-        new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
+        new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.IgnoreAll });
 
       // {
       //   "Company": "Acme Ltd.",

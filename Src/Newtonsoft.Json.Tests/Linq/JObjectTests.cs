@@ -1846,5 +1846,24 @@ Parameter name: arrayIndex",
 
       Assert.IsFalse(o1.DeepEquals(null));
     }
+
+    [Test]
+    public void ToListOnEmptyObject()
+    {
+      JObject o = JObject.Parse(@"{}");
+      IList<JToken> l1 = o.ToList<JToken>();
+      Assert.AreEqual(0, l1.Count);
+
+      IList<KeyValuePair<string, JToken>> l2 = o.ToList<KeyValuePair<string, JToken>>();
+      Assert.AreEqual(0, l2.Count);
+
+      o = JObject.Parse(@"{'hi':null}");
+      
+      l1 = o.ToList<JToken>();
+      Assert.AreEqual(1, l1.Count);
+
+      l2 = o.ToList<KeyValuePair<string, JToken>>();
+      Assert.AreEqual(1, l2.Count);
+    }
   }
 }

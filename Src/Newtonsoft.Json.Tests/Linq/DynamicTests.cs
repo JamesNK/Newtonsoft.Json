@@ -701,7 +701,7 @@ namespace Newtonsoft.Json.Tests.Linq
       //   "Enabled": true,
       //   "Price": 2.45,
       //   "StockCount": 9000,
-      //   "StockValue": 22050.0
+      //   "StockValue": 22050.00
       // }
 
       Assert.AreEqual(@"{
@@ -709,7 +709,7 @@ namespace Newtonsoft.Json.Tests.Linq
   ""Enabled"": true,
   ""Price"": 2.45,
   ""StockCount"": 9000,
-  ""StockValue"": 22050.0
+  ""StockValue"": 22050.00
 }", json);
     }
   }

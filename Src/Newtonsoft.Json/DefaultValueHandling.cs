@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.ComponentModel;
 
 namespace Newtonsoft.Json
 {
@@ -44,7 +45,9 @@ namespace Newtonsoft.Json
     Include = 0,
     /// <summary>
     /// Ignore members where the member value is the same as the member's default value when serializing objects
-    /// so that is is not written to JSON, and ignores setting members when the JSON value equals the member's default value.
+    /// so that is is not written to JSON. This option will only ignore <c>null</c> values for object and nullable types
+    /// unless the property explicitly has a <see cref="DefaultValueAttribute"/> specified. To ignore default values
+    /// for all types use the <c>IgnoreAll</c> option.
     /// </summary>
     Ignore = 1,
     /// <summary>
@@ -55,6 +58,14 @@ namespace Newtonsoft.Json
     /// Ignore members where the member value is the same as the member's default value when serializing objects
     /// and sets members to their default value when deserializing.
     /// </summary>
-    IgnoreAndPopulate = Ignore | Populate
+    IgnoreAndPopulate = Ignore | Populate,
+    /// <summary>
+    /// Ignore members where the member value is the same as the member's default value when serializing objects
+    /// so that is is not written to JSON, and ignores setting members when the JSON value equals the member's default value.
+    /// This option will ignore all default values (e.g. <c>null</c> for objects and nullable typesl; <c>0</c> for integers,
+    /// decimals and floating point numbers; and <c>false</c> for booleans). The default value ignored can be override by
+    /// the <see cref="DefaultValueAttribute"/>.
+    /// </summary>
+    IgnoreAll = 4
   }
 }

@@ -314,5 +314,33 @@ namespace Newtonsoft.Json.Tests.Linq
 
       Assert.AreEqual("5.2", json);
     }
+
+    public class Rate
+    {
+      public decimal Compoundings { get; set; }
+    }
+
+    private readonly Rate rate = new Rate { Compoundings = 12.166666666666666666666666667m };
+
+    [Test]
+    public void WriteFullDecimalPrecision()
+    {
+      var jTokenWriter = new JTokenWriter();
+      new JsonSerializer().Serialize(jTokenWriter, rate);
+      string json = jTokenWriter.Token.ToString();
+      Assert.AreEqual(@"{
+  ""Compoundings"": 12.166666666666666666666666667
+}", json);
+    }
+
+    [Test]
+    public void RoundTripDecimal()
+    {
+      var jTokenWriter = new JTokenWriter();
+      new JsonSerializer().Serialize(jTokenWriter, rate);
+      var rate2 = new JsonSerializer().Deserialize<Rate>(new JTokenReader(jTokenWriter.Token));
+
+      Assert.AreEqual(rate.Compoundings, rate2.Compoundings);
+    }
   }
 }

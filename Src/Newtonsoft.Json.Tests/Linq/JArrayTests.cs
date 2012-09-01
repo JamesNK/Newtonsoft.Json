@@ -561,5 +561,21 @@ Parameter name: index",
             JArray.Parse(json);
           });
     }
+
+    [Test]
+    public void ToListOnEmptyArray()
+    {
+      string json = @"{""decks"":[]}";
+
+      JArray decks = (JArray)JObject.Parse(json)["decks"];
+      IList<JToken> l = decks.ToList();
+      Assert.AreEqual(0, l.Count);
+
+      json = @"{""decks"":[1]}";
+
+      decks = (JArray)JObject.Parse(json)["decks"];
+      l = decks.ToList();
+      Assert.AreEqual(1, l.Count);
+    }
   }
 }

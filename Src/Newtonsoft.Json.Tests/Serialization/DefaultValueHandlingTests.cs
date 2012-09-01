@@ -25,6 +25,12 @@
 
 using System;
 using System.ComponentModel;
+using System.IO;
+using System.Runtime.Serialization;
+#if !(SILVERLIGHT || PocketPC || NET20 || NET35 || NETFX_CORE || PORTABLE)
+using System.Runtime.Serialization.Json;
+#endif
+using System.Text;
 using Newtonsoft.Json.Tests.TestObjects;
 #if !NETFX_CORE
 using NUnit.Framework;
@@ -57,26 +63,33 @@ namespace Newtonsoft.Json.Tests.Serialization
         Formatting.Indented,
         new JsonSerializerSettings { });
 
-      // {
-      //   "Company": "Acme Ltd.",
-      //   "Amount": 50.0,
-      //   "Paid": false,
-      //   "PaidDate": null,
-      //   "FollowUpDays": 30,
-      //   "FollowUpEmailAddress": ""
-      // }
+      Assert.AreEqual(@"{
+  ""Company"": ""Acme Ltd."",
+  ""Amount"": 50.0,
+  ""Paid"": false,
+  ""PaidDate"": null,
+  ""FollowUpDays"": 30,
+  ""FollowUpEmailAddress"": """"
+}", included);
 
       string ignored = JsonConvert.SerializeObject(invoice,
         Formatting.Indented,
         new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
 
-      // {
-      //   "Company": "Acme Ltd.",
-      //   "Amount": 50.0
-      // }
+      Assert.AreEqual(@"{
+  ""Company"": ""Acme Ltd."",
+  ""Amount"": 50.0,
+  ""Paid"": false
+}", ignored);
 
-      Console.WriteLine(included);
-      Console.WriteLine(ignored);
+      string ignoredAll = JsonConvert.SerializeObject(invoice,
+        Formatting.Indented,
+        new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.IgnoreAll });
+
+      Assert.AreEqual(@"{
+  ""Company"": ""Acme Ltd."",
+  ""Amount"": 50.0
+}", ignoredAll);
     }
 
     [Test]
@@ -172,5 +185,126 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.IsFalse(MathUtils.ApproxEquals(1000.0, 1000.000000000001));
       Assert.IsFalse(MathUtils.ApproxEquals(0.0, 0.00001));
     }
+
+#if !NET20
+    [Test]
+    public void EmitDefaultValueTest()
+    {
+      EmitDefaultValueClass c = new EmitDefaultValueClass();
+
+#if !(SILVERLIGHT || PocketPC || NET20 || NET35 || NETFX_CORE || PORTABLE)
+      DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(EmitDefaultValueClass));
+
+      MemoryStream ms = new MemoryStream();
+      jsonSerializer.WriteObject(ms, c);
+
+      Assert.AreEqual("{}", Encoding.UTF8.GetString(ms.ToArray()));
+#endif
+
+      string json = JsonConvert.SerializeObject(c);
+
+      Assert.AreEqual("{}", json);
+    }
+#endif
+
+    [Test]
+    public void DefaultValueHandlingPropertyTest()
+    {
+      DefaultValueHandlingPropertyClass c = new DefaultValueHandlingPropertyClass();
+
+      string json = JsonConvert.SerializeObject(c, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""IntInclude"": 0,
+  ""IntDefault"": 0
+}", json);
+
+      json = JsonConvert.SerializeObject(c, Formatting.Indented, new JsonSerializerSettings
+        {
+          DefaultValueHandling = DefaultValueHandling.IgnoreAll
+        });
+
+      Assert.AreEqual(@"{
+  ""IntInclude"": 0
+}", json);
+
+      json = JsonConvert.SerializeObject(c, Formatting.Indented, new JsonSerializerSettings
+      {
+        DefaultValueHandling = DefaultValueHandling.Include
+      });
+
+      Assert.AreEqual(@"{
+  ""IntInclude"": 0,
+  ""IntDefault"": 0
+}", json);
+    }
   }
+
+  public struct DefaultStruct
+  {
+    public string Default { get; set; }
+  }
+
+  public class DefaultValueHandlingPropertyClass
+  {
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAll)]
+    public int IntIgnore { get; set; }
+
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
+    public int IntInclude { get; set; }
+
+    [JsonProperty]
+    public int IntDefault { get; set; }
+  }
+
+#if !NET20
+  [DataContract]
+  public class EmitDefaultValueClass
+  {
+    [DataMember(EmitDefaultValue = false)]
+    public Guid Guid { get; set; }
+    [DataMember(EmitDefaultValue = false)]
+    public TimeSpan TimeSpan { get; set; }
+    [DataMember(EmitDefaultValue = false)]
+    public DateTime DateTime { get; set; }
+    [DataMember(EmitDefaultValue = false)]
+    public DateTimeOffset DateTimeOffset { get; set; }
+    [DataMember(EmitDefaultValue = false)]
+    public decimal Decimal { get; set; }
+    [DataMember(EmitDefaultValue = false)]
+    public int Integer { get; set; }
+    [DataMember(EmitDefaultValue = false)]
+    public double Double { get; set; }
+    [DataMember(EmitDefaultValue = false)]
+    public bool Boolean { get; set; }
+    [DataMember(EmitDefaultValue = false)]
+    public DefaultStruct Struct { get; set; }
+    [DataMember(EmitDefaultValue = false)]
+    public StringComparison Enum { get; set; }
+
+    [DataMember(EmitDefaultValue = false)]
+    public Guid? NullableGuid { get; set; }
+    [DataMember(EmitDefaultValue = false)]
+    public TimeSpan? NullableTimeSpan { get; set; }
+    [DataMember(EmitDefaultValue = false)]
+    public DateTime? NullableDateTime { get; set; }
+    [DataMember(EmitDefaultValue = false)]
+    public DateTimeOffset? NullableDateTimeOffset { get; set; }
+    [DataMember(EmitDefaultValue = false)]
+    public decimal? NullableDecimal { get; set; }
+    [DataMember(EmitDefaultValue = false)]
+    public int? NullableInteger { get; set; }
+    [DataMember(EmitDefaultValue = false)]
+    public double? NullableDouble { get; set; }
+    [DataMember(EmitDefaultValue = false)]
+    public bool? NullableBoolean { get; set; }
+    [DataMember(EmitDefaultValue = false)]
+    public DefaultStruct? NullableStruct { get; set; }
+    [DataMember(EmitDefaultValue = false)]
+    public StringComparison? NullableEnum { get; set; }
+
+    [DataMember(EmitDefaultValue = false)]
+    public object Object { get; set; }
+  }
+#endif
 }
