@@ -228,6 +228,81 @@ namespace Newtonsoft.Json.Tests.Serialization
   ""IntDefault"": 0
 }", json);
     }
+
+    [Test]
+    public void DeserializeWithIgnore()
+    {
+      string json = @"{'Value':null,'IntValue1':1,'IntValue2':0,'IntValue3':null}";
+
+      var o = JsonConvert.DeserializeObject<DefaultValueHandlingDeserializeHolder>(json, new JsonSerializerSettings
+        {
+          DefaultValueHandling = DefaultValueHandling.Ignore
+        });
+
+      Assert.AreEqual(int.MaxValue, o.IntValue1);
+      Assert.AreEqual(int.MinValue, o.IntValue2);
+      Assert.AreEqual(int.MaxValue, o.IntValue3);
+      Assert.AreEqual("Derp!", o.ClassValue.Derp);
+    }
+
+    [Test]
+    public void DeserializeWithPopulate()
+    {
+      string json = @"{}";
+
+      var o = JsonConvert.DeserializeObject<DefaultValueHandlingDeserializePopulate>(json, new JsonSerializerSettings
+      {
+        DefaultValueHandling = DefaultValueHandling.Populate
+      });
+
+      Assert.AreEqual(1, o.IntValue1);
+      Assert.AreEqual(0, o.IntValue2);
+      Assert.AreEqual(null, o.ClassValue);
+    }
+  }
+
+  public class DefaultValueHandlingDeserialize
+  {
+    public string Derp { get; set; }
+  }
+
+  public class DefaultValueHandlingDeserializeHolder
+  {
+    public DefaultValueHandlingDeserializeHolder()
+    {
+      ClassValue = new DefaultValueHandlingDeserialize
+        {
+          Derp = "Derp!"
+        };
+      IntValue1 = int.MaxValue;
+      IntValue2 = int.MinValue;
+      IntValue3 = int.MaxValue;
+    }
+
+    [DefaultValue(1)]
+    public int IntValue1 { get; set; }
+    public int IntValue2 { get; set; }
+    [DefaultValue(null)]
+    public int IntValue3 { get; set; }
+    public DefaultValueHandlingDeserialize ClassValue { get; set; }
+  }
+
+  public class DefaultValueHandlingDeserializePopulate
+  {
+    public DefaultValueHandlingDeserializePopulate()
+    {
+      ClassValue = new DefaultValueHandlingDeserialize
+      {
+        Derp = "Derp!"
+      };
+      IntValue1 = int.MaxValue;
+      IntValue2 = int.MinValue;
+    }
+
+    [DefaultValue(1)]
+    public int IntValue1 { get; set; }
+    public int IntValue2 { get; set; }
+    public DefaultValueHandlingDeserialize ClassValue { get; set; }
   }
 
   public struct DefaultStruct

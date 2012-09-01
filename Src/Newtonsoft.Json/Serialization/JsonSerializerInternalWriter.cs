@@ -205,7 +205,7 @@ namespace Newtonsoft.Json.Serialization
         return false;
 
       if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer.DefaultValueHandling), DefaultValueHandling.Ignore)
-          && MiscellaneousUtils.ValueEquals(memberValue, property.DefaultValue ?? ReflectionUtils.GetDefaultValue(property.PropertyType)))
+          && MiscellaneousUtils.ValueEquals(memberValue, property.GetResolvedDefaultValue()))
         return false;
 
       return true;

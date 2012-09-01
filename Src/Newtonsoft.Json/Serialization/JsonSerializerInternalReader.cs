@@ -737,7 +737,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
       // test tokentype here because default value might not be convertable to actual type, e.g. default of "" for DateTime
       if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer.DefaultValueHandling), DefaultValueHandling.Ignore)
           && JsonReader.IsPrimitiveToken(reader.TokenType)
-          && MiscellaneousUtils.ValueEquals(reader.Value, property.DefaultValue))
+          && MiscellaneousUtils.ValueEquals(reader.Value, property.GetResolvedDefaultValue()))
       {
         reader.Skip();
         return true;
@@ -772,7 +772,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
         return false;
 
       if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer.DefaultValueHandling), DefaultValueHandling.Ignore)
-        && MiscellaneousUtils.ValueEquals(value, property.DefaultValue))
+        && MiscellaneousUtils.ValueEquals(value, property.GetResolvedDefaultValue()))
         return false;
 
       if (!property.Writable)
@@ -1572,7 +1572,7 @@ To fix this error either change the environment to be fully trusted, change the 
                     property.PropertyContract = GetContractSafe(property.PropertyType);
 
                   if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer.DefaultValueHandling), DefaultValueHandling.Populate) && property.Writable)
-                    property.ValueProvider.SetValue(newObject, EnsureType(reader, property.DefaultValue, CultureInfo.InvariantCulture, property.PropertyContract, property.PropertyType));
+                    property.ValueProvider.SetValue(newObject, EnsureType(reader, property.GetResolvedDefaultValue(), CultureInfo.InvariantCulture, property.PropertyContract, property.PropertyType));
                   break;
                 case PropertyPresence.Null:
                   if (resolvedRequired == Required.Always)

@@ -471,7 +471,10 @@ namespace Newtonsoft.Json.Serialization
         property.PropertyName = (property.PropertyName != parameterInfo.Name) ? property.PropertyName : matchingMemberProperty.PropertyName;
         property.Converter = property.Converter ?? matchingMemberProperty.Converter;
         property.MemberConverter = property.MemberConverter ?? matchingMemberProperty.MemberConverter;
-        property.DefaultValue = property.DefaultValue ?? matchingMemberProperty.DefaultValue;
+
+        if (!property._hasExplicitDefaultValue && matchingMemberProperty._hasExplicitDefaultValue)
+          property.DefaultValue = matchingMemberProperty.DefaultValue;
+
         property._required = property._required ?? matchingMemberProperty._required;
         property.IsReference = property.IsReference ?? matchingMemberProperty.IsReference;
         property.NullValueHandling = property.NullValueHandling ?? matchingMemberProperty.NullValueHandling;
@@ -1011,7 +1014,8 @@ namespace Newtonsoft.Json.Serialization
       property.MemberConverter = JsonTypeReflector.GetJsonConverter(attributeProvider, property.PropertyType);
 
       DefaultValueAttribute defaultValueAttribute = JsonTypeReflector.GetAttribute<DefaultValueAttribute>(attributeProvider);
-      property.DefaultValue = (defaultValueAttribute != null) ? defaultValueAttribute.Value : null;
+      if (defaultValueAttribute != null)
+        property.DefaultValue = defaultValueAttribute.Value;
 
       property.NullValueHandling = (propertyAttribute != null) ? propertyAttribute._nullValueHandling : null;
       property.ReferenceLoopHandling = (propertyAttribute != null) ? propertyAttribute._referenceLoopHandling : null;
