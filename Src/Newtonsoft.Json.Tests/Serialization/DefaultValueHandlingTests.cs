@@ -78,18 +78,8 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       Assert.AreEqual(@"{
   ""Company"": ""Acme Ltd."",
-  ""Amount"": 50.0,
-  ""Paid"": false
-}", ignored);
-
-      string ignoredAll = JsonConvert.SerializeObject(invoice,
-        Formatting.Indented,
-        new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.IgnoreAll });
-
-      Assert.AreEqual(@"{
-  ""Company"": ""Acme Ltd."",
   ""Amount"": 50.0
-}", ignoredAll);
+}", ignored);
     }
 
     [Test]
@@ -221,7 +211,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       json = JsonConvert.SerializeObject(c, Formatting.Indented, new JsonSerializerSettings
         {
-          DefaultValueHandling = DefaultValueHandling.IgnoreAll
+          DefaultValueHandling = DefaultValueHandling.Ignore
         });
 
       Assert.AreEqual(@"{
@@ -247,7 +237,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
   public class DefaultValueHandlingPropertyClass
   {
-    [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAll)]
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
     public int IntIgnore { get; set; }
 
     [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]

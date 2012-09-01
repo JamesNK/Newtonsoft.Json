@@ -976,7 +976,7 @@ namespace Newtonsoft.Json.Serialization
       {
         property._required = (dataMemberAttribute.IsRequired) ? Required.AllowNull : Required.Default;
         property.Order = (dataMemberAttribute.Order != -1) ? (int?) dataMemberAttribute.Order : null;
-        property.DefaultValueHandling = (!dataMemberAttribute.EmitDefaultValue) ? (DefaultValueHandling?) DefaultValueHandling.IgnoreAll : null;
+        property.DefaultValueHandling = (!dataMemberAttribute.EmitDefaultValue) ? (DefaultValueHandling?) DefaultValueHandling.Ignore : null;
         hasMemberAttribute = true;
       }
 #endif

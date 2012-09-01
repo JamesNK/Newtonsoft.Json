@@ -130,12 +130,8 @@
   </row>
   <row>
     <entry><para><legacyBold>Ignore</legacyBold></para></entry>
-    <entry><para>Json.NET will skip writing a field/property value to JSON if the value is null or is the same as the value specified in field/property's <codeEntityReference>T:System.ComponentModel.DefaultValueAttribute</codeEntityReference>. The Json.NET deserializer will skip setting a .NET object's field/property if the JSON value is the same as the default value.</para></entry>
-  </row>
-  <row>
-    <entry><para><legacyBold>IgnoreAll</legacyBold></para></entry>
     <entry><para>Json.NET will skip writing a field/property value to JSON if the value is the same as the field/property's default value, or the custom
-    value specified in <codeEntityReference>T:System.ComponentModel.DefaultValueAttribute</codeEntityReference> if it is present. The Json.NET deserializer
+    value specified in <codeEntityReference>T:System.ComponentModel.DefaultValueAttribute</codeEntityReference> if the attribute is present. The Json.NET deserializer
     will skip setting a .NET object's field/property if the JSON value is the same as the default value.</para></entry>
   </row>
 </table>

@@ -209,7 +209,7 @@ namespace Newtonsoft.Json
       get { return _defaultValueHandling; }
       set
       {
-        if (value < DefaultValueHandling.Include || value > DefaultValueHandling.IgnoreAll)
+        if (value < DefaultValueHandling.Include || value > DefaultValueHandling.IgnoreAndPopulate)
           throw new ArgumentOutOfRangeException("value");
 
         _defaultValueHandling = value;

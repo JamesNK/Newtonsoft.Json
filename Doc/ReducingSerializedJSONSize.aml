@@ -84,7 +84,7 @@
       <content>
         <para><codeEntityReference>T:Newtonsoft.Json.DefaultValueHandling</codeEntityReference>
         is an option on the JsonSerializer and controls how the serializer handles
-        properties with a default value. Setting a value of DefaultValueHandling.IgnoreAll
+        properties with a default value. Setting a value of DefaultValueHandling.Ignore
         will make the JsonSerializer skip writing any properties that have a default
         value to the JSON result. For object references this will be null. For value
         types like int and DateTime the serializer will skip the default uninitialized
