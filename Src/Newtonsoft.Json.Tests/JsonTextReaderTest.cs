@@ -2210,7 +2210,7 @@ bye", reader.Value);
     {
       double d;
 
-      d = Convert.ToDouble("6.0221418e23");
+      d = Convert.ToDouble("6.0221418e23", CultureInfo.InvariantCulture);
       Console.WriteLine(d.ToString(new CultureInfo("fr-FR")));
       Console.WriteLine(d.ToString("0.#############################################################################"));
 

@@ -47,7 +47,7 @@ namespace Newtonsoft.Json.Tests.TestObjects
     public Store()
     {
       Mottos.Add("Hello World");
-      Mottos.Add("öäüÖÄÜ\\'{new Date(12345);}[222]_µ@²³~");
+      Mottos.Add("Ã¶Ã¤Ã¼Ã–Ã„Ãœ\\'{new Date(12345);}[222]_Âµ@Â²Â³~");
       Mottos.Add(null);
       Mottos.Add(" ");
 
