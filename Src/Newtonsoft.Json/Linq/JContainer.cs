@@ -127,7 +127,7 @@ namespace Newtonsoft.Json.Linq
 
  #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
     /// <summary>
-    /// Raises the <see cref="_addingNew"/> event.
+    /// Raises the <see cref="AddingNew"/> event.
     /// </summary>
     /// <param name="e">The <see cref="AddingNewEventArgs"/> instance containing the event data.</param>
     protected virtual void OnAddingNew(AddingNewEventArgs e)
@@ -161,7 +161,7 @@ namespace Newtonsoft.Json.Linq
 #endif
 #if SILVERLIGHT || !(NET20 || NET35 || PORTABLE)
     /// <summary>
-    /// Raises the <see cref="_collectionChanged"/> event.
+    /// Raises the <see cref="CollectionChanged"/> event.
     /// </summary>
     /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
     protected virtual void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
