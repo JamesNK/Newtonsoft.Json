@@ -39,7 +39,7 @@
         The way to tackle this scenario is to add the
         <codeEntityReference>T:System.Runtime.Serialization.DataContractAttribute</codeEntityReference>
         to the class and
-        <codeEntityReference>T:System.Runtime.Serialization.DataMemberAttributes</codeEntityReference>
+        <codeEntityReference>T:System.Runtime.Serialization.DataMemberAttribute</codeEntityReference>
         to the properties to serialize. This is opt-in
         serialization, only the properties you mark up with be serialized, compared to
         opt-out serialization using JsonIgnoreAttribute.</para>
