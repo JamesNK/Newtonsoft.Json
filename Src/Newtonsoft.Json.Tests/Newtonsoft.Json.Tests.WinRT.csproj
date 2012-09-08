@@ -14,14 +14,14 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <PackageCertificateKeyFile>Newtonsoft.Json.Tests.Metro_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>Newtonsoft.Json.Tests.WinRT_TemporaryKey.pfx</PackageCertificateKeyFile>
     <PackageCertificateThumbprint>E58487D6BF8E40BC44C9BE962D19FB3EFBEB81BD</PackageCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\Metro\</OutputPath>
+    <OutputPath>bin\Debug\WinRT\</OutputPath>
     <DefineConstants>DEBUG;TRACE;NETFX_CORE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -29,7 +29,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\Metro\</OutputPath>
+    <OutputPath>bin\Release\WinRT\</OutputPath>
     <DefineConstants>TRACE;NETFX_CORE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -301,13 +301,13 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.Metro.csproj">
+    <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.WinRT.csproj">
       <Project>{263136a2-b89b-424e-a87a-f988caa8d032}</Project>
-      <Name>Newtonsoft.Json.Metro</Name>
+      <Name>Newtonsoft.Json.WinRT</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Newtonsoft.Json.Tests.Metro_TemporaryKey.pfx" />
+    <None Include="Newtonsoft.Json.Tests.WinRT_TemporaryKey.pfx" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' ">
     <VisualStudioVersion>11.0</VisualStudioVersion>

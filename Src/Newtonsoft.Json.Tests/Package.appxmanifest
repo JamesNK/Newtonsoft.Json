@@ -2,10 +2,10 @@
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
   <Identity Name="A8B0D936-59D4-42B2-8044-E3920F5398BD" Publisher="CN=James" Version="1.0.0.0" />
   <Properties>
-    <DisplayName>Newtonsoft.Json.Tests.Metro</DisplayName>
+    <DisplayName>Newtonsoft.Json.Tests.WinRT</DisplayName>
     <PublisherDisplayName>James</PublisherDisplayName>
     <Logo>Images\UnitTestStoreLogo.png</Logo>
-    <Description>Newtonsoft.Json.Tests.Metro</Description>
+    <Description>Newtonsoft.Json.Tests.WinRT</Description>
   </Properties>
   <Prerequisites>
     <OSMinVersion>6.2</OSMinVersion>

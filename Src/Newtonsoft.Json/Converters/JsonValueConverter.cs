@@ -34,13 +34,11 @@ namespace Newtonsoft.Json.Converters
 {
   public class JsonValueConverter : JsonConverter
   {
-    [SecuritySafeCritical]
     public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {
       WriteJsonValue(writer, (IJsonValue)value);
     }
 
-    [SecuritySafeCritical]
     private void WriteJsonValue(JsonWriter writer, IJsonValue value)
     {
       switch (value.ValueType)
