@@ -232,6 +232,39 @@ namespace Newtonsoft.Json.Tests.Converters
 ]", json);
     }
 
+    [Test]
+    public void SerializeDouble()
+    {
+      JsonObject o = new JsonObject();
+      o["zero"] = JsonValue.CreateNumberValue(0);
+      o["int"] = JsonValue.CreateNumberValue(1);
+      o["smallfraction"] = JsonValue.CreateNumberValue(3.0000000000000009);
+      o["double"] = JsonValue.CreateNumberValue(1.1);
+      o["probablyint"] = JsonValue.CreateNumberValue(1.0);
+      o["Epsilon"] = JsonValue.CreateNumberValue(double.Epsilon);
+      o["MinValue"] = JsonValue.CreateNumberValue(double.MinValue);
+      o["MaxValue"] = JsonValue.CreateNumberValue(double.MaxValue);
+      o["NaN"] = JsonValue.CreateNumberValue(double.NaN);
+      o["NegativeInfinity"] = JsonValue.CreateNumberValue(double.NegativeInfinity);
+      o["PositiveInfinity"] = JsonValue.CreateNumberValue(double.PositiveInfinity);
+
+      string json = JsonConvert.SerializeObject(o, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""PositiveInfinity"": Infinity,
+  ""NegativeInfinity"": -Infinity,
+  ""MinValue"": -1.7976931348623157E+308,
+  ""double"": 1.1,
+  ""int"": 1,
+  ""zero"": 0,
+  ""Epsilon"": 4.94065645841247E-324,
+  ""MaxValue"": 1.7976931348623157E+308,
+  ""NaN"": NaN,
+  ""smallfraction"": 3.0000000000000009,
+  ""probablyint"": 1
+}", json);
+    }
+
     //[Test]
     public void DeserializePerformance()
     {
