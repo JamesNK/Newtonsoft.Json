@@ -24,6 +24,7 @@
 #endregion
 
 using System.Globalization;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Serialization
@@ -48,8 +49,29 @@ namespace Newtonsoft.Json.Serialization
     /// <returns>The property name camel cased.</returns>
     protected internal override string ResolvePropertyName(string propertyName)
     {
-      // lower case the first letter of the passed in name
-      return StringUtils.ToCamelCase(propertyName);
+
+			/*
+				This is for handling 2 character abbreviations / acronyms.
+			*/
+			// 2 char abbrev in the property
+			var options = RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnorePatternWhitespace | RegexOptions.Singleline;
+			var regex = new Regex ( @"^(.*?[a-z_]?)([A-Z]{2})([A-Z_]?.*?)$", options );
+			var m = regex.Match ( propertyName );
+			if ( m.Success ) {
+
+#if !(NETFX_CORE || PORTABLE)
+				var abbrev = m.Result ( "$2" ).ToLower(CultureInfo.InvariantCulture);
+				abbrev = CultureInfo.InvariantCulture.TextInfo.ToTitleCase ( abbrev );
+#else
+				var abbrev = m.Result ( "$2" ).ToLower();
+				CultureInfo.InvariantCulture.TextInfo.ToTitleCase ( abbrev );
+#endif
+
+				propertyName = System.String.Format ( "{0}{1}{2}", m.Result ( "$1" ), abbrev, m.Result ( "$3" ) );
+			}
+
+			// lower case the first letter of the passed in name
+			return StringUtils.ToCamelCase(propertyName);
     }
   }
 }

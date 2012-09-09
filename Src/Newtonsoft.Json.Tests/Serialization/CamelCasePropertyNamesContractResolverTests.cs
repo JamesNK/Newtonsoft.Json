@@ -80,6 +80,32 @@ namespace Newtonsoft.Json.Tests.Serialization
 
     }
 
+		[Test]
+		public void JsonConvertSerializerWith2CharAbbreviation ( ) 
+		{
+			var dummyObject = new {
+				ID = 1,
+				ReferenceID = 2,
+				AnotherReference_ID = 3,
+				LookOutForThatTree = "george",
+				WantItToBeOK = true,
+				HasIDInTheMiddle = true
+			};
+
+			string json = JsonConvert.SerializeObject ( dummyObject, Formatting.Indented, new JsonSerializerSettings {
+				ContractResolver = new CamelCasePropertyNamesContractResolver ( )
+			} );
+
+			Assert.AreEqual ( @"{
+  ""id"": 1,
+  ""referenceId"": 2,
+  ""anotherReference_Id"": 3,
+  ""lookOutForThatTree"": ""george"",
+  ""wantItToBeOk"": true,
+  ""hasIdInTheMiddle"": true
+}", json );
+		}
+
     [Test]
     public void JTokenWriter()
     {
