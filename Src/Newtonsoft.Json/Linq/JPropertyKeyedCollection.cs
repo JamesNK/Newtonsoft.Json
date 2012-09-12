@@ -200,6 +200,15 @@ namespace Newtonsoft.Json.Linq
       Dictionary<string, JToken> d1 = _dictionary;
       Dictionary<string, JToken> d2 = other._dictionary;
 
+      if (d1 == null && d2 == null)
+        return true;
+
+      if (d1 == null)
+        return d2.Count == 0;
+
+      if (d2 == null)
+        return d1.Count == 0;
+
       if (d1.Count != d2.Count)
         return false;
 

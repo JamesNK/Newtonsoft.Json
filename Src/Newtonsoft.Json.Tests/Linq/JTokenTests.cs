@@ -768,6 +768,21 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
+    public void EmptyObjectDeepEquals()
+    {
+      Assert.IsTrue(JToken.DeepEquals(new JObject(), new JObject()));
+
+      JObject a = new JObject();
+      JObject b = new JObject();
+
+      b.Add("hi", "bye");
+      b.Remove("hi");
+
+      Assert.IsTrue(JToken.DeepEquals(a, b));
+      Assert.IsTrue(JToken.DeepEquals(b, a));
+    }
+
+    [Test]
     public void ParseAdditionalContent()
     {
       ExceptionAssert.Throws<JsonReaderException>("Additional text encountered after finished reading JSON content: ,. Path '', line 5, position 2.",
