@@ -66,7 +66,14 @@ namespace Newtonsoft.Json.Converters
           break;
         case JsonValueType.Number:
           {
-            writer.WriteValue(value.GetNumber());
+            // JsonValue doesn't support integers
+            // serialize whole numbers without a decimal point
+            double d = value.GetNumber();
+            bool isInteger = (d % 1 == 0);
+            if (isInteger && d <= long.MaxValue && d >= long.MinValue)
+              writer.WriteValue(Convert.ToInt64(d));
+            else
+              writer.WriteValue(d);
           }
           break;
         case JsonValueType.Object:
