@@ -61,7 +61,7 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(null, v.Value);
       Assert.AreEqual(JTokenType.Null, v.Type);
 
-      v.Value = (int?)null;
+      v.Value = (int?) null;
       Assert.AreEqual(null, v.Value);
       Assert.AreEqual(JTokenType.Null, v.Type);
 
@@ -156,11 +156,11 @@ namespace Newtonsoft.Json.Tests.Linq
     public void Last()
     {
       ExceptionAssert.Throws<InvalidOperationException>("Cannot access child value on Newtonsoft.Json.Linq.JValue.",
-      () =>
-      {
-        JValue v = new JValue(true);
-        JToken last = v.Last;
-      });
+        () =>
+          {
+            JValue v = new JValue(true);
+            JToken last = v.Last;
+          });
     }
 
     [Test]
@@ -175,44 +175,44 @@ namespace Newtonsoft.Json.Tests.Linq
     public void First()
     {
       ExceptionAssert.Throws<InvalidOperationException>("Cannot access child value on Newtonsoft.Json.Linq.JValue.",
-      () =>
-      {
-        JValue v = new JValue(true);
-        JToken first = v.First;
-      });
+        () =>
+          {
+            JValue v = new JValue(true);
+            JToken first = v.First;
+          });
     }
 
     [Test]
     public void Item()
     {
       ExceptionAssert.Throws<InvalidOperationException>("Cannot access child value on Newtonsoft.Json.Linq.JValue.",
-      () =>
-      {
-        JValue v = new JValue(true);
-        JToken first = v[0];
-      });
+        () =>
+          {
+            JValue v = new JValue(true);
+            JToken first = v[0];
+          });
     }
 
     [Test]
     public void Values()
     {
       ExceptionAssert.Throws<InvalidOperationException>("Cannot access child value on Newtonsoft.Json.Linq.JValue.",
-      () =>
-      {
-        JValue v = new JValue(true);
-        v.Values<int>();
-      });
+        () =>
+          {
+            JValue v = new JValue(true);
+            v.Values<int>();
+          });
     }
 
     [Test]
     public void RemoveParentNull()
     {
       ExceptionAssert.Throws<InvalidOperationException>("The parent is missing.",
-      () =>
-      {
-        JValue v = new JValue(true);
-        v.Remove();
-      });
+        () =>
+          {
+            JValue v = new JValue(true);
+            v.Remove();
+          });
     }
 
     [Test]
@@ -241,7 +241,7 @@ namespace Newtonsoft.Json.Tests.Linq
     {
       Assert.IsTrue(JToken.DeepEquals(new JValue(5L), new JValue(5)));
       Assert.IsFalse(JToken.DeepEquals(new JValue(5M), new JValue(5)));
-      Assert.IsTrue(JToken.DeepEquals(new JValue((ulong)long.MaxValue), new JValue(long.MaxValue)));
+      Assert.IsTrue(JToken.DeepEquals(new JValue((ulong) long.MaxValue), new JValue(long.MaxValue)));
     }
 
     [Test]
@@ -254,22 +254,22 @@ namespace Newtonsoft.Json.Tests.Linq
     public void SetValue()
     {
       ExceptionAssert.Throws<InvalidOperationException>("Cannot set child value on Newtonsoft.Json.Linq.JValue.",
-      () =>
-      {
-        JToken t = new JValue(5L);
-        t[0] = new JValue(3);
-      });
+        () =>
+          {
+            JToken t = new JValue(5L);
+            t[0] = new JValue(3);
+          });
     }
 
     [Test]
     public void CastNullValueToNonNullable()
     {
       ExceptionAssert.Throws<ArgumentException>("Can not convert Null to Int32.",
-      () =>
-      {
-        JValue v = new JValue((object)null);
-        int i = (int)v;
-      });
+        () =>
+          {
+            JValue v = new JValue((object) null);
+            int i = (int) v;
+          });
     }
 
     [Test]
@@ -320,7 +320,7 @@ namespace Newtonsoft.Json.Tests.Linq
       public decimal Compoundings { get; set; }
     }
 
-    private readonly Rate rate = new Rate { Compoundings = 12.166666666666666666666666667m };
+    private readonly Rate rate = new Rate {Compoundings = 12.166666666666666666666666667m};
 
     [Test]
     public void WriteFullDecimalPrecision()
@@ -342,5 +342,26 @@ namespace Newtonsoft.Json.Tests.Linq
 
       Assert.AreEqual(rate.Compoundings, rate2.Compoundings);
     }
+
+#if !NET20
+    public class ObjectWithDateTimeOffset
+    {
+      public DateTimeOffset DateTimeOffset { get; set; }
+    }
+
+    [Test]
+    public void SetDateTimeOffsetProperty()
+    {
+      var dateTimeOffset = new DateTimeOffset(new DateTime(2000, 1, 1), TimeSpan.FromHours(3));
+      var json = JsonConvert.SerializeObject(
+        new ObjectWithDateTimeOffset
+          {
+            DateTimeOffset = dateTimeOffset
+          });
+
+      var o = JObject.Parse(json);
+      o.Property("DateTimeOffset").Value = dateTimeOffset;
+    }
+#endif
   }
 }

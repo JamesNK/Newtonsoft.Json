@@ -216,19 +216,26 @@ namespace Newtonsoft.Json.Linq
           if (objA is DateTime)
           {
 #endif
-            DateTime date1 = Convert.ToDateTime(objA, CultureInfo.InvariantCulture);
-            DateTime date2 = Convert.ToDateTime(objB, CultureInfo.InvariantCulture);
+            DateTime date1 = (DateTime)objA;
+            DateTime date2;
+
+            if (objB is DateTimeOffset)
+              date2 = ((DateTimeOffset)objB).DateTime;
+            else
+              date2 = Convert.ToDateTime(objB, CultureInfo.InvariantCulture);
 
             return date1.CompareTo(date2);
 #if !NET20
           }
           else
           {
-            if (!(objB is DateTimeOffset))
-              throw new ArgumentException("Object must be of type DateTimeOffset.");
-
             DateTimeOffset date1 = (DateTimeOffset) objA;
-            DateTimeOffset date2 = (DateTimeOffset) objB;
+            DateTimeOffset date2;
+
+            if (objB is DateTimeOffset)
+              date2 = (DateTimeOffset)objB;
+            else
+              date2 = new DateTimeOffset(Convert.ToDateTime(objB, CultureInfo.InvariantCulture));
 
             return date1.CompareTo(date2);
           }

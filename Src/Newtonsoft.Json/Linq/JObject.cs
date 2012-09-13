@@ -378,6 +378,59 @@ namespace Newtonsoft.Json.Linq
       writer.WriteEndObject();
     }
 
+    /// <summary>
+    /// Gets the <see cref="Newtonsoft.Json.Linq.JToken"/> with the specified property name.
+    /// </summary>
+    /// <value>The <see cref="Newtonsoft.Json.Linq.JToken"/> with the specified property name.</value>
+    public JToken GetValue(string propertyName)
+    {
+      return GetValue(propertyName, StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// Gets the <see cref="Newtonsoft.Json.Linq.JToken"/> with the specified property name.
+    /// The exact property name will be searched for first and if no matching property is found then
+    /// the <see cref="StringComparison"/> will be used to match a property.
+    /// </summary>
+    /// <value>The <see cref="Newtonsoft.Json.Linq.JToken"/> with the specified property name.</value>
+    public JToken GetValue(string propertyName, StringComparison comparison)
+    {
+      if (propertyName == null)
+        return null;
+
+      // attempt to get value via dictionary first for performance
+      JProperty property = Property(propertyName);
+      if (property != null)
+        return property.Value;
+
+      // test above already uses this comparison so no need to repeat
+      if (comparison != StringComparison.Ordinal)
+      {
+        foreach (JProperty p in _properties)
+        {
+          if (string.Equals(p.Name, propertyName, comparison))
+            return p.Value;
+        }
+      }
+
+      return null;
+    }
+
+    /// <summary>
+    /// Tries to get the <see cref="Newtonsoft.Json.Linq.JToken"/> with the specified property name.
+    /// The exact property name will be searched for first and if no matching property is found then
+    /// the <see cref="StringComparison"/> will be used to match a property.
+    /// </summary>
+    /// <param name="propertyName">Name of the property.</param>
+    /// <param name="value">The value.</param>
+    /// <param name="comparison">One of the enumeration values that specifies how the strings will be compared.</param>
+    /// <returns>true if a value was successfully retrieved; otherwise, false.</returns>
+    public bool TryGetValue(string propertyName, StringComparison comparison, out JToken value)
+    {
+      value = GetValue(propertyName, comparison);
+      return (value != null);
+    }
+
     #region IDictionary<string,JToken> Members
     /// <summary>
     /// Adds the specified property name.

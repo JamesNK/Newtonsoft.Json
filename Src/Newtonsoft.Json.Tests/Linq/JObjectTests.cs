@@ -1865,5 +1865,52 @@ Parameter name: arrayIndex",
       l2 = o.ToList<KeyValuePair<string, JToken>>();
       Assert.AreEqual(1, l2.Count);
     }
+
+    [Test]
+    public void EmptyObjectDeepEquals()
+    {
+      Assert.IsTrue(JToken.DeepEquals(new JObject(), new JObject()));
+
+      JObject a = new JObject();
+      JObject b = new JObject();
+
+      b.Add("hi", "bye");
+      b.Remove("hi");
+
+      Assert.IsTrue(JToken.DeepEquals(a, b));
+      Assert.IsTrue(JToken.DeepEquals(b, a));
+    }
+
+    [Test]
+    public void GetValue()
+    {
+      JObject a = new JObject();
+      a["Name"] = "Name!";
+      a["name"] = "name!";
+      a["title"] = "Title!";
+
+      Assert.AreEqual(null, a.GetValue("NAME", StringComparison.Ordinal));
+      Assert.AreEqual(null, a.GetValue("NAME"));
+      Assert.AreEqual(null, a.GetValue("TITLE"));
+      Assert.AreEqual("Name!", (string)a.GetValue("NAME", StringComparison.OrdinalIgnoreCase));
+      Assert.AreEqual("name!", (string)a.GetValue("name", StringComparison.Ordinal));
+      Assert.AreEqual(null, a.GetValue(null, StringComparison.Ordinal));
+      Assert.AreEqual(null, a.GetValue(null));
+
+      JToken v;
+      Assert.IsFalse(a.TryGetValue("NAME", StringComparison.Ordinal, out v));
+      Assert.AreEqual(null, v);
+
+      Assert.IsFalse(a.TryGetValue("NAME", out v));
+      Assert.IsFalse(a.TryGetValue("TITLE", out v));
+
+      Assert.IsTrue(a.TryGetValue("NAME", StringComparison.OrdinalIgnoreCase, out v));
+      Assert.AreEqual("Name!", (string)v);
+
+      Assert.IsTrue(a.TryGetValue("name", StringComparison.Ordinal, out v));
+      Assert.AreEqual("name!", (string)v);
+
+      Assert.IsFalse(a.TryGetValue(null, StringComparison.Ordinal, out v));
+    }
   }
 }

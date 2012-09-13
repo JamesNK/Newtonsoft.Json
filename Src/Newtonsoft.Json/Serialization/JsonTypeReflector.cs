@@ -27,6 +27,7 @@ using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
+using System.Security;
 #if !(NETFX_CORE || PORTABLE)
 using System.Security.Permissions;
 #endif
@@ -388,6 +389,9 @@ namespace Newtonsoft.Json.Serialization
 
     public static bool DynamicCodeGeneration
     {
+#if !(NET20 || NET35 || SILVERLIGHT || NETFX_CORE || PORTABLE)
+      [SecuritySafeCritical]
+#endif
       get
       {
         if (_dynamicCodeGeneration == null)
