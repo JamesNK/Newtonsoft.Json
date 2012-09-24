@@ -169,7 +169,7 @@ namespace Newtonsoft.Json.Converters
                 .FormatWith(CultureInfo.InvariantCulture, n2, t.Name));
             }
 
-            map.Add(n1, n2);
+            map.Set(n1, n2);
           }
 
           _enumMemberNamesPerType[t] = map;

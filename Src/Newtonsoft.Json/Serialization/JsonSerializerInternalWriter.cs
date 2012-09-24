@@ -254,8 +254,21 @@ namespace Newtonsoft.Json.Serialization
     {
       writer.WriteStartObject();
       writer.WritePropertyName(JsonTypeReflector.RefPropertyName);
-      writer.WriteValue(Serializer.ReferenceResolver.GetReference(this, value));
+      writer.WriteValue(GetReference(writer, value));
       writer.WriteEndObject();
+    }
+
+    private string GetReference(JsonWriter writer, object value)
+    {
+      try
+      {
+        string reference = Serializer.ReferenceResolver.GetReference(this, value);
+        return reference;
+      }
+      catch (Exception ex)
+      {
+        throw JsonSerializationException.Create(null, writer.ContainerPath, "Error writing object reference for '{0}'.".FormatWith(CultureInfo.InvariantCulture, value.GetType()), ex);
+      }
     }
 
     internal static bool TryConvertToString(object value, Type type, out string s)
@@ -397,7 +410,7 @@ namespace Newtonsoft.Json.Serialization
       if (isReference)
       {
         writer.WritePropertyName(JsonTypeReflector.IdPropertyName);
-        writer.WriteValue(Serializer.ReferenceResolver.GetReference(this, value));
+        writer.WriteValue(GetReference(writer, value));
       }
       if (ShouldWriteType(TypeNameHandling.Objects, contract, member, collectionContract, containerProperty))
       {
@@ -584,7 +597,7 @@ namespace Newtonsoft.Json.Serialization
         if (isReference)
         {
           writer.WritePropertyName(JsonTypeReflector.IdPropertyName);
-          writer.WriteValue(Serializer.ReferenceResolver.GetReference(this, values));
+          writer.WriteValue(GetReference(writer, values));
         }
         if (includeTypeDetails)
         {

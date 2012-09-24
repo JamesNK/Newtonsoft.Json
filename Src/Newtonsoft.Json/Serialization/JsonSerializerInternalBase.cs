@@ -73,7 +73,9 @@ namespace Newtonsoft.Json.Serialization
         if (_mappings == null)
           _mappings = new BidirectionalDictionary<string, object>(
             EqualityComparer<string>.Default,
-            new ReferenceEqualsEqualityComparer());
+            new ReferenceEqualsEqualityComparer(),
+            "A different value already has the Id '{0}'.",
+            "A different Id has already been assigned for value '{0}'.");
 
         return _mappings;
       }

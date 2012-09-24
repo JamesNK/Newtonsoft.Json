@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization.Formatters;
 using System.Text;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Tests.TestObjects;
@@ -1054,6 +1055,27 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       Assert.IsTrue(ReferenceEquals(c2, c3));
       Assert.IsFalse(ReferenceEquals(c2, c4));
+    }
+
+    [Test]
+    public void DuplicateId()
+    {
+      string json = @"{
+  ""Data"": {
+    ""Prop1"": {
+      ""$id"": ""1"",
+      ""MyProperty"": 0
+    },
+    ""Prop2"": {
+      ""$id"": ""1"",
+      ""MyProperty"": 0
+    }
+  }
+}";
+
+      ExceptionAssert.Throws<JsonSerializationException>(
+        "Error reading object reference '1'. Path 'Data.Prop2.MyProperty', line 9, position 20.",
+        () => JsonConvert.DeserializeObject<PropertyItemIsReferenceObject>(json));
     }
   }
 

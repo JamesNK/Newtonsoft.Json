@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Newtonsoft.Json.Utilities
 {
@@ -32,6 +33,8 @@ namespace Newtonsoft.Json.Utilities
   {
     private readonly IDictionary<TFirst, TSecond> _firstToSecond;
     private readonly IDictionary<TSecond, TFirst> _secondToFirst;
+    private readonly string _duplicateFirstErrorMessage;
+    private readonly string _duplicateSecondErrorMessage;
 
     public BidirectionalDictionary()
       : this(EqualityComparer<TFirst>.Default, EqualityComparer<TSecond>.Default)
@@ -39,17 +42,40 @@ namespace Newtonsoft.Json.Utilities
     }
 
     public BidirectionalDictionary(IEqualityComparer<TFirst> firstEqualityComparer, IEqualityComparer<TSecond> secondEqualityComparer)
+      : this(
+          firstEqualityComparer,
+          secondEqualityComparer,
+          "Duplicate item already exists for '{0}'.",
+          "Duplicate item already exists for '{0}'.")
+    {
+    }
+
+    public BidirectionalDictionary(IEqualityComparer<TFirst> firstEqualityComparer, IEqualityComparer<TSecond> secondEqualityComparer,
+      string duplicateFirstErrorMessage, string duplicateSecondErrorMessage)
     {
       _firstToSecond = new Dictionary<TFirst, TSecond>(firstEqualityComparer);
       _secondToFirst = new Dictionary<TSecond, TFirst>(secondEqualityComparer);
+      _duplicateFirstErrorMessage = duplicateFirstErrorMessage;
+      _duplicateSecondErrorMessage = duplicateSecondErrorMessage;
     }
 
-    public void Add(TFirst first, TSecond second)
+    public void Set(TFirst first, TSecond second)
     {
-      if (_firstToSecond.ContainsKey(first) || _secondToFirst.ContainsKey(second))
+      TFirst existingFirst;
+      TSecond existingSecond;
+
+      if (_firstToSecond.TryGetValue(first, out existingSecond))
       {
-        throw new ArgumentException("Duplicate first or second");
+        if (!existingSecond.Equals(second))
+          throw new ArgumentException(_duplicateFirstErrorMessage.FormatWith(CultureInfo.InvariantCulture, first));
       }
+
+      if (_secondToFirst.TryGetValue(second, out existingFirst))
+      {
+        if (!existingFirst.Equals(first))
+          throw new ArgumentException(_duplicateSecondErrorMessage.FormatWith(CultureInfo.InvariantCulture, second));
+      }
+
       _firstToSecond.Add(first, second);
       _secondToFirst.Add(second, first);
     }
