@@ -76,5 +76,5 @@ using System.Security;
 // by using the '*' as shown below:
 [assembly: AssemblyVersion("4.5.0.0")]
 #if !PocketPC
-[assembly: AssemblyFileVersion("4.5.9.15324")]
+[assembly: AssemblyFileVersion("4.5.9.15402")]
 #endif

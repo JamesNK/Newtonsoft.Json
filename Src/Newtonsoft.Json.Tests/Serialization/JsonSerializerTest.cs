@@ -1312,7 +1312,7 @@ keyword such as type of business.""
       String strFromTest = JsonConvert.SerializeObject(testClass);
 
       ExceptionAssert.Throws<JsonSerializationException>(
-        @"Could not create an instance of type Newtonsoft.Json.Tests.TestObjects.ICo. Type is an interface or abstract class and cannot be instantated. Path 'co.Name', line 1, position 14.",
+        @"Could not create an instance of type Newtonsoft.Json.Tests.TestObjects.ICo. Type is an interface or abstract class and cannot be instantiated. Path 'co.Name', line 1, position 14.",
         () =>
         {
           InterfacePropertyTestClass testFromDe = (InterfacePropertyTestClass)JsonConvert.DeserializeObject(strFromTest, typeof(InterfacePropertyTestClass));
@@ -7160,6 +7160,23 @@ Parameter name: value",
   ],
   ""CPU"": ""Intel""
 }", json);
+    }
+#endif
+
+#if !NET20
+    [Test]
+    public void RoundtripOfDateTimeOffset()
+    {
+      var content = @"{""startDateTime"":""2012-07-19T14:30:00+09:30""}";
+
+      var jsonSerializerSettings = new JsonSerializerSettings() {DateFormatHandling = DateFormatHandling.IsoDateFormat, DateParseHandling = DateParseHandling.DateTimeOffset, DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind};
+      
+      var obj = (JObject)JsonConvert.DeserializeObject(content, jsonSerializerSettings);
+
+      var dateTimeOffset = (DateTimeOffset)((JValue) obj["startDateTime"]).Value;
+
+      Assert.AreEqual(TimeSpan.FromHours(9.5), dateTimeOffset.Offset);
+      Assert.AreEqual("07/19/2012 14:30:00 +09:30", dateTimeOffset.ToString(CultureInfo.InvariantCulture));
     }
 #endif
   }

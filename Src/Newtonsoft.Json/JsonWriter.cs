@@ -432,13 +432,22 @@ namespace Newtonsoft.Json
             WritePropertyName(reader.Value.ToString());
             break;
           case JsonToken.Comment:
-            WriteComment(reader.Value.ToString());
+            WriteComment((reader.Value != null) ? reader.Value.ToString() : null);
             break;
           case JsonToken.Integer:
             WriteValue(Convert.ToInt64(reader.Value, CultureInfo.InvariantCulture));
             break;
           case JsonToken.Float:
-            WriteValue(Convert.ToDouble(reader.Value, CultureInfo.InvariantCulture));
+            object value = reader.Value;
+
+            if (value is decimal)
+              WriteValue((decimal)value);
+            else if (value is double)
+              WriteValue((double)value);
+            else if (value is float)
+              WriteValue((float)value);
+            else
+              WriteValue(Convert.ToDouble(value, CultureInfo.InvariantCulture));
             break;
           case JsonToken.String:
             WriteValue(reader.Value.ToString());
@@ -462,10 +471,15 @@ namespace Newtonsoft.Json
             WriteEndConstructor();
             break;
           case JsonToken.Date:
-            WriteValue((DateTime)reader.Value);
+#if !PocketPC && !NET20
+            if (reader.Value is DateTimeOffset)
+              WriteValue((DateTimeOffset)reader.Value);
+            else
+#endif
+              WriteValue(Convert.ToDateTime(reader.Value, CultureInfo.InvariantCulture));
             break;
           case JsonToken.Raw:
-            WriteRawValue((string)reader.Value);
+            WriteRawValue((reader.Value != null) ? reader.Value.ToString() : null);
             break;
           case JsonToken.Bytes:
             WriteValue((byte[])reader.Value);

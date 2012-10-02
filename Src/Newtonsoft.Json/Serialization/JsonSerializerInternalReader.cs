@@ -1165,7 +1165,7 @@ To fix this error either change the environment to be fully trusted, change the 
       IDynamicMetaObjectProvider newObject;
 
       if (contract.UnderlyingType.IsInterface() || contract.UnderlyingType.IsAbstract())
-        throw JsonSerializationException.Create(reader, "Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantated.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+        throw JsonSerializationException.Create(reader, "Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantiated.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
       if (contract.DefaultCreator != null &&
         (!contract.DefaultCreatorNonPublic || Serializer.ConstructorHandling == ConstructorHandling.AllowNonPublicDefaultConstructor))
@@ -1446,7 +1446,7 @@ To fix this error either change the environment to be fully trusted, change the 
       object newObject = null;
 
       if (objectContract.UnderlyingType.IsInterface() || objectContract.UnderlyingType.IsAbstract())
-        throw JsonSerializationException.Create(reader, "Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantated.".FormatWith(CultureInfo.InvariantCulture, objectContract.UnderlyingType));
+        throw JsonSerializationException.Create(reader, "Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantiated.".FormatWith(CultureInfo.InvariantCulture, objectContract.UnderlyingType));
 
       if (objectContract.OverrideConstructor != null)
       {

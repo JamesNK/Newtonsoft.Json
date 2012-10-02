@@ -432,7 +432,10 @@ namespace Newtonsoft.Json.Serialization
 
       foreach (ParameterInfo parameterInfo in constructorParameters)
       {
-        JsonProperty matchingMemberProperty = memberProperties.GetClosestMatchProperty(parameterInfo.Name);
+        // it is possible to generate a ParameterInfo with a null name using Reflection.Emit
+        // protect against an ArgumentNullException from GetClosestMatchProperty by testing for null here
+        JsonProperty matchingMemberProperty = (parameterInfo.Name != null) ? memberProperties.GetClosestMatchProperty(parameterInfo.Name) : null;
+
         // type must match as well as name
         if (matchingMemberProperty != null && matchingMemberProperty.PropertyType != parameterInfo.ParameterType)
           matchingMemberProperty = null;

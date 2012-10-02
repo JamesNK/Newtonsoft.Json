@@ -530,7 +530,7 @@ namespace Newtonsoft.Json
         reader.DateTimeZoneHandling = _dateTimeZoneHandling.Value;
       }
       DateParseHandling? previousDateParseHandling = null;
-      if (_dateParseHandling != null && reader.DateTimeZoneHandling != _dateTimeZoneHandling)
+      if (_dateParseHandling != null && reader.DateParseHandling != _dateParseHandling)
       {
         previousDateParseHandling = reader.DateParseHandling;
         reader.DateParseHandling = _dateParseHandling.Value;
