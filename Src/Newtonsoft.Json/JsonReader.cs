@@ -388,7 +388,14 @@ namespace Newtonsoft.Json
       DateTimeOffset dt;
       if (TokenType == JsonToken.String)
       {
-        if (DateTimeOffset.TryParse((string)Value, Culture, DateTimeStyles.RoundtripKind, out dt))
+        string s = (string)Value;
+        if (string.IsNullOrEmpty(s))
+        {
+          SetToken(JsonToken.Null);
+          return null;
+        }
+
+        if (DateTimeOffset.TryParse(s, Culture, DateTimeStyles.RoundtripKind, out dt))
         {
           SetToken(JsonToken.Date, dt);
           return dt;
@@ -500,7 +507,14 @@ namespace Newtonsoft.Json
       decimal d;
       if (TokenType == JsonToken.String)
       {
-        if (decimal.TryParse((string)Value, NumberStyles.Number, Culture, out d))
+        string s = (string)Value;
+        if (string.IsNullOrEmpty(s))
+        {
+          SetToken(JsonToken.Null);
+          return null;
+        }
+
+        if (decimal.TryParse(s, NumberStyles.Number, Culture, out d))
         {
           SetToken(JsonToken.Float, d);
           return d;
@@ -544,7 +558,14 @@ namespace Newtonsoft.Json
       int i;
       if (TokenType == JsonToken.String)
       {
-        if (int.TryParse((string)Value, NumberStyles.Integer, Culture, out i))
+        string s = (string)Value;
+        if (string.IsNullOrEmpty(s))
+        {
+          SetToken(JsonToken.Null);
+          return null;
+        }
+
+        if (int.TryParse(s, NumberStyles.Integer, Culture, out i))
         {
           SetToken(JsonToken.Integer, i);
           return i;

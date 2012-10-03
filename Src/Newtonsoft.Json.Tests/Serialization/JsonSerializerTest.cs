@@ -2246,8 +2246,8 @@ Path '', line 1, position 2.",
     [Test]
     public void DeserializeEnsureTypeEmptyStringToIntError()
     {
-      ExceptionAssert.Throws<JsonReaderException>(
-        @"Could not convert string to integer: . Path 'ReadTimeout', line 1, position 15.",
+      ExceptionAssert.Throws<JsonSerializationException>(
+        @"Error converting value {null} to type 'System.Int32'. Path 'ReadTimeout', line 1, position 15.",
         () =>
         {
           JsonConvert.DeserializeObject<MemoryStream>("{ReadTimeout:''}", new JsonSerializerSettings
@@ -7177,6 +7177,36 @@ Parameter name: value",
 
       Assert.AreEqual(TimeSpan.FromHours(9.5), dateTimeOffset.Offset);
       Assert.AreEqual("07/19/2012 14:30:00 +09:30", dateTimeOffset.ToString(CultureInfo.InvariantCulture));
+    }
+#endif
+
+#if !NET20
+    public class NullableTestClass
+    {
+      public bool? MyNullableBool { get; set; }
+      public int? MyNullableInteger { get; set; }
+      public DateTime? MyNullableDateTime { get; set; }
+      public DateTimeOffset? MyNullableDateTimeOffset { get; set; }
+      public Decimal? MyNullableDecimal { get; set; }
+    }
+
+    [Test]
+    public void TestStringToNullableDeserialization()
+    {
+      string json = @"{
+  ""MyNullableBool"": """",
+  ""MyNullableInteger"": """",
+  ""MyNullableDateTime"": """",
+  ""MyNullableDateTimeOffset"": """",
+  ""MyNullableDecimal"": """"
+}";
+
+      NullableTestClass c2 = JsonConvert.DeserializeObject<NullableTestClass>(json);
+      Assert.IsNull(c2.MyNullableBool);
+      Assert.IsNull(c2.MyNullableInteger);
+      Assert.IsNull(c2.MyNullableDateTime);
+      Assert.IsNull(c2.MyNullableDateTimeOffset);
+      Assert.IsNull(c2.MyNullableDecimal);
     }
 #endif
   }
