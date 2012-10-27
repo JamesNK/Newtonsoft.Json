@@ -33,7 +33,6 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Web.Script.Serialization;
 using System.Xml.Linq;
-using System.Xml.Serialization;
 using Newtonsoft.Json.Utilities;
 using NUnit.Framework;
 using System.Runtime.Serialization.Json;
@@ -123,6 +122,8 @@ namespace Newtonsoft.Json.Tests
       TestClass test = CreateSerializationObject();
 
       SerializeTests(test);
+
+      Deserialize();
     }
 
     private void SerializeTests(object value)
@@ -153,6 +154,7 @@ namespace Newtonsoft.Json.Tests
       BenchmarkDeserializeMethod<T>(SerializeMethod.JavaScriptSerializer, json);
       BenchmarkDeserializeMethod<T>(SerializeMethod.DataContractJsonSerializer, json);
       BenchmarkDeserializeMethod<T>(SerializeMethod.JsonNet, json);
+      BenchmarkDeserializeMethod<T>(SerializeMethod.JsonNetManual, json);
     }
 
     [Test]
@@ -658,12 +660,94 @@ namespace Newtonsoft.Json.Tests
 
       var value = (T) serializer.Deserialize(new StringReader(json), type);
       return value;
-      //JsonTextReader reader = new JsonTextReader(new StringReader(JsonText));
-      //while (reader.Read())
-      //{
+    }
 
-      //}
-      //return default(T);
+    public TestClass DeserializeJsonNetManual(string json)
+    {
+      TestClass c = new TestClass();
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+      reader.Read();
+      while (reader.Read())
+      {
+        if (reader.TokenType == JsonToken.PropertyName)
+        {
+          string propertyName = (string) reader.Value;
+          switch (propertyName)
+          {
+            case "strings":
+              reader.Read();
+              while (reader.Read() && reader.TokenType != JsonToken.EndArray)
+              {
+                c.strings.Add((string) reader.Value);
+              }
+              break;
+            case "dictionary":
+              reader.Read();
+              while (reader.Read() && reader.TokenType != JsonToken.EndObject)
+              {
+                string key = (string) reader.Value;
+                c.dictionary.Add(key, reader.ReadAsInt32().GetValueOrDefault());
+              }
+              break;
+            case "Name":
+              c.Name = reader.ReadAsString();
+              break;
+            case "Now":
+              c.Now = reader.ReadAsDateTime().GetValueOrDefault();
+              break;
+            case "BigNumber":
+              c.BigNumber = reader.ReadAsDecimal().GetValueOrDefault();
+              break;
+            case "Address1":
+              reader.Read();
+              c.Address1 = CreateAddress(reader);
+              break;
+            case "Addresses":
+              reader.Read();
+              while (reader.Read() && reader.TokenType != JsonToken.EndArray)
+              {
+                var address = CreateAddress(reader);
+                c.Addresses.Add(address);
+              }
+              break;
+          }
+        }
+        else
+        {
+          break;
+        }
+      }
+
+      return c;
+    }
+
+    private static Address CreateAddress(JsonTextReader reader)
+    {
+      Address a = new Address();
+      while (reader.Read())
+      {
+        if (reader.TokenType == JsonToken.PropertyName)
+        {
+          switch ((string) reader.Value)
+          {
+            case "Street":
+              a.Street = reader.ReadAsString();
+              break;
+            case "Phone":
+              a.Phone = reader.ReadAsString();
+              break;
+            case "Entered":
+              a.Entered = reader.ReadAsDateTime().GetValueOrDefault();
+              break;
+          }
+        }
+        else
+        {
+          break;
+        }
+      }
+      return a;
     }
 
     public T DeserializeJsonNetBinary<T>(byte[] bson)
@@ -703,6 +787,11 @@ namespace Newtonsoft.Json.Tests
           return DeserializeJsonNet<T>((string)json, false);
         case SerializeMethod.JsonNetWithIsoConverter:
           return DeserializeJsonNet<T>((string)json, true);
+        case SerializeMethod.JsonNetManual:
+          if (typeof(T) == typeof(TestClass))
+            return (T)(object)DeserializeJsonNetManual((string)json);
+
+          return default(T);
         case SerializeMethod.JsonNetBinary:
           return DeserializeJsonNetBinary<T>((byte[]) json);
         case SerializeMethod.BinaryFormatter:

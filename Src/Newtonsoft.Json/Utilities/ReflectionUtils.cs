@@ -709,7 +709,7 @@ namespace Newtonsoft.Json.Utilities
     {
       T[] attributes = GetAttributes<T>(attributeProvider, inherit);
 
-      return attributes.SingleOrDefault();
+      return (attributes != null) ? attributes.SingleOrDefault() : null;
     }
 
 #if !(NETFX_CORE)

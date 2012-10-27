@@ -141,6 +141,7 @@
     <None Include="ContractResolver.aml" />
     <None Include="ConvertingJSONandXML.aml" />
     <None Include="CreatingLINQtoJSON.aml" />
+    <None Include="Performance.aml" />
     <None Include="JsonSchema.aml" />
     <None Include="JsonSchema.aml" />
     <None Include="ParsingLINQtoJSON.aml" />
@@ -165,6 +166,10 @@
     <ContentLayout Include="doc.content" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="performance.png">
+      <ImageId>performance</ImageId>
+      <AlternateText>performance</AlternateText>
+    </Image>
     <Image Include="logo.jpg">
       <ImageId>logo</ImageId>
       <AlternateText>logo</AlternateText>

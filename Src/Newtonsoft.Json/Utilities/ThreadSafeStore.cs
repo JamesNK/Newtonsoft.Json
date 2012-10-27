@@ -28,6 +28,7 @@ using System.Collections.Generic;
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
 #endif
+using System.Threading;
 using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Utilities
@@ -44,13 +45,11 @@ namespace Newtonsoft.Json.Utilities
         throw new ArgumentNullException("creator");
 
       _creator = creator;
+      _store = new Dictionary<TKey, TValue>();
     }
 
     public TValue Get(TKey key)
     {
-      if (_store == null)
-        return AddValue(key);
-
       TValue value;
       if (!_store.TryGetValue(key, out value))
         return AddValue(key);
@@ -79,6 +78,7 @@ namespace Newtonsoft.Json.Utilities
           Dictionary<TKey, TValue> newStore = new Dictionary<TKey, TValue>(_store);
           newStore[key] = value;
 
+          Thread.MemoryBarrier();
           _store = newStore;
         }
 

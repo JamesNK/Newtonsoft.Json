@@ -1882,6 +1882,24 @@ Parameter name: arrayIndex",
     }
 
     [Test]
+    public void GetValueBlogExample()
+    {
+      JObject o = JObject.Parse(@"{
+        'name': 'Lower',
+        'NAME': 'Upper'
+      }");
+
+      string exactMatch = (string)o.GetValue("NAME", StringComparison.OrdinalIgnoreCase);
+      // Upper
+
+      string ignoreCase = (string)o.GetValue("Name", StringComparison.OrdinalIgnoreCase);
+      // Lower
+
+      Assert.AreEqual("Upper", exactMatch);
+      Assert.AreEqual("Lower", ignoreCase);
+    }
+
+    [Test]
     public void GetValue()
     {
       JObject a = new JObject();

@@ -21,7 +21,8 @@
     <Topic id="QueryingLINQtoJSON" visible="True" title="Querying JSON with LINQ" />
     <Topic id="SelectToken" visible="True" title="Querying JSON with SelectToken" />
   </Topic>
-  <Topic id="JsonSchema" visible="True" isSelected="true" title="Validating JSON" />
+  <Topic id="Performance" visible="True" isSelected="true" title="Performance" />
+  <Topic id="JsonSchema" visible="True" title="Validating JSON" />
   <Topic id="ReadingWritingJSON" visible="True" title="Basic Reading and Writing JSON" />
   <Topic id="ConvertingJSONandXML" visible="True" title="Converting between JSON and XML" />
 </Topics>

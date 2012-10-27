@@ -47,6 +47,33 @@ namespace Newtonsoft.Json.Tests.Serialization
   public class DefaultValueHandlingTests : TestFixtureBase
   {
     [Test]
+    public void Include()
+    {
+      Invoice invoice = new Invoice
+      {
+        Company = "Acme Ltd.",
+        Amount = 50.0m,
+        Paid = false,
+        FollowUpDays = 30,
+        FollowUpEmailAddress = string.Empty,
+        PaidDate = null
+      };
+
+      string included = JsonConvert.SerializeObject(invoice,
+        Formatting.Indented,
+        new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Include });
+
+      Assert.AreEqual(@"{
+  ""Company"": ""Acme Ltd."",
+  ""Amount"": 50.0,
+  ""Paid"": false,
+  ""PaidDate"": null,
+  ""FollowUpDays"": 30,
+  ""FollowUpEmailAddress"": """"
+}", included);
+    }
+
+    [Test]
     public void SerializeInvoice()
     {
       Invoice invoice = new Invoice
