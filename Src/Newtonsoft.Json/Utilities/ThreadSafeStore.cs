@@ -78,7 +78,9 @@ namespace Newtonsoft.Json.Utilities
           Dictionary<TKey, TValue> newStore = new Dictionary<TKey, TValue>(_store);
           newStore[key] = value;
 
+#if !NETFX_CORE
           Thread.MemoryBarrier();
+#endif
           _store = newStore;
         }
 
