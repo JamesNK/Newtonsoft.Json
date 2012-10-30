@@ -70,7 +70,7 @@
 			</outputPaths>
           <!-- Logo image file (optional).  Filename is required. The height, width, altText, placement, and
 					 alignment attributes are optional. -->
-          <logoFile filename="D:\Development\Source\Json\Newtonsoft.Json\Doc\logo.jpg" height="0" width="0" altText="Json.NET" placement="left" alignment="left" />
+          <logoFile filename="{@ProjectFolder}logo.jpg" height="0" width="0" altText="Json.NET" placement="left" alignment="left" />
         </component>
       </ComponentConfig>
       <ComponentConfig id="Code Block Component" enabled="True">
