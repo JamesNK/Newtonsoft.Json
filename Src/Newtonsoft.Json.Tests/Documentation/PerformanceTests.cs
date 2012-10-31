@@ -80,10 +80,13 @@ namespace Newtonsoft.Json.Tests.Documentation
   #region JsonConverterContractResolver
   public class ConverterContractResolver : DefaultContractResolver
   {
+    public new static readonly ConverterContractResolver Instance = new ConverterContractResolver();
+
     protected override JsonContract CreateContract(Type objectType)
     {
       JsonContract contract = base.CreateContract(objectType);
 
+      // this will only be called once and then cached
       if (objectType == typeof(DateTime) || objectType == typeof(DateTimeOffset))
         contract.Converter = new JavaScriptDateTimeConverter();
 
@@ -117,7 +120,7 @@ namespace Newtonsoft.Json.Tests.Documentation
     {
       string json = JsonConvert.SerializeObject(new DateTime(2000, 10, 10, 10, 10, 10, DateTimeKind.Utc), new JsonSerializerSettings
         {
-          ContractResolver = new ConverterContractResolver()
+          ContractResolver = ConverterContractResolver.Instance
         });
 
       Console.WriteLine(json);

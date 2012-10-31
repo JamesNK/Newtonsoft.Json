@@ -5,3 +5,6 @@ TestResults/
 AppPackages/
 *.suo
 *.user
+_ReSharper.*
+*.ReSharper.user
+*.resharper.user
