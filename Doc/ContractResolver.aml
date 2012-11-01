@@ -45,6 +45,23 @@
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="ContractResolver" title="ContractResolver" />
       </content>
     </section>
+    <section>
+      <title>Custom Examples</title>
+      <content>
+        <para>Setting a <codeEntityReference>T:Newtonsoft.Json.JsonConverter</codeEntityReference> on a type
+        using an IContractResolver.</para>
+
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\PerformanceTests.cs" region="JsonConverterContractResolver" title="Use JsonConverter with IContractResolver" />
+
+        <para><externalLink>
+        <linkText>Conditionally serializing properties</linkText>
+        <linkUri>ConditionalProperties.htm</linkUri>
+        <linkTarget>_self</linkTarget>
+      </externalLink> using an IContractResolver.</para>
+
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\ConditionalPropertiesTests.cs" region="ShouldSerializeContractResolver" title="Conditional properties with IContractResolver" />
+      </content>
+    </section>
     <relatedTopics>
       <codeEntityReference>T:Newtonsoft.Json.Serialization.IContractResolver</codeEntityReference>
       <codeEntityReference>T:Newtonsoft.Json.Serialization.DefaultContractResolver</codeEntityReference>

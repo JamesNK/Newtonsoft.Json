@@ -713,6 +713,7 @@ _____'propertyName': NaN
         jsonWriter.WriteValue(data);
         jsonWriter.WriteValue((object)data);
         jsonWriter.WriteValue((byte[])null);
+        jsonWriter.WriteValue((Uri)null);
         jsonWriter.WriteEndArray();
       }
 
@@ -720,6 +721,7 @@ _____'propertyName': NaN
   ""SGVsbG8gd29ybGQu"",
   ""SGVsbG8gd29ybGQu"",
   ""SGVsbG8gd29ybGQu"",
+  null,
   null
 ]";
       string result = sb.ToString();

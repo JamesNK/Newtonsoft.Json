@@ -117,6 +117,7 @@
     <Compile Include="Converters\StringEnumConverterTests.cs" />
     <Compile Include="Converters\VersionConverterTests.cs" />
     <Compile Include="Documentation\ConvertingJsonAndXmlTests.cs" />
+    <Compile Include="Documentation\ConditionalPropertiesTests.cs" />
     <Compile Include="Documentation\PerformanceTests.cs" />
     <Compile Include="Documentation\JsonSchemaTests.cs" />
     <Compile Include="Documentation\ReadingAndWritingJsonTests.cs" />
