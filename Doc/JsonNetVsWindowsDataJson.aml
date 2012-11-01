@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="JsonNetVsWindowsDataJson" revisionNumber="1">
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <introduction>
+      <para>Windows 8 introduces a new way to work with JSON via the <externalLink>
+<linkText>Windows.Data.Json</linkText>
+<linkUri>http://msdn.microsoft.com/en-us/library/windows/apps/xaml/br240639.aspx</linkUri>
+<linkTarget>_blank</linkTarget>
+</externalLink> namespace. Similar to LINQ to JSON in Json.NET
+      it defines classes that can be used to parse values, strings, objects, and arrays from
+      JSON text or serialize value types into JSON text.</para>
+      <para>Below is a comparison of Json.NET&apos;s LINQ to JSON to Window 8&apos;s Windows.Data.Json.</para>
+    </introduction>
+    <section>
+      <title>Exclusive Json.NET Features</title>
+      <content>
+<list class="bullet">
+   <listItem>
+     <para>
+       Runs on .NET 2, .NET 3, .NET 4, Silverlight and Windows Phone 7
+     </para>
+   </listItem>
+   <listItem>
+     <para>
+       Supports dynamic programming
+     </para>
+   </listItem>
+   <listItem>
+     <para>
+       Write indented JSON
+     </para>
+   </listItem>
+   <listItem>
+     <para>
+       Customize reading and writing JSON with JsonConverters
+     </para>
+   </listItem>
+   <listItem>
+     <para>
+       Read and write ISO8601 dates
+     </para>
+   </listItem>
+   <listItem>
+     <para>
+       Better LINQ support
+     </para>
+   </listItem>
+</list>
+      </content>
+    </section>
+    <section>
+      <title>Creating JSON</title>
+      <content>
+        <para>The big difference between the two libraries when creating JSON is Windows.Data.Json requires
+        string/integer/double values to be explicitly converted to JsonValue objects.</para>
+        <para>Note that there is a weird limitation to creating JSON with Windows.Data.Json: it doesn&apos;t
+        allow you to set properties to null or put null values in an array.</para>
+
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\JsonNetVsWindowsDataJsonTests.cs" region="CreatingJSON" title="Creating JSON with Json.NET and Windows.Data.Json" />
+        
+      </content>
+    </section>
+    <section>
+      <title>Querying JSON</title>
+      <content>
+        <para>Windows.Data.Json requires a value to be cast to its exact type with the GetObject/GetArray methods
+        before it can be used, making Windows.Data.Json&apos;s code verbose compared to LINQ to JSON.</para>
+
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\JsonNetVsWindowsDataJsonTests.cs" region="QueryingJSON" title="Querying JSON with Json.NET and Windows.Data.Json" />
+        
+      </content>
+    </section>
+    <section>
+      <title>Performance</title>
+      <content>
+        <para>Json.NET is slightly slower at writing JSON than Windows.Data.Json but considerably faster at parsing JSON.</para>
+        
+	<mediaLink>
+      <image class="image" xlink:href="jsonnetwindowsdatajson" mimeType="image/png" width="592" height="356" />
+      <summary>Json.NET and Windows.Data.Json Performance</summary>
+	</mediaLink>
+        
+      </content>
+    </section>
+    <section>
+      <title>Converting Between LINQ to JSON and Windows.Data.Json</title>
+      <content>
+        <para>Json.NET supports converting between the types of the two libraries.
+        This feature is useful if you are working with another API but you want to use Json.NET inside your own code.</para>
+        <para>Use <codeEntityReference>Overload:Newtonsoft.Json.Linq.JToken.FromObject</codeEntityReference> to convert a Windows.Data.Json
+        value to LINQ to JSON and use <codeEntityReference>Overload:Newtonsoft.Json.Linq.JToken.ToObject</codeEntityReference> to convert LINQ to JSON to Windows.Data.Json.</para>
+
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\JsonNetVsWindowsDataJsonTests.cs" region="Converting" title="Converting between Json.NET and Windows.Data.Json" />
+        
+      </content>
+    </section>
+    <relatedTopics>
+      <codeEntityReference>N:Newtonsoft.Json.Linq</codeEntityReference>
+    </relatedTopics>
+  </developerConceptualDocument>
+</topic>

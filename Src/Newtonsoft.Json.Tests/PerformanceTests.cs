@@ -64,8 +64,8 @@ namespace Newtonsoft.Json.Tests
   [TestFixture]
   public class PerformanceTests : TestFixtureBase
   {
-    private const int Iterations = 100;
-    //private const int Iterations = 5000;
+    //private const int Iterations = 100;
+    private const int Iterations = 5000;
 
 #region Data
 
@@ -122,21 +122,19 @@ namespace Newtonsoft.Json.Tests
       TestClass test = CreateSerializationObject();
 
       SerializeTests(test);
-
-      Deserialize();
     }
 
     private void SerializeTests(object value)
     {
-      BenchmarkSerializeMethod(SerializeMethod.DataContractSerializer, value);
-      BenchmarkSerializeMethod(SerializeMethod.BinaryFormatter, value);
-      BenchmarkSerializeMethod(SerializeMethod.JavaScriptSerializer, value);
-      BenchmarkSerializeMethod(SerializeMethod.DataContractJsonSerializer, value);
-      BenchmarkSerializeMethod(SerializeMethod.JsonNet, value);
-      BenchmarkSerializeMethod(SerializeMethod.JsonNetLinq, value);
+      //BenchmarkSerializeMethod(SerializeMethod.DataContractSerializer, value);
+      //BenchmarkSerializeMethod(SerializeMethod.BinaryFormatter, value);
+      //BenchmarkSerializeMethod(SerializeMethod.JavaScriptSerializer, value);
+      //BenchmarkSerializeMethod(SerializeMethod.DataContractJsonSerializer, value);
+      //BenchmarkSerializeMethod(SerializeMethod.JsonNet, value);
+      //BenchmarkSerializeMethod(SerializeMethod.JsonNetLinq, value);
       BenchmarkSerializeMethod(SerializeMethod.JsonNetManual, value);
-      BenchmarkSerializeMethod(SerializeMethod.JsonNetWithIsoConverter, value);
-      BenchmarkSerializeMethod(SerializeMethod.JsonNetBinary, value);
+      //BenchmarkSerializeMethod(SerializeMethod.JsonNetWithIsoConverter, value);
+      //BenchmarkSerializeMethod(SerializeMethod.JsonNetBinary, value);
     }
 
     [Test]

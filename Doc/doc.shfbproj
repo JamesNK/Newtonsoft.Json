@@ -137,6 +137,8 @@
     <Content Include="donate.gif" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="JsonNetVsDotNetSerializers.aml" />
+    <None Include="JsonNetVsWindowsDataJson.aml" />
     <None Include="ConditionalProperties.aml" />
     <None Include="CustomCreationConverter.aml" />
     <None Include="ContractResolver.aml" />
@@ -167,6 +169,18 @@
     <ContentLayout Include="doc.content" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="tick.png">
+      <ImageId>tick</ImageId>
+      <AlternateText>tick</AlternateText>
+    </Content>
+    <Content Include="cross.png">
+      <ImageId>cross</ImageId>
+      <AlternateText>cross</AlternateText>
+    </Content>
+    <Image Include="jsonnetwindowsdatajson.png">
+      <ImageId>jsonnetwindowsdatajson</ImageId>
+      <AlternateText>jsonnetwindowsdatajson</AlternateText>
+    </Image>
     <Image Include="performance.png">
       <ImageId>performance</ImageId>
       <AlternateText>performance</AlternateText>
