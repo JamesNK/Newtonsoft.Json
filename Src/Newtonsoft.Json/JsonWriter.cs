@@ -142,21 +142,6 @@ namespace Newtonsoft.Json
         return depth;
       }
     }
-
-    internal string ContainerPath
-    {
-      get
-      {
-        if (_currentPosition.Type == JsonContainerType.None)
-          return string.Empty;
-
-        IEnumerable<JsonPosition> positions = (_currentPosition.InsideContainer())
-          ? _stack
-          : _stack.Concat(new[] { _currentPosition });
-
-        return JsonPosition.BuildPath(positions);
-      }
-    }
     
     /// <summary>
     /// Gets the state of the writer.
@@ -190,6 +175,17 @@ namespace Newtonsoft.Json
       }
     }
 
+    internal string ContainerPath
+    {
+      get
+      {
+        if (_currentPosition.Type == JsonContainerType.None)
+          return string.Empty;
+
+        return JsonPosition.BuildPath(_stack);
+      }
+    }
+
     /// <summary>
     /// Gets the path of the writer. 
     /// </summary>
@@ -200,7 +196,15 @@ namespace Newtonsoft.Json
         if (_currentPosition.Type == JsonContainerType.None)
           return string.Empty;
 
-        return JsonPosition.BuildPath(_stack.Concat(new[] { _currentPosition }));
+        bool insideContainer = (_currentState != State.ArrayStart
+          && _currentState != State.ConstructorStart
+          && _currentState != State.ObjectStart);
+
+        IEnumerable<JsonPosition> positions = (!insideContainer)
+          ? _stack
+          : _stack.Concat(new[] { _currentPosition });
+
+        return JsonPosition.BuildPath(positions);
       }
     }
 
@@ -249,45 +253,29 @@ namespace Newtonsoft.Json
 
     internal void UpdateScopeWithFinishedValue()
     {
-      if (_currentPosition.Type == JsonContainerType.Array
-        || _currentPosition.Type == JsonContainerType.Constructor)
-      {
-        if (_currentPosition.Position == null)
-          _currentPosition.Position = 0;
-        else
+      if (_currentPosition.HasIndex)
           _currentPosition.Position++;
-      }
     }
 
     private void Push(JsonContainerType value)
     {
-      if (_currentPosition.Type == JsonContainerType.None)
-      {
-        _currentPosition.Type = value;
-      }
-      else
-      {
+      if (_currentPosition.Type != JsonContainerType.None)
         _stack.Add(_currentPosition);
-        var state = new JsonPosition
-        {
-          Type = value
-        };
-        _currentPosition = state;
-      }
+
+      _currentPosition = new JsonPosition(value);
     }
 
     private JsonContainerType Pop()
     {
-      JsonPosition oldPosition;
+      JsonPosition oldPosition = _currentPosition;
+
       if (_stack.Count > 0)
       {
-        oldPosition = _currentPosition;
         _currentPosition = _stack[_stack.Count - 1];
         _stack.RemoveAt(_stack.Count - 1);
       }
       else
       {
-        oldPosition = _currentPosition;
         _currentPosition = new JsonPosition();
       }
 
@@ -561,21 +549,6 @@ namespace Newtonsoft.Json
       while (Top > 0)
       {
         WriteEnd();
-      }
-    }
-
-    private JsonContainerType GetTypeForCloseToken(JsonToken token)
-    {
-      switch (token)
-      {
-        case JsonToken.EndObject:
-          return JsonContainerType.Object;
-        case JsonToken.EndArray:
-          return JsonContainerType.Array;
-        case JsonToken.EndConstructor:
-          return JsonContainerType.Constructor;
-        default:
-          throw JsonWriterException.Create(this, "No type for token: " + token, null);
       }
     }
 

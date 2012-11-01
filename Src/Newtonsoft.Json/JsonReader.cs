@@ -225,7 +225,15 @@ namespace Newtonsoft.Json
         if (_currentPosition.Type == JsonContainerType.None)
           return string.Empty;
 
-        return JsonPosition.BuildPath(_stack.Concat(new[] { _currentPosition }));
+        bool insideContainer = (_currentState != State.ArrayStart
+          && _currentState != State.ConstructorStart
+          && _currentState != State.ObjectStart);
+
+        IEnumerable<JsonPosition> positions = (!insideContainer)
+          ? _stack
+          : _stack.Concat(new[] {_currentPosition});
+
+        return JsonPosition.BuildPath(positions);
       }
     }
 
@@ -265,16 +273,12 @@ namespace Newtonsoft.Json
 
       if (_currentPosition.Type == JsonContainerType.None)
       {
-        _currentPosition.Type = value;
+        _currentPosition = new JsonPosition(value);
       }
       else
       {
         _stack.Add(_currentPosition);
-        JsonPosition state = new JsonPosition
-        {
-          Type = value
-        };
-        _currentPosition = state;
+        _currentPosition = new JsonPosition(value);
 
         // this is a little hacky because Depth increases when first property/value is written but only testing here is faster/simpler
         if (_maxDepth != null && Depth + 1 > _maxDepth && !_hasExceededMaxDepth)
