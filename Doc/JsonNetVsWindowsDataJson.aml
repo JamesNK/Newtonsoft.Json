@@ -22,7 +22,7 @@
    </listItem>
    <listItem>
      <para>
-       Supports dynamic programming
+       Dynamic programming
      </para>
    </listItem>
    <listItem>
@@ -71,7 +71,7 @@
       </content>
     </section>
     <section>
-      <title>Performance</title>
+      <title>Benchmarks</title>
       <content>
         <para>Json.NET is slightly slower at writing JSON than Windows.Data.Json but considerably faster at parsing JSON.</para>
         
@@ -86,7 +86,7 @@
       <title>Converting Between LINQ to JSON and Windows.Data.Json</title>
       <content>
         <para>Json.NET supports converting between the types of the two libraries.
-        This feature is useful if you are working with another API but you want to use Json.NET inside your own code.</para>
+        This feature is useful if you are working with another API that uses Windows.Data.Json types but you want to use Json.NET inside your own code.</para>
         <para>Use <codeEntityReference>Overload:Newtonsoft.Json.Linq.JToken.FromObject</codeEntityReference> to convert a Windows.Data.Json
         value to LINQ to JSON and use <codeEntityReference>Overload:Newtonsoft.Json.Linq.JToken.ToObject</codeEntityReference> to convert LINQ to JSON to Windows.Data.Json.</para>
 

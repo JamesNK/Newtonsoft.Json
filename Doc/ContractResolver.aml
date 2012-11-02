@@ -9,11 +9,10 @@
     <introduction>
       <para>The <codeEntityReference>T:Newtonsoft.Json.Serialization.IContractResolver</codeEntityReference>
       interface provides a way to customize how the
-      JsonSerializer serializes and deserializes .NET objects to JSON without placing attributes on your classes.</para>
-      <para>Implementing the IContractResolver interface and then assigning an
-      instance to a JsonSerializer lets you control whether the object is
-      serialized as a JSON object or JSON array, what object members should be
-      serialized, how they are serialized and what they are called.</para>
+      JsonSerializer serializes and deserializes .NET objects to JSON without placing attributes on your classes.
+      </para>
+      <para>Anything that can be set on an object, collection, property, etc, using attributes or methods to control serialization
+      can also be set using an IContractResolver.</para>
     </introduction>
     <!-- Add one or more top-level section elements.  These are collapsible.
          If using <autoOutline />, add an address attribute to identify it
@@ -46,20 +45,20 @@
       </content>
     </section>
     <section>
-      <title>Custom Examples</title>
+      <title>Custom IContractResolver Examples</title>
       <content>
-        <para>Setting a <codeEntityReference>T:Newtonsoft.Json.JsonConverter</codeEntityReference> on a type
-        using an IContractResolver.</para>
-
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\PerformanceTests.cs" region="JsonConverterContractResolver" title="Use JsonConverter with IContractResolver" />
 
-        <para><externalLink>
-        <linkText>Conditionally serializing properties</linkText>
-        <linkUri>ConditionalProperties.htm</linkUri>
-        <linkTarget>_self</linkTarget>
-      </externalLink> using an IContractResolver.</para>
+        <para>This example sets a <codeEntityReference>T:Newtonsoft.Json.JsonConverter</codeEntityReference> for a type
+        using an IContractResolver. Using a contract resolver here is useful because DateTime is not your own type and it is not possible to place a JsonConverterAttribute on it.</para>
 
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\ConditionalPropertiesTests.cs" region="ShouldSerializeContractResolver" title="Conditional properties with IContractResolver" />
+
+        <para>This example sets up <externalLink>
+        <linkText>conditional serialization for a property</linkText>
+        <linkUri>ConditionalProperties.htm</linkUri>
+        <linkTarget>_self</linkTarget>
+      </externalLink> using an IContractResolver. This is useful if you want to conditional serialize a property but don't want to add additional methods to your type.</para>
       </content>
     </section>
     <relatedTopics>

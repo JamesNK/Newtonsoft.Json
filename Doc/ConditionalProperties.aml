@@ -35,7 +35,7 @@
     <relatedTopics>
       <codeEntityReference>T:Newtonsoft.Json.JsonSerializer</codeEntityReference>
       <codeEntityReference>T:Newtonsoft.Json.Serialization.IContractResolver</codeEntityReference>
-      <codeEntityReference>M:Newtonsoft.Json.Serialization.JsonProperty.ShouldSerialize</codeEntityReference>
+      <codeEntityReference>P:Newtonsoft.Json.Serialization.JsonProperty.ShouldSerialize</codeEntityReference>
     </relatedTopics>
   </developerConceptualDocument>
 </topic>
