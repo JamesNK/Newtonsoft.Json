@@ -9,7 +9,7 @@
     <introduction>
       <para>The <codeEntityReference>T:Newtonsoft.Json.Serialization.IContractResolver</codeEntityReference>
       interface provides a way to customize how the
-      JsonSerializer serializes and deserializes .NET objects to JSON.</para>
+      JsonSerializer serializes and deserializes .NET objects to JSON without placing attributes on your classes.</para>
       <para>Implementing the IContractResolver interface and then assigning an
       instance to a JsonSerializer lets you control whether the object is
       serialized as a JSON object or JSON array, what object members should be

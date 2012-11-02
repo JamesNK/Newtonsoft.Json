@@ -59,7 +59,14 @@
         
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\PerformanceTests.cs" region="ReaderWriter" title="Manually serialize using JsonTextWriter" />
 
-        <para>If performance is important and you don't mind more code to get it then this is your best choice.</para>
+        <para>If performance is important and you don't mind more code to get it then this is your best choice. Read more about using JsonReader/JsonWriter here:
+        <externalLink>
+        <linkText>Basic Reading and Writing JSON</linkText>
+        <linkUri>ReadingWritingJSON.aml</linkUri>
+        <linkTarget>_self</linkTarget>
+      </externalLink>
+        
+        </para>
       </content>
     </section>
     <section>

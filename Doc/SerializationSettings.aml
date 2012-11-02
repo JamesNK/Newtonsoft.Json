@@ -61,8 +61,12 @@
 
 <section>
  <title>ReferenceLoopHandling</title>
- <content><para><codeEntityReference>T:Newtonsoft.Json.ReferenceLoopHandling</codeEntityReference> controls how circular referencing objects, e.g. a Person object referencing itself via a Manager property, are serialized.</para>
- 
+ <content>
+   <para><codeEntityReference>T:Newtonsoft.Json.ReferenceLoopHandling</codeEntityReference> controls how circular referencing objects,
+   e.g. a Person object referencing itself via a Manager property, are serialized.</para>
+   <para>The <codeEntityReference>M:System.Object.Equals(System.Object)</codeEntityReference> method is used to test whether an object is in a circular reference.
+   By default <codeInline>Object.Equals(Object)</codeInline> will test whether the references are equal for reference types and private and public values
+   are equal for value types. Classes and structs can override this method.</para> 
 <table>
   <tableHeader>
     <row>
@@ -83,7 +87,11 @@
     <entry><para>This option forces Json.NET to serialize objects in reference loops. This is useful if objects are nested but not indefinitely.</para></entry>
   </row>
 </table>
-<para>ReferenceLoopHandling can also be customized on individual properties with JsonPropertyAttribute.</para>
+<para>ReferenceLoopHandling can be used as an argument when calling the serializer, it can be set on an object's properties or
+a collection's items using <codeEntityReference>P:Newtonsoft.Json.JsonContainerAttribute.ItemReferenceLoopHandling</codeEntityReference>,
+customized on a property with <codeEntityReference>P:Newtonsoft.Json.JsonPropertyAttribute.ReferenceLoopHandling</codeEntityReference>
+or a property's object properties or collection items using
+<codeEntityReference>P:Newtonsoft.Json.JsonPropertyAttribute.ItemReferenceLoopHandling</codeEntityReference>.</para>
 </content>
 </section>
 
@@ -171,7 +179,16 @@
 
 <section>
  <title>TypeNameHandling</title>
- <content><para><codeEntityReference>T:Newtonsoft.Json.TypeNameHandling</codeEntityReference> controls whether Json.NET includes .NET type names during serialization with a $type property and reads .NET type names from that property to determine what type to create during deserialization.</para>
+ <content>
+ <para>
+   <codeEntityReference>T:Newtonsoft.Json.TypeNameHandling</codeEntityReference> controls whether Json.NET includes .NET type names
+   during serialization with a $type property and reads .NET type names from that property to determine what type to create during
+   deserialization.
+ </para>
+ <para>
+   The value of the $type property can be customized by creating your own 
+   <codeEntityReference>T:System.Runtime.Serialization.SerializationBinder</codeEntityReference>.
+ </para>
  
 <table>
   <tableHeader>
@@ -201,8 +218,11 @@
     <entry><para>Json.NET will write and use type names for objects and collections.</para></entry>
   </row>
 </table>
-<para>TypeNameHandling can also be customized on individual properties with JsonPropertyAttribute.</para>
-
+<para>TypeNameHandling can be used as an argument when calling the serializer, it can be set on an object's properties or
+a collection's items using <codeEntityReference>P:Newtonsoft.Json.JsonContainerAttribute.ItemTypeNameHandling</codeEntityReference>,
+customized on a property with <codeEntityReference>P:Newtonsoft.Json.JsonPropertyAttribute.TypeNameHandling</codeEntityReference>
+or a property's object properties or collection items using
+<codeEntityReference>P:Newtonsoft.Json.JsonPropertyAttribute.ItemTypeNameHandling</codeEntityReference>.</para>
 </content>
 </section>
 
@@ -274,9 +294,14 @@
  using its CanConvert to see if it should be used. If CanConvert returns true then the JsonConverter will be used to read or write
  the JSON for that value. Note that while a JsonConverter gives you complete control over that values JSON, many Json.NET serialization
  features are no longer available like type name and reference handling.</para>
+
+<para>JsonConverters can be used as an argument when calling the serializer, it can be set on an object or property
+using <codeEntityReference>T:Newtonsoft.Json.JsonConverterAttribute</codeEntityReference>, it be set on an object's properties or
+a collection's items using <codeEntityReference>P:Newtonsoft.Json.JsonContainerAttribute.ItemConverterType</codeEntityReference>,
+or a property's object properties or collection items using
+<codeEntityReference>P:Newtonsoft.Json.JsonPropertyAttribute.ItemConverterType</codeEntityReference>.</para>
+
  <para>To create your own custom converter inherit from the JsonConverter class. Read more about the built-in JsonConverters below:</para>
-
-
 <list class="bullet">
   <listItem><para><externalLink>
 <linkText>Serializing Dates in JSON</linkText>

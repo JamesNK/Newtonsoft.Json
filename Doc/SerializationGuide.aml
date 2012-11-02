@@ -7,12 +7,7 @@
     </summary>
     -->
     <introduction>
-      <!-- Uncomment this to generate an outline of the section and sub-section
-           titles.  Specify a numeric value as the inner text to limit it to
-           a specific number of sub-topics when creating the outline.  Specify
-           zero (0) to limit it to top-level sections only.  -->
-      <!-- <autoOutline /> -->
-      <para> The Json.NET serializer can serialize a wide variety of .NET objects. This guide looks at how it works, first at a high level and then in more detail.</para>
+      <para>The Json.NET serializer can serialize a wide variety of .NET objects. This guide looks at how it works, first at a high level and then in more detail.</para>
     </introduction>
     <!-- Add one or more top-level section elements.  These are collapsible.
          If using <autoOutline />, add an address attribute to identify it
@@ -41,11 +36,11 @@
   </tableHeader>
   <row>
     <entry><para><legacyBold>IList, IEnumerable, IList&lt;T&gt;, Array</legacyBold></para></entry>
-    <entry><para>Array</para></entry>
+    <entry><para>Array (properties on the collection will not be serialized)</para></entry>
   </row>
   <row>
     <entry><para><legacyBold>IDictionary, IDictionary&lt;TKey, TValue&gt;</legacyBold></para></entry>
-    <entry><para>Object</para></entry>
+    <entry><para>Object (dictionary name/values only, properties on the dictionary will not be serialized)</para></entry>
   </row>
   <row>
     <entry><para><legacyBold>Object (more detail below)</legacyBold></para></entry>
