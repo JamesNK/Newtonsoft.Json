@@ -439,7 +439,7 @@ namespace Newtonsoft.Json
     {
       InternalWriteValue(JsonToken.Date);
       value = JsonConvert.EnsureDateTime(value, DateTimeZoneHandling);
-      JsonConvert.WriteDateTimeString(_writer, value, DateFormatHandling);
+      JsonConvert.WriteDateTimeString(_writer, value, DateFormatHandling, _quoteChar);
     }
 
     /// <summary>
@@ -470,7 +470,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(DateTimeOffset value)
     {
       InternalWriteValue(JsonToken.Date);
-      WriteValueInternal(JsonConvert.ToString(value, DateFormatHandling), JsonToken.Date);
+      WriteValueInternal(JsonConvert.ToString(value, DateFormatHandling, _quoteChar), JsonToken.Date);
     }
 #endif
 
@@ -481,7 +481,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(Guid value)
     {
       InternalWriteValue(JsonToken.String);
-      WriteValueInternal(JsonConvert.ToString(value), JsonToken.String);
+      WriteValueInternal(JsonConvert.ToString(value, _quoteChar), JsonToken.String);
     }
 
     /// <summary>
@@ -491,7 +491,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(TimeSpan value)
     {
       InternalWriteValue(JsonToken.String);
-      WriteValueInternal(JsonConvert.ToString(value), JsonToken.String);
+      WriteValueInternal(JsonConvert.ToString(value, _quoteChar), JsonToken.String);
     }
 
     /// <summary>
@@ -507,7 +507,7 @@ namespace Newtonsoft.Json
       else
       {
         InternalWriteValue(JsonToken.String);
-        WriteValueInternal(JsonConvert.ToString(value), JsonToken.String);
+        WriteValueInternal(JsonConvert.ToString(value, _quoteChar), JsonToken.String);
       }
     }
     #endregion

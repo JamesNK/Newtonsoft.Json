@@ -155,17 +155,23 @@ namespace Newtonsoft.Json.Utilities
       if (!char.IsUpper(s[0]))
         return s;
 
-      string camelCase = null;
-#if !(NETFX_CORE || PORTABLE)
-      camelCase = char.ToLower(s[0], CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture);
-#else
-      camelCase = char.ToLower(s[0]).ToString();
-#endif
+      StringBuilder sb = new StringBuilder();
+      for (int i = 0; i < s.Length; i++)
+      {
+        bool hasNext = (i + 1 < s.Length);
+        if ((i == 0 || !hasNext) || char.IsUpper(s[i + 1]))
+        {
+          char lowerCase = char.ToLower(s[i], CultureInfo.InvariantCulture);
+          sb.Append(lowerCase);
+        }
+        else
+        {
+          sb.Append(s.Substring(i));
+          break;
+        }
+      }
 
-      if (s.Length > 1)
-        camelCase += s.Substring(1);
-
-      return camelCase;
+      return sb.ToString();
     }
 
     public static bool IsHighSurrogate(char c)

@@ -365,15 +365,13 @@ namespace Newtonsoft.Json.Serialization
       if (attribute != null)
         contract.ItemRequired = attribute._itemRequired;
 
+      ConstructorInfo overrideConstructor = GetAttributeConstructor(contract.NonNullableUnderlyingType);
+        
       // check if a JsonConstructorAttribute has been defined and use that
-      if (contract.NonNullableUnderlyingType.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Any(c => c.IsDefined(typeof(JsonConstructorAttribute), true)))
+      if (overrideConstructor != null)
       {
-        ConstructorInfo constructor = GetAttributeConstructor(contract.NonNullableUnderlyingType);
-        if (constructor != null)
-        {
-          contract.OverrideConstructor = constructor;
-          contract.ConstructorParameters.AddRange(CreateConstructorParameters(constructor, contract.Properties));
-        }
+        contract.OverrideConstructor = overrideConstructor;
+        contract.ConstructorParameters.AddRange(CreateConstructorParameters(overrideConstructor, contract.Properties));
       }
       else if (contract.MemberSerialization == MemberSerialization.Fields)
       {
@@ -404,6 +402,10 @@ namespace Newtonsoft.Json.Serialization
         throw new JsonException("Multiple constructors with the JsonConstructorAttribute.");
       else if (markedConstructors.Count == 1)
         return markedConstructors[0];
+
+      // little hack to get Version objects to deserialize correctly
+      if (objectType == typeof(Version))
+        return objectType.GetConstructor(new [] { typeof(int), typeof(int), typeof(int), typeof(int) });
 
       return null;
     }

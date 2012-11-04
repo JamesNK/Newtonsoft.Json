@@ -113,5 +113,18 @@ namespace Newtonsoft.Json.Tests.Converters
       DeserializeVersionClass("1.2.3", "2.3.4");
       DeserializeVersionClass("1.2.3.4", "2.3.4.5");
     }
+
+    [Test]
+    public void RoundtripImplicitConverter()
+    {
+      var version = new Version(1, 0, 0, 0);
+      string reportJSON = JsonConvert.SerializeObject(version);
+
+      //Test
+      Version report2 = JsonConvert.DeserializeObject<Version>(reportJSON);
+      string reportJSON2 = JsonConvert.SerializeObject(report2);
+
+      Assert.AreEqual(reportJSON, reportJSON2);
+    }
   }
 }

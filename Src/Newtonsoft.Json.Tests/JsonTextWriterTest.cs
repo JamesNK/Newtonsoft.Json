@@ -854,5 +854,43 @@ _____'propertyName': NaN
 
       Assert.AreEqual("{'Blah':null}", sw.ToString());
     }
+
+#if !NET20
+    [Test]
+    public void QuoteChar()
+    {
+      StringWriter sw = new StringWriter();
+      JsonTextWriter writer = new JsonTextWriter(sw);
+      writer.Formatting = Formatting.Indented;
+      writer.QuoteChar = '\'';
+
+      writer.WriteStartArray();
+
+      writer.WriteValue(new DateTime(2000, 1, 1, 1, 1, 1, DateTimeKind.Utc));
+      writer.WriteValue(new DateTimeOffset(2000, 1, 1, 1, 1, 1, TimeSpan.Zero));
+
+      writer.DateFormatHandling = DateFormatHandling.MicrosoftDateFormat;
+      writer.WriteValue(new DateTime(2000, 1, 1, 1, 1, 1, DateTimeKind.Utc));
+      writer.WriteValue(new DateTimeOffset(2000, 1, 1, 1, 1, 1, TimeSpan.Zero));
+
+      writer.WriteValue(new byte[] { 1, 2, 3 });
+      writer.WriteValue(TimeSpan.Zero);
+      writer.WriteValue(new Uri("http://www.google.com/"));
+      writer.WriteValue(Guid.Empty);
+
+      writer.WriteEnd();
+
+      Assert.AreEqual(@"[
+  '2000-01-01T01:01:01Z',
+  '2000-01-01T01:01:01+00:00',
+  '\/Date(946688461000)\/',
+  '\/Date(946688461000+0000)\/',
+  'AQID',
+  '00:00:00',
+  'http://www.google.com/',
+  '00000000-0000-0000-0000-000000000000'
+]", sw.ToString());
+    }
+#endif
   }
 }

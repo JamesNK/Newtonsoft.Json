@@ -110,7 +110,7 @@ namespace Newtonsoft.Json
 
       using (StringWriter writer = StringUtils.CreateStringWriter(64))
       {
-        WriteDateTimeString(writer, updatedDateTime, updatedDateTime.GetUtcOffset(), updatedDateTime.Kind, format);
+        WriteDateTimeString(writer, updatedDateTime, updatedDateTime.GetUtcOffset(), updatedDateTime.Kind, format, '"');
         return writer.ToString();
       }
     }
@@ -156,26 +156,32 @@ namespace Newtonsoft.Json
     /// <returns>A JSON string representation of the <see cref="DateTimeOffset"/>.</returns>
     public static string ToString(DateTimeOffset value, DateFormatHandling format)
     {
+      return ToString(value, format, '"');
+    }
+
+    internal static string ToString(DateTimeOffset value, DateFormatHandling format, char quoteChar)
+    {
       using (StringWriter writer = StringUtils.CreateStringWriter(64))
       {
-        WriteDateTimeString(writer, (format == DateFormatHandling.IsoDateFormat) ? value.DateTime : value.UtcDateTime, value.Offset, DateTimeKind.Local, format);
+        WriteDateTimeString(writer, (format == DateFormatHandling.IsoDateFormat) ? value.DateTime : value.UtcDateTime, value.Offset, DateTimeKind.Local, format, quoteChar);
         return writer.ToString();
       }
     }
 #endif
 
-    internal static void WriteDateTimeString(TextWriter writer, DateTime value, DateFormatHandling format)
+    internal static void WriteDateTimeString(TextWriter writer, DateTime value, DateFormatHandling format, char quoteChar)
     {
-      WriteDateTimeString(writer, value, value.GetUtcOffset(), value.Kind, format);
+      WriteDateTimeString(writer, value, value.GetUtcOffset(), value.Kind, format, quoteChar);
     }
 
-    internal static void WriteDateTimeString(TextWriter writer, DateTime value, TimeSpan offset, DateTimeKind kind, DateFormatHandling format)
+    internal static void WriteDateTimeString(TextWriter writer, DateTime value, TimeSpan offset, DateTimeKind kind, DateFormatHandling format, char quoteChar)
     {
       if (format == DateFormatHandling.MicrosoftDateFormat)
       {
         long javaScriptTicks = ConvertDateTimeToJavaScriptTicks(value, offset);
 
-        writer.Write(@"""\/Date(");
+        writer.Write(quoteChar);
+        writer.Write(@"\/Date(");
         writer.Write(javaScriptTicks);
 
         switch (kind)
@@ -189,11 +195,12 @@ namespace Newtonsoft.Json
             break;
         }
 
-        writer.Write(@")\/""");
+        writer.Write(@")\/");
+        writer.Write(quoteChar);
       }
       else
       {
-        writer.Write(@"""");
+        writer.Write(quoteChar);
         writer.Write(value.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFF", CultureInfo.InvariantCulture));
 
         switch (kind)
@@ -207,7 +214,7 @@ namespace Newtonsoft.Json
         }
 
 
-        writer.Write(@"""");
+        writer.Write(quoteChar);
       }
     }
 
@@ -486,6 +493,11 @@ namespace Newtonsoft.Json
     /// <returns>A JSON string representation of the <see cref="Guid"/>.</returns>
     public static string ToString(Guid value)
     {
+      return ToString(value, '"');
+    }
+
+    internal static string ToString(Guid value, char quoteChar)
+    {
       string text = null;
 
 #if !(NETFX_CORE || PORTABLE)
@@ -494,7 +506,7 @@ namespace Newtonsoft.Json
       text = value.ToString("D");
 #endif
 
-      return '"' + text + '"';
+      return quoteChar + text + quoteChar;
     }
 
     /// <summary>
@@ -504,7 +516,12 @@ namespace Newtonsoft.Json
     /// <returns>A JSON string representation of the <see cref="TimeSpan"/>.</returns>
     public static string ToString(TimeSpan value)
     {
-      return '"' + value.ToString() + '"';
+      return ToString(value, '"');
+    }
+
+    internal static string ToString(TimeSpan value, char quoteChar)
+    {
+      return ToString(value.ToString(), quoteChar);
     }
 
     /// <summary>
@@ -517,7 +534,12 @@ namespace Newtonsoft.Json
       if (value == null)
         return Null;
 
-      return ToString(value.ToString());
+      return ToString(value, '"');
+    }
+
+    internal static string ToString(Uri value, char quoteChar)
+    {
+      return ToString(value.ToString(), quoteChar);
     }
 
     /// <summary>

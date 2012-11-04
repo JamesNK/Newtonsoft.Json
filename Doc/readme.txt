@@ -50,9 +50,6 @@ Json.NET comes in different versions for the various .NET frameworks.
 
 Notes:
 
-The Silverlight and Windows Phone builds are not strong-named.
-Use the assemblies in the Signed sub-directories for the strong-named versions.
-
 Microsoft stopped support for the Compact Framework in Visual Studio 2010.
 For a Compact Framework 3.5 build download Json.NET 3.5.
 

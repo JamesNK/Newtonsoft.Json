@@ -293,6 +293,7 @@
     <Compile Include="TestObjects\UserNullable.cs" />
     <Compile Include="Utilities\DynamicReflectionDelegateFactoryTests.cs" />
     <Compile Include="Utilities\ReflectionUtilsTests.cs" />
+    <Compile Include="Utilities\StringUtilsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.csproj">

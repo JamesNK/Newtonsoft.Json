@@ -274,6 +274,7 @@
     <Compile Include="TestObjects\UserNullable.cs" />
     <Compile Include="Utilities\DynamicReflectionDelegateFactoryTests.cs" />
     <Compile Include="Utilities\ReflectionUtilsTests.cs" />
+    <Compile Include="Utilities\StringUtilsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
