@@ -44,6 +44,12 @@ namespace Newtonsoft.Json.Tests.Converters
   [TestFixture]
   public class JsonValueConverterTests : TestFixtureBase
   {
+    public class Computer
+    {
+      public string Cpu { get; set; }
+      public List<string> Drives { get; set; }
+    }
+
     [Test]
     public void WriteJson()
     {
@@ -270,17 +276,19 @@ namespace Newtonsoft.Json.Tests.Converters
     [Test]
     public void DeserializePerformance()
     {
-      Stopwatch timer = new Stopwatch();
-      timer.Start();
-      for (int i = 0; i < 100000; i++)
-      {
-        JsonObject o = JsonObject.Parse(@"{
+      string json = @"{
   ""CPU"": ""Intel"",
   ""Drives"": [
     ""DVD read/writer"",
     ""500 gigabyte hard drive""
   ]
-}");
+}";
+
+      Stopwatch timer = new Stopwatch();
+      timer.Start();
+      for (int i = 0; i < 100000; i++)
+      {
+        JsonObject o = JsonObject.Parse(json);
       }
       timer.Stop();
 
@@ -290,29 +298,20 @@ namespace Newtonsoft.Json.Tests.Converters
       timer.Start();
       for (int i = 0; i < 100000; i++)
       {
-        JObject o = JObject.Parse(@"{
-  ""CPU"": ""Intel"",
-  ""Drives"": [
-    ""DVD read/writer"",
-    ""500 gigabyte hard drive""
-  ]
-}");
+        JObject o = JObject.Parse(json);
       }
       timer.Stop();
 
       string linq = timer.Elapsed.TotalSeconds.ToString();
 
+      // warm up
+      JsonConvert.DeserializeObject<Computer>(json);
+
       timer = new Stopwatch();
       timer.Start();
       for (int i = 0; i < 100000; i++)
       {
-        JsonObject o = JsonConvert.DeserializeObject<JsonObject>(@"{
-  ""CPU"": ""Intel"",
-  ""Drives"": [
-    ""DVD read/writer"",
-    ""500 gigabyte hard drive""
-  ]
-}");
+        Computer o = JsonConvert.DeserializeObject<Computer>(json);
       }
       timer.Stop();
 
@@ -326,21 +325,17 @@ namespace Newtonsoft.Json.Tests.Converters
     [Test]
     public void SerializePerformance()
     {
-      JsonObject o = JsonObject.Parse(@"{
+      string json = @"{
   ""CPU"": ""Intel"",
   ""Drives"": [
     ""DVD read/writer"",
     ""500 gigabyte hard drive""
   ]
-}");
+}";
 
-      JObject o1 = JObject.Parse(@"{
-  ""CPU"": ""Intel"",
-  ""Drives"": [
-    ""DVD read/writer"",
-    ""500 gigabyte hard drive""
-  ]
-}");
+      JsonObject o = JsonObject.Parse(json);
+      JObject o1 = JObject.Parse(json);
+      Computer o2 = JsonConvert.DeserializeObject<Computer>(json);
 
       Stopwatch timer = new Stopwatch();
       timer.Start();

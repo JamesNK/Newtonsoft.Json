@@ -161,7 +161,13 @@ namespace Newtonsoft.Json.Utilities
         bool hasNext = (i + 1 < s.Length);
         if ((i == 0 || !hasNext) || char.IsUpper(s[i + 1]))
         {
-          char lowerCase = char.ToLower(s[i], CultureInfo.InvariantCulture);
+          char lowerCase;
+#if !NETFX_CORE
+          lowerCase = char.ToLower(s[i], CultureInfo.InvariantCulture);
+#else
+          lowerCase = char.ToLower(s[i]);
+#endif
+
           sb.Append(lowerCase);
         }
         else
