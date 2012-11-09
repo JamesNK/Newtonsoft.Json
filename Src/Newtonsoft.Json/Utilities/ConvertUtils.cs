@@ -332,7 +332,7 @@ namespace Newtonsoft.Json.Utilities
         if (targetType == typeof (Uri))
           return new Uri((string) initialValue, UriKind.RelativeOrAbsolute);
         if (targetType == typeof (TimeSpan))
-#if !(NET35 || NET20 || PORTABLE)
+#if !(NET35 || NET20 || PORTABLE || WINDOWS_PHONE)
           return TimeSpan.Parse((string) initialValue, CultureInfo.InvariantCulture);
 #else
           return TimeSpan.Parse((string)initialValue);
