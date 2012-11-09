@@ -49,6 +49,12 @@ namespace Newtonsoft.Json.Serialization
       set { _serializer.ReferenceResolver = value; }
     }
 
+    public override ITraceWriter TraceWriter
+    {
+      get { return _serializer.TraceWriter; }
+      set { _serializer.TraceWriter = value; }
+    }
+
     public override JsonConverterCollection Converters
     {
       get { return _serializer.Converters; }

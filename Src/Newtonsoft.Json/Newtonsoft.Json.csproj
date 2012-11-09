@@ -67,6 +67,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\Net40\Newtonsoft.Json.xml</DocumentationFile>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -112,6 +113,7 @@
     <Compile Include="JsonConstructorAttribute.cs" />
     <Compile Include="JsonPosition.cs" />
     <Compile Include="Linq\JPropertyKeyedCollection.cs" />
+    <Compile Include="Serialization\ITraceWriter.cs" />
     <Compile Include="Serialization\JsonContainerContract.cs" />
     <Compile Include="Utilities\DynamicProxy.cs" />
     <Compile Include="Linq\JPath.cs" />

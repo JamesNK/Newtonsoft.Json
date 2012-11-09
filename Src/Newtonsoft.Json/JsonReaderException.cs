@@ -118,7 +118,7 @@ namespace Newtonsoft.Json
 
     internal static JsonReaderException Create(IJsonLineInfo lineInfo, string path, string message, Exception ex)
     {
-      message = FormatExceptionMessage(lineInfo, path, message);
+      message = JsonPosition.FormatMessage(lineInfo, path, message);
 
       int lineNumber;
       int linePosition;

@@ -219,9 +219,11 @@ namespace Newtonsoft.Json.Linq
             DateTime date1 = (DateTime)objA;
             DateTime date2;
 
+#if !NET20
             if (objB is DateTimeOffset)
               date2 = ((DateTimeOffset)objB).DateTime;
             else
+#endif
               date2 = Convert.ToDateTime(objB, CultureInfo.InvariantCulture);
 
             return date1.CompareTo(date2);

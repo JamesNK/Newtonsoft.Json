@@ -786,14 +786,8 @@ namespace Newtonsoft.Json
 
     private void UpdateScopeWithFinishedValue()
     {
-      if (_currentPosition.Type == JsonContainerType.Array
-        || _currentPosition.Type == JsonContainerType.Constructor)
-      {
-        if (_currentPosition.Position == null)
-          _currentPosition.Position = 0;
-        else
-          _currentPosition.Position++;
-      }
+      if (_currentPosition.HasIndex)
+        _currentPosition.Position++;
     }
 
     private void ValidateEnd(JsonToken endToken)

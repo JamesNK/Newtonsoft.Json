@@ -1049,8 +1049,10 @@ namespace Newtonsoft.Json.Utilities
       if (type == typeof(Guid))
         return new Guid();
 
+#if !NET20
       if (type == typeof(DateTimeOffset))
         return new DateTimeOffset();
+#endif
 
       if (IsNullable(type))
         return null;

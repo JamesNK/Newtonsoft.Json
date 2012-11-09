@@ -99,7 +99,7 @@ namespace Newtonsoft.Json
 
     internal static JsonWriterException Create(string path, string message, Exception ex)
     {
-      message = FormatExceptionMessage(null, path, message);
+      message = JsonPosition.FormatMessage(null, path, message);
 
       return new JsonWriterException(message, ex, path);
     }

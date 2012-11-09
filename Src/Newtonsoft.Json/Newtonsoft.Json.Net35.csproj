@@ -116,8 +116,10 @@
     <Compile Include="Linq\JPropertyDescriptor.cs" />
     <Compile Include="Linq\JPropertyKeyedCollection.cs" />
     <Compile Include="SerializationBinder.cs" />
+    <Compile Include="Serialization\ITraceWriter.cs" />
     <Compile Include="Serialization\JsonContainerContract.cs" />
     <Compile Include="StreamingContext.cs" />
+    <Compile Include="TraceLevel.cs" />
     <Compile Include="Utilities\DynamicProxy.cs" />
     <Compile Include="Linq\JPath.cs" />
     <Compile Include="Linq\JRaw.cs" />

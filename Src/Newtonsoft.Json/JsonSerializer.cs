@@ -55,6 +55,7 @@ namespace Newtonsoft.Json
     private JsonConverterCollection _converters;
     private IContractResolver _contractResolver;
     private IReferenceResolver _referenceResolver;
+    private ITraceWriter _traceWriter;
     private SerializationBinder _binder;
     private StreamingContext _context;
     private Formatting? _formatting;
@@ -107,6 +108,22 @@ namespace Newtonsoft.Json
           throw new ArgumentNullException("value", "Serialization binder cannot be null.");
 
         _binder = value;
+      }
+    }
+
+    /// <summary>
+    /// Gets or sets the <see cref="ITraceWriter"/> used by the serializer when writing trace messages.
+    /// </summary>
+    /// <value>The trace writer.</value>
+    public virtual ITraceWriter TraceWriter
+    {
+      get
+      {
+        return _traceWriter;
+      }
+      set
+      {
+        _traceWriter = value;
       }
     }
 
@@ -430,6 +447,8 @@ namespace Newtonsoft.Json
           jsonSerializer.ContractResolver = settings.ContractResolver;
         if (settings.ReferenceResolver != null)
           jsonSerializer.ReferenceResolver = settings.ReferenceResolver;
+        if (settings.TraceWriter != null)
+          jsonSerializer.TraceWriter = settings.TraceWriter;
         if (settings.Binder != null)
           jsonSerializer.Binder = settings.Binder;
       }
