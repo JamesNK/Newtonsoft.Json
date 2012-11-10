@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
@@ -23,9 +24,95 @@ using System.Linq;
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
+  public class Staff
+  {
+    public string Name { get; set; }
+    public DateTime StartDate { get; set; }
+    public IList<string> Roles { get; set; }
+  }
+
   [TestFixture]
   public class TraceWriterTests : TestFixtureBase
   {
+#if !(SILVERLIGHT || PORTABLE || NETFX_CORE)
+    [Test]
+    public void DiagnosticsTraceWriterTest()
+    {
+      StringWriter sw = new StringWriter();
+      TextWriterTraceListener listener = new TextWriterTraceListener(sw);
+
+      try
+      {
+        Trace.AutoFlush = true;
+        Trace.Listeners.Add(listener);
+
+        DiagnosticsTraceWriter traceWriter = new DiagnosticsTraceWriter();
+        traceWriter.Trace(TraceLevel.Verbose, "Verbose!", null);
+        traceWriter.Trace(TraceLevel.Info, "Info!", null);
+        traceWriter.Trace(TraceLevel.Warning, "Warning!", null);
+        traceWriter.Trace(TraceLevel.Error, "Error!", null);
+        traceWriter.Trace(TraceLevel.Off, "Off!", null);
+
+        Assert.AreEqual(@"Newtonsoft.Json Verbose: 0 : Verbose!
+Newtonsoft.Json Information: 0 : Info!
+Newtonsoft.Json Warning: 0 : Warning!
+Newtonsoft.Json Error: 0 : Error!
+", sw.ToString());
+      }
+      finally
+      {
+        Trace.Listeners.Remove(listener);
+        Trace.AutoFlush = false;
+      }
+    }
+#endif
+
+    [Test]
+    public void MemoryTraceWriterTest()
+    {
+      Staff staff = new Staff();
+      staff.Name = "Arnie Admin";
+      staff.Roles = new List<string> {"Administrator"};
+      staff.StartDate = DateTime.Now;
+
+      ITraceWriter traceWriter = new MemoryTraceWriter();
+
+      JsonConvert.SerializeObject(
+        staff,
+        new JsonSerializerSettings {TraceWriter = traceWriter, Converters = {new JavaScriptDateTimeConverter()}});
+
+      Console.WriteLine(traceWriter);
+      // 2012-11-11T12:08:42.761 Info Started serializing Newtonsoft.Json.Tests.Serialization.Staff. Path ''.
+      // 2012-11-11T12:08:42.785 Info Started serializing System.DateTime with converter Newtonsoft.Json.Converters.JavaScriptDateTimeConverter. Path 'StartDate'.
+      // 2012-11-11T12:08:42.791 Info Finished serializing System.DateTime with converter Newtonsoft.Json.Converters.JavaScriptDateTimeConverter. Path 'StartDate'.
+      // 2012-11-11T12:08:42.797 Info Started serializing System.Collections.Generic.List`1[System.String]. Path 'Roles'.
+      // 2012-11-11T12:08:42.798 Info Finished serializing System.Collections.Generic.List`1[System.String]. Path 'Roles'.
+      // 2012-11-11T12:08:42.799 Info Finished serializing Newtonsoft.Json.Tests.Serialization.Staff. Path ''.
+
+      MemoryTraceWriter memoryTraceWriter = (MemoryTraceWriter)traceWriter;
+
+      Assert.AreEqual(743, memoryTraceWriter.ToString().Length);
+      Assert.AreEqual(6, memoryTraceWriter.GetTraceMessages().Count());
+    }
+
+    [Test]
+    public void MemoryTraceWriterLimitTest()
+    {
+      MemoryTraceWriter traceWriter = new MemoryTraceWriter();
+
+      for (int i = 0; i < 1005; i++)
+      {
+        traceWriter.Trace(TraceLevel.Verbose, (i + 1).ToString(CultureInfo.InvariantCulture), null);
+      }
+
+      IList<string> traceMessages = traceWriter.GetTraceMessages().ToList();
+
+      Assert.AreEqual(1000, traceMessages.Count);
+
+      Assert.IsTrue(traceMessages.First().EndsWith(" 6"));
+      Assert.IsTrue(traceMessages.Last().EndsWith(" 1005"));
+    }
+
     [Test]
     public void Serialize()
     {
