@@ -3847,24 +3847,6 @@ To fix this error either change the environment to be fully trusted, change the 
       Assert.AreEqual(null, cc.Ignored);
     }
 
-    public class ShouldSerializeTestClass
-    {
-      internal bool _shouldSerializeName;
-
-      public string Name { get; set; }
-      public int Age { get; set; }
-
-      public void ShouldSerializeAge()
-      {
-        // dummy. should never be used because it doesn't return bool
-      }
-
-      public bool ShouldSerializeName()
-      {
-        return _shouldSerializeName;
-      }
-    }
-
     [Test]
     public void ShouldSerializeTest()
     {
@@ -3927,43 +3909,6 @@ To fix this error either change the environment to be fully trusted, change the 
       // ]
 
       Console.WriteLine(json);
-    }
-
-    public class SpecifiedTestClass
-    {
-      private bool _nameSpecified;
-
-      public string Name { get; set; }
-      public int Age { get; set; }
-      public int Weight { get; set; }
-      public int Height { get; set; }
-      public int FavoriteNumber { get; set; }
-
-      // dummy. should never be used because it isn't of type bool
-      [JsonIgnore]
-      public long AgeSpecified { get; set; }
-
-      [JsonIgnore]
-      public bool NameSpecified
-      {
-        get { return _nameSpecified; }
-        set { _nameSpecified = value; }
-      }
-
-      [JsonIgnore]
-      public bool WeightSpecified;
-
-      [JsonIgnore]
-      [System.Xml.Serialization.XmlIgnoreAttribute]
-      public bool HeightSpecified;
-
-      [JsonIgnore]
-
-      public bool FavoriteNumberSpecified
-      {
-        // get only example
-        get { return FavoriteNumber != 0; }
-      }
     }
 
     [Test]
@@ -7557,6 +7502,60 @@ Parameter name: value",
     public override bool CanConvert(Type objectType)
     {
       return objectType == typeof (int);
+    }
+  }
+
+  public class ShouldSerializeTestClass
+  {
+    internal bool _shouldSerializeName;
+
+    public string Name { get; set; }
+    public int Age { get; set; }
+
+    public void ShouldSerializeAge()
+    {
+      // dummy. should never be used because it doesn't return bool
+    }
+
+    public bool ShouldSerializeName()
+    {
+      return _shouldSerializeName;
+    }
+  }
+
+  public class SpecifiedTestClass
+  {
+    private bool _nameSpecified;
+
+    public string Name { get; set; }
+    public int Age { get; set; }
+    public int Weight { get; set; }
+    public int Height { get; set; }
+    public int FavoriteNumber { get; set; }
+
+    // dummy. should never be used because it isn't of type bool
+    [JsonIgnore]
+    public long AgeSpecified { get; set; }
+
+    [JsonIgnore]
+    public bool NameSpecified
+    {
+      get { return _nameSpecified; }
+      set { _nameSpecified = value; }
+    }
+
+    [JsonIgnore]
+    public bool WeightSpecified;
+
+    [JsonIgnore]
+    [System.Xml.Serialization.XmlIgnoreAttribute]
+    public bool HeightSpecified;
+
+    [JsonIgnore]
+    public bool FavoriteNumberSpecified
+    {
+      // get only example
+      get { return FavoriteNumber != 0; }
     }
   }
 }

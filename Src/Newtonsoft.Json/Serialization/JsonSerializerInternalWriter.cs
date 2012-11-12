@@ -393,7 +393,7 @@ namespace Newtonsoft.Json.Serialization
 
     private bool CalculatePropertyValues(JsonWriter writer, object value, JsonContainerContract contract, JsonProperty member, JsonProperty property, out JsonContract memberContract, out object memberValue)
     {
-      if (!property.Ignored && property.Readable && ShouldSerialize(property, value) && IsSpecified(property, value))
+      if (!property.Ignored && property.Readable && ShouldSerialize(writer, property, value) && IsSpecified(writer, property, value))
       {
         if (property.PropertyContract == null)
           property.PropertyContract = Serializer.ContractResolver.ResolveContract(property.PropertyType);
@@ -873,20 +873,30 @@ To fix this error either change the environment to be fully trusted, change the 
       }
     }
 
-    private bool ShouldSerialize(JsonProperty property, object target)
+    private bool ShouldSerialize(JsonWriter writer, JsonProperty property, object target)
     {
       if (property.ShouldSerialize == null)
         return true;
 
-      return property.ShouldSerialize(target);
+      bool shouldSerialize = property.ShouldSerialize(target);
+
+      if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
+        TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, writer.Path, "ShouldSerialize result for property '{0}' on {1}: {2}".FormatWith(CultureInfo.InvariantCulture, property.PropertyName, property.DeclaringType, shouldSerialize)), null);
+
+      return shouldSerialize;
     }
 
-    private bool IsSpecified(JsonProperty property, object target)
+    private bool IsSpecified(JsonWriter writer, JsonProperty property, object target)
     {
       if (property.GetIsSpecified == null)
         return true;
 
-      return property.GetIsSpecified(target);
+      bool isSpecified = property.GetIsSpecified(target);
+
+      if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
+        TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, writer.Path, "IsSpecified result for property '{0}' on {1}: {2}".FormatWith(CultureInfo.InvariantCulture, property.PropertyName, property.DeclaringType, isSpecified)), null);
+
+      return isSpecified;
     }
   }
 }

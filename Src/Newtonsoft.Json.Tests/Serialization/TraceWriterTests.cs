@@ -534,6 +534,116 @@ Newtonsoft.Json Error: 0 : Error!
       Assert.AreEqual("Started deserializing System.Version. Path '', line 9, position 2.", traceWriter.TraceRecords[2].Message);
       Assert.AreEqual("Finished deserializing System.Version. Path '', line 9, position 2.", traceWriter.TraceRecords[3].Message);
     }
+
+    [Test]
+    public void ShouldSerializeTestClass()
+    {
+      ShouldSerializeTestClass c = new ShouldSerializeTestClass();
+      c.Age = 29;
+      c.Name = "Jim";
+      c._shouldSerializeName = true;
+
+      InMemoryTraceWriter traceWriter = new InMemoryTraceWriter 
+      {
+        LevelFilter = TraceLevel.Verbose
+      };
+
+      JsonConvert.SerializeObject(c, new JsonSerializerSettings {TraceWriter = traceWriter});
+
+      Assert.AreEqual("ShouldSerialize result for property 'Name' on Newtonsoft.Json.Tests.Serialization.ShouldSerializeTestClass: True. Path ''.", traceWriter.TraceRecords[1].Message);
+      Assert.AreEqual(TraceLevel.Verbose, traceWriter.TraceRecords[1].Level);
+
+      traceWriter = new InMemoryTraceWriter
+      {
+        LevelFilter = TraceLevel.Verbose
+      };
+
+      c._shouldSerializeName = false;
+
+      JsonConvert.SerializeObject(c, new JsonSerializerSettings { TraceWriter = traceWriter });
+
+      Assert.AreEqual("ShouldSerialize result for property 'Name' on Newtonsoft.Json.Tests.Serialization.ShouldSerializeTestClass: False. Path ''.", traceWriter.TraceRecords[1].Message);
+      Assert.AreEqual(TraceLevel.Verbose, traceWriter.TraceRecords[1].Level);
+    }
+
+    [Test]
+    public void SpecifiedTest()
+    {
+      SpecifiedTestClass c = new SpecifiedTestClass();
+      c.Name = "James";
+      c.Age = 27;
+      c.NameSpecified = false;
+
+      InMemoryTraceWriter traceWriter = new InMemoryTraceWriter
+      {
+        LevelFilter = TraceLevel.Verbose
+      };
+
+      string json = JsonConvert.SerializeObject(c, Formatting.Indented, new JsonSerializerSettings { TraceWriter = traceWriter });
+
+      Assert.AreEqual("Started serializing Newtonsoft.Json.Tests.Serialization.SpecifiedTestClass. Path ''.", traceWriter.TraceRecords[0].Message);
+      Assert.AreEqual("IsSpecified result for property 'Name' on Newtonsoft.Json.Tests.Serialization.SpecifiedTestClass: False. Path ''.", traceWriter.TraceRecords[1].Message);
+      Assert.AreEqual("IsSpecified result for property 'Weight' on Newtonsoft.Json.Tests.Serialization.SpecifiedTestClass: False. Path 'Age'.", traceWriter.TraceRecords[2].Message);
+      Assert.AreEqual("IsSpecified result for property 'Height' on Newtonsoft.Json.Tests.Serialization.SpecifiedTestClass: False. Path 'Age'.", traceWriter.TraceRecords[3].Message);
+      Assert.AreEqual("IsSpecified result for property 'FavoriteNumber' on Newtonsoft.Json.Tests.Serialization.SpecifiedTestClass: False. Path 'Age'.", traceWriter.TraceRecords[4].Message);
+      Assert.AreEqual("Finished serializing Newtonsoft.Json.Tests.Serialization.SpecifiedTestClass. Path ''.", traceWriter.TraceRecords[5].Message);
+
+      Assert.AreEqual(@"{
+  ""Age"": 27
+}", json);
+
+      traceWriter = new InMemoryTraceWriter
+      {
+        LevelFilter = TraceLevel.Verbose
+      };
+
+      SpecifiedTestClass deserialized = JsonConvert.DeserializeObject<SpecifiedTestClass>(json, new JsonSerializerSettings { TraceWriter = traceWriter });
+
+      Assert.AreEqual("Started deserializing Newtonsoft.Json.Tests.Serialization.SpecifiedTestClass. Path 'Age', line 2, position 9.", traceWriter.TraceRecords[0].Message);
+      Assert.AreEqual("Finished deserializing Newtonsoft.Json.Tests.Serialization.SpecifiedTestClass. Path '', line 3, position 2.", traceWriter.TraceRecords[1].Message);
+
+      Assert.IsNull(deserialized.Name);
+      Assert.IsFalse(deserialized.NameSpecified);
+      Assert.IsFalse(deserialized.WeightSpecified);
+      Assert.IsFalse(deserialized.HeightSpecified);
+      Assert.IsFalse(deserialized.FavoriteNumberSpecified);
+      Assert.AreEqual(27, deserialized.Age);
+
+      c.NameSpecified = true;
+      c.WeightSpecified = true;
+      c.HeightSpecified = true;
+      c.FavoriteNumber = 23;
+      json = JsonConvert.SerializeObject(c, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""Name"": ""James"",
+  ""Age"": 27,
+  ""Weight"": 0,
+  ""Height"": 0,
+  ""FavoriteNumber"": 23
+}", json);
+
+      traceWriter = new InMemoryTraceWriter
+      {
+        LevelFilter = TraceLevel.Verbose
+      };
+
+      deserialized = JsonConvert.DeserializeObject<SpecifiedTestClass>(json, new JsonSerializerSettings { TraceWriter = traceWriter });
+
+      Assert.AreEqual("Started deserializing Newtonsoft.Json.Tests.Serialization.SpecifiedTestClass. Path 'Name', line 2, position 10.", traceWriter.TraceRecords[0].Message);
+      Assert.AreEqual("IsSpecified for property 'Name' on Newtonsoft.Json.Tests.Serialization.SpecifiedTestClass set to true. Path 'Name', line 2, position 18.", traceWriter.TraceRecords[1].Message);
+      Assert.AreEqual("IsSpecified for property 'Weight' on Newtonsoft.Json.Tests.Serialization.SpecifiedTestClass set to true. Path 'Weight', line 4, position 14.", traceWriter.TraceRecords[2].Message);
+      Assert.AreEqual("IsSpecified for property 'Height' on Newtonsoft.Json.Tests.Serialization.SpecifiedTestClass set to true. Path 'Height', line 5, position 14.", traceWriter.TraceRecords[3].Message);
+      Assert.AreEqual("Finished deserializing Newtonsoft.Json.Tests.Serialization.SpecifiedTestClass. Path '', line 7, position 2.", traceWriter.TraceRecords[4].Message);
+
+      Assert.AreEqual("James", deserialized.Name);
+      Assert.IsTrue(deserialized.NameSpecified);
+      Assert.IsTrue(deserialized.WeightSpecified);
+      Assert.IsTrue(deserialized.HeightSpecified);
+      Assert.IsTrue(deserialized.FavoriteNumberSpecified);
+      Assert.AreEqual(27, deserialized.Age);
+      Assert.AreEqual(23, deserialized.FavoriteNumber);
+    }
   }
 
   public class TraceRecord

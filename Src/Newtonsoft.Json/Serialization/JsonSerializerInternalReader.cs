@@ -701,7 +701,12 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
         property.ValueProvider.SetValue(target, value);
 
         if (property.SetIsSpecified != null)
+        {
+          if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
+            TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(reader as IJsonLineInfo, reader.Path, "IsSpecified for property '{0}' on {1} set to true.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName, property.DeclaringType)), null);
+
           property.SetIsSpecified(target, true);
+        }
       }
     }
 
