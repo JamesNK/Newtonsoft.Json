@@ -30,14 +30,48 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
+#endif
 
 namespace Newtonsoft.Json.Utilities
 {
   internal static class JavaScriptUtils
   {
+    internal static readonly bool[] SingleQuoteCharEscapeFlags = new bool[128];
+    internal static readonly bool[] DoubleQuoteCharEscapeFlags = new bool[128];
+    internal static readonly bool[] HtmlCharEscapeFlags = new bool[128];
+
+    static JavaScriptUtils()
+    {
+      IList<char> escapeChars = new List<char>
+      {
+        '\n', '\r', '\t', '\\', '\f', '\b',
+      };
+      for (int i = 0; i < ' '; i++)
+      {
+        escapeChars.Add((char)i);
+      }
+
+      foreach (var escapeChar in escapeChars.Union(new[] { '\'' }))
+      {
+        SingleQuoteCharEscapeFlags[escapeChar] = true;
+      }
+      foreach (var escapeChar in escapeChars.Union(new[] { '"' }))
+      {
+        DoubleQuoteCharEscapeFlags[escapeChar] = true;
+      }
+      foreach (var escapeChar in escapeChars.Union(new[] { '"', '\'', '<', '>', '&' }))
+      {
+        HtmlCharEscapeFlags[escapeChar] = true;
+      }
+    }
+
     private const string EscapedUnicodeText = "!";
 
-    public static void WriteEscapedJavaScriptString(TextWriter writer, string s, char delimiter, bool appendDelimiters)
+    public static void WriteEscapedJavaScriptString(TextWriter writer, string s, char delimiter, bool appendDelimiters, bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling)
     {
       // leading delimiter
       if (appendDelimiters)
@@ -53,8 +87,7 @@ namespace Newtonsoft.Json.Utilities
         {
           var c = s[i];
 
-          // don't escape standard text/numbers except '\' and the text delimiter
-          if (c >= ' ' && c < 128 && c != '\\' && c != delimiter)
+          if (c < charEscapeFlags.Length && !charEscapeFlags[c])
             continue;
 
           string escapedValue;
@@ -88,24 +121,27 @@ namespace Newtonsoft.Json.Utilities
             case '\u2029': // Paragraph Separator
               escapedValue = @"\u2029";
               break;
-            case '\'':
-              // this charater is being used as the delimiter
-              escapedValue = @"\'";
-              break;
-            case '"':
-              // this charater is being used as the delimiter
-              escapedValue = "\\\"";
-              break;
             default:
-              if (c <= '\u001f')
+              if (c < charEscapeFlags.Length || stringEscapeHandling == StringEscapeHandling.EscapeNonAscii)
               {
-                if (unicodeBuffer == null)
-                  unicodeBuffer = new char[6];
+                if (c == '\'' && stringEscapeHandling != StringEscapeHandling.EscapeHtml)
+                {
+                  escapedValue = @"\'";
+                }
+                else if (c == '"' && stringEscapeHandling != StringEscapeHandling.EscapeHtml)
+                {
+                  escapedValue = @"\""";
+                }
+                else
+                {
+                  if (unicodeBuffer == null)
+                    unicodeBuffer = new char[6];
 
-                StringUtils.ToCharAsUnicode(c, unicodeBuffer);
+                  StringUtils.ToCharAsUnicode(c, unicodeBuffer);
 
-                // slightly hacky but it saves multiple conditions in if test
-                escapedValue = EscapedUnicodeText;
+                  // slightly hacky but it saves multiple conditions in if test
+                  escapedValue = EscapedUnicodeText;
+                }
               }
               else
               {
@@ -162,7 +198,7 @@ namespace Newtonsoft.Json.Utilities
     {
       using (StringWriter w = StringUtils.CreateStringWriter(StringUtils.GetLength(value) ?? 16))
       {
-        WriteEscapedJavaScriptString(w, value, delimiter, appendDelimiters);
+        WriteEscapedJavaScriptString(w, value, delimiter, appendDelimiters, (delimiter == '"') ? DoubleQuoteCharEscapeFlags : SingleQuoteCharEscapeFlags, StringEscapeHandling.Default);
         return w.ToString();
       }
     }

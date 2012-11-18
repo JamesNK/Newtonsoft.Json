@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+using System;
 using System.Collections.Generic;
 #if !NETFX_CORE
 using NUnit.Framework;
@@ -31,6 +32,11 @@ using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
 #endif
+#if !(NET20 || NET35 || WINDOWS_PHONE)
+using System.Dynamic;
+#endif
+using System.Runtime.Serialization;
+using Newtonsoft.Json.Tests.Linq;
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
@@ -142,6 +148,126 @@ namespace Newtonsoft.Json.Tests.Serialization
   ]
 }", json);
     }
+
+#if !(PORTABLE || SILVERLIGHT)
+    public class MainClass : ISerializable
+    {
+      public ChildClass Child { get; set; }
+
+      public void GetObjectData(SerializationInfo info, StreamingContext context)
+      {
+        info.AddValue("Child", Child);
+      }
+    }
+
+    public class ChildClass : ISerializable
+    {
+      public string Name { get; set; }
+      public MainClass Parent { get; set; }
+
+      public void GetObjectData(SerializationInfo info, StreamingContext context)
+      {
+        info.AddValue("Parent", Parent);
+        info.AddValue("Name", Name);
+      }
+    }
+
+    [Test]
+    public void ErrorISerializableCyclicReferenceLoop()
+    {
+      var main = new MainClass();
+      var child = new ChildClass();
+
+      child.Name = "Child1";
+      child.Parent = main; // Obvious Circular Reference
+
+      main.Child = child;
+
+      var settings =
+          new JsonSerializerSettings();
+
+      ExceptionAssert.Throws<JsonSerializationException>(
+        "Self referencing loop detected with type 'Newtonsoft.Json.Tests.Serialization.ReferenceLoopHandlingTests+MainClass'. Path 'Child'.",
+        () => JsonConvert.SerializeObject(main, settings));
+    }
+
+    [Test]
+    public void IgnoreISerializableCyclicReferenceLoop()
+    {
+      var main = new MainClass();
+      var child = new ChildClass();
+
+      child.Name = "Child1";
+      child.Parent = main; // Obvious Circular Reference
+
+      main.Child = child;
+
+      var settings =
+          new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
+
+      var c = JsonConvert.SerializeObject(main, settings);
+      Assert.AreEqual(@"{""Child"":{""Name"":""Child1""}}", c);
+    }
+#endif
+
+#if !(PORTABLE || NET20 || NET35 || WINDOWS_PHONE)
+    public class DictionaryDynamicObject : DynamicObject
+    {
+      public IDictionary<string, object> Values { get; private set; }
+
+      public DictionaryDynamicObject()
+      {
+        Values = new Dictionary<string, object>();
+      }
+
+      public override bool TrySetMember(SetMemberBinder binder, object value)
+      {
+        Values[binder.Name] = value;
+        return true;
+      }
+
+      public override bool TryGetMember(GetMemberBinder binder, out object result)
+      {
+        return Values.TryGetValue(binder.Name, out result);
+      }
+
+      public override IEnumerable<string> GetDynamicMemberNames()
+      {
+        return Values.Keys;
+      }
+    }
+
+    [Test]
+    public void ErrorDynamicCyclicReferenceLoop()
+    {
+      dynamic parent = new DictionaryDynamicObject();
+      dynamic child = new DictionaryDynamicObject();
+      parent.child = child;
+      child.parent = parent;
+
+      var settings = new JsonSerializerSettings();
+
+      ExceptionAssert.Throws<JsonSerializationException>(
+        "Self referencing loop detected with type 'Newtonsoft.Json.Tests.Serialization.ReferenceLoopHandlingTests+DictionaryDynamicObject'. Path 'child'.",
+        () => JsonConvert.SerializeObject(parent, settings));
+    }
+
+    [Test]
+    public void IgnoreDynamicCyclicReferenceLoop()
+    {
+      dynamic parent = new DictionaryDynamicObject();
+      dynamic child = new DictionaryDynamicObject();
+      parent.child = child;
+      parent.name = "parent";
+      child.parent = parent;
+      child.name = "child";
+
+      var settings = new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
+
+      var c = JsonConvert.SerializeObject(parent, settings);
+      Assert.AreEqual(@"{""child"":{""name"":""child""},""name"":""parent""}", c);
+    }
+#endif
   }
 
   public class PropertyItemReferenceLoopHandling

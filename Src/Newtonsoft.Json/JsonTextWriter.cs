@@ -206,9 +206,20 @@ namespace Newtonsoft.Json
     {
       InternalWritePropertyName(name);
 
-      JavaScriptUtils.WriteEscapedJavaScriptString(_writer, name, _quoteChar, _quoteName);
+      JavaScriptUtils.WriteEscapedJavaScriptString(_writer, name, _quoteChar, _quoteName, GetCharEscapeFlags(), StringEscapeHandling);
 
       _writer.Write(':');
+    }
+
+    private bool[] GetCharEscapeFlags()
+    {
+      if (StringEscapeHandling == StringEscapeHandling.EscapeHtml)
+        return JavaScriptUtils.HtmlCharEscapeFlags;
+
+      if (_quoteChar == '"')
+        return JavaScriptUtils.DoubleQuoteCharEscapeFlags;
+      
+      return JavaScriptUtils.SingleQuoteCharEscapeFlags;
     }
 
     /// <summary>
@@ -294,7 +305,7 @@ namespace Newtonsoft.Json
       if (value == null)
         WriteValueInternal(JsonConvert.Null, JsonToken.Null);
       else
-        JavaScriptUtils.WriteEscapedJavaScriptString(_writer, value, _quoteChar, true);
+        JavaScriptUtils.WriteEscapedJavaScriptString(_writer, value, _quoteChar, true, GetCharEscapeFlags(), StringEscapeHandling);
     }
 
     /// <summary>

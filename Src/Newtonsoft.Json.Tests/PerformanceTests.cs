@@ -291,6 +291,48 @@ namespace Newtonsoft.Json.Tests
       Console.WriteLine("XML: " + watch.Elapsed.TotalSeconds);
     }
 
+    [Test]
+    public void SerializeString()
+    {
+      string text = @"The general form of an HTML element is therefore: <tag attribute1=""value1"" attribute2=""value2"">content</tag>.
+Some HTML elements are defined as empty elements and take the form <tag attribute1=""value1"" attribute2=""value2"" >.
+Empty elements may enclose no content, for instance, the BR tag or the inline IMG tag.
+The name of an HTML element is the name used in the tags.
+Note that the end tag's name is preceded by a slash character, ""/"", and that in empty elements the end tag is neither required nor allowed.
+If attributes are not mentioned, default values are used in each case.
+
+The general form of an HTML element is therefore: <tag attribute1=""value1"" attribute2=""value2"">content</tag>.
+Some HTML elements are defined as empty elements and take the form <tag attribute1=""value1"" attribute2=""value2"" >.
+Empty elements may enclose no content, for instance, the BR tag or the inline IMG tag.
+The name of an HTML element is the name used in the tags.
+Note that the end tag's name is preceded by a slash character, ""/"", and that in empty elements the end tag is neither required nor allowed.
+If attributes are not mentioned, default values are used in each case.
+
+The general form of an HTML element is therefore: <tag attribute1=""value1"" attribute2=""value2"">content</tag>.
+Some HTML elements are defined as empty elements and take the form <tag attribute1=""value1"" attribute2=""value2"" >.
+Empty elements may enclose no content, for instance, the BR tag or the inline IMG tag.
+The name of an HTML element is the name used in the tags.
+Note that the end tag's name is preceded by a slash character, ""/"", and that in empty elements the end tag is neither required nor allowed.
+If attributes are not mentioned, default values are used in each case.
+";
+
+      int interations = 1000;
+
+      TimeOperation(() =>
+      {
+        string json = null;
+        for (int i = 0; i < interations; i++)
+        {
+          using (StringWriter w = StringUtils.CreateStringWriter(StringUtils.GetLength(text) ?? 16))
+          {
+            JavaScriptUtils.WriteEscapedJavaScriptString(w, text, '"', true, JavaScriptUtils.DoubleQuoteCharEscapeFlags, StringEscapeHandling.Default);
+          }
+        }
+
+        return "";
+      }, "New");
+    }
+
     private void SerializeSize(object value)
     {
       // this is extremely slow with 5000 interations

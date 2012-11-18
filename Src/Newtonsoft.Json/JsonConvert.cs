@@ -556,11 +556,14 @@ namespace Newtonsoft.Json
     /// Converts the <see cref="String"/> to its JSON string representation.
     /// </summary>
     /// <param name="value">The value to convert.</param>
-    /// <param name="delimter">The string delimiter character.</param>
+    /// <param name="delimiter">The string delimiter character.</param>
     /// <returns>A JSON string representation of the <see cref="String"/>.</returns>
-    public static string ToString(string value, char delimter)
+    public static string ToString(string value, char delimiter)
     {
-      return JavaScriptUtils.ToEscapedJavaScriptString(value, delimter, true);
+      if (delimiter != '"' && delimiter != '\'')
+        throw new ArgumentException("Delimiter must be a single or double quote.", "delimiter");
+
+      return JavaScriptUtils.ToEscapedJavaScriptString(value, delimiter, true);
     }
 
     /// <summary>

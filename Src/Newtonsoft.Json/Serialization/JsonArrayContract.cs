@@ -85,9 +85,11 @@ namespace Newtonsoft.Json.Serialization
         _isCollectionItemTypeNullableType = ReflectionUtils.IsNullableType(CollectionItemType);
 
       if (IsTypeGenericCollectionInterface(UnderlyingType))
-      {
         CreatedType = ReflectionUtils.MakeGenericType(typeof(List<>), CollectionItemType);
-      }
+#if !(PORTABLE || NET20 || NET35 || WINDOWS_PHONE)
+      else if (IsTypeGenericSetnterface(UnderlyingType))
+        CreatedType = ReflectionUtils.MakeGenericType(typeof(HashSet<>), CollectionItemType);
+#endif
 
       IsMultidimensionalArray = (UnderlyingType.IsArray && UnderlyingType.GetArrayRank() > 1);
     }
@@ -152,5 +154,17 @@ namespace Newtonsoft.Json.Serialization
               || genericDefinition == typeof(ICollection<>)
               || genericDefinition == typeof(IEnumerable<>));
     }
+
+#if !(PORTABLE || NET20 || NET35 || WINDOWS_PHONE)
+    private bool IsTypeGenericSetnterface(Type type)
+    {
+      if (!type.IsGenericType())
+        return false;
+
+      Type genericDefinition = type.GetGenericTypeDefinition();
+
+      return (genericDefinition == typeof(ISet<>));
+    }
+#endif
   }
 }

@@ -842,6 +842,69 @@ _____'propertyName': NaN
     }
 
     [Test]
+    public void HtmlStringEscapeHandling()
+    {
+      StringWriter sw = new StringWriter();
+      JsonTextWriter writer = new JsonTextWriter(sw)
+      {
+        StringEscapeHandling = StringEscapeHandling.EscapeHtml
+      };
+
+      string script = @"<script type=""text/javascript"">alert('hi');</script>";
+
+      writer.WriteValue(script);
+
+      string json = sw.ToString();
+
+      Assert.AreEqual(@"""\u003cscript type=\u0022text/javascript\u0022\u003ealert(\u0027hi\u0027);\u003c/script\u003e""", json);
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+      
+      Assert.AreEqual(script, reader.ReadAsString());
+
+      //Console.WriteLine(HttpUtility.HtmlEncode(script));
+
+      //System.Web.Script.Serialization.JavaScriptSerializer s = new System.Web.Script.Serialization.JavaScriptSerializer();
+      //Console.WriteLine(s.Serialize(new { html = script }));
+    }
+
+    [Test]
+    public void NonAsciiStringEscapeHandling()
+    {
+      StringWriter sw = new StringWriter();
+      JsonTextWriter writer = new JsonTextWriter(sw)
+      {
+        StringEscapeHandling = StringEscapeHandling.EscapeNonAscii
+      };
+
+      string unicode = "\u5f20";
+
+      writer.WriteValue(unicode);
+
+      string json = sw.ToString();
+
+      Assert.AreEqual(8, json.Length);
+      Assert.AreEqual(@"""\u5f20""", json);
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+      Assert.AreEqual(unicode, reader.ReadAsString());
+
+      sw = new StringWriter();
+      writer = new JsonTextWriter(sw)
+      {
+        StringEscapeHandling = StringEscapeHandling.Default
+      };
+
+      writer.WriteValue(unicode);
+
+      json = sw.ToString();
+
+      Assert.AreEqual(3, json.Length);
+      Assert.AreEqual("\"\u5f20\"", json);
+    }
+
+    [Test]
     public void WriteEndOnProperty()
     {
       StringWriter sw = new StringWriter();

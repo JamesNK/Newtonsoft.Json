@@ -682,8 +682,13 @@ To fix this error either change the environment to be fully trusted, change the 
 
       foreach (SerializationEntry serializationEntry in serializationInfo)
       {
-        writer.WritePropertyName(serializationEntry.Name);
-        SerializeValue(writer, serializationEntry.Value, GetContractSafe(serializationEntry.Value), null, null, member);
+        JsonContract valueContract = GetContractSafe(serializationEntry.Value);
+
+        if (CheckForCircularReference(writer, serializationEntry.Value, null, valueContract, contract, member))
+        {
+          writer.WritePropertyName(serializationEntry.Name);
+          SerializeValue(writer, serializationEntry.Value, valueContract, null, contract, member);
+        }
       }
 
       writer.WriteEndObject();
@@ -736,12 +741,17 @@ To fix this error either change the environment to be fully trusted, change the 
         {
           try
           {
-            string resolvedPropertyName = (contract.PropertyNameResolver != null)
-                                            ? contract.PropertyNameResolver(memberName)
-                                            : memberName;
+            JsonContract valueContract = GetContractSafe(memberValue);
 
-            writer.WritePropertyName(resolvedPropertyName);
-            SerializeValue(writer, memberValue, GetContractSafe(memberValue), null, null, member);
+            if (CheckForCircularReference(writer, memberValue, null, valueContract, contract, member))
+            {
+              string resolvedPropertyName = (contract.PropertyNameResolver != null)
+                                              ? contract.PropertyNameResolver(memberName)
+                                              : memberName;
+
+              writer.WritePropertyName(resolvedPropertyName);
+              SerializeValue(writer, memberValue, valueContract, null, contract, member);
+            }
           }
           catch (Exception ex)
           {

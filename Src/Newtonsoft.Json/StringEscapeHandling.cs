@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -23,31 +23,24 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
-using System;
-
-namespace Newtonsoft.Json.Serialization
+namespace Newtonsoft.Json
 {
   /// <summary>
-  /// Contract details for a <see cref="Type"/> used by the <see cref="JsonSerializer"/>.
+  /// Specifies how strings are escaped when writing JSON text.
   /// </summary>
-  public class JsonISerializableContract : JsonContainerContract
+  public enum StringEscapeHandling
   {
     /// <summary>
-    /// Gets or sets the ISerializable object constructor.
+    /// Only control characters (e.g. newline) are escaped.
     /// </summary>
-    /// <value>The ISerializable object constructor.</value>
-    public ObjectConstructor<object> ISerializableCreator { get; set; }
-
+    Default,
     /// <summary>
-    /// Initializes a new instance of the <see cref="JsonISerializableContract"/> class.
+    /// All non-ASCII and control characters (e.g. newline) are escaped.
     /// </summary>
-    /// <param name="underlyingType">The underlying type for the contract.</param>
-    public JsonISerializableContract(Type underlyingType)
-      : base(underlyingType)
-    {
-      ContractType = JsonContractType.Serializable;
-    }
+    EscapeNonAscii,
+    /// <summary>
+    /// HTML (&lt;, &gt;, &amp;, &apos;, &quot;) and control characters (e.g. newline) are escaped.
+    /// </summary>
+    EscapeHtml
   }
 }
-#endif

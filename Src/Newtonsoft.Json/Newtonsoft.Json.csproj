@@ -117,6 +117,7 @@
     <Compile Include="Serialization\ITraceWriter.cs" />
     <Compile Include="Serialization\JsonContainerContract.cs" />
     <Compile Include="Serialization\MemoryTraceWriter.cs" />
+    <Compile Include="StringEscapeHandling.cs" />
     <Compile Include="Utilities\DynamicProxy.cs" />
     <Compile Include="Linq\JPath.cs" />
     <Compile Include="Linq\JRaw.cs" />

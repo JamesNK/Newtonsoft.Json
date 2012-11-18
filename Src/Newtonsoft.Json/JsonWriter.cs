@@ -209,6 +209,7 @@ namespace Newtonsoft.Json
 
     private DateFormatHandling _dateFormatHandling;
     private DateTimeZoneHandling _dateTimeZoneHandling;
+    private StringEscapeHandling _stringEscapeHandling;
 
     /// <summary>
     /// Indicates how JSON text output is formatted.
@@ -229,12 +230,21 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Get or set how <see cref="DateTime"/> time zones are handling when writing JSON.
+    /// Get or set how <see cref="DateTime"/> time zones are handling when writing JSON text.
     /// </summary>
     public DateTimeZoneHandling DateTimeZoneHandling
     {
       get { return _dateTimeZoneHandling; }
       set { _dateTimeZoneHandling = value; }
+    }
+
+    /// <summary>
+    /// Get or set how strings are escaped when writing JSON text.
+    /// </summary>
+    public StringEscapeHandling StringEscapeHandling
+    {
+      get { return _stringEscapeHandling; }
+      set { _stringEscapeHandling = value; }
     }
 
     /// <summary>
