@@ -149,7 +149,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 }", json);
     }
 
-#if !(PORTABLE || SILVERLIGHT)
+#if !(PORTABLE || SILVERLIGHT || NETFX_CORE)
     public class MainClass : ISerializable
     {
       public ChildClass Child { get; set; }

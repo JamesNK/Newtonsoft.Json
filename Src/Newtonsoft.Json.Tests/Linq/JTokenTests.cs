@@ -290,28 +290,28 @@ namespace Newtonsoft.Json.Tests.Linq
     [Test]
     public void ToObject()
     {
-      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(ushort))));
-      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(ushort?))));
-      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(uint))));
-      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(uint?))));
-      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(ulong))));
-      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(ulong?))));
-      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(sbyte))));
-      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(sbyte?))));
-      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(byte))));
-      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(byte?))));
-      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(short))));
-      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(short?))));
-      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(int))));
-      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(int?))));
+      Assert.AreEqual((ushort)1, (new JValue(1).ToObject(typeof(ushort))));
+      Assert.AreEqual((ushort)1, (new JValue(1).ToObject(typeof(ushort?))));
+      Assert.AreEqual((uint)1L, (new JValue(1).ToObject(typeof(uint))));
+      Assert.AreEqual((uint)1L, (new JValue(1).ToObject(typeof(uint?))));
+      Assert.AreEqual((ulong)1L, (new JValue(1).ToObject(typeof(ulong))));
+      Assert.AreEqual((ulong)1L, (new JValue(1).ToObject(typeof(ulong?))));
+      Assert.AreEqual((sbyte)1L, (new JValue(1).ToObject(typeof(sbyte))));
+      Assert.AreEqual((sbyte)1L, (new JValue(1).ToObject(typeof(sbyte?))));
+      Assert.AreEqual((byte)1L, (new JValue(1).ToObject(typeof(byte))));
+      Assert.AreEqual((byte)1L, (new JValue(1).ToObject(typeof(byte?))));
+      Assert.AreEqual((short)1L, (new JValue(1).ToObject(typeof(short))));
+      Assert.AreEqual((short)1L, (new JValue(1).ToObject(typeof(short?))));
+      Assert.AreEqual(1, (new JValue(1).ToObject(typeof(int))));
+      Assert.AreEqual(1, (new JValue(1).ToObject(typeof(int?))));
       Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(long))));
       Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(long?))));
-      Assert.AreEqual(1L, (new JValue(1.0).ToObject(typeof(float))));
-      Assert.AreEqual(1L, (new JValue(1.0).ToObject(typeof(float?))));
-      Assert.AreEqual(1L, (new JValue(1.0).ToObject(typeof(double))));
-      Assert.AreEqual(1L, (new JValue(1.0).ToObject(typeof(double?))));
-      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(decimal))));
-      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(decimal?))));
+      Assert.AreEqual((float)1, (new JValue(1.0).ToObject(typeof(float))));
+      Assert.AreEqual((float)1, (new JValue(1.0).ToObject(typeof(float?))));
+      Assert.AreEqual((double)1, (new JValue(1.0).ToObject(typeof(double))));
+      Assert.AreEqual((double)1, (new JValue(1.0).ToObject(typeof(double?))));
+      Assert.AreEqual(1m, (new JValue(1).ToObject(typeof(decimal))));
+      Assert.AreEqual(1m, (new JValue(1).ToObject(typeof(decimal?))));
       Assert.AreEqual(true, (new JValue(true).ToObject(typeof(bool))));
       Assert.AreEqual(true, (new JValue(true).ToObject(typeof(bool?))));
       Assert.AreEqual('b', (new JValue('b').ToObject(typeof(char))));
