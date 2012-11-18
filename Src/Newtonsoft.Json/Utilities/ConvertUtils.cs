@@ -222,6 +222,15 @@ namespace Newtonsoft.Json.Utilities
 #endif
     }
 
+    public static TimeSpan ParseTimeSpan(string input)
+    {
+#if !(NET35 || NET20 || PORTABLE || WINDOWS_PHONE)
+      return TimeSpan.Parse((string) input, CultureInfo.InvariantCulture);
+#else
+      return TimeSpan.Parse((string)input);
+#endif
+    }
+
     internal struct TypeConvertKey : IEquatable<TypeConvertKey>
     {
       private readonly Type _initialType;
@@ -331,12 +340,8 @@ namespace Newtonsoft.Json.Utilities
           return new Guid((string) initialValue);
         if (targetType == typeof (Uri))
           return new Uri((string) initialValue, UriKind.RelativeOrAbsolute);
-        if (targetType == typeof (TimeSpan))
-#if !(NET35 || NET20 || PORTABLE || WINDOWS_PHONE)
-          return TimeSpan.Parse((string) initialValue, CultureInfo.InvariantCulture);
-#else
-          return TimeSpan.Parse((string)initialValue);
-#endif
+        if (targetType == typeof(TimeSpan))
+          return ParseTimeSpan((string) initialValue);
       }
 
 #if !(NETFX_CORE || PORTABLE)

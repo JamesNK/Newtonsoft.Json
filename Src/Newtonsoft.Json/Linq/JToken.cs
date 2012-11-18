@@ -403,9 +403,9 @@ namespace Newtonsoft.Json.Linq
       return (o.Type == JTokenType.Boolean || (nullable && IsNullable(o)));
     }
 
-    private static bool ValidateString(JToken o)
+    private static bool ValidateString(JToken o, bool nullable)
     {
-      return (o.Type == JTokenType.String || o.Type == JTokenType.Comment || o.Type == JTokenType.Raw || IsNullable(o));
+      return (o.Type == JTokenType.String || o.Type == JTokenType.Comment || o.Type == JTokenType.Raw || (nullable && IsNullable(o)));
     }
 
     private static bool ValidateBytes(JToken o)
@@ -542,7 +542,24 @@ namespace Newtonsoft.Json.Linq
       if (v == null || !ValidateFloat(v, true))
         throw new ArgumentException("Can not convert {0} to Double.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
-      return (double?)v.Value;
+      return (v.Value != null) ? (double?)Convert.ToDouble(v.Value, CultureInfo.InvariantCulture) : null;
+    }
+
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="Nullable{Char}"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static explicit operator char?(JToken value)
+    {
+      if (value == null)
+        return null;
+
+      JValue v = EnsureValue(value);
+      if (v == null || !ValidateString(v, true))
+        throw new ArgumentException("Can not convert {0} to Char.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+
+      return (v.Value != null) ? (char?)Convert.ToChar(v.Value, CultureInfo.InvariantCulture) : null;
     }
 
     /// <summary>
@@ -586,6 +603,35 @@ namespace Newtonsoft.Json.Linq
         throw new ArgumentException("Can not convert {0} to UInt16.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       return Convert.ToUInt16(v.Value, CultureInfo.InvariantCulture);
+    }
+
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="System.Char"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
+    [CLSCompliant(false)]
+    public static explicit operator char(JToken value)
+    {
+      JValue v = EnsureValue(value);
+      if (v == null || (!ValidateInteger(v, false) && !ValidateString(v, false)))
+        throw new ArgumentException("Can not convert {0} to Char.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+
+      return Convert.ToChar(v.Value, CultureInfo.InvariantCulture);
+    }
+
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="System.Byte"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static explicit operator byte(JToken value)
+    {
+      JValue v = EnsureValue(value);
+      if (v == null || !ValidateInteger(v, false))
+        throw new ArgumentException("Can not convert {0} to Byte.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+
+      return Convert.ToByte(v.Value, CultureInfo.InvariantCulture);
     }
 
     /// <summary>
@@ -637,7 +683,24 @@ namespace Newtonsoft.Json.Linq
       if (v == null || !ValidateInteger(v, true))
         throw new ArgumentException("Can not convert {0} to UInt16.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
-      return (v.Value != null) ? (ushort?)Convert.ToInt16(v.Value, CultureInfo.InvariantCulture) : null;
+      return (v.Value != null) ? (ushort?)Convert.ToUInt16(v.Value, CultureInfo.InvariantCulture) : null;
+    }
+
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="Nullable{Byte}"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static explicit operator byte?(JToken value)
+    {
+      if (value == null)
+        return null;
+
+      JValue v = EnsureValue(value);
+      if (v == null || !ValidateInteger(v, true))
+        throw new ArgumentException("Can not convert {0} to Byte.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+
+      return (v.Value != null) ? (byte?)Convert.ToByte(v.Value, CultureInfo.InvariantCulture) : null;
     }
 
     /// <summary>
@@ -777,7 +840,7 @@ namespace Newtonsoft.Json.Linq
         return null;
 
       JValue v = EnsureValue(value);
-      if (v == null || !ValidateString(v))
+      if (v == null || !ValidateString(v, true))
         throw new ArgumentException("Can not convert {0} to String.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       return (v.Value != null) ? Convert.ToString(v.Value, CultureInfo.InvariantCulture) : null;
@@ -825,6 +888,85 @@ namespace Newtonsoft.Json.Linq
         throw new ArgumentException("Can not convert {0} to byte array.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       return (byte[])v.Value;
+    }
+
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="System.Guid"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static explicit operator Guid(JToken value)
+    {
+      JValue v = EnsureValue(value);
+      if (v == null || !ValidateString(v, false))
+        throw new ArgumentException("Can not convert {0} to Guid.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+
+      return (v.Value is Guid) ? (Guid)v.Value : new Guid((string)v.Value);
+    }
+
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="System.Guid"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static explicit operator Guid?(JToken value)
+    {
+      JValue v = EnsureValue(value);
+      if (v == null || !ValidateString(v, true))
+        throw new ArgumentException("Can not convert {0} to Guid.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+
+      if (v.Value == null)
+        return null;
+
+      return (v.Value is Guid) ? (Guid)v.Value : new Guid(Convert.ToString(v.Value, CultureInfo.InvariantCulture));
+    }
+
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="System.TimeSpan"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static explicit operator TimeSpan(JToken value)
+    {
+      JValue v = EnsureValue(value);
+      if (v == null || !ValidateString(v, false))
+        throw new ArgumentException("Can not convert {0} to TimeSpan.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+
+      return (v.Value is TimeSpan) ? (TimeSpan)v.Value : ConvertUtils.ParseTimeSpan(Convert.ToString(v.Value, CultureInfo.InvariantCulture));
+    }
+
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="System.TimeSpan"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static explicit operator TimeSpan?(JToken value)
+    {
+      JValue v = EnsureValue(value);
+      if (v == null || !ValidateString(v, true))
+        throw new ArgumentException("Can not convert {0} to TimeSpan.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+
+      if (v.Value == null)
+        return null;
+
+      return (v.Value is TimeSpan) ? (TimeSpan)v.Value : ConvertUtils.ParseTimeSpan(Convert.ToString(v.Value, CultureInfo.InvariantCulture));
+    }
+
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="System.Uri"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static explicit operator Uri(JToken value)
+    {
+      JValue v = EnsureValue(value);
+      if (v == null || !ValidateString(v, true))
+        throw new ArgumentException("Can not convert {0} to Uri.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+
+      if (v.Value == null)
+        return null;
+
+      return (v.Value is Uri) ? (Uri)v.Value : new Uri(Convert.ToString(v.Value, CultureInfo.InvariantCulture));
     }
     #endregion
 
@@ -1171,7 +1313,134 @@ namespace Newtonsoft.Json.Linq
     /// <returns>The new object created from the JSON value.</returns>
     public T ToObject<T>()
     {
-      return ToObject<T>(new JsonSerializer());
+      return (T)ToObject(typeof(T));
+    }
+
+    /// <summary>
+    /// Creates the specified .NET type from the <see cref="JToken"/>.
+    /// </summary>
+    /// <param name="objectType">The object type that the token will be deserialized to.</param>
+    /// <returns>The new object created from the JSON value.</returns>
+    public object ToObject(Type objectType)
+    {
+      return ToObject(objectType, false);
+    }
+
+    private object ToObject(Type objectType, bool isNullable)
+    {
+      TypeCode typeCode = ConvertUtils.GetTypeCode(objectType);
+
+      switch (typeCode)
+      {
+        case TypeCode.Object:
+          if (!isNullable && ReflectionUtils.IsNullableType(objectType))
+            return ToObject(Nullable.GetUnderlyingType(objectType), true);
+
+          // fall back to standard JsonSerializer
+          break;
+        case TypeCode.Boolean:
+          if (isNullable)
+            return (bool?) this;
+
+          return (bool) this;
+        case TypeCode.Char:
+          if (isNullable)
+            return (char?) this;
+
+          return (char) this;
+        case TypeCode.SByte:
+          if (isNullable)
+            return (sbyte?) this;
+
+          return (sbyte) this;
+        case TypeCode.Byte:
+          if (isNullable)
+            return (byte?) this;
+
+          return (byte) this;
+        case TypeCode.Int16:
+          if (isNullable)
+            return (short?) this;
+
+          return (short) this;
+        case TypeCode.UInt16:
+          if (isNullable)
+            return (ushort?) this;
+
+          return (ushort) this;
+        case TypeCode.Int32:
+          if (isNullable)
+            return (int?) this;
+
+          return (int) this;
+        case TypeCode.UInt32:
+          if (isNullable)
+            return (uint?) this;
+
+          return (uint) this;
+        case TypeCode.Int64:
+          if (isNullable)
+            return (long?) this;
+
+          return (long) this;
+        case TypeCode.UInt64:
+          if (isNullable)
+            return (ulong?) this;
+
+          return (ulong) this;
+        case TypeCode.Single:
+          if (isNullable)
+            return (float?) this;
+
+          return (float) this;
+        case TypeCode.Double:
+          if (isNullable)
+            return (double?) this;
+
+          return (double) this;
+        case TypeCode.Decimal:
+          if (isNullable)
+            return (decimal?) this;
+
+          return (decimal) this;
+        case TypeCode.DateTime:
+          if (isNullable)
+            return (DateTime?) this;
+
+          return (DateTime) this;
+        case TypeCode.String:
+          return (string) this;
+      }
+
+#if !PocketPC && !NET20
+      if (objectType == typeof (DateTimeOffset))
+      {
+        if (isNullable)
+          return (DateTimeOffset?) this;
+
+        return (DateTimeOffset) this;
+      }
+#endif
+      if (objectType == typeof (Guid))
+      {
+        if (isNullable)
+          return (Guid?) this;
+
+        return (Guid) this;
+      }
+      if (objectType == typeof (Uri))
+      {
+        return (Uri) this;
+      }
+      if (objectType == typeof (TimeSpan))
+      {
+        if (isNullable)
+          return (TimeSpan?) this;
+
+        return (TimeSpan) this;
+      }
+
+      return ToObject(objectType, new JsonSerializer());
     }
 
     /// <summary>
@@ -1182,11 +1451,22 @@ namespace Newtonsoft.Json.Linq
     /// <returns>The new object created from the JSON value.</returns>
     public T ToObject<T>(JsonSerializer jsonSerializer)
     {
+      return (T)ToObject(typeof(T), jsonSerializer);
+    }
+
+    /// <summary>
+    /// Creates the specified .NET type from the <see cref="JToken"/> using the specified <see cref="JsonSerializer"/>.
+    /// </summary>
+    /// <param name="objectType">The object type that the token will be deserialized to.</param>
+    /// <param name="jsonSerializer">The <see cref="JsonSerializer"/> that will be used when creating the object.</param>
+    /// <returns>The new object created from the JSON value.</returns>
+    public object ToObject(Type objectType, JsonSerializer jsonSerializer)
+    {
       ValidationUtils.ArgumentNotNull(jsonSerializer, "jsonSerializer");
 
       using (JTokenReader jsonReader = new JTokenReader(this))
       {
-        return jsonSerializer.Deserialize<T>(jsonReader);
+        return jsonSerializer.Deserialize(jsonReader, objectType);
       }
     }
 

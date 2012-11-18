@@ -230,7 +230,7 @@ namespace Newtonsoft.Json.Tests.Linq
     public void Casting()
     {
       Assert.AreEqual(1L, (long)(new JValue(1)));
-      Assert.AreEqual(2L, (long) new JArray(1, 2, 3)[1]);
+      Assert.AreEqual(2L, (long)new JArray(1, 2, 3)[1]);
 
       Assert.AreEqual(new DateTime(2000, 12, 20), (DateTime)new JValue(new DateTime(2000, 12, 20)));
 #if !PocketPC && !NET20
@@ -261,6 +261,8 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(null, (uint?)(JValue)null);
       Assert.AreEqual(null, (sbyte?)new JValue((sbyte?)null));
       Assert.AreEqual(null, (sbyte?)(JValue)null);
+      Assert.AreEqual(null, (byte?)new JValue((byte?)null));
+      Assert.AreEqual(null, (byte?)(JValue)null);
       Assert.AreEqual(null, (ulong?)new JValue((ulong?)null));
       Assert.AreEqual(null, (ulong?)(JValue)null);
       Assert.AreEqual(null, (uint?)new JValue((uint?)null));
@@ -277,11 +279,55 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(5f, (float)(new JValue(5L)));
       Assert.AreEqual(5f, (float)(new JValue(5m)));
       Assert.AreEqual(5f, (float?)(new JValue(5m)));
+      Assert.AreEqual(5, (byte)(new JValue(5)));
 
       byte[] data = new byte[0];
       Assert.AreEqual(data, (byte[])(new JValue(data)));
 
       Assert.AreEqual(5, (int)(new JValue(StringComparison.OrdinalIgnoreCase)));
+    }
+
+    [Test]
+    public void ToObject()
+    {
+      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(ushort))));
+      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(ushort?))));
+      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(uint))));
+      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(uint?))));
+      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(ulong))));
+      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(ulong?))));
+      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(sbyte))));
+      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(sbyte?))));
+      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(byte))));
+      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(byte?))));
+      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(short))));
+      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(short?))));
+      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(int))));
+      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(int?))));
+      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(long))));
+      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(long?))));
+      Assert.AreEqual(1L, (new JValue(1.0).ToObject(typeof(float))));
+      Assert.AreEqual(1L, (new JValue(1.0).ToObject(typeof(float?))));
+      Assert.AreEqual(1L, (new JValue(1.0).ToObject(typeof(double))));
+      Assert.AreEqual(1L, (new JValue(1.0).ToObject(typeof(double?))));
+      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(decimal))));
+      Assert.AreEqual(1L, (new JValue(1).ToObject(typeof(decimal?))));
+      Assert.AreEqual(true, (new JValue(true).ToObject(typeof(bool))));
+      Assert.AreEqual(true, (new JValue(true).ToObject(typeof(bool?))));
+      Assert.AreEqual('b', (new JValue('b').ToObject(typeof(char))));
+      Assert.AreEqual('b', (new JValue('b').ToObject(typeof(char?))));
+      Assert.AreEqual(TimeSpan.MaxValue, (new JValue(TimeSpan.MaxValue).ToObject(typeof(TimeSpan))));
+      Assert.AreEqual(TimeSpan.MaxValue, (new JValue(TimeSpan.MaxValue).ToObject(typeof(TimeSpan?))));
+      Assert.AreEqual(DateTime.MaxValue, (new JValue(DateTime.MaxValue).ToObject(typeof(DateTime))));
+      Assert.AreEqual(DateTime.MaxValue, (new JValue(DateTime.MaxValue).ToObject(typeof(DateTime?))));
+#if !NET20
+      Assert.AreEqual(DateTimeOffset.MaxValue, (new JValue(DateTimeOffset.MaxValue).ToObject(typeof(DateTimeOffset))));
+      Assert.AreEqual(DateTimeOffset.MaxValue, (new JValue(DateTimeOffset.MaxValue).ToObject(typeof(DateTimeOffset?))));
+#endif
+      Assert.AreEqual("b", (new JValue("b").ToObject(typeof(string))));
+      Assert.AreEqual(new Guid("A34B2080-B5F0-488E-834D-45D44ECB9E5C"), (new JValue(new Guid("A34B2080-B5F0-488E-834D-45D44ECB9E5C")).ToObject(typeof(Guid))));
+      Assert.AreEqual(new Guid("A34B2080-B5F0-488E-834D-45D44ECB9E5C"), (new JValue(new Guid("A34B2080-B5F0-488E-834D-45D44ECB9E5C")).ToObject(typeof(Guid?))));
+      Assert.AreEqual(new Uri("http://www.google.com/"), (new JValue(new Uri("http://www.google.com/")).ToObject(typeof(Uri))));
     }
 
     [Test]
@@ -308,6 +354,7 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.IsTrue(JToken.DeepEquals(new JValue((ulong?)null), (JValue)(ulong?)null));
       Assert.IsTrue(JToken.DeepEquals(new JValue((sbyte?)null), (JValue)(sbyte?)null));
       Assert.IsTrue(JToken.DeepEquals(new JValue((ushort?)null), (JValue)(ushort?)null));
+      Assert.IsTrue(JToken.DeepEquals(new JValue(short.MaxValue), (JValue)short.MaxValue));
       Assert.IsTrue(JToken.DeepEquals(new JValue(ushort.MaxValue), (JValue)ushort.MaxValue));
       Assert.IsTrue(JToken.DeepEquals(new JValue(11.1f), (JValue)11.1f));
       Assert.IsTrue(JToken.DeepEquals(new JValue(float.MinValue), (JValue)float.MinValue));

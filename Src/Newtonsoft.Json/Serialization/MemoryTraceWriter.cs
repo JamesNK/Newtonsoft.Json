@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 
 namespace Newtonsoft.Json.Serialization
@@ -40,7 +41,7 @@ namespace Newtonsoft.Json.Serialization
     /// <param name="ex">The trace exception. This parameter is optional.</param>
     public void Trace(TraceLevel level, string message, Exception ex)
     {
-      string traceMessage = DateTime.Now.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff") + " " + level.ToString("g") + " " + message;
+      string traceMessage = DateTime.Now.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff", CultureInfo.InvariantCulture) + " " + level.ToString("g") + " " + message;
 
       if (_traceMessages.Count >= 1000)
         _traceMessages.Dequeue();
