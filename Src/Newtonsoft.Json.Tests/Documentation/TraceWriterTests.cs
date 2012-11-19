@@ -98,6 +98,19 @@ namespace Newtonsoft.Json.Tests.Documentation
         get { return TraceLevel.Verbose; }
       }
 
+      public void Trace(TraceLevel level, string message, Exception ex)
+      {
+        LogEventInfo logEvent = new LogEventInfo
+        {
+          Message = message,
+          Level = GetLogLevel(level),
+          Exception = ex
+        };
+
+        // log Json.NET message to NLog
+        Logger.Log(logEvent);
+      }
+
       private LogLevel GetLogLevel(TraceLevel level)
       {
         switch (level)
@@ -113,18 +126,6 @@ namespace Newtonsoft.Json.Tests.Documentation
           default:
             return LogLevel.Trace;
         }
-      }
-
-      public void Trace(TraceLevel level, string message, Exception ex)
-      {
-        LogEventInfo logEvent = new LogEventInfo
-                                  {
-                                    Message = message,
-                                    Level = GetLogLevel(level),
-                                    Exception = ex
-                                  };
-
-        Logger.Log(logEvent);
       }
     }
     #endregion

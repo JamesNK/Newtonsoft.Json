@@ -15,7 +15,7 @@
     <Topic id="SerializingJSONFragments" visible="True" title="Serializing Partial JSON Fragments" />
     <Topic id="ConditionalProperties" visible="True" title="Conditional Property Serialization" />
     <Topic id="ContractResolver" visible="True" title="Serialization using ContractResolver" />
-    <Topic id="SerializationTracing" visible="True" isSelected="true" title="Debug with Serialization Tracing" />
+    <Topic id="SerializationTracing" visible="True" isSelected="true" title="Debugging with Serialization Tracing" />
   </Topic>
   <Topic id="LINQtoJSON" visible="True" title="LINQ to JSON">
     <Topic id="ParsingLINQtoJSON" visible="True" title="Parsing JSON" />
