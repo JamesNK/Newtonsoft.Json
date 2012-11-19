@@ -4,7 +4,8 @@
     <introduction>
       <para>The Json.NET serializer supports logging and debugging using the
       <codeEntityReference>T:Newtonsoft.Json.Serialization.ITraceWriter</codeEntityReference> interface.
-      By assigning a trace writer you can debug what happens inside the Json.NET serializer when serializing and deserializing JSON.</para>
+      By assigning a trace writer you can capture serialization messages and errors, and debug what happens inside the
+      Json.NET serializer when serializing and deserializing JSON.</para>
     </introduction>
     <section>
       <title>ITraceWriter</title>
@@ -22,7 +23,7 @@
     <section>
       <title>Custom ITraceWriter</title>
       <content>
-        <para>To write messages using your existing logging framework implement a custom version of ITraceWriter.</para>
+        <para>To write messages using your existing logging framework just implement a custom version of ITraceWriter.</para>
 
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\TraceWriterTests.cs" region="CustomTraceWriterExample" title="Custom NLog TraceWriter" />
         
