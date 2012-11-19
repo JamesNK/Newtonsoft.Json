@@ -305,6 +305,9 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(1m, (decimal)(new JValue("1")));
       Assert.AreEqual(1m, (decimal)(new JValue(true)));
       Assert.AreEqual(TimeSpan.FromMinutes(1), (TimeSpan)(new JValue(TimeSpan.FromMinutes(1))));
+      Assert.AreEqual("00:01:00", (string)(new JValue(TimeSpan.FromMinutes(1))));
+      Assert.AreEqual("46efe013-b56a-4e83-99e4-4dce7678a5bc", (string)(new JValue(new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC"))));
+      Assert.AreEqual("http://www.google.com/", (string)(new JValue(new Uri("http://www.google.com"))));
       Assert.AreEqual(new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC"), (Guid)(new JValue("46EFE013-B56A-4E83-99E4-4DCE7678A5BC")));
       Assert.AreEqual(new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC"), (Guid)(new JValue(new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC"))));
       Assert.AreEqual(new Uri("http://www.google.com"), (Uri)(new JValue("http://www.google.com")));
