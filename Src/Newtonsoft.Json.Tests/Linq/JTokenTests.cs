@@ -234,6 +234,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
       Assert.AreEqual(new DateTime(2000, 12, 20), (DateTime)new JValue(new DateTime(2000, 12, 20)));
 #if !PocketPC && !NET20
+      Assert.AreEqual(new DateTimeOffset(2000, 12, 20, 0, 0, 0, TimeSpan.Zero), (DateTimeOffset)new JValue(new DateTime(2000, 12, 20, 0, 0, 0, DateTimeKind.Utc)));
       Assert.AreEqual(new DateTimeOffset(2000, 12, 20, 23, 50, 10, TimeSpan.Zero), (DateTimeOffset)new JValue(new DateTimeOffset(2000, 12, 20, 23, 50, 10, TimeSpan.Zero)));
       Assert.AreEqual(null, (DateTimeOffset?)new JValue((DateTimeOffset?)null));
       Assert.AreEqual(null, (DateTimeOffset?)(JValue)null);
@@ -280,6 +281,60 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(5f, (float)(new JValue(5m)));
       Assert.AreEqual(5f, (float?)(new JValue(5m)));
       Assert.AreEqual(5, (byte)(new JValue(5)));
+
+      Assert.AreEqual("1", (string)(new JValue(1)));
+      Assert.AreEqual("1", (string)(new JValue(1.0)));
+      Assert.AreEqual("1.0", (string)(new JValue(1.0m)));
+      Assert.AreEqual("True", (string)(new JValue(true)));
+      Assert.AreEqual(null, (string)(new JValue((object)null)));
+      Assert.AreEqual(null, (string)(JValue)null);
+      Assert.AreEqual("12/12/2000 12:12:12", (string)(new JValue(new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Utc))));
+#if !NET20
+      Assert.AreEqual("12/12/2000 12:12:12 +00:00", (string)(new JValue(new DateTimeOffset(2000, 12, 12, 12, 12, 12, TimeSpan.Zero))));
+#endif
+      Assert.AreEqual(true, (bool)(new JValue(1)));
+      Assert.AreEqual(true, (bool)(new JValue(1.0)));
+      Assert.AreEqual(true, (bool)(new JValue("true")));
+      Assert.AreEqual(true, (bool)(new JValue(true)));
+      Assert.AreEqual(1, (int)(new JValue(1)));
+      Assert.AreEqual(1, (int)(new JValue(1.0)));
+      Assert.AreEqual(1, (int)(new JValue("1")));
+      Assert.AreEqual(1, (int)(new JValue(true)));
+      Assert.AreEqual(1m, (decimal)(new JValue(1)));
+      Assert.AreEqual(1m, (decimal)(new JValue(1.0)));
+      Assert.AreEqual(1m, (decimal)(new JValue("1")));
+      Assert.AreEqual(1m, (decimal)(new JValue(true)));
+      Assert.AreEqual(TimeSpan.FromMinutes(1), (TimeSpan)(new JValue(TimeSpan.FromMinutes(1))));
+      Assert.AreEqual(new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC"), (Guid)(new JValue("46EFE013-B56A-4E83-99E4-4DCE7678A5BC")));
+      Assert.AreEqual(new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC"), (Guid)(new JValue(new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC"))));
+      Assert.AreEqual(new Uri("http://www.google.com"), (Uri)(new JValue("http://www.google.com")));
+      Assert.AreEqual(new Uri("http://www.google.com"), (Uri)(new JValue(new Uri("http://www.google.com"))));
+      Assert.AreEqual(null, (Uri)(new JValue((object)null)));
+      Assert.AreEqual(Convert.ToBase64String(Encoding.UTF8.GetBytes("hi")), (string)(new JValue(Encoding.UTF8.GetBytes("hi"))));
+      Assert.AreEqual(Encoding.UTF8.GetBytes("hi"), (byte[])(new JValue(Convert.ToBase64String(Encoding.UTF8.GetBytes("hi")))));
+
+      Assert.AreEqual(null, (Uri)(JValue)null);
+      Assert.AreEqual(null, (int?)(JValue)null);
+      Assert.AreEqual(null, (uint?)(JValue)null);
+      Assert.AreEqual(null, (Guid?)(JValue)null);
+      Assert.AreEqual(null, (TimeSpan?)(JValue)null);
+      Assert.AreEqual(null, (byte[])(JValue)null);
+      Assert.AreEqual(null, (bool?)(JValue)null);
+      Assert.AreEqual(null, (char?)(JValue)null);
+      Assert.AreEqual(null, (DateTime?)(JValue)null);
+#if !NET20
+      Assert.AreEqual(null, (DateTimeOffset?)(JValue)null);
+#endif
+      Assert.AreEqual(null, (short?)(JValue)null);
+      Assert.AreEqual(null, (ushort?)(JValue)null);
+      Assert.AreEqual(null, (byte?)(JValue)null);
+      Assert.AreEqual(null, (byte?)(JValue)null);
+      Assert.AreEqual(null, (sbyte?)(JValue)null);
+      Assert.AreEqual(null, (sbyte?)(JValue)null);
+      Assert.AreEqual(null, (long?)(JValue)null);
+      Assert.AreEqual(null, (ulong?)(JValue)null);
+      Assert.AreEqual(null, (double?)(JValue)null);
+      Assert.AreEqual(null, (float?)(JValue)null);
 
       byte[] data = new byte[0];
       Assert.AreEqual(data, (byte[])(new JValue(data)));
@@ -378,6 +433,13 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.IsTrue(JToken.DeepEquals(new JValue(emptyData), (JValue)emptyData));
       Assert.IsFalse(JToken.DeepEquals(new JValue(emptyData), (JValue)new byte[1]));
       Assert.IsTrue(JToken.DeepEquals(new JValue(Encoding.UTF8.GetBytes("Hi")), (JValue)Encoding.UTF8.GetBytes("Hi")));
+
+      Assert.IsTrue(JToken.DeepEquals(new JValue(TimeSpan.FromMinutes(1)), (JValue)TimeSpan.FromMinutes(1)));
+      Assert.IsTrue(JToken.DeepEquals(new JValue((object)null), (JValue)(TimeSpan?)null));
+      Assert.IsTrue(JToken.DeepEquals(new JValue(TimeSpan.FromMinutes(1)), (JValue)(TimeSpan?)TimeSpan.FromMinutes(1)));
+      Assert.IsTrue(JToken.DeepEquals(new JValue(new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC")), (JValue)new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC")));
+      Assert.IsTrue(JToken.DeepEquals(new JValue(new Uri("http://www.google.com")), (JValue)new Uri("http://www.google.com")));
+
     }
 
     [Test]

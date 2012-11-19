@@ -135,7 +135,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="value">The value.</param>
     public JValue(Guid value)
-      : this(value, JTokenType.String)
+      : this(value, JTokenType.Guid)
     {
     }
 
@@ -144,7 +144,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="value">The value.</param>
     public JValue(Uri value)
-      : this(value, JTokenType.String)
+      : this(value, JTokenType.Uri)
     {
     }
 
@@ -153,7 +153,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="value">The value.</param>
     public JValue(TimeSpan value)
-      : this(value, JTokenType.String)
+      : this(value, JTokenType.TimeSpan)
     {
     }
 

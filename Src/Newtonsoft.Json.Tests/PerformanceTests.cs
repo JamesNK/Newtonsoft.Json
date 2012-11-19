@@ -333,6 +333,44 @@ If attributes are not mentioned, default values are used in each case.
       }, "New");
     }
 
+    [Test]
+    public void JTokenToObject()
+    {
+      JValue s = new JValue("String!");
+
+      int interations = 1000000;
+
+      TimeOperation(() =>
+      {
+        for (int i = 0; i < interations; i++)
+        {
+          s.ToObject(typeof (string));
+        }
+
+        return "";
+      }, "New");
+
+      TimeOperation(() =>
+      {
+        for (int i = 0; i < interations; i++)
+        {
+          s.ToObject(typeof(string), new JsonSerializer());
+        }
+
+        return "";
+      }, "Old");
+
+      TimeOperation(() =>
+      {
+        for (int i = 0; i < interations; i++)
+        {
+          s.Value<string>();
+        }
+
+        return "";
+      }, "Value");
+    }
+
     private void SerializeSize(object value)
     {
       // this is extremely slow with 5000 interations
