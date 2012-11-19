@@ -339,6 +339,19 @@ or a property's object properties or collection items using
 </section>
 
 <section>
+ <title>TraceWriter</title>
+ <content><para>The Json.NET serializer supports logging using the <codeEntityReference>T:Newtonsoft.Json.Serialization.ITraceWriter</codeEntityReference>
+      interface. By assigning a trace writer you can debug what is happening inside the Json.NET serializer when
+      serializing and deserializing JSON.</para>
+ <para>Read more about TraceWriters here: <externalLink>
+<linkText>Debug with Serialization Tracing</linkText>
+<linkUri>SerializationTracing.htm</linkUri>
+<linkTarget>_self</linkTarget>
+</externalLink></para>
+</content>
+</section>
+
+<section>
  <title>Error</title>
  <content><para>The <codeEntityReference>E:Newtonsoft.Json.JsonSerializer.Error</codeEntityReference> event can catch errors during serialization and either handle the event and continue with
  serialization or let the error bubble up and be thrown to the application.</para>

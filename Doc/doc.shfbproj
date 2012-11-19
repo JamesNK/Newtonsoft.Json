@@ -137,6 +137,7 @@
     <Content Include="donate.gif" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="SerializationTracing.aml" />
     <None Include="JsonNetVsDotNetSerializers.aml" />
     <None Include="JsonNetVsWindowsDataJson.aml" />
     <None Include="ConditionalProperties.aml" />

@@ -320,7 +320,6 @@ If attributes are not mentioned, default values are used in each case.
 
       TimeOperation(() =>
       {
-        string json = null;
         for (int i = 0; i < interations; i++)
         {
           using (StringWriter w = StringUtils.CreateStringWriter(StringUtils.GetLength(text) ?? 16))
