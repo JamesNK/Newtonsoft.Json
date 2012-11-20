@@ -365,7 +365,9 @@ namespace Newtonsoft.Json.Tests.Linq
       ExceptionAssert.Throws<ArgumentException>("Can not convert TimeSpan to Uri.", () => { var i = (Uri)new JValue(TimeSpan.Zero); });
       ExceptionAssert.Throws<ArgumentException>("Can not convert Guid to Uri.", () => { var i = (Uri)new JValue(Guid.NewGuid()); });
       ExceptionAssert.Throws<ArgumentException>("Can not convert Date to Uri.", () => { var i = (Uri)new JValue(DateTime.Now); });
+#if !NET20
       ExceptionAssert.Throws<ArgumentException>("Can not convert Date to Uri.", () => { var i = (Uri)new JValue(DateTimeOffset.Now); });
+#endif
 
       ExceptionAssert.Throws<ArgumentException>("Can not convert Boolean to TimeSpan.", () => { var i = (TimeSpan)new JValue(true); });
       ExceptionAssert.Throws<ArgumentException>("Can not convert Integer to TimeSpan.", () => { var i = (TimeSpan)new JValue(1); });
@@ -374,7 +376,9 @@ namespace Newtonsoft.Json.Tests.Linq
       ExceptionAssert.Throws<ArgumentException>("Can not convert Null to TimeSpan.", () => { var i = (TimeSpan)new JValue((object)null); });
       ExceptionAssert.Throws<ArgumentException>("Can not convert Guid to TimeSpan.", () => { var i = (TimeSpan)new JValue(Guid.NewGuid()); });
       ExceptionAssert.Throws<ArgumentException>("Can not convert Date to TimeSpan.", () => { var i = (TimeSpan)new JValue(DateTime.Now); });
+#if !NET20
       ExceptionAssert.Throws<ArgumentException>("Can not convert Date to TimeSpan.", () => { var i = (TimeSpan)new JValue(DateTimeOffset.Now); });
+#endif
       ExceptionAssert.Throws<ArgumentException>("Can not convert Uri to TimeSpan.", () => { var i = (TimeSpan)new JValue(new Uri("http://www.google.com")); });
 
       ExceptionAssert.Throws<ArgumentException>("Can not convert Boolean to Guid.", () => { var i = (Guid)new JValue(true); });
@@ -383,7 +387,9 @@ namespace Newtonsoft.Json.Tests.Linq
       ExceptionAssert.Throws<ArgumentException>("Can not convert Float to Guid.", () => { var i = (Guid)new JValue(1.1m); });
       ExceptionAssert.Throws<ArgumentException>("Can not convert Null to Guid.", () => { var i = (Guid)new JValue((object)null); });
       ExceptionAssert.Throws<ArgumentException>("Can not convert Date to Guid.", () => { var i = (Guid)new JValue(DateTime.Now); });
+#if !NET20
       ExceptionAssert.Throws<ArgumentException>("Can not convert Date to Guid.", () => { var i = (Guid)new JValue(DateTimeOffset.Now); });
+#endif
       ExceptionAssert.Throws<ArgumentException>("Can not convert TimeSpan to Guid.", () => { var i = (Guid)new JValue(TimeSpan.FromMinutes(1)); });
       ExceptionAssert.Throws<ArgumentException>("Can not convert Uri to Guid.", () => { var i = (Guid)new JValue(new Uri("http://www.google.com")); });
 
