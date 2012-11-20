@@ -955,5 +955,155 @@ _____'propertyName': NaN
 ]", sw.ToString());
     }
 #endif
+
+    [Test]
+    public void CompareNewStringEscapingWithOld()
+    {
+      Console.WriteLine("Started");
+
+      char c = (char) 0;
+
+      do
+      {
+        if (c % 1000 == 0)
+          Console.WriteLine("Position: " + (int)c);
+
+        StringWriter swNew = new StringWriter();
+        JavaScriptUtils.WriteEscapedJavaScriptString(swNew, c.ToString(), '"', true, JavaScriptUtils.DoubleQuoteCharEscapeFlags, StringEscapeHandling.Default);
+
+        StringWriter swOld = new StringWriter();
+        WriteEscapedJavaScriptStringOld(swOld, c.ToString(), '"', true);
+
+        string newText = swNew.ToString();
+        string oldText = swOld.ToString();
+
+        if (newText != oldText)
+          throw new Exception("Difference for char '{0}' (value {1}). Old text: {2}, New text: {3}".FormatWith(CultureInfo.InvariantCulture, c, (int) c, oldText, newText));
+
+        c++;
+      } while (c != char.MaxValue);
+
+      Console.WriteLine("Finished");
+    }
+
+    private const string EscapedUnicodeText = "!";
+
+    private static void WriteEscapedJavaScriptStringOld(TextWriter writer, string s, char delimiter, bool appendDelimiters)
+    {
+      // leading delimiter
+      if (appendDelimiters)
+        writer.Write(delimiter);
+
+      if (s != null)
+      {
+        char[] chars = null;
+        char[] unicodeBuffer = null;
+        int lastWritePosition = 0;
+
+        for (int i = 0; i < s.Length; i++)
+        {
+          var c = s[i];
+
+          // don't escape standard text/numbers except '\' and the text delimiter
+          if (c >= ' ' && c < 128 && c != '\\' && c != delimiter)
+            continue;
+
+          string escapedValue;
+
+          switch (c)
+          {
+            case '\t':
+              escapedValue = @"\t";
+              break;
+            case '\n':
+              escapedValue = @"\n";
+              break;
+            case '\r':
+              escapedValue = @"\r";
+              break;
+            case '\f':
+              escapedValue = @"\f";
+              break;
+            case '\b':
+              escapedValue = @"\b";
+              break;
+            case '\\':
+              escapedValue = @"\\";
+              break;
+            case '\u0085': // Next Line
+              escapedValue = @"\u0085";
+              break;
+            case '\u2028': // Line Separator
+              escapedValue = @"\u2028";
+              break;
+            case '\u2029': // Paragraph Separator
+              escapedValue = @"\u2029";
+              break;
+            case '\'':
+              // this charater is being used as the delimiter
+              escapedValue = @"\'";
+              break;
+            case '"':
+              // this charater is being used as the delimiter
+              escapedValue = "\\\"";
+              break;
+            default:
+              if (c <= '\u001f')
+              {
+                if (unicodeBuffer == null)
+                  unicodeBuffer = new char[6];
+
+                StringUtils.ToCharAsUnicode(c, unicodeBuffer);
+
+                // slightly hacky but it saves multiple conditions in if test
+                escapedValue = EscapedUnicodeText;
+              }
+              else
+              {
+                escapedValue = null;
+              }
+              break;
+          }
+
+          if (escapedValue == null)
+            continue;
+
+          if (i > lastWritePosition)
+          {
+            if (chars == null)
+              chars = s.ToCharArray();
+
+            // write unchanged chars before writing escaped text
+            writer.Write(chars, lastWritePosition, i - lastWritePosition);
+          }
+
+          lastWritePosition = i + 1;
+          if (!string.Equals(escapedValue, EscapedUnicodeText))
+            writer.Write(escapedValue);
+          else
+            writer.Write(unicodeBuffer);
+        }
+
+        if (lastWritePosition == 0)
+        {
+          // no escaped text, write entire string
+          writer.Write(s);
+        }
+        else
+        {
+          if (chars == null)
+            chars = s.ToCharArray();
+
+          // write remaining text
+          writer.Write(chars, lastWritePosition, s.Length - lastWritePosition);
+        }
+      }
+
+      // trailing delimiter
+      if (appendDelimiters)
+        writer.Write(delimiter);
+    }
+
+
   }
 }
