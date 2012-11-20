@@ -144,7 +144,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="value">The value.</param>
     public JValue(Uri value)
-      : this(value, JTokenType.Uri)
+      : this(value, (value != null) ? JTokenType.Uri : JTokenType.Null)
     {
     }
 

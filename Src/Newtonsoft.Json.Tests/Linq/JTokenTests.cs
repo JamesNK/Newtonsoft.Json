@@ -306,6 +306,7 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(1m, (decimal)(new JValue(true)));
       Assert.AreEqual(TimeSpan.FromMinutes(1), (TimeSpan)(new JValue(TimeSpan.FromMinutes(1))));
       Assert.AreEqual("00:01:00", (string)(new JValue(TimeSpan.FromMinutes(1))));
+      Assert.AreEqual(TimeSpan.FromMinutes(1), (TimeSpan)(new JValue("00:01:00")));
       Assert.AreEqual("46efe013-b56a-4e83-99e4-4dce7678a5bc", (string)(new JValue(new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC"))));
       Assert.AreEqual("http://www.google.com/", (string)(new JValue(new Uri("http://www.google.com"))));
       Assert.AreEqual(new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC"), (Guid)(new JValue("46EFE013-B56A-4E83-99E4-4DCE7678A5BC")));
@@ -343,6 +344,51 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(data, (byte[])(new JValue(data)));
 
       Assert.AreEqual(5, (int)(new JValue(StringComparison.OrdinalIgnoreCase)));
+    }
+
+    [Test]
+    public void FailedCasting()
+    {
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Boolean to DateTime.", () => { var i = (DateTime)new JValue(true); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Integer to DateTime.", () => { var i = (DateTime)new JValue(1); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Float to DateTime.", () => { var i = (DateTime)new JValue(1.1); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Float to DateTime.", () => { var i = (DateTime)new JValue(1.1m); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert TimeSpan to DateTime.", () => { var i = (DateTime)new JValue(TimeSpan.Zero); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Uri to DateTime.", () => { var i = (DateTime)new JValue(new Uri("http://www.google.com")); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Null to DateTime.", () => { var i = (DateTime)new JValue((object)null); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Guid to DateTime.", () => { var i = (DateTime)new JValue(Guid.NewGuid()); });
+
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Boolean to Uri.", () => { var i = (Uri)new JValue(true); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Integer to Uri.", () => { var i = (Uri)new JValue(1); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Float to Uri.", () => { var i = (Uri)new JValue(1.1); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Float to Uri.", () => { var i = (Uri)new JValue(1.1m); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert TimeSpan to Uri.", () => { var i = (Uri)new JValue(TimeSpan.Zero); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Guid to Uri.", () => { var i = (Uri)new JValue(Guid.NewGuid()); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Date to Uri.", () => { var i = (Uri)new JValue(DateTime.Now); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Date to Uri.", () => { var i = (Uri)new JValue(DateTimeOffset.Now); });
+
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Boolean to TimeSpan.", () => { var i = (TimeSpan)new JValue(true); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Integer to TimeSpan.", () => { var i = (TimeSpan)new JValue(1); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Float to TimeSpan.", () => { var i = (TimeSpan)new JValue(1.1); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Float to TimeSpan.", () => { var i = (TimeSpan)new JValue(1.1m); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Null to TimeSpan.", () => { var i = (TimeSpan)new JValue((object)null); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Guid to TimeSpan.", () => { var i = (TimeSpan)new JValue(Guid.NewGuid()); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Date to TimeSpan.", () => { var i = (TimeSpan)new JValue(DateTime.Now); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Date to TimeSpan.", () => { var i = (TimeSpan)new JValue(DateTimeOffset.Now); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Uri to TimeSpan.", () => { var i = (TimeSpan)new JValue(new Uri("http://www.google.com")); });
+
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Boolean to Guid.", () => { var i = (Guid)new JValue(true); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Integer to Guid.", () => { var i = (Guid)new JValue(1); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Float to Guid.", () => { var i = (Guid)new JValue(1.1); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Float to Guid.", () => { var i = (Guid)new JValue(1.1m); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Null to Guid.", () => { var i = (Guid)new JValue((object)null); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Date to Guid.", () => { var i = (Guid)new JValue(DateTime.Now); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Date to Guid.", () => { var i = (Guid)new JValue(DateTimeOffset.Now); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert TimeSpan to Guid.", () => { var i = (Guid)new JValue(TimeSpan.FromMinutes(1)); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Uri to Guid.", () => { var i = (Guid)new JValue(new Uri("http://www.google.com")); });
+
+      ExceptionAssert.Throws<Exception>("Can not convert Boolean to DateTimeOffset.", () => { var i = (DateTimeOffset)new JValue(true); });
+      ExceptionAssert.Throws<Exception>("Can not convert Boolean to Uri.", () => { var i = (Uri)new JValue(true); });
     }
 
     [Test]
@@ -442,7 +488,8 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.IsTrue(JToken.DeepEquals(new JValue(TimeSpan.FromMinutes(1)), (JValue)(TimeSpan?)TimeSpan.FromMinutes(1)));
       Assert.IsTrue(JToken.DeepEquals(new JValue(new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC")), (JValue)new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC")));
       Assert.IsTrue(JToken.DeepEquals(new JValue(new Uri("http://www.google.com")), (JValue)new Uri("http://www.google.com")));
-
+      Assert.IsTrue(JToken.DeepEquals(new JValue((object)null), (JValue)(Uri)null));
+      Assert.IsTrue(JToken.DeepEquals(new JValue((object)null), (JValue)(Guid?)null));
     }
 
     [Test]

@@ -64,6 +64,9 @@ namespace Newtonsoft.Json.Linq
     private static readonly JTokenType[] BooleanTypes = new[] { JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Boolean };
     private static readonly JTokenType[] NumberTypes = new[] { JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Boolean };
     private static readonly JTokenType[] StringTypes = new[] { JTokenType.Date, JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Boolean, JTokenType.Bytes, JTokenType.Guid, JTokenType.TimeSpan, JTokenType.Uri };
+    private static readonly JTokenType[] GuidTypes = new[] { JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Guid };
+    private static readonly JTokenType[] TimeSpanTypes = new[] { JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.TimeSpan };
+    private static readonly JTokenType[] UriTypes = new[] { JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Uri };
     private static readonly JTokenType[] CharTypes = new[] { JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Raw };
     private static readonly JTokenType[] DateTimeTypes = new[] { JTokenType.Date, JTokenType.String, JTokenType.Comment, JTokenType.Raw };
     private static readonly JTokenType[] BytesTypes = new[] { JTokenType.Bytes, JTokenType.String, JTokenType.Comment, JTokenType.Raw };
@@ -895,7 +898,7 @@ namespace Newtonsoft.Json.Linq
     public static explicit operator Guid(JToken value)
     {
       JValue v = EnsureValue(value);
-      if (v == null || !ValidateToken(v, StringTypes, false))
+      if (v == null || !ValidateToken(v, GuidTypes, false))
         throw new ArgumentException("Can not convert {0} to Guid.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       return (v.Value is Guid) ? (Guid)v.Value : new Guid(Convert.ToString(v.Value, CultureInfo.InvariantCulture));
@@ -912,7 +915,7 @@ namespace Newtonsoft.Json.Linq
         return null;
 
       JValue v = EnsureValue(value);
-      if (v == null || !ValidateToken(v, StringTypes, true))
+      if (v == null || !ValidateToken(v, GuidTypes, true))
         throw new ArgumentException("Can not convert {0} to Guid.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       if (v.Value == null)
@@ -929,7 +932,7 @@ namespace Newtonsoft.Json.Linq
     public static explicit operator TimeSpan(JToken value)
     {
       JValue v = EnsureValue(value);
-      if (v == null || !ValidateToken(v, StringTypes, false))
+      if (v == null || !ValidateToken(v, TimeSpanTypes, false))
         throw new ArgumentException("Can not convert {0} to TimeSpan.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       return (v.Value is TimeSpan) ? (TimeSpan)v.Value : ConvertUtils.ParseTimeSpan(Convert.ToString(v.Value, CultureInfo.InvariantCulture));
@@ -946,7 +949,7 @@ namespace Newtonsoft.Json.Linq
         return null;
 
       JValue v = EnsureValue(value);
-      if (v == null || !ValidateToken(v, StringTypes, true))
+      if (v == null || !ValidateToken(v, TimeSpanTypes, true))
         throw new ArgumentException("Can not convert {0} to TimeSpan.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       if (v.Value == null)
@@ -966,7 +969,7 @@ namespace Newtonsoft.Json.Linq
         return null;
 
       JValue v = EnsureValue(value);
-      if (v == null || !ValidateToken(v, StringTypes, true))
+      if (v == null || !ValidateToken(v, UriTypes, true))
         throw new ArgumentException("Can not convert {0} to Uri.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       if (v.Value == null)
