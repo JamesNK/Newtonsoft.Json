@@ -387,7 +387,9 @@ namespace Newtonsoft.Json.Tests.Linq
       ExceptionAssert.Throws<ArgumentException>("Can not convert TimeSpan to Guid.", () => { var i = (Guid)new JValue(TimeSpan.FromMinutes(1)); });
       ExceptionAssert.Throws<ArgumentException>("Can not convert Uri to Guid.", () => { var i = (Guid)new JValue(new Uri("http://www.google.com")); });
 
+#if !NET20
       ExceptionAssert.Throws<Exception>("Can not convert Boolean to DateTimeOffset.", () => { var i = (DateTimeOffset)new JValue(true); });
+#endif
       ExceptionAssert.Throws<Exception>("Can not convert Boolean to Uri.", () => { var i = (Uri)new JValue(true); });
     }
 
