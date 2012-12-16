@@ -47,6 +47,8 @@ namespace Newtonsoft.Json
     private FormatterAssemblyStyle _typeNameAssemblyFormat;
     private PreserveReferencesHandling _preserveReferencesHandling;
     private ReferenceLoopHandling _referenceLoopHandling;
+    private MemberNameMatchHandling _memberNameMatchHandling;
+    private MemberTypeConversionHandling _memberTypeConversionHandling;
     private MissingMemberHandling _missingMemberHandling;
     private ObjectCreationHandling _objectCreationHandling;
     private NullValueHandling _nullValueHandling;
@@ -185,6 +187,36 @@ namespace Newtonsoft.Json
           throw new ArgumentOutOfRangeException("value");
 
         _referenceLoopHandling = value;
+      }
+    }
+
+    /// <summary>
+    /// Gets or sets whether class members are looked up using case sensitive or insensitive manner.
+    /// </summary>
+    public virtual MemberNameMatchHandling MemberNameMatchHandling
+    {
+      get { return _memberNameMatchHandling; }
+      set
+      {
+        if (value < MemberNameMatchHandling.CaseInsensitive || value > MemberNameMatchHandling.CaseSensitive)
+          throw new ArgumentOutOfRangeException("value");
+
+        _memberNameMatchHandling = value;
+      }
+    }
+
+    /// <summary>
+    /// Gets or sets whether the deserializer attempts to convert basic types (e.g. the string "2" to an integer field)
+    /// </summary>
+    public virtual MemberTypeConversionHandling MemberTypeConversionHandling
+    {
+      get { return _memberTypeConversionHandling; }
+      set
+      {
+        if (value < MemberTypeConversionHandling.AllowTypeConversions || value > MemberTypeConversionHandling.ProhibitTypeConversions)
+          throw new ArgumentOutOfRangeException("value");
+
+        _memberTypeConversionHandling = value;
       }
     }
 
@@ -392,6 +424,8 @@ namespace Newtonsoft.Json
     public JsonSerializer()
     {
       _referenceLoopHandling = JsonSerializerSettings.DefaultReferenceLoopHandling;
+      _memberNameMatchHandling = JsonSerializerSettings.DefaultMemberNameMatchHandling;
+      _memberTypeConversionHandling = JsonSerializerSettings.DefaultMemberTypeConversionHandling;
       _missingMemberHandling = JsonSerializerSettings.DefaultMissingMemberHandling;
       _nullValueHandling = JsonSerializerSettings.DefaultNullValueHandling;
       _defaultValueHandling = JsonSerializerSettings.DefaultDefaultValueHandling;
@@ -422,6 +456,8 @@ namespace Newtonsoft.Json
         jsonSerializer.TypeNameAssemblyFormat = settings.TypeNameAssemblyFormat;
         jsonSerializer.PreserveReferencesHandling = settings.PreserveReferencesHandling;
         jsonSerializer.ReferenceLoopHandling = settings.ReferenceLoopHandling;
+        jsonSerializer.MemberNameMatchHandling = settings.MemberNameMatchHandling;
+        jsonSerializer.MemberTypeConversionHandling = settings.MemberTypeConversionHandling;
         jsonSerializer.MissingMemberHandling = settings.MissingMemberHandling;
         jsonSerializer.ObjectCreationHandling = settings.ObjectCreationHandling;
         jsonSerializer.NullValueHandling = settings.NullValueHandling;

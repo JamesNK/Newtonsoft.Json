@@ -643,7 +643,10 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                   return Enum.ToObject(contract.NonNullableUnderlyingType, value);
               }
 
-              return Convert.ChangeType(value, contract.NonNullableUnderlyingType, culture);
+              if (   Serializer.MemberTypeConversionHandling == MemberTypeConversionHandling.AllowTypeConversions
+                  || ConvertUtils.IsSameBasicType(valueType, contract.NonNullableUnderlyingType))
+                return Convert.ChangeType(value, contract.NonNullableUnderlyingType, culture);
+              else throw new FormatException();
           }
 
           return ConvertUtils.ConvertOrCast(value, culture, contract.NonNullableUnderlyingType);
@@ -1396,8 +1399,8 @@ To fix this error either change the environment to be fully trusted, change the 
 
             // attempt exact case match first
             // then try match ignoring case
-            JsonProperty property = contract.ConstructorParameters.GetClosestMatchProperty(memberName) ??
-              contract.Properties.GetClosestMatchProperty(memberName);
+            JsonProperty property = contract.ConstructorParameters.GetClosestMatchProperty(memberName, this.Serializer.MemberNameMatchHandling) ??
+              contract.Properties.GetClosestMatchProperty(memberName, this.Serializer.MemberNameMatchHandling);
 
             if (property != null)
             {
@@ -1566,7 +1569,7 @@ To fix this error either change the environment to be fully trusted, change the 
               {
                 // attempt exact case match first
                 // then try match ignoring case
-                JsonProperty property = contract.Properties.GetClosestMatchProperty(memberName);
+                JsonProperty property = contract.Properties.GetClosestMatchProperty(memberName, this.Serializer.MemberNameMatchHandling);
 
                 if (property == null)
                 {

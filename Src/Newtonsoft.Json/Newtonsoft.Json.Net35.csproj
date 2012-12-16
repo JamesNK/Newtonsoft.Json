@@ -104,6 +104,7 @@
     <Compile Include="Converters\StringEnumConverter.cs" />
     <Compile Include="ConstructorHandling.cs" />
     <Compile Include="Converters\VersionConverter.cs" />
+    <Compile Include="MemberNameMatchHandling.cs" />
     <Compile Include="DateFormatHandling.cs" />
     <Compile Include="DateParseHandling.cs" />
     <Compile Include="DateTimeZoneHandling.cs" />
@@ -115,6 +116,7 @@
     <Compile Include="JsonPosition.cs" />
     <Compile Include="Linq\JPropertyDescriptor.cs" />
     <Compile Include="Linq\JPropertyKeyedCollection.cs" />
+    <Compile Include="MemberTypeConversionHandling.cs" />
     <Compile Include="SerializationBinder.cs" />
     <Compile Include="Serialization\DiagnosticsTraceWriter.cs" />
     <Compile Include="Serialization\ITraceWriter.cs" />

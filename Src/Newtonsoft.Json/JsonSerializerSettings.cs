@@ -38,6 +38,8 @@ namespace Newtonsoft.Json
   public class JsonSerializerSettings
   {
     internal const ReferenceLoopHandling DefaultReferenceLoopHandling = ReferenceLoopHandling.Error;
+    internal const MemberNameMatchHandling DefaultMemberNameMatchHandling = MemberNameMatchHandling.CaseInsensitive;
+    internal const MemberTypeConversionHandling DefaultMemberTypeConversionHandling = MemberTypeConversionHandling.AllowTypeConversions;
     internal const MissingMemberHandling DefaultMissingMemberHandling = MissingMemberHandling.Ignore;
     internal const NullValueHandling DefaultNullValueHandling = NullValueHandling.Include;
     internal const DefaultValueHandling DefaultDefaultValueHandling = DefaultValueHandling.Include;
@@ -69,6 +71,18 @@ namespace Newtonsoft.Json
     /// </summary>
     /// <value>Reference loop handling.</value>
     public ReferenceLoopHandling ReferenceLoopHandling { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether class members are looked up using case sensitive or insensitive manner.
+    /// </summary>
+    /// <value>Member name match handling.</value>
+    public MemberNameMatchHandling MemberNameMatchHandling { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the deserializer attempts to convert basic types (e.g. the string "2" to an integer field)
+    /// </summary>
+    /// <value>Member name match handling.</value>
+    public MemberTypeConversionHandling MemberTypeConversionHandling { get; set; }
 
     /// <summary>
     /// Gets or sets how missing members (e.g. JSON contains a property that isn't a member on the object) are handled during deserialization.
