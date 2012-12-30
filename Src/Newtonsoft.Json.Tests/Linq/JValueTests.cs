@@ -376,7 +376,7 @@ namespace Newtonsoft.Json.Tests.Linq
         var obj = JObject.Load(jsonReader);
         var d = (JValue)obj["d"];
 
-        Assert.IsInstanceOfType(typeof(DateTimeOffset), d.Value);
+        CustomAssert.IsInstanceOfType(typeof(DateTimeOffset), d.Value);
         TimeSpan offset = ((DateTimeOffset)d.Value).Offset;
         Assert.AreEqual(TimeSpan.FromHours(1), offset);
 
@@ -394,7 +394,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
       object startDateTime = obj["startDateTime"];
 
-      Assert.IsInstanceOfType(typeof(DateTimeOffset), startDateTime);
+      CustomAssert.IsInstanceOfType(typeof(DateTimeOffset), startDateTime);
     }
 #endif
   }
