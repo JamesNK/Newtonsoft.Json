@@ -424,7 +424,7 @@ namespace Newtonsoft.Json.Linq
       if (v.Value is DateTimeOffset)
         return (DateTimeOffset)v.Value;
       if (v.Value is string)
-        return DateTimeOffset.Parse((string)v.Value);
+        return DateTimeOffset.Parse((string)v.Value, CultureInfo.InvariantCulture);
       return new DateTimeOffset(Convert.ToDateTime(v.Value, CultureInfo.InvariantCulture));
     }
 #endif
@@ -497,7 +497,7 @@ namespace Newtonsoft.Json.Linq
       if (v.Value is DateTimeOffset)
         return (DateTimeOffset?)v.Value;
       if (v.Value is string)
-        return DateTimeOffset.Parse((string)v.Value);
+        return DateTimeOffset.Parse((string)v.Value, CultureInfo.InvariantCulture);
       return new DateTimeOffset(Convert.ToDateTime(v.Value, CultureInfo.InvariantCulture));
     }
 #endif
