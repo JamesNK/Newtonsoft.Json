@@ -300,14 +300,156 @@ namespace Newtonsoft.Json.Tests.Schema
     public void DivisibleBy_Int()
     {
       ExceptionAssert.Throws<JsonSchemaException>("Integer 10 is not evenly divisible by 3.",
-      () =>
-      {
-        JsonSchema schema = new JsonSchema();
-        schema.DivisibleBy = 3;
+        () =>
+          {
+            JsonSchema schema = new JsonSchema();
+            schema.DivisibleBy = 3;
 
-        JValue v = new JValue(10);
-        v.Validate(schema);
-      });
+            JValue v = new JValue(10);
+            v.Validate(schema);
+          });
+    }
+
+    [Test]
+    public void UniqueItems_SimpleUnique()
+    {
+      JsonSchema schema = new JsonSchema();
+      schema.UniqueItems = true;
+
+      JArray a = new JArray(1, 2, 3);
+      Assert.IsTrue(a.IsValid(schema));
+    }
+
+    [Test]
+    public void UniqueItems_SimpleDuplicate()
+    {
+      JsonSchema schema = new JsonSchema();
+      schema.UniqueItems = true;
+
+      JArray a = new JArray(1, 2, 3, 2, 2);
+      IList<string> errorMessages;
+      Assert.IsFalse(a.IsValid(schema, out errorMessages));
+      Assert.AreEqual(2, errorMessages.Count);
+      Assert.AreEqual("Non-unique array item at index 3.", errorMessages[0]);
+      Assert.AreEqual("Non-unique array item at index 4.", errorMessages[1]);
+    }
+
+    [Test]
+    public void UniqueItems_ComplexDuplicate()
+    {
+      JsonSchema schema = new JsonSchema();
+      schema.UniqueItems = true;
+
+      JArray a = new JArray(1, new JObject(new JProperty("value", "value!")), 3, 2, new JObject(new JProperty("value", "value!")), 4, 2, new JObject(new JProperty("value", "value!")));
+      IList<string> errorMessages;
+      Assert.IsFalse(a.IsValid(schema, out errorMessages));
+      Assert.AreEqual(3, errorMessages.Count);
+      Assert.AreEqual("Non-unique array item at index 4.", errorMessages[0]);
+      Assert.AreEqual("Non-unique array item at index 6.", errorMessages[1]);
+      Assert.AreEqual("Non-unique array item at index 7.", errorMessages[2]);
+    }
+
+    [Test]
+    public void UniqueItems_NestedDuplicate()
+    {
+      JsonSchema schema = new JsonSchema();
+      schema.UniqueItems = true;
+      schema.Items = new List<JsonSchema>
+        {
+          new JsonSchema
+            {
+              UniqueItems = true
+            }
+        };
+      schema.PositionalItemsValidation = false;
+
+      JArray a = new JArray(
+        new JArray(1, 2),
+        new JArray(1, 1),
+        new JArray(3, 4),
+        new JArray(1, 2),
+        new JArray(1, 1)
+        );
+      IList<string> errorMessages;
+      Assert.IsFalse(a.IsValid(schema, out errorMessages));
+      Assert.AreEqual(4, errorMessages.Count);
+      Assert.AreEqual("Non-unique array item at index 1.", errorMessages[0]);
+      Assert.AreEqual("Non-unique array item at index 3.", errorMessages[1]);
+      Assert.AreEqual("Non-unique array item at index 1.", errorMessages[2]);
+      Assert.AreEqual("Non-unique array item at index 4.", errorMessages[3]);
+    }
+
+    [Test]
+    public void Enum_Properties()
+    {
+      JsonSchema schema = new JsonSchema();
+      schema.Properties = new Dictionary<string, JsonSchema>
+        {
+          {
+            "bar",
+            new JsonSchema
+            {
+              Enum = new List<JToken>
+                {
+                  new JValue(1),
+                  new JValue(2)
+                }
+            }
+          }
+        };
+
+      JObject o = new JObject(
+        new JProperty("bar", 1)
+        );
+      IList<string> errorMessages;
+      Assert.IsTrue(o.IsValid(schema, out errorMessages));
+      Assert.AreEqual(0, errorMessages.Count);
+
+      o = new JObject(
+        new JProperty("bar", 3)
+        );
+      Assert.IsFalse(o.IsValid(schema, out errorMessages));
+      Assert.AreEqual(1, errorMessages.Count);
+    }
+
+    [Test]
+    public void UniqueItems_Property()
+    {
+      JsonSchema schema = new JsonSchema();
+      schema.Properties = new Dictionary<string, JsonSchema>
+        {
+          {
+            "bar",
+            new JsonSchema
+            {
+              UniqueItems = true
+            }
+          }
+        };
+
+      JObject o = new JObject(
+        new JProperty("bar", new JArray(1, 2, 3, 3))
+        );
+      IList<string> errorMessages;
+      Assert.IsFalse(o.IsValid(schema, out errorMessages));
+      Assert.AreEqual(1, errorMessages.Count);
+    }
+
+    [Test]
+    public void Items_Positional()
+    {
+      JsonSchema schema = new JsonSchema();
+      schema.Items = new List<JsonSchema>
+        {
+          new JsonSchema { Type = JsonSchemaType.Object },
+          new JsonSchema { Type = JsonSchemaType.Integer }
+        };
+      schema.PositionalItemsValidation = true;
+
+      JArray a = new JArray(new JObject(), 1);
+      IList<string> errorMessages;
+      Assert.IsTrue(a.IsValid(schema, out errorMessages));
+      Assert.AreEqual(0, errorMessages.Count);
     }
   }
 }

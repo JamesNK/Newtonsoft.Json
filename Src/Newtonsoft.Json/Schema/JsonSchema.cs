@@ -126,6 +126,29 @@ namespace Newtonsoft.Json.Schema
     /// <value>The <see cref="JsonSchema"/> of items.</value>
     public IList<JsonSchema> Items { get; set; }
     /// <summary>
+    /// Gets or sets a value indicating whether items in an array are validated using the <see cref="JsonSchema"/> instance at their array position from <see cref="JsonSchema.Items"/>.
+    /// </summary>
+    /// <value>
+    /// 	<c>true</c> if items are validated using their array position; otherwise, <c>false</c>.
+    /// </value>
+    public bool PositionalItemsValidation { get; set; }
+    /// <summary>
+    /// Gets or sets the <see cref="JsonSchema"/> of additional items.
+    /// </summary>
+    /// <value>The <see cref="JsonSchema"/> of additional items.</value>
+    public JsonSchema AdditionalItems { get; set; }
+    /// <summary>
+    /// Gets or sets a value indicating whether additional items are allowed.
+    /// </summary>
+    /// <value>
+    /// 	<c>true</c> if additional items are allowed; otherwise, <c>false</c>.
+    /// </value>
+    public bool AllowAdditionalItems { get; set; }
+    /// <summary>
+    /// Gets or sets whether the array items must be unique.
+    /// </summary>
+    public bool UniqueItems { get; set; }
+    /// <summary>
     /// Gets or sets the <see cref="JsonSchema"/> of properties.
     /// </summary>
     /// <value>The <see cref="JsonSchema"/> of properties.</value>
@@ -153,20 +176,10 @@ namespace Newtonsoft.Json.Schema
     /// <value>The required property if this property is present.</value>
     public string Requires { get; set; }
     /// <summary>
-    /// Gets or sets the identity.
-    /// </summary>
-    /// <value>The identity.</value>
-    public IList<string> Identity { get; set; }
-    /// <summary>
     /// Gets or sets the a collection of valid enum values allowed.
     /// </summary>
     /// <value>A collection of valid enum values allowed.</value>
     public IList<JToken> Enum { get; set; }
-    /// <summary>
-    /// Gets or sets a collection of options.
-    /// </summary>
-    /// <value>A collection of options.</value>
-    public IDictionary<JToken, string> Options { get; set; }
     /// <summary>
     /// Gets or sets disallowed types.
     /// </summary>
@@ -178,15 +191,17 @@ namespace Newtonsoft.Json.Schema
     /// <value>The default value.</value>
     public JToken Default { get; set; }
     /// <summary>
-    /// Gets or sets the extend <see cref="JsonSchema"/>.
+    /// Gets or sets the collection of <see cref="JsonSchema"/> that this schema extends.
     /// </summary>
-    /// <value>The extended <see cref="JsonSchema"/>.</value>
-    public JsonSchema Extends { get; set; }
+    /// <value>The collection of <see cref="JsonSchema"/> that this schema extends.</value>
+    public IList<JsonSchema> Extends { get; set; }
     /// <summary>
     /// Gets or sets the format.
     /// </summary>
     /// <value>The format.</value>
     public string Format { get; set; }
+
+    public string Location { get; set; }
 
     private readonly string _internalId = Guid.NewGuid().ToString("N");
 
@@ -195,12 +210,18 @@ namespace Newtonsoft.Json.Schema
       get { return _internalId; }
     }
 
+    // if this is set then this schema instance is just a deferred reference
+    // and will be replaced when the schema reference is resolved
+    internal string DeferredReference { get; set; }
+    internal bool ReferencesResolved { get; set; }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonSchema"/> class.
     /// </summary>
     public JsonSchema()
     {
       AllowAdditionalProperties = true;
+      AllowAdditionalItems = true;
     }
 
     /// <summary>
@@ -225,7 +246,7 @@ namespace Newtonsoft.Json.Schema
       ValidationUtils.ArgumentNotNull(resolver, "resolver");
 
       JsonSchemaBuilder builder = new JsonSchemaBuilder(resolver);
-      return builder.Parse(reader);
+      return builder.Read(reader);
     }
 
     /// <summary>

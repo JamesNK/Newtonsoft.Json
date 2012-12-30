@@ -47,7 +47,11 @@ namespace Newtonsoft.Json.Schema
     public IDictionary<string, JsonSchemaModel> Properties { get; set; }
     public IDictionary<string, JsonSchemaModel> PatternProperties { get; set; }
     public JsonSchemaModel AdditionalProperties { get; set; }
+    public JsonSchemaModel AdditionalItems { get; set; }
+    public bool PositionalItemsValidation { get; set; }
     public bool AllowAdditionalProperties { get; set; }
+    public bool AllowAdditionalItems { get; set; }
+    public bool UniqueItems { get; set; }
     public IList<JToken> Enum { get; set; }
     public JsonSchemaType Disallow { get; set; }
 
@@ -55,6 +59,7 @@ namespace Newtonsoft.Json.Schema
     {
       Type = JsonSchemaType.Any;
       AllowAdditionalProperties = true;
+      AllowAdditionalItems = true;
       Required = false;
     }
 
@@ -89,13 +94,16 @@ namespace Newtonsoft.Json.Schema
 
       model.MinimumItems = MathUtils.Max(model.MinimumItems, schema.MinimumItems);
       model.MaximumItems = MathUtils.Min(model.MaximumItems, schema.MaximumItems);
+      model.PositionalItemsValidation = model.PositionalItemsValidation || schema.PositionalItemsValidation;
       model.AllowAdditionalProperties = model.AllowAdditionalProperties && schema.AllowAdditionalProperties;
+      model.AllowAdditionalItems = model.AllowAdditionalItems && schema.AllowAdditionalItems;
+      model.UniqueItems = model.UniqueItems || schema.UniqueItems;
       if (schema.Enum != null)
       {
         if (model.Enum == null)
           model.Enum = new List<JToken>();
 
-        model.Enum.AddRangeDistinct(schema.Enum, new JTokenEqualityComparer());
+        model.Enum.AddRangeDistinct(schema.Enum, JToken.EqualityComparer);
       }
       model.Disallow = model.Disallow | (schema.Disallow ?? JsonSchemaType.None);
 

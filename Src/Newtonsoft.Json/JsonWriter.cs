@@ -394,10 +394,20 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Writes the current <see cref="JsonReader"/> token.
+    /// Writes the current <see cref="JsonReader"/> token and its children.
     /// </summary>
     /// <param name="reader">The <see cref="JsonReader"/> to read the token from.</param>
     public void WriteToken(JsonReader reader)
+    {
+      WriteToken(reader, true);
+    }
+
+    /// <summary>
+    /// Writes the current <see cref="JsonReader"/> token.
+    /// </summary>
+    /// <param name="reader">The <see cref="JsonReader"/> to read the token from.</param>
+    /// <param name="writeChildren">A flag indicating whether the current token's children should be written.</param>
+    public void WriteToken(JsonReader reader, bool writeChildren)
     {
       ValidationUtils.ArgumentNotNull(reader, "reader");
 
@@ -410,10 +420,10 @@ namespace Newtonsoft.Json
       else
         initialDepth = reader.Depth;
 
-      WriteToken(reader, initialDepth);
+      WriteToken(reader, initialDepth, writeChildren);
     }
 
-    internal void WriteToken(JsonReader reader, int initialDepth)
+    internal void WriteToken(JsonReader reader, int initialDepth, bool writeChildren)
     {
       do
       {
@@ -499,6 +509,7 @@ namespace Newtonsoft.Json
       while (
         // stop if we have reached the end of the token being read
         initialDepth - 1 < reader.Depth - (IsEndToken(reader.TokenType) ? 1 : 0)
+        && writeChildren
         && reader.Read());
     }
 
@@ -520,7 +531,7 @@ namespace Newtonsoft.Json
       WriteValue(date);
     }
 
-    private bool IsEndToken(JsonToken token)
+    internal static bool IsEndToken(JsonToken token)
     {
       switch (token)
       {
@@ -533,7 +544,7 @@ namespace Newtonsoft.Json
       }
     }
 
-    private bool IsStartToken(JsonToken token)
+    internal static bool IsStartToken(JsonToken token)
     {
       switch (token)
       {

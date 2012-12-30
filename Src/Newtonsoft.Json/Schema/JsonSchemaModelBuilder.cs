@@ -85,11 +85,19 @@ namespace Newtonsoft.Json.Schema
         }
       }
 
+      if (schema.AdditionalItems != null)
+        AddAdditionalItems(currentNode, schema.AdditionalItems);
+
       if (schema.AdditionalProperties != null)
         AddAdditionalProperties(currentNode, schema.AdditionalProperties);
 
       if (schema.Extends != null)
-        currentNode = AddSchema(currentNode, schema.Extends);
+      {
+        foreach (JsonSchema jsonSchema in schema.Extends)
+        {
+          currentNode = AddSchema(currentNode, jsonSchema);
+        }
+      }
 
       return currentNode;
     }
@@ -136,6 +144,11 @@ namespace Newtonsoft.Json.Schema
       parentNode.AdditionalProperties = AddSchema(parentNode.AdditionalProperties, schema);
     }
 
+    public void AddAdditionalItems(JsonSchemaNode parentNode, JsonSchema schema)
+    {
+      parentNode.AdditionalItems = AddSchema(parentNode.AdditionalItems, schema);
+    }
+
     private JsonSchemaModel BuildNodeModel(JsonSchemaNode node)
     {
       JsonSchemaModel model;
@@ -168,6 +181,8 @@ namespace Newtonsoft.Json.Schema
       }
       if (node.AdditionalProperties != null)
         model.AdditionalProperties = BuildNodeModel(node.AdditionalProperties);
+      if (node.AdditionalItems != null)
+        model.AdditionalItems = BuildNodeModel(node.AdditionalItems);
 
       return model;
     }

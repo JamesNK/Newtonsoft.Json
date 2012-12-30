@@ -619,20 +619,6 @@ namespace Newtonsoft.Json.Tests.Schema
         0,
         1,
         -1
-      ],
-      ""options"": [
-        {
-          ""value"": 0,
-          ""label"": ""No""
-        },
-        {
-          ""value"": 1,
-          ""label"": ""Asc""
-        },
-        {
-          ""value"": -1,
-          ""label"": ""Desc""
-        }
       ]
     }
   }

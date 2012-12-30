@@ -1068,12 +1068,12 @@ namespace Newtonsoft.Json.Tests
     }
 
     [Test]
-    public void NoAdditionalProperties()
+    public void NoAdditionalItems()
     {
       string schemaJson = @"{
   ""type"":""array"",
   ""items"": [{""type"":""string""},{""type"":""integer""}],
-  ""additionalProperties"": false
+  ""additionalItems"": false
 }";
 
       string json = @"[1, 'a', null]";

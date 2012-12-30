@@ -1,0 +1,84 @@
+[
+    {
+        "description": "root pointer ref",
+        "schema": {
+            "properties": {
+                "foo": {"$ref": "#"}
+            },
+            "additionalProperties": false
+        },
+        "tests": [
+            {
+                "description": "match",
+                "data": {"foo": false},
+                "valid": true
+            },
+            {
+                "description": "recursive match",
+                "data": {"foo": {"foo": false}},
+                "valid": true
+            },
+            {
+                "description": "mismatch",
+                "data": {"bar": false},
+                "valid": false
+            },
+            {
+                "description": "recursive mismatch",
+                "data": {"foo": {"bar": false}},
+                "valid": false
+            }
+        ]
+    },
+    {
+        "description": "relative pointer ref",
+        "schema": {
+            "properties": {
+                "foo": {"type": "integer"},
+                "bar": {"$ref": "#/properties/foo"}
+            }
+        },
+        "tests": [
+            {
+                "description": "match",
+                "data": {"bar": 3},
+                "valid": true
+            },
+            {
+                "description": "mismatch",
+                "data": {"bar": true},
+                "valid": false
+            }
+        ]
+    },
+    {
+        "description": "escaped pointer ref",
+        "schema": {
+            "tilda~field": {"type": "integer"},
+            "slash/field": {"type": "integer"},
+            "percent%field": {"type": "integer"},
+            "properties": {
+                "tilda": {"$ref": "#/tilda~0field"},
+                "slash": {"$ref": "#/slash~1field"},
+                "percent": {"$ref": "#/percent%25field"}
+            }
+        },
+        "tests": [
+            {
+                "description": "slash",
+                "data": {"slash": "aoeu"},
+                "valid": false
+            },
+            {
+                "description": "tilda",
+                "data": {"tilda": "aoeu"},
+                "valid": false
+            },
+            {
+                "description": "percent",
+                "data": {"percent": "aoeu"},
+                "valid": false
+            }
+        ]
+    }
+]

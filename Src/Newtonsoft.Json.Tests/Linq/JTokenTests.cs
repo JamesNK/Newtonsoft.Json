@@ -949,5 +949,38 @@ namespace Newtonsoft.Json.Tests.Linq
           JToken.Parse(json);
         });
     }
+
+    [Test]
+    public void Path()
+    {
+      JObject o =
+        new JObject(
+          new JProperty("Test1", new JArray(1, 2, 3)),
+          new JProperty("Test2", "Test2Value"),
+          new JProperty("Test3", new JObject(new JProperty("Test1", new JArray(1, new JObject(new JProperty("Test1", 1)), 3)))),
+          new JProperty("Test4", new JConstructor("Date", new JArray(1, 2, 3)))
+          );
+
+      JToken t = o.SelectToken("Test1[0]");
+      Assert.AreEqual("Test1[0]", t.Path);
+
+      t = o.SelectToken("Test2");
+      Assert.AreEqual("Test2", t.Path);
+
+      t = o.SelectToken("");
+      Assert.AreEqual("", t.Path);
+
+      t = o.SelectToken("Test4[0][0]");
+      Assert.AreEqual("Test4[0][0]", t.Path);
+
+      t = o.SelectToken("Test4[0]");
+      Assert.AreEqual("Test4[0]", t.Path);
+
+      t = t.DeepClone();
+      Assert.AreEqual("", t.Path);
+
+      t = o.SelectToken("Test3.Test1[1].Test1");
+      Assert.AreEqual("Test3.Test1[1].Test1", t.Path);
+    }
   }
 }

@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 #if !NETFX_CORE
 using NUnit.Framework;
@@ -361,6 +362,39 @@ namespace Newtonsoft.Json.Tests.Linq
 
       var o = JObject.Parse(json);
       o.Property("DateTimeOffset").Value = dateTimeOffset;
+    }
+
+    public void ParseAndConvertDateTimeOffset()
+    {
+      var json = @"{ d: ""\/Date(0+0100)\/"" }";
+
+      using (var stringReader = new StringReader(json))
+      using (var jsonReader = new JsonTextReader(stringReader))
+      {
+        jsonReader.DateParseHandling = DateParseHandling.DateTimeOffset;
+
+        var obj = JObject.Load(jsonReader);
+        var d = (JValue)obj["d"];
+
+        Assert.IsInstanceOfType(typeof(DateTimeOffset), d.Value);
+        TimeSpan offset = ((DateTimeOffset)d.Value).Offset;
+        Assert.AreEqual(TimeSpan.FromHours(1), offset);
+
+        DateTimeOffset dateTimeOffset = (DateTimeOffset) d;
+        Assert.AreEqual(TimeSpan.FromHours(1), dateTimeOffset.Offset);
+      }
+    }
+
+    public void ReadDatesAsDateTimeOffsetViaJsonConvert()
+    {
+      var content = @"{""startDateTime"":""2012-07-19T14:30:00+09:30""}";
+
+      var jsonSerializerSettings = new JsonSerializerSettings() { DateFormatHandling = DateFormatHandling.IsoDateFormat, DateParseHandling = DateParseHandling.DateTimeOffset, DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind };
+      JObject obj = (JObject)JsonConvert.DeserializeObject(content, jsonSerializerSettings);
+
+      object startDateTime = obj["startDateTime"];
+
+      Assert.IsInstanceOfType(typeof(DateTimeOffset), startDateTime);
     }
 #endif
   }

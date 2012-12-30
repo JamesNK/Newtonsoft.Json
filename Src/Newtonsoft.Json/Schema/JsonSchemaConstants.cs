@@ -32,11 +32,11 @@ namespace Newtonsoft.Json.Schema
     public const string TypePropertyName = "type";
     public const string PropertiesPropertyName = "properties";
     public const string ItemsPropertyName = "items";
+    public const string AdditionalItemsPropertyName = "additionalItems";
     public const string RequiredPropertyName = "required";
     public const string PatternPropertiesPropertyName = "patternProperties";
     public const string AdditionalPropertiesPropertyName = "additionalProperties";
     public const string RequiresPropertyName = "requires";
-    public const string IdentityPropertyName = "identity";
     public const string MinimumPropertyName = "minimum";
     public const string MaximumPropertyName = "maximum";
     public const string ExclusiveMinimumPropertyName = "exclusiveMinimum";
@@ -47,7 +47,6 @@ namespace Newtonsoft.Json.Schema
     public const string MaximumLengthPropertyName = "maxLength";
     public const string MinimumLengthPropertyName = "minLength";
     public const string EnumPropertyName = "enum";
-    public const string OptionsPropertyName = "options";
     public const string ReadOnlyPropertyName = "readonly";
     public const string TitlePropertyName = "title";
     public const string DescriptionPropertyName = "description";
@@ -59,6 +58,7 @@ namespace Newtonsoft.Json.Schema
     public const string DisallowPropertyName = "disallow";
     public const string ExtendsPropertyName = "extends";
     public const string IdPropertyName = "id";
+    public const string UniqueItemsPropertyName = "uniqueItems";
 
     public const string OptionValuePropertyName = "value";
     public const string OptionLabelPropertyName = "label";

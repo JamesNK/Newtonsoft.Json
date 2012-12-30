@@ -95,25 +95,22 @@ and write from your objects.</para>
                 <linkTarget>_blank</linkTarget>
             </externalLink>,
             Microsoft's HTTP service framework.</para>
-  <para><externalLink>
-                <linkText>James Newton-King</linkText>
-                <linkUri>http://twitter.com/jamesnk</linkUri>
-                <linkTarget>_blank</linkTarget>
-            </externalLink></para>
+  <para><markup>
+            <a href="https://twitter.com/JamesNK" class="twitter-follow-button" data-show-count="false" data-lang="en" data-size="large">Follow @JamesNK</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+            </markup></para>
 </content>
 </section>
 
 <section>
  <title>Donate</title>
- <content><para>Json.NET is a free open source project developed in my own time.</para>
- <para>I really appreciate your feedback and donations help support Json.NET and its future development.</para></content>
+ <content><para>Json.NET is a personal open source project. Started in 2006, I have put hundreds of hours adding, refining and tuning Json.NET with the goal to make it not just the best JSON serializer for .NET but the best serializer for any computer language. I need your
+ help to achieve this.</para></content>
 </section>
 
  <markup>
  <p>
- <a target="_blank" href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=james%40newtonking%2ecom&amp;item_name=Supporting%20Json%2eNET&amp;no_shipping=0&amp;no_note=1&amp;tax=0&amp;currency_code=USD&amp;lc=US&amp;bn=PP%2dDonationsBF&amp;charset=UTF%2d8">
-            <img style="border-width:0;" alt="Donate" src="../donate.gif" />
-            </a>
+   <a href="http://www.pledgie.com/campaigns/18941" target="_blank"><img src="http://www.pledgie.com/campaigns/18941.png?skin_name=chrome" alt="Click here to lend your support to: Json.NET and make a donation at www.pledgie.com !" border="0" /></a>
  </p>
  </markup>
     <relatedTopics>

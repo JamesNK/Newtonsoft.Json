@@ -76,6 +76,23 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 
     [Test]
+    public void JObjectCount()
+    {
+      JObject o = new JObject();
+
+      dynamic d = o;
+
+      long? c1 = d.Count;
+
+      o["Count"] = 99;
+
+      long? c2 = d.Count;
+
+      Assert.AreEqual(null, c1);
+      Assert.AreEqual(99, c2);
+    }
+
+    [Test]
     public void JObjectEnumerator()
     {
       JObject o = new JObject(

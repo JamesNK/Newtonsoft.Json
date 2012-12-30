@@ -30,6 +30,7 @@ using System.Dynamic;
 using System.Linq.Expressions;
 #endif
 using System.IO;
+using System.Text;
 using Newtonsoft.Json.Utilities;
 using System.Diagnostics;
 using System.Globalization;
@@ -1698,6 +1699,45 @@ namespace Newtonsoft.Json.Linq
     public JToken DeepClone()
     {
       return CloneToken();
+    }
+
+    public string Path
+    {
+      get
+      {
+        IList<JToken> ancestors = Ancestors().Reverse().ToList();
+        ancestors.Add(this);
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < ancestors.Count; i++)
+        {
+          JToken current = ancestors[i];
+          JToken next = (i + 1 < ancestors.Count) ? ancestors[i + 1] : null;
+          
+          if (next != null)
+          {
+            switch (current.Type)
+            {
+              case JTokenType.Property:
+                JProperty property = (JProperty) current;
+
+                if (sb.Length > 0)
+                  sb.Append(".");
+
+                sb.Append(property.Name);
+                break;
+              case JTokenType.Array:
+              case JTokenType.Constructor:
+                int index = ((IList<JToken>)current).IndexOf(next);
+
+                sb.Append("[" + index + "]");
+                break;
+            }
+          }
+        }
+
+        return sb.ToString();
+      }
     }
   }
 }

@@ -81,5 +81,12 @@ namespace Newtonsoft.Json
     {
     }
 #endif
+
+    internal static JsonException Create(IJsonLineInfo lineInfo, string path, string message)
+    {
+      message = JsonPosition.FormatMessage(lineInfo, path, message);
+
+      return new JsonException(message);
+    }
   }
 }

@@ -37,6 +37,13 @@
         <para>With PreserveReferencesHandling on now only one Person object is created
         on deserialization and the list contains two references to it, mirroring
         what we started with.</para>
+<alert class="note">
+  <para>References cannot be preserved when a value is set via a non-default constructor.
+        With a non-default constructor child values must be created before the parent value so they can be passed into
+        the constructor, making tracking reference impossible.
+        <codeEntityReference>T:System.Runtime.Serialization.ISerializable</codeEntityReference> types are an example
+        of a class whose values are populated with a non-default constructor and won't work with PreserveReferencesHandling.</para>
+</alert>
       </content>
     </section>
     

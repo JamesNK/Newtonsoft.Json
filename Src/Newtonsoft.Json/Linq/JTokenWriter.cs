@@ -173,7 +173,7 @@ namespace Newtonsoft.Json.Linq
       }
       else
       {
-        _value = value;
+        _value = value ?? new JValue((object)null);
       }
     }
 

@@ -91,6 +91,19 @@ namespace Newtonsoft.Json.Schema
           ReferenceOrWriteSchema(schema.AdditionalProperties);
         }
       }
+      if (!schema.AllowAdditionalItems)
+      {
+        _writer.WritePropertyName(JsonSchemaConstants.AdditionalItemsPropertyName);
+        _writer.WriteValue(schema.AllowAdditionalItems);
+      }
+      else
+      {
+        if (schema.AdditionalItems != null)
+        {
+          _writer.WritePropertyName(JsonSchemaConstants.AdditionalItemsPropertyName);
+          ReferenceOrWriteSchema(schema.AdditionalItems);
+        }
+      }
       WriteSchemaDictionaryIfNotNull(_writer, JsonSchemaConstants.PropertiesPropertyName, schema.Properties);
       WriteSchemaDictionaryIfNotNull(_writer, JsonSchemaConstants.PatternPropertiesPropertyName, schema.PatternProperties);
       WriteItems(schema);
@@ -120,30 +133,24 @@ namespace Newtonsoft.Json.Schema
         _writer.WritePropertyName(JsonSchemaConstants.DefaultPropertyName);
         schema.Default.WriteTo(_writer);
       }
-      if (schema.Options != null)
-      {
-        _writer.WritePropertyName(JsonSchemaConstants.OptionsPropertyName);
-        _writer.WriteStartArray();
-        foreach (KeyValuePair<JToken, string> option in schema.Options)
-        {
-          _writer.WriteStartObject();
-          _writer.WritePropertyName(JsonSchemaConstants.OptionValuePropertyName);
-          option.Key.WriteTo(_writer);
-          if (option.Value != null)
-          {
-            _writer.WritePropertyName(JsonSchemaConstants.OptionLabelPropertyName);
-            _writer.WriteValue(option.Value);
-          }
-          _writer.WriteEndObject();
-        }
-        _writer.WriteEndArray();
-      }
       if (schema.Disallow != null)
         WriteType(JsonSchemaConstants.DisallowPropertyName, _writer, schema.Disallow.Value);
-      if (schema.Extends != null)
+      if (schema.Extends != null && schema.Extends.Count > 0)
       {
         _writer.WritePropertyName(JsonSchemaConstants.ExtendsPropertyName);
-        ReferenceOrWriteSchema(schema.Extends);
+        if (schema.Extends.Count == 1)
+        {
+          ReferenceOrWriteSchema(schema.Extends[0]);
+        }
+        else
+        {
+          _writer.WriteStartArray();
+          foreach (JsonSchema jsonSchema in schema.Extends)
+          {
+            ReferenceOrWriteSchema(jsonSchema);
+          }
+          _writer.WriteEndArray();
+        }
       }
       _writer.WriteEndObject();
     }
@@ -165,21 +172,32 @@ namespace Newtonsoft.Json.Schema
 
     private void WriteItems(JsonSchema schema)
     {
-      if (CollectionUtils.IsNullOrEmpty(schema.Items))
+      if (schema.Items == null && !schema.PositionalItemsValidation)
         return;
 
       _writer.WritePropertyName(JsonSchemaConstants.ItemsPropertyName);
 
-      if (schema.Items.Count == 1)
+      if (!schema.PositionalItemsValidation)
       {
-        ReferenceOrWriteSchema(schema.Items[0]);
+        if (schema.Items != null && schema.Items.Count > 0)
+        {
+          ReferenceOrWriteSchema(schema.Items[0]);
+        }
+        else
+        {
+          _writer.WriteStartObject();
+          _writer.WriteEndObject();
+        }
         return;
       }
 
       _writer.WriteStartArray();
-      foreach (JsonSchema itemSchema in schema.Items)
+      if (schema.Items != null)
       {
-        ReferenceOrWriteSchema(itemSchema);
+        foreach (JsonSchema itemSchema in schema.Items)
+        {
+          ReferenceOrWriteSchema(itemSchema);
+        }
       }
       _writer.WriteEndArray();
     }

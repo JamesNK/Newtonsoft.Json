@@ -864,5 +864,24 @@ keyword such as type of business.""
       JArray a = JArray.Parse(json);
       Assert.AreEqual("hi!", (string)a[0]);
     }
+
+#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
+    [Test]
+    public void ExceptionFromOverloadWithJValue()
+    {
+      dynamic name = new JValue("Matthew Doig");
+
+      IDictionary<string, string> users = new Dictionary<string, string>();
+
+      // unfortunatly there doesn't appear to be a way around this
+      ExceptionAssert.Throws<Microsoft.CSharp.RuntimeBinder.RuntimeBinderException>("The best overloaded method match for 'System.Collections.Generic.IDictionary<string,string>.Add(string, string)' has some invalid arguments",
+        () =>
+          {
+            users.Add("name2", name);
+
+            Assert.AreEqual(users["name2"], "Matthew Doig");
+          });
+    }
+#endif
   }
 }

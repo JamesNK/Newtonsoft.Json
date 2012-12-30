@@ -42,6 +42,7 @@ namespace Newtonsoft.Json.Schema
     public Dictionary<string, JsonSchemaNode> PatternProperties { get; private set; }
     public List<JsonSchemaNode> Items { get; private set; }
     public JsonSchemaNode AdditionalProperties { get; set; }
+    public JsonSchemaNode AdditionalItems { get; set; }
 
     public JsonSchemaNode(JsonSchema schema)
     {
@@ -60,6 +61,7 @@ namespace Newtonsoft.Json.Schema
       PatternProperties = new Dictionary<string, JsonSchemaNode>(source.PatternProperties);
       Items = new List<JsonSchemaNode>(source.Items);
       AdditionalProperties = source.AdditionalProperties;
+      AdditionalItems = source.AdditionalItems;
 
       Id = GetId(Schemas);
     }

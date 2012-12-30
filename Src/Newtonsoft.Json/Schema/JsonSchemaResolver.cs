@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+using System;
 using System.Collections.Generic;
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
@@ -52,13 +53,17 @@ namespace Newtonsoft.Json.Schema
     }
 
     /// <summary>
-    /// Gets a <see cref="JsonSchema"/> for the specified id.
+    /// Gets a <see cref="JsonSchema"/> for the specified reference.
     /// </summary>
-    /// <param name="id">The id.</param>
-    /// <returns>A <see cref="JsonSchema"/> for the specified id.</returns>
-    public virtual JsonSchema GetSchema(string id)
+    /// <param name="reference">The id.</param>
+    /// <returns>A <see cref="JsonSchema"/> for the specified reference.</returns>
+    public virtual JsonSchema GetSchema(string reference)
     {
-      JsonSchema schema = LoadedSchemas.SingleOrDefault(s => s.Id == id);
+      JsonSchema schema = LoadedSchemas.SingleOrDefault(s => string.Equals(s.Id, reference, StringComparison.Ordinal));
+
+      if (schema == null)
+        schema = LoadedSchemas.SingleOrDefault(s => string.Equals(s.Location, reference, StringComparison.Ordinal));
+
       return schema;
     }
   }
