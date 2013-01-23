@@ -565,5 +565,85 @@ namespace Newtonsoft.Json.Tests.Schema
       Assert.AreEqual(JsonSchemaType.Object, schema.Properties["slash"].Type);
       Assert.AreEqual(JsonSchemaType.Array, schema.Properties["percent"].Type);
     }
+
+    [Test]
+    public void References_Array()
+    {
+      string json = @"{
+            ""array"": [{""type"": ""integer""},{""prop"":{""type"": ""object""}}],
+            ""properties"": {
+                ""array"": {""$ref"": ""#/array/0""},
+                ""arrayprop"": {""$ref"": ""#/array/1/prop""}
+            }
+        }";
+
+      JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
+      JsonSchema schema = builder.Read(new JsonTextReader(new StringReader(json)));
+
+      Assert.AreEqual(JsonSchemaType.Integer, schema.Properties["array"].Type);
+      Assert.AreEqual(JsonSchemaType.Object, schema.Properties["arrayprop"].Type);
+    }
+
+    [Test]
+    public void References_IndexTooBig()
+    {
+      // JsonException : Could not resolve schema reference '#/array/10'.
+
+      string json = @"{
+            ""array"": [{""type"": ""integer""},{""prop"":{""type"": ""object""}}],
+            ""properties"": {
+                ""array"": {""$ref"": ""#/array/0""},
+                ""arrayprop"": {""$ref"": ""#/array/10""}
+            }
+        }";
+
+      ExceptionAssert.Throws<JsonException>(
+        "Could not resolve schema reference '#/array/10'.",
+        () =>
+          {
+            JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
+            builder.Read(new JsonTextReader(new StringReader(json)));
+          });
+    }
+
+    [Test]
+    public void References_IndexNegative()
+    {
+      string json = @"{
+            ""array"": [{""type"": ""integer""},{""prop"":{""type"": ""object""}}],
+            ""properties"": {
+                ""array"": {""$ref"": ""#/array/0""},
+                ""arrayprop"": {""$ref"": ""#/array/-1""}
+            }
+        }";
+
+      ExceptionAssert.Throws<JsonException>(
+        "Could not resolve schema reference '#/array/-1'.",
+        () =>
+        {
+          JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
+          builder.Read(new JsonTextReader(new StringReader(json)));
+        });
+    }
+
+    [Test]
+    public void References_IndexNotInteger()
+    {
+      string json = @"{
+            ""array"": [{""type"": ""integer""},{""prop"":{""type"": ""object""}}],
+            ""properties"": {
+                ""array"": {""$ref"": ""#/array/0""},
+                ""arrayprop"": {""$ref"": ""#/array/one""}
+            }
+        }";
+
+      ExceptionAssert.Throws<JsonException>(
+        "Could not resolve schema reference '#/array/one'.",
+        () =>
+        {
+          JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
+          builder.Read(new JsonTextReader(new StringReader(json)));
+        });
+    }
   }
 }

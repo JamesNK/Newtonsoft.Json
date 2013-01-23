@@ -120,7 +120,7 @@ namespace Newtonsoft.Json.Schema
               else if (currentToken.Type == JTokenType.Array || currentToken.Type == JTokenType.Constructor)
               {
                 int index;
-                if (int.TryParse(part, out index))
+                if (int.TryParse(part, out index) && index >= 0 && index < currentToken.Count())
                   currentToken = currentToken[index];
                 else
                   currentToken = null;

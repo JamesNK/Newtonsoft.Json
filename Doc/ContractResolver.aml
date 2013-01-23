@@ -58,7 +58,7 @@
         <linkText>conditional serialization for a property</linkText>
         <linkUri>ConditionalProperties.htm</linkUri>
         <linkTarget>_self</linkTarget>
-      </externalLink> using an IContractResolver. This is useful if you want to conditional serialize a property but don't want to add additional methods to your type.</para>
+      </externalLink> using an IContractResolver. This is useful if you want to conditionally serialize a property but don't want to add additional methods to your type.</para>
       </content>
     </section>
     <relatedTopics>

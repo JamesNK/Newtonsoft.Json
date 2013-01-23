@@ -54,6 +54,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -118,6 +119,76 @@
     <Compile Include="Converters\VersionConverterTests.cs" />
     <Compile Include="Documentation\ConvertingJsonAndXmlTests.cs" />
     <Compile Include="Documentation\ConditionalPropertiesTests.cs" />
+    <Compile Include="Documentation\Examples\DeserializeFromBson.cs" />
+    <Compile Include="Documentation\Examples\DeserializeFromBsonCollection.cs" />
+    <Compile Include="Documentation\Examples\Linq\Clone.cs" />
+    <Compile Include="Documentation\Examples\Linq\CreateJsonDynamic.cs" />
+    <Compile Include="Documentation\Examples\Linq\QueryJsonDynamic.cs" />
+    <Compile Include="Documentation\Examples\Linq\SerializeWithLinq.cs" />
+    <Compile Include="Documentation\Examples\Linq\CreateJsonCollectionInitializer.cs" />
+    <Compile Include="Documentation\Examples\Linq\CreateReader.cs" />
+    <Compile Include="Documentation\Examples\Linq\CreateWriter.cs" />
+    <Compile Include="Documentation\Examples\Linq\DeepEquals.cs" />
+    <Compile Include="Documentation\Examples\Linq\DeserializeWithLinq.cs" />
+    <Compile Include="Documentation\Examples\Linq\FromObject.cs" />
+    <Compile Include="Documentation\Examples\Linq\CreateJsonJTokenWriter.cs" />
+    <Compile Include="Documentation\Examples\Linq\JObjectProperties.cs" />
+    <Compile Include="Documentation\Examples\Linq\JValueValue.cs" />
+    <Compile Include="Documentation\Examples\Linq\ModifyJson.cs" />
+    <Compile Include="Documentation\Examples\Linq\ToObjectComplex.cs" />
+    <Compile Include="Documentation\Examples\Linq\ToObjectGeneric.cs" />
+    <Compile Include="Documentation\Examples\Linq\JValueCast.cs" />
+    <Compile Include="Documentation\Examples\Linq\ParseJsonAny.cs" />
+    <Compile Include="Documentation\Examples\Linq\ParseJsonArray.cs" />
+    <Compile Include="Documentation\Examples\Linq\CreateJsonAnonymousObject.cs" />
+    <Compile Include="Documentation\Examples\Linq\CreateJsonDeclaratively.cs" />
+    <Compile Include="Documentation\Examples\Linq\CreateJsonManually.cs" />
+    <Compile Include="Documentation\Examples\Linq\ParseJsonObject.cs" />
+    <Compile Include="Documentation\Examples\Linq\ToObjectType.cs" />
+    <Compile Include="Documentation\Examples\Linq\ToString.cs" />
+    <Compile Include="Documentation\Examples\Linq\ToStringJsonConverter.cs" />
+    <Compile Include="Documentation\Examples\Linq\WriteToJsonFile.cs" />
+    <Compile Include="Documentation\Examples\Linq\ReadJson.cs" />
+    <Compile Include="Documentation\Examples\SerializeDictionary.cs" />
+    <Compile Include="Documentation\Examples\CustomContractResolver.cs" />
+    <Compile Include="Documentation\Examples\DataContractAndDataMember.cs" />
+    <Compile Include="Documentation\Examples\DefaultValueAttributeIgnore.cs" />
+    <Compile Include="Documentation\Examples\DefaultValueHandlingIgnore.cs" />
+    <Compile Include="Documentation\Examples\DeserializeAnonymousType.cs" />
+    <Compile Include="Documentation\Examples\DeserializeConstructorHandling.cs" />
+    <Compile Include="Documentation\Examples\DeserializeMissingMemberHandling.cs" />
+    <Compile Include="Documentation\Examples\DeserializeWithJsonSerializerToFile.cs" />
+    <Compile Include="Documentation\Examples\DeserializeCollection.cs" />
+    <Compile Include="Documentation\Examples\DeserializeDictionary.cs" />
+    <Compile Include="Documentation\Examples\DeserializeObject.cs" />
+    <Compile Include="Documentation\Examples\ErrorHandlingEvent.cs" />
+    <Compile Include="Documentation\Examples\JsonConverterAttributeClass.cs" />
+    <Compile Include="Documentation\Examples\JsonObjectAttributeOptIn.cs" />
+    <Compile Include="Documentation\Examples\JsonPropertyName.cs" />
+    <Compile Include="Documentation\Examples\JsonPropertyOrder.cs" />
+    <Compile Include="Documentation\Examples\JsonPropertyItemLevelSetting.cs" />
+    <Compile Include="Documentation\Examples\JsonPropertyPropertyLevelSetting.cs" />
+    <Compile Include="Documentation\Examples\JsonPropertyRequired.cs" />
+    <Compile Include="Documentation\Examples\NullValueHandlingIgnore.cs" />
+    <Compile Include="Documentation\Examples\PopulateObject.cs" />
+    <Compile Include="Documentation\Examples\PropertyJsonIgnore.cs" />
+    <Compile Include="Documentation\Examples\ReferenceLoopHandlingIgnore.cs" />
+    <Compile Include="Documentation\Examples\ReferenceLoopHandlingObject.cs" />
+    <Compile Include="Documentation\Examples\SerializationCallbackAttributes.cs" />
+    <Compile Include="Documentation\Examples\DeserializeCustomCreationConverter.cs" />
+    <Compile Include="Documentation\Examples\SerializeContractResolver.cs" />
+    <Compile Include="Documentation\Examples\SerializeDateTimeZoneHandling.cs" />
+    <Compile Include="Documentation\Examples\JsonConverterAttributeProperty.cs" />
+    <Compile Include="Documentation\Examples\SerializeSerializationBinder.cs" />
+    <Compile Include="Documentation\Examples\SerializeCollection.cs" />
+    <Compile Include="Documentation\Examples\SerializeDateFormatHandling.cs" />
+    <Compile Include="Documentation\Examples\SerializeObject.cs" />
+    <Compile Include="Documentation\Examples\SerializeToBson.cs" />
+    <Compile Include="Documentation\Examples\SerializeTypeNameHandling.cs" />
+    <Compile Include="Documentation\Examples\SerializeUnindentedJson.cs" />
+    <Compile Include="Documentation\Examples\SerializeWithJsonConverters.cs" />
+    <Compile Include="Documentation\Examples\SerializeWithJsonSerializerToFile.cs" />
+    <Compile Include="Documentation\Examples\TraceWriter.cs" />
     <Compile Include="Documentation\TraceWriterTests.cs" />
     <Compile Include="Documentation\JsonNetVsWindowsDataJsonTests.cs" />
     <Compile Include="Documentation\PerformanceTests.cs" />

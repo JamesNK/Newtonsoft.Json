@@ -981,6 +981,11 @@ namespace Newtonsoft.Json.Tests.Linq
 
       t = o.SelectToken("Test3.Test1[1].Test1");
       Assert.AreEqual("Test3.Test1[1].Test1", t.Path);
+
+      JArray a = new JArray(1);
+      Assert.AreEqual("", a.Path);
+      
+      Assert.AreEqual("[0]", a[0].Path);
     }
   }
 }

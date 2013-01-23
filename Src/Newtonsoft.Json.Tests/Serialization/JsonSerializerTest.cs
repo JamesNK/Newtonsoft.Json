@@ -7216,6 +7216,108 @@ Parameter name: value",
   }
 }", json);
     }
+
+    [Test]
+    public void DeserializeDecimal()
+    {
+      JsonTextReader reader = new JsonTextReader(new StringReader("1234567890.123456"));
+      var settings = new JsonSerializerSettings();
+      var serialiser = JsonSerializer.Create(settings);
+      decimal? d = serialiser.Deserialize<decimal?>(reader);
+
+      Assert.AreEqual(1234567890.123456m, d);
+    }
+
+    [Test]
+    public void DontSerializeStaticFields()
+    {
+      string json =
+        JsonConvert.SerializeObject(new AnswerFilterModel(), Formatting.Indented, new JsonSerializerSettings
+          {
+            ContractResolver = new DefaultContractResolver
+              {
+                IgnoreSerializableAttribute = false
+              }
+          });
+
+      Assert.AreEqual(@"{
+  ""<Active>k__BackingField"": false,
+  ""<Ja>k__BackingField"": false,
+  ""<Handlungsbedarf>k__BackingField"": false,
+  ""<Beratungsbedarf>k__BackingField"": false,
+  ""<Unzutreffend>k__BackingField"": false,
+  ""<Unbeantwortet>k__BackingField"": false
+}", json);
+    }
+  }
+
+  public enum Antworten
+  {
+    First,
+    Second
+  }
+
+  public class SelectListItem
+  {
+    public string Text { get; set; }
+    public string Value { get; set; }
+    public bool Selected { get; set; }
+  }
+
+  [Serializable]
+  public class AnswerFilterModel
+  {
+    [NonSerialized]
+    private readonly IList answerValues;
+
+    /// <summary>
+    /// Initializes a new instance of the  class.
+    /// </summary>
+    public AnswerFilterModel()
+    {
+      this.answerValues = (from answer in Enum.GetNames(typeof(Antworten))
+                           select new SelectListItem { Text = answer, Value = answer, Selected = false })
+                           .ToList();
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether active.
+    /// </summary>
+    public bool Active { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether ja.
+    /// nach bisherigen Antworten.
+    /// </summary>
+    public bool Ja { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether handlungsbedarf.
+    /// </summary>
+    public bool Handlungsbedarf { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether beratungsbedarf.
+    /// </summary>
+    public bool Beratungsbedarf { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether unzutreffend.
+    /// </summary>
+    public bool Unzutreffend { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether unbeantwortet.
+    /// </summary>
+    public bool Unbeantwortet { get; set; }
+
+    /// <summary>
+    /// Gets the answer values.
+    /// </summary>
+    public IEnumerable AnswerValues
+    {
+      get { return this.answerValues; }
+    }
   }
 
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)

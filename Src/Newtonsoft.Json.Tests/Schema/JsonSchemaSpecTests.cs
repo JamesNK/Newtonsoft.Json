@@ -54,8 +54,6 @@ namespace Newtonsoft.Json.Tests.Schema
       string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
       string baseTestPath = Path.Combine(baseDirectory, "Schema", "Specs");
 
-      Console.WriteLine("Loading JSON Schema tests from " + baseTestPath);
-
       string[] testFiles = Directory.GetFiles(baseTestPath, "*.json", SearchOption.AllDirectories);
 
       // read through each of the *.json test files and extract the test details

@@ -201,7 +201,7 @@ namespace Newtonsoft.Json.Schema
     /// <value>The format.</value>
     public string Format { get; set; }
 
-    public string Location { get; set; }
+    internal string Location { get; set; }
 
     private readonly string _internalId = Guid.NewGuid().ToString("N");
 

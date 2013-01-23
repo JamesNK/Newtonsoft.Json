@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json.Linq;
@@ -117,6 +118,89 @@ namespace Newtonsoft.Json.Tests.Schema
     }
   }
 }", writtenJson);
+    }
+
+    [Test]
+    public void Extends_Multiple()
+    {
+      string json = @"{
+  ""type"":""object"",
+  ""extends"":{""type"":""string""},
+  ""additionalProperties"":{""type"":""string""}
+}";
+
+      JsonSchema s = JsonSchema.Parse(json);
+
+      StringWriter writer = new StringWriter();
+      JsonTextWriter jsonWriter = new JsonTextWriter(writer);
+      jsonWriter.Formatting = Formatting.Indented;
+
+      string newJson = s.ToString();
+
+      Assert.AreEqual(@"{
+  ""type"": ""object"",
+  ""additionalProperties"": {
+    ""type"": ""string""
+  },
+  ""extends"": {
+    ""type"": ""string""
+  }
+}", newJson);
+      
+
+      json = @"{
+  ""type"":""object"",
+  ""extends"":[{""type"":""string""}],
+  ""additionalProperties"":{""type"":""string""}
+}";
+
+      s = JsonSchema.Parse(json);
+
+      writer = new StringWriter();
+      jsonWriter = new JsonTextWriter(writer);
+      jsonWriter.Formatting = Formatting.Indented;
+
+      newJson = s.ToString();
+
+      Assert.AreEqual(@"{
+  ""type"": ""object"",
+  ""additionalProperties"": {
+    ""type"": ""string""
+  },
+  ""extends"": {
+    ""type"": ""string""
+  }
+}", newJson);
+
+
+      json = @"{
+  ""type"":""object"",
+  ""extends"":[{""type"":""string""},{""type"":""object""}],
+  ""additionalProperties"":{""type"":""string""}
+}";
+
+      s = JsonSchema.Parse(json);
+
+      writer = new StringWriter();
+      jsonWriter = new JsonTextWriter(writer);
+      jsonWriter.Formatting = Formatting.Indented;
+
+      newJson = s.ToString();
+
+      Assert.AreEqual(@"{
+  ""type"": ""object"",
+  ""additionalProperties"": {
+    ""type"": ""string""
+  },
+  ""extends"": [
+    {
+      ""type"": ""string""
+    },
+    {
+      ""type"": ""object""
+    }
+  ]
+}", newJson);
     }
 
     [Test]

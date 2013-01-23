@@ -96,11 +96,13 @@ namespace Newtonsoft.Json.Tests
   {
     public static void IsInstanceOfType(Type t, object instance)
     {
-#if !NETFX_CORE
+#if (WINDOWS_PHONE || SILVERLIGHT)
       Assert.IsInstanceOfType(t, instance);
-#else
+#elif NETFX_CORE
       if (!instance.GetType().IsAssignableFrom(t))
-        throw new Exception("Blah");
+        throw new Exception("Not instance of type");
+#else
+      Assert.IsInstanceOf(t, instance);
 #endif
     }
 

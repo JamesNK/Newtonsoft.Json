@@ -216,7 +216,7 @@ namespace Newtonsoft.Json.Tests.Converters
       Assert.AreEqual("shoes", table.Rows[2]["item"]);
       Assert.AreEqual(49.99, (double)table.Rows[0]["price"], 0.01);
       Assert.AreEqual(54.99, (double)table.Rows[1]["price"], 0.01);
-      Assert.IsInstanceOfType(typeof(System.DBNull), table.Rows[2]["price"]);
+      CustomAssert.IsInstanceOfType(typeof(System.DBNull), table.Rows[2]["price"]);
     }
 
     [Test]
@@ -232,7 +232,7 @@ namespace Newtonsoft.Json.Tests.Converters
       Assert.AreEqual("shoes", table.Rows[2]["item"]);
       Assert.AreEqual(49.99, (double)table.Rows[0]["price"], 0.01);
       Assert.AreEqual(54.99, (double)table.Rows[1]["price"], 0.01);
-      Assert.IsInstanceOfType(typeof(System.DBNull), table.Rows[2]["price"]);
+      CustomAssert.IsInstanceOfType(typeof(System.DBNull), table.Rows[2]["price"]);
     }
 
     [Test]

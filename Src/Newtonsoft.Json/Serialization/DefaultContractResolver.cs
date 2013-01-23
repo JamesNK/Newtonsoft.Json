@@ -319,7 +319,8 @@ namespace Newtonsoft.Json.Serialization
         // serialize all fields
         foreach (MemberInfo member in allMembers)
         {
-          if (member.MemberType() == MemberTypes.Field)
+          FieldInfo field = member as FieldInfo;
+          if (field != null && !field.IsStatic)
             serializableMembers.Add(member);
         }
       }

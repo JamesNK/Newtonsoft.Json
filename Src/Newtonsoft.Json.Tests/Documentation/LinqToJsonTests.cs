@@ -56,6 +56,21 @@ namespace Newtonsoft.Json.Tests.Documentation
     {
       return null;
     }
+
+    public static StreamWriter CreateText(string path)
+    {
+      return null;
+    }
+
+    public static void WriteAllText(string path, string contents)
+    {
+      Console.WriteLine(contents);
+    }
+
+    public static string ReadAllText(string path)
+    {
+      return null;
+    }
   }
 
   public class LinqToJsonTests
