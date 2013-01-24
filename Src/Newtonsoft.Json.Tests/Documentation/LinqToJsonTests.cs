@@ -306,7 +306,7 @@ namespace Newtonsoft.Json.Tests.Documentation
 
       #region LinqToJsonQuerying
       var postTitles =
-        from p in rss["channel"]["item"].Children()
+        from p in rss["channel"]["item"]
         select (string)p["title"];
 
       foreach (var item in postTitles)

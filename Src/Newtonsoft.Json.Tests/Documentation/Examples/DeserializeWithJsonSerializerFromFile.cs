@@ -7,7 +7,7 @@ using File = System.IO.File;
 
 namespace Newtonsoft.Json.Tests.Documentation.Examples
 {
-  public class DeserializeWithJsonSerializerToFile
+  public class DeserializeWithJsonSerializerFromFile
   {
     public class Movie
     {

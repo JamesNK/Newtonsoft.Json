@@ -46,6 +46,26 @@ namespace Newtonsoft.Json.Tests.Linq
   public class JArrayTests : TestFixtureBase
   {
     [Test]
+    public void RemoveSpecificAndRemoveSelf()
+    {
+      JObject o = new JObject
+      {
+        {"results", new JArray(1, 2, 3, 4)}
+      };
+
+      JArray a = (JArray)o["results"];
+
+      var last = a.Last();
+
+      Assert.IsTrue(a.Remove(last));
+
+      last = a.Last();
+      last.Remove();
+
+      Assert.AreEqual(2, a.Count);
+    }
+
+    [Test]
     public void Clear()
     {
       JArray a = new JArray {1};

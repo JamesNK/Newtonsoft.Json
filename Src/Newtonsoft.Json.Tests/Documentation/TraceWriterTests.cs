@@ -53,40 +53,40 @@ using System.Globalization;
 
 namespace Newtonsoft.Json.Tests.Documentation
 {
+  public class LogEventInfo
+  {
+    public LogLevel Level;
+    public string Message;
+    public Exception Exception;
+  }
+
+  public class LogLevel
+  {
+    public static LogLevel Info;
+    public static LogLevel Trace;
+    public static LogLevel Error;
+    public static LogLevel Warn;
+    public static LogLevel Off;
+  }
+
+  public class Logger
+  {
+    public void Log(LogEventInfo logEvent)
+    {
+    }
+  }
+
+  public static class LogManager
+  {
+    public static Logger GetLogger(string className)
+    {
+      return new Logger();
+    }
+  }
+  
   [TestFixture]
   public class TraceWriterTests : TestFixtureBase
   {
-    public class LogEventInfo
-    {
-      public LogLevel Level;
-      public string Message;
-      public Exception Exception;
-    }
-
-    public class LogLevel
-    {
-      public static LogLevel Info;
-      public static LogLevel Trace;
-      public static LogLevel Error;
-      public static LogLevel Warn;
-      public static LogLevel Off;
-    }
-
-    public class Logger
-    {
-      public void Log(LogEventInfo logEvent)
-      { 
-      }
-    }
-
-    public static class LogManager
-    {
-      public static Logger GetLogger(string className)
-      {
-        return new Logger();
-      }
-    }
-
     #region CustomTraceWriterExample
     public class NLogTraceWriter : ITraceWriter
     {
