@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace Newtonsoft.Json.Tests.Documentation.Examples
+namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class CustomTraceWriter
   {

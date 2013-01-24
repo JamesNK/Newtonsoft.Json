@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 
-namespace Newtonsoft.Json.Tests.Documentation.Examples
+namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class ErrorHandlingAttribute
   {

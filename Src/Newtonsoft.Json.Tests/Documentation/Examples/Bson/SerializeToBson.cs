@@ -6,7 +6,7 @@ using System.Text;
 using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Linq;
 
-namespace Newtonsoft.Json.Tests.Documentation.Examples
+namespace Newtonsoft.Json.Tests.Documentation.Examples.Bson
 {
   public class SerializeToBson
   {

@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Newtonsoft.Json.Tests.Documentation.Examples
+namespace Newtonsoft.Json.Tests.Documentation.Examples.Json
 {
   public class ReadJsonWithJsonTextReader
   {

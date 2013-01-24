@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Bson;
 
-namespace Newtonsoft.Json.Tests.Documentation.Examples
+namespace Newtonsoft.Json.Tests.Documentation.Examples.Bson
 {
   public class DeserializeFromBsonCollection
   {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Newtonsoft.Json.Tests.Documentation.Examples
+namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class NullValueHandlingIgnore
   {
@@ -35,7 +35,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples
 
       string jsonIgnoreNullValues = JsonConvert.SerializeObject(person, Formatting.Indented, new JsonSerializerSettings
         {
-          NullValueHandling = Json.NullValueHandling.Ignore
+          NullValueHandling = NullValueHandling.Ignore
         });
 
       Console.WriteLine(jsonIgnoreNullValues);
