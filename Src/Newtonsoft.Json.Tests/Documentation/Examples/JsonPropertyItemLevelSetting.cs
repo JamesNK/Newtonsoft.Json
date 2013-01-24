@@ -31,7 +31,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples
       };
       Employee worker = new Employee
       {
-        Name = "Mabae",
+        Name = "Maeby",
         Manager = manager
       };
 
@@ -58,7 +58,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples
       //     },
       //     {
       //       "$id": "2",
-      //       "Name": "Mabae",
+      //       "Name": "Maeby",
       //       "Manager": {
       //         "$ref": "1"
       //       }

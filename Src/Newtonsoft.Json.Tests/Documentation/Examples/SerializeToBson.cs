@@ -20,26 +20,21 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples
     {
       Event e = new Event
         {
-          Name = "Movie premier",
+          Name = "Movie Premiere",
           StartDate = new DateTime(2013, 1, 22, 20, 30, 0)
-        };
-
-      IList<Event> es = new List<Event>
-        {
-          e, e
         };
 
       MemoryStream ms = new MemoryStream();
       using (BsonWriter writer = new BsonWriter(ms))
       {
         JsonSerializer serializer = new JsonSerializer();
-        serializer.Serialize(writer, es);
+        serializer.Serialize(writer, e);
       }
 
       string data = Convert.ToBase64String(ms.ToArray());
       
       Console.WriteLine(data);
-      // MAAAAAJOYW1lAA4AAABNb3ZpZSBwcmVtaWVyAAlTdGFydERhdGUAwOApYTwBAAAA
+      // MQAAAAJOYW1lAA8AAABNb3ZpZSBQcmVtaWVyZQAJU3RhcnREYXRlAMDgKWE8AQAAAA==
     }
   }
 }

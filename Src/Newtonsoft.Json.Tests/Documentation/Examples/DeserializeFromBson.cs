@@ -17,7 +17,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples
 
     public void Example()
     {
-      byte[] data = Convert.FromBase64String("MAAAAAJOYW1lAA4AAABNb3ZpZSBwcmVtaWVyAAlTdGFydERhdGUAwOApYTwBAAAA");
+      byte[] data = Convert.FromBase64String("MQAAAAJOYW1lAA8AAABNb3ZpZSBQcmVtaWVyZQAJU3RhcnREYXRlAMDgKWE8AQAAAA==");
 
       MemoryStream ms = new MemoryStream(data);
       using (BsonReader reader = new BsonReader(ms))
@@ -27,7 +27,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples
         Event e = serializer.Deserialize<Event>(reader);
 
         Console.WriteLine(e.Name);
-        // Movie premier
+        // Movie Premiere
       }
     }
   }

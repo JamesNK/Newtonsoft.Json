@@ -122,15 +122,19 @@
     <Compile Include="Documentation\Examples\ConvertJsonToXml.cs" />
     <Compile Include="Documentation\Examples\ConvertXmlToJson.cs" />
     <Compile Include="Documentation\Examples\ConvertXmlToJsonForceArray.cs" />
+    <Compile Include="Documentation\Examples\DeserializeDataSet.cs" />
+    <Compile Include="Documentation\Examples\JsonObjectAttributeOverrideIEnumerable.cs" />
     <Compile Include="Documentation\Examples\CustomJsonConverter.cs" />
     <Compile Include="Documentation\Examples\CustomTraceWriter.cs" />
     <Compile Include="Documentation\Examples\DeserializeFromBson.cs" />
     <Compile Include="Documentation\Examples\DeserializeFromBsonCollection.cs" />
+    <Compile Include="Documentation\Examples\DeserializeObjectCreationHandling.cs" />
     <Compile Include="Documentation\Examples\ErrorHandlingAttribute.cs" />
     <Compile Include="Documentation\Examples\Linq\QueryJsonLinq.cs" />
     <Compile Include="Documentation\Examples\Linq\QueryJson.cs" />
     <Compile Include="Documentation\Examples\Linq\QueryJsonSelectTokenWithLinq.cs" />
     <Compile Include="Documentation\Examples\Linq\QueryJsonSelectToken.cs" />
+    <Compile Include="Documentation\Examples\MaxDepth.cs" />
     <Compile Include="Documentation\Examples\ReadJsonWithJsonTextReader.cs" />
     <Compile Include="Documentation\Examples\Schema\JTokenValidateWithEvent.cs" />
     <Compile Include="Documentation\Examples\Schema\JTokenIsValidWithMessages.cs" />
@@ -172,6 +176,7 @@
     <Compile Include="Documentation\Examples\Linq\WriteToJsonFile.cs" />
     <Compile Include="Documentation\Examples\Linq\ReadJson.cs" />
     <Compile Include="Documentation\Examples\Schema\LoadJsonSchemaFromFile.cs" />
+    <Compile Include="Documentation\Examples\SerializeDataSet.cs" />
     <Compile Include="Documentation\Examples\SerializeDictionary.cs" />
     <Compile Include="Documentation\Examples\CustomContractResolver.cs" />
     <Compile Include="Documentation\Examples\DataContractAndDataMember.cs" />
@@ -202,6 +207,7 @@
     <Compile Include="Documentation\Examples\SerializeContractResolver.cs" />
     <Compile Include="Documentation\Examples\SerializeDateTimeZoneHandling.cs" />
     <Compile Include="Documentation\Examples\JsonConverterAttributeProperty.cs" />
+    <Compile Include="Documentation\Examples\SerializeRawJson.cs" />
     <Compile Include="Documentation\Examples\SerializeSerializationBinder.cs" />
     <Compile Include="Documentation\Examples\SerializeCollection.cs" />
     <Compile Include="Documentation\Examples\SerializeDateFormatHandling.cs" />

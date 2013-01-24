@@ -7228,6 +7228,7 @@ Parameter name: value",
       Assert.AreEqual(1234567890.123456m, d);
     }
 
+#if !(PORTABLE || SILVERLIGHT || NETFX_CORE || WINDOWS_PHONE)
     [Test]
     public void DontSerializeStaticFields()
     {
@@ -7249,6 +7250,7 @@ Parameter name: value",
   ""<Unbeantwortet>k__BackingField"": false
 }", json);
     }
+#endif
   }
 
   public enum Antworten
@@ -7264,6 +7266,7 @@ Parameter name: value",
     public bool Selected { get; set; }
   }
 
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
   [Serializable]
   public class AnswerFilterModel
   {
@@ -7320,7 +7323,6 @@ Parameter name: value",
     }
   }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
   [Serializable]
   public class PersonSerializable
   {
