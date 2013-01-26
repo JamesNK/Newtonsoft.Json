@@ -7,6 +7,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class DefaultValueHandlingIgnore
   {
+    #region Types
     public class Person
     {
       public string Name { get; set; }
@@ -14,9 +15,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       public Person Partner { get; set; }
       public decimal? Salary { get; set; }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       Person person = new Person();
 
       string jsonIncludeDefaultValues = JsonConvert.SerializeObject(person, Formatting.Indented);
@@ -36,6 +39,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 
       Console.WriteLine(jsonIgnoreDefaultValues);
       // {}
+      #endregion
     }
   }
 }

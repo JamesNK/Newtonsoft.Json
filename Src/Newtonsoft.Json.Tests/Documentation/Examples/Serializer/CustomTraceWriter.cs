@@ -9,6 +9,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class CustomTraceWriter
   {
+    #region Types
     public class NLogTraceWriter : ITraceWriter
     {
       private static readonly Logger Logger = LogManager.GetLogger("NLogTraceWriter");
@@ -49,9 +50,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
         }
       }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       IList<string> countries = new List<string>
         {
           "New Zealand",
@@ -72,6 +75,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       //   "Denmark",
       //   "China"
       // ]
+      #endregion
     }
   }
 }

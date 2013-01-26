@@ -7,6 +7,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class SerializeDateTimeZoneHandling
   {
+    #region Types
     public class Flight
     {
       public string Destination { get; set; }
@@ -15,9 +16,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       public DateTime DepartureDateLocal { get; set; }
       public TimeSpan Duration { get; set; }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       Flight flight = new Flight
         {
           Destination = "Dubai",
@@ -82,6 +85,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       //   "DepartureDateLocal": "2013-01-21T00:00:00",
       //   "Duration": "05:30:00"
       // }
+      #endregion
     }
   }
 }

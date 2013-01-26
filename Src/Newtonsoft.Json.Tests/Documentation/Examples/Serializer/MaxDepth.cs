@@ -9,12 +9,13 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
   {
     public void Example()
     {
+      #region Usage
       string json = @"[
         [
           [
-            ""1"",
-            ""Two"",
-            ""III""
+            '1',
+            'Two',
+            'III'
           ]
         ]
       ]";
@@ -31,6 +32,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
         Console.WriteLine(ex.Message);
         // The reader's MaxDepth of 2 has been exceeded. Path '[0][0]', line 3, position 12.
       }
+      #endregion
     }
   }
 }

@@ -8,6 +8,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class DeserializeConstructorHandling
   {
+    #region Types
     public class Website
     {
       public string Url { get; set; }
@@ -24,10 +25,12 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
         Url = website.Url;
       }
     }
+    #endregion
 
     public void Example()
     {
-      string json = @"{""Url"":""http://www.google.com""}";
+      #region Usage
+      string json = @"{'Url':'http://www.google.com'}";
 
       try
       {
@@ -46,6 +49,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 
       Console.WriteLine(website.Url);
       // http://www.google.com
+      #endregion
     }
   }
 }

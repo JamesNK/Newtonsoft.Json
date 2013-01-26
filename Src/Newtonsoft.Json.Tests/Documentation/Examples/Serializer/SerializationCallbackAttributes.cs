@@ -8,6 +8,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class SerializationCallbackAttributes
   {
+    #region Types
     public class SerializationEventTestObject
     {
       // 2222
@@ -58,9 +59,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
         Member4 = "This value was set after deserialization.";
       }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       SerializationEventTestObject obj = new SerializationEventTestObject();
 
       Console.WriteLine(obj.Member1);
@@ -98,6 +101,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       // This value was set during deserialization
       Console.WriteLine(obj.Member4);
       // This value was set after deserialization.
+      #endregion
     }
   }
 }

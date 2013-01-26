@@ -8,6 +8,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class JsonObjectAttributeOverrideIEnumerable
   {
+    #region Types
     [JsonObject]
     public class Directory : IEnumerable<string>
     {
@@ -29,9 +30,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
         return GetEnumerator();
       }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       Directory directory = new Directory
         {
           Name = "My Documents",
@@ -52,6 +55,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       //     "WiseFinancalAdvice.xlsx"
       //   ]
       // }
+      #endregion
     }
   }
 }

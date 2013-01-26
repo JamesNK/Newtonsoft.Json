@@ -8,6 +8,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class DataContractAndDataMember
   {
+    #region Usage
     [DataContract]
     public class File
     {
@@ -20,9 +21,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       [DataMember]
       public int Size { get; set; }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       File file = new File
         {
           Id = Guid.NewGuid(),
@@ -37,6 +40,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       //   "Name": "ImportantLegalDocuments.docx",
       //   "Size": 51200
       // }
+      #endregion
     }
   }
 }

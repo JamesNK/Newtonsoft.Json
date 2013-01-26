@@ -7,6 +7,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class JsonPropertyRequired
   {
+    #region Types
     public class Videogame
     {
       [JsonProperty(Required = Required.Always)]
@@ -15,12 +16,14 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       [JsonProperty(Required = Required.AllowNull)]
       public DateTime? ReleaseDate { get; set; }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       string json = @"{
-        ""Name"": ""Starcraft III"",
-        ""ReleaseDate"": null
+        'Name': 'Starcraft III',
+        'ReleaseDate': null
       }";
 
       Videogame starcraft = JsonConvert.DeserializeObject<Videogame>(json);
@@ -30,6 +33,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 
       Console.WriteLine(starcraft.ReleaseDate);
       // null
+      #endregion
     }
   }
 }

@@ -11,6 +11,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
   {
     public void Example()
     {
+      #region Usage
       List<string> errors = new List<string>();
 
       List<DateTime> c = JsonConvert.DeserializeObject<List<DateTime>>(@"[
@@ -40,6 +41,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       // The string was not recognized as a valid DateTime. There is a unknown word starting at index 0.
       // Unexpected token parsing date. Expected String, got StartArray.
       // Cannot convert null value to System.DateTime.
+      #endregion
     }
   }
 }

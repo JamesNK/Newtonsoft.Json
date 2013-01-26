@@ -9,7 +9,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
   {
     public void Example()
     {
-      string json = @"{""Name"":""James""}";
+      #region Usage
+      string json = @"{'Name':'James'}";
 
       var customerDefinition = new {Name = ""};
 
@@ -17,6 +18,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 
       Console.WriteLine(customer.Name);
       // James
+      #endregion
     }
   }
 }

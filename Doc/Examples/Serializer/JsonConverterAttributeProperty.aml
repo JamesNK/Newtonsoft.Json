@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="JsonConverterAttributeProperty" revisionNumber="1">
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <introduction>
+      <para>This example uses the
+      <codeEntityReference>T:Newtonsoft.Json.JsonConverterAttribute</codeEntityReference>
+      to specify that a <codeEntityReference>T:Newtonsoft.Json.JsonConverter</codeEntityReference>
+      should be used when serializing and deserializing a property.</para>
+    </introduction>
+    <section>
+      <title>Example</title>
+      <content>
+        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Examples\Serializer\JsonConverterAttributeProperty.cs" region="Types" title="Types" />
+        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Examples\Serializer\JsonConverterAttributeProperty.cs" region="Usage" title="Usage" />
+      </content>
+    </section>
+  </developerConceptualDocument>
+</topic>

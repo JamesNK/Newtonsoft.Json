@@ -9,9 +9,10 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
   {
     public void Example()
     {
+      #region Usage
       string json = @"{
-        ""href"": ""/account/login.aspx"",
-        ""target"": ""_blank""
+        'href': '/account/login.aspx',
+        'target': '_blank'
       }";
 
       Dictionary<string, string> htmlAttributes = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
@@ -21,6 +22,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 
       Console.WriteLine(htmlAttributes["target"]);
       // _blank
+      #endregion
     }
   }
 }

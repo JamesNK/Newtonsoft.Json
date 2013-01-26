@@ -11,18 +11,18 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Xml
     public void Example()
     {
       string json = @"{
-        ""@Id"": 1,
-        ""Email"": ""james@example.com"",
-        ""Active"": true,
-        ""CreatedDate"": ""2013-01-20T00:00:00Z"",
-        ""Roles"": [
-          ""User"",
-          ""Admin""
+        '@Id': 1,
+        'Email': 'james@example.com',
+        'Active': true,
+        'CreatedDate': '2013-01-20T00:00:00Z',
+        'Roles': [
+          'User',
+          'Admin'
         ],
-        ""Team"": {
-          ""@Id"": 2,
-          ""Name"": ""Software Developers"",
-          ""Description"": ""Creators of fine software products and services.""
+        'Team': {
+          '@Id': 2,
+          'Name': 'Software Developers',
+          'Description': 'Creators of fine software products and services.'
         }
       }";
 

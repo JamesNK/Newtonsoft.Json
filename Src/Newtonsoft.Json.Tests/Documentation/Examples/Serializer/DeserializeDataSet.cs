@@ -11,15 +11,16 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
   {
     public void Example()
     {
+      #region Usage
       string json = @"{
-        ""Table1"": [
+        'Table1': [
           {
-            ""id"": 0,
-            ""item"": ""item 0""
+            'id': 0,
+            'item': 'item 0'
           },
           {
-            ""id"": 1,
-            ""item"": ""item 1""
+            'id': 1,
+            'item': 'item 1'
           }
         ]
       }";
@@ -37,6 +38,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       }
       // 0 - item 0
       // 1 - item 1
+      #endregion
     }
   }
 }

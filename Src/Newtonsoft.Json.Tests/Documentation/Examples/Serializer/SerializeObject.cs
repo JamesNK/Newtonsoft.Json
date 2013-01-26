@@ -7,6 +7,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class SerializeObject
   {
+    #region Types
     public class Account
     {
       public string Email { get; set; }
@@ -14,9 +15,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       public DateTime CreatedDate { get; set; }
       public IList<string> Roles { get; set; } 
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       Account account = new Account
         {
           Email = "james@example.com",
@@ -41,6 +44,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       // }
 
       Console.WriteLine(json);
+      #endregion
     }
   }
 }

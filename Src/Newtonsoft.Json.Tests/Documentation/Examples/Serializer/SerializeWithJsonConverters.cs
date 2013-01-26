@@ -10,6 +10,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
   {
     public void Example()
     {
+      #region Usage
       List<StringComparison> stringComparisons = new List<StringComparison>
         {
           StringComparison.CurrentCulture,
@@ -30,6 +31,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 
       Console.WriteLine(string.Join(", ", newStringComparsions.Select(c => c.ToString())));
       // CurrentCulture, InvariantCulture
+      #endregion
     }
   }
 }

@@ -7,6 +7,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class PropertyJsonIgnore
   {
+    #region Types
     public class Account
     {
       public string FullName { get; set; }
@@ -14,9 +15,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       [JsonIgnore]
       public string PasswordHash { get; set; }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       Account account = new Account
         {
           FullName = "Joe User",
@@ -28,6 +31,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 
       Console.WriteLine(json);
       // {"FullName":"Joe User","EmailAddress":"joe@example.com"}
+      #endregion
     }
   }
 }

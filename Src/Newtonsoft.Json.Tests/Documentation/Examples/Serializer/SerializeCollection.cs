@@ -9,6 +9,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
   {
     public void Example()
     {
+      #region Usage
       List<string> videogames = new List<string>
         {
           "Starcraft",
@@ -20,6 +21,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 
       Console.WriteLine(json);
       // ["Starcraft","Halo","Legend of Zelda"]
+      #endregion
     }
   }
 }

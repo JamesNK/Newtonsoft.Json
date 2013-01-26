@@ -15,33 +15,33 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Schema
       JsonSchemaResolver resolver = new JsonSchemaResolver();
 
       schemaJson = @"{
-        ""id"": ""person"",
-        ""type"": ""object"",
-        ""properties"": {
-          ""name"": {""type"":""string""},
-          ""age"": {""type"":""integer""}
+        'id': 'person',
+        'type': 'object',
+        'properties': {
+          'name': {'type':'string'},
+          'age': {'type':'integer'}
         }
       }";
 
       JsonSchema personSchema = JsonSchema.Parse(schemaJson, resolver);
 
       schemaJson = @"{
-        ""id"": ""employee"",
-        ""type"": ""object"",
-        ""extends"": {""$ref"":""person""},
-        ""properties"": {
-          ""salary"": {""type"":""number""},
-          ""jobTitle"": {""type"":""string""}
+        'id': 'employee',
+        'type': 'object',
+        'extends': {'$ref':'person'},
+        'properties': {
+          'salary': {'type':'number'},
+          'jobTitle': {'type':'string'}
         }
       }";
 
       JsonSchema employeeSchema = JsonSchema.Parse(schemaJson, resolver);
 
       string json = @"{
-        ""name"": ""James"",
-        ""age"": 29,
-        ""salary"": 9000.01,
-        ""jobTitle"": ""Junior Vice President""
+        'name': 'James',
+        'age': 29,
+        'salary': 9000.01,
+        'jobTitle': 'Junior Vice President'
       }";
 
       JObject employee = JObject.Parse(json);

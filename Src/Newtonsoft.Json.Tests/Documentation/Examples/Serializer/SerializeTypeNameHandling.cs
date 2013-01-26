@@ -7,6 +7,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class SerializeTypeNameHandling
   {
+    #region Types
     public abstract class Business
     {
       public string Name { get; set; }
@@ -22,9 +23,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       public string FullName { get; set; }
       public IList<Business> Businesses { get; set; }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       Stockholder stockholder = new Stockholder
         {
           FullName = "Steve Stockholder",
@@ -84,6 +87,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 
       Console.WriteLine(newStockholder.Businesses[0].GetType().Name);
       // Hotel
+      #endregion
     }
   }
 }

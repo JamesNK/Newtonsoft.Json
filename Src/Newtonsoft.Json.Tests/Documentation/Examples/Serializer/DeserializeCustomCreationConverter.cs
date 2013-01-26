@@ -8,6 +8,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class DeserializeCustomCreationConverter
   {
+    #region Types
     public class Person
     {
       public string FirstName { get; set; }
@@ -28,15 +29,17 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
         return new Employee();
       }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       string json = @"{
-        ""Department"": ""Furniture"",
-        ""JobTitle"": ""Carpenter"",
-        ""FirstName"": ""John"",
-        ""LastName"": ""Joinery"",
-        ""BirthDate"": ""1983-02-02T00:00:00""
+        'Department': 'Furniture',
+        'JobTitle': 'Carpenter',
+        'FirstName': 'John',
+        'LastName': 'Joinery',
+        'BirthDate': '1983-02-02T00:00:00'
       }";
 
       Person person = JsonConvert.DeserializeObject<Person>(json, new PersonConverter());
@@ -48,6 +51,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 
       Console.WriteLine(employee.JobTitle);
       // Capenter
+      #endregion
     }
   }
 }

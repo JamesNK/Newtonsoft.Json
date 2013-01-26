@@ -8,6 +8,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class CustomContractResolver
   {
+    #region Types
     public class DynamicContractResolver : DefaultContractResolver
     {
       private readonly char _startingWithChar;
@@ -38,9 +39,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
         get { return FirstName + " " + LastName; }
       }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       Person person = new Person
         {
           FirstName = "Dennis",
@@ -63,6 +66,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       // {
       //   "LastName": "Deepwater-Diver"
       // }
+      #endregion
     }
   }
 }

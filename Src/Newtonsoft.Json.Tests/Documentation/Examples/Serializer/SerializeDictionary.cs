@@ -9,6 +9,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
   {
     public void Example()
     {
+      #region Usage
       Dictionary<string, int> points = new Dictionary<string, int>
         {
           { "James", 9001 },
@@ -24,6 +25,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       //   "Jo": 3474,
       //   "Jess": 11926
       // }
+      #endregion
     }
   }
 }

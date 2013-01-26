@@ -9,6 +9,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
   {
     public void Example()
     {
+      #region Usage
       DateTime mayanEndOfTheWorld = new DateTime(2012, 12, 21);
 
       string jsonIsoDate = JsonConvert.SerializeObject(mayanEndOfTheWorld);
@@ -23,6 +24,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 
       Console.WriteLine(jsonMsDate);
       // "\/Date(1356044400000+0100)\/"
+      #endregion
     }
   }
 }

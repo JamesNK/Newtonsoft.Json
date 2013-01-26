@@ -22,14 +22,14 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
     {
       string json = @"[
         {
-          ""Title"": ""Json.NET is awesome!"",
-          ""Author"": {
-            ""Name"": ""James Newton-King"",
-            ""Twitter"": ""@JamesNK"",
-            ""Picture"": ""/jamesnk.png""
+          'Title': 'Json.NET is awesome!',
+          'Author': {
+            'Name': 'James Newton-King',
+            'Twitter': '@JamesNK',
+            'Picture': '/jamesnk.png'
           },
-          ""Date"": ""2013-01-23T19:30:00"",
-          ""BodyHtml"": ""&lt;h3&gt;Title!&lt;/h3&gt;\r\n&lt;p&gt;Content!&lt;/p&gt;""
+          'Date': '2013-01-23T19:30:00',
+          'BodyHtml': '&lt;h3&gt;Title!&lt;/h3&gt;\r\n&lt;p&gt;Content!&lt;/p&gt;'
         }
       ]";
 

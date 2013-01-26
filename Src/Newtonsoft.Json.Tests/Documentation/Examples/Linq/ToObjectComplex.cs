@@ -16,12 +16,12 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
     public void Example()
     {
       string json = @"{
-        ""d"": [
+        'd': [
           {
-            ""Name"": ""John Smith""
+            'Name': 'John Smith'
           },
           {
-            ""Name"": ""Mike Smith""
+            'Name': 'Mike Smith'
           }
         ]
       }";

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Topics>
   <Topic id="Introduction" visible="True" isDefault="true" />
-  <Topic id="SerializingJSON" visible="True" isExpanded="true" title="Serializing and Deserializing JSON">
+  <Topic id="SerializingJSON" visible="True" title="Serializing and Deserializing JSON">
     <Topic id="SerializationSettings" visible="True" title="Serialization Settings" />
     <Topic id="SerializationGuide" visible="True" title="Serialization Guide" />
     <Topic id="SerializationAttributes" visible="True" title="Serialization Attributes" />
@@ -15,7 +15,7 @@
     <Topic id="SerializingJSONFragments" visible="True" title="Serializing Partial JSON Fragments" />
     <Topic id="ConditionalProperties" visible="True" title="Conditional Property Serialization" />
     <Topic id="ContractResolver" visible="True" title="Serialization using ContractResolver" />
-    <Topic id="SerializationTracing" visible="True" isSelected="true" title="Debugging with Serialization Tracing" />
+    <Topic id="SerializationTracing" visible="True" title="Debugging with Serialization Tracing" />
   </Topic>
   <Topic id="LINQtoJSON" visible="True" title="LINQ to JSON">
     <Topic id="ParsingLINQtoJSON" visible="True" title="Parsing JSON" />
@@ -29,4 +29,57 @@
   <Topic id="ConvertingJSONandXML" visible="True" title="Converting between JSON and XML" />
   <Topic id="JsonNetVsDotNetSerializers" visible="True" title="Json.NET vs .NET Serializers" />
   <Topic id="JsonNetVsWindowsDataJson" visible="True" title="Json.NET vs Windows.Data.Json" />
+  <Topic id="Examples" visible="True" isExpanded="true">
+    <Topic id="Serializer" visible="True" isExpanded="true">
+      <Topic id="CustomContractResolver" visible="True" title="Custom Contract Resolver" />
+      <Topic id="CustomJsonConverter" visible="True" />
+      <Topic id="CustomTraceWriter" visible="True" />
+      <Topic id="DataContractAndDataMember" visible="True" />
+      <Topic id="DefaultValueAttributeIgnore" visible="True" />
+      <Topic id="DefaultValueHandlingIgnore" visible="True" />
+      <Topic id="DeserializeAnonymousType" visible="True" />
+      <Topic id="DeserializeCollection" visible="True" />
+      <Topic id="DeserializeConstructorHandling" visible="True" />
+      <Topic id="DeserializeCustomCreationConverter" visible="True" />
+      <Topic id="DeserializeDataSet" visible="True" />
+      <Topic id="DeserializeDictionary" visible="True" />
+      <Topic id="DeserializeMissingMemberHandling" visible="True" />
+      <Topic id="DeserializeObject" visible="True" />
+      <Topic id="DeserializeObjectCreationHandling" visible="True" isSelected="true" />
+      <Topic id="DeserializeWithJsonSerializerFromFile" visible="True" />
+      <Topic id="ErrorHandlingAttribute" visible="True" />
+      <Topic id="ErrorHandlingEvent" visible="True" />
+      <Topic id="JsonConverterAttributeClass" visible="True" />
+      <Topic id="JsonConverterAttributeProperty" visible="True" />
+      <Topic id="JsonObjectAttributeOptIn" visible="True" />
+      <Topic id="JsonObjectAttributeOverrideIEnumerable" visible="True" />
+      <Topic id="JsonPropertyItemLevelSetting" visible="True" />
+      <Topic id="JsonPropertyName" visible="True" />
+      <Topic id="JsonPropertyOrder" visible="True" />
+      <Topic id="JsonPropertyPropertyLevelSetting" visible="True" />
+      <Topic id="JsonPropertyRequired" visible="True" />
+      <Topic id="MaxDepth" visible="True" />
+      <Topic id="NullValueHandlingIgnore" visible="True" />
+      <Topic id="PopulateObject" visible="True" />
+      <Topic id="PreserveReferencesHandlingObject" visible="True" />
+      <Topic id="PropertyJsonIgnore" visible="True" />
+      <Topic id="ReferenceLoopHandlingIgnore" visible="True" />
+      <Topic id="SerializationCallbackAttributes" visible="True" />
+      <Topic id="SerializeCollection" visible="True" />
+      <Topic id="SerializeConditionalProperty" visible="True" />
+      <Topic id="SerializeContractResolver" visible="True" />
+      <Topic id="SerializeDataSet" visible="True" />
+      <Topic id="SerializeDateFormatHandling" visible="True" />
+      <Topic id="SerializeDateTimeZoneHandling" visible="True" />
+      <Topic id="SerializeDictionary" visible="True" />
+      <Topic id="SerializeObject" visible="True" />
+      <Topic id="SerializeRawJson" visible="True" />
+      <Topic id="SerializeSerializationBinder" visible="True" />
+      <Topic id="SerializeTypeNameHandling" visible="True" />
+      <Topic id="SerializeUnindentedJson" visible="True" />
+      <Topic id="SerializeWithJsonConverters" visible="True" />
+      <Topic id="SerializeWithJsonSerializerToFile" visible="True" />
+      <Topic id="TraceWriter" visible="True" />
+    </Topic>
+  </Topic>
 </Topics>

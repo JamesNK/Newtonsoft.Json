@@ -7,6 +7,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class JsonObjectAttributeOptIn
   {
+    #region Types
     [JsonObject(MemberSerialization.OptIn)]
     public class File
     {
@@ -19,9 +20,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       [JsonProperty]
       public int Size { get; set; }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       File file = new File
         {
           Id = Guid.NewGuid(),
@@ -36,6 +39,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       //   "Name": "ImportantLegalDocuments.docx",
       //   "Size": 51200
       // }
+      #endregion
     }
   }
 }

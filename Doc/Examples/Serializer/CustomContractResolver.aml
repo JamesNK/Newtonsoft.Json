@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="CustomContractResolver" revisionNumber="1">
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <introduction>
+      <para>This example creates a custom <codeEntityReference>T:Newtonsoft.Json.Serialization.IContractResolver</codeEntityReference>
+      that only serializes a type's properties that begin with a specified character.</para>
+    </introduction>
+    <section>
+      <title>Example</title>
+      <content>
+        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Examples\Serializer\CustomContractResolver.cs" region="Types" title="Types" />
+        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Examples\Serializer\CustomContractResolver.cs" region="Usage" title="Usage" />
+      </content>
+    </section>
+  </developerConceptualDocument>
+</topic>

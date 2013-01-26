@@ -8,6 +8,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class SerializeSerializationBinder
   {
+    #region Types
     public class KnownTypesBinder : SerializationBinder
     {
       public IList<Type> KnownTypes { get; set; }
@@ -29,9 +30,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       public string Maker { get; set; }
       public string Model { get; set; }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       KnownTypesBinder knownTypesBinder = new KnownTypesBinder
         {
           KnownTypes = new List<Type> {typeof (Car)}
@@ -64,6 +67,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 
       Console.WriteLine(newValue.GetType().Name);
       // Car
+      #endregion
     }
   }
 }

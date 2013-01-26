@@ -8,6 +8,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class DefaultValueAttributeIgnore
   {
+    #region Types
     public class Customer
     {
       public string FirstName { get; set; }
@@ -19,9 +20,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
         get { return FirstName + " " + LastName; }
       }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       Customer customer = new Customer();
 
       string jsonIncludeDefaultValues = JsonConvert.SerializeObject(customer, Formatting.Indented);
@@ -40,6 +43,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 
       Console.WriteLine(jsonIgnoreDefaultValues);
       // {}
+      #endregion
     }
   }
 }

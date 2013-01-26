@@ -7,6 +7,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class JsonPropertyOrder
   {
+    #region Types
     public class Account
     {
       public string EmailAddress { get; set; }
@@ -24,9 +25,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       [JsonProperty(Order = -2)]
       public string FullName { get; set; }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       Account account = new Account
         {
           FullName = "Aaron Account",
@@ -48,6 +51,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       //   "Deleted": true,
       //   "DeletedDate": "2013-01-25T00:00:00"
       // }
+      #endregion
     }
   }
 }

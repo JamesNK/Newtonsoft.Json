@@ -11,12 +11,12 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
     public void Example()
     {
       string json = @"{
-        ""channel"": {
-          ""title"": ""Star Wars"",
-          ""link"": ""http://www.starwars.com"",
-          ""description"": ""Star Wars blog."",
-          ""obsolete"": ""Obsolete value"",
-          ""item"": []
+        'channel': {
+          'title': 'Star Wars',
+          'link': 'http://www.starwars.com',
+          'description': 'Star Wars blog.',
+          'obsolete': 'Obsolete value',
+          'item': []
         }
       }";
 

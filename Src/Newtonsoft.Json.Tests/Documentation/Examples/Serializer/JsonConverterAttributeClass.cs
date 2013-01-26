@@ -8,6 +8,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class JsonConverterAttributeClass
   {
+    #region Types
     public class UserConverter : JsonConverter
     {
       public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -36,9 +37,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
     {
       public string UserName { get; set; }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       User user = new User
       {
         UserName = @"domain\username"
@@ -48,6 +51,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 
       Console.WriteLine(json);
       // "domain\\username"
+      #endregion
     }
   }
 }

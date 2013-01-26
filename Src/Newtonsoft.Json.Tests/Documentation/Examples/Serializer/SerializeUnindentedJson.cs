@@ -7,6 +7,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class SerializeUnindentedJson
   {
+    #region Types
     public class Account
     {
       public string Email { get; set; }
@@ -14,9 +15,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       public DateTime CreatedDate { get; set; }
       public IList<string> Roles { get; set; }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       Account account = new Account
         {
           Email = "james@example.com",
@@ -33,6 +36,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       // {"Email":"james@example.com","Active":true,"CreatedDate":"2013-01-20T00:00:00Z","Roles":["User","Admin"]}
 
       Console.WriteLine(json);
+      #endregion
     }
   }
 }

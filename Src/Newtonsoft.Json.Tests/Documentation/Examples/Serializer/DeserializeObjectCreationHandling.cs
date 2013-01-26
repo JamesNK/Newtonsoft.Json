@@ -7,6 +7,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class DeserializeObjectCreationHandling
   {
+    #region Types
     public class UserViewModel
     {
       public string Name { get; set; }
@@ -22,15 +23,17 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
           };
       }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       string json = @"{
-        ""Name"": ""James"",
-        ""Offices"": [
-          ""Auckland"",
-          ""Wellington"",
-          ""Christchurch""
+        'Name': 'James',
+        'Offices': [
+          'Auckland',
+          'Wellington',
+          'Christchurch'
         ]
       }";
 
@@ -59,6 +62,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       // Auckland
       // Wellington
       // Christchurch
+      #endregion
     }
   }
 }

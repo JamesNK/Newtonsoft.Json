@@ -5,8 +5,9 @@ using System.Text;
 
 namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
-  public class ReferenceLoopHandlingObject
+  public class PreserveReferencesHandlingObject
   {
+    #region Types
     public class Directory
     {
       public string Name { get; set; }
@@ -19,9 +20,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       public string Name { get; set; }
       public Directory Parent { get; set; } 
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       Directory root = new Directory { Name = "Root" };
       Directory documents = new Directory { Name = "My Documents", Parent = root };
 
@@ -93,6 +96,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       //     }
       //   ]
       // }
+      #endregion
     }
   }
 }

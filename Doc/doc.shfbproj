@@ -137,6 +137,57 @@
     <Content Include="donate.gif" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Examples\Serializer\TraceWriter.aml" />
+    <None Include="Examples\Serializer\SerializeWithJsonSerializerToFile.aml" />
+    <None Include="Examples\Serializer\SerializeWithJsonConverters.aml" />
+    <None Include="Examples\Serializer\SerializeUnindentedJson.aml" />
+    <None Include="Examples\Serializer\SerializeTypeNameHandling.aml" />
+    <None Include="Examples\Serializer\SerializeSerializationBinder.aml" />
+    <None Include="Examples\Serializer\SerializeRawJson.aml" />
+    <None Include="Examples\Serializer\SerializeObject.aml" />
+    <None Include="Examples\Serializer\SerializeDictionary.aml" />
+    <None Include="Examples\Serializer\SerializeDateTimeZoneHandling.aml" />
+    <None Include="Examples\Serializer\SerializeDateFormatHandling.aml" />
+    <None Include="Examples\Serializer\SerializeDataSet.aml" />
+    <None Include="Examples\Serializer\SerializeContractResolver.aml" />
+    <None Include="Examples\Serializer\SerializeConditionalProperty.aml" />
+    <None Include="Examples\Serializer\SerializeCollection.aml" />
+    <None Include="Examples\Serializer\SerializationCallbackAttributes.aml" />
+    <None Include="Examples\Serializer\ReferenceLoopHandlingIgnore.aml" />
+    <None Include="Examples\Serializer\PropertyJsonIgnore.aml" />
+    <None Include="Examples\Serializer\PreserveReferencesHandlingObject.aml" />
+    <None Include="Examples\Serializer\PopulateObject.aml" />
+    <None Include="Examples\Serializer\NullValueHandlingIgnore.aml" />
+    <None Include="Examples\Serializer\MaxDepth.aml" />
+    <None Include="Examples\Serializer\JsonPropertyRequired.aml" />
+    <None Include="Examples\Serializer\JsonPropertyPropertyLevelSetting.aml" />
+    <None Include="Examples\Serializer\JsonPropertyOrder.aml" />
+    <None Include="Examples\Serializer\JsonPropertyName.aml" />
+    <None Include="Examples\Serializer\JsonPropertyItemLevelSetting.aml" />
+    <None Include="Examples\Serializer\JsonObjectAttributeOverrideIEnumerable.aml" />
+    <None Include="Examples\Serializer\JsonObjectAttributeOptIn.aml" />
+    <None Include="Examples\Serializer\JsonConverterAttributeProperty.aml" />
+    <None Include="Examples\Serializer\JsonConverterAttributeClass.aml" />
+    <None Include="Examples\Serializer\ErrorHandlingEvent.aml" />
+    <None Include="Examples\Serializer\ErrorHandlingAttribute.aml" />
+    <None Include="Examples\Serializer\DeserializeWithJsonSerializerFromFile.aml" />
+    <None Include="Examples\Serializer\DeserializeObjectCreationHandling.aml" />
+    <None Include="Examples\Serializer\DeserializeObject.aml" />
+    <None Include="Examples\Serializer\DeserializeMissingMemberHandling.aml" />
+    <None Include="Examples\Serializer\DeserializeDictionary.aml" />
+    <None Include="Examples\Serializer\DeserializeDataSet.aml" />
+    <None Include="Examples\Serializer\DeserializeCustomCreationConverter.aml" />
+    <None Include="Examples\Serializer\DeserializeConstructorHandling.aml" />
+    <None Include="Examples\Serializer\DeserializeCollection.aml" />
+    <None Include="Examples\Serializer\DeserializeAnonymousType.aml" />
+    <None Include="Examples\Serializer\DefaultValueHandlingIgnore.aml" />
+    <None Include="Examples\Serializer\DefaultValueAttributeIgnore.aml" />
+    <None Include="Examples\Serializer\DataContractAndDataMember.aml" />
+    <None Include="Examples\Serializer\CustomTraceWriter.aml" />
+    <None Include="Examples\Serializer\CustomJsonConverter.aml" />
+    <None Include="Examples\Serializer\CustomContractResolver.aml" />
+    <None Include="Examples\Serializer.aml" />
+    <None Include="Examples\Examples.aml" />
     <None Include="SerializationTracing.aml" />
     <None Include="JsonNetVsDotNetSerializers.aml" />
     <None Include="JsonNetVsWindowsDataJson.aml" />
@@ -190,6 +241,10 @@
       <ImageId>logo</ImageId>
       <AlternateText>logo</AlternateText>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Examples\Serializer\" />
+    <Folder Include="Examples\" />
   </ItemGroup>
   <!-- Import the SHFB build targets -->
   <Import Project="$(SHFBROOT)\SandcastleHelpFileBuilder.targets" />

@@ -25,7 +25,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
       Console.WriteLine(t3.Type);
       // Null
 
-      JToken t4 = JToken.Parse(@"""A string!""");
+      JToken t4 = JToken.Parse(@"'A string!'");
 
       Console.WriteLine(t4.Type);
       // String

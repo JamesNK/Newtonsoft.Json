@@ -8,6 +8,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class JsonConverterAttributeProperty
   {
+    #region Types
     public enum UserStatus
     {
       NotConfirmed,
@@ -22,9 +23,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       [JsonConverter(typeof(StringEnumConverter))]
       public UserStatus Status { get; set; }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       User user = new User
         {
           UserName = @"domain\username",
@@ -38,6 +41,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       //   "UserName": "domain\\username",
       //   "Status": "Deleted"
       // }
+      #endregion
     }
   }
 }

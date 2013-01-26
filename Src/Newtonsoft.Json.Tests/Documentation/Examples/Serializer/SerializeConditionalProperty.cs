@@ -7,6 +7,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class SerializeConditionalProperty
   {
+    #region Types
     public class Employee
     {
       public string Name { get; set; }
@@ -18,9 +19,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
         return (Manager != this);
       }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       Employee joe = new Employee();
       joe.Name = "Joe Employee";
       Employee mike = new Employee();
@@ -33,6 +36,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       mike.Manager = mike;
 
       string json = JsonConvert.SerializeObject(new[] { joe, mike }, Formatting.Indented);
+
+      Console.WriteLine(json);
       // [
       //   {
       //     "Name": "Joe Employee",
@@ -44,6 +49,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       //     "Name": "Mike Manager"
       //   }
       // ]
+      #endregion
     }
   }
 }

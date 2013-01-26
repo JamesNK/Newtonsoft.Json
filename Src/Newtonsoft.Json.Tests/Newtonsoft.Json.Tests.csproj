@@ -200,7 +200,7 @@
     <Compile Include="Documentation\Examples\Serializer\PopulateObject.cs" />
     <Compile Include="Documentation\Examples\Serializer\PropertyJsonIgnore.cs" />
     <Compile Include="Documentation\Examples\Serializer\ReferenceLoopHandlingIgnore.cs" />
-    <Compile Include="Documentation\Examples\Serializer\ReferenceLoopHandlingObject.cs" />
+    <Compile Include="Documentation\Examples\Serializer\PreserveReferencesHandlingObject.cs" />
     <Compile Include="Documentation\Examples\Serializer\SerializationCallbackAttributes.cs" />
     <Compile Include="Documentation\Examples\Serializer\SerializeCollection.cs" />
     <Compile Include="Documentation\Examples\Serializer\SerializeConditionalProperty.cs" />

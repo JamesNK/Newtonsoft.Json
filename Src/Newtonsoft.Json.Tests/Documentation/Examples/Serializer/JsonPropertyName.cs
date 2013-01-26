@@ -7,6 +7,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class JsonPropertyName
   {
+    #region Types
     public class Videogame
     {
       [JsonProperty("name")]
@@ -15,9 +16,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       [JsonProperty("release_date")]
       public DateTime ReleaseDate { get; set; }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       Videogame starcraft = new Videogame
         {
           Name = "Starcraft",
@@ -31,6 +34,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       //   "name": "Starcraft",
       //   "release_date": "1998-01-01T00:00:00"
       // }
+      #endregion
     }
   }
 }

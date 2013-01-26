@@ -11,6 +11,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
   {
     public void Example()
     {
+      #region Usage
       DataSet dataSet = new DataSet("dataSet");
       dataSet.Namespace = "NetFrameWork";
       DataTable table = new DataTable();
@@ -46,6 +47,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       //     }
       //   ]
       // }
+      #endregion
     }
   }
 }

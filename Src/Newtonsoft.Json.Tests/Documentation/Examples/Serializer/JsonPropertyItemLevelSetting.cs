@@ -7,6 +7,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class JsonPropertyItemLevelSetting
   {
+    #region Types
     public class Business
     {
       public string Name { get; set; }
@@ -22,9 +23,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       [JsonProperty(IsReference = true)]
       public Employee Manager { get; set; }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       Employee manager = new Employee
       {
         Name = "George-Michael"
@@ -65,6 +68,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       //     }
       //   ]
       // }
+      #endregion
     }
   }
 }

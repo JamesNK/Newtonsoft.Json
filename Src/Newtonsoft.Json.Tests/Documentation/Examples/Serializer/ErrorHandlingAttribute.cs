@@ -9,6 +9,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class ErrorHandlingAttribute
   {
+    #region Types
     public class Employee
     {
       private List<string> _roles;
@@ -34,9 +35,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
         errorContext.Handled = true;
       }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       Employee person = new Employee
       {
         Name = "George Michael Bluth",
@@ -53,6 +56,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       //   "Age": 16,
       //   "Title": "Mister Manager"
       // }
+      #endregion
     }
   }
 }

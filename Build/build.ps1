@@ -5,7 +5,7 @@
   $version = GetVersion $majorWithReleaseVersion
   $signAssemblies = $false
   $signKeyPath = "D:\Development\Releases\newtonsoft.snk"
-  $buildDocumentation = $false
+  $buildDocumentation = $true
   $buildNuGet = $false
   
   $baseDir  = resolve-path ..

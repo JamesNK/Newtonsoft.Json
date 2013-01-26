@@ -8,6 +8,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class CustomJsonConverter
   {
+    #region Types
     public class KeysJsonConverter : JsonConverter
     {
       private Type[] _types;
@@ -58,9 +59,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       public string LastName { get; set; }
       public IList<string> Roles { get; set; }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       Employee employee = new Employee
       {
         FirstName = "James",
@@ -91,6 +94,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 
       Console.WriteLine(newEmployee.FirstName);
       // James
+      #endregion
     }
   }
 }

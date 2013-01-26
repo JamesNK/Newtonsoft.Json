@@ -9,12 +9,14 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
   {
     public void Example()
     {
-      string json = @"[""Starcraft"",""Halo"",""Legend of Zelda""]";
+      #region Usage
+      string json = @"['Starcraft','Halo','Legend of Zelda']";
 
       List<string> videogames = JsonConvert.DeserializeObject<List<string>>(json);
 
       Console.WriteLine(string.Join(", ", videogames));
       // Starcraft, Halo, Legend of Zelda
+      #endregion
     }
   }
 }

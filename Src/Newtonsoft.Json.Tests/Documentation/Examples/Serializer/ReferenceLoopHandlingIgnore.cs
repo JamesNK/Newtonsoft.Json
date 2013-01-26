@@ -7,14 +7,17 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class ReferenceLoopHandlingIgnore
   {
+    #region Types
     public class Employee
     {
       public string Name { get; set; }
       public Employee Manager { get; set; }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       Employee joe = new Employee { Name = "Joe User" };
       Employee mike = new Employee { Name = "Mike Manager" };
       joe.Manager = mike;
@@ -32,6 +35,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       //     "Name": "Mike Manager"
       //   }
       // }
+      #endregion
     }
   }
 }

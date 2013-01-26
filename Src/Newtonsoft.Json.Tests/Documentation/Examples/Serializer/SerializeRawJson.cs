@@ -8,14 +8,17 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class SerializeRawJson
   {
+    #region Types
     public class JavaScriptSettings
     {
       public JRaw OnLoadFunction { get; set; }
       public JRaw OnUnloadFunction { get; set; }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       JavaScriptSettings settings = new JavaScriptSettings
         {
           OnLoadFunction = new JRaw("OnLoad"),
@@ -29,6 +32,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       //   "OnLoadFunction": OnLoad,
       //   "OnUnloadFunction": function(e) { alert(e); }
       // }
+      #endregion
     }
   }
 }

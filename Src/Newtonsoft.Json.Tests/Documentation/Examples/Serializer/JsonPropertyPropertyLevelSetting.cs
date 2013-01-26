@@ -7,6 +7,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class JsonPropertyPropertyLevelSetting
   {
+    #region Types
     public class Vessel
     {
       public string Name { get; set; }
@@ -15,9 +16,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
       public DateTime? LaunchDate { get; set; }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       Vessel vessel = new Vessel
         {
           Name = "Red October",
@@ -31,6 +34,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       //   "Name": "Red October",
       //   "Class": "Typhoon"
       // }
+      #endregion
     }
   }
 }

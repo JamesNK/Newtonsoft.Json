@@ -8,6 +8,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class SerializeContractResolver
   {
+    #region Types
     public class Person
     {
       public string FirstName { get; set; }
@@ -18,9 +19,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
         get { return FirstName + " " + LastName; }
       }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       Person person = new Person
         {
           FirstName = "Sarah",
@@ -38,6 +41,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       //   "lastName": "Security",
       //   "fullName": "Sarah Security"
       // }
+      #endregion
     }
   }
 }

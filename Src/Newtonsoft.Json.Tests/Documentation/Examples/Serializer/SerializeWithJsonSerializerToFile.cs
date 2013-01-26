@@ -9,14 +9,17 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
 {
   public class SerializeWithJsonSerializerToFile
   {
+    #region Types
     public class Movie
     {
       public string Name { get; set; }
       public int Year { get; set; }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       Movie movie = new Movie
         {
           Name = "Bad Boys",
@@ -32,6 +35,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
         JsonSerializer serializer = new JsonSerializer();
         serializer.Serialize(file, movie);
       }
+      #endregion
     }
   }
 }
