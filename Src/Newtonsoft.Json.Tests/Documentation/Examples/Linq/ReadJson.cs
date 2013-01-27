@@ -11,6 +11,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
   {
     public void Example()
     {
+      #region Usage
       JObject o1 = JObject.Parse(File.ReadAllText(@"c:\videogames.json"));
 
       // read JSON directly from a file
@@ -19,6 +20,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
       {
         JObject o2 = (JObject) JToken.ReadFrom(reader);
       }
+      #endregion
     }
   }
 }

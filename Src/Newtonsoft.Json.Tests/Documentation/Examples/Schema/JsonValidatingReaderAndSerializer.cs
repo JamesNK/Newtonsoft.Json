@@ -9,14 +9,17 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Schema
 {
   public class JsonValidatingReaderAndSerializer
   {
+    #region Types
     public class Person
     {
       public string Name { get; set; }
       public IList<string> Hobbies { get; set; }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       string schemaJson = @"{
         'description': 'A person',
         'type': 'object',
@@ -52,6 +55,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Schema
 
       Console.WriteLine(isValid);
       // true
+      #endregion
     }
   }
 }

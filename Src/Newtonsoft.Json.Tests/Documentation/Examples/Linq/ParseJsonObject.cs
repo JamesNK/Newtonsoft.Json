@@ -10,6 +10,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
   {
     public void Example()
     {
+      #region Usage
       string json = @"{
         CPU: 'Intel',
         Drives: [
@@ -28,6 +29,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
       //     "500 gigabyte hard drive"
       //   ]
       // }
+      #endregion
     }
   }
 }

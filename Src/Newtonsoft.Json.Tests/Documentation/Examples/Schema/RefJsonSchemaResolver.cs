@@ -11,6 +11,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Schema
   {
     public void Example()
     {
+      #region Usage
       string schemaJson;
       JsonSchemaResolver resolver = new JsonSchemaResolver();
 
@@ -50,6 +51,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Schema
 
       Console.WriteLine(valid);
       // true
+      #endregion
     }
   }
 }

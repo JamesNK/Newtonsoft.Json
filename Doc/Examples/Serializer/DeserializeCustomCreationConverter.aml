@@ -2,7 +2,7 @@
 <topic id="DeserializeCustomCreationConverter" revisionNumber="1">
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
-      <para>This example creates a class that inherits from <codeEntityReference>T:Newtonsoft.Json.CustomCreationConverter`1</codeEntityReference>
+      <para>This example creates a class that inherits from <codeEntityReference>T:Newtonsoft.Json.Converters.CustomCreationConverter`1</codeEntityReference>
       that instantiates Employee instances for the Person type.</para>
     </introduction>
     <section>

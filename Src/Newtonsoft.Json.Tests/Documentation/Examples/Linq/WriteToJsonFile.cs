@@ -11,6 +11,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
   {
     public void Example()
     {
+      #region Usage
       JObject videogameRatings = new JObject(
         new JProperty("Halo", 9),
         new JProperty("Starcraft", 9),
@@ -24,6 +25,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
       {
         videogameRatings.WriteTo(writer);
       }
+      #endregion
     }
   }
 }

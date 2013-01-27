@@ -10,6 +10,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Xml
   {
     public void Example()
     {
+      #region Usage
       string xml = @"<?xml version='1.0' standalone='no'?>
       <root>
         <person id='1'>
@@ -48,6 +49,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Xml
       //     ]
       //   }
       // }
+      #endregion
     }
   }
 }

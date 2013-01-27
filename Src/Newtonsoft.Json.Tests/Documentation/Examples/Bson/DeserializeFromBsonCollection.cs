@@ -9,14 +9,17 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Bson
 {
   public class DeserializeFromBsonCollection
   {
+    #region Types
     public class Event
     {
       public string Name { get; set; }
       public DateTime StartDate { get; set; }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       byte[] data = Convert.FromBase64String("awAAAAMwADAAAAACTmFtZQAOAAAATW92aWUgcHJlbWllcgAJU3RhcnREYXRlAMDgKWE8AQAAAAMxADAAAAACTmFtZQAOAAAATW92aWUgcHJlbWllcgAJU3RhcnREYXRlAMDgKWE8AQAAAAA=");
 
       MemoryStream ms = new MemoryStream(data);
@@ -31,6 +34,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Bson
         Console.WriteLine(events.Count);
         // 2
       }
+      #endregion
     }
   }
 }

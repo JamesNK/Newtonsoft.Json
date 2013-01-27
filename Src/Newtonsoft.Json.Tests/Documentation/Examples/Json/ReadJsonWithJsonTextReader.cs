@@ -10,6 +10,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Json
   {
     public void Example()
     {
+      #region Usage
       string json = @"{
          'CPU': 'Intel',
          'PSU': '500W',
@@ -43,6 +44,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Json
       // Token: String, Value: 200 gigabype hard drive
       // Token: EndArray
       // Token: EndObject
+      #endregion
     }
   }
 }

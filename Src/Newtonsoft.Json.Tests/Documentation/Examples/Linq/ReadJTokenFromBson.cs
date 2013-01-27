@@ -12,6 +12,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
   {
     public void Example()
     {
+      #region Usage
       byte[] data = Convert.FromBase64String("KQAAAAJuYW1lMQAHAAAAdmFsdWUxAAJuYW1lMgAHAAAAdmFsdWUyAAA=");
       MemoryStream ms = new MemoryStream(data);
 
@@ -25,6 +26,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
 
       Console.WriteLine(value);
       // value1
+      #endregion
     }
   }
 }

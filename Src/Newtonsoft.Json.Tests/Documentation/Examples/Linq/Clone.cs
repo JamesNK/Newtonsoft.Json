@@ -10,6 +10,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
   {
     public void Example()
     {
+      #region Usage
       JObject o1 = new JObject
         {
           {"String", "A string!"},
@@ -41,6 +42,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
 
       Console.WriteLine(Object.ReferenceEquals(o1, o2));
       // false
+      #endregion
     }
   }
 }

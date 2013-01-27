@@ -23,63 +23,124 @@
     <Topic id="QueryingLINQtoJSON" visible="True" title="Querying JSON with LINQ" />
     <Topic id="SelectToken" visible="True" title="Querying JSON with SelectToken" />
   </Topic>
-  <Topic id="Performance" visible="True" title="Performance" />
-  <Topic id="JsonSchema" visible="True" title="Validating JSON" />
+  <Topic id="Performance" visible="True" title="Performance Tips" />
+  <Topic id="JsonSchema" visible="True" title="Validating JSON with JSON Schema" />
   <Topic id="ReadingWritingJSON" visible="True" title="Basic Reading and Writing JSON" />
   <Topic id="ConvertingJSONandXML" visible="True" title="Converting between JSON and XML" />
   <Topic id="JsonNetVsDotNetSerializers" visible="True" title="Json.NET vs .NET Serializers" />
   <Topic id="JsonNetVsWindowsDataJson" visible="True" title="Json.NET vs Windows.Data.Json" />
-  <Topic id="Examples" visible="True" isExpanded="true">
-    <Topic id="Serializer" visible="True" isExpanded="true">
-      <Topic id="CustomContractResolver" visible="True" title="Custom Contract Resolver" />
-      <Topic id="CustomJsonConverter" visible="True" />
-      <Topic id="CustomTraceWriter" visible="True" />
-      <Topic id="DataContractAndDataMember" visible="True" />
-      <Topic id="DefaultValueAttributeIgnore" visible="True" />
-      <Topic id="DefaultValueHandlingIgnore" visible="True" />
-      <Topic id="DeserializeAnonymousType" visible="True" />
-      <Topic id="DeserializeCollection" visible="True" />
-      <Topic id="DeserializeConstructorHandling" visible="True" />
-      <Topic id="DeserializeCustomCreationConverter" visible="True" />
-      <Topic id="DeserializeDataSet" visible="True" />
-      <Topic id="DeserializeDictionary" visible="True" />
-      <Topic id="DeserializeMissingMemberHandling" visible="True" />
-      <Topic id="DeserializeObject" visible="True" />
-      <Topic id="DeserializeObjectCreationHandling" visible="True" isSelected="true" />
-      <Topic id="DeserializeWithJsonSerializerFromFile" visible="True" />
-      <Topic id="ErrorHandlingAttribute" visible="True" />
-      <Topic id="ErrorHandlingEvent" visible="True" />
-      <Topic id="JsonConverterAttributeClass" visible="True" />
-      <Topic id="JsonConverterAttributeProperty" visible="True" />
-      <Topic id="JsonObjectAttributeOptIn" visible="True" />
-      <Topic id="JsonObjectAttributeOverrideIEnumerable" visible="True" />
-      <Topic id="JsonPropertyItemLevelSetting" visible="True" />
-      <Topic id="JsonPropertyName" visible="True" />
-      <Topic id="JsonPropertyOrder" visible="True" />
-      <Topic id="JsonPropertyPropertyLevelSetting" visible="True" />
-      <Topic id="JsonPropertyRequired" visible="True" />
-      <Topic id="MaxDepth" visible="True" />
-      <Topic id="NullValueHandlingIgnore" visible="True" />
-      <Topic id="PopulateObject" visible="True" />
-      <Topic id="PreserveReferencesHandlingObject" visible="True" />
-      <Topic id="PropertyJsonIgnore" visible="True" />
-      <Topic id="ReferenceLoopHandlingIgnore" visible="True" />
-      <Topic id="SerializationCallbackAttributes" visible="True" />
-      <Topic id="SerializeCollection" visible="True" />
-      <Topic id="SerializeConditionalProperty" visible="True" />
-      <Topic id="SerializeContractResolver" visible="True" />
-      <Topic id="SerializeDataSet" visible="True" />
-      <Topic id="SerializeDateFormatHandling" visible="True" />
-      <Topic id="SerializeDateTimeZoneHandling" visible="True" />
-      <Topic id="SerializeDictionary" visible="True" />
-      <Topic id="SerializeObject" visible="True" />
-      <Topic id="SerializeRawJson" visible="True" />
-      <Topic id="SerializeSerializationBinder" visible="True" />
-      <Topic id="SerializeTypeNameHandling" visible="True" />
-      <Topic id="SerializeUnindentedJson" visible="True" />
-      <Topic id="SerializeWithJsonConverters" visible="True" />
-      <Topic id="SerializeWithJsonSerializerToFile" visible="True" />
-      <Topic id="TraceWriter" visible="True" />
+  <Topic id="Examples" visible="True" isExpanded="true" title="Examples">
+    <Topic id="d6e185d5-c992-44fc-8d8f-d9acc2bbec2f" visible="True" noFile="true" isExpanded="true" title="Serializing JSON">
+      <Topic id="SerializeObject" visible="True" title="Serialize an Object" />
+      <Topic id="SerializeCollection" visible="True" title="Serialize a Collection" />
+      <Topic id="SerializeDictionary" visible="True" title="Serialize a Dictionary" />
+      <Topic id="SerializeWithJsonSerializerToFile" visible="True" title="Serialize JSON to a file" />
+      <Topic id="SerializeWithJsonConverters" visible="True" title="Serialize with JsonConverters" />
+      <Topic id="SerializeDataSet" visible="True" title="Serialize a DataSet" />
+      <Topic id="SerializeRawJson" visible="True" title="Serialize Raw JSON value" />
+      <Topic id="SerializeUnindentedJson" visible="True" title="Serialize Unindented JSON" />
+      <Topic id="SerializeConditionalProperty" visible="True" title="Serialize Conditional Property" />
+      <Topic id="DeserializeObject" visible="True" title="Deserialize an Object" />
+      <Topic id="DeserializeCollection" visible="True" title="Deserialize a Collection" />
+      <Topic id="DeserializeDictionary" visible="True" title="Deserialize a Dictionary" />
+      <Topic id="DeserializeAnonymousType" visible="True" title="Deserialize an Anonymous Type" />
+      <Topic id="DeserializeDataSet" visible="True" title="Deserialize a DataSet" />
+      <Topic id="DeserializeCustomCreationConverter" visible="True" title="Deserialize with CustomCreationConverter" />
+      <Topic id="DeserializeWithJsonSerializerFromFile" visible="True" title="Deserialize JSON from a file" />
+      <Topic id="PopulateObject" visible="True" title="Populate an Object" />
+      <Topic id="DeserializeConstructorHandling" visible="True" title="ConstructorHandling setting" />
+      <Topic id="DeserializeObjectCreationHandling" visible="True" title="ObjectCreationHandling setting" />
+      <Topic id="DefaultValueHandlingIgnore" visible="True" title="DefaultValueHandling setting" />
+      <Topic id="DeserializeMissingMemberHandling" visible="True" title="MissingMemberHandling setting" />
+      <Topic id="NullValueHandlingIgnore" visible="True" title="NullValueHandling setting" />
+      <Topic id="ReferenceLoopHandlingIgnore" visible="True" title="RefereneLoopHandling setting" />
+      <Topic id="PreserveReferencesHandlingObject" visible="True" title="PreserveReferencesHandling setting" />
+      <Topic id="SerializeDateFormatHandling" visible="True" title="DateFormatHandling setting" />
+      <Topic id="SerializeDateTimeZoneHandling" visible="True" title="DateTimeZoneHandling setting" />
+      <Topic id="SerializeTypeNameHandling" visible="True" title="TypeNameHandling setting" />
+      <Topic id="SerializeContractResolver" visible="True" title="ContractResolver setting" />
+      <Topic id="TraceWriter" visible="True" title="TraceWriter setting" />
+      <Topic id="ErrorHandlingEvent" visible="True" title="ErrorHandling setting" />
+      <Topic id="MaxDepth" visible="True" title="MaxDepth setting" />
+      <Topic id="CustomJsonConverter" visible="True" title="Custom JsonConverter" />
+      <Topic id="CustomContractResolver" visible="True" title="Custom IContractResolver" />
+      <Topic id="CustomTraceWriter" visible="True" title="Custom ITraceWriter" />
+      <Topic id="SerializeSerializationBinder" visible="True" title="Custom SerializationBinder" />
+      <Topic id="JsonConverterAttributeClass" visible="True" title="JsonConverterAttribute on a class" />
+      <Topic id="JsonConverterAttributeProperty" visible="True" title="JsonConverterAttribute on a property" />
+      <Topic id="JsonObjectAttributeOptIn" visible="True" title="JsonObjectAttribute opt-in serialization" />
+      <Topic id="JsonObjectAttributeOverrideIEnumerable" visible="True" title="JsonObjectAttribute force object serialization" />
+      <Topic id="JsonPropertyName" visible="True" title="JsonPropertyAttribute name" />
+      <Topic id="JsonPropertyOrder" visible="True" title="JsonPropertyAttribute order" />
+      <Topic id="JsonPropertyRequired" visible="True" title="JsonPropertyAttribute required" />
+      <Topic id="JsonPropertyItemLevelSetting" visible="True" title="JsonPropertyAttribute items setting" />
+      <Topic id="JsonPropertyPropertyLevelSetting" visible="True" title="JsonPropertyAttribute property setting" />
+      <Topic id="PropertyJsonIgnore" visible="True" title="JsonIgnoreAttribute" />
+      <Topic id="ErrorHandlingAttribute" visible="True" title="ErrorHandlingAttribute" />
+      <Topic id="DefaultValueAttributeIgnore" visible="True" isSelected="true" title="DefaultValueAttribute" />
+      <Topic id="SerializationCallbackAttributes" visible="True" title="Serialization Callback Attributes" />
+      <Topic id="DataContractAndDataMember" visible="True" title="DataContract and DataMember Attributes" />
+    </Topic>
+    <Topic id="68b9fad2-5436-4e35-a734-9b9d751cc3e5" visible="True" noFile="true" title="LINQ to JSON">
+      <Topic id="CreateJsonManually" visible="True" title="Create JSON manually" />
+      <Topic id="CreateJsonAnonymousObject" visible="True" title="Create JSON from an Anonymous Object" />
+      <Topic id="CreateJsonCollectionInitializer" visible="True" title="Create JSON using Collection Initializers" />
+      <Topic id="CreateJsonDeclaratively" visible="True" title="Create JSON declaratively with LINQ" />
+      <Topic id="CreateJsonDynamic" visible="True" title="Create JSON with dynamic" />
+      <Topic id="CreateJsonJTokenWriter" visible="True" title="Create JSON with JTokenWriter" />
+      <Topic id="FromObject" visible="True" title="Create JSON from an Object" />
+      <Topic id="ParseJsonArray" visible="True" title="Parsing JSON Array using JArray.Parse" />
+      <Topic id="ParseJsonObject" visible="True" title="Parsing JSON Object using JObject.Parse" />
+      <Topic id="ParseJsonAny" visible="True" title="Parsing all JSON using JToken.Parse" />
+      <Topic id="DeserializeWithLinq" visible="True" title="Deserializing from JSON with LINQ" />
+      <Topic id="SerializeWithLinq" visible="True" title="Serializing to JSON with LINQ" />
+      <Topic id="ModifyJson" visible="True" title="Modifying JSON" />
+      <Topic id="QueryJson" visible="True" title="Querying JSON" />
+      <Topic id="QueryJsonDynamic" visible="True" title="Querying JSON with dynamic" />
+      <Topic id="QueryJsonLinq" visible="True" title="Querying JSON with LINQ" />
+      <Topic id="QueryJsonSelectToken" visible="True" title="Querying JSON with SelectToken" />
+      <Topic id="QueryJsonSelectTokenWithLinq" visible="True" title="Querying JSON with SelectToken and LINQ" />
+      <Topic id="ReadJson" visible="True" title="Read JSON from a file" />
+      <Topic id="WriteToJsonFile" visible="True" title="Write JSON to a file" />
+      <Topic id="ToObjectComplex" visible="True" title="Convert JSON to Collection" />
+      <Topic id="ToObjectGeneric" visible="True" title="Convert JSON to Value" />
+      <Topic id="ToObjectType" visible="True" title="Convert JSON to a Type" />
+      <Topic id="JValueCast" visible="True" title="Casting JValue" />
+      <Topic id="JValueValue" visible="True" title="Using JValue.Value" />
+      <Topic id="JObjectProperties" visible="True" title="Using JObject.Properties" />
+      <Topic id="DeepEquals" visible="True" title="Comparing JSON with JToken.DeepEquals" />
+      <Topic id="Clone" visible="True" title="Cloning JSON with JToken.DeepClone" />
+      <Topic id="ToString" visible="True" title="Write JSON text with JToken.ToString" />
+      <Topic id="ToStringJsonConverter" visible="True" title="Using JToken.ToString with JsonConverter" />
+      <Topic id="CreateReader" visible="True" title="Using JToken.CreateReader" />
+      <Topic id="CreateWriter" visible="True" title="Using JToken.CreateWriter" />
+      <Topic id="ReadJTokenFromBson" visible="True" title="Read from BSON" />
+      <Topic id="WriteJTokenToBson" visible="True" title="Write as BSON" />
+    </Topic>
+    <Topic id="11cded7e-959a-4c6d-a9c9-61d571b75edc" visible="True" noFile="true" title="JSON Schema">
+      <Topic id="JsonSchemaParse" visible="True" title="Parse JSON Schema from JSON" />
+      <Topic id="LoadJsonSchemaFromFile" visible="True" title="Load JSON Schema from a file" />
+      <Topic id="CreateJsonSchemaManually" visible="True" title="Create JSON Schema manually" />
+      <Topic id="SaveJsonSchemaToFile" visible="True" title="Save JSON Schema to a file" />
+      <Topic id="JTokenIsValid" visible="True" title="Validate JSON with JToken.IsValid" />
+      <Topic id="JTokenIsValidWithMessages" visible="True" title="Validate with validation error messages" />
+      <Topic id="JTokenValidateWithEvent" visible="True" title="Validate with validation error events" />
+      <Topic id="JsonValidatingReaderAndSerializer" visible="True" title="Validate JSON with JsonValidatingReader" />
+      <Topic id="RefJsonSchemaResolver" visible="True" title="Using JsonSchemaResolver" />
+    </Topic>
+    <Topic id="0eeb9041-1824-48aa-b070-50d5fcd6ab68" visible="True" noFile="true" title="Converting XML">
+      <Topic id="ConvertJsonToXml" visible="True" title="Convert JSON to XML" />
+      <Topic id="ConvertXmlToJson" visible="True" title="Convert XML to JSON" />
+      <Topic id="ConvertXmlToJsonForceArray" visible="True" title="Convert XML to JSON and force array" />
+    </Topic>
+    <Topic id="d3ec6e07-1411-4fde-ba66-c0cede5e1ae8" visible="True" noFile="true" title="BSON">
+      <Topic id="SerializeToBson" visible="True" title="Serialize to BSON" />
+      <Topic id="DeserializeFromBson" visible="True" title="Deserialize from BSON" />
+      <Topic id="DeserializeFromBsonCollection" visible="True" title="Deserialize a Collection from BSON" />
+    </Topic>
+    <Topic id="ca145ed0-f377-4f1c-9479-d1629082fc6e" visible="True" noFile="true" title="Reading and Writing JSON">
+      <Topic id="ReadJsonWithJsonTextReader" visible="True" title="Read JSON with JsonTextReader" />
+      <Topic id="WriteJsonWithJsonTextWriter" visible="True" title="Write JSON with JsonTextWriter" />
     </Topic>
   </Topic>
 </Topics>

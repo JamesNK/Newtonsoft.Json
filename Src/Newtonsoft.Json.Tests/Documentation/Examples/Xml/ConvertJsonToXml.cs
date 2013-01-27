@@ -10,6 +10,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Xml
   {
     public void Example()
     {
+      #region Usage
       string json = @"{
         '@Id': 1,
         'Email': 'james@example.com',
@@ -40,6 +41,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Xml
       //     <Description>Creators of fine software products and services.</Description>
       //   </Team>
       // </Root>
+      #endregion
     }
   }
 }

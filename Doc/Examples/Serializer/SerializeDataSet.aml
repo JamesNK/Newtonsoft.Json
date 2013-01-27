@@ -2,7 +2,7 @@
 <topic id="SerializeDataSet" revisionNumber="1">
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
-      <para>This example serializes a DataSet to JSON.</para>
+      <para>This example serializes a <codeEntityReference>T:System.Data.DataSet</codeEntityReference> to JSON.</para>
     </introduction>
     <section>
       <title>Example</title>

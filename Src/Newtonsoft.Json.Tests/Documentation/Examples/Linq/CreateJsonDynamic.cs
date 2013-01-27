@@ -10,6 +10,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
   {
     public void Example()
     {
+      #region Usage
       dynamic product = new JObject();
       product.ProductName = "Elbow Grease";
       product.Enabled = true;
@@ -30,6 +31,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
       //     "OnSale"
       //   ]
       // }
+      #endregion
     }
   }
 }

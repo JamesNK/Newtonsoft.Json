@@ -8,6 +8,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
 {
   public class CreateJsonAnonymousObject
   {
+    #region Types
     public class Post
     {
       public string Title { get; set; }
@@ -15,9 +16,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
       public string Link { get; set; }
       public IList<string> Categories { get; set; }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       List<Post> posts = new List<Post>
         {
           new Post
@@ -72,6 +75,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
       //     ]
       //   }
       // }
+      #endregion
     }
   }
 }

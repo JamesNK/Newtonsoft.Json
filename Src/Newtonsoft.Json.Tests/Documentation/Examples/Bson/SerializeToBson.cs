@@ -10,14 +10,17 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Bson
 {
   public class SerializeToBson
   {
+    #region Types
     public class Event
     {
       public string Name { get; set; }
       public DateTime StartDate { get; set; }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       Event e = new Event
         {
           Name = "Movie Premiere",
@@ -35,6 +38,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Bson
       
       Console.WriteLine(data);
       // MQAAAAJOYW1lAA8AAABNb3ZpZSBQcmVtaWVyZQAJU3RhcnREYXRlAMDgKWE8AQAAAA==
+      #endregion
     }
   }
 }

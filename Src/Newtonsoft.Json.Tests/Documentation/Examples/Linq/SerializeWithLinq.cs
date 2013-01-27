@@ -9,6 +9,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
 {
   public class SerializeWithLinq
   {
+    #region Types
     public class BlogPost
     {
       public string Title { get; set; }
@@ -17,9 +18,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
       public string Body { get; set; }
       public DateTime PostedDate { get; set; }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       IList<BlogPost> blogPosts = new List<BlogPost>
         {
           new BlogPost
@@ -29,7 +32,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
               AuthorTwitter = "JamesNK",
               PostedDate = new DateTime(2013, 1, 23, 19, 30, 0),
               Body = @"<h3>Title!</h3>
-<p>Content!</p>"
+                       <p>Content!</p>"
             }
         };
 
@@ -61,6 +64,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
       //     "BodyHtml": "&lt;h3&gt;Title!&lt;/h3&gt;\r\n&lt;p&gt;Content!&lt;/p&gt;"
       //   }
       // ]
+      #endregion
     }
   }
 }

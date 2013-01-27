@@ -10,6 +10,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
   {
     public void Example()
     {
+      #region Usage
       JValue v1 = new JValue("1");
       int i = (int)v1;
 
@@ -50,6 +51,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
 
       Console.WriteLine((dt != null) ? dt.ToString() : "{null}");
       // {null}
+      #endregion
     }
   }
 }

@@ -9,14 +9,17 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Bson
 {
   public class DeserializeFromBson
   {
+    #region Types
     public class Event
     {
       public string Name { get; set; }
       public DateTime StartDate { get; set; }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       byte[] data = Convert.FromBase64String("MQAAAAJOYW1lAA8AAABNb3ZpZSBQcmVtaWVyZQAJU3RhcnREYXRlAMDgKWE8AQAAAA==");
 
       MemoryStream ms = new MemoryStream(data);
@@ -29,6 +32,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Bson
         Console.WriteLine(e.Name);
         // Movie Premiere
       }
+      #endregion
     }
   }
 }

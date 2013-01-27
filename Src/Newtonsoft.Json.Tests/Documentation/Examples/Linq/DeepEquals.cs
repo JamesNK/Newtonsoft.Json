@@ -10,6 +10,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
   {
     public void Example()
     {
+      #region Usage
       JValue s1 = new JValue("A string");
       JValue s2 = new JValue("A string");
       JValue s3 = new JValue("A STRING");
@@ -39,6 +40,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
 
       Console.WriteLine(JToken.DeepEquals(s1, o1["String"]));
       // true
+      #endregion
     }
   }
 }

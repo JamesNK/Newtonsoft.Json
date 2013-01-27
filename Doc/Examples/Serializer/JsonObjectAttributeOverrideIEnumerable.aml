@@ -3,7 +3,7 @@
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
       <para>This example uses <codeEntityReference>T:Newtonsoft.Json.JsonObjectAttribute</codeEntityReference>
-      to serialize a class that implements <codeEntityReference>T:System.IEnumerable`1</codeEntityReference> as
+      to serialize a class that implements <codeEntityReference>T:System.Collections.IEnumerable`1</codeEntityReference> as
       a JSON object instead of a JSON array.</para>
     </introduction>
     <section>

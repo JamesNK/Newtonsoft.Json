@@ -9,6 +9,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
 {
   public class DeserializeWithLinq
   {
+    #region Types
     public class BlogPost
     {
       public string Title { get; set; }
@@ -17,9 +18,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
       public string Body { get; set; }
       public DateTime PostedDate { get; set; }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       string json = @"[
         {
           'Title': 'Json.NET is awesome!',
@@ -47,6 +50,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
       Console.WriteLine(blogPosts[0].Body);
       // <h3>Title!</h3>
       // <p>Content!</p>
+      #endregion
     }
   }
 }

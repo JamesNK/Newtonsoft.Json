@@ -8,6 +8,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
 {
   public class CreateJsonDeclaratively
   {
+    #region Types
     public class Post
     {
       public string Title { get; set; }
@@ -15,13 +16,16 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
       public string Link { get; set; }
       public IList<string> Categories { get; set; }
     }
+    #endregion
 
     private List<Post> GetPosts()
     {
       return null;
     }
+
     public void Example()
     {
+      #region Usage
       List<Post> posts = GetPosts();
 
       JObject rss =
@@ -73,6 +77,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
       //     ]
       //   }
       // }
+      #endregion
     }
   }
 }

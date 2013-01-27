@@ -11,6 +11,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Schema
   {
     public void Example()
     {
+      #region Usage
       string schemaJson = @"{
         'description': 'A person',
         'type': 'object',
@@ -34,6 +35,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Schema
       }
       // name - String
       // hobbies - Array
+      #endregion
     }
   }
 }

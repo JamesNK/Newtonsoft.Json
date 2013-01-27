@@ -11,6 +11,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Schema
   {
     public void Example()
     {
+      #region Usage
       JsonSchema schema = new JsonSchema();
       schema.Type = JsonSchemaType.Object;
       schema.Properties = new Dictionary<string, JsonSchema>
@@ -52,6 +53,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Schema
 
       Console.WriteLine(valid);
       // true
+      #endregion
     }
   }
 }

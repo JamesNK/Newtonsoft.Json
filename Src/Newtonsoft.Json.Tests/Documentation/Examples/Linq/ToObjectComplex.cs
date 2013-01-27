@@ -8,13 +8,16 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
 {
   public class ToObjectComplex
   {
+    #region Types
     public class Person
     {
       public string Name { get; set; }
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       string json = @"{
         'd': [
           {
@@ -37,6 +40,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
 
       Console.WriteLine(person[1].Name);
       // Mike Smith
+      #endregion
     }
   }
 }

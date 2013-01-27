@@ -10,6 +10,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
   {
     public void Example()
     {
+      #region Usage
       JObject o = new JObject
         {
           {"name1", "value1"},
@@ -32,6 +33,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
       //     2
       //   ]
       // }
+      #endregion
     }
   }
 }

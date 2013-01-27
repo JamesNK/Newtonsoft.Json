@@ -10,6 +10,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Json
   {
     public void Example()
     {
+      #region Usage
       StringBuilder sb = new StringBuilder();
       StringWriter sw = new StringWriter(sb);
 
@@ -43,6 +44,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Json
       //     "200 gigabype hard drive"
       //   ]
       // }
+      #endregion
     }
   }
 }

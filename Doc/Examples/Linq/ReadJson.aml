@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="ReadJson" revisionNumber="1">
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <introduction>
+      <para>This example reads JSON from a file into a <codeEntityReference>T:Newtonsoft.Json.Linq.JObject</codeEntityReference>.</para>
+    </introduction>
+    <section>
+      <title>Example</title>
+      <content>
+        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Examples\Linq\ReadJson.cs" region="Usage" title="Usage" />
+      </content>
+    </section>
+  </developerConceptualDocument>
+</topic>

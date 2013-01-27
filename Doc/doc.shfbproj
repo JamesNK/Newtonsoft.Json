@@ -137,6 +137,57 @@
     <Content Include="donate.gif" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Examples\Xml\ConvertXmlToJsonForceArray.aml" />
+    <None Include="Examples\Xml\ConvertXmlToJson.aml" />
+    <None Include="Examples\Xml\ConvertJsonToXml.aml" />
+    <None Include="Examples\Schema\SaveJsonSchemaToFile.aml" />
+    <None Include="Examples\Schema\RefJsonSchemaResolver.aml" />
+    <None Include="Examples\Schema\LoadJsonSchemaFromFile.aml" />
+    <None Include="Examples\Schema\JTokenValidateWithEvent.aml" />
+    <None Include="Examples\Schema\JTokenIsValidWithMessages.aml" />
+    <None Include="Examples\Schema\JTokenIsValid.aml" />
+    <None Include="Examples\Schema\JsonValidatingReaderAndSerializer.aml" />
+    <None Include="Examples\Schema\JsonSchemaParse.aml" />
+    <None Include="Examples\Schema\CreateJsonSchemaManually.aml" />
+    <None Include="Examples\Linq\WriteToJsonFile.aml" />
+    <None Include="Examples\Linq\WriteJTokenToBson.aml" />
+    <None Include="Examples\Linq\ToStringJsonConverter.aml" />
+    <None Include="Examples\Linq\ToString.aml" />
+    <None Include="Examples\Linq\ToObjectType.aml" />
+    <None Include="Examples\Linq\ToObjectGeneric.aml" />
+    <None Include="Examples\Linq\ToObjectComplex.aml" />
+    <None Include="Examples\Linq\SerializeWithLinq.aml" />
+    <None Include="Examples\Linq\ReadJTokenFromBson.aml" />
+    <None Include="Examples\Linq\ReadJson.aml" />
+    <None Include="Examples\Linq\QueryJsonSelectTokenWithLinq.aml" />
+    <None Include="Examples\Linq\QueryJsonSelectToken.aml" />
+    <None Include="Examples\Linq\QueryJsonLinq.aml" />
+    <None Include="Examples\Linq\QueryJsonDynamic.aml" />
+    <None Include="Examples\Linq\QueryJson.aml" />
+    <None Include="Examples\Linq\ParseJsonObject.aml" />
+    <None Include="Examples\Linq\ParseJsonArray.aml" />
+    <None Include="Examples\Linq\ParseJsonAny.aml" />
+    <None Include="Examples\Linq\ModifyJson.aml" />
+    <None Include="Examples\Linq\JValueValue.aml" />
+    <None Include="Examples\Linq\JValueCast.aml" />
+    <None Include="Examples\Linq\JObjectProperties.aml" />
+    <None Include="Examples\Linq\FromObject.aml" />
+    <None Include="Examples\Linq\DeserializeWithLinq.aml" />
+    <None Include="Examples\Linq\DeepEquals.aml" />
+    <None Include="Examples\Linq\CreateWriter.aml" />
+    <None Include="Examples\Linq\CreateReader.aml" />
+    <None Include="Examples\Linq\CreateJsonManually.aml" />
+    <None Include="Examples\Linq\CreateJsonJTokenWriter.aml" />
+    <None Include="Examples\Linq\CreateJsonDynamic.aml" />
+    <None Include="Examples\Linq\CreateJsonDeclaratively.aml" />
+    <None Include="Examples\Linq\CreateJsonCollectionInitializer.aml" />
+    <None Include="Examples\Linq\CreateJsonAnonymousObject.aml" />
+    <None Include="Examples\Linq\Clone.aml" />
+    <None Include="Examples\Json\WriteJsonWithJsonTextWriter.aml" />
+    <None Include="Examples\Json\ReadJsonWithJsonTextReader.aml" />
+    <None Include="Examples\Bson\SerializeToBson.aml" />
+    <None Include="Examples\Bson\DeserializeFromBsonCollection.aml" />
+    <None Include="Examples\Bson\DeserializeFromBson.aml" />
     <None Include="Examples\Serializer\TraceWriter.aml" />
     <None Include="Examples\Serializer\SerializeWithJsonSerializerToFile.aml" />
     <None Include="Examples\Serializer\SerializeWithJsonConverters.aml" />
@@ -243,6 +294,11 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Examples\Xml\" />
+    <Folder Include="Examples\Schema\" />
+    <Folder Include="Examples\Linq\" />
+    <Folder Include="Examples\Json\" />
+    <Folder Include="Examples\Bson\" />
     <Folder Include="Examples\Serializer\" />
     <Folder Include="Examples\" />
   </ItemGroup>

@@ -10,6 +10,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
   {
     public void Example()
     {
+      #region Usage
       JValue v1 = new JValue(true);
 
       bool b = (bool)v1.ToObject(typeof(bool));
@@ -26,6 +27,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
 
       Console.WriteLine(s);
       // "True"
+      #endregion
     }
   }
 }

@@ -8,15 +8,18 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
 {
   public class FromObject
   {
+    #region Types
     public class Computer
     {
       public string Cpu { get; set; }
       public int Memory { get; set; }
       public IList<string> Drives { get; set; } 
     }
+    #endregion
 
     public void Example()
     {
+      #region Usage
       JValue i = (JValue)JToken.FromObject(12345);
 
       Console.WriteLine(i.Type);
@@ -61,6 +64,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
       //   "DVD",
       //   "SSD"
       // ]
+      #endregion
     }
   }
 }

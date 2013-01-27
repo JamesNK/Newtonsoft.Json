@@ -36,8 +36,9 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Serializer
       {
         JsonConvert.DeserializeObject<Website>(json);
       }
-      catch (TargetInvocationException)
+      catch (TargetInvocationException ex)
       {
+        Console.WriteLine(ex);
         // Value cannot be null.
         // Parameter name: website
       }

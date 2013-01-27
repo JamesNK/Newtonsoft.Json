@@ -10,6 +10,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
   {
     public void Example()
     {
+      #region Usage
       JToken t1 = JToken.Parse("{}");
 
       Console.WriteLine(t1.Type);
@@ -29,6 +30,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
 
       Console.WriteLine(t4.Type);
       // String
+      #endregion
     }
   }
 }

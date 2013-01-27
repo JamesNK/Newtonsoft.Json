@@ -11,6 +11,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
   {
     public void Example()
     {
+      #region Usage
       string json = @"[
         {
           'Title': 'Json.NET is awesome!',
@@ -29,16 +30,20 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
       dynamic blogPost = blogPosts[0];
 
       string title = blogPost.Title;
+
       Console.WriteLine(title);
       // Json.NET is awesome!
 
       string author = blogPost.Author.Name;
+
       Console.WriteLine(author);
       // James Newton-King
 
       DateTime postDate = blogPost.Date;
+
       Console.WriteLine(postDate);
       // 23/01/2013 7:30:00 p.m.
+      #endregion
     }
   }
 }

@@ -10,6 +10,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
   {
     public void Example()
     {
+      #region Usage
       JValue s = new JValue("A string value");
 
       Console.WriteLine(s.Value.GetType().Name);
@@ -23,6 +24,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
       // Uri
       Console.WriteLine(u.Value);
       // http://www.google.com/
+      #endregion
     }
   }
 }

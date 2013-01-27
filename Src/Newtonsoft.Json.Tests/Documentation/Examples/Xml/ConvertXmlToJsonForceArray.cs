@@ -10,6 +10,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Xml
   {
     public void Example()
     {
+      #region Usage
       string xml = @"<person id='1'>
         <name>Alan</name>
         <url>http://www.google.com</url>
@@ -53,6 +54,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Xml
       //     ]
       //   }
       // }
+      #endregion
     }
   }
 }

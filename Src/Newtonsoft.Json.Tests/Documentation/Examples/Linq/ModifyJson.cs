@@ -10,6 +10,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
   {
     public void Example()
     {
+      #region Usage
       string json = @"{
         'channel': {
           'title': 'Star Wars',
@@ -48,6 +49,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
       //     ]
       //   }
       // }
+      #endregion
     }
   }
 }

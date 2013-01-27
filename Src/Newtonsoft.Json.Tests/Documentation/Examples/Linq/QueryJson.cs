@@ -10,6 +10,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
   {
     public void Example()
     {
+      #region Usage
       string json = @"{
         'channel': {
           'title': 'James Newton-King',
@@ -62,6 +63,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
 
       Console.WriteLine(string.Join(", ", categoriesText));
       // Json.NET, CodePlex
+      #endregion
     }
   }
 }

@@ -135,7 +135,6 @@
     <Compile Include="Documentation\Examples\Schema\JTokenIsValid.cs" />
     <Compile Include="Documentation\Examples\Schema\RefJsonSchemaResolver.cs" />
     <Compile Include="Documentation\Examples\Schema\SaveJsonSchemaToFile.cs" />
-    <Compile Include="Documentation\Examples\Schema\JsonSchemaLoad.cs" />
     <Compile Include="Documentation\Examples\Schema\JsonSchemaParse.cs" />
     <Compile Include="Documentation\Examples\Linq\Clone.cs" />
     <Compile Include="Documentation\Examples\Linq\ReadJTokenFromBson.cs" />

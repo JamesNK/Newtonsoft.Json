@@ -10,6 +10,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
   {
     public void Example()
     {
+      #region Usage
       JObject o = JObject.Parse(@"{
         'Stores': [
           'Lambton Quay',
@@ -55,6 +56,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
 
       Console.WriteLine(productName);
       // Elbow Grease
+      #endregion
     }
   }
 }

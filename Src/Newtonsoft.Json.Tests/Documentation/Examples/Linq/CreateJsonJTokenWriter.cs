@@ -10,6 +10,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
   {
     public void Example()
     {
+      #region Usage
       JTokenWriter writer = new JTokenWriter();
       writer.WriteStartObject();
       writer.WritePropertyName("name1");
@@ -31,6 +32,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
       //     2
       //   ]
       // }
+      #endregion
     }
   }
 }

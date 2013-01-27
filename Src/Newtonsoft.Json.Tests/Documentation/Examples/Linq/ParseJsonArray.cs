@@ -10,6 +10,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
   {
     public void Example()
     {
+      #region Usage
       string json = @"[
         'Small',
         'Medium',
@@ -24,6 +25,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Linq
       //   "Medium",
       //   "Large"
       // ]
+      #endregion
     }
   }
 }

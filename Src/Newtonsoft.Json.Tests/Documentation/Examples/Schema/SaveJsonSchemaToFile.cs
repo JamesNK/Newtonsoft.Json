@@ -11,6 +11,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Schema
   {
     public void Example()
     {
+      #region Usage
       JsonSchema schema = JsonSchema.Parse(@"{'type': 'object'}");
 
       // serialize JsonSchema to a string and then write string to a file
@@ -22,6 +23,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Schema
       {
         schema.WriteTo(writer);
       }
+      #endregion
     }
   }
 }

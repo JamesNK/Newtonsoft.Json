@@ -11,6 +11,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Schema
   {
     public void Example()
     {
+      #region Usage
       // read file into a string and parse JsonSchema from the string
       JsonSchema schema1 = JsonSchema.Parse(File.ReadAllText(@"c:\schema.json"));
 
@@ -20,6 +21,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Schema
       {
         JsonSchema schema2 = JsonSchema.Read(reader);
       }
+      #endregion
     }
   }
 }

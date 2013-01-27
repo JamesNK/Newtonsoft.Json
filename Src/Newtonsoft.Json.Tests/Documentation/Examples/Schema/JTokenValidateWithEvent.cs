@@ -11,6 +11,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Schema
   {
     public void Example()
     {
+      #region Usage
       string schemaJson = @"{
         'description': 'A person',
         'type': 'object',
@@ -41,6 +42,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Examples.Schema
       }
       // Invalid type. Expected String but got Null. Line 2, position 21.
       // Invalid type. Expected String but got Float. Line 3, position 51.
+      #endregion
     }
   }
 }
