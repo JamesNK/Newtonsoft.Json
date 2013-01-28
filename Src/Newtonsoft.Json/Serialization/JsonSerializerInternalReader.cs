@@ -1466,6 +1466,10 @@ To fix this error either change the environment to be fully trusted, change the 
 
       ReadType t = (contract != null) ? contract.InternalReadType : ReadType.Read;
 
+      if (   Serializer.MemberTypeConversionHandling == MemberTypeConversionHandling.ProhibitTypeConversions
+          && (t == ReadType.ReadAsInt32 || t == ReadType.ReadAsDecimal))
+          t = ReadType.Read;
+
       switch (t)
       {
         case ReadType.Read:
