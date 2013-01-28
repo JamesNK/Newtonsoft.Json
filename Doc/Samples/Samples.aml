@@ -2,9 +2,7 @@
 <topic id="Samples" revisionNumber="1">
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
-      <para>These code samples cover Json.NET's most commonly used functionality, demonstrating
-      how to serialize JSON using the JsonSerializer; read, write and modify JSON using LINQ to JSON;
-      and validate JSON using JSON Schema.</para>
+      <para>Over 100 code samples covering Json.NET's most commonly used functionality.</para>
     </introduction>
     <section>
       <title>Samples</title>
@@ -18,7 +16,7 @@
         <para><legacyBold>LINQ to JSON</legacyBold> - Parsing, querying, modifying and writing JSON</para>
     </listItem>
     <listItem>
-        <para><legacyBold>JSON Schema</legacyBold> - Parsing schemas and validating JSON</para>
+        <para><legacyBold>JSON Schema</legacyBold> - Loading schemas and validating JSON</para>
     </listItem>
     <listItem>
         <para><legacyBold>Converting XML</legacyBold> - Converting JSON to XML and XML to JSON</para>
@@ -30,7 +28,6 @@
         <para><legacyBold>Reading and Writing JSON</legacyBold> - Reading JSON with JsonTextReader, writing JSON with JsonTextWriter</para>
     </listItem>
 </list>
-      <para>Sample links are available on the left hand menu.</para>
 
       </content>
     </section>

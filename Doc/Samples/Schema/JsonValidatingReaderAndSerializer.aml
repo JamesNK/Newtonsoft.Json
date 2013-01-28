@@ -2,14 +2,14 @@
 <topic id="JsonValidatingReaderAndSerializer" revisionNumber="1">
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
-      <para>This example validates JSON when deserializing an object using
+      <para>This sample validates JSON while deserializing an object using
       <codeEntityReference>T:Newtonsoft.Json.JsonValidatingReader</codeEntityReference>.</para>
     </introduction>
     <section>
-      <title>Example</title>
+      <title>Sample</title>
       <content>
-        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Examples\Schema\JsonValidatingReaderAndSerializer.cs" region="Types" title="Types" />
-        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Examples\Schema\JsonValidatingReaderAndSerializer.cs" region="Usage" title="Usage" />
+        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\Schema\JsonValidatingReaderAndSerializer.cs" region="Types" title="Types" />
+        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\Schema\JsonValidatingReaderAndSerializer.cs" region="Usage" title="Usage" />
       </content>
     </section>
   </developerConceptualDocument>

@@ -2,13 +2,13 @@
 <topic id="SerializeDateFormatHandling" revisionNumber="1">
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
-      <para>This example uses the <codeEntityReference>T:Newtonsoft.Json.DateFormatHandling</codeEntityReference>
+      <para>This sample uses the <codeEntityReference>T:Newtonsoft.Json.DateFormatHandling</codeEntityReference>
       setting to control how <codeEntityReference>T:System.DateTime</codeEntityReference> and <codeEntityReference>T:System.DateTimeOffset</codeEntityReference> are serialized.</para>
     </introduction>
     <section>
-      <title>Example</title>
+      <title>Sample</title>
       <content>
-        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Examples\Serializer\SerializeDateFormatHandling.cs" region="Usage" title="Usage" />
+        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\Serializer\SerializeDateFormatHandling.cs" region="Usage" title="Usage" />
       </content>
     </section>
   </developerConceptualDocument>

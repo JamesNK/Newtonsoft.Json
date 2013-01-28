@@ -2,15 +2,15 @@
 <topic id="JsonObjectAttributeOverrideIEnumerable" revisionNumber="1">
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
-      <para>This example uses <codeEntityReference>T:Newtonsoft.Json.JsonObjectAttribute</codeEntityReference>
-      to serialize a class that implements <codeEntityReference>T:System.Collections.IEnumerable`1</codeEntityReference> as
+      <para>This sample uses <codeEntityReference>T:Newtonsoft.Json.JsonObjectAttribute</codeEntityReference>
+      to serialize a class that implements <codeEntityReference>I:System.Collections.IEnumerable`1</codeEntityReference> as
       a JSON object instead of a JSON array.</para>
     </introduction>
     <section>
-      <title>Example</title>
+      <title>Sample</title>
       <content>
-        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Examples\Serializer\JsonObjectAttributeOverrideIEnumerable.cs" region="Types" title="Types" />
-        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Examples\Serializer\JsonObjectAttributeOverrideIEnumerable.cs" region="Usage" title="Usage" />
+        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\Serializer\JsonObjectAttributeOverrideIEnumerable.cs" region="Types" title="Types" />
+        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\Serializer\JsonObjectAttributeOverrideIEnumerable.cs" region="Usage" title="Usage" />
       </content>
     </section>
   </developerConceptualDocument>

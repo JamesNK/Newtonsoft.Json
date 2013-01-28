@@ -29,8 +29,8 @@
   <Topic id="ConvertingJSONandXML" visible="True" title="Converting between JSON and XML" />
   <Topic id="JsonNetVsDotNetSerializers" visible="True" title="Json.NET vs .NET Serializers" />
   <Topic id="JsonNetVsWindowsDataJson" visible="True" title="Json.NET vs Windows.Data.Json" />
-  <Topic id="Examples" visible="True" isExpanded="true" title="Examples">
-    <Topic id="d6e185d5-c992-44fc-8d8f-d9acc2bbec2f" visible="True" noFile="true" isExpanded="true" title="Serializing JSON">
+  <Topic id="Samples" visible="True" isExpanded="true" title="Samples">
+    <Topic id="d6e185d5-c992-44fc-8d8f-d9acc2bbec2f" visible="True" noFile="true" title="Serializing JSON">
       <Topic id="SerializeObject" visible="True" title="Serialize an Object" />
       <Topic id="SerializeCollection" visible="True" title="Serialize a Collection" />
       <Topic id="SerializeDictionary" visible="True" title="Serialize a Dictionary" />
@@ -77,13 +77,13 @@
       <Topic id="JsonPropertyPropertyLevelSetting" visible="True" title="JsonPropertyAttribute property setting" />
       <Topic id="PropertyJsonIgnore" visible="True" title="JsonIgnoreAttribute" />
       <Topic id="ErrorHandlingAttribute" visible="True" title="ErrorHandlingAttribute" />
-      <Topic id="DefaultValueAttributeIgnore" visible="True" isSelected="true" title="DefaultValueAttribute" />
+      <Topic id="DefaultValueAttributeIgnore" visible="True" title="DefaultValueAttribute" />
       <Topic id="SerializationCallbackAttributes" visible="True" title="Serialization Callback Attributes" />
       <Topic id="DataContractAndDataMember" visible="True" title="DataContract and DataMember Attributes" />
     </Topic>
-    <Topic id="68b9fad2-5436-4e35-a734-9b9d751cc3e5" visible="True" noFile="true" title="LINQ to JSON">
+    <Topic id="68b9fad2-5436-4e35-a734-9b9d751cc3e5" visible="True" noFile="true" isExpanded="true" title="LINQ to JSON">
       <Topic id="CreateJsonManually" visible="True" title="Create JSON manually" />
-      <Topic id="CreateJsonAnonymousObject" visible="True" title="Create JSON from an Anonymous Object" />
+      <Topic id="CreateJsonAnonymousObject" visible="True" isSelected="true" title="Create JSON from an Anonymous Type" />
       <Topic id="CreateJsonCollectionInitializer" visible="True" title="Create JSON using Collection Initializers" />
       <Topic id="CreateJsonDeclaratively" visible="True" title="Create JSON declaratively with LINQ" />
       <Topic id="CreateJsonDynamic" visible="True" title="Create JSON with dynamic" />

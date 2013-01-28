@@ -2,13 +2,13 @@
 <topic id="SerializeConditionalProperty" revisionNumber="1">
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
-      <para>This example uses a conditional property to exclude a property from serialization.</para>
+      <para>This sample uses a conditional property to exclude a property from serialization.</para>
     </introduction>
     <section>
-      <title>Example</title>
+      <title>Sample</title>
       <content>
-        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Examples\Serializer\SerializeConditionalProperty.cs" region="Types" title="Types" />
-        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Examples\Serializer\SerializeConditionalProperty.cs" region="Usage" title="Usage" />
+        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\Serializer\SerializeConditionalProperty.cs" region="Types" title="Types" />
+        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\Serializer\SerializeConditionalProperty.cs" region="Usage" title="Usage" />
       </content>
     </section>
   </developerConceptualDocument>

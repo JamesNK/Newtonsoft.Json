@@ -2,15 +2,15 @@
 <topic id="JsonPropertyRequired" revisionNumber="1">
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
-      <para>This example uses <codeEntityReference>T:Newtonsoft.Json.JsonPropertyAttribute</codeEntityReference>
+      <para>This sample uses <codeEntityReference>T:Newtonsoft.Json.JsonPropertyAttribute</codeEntityReference>
       to set <codeEntityReference>T:Newtonsoft.Json.Required</codeEntityReference> which is used during deserialization
       to validate the presence of required JSON properties.</para>
     </introduction>
     <section>
-      <title>Example</title>
+      <title>Sample</title>
       <content>
-        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Examples\Serializer\JsonPropertyRequired.cs" region="Types" title="Types" />
-        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Examples\Serializer\JsonPropertyRequired.cs" region="Usage" title="Usage" />
+        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\Serializer\JsonPropertyRequired.cs" region="Types" title="Types" />
+        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\Serializer\JsonPropertyRequired.cs" region="Usage" title="Usage" />
       </content>
     </section>
   </developerConceptualDocument>

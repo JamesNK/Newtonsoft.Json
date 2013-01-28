@@ -2,13 +2,13 @@
 <topic id="JObjectProperties" revisionNumber="1">
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
-      <para>This example gets an object's <codeEntityReference>T:Newtonsoft.Json.Linq.JProperty</codeEntityReference>
+      <para>This sample gets an object's <codeEntityReference>T:Newtonsoft.Json.Linq.JProperty</codeEntityReference>
       collection using <codeEntityReference>M:Newtonsoft.Json.Linq.JObject.Properties</codeEntityReference>.</para>
     </introduction>
     <section>
-      <title>Example</title>
+      <title>Sample</title>
       <content>
-        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Examples\Linq\JObjectProperties.cs" region="Usage" title="Usage" />
+        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\Linq\JObjectProperties.cs" region="Usage" title="Usage" />
       </content>
     </section>
   </developerConceptualDocument>

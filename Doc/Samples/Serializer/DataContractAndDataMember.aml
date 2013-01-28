@@ -2,17 +2,17 @@
 <topic id="DataContractAndDataMember" revisionNumber="1">
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
-      <para>This example shows how .NET Framework attributes such as
+      <para>This sample shows how .NET Framework attributes such as
       <codeEntityReference>T:System.Runtime.Serialization.DataContractAttribute</codeEntityReference>,
       <codeEntityReference>T:System.Runtime.Serialization.DataMemberAttribute</codeEntityReference> and
-      <codeEntityReference>T:System.Runtime.Serialization.NonSerializedAttribute</codeEntityReference>
+      <codeEntityReference>T:System.NonSerializedAttribute</codeEntityReference>
       can be used with Json.NET instead of Json.NET's own attributes.</para>
     </introduction>
     <section>
-      <title>Example</title>
+      <title>Sample</title>
       <content>
-        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Examples\Serializer\CustomContractResolver.cs" region="Types" title="Types" />
-        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Examples\Serializer\CustomContractResolver.cs" region="Usage" title="Usage" />
+        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\Serializer\CustomContractResolver.cs" region="Types" title="Types" />
+        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\Serializer\CustomContractResolver.cs" region="Usage" title="Usage" />
       </content>
     </section>
   </developerConceptualDocument>
