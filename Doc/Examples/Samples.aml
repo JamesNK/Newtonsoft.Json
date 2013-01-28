@@ -1,11 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<topic id="Examples" revisionNumber="1">
+<topic id="Samples" revisionNumber="1">
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
-      <para>These are examples of Json.NET being used with JSON and .NET.</para>
+      <para>These code samples cover Json.NET's most commonly used functionality, demonstrating
+      how to serialize JSON using the JsonSerializer; read, write and modify JSON using LINQ to JSON;
+      and validate JSON using JSON Schema.</para>
     </introduction>
     <section>
-      <title>Examples</title>
+      <title>Samples</title>
       <content>
 
 <list class="bullet">
@@ -28,6 +30,7 @@
         <para><legacyBold>Reading and Writing JSON</legacyBold> - Reading JSON with JsonTextReader, writing JSON with JsonTextWriter</para>
     </listItem>
 </list>
+      <para>Sample links are available on the left hand menu.</para>
 
       </content>
     </section>

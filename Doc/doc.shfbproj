@@ -237,8 +237,7 @@
     <None Include="Examples\Serializer\CustomTraceWriter.aml" />
     <None Include="Examples\Serializer\CustomJsonConverter.aml" />
     <None Include="Examples\Serializer\CustomContractResolver.aml" />
-    <None Include="Examples\Serializer.aml" />
-    <None Include="Examples\Examples.aml" />
+    <None Include="Examples\Samples.aml" />
     <None Include="SerializationTracing.aml" />
     <None Include="JsonNetVsDotNetSerializers.aml" />
     <None Include="JsonNetVsWindowsDataJson.aml" />
