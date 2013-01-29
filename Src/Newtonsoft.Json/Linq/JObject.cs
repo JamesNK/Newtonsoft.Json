@@ -382,7 +382,7 @@ namespace Newtonsoft.Json.Linq
     /// Gets the <see cref="Newtonsoft.Json.Linq.JToken"/> with the specified property name.
     /// </summary>
     /// <param name="propertyName">Name of the property.</param>
-    /// <value>The <see cref="Newtonsoft.Json.Linq.JToken"/> with the specified property name.</value>
+    /// <returns>The <see cref="Newtonsoft.Json.Linq.JToken"/> with the specified property name.</returns>
     public JToken GetValue(string propertyName)
     {
       return GetValue(propertyName, StringComparison.Ordinal);
@@ -395,7 +395,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     /// <param name="propertyName">Name of the property.</param>
     /// <param name="comparison">One of the enumeration values that specifies how the strings will be compared.</param>
-    /// <value>The <see cref="Newtonsoft.Json.Linq.JToken"/> with the specified property name.</value>
+    /// <returns>The <see cref="Newtonsoft.Json.Linq.JToken"/> with the specified property name.</returns>
     public JToken GetValue(string propertyName, StringComparison comparison)
     {
       if (propertyName == null)

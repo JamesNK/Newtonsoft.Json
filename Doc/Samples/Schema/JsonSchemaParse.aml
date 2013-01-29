@@ -2,7 +2,7 @@
 <topic id="JsonSchemaParse" revisionNumber="1">
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
-      <para>This sample parses a <codeEntityReference>T:Newtonsoft.Json.Schema.JsonSchema</codeEntityReference>.
+      <para>This sample parses a <codeEntityReference>T:Newtonsoft.Json.Schema.JsonSchema</codeEntityReference>
       from JSON</para>
     </introduction>
     <section>

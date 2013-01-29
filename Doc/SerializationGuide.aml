@@ -235,7 +235,7 @@
         <codeEntityReference>T:System.Dynamic.ExpandoObject</codeEntityReference>
         is a good example of a dynamic object.</para>
         <para>Dynamic objects are serialized as JSON objects. A property is written for every member name returned by
-        <codeEntityReference>M:System.Dynamic.DynamicMetaObject.GetDynamicMemberNames</codeEntityReference>.</para>
+        <codeEntityReference qualifyHint="true">M:System.Dynamic.DynamicMetaObject.GetDynamicMemberNames</codeEntityReference>.</para>
         <para>When deserializing dynamic objects the serializer first attempts to set JSON property values on a normal .NET
         member with the matching name. If no .NET member is found with the property name then the serializer will call
         SetMember on the dynamic object. Because there is no type information for dynamic members on a dynamic object the

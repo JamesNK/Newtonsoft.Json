@@ -12,11 +12,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
     {
       #region Usage
       JArray array = new JArray();
-      JValue text = new JValue("Manual text");
-      JValue date = new JValue(new DateTime(2000, 5, 23));
-
-      array.Add(text);
-      array.Add(date);
+      array.Add("Manual text");
+      array.Add(new DateTime(2000, 5, 23));
 
       JObject o = new JObject();
       o["MyArray"] = array;

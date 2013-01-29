@@ -396,7 +396,7 @@ keyword such as type of business.""
         new Post()
         {
           Title = "Json.NET 1.3 + New license + Now on CodePlex",
-          Description = "Annoucing the release of Json.NET 1.3, the MIT license and the source being available on CodePlex",
+          Description = "Annoucing the release of Json.NET 1.3, the MIT license and being available on CodePlex",
           Link = "http://james.newtonking.com/projects/json-net.aspx",
           Categories = new List<string>() { "Json.NET", "CodePlex" }
         }
@@ -438,7 +438,7 @@ keyword such as type of business.""
       //    "item": [
       //      {
       //        "title": "Json.NET 1.3 + New license + Now on CodePlex",
-      //        "description": "Annoucing the release of Json.NET 1.3, the MIT license and the source being available on CodePlex",
+      //        "description": "Annoucing the release of Json.NET 1.3, the MIT license and being available on CodePlex",
       //        "link": "http://james.newtonking.com/projects/json-net.aspx",
       //        "category": [
       //          "Json.NET",
@@ -497,7 +497,7 @@ keyword such as type of business.""
                           ""item"": [
                             {
                               ""title"": ""Json.NET 1.3 + New license + Now on CodePlex"",
-                              ""description"": ""Annoucing the release of Json.NET 1.3, the MIT license and the source being available on CodePlex"",
+                              ""description"": ""Annoucing the release of Json.NET 1.3, the MIT license and being available on CodePlex"",
                               ""link"": ""http://james.newtonking.com/projects/json-net.aspx"",
                               ""category"": [
                                 ""Json.NET"",
@@ -744,7 +744,7 @@ keyword such as type of business.""
                           ""item"": [
                             {
                               ""title"": ""Json.NET 1.3 + New license + Now on CodePlex"",
-                              ""description"": ""Annoucing the release of Json.NET 1.3, the MIT license and the source being available on CodePlex"",
+                              ""description"": ""Annoucing the release of Json.NET 1.3, the MIT license and being available on CodePlex"",
                               ""link"": ""http://james.newtonking.com/projects/json-net.aspx"",
                               ""category"": [
                                 ""Json.NET"",
@@ -769,7 +769,7 @@ keyword such as type of business.""
                           ""item"": [
                             {
                               ""title"": ""Json.NET 1.3 + New license + Now on CodePlex"",
-                              ""description"": ""Annoucing the release of Json.NET 1.3, the MIT license and the source being available on CodePlex"",
+                              ""description"": ""Annoucing the release of Json.NET 1.3, the MIT license and being available on CodePlex"",
                               ""link"": ""http://james.newtonking.com/projects/json-net.aspx"",
                               ""category"": [
                                 ""Json.NET"",

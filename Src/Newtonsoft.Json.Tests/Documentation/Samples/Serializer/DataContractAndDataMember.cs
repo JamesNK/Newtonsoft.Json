@@ -8,7 +8,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
   public class DataContractAndDataMember
   {
-    #region Usage
+    #region Types
     [DataContract]
     public class File
     {

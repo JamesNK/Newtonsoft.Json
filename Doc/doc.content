@@ -83,17 +83,17 @@
     </Topic>
     <Topic id="68b9fad2-5436-4e35-a734-9b9d751cc3e5" visible="True" noFile="true" isExpanded="true" title="LINQ to JSON">
       <Topic id="CreateJsonManually" visible="True" title="Create JSON manually" />
-      <Topic id="CreateJsonAnonymousObject" visible="True" isSelected="true" title="Create JSON from an Anonymous Type" />
       <Topic id="CreateJsonCollectionInitializer" visible="True" title="Create JSON using Collection Initializers" />
       <Topic id="CreateJsonDeclaratively" visible="True" title="Create JSON declaratively with LINQ" />
       <Topic id="CreateJsonDynamic" visible="True" title="Create JSON with dynamic" />
       <Topic id="CreateJsonJTokenWriter" visible="True" title="Create JSON with JTokenWriter" />
       <Topic id="FromObject" visible="True" title="Create JSON from an Object" />
+      <Topic id="CreateJsonAnonymousObject" visible="True" title="Create JSON from an Anonymous Type" />
       <Topic id="ParseJsonArray" visible="True" title="Parsing JSON Array using JArray.Parse" />
       <Topic id="ParseJsonObject" visible="True" title="Parsing JSON Object using JObject.Parse" />
       <Topic id="ParseJsonAny" visible="True" title="Parsing all JSON using JToken.Parse" />
       <Topic id="DeserializeWithLinq" visible="True" title="Deserializing from JSON with LINQ" />
-      <Topic id="SerializeWithLinq" visible="True" title="Serializing to JSON with LINQ" />
+      <Topic id="SerializeWithLinq" visible="True" isSelected="true" title="Serializing to JSON with LINQ" />
       <Topic id="ModifyJson" visible="True" title="Modifying JSON" />
       <Topic id="QueryJson" visible="True" title="Querying JSON" />
       <Topic id="QueryJsonDynamic" visible="True" title="Querying JSON with dynamic" />

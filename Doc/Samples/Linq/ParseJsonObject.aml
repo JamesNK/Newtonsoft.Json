@@ -3,7 +3,7 @@
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
       <para>This sample parses a JSON object using
-      <codeEntityReference>M:Newtonsoft.Json.Linq.JObject.Parse(System.String)</codeEntityReference>.</para>
+      <codeEntityReference qualifyHint="true">M:Newtonsoft.Json.Linq.JObject.Parse(System.String)</codeEntityReference>.</para>
     </introduction>
     <section>
       <title>Sample</title>

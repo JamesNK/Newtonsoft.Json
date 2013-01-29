@@ -3,7 +3,7 @@
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
       <para>This sample sets <codeEntityReference>P:Newtonsoft.Json.Bson.BsonReader.ReadRootValueAsArray</codeEntityReference>
-      to <code>true</code> so the root BSON value is correctly read
+      to <codeInline>true</codeInline> so the root BSON value is correctly read
       as an array instead of an object and deserializes BSON to a collection.</para>
     </introduction>
     <section>

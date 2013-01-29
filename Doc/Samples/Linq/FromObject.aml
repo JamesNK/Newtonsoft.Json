@@ -3,7 +3,7 @@
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
       <para>This sample converts .NET values to LINQ to JSON using
-      <codeEntityReference>M:Newtonsoft.Json.Linq.JToken.FromObject(System.Object)</codeEntityReference>.</para>
+      <codeEntityReference qualifyHint="true">M:Newtonsoft.Json.Linq.JToken.FromObject(System.Object)</codeEntityReference>.</para>
     </introduction>
     <section>
       <title>Sample</title>

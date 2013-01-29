@@ -3,7 +3,7 @@
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
       <para>This sample creates a new <codeEntityReference>T:Newtonsoft.Json.Schema.JsonSchema</codeEntityReference>
-      instance manually in code instead of loading an existing schema from JSON.</para>
+      instance manually in code.</para>
     </introduction>
     <section>
       <title>Sample</title>

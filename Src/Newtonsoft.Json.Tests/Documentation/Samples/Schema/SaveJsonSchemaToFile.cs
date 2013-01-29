@@ -12,7 +12,10 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Schema
     public void Example()
     {
       #region Usage
-      JsonSchema schema = JsonSchema.Parse(@"{'type': 'object'}");
+      JsonSchema schema = new JsonSchema
+        {
+          Type = JsonSchemaType.Object
+        };
 
       // serialize JsonSchema to a string and then write string to a file
       File.WriteAllText(@"c:\schema.json", schema.ToString());
