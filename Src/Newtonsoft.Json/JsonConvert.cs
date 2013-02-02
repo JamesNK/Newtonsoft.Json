@@ -156,22 +156,40 @@ namespace Newtonsoft.Json
     /// <returns>A JSON string representation of the <see cref="DateTimeOffset"/>.</returns>
     public static string ToString(DateTimeOffset value, DateFormatHandling format)
     {
-      return ToString(value, format, '"');
-    }
-
-    internal static string ToString(DateTimeOffset value, DateFormatHandling format, char quoteChar)
-    {
       using (StringWriter writer = StringUtils.CreateStringWriter(64))
       {
-        WriteDateTimeString(writer, (format == DateFormatHandling.IsoDateFormat) ? value.DateTime : value.UtcDateTime, value.Offset, DateTimeKind.Local, format, quoteChar);
+        WriteDateTimeOffsetString(writer, value, format, null, CultureInfo.InvariantCulture, '"');
         return writer.ToString();
+      }
+    }
+
+    internal static void WriteDateTimeOffsetString(TextWriter writer, DateTimeOffset value, DateFormatHandling format, string formatString, CultureInfo culture, char quoteChar)
+    {
+      if (string.IsNullOrEmpty(formatString))
+      {
+        WriteDateTimeString(writer, (format == DateFormatHandling.IsoDateFormat) ? value.DateTime : value.UtcDateTime, value.Offset, DateTimeKind.Local, format, quoteChar);
+      }
+      else
+      {
+        writer.Write(quoteChar);
+        writer.Write(value.ToString(formatString, culture));
+        writer.Write(quoteChar);
       }
     }
 #endif
 
-    internal static void WriteDateTimeString(TextWriter writer, DateTime value, DateFormatHandling format, char quoteChar)
+    internal static void WriteDateTimeString(TextWriter writer, DateTime value, DateFormatHandling format, string formatString, CultureInfo culture, char quoteChar)
     {
-      WriteDateTimeString(writer, value, value.GetUtcOffset(), value.Kind, format, quoteChar);
+      if (string.IsNullOrEmpty(formatString))
+      {
+        WriteDateTimeString(writer, value, value.GetUtcOffset(), value.Kind, format, quoteChar);
+      }
+      else
+      {
+        writer.Write(quoteChar);
+        writer.Write(value.ToString(formatString, culture));
+        writer.Write(quoteChar);
+      }
     }
 
     internal static void WriteDateTimeString(TextWriter writer, DateTime value, TimeSpan offset, DateTimeKind kind, DateFormatHandling format, char quoteChar)
@@ -201,7 +219,7 @@ namespace Newtonsoft.Json
       else
       {
         writer.Write(quoteChar);
-        writer.Write(value.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFF", CultureInfo.InvariantCulture));
+        writer.Write(value.ToString(@"yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFF", CultureInfo.InvariantCulture));
 
         switch (kind)
         {
@@ -212,7 +230,6 @@ namespace Newtonsoft.Json
             writer.Write("Z");
             break;
         }
-
 
         writer.Write(quoteChar);
       }
@@ -429,6 +446,22 @@ namespace Newtonsoft.Json
       return EnsureDecimalPlace(value, value.ToString("R", CultureInfo.InvariantCulture));
     }
 
+    internal static string ToString(float value, FloatFormatHandling floatFormatHandling, char quoteChar)
+    {
+      return EnsureFloatFormat(value, EnsureDecimalPlace(value, value.ToString("R", CultureInfo.InvariantCulture)), floatFormatHandling, quoteChar);
+    }
+
+    private static string EnsureFloatFormat(double value, string text, FloatFormatHandling floatFormatHandling, char quoteChar)
+    {
+      if (floatFormatHandling == FloatFormatHandling.Symbol || !(double.IsInfinity(value) || double.IsNaN(value)))
+        return text;
+
+      if (floatFormatHandling == FloatFormatHandling.Zero)
+        return "0.0";
+      
+      return quoteChar + text + quoteChar;
+    }
+
     /// <summary>
     /// Converts the <see cref="Double"/> to its JSON string representation.
     /// </summary>
@@ -437,6 +470,11 @@ namespace Newtonsoft.Json
     public static string ToString(double value)
     {
       return EnsureDecimalPlace(value, value.ToString("R", CultureInfo.InvariantCulture));
+    }
+
+    internal static string ToString(double value, FloatFormatHandling floatFormatHandling, char quoteChar)
+    {
+      return EnsureFloatFormat(value, EnsureDecimalPlace(value, value.ToString("R", CultureInfo.InvariantCulture)), floatFormatHandling, quoteChar);
     }
 
     private static string EnsureDecimalPlace(double value, string text)

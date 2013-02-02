@@ -357,7 +357,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(float value)
     {
       InternalWriteValue(JsonToken.Float);
-      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Float);
+      WriteValueInternal(JsonConvert.ToString(value, FloatFormatHandling, QuoteChar), JsonToken.Float);
     }
 
     /// <summary>
@@ -367,7 +367,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(double value)
     {
       InternalWriteValue(JsonToken.Float);
-      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Float);
+      WriteValueInternal(JsonConvert.ToString(value, FloatFormatHandling, QuoteChar), JsonToken.Float);
     }
 
     /// <summary>
@@ -450,7 +450,7 @@ namespace Newtonsoft.Json
     {
       InternalWriteValue(JsonToken.Date);
       value = JsonConvert.EnsureDateTime(value, DateTimeZoneHandling);
-      JsonConvert.WriteDateTimeString(_writer, value, DateFormatHandling, _quoteChar);
+      JsonConvert.WriteDateTimeString(_writer, value, DateFormatHandling, DateFormatString, Culture, _quoteChar);
     }
 
     /// <summary>
@@ -481,7 +481,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(DateTimeOffset value)
     {
       InternalWriteValue(JsonToken.Date);
-      WriteValueInternal(JsonConvert.ToString(value, DateFormatHandling, _quoteChar), JsonToken.Date);
+      JsonConvert.WriteDateTimeOffsetString(_writer, value, DateFormatHandling, DateFormatString, Culture, _quoteChar);
     }
 #endif
 

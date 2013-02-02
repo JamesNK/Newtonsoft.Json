@@ -52,17 +52,24 @@ namespace Newtonsoft.Json
     internal const DateFormatHandling DefaultDateFormatHandling = DateFormatHandling.IsoDateFormat;
     internal const DateTimeZoneHandling DefaultDateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
     internal const DateParseHandling DefaultDateParseHandling = DateParseHandling.DateTime;
+    internal const FloatFormatHandling DefaultFloatFormatHandling = FloatFormatHandling.String;
+    internal const StringEscapeHandling DefaultStringEscapeHandling = StringEscapeHandling.Default;
     internal static readonly CultureInfo DefaultCulture;
     internal const bool DefaultCheckAdditionalContent = false;
+    internal const string DefaultDateFormatString = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK";
 
     internal Formatting? _formatting;
     internal DateFormatHandling? _dateFormatHandling;
     internal DateTimeZoneHandling? _dateTimeZoneHandling;
     internal DateParseHandling? _dateParseHandling;
+    internal FloatFormatHandling? _floatFormatHandling;
+    internal StringEscapeHandling? _stringEscapeHandling;
     internal CultureInfo _culture;
     internal bool? _checkAdditionalContent;
     internal int? _maxDepth;
     internal bool _maxDepthSet;
+    internal string _dateFormatString;
+    internal bool _dateFormatStringSet;
 
     /// <summary>
     /// Gets or sets how reference loops (e.g. a class referencing itself) is handled.
@@ -161,6 +168,16 @@ namespace Newtonsoft.Json
     /// <value>The context.</value>
     public StreamingContext Context { get; set; }
 
+    public string DateFormatString
+    {
+      get { return _dateFormatString ?? DefaultDateFormatString; }
+      set
+      {
+        _dateFormatString = value;
+        _dateFormatStringSet = true;
+      }
+    }
+
     /// <summary>
     /// Gets or sets the maximum depth allowed when reading JSON. Reading past this depth will throw a <see cref="JsonReaderException"/>.
     /// </summary>
@@ -211,6 +228,18 @@ namespace Newtonsoft.Json
     {
       get { return _dateParseHandling ?? DefaultDateParseHandling; }
       set { _dateParseHandling = value; }
+    }
+
+    public FloatFormatHandling FloatFormatHandling
+    {
+      get { return _floatFormatHandling ?? DefaultFloatFormatHandling; }
+      set { _floatFormatHandling = value; }
+    }
+
+    public StringEscapeHandling StringEscapeHandling
+    {
+      get { return _stringEscapeHandling ?? DefaultStringEscapeHandling; }
+      set { _stringEscapeHandling = value; }
     }
 
     /// <summary>

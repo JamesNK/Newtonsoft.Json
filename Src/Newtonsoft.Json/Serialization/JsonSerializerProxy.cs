@@ -156,6 +156,24 @@ namespace Newtonsoft.Json.Serialization
       set { _serializer.DateParseHandling = value; }
     }
 
+    public override FloatFormatHandling FloatFormatHandling
+    {
+      get { return _serializer.FloatFormatHandling; }
+      set { _serializer.FloatFormatHandling = value; }
+    }
+
+    public override StringEscapeHandling StringEscapeHandling
+    {
+      get { return _serializer.StringEscapeHandling; }
+      set { _serializer.StringEscapeHandling = value; }
+    }
+
+    public override string DateFormatString
+    {
+      get { return _serializer.DateFormatString; }
+      set { _serializer.DateFormatString = value; }
+    }
+
     public override CultureInfo Culture
     {
       get { return _serializer.Culture; }

@@ -7123,6 +7123,128 @@ Parameter name: value",
       Assert.AreEqual(TimeSpan.FromHours(9.5), dateTimeOffset.Offset);
       Assert.AreEqual("07/19/2012 14:30:00 +09:30", dateTimeOffset.ToString(CultureInfo.InvariantCulture));
     }
+
+    [Test]
+    public void DateFormatString()
+    {
+      IList<object> dates = new List<object>
+        {
+          new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Utc),
+          new DateTimeOffset(2000, 12, 12, 12, 12, 12, TimeSpan.FromHours(1))
+        };
+
+      string json = JsonConvert.SerializeObject(dates, Formatting.Indented, new JsonSerializerSettings
+        {
+          DateFormatString = "yyyy tt",
+          Culture = new CultureInfo("en-NZ")
+        });
+
+      Assert.AreEqual(@"[
+  ""2000 p.m."",
+  ""2000 p.m.""
+]", json);
+    }
+
+    [Test]
+    public void JsonSerializerDateFormatString()
+    {
+      IList<object> dates = new List<object>
+        {
+          new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Utc),
+          new DateTimeOffset(2000, 12, 12, 12, 12, 12, TimeSpan.FromHours(1))
+        };
+
+      StringWriter sw = new StringWriter();
+      JsonTextWriter jsonWriter = new JsonTextWriter(sw);
+
+      JsonSerializer serializer = JsonSerializer.Create(new JsonSerializerSettings
+        {
+          DateFormatString = "yyyy tt",
+          Culture = new CultureInfo("en-NZ"),
+          Formatting = Formatting.Indented
+        });
+      serializer.Serialize(jsonWriter, dates);
+
+      Assert.IsNull(jsonWriter.DateFormatString);
+      Assert.AreEqual(CultureInfo.InvariantCulture, jsonWriter.Culture);
+      Assert.AreEqual(Formatting.None, jsonWriter.Formatting);
+
+      string json = sw.ToString();
+
+      Assert.AreEqual(@"[
+  ""2000 p.m."",
+  ""2000 p.m.""
+]", json);
+    }
+
+    [Test]
+    public void JsonSerializerStringEscapeHandling()
+    {
+      StringWriter sw = new StringWriter();
+      JsonTextWriter jsonWriter = new JsonTextWriter(sw);
+
+      JsonSerializer serializer = JsonSerializer.Create(new JsonSerializerSettings
+      {
+        StringEscapeHandling = StringEscapeHandling.EscapeHtml,
+        Formatting = Formatting.Indented
+      });
+      serializer.Serialize(jsonWriter, new { html = "<html></html>" });
+
+      Assert.AreEqual(StringEscapeHandling.Default, jsonWriter.StringEscapeHandling);
+
+      string json = sw.ToString();
+
+      Assert.AreEqual(@"{
+  ""html"": ""\u003chtml\u003e\u003c/html\u003e""
+}", json);
+    }
+
+    [Test]
+    public void ReadStringFloatingPointSymbols()
+    {
+      string json = @"[
+  'NaN',
+  'Infinity',
+  '-Infinity'
+]";
+
+      IList<float> floats = JsonConvert.DeserializeObject<IList<float>>(json);
+      Assert.AreEqual(float.NaN, floats[0]);
+      Assert.AreEqual(float.PositiveInfinity, floats[1]);
+      Assert.AreEqual(float.NegativeInfinity, floats[2]);
+
+      IList<double> doubles = JsonConvert.DeserializeObject<IList<double>>(json);
+      Assert.AreEqual(float.NaN, doubles[0]);
+      Assert.AreEqual(float.PositiveInfinity, doubles[1]);
+      Assert.AreEqual(float.NegativeInfinity, doubles[2]);
+    }
+
+    [Test]
+    public void DefaultDateStringFormatVsUnsetDateStringFormat()
+    {
+      IDictionary<string, object> dates = new Dictionary<string, object>
+        {
+          {"DateTime-Unspecified", new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Unspecified)},
+          {"DateTime-Utc", new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Utc)},
+          {"DateTime-Local", new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Local)},
+          {"DateTimeOffset-Zero", new DateTimeOffset(2000, 12, 12, 12, 12, 12, TimeSpan.Zero)},
+          {"DateTimeOffset-Plus1", new DateTimeOffset(2000, 12, 12, 12, 12, 12, TimeSpan.FromHours(1))},
+          {"DateTimeOffset-Plus15", new DateTimeOffset(2000, 12, 12, 12, 12, 12, TimeSpan.FromHours(1.5))}
+        };
+
+      string expected = JsonConvert.SerializeObject(dates, Formatting.Indented);
+
+      Console.WriteLine(expected);
+
+      string actual = JsonConvert.SerializeObject(dates, Formatting.Indented, new JsonSerializerSettings
+        {
+          DateFormatString = JsonSerializerSettings.DefaultDateFormatString
+        });
+
+      Console.WriteLine(expected);
+
+      Assert.AreEqual(expected, actual);
+    }
 #endif
 
 #if !NET20

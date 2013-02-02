@@ -321,5 +321,18 @@ namespace Newtonsoft.Json.Tests.Converters
       EnumContainer<FlagsTestEnum> c = JsonConvert.DeserializeObject<EnumContainer<FlagsTestEnum>>(json, new StringEnumConverter { CamelCaseText = true });
       Assert.AreEqual(FlagsTestEnum.First | FlagsTestEnum.Second, c.Enum);
     }
+
+    [Test]
+    public void DeserializeEmptyStringIntoNullable()
+    {
+      string json = @"{
+  ""StoreColor"": ""Red"",
+  ""NullableStoreColor1"": ""White"",
+  ""NullableStoreColor2"": """"
+}";
+
+      EnumClass c = JsonConvert.DeserializeObject<EnumClass>(json, new StringEnumConverter());
+      Assert.IsNull(c.NullableStoreColor2);
+    }
   }
 }

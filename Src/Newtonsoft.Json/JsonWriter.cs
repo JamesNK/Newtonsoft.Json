@@ -210,6 +210,9 @@ namespace Newtonsoft.Json
     private DateFormatHandling _dateFormatHandling;
     private DateTimeZoneHandling _dateTimeZoneHandling;
     private StringEscapeHandling _stringEscapeHandling;
+    private FloatFormatHandling _floatFormatHandling;
+    private string _dateFormatString;
+    private CultureInfo _culture;
 
     /// <summary>
     /// Indicates how JSON text output is formatted.
@@ -245,6 +248,24 @@ namespace Newtonsoft.Json
     {
       get { return _stringEscapeHandling; }
       set { _stringEscapeHandling = value; }
+    }
+
+    public FloatFormatHandling FloatFormatHandling
+    {
+      get { return _floatFormatHandling; }
+      set { _floatFormatHandling = value; }
+    }
+
+    public string DateFormatString
+    {
+      get { return _dateFormatString; }
+      set { _dateFormatString = value; }
+    }
+
+    public CultureInfo Culture
+    {
+      get { return _culture ?? CultureInfo.InvariantCulture; }
+      set { _culture = value; }
     }
 
     /// <summary>

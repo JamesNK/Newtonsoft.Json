@@ -100,9 +100,8 @@ namespace Newtonsoft.Json.Converters
     /// <returns>The object value.</returns>
     public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
     {
-      Type t = (ReflectionUtils.IsNullableType(objectType))
-      ? Nullable.GetUnderlyingType(objectType)
-      : objectType;
+      bool isNullable = ReflectionUtils.IsNullableType(objectType);
+      Type t = isNullable ? Nullable.GetUnderlyingType(objectType) : objectType;
 
       if (reader.TokenType == JsonToken.Null)
       {
@@ -114,10 +113,14 @@ namespace Newtonsoft.Json.Converters
 
       if (reader.TokenType == JsonToken.String)
       {
+        string enumText = reader.Value.ToString();
+        if (enumText == string.Empty && isNullable)
+          return null;
+
         var map = GetEnumNameMap(t);
         string resolvedEnumName;
-        map.TryGetBySecond(reader.Value.ToString(), out resolvedEnumName);
-        resolvedEnumName = resolvedEnumName ?? reader.Value.ToString();
+        map.TryGetBySecond(enumText, out resolvedEnumName);
+        resolvedEnumName = resolvedEnumName ?? enumText;
 
         return Enum.Parse(t, resolvedEnumName, true);
       }

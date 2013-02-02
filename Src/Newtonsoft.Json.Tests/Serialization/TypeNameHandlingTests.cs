@@ -1455,6 +1455,27 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual(2, (int)o["MyProperty"]);
     }
 #endif
+
+    [Test]
+    public void SerializeDeserialize_DictionaryContextContainsGuid_DeserializesItemAsGuid()
+    {
+      const string contextKey = "k1";
+      var someValue = Guid.NewGuid();
+
+      Dictionary<string, Guid> inputContext = new Dictionary<string, Guid>();
+      inputContext.Add(contextKey, someValue);
+
+      JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings()
+        {
+          Formatting = Formatting.Indented,
+          TypeNameHandling = TypeNameHandling.All
+        };
+      string serializedString = JsonConvert.SerializeObject(inputContext, jsonSerializerSettings);
+
+      var deserializedObject = (Dictionary<string, Guid>)JsonConvert.DeserializeObject(serializedString, jsonSerializerSettings);
+
+      Assert.AreEqual(someValue, deserializedObject[contextKey]);
+    }
   }
 
   public class Message

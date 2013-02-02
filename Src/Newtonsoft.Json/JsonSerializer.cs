@@ -62,10 +62,14 @@ namespace Newtonsoft.Json
     private DateFormatHandling? _dateFormatHandling;
     private DateTimeZoneHandling? _dateTimeZoneHandling;
     private DateParseHandling? _dateParseHandling;
+    private FloatFormatHandling? _floatFormatHandling;
+    private StringEscapeHandling? _stringEscapeHandling;
     private CultureInfo _culture;
     private int? _maxDepth;
     private bool _maxDepthSet;
     private bool? _checkAdditionalContent;
+    private string _dateFormatString;
+    private bool _dateFormatStringSet;
 
     /// <summary>
     /// Occurs when the <see cref="JsonSerializer"/> errors during serialization and deserialization.
@@ -342,6 +346,28 @@ namespace Newtonsoft.Json
       set { _dateParseHandling = value; }
     }
 
+    public virtual FloatFormatHandling FloatFormatHandling
+    {
+      get { return _floatFormatHandling ?? JsonSerializerSettings.DefaultFloatFormatHandling; }
+      set { _floatFormatHandling = value; }
+    }
+
+    public virtual StringEscapeHandling StringEscapeHandling
+    {
+      get { return _stringEscapeHandling ?? JsonSerializerSettings.DefaultStringEscapeHandling; }
+      set { _stringEscapeHandling = value; }
+    }
+
+    public virtual string DateFormatString
+    {
+      get { return _dateFormatString ?? JsonSerializerSettings.DefaultDateFormatString; }
+      set
+      {
+        _dateFormatString = value;
+        _dateFormatStringSet = true;
+      }
+    }
+
     /// <summary>
     /// Gets or sets the culture used when reading JSON. Defaults to <see cref="CultureInfo.InvariantCulture"/>.
     /// </summary>
@@ -436,6 +462,10 @@ namespace Newtonsoft.Json
         jsonSerializer._dateFormatHandling = settings._dateFormatHandling;
         jsonSerializer._dateTimeZoneHandling = settings._dateTimeZoneHandling;
         jsonSerializer._dateParseHandling = settings._dateParseHandling;
+        jsonSerializer._dateFormatString = settings._dateFormatString;
+        jsonSerializer._dateFormatStringSet = settings._dateFormatStringSet;
+        jsonSerializer._floatFormatHandling = settings._floatFormatHandling;
+        jsonSerializer._stringEscapeHandling = settings._stringEscapeHandling;
         jsonSerializer._culture = settings._culture;
         jsonSerializer._maxDepth = settings._maxDepth;
         jsonSerializer._maxDepthSet = settings._maxDepthSet;
@@ -537,23 +567,26 @@ namespace Newtonsoft.Json
 
       // set serialization options onto reader
       CultureInfo previousCulture = null;
-      if (_culture != null && reader.Culture != _culture)
+      if (_culture != null && !_culture.Equals(reader.Culture))
       {
         previousCulture = reader.Culture;
         reader.Culture = _culture;
       }
+
       DateTimeZoneHandling? previousDateTimeZoneHandling = null;
       if (_dateTimeZoneHandling != null && reader.DateTimeZoneHandling != _dateTimeZoneHandling)
       {
         previousDateTimeZoneHandling = reader.DateTimeZoneHandling;
         reader.DateTimeZoneHandling = _dateTimeZoneHandling.Value;
       }
+
       DateParseHandling? previousDateParseHandling = null;
       if (_dateParseHandling != null && reader.DateParseHandling != _dateParseHandling)
       {
         previousDateParseHandling = reader.DateParseHandling;
         reader.DateParseHandling = _dateParseHandling.Value;
       }
+
       int? previousMaxDepth = null;
       if (_maxDepthSet && reader.MaxDepth != _maxDepth)
       {
@@ -610,19 +643,49 @@ namespace Newtonsoft.Json
         previousFormatting = jsonWriter.Formatting;
         jsonWriter.Formatting = _formatting.Value;
       }
+
       DateFormatHandling? previousDateFormatHandling = null;
       if (_dateFormatHandling != null && jsonWriter.DateFormatHandling != _dateFormatHandling)
       {
         previousDateFormatHandling = jsonWriter.DateFormatHandling;
         jsonWriter.DateFormatHandling = _dateFormatHandling.Value;
       }
+
       DateTimeZoneHandling? previousDateTimeZoneHandling = null;
       if (_dateTimeZoneHandling != null && jsonWriter.DateTimeZoneHandling != _dateTimeZoneHandling)
       {
         previousDateTimeZoneHandling = jsonWriter.DateTimeZoneHandling;
         jsonWriter.DateTimeZoneHandling = _dateTimeZoneHandling.Value;
       }
-      
+
+      FloatFormatHandling? previousFloatFormatHandling = null;
+      if (_floatFormatHandling != null && jsonWriter.FloatFormatHandling != _floatFormatHandling)
+      {
+        previousFloatFormatHandling = jsonWriter.FloatFormatHandling;
+        jsonWriter.FloatFormatHandling = _floatFormatHandling.Value;
+      }
+
+      StringEscapeHandling? previousStringEscapeHandling = null;
+      if (_stringEscapeHandling != null && jsonWriter.StringEscapeHandling != _stringEscapeHandling)
+      {
+        previousStringEscapeHandling = jsonWriter.StringEscapeHandling;
+        jsonWriter.StringEscapeHandling = _stringEscapeHandling.Value;
+      }
+
+      CultureInfo previousCulture = null;
+      if (_culture != null && !_culture.Equals(jsonWriter.Culture))
+      {
+        previousCulture = jsonWriter.Culture;
+        jsonWriter.Culture = _culture;
+      }
+
+      string previousDateFormatString = null;
+      if (_dateFormatStringSet && jsonWriter.DateFormatString != _dateFormatString)
+      {
+        previousDateFormatString = jsonWriter.DateFormatString;
+        jsonWriter.DateFormatString = _dateFormatString;
+      }
+
       JsonSerializerInternalWriter serializerWriter = new JsonSerializerInternalWriter(this);
       serializerWriter.Serialize(jsonWriter, value);
 
@@ -633,6 +696,14 @@ namespace Newtonsoft.Json
         jsonWriter.DateFormatHandling = previousDateFormatHandling.Value;
       if (previousDateTimeZoneHandling != null)
         jsonWriter.DateTimeZoneHandling = previousDateTimeZoneHandling.Value;
+      if (previousFloatFormatHandling != null)
+        jsonWriter.FloatFormatHandling = previousFloatFormatHandling.Value;
+      if (previousStringEscapeHandling != null)
+        jsonWriter.StringEscapeHandling = previousStringEscapeHandling.Value;
+      if (_dateFormatStringSet)
+        jsonWriter.DateFormatString = previousDateFormatString;
+      if (previousCulture != null)
+        jsonWriter.Culture = previousCulture;
     }
 
     internal JsonConverter GetMatchingConverter(Type type)

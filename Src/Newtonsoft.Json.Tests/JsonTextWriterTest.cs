@@ -389,7 +389,7 @@ namespace Newtonsoft.Json.Tests
     }
 
     [Test]
-    public void FloatingPointNonFiniteNumbers()
+    public void FloatingPointNonFiniteNumbers_Symbol()
     {
       StringBuilder sb = new StringBuilder();
       StringWriter sw = new StringWriter(sb);
@@ -397,6 +397,7 @@ namespace Newtonsoft.Json.Tests
       using (JsonWriter jsonWriter = new JsonTextWriter(sw))
       {
         jsonWriter.Formatting = Formatting.Indented;
+        jsonWriter.FloatFormatHandling = FloatFormatHandling.Symbol;
 
         jsonWriter.WriteStartArray();
         jsonWriter.WriteValue(double.NaN);
@@ -424,6 +425,115 @@ namespace Newtonsoft.Json.Tests
     }
 
     [Test]
+    public void FloatingPointNonFiniteNumbers_Zero()
+    {
+      StringBuilder sb = new StringBuilder();
+      StringWriter sw = new StringWriter(sb);
+
+      using (JsonWriter jsonWriter = new JsonTextWriter(sw))
+      {
+        jsonWriter.Formatting = Formatting.Indented;
+        jsonWriter.FloatFormatHandling = FloatFormatHandling.Zero;
+
+        jsonWriter.WriteStartArray();
+        jsonWriter.WriteValue(double.NaN);
+        jsonWriter.WriteValue(double.PositiveInfinity);
+        jsonWriter.WriteValue(double.NegativeInfinity);
+        jsonWriter.WriteValue(float.NaN);
+        jsonWriter.WriteValue(float.PositiveInfinity);
+        jsonWriter.WriteValue(float.NegativeInfinity);
+        jsonWriter.WriteEndArray();
+
+        jsonWriter.Flush();
+      }
+
+      string expected = @"[
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0
+]";
+      string result = sb.ToString();
+
+      Assert.AreEqual(expected, result);
+    }
+
+    [Test]
+    public void FloatingPointNonFiniteNumbers_String()
+    {
+      StringBuilder sb = new StringBuilder();
+      StringWriter sw = new StringWriter(sb);
+
+      using (JsonWriter jsonWriter = new JsonTextWriter(sw))
+      {
+        jsonWriter.Formatting = Formatting.Indented;
+        jsonWriter.FloatFormatHandling = FloatFormatHandling.String;
+
+        jsonWriter.WriteStartArray();
+        jsonWriter.WriteValue(double.NaN);
+        jsonWriter.WriteValue(double.PositiveInfinity);
+        jsonWriter.WriteValue(double.NegativeInfinity);
+        jsonWriter.WriteValue(float.NaN);
+        jsonWriter.WriteValue(float.PositiveInfinity);
+        jsonWriter.WriteValue(float.NegativeInfinity);
+        jsonWriter.WriteEndArray();
+
+        jsonWriter.Flush();
+      }
+
+      string expected = @"[
+  ""NaN"",
+  ""Infinity"",
+  ""-Infinity"",
+  ""NaN"",
+  ""Infinity"",
+  ""-Infinity""
+]";
+      string result = sb.ToString();
+
+      Assert.AreEqual(expected, result);
+    }
+
+    [Test]
+    public void FloatingPointNonFiniteNumbers_QuoteChar()
+    {
+      StringBuilder sb = new StringBuilder();
+      StringWriter sw = new StringWriter(sb);
+
+      using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
+      {
+        jsonWriter.Formatting = Formatting.Indented;
+        jsonWriter.FloatFormatHandling = FloatFormatHandling.String;
+        jsonWriter.QuoteChar = '\'';
+
+        jsonWriter.WriteStartArray();
+        jsonWriter.WriteValue(double.NaN);
+        jsonWriter.WriteValue(double.PositiveInfinity);
+        jsonWriter.WriteValue(double.NegativeInfinity);
+        jsonWriter.WriteValue(float.NaN);
+        jsonWriter.WriteValue(float.PositiveInfinity);
+        jsonWriter.WriteValue(float.NegativeInfinity);
+        jsonWriter.WriteEndArray();
+
+        jsonWriter.Flush();
+      }
+
+      string expected = @"[
+  'NaN',
+  'Infinity',
+  '-Infinity',
+  'NaN',
+  'Infinity',
+  '-Infinity'
+]";
+      string result = sb.ToString();
+
+      Assert.AreEqual(expected, result);
+    }
+
+    [Test]
     public void WriteRawInStart()
     {
       StringBuilder sb = new StringBuilder();
@@ -432,6 +542,7 @@ namespace Newtonsoft.Json.Tests
       using (JsonWriter jsonWriter = new JsonTextWriter(sw))
       {
         jsonWriter.Formatting = Formatting.Indented;
+        jsonWriter.FloatFormatHandling = FloatFormatHandling.Symbol;
 
         jsonWriter.WriteRaw("[1,2,3,4,5]");
         jsonWriter.WriteWhitespace("  ");
@@ -457,6 +568,7 @@ namespace Newtonsoft.Json.Tests
       using (JsonWriter jsonWriter = new JsonTextWriter(sw))
       {
         jsonWriter.Formatting = Formatting.Indented;
+        jsonWriter.FloatFormatHandling = FloatFormatHandling.Symbol;
 
         jsonWriter.WriteStartArray();
         jsonWriter.WriteValue(double.NaN);
@@ -569,6 +681,8 @@ namespace Newtonsoft.Json.Tests
 
       using (JsonWriter jsonWriter = new JsonTextWriter(sw))
       {
+        jsonWriter.FloatFormatHandling = FloatFormatHandling.Symbol;
+        
         jsonWriter.WriteStartArray();
 
         jsonWriter.WriteValue(0.0);
@@ -642,6 +756,8 @@ namespace Newtonsoft.Json.Tests
       using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
       {
         jsonWriter.Formatting = Formatting.Indented;
+        jsonWriter.FloatFormatHandling = FloatFormatHandling.Symbol;
+
         Assert.AreEqual(Formatting.Indented, jsonWriter.Formatting);
 
         jsonWriter.Indentation = 5;
@@ -936,6 +1052,10 @@ _____'propertyName': NaN
       writer.WriteValue(new DateTime(2000, 1, 1, 1, 1, 1, DateTimeKind.Utc));
       writer.WriteValue(new DateTimeOffset(2000, 1, 1, 1, 1, 1, TimeSpan.Zero));
 
+      writer.DateFormatString = "yyyy gg";
+      writer.WriteValue(new DateTime(2000, 1, 1, 1, 1, 1, DateTimeKind.Utc));
+      writer.WriteValue(new DateTimeOffset(2000, 1, 1, 1, 1, 1, TimeSpan.Zero));
+
       writer.WriteValue(new byte[] { 1, 2, 3 });
       writer.WriteValue(TimeSpan.Zero);
       writer.WriteValue(new Uri("http://www.google.com/"));
@@ -948,10 +1068,35 @@ _____'propertyName': NaN
   '2000-01-01T01:01:01+00:00',
   '\/Date(946688461000)\/',
   '\/Date(946688461000+0000)\/',
+  '2000 A.D.',
+  '2000 A.D.',
   'AQID',
   '00:00:00',
   'http://www.google.com/',
   '00000000-0000-0000-0000-000000000000'
+]", sw.ToString());
+    }
+
+    [Test]
+    public void Culture()
+    {
+      StringWriter sw = new StringWriter();
+      JsonTextWriter writer = new JsonTextWriter(sw);
+      writer.Formatting = Formatting.Indented;
+      writer.DateFormatString = "yyyy tt";
+      writer.Culture = new CultureInfo("en-NZ");
+      writer.QuoteChar = '\'';
+
+      writer.WriteStartArray();
+
+      writer.WriteValue(new DateTime(2000, 1, 1, 1, 1, 1, DateTimeKind.Utc));
+      writer.WriteValue(new DateTimeOffset(2000, 1, 1, 1, 1, 1, TimeSpan.Zero));
+
+      writer.WriteEnd();
+
+      Assert.AreEqual(@"[
+  '2000 a.m.',
+  '2000 a.m.'
 ]", sw.ToString());
     }
 #endif
