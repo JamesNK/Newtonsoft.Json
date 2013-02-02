@@ -7146,6 +7146,26 @@ Parameter name: value",
     }
 
     [Test]
+    public void DateFormatStringForInternetExplorer()
+    {
+      IList<object> dates = new List<object>
+        {
+          new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Utc),
+          new DateTimeOffset(2000, 12, 12, 12, 12, 12, TimeSpan.FromHours(1))
+        };
+
+      string json = JsonConvert.SerializeObject(dates, Formatting.Indented, new JsonSerializerSettings
+      {
+        DateFormatString = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffK"
+      });
+
+      Assert.AreEqual(@"[
+  ""2000-12-12T12:12:12.000Z"",
+  ""2000-12-12T12:12:12.000+01:00""
+]", json);
+    }
+
+    [Test]
     public void JsonSerializerDateFormatString()
     {
       IList<object> dates = new List<object>

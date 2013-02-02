@@ -5,8 +5,9 @@
   $version = GetVersion $majorWithReleaseVersion
   $signAssemblies = $false
   $signKeyPath = "D:\Development\Releases\newtonsoft.snk"
-  $buildDocumentation = $true
+  $buildDocumentation = $false
   $buildNuGet = $false
+  $treatWarningsAsErrors = $false
   
   $baseDir  = resolve-path ..
   $buildDir = "$baseDir\Build"
@@ -59,7 +60,7 @@ task Build -depends Clean {
     Write-Host -ForegroundColor Green "Building " $name
     Write-Host -ForegroundColor Green "Signed " $sign
     Write-Host
-    exec { msbuild "/t:Clean;Rebuild" /p:Configuration=Release "/p:Platform=Any CPU" /p:OutputPath=bin\Release\$finalDir\ /p:AssemblyOriginatorKeyFile=$signKeyPath "/p:SignAssembly=$sign" (GetConstants $build.Constants $sign) ".\Src\$name.sln" | Out-Default } "Error building $name"
+    exec { msbuild "/t:Clean;Rebuild" /p:Configuration=Release "/p:Platform=Any CPU" /p:OutputPath=bin\Release\$finalDir\ /p:AssemblyOriginatorKeyFile=$signKeyPath "/p:SignAssembly=$sign" "/p:TreatWarningsAsErrors=$treatWarningsAsErrors" (GetConstants $build.Constants $sign) ".\Src\$name.sln" | Out-Default } "Error building $name"
   }
 }
 
