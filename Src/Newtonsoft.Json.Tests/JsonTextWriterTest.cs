@@ -433,7 +433,7 @@ namespace Newtonsoft.Json.Tests
       using (JsonWriter jsonWriter = new JsonTextWriter(sw))
       {
         jsonWriter.Formatting = Formatting.Indented;
-        jsonWriter.FloatFormatHandling = FloatFormatHandling.Zero;
+        jsonWriter.FloatFormatHandling = FloatFormatHandling.DefaultValue;
 
         jsonWriter.WriteStartArray();
         jsonWriter.WriteValue(double.NaN);
@@ -442,6 +442,12 @@ namespace Newtonsoft.Json.Tests
         jsonWriter.WriteValue(float.NaN);
         jsonWriter.WriteValue(float.PositiveInfinity);
         jsonWriter.WriteValue(float.NegativeInfinity);
+        jsonWriter.WriteValue((double?)double.NaN);
+        jsonWriter.WriteValue((double?)double.PositiveInfinity);
+        jsonWriter.WriteValue((double?)double.NegativeInfinity);
+        jsonWriter.WriteValue((float?)float.NaN);
+        jsonWriter.WriteValue((float?)float.PositiveInfinity);
+        jsonWriter.WriteValue((float?)float.NegativeInfinity);
         jsonWriter.WriteEndArray();
 
         jsonWriter.Flush();
@@ -453,7 +459,13 @@ namespace Newtonsoft.Json.Tests
   0.0,
   0.0,
   0.0,
-  0.0
+  0.0,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null
 ]";
       string result = sb.ToString();
 

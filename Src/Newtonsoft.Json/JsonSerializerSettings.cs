@@ -168,6 +168,9 @@ namespace Newtonsoft.Json
     /// <value>The context.</value>
     public StreamingContext Context { get; set; }
 
+    /// <summary>
+    /// Get or set how <see cref="DateTime"/> and <see cref="DateTimeOffset"/> values are formatting when writing JSON text.
+    /// </summary>
     public string DateFormatString
     {
       get { return _dateFormatString ?? DefaultDateFormatString; }
@@ -230,12 +233,20 @@ namespace Newtonsoft.Json
       set { _dateParseHandling = value; }
     }
 
+    /// <summary>
+    /// Get or set how special floating point values, e.g. <see cref="F:System.Double.NaN"/>,
+    /// <see cref="F:System.Double.PositiveInfinity"/> and <see cref="F:System.Double.NegativeInfinity"/>,
+    /// are written as JSON.
+    /// </summary>
     public FloatFormatHandling FloatFormatHandling
     {
       get { return _floatFormatHandling ?? DefaultFloatFormatHandling; }
       set { _floatFormatHandling = value; }
     }
 
+    /// <summary>
+    /// Get or set how strings are escaped when writing JSON text.
+    /// </summary>
     public StringEscapeHandling StringEscapeHandling
     {
       get { return _stringEscapeHandling ?? DefaultStringEscapeHandling; }

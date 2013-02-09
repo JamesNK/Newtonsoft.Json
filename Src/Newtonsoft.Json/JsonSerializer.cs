@@ -346,18 +346,29 @@ namespace Newtonsoft.Json
       set { _dateParseHandling = value; }
     }
 
+    /// <summary>
+    /// Get or set how special floating point values, e.g. <see cref="F:System.Double.NaN"/>,
+    /// <see cref="F:System.Double.PositiveInfinity"/> and <see cref="F:System.Double.NegativeInfinity"/>,
+    /// are written as JSON.
+    /// </summary>
     public virtual FloatFormatHandling FloatFormatHandling
     {
       get { return _floatFormatHandling ?? JsonSerializerSettings.DefaultFloatFormatHandling; }
       set { _floatFormatHandling = value; }
     }
 
+    /// <summary>
+    /// Get or set how strings are escaped when writing JSON text.
+    /// </summary>
     public virtual StringEscapeHandling StringEscapeHandling
     {
       get { return _stringEscapeHandling ?? JsonSerializerSettings.DefaultStringEscapeHandling; }
       set { _stringEscapeHandling = value; }
     }
 
+    /// <summary>
+    /// Get or set how <see cref="DateTime"/> and <see cref="DateTimeOffset"/> values are formatting when writing JSON text.
+    /// </summary>
     public virtual string DateFormatString
     {
       get { return _dateFormatString ?? JsonSerializerSettings.DefaultDateFormatString; }

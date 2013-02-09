@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Serialization
 {
@@ -32,6 +33,8 @@ namespace Newtonsoft.Json.Serialization
   /// </summary>
   public class JsonPrimitiveContract : JsonContract
   {
+    internal bool Nullable { get; set; }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonPrimitiveContract"/> class.
     /// </summary>
@@ -40,6 +43,8 @@ namespace Newtonsoft.Json.Serialization
       : base(underlyingType)
     {
       ContractType = JsonContractType.Primitive;
+
+      Nullable = ReflectionUtils.IsNullable(underlyingType);
     }
   }
 }

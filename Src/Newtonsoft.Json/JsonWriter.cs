@@ -250,18 +250,29 @@ namespace Newtonsoft.Json
       set { _stringEscapeHandling = value; }
     }
 
+    /// <summary>
+    /// Get or set how special floating point values, e.g. <see cref="F:System.Double.NaN"/>,
+    /// <see cref="F:System.Double.PositiveInfinity"/> and <see cref="F:System.Double.NegativeInfinity"/>,
+    /// are written to JSON text.
+    /// </summary>
     public FloatFormatHandling FloatFormatHandling
     {
       get { return _floatFormatHandling; }
       set { _floatFormatHandling = value; }
     }
 
+    /// <summary>
+    /// Get or set how <see cref="DateTime"/> and <see cref="DateTimeOffset"/> values are formatting when writing JSON text.
+    /// </summary>
     public string DateFormatString
     {
       get { return _dateFormatString; }
       set { _dateFormatString = value; }
     }
 
+    /// <summary>
+    /// Gets or sets the culture used when writing JSON. Defaults to <see cref="CultureInfo.InvariantCulture"/>.
+    /// </summary>
     public CultureInfo Culture
     {
       get { return _culture ?? CultureInfo.InvariantCulture; }
@@ -1296,6 +1307,111 @@ namespace Newtonsoft.Json
       else if (value is TimeSpan)
       {
         WriteValue((TimeSpan)value);
+        return;
+      }
+
+      throw JsonWriterException.Create(this, "Unsupported type: {0}. Use the JsonSerializer class to get the object's JSON representation.".FormatWith(CultureInfo.InvariantCulture, value.GetType()), null);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Object"/> value.
+    /// An error will raised if the value cannot be written as a single JSON token.
+    /// </summary>
+    /// <param name="value">The <see cref="Object"/> value to write.</param>
+    /// <param name="nullable">A flag indicating whether the value is nullable.</param>
+    public virtual void WriteValue(object value, bool nullable)
+    {
+      if (!nullable)
+        WriteValue(value);
+
+      if (value == null)
+      {
+        WriteNull();
+        return;
+      }
+      else if (ConvertUtils.IsConvertible(value))
+      {
+        IConvertible convertible = ConvertUtils.ToConvertible(value);
+
+        switch (convertible.GetTypeCode())
+        {
+          case TypeCode.String:
+            WriteValue(convertible.ToString(CultureInfo.InvariantCulture));
+            return;
+          case TypeCode.Char:
+            WriteValue((char?)convertible.ToChar(CultureInfo.InvariantCulture));
+            return;
+          case TypeCode.Boolean:
+            WriteValue((bool?)convertible.ToBoolean(CultureInfo.InvariantCulture));
+            return;
+          case TypeCode.SByte:
+            WriteValue((sbyte?)convertible.ToSByte(CultureInfo.InvariantCulture));
+            return;
+          case TypeCode.Int16:
+            WriteValue((short?)convertible.ToInt16(CultureInfo.InvariantCulture));
+            return;
+          case TypeCode.UInt16:
+            WriteValue((ushort?)convertible.ToUInt16(CultureInfo.InvariantCulture));
+            return;
+          case TypeCode.Int32:
+            WriteValue((int?)convertible.ToInt32(CultureInfo.InvariantCulture));
+            return;
+          case TypeCode.Byte:
+            WriteValue((byte?)convertible.ToByte(CultureInfo.InvariantCulture));
+            return;
+          case TypeCode.UInt32:
+            WriteValue((uint?)convertible.ToUInt32(CultureInfo.InvariantCulture));
+            return;
+          case TypeCode.Int64:
+            WriteValue((long?)convertible.ToInt64(CultureInfo.InvariantCulture));
+            return;
+          case TypeCode.UInt64:
+            WriteValue((ulong?)convertible.ToUInt64(CultureInfo.InvariantCulture));
+            return;
+          case TypeCode.Single:
+            WriteValue((float?)convertible.ToSingle(CultureInfo.InvariantCulture));
+            return;
+          case TypeCode.Double:
+            WriteValue((double?)convertible.ToDouble(CultureInfo.InvariantCulture));
+            return;
+          case TypeCode.DateTime:
+            WriteValue((DateTime?)convertible.ToDateTime(CultureInfo.InvariantCulture));
+            return;
+          case TypeCode.Decimal:
+            WriteValue((decimal?)convertible.ToDecimal(CultureInfo.InvariantCulture));
+            return;
+#if !(NETFX_CORE || PORTABLE)
+          case TypeCode.DBNull:
+            WriteNull();
+            return;
+#endif
+        }
+      }
+#if !PocketPC && !NET20
+      else if (value is DateTimeOffset)
+      {
+        WriteValue((DateTimeOffset?)value);
+        return;
+      }
+#endif
+      else if (value is byte[])
+      {
+        WriteValue((byte[])value);
+        return;
+      }
+      else if (value is Guid)
+      {
+        WriteValue((Guid?)value);
+        return;
+      }
+      else if (value is Uri)
+      {
+        WriteValue((Uri)value);
+        return;
+      }
+      else if (value is TimeSpan)
+      {
+        WriteValue((TimeSpan?)value);
         return;
       }
 

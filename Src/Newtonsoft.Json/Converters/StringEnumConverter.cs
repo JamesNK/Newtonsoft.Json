@@ -131,11 +131,6 @@ namespace Newtonsoft.Json.Converters
       throw JsonSerializationException.Create(reader, "Unexpected token when parsing enum. Expected String or Integer, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
     }
 
-    /// <summary>
-    /// A cached representation of the Enum string representation to respect per Enum field name.
-    /// </summary>
-    /// <param name="t">The type of the Enum.</param>
-    /// <returns>A map of enum field name to either the field name, or the configured enum member name (<see cref="EnumMemberAttribute"/>).</returns>
     private BidirectionalDictionary<string, string> GetEnumNameMap(Type t)
     {
       BidirectionalDictionary<string, string> map;

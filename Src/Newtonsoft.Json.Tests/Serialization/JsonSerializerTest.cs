@@ -7124,6 +7124,43 @@ Parameter name: value",
       Assert.AreEqual("07/19/2012 14:30:00 +09:30", dateTimeOffset.ToString(CultureInfo.InvariantCulture));
     }
 
+    public class NullableFloats
+    {
+      public object Object { get; set; }
+      public float Float { get; set; }
+      public double Double { get; set; }
+      public float? NullableFloat { get; set; }
+      public double? NullableDouble { get; set; }
+      public object ObjectNull { get; set; }
+    }
+
+    [Test]
+    public void NullableFloatingPoint()
+    {
+      NullableFloats floats = new NullableFloats
+        {
+          Object = double.NaN,
+          ObjectNull = null,
+          Float = float.NaN,
+          NullableDouble = double.NaN,
+          NullableFloat = null
+        };
+
+      string json = JsonConvert.SerializeObject(floats, Formatting.Indented, new JsonSerializerSettings
+        {
+          FloatFormatHandling = FloatFormatHandling.DefaultValue
+        });
+
+      Assert.AreEqual(@"{
+  ""Object"": 0.0,
+  ""Float"": 0.0,
+  ""Double"": 0.0,
+  ""NullableFloat"": null,
+  ""NullableDouble"": null,
+  ""ObjectNull"": null
+}", json);
+    }
+
     [Test]
     public void DateFormatString()
     {

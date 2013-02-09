@@ -154,7 +154,7 @@ function GetConstants($constants, $includeSigned)
 {
   $signed = switch($includeSigned) { $true { ";SIGNED" } default { "" } }
 
-  return "/p:DefineConstants=`"TRACE;$constants$signed`""
+  return "/p:DefineConstants=`"CODE_ANALYSIS;TRACE;$constants$signed`""
 }
 
 function GetVersion($majorVersion)

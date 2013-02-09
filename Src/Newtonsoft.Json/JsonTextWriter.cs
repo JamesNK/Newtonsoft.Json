@@ -357,7 +357,24 @@ namespace Newtonsoft.Json
     public override void WriteValue(float value)
     {
       InternalWriteValue(JsonToken.Float);
-      WriteValueInternal(JsonConvert.ToString(value, FloatFormatHandling, QuoteChar), JsonToken.Float);
+      WriteValueInternal(JsonConvert.ToString(value, FloatFormatHandling, QuoteChar, false), JsonToken.Float);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Nullable{Single}"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Nullable{Single}"/> value to write.</param>
+    public override void WriteValue(float? value)
+    {
+      if (value == null)
+      {
+        WriteNull();
+      }
+      else
+      {
+        InternalWriteValue(JsonToken.Float);
+        WriteValueInternal(JsonConvert.ToString(value.Value, FloatFormatHandling, QuoteChar, true), JsonToken.Float);
+      }
     }
 
     /// <summary>
@@ -367,7 +384,24 @@ namespace Newtonsoft.Json
     public override void WriteValue(double value)
     {
       InternalWriteValue(JsonToken.Float);
-      WriteValueInternal(JsonConvert.ToString(value, FloatFormatHandling, QuoteChar), JsonToken.Float);
+      WriteValueInternal(JsonConvert.ToString(value, FloatFormatHandling, QuoteChar, false), JsonToken.Float);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Nullable{Double}"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Nullable{Double}"/> value to write.</param>
+    public override void WriteValue(double? value)
+    {
+      if (value == null)
+      {
+        WriteNull();
+      }
+      else
+      {
+        InternalWriteValue(JsonToken.Float);
+        WriteValueInternal(JsonConvert.ToString(value.Value, FloatFormatHandling, QuoteChar, true), JsonToken.Float);
+      }
     }
 
     /// <summary>

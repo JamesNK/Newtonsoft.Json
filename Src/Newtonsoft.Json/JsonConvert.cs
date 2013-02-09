@@ -446,18 +446,18 @@ namespace Newtonsoft.Json
       return EnsureDecimalPlace(value, value.ToString("R", CultureInfo.InvariantCulture));
     }
 
-    internal static string ToString(float value, FloatFormatHandling floatFormatHandling, char quoteChar)
+    internal static string ToString(float value, FloatFormatHandling floatFormatHandling, char quoteChar, bool nullable)
     {
-      return EnsureFloatFormat(value, EnsureDecimalPlace(value, value.ToString("R", CultureInfo.InvariantCulture)), floatFormatHandling, quoteChar);
+      return EnsureFloatFormat(value, EnsureDecimalPlace(value, value.ToString("R", CultureInfo.InvariantCulture)), floatFormatHandling, quoteChar, nullable);
     }
 
-    private static string EnsureFloatFormat(double value, string text, FloatFormatHandling floatFormatHandling, char quoteChar)
+    private static string EnsureFloatFormat(double value, string text, FloatFormatHandling floatFormatHandling, char quoteChar, bool nullable)
     {
       if (floatFormatHandling == FloatFormatHandling.Symbol || !(double.IsInfinity(value) || double.IsNaN(value)))
         return text;
 
-      if (floatFormatHandling == FloatFormatHandling.Zero)
-        return "0.0";
+      if (floatFormatHandling == FloatFormatHandling.DefaultValue)
+        return (!nullable) ? "0.0" : Null;
       
       return quoteChar + text + quoteChar;
     }
@@ -472,9 +472,9 @@ namespace Newtonsoft.Json
       return EnsureDecimalPlace(value, value.ToString("R", CultureInfo.InvariantCulture));
     }
 
-    internal static string ToString(double value, FloatFormatHandling floatFormatHandling, char quoteChar)
+    internal static string ToString(double value, FloatFormatHandling floatFormatHandling, char quoteChar, bool nullable)
     {
-      return EnsureFloatFormat(value, EnsureDecimalPlace(value, value.ToString("R", CultureInfo.InvariantCulture)), floatFormatHandling, quoteChar);
+      return EnsureFloatFormat(value, EnsureDecimalPlace(value, value.ToString("R", CultureInfo.InvariantCulture)), floatFormatHandling, quoteChar, nullable);
     }
 
     private static string EnsureDecimalPlace(double value, string text)
