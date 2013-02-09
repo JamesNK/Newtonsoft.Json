@@ -1219,98 +1219,7 @@ namespace Newtonsoft.Json
     /// <param name="value">The <see cref="Object"/> value to write.</param>
     public virtual void WriteValue(object value)
     {
-      if (value == null)
-      {
-        WriteNull();
-        return;
-      }
-      else if (ConvertUtils.IsConvertible(value))
-      {
-        IConvertible convertible = ConvertUtils.ToConvertible(value);
-
-        switch (convertible.GetTypeCode())
-        {
-          case TypeCode.String:
-            WriteValue(convertible.ToString(CultureInfo.InvariantCulture));
-            return;
-          case TypeCode.Char:
-            WriteValue(convertible.ToChar(CultureInfo.InvariantCulture));
-            return;
-          case TypeCode.Boolean:
-            WriteValue(convertible.ToBoolean(CultureInfo.InvariantCulture));
-            return;
-          case TypeCode.SByte:
-            WriteValue(convertible.ToSByte(CultureInfo.InvariantCulture));
-            return;
-          case TypeCode.Int16:
-            WriteValue(convertible.ToInt16(CultureInfo.InvariantCulture));
-            return;
-          case TypeCode.UInt16:
-            WriteValue(convertible.ToUInt16(CultureInfo.InvariantCulture));
-            return;
-          case TypeCode.Int32:
-            WriteValue(convertible.ToInt32(CultureInfo.InvariantCulture));
-            return;
-          case TypeCode.Byte:
-            WriteValue(convertible.ToByte(CultureInfo.InvariantCulture));
-            return;
-          case TypeCode.UInt32:
-            WriteValue(convertible.ToUInt32(CultureInfo.InvariantCulture));
-            return;
-          case TypeCode.Int64:
-            WriteValue(convertible.ToInt64(CultureInfo.InvariantCulture));
-            return;
-          case TypeCode.UInt64:
-            WriteValue(convertible.ToUInt64(CultureInfo.InvariantCulture));
-            return;
-          case TypeCode.Single:
-            WriteValue(convertible.ToSingle(CultureInfo.InvariantCulture));
-            return;
-          case TypeCode.Double:
-            WriteValue(convertible.ToDouble(CultureInfo.InvariantCulture));
-            return;
-          case TypeCode.DateTime:
-            WriteValue(convertible.ToDateTime(CultureInfo.InvariantCulture));
-            return;
-          case TypeCode.Decimal:
-            WriteValue(convertible.ToDecimal(CultureInfo.InvariantCulture));
-            return;
-#if !(NETFX_CORE || PORTABLE)
-          case TypeCode.DBNull:
-            WriteNull();
-            return;
-#endif
-        }
-      }
-#if !PocketPC && !NET20
-      else if (value is DateTimeOffset)
-      {
-        WriteValue((DateTimeOffset)value);
-        return;
-      }
-#endif
-      else if (value is byte[])
-      {
-        WriteValue((byte[])value);
-        return;
-      }
-      else if (value is Guid)
-      {
-        WriteValue((Guid)value);
-        return;
-      }
-      else if (value is Uri)
-      {
-        WriteValue((Uri)value);
-        return;
-      }
-      else if (value is TimeSpan)
-      {
-        WriteValue((TimeSpan)value);
-        return;
-      }
-
-      throw JsonWriterException.Create(this, "Unsupported type: {0}. Use the JsonSerializer class to get the object's JSON representation.".FormatWith(CultureInfo.InvariantCulture, value.GetType()), null);
+      WriteValueInternal(value, false);
     }
 
     /// <summary>
@@ -1321,64 +1230,108 @@ namespace Newtonsoft.Json
     /// <param name="nullable">A flag indicating whether the value is nullable.</param>
     public virtual void WriteValue(object value, bool nullable)
     {
-      if (!nullable)
-        WriteValue(value);
+      WriteValueInternal(value, nullable);
+    }
 
+    private void WriteValueInternal(object value, bool nullable)
+    {
       if (value == null)
       {
         WriteNull();
         return;
       }
-      else if (ConvertUtils.IsConvertible(value))
-      {
-        IConvertible convertible = ConvertUtils.ToConvertible(value);
 
+      IConvertible convertible = ConvertUtils.ToConvertible(value);
+      if (convertible != null)
+      {
         switch (convertible.GetTypeCode())
         {
           case TypeCode.String:
             WriteValue(convertible.ToString(CultureInfo.InvariantCulture));
             return;
           case TypeCode.Char:
-            WriteValue((char?)convertible.ToChar(CultureInfo.InvariantCulture));
+            if (nullable)
+              WriteValue((char?)convertible.ToChar(CultureInfo.InvariantCulture));
+            else
+              WriteValue(convertible.ToChar(CultureInfo.InvariantCulture));
             return;
           case TypeCode.Boolean:
-            WriteValue((bool?)convertible.ToBoolean(CultureInfo.InvariantCulture));
+            if (nullable)
+              WriteValue((bool?)convertible.ToBoolean(CultureInfo.InvariantCulture));
+            else
+              WriteValue(convertible.ToBoolean(CultureInfo.InvariantCulture));
             return;
           case TypeCode.SByte:
-            WriteValue((sbyte?)convertible.ToSByte(CultureInfo.InvariantCulture));
-            return;
+            if (nullable)
+              WriteValue((sbyte?)convertible.ToSByte(CultureInfo.InvariantCulture));
+            else
+               WriteValue(convertible.ToSByte(CultureInfo.InvariantCulture));
+           return;
           case TypeCode.Int16:
-            WriteValue((short?)convertible.ToInt16(CultureInfo.InvariantCulture));
+            if (nullable)
+              WriteValue((short?)convertible.ToInt16(CultureInfo.InvariantCulture));
+            else
+              WriteValue(convertible.ToInt16(CultureInfo.InvariantCulture));
             return;
           case TypeCode.UInt16:
-            WriteValue((ushort?)convertible.ToUInt16(CultureInfo.InvariantCulture));
+            if (nullable)
+              WriteValue((ushort?)convertible.ToUInt16(CultureInfo.InvariantCulture));
+            else
+              WriteValue(convertible.ToUInt16(CultureInfo.InvariantCulture));
             return;
           case TypeCode.Int32:
-            WriteValue((int?)convertible.ToInt32(CultureInfo.InvariantCulture));
+            if (nullable)
+              WriteValue((int?)convertible.ToInt32(CultureInfo.InvariantCulture));
+            else
+              WriteValue(convertible.ToInt32(CultureInfo.InvariantCulture));
             return;
           case TypeCode.Byte:
-            WriteValue((byte?)convertible.ToByte(CultureInfo.InvariantCulture));
+            if (nullable)
+              WriteValue((byte?)convertible.ToByte(CultureInfo.InvariantCulture));
+            else
+              WriteValue(convertible.ToByte(CultureInfo.InvariantCulture));
             return;
           case TypeCode.UInt32:
-            WriteValue((uint?)convertible.ToUInt32(CultureInfo.InvariantCulture));
+            if (nullable)
+              WriteValue((uint?)convertible.ToUInt32(CultureInfo.InvariantCulture));
+            else
+              WriteValue(convertible.ToUInt32(CultureInfo.InvariantCulture));
             return;
           case TypeCode.Int64:
-            WriteValue((long?)convertible.ToInt64(CultureInfo.InvariantCulture));
+            if (nullable)
+              WriteValue((long?)convertible.ToInt64(CultureInfo.InvariantCulture));
+            else
+              WriteValue(convertible.ToInt64(CultureInfo.InvariantCulture));
             return;
           case TypeCode.UInt64:
-            WriteValue((ulong?)convertible.ToUInt64(CultureInfo.InvariantCulture));
+            if (nullable)
+              WriteValue((ulong?)convertible.ToUInt64(CultureInfo.InvariantCulture));
+            else
+              WriteValue(convertible.ToUInt64(CultureInfo.InvariantCulture));
             return;
           case TypeCode.Single:
-            WriteValue((float?)convertible.ToSingle(CultureInfo.InvariantCulture));
+            if (nullable)
+              WriteValue((float?)convertible.ToSingle(CultureInfo.InvariantCulture));
+            else
+              WriteValue(convertible.ToSingle(CultureInfo.InvariantCulture));
             return;
           case TypeCode.Double:
-            WriteValue((double?)convertible.ToDouble(CultureInfo.InvariantCulture));
+            if (nullable)
+              WriteValue((double?)convertible.ToDouble(CultureInfo.InvariantCulture));
+            else
+              WriteValue(convertible.ToDouble(CultureInfo.InvariantCulture));
             return;
           case TypeCode.DateTime:
-            WriteValue((DateTime?)convertible.ToDateTime(CultureInfo.InvariantCulture));
+            if (nullable)
+              WriteValue((DateTime?)convertible.ToDateTime(CultureInfo.InvariantCulture));
+            else
+              WriteValue(convertible.ToDateTime(CultureInfo.InvariantCulture));
             return;
           case TypeCode.Decimal:
-            WriteValue((decimal?)convertible.ToDecimal(CultureInfo.InvariantCulture));
+            if (nullable)
+              WriteValue((decimal?)convertible.ToDecimal(CultureInfo.InvariantCulture));
+            else
+              WriteValue(convertible.ToDecimal(CultureInfo.InvariantCulture));
             return;
 #if !(NETFX_CORE || PORTABLE)
           case TypeCode.DBNull:
@@ -1390,7 +1343,10 @@ namespace Newtonsoft.Json
 #if !PocketPC && !NET20
       else if (value is DateTimeOffset)
       {
-        WriteValue((DateTimeOffset?)value);
+        if (nullable)
+          WriteValue((DateTimeOffset?)value);
+        else
+          WriteValue((DateTimeOffset)value);
         return;
       }
 #endif
@@ -1401,7 +1357,10 @@ namespace Newtonsoft.Json
       }
       else if (value is Guid)
       {
-        WriteValue((Guid?)value);
+        if (nullable)
+          WriteValue((Guid?)value);
+        else
+          WriteValue((Guid)value);
         return;
       }
       else if (value is Uri)
@@ -1411,7 +1370,10 @@ namespace Newtonsoft.Json
       }
       else if (value is TimeSpan)
       {
-        WriteValue((TimeSpan?)value);
+        if (nullable)
+          WriteValue((TimeSpan?)value);
+        else
+          WriteValue((TimeSpan)value);
         return;
       }
 
