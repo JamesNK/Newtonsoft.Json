@@ -15,16 +15,19 @@ Json.NET comes in different versions for the various .NET frameworks.
   Silverlight 4 & 5
 
 -WindowsPhone:
-  Windows Phone 7 & 7.1
+  Windows Phone 7.1 & 8
 
 -WinRT:
   Windows 8 Store, WinRT 4.5
 
 -Portable:
-  .NET 4.0, Silverlight 4, Windows Phone 7, WinRT 4.5
+  .NET 4.0.3, Silverlight 4 & 5, Windows Phone 7.1 & 8, WinRT 4.5
 
 
 Notes:
+
+Using the Portable Library against .NET 4.0 requires the .NET 4.0.3 Multi-Targeting Pack, 
+which can be found here: http://www.microsoft.com/en-us/download/details.aspx?id=29052
 
 The Silverlight and Windows Phone builds are not strong-named.
 Use the assemblies in the Signed sub-directories for the strong-named versions.
