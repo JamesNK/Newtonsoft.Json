@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lib", "Lib", "{F69285DD-24FB-4A60-AE8B-4C2744285D0F}"
 	ProjectSection(SolutionItems) = preProject
 		Lib\NUnit\Silverlight\nunit.framework.dll = Lib\NUnit\Silverlight\nunit.framework.dll
@@ -9,6 +9,13 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.WindowsPhone", "Newtonsoft.Json\Newtonsoft.Json.WindowsPhone.csproj", "{7A7F70AB-5C07-47ED-BDD2-ECC14DBACA5E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.Tests.WindowsPhone", "Newtonsoft.Json.Tests\Newtonsoft.Json.Tests.WindowsPhone.csproj", "{5ED71C8C-D0A6-487C-9A8C-BB855ECEAF75}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{ED8F2AF0-CC20-4764-8A23-280FC643C2EF}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

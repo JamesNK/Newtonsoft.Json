@@ -8,12 +8,13 @@
 //------------------------------------------------------------------------------
 
 using System;
+using System.ComponentModel;
+using System.Data.EntityClient;
 using System.Data.Objects;
 using System.Data.Objects.DataClasses;
-using System.Data.EntityClient;
-using System.ComponentModel;
-using System.Xml.Serialization;
+using System.Linq;
 using System.Runtime.Serialization;
+using System.Xml.Serialization;
 
 [assembly: EdmSchemaAttribute()]
 #region EDM Relationship Metadata
@@ -101,6 +102,7 @@ namespace Newtonsoft.Json.Tests
         private ObjectSet<Folder> _Folder;
 
         #endregion
+
         #region AddTo Methods
     
         /// <summary>
@@ -120,11 +122,11 @@ namespace Newtonsoft.Json.Tests
         }
 
         #endregion
+
     }
-    
 
     #endregion
-    
+
     #region Entities
     
     /// <summary>
@@ -155,6 +157,7 @@ namespace Newtonsoft.Json.Tests
         }
 
         #endregion
+
         #region Primitive Properties
     
         /// <summary>
@@ -257,6 +260,7 @@ namespace Newtonsoft.Json.Tests
         partial void OnCreatedDateChanged();
 
         #endregion
+
     
         #region Navigation Properties
     
@@ -299,6 +303,7 @@ namespace Newtonsoft.Json.Tests
         }
 
         #endregion
+
     }
     
     /// <summary>
@@ -329,6 +334,7 @@ namespace Newtonsoft.Json.Tests
         }
 
         #endregion
+
         #region Primitive Properties
     
         /// <summary>
@@ -431,6 +437,7 @@ namespace Newtonsoft.Json.Tests
         partial void OnCreatedDateChanged();
 
         #endregion
+
     
         #region Navigation Properties
     
@@ -517,8 +524,10 @@ namespace Newtonsoft.Json.Tests
         }
 
         #endregion
+
     }
 
     #endregion
+
     
 }

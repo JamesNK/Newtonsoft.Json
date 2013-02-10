@@ -103,7 +103,7 @@ namespace Newtonsoft.Json.Serialization
 #if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
         new ExpandoObjectConverter(),
 #endif
-#if (!(SILVERLIGHT || PORTABLE) || WINDOWS_PHONE)
+#if !(SILVERLIGHT || WINDOWS_PHONE)
         new XmlNodeConverter(),
 #endif
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)

@@ -8,3 +8,9 @@ AppPackages/
 _ReSharper.*
 *.ReSharper.user
 *.resharper.user
+[Pp]ackages/
+_UpgradeReport_Files/
+[Bb]ackup*/
+*.tss
+UpgradeLog*.*
+runbuild.txt
