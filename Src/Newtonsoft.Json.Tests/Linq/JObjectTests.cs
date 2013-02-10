@@ -38,7 +38,7 @@ using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAtt
 using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Collections;
-#if !PocketPC && !SILVERLIGHT && !NETFX_CORE
+#if !SILVERLIGHT && !NETFX_CORE
 using System.Web.UI;
 #endif
 #if NET20

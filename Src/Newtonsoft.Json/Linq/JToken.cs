@@ -454,7 +454,7 @@ namespace Newtonsoft.Json.Linq
       return Convert.ToBoolean(v.Value, CultureInfo.InvariantCulture);
     }
 
-#if !PocketPC && !NET20
+#if !NET20
     /// <summary>
     /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="System.DateTimeOffset"/>.
     /// </summary>
@@ -522,7 +522,7 @@ namespace Newtonsoft.Json.Linq
       return (v.Value != null) ? (DateTime?)Convert.ToDateTime(v.Value, CultureInfo.InvariantCulture) : null;
     }
 
-#if !PocketPC && !NET20
+#if !NET20
     /// <summary>
     /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="Nullable{DateTimeOffset}"/>.
     /// </summary>
@@ -1036,7 +1036,7 @@ namespace Newtonsoft.Json.Linq
       return new JValue(value);
     }
 
-#if !PocketPC && !NET20
+#if !NET20
     /// <summary>
     /// Performs an implicit conversion from <see cref="DateTimeOffset"/> to <see cref="JToken"/>.
     /// </summary>
@@ -1078,7 +1078,7 @@ namespace Newtonsoft.Json.Linq
       return new JValue(value);
     }
 
-#if !PocketPC && !NET20
+#if !NET20
     /// <summary>
     /// Performs an implicit conversion from <see cref="Nullable{DateTimeOffset}"/> to <see cref="JToken"/>.
     /// </summary>
@@ -1517,7 +1517,7 @@ namespace Newtonsoft.Json.Linq
           return (string) this;
       }
 
-#if !PocketPC && !NET20
+#if !NET20
       if (objectType == typeof (DateTimeOffset))
       {
         if (isNullable)

@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !PocketPC && !NET20
+#if !NET20
 using System;
 using System.Collections.Generic;
 using System.Linq;

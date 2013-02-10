@@ -44,7 +44,7 @@ using System.Runtime.Serialization;
 
 namespace Newtonsoft.Json.Serialization
 {
-#if !SILVERLIGHT && !PocketPC && !NET20 && !NETFX_CORE
+#if !SILVERLIGHT && !NET20 && !NETFX_CORE
   internal interface IMetadataTypeAttribute
   {
     Type MetadataClassType { get; }
@@ -115,7 +115,7 @@ namespace Newtonsoft.Json.Serialization
     }
 #endif
 
-#if !PocketPC && !NET20
+#if !NET20
     public static DataContractAttribute GetDataContractAttribute(Type type)
     {
       // DataContractAttribute does not have inheritance
@@ -171,7 +171,7 @@ namespace Newtonsoft.Json.Serialization
       if (objectAttribute != null)
         return objectAttribute.MemberSerialization;
 
-#if !PocketPC && !NET20
+#if !NET20
       DataContractAttribute dataContractAttribute = GetDataContractAttribute(objectType);
       if (dataContractAttribute != null)
         return MemberSerialization.OptIn;
@@ -225,7 +225,6 @@ namespace Newtonsoft.Json.Serialization
     }
 
 #if !(NETFX_CORE || PORTABLE)
-#if !PocketPC
     public static TypeConverter GetTypeConverter(Type type)
     {
 #if !SILVERLIGHT
@@ -237,7 +236,6 @@ namespace Newtonsoft.Json.Serialization
         return (TypeConverter)ReflectionUtils.CreateInstance(converterType);
 
       return null;
-#endif
 #endif
     }
 #endif

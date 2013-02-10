@@ -274,7 +274,7 @@ namespace Newtonsoft.Json.Serialization
       
       if (memberSerialization != MemberSerialization.Fields)
       {
-#if !PocketPC && !NET20
+#if !NET20
         DataContractAttribute dataContractAttribute = JsonTypeReflector.GetDataContractAttribute(objectType);
 #endif
 
@@ -297,7 +297,7 @@ namespace Newtonsoft.Json.Serialization
               // or are a field if serializing just fields
               if (JsonTypeReflector.GetAttribute<JsonPropertyAttribute>(member.GetCustomAttributeProvider()) != null)
                 serializableMembers.Add(member);
-#if !PocketPC && !NET20
+#if !NET20
               else if (dataContractAttribute != null && JsonTypeReflector.GetAttribute<DataMemberAttribute>(member.GetCustomAttributeProvider()) != null)
                 serializableMembers.Add(member);
 #endif
@@ -307,7 +307,7 @@ namespace Newtonsoft.Json.Serialization
           }
         }
 
-#if !PocketPC && !SILVERLIGHT && !NET20
+#if !SILVERLIGHT && !NET20
         Type match;
         // don't include EntityKey on entities objects... this is a bit hacky
         if (objectType.AssignableToTypeName("System.Data.Objects.DataClasses.EntityObject", out match))
@@ -328,7 +328,7 @@ namespace Newtonsoft.Json.Serialization
       return serializableMembers;
     }
 
-#if !PocketPC && !SILVERLIGHT && !NET20
+#if !SILVERLIGHT && !NET20
     private bool ShouldSerializeEntityMember(MemberInfo memberInfo)
     {
       PropertyInfo propertyInfo = memberInfo as PropertyInfo;
@@ -508,7 +508,7 @@ namespace Newtonsoft.Json.Serialization
       return JsonTypeReflector.ReflectionDelegateFactory.CreateDefaultConstructor<object>(createdType);
     }
 
-#if !PocketPC && !NET20
+#if !NET20
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.Runtime.Serialization.DataContractAttribute.#get_IsReference()")]
 #endif
     private void InitializeContract(JsonContract contract)
@@ -518,7 +518,7 @@ namespace Newtonsoft.Json.Serialization
       {
         contract.IsReference = containerAttribute._isReference;
       }
-#if !PocketPC && !NET20
+#if !NET20
       else
       {
         DataContractAttribute dataContractAttribute = JsonTypeReflector.GetDataContractAttribute(contract.NonNullableUnderlyingType);
@@ -805,7 +805,7 @@ namespace Newtonsoft.Json.Serialization
       if (type == typeof(Type) || type.IsSubclassOf(typeof(Type)))
         return true;
 
-#if SILVERLIGHT || PocketPC
+#if SILVERLIGHT
       if (type == typeof(Guid) || type == typeof(Uri) || type == typeof(TimeSpan))
         return true;
 #endif
@@ -938,7 +938,7 @@ namespace Newtonsoft.Json.Serialization
 
     private void SetPropertySettingsFromAttributes(JsonProperty property, ICustomAttributeProvider attributeProvider, string name, Type declaringType, MemberSerialization memberSerialization, out bool allowNonPublicAccess)
     {
-#if !PocketPC && !NET20
+#if !NET20
       DataContractAttribute dataContractAttribute = JsonTypeReflector.GetDataContractAttribute(declaringType);
 
       MemberInfo memberInfo = null;
@@ -962,7 +962,7 @@ namespace Newtonsoft.Json.Serialization
       string mappedName;
       if (propertyAttribute != null && propertyAttribute.PropertyName != null)
         mappedName = propertyAttribute.PropertyName;
-#if !PocketPC && !NET20
+#if !NET20
       else if (dataMemberAttribute != null && dataMemberAttribute.Name != null)
         mappedName = dataMemberAttribute.Name;
 #endif
@@ -980,7 +980,7 @@ namespace Newtonsoft.Json.Serialization
         property.DefaultValueHandling = propertyAttribute._defaultValueHandling;
         hasMemberAttribute = true;
       }
-#if !PocketPC && !NET20
+#if !NET20
       else if (dataMemberAttribute != null)
       {
         property._required = (dataMemberAttribute.IsRequired) ? Required.AllowNull : Required.Default;
@@ -1045,7 +1045,7 @@ namespace Newtonsoft.Json.Serialization
       if (memberSerialization == MemberSerialization.Fields)
         allowNonPublicAccess = true;
 
-#if !PocketPC && !NET20
+#if !NET20
       if (dataMemberAttribute != null)
       {
         allowNonPublicAccess = true;

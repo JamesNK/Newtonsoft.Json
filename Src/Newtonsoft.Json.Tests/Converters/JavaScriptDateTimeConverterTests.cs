@@ -53,7 +53,7 @@ namespace Newtonsoft.Json.Tests.Converters
       Assert.AreEqual("new Date(976918263055)", result);
     }
 
-#if !PocketPC && !NET20
+#if !NET20
     [Test]
     public void SerializeDateTimeOffset()
     {

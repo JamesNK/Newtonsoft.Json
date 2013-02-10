@@ -407,7 +407,7 @@ namespace Newtonsoft.Json.Bson
       AddValue(value, BsonType.Date);
     }
 
-#if !PocketPC && !NET20
+#if !NET20
     /// <summary>
     /// Writes a <see cref="DateTimeOffset"/> value.
     /// </summary>

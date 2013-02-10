@@ -148,7 +148,7 @@ namespace Newtonsoft.Json.Bson
 
               ticks = JsonConvert.ConvertDateTimeToJavaScriptTicks(dateTime, false);
             }
-#if !PocketPC && !NET20
+#if !NET20
             else
             {
               DateTimeOffset dateTimeOffset = (DateTimeOffset)value.Value;

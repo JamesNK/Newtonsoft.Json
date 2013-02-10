@@ -231,7 +231,7 @@ now brown cow?", '"', true);
       value = new DateTime(JsonConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc);
       Assert.AreEqual(@"""\/Date(0)\/""", JsonConvert.ToString((DateTime)value, DateFormatHandling.MicrosoftDateFormat, DateTimeZoneHandling.RoundtripKind));
 
-#if !PocketPC && !NET20
+#if !NET20
       value = new DateTimeOffset(JsonConvert.InitialJavaScriptDateTicks, TimeSpan.Zero);
       Assert.AreEqual(@"""1970-01-01T00:00:00+00:00""", JsonConvert.ToString(value));
 
@@ -280,7 +280,7 @@ now brown cow?", '"', true);
       int i = JsonConvert.DeserializeObject<int>("1");
       Assert.AreEqual(1, i);
 
-#if !PocketPC && !NET20
+#if !NET20
       DateTimeOffset d = JsonConvert.DeserializeObject<DateTimeOffset>(@"""\/Date(-59011455539000+0000)\/""");
       Assert.AreEqual(new DateTimeOffset(new DateTime(100, 1, 1, 1, 1, 1, DateTimeKind.Utc)), d);
 #endif

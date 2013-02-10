@@ -82,7 +82,7 @@ namespace Newtonsoft.Json.Tests.Bson
       Assert.AreEqual("0F-00-00-00-10-42-6C-61-68-00-01-00-00-00-00", bson);
     }
 
-#if !PocketPC && !NET20
+#if !NET20
     [Test]
     public void WriteValues()
     {

@@ -89,7 +89,6 @@ namespace Newtonsoft.Json.Serialization
     // checked for after passed in converters and attribute specified converters
     internal JsonConverter InternalConverter { get; set; }
 
-#if !PocketPC
     /// <summary>
     /// Gets or sets the method called immediately after deserialization of the object.
     /// </summary>
@@ -113,7 +112,6 @@ namespace Newtonsoft.Json.Serialization
     /// </summary>
     /// <value>The method called before serialization of the object.</value>
     public MethodInfo OnSerializing { get; set; }
-#endif
 
     /// <summary>
     /// Gets or sets the default creator method used to create the object.
@@ -135,34 +133,26 @@ namespace Newtonsoft.Json.Serialization
 
     internal void InvokeOnSerializing(object o, StreamingContext context)
     {
-#if !PocketPC
       if (OnSerializing != null)
         OnSerializing.Invoke(o, new object[] {context});
-#endif
     }
 
     internal void InvokeOnSerialized(object o, StreamingContext context)
     {
-#if !PocketPC
       if (OnSerialized != null)
         OnSerialized.Invoke(o, new object[] {context});
-#endif
     }
 
     internal void InvokeOnDeserializing(object o, StreamingContext context)
     {
-#if !PocketPC
       if (OnDeserializing != null)
         OnDeserializing.Invoke(o, new object[] {context});
-#endif
     }
 
     internal void InvokeOnDeserialized(object o, StreamingContext context)
     {
-#if !PocketPC
       if (OnDeserialized != null)
         OnDeserialized.Invoke(o, new object[] {context});
-#endif
     }
 
     internal void InvokeOnError(object o, StreamingContext context, ErrorContext errorContext)

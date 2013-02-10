@@ -137,7 +137,7 @@ namespace Newtonsoft.Json
       return value;
     }
 
-#if !PocketPC && !NET20
+#if !NET20
     /// <summary>
     /// Converts the <see cref="DateTimeOffset"/> to its JSON string representation.
     /// </summary>
@@ -656,7 +656,7 @@ namespace Newtonsoft.Json
 #endif
         }
       }
-#if !PocketPC && !NET20
+#if !NET20
       else if (value is DateTimeOffset)
       {
         return ToString((DateTimeOffset) value);
@@ -711,7 +711,7 @@ namespace Newtonsoft.Json
       if (ReflectionUtils.IsNullableType(type))
         type = Nullable.GetUnderlyingType(type);
 
-#if !PocketPC && !NET20
+#if !NET20
       if (type == typeof (DateTimeOffset))
         return true;
 #endif

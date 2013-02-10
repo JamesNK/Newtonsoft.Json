@@ -460,7 +460,7 @@ namespace Newtonsoft.Json.Linq
         return JTokenType.Float;
       else if (value is DateTime)
         return JTokenType.Date;
-#if !PocketPC && !NET20
+#if !NET20
       else if (value is DateTimeOffset)
         return JTokenType.Date;
 #endif
@@ -573,7 +573,7 @@ namespace Newtonsoft.Json.Linq
           writer.WriteValue(Convert.ToBoolean(_value, CultureInfo.InvariantCulture));
           return;
         case JTokenType.Date:
-#if !PocketPC && !NET20
+#if !NET20
           if (_value is DateTimeOffset)
             writer.WriteValue((DateTimeOffset)_value);
           else

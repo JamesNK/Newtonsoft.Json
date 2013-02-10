@@ -36,8 +36,6 @@ using System.Security;
 [assembly: AssemblyTitle("Json.NET Windows Phone")]
 #elif SILVERLIGHT
 [assembly: AssemblyTitle("Json.NET Silverlight")]
-#elif PocketPC
-[assembly: AssemblyTitle("Json.NET Compact")]
 #elif PORTABLE
 [assembly: AssemblyTitle("Json.NET Portable")]
 #elif NETFX_CORE
@@ -89,8 +87,6 @@ using System.Security;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 [assembly: AssemblyVersion("4.5.0.0")]
-#if !PocketPC
 [assembly: AssemblyFileVersion("4.5.11.15810")]
-#endif
 
 [assembly: CLSCompliant(true)]

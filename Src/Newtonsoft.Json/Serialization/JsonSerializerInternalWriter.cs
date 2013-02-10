@@ -292,7 +292,7 @@ namespace Newtonsoft.Json.Serialization
 
     internal static bool TryConvertToString(object value, Type type, out string s)
     {
-#if !(PocketPC || NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE)
       TypeConverter converter = ConvertUtils.GetConverter(type);
 
       // use the objectType's TypeConverter if it has one and can convert to a string
@@ -315,7 +315,7 @@ namespace Newtonsoft.Json.Serialization
       }
 #endif
 
-#if SILVERLIGHT || PocketPC || NETFX_CORE
+#if SILVERLIGHT || NETFX_CORE
       if (value is Guid || value is Uri || value is TimeSpan)
       {
         s = value.ToString();

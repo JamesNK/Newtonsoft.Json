@@ -28,7 +28,7 @@ using System;
 using System.Collections.Concurrent;
 #endif
 using System.Collections.Generic;
-#if !SILVERLIGHT && !PocketPC && !NET20 && !NETFX_CORE
+#if !SILVERLIGHT && !NET20 && !NETFX_CORE
 using System.ComponentModel.DataAnnotations;
 using System.Configuration;
 using System.Runtime.CompilerServices;
@@ -53,7 +53,7 @@ using System.Collections.ObjectModel;
 using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Converters;
-#if !PocketPC && !NET20 && !WINDOWS_PHONE
+#if !NET20 && !WINDOWS_PHONE
 using System.Runtime.Serialization.Json;
 #endif
 using Newtonsoft.Json.Serialization;
@@ -173,7 +173,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       string jsonText = JsonConvert.SerializeObject(testDictionary);
 
-#if !PocketPC && !NET20 && !WINDOWS_PHONE
+#if !NET20 && !WINDOWS_PHONE
       MemoryStream ms = new MemoryStream();
       DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(Dictionary<string, object>));
       serializer.WriteObject(ms, testDictionary);
@@ -432,7 +432,7 @@ keyword such as type of business.""
       CollectionAssert.AreEqual(r1, r2);
     }
 
-#if !PocketPC && !NET20 && !WINDOWS_PHONE
+#if !NET20 && !WINDOWS_PHONE
     [Test]
     public void Unicode()
     {
@@ -1595,7 +1595,7 @@ keyword such as type of business.""
     }
 #endif
 
-#if !PocketPC && !NET20
+#if !NET20
     [DataContract]
     public class DataContractPrivateMembers
     {
@@ -1982,7 +1982,7 @@ keyword such as type of business.""
       Assert.AreEqual("Product 1", products[0].Name);
     }
 
-#if !PocketPC && !NET20
+#if !NET20
     [Test]
     public void DeserializeEmptyStringToNullableDateTime()
     {
@@ -2759,7 +2759,7 @@ Path '', line 1, position 2.",
       public string Ethnicity { get; set; }
     }
 
-#if !NET20 && !PocketPC && !WINDOWS_PHONE
+#if !NET20 && !WINDOWS_PHONE
     public class DataContractJsonSerializerTestClass
     {
       public TimeSpan TimeSpanProperty { get; set; }
@@ -4108,7 +4108,7 @@ To fix this error either change the environment to be fully trusted, change the 
       Assert.AreEqual(null, d[2]);
     }
 
-#if !SILVERLIGHT && !NET20 && !PocketPC
+#if !SILVERLIGHT && !NET20
     [Test]
     public void SerializeHashSet()
     {
@@ -4161,7 +4161,7 @@ To fix this error either change the environment to be fully trusted, change the 
       Assert.AreEqual(0, z[1].Prop1.Length);
     }
 
-#if !NET20 && !PocketPC && !SILVERLIGHT && !NETFX_CORE
+#if !NET20 && !SILVERLIGHT && !NETFX_CORE
     public class StringDictionaryTestClass
     {
       public StringDictionary StringDictionaryProperty { get; set; }
@@ -4456,7 +4456,7 @@ To fix this error either change the environment to be fully trusted, change the 
       Assert.AreEqual(meh.IDontWork, "meh");
     }
 
-#if !(SILVERLIGHT || PocketPC || NET20 || NETFX_CORE)
+#if !(SILVERLIGHT || NET20 || NETFX_CORE)
     [DataContract]
     public struct StructISerializable : ISerializable
     {

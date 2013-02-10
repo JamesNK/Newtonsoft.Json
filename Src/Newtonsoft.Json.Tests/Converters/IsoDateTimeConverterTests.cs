@@ -149,7 +149,7 @@ namespace Newtonsoft.Json.Tests.Converters
     }
 #endif
 
-#if !PocketPC && !NET20
+#if !NET20
     [Test]
     public void SerializeDateTimeOffset()
     {

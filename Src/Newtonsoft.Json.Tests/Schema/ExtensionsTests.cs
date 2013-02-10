@@ -199,7 +199,7 @@ namespace Newtonsoft.Json.Tests.Schema
       GenerateSchemaAndSerializeFromType(new CircularReferenceWithIdClass());
       GenerateSchemaAndSerializeFromType(new ClassWithArray());
       GenerateSchemaAndSerializeFromType(new ClassWithGuid());
-#if !NET20 && !PocketPC
+#if !NET20
       GenerateSchemaAndSerializeFromType(new NullableDateTimeTestClass());
 #endif
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)

@@ -27,7 +27,7 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.Serialization;
-#if !(SILVERLIGHT || PocketPC || NET20 || NET35 || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NET20 || NET35 || NETFX_CORE || PORTABLE)
 using System.Runtime.Serialization.Json;
 #endif
 using System.Text;
@@ -209,7 +209,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     {
       EmitDefaultValueClass c = new EmitDefaultValueClass();
 
-#if !(SILVERLIGHT || PocketPC || NET20 || NET35 || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NET20 || NET35 || NETFX_CORE || PORTABLE)
       DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(EmitDefaultValueClass));
 
       MemoryStream ms = new MemoryStream();

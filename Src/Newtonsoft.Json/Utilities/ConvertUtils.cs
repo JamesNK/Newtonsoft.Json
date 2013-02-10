@@ -329,7 +329,7 @@ namespace Newtonsoft.Json.Utilities
       if (targetType.IsInterface() || targetType.IsGenericTypeDefinition() || targetType.IsAbstract())
         throw new ArgumentException("Target type {0} is not a value type or a non-abstract class.".FormatWith(CultureInfo.InvariantCulture, targetType), "targetType");
 
-#if !PocketPC && !NET20
+#if !NET20
       if (initialValue is DateTime && targetType == typeof(DateTimeOffset))
         return new DateTimeOffset((DateTime)initialValue);
 #endif

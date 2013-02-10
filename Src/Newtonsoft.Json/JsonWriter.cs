@@ -521,7 +521,7 @@ namespace Newtonsoft.Json
             WriteEndConstructor();
             break;
           case JsonToken.Date:
-#if !PocketPC && !NET20
+#if !NET20
             if (reader.Value is DateTimeOffset)
               WriteValue((DateTimeOffset)reader.Value);
             else
@@ -949,7 +949,7 @@ namespace Newtonsoft.Json
       InternalWriteValue(JsonToken.Date);
     }
 
-#if !PocketPC && !NET20
+#if !NET20
     /// <summary>
     /// Writes a <see cref="DateTimeOffset"/> value.
     /// </summary>
@@ -1150,7 +1150,7 @@ namespace Newtonsoft.Json
         WriteValue(value.Value);
     }
 
-#if !PocketPC && !NET20
+#if !NET20
     /// <summary>
     /// Writes a <see cref="Nullable{DateTimeOffset}"/> value.
     /// </summary>
@@ -1340,7 +1340,7 @@ namespace Newtonsoft.Json
 #endif
         }
       }
-#if !PocketPC && !NET20
+#if !NET20
       else if (value is DateTimeOffset)
       {
         if (nullable)

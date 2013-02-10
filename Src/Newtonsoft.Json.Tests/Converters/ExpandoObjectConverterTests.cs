@@ -27,7 +27,7 @@
 
 using System;
 using System.Collections.Generic;
-#if !SILVERLIGHT && !PocketPC && !NET20 && !NETFX_CORE
+#if !SILVERLIGHT && !NET20 && !NETFX_CORE
 using System.Data.Linq;
 #endif
 #if !SILVERLIGHT && !NETFX_CORE

@@ -29,7 +29,7 @@ using System.ComponentModel;
 namespace Newtonsoft.Json.Tests.TestObjects
 {
   [JsonObject(Id = "Person", Title = "Title!", Description = "JsonObjectAttribute description!", MemberSerialization = MemberSerialization.OptIn)]
-#if !PocketPC && !NETFX_CORE
+#if !NETFX_CORE
   [Description("DescriptionAttribute description!")]
 #endif
   public class Person

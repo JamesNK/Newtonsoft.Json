@@ -50,7 +50,7 @@ namespace Newtonsoft.Json.Converters
         DateTime utcDateTime = dateTime.ToUniversalTime();
         ticks = JsonConvert.ConvertDateTimeToJavaScriptTicks(utcDateTime);
       }
-#if !PocketPC && !NET20
+#if !NET20
       else if (value is DateTimeOffset)
       {
         DateTimeOffset dateTimeOffset = (DateTimeOffset)value;
@@ -107,7 +107,7 @@ namespace Newtonsoft.Json.Converters
       if (reader.TokenType != JsonToken.EndConstructor)
         throw JsonSerializationException.Create(reader, "Unexpected token parsing date. Expected EndConstructor, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
 
-#if !PocketPC && !NET20
+#if !NET20
       if (t == typeof(DateTimeOffset))
         return new DateTimeOffset(d);
 #endif

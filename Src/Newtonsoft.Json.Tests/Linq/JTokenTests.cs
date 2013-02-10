@@ -233,7 +233,7 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(2L, (long)new JArray(1, 2, 3)[1]);
 
       Assert.AreEqual(new DateTime(2000, 12, 20), (DateTime)new JValue(new DateTime(2000, 12, 20)));
-#if !PocketPC && !NET20
+#if !NET20
       Assert.AreEqual(new DateTimeOffset(2000, 12, 20, 0, 0, 0, TimeSpan.Zero), (DateTimeOffset)new JValue(new DateTime(2000, 12, 20, 0, 0, 0, DateTimeKind.Utc)));
       Assert.AreEqual(new DateTimeOffset(2000, 12, 20, 23, 50, 10, TimeSpan.Zero), (DateTimeOffset)new JValue(new DateTimeOffset(2000, 12, 20, 23, 50, 10, TimeSpan.Zero)));
       Assert.AreEqual(null, (DateTimeOffset?)new JValue((DateTimeOffset?)null));
@@ -446,7 +446,7 @@ namespace Newtonsoft.Json.Tests.Linq
     public void ImplicitCastingTo()
     {
       Assert.IsTrue(JToken.DeepEquals(new JValue(new DateTime(2000, 12, 20)), (JValue)new DateTime(2000, 12, 20)));
-#if !PocketPC && !NET20
+#if !NET20
       Assert.IsTrue(JToken.DeepEquals(new JValue(new DateTimeOffset(2000, 12, 20, 23, 50, 10, TimeSpan.Zero)), (JValue)new DateTimeOffset(2000, 12, 20, 23, 50, 10, TimeSpan.Zero)));
       Assert.IsTrue(JToken.DeepEquals(new JValue((DateTimeOffset?)null), (JValue)(DateTimeOffset?)null));
 #endif

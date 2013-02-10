@@ -133,7 +133,7 @@ namespace Newtonsoft.Json.Tests
         jsonWriter.WriteValue((decimal?)1.1m);
         jsonWriter.WriteValue((DateTime?)null);
         jsonWriter.WriteValue((DateTime?)new DateTime(JsonConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc));
-#if !PocketPC && !NET20
+#if !NET20
         jsonWriter.WriteValue((DateTimeOffset?)null);
         jsonWriter.WriteValue((DateTimeOffset?)new DateTimeOffset(JsonConvert.InitialJavaScriptDateTicks, TimeSpan.Zero));
 #endif
@@ -143,7 +143,7 @@ namespace Newtonsoft.Json.Tests
       string json = sw.ToString();
       string expected;
 
-#if !PocketPC && !NET20
+#if !NET20
       expected = @"[null,""c"",null,true,null,1,null,1,null,1,null,1,null,1,null,1,null,1,null,1,null,1.1,null,1.1,null,1.1,null,""1970-01-01T00:00:00Z"",null,""1970-01-01T00:00:00+00:00""]";
 #else
       expected = @"[null,""c"",null,true,null,1,null,1,null,1,null,1,null,1,null,1,null,1,null,1,null,1.1,null,1.1,null,1.1,null,""1970-01-01T00:00:00Z""]";

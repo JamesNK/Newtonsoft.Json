@@ -561,10 +561,9 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
           if (id != null && isTemporaryListReference)
             throw JsonSerializationException.Create(reader, "Cannot preserve reference to array or readonly list: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
-#if !PocketPC
           if (contract.OnSerializing != null && isTemporaryListReference)
             throw JsonSerializationException.Create(reader, "Cannot call OnSerializing on an array or readonly list: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
-#endif
+
           if (contract.OnError != null && isTemporaryListReference)
             throw JsonSerializationException.Create(reader, "Cannot call OnError on an array or readonly list: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 

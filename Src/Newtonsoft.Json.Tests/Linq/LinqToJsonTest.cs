@@ -565,7 +565,7 @@ keyword such as type of business.""
       });
     }
 
-#if !PocketPC && !NET20
+#if !NET20
     [Test]
     public void ToStringJsonConverter()
     {
