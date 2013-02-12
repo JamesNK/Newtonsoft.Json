@@ -48,41 +48,53 @@ namespace Newtonsoft.Json.Tests.Serialization
     [Test]
     public void ObjectEvents()
     {
-      SerializationEventTestObject obj = new SerializationEventTestObject();
+      SerializationEventTestObject[] objs = new[] { new SerializationEventTestObject(), new DerivedSerializationEventTestObject() };
 
-      Assert.AreEqual(11, obj.Member1);
-      Assert.AreEqual("Hello World!", obj.Member2);
-      Assert.AreEqual("This is a nonserialized value", obj.Member3);
-      Assert.AreEqual(null, obj.Member4);
-      Assert.AreEqual(null, obj.Member5);
+      foreach(SerializationEventTestObject current in objs) 
+      {
+	SerializationEventTestObject obj = current;
 
-      string json = JsonConvert.SerializeObject(obj, Formatting.Indented);
-      Assert.AreEqual(@"{
-  ""Member1"": 11,
-  ""Member2"": ""This value went into the data file during serialization."",
-  ""Member4"": null
-}", json);
+        Assert.AreEqual(11, obj.Member1);
+        Assert.AreEqual("Hello World!", obj.Member2);
+        Assert.AreEqual("This is a nonserialized value", obj.Member3);
+        Assert.AreEqual(null, obj.Member4);
+        Assert.AreEqual(null, obj.Member5);
 
-      Assert.AreEqual(11, obj.Member1);
-      Assert.AreEqual("This value was reset after serialization.", obj.Member2);
-      Assert.AreEqual("This is a nonserialized value", obj.Member3);
-      Assert.AreEqual(null, obj.Member4);
-      Assert.AreEqual("Error message for member Member6 = Error getting value from 'Member6' on 'Newtonsoft.Json.Tests.TestObjects.SerializationEventTestObject'.", obj.Member5);
+        string json = JsonConvert.SerializeObject(obj, Formatting.Indented);
+        Assert.AreEqual(@"{
+    ""Member1"": 11,
+    ""Member2"": ""This value went into the data file during serialization."",
+    ""Member4"": null
+  }", json);
 
-      JObject o = JObject.Parse(@"{
-  ""Member1"": 11,
-  ""Member2"": ""This value went into the data file during serialization."",
-  ""Member4"": null
-}");
-      o["Member6"] = "Dummy text for error";
+        Assert.AreEqual(11, obj.Member1);
+        Assert.AreEqual("This value was reset after serialization.", obj.Member2);
+        Assert.AreEqual("This is a nonserialized value", obj.Member3);
+        Assert.AreEqual(null, obj.Member4);
 
-      obj = JsonConvert.DeserializeObject<SerializationEventTestObject>(o.ToString());
+	string expectedError = String.Format("Error message for member Member6 = Error getting value from 'Member6' on '{0}'.", obj.GetType().FullName);
+        Assert.AreEqual(expectedError, obj.Member5);
 
-      Assert.AreEqual(11, obj.Member1);
-      Assert.AreEqual("This value went into the data file during serialization.", obj.Member2);
-      Assert.AreEqual("This value was set during deserialization", obj.Member3);
-      Assert.AreEqual("This value was set after deserialization.", obj.Member4);
-      Assert.AreEqual("Error message for member Member6 = Error setting value to 'Member6' on 'Newtonsoft.Json.Tests.TestObjects.SerializationEventTestObject'.", obj.Member5);
+        JObject o = JObject.Parse(@"{
+    ""Member1"": 11,
+    ""Member2"": ""This value went into the data file during serialization."",
+    ""Member4"": null
+  }");
+        o["Member6"] = "Dummy text for error";
+
+        obj = (SerializationEventTestObject) JsonConvert.DeserializeObject(o.ToString(), obj.GetType());
+
+        Assert.AreEqual(11, obj.Member1);
+        Assert.AreEqual("This value went into the data file during serialization.", obj.Member2);
+        Assert.AreEqual("This value was set during deserialization", obj.Member3);
+        Assert.AreEqual("This value was set after deserialization.", obj.Member4);
+
+        expectedError = String.Format("Error message for member Member6 = Error setting value to 'Member6' on '{0}'.", obj.GetType());
+        Assert.AreEqual(expectedError, obj.Member5);
+
+        DerivedSerializationEventTestObject derivedObj = obj as DerivedSerializationEventTestObject;
+        if (derivedObj != null) Assert.AreEqual("This value was set after deserialization.", derivedObj.Member7);
+      }
     }
 
     [Test]
