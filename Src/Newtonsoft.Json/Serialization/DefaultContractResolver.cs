@@ -597,37 +597,78 @@ namespace Newtonsoft.Json.Serialization
       onDeserialized = null;
       onError = null;
 
-      foreach (MethodInfo method in type.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+      foreach (Type baseType in GetClassHierarchyForType(type))
       {
-        // compact framework errors when getting parameters for a generic method
-        // lame, but generic methods should not be callbacks anyway
-        if (method.ContainsGenericParameters)
-          continue;
+        // while we allow more than one OnSerialized total, only one can be defined
+        // per class
+        MethodInfo currentOnSerializing = null;
+        MethodInfo currentOnSerialized = null;
+        MethodInfo currentOnDeserializing = null;
+        MethodInfo currentOnDeserialized = null;
+        MethodInfo currentOnError = null;
 
-        Type prevAttributeType = null;
-        ParameterInfo[] parameters = method.GetParameters();
+        foreach (MethodInfo method in baseType.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+        {
+          // compact framework errors when getting parameters for a generic method
+          // lame, but generic methods should not be callbacks anyway
+          if (method.ContainsGenericParameters)
+            continue;
 
-        if (IsValidCallback(method, parameters, typeof(OnSerializingAttribute), onSerializing, ref prevAttributeType))
-        {
-          onSerializing = method;
-        }
-        if (IsValidCallback(method, parameters, typeof(OnSerializedAttribute), onSerialized, ref prevAttributeType))
-        {
-          onSerialized = method;
-        }
-        if (IsValidCallback(method, parameters, typeof(OnDeserializingAttribute), onDeserializing, ref prevAttributeType))
-        {
-          onDeserializing = method;
-        }
-        if (IsValidCallback(method, parameters, typeof(OnDeserializedAttribute), onDeserialized, ref prevAttributeType))
-        {
-          onDeserialized = method;
-        }
-        if (IsValidCallback(method, parameters, typeof(OnErrorAttribute), onError, ref prevAttributeType))
-        {
-          onError = method;
+          Type prevAttributeType = null;
+          ParameterInfo[] parameters = method.GetParameters();
+
+          if (IsValidCallback(method, parameters, typeof(OnSerializingAttribute), currentOnSerializing, ref prevAttributeType))
+          {
+            onSerializing = onSerializing ?? new List<MethodInfo>();
+            onSerializing.Add(method);
+            currentOnSerializing = method;
+          }
+          if (IsValidCallback(method, parameters, typeof(OnSerializedAttribute), currentOnSerialized, ref prevAttributeType))
+          {
+            onSerialized = onSerialized ?? new List<MethodInfo>();
+            onSerialized.Add(method);
+            currentOnSerialized = method;
+          }
+          if (IsValidCallback(method, parameters, typeof(OnDeserializingAttribute), currentOnDeserializing, ref prevAttributeType))
+          {
+            onDeserializing = onDeserializing ?? new List<MethodInfo>();
+            onDeserializing.Add(method);
+            currentOnDeserializing = method;
+          }
+          if (IsValidCallback(method, parameters, typeof(OnDeserializedAttribute), currentOnDeserialized, ref prevAttributeType))
+          {
+            onDeserialized = onDeserialized ?? new List<MethodInfo>();
+            onDeserialized.Add(method);
+            currentOnDeserialized = method;
+          }
+          if (IsValidCallback(method, parameters, typeof(OnErrorAttribute), currentOnError, ref prevAttributeType))
+          {
+            onError = onError ?? new List<MethodInfo>();
+            onError.Add(method);
+            currentOnError = method;
+          }
         }
       }
+    }
+
+    private List<Type> GetClassHierarchyForType(Type type)
+    {
+      List<Type> ret = new List<Type>();
+
+      Type current = type;
+      while (current != null && current != typeof(object))
+      {
+        ret.Add(current);
+#if NETFX_CORE
+        current = current.BaseType();
+#else
+        current = current.BaseType;
+#endif
+      }
+
+      // Return the class list in order of simple => complex
+      ret.Reverse();
+      return ret;
     }
 
     /// <summary>
