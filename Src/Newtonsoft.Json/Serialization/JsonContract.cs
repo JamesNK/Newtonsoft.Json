@@ -204,32 +204,51 @@ namespace Newtonsoft.Json.Serialization
 
     internal void InvokeOnSerializing(object o, StreamingContext context)
     {
-      if (OnSerializing != null)
-        OnSerializing.Invoke(o, new object[] {context});
+      if (OnSerializingMethods == null) return;
+
+      foreach (MethodInfo mi in OnSerializingMethods)
+      {
+        mi.Invoke(o, new object[] {context});
+      }
     }
 
     internal void InvokeOnSerialized(object o, StreamingContext context)
     {
-      if (OnSerialized != null)
-        OnSerialized.Invoke(o, new object[] {context});
+      if (OnSerializedMethods == null) return;
+
+      foreach (MethodInfo mi in OnSerializedMethods)
+      {
+        mi.Invoke(o, new object[] {context});
+      }
     }
 
     internal void InvokeOnDeserializing(object o, StreamingContext context)
     {
-      if (OnDeserializing != null)
-        OnDeserializing.Invoke(o, new object[] {context});
+      if (OnDeserializingMethods == null) return;
+
+      foreach (MethodInfo mi in OnDeserializingMethods)
+      {
+        mi.Invoke(o, new object[] {context});
+      }
     }
 
     internal void InvokeOnDeserialized(object o, StreamingContext context)
     {
-      if (OnDeserialized != null)
-        OnDeserialized.Invoke(o, new object[] {context});
+      if (OnDeserializedMethods == null) return;
+
+      foreach (MethodInfo mi in OnDeserializedMethods)
+      {
+        mi.Invoke(o, new object[] {context});
+      }
     }
 
     internal void InvokeOnError(object o, StreamingContext context, ErrorContext errorContext)
     {
-      if (OnError != null)
-        OnError.Invoke(o, new object[] {context, errorContext});
+      if (OnErrorMethods == null) return;
+      foreach (MethodInfo mi in OnErrorMethods)
+      {
+        mi.Invoke(o, new object[] {context, errorContext});
+      }
     }
 
     internal JsonContract(Type underlyingType)
