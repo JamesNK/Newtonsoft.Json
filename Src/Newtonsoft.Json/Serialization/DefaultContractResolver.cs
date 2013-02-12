@@ -550,11 +550,11 @@ namespace Newtonsoft.Json.Serialization
       if (t.BaseType() != null)
         ResolveCallbackMethods(contract, t.BaseType());
 
-      MethodInfo onSerializing;
-      MethodInfo onSerialized;
-      MethodInfo onDeserializing;
-      MethodInfo onDeserialized;
-      MethodInfo onError;
+      List<MethodInfo> onSerializing;
+      List<MethodInfo> onSerialized;
+      List<MethodInfo> onDeserializing;
+      List<MethodInfo> onDeserialized;
+      List<MethodInfo> onError;
 
       GetCallbackMethodsForType(t, out onSerializing, out onSerialized, out onDeserializing, out onDeserialized, out onError);
 
@@ -562,34 +562,34 @@ namespace Newtonsoft.Json.Serialization
       {
 #if NETFX_CORE
         if (!t.IsGenericType() || (t.GetGenericTypeDefinition() != typeof(ConcurrentDictionary<,>)))
-          contract.OnSerializing = onSerializing;
+          contract.OnSerializingMethods = onSerializing;
 #else
-        contract.OnSerializing = onSerializing;
+        contract.OnSerializingMethods = onSerializing;
 #endif
       }
 
       if (onSerialized != null)
-        contract.OnSerialized = onSerialized;
+        contract.OnSerializedMethods = onSerialized;
 
       if (onDeserializing != null)
-        contract.OnDeserializing = onDeserializing;
+        contract.OnDeserializingMethods = onDeserializing;
 
       if (onDeserialized != null)
       {
         // ConcurrentDictionary throws an error here so don't use its OnDeserialized - http://json.codeplex.com/discussions/257093
 #if !(NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE)
         if (!t.IsGenericType() || (t.GetGenericTypeDefinition() != typeof(ConcurrentDictionary<,>)))
-          contract.OnDeserialized = onDeserialized;
+          contract.OnDeserializedMethods = onDeserialized;
 #else
-        contract.OnDeserialized = onDeserialized;
+        contract.OnDeserializedMethods = onDeserialized;
 #endif
       }
 
       if (onError != null)
-        contract.OnError = onError;
+        contract.OnErrorMethods = onError;
     }
 
-    private void GetCallbackMethodsForType(Type type, out MethodInfo onSerializing, out MethodInfo onSerialized, out MethodInfo onDeserializing, out MethodInfo onDeserialized, out MethodInfo onError)
+    private void GetCallbackMethodsForType(Type type, out List<MethodInfo> onSerializing, out List<MethodInfo> onSerialized, out List<MethodInfo> onDeserializing, out List<MethodInfo> onDeserialized, out List<MethodInfo> onError)
     {
       onSerializing = null;
       onSerialized = null;
