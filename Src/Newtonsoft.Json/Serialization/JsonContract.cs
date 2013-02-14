@@ -94,25 +94,25 @@ namespace Newtonsoft.Json.Serialization
     /// Gets or sets all methods called immediately after deserialization of the object.
     /// </summary>
     /// <value>The methods called immediately after deserialization of the object.</value>
-    public List<MethodInfo> OnDeserializedMethods { get; set; }
+    public IList<MethodInfo> OnDeserializedMethods { get; private set; }
 
     /// <summary>
     /// Gets or sets all methods called during deserialization of the object.
     /// </summary>
     /// <value>The methods called during deserialization of the object.</value>
-    public List<MethodInfo> OnDeserializingMethods { get; set; }
+    public IList<MethodInfo> OnDeserializingMethods { get; private set; }
 
     /// <summary>
     /// Gets or sets all methods called after serialization of the object graph.
     /// </summary>
     /// <value>The methods called after serialization of the object graph.</value>
-    public List<MethodInfo> OnSerializedMethods { get; set; }
+    public IList<MethodInfo> OnSerializedMethods { get; private set; }
 
     /// <summary>
     /// Gets or sets all methods called before serialization of the object.
     /// </summary>
     /// <value>The methods called before serialization of the object.</value>
-    public List<MethodInfo> OnSerializingMethods { get; set; }
+    public IList<MethodInfo> OnSerializingMethods { get; private set; }
 
     /// <summary>
     /// Gets or sets the method called immediately after deserialization of the object.
@@ -120,10 +120,10 @@ namespace Newtonsoft.Json.Serialization
     /// <value>The method called immediately after deserialization of the object.</value>
     public MethodInfo OnDeserialized
     {
-      get { return (OnDeserializedMethods != null && OnDeserializedMethods.Count > 0 ? OnDeserializedMethods[0] : null); }
+      get { return (OnDeserializedMethods.Count > 0) ? OnDeserializedMethods[0] : null; }
       set 
       {
-        OnDeserializedMethods = new List<MethodInfo>();
+        OnDeserializedMethods.Clear();
         OnDeserializedMethods.Add(value);
       }
     }
@@ -134,10 +134,10 @@ namespace Newtonsoft.Json.Serialization
     /// <value>The method called during deserialization of the object.</value>
     public MethodInfo OnDeserializing 
     {
-      get { return (OnDeserializingMethods != null && OnDeserializingMethods.Count > 0 ? OnDeserializingMethods[0] : null); }
+      get { return (OnDeserializingMethods.Count > 0) ? OnDeserializingMethods[0] : null; }
       set 
       {
-        OnDeserializingMethods = new List<MethodInfo>();
+        OnDeserializingMethods.Clear();
         OnDeserializingMethods.Add(value);
       }
     }
@@ -148,10 +148,10 @@ namespace Newtonsoft.Json.Serialization
     /// <value>The method called after serialization of the object graph.</value>
     public MethodInfo OnSerialized 
     {
-      get { return (OnSerializedMethods != null && OnSerializedMethods.Count > 0 ? OnSerializedMethods[0] : null); }
+      get { return (OnSerializedMethods.Count > 0) ? OnSerializedMethods[0] : null; }
       set 
       {
-        OnSerializedMethods = new List<MethodInfo>();
+        OnSerializedMethods.Clear();
         OnSerializedMethods.Add(value);
       }
     }
@@ -162,10 +162,10 @@ namespace Newtonsoft.Json.Serialization
     /// <value>The method called before serialization of the object.</value>
     public MethodInfo OnSerializing 
     {
-      get { return (OnSerializingMethods != null && OnSerializingMethods.Count > 0 ? OnSerializingMethods[0] : null); }
+      get { return (OnSerializingMethods.Count > 0) ? OnSerializingMethods[0] : null; }
       set 
       {
-        OnSerializingMethods = new List<MethodInfo>();
+        OnSerializingMethods.Clear();
         OnSerializingMethods.Add(value);
       }
     }
@@ -186,7 +186,7 @@ namespace Newtonsoft.Json.Serialization
     /// Gets or sets all method called when an error is thrown during the serialization of the object.
     /// </summary>
     /// <value>The methods called when an error is thrown during the serialization of the object.</value>
-    public List<MethodInfo> OnErrorMethods { get; set; }
+    public IList<MethodInfo> OnErrorMethods { get; private set; }
 
     /// <summary>
     /// Gets or sets the method called when an error is thrown during the serialization of the object.
@@ -194,18 +194,16 @@ namespace Newtonsoft.Json.Serialization
     /// <value>The method called when an error is thrown during the serialization of the object.</value>
     public MethodInfo OnError
     {
-      get { return (OnErrorMethods != null && OnErrorMethods.Count > 0 ? OnErrorMethods[0] : null); }
+      get { return (OnErrorMethods.Count > 0) ? OnErrorMethods[0] : null; }
       set 
       {
-        OnErrorMethods = new List<MethodInfo>();
+        OnErrorMethods.Clear();
         OnErrorMethods.Add(value);
       }
     }
 
     internal void InvokeOnSerializing(object o, StreamingContext context)
     {
-      if (OnSerializingMethods == null) return;
-
       foreach (MethodInfo mi in OnSerializingMethods)
       {
         mi.Invoke(o, new object[] {context});
@@ -214,8 +212,6 @@ namespace Newtonsoft.Json.Serialization
 
     internal void InvokeOnSerialized(object o, StreamingContext context)
     {
-      if (OnSerializedMethods == null) return;
-
       foreach (MethodInfo mi in OnSerializedMethods)
       {
         mi.Invoke(o, new object[] {context});
@@ -224,8 +220,6 @@ namespace Newtonsoft.Json.Serialization
 
     internal void InvokeOnDeserializing(object o, StreamingContext context)
     {
-      if (OnDeserializingMethods == null) return;
-
       foreach (MethodInfo mi in OnDeserializingMethods)
       {
         mi.Invoke(o, new object[] {context});
@@ -234,8 +228,6 @@ namespace Newtonsoft.Json.Serialization
 
     internal void InvokeOnDeserialized(object o, StreamingContext context)
     {
-      if (OnDeserializedMethods == null) return;
-
       foreach (MethodInfo mi in OnDeserializedMethods)
       {
         mi.Invoke(o, new object[] {context});
@@ -244,7 +236,6 @@ namespace Newtonsoft.Json.Serialization
 
     internal void InvokeOnError(object o, StreamingContext context, ErrorContext errorContext)
     {
-      if (OnErrorMethods == null) return;
       foreach (MethodInfo mi in OnErrorMethods)
       {
         mi.Invoke(o, new object[] {context, errorContext});
@@ -294,6 +285,12 @@ namespace Newtonsoft.Json.Serialization
       {
         InternalReadType = ReadType.Read;
       }
+
+      OnErrorMethods = new List<MethodInfo>();
+      OnSerializedMethods = new List<MethodInfo>();
+      OnSerializingMethods = new List<MethodInfo>();
+      OnDeserializedMethods = new List<MethodInfo>();
+      OnDeserializingMethods = new List<MethodInfo>();
     }
   }
 }

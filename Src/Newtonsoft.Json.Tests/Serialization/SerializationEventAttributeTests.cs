@@ -48,11 +48,11 @@ namespace Newtonsoft.Json.Tests.Serialization
     [Test]
     public void ObjectEvents()
     {
-      SerializationEventTestObject[] objs = new[] { new SerializationEventTestObject(), new DerivedSerializationEventTestObject() };
+      SerializationEventTestObject[] objs = new[] {new SerializationEventTestObject(), new DerivedSerializationEventTestObject()};
 
-      foreach(SerializationEventTestObject current in objs) 
+      foreach (SerializationEventTestObject current in objs)
       {
-	SerializationEventTestObject obj = current;
+        SerializationEventTestObject obj = current;
 
         Assert.AreEqual(11, obj.Member1);
         Assert.AreEqual("Hello World!", obj.Member2);
@@ -62,24 +62,24 @@ namespace Newtonsoft.Json.Tests.Serialization
 
         string json = JsonConvert.SerializeObject(obj, Formatting.Indented);
         Assert.AreEqual(@"{
-    ""Member1"": 11,
-    ""Member2"": ""This value went into the data file during serialization."",
-    ""Member4"": null
-  }", json);
+  ""Member1"": 11,
+  ""Member2"": ""This value went into the data file during serialization."",
+  ""Member4"": null
+}", json);
 
         Assert.AreEqual(11, obj.Member1);
         Assert.AreEqual("This value was reset after serialization.", obj.Member2);
         Assert.AreEqual("This is a nonserialized value", obj.Member3);
         Assert.AreEqual(null, obj.Member4);
 
-	string expectedError = String.Format("Error message for member Member6 = Error getting value from 'Member6' on '{0}'.", obj.GetType().FullName);
+        string expectedError = String.Format("Error message for member Member6 = Error getting value from 'Member6' on '{0}'.", obj.GetType().FullName);
         Assert.AreEqual(expectedError, obj.Member5);
 
         JObject o = JObject.Parse(@"{
-    ""Member1"": 11,
-    ""Member2"": ""This value went into the data file during serialization."",
-    ""Member4"": null
-  }");
+  ""Member1"": 11,
+  ""Member2"": ""This value went into the data file during serialization."",
+  ""Member4"": null
+}");
         o["Member6"] = "Dummy text for error";
 
         obj = (SerializationEventTestObject) JsonConvert.DeserializeObject(o.ToString(), obj.GetType());
