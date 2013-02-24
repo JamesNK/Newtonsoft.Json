@@ -367,11 +367,17 @@ namespace Newtonsoft.Json.Serialization
 
           return PopulateObject(targetObject, reader, objectContract, member, id);
         case JsonContractType.Primitive:
-          JsonPrimitiveContract primitiveContract = (JsonPrimitiveContract) contract;
+          JsonPrimitiveContract primitiveContract = (JsonPrimitiveContract)contract;
           // if the content is inside $value then read past it
           if (reader.TokenType == JsonToken.PropertyName && string.Equals(reader.Value.ToString(), JsonTypeReflector.ValuePropertyName, StringComparison.Ordinal))
           {
             CheckedRead(reader);
+
+            // the token should not be an object because the $type value could have been included in the object
+            // without needing the $value property
+            if (reader.TokenType == JsonToken.StartObject)
+              throw JsonSerializationException.Create(reader, "Unexpected token when deserializing primitive value: " + reader.TokenType);
+
             object value = CreateValueInternal(reader, objectType, primitiveContract, member, null, null, existingValue);
 
             CheckedRead(reader);

@@ -232,10 +232,10 @@ namespace Newtonsoft.Json.Serialization
         _serializer.Populate(reader, target);
     }
 
-    internal override void SerializeInternal(JsonWriter jsonWriter, object value)
+    internal override void SerializeInternal(JsonWriter jsonWriter, object value, Type rootType)
     {
       if (_serializerWriter != null)
-        _serializerWriter.Serialize(jsonWriter, value);
+        _serializerWriter.Serialize(jsonWriter, value, rootType);
       else
         _serializer.Serialize(jsonWriter, value);
     }

@@ -27,6 +27,7 @@
 #if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
 using System.Dynamic;
 #endif
+using System.Text;
 using Newtonsoft.Json.Tests.Linq;
 using global::System;
 using global::System.Collections;
@@ -53,6 +54,68 @@ namespace Newtonsoft.Json.Tests.Serialization
   [TestFixture]
   public class TypeNameHandlingTests : TestFixtureBase
   {
+    [Test]
+    public void NestedValueObjects()
+    {
+      StringBuilder sb = new StringBuilder();
+      for (int i = 0; i < 10000; i++)
+      {
+        sb.Append(@"{""$value"":");
+      }
+
+      ExceptionAssert.Throws<JsonSerializationException>("Unexpected token when deserializing primitive value: StartObject. Path '$value', line 1, position 11.", () =>
+        {
+          var reader = new JsonTextReader(new StringReader(sb.ToString()));
+          var ser = new JsonSerializer();
+          ser.Deserialize<bool>(reader);
+        });
+    }
+
+    [Test]
+    public void SerializeRootTypeNameIfDerivedWithAuto()
+    {
+      var serializer = new JsonSerializer()
+        {
+          TypeNameHandling = TypeNameHandling.Auto
+        };
+      var sw = new StringWriter();
+      serializer.Serialize<Person>(new JsonTextWriter(sw) { Formatting = Formatting.Indented }, new WagePerson());
+      var result = sw.ToString();
+      
+      Assert.AreEqual(@"{
+  ""$type"": ""Newtonsoft.Json.Tests.TestObjects.WagePerson, Newtonsoft.Json.Tests"",
+  ""HourlyWage"": 0.0,
+  ""Name"": null,
+  ""BirthDate"": ""0001-01-01T00:00:00"",
+  ""LastModified"": ""0001-01-01T00:00:00""
+}", result);
+
+      Assert.IsTrue(result.Contains("WagePerson"));
+      using (var rd = new JsonTextReader(new StringReader(result)))
+      {
+        var person = serializer.Deserialize<Person>(rd);
+
+        CustomAssert.IsInstanceOfType(typeof(WagePerson), person);
+      }
+    }
+
+    [Test]
+    public void SerializeRootTypeNameAutoWithJsonConvert()
+    {
+      string json = JsonConvert.SerializeObject<object>(new WagePerson(), Formatting.Indented, new JsonSerializerSettings
+        {
+          TypeNameHandling = TypeNameHandling.Auto
+        });
+
+      Assert.AreEqual(@"{
+  ""$type"": ""Newtonsoft.Json.Tests.TestObjects.WagePerson, Newtonsoft.Json.Tests"",
+  ""HourlyWage"": 0.0,
+  ""Name"": null,
+  ""BirthDate"": ""0001-01-01T00:00:00"",
+  ""LastModified"": ""0001-01-01T00:00:00""
+}", json);
+    }
+
     public class Wrapper
     {
       public IList<EmployeeReference> Array { get; set; }

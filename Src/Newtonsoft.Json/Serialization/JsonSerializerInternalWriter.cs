@@ -46,6 +46,7 @@ namespace Newtonsoft.Json.Serialization
 {
   internal class JsonSerializerInternalWriter : JsonSerializerInternalBase
   {
+    private JsonContract _rootContract;
     private readonly List<object> _serializeStack = new List<object>();
     private JsonSerializerProxy _internalSerializer;
 
@@ -54,10 +55,13 @@ namespace Newtonsoft.Json.Serialization
     {
     }
 
-    public void Serialize(JsonWriter jsonWriter, object value)
+    public void Serialize(JsonWriter jsonWriter, object value, Type rootType)
     {
       if (jsonWriter == null)
         throw new ArgumentNullException("jsonWriter");
+
+      if (rootType != null)
+        _rootContract = Serializer.ContractResolver.ResolveContract(rootType);
 
       SerializeValue(jsonWriter, value, GetContractSafe(value), null, null, null);
     }
@@ -800,6 +804,11 @@ To fix this error either change the environment to be fully trusted, change the 
         else if (containerContract != null && containerContract.ItemContract != null)
         {
           if (contract.UnderlyingType != containerContract.ItemContract.CreatedType)
+            return true;
+        }
+        else if (_rootContract != null && _serializeStack.Count == 1)
+        {
+          if (contract.UnderlyingType != _rootContract.CreatedType)
             return true;
         }
       }

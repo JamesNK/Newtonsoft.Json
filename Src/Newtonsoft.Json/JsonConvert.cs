@@ -792,6 +792,16 @@ namespace Newtonsoft.Json
       return SerializeObject(value, Formatting.None, settings);
     }
 
+    public static string SerializeObject<T>(T value, JsonSerializerSettings settings)
+    {
+      return SerializeObject<T>(value, Formatting.None, settings);
+    }
+
+    public static string SerializeObject<T>(T value, Formatting formatting, JsonSerializerSettings settings)
+    {
+      return SerializeObjectInternal(value, formatting, settings, typeof (T));
+    }
+
     /// <summary>
     /// Serializes the specified object to a JSON string using a collection of <see cref="JsonConverter"/>.
     /// </summary>
@@ -804,6 +814,11 @@ namespace Newtonsoft.Json
     /// </returns>
     public static string SerializeObject(object value, Formatting formatting, JsonSerializerSettings settings)
     {
+      return SerializeObjectInternal(value, formatting, settings, null);
+    }
+
+    public static string SerializeObjectInternal(object value, Formatting formatting, JsonSerializerSettings settings, Type rootType)
+    {
       JsonSerializer jsonSerializer = JsonSerializer.Create(settings);
 
       StringBuilder sb = new StringBuilder(256);
@@ -812,7 +827,7 @@ namespace Newtonsoft.Json
       {
         jsonWriter.Formatting = formatting;
 
-        jsonSerializer.Serialize(jsonWriter, value);
+        jsonSerializer.Serialize(jsonWriter, value, rootType);
       }
 
       return sw.ToString();
@@ -922,6 +937,11 @@ namespace Newtonsoft.Json
     public static T DeserializeAnonymousType<T>(string value, T anonymousTypeObject)
     {
       return DeserializeObject<T>(value);
+    }
+
+    public static T DeserializeAnonymousType<T>(string value, T anonymousTypeObject, JsonSerializerSettings settings)
+    {
+      return DeserializeObject<T>(value, settings);
     }
 
     /// <summary>

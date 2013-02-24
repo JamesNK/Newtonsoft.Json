@@ -632,6 +632,16 @@ namespace Newtonsoft.Json
       Serialize(new JsonTextWriter(textWriter), value);
     }
 
+    public void Serialize(JsonWriter jsonWriter, object value, Type rootType)
+    {
+      SerializeInternal(jsonWriter, value, rootType);
+    }
+
+    public void Serialize(TextWriter textWriter, object value, Type rootType)
+    {
+      Serialize(new JsonTextWriter(textWriter), value, rootType);
+    }
+
     /// <summary>
     /// Serializes the specified <see cref="Object"/> and writes the Json structure
     /// to a <c>Stream</c> using the specified <see cref="JsonWriter"/>. 
@@ -640,10 +650,15 @@ namespace Newtonsoft.Json
     /// <param name="value">The <see cref="Object"/> to serialize.</param>
     public void Serialize(JsonWriter jsonWriter, object value)
     {
-      SerializeInternal(jsonWriter, value);
+      SerializeInternal(jsonWriter, value, null);
     }
 
-    internal virtual void SerializeInternal(JsonWriter jsonWriter, object value)
+    public void Serialize<T>(JsonWriter jsonWriter, object value)
+    {
+      SerializeInternal(jsonWriter, value, typeof(T));
+    }
+
+    internal virtual void SerializeInternal(JsonWriter jsonWriter, object value, Type rootType)
     {
       ValidationUtils.ArgumentNotNull(jsonWriter, "jsonWriter");
 
@@ -698,7 +713,7 @@ namespace Newtonsoft.Json
       }
 
       JsonSerializerInternalWriter serializerWriter = new JsonSerializerInternalWriter(this);
-      serializerWriter.Serialize(jsonWriter, value);
+      serializerWriter.Serialize(jsonWriter, value, rootType);
 
       // reset writer back to previous options
       if (previousFormatting != null)

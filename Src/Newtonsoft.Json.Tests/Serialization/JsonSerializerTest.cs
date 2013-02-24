@@ -581,6 +581,30 @@ keyword such as type of business.""
     }
 
     [Test]
+    public void AnonymousObjectSerializationWithSetting()
+    {
+      DateTime d = new DateTime(2000, 1, 1);
+
+      var anonymous =
+        new
+        {
+          DateValue = d
+        };
+
+      JsonSerializerSettings settings = new JsonSerializerSettings();
+      settings.Converters.Add(new IsoDateTimeConverter
+        {
+          DateTimeFormat = "yyyy"
+        });
+
+      string json = JsonConvert.SerializeObject(anonymous, settings);
+      Assert.AreEqual(@"{""DateValue"":""2000""}", json);
+
+      anonymous = JsonConvert.DeserializeAnonymousType(json, anonymous, settings);
+      Assert.AreEqual(d, anonymous.DateValue);
+    }
+
+    [Test]
     public void CustomCollectionSerialization()
     {
       ProductCollection collection = new ProductCollection()
