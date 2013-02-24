@@ -85,6 +85,11 @@ namespace Newtonsoft.Json
     public MemberTypeConversionHandling MemberTypeConversionHandling { get; set; }
 
     /// <summary>
+    /// Gets or sets whether the deserializer replaces lists with default values
+    /// </summary>
+    public NonEmptyListHandling NonEmptyListHandling { get; set; }
+
+      /// <summary>
     /// Gets or sets how missing members (e.g. JSON contains a property that isn't a member on the object) are handled during deserialization.
     /// </summary>
     /// <value>Missing member handling.</value>

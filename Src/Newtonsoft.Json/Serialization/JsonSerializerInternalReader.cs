@@ -737,6 +737,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
         gottenCurrentValue = true;
 
         useExistingValue = (currentValue != null
+                            && Serializer.NonEmptyListHandling == NonEmptyListHandling.Do_Not_Replace
                             && !property.PropertyType.IsArray
                             && !ReflectionUtils.InheritsGenericDefinition(property.PropertyType, typeof (ReadOnlyCollection<>))
                             && !property.PropertyType.IsValueType());

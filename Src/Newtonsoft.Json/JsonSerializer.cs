@@ -220,6 +220,12 @@ namespace Newtonsoft.Json
       }
     }
 
+
+    /// <summary>
+    /// Gets or sets whether the deserializer replaces lists with default values
+    /// </summary>
+    public virtual NonEmptyListHandling NonEmptyListHandling { get; set; }
+
     /// <summary>
     /// Get or set how missing members (e.g. JSON contains a property that isn't a member on the object) are handled during deserialization.
     /// </summary>
@@ -458,6 +464,7 @@ namespace Newtonsoft.Json
         jsonSerializer.ReferenceLoopHandling = settings.ReferenceLoopHandling;
         jsonSerializer.MemberNameMatchHandling = settings.MemberNameMatchHandling;
         jsonSerializer.MemberTypeConversionHandling = settings.MemberTypeConversionHandling;
+        jsonSerializer.NonEmptyListHandling = settings.NonEmptyListHandling;
         jsonSerializer.MissingMemberHandling = settings.MissingMemberHandling;
         jsonSerializer.ObjectCreationHandling = settings.ObjectCreationHandling;
         jsonSerializer.NullValueHandling = settings.NullValueHandling;
