@@ -315,7 +315,7 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(new Uri("http://www.google.com"), (Uri)(new JValue(new Uri("http://www.google.com"))));
       Assert.AreEqual(null, (Uri)(new JValue((object)null)));
       Assert.AreEqual(Convert.ToBase64String(Encoding.UTF8.GetBytes("hi")), (string)(new JValue(Encoding.UTF8.GetBytes("hi"))));
-      Assert.AreEqual(Encoding.UTF8.GetBytes("hi"), (byte[])(new JValue(Convert.ToBase64String(Encoding.UTF8.GetBytes("hi")))));
+      CollectionAssert.AreEquivalent((byte[])Encoding.UTF8.GetBytes("hi"), (byte[])(new JValue(Convert.ToBase64String(Encoding.UTF8.GetBytes("hi")))));
 
       Assert.AreEqual(null, (Uri)(JValue)null);
       Assert.AreEqual(null, (int?)(JValue)null);

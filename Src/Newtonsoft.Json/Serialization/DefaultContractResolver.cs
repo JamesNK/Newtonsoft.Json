@@ -562,7 +562,7 @@ namespace Newtonsoft.Json.Serialization
       {
 #if NETFX_CORE
         if (!t.IsGenericType() || (t.GetGenericTypeDefinition() != typeof(ConcurrentDictionary<,>)))
-          contract.OnSerializingMethods = onSerializing;
+          contract.OnSerializingMethods.AddRange(onSerializing);
 #else
         contract.OnSerializingMethods.AddRange(onSerializing);
 #endif

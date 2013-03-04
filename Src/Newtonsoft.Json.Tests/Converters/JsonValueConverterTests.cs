@@ -259,15 +259,15 @@ namespace Newtonsoft.Json.Tests.Converters
       string json = JsonConvert.SerializeObject(o, Formatting.Indented);
 
       Assert.AreEqual(@"{
-  ""PositiveInfinity"": Infinity,
-  ""NegativeInfinity"": -Infinity,
+  ""PositiveInfinity"": ""Infinity"",
+  ""NegativeInfinity"": ""-Infinity"",
   ""MinValue"": -1.7976931348623157E+308,
   ""double"": 1.1,
   ""int"": 1,
   ""zero"": 0,
   ""Epsilon"": 4.94065645841247E-324,
   ""MaxValue"": 1.7976931348623157E+308,
-  ""NaN"": NaN,
+  ""NaN"": ""NaN"",
   ""smallfraction"": 3.0000000000000009,
   ""probablyint"": 1
 }", json);

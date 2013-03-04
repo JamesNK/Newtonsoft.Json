@@ -1278,17 +1278,17 @@ bye", reader.Value);
       jsonReader.Read();
       Assert.AreEqual(JsonToken.Integer, jsonReader.TokenType);
       Assert.AreEqual(typeof(long), jsonReader.ValueType);
-      Assert.AreEqual(250, jsonReader.Value);
+      Assert.AreEqual((long)250, (long)jsonReader.Value);
 
       jsonReader.Read();
       Assert.AreEqual(JsonToken.Integer, jsonReader.TokenType);
       Assert.AreEqual(typeof(long), jsonReader.ValueType);
-      Assert.AreEqual(250, jsonReader.Value);
+      Assert.AreEqual((long)250, (long)jsonReader.Value);
 
       jsonReader.Read();
       Assert.AreEqual(JsonToken.Integer, jsonReader.TokenType);
       Assert.AreEqual(typeof(long), jsonReader.ValueType);
-      Assert.AreEqual(250, jsonReader.Value);
+      Assert.AreEqual((long)250, (long)jsonReader.Value);
 
       Assert.IsTrue(jsonReader.Read());
       Assert.AreEqual(JsonToken.EndArray, jsonReader.TokenType);
