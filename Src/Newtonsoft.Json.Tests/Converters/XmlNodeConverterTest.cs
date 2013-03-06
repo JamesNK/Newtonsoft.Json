@@ -1876,6 +1876,32 @@ namespace Newtonsoft.Json.Tests.Converters
 
       Assert.AreEqual(@"<item action=""update"" itemid=""1"" description=""temp""><elements action=""none"" id=""2"" /><elements action=""none"" id=""3"" /></item>", xmldoc.InnerXml);
     }
+
+    [Test]
+    public void SerializingXmlNamespaceScope()
+    {
+      var xmlString = @"<root xmlns=""http://www.example.com/ns"">
+  <a/>
+  <bns:b xmlns:bns=""http://www.example.com/ns""/>
+  <c/>
+</root>";
+
+#if !NET20
+      var xml = XElement.Parse(xmlString);
+
+      var json1 = JsonConvert.SerializeObject(xml);
+
+      Assert.AreEqual(@"{""root"":{""@xmlns"":""http://www.example.com/ns"",""a"":null,""bns:b"":{""@xmlns:bns"":""http://www.example.com/ns""},""c"":null}}", json1);
+#endif
+#if !(SILVERLIGHT || NETFX_CORE)
+      var xml1 = new XmlDocument();
+      xml1.LoadXml(xmlString);
+
+      var json2 = JsonConvert.SerializeObject(xml1);
+
+      Assert.AreEqual(@"{""root"":{""@xmlns"":""http://www.example.com/ns"",""a"":null,""bns:b"":{""@xmlns:bns"":""http://www.example.com/ns""},""c"":null}}", json2);
+#endif
+    }
   }
 }
 #endif

@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
+#if !(NET35 || NET20 || WINDOWS_PHONE)
 using System;
 using System.Collections.Generic;
 using System.Reflection;

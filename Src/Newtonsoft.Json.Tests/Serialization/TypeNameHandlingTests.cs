@@ -1445,7 +1445,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual(1, (int)j["MyProperty"]);
     }
 
-#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
+#if !(NET35 || NET20 || WINDOWS_PHONE)
     [Test]
     public void PropertyItemTypeNameHandlingDynamic()
     {
@@ -1651,7 +1651,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     public TypeNameHandlingTestObject Data { get; set; }
   }
 
-#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
+#if !(NET35 || NET20 || WINDOWS_PHONE)
   public class PropertyItemTypeNameHandlingDynamic
   {
     [JsonProperty(ItemTypeNameHandling = TypeNameHandling.All)]

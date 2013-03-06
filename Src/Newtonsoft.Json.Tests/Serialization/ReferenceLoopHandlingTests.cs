@@ -210,7 +210,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 #endif
 
-#if !(PORTABLE || NET20 || NET35 || WINDOWS_PHONE)
+#if !(NET20 || NET35 || WINDOWS_PHONE)
     public class DictionaryDynamicObject : DynamicObject
     {
       public IDictionary<string, object> Values { get; private set; }

@@ -177,7 +177,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 }", json);
     }
 
-#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
+#if !(NET35 || NET20 || WINDOWS_PHONE)
     [Test]
     public void DynamicCamelCasePropertyNames()
     {

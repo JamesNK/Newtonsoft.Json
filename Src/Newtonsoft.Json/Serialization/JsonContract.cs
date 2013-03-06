@@ -42,7 +42,7 @@ namespace Newtonsoft.Json.Serialization
     Primitive,
     String,
     Dictionary,
-#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
+#if !(NET35 || NET20 || WINDOWS_PHONE)
     Dynamic,
 #endif
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)

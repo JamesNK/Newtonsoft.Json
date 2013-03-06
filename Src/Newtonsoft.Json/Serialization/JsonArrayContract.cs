@@ -86,7 +86,7 @@ namespace Newtonsoft.Json.Serialization
 
       if (IsTypeGenericCollectionInterface(UnderlyingType))
         CreatedType = ReflectionUtils.MakeGenericType(typeof(List<>), CollectionItemType);
-#if !(PORTABLE || NET20 || NET35 || WINDOWS_PHONE)
+#if !(NET20 || NET35 || WINDOWS_PHONE)
       else if (IsTypeGenericSetnterface(UnderlyingType))
         CreatedType = ReflectionUtils.MakeGenericType(typeof(HashSet<>), CollectionItemType);
 #endif
@@ -155,7 +155,7 @@ namespace Newtonsoft.Json.Serialization
               || genericDefinition == typeof(IEnumerable<>));
     }
 
-#if !(PORTABLE || NET20 || NET35 || WINDOWS_PHONE)
+#if !(NET20 || NET35 || WINDOWS_PHONE)
     private bool IsTypeGenericSetnterface(Type type)
     {
       if (!type.IsGenericType())

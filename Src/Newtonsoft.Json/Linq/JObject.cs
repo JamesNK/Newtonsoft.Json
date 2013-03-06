@@ -26,11 +26,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-#if !PORTABLE
 using System.Collections.Specialized;
-#endif
 using System.ComponentModel;
-#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
+#if !(NET35 || NET20 || WINDOWS_PHONE)
 using System.Dynamic;
 using System.Linq.Expressions;
 #endif
@@ -162,7 +160,7 @@ namespace Newtonsoft.Json.Linq
       if (_listChanged != null)
         OnListChanged(new ListChangedEventArgs(ListChangedType.ItemChanged, IndexOfItem(childProperty)));
 #endif
-#if SILVERLIGHT || !(NET20 || NET35 || PORTABLE)
+#if SILVERLIGHT || !(NET20 || NET35)
       if (_collectionChanged != null)
         OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, childProperty, childProperty, IndexOfItem(childProperty)));
 #endif
@@ -757,7 +755,7 @@ namespace Newtonsoft.Json.Linq
     #endregion
 #endif
 
-#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
+#if !(NET35 || NET20 || WINDOWS_PHONE)
     /// <summary>
     /// Returns the <see cref="T:System.Dynamic.DynamicMetaObject"/> responsible for binding operations performed on this object.
     /// </summary>

@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
+#if !(NET35 || NET20 || WINDOWS_PHONE)
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -85,7 +85,7 @@ namespace Newtonsoft.Json.Utilities
 
         for (int i = 0; i < values.Length; i++)
         {
-          MethodInfo createArgumentInfoMethod = csharpArgumentInfoType.GetMethod("Create", BindingFlags.Public | BindingFlags.Static, null, new[] { csharpArgumentInfoFlags, typeof(string) }, null);
+          MethodInfo createArgumentInfoMethod = csharpArgumentInfoType.GetMethod("Create", new[] { csharpArgumentInfoFlags, typeof(string) });
           object arg = createArgumentInfoMethod.Invoke(null, new object[] { 0, null });
           a.SetValue(arg, i);
         }
@@ -101,10 +101,10 @@ namespace Newtonsoft.Json.Utilities
 
         Type csharpArgumentInfoTypeEnumerableType = typeof(IEnumerable<>).MakeGenericType(csharpArgumentInfoType);
 
-        MethodInfo getMemberMethod = binderType.GetMethod("GetMember", BindingFlags.Public | BindingFlags.Static, null, new[] { csharpBinderFlagsType, typeof(string), typeof(Type), csharpArgumentInfoTypeEnumerableType }, null);
+        MethodInfo getMemberMethod = binderType.GetMethod("GetMember", new[] { csharpBinderFlagsType, typeof(string), typeof(Type), csharpArgumentInfoTypeEnumerableType });
         _getMemberCall = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(getMemberMethod);
 
-        MethodInfo setMemberMethod = binderType.GetMethod("SetMember", BindingFlags.Public | BindingFlags.Static, null, new[] { csharpBinderFlagsType, typeof(string), typeof(Type), csharpArgumentInfoTypeEnumerableType }, null);
+        MethodInfo setMemberMethod = binderType.GetMethod("SetMember", new[] { csharpBinderFlagsType, typeof(string), typeof(Type), csharpArgumentInfoTypeEnumerableType });
         _setMemberCall = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(setMemberMethod);
       }
 

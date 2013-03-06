@@ -224,7 +224,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static TimeSpan ParseTimeSpan(string input)
     {
-#if !(NET35 || NET20 || PORTABLE || WINDOWS_PHONE)
+#if !(NET35 || NET20 || WINDOWS_PHONE)
       return TimeSpan.Parse((string) input, CultureInfo.InvariantCulture);
 #else
       return TimeSpan.Parse((string)input);

@@ -636,7 +636,7 @@ now brown cow?", '"', true);
       return (T)converter.ReadJson(reader, typeof(T), null, null);
     }
 
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT)
     [Test]
     public void Async()
     {

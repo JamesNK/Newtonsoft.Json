@@ -2123,7 +2123,7 @@ Path '', line 1, position 1.",
         });
     }
 
-#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
+#if !(NET35 || NET20 || WINDOWS_PHONE)
     [Test]
     public void CannotDeserializeArrayIntoDynamic()
     {
@@ -3454,7 +3454,7 @@ To fix this error either change the environment to be fully trusted, change the 
     }
 #endif
 
-#if !(NET20 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || SILVERLIGHT)
     [Test]
     public void SerializeDeserializeXNodeProperties()
     {
@@ -4318,7 +4318,7 @@ To fix this error either change the environment to be fully trusted, change the 
 }", json);
     }
 
-#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
+#if !(NET35 || NET20 || WINDOWS_PHONE)
     [Test]
     public void SerializeExpandoObject()
     {
