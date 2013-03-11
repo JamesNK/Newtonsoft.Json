@@ -411,6 +411,11 @@ namespace Newtonsoft.Json
       InternalWritePropertyName(name);
     }
 
+    public virtual void WritePropertyName(string name, bool escape)
+    {
+      WritePropertyName(name);
+    }
+
     internal void InternalWritePropertyName(string name)
     {
       _currentPosition.PropertyName = name;

@@ -37,7 +37,7 @@ namespace Newtonsoft.Json.Linq
   /// <summary>
   /// Represents a value in JSON (string, integer, date, etc).
   /// </summary>
-  public class JValue : JToken, IEquatable<JValue>, IFormattable, IComparable, IComparable<JValue>
+  public class JValue : JToken, IEquatable<JValue>, IFormattable, IComparable, IComparable<JValue>, IConvertible
   {
     private JTokenType _valueType;
     private object _value;
@@ -829,6 +829,94 @@ namespace Newtonsoft.Json.Linq
         return 1;
 
       return Compare(_valueType, _value, obj._value);
+    }
+
+    TypeCode IConvertible.GetTypeCode()
+    {
+      if (_value == null)
+        return TypeCode.Empty;
+
+      return System.Type.GetTypeCode(_value.GetType());
+    }
+
+    bool IConvertible.ToBoolean(IFormatProvider provider)
+    {
+      return Convert.ToBoolean(_value, CultureInfo.InvariantCulture);
+    }
+
+    char IConvertible.ToChar(IFormatProvider provider)
+    {
+      return Convert.ToChar(_value, CultureInfo.InvariantCulture);
+    }
+
+    sbyte IConvertible.ToSByte(IFormatProvider provider)
+    {
+      return Convert.ToSByte(_value, CultureInfo.InvariantCulture);
+    }
+
+    byte IConvertible.ToByte(IFormatProvider provider)
+    {
+      return Convert.ToByte(_value, CultureInfo.InvariantCulture);
+    }
+
+    short IConvertible.ToInt16(IFormatProvider provider)
+    {
+      return Convert.ToInt16(_value, CultureInfo.InvariantCulture);
+    }
+
+    ushort IConvertible.ToUInt16(IFormatProvider provider)
+    {
+      return Convert.ToUInt16(_value, CultureInfo.InvariantCulture);
+    }
+
+    int IConvertible.ToInt32(IFormatProvider provider)
+    {
+      return Convert.ToInt32(_value, CultureInfo.InvariantCulture);
+    }
+
+    uint IConvertible.ToUInt32(IFormatProvider provider)
+    {
+      return Convert.ToUInt32(_value, CultureInfo.InvariantCulture);
+    }
+
+    long IConvertible.ToInt64(IFormatProvider provider)
+    {
+      return Convert.ToInt64(_value, CultureInfo.InvariantCulture);
+    }
+
+    ulong IConvertible.ToUInt64(IFormatProvider provider)
+    {
+      return Convert.ToUInt64(_value, CultureInfo.InvariantCulture);
+    }
+
+    float IConvertible.ToSingle(IFormatProvider provider)
+    {
+      return Convert.ToSingle(_value, CultureInfo.InvariantCulture);
+    }
+
+    double IConvertible.ToDouble(IFormatProvider provider)
+    {
+      return Convert.ToDouble(_value, CultureInfo.InvariantCulture);
+    }
+
+    decimal IConvertible.ToDecimal(IFormatProvider provider)
+    {
+      return Convert.ToDecimal(_value, CultureInfo.InvariantCulture);
+    }
+
+    DateTime IConvertible.ToDateTime(IFormatProvider provider)
+    {
+#if !NET20
+      if (_value is DateTimeOffset)
+        return ((DateTimeOffset) _value).DateTime;
+#endif
+
+      return Convert.ToDateTime(_value, CultureInfo.InvariantCulture);
+    }
+
+    object IConvertible.ToType(Type conversionType, IFormatProvider provider)
+    {
+      return Convert.ChangeType(_value, conversionType, provider);
     }
   }
 }

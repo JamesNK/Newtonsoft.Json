@@ -119,18 +119,7 @@ namespace Newtonsoft.Json.Serialization
     public static DataContractAttribute GetDataContractAttribute(Type type)
     {
       // DataContractAttribute does not have inheritance
-      Type currentType = type;
-
-      while (currentType != null)
-      {
-        DataContractAttribute result = CachedAttributeGetter<DataContractAttribute>.GetAttribute(currentType.GetCustomAttributeProvider());
-        if (result != null)
-          return result;
-
-        currentType = currentType.BaseType();
-      }
-
-      return null;
+      return CachedAttributeGetter<DataContractAttribute>.GetAttribute(type.GetCustomAttributeProvider());
     }
 
     public static DataMemberAttribute GetDataMemberAttribute(MemberInfo memberInfo)

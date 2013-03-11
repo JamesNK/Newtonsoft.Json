@@ -397,5 +397,145 @@ namespace Newtonsoft.Json.Tests.Linq
       CustomAssert.IsInstanceOfType(typeof(DateTimeOffset), startDateTime);
     }
 #endif
+
+    [Test]
+    public void ConvertsToBoolean()
+    {
+      Assert.AreEqual(true, Convert.ToBoolean(new JValue(true)));
+    }
+
+    [Test]
+    public void ConvertsToBoolean_String()
+    {
+      Assert.AreEqual(true, Convert.ToBoolean(new JValue("true")));
+    }
+
+    [Test]
+    public void ConvertsToInt32()
+    {
+      Assert.AreEqual(Int32.MaxValue, Convert.ToInt32(new JValue(Int32.MaxValue)));
+    }
+
+    [Test]
+    public void ConvertsToChar()
+    {
+      Assert.AreEqual('c', Convert.ToChar(new JValue('c')));
+    }
+
+    [Test]
+    public void ConvertsToSByte()
+    {
+      Assert.AreEqual(SByte.MaxValue, Convert.ToSByte(new JValue(SByte.MaxValue)));
+    }
+
+    [Test]
+    public void ConvertsToByte()
+    {
+      Assert.AreEqual(Byte.MaxValue, Convert.ToByte(new JValue(Byte.MaxValue)));
+    }
+
+    [Test]
+    public void ConvertsToInt16()
+    {
+      Assert.AreEqual(Int16.MaxValue, Convert.ToInt16(new JValue(Int16.MaxValue)));
+    }
+
+    [Test]
+    public void ConvertsToUInt16()
+    {
+      Assert.AreEqual(UInt16.MaxValue, Convert.ToUInt16(new JValue(UInt16.MaxValue)));
+    }
+
+    [Test]
+    public void ConvertsToUInt32()
+    {
+      Assert.AreEqual(UInt32.MaxValue, Convert.ToUInt32(new JValue(UInt32.MaxValue)));
+    }
+
+    [Test]
+    public void ConvertsToInt64()
+    {
+      Assert.AreEqual(Int64.MaxValue, Convert.ToInt64(new JValue(Int64.MaxValue)));
+    }
+
+    [Test]
+    public void ConvertsToUInt64()
+    {
+      Assert.AreEqual(UInt64.MaxValue, Convert.ToUInt64(new JValue(UInt64.MaxValue)));
+    }
+
+    [Test]
+    public void ConvertsToSingle()
+    {
+      Assert.AreEqual(Single.MaxValue, Convert.ToSingle(new JValue(Single.MaxValue)));
+    }
+
+    [Test]
+    public void ConvertsToDouble()
+    {
+      Assert.AreEqual(Double.MaxValue, Convert.ToDouble(new JValue(Double.MaxValue)));
+    }
+
+    [Test]
+    public void ConvertsToDecimal()
+    {
+      Assert.AreEqual(Decimal.MaxValue, Convert.ToDecimal(new JValue(Decimal.MaxValue)));
+    }
+
+    [Test]
+    public void ConvertsToString_Decimal()
+    {
+      Assert.AreEqual("79228162514264337593543950335", Convert.ToString(new JValue(Decimal.MaxValue)));
+    }
+
+    [Test]
+    public void ConvertsToString_Uri()
+    {
+      Assert.AreEqual("http://www.google.com/", Convert.ToString(new JValue(new Uri("http://www.google.com"))));
+    }
+
+    [Test]
+    public void ConvertsToString_Null()
+    {
+      Assert.AreEqual(string.Empty, Convert.ToString(new JValue((object)null)));
+    }
+
+    [Test]
+    public void ConvertsToString_Guid()
+    {
+      Guid g = new Guid("0B5D4F85-E94C-4143-94C8-35F2AAEBB100");
+
+      Assert.AreEqual("0b5d4f85-e94c-4143-94c8-35f2aaebb100", Convert.ToString(new JValue(g)));
+    }
+
+    [Test]
+    public void ConvertsToType()
+    {
+      Assert.AreEqual(Int32.MaxValue, Convert.ChangeType(new JValue(Int32.MaxValue), typeof(Int32), CultureInfo.InvariantCulture));
+    }
+
+    [Test]
+    public void ConvertsToDateTime()
+    {
+      Assert.AreEqual(new DateTime(2013, 02, 01, 01, 02, 03, 04), Convert.ToDateTime(new JValue(new DateTime(2013, 02, 01, 01, 02, 03, 04))));
+    }
+
+#if !NET20
+    [Test]
+    public void ConvertsToDateTime_DateTimeOffset()
+    {
+      var offset = new DateTimeOffset(2013, 02, 01, 01, 02, 03, 04, TimeSpan.Zero);
+
+      Assert.AreEqual(new DateTime(2013, 02, 01, 01, 02, 03, 04), Convert.ToDateTime(new JValue(offset)));
+    }
+#endif
+
+    [Test]
+    public void GetTypeCode()
+    {
+      IConvertible v = new JValue(new Guid("0B5D4F85-E94C-4143-94C8-35F2AAEBB100"));
+
+      Assert.AreEqual(TypeCode.Object, v.GetTypeCode());
+    }
   }
 }

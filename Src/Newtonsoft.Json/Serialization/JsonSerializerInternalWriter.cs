@@ -32,6 +32,7 @@ using System.Dynamic;
 #endif
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Security;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities;
@@ -833,7 +834,8 @@ To fix this error either change the environment to be fully trusted, change the 
 
       foreach (DictionaryEntry entry in d)
       {
-        string propertyName = GetPropertyName(entry);
+        bool escape;
+        string propertyName = GetPropertyName(writer, entry, out escape);
 
         propertyName = (contract.PropertyNameResolver != null)
                          ? contract.PropertyNameResolver(propertyName)
@@ -846,7 +848,7 @@ To fix this error either change the environment to be fully trusted, change the 
 
           if (ShouldWriteReference(value, null, valueContract, contract, member))
           {
-            writer.WritePropertyName(propertyName);
+            writer.WritePropertyName(propertyName, escape);
             WriteReference(writer, value);
           }
           else
@@ -854,7 +856,7 @@ To fix this error either change the environment to be fully trusted, change the 
             if (!CheckForCircularReference(writer, value, null, valueContract, contract, member))
               continue;
 
-            writer.WritePropertyName(propertyName);
+            writer.WritePropertyName(propertyName, escape);
 
             SerializeValue(writer, value, valueContract, null, contract, member);
           }
@@ -875,16 +877,43 @@ To fix this error either change the environment to be fully trusted, change the 
       OnSerialized(writer, contract, values.UnderlyingDictionary);
     }
 
-    private string GetPropertyName(DictionaryEntry entry)
+    private string GetPropertyName(JsonWriter writer, DictionaryEntry entry, out bool escape)
     {
+      object key = entry.Key;
+
       string propertyName;
 
-      if (ConvertUtils.IsConvertible(entry.Key))
-        return Convert.ToString(entry.Key, CultureInfo.InvariantCulture);
-      else if (TryConvertToString(entry.Key, entry.Key.GetType(), out propertyName))
+      if (key is DateTime)
+      {
+        escape = false;
+        StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
+        JsonConvert.WriteDateTimeString(sw, (DateTime)key, writer.DateFormatHandling, writer.DateFormatString, writer.Culture);
+        return sw.ToString();
+      }
+#if !NET20
+      else if (key is DateTimeOffset)
+      {
+        escape = false;
+        StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
+        JsonConvert.WriteDateTimeOffsetString(sw, (DateTimeOffset)key, writer.DateFormatHandling, writer.DateFormatString, writer.Culture);
+        return sw.ToString();
+      }
+#endif
+      else if (ConvertUtils.IsConvertible(key))
+      {
+        escape = true;
+        return Convert.ToString(key, CultureInfo.InvariantCulture);
+      }
+      else if (TryConvertToString(key, key.GetType(), out propertyName))
+      {
+        escape = true;
         return propertyName;
+      }
       else
-        return entry.Key.ToString();
+      {
+        escape = true;
+        return key.ToString();
+      }
     }
 
     private void HandleError(JsonWriter writer, int initialDepth)

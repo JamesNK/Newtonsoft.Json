@@ -4925,13 +4925,38 @@ To fix this error either change the environment to be fully trusted, change the 
     public void ChildDataContractTest()
     {
       ChildDataContract cc = new ChildDataContract
+      {
+        VirtualMember = "VirtualMember!",
+        NonVirtualMember = "NonVirtualMember!"
+      };
+
+      string result = JsonConvert.SerializeObject(cc, Formatting.Indented);
+//      Assert.AreEqual(@"{
+//  ""VirtualMember"": ""VirtualMember!"",
+//  ""NewMember"": null,
+//  ""nonVirtualMember"": ""NonVirtualMember!""
+//}", result);
+
+      Console.WriteLine(result);
+    }
+
+    [Test]
+    public void ChildDataContractTestWithDataContractSerializer()
+    {
+      ChildDataContract cc = new ChildDataContract
         {
           VirtualMember = "VirtualMember!",
           NonVirtualMember = "NonVirtualMember!"
         };
 
-      string result = JsonConvert.SerializeObject(cc);
-      Assert.AreEqual(@"{""virtualMember"":""VirtualMember!"",""nonVirtualMember"":""NonVirtualMember!""}", result);
+      DataContractSerializer serializer = new DataContractSerializer(typeof(ChildDataContract));
+
+      MemoryStream ms = new MemoryStream();
+      serializer.WriteObject(ms, cc);
+
+      string xml = Encoding.UTF8.GetString(ms.ToArray(), 0, Convert.ToInt32(ms.Length));
+
+      Console.WriteLine(xml);
     }
 #endif
 
@@ -6224,6 +6249,106 @@ Parameter name: value",
       string json = JsonConvert.SerializeObject(c);
 
       Assert.AreEqual(@"{""Data"":["":::ONE:::"","":::TWO:::"","":::THREE:::""]}", json);
+    }
+
+#if !NET20
+    [Test]
+    public void DateTimeDictionaryKey_DateTimeOffset_Iso()
+    {
+      IDictionary<DateTimeOffset, int> dic1 = new Dictionary<DateTimeOffset, int>
+        {
+          {new DateTimeOffset(2000, 12, 12, 12, 12, 12, TimeSpan.Zero), 1},
+          {new DateTimeOffset(2013, 12, 12, 12, 12, 12, TimeSpan.Zero), 2}
+        };
+
+      string json = JsonConvert.SerializeObject(dic1, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""2000-12-12T12:12:12+00:00"": 1,
+  ""2013-12-12T12:12:12+00:00"": 2
+}", json);
+
+      IDictionary<DateTimeOffset, int> dic2 = JsonConvert.DeserializeObject<IDictionary<DateTimeOffset, int>>(json);
+
+      Assert.AreEqual(2, dic2.Count);
+      Assert.AreEqual(1, dic2[new DateTimeOffset(2000, 12, 12, 12, 12, 12, TimeSpan.Zero)]);
+      Assert.AreEqual(2, dic2[new DateTimeOffset(2013, 12, 12, 12, 12, 12, TimeSpan.Zero)]);
+    }
+
+    [Test]
+    public void DateTimeDictionaryKey_DateTimeOffset_MS()
+    {
+      IDictionary<DateTimeOffset, int> dic1 = new Dictionary<DateTimeOffset, int>
+        {
+          {new DateTimeOffset(2000, 12, 12, 12, 12, 12, TimeSpan.Zero), 1},
+          {new DateTimeOffset(2013, 12, 12, 12, 12, 12, TimeSpan.Zero), 2}
+        };
+
+      string json = JsonConvert.SerializeObject(dic1, Formatting.Indented, new JsonSerializerSettings
+        {
+          DateFormatHandling = DateFormatHandling.MicrosoftDateFormat
+        });
+
+      Assert.AreEqual(@"{
+  ""\/Date(976623132000+0000)\/"": 1,
+  ""\/Date(1386850332000+0000)\/"": 2
+}", json);
+
+      IDictionary<DateTimeOffset, int> dic2 = JsonConvert.DeserializeObject<IDictionary<DateTimeOffset, int>>(json);
+
+      Assert.AreEqual(2, dic2.Count);
+      Assert.AreEqual(1, dic2[new DateTimeOffset(2000, 12, 12, 12, 12, 12, TimeSpan.Zero)]);
+      Assert.AreEqual(2, dic2[new DateTimeOffset(2013, 12, 12, 12, 12, 12, TimeSpan.Zero)]);
+    }
+#endif
+
+    [Test]
+    public void DateTimeDictionaryKey_DateTime_Iso()
+    {
+      IDictionary<DateTime, int> dic1 = new Dictionary<DateTime, int>
+        {
+          {new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Utc), 1},
+          {new DateTime(2013, 12, 12, 12, 12, 12, DateTimeKind.Utc), 2}
+        };
+
+      string json = JsonConvert.SerializeObject(dic1, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""2000-12-12T12:12:12Z"": 1,
+  ""2013-12-12T12:12:12Z"": 2
+}", json);
+
+      IDictionary<DateTime, int> dic2 = JsonConvert.DeserializeObject<IDictionary<DateTime, int>>(json);
+
+      Assert.AreEqual(2, dic2.Count);
+      Assert.AreEqual(1, dic2[new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Utc)]);
+      Assert.AreEqual(2, dic2[new DateTime(2013, 12, 12, 12, 12, 12, DateTimeKind.Utc)]);
+    }
+
+    [Test]
+    public void DateTimeDictionaryKey_DateTime_MS()
+    {
+      IDictionary<DateTime, int> dic1 = new Dictionary<DateTime, int>
+        {
+          {new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Utc), 1},
+          {new DateTime(2013, 12, 12, 12, 12, 12, DateTimeKind.Utc), 2}
+        };
+
+      string json = JsonConvert.SerializeObject(dic1, Formatting.Indented, new JsonSerializerSettings
+      {
+        DateFormatHandling = DateFormatHandling.MicrosoftDateFormat
+      });
+
+      Assert.AreEqual(@"{
+  ""\/Date(976623132000)\/"": 1,
+  ""\/Date(1386850332000)\/"": 2
+}", json);
+
+      IDictionary<DateTime, int> dic2 = JsonConvert.DeserializeObject<IDictionary<DateTime, int>>(json);
+
+      Assert.AreEqual(2, dic2.Count);
+      Assert.AreEqual(1, dic2[new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Utc)]);
+      Assert.AreEqual(2, dic2[new DateTime(2013, 12, 12, 12, 12, 12, DateTimeKind.Utc)]);
     }
 
     [Test]

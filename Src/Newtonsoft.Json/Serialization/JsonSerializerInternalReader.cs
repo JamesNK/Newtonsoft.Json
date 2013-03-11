@@ -883,7 +883,18 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
             {
               try
               {
-                keyValue = EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract, contract.DictionaryKeyType);
+                if (contract.DictionaryKeyType == typeof(DateTime) && JsonConvert.TryParseDateTime(keyValue.ToString(), DateParseHandling.DateTime, reader.DateTimeZoneHandling, out keyValue))
+                {
+                }
+#if !NET20
+                else if (contract.DictionaryKeyType == typeof(DateTimeOffset) && JsonConvert.TryParseDateTime(keyValue.ToString(), DateParseHandling.DateTimeOffset, reader.DateTimeZoneHandling, out keyValue))
+                {
+                }
+#endif
+                else
+                {
+                  keyValue = EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract, contract.DictionaryKeyType);
+                }
               }
               catch (Exception ex)
               {
