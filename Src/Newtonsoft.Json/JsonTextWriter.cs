@@ -211,6 +211,28 @@ namespace Newtonsoft.Json
       _writer.Write(':');
     }
 
+    public override void WritePropertyName(string name, bool escape)
+    {
+      InternalWritePropertyName(name);
+
+      if (escape)
+      {
+        JavaScriptUtils.WriteEscapedJavaScriptString(_writer, name, _quoteChar, _quoteName, GetCharEscapeFlags(), StringEscapeHandling);
+      }
+      else
+      {
+        if (_quoteName)
+          _writer.Write(_quoteChar);
+
+        _writer.Write(name);
+
+        if (_quoteName)
+          _writer.Write(_quoteChar);
+      }
+
+      _writer.Write(':');
+    }
+
     private bool[] GetCharEscapeFlags()
     {
       if (StringEscapeHandling == StringEscapeHandling.EscapeHtml)
@@ -484,7 +506,9 @@ namespace Newtonsoft.Json
     {
       InternalWriteValue(JsonToken.Date);
       value = JsonConvert.EnsureDateTime(value, DateTimeZoneHandling);
-      JsonConvert.WriteDateTimeString(_writer, value, DateFormatHandling, DateFormatString, Culture, _quoteChar);
+      _writer.Write(_quoteChar);
+      JsonConvert.WriteDateTimeString(_writer, value, DateFormatHandling, DateFormatString, Culture);
+      _writer.Write(_quoteChar);
     }
 
     /// <summary>
@@ -515,7 +539,9 @@ namespace Newtonsoft.Json
     public override void WriteValue(DateTimeOffset value)
     {
       InternalWriteValue(JsonToken.Date);
-      JsonConvert.WriteDateTimeOffsetString(_writer, value, DateFormatHandling, DateFormatString, Culture, _quoteChar);
+      _writer.Write(_quoteChar);
+      JsonConvert.WriteDateTimeOffsetString(_writer, value, DateFormatHandling, DateFormatString, Culture);
+      _writer.Write(_quoteChar);
     }
 #endif
 

@@ -547,9 +547,6 @@ namespace Newtonsoft.Json.Serialization
 
     private void ResolveCallbackMethods(JsonContract contract, Type t)
     {
-      if (t.BaseType() != null)
-        ResolveCallbackMethods(contract, t.BaseType());
-
       List<MethodInfo> onSerializing;
       List<MethodInfo> onSerialized;
       List<MethodInfo> onDeserializing;

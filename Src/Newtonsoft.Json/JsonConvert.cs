@@ -110,7 +110,9 @@ namespace Newtonsoft.Json
 
       using (StringWriter writer = StringUtils.CreateStringWriter(64))
       {
-        WriteDateTimeString(writer, updatedDateTime, updatedDateTime.GetUtcOffset(), updatedDateTime.Kind, format, '"');
+        writer.Write('"');
+        WriteDateTimeString(writer, updatedDateTime, updatedDateTime.GetUtcOffset(), updatedDateTime.Kind, format);
+        writer.Write('"');
         return writer.ToString();
       }
     }
@@ -158,47 +160,44 @@ namespace Newtonsoft.Json
     {
       using (StringWriter writer = StringUtils.CreateStringWriter(64))
       {
-        WriteDateTimeOffsetString(writer, value, format, null, CultureInfo.InvariantCulture, '"');
+        writer.Write('"');
+        WriteDateTimeOffsetString(writer, value, format, null, CultureInfo.InvariantCulture);
+        writer.Write('"');
         return writer.ToString();
       }
     }
 
-    internal static void WriteDateTimeOffsetString(TextWriter writer, DateTimeOffset value, DateFormatHandling format, string formatString, CultureInfo culture, char quoteChar)
+    internal static void WriteDateTimeOffsetString(TextWriter writer, DateTimeOffset value, DateFormatHandling format, string formatString, CultureInfo culture)
     {
       if (string.IsNullOrEmpty(formatString))
       {
-        WriteDateTimeString(writer, (format == DateFormatHandling.IsoDateFormat) ? value.DateTime : value.UtcDateTime, value.Offset, DateTimeKind.Local, format, quoteChar);
+        WriteDateTimeString(writer, (format == DateFormatHandling.IsoDateFormat) ? value.DateTime : value.UtcDateTime, value.Offset, DateTimeKind.Local, format);
       }
       else
       {
-        writer.Write(quoteChar);
         writer.Write(value.ToString(formatString, culture));
-        writer.Write(quoteChar);
       }
     }
 #endif
 
-    internal static void WriteDateTimeString(TextWriter writer, DateTime value, DateFormatHandling format, string formatString, CultureInfo culture, char quoteChar)
+    internal static void WriteDateTimeString(TextWriter writer, DateTime value, DateFormatHandling format, string formatString, CultureInfo culture)
     {
       if (string.IsNullOrEmpty(formatString))
       {
-        WriteDateTimeString(writer, value, value.GetUtcOffset(), value.Kind, format, quoteChar);
+        WriteDateTimeString(writer, value, value.GetUtcOffset(), value.Kind, format);
       }
       else
       {
-        writer.Write(quoteChar);
         writer.Write(value.ToString(formatString, culture));
-        writer.Write(quoteChar);
       }
     }
 
-    internal static void WriteDateTimeString(TextWriter writer, DateTime value, TimeSpan offset, DateTimeKind kind, DateFormatHandling format, char quoteChar)
+    internal static void WriteDateTimeString(TextWriter writer, DateTime value, TimeSpan offset, DateTimeKind kind, DateFormatHandling format)
     {
       if (format == DateFormatHandling.MicrosoftDateFormat)
       {
         long javaScriptTicks = ConvertDateTimeToJavaScriptTicks(value, offset);
 
-        writer.Write(quoteChar);
         writer.Write(@"\/Date(");
         writer.Write(javaScriptTicks);
 
@@ -214,11 +213,9 @@ namespace Newtonsoft.Json
         }
 
         writer.Write(@")\/");
-        writer.Write(quoteChar);
       }
       else
       {
-        writer.Write(quoteChar);
         writer.Write(value.ToString(@"yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFF", CultureInfo.InvariantCulture));
 
         switch (kind)
@@ -231,7 +228,6 @@ namespace Newtonsoft.Json
             break;
         }
 
-        writer.Write(quoteChar);
       }
     }
 
@@ -725,6 +721,126 @@ namespace Newtonsoft.Json
         return true;
 
       return IsJsonPrimitiveTypeCode(ConvertUtils.GetTypeCode(type));
+    }
+
+    internal static bool TryParseDateTime(string s, DateParseHandling dateParseHandling, DateTimeZoneHandling dateTimeZoneHandling, out object dt)
+    {
+      if (s.Length > 0)
+      {
+        if (s[0] == '/')
+        {
+          if (s.StartsWith("/Date(", StringComparison.Ordinal) && s.EndsWith(")/", StringComparison.Ordinal))
+          {
+            return TryParseDateMicrosoft(s, dateParseHandling, dateTimeZoneHandling, out dt);
+          }
+        }
+        else if (char.IsDigit(s[0]) && s.Length >= 19 && s.Length <= 40)
+        {
+          return TryParseDateIso(s, dateParseHandling, dateTimeZoneHandling, out dt);
+        }
+      }
+
+      dt = null;
+      return false;
+    }
+
+    private static bool TryParseDateIso(string text, DateParseHandling dateParseHandling, DateTimeZoneHandling dateTimeZoneHandling, out object dt)
+    {
+      const string isoDateFormat = "yyyy-MM-ddTHH:mm:ss.FFFFFFFK";
+
+#if !NET20
+      if (dateParseHandling == DateParseHandling.DateTimeOffset)
+      {
+        DateTimeOffset dateTimeOffset;
+        if (DateTimeOffset.TryParseExact(text, isoDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out dateTimeOffset))
+        {
+          dt = dateTimeOffset;
+          return true;
+        }
+      }
+      else
+#endif
+      {
+        DateTime dateTime;
+        if (DateTime.TryParseExact(text, isoDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out dateTime))
+        {
+          dateTime = EnsureDateTime(dateTime, dateTimeZoneHandling);
+
+          dt = dateTime;
+          return true;
+        }
+      }
+
+      dt = null;
+      return false;
+    }
+
+    private static bool TryParseDateMicrosoft(string text, DateParseHandling dateParseHandling, DateTimeZoneHandling dateTimeZoneHandling, out object dt)
+    {
+      string value = text.Substring(6, text.Length - 8);
+      DateTimeKind kind = DateTimeKind.Utc;
+
+      int index = value.IndexOf('+', 1);
+
+      if (index == -1)
+        index = value.IndexOf('-', 1);
+
+      TimeSpan offset = TimeSpan.Zero;
+
+      if (index != -1)
+      {
+        kind = DateTimeKind.Local;
+        offset = ReadOffset(value.Substring(index));
+        value = value.Substring(0, index);
+      }
+
+      long javaScriptTicks = long.Parse(value, NumberStyles.Integer, CultureInfo.InvariantCulture);
+
+      DateTime utcDateTime = ConvertJavaScriptTicksToDateTime(javaScriptTicks);
+
+#if !NET20
+      if (dateParseHandling == DateParseHandling.DateTimeOffset)
+      {
+        dt = new DateTimeOffset(utcDateTime.Add(offset).Ticks, offset);
+        return true;
+      }
+      else
+#endif
+      {
+        DateTime dateTime;
+
+        switch (kind)
+        {
+          case DateTimeKind.Unspecified:
+            dateTime = DateTime.SpecifyKind(utcDateTime.ToLocalTime(), DateTimeKind.Unspecified);
+            break;
+          case DateTimeKind.Local:
+            dateTime = utcDateTime.ToLocalTime();
+            break;
+          default:
+            dateTime = utcDateTime;
+            break;
+        }
+
+        dt = EnsureDateTime(dateTime, dateTimeZoneHandling);
+        return true;
+      }
+    }
+
+    private static TimeSpan ReadOffset(string offsetText)
+    {
+      bool negative = (offsetText[0] == '-');
+
+      int hours = int.Parse(offsetText.Substring(1, 2), NumberStyles.Integer, CultureInfo.InvariantCulture);
+      int minutes = 0;
+      if (offsetText.Length >= 5)
+        minutes = int.Parse(offsetText.Substring(3, 2), NumberStyles.Integer, CultureInfo.InvariantCulture);
+
+      TimeSpan offset = TimeSpan.FromHours(hours) + TimeSpan.FromMinutes(minutes);
+      if (negative)
+        offset = offset.Negate();
+
+      return offset;
     }
 
     #region Serialize
