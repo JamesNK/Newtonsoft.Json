@@ -4904,7 +4904,7 @@ To fix this error either change the environment to be fully trusted, change the 
       JsonConvert.DeserializeObject<EnumerableArrayPropertyClass>(json);
     }
 
-#if !NET20
+#if !(NET20 || SILVERLIGHT)
     [DataContract]
     public class BaseDataContract
     {

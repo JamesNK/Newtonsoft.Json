@@ -37,7 +37,10 @@ namespace Newtonsoft.Json.Linq
   /// <summary>
   /// Represents a value in JSON (string, integer, date, etc).
   /// </summary>
-  public class JValue : JToken, IEquatable<JValue>, IFormattable, IComparable, IComparable<JValue>, IConvertible
+  public class JValue : JToken, IEquatable<JValue>, IFormattable, IComparable, IComparable<JValue>
+#if !(NETFX_CORE)    
+    , IConvertible
+#endif
   {
     private JTokenType _valueType;
     private object _value;
@@ -831,6 +834,7 @@ namespace Newtonsoft.Json.Linq
       return Compare(_valueType, _value, obj._value);
     }
 
+#if !(NETFX_CORE)    
     TypeCode IConvertible.GetTypeCode()
     {
       if (_value == null)
@@ -918,5 +922,6 @@ namespace Newtonsoft.Json.Linq
     {
       return Convert.ChangeType(_value, conversionType, provider);
     }
+#endif
   }
 }

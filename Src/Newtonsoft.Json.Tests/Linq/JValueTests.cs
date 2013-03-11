@@ -398,6 +398,7 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 #endif
 
+#if !NETFX_CORE
     [Test]
     public void ConvertsToBoolean()
     {
@@ -537,5 +538,6 @@ namespace Newtonsoft.Json.Tests.Linq
 
       Assert.AreEqual(TypeCode.Object, v.GetTypeCode());
     }
+#endif
   }
 }
