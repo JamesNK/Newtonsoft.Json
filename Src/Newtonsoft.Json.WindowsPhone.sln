@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lib", "Lib", "{F69285DD-24FB-4A60-AE8B-4C2744285D0F}"
 	ProjectSection(SolutionItems) = preProject
 		Lib\NUnit\Silverlight\nunit.framework.dll = Lib\NUnit\Silverlight\nunit.framework.dll

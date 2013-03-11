@@ -612,7 +612,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual(@"Unexpected end when deserializing object. Path 'events2.code', line 1, position 49.", errors[1]);
     }
 
-#if !(NET35 || NET20 || WINDOWS_PHONE)
+#if !(NET35 || NET20)
     [Test]
     public void ErrorHandlingEndOfContentDynamic()
     {

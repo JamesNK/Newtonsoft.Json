@@ -27,7 +27,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-#if !(NET35 || NET20 || WINDOWS_PHONE)
+#if !(NET35 || NET20)
 using System.ComponentModel;
 using System.Dynamic;
 #endif
@@ -288,7 +288,7 @@ namespace Newtonsoft.Json.Serialization
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
         case JsonContractType.Serializable:
 #endif
-#if !(NET35 || NET20 || WINDOWS_PHONE)
+#if !(NET35 || NET20)
         case JsonContractType.Dynamic:
 #endif
           return @"JSON object (e.g. {""name"":""value""})";
@@ -393,7 +393,7 @@ namespace Newtonsoft.Json.Serialization
             targetDictionary = CreateNewDictionary(reader, dictionaryContract);
 
           return PopulateDictionary(dictionaryContract.CreateWrapper(targetDictionary), reader, dictionaryContract, member, id);
-#if !(NET35 || NET20 || WINDOWS_PHONE)
+#if !(NET35 || NET20)
         case JsonContractType.Dynamic:
           JsonDynamicContract dynamicContract = (JsonDynamicContract) contract;
           return CreateDynamic(reader, dynamicContract, member, id);
@@ -490,7 +490,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                   TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(reader as IJsonLineInfo, reader.Path, "Resolved type '{0}' to {1}.".FormatWith(CultureInfo.InvariantCulture, qualifiedTypeName, specifiedType)), null);
 
                 if (objectType != null
-#if !(NET35 || NET20 || WINDOWS_PHONE)
+#if !(NET35 || NET20)
                     && objectType != typeof (IDynamicMetaObjectProvider)
 #endif
                     && !objectType.IsAssignableFrom(specifiedType))
@@ -621,7 +621,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
     private bool HasDefinedType(Type type)
     {
       return (type != null && type != typeof (object) && !typeof (JToken).IsSubclassOf(type)
-#if !(NET35 || NET20 || WINDOWS_PHONE)
+#if !(NET35 || NET20)
         && type != typeof (IDynamicMetaObjectProvider)
 #endif
         );
@@ -1209,7 +1209,7 @@ To fix this error either change the environment to be fully trusted, change the 
     }
 #endif
 
-#if !(NET35 || NET20 || WINDOWS_PHONE)
+#if !(NET35 || NET20)
     private object CreateDynamic(JsonReader reader, JsonDynamicContract contract, JsonProperty member, string id)
     {
       IDynamicMetaObjectProvider newObject;

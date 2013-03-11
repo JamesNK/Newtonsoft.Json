@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET35 || NET20 || WINDOWS_PHONE)
+#if !(NET35 || NET20)
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -44,7 +44,7 @@ namespace Newtonsoft.Json.Utilities
 #if !SILVERLIGHT
       public const string CSharpAssemblyName = "Microsoft.CSharp, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a";
 #else
-      public const string CSharpAssemblyName = "Microsoft.CSharp, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
+      public const string CSharpAssemblyName = "Microsoft.CSharp, Version=5.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
 #endif
 
       private const string BinderTypeName = "Microsoft.CSharp.RuntimeBinder.Binder, " + CSharpAssemblyName;

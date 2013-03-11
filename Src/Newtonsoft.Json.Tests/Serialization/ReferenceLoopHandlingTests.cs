@@ -32,7 +32,7 @@ using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
 #endif
-#if !(NET20 || NET35 || WINDOWS_PHONE)
+#if !(NET20 || NET35)
 using System.Dynamic;
 #endif
 using System.Runtime.Serialization;
@@ -210,7 +210,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 #endif
 
-#if !(NET20 || NET35 || WINDOWS_PHONE)
+#if !(NET20 || NET35)
     public class DictionaryDynamicObject : DynamicObject
     {
       public IDictionary<string, object> Values { get; private set; }

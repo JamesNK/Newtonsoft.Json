@@ -25,7 +25,7 @@
 
 using System;
 using System.Collections.Generic;
-#if !(NET35 || NET20 || WINDOWS_PHONE)
+#if !(NET35 || NET20)
 using System.Dynamic;
 using System.Linq.Expressions;
 #endif
@@ -50,7 +50,7 @@ namespace Newtonsoft.Json.Linq
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
 , ICloneable
 #endif
-#if !(NET35 || NET20 || WINDOWS_PHONE)
+#if !(NET35 || NET20)
 , IDynamicMetaObjectProvider
 #endif
   {
@@ -1704,7 +1704,7 @@ namespace Newtonsoft.Json.Linq
       return p.Evaluate(this, errorWhenNoMatch);
     }
 
-#if !(NET35 || NET20 || WINDOWS_PHONE)
+#if !(NET35 || NET20)
     /// <summary>
     /// Returns the <see cref="T:System.Dynamic.DynamicMetaObject"/> responsible for binding operations performed on this object.
     /// </summary>

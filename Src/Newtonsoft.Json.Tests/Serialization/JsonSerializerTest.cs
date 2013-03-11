@@ -24,7 +24,7 @@
 #endregion
 
 using System;
-#if !(NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE)
+#if !(NET35 || NET20 || SILVERLIGHT)
 using System.Collections.Concurrent;
 #endif
 using System.Collections.Generic;
@@ -53,7 +53,7 @@ using System.Collections.ObjectModel;
 using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Converters;
-#if !NET20 && !WINDOWS_PHONE
+#if !NET20
 using System.Runtime.Serialization.Json;
 #endif
 using Newtonsoft.Json.Serialization;
@@ -69,7 +69,7 @@ using System.Text.RegularExpressions;
 using System.Collections.Specialized;
 using System.Linq.Expressions;
 #endif
-#if !(NET35 || NET20 || WINDOWS_PHONE)
+#if !(NET35 || NET20)
 using System.Dynamic;
 using System.ComponentModel;
 #endif
@@ -173,7 +173,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       string jsonText = JsonConvert.SerializeObject(testDictionary);
 
-#if !NET20 && !WINDOWS_PHONE
+#if !NET20
       MemoryStream ms = new MemoryStream();
       DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(Dictionary<string, object>));
       serializer.WriteObject(ms, testDictionary);
@@ -432,7 +432,7 @@ keyword such as type of business.""
       CollectionAssert.AreEqual(r1, r2);
     }
 
-#if !NET20 && !WINDOWS_PHONE
+#if !NET20
     [Test]
     public void Unicode()
     {
@@ -2123,7 +2123,7 @@ Path '', line 1, position 1.",
         });
     }
 
-#if !(NET35 || NET20 || WINDOWS_PHONE)
+#if !(NET35 || NET20)
     [Test]
     public void CannotDeserializeArrayIntoDynamic()
     {
@@ -2783,7 +2783,7 @@ Path '', line 1, position 2.",
       public string Ethnicity { get; set; }
     }
 
-#if !NET20 && !WINDOWS_PHONE
+#if !NET20
     public class DataContractJsonSerializerTestClass
     {
       public TimeSpan TimeSpanProperty { get; set; }
@@ -4318,7 +4318,7 @@ To fix this error either change the environment to be fully trusted, change the 
 }", json);
     }
 
-#if !(NET35 || NET20 || WINDOWS_PHONE)
+#if !(NET35 || NET20)
     [Test]
     public void SerializeExpandoObject()
     {
@@ -7395,7 +7395,7 @@ Parameter name: value",
     }
 #endif
 
-#if !(PORTABLE || NET20 || NET35 || WINDOWS_PHONE)
+#if !(PORTABLE || NET20 || NET35)
     [Test]
     public void HashSetInterface()
     {
