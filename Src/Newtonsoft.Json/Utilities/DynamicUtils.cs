@@ -85,8 +85,8 @@ namespace Newtonsoft.Json.Utilities
 
         for (int i = 0; i < values.Length; i++)
         {
-          MethodInfo createArgumentInfoMethod = csharpArgumentInfoType.GetMethod("Create", new[] { csharpArgumentInfoFlags, typeof(string) });
-          object arg = createArgumentInfoMethod.Invoke(null, new object[] { 0, null });
+          MethodInfo createArgumentInfoMethod = csharpArgumentInfoType.GetMethod("Create", new[] {csharpArgumentInfoFlags, typeof (string)});
+          object arg = createArgumentInfoMethod.Invoke(null, new object[] {0, null});
           a.SetValue(arg, i);
         }
 
@@ -99,61 +99,26 @@ namespace Newtonsoft.Json.Utilities
         Type csharpBinderFlagsType = Type.GetType(CSharpBinderFlagsTypeName);
         Type binderType = Type.GetType(BinderTypeName);
 
-        Type csharpArgumentInfoTypeEnumerableType = typeof(IEnumerable<>).MakeGenericType(csharpArgumentInfoType);
+        Type csharpArgumentInfoTypeEnumerableType = typeof (IEnumerable<>).MakeGenericType(csharpArgumentInfoType);
 
-        MethodInfo getMemberMethod = binderType.GetMethod("GetMember", new[] { csharpBinderFlagsType, typeof(string), typeof(Type), csharpArgumentInfoTypeEnumerableType });
+        MethodInfo getMemberMethod = binderType.GetMethod("GetMember", new[] {csharpBinderFlagsType, typeof (string), typeof (Type), csharpArgumentInfoTypeEnumerableType});
         _getMemberCall = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(getMemberMethod);
 
-        MethodInfo setMemberMethod = binderType.GetMethod("SetMember", new[] { csharpBinderFlagsType, typeof(string), typeof(Type), csharpArgumentInfoTypeEnumerableType });
+        MethodInfo setMemberMethod = binderType.GetMethod("SetMember", new[] {csharpBinderFlagsType, typeof (string), typeof (Type), csharpArgumentInfoTypeEnumerableType});
         _setMemberCall = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(setMemberMethod);
       }
 
       public static CallSiteBinder GetMember(string name, Type context)
       {
         Init();
-        return (CallSiteBinder)_getMemberCall(null, 0, name, context, _getCSharpArgumentInfoArray);
+        return (CallSiteBinder) _getMemberCall(null, 0, name, context, _getCSharpArgumentInfoArray);
       }
 
       public static CallSiteBinder SetMember(string name, Type context)
       {
         Init();
-        return (CallSiteBinder)_setMemberCall(null, 0, name, context, _setCSharpArgumentInfoArray);
+        return (CallSiteBinder) _setMemberCall(null, 0, name, context, _setCSharpArgumentInfoArray);
       }
-    }
-
-    public static bool TryGetMember(this IDynamicMetaObjectProvider dynamicProvider, string name, out object value)
-    {
-      ValidationUtils.ArgumentNotNull(dynamicProvider, "dynamicProvider");
-
-      GetMemberBinder getMemberBinder = (GetMemberBinder) BinderWrapper.GetMember(name, typeof (DynamicUtils));
-
-      CallSite<Func<CallSite, object, object>> callSite = CallSite<Func<CallSite, object, object>>.Create(new NoThrowGetBinderMember(getMemberBinder));
-
-      object result = callSite.Target(callSite, dynamicProvider);
-
-      if (!ReferenceEquals(result, NoThrowExpressionVisitor.ErrorResult))
-      {
-        value = result;
-        return true;
-      }
-      else
-      {
-        value = null;
-        return false;
-      }
-    }
-
-    public static bool TrySetMember(this IDynamicMetaObjectProvider dynamicProvider, string name, object value)
-    {
-      ValidationUtils.ArgumentNotNull(dynamicProvider, "dynamicProvider");
-
-      SetMemberBinder binder = (SetMemberBinder)BinderWrapper.SetMember(name, typeof(DynamicUtils));
-
-      var setterSite = CallSite<Func<CallSite, object, object, object>>.Create(new NoThrowSetBinderMember(binder));
-
-      object result = setterSite.Target(setterSite, dynamicProvider, value);
-
-      return !ReferenceEquals(result, NoThrowExpressionVisitor.ErrorResult);
     }
 
     public static IEnumerable<string> GetDynamicMemberNames(this IDynamicMetaObjectProvider dynamicProvider)
@@ -161,65 +126,65 @@ namespace Newtonsoft.Json.Utilities
       DynamicMetaObject metaObject = dynamicProvider.GetMetaObject(Expression.Constant(dynamicProvider));
       return metaObject.GetDynamicMemberNames();
     }
+  }
 
-    internal class NoThrowGetBinderMember : GetMemberBinder
+  internal class NoThrowGetBinderMember : GetMemberBinder
+  {
+    private readonly GetMemberBinder _innerBinder;
+
+    public NoThrowGetBinderMember(GetMemberBinder innerBinder)
+      : base(innerBinder.Name, innerBinder.IgnoreCase)
     {
-      private readonly GetMemberBinder _innerBinder;
-
-      public NoThrowGetBinderMember(GetMemberBinder innerBinder)
-        : base(innerBinder.Name, innerBinder.IgnoreCase)
-      {
-        _innerBinder = innerBinder;
-      }
-
-      public override DynamicMetaObject FallbackGetMember(DynamicMetaObject target, DynamicMetaObject errorSuggestion)
-      {
-        DynamicMetaObject retMetaObject = _innerBinder.Bind(target, new DynamicMetaObject[] { });
-
-        NoThrowExpressionVisitor noThrowVisitor = new NoThrowExpressionVisitor();
-        Expression resultExpression = noThrowVisitor.Visit(retMetaObject.Expression);
-
-        DynamicMetaObject finalMetaObject = new DynamicMetaObject(resultExpression, retMetaObject.Restrictions);
-        return finalMetaObject;
-      }
+      _innerBinder = innerBinder;
     }
 
-    internal class NoThrowSetBinderMember : SetMemberBinder
+    public override DynamicMetaObject FallbackGetMember(DynamicMetaObject target, DynamicMetaObject errorSuggestion)
     {
-      private readonly SetMemberBinder _innerBinder;
+      DynamicMetaObject retMetaObject = _innerBinder.Bind(target, new DynamicMetaObject[] { });
 
-      public NoThrowSetBinderMember(SetMemberBinder innerBinder)
-        : base(innerBinder.Name, innerBinder.IgnoreCase)
-      {
-        _innerBinder = innerBinder;
-      }
+      NoThrowExpressionVisitor noThrowVisitor = new NoThrowExpressionVisitor();
+      Expression resultExpression = noThrowVisitor.Visit(retMetaObject.Expression);
 
-      public override DynamicMetaObject FallbackSetMember(DynamicMetaObject target, DynamicMetaObject value, DynamicMetaObject errorSuggestion)
-      {
-        DynamicMetaObject retMetaObject = _innerBinder.Bind(target, new DynamicMetaObject[] { value });
-
-        NoThrowExpressionVisitor noThrowVisitor = new NoThrowExpressionVisitor();
-        Expression resultExpression = noThrowVisitor.Visit(retMetaObject.Expression);
-
-        DynamicMetaObject finalMetaObject = new DynamicMetaObject(resultExpression, retMetaObject.Restrictions);
-        return finalMetaObject;
-      }
-    }
-
-
-    internal class NoThrowExpressionVisitor : ExpressionVisitor
-    {
-      internal static readonly object ErrorResult = new object();
-
-      protected override Expression VisitConditional(ConditionalExpression node)
-      {
-        // if the result of a test is to throw an error, rewrite to result an error result value
-        if (node.IfFalse.NodeType == ExpressionType.Throw)
-          return Expression.Condition(node.Test, node.IfTrue, Expression.Constant(ErrorResult));
-
-        return base.VisitConditional(node);
-      }
+      DynamicMetaObject finalMetaObject = new DynamicMetaObject(resultExpression, retMetaObject.Restrictions);
+      return finalMetaObject;
     }
   }
+
+  internal class NoThrowSetBinderMember : SetMemberBinder
+  {
+    private readonly SetMemberBinder _innerBinder;
+
+    public NoThrowSetBinderMember(SetMemberBinder innerBinder)
+      : base(innerBinder.Name, innerBinder.IgnoreCase)
+    {
+      _innerBinder = innerBinder;
+    }
+
+    public override DynamicMetaObject FallbackSetMember(DynamicMetaObject target, DynamicMetaObject value, DynamicMetaObject errorSuggestion)
+    {
+      DynamicMetaObject retMetaObject = _innerBinder.Bind(target, new DynamicMetaObject[] { value });
+
+      NoThrowExpressionVisitor noThrowVisitor = new NoThrowExpressionVisitor();
+      Expression resultExpression = noThrowVisitor.Visit(retMetaObject.Expression);
+
+      DynamicMetaObject finalMetaObject = new DynamicMetaObject(resultExpression, retMetaObject.Restrictions);
+      return finalMetaObject;
+    }
+  }
+
+  internal class NoThrowExpressionVisitor : ExpressionVisitor
+  {
+    internal static readonly object ErrorResult = new object();
+
+    protected override Expression VisitConditional(ConditionalExpression node)
+    {
+      // if the result of a test is to throw an error, rewrite to result an error result value
+      if (node.IfFalse.NodeType == ExpressionType.Throw)
+        return Expression.Condition(node.Test, node.IfTrue, Expression.Constant(ErrorResult));
+
+      return base.VisitConditional(node);
+    }
+  }
+
 }
 #endif

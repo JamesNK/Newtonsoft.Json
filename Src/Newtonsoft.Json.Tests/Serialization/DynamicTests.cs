@@ -63,10 +63,13 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       Dictionary<string, object> values = new Dictionary<string, object>();
 
+      IContractResolver c = DefaultContractResolver.Instance;
+      JsonDynamicContract dynamicContract = (JsonDynamicContract)c.ResolveContract(dynamicObject.GetType());
+
       foreach (string memberName in dynamicObject.GetDynamicMemberNames())
       {
         object value;
-        dynamicObject.TryGetMember(memberName, out value);
+        dynamicContract.TryGetMember(dynamicObject, memberName, out value);
 
         values.Add(memberName, value);
       }

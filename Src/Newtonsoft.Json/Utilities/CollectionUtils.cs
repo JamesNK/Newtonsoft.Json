@@ -226,6 +226,32 @@ namespace Newtonsoft.Json.Utilities
         else
           list = null;
       }
+      else if (ReflectionUtils.ImplementsGenericDefinition(listType, typeof (IEnumerable<>), out collectionType))
+      {
+        bool suitableConstructor = false;
+
+        foreach (ConstructorInfo constructor in listType.GetConstructors())
+        {
+          IList<ParameterInfo> parameters = constructor.GetParameters();
+
+          if (parameters.Count == 1)
+          {
+            if (collectionType.IsAssignableFrom(parameters[0].ParameterType))
+            {
+              suitableConstructor = true;
+              break;
+            }
+          }
+        }
+
+        if (!suitableConstructor)
+          throw new Exception("{0} does not have a public constructor that takes a type that implements {1}.".FormatWith(CultureInfo.InvariantCulture, listType, collectionType));
+
+        Type collectionContentsType = collectionType.GetGenericArguments()[0];
+
+        list = CreateGenericList(collectionContentsType);
+        isReadOnlyOrFixedSize = true;
+      }
       else
       {
         list = null;

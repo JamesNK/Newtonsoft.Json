@@ -749,7 +749,7 @@ To fix this error either change the environment to be fully trusted, change the 
       foreach (string memberName in value.GetDynamicMemberNames())
       {
         object memberValue;
-        if (value.TryGetMember(memberName, out memberValue))
+        if (contract.TryGetMember(value, memberName, out memberValue))
         {
           try
           {

@@ -593,6 +593,10 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
             {
               list = (IList) ReflectionUtils.CreateInstance(contract.CreatedType, list);
             }
+            else
+            {
+              return ReflectionUtils.CreateInstance(contract.CreatedType, list);
+            }
           }
           else if (list is IWrappedCollection)
           {
@@ -610,6 +614,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
       {
         value = CreateJToken(reader, contract);
       }
+
       return value;
     }
 
@@ -1263,7 +1268,7 @@ To fix this error either change the environment to be fully trusted, change the 
                 else
                   value = CreateValueInternal(reader, t, dynamicMemberContract, null, null, member, null);
 
-                newObject.TrySetMember(memberName, value);
+                contract.TrySetMember(newObject, memberName, value);
               }
             }
             catch (Exception ex)
