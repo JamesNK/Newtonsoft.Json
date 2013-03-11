@@ -6638,6 +6638,43 @@ Parameter name: value",
 }", json);
     }
 
+    public class EnumerableClass<T> : IEnumerable<T>
+    {
+      private readonly IList<T> _values;
+ 
+      public EnumerableClass(IEnumerable<T> values)
+      {
+        _values = new List<T>(values);
+      }
+
+      public IEnumerator<T> GetEnumerator()
+      {
+        return _values.GetEnumerator();
+      }
+
+      IEnumerator IEnumerable.GetEnumerator()
+      {
+        return GetEnumerator();
+      }
+    }
+
+    [Test]
+    public void DeserializeIEnumerableFromConstructor()
+    {
+      string json = @"[
+  ""One"",
+  ""II"",
+  ""3""
+]";
+
+      var result = JsonConvert.DeserializeObject<EnumerableClass<string>>(json);
+
+      Assert.AreEqual(3, result.Count());
+      Assert.AreEqual("One", result.ElementAt(0));
+      Assert.AreEqual("II", result.ElementAt(1));
+      Assert.AreEqual("3", result.ElementAt(2));
+    }
+
     [JsonObject(MemberSerialization.Fields)]
     public class MyTuple<T1>
     {

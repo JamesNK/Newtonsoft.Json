@@ -974,16 +974,14 @@ namespace Newtonsoft.Json.Converters
           {
             manager.PushScope();
 
-            string namespacePrefix = null;
-            string namespaceUri = null;
             foreach (IXmlNode attribute in node.Attributes)
             {
               if (attribute.NamespaceUri == "http://www.w3.org/2000/xmlns/")
               {
-                namespacePrefix = (attribute.LocalName != "xmlns")
+                string namespacePrefix = (attribute.LocalName != "xmlns")
                                     ? attribute.LocalName
                                     : string.Empty;
-                namespaceUri = attribute.Value;
+                string namespaceUri = attribute.Value;
 
                 manager.AddNamespace(namespacePrefix, namespaceUri);
               }
@@ -1016,9 +1014,6 @@ namespace Newtonsoft.Json.Converters
 
               writer.WriteEndObject();
             }
-
-            if (namespacePrefix != null)
-              manager.RemoveNamespace(namespacePrefix, namespaceUri);
 
             manager.PopScope();
           }
