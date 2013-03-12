@@ -83,7 +83,7 @@ namespace Newtonsoft.Json.Utilities
       }
     }
 
-    public static void AddRange(this IList initial, IEnumerable collection)
+    public static void AddCastedRange(this IList initial, IEnumerable collection)
     {
       ValidationUtils.ArgumentNotNull(initial, "initial");
 

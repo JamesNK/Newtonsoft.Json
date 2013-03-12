@@ -547,11 +547,11 @@ namespace Newtonsoft.Json.Serialization
 
     private void ResolveCallbackMethods(JsonContract contract, Type t)
     {
-      List<MethodInfo> onSerializing;
-      List<MethodInfo> onSerialized;
-      List<MethodInfo> onDeserializing;
-      List<MethodInfo> onDeserialized;
-      List<MethodInfo> onError;
+      List<SerializingCallback> onSerializing;
+      List<SerializingCallback> onSerialized;
+      List<SerializingCallback> onDeserializing;
+      List<SerializingCallback> onDeserialized;
+      List<SerializingErrorCallback> onError;
 
       GetCallbackMethodsForType(t, out onSerializing, out onSerialized, out onDeserializing, out onDeserialized, out onError);
 
@@ -559,34 +559,34 @@ namespace Newtonsoft.Json.Serialization
       {
 #if NETFX_CORE
         if (!t.IsGenericType() || (t.GetGenericTypeDefinition() != typeof(ConcurrentDictionary<,>)))
-          contract.OnSerializingMethods.AddRange(onSerializing);
+          contract.OnSerializingActions.AddRange(onSerializing);
 #else
-        contract.OnSerializingMethods.AddRange(onSerializing);
+        contract.OnSerializingActions.AddRange(onSerializing);
 #endif
       }
 
       if (onSerialized != null)
-        contract.OnSerializedMethods.AddRange(onSerialized);
+        contract.OnSerializedActions.AddRange(onSerialized);
 
       if (onDeserializing != null)
-        contract.OnDeserializingMethods.AddRange(onDeserializing);
+        contract.OnDeserializingActions.AddRange(onDeserializing);
 
       if (onDeserialized != null)
       {
         // ConcurrentDictionary throws an error here so don't use its OnDeserialized - http://json.codeplex.com/discussions/257093
 #if !(NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE)
         if (!t.IsGenericType() || (t.GetGenericTypeDefinition() != typeof(ConcurrentDictionary<,>)))
-          contract.OnDeserializedMethods.AddRange(onDeserialized);
+          contract.OnDeserializedActions.AddRange(onDeserialized);
 #else
-        contract.OnDeserializedMethods.AddRange(onDeserialized);
+        contract.OnDeserializedActions.AddRange(onDeserialized);
 #endif
       }
 
       if (onError != null)
-        contract.OnErrorMethods.AddRange(onError);
+        contract.OnErrorActions.AddRange(onError);
     }
 
-    private void GetCallbackMethodsForType(Type type, out List<MethodInfo> onSerializing, out List<MethodInfo> onSerialized, out List<MethodInfo> onDeserializing, out List<MethodInfo> onDeserialized, out List<MethodInfo> onError)
+    private void GetCallbackMethodsForType (Type type, out List<SerializingCallback> onSerializing, out List<SerializingCallback> onSerialized, out List<SerializingCallback> onDeserializing, out List<SerializingCallback> onDeserialized, out List<SerializingErrorCallback> onError)
     {
       onSerializing = null;
       onSerialized = null;
@@ -616,32 +616,32 @@ namespace Newtonsoft.Json.Serialization
 
           if (IsValidCallback(method, parameters, typeof(OnSerializingAttribute), currentOnSerializing, ref prevAttributeType))
           {
-            onSerializing = onSerializing ?? new List<MethodInfo>();
-            onSerializing.Add(method);
+            onSerializing = onSerializing ?? new List<SerializingCallback>();
+            onSerializing.Add(JsonContract.SerializingMethodToAction(method));
             currentOnSerializing = method;
           }
           if (IsValidCallback(method, parameters, typeof(OnSerializedAttribute), currentOnSerialized, ref prevAttributeType))
           {
-            onSerialized = onSerialized ?? new List<MethodInfo>();
-            onSerialized.Add(method);
+            onSerialized = onSerialized ?? new List<SerializingCallback>();
+            onSerialized.Add(JsonContract.SerializingMethodToAction(method));
             currentOnSerialized = method;
           }
           if (IsValidCallback(method, parameters, typeof(OnDeserializingAttribute), currentOnDeserializing, ref prevAttributeType))
           {
-            onDeserializing = onDeserializing ?? new List<MethodInfo>();
-            onDeserializing.Add(method);
+            onDeserializing = onDeserializing ?? new List<SerializingCallback>();
+            onDeserializing.Add(JsonContract.SerializingMethodToAction(method));
             currentOnDeserializing = method;
           }
           if (IsValidCallback(method, parameters, typeof(OnDeserializedAttribute), currentOnDeserialized, ref prevAttributeType))
           {
-            onDeserialized = onDeserialized ?? new List<MethodInfo>();
-            onDeserialized.Add(method);
+            onDeserialized = onDeserialized ?? new List<SerializingCallback>();
+            onDeserialized.Add(JsonContract.SerializingMethodToAction(method));
             currentOnDeserialized = method;
           }
           if (IsValidCallback(method, parameters, typeof(OnErrorAttribute), currentOnError, ref prevAttributeType))
           {
-            onError = onError ?? new List<MethodInfo>();
-            onError.Add(method);
+            onError = onError ?? new List<SerializingErrorCallback>();
+            onError.Add(JsonContract.SerializingErrorMethodToAction(method));
             currentOnError = method;
           }
         }
