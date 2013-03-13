@@ -386,13 +386,24 @@ namespace Newtonsoft.Json.Serialization
           break;
         case JsonContractType.Dictionary:
           JsonDictionaryContract dictionaryContract = (JsonDictionaryContract) contract;
+          bool isTemporaryDictionary = false;
           object targetDictionary;
           if (existingValue != null)
             targetDictionary = existingValue;
           else
-            targetDictionary = CreateNewDictionary(reader, dictionaryContract);
+            targetDictionary = CreateNewDictionary(reader, dictionaryContract, out isTemporaryDictionary);
 
-          return PopulateDictionary(dictionaryContract.CreateWrapper(targetDictionary), reader, dictionaryContract, member, id);
+          object dictionary = PopulateDictionary(dictionaryContract.CreateWrapper(targetDictionary), reader, dictionaryContract, member, id);
+
+          if (isTemporaryDictionary)
+          {
+            if (dictionaryContract.IsReadOnlyDictionary)
+            {
+              dictionary = ReflectionUtils.CreateInstance(contract.CreatedType, dictionary);
+            }
+          }
+
+          return dictionary;
 #if !(NET35 || NET20)
         case JsonContractType.Dynamic:
           JsonDynamicContract dynamicContract = (JsonDynamicContract) contract;
@@ -824,15 +835,24 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
       return true;
     }
 
-    public object CreateNewDictionary(JsonReader reader, JsonDictionaryContract contract)
+    public object CreateNewDictionary(JsonReader reader, JsonDictionaryContract contract, out bool isTemporaryDictionary)
     {
       object dictionary;
 
-      if (contract.DefaultCreator != null &&
-        (!contract.DefaultCreatorNonPublic || Serializer.ConstructorHandling == ConstructorHandling.AllowNonPublicDefaultConstructor))
+      if (contract.DefaultCreator != null && (!contract.DefaultCreatorNonPublic || Serializer.ConstructorHandling == ConstructorHandling.AllowNonPublicDefaultConstructor))
+      {
         dictionary = contract.DefaultCreator();
+        isTemporaryDictionary = false;
+      }
+      else if (contract.IsReadOnlyDictionary)
+      {
+        dictionary = contract.CreateTemporaryDictionary();
+        isTemporaryDictionary = true;
+      }
       else
+      {
         throw JsonSerializationException.Create(reader, "Unable to find a default constructor to use for type {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+      }
 
       return dictionary;
     }

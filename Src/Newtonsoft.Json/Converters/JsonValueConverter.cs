@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if NETFX_CORE
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -196,3 +197,4 @@ namespace Newtonsoft.Json.Converters
     }
   }
 }
+#endif

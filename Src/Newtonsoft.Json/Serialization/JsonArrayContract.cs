@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Reflection;
 using Newtonsoft.Json.Utilities;
 using System.Collections;
@@ -76,6 +77,12 @@ namespace Newtonsoft.Json.Serialization
         _genericCollectionDefinitionType =  typeof (IEnumerable<>);
         CollectionItemType = underlyingType.GetGenericArguments()[0];
       }
+#if !(NET40 || NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE)
+      else if (underlyingType.IsGenericType() && underlyingType.GetGenericTypeDefinition() == typeof(IReadOnlyCollection<>))
+      {
+        CollectionItemType = underlyingType.GetGenericArguments()[0];
+      }
+#endif
       else
       {
         CollectionItemType = ReflectionUtils.GetCollectionItemType(UnderlyingType);
@@ -86,6 +93,10 @@ namespace Newtonsoft.Json.Serialization
 
       if (IsTypeGenericCollectionInterface(UnderlyingType))
         CreatedType = ReflectionUtils.MakeGenericType(typeof(List<>), CollectionItemType);
+#if !(NET40 || NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE)
+      else if (IsTypeGenericReadOnlyCollectionInterface(UnderlyingType))
+        CreatedType = ReflectionUtils.MakeGenericType(typeof(ReadOnlyCollection<>), CollectionItemType);
+#endif
 #if !(NET20 || NET35)
       else if (IsTypeGenericSetInterface(UnderlyingType))
         CreatedType = ReflectionUtils.MakeGenericType(typeof(HashSet<>), CollectionItemType);
@@ -154,6 +165,19 @@ namespace Newtonsoft.Json.Serialization
               || genericDefinition == typeof(ICollection<>)
               || genericDefinition == typeof(IEnumerable<>));
     }
+
+#if !(NET40 || NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE)
+    private bool IsTypeGenericReadOnlyCollectionInterface(Type type)
+    {
+      if (!type.IsGenericType())
+        return false;
+
+      Type genericDefinition = type.GetGenericTypeDefinition();
+
+      return (genericDefinition == typeof (IReadOnlyCollection<>)
+              || genericDefinition == typeof (IReadOnlyList<>));
+    }
+#endif
 
 #if !(NET20 || NET35)
     private bool IsTypeGenericSetInterface(Type type)

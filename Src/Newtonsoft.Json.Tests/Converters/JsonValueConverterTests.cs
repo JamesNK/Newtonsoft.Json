@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if NETFX_CORE
 using System;
 using Newtonsoft.Json.Converters;
 #if !NETFX_CORE
@@ -456,3 +457,4 @@ namespace Newtonsoft.Json.Tests.Converters
     }
   }
 }
+#endif

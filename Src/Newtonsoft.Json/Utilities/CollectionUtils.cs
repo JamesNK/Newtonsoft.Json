@@ -104,8 +104,12 @@ namespace Newtonsoft.Json.Utilities
 
       if (typeof(IDictionary).IsAssignableFrom(type))
         return true;
-      if (ReflectionUtils.ImplementsGenericDefinition(type, typeof (IDictionary<,>)))
+      if (ReflectionUtils.ImplementsGenericDefinition(type, typeof(IDictionary<,>)))
         return true;
+#if !(NET40 || NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE)
+      if (ReflectionUtils.ImplementsGenericDefinition(type, typeof(IReadOnlyDictionary<,>)))
+        return true;
+#endif
 
       return false;
     }

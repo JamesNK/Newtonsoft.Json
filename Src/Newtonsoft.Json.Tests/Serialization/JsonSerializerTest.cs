@@ -7616,6 +7616,157 @@ Parameter name: value",
 }", json);
     }
 #endif
+
+#if !(NET40 || NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE)
+    [Test]
+    public void DeserializeReadOnlyList()
+    {
+      IReadOnlyList<int> list = JsonConvert.DeserializeObject<IReadOnlyList<int>>("[1,2,3]");
+
+      Assert.AreEqual(3, list.Count);
+      Assert.AreEqual(1, list[0]);
+      Assert.AreEqual(2, list[1]);
+      Assert.AreEqual(3, list[2]);
+    }
+
+    [Test]
+    public void DeserializeReadOnlyCollection()
+    {
+      IReadOnlyCollection<int> list = JsonConvert.DeserializeObject<IReadOnlyCollection<int>>("[1,2,3]");
+
+      Assert.AreEqual(3, list.Count);
+
+      Assert.AreEqual(1, list.ElementAt(0));
+      Assert.AreEqual(2, list.ElementAt(1));
+      Assert.AreEqual(3, list.ElementAt(2));
+    }
+
+    [Test]
+    public void DeserializeReadOnlyDictionary()
+    {
+      IReadOnlyDictionary<string, int> dic = JsonConvert.DeserializeObject<IReadOnlyDictionary<string, int>>("{'one':1,'two':2}");
+
+      Assert.AreEqual(2, dic.Count);
+
+      Assert.AreEqual(1, dic["one"]);
+      Assert.AreEqual(2, dic["two"]);
+
+      CustomAssert.IsInstanceOfType(typeof(ReadOnlyDictionary<string, int>), dic);
+    }
+
+    public class CustomReadOnlyDictionary<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>
+    {
+      private readonly IDictionary<TKey, TValue> _dictionary;
+
+      public CustomReadOnlyDictionary(IDictionary<TKey, TValue> dictionary)
+      {
+        _dictionary = dictionary;
+      }
+ 
+      public bool ContainsKey(TKey key)
+      {
+        return _dictionary.ContainsKey(key);
+      }
+
+      public IEnumerable<TKey> Keys
+      {
+        get { return _dictionary.Keys; }
+      }
+
+      public bool TryGetValue(TKey key, out TValue value)
+      {
+        return _dictionary.TryGetValue(key, out value);
+      }
+
+      public IEnumerable<TValue> Values
+      {
+        get { return _dictionary.Values; }
+      }
+
+      public TValue this[TKey key]
+      {
+        get { return _dictionary[key]; }
+      }
+
+      public int Count
+      {
+        get { return _dictionary.Count; }
+      }
+
+      public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+      {
+        return _dictionary.GetEnumerator();
+      }
+
+      IEnumerator IEnumerable.GetEnumerator()
+      {
+        return _dictionary.GetEnumerator();
+      }
+    }
+
+    [Test]
+    public void SerializeCustomReadOnlyDictionary()
+    {
+      IDictionary<string, int> d = new Dictionary<string, int>
+                                     {
+                                       {"one", 1},
+                                       {"two", 2}
+                                     };
+
+      CustomReadOnlyDictionary<string, int> dic = new CustomReadOnlyDictionary<string, int>(d);
+
+      string json = JsonConvert.SerializeObject(dic, Formatting.Indented);
+      Assert.AreEqual(@"{
+  ""one"": 1,
+  ""two"": 2
+}", json);
+    }
+
+    public class CustomReadOnlyCollection<T> : IReadOnlyCollection<T>
+    {
+      private readonly IList<T> _values;
+
+      public CustomReadOnlyCollection (IList<T> values)
+      {
+        _values = values;
+      }
+
+      public int Count
+      {
+        get { return _values.Count; }
+      }
+
+      public IEnumerator<T> GetEnumerator()
+      {
+        return _values.GetEnumerator();
+      }
+
+      IEnumerator IEnumerable.GetEnumerator()
+      {
+        return _values.GetEnumerator();
+      }
+    }
+
+    [Test]
+    public void SerializeCustomReadOnlyCollection()
+    {
+      IList<int> l = new List<int>
+                       {
+                         1,
+                         2,
+                         3
+                       };
+
+      CustomReadOnlyCollection<int> list = new CustomReadOnlyCollection<int>(l);
+
+      string json = JsonConvert.SerializeObject(list, Formatting.Indented);
+      Assert.AreEqual(@"[
+  1,
+  2,
+  3
+]", json);
+    }
+#endif
   }
 
   public enum Antworten

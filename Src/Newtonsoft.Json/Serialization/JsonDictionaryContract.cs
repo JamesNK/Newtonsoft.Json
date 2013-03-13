@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Reflection;
 using Newtonsoft.Json.Utilities;
 using System.Collections;
@@ -60,8 +61,11 @@ namespace Newtonsoft.Json.Serialization
 
     private readonly bool _isDictionaryValueTypeNullableType;
     private readonly Type _genericCollectionDefinitionType;
+
     private Type _genericWrapperType;
     private MethodCall<object, object> _genericWrapperCreator;
+
+    private Func<object> _genericTemporaryDictionaryCreator;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonDictionaryContract"/> class.
@@ -79,6 +83,13 @@ namespace Newtonsoft.Json.Serialization
         keyType = _genericCollectionDefinitionType.GetGenericArguments()[0];
         valueType = _genericCollectionDefinitionType.GetGenericArguments()[1];
       }
+#if !(NET40 || NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE)
+      else if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof(IReadOnlyDictionary<,>), out _genericCollectionDefinitionType))
+      {
+        keyType = _genericCollectionDefinitionType.GetGenericArguments()[0];
+        valueType = _genericCollectionDefinitionType.GetGenericArguments()[1];
+      }
+#endif
       else
       {
         ReflectionUtils.GetDictionaryKeyValueTypes(UnderlyingType, out keyType, out valueType);
@@ -94,6 +105,13 @@ namespace Newtonsoft.Json.Serialization
       {
         CreatedType = ReflectionUtils.MakeGenericType(typeof(Dictionary<,>), keyType, valueType);
       }
+#if !(NET40 || NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE)
+      else if (IsTypeGenericReadOnlyDictionaryInterface(UnderlyingType))
+      {
+        IsReadOnlyDictionary = true;
+        CreatedType = ReflectionUtils.MakeGenericType(typeof(ReadOnlyDictionary<,>), keyType, valueType);
+      }
+#endif
       else if (UnderlyingType == typeof(IDictionary))
       {
         CreatedType = typeof (Dictionary<object, object>);
@@ -116,6 +134,18 @@ namespace Newtonsoft.Json.Serialization
       return (IWrappedDictionary)_genericWrapperCreator(null, dictionary);
     }
 
+    internal object CreateTemporaryDictionary()
+    {
+      if (_genericTemporaryDictionaryCreator == null)
+      {
+        Type temporaryDictionaryType = ReflectionUtils.MakeGenericType(typeof (Dictionary<,>), DictionaryKeyType, DictionaryValueType);
+
+        _genericTemporaryDictionaryCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateDefaultConstructor<object>(temporaryDictionaryType);
+      }
+
+      return _genericTemporaryDictionaryCreator();
+    }
+
     private bool IsTypeGenericDictionaryInterface(Type type)
     {
       if (!type.IsGenericType())
@@ -125,5 +155,19 @@ namespace Newtonsoft.Json.Serialization
 
       return (genericDefinition == typeof(IDictionary<,>));
     }
+
+#if !(NET40 || NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE)
+    private bool IsTypeGenericReadOnlyDictionaryInterface(Type type)
+    {
+      if (!type.IsGenericType())
+        return false;
+
+      Type genericDefinition = type.GetGenericTypeDefinition();
+
+      return (genericDefinition == typeof(IReadOnlyDictionary<,>));
+    }
+#endif
+
+    public bool IsReadOnlyDictionary { get; set; }
   }
 }

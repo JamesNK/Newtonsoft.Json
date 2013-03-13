@@ -1,15 +1,9 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lib", "Lib", "{620042D9-2753-48F5-BEDE-3905248781D2}"
-	ProjectSection(SolutionItems) = preProject
-		Lib\NUnit\DotNet\nunit.framework.dll = Lib\NUnit\DotNet\nunit.framework.dll
-		Lib\NUnit\DotNet\nunit.framework.xml = Lib\NUnit\DotNet\nunit.framework.xml
-	EndProjectSection
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json", "Newtonsoft.Json\Newtonsoft.Json.csproj", "{EEEA67F9-9089-481D-A4DC-0966DEC9FD7D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json", "Newtonsoft.Json\Newtonsoft.Json.csproj", "{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.Tests", "Newtonsoft.Json.Tests\Newtonsoft.Json.Tests.csproj", "{3E6E2335-B079-4B5B-A65A-9D586914BCBB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.Tests", "Newtonsoft.Json.Tests\Newtonsoft.Json.Tests.csproj", "{CCD1B8C4-7349-409C-A090-A9B9A1ABD981}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,14 +11,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3E6E2335-B079-4B5B-A65A-9D586914BCBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3E6E2335-B079-4B5B-A65A-9D586914BCBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3E6E2335-B079-4B5B-A65A-9D586914BCBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3E6E2335-B079-4B5B-A65A-9D586914BCBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EEEA67F9-9089-481D-A4DC-0966DEC9FD7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEEA67F9-9089-481D-A4DC-0966DEC9FD7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEEA67F9-9089-481D-A4DC-0966DEC9FD7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEEA67F9-9089-481D-A4DC-0966DEC9FD7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCD1B8C4-7349-409C-A090-A9B9A1ABD981}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCD1B8C4-7349-409C-A090-A9B9A1ABD981}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCD1B8C4-7349-409C-A090-A9B9A1ABD981}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCD1B8C4-7349-409C-A090-A9B9A1ABD981}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
