@@ -578,10 +578,10 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
           if (id != null && isTemporaryListReference)
             throw JsonSerializationException.Create(reader, "Cannot preserve reference to array or readonly list: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
-          if (contract.OnSerializingMethods.Count > 0 && isTemporaryListReference)
+          if (contract.OnSerializingActions.Count > 0 && isTemporaryListReference)
             throw JsonSerializationException.Create(reader, "Cannot call OnSerializing on an array or readonly list: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
-          if (contract.OnErrorMethods.Count > 0 && isTemporaryListReference)
+          if (contract.OnErrorActions.Count > 0 && isTemporaryListReference)
             throw JsonSerializationException.Create(reader, "Cannot call OnError on an array or readonly list: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
           if (!arrayContract.IsMultidimensionalArray)
