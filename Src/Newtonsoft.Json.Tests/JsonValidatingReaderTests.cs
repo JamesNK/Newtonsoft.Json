@@ -29,6 +29,9 @@ using System.IO;
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
 #endif
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+using System.Numerics;
+#endif
 using System.Text;
 #if !NETFX_CORE
 using NUnit.Framework;
@@ -39,6 +42,7 @@ using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAtt
 #endif
 using System.Xml;
 using System.Xml.Schema;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Utilities;
 using ValidationEventArgs = Newtonsoft.Json.Schema.ValidationEventArgs;
@@ -348,6 +352,51 @@ namespace Newtonsoft.Json.Tests
       Assert.IsNotNull(validationEventArgs);
     }
 
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+    [Test]
+    public void IntegerGreaterThanMaximumValue_BigInteger()
+    {
+      string schemaJson = @"{
+  ""type"":""integer"",
+  ""maximum"":5
+}";
+
+      string json = "99999999999999999999999999999999999999999999999999999999999999999999";
+
+      Json.Schema.ValidationEventArgs validationEventArgs = null;
+
+      JsonValidatingReader reader = new JsonValidatingReader(new JsonTextReader(new StringReader(json)));
+      reader.ValidationEventHandler += (sender, args) => { validationEventArgs = args; };
+      reader.Schema = JsonSchema.Parse(schemaJson);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+      Assert.AreEqual("Integer 99999999999999999999999999999999999999999999999999999999999999999999 exceeds maximum value of 5. Line 1, position 68.", validationEventArgs.Message);
+      Assert.AreEqual("", validationEventArgs.Path);
+
+      Assert.IsNotNull(validationEventArgs);
+    }
+
+    [Test]
+    public void IntegerLessThanMaximumValue_BigInteger()
+    {
+      string schemaJson = @"{
+  ""type"":""integer"",
+  ""minimum"":5
+}";
+
+      JValue v = new JValue(new BigInteger(1));
+
+      Json.Schema.ValidationEventArgs validationEventArgs = null;
+
+      v.Validate(JsonSchema.Parse(schemaJson), (sender, args) => { validationEventArgs = args; });
+
+      Assert.IsNotNull(validationEventArgs);
+      Assert.AreEqual("Integer 1 is less than minimum value of 5.", validationEventArgs.Message);
+      Assert.AreEqual("", validationEventArgs.Path);
+    }
+#endif
+
     [Test]
     public void ThrowExceptionWhenNoValidationEventHandler()
     {
@@ -518,7 +567,7 @@ namespace Newtonsoft.Json.Tests
     }
 
     [Test]
-    public void FloatExceedsMaxDecimalPlaces()
+    public void FloatDivisibleBy()
     {
       string schemaJson = @"{
   ""type"":""array"",
@@ -556,6 +605,123 @@ namespace Newtonsoft.Json.Tests
 
       Assert.IsNotNull(validationEventArgs);
     }
+
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+    [Test]
+    public void BigIntegerDivisibleBy_Success()
+    {
+      string schemaJson = @"{
+  ""type"":""array"",
+  ""items"":{
+    ""type"":""number"",
+    ""divisibleBy"":2
+  }
+}";
+
+      string json = "[999999999999999999999999999999999999999999999999999999998]";
+
+      Json.Schema.ValidationEventArgs validationEventArgs = null;
+
+      JsonValidatingReader reader = new JsonValidatingReader(new JsonTextReader(new StringReader(json)));
+      reader.ValidationEventHandler += (sender, args) => { validationEventArgs = args; };
+      reader.Schema = JsonSchema.Parse(schemaJson);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+      Assert.IsNull(validationEventArgs);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+    }
+
+    [Test]
+    public void BigIntegerDivisibleBy_Failure()
+    {
+      string schemaJson = @"{
+  ""type"":""array"",
+  ""items"":{
+    ""type"":""number"",
+    ""divisibleBy"":2
+  }
+}";
+
+      string json = "[999999999999999999999999999999999999999999999999999999999]";
+
+      Json.Schema.ValidationEventArgs validationEventArgs = null;
+
+      JsonValidatingReader reader = new JsonValidatingReader(new JsonTextReader(new StringReader(json)));
+      reader.ValidationEventHandler += (sender, args) => { validationEventArgs = args; };
+      reader.Schema = JsonSchema.Parse(schemaJson);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+      Assert.AreEqual(@"Integer 999999999999999999999999999999999999999999999999999999999 is not evenly divisible by 2. Line 1, position 58.", validationEventArgs.Message);
+      Assert.AreEqual("[0]", validationEventArgs.Path);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+
+      Assert.IsNotNull(validationEventArgs);
+    }
+
+    [Test]
+    public void BigIntegerDivisibleBy_Fraction()
+    {
+      string schemaJson = @"{
+  ""type"":""array"",
+  ""items"":{
+    ""type"":""number"",
+    ""divisibleBy"":1.1
+  }
+}";
+
+      string json = "[999999999999999999999999999999999999999999999999999999999]";
+
+      Json.Schema.ValidationEventArgs validationEventArgs = null;
+
+      JsonValidatingReader reader = new JsonValidatingReader(new JsonTextReader(new StringReader(json)));
+      reader.ValidationEventHandler += (sender, args) => { validationEventArgs = args; };
+      reader.Schema = JsonSchema.Parse(schemaJson);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+      Assert.IsNotNull(validationEventArgs);
+      Assert.AreEqual(@"Integer 999999999999999999999999999999999999999999999999999999999 is not evenly divisible by 1.1. Line 1, position 58.", validationEventArgs.Message);
+      Assert.AreEqual("[0]", validationEventArgs.Path);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+    }
+
+    [Test]
+    public void BigIntegerDivisibleBy_FractionWithZeroValue()
+    {
+      string schemaJson = @"{
+  ""type"":""array"",
+  ""items"":{
+    ""type"":""number"",
+    ""divisibleBy"":1.1
+  }
+}";
+
+      JArray a = new JArray(new JValue(new BigInteger(0)));
+
+      ValidationEventArgs validationEventArgs = null;
+
+      a.Validate(JsonSchema.Parse(schemaJson), (sender, args) => { validationEventArgs = args; });
+
+      Assert.IsNull(validationEventArgs);
+    }
+#endif
 
     [Test]
     public void IntValidForNumber()

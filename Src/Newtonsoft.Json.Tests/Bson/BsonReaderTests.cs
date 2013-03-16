@@ -25,6 +25,9 @@
 
 using System;
 using System.Globalization;
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+using System.Numerics;
+#endif
 using System.Text;
 #if !NETFX_CORE
 using NUnit.Framework;
@@ -1311,6 +1314,30 @@ namespace Newtonsoft.Json.Tests.Bson
       JObject o = JObject.Load(new BsonReader(memoryStream));
 
       Assert.AreEqual(badText, (string)o["test"]);
+    }
+#endif
+
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+    public class BigIntegerTestClass
+    {
+      public BigInteger Blah { get; set; }
+    }
+
+    [Test]
+    public void WriteBigInteger()
+    {
+      BigInteger i = BigInteger.Parse("1999999999999999999999999999999999999999999999999999999999990");
+
+      byte[] data = MiscellaneousUtils.HexToBytes("2A-00-00-00-05-42-6C-61-68-00-1A-00-00-00-00-F6-FF-FF-FF-FF-FF-FF-1F-B2-21-CB-28-59-84-C4-AE-03-8A-44-34-2F-4C-4E-9E-3E-01-00");
+      MemoryStream ms = new MemoryStream(data);
+
+      BsonReader reader = new BsonReader(ms);
+
+      JsonSerializer serializer = new JsonSerializer();
+
+      BigIntegerTestClass c = serializer.Deserialize<BigIntegerTestClass>(reader);
+
+      Assert.AreEqual(i, c.Blah);
     }
 #endif
   }

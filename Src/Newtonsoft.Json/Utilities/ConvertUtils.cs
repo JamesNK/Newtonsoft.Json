@@ -26,6 +26,9 @@
 using System;
 using System.Globalization;
 using System.ComponentModel;
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+using System.Numerics;
+#endif
 using Newtonsoft.Json.Serialization;
 using System.Reflection;
 #if NET20
@@ -288,6 +291,34 @@ namespace Newtonsoft.Json.Utilities
       return o => call(null, o);
     }
 
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+    internal static BigInteger ToBigInteger(object value)
+    {
+      if (value is BigInteger)
+        return (BigInteger)value;
+      if (value is string)
+        return BigInteger.Parse((string)value, CultureInfo.InvariantCulture);
+      if (value is float)
+        return new BigInteger((float)value);
+      if (value is double)
+        return new BigInteger((double)value);
+      if (value is decimal)
+        return new BigInteger((decimal)value);
+      if (value is int)
+        return new BigInteger((int)value);
+      if (value is long)
+        return new BigInteger((long)value);
+      if (value is uint)
+        return new BigInteger((uint)value);
+      if (value is ulong)
+        return new BigInteger((ulong)value);
+      if (value is byte[])
+        return new BigInteger((byte[])value);
+
+      throw new InvalidCastException("Cannot convert {0} to BigInteger.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
+    }
+#endif
+
     #region Convert
     /// <summary>
     /// Converts the value to the specified type.
@@ -343,6 +374,27 @@ namespace Newtonsoft.Json.Utilities
         if (targetType == typeof(TimeSpan))
           return ParseTimeSpan((string) initialValue);
       }
+
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+      if (targetType == typeof(BigInteger))
+      {
+        return ToBigInteger(initialValue);
+      }
+      if (initialValue is BigInteger)
+      {
+        BigInteger i = (BigInteger) initialValue;
+        if (targetType == typeof(decimal))
+          return (decimal) i;
+        if (targetType == typeof(double))
+          return (double) i;
+        if (targetType == typeof(float))
+          return (float) i;
+        if (targetType == typeof(ulong))
+          return (ulong) i;
+        if (IsConvertible(targetType))
+          return System.Convert.ChangeType((long) i, targetType, CultureInfo.InvariantCulture);
+      }
+#endif
 
 #if !(NETFX_CORE || PORTABLE)
       // see if source or target types have a TypeConverter that converts between the two

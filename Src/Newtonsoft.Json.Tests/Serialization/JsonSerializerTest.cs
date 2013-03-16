@@ -28,6 +28,9 @@ using System;
 using System.Collections.Concurrent;
 #endif
 using System.Collections.Generic;
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+using System.Numerics;
+#endif
 #if !SILVERLIGHT && !NET20 && !NETFX_CORE
 using System.ComponentModel.DataAnnotations;
 using System.Configuration;
@@ -7614,6 +7617,19 @@ Parameter name: value",
   ""<Unzutreffend>k__BackingField"": false,
   ""<Unbeantwortet>k__BackingField"": false
 }", json);
+    }
+#endif
+
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+    public void SerializeBigInteger()
+    {
+      BigInteger i = BigInteger.Parse("123456789999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999990");
+
+      string json = JsonConvert.SerializeObject(new [] {i}, Formatting.Indented);
+
+      Assert.AreEqual(@"[
+  123456789999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999990
+]", json);
     }
 #endif
 

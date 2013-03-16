@@ -26,6 +26,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+using System.Numerics;
+#endif
 using System.Text;
 using System.IO;
 using System.Xml;
@@ -1245,13 +1248,19 @@ namespace Newtonsoft.Json
           }
           else
           {
-            try
+            long value;
+            if (long.TryParse(number, out value))
             {
-              numberValue = Convert.ToInt64(number, CultureInfo.InvariantCulture);
+              numberValue = value;
             }
-            catch (OverflowException ex)
+            else
             {
-              throw JsonReaderException.Create((JsonReader)this, "JSON integer {0} is too large or small for an Int64.".FormatWith(CultureInfo.InvariantCulture, number), ex);
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+              numberValue = BigInteger.Parse(number, CultureInfo.InvariantCulture);
+#else
+              // todo - validate number was a valid integer to make sure overflow was the reason for failure
+              throw JsonReaderException.Create((JsonReader)this, "JSON integer {0} is too large or small for an Int64.".FormatWith(CultureInfo.InvariantCulture, number));
+#endif
             }
 
             numberType = JsonToken.Integer;

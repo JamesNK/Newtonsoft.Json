@@ -31,6 +31,9 @@ using System.Globalization;
 using System.Dynamic;
 using System.Linq.Expressions;
 #endif
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+using System.Numerics;
+#endif
 
 namespace Newtonsoft.Json.Linq
 {
@@ -191,7 +194,32 @@ namespace Newtonsoft.Json.Linq
       get { return false; }
     }
 
-    private static int Compare(JTokenType valueType, object objA, object objB)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+    private static int CompareBigInteger(BigInteger i1, object i2)
+    {
+      int result = i1.CompareTo(ConvertUtils.ToBigInteger(i2));
+
+      if (result != 0)
+        return result;
+
+      // converting a fractional number to a BigInteger will lose the fraction
+      // check for fraction if result is two numbers are equal
+      if (i2 is decimal)
+      {
+        decimal d = (decimal) i2;
+        return (0m).CompareTo(Math.Abs(d - Math.Truncate(d)));
+      }
+      else if (i2 is double || i2 is float)
+      {
+        double d = Convert.ToDouble(i2, CultureInfo.InvariantCulture);
+        return (0d).CompareTo(Math.Abs(d - Math.Truncate(d)));
+      }
+
+      return result;
+    }
+#endif
+
+    internal static int Compare(JTokenType valueType, object objA, object objB)
     {
       if (objA == null && objB == null)
         return 0;
@@ -203,6 +231,12 @@ namespace Newtonsoft.Json.Linq
       switch (valueType)
       {
         case JTokenType.Integer:
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+          if (objA is BigInteger)
+            return CompareBigInteger((BigInteger)objA, objB);
+          if (objB is BigInteger)
+            return -CompareBigInteger((BigInteger)objB, objA);
+#endif
           if (objA is ulong || objB is ulong || objA is decimal || objB is decimal)
             return Convert.ToDecimal(objA, CultureInfo.InvariantCulture).CompareTo(Convert.ToDecimal(objB, CultureInfo.InvariantCulture));
           else if (objA is float || objB is float || objA is double || objB is double)
@@ -210,6 +244,12 @@ namespace Newtonsoft.Json.Linq
           else
             return Convert.ToInt64(objA, CultureInfo.InvariantCulture).CompareTo(Convert.ToInt64(objB, CultureInfo.InvariantCulture));
         case JTokenType.Float:
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+          if (objA is BigInteger)
+            return CompareBigInteger((BigInteger)objA, objB);
+          if (objB is BigInteger)
+            return -CompareBigInteger((BigInteger)objB, objA);
+#endif
           return CompareFloat(objA, objB);
         case JTokenType.Comment:
         case JTokenType.String:
@@ -319,6 +359,42 @@ namespace Newtonsoft.Json.Linq
         }
       }
 
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+      if (objA is BigInteger || objB is BigInteger)
+      {
+        if (objA == null || objB == null)
+        {
+          result = null;
+          return true;
+        }
+
+        // not that this will lose the fraction
+        // BigInteger doesn't have operators with non-integer types
+        BigInteger i1 = ConvertUtils.ToBigInteger(objA);
+        BigInteger i2 = ConvertUtils.ToBigInteger(objB);
+
+        switch (operation)
+        {
+          case ExpressionType.Add:
+          case ExpressionType.AddAssign:
+            result = i1 + i2;
+            return true;
+          case ExpressionType.Subtract:
+          case ExpressionType.SubtractAssign:
+            result = i1 - i2;
+            return true;
+          case ExpressionType.Multiply:
+          case ExpressionType.MultiplyAssign:
+            result = i1 * i2;
+            return true;
+          case ExpressionType.Divide:
+          case ExpressionType.DivideAssign:
+            result = i1 / i2;
+            return true;
+        }
+      }
+      else
+#endif
       if (objA is ulong || objB is ulong || objA is decimal || objB is decimal)
       {
         if (objA == null || objB == null)
@@ -459,6 +535,10 @@ namespace Newtonsoft.Json.Linq
         return JTokenType.Integer;
       else if (value is Enum)
         return JTokenType.Integer;
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+      else if (value is BigInteger)
+        return JTokenType.Integer;
+#endif
       else if (value is double || value is float || value is decimal)
         return JTokenType.Float;
       else if (value is DateTime)
@@ -557,7 +637,12 @@ namespace Newtonsoft.Json.Linq
           writer.WriteUndefined();
           return;
         case JTokenType.Integer:
-          writer.WriteValue(Convert.ToInt64(_value, CultureInfo.InvariantCulture));
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+          if (_value is BigInteger)
+            writer.WriteValue((BigInteger)_value);
+          else
+#endif
+            writer.WriteValue(Convert.ToInt64(_value, CultureInfo.InvariantCulture));
           return;
         case JTokenType.Float:
           if (_value is decimal)
@@ -840,87 +925,91 @@ namespace Newtonsoft.Json.Linq
       if (_value == null)
         return TypeCode.Empty;
 
+#if !NET20
+      if (_value is DateTimeOffset)
+        return TypeCode.DateTime;
+#endif
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+      if (_value is BigInteger)
+        return TypeCode.Int64;
+#endif
+
       return System.Type.GetTypeCode(_value.GetType());
     }
 
     bool IConvertible.ToBoolean(IFormatProvider provider)
     {
-      return Convert.ToBoolean(_value, CultureInfo.InvariantCulture);
+      return (bool) this;
     }
 
     char IConvertible.ToChar(IFormatProvider provider)
     {
-      return Convert.ToChar(_value, CultureInfo.InvariantCulture);
+      return (char) this;
     }
 
     sbyte IConvertible.ToSByte(IFormatProvider provider)
     {
-      return Convert.ToSByte(_value, CultureInfo.InvariantCulture);
+      return (sbyte) this;
     }
 
     byte IConvertible.ToByte(IFormatProvider provider)
     {
-      return Convert.ToByte(_value, CultureInfo.InvariantCulture);
+      return (byte) this;
     }
 
     short IConvertible.ToInt16(IFormatProvider provider)
     {
-      return Convert.ToInt16(_value, CultureInfo.InvariantCulture);
+      return (short) this;
     }
 
     ushort IConvertible.ToUInt16(IFormatProvider provider)
     {
-      return Convert.ToUInt16(_value, CultureInfo.InvariantCulture);
+      return (ushort) this;
     }
 
     int IConvertible.ToInt32(IFormatProvider provider)
     {
-      return Convert.ToInt32(_value, CultureInfo.InvariantCulture);
+      return (int) this;
     }
 
     uint IConvertible.ToUInt32(IFormatProvider provider)
     {
-      return Convert.ToUInt32(_value, CultureInfo.InvariantCulture);
+      return (uint) this;
     }
 
     long IConvertible.ToInt64(IFormatProvider provider)
     {
-      return Convert.ToInt64(_value, CultureInfo.InvariantCulture);
+      return (long) this;
     }
 
     ulong IConvertible.ToUInt64(IFormatProvider provider)
     {
-      return Convert.ToUInt64(_value, CultureInfo.InvariantCulture);
+      return (ulong) this;
     }
 
     float IConvertible.ToSingle(IFormatProvider provider)
     {
-      return Convert.ToSingle(_value, CultureInfo.InvariantCulture);
+      return (float) this;
     }
 
     double IConvertible.ToDouble(IFormatProvider provider)
     {
-      return Convert.ToDouble(_value, CultureInfo.InvariantCulture);
+      return (double) this;
     }
 
     decimal IConvertible.ToDecimal(IFormatProvider provider)
     {
-      return Convert.ToDecimal(_value, CultureInfo.InvariantCulture);
+      return (decimal) this;
     }
 
     DateTime IConvertible.ToDateTime(IFormatProvider provider)
     {
-#if !NET20
-      if (_value is DateTimeOffset)
-        return ((DateTimeOffset) _value).DateTime;
-#endif
-
-      return Convert.ToDateTime(_value, CultureInfo.InvariantCulture);
+      return (DateTime) this;
     }
 
     object IConvertible.ToType(Type conversionType, IFormatProvider provider)
     {
-      return Convert.ChangeType(_value, conversionType, provider);
+      return ToObject(conversionType);
     }
 #endif
   }

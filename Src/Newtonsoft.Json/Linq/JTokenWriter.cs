@@ -25,6 +25,9 @@
 
 using System;
 using System.Globalization;
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+using System.Numerics;
+#endif
 using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Linq
@@ -428,6 +431,18 @@ namespace Newtonsoft.Json.Linq
       base.WriteValue(value);
       AddValue(value, JsonToken.String);
     }
+
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+    /// <summary>
+    /// Writes a <see cref="BigInteger"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="BigInteger"/> value to write.</param>
+    public override void WriteValue(BigInteger value)
+    {
+      base.WriteValue(value);
+      AddValue(value, JsonToken.Integer);
+    }
+#endif
     #endregion
   }
 }

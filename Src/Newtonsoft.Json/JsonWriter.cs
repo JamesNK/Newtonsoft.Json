@@ -26,6 +26,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+using System.Numerics;
+#endif
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
 #if NETFX_CORE
@@ -1217,6 +1220,17 @@ namespace Newtonsoft.Json
         InternalWriteValue(JsonToken.String);
     }
 
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+    /// <summary>
+    /// Writes a <see cref="BigInteger"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="BigInteger"/> value to write.</param>
+    public virtual void WriteValue(BigInteger value)
+    {
+      InternalWriteValue(JsonToken.Integer);
+    }
+#endif
+
     /// <summary>
     /// Writes a <see cref="Object"/> value.
     /// An error will raised if the value cannot be written as a single JSON token.
@@ -1381,6 +1395,13 @@ namespace Newtonsoft.Json
           WriteValue((TimeSpan)value);
         return;
       }
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+      else if (value is BigInteger)
+      {
+        WriteValue((BigInteger)value);
+        return;
+      }
+#endif
 
       throw JsonWriterException.Create(this, "Unsupported type: {0}. Use the JsonSerializer class to get the object's JSON representation.".FormatWith(CultureInfo.InvariantCulture, value.GetType()), null);
     }

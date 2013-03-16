@@ -27,6 +27,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+using System.Numerics;
+#endif
 using Newtonsoft.Json.Tests.TestObjects;
 #if !NETFX_CORE
 using NUnit.Framework;
@@ -1628,17 +1631,17 @@ Parameter name: arrayIndex",
       });
     }
 
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
     [Test]
     public void NumberTooBigForInt64()
     {
-      ExceptionAssert.Throws<JsonReaderException>("JSON integer 307953220000517141511 is too large or small for an Int64. Path 'code', line 1, position 30.",
-        () =>
-        {
-          string json = @"{""code"": 307953220000517141511}";
+      string json = @"{""code"": 307953220000517141511}";
 
-          JObject.Parse(json);
-        });
+      JObject o = JObject.Parse(json);
+
+      BigInteger b = (BigInteger)o["code"];
     }
+#endif
 
     [Test]
     public void ParseIncomplete()

@@ -26,6 +26,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+using System.Numerics;
+#endif
 using System.Text;
 #if !NETFX_CORE
 using NUnit.Framework;
@@ -98,6 +101,13 @@ namespace Newtonsoft.Json.Tests.Linq
       v.Value = g;
       Assert.AreEqual(g, v.Value);
       Assert.AreEqual(JTokenType.Guid, v.Type);
+
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+      BigInteger i = BigInteger.Parse("123456789999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999990");
+      v.Value = i;
+      Assert.AreEqual(i, v.Value);
+      Assert.AreEqual(JTokenType.Integer, v.Type);
+#endif
     }
 
     [Test]
@@ -151,7 +161,23 @@ namespace Newtonsoft.Json.Tests.Linq
 
       v = new JValue(new Guid("B282ADE7-C520-496C-A448-4084F6803DE5"));
       Assert.AreEqual("b282ade7-c520-496c-a448-4084f6803de5", v.ToString(null, CultureInfo.InvariantCulture));
+
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+      v = new JValue(BigInteger.Parse("123456789999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999990"));
+      Assert.AreEqual("123456789999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999990", v.ToString(null, CultureInfo.InvariantCulture));
+#endif
     }
+
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+    [Test]
+    public void JValueParse()
+    {
+      JValue v = (JValue)JToken.Parse("123456789999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999990");
+      
+      Assert.AreEqual(JTokenType.Integer, v.Type);
+      Assert.AreEqual(BigInteger.Parse("123456789999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999990"), v.Value);
+    }
+#endif
 
     [Test]
     public void Last()
@@ -417,6 +443,14 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(Int32.MaxValue, Convert.ToInt32(new JValue(Int32.MaxValue)));
     }
 
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+    [Test]
+    public void ConvertsToInt32_BigInteger()
+    {
+      Assert.AreEqual(123, Convert.ToInt32(new JValue(BigInteger.Parse("123"))));
+    }
+#endif
+
     [Test]
     public void ConvertsToChar()
     {
@@ -481,6 +515,12 @@ namespace Newtonsoft.Json.Tests.Linq
     public void ConvertsToDecimal()
     {
       Assert.AreEqual(Decimal.MaxValue, Convert.ToDecimal(new JValue(Decimal.MaxValue)));
+    }
+
+    [Test]
+    public void ConvertsToDecimal_Int64()
+    {
+      Assert.AreEqual(123, Convert.ToDecimal(new JValue(123)));
     }
 
     [Test]

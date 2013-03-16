@@ -26,6 +26,9 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+using System.Numerics;
+#endif
 using System.Text;
 using System.IO;
 using System.Xml;
@@ -581,6 +584,18 @@ namespace Newtonsoft.Json
         WriteValueInternal(JsonConvert.ToString(value, _quoteChar), JsonToken.String);
       }
     }
+
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+    /// <summary>
+    /// Writes a <see cref="BigInteger"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="BigInteger"/> value to write.</param>
+    public override void WriteValue(BigInteger value)
+    {
+      InternalWriteValue(JsonToken.Integer);
+      WriteValueInternal(value.ToString(CultureInfo.InvariantCulture), JsonToken.String);
+    }
+#endif
     #endregion
 
     /// <summary>

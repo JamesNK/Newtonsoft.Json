@@ -27,6 +27,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+using System.Numerics;
+#endif
 using System.Text;
 using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Linq;
@@ -459,6 +462,13 @@ namespace Newtonsoft.Json.Bson
       AddToken(new BsonString(value.ToString(), true));
     }
 
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+    public override void WriteValue(BigInteger value)
+    {
+      base.WriteValue(value);
+      AddToken(new BsonValue(value.ToByteArray(), BsonType.Binary));
+    }
+#endif
     #endregion
 
     /// <summary>

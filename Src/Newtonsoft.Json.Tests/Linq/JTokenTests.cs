@@ -25,6 +25,9 @@
 
 using System;
 using System.Collections.Generic;
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+using System.Numerics;
+#endif
 using System.Text;
 using Newtonsoft.Json.Converters;
 #if !NETFX_CORE
@@ -344,6 +347,29 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(data, (byte[])(new JValue(data)));
 
       Assert.AreEqual(5, (int)(new JValue(StringComparison.OrdinalIgnoreCase)));
+
+      string bigIntegerText = "1234567899999999999999999999999999999999999999999999999999999999999990";
+
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+      Assert.AreEqual(BigInteger.Parse(bigIntegerText), (BigInteger)(new JValue(bigIntegerText)));
+      Assert.AreEqual(new BigInteger(long.MaxValue), (BigInteger)(new JValue(long.MaxValue)));
+      Assert.AreEqual(new BigInteger(4.5d), (BigInteger)(new JValue((4.5d))));
+      Assert.AreEqual(new BigInteger(4.5f), (BigInteger)(new JValue((4.5f))));
+      Assert.AreEqual(new BigInteger(byte.MaxValue), (BigInteger)(new JValue(byte.MaxValue)));
+      Assert.AreEqual(new BigInteger(123), (BigInteger)(new JValue(123)));
+
+      byte[] intData = BigInteger.Parse(bigIntegerText).ToByteArray();
+      Assert.AreEqual(BigInteger.Parse(bigIntegerText), (BigInteger)(new JValue(intData)));
+
+      Assert.AreEqual(4.0d, (double)(new JValue(new BigInteger(4.5d))));
+      Assert.AreEqual(true, (bool)(new JValue(new BigInteger(1))));
+      Assert.AreEqual(long.MaxValue, (long)(new JValue(new BigInteger(long.MaxValue))));
+      Assert.AreEqual(long.MaxValue, (long)(new JValue(new BigInteger(new byte[] { 255, 255, 255, 255, 255, 255, 255, 127 }))));
+      Assert.AreEqual("9223372036854775807", (string)(new JValue(new BigInteger(long.MaxValue))));
+
+      intData = (byte[]) (new JValue(new BigInteger(long.MaxValue)));
+      Assert.AreEqual(new byte[] { 255, 255, 255, 255, 255, 255, 255, 127 }, intData);
+#endif
     }
 
     [Test]
@@ -394,14 +420,25 @@ namespace Newtonsoft.Json.Tests.Linq
       ExceptionAssert.Throws<ArgumentException>("Can not convert Uri to Guid.", () => { var i = (Guid)new JValue(new Uri("http://www.google.com")); });
 
 #if !NET20
-      ExceptionAssert.Throws<Exception>("Can not convert Boolean to DateTimeOffset.", () => { var i = (DateTimeOffset)new JValue(true); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Boolean to DateTimeOffset.", () => { var i = (DateTimeOffset)new JValue(true); });
 #endif
-      ExceptionAssert.Throws<Exception>("Can not convert Boolean to Uri.", () => { var i = (Uri)new JValue(true); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Boolean to Uri.", () => { var i = (Uri)new JValue(true); });
+
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Uri to BigInteger.", () => { var i = (BigInteger)new JValue(new Uri("http://www.google.com")); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Null to BigInteger.", () => { var i = (BigInteger)new JValue((object)null); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Guid to BigInteger.", () => { var i = (BigInteger)new JValue(Guid.NewGuid()); });
+#endif
     }
 
     [Test]
     public void ToObject()
     {
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+      Assert.AreEqual((BigInteger)1, (new JValue(1).ToObject(typeof(BigInteger))));
+      Assert.AreEqual((BigInteger)1, (new JValue(1).ToObject(typeof(BigInteger?))));
+      Assert.AreEqual((BigInteger?)null, (new JValue((object)null).ToObject(typeof(BigInteger?))));
+#endif
       Assert.AreEqual((ushort)1, (new JValue(1).ToObject(typeof(ushort))));
       Assert.AreEqual((ushort)1, (new JValue(1).ToObject(typeof(ushort?))));
       Assert.AreEqual((uint)1L, (new JValue(1).ToObject(typeof(uint))));
@@ -451,6 +488,11 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.IsTrue(JToken.DeepEquals(new JValue((DateTimeOffset?)null), (JValue)(DateTimeOffset?)null));
 #endif
 
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+      Assert.IsTrue(JToken.DeepEquals(new JValue(new BigInteger(1)), (JValue)new BigInteger(1)));
+      Assert.IsTrue(JToken.DeepEquals(new JValue((BigInteger?)null), (JValue)(BigInteger?)null));
+#endif
+      Assert.IsTrue(JToken.DeepEquals(new JValue(true), (JValue)true));
       Assert.IsTrue(JToken.DeepEquals(new JValue(true), (JValue)true));
       Assert.IsTrue(JToken.DeepEquals(new JValue(true), (JValue)(bool?)true));
       Assert.IsTrue(JToken.DeepEquals(new JValue((bool?)null), (JValue)(bool?)null));

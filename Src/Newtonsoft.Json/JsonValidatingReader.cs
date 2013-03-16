@@ -25,6 +25,9 @@
 
 using System;
 using System.Collections.Generic;
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+using System.Numerics;
+#endif
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Utilities;
@@ -711,26 +714,46 @@ namespace Newtonsoft.Json
 
       ValidateNotDisallowed(schema);
       
-      long value = Convert.ToInt64(_reader.Value, CultureInfo.InvariantCulture);
+      object value = _reader.Value;
 
       if (schema.Maximum != null)
       {
-        if (value > schema.Maximum)
+        if (JValue.Compare(JTokenType.Integer, value, schema.Maximum) > 0)
           RaiseError("Integer {0} exceeds maximum value of {1}.".FormatWith(CultureInfo.InvariantCulture, value, schema.Maximum), schema);
-        if (schema.ExclusiveMaximum && value == schema.Maximum)
+        if (schema.ExclusiveMaximum && JValue.Compare(JTokenType.Integer, value, schema.Maximum) == 0)
           RaiseError("Integer {0} equals maximum value of {1} and exclusive maximum is true.".FormatWith(CultureInfo.InvariantCulture, value, schema.Maximum), schema);
       }
 
       if (schema.Minimum != null)
       {
-        if (value < schema.Minimum)
+        if (JValue.Compare(JTokenType.Integer, value, schema.Minimum) < 0)
           RaiseError("Integer {0} is less than minimum value of {1}.".FormatWith(CultureInfo.InvariantCulture, value, schema.Minimum), schema);
-        if (schema.ExclusiveMinimum && value == schema.Minimum)
+        if (schema.ExclusiveMinimum && JValue.Compare(JTokenType.Integer, value, schema.Minimum) == 0)
           RaiseError("Integer {0} equals minimum value of {1} and exclusive minimum is true.".FormatWith(CultureInfo.InvariantCulture, value, schema.Minimum), schema);
       }
 
-      if (schema.DivisibleBy != null && !IsZero(value % schema.DivisibleBy.Value))
-        RaiseError("Integer {0} is not evenly divisible by {1}.".FormatWith(CultureInfo.InvariantCulture, JsonConvert.ToString(value), schema.DivisibleBy), schema);
+      if (schema.DivisibleBy != null)
+      {
+        bool notDivisible;
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+        if (value is BigInteger)
+        {
+          // not that this will lose any decimal point on DivisibleBy
+          // so manually raise an error if DivisibleBy is not an integer and value is not zero
+          BigInteger i = (BigInteger)value;
+          bool divisibleNonInteger = !Math.Abs(schema.DivisibleBy.Value - Math.Truncate(schema.DivisibleBy.Value)).Equals(0);
+          if (divisibleNonInteger)
+            notDivisible = i != 0;
+          else
+            notDivisible = i % new BigInteger(schema.DivisibleBy.Value) != 0;
+        }
+        else
+#endif
+          notDivisible = !IsZero(Convert.ToInt64(value, CultureInfo.InvariantCulture) % schema.DivisibleBy.Value);
+
+        if (notDivisible)
+          RaiseError("Integer {0} is not evenly divisible by {1}.".FormatWith(CultureInfo.InvariantCulture, JsonConvert.ToString(value), schema.DivisibleBy), schema);
+      }
     }
 
     private void ProcessValue()

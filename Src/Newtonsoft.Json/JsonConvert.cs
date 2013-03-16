@@ -26,6 +26,9 @@
 using System;
 using System.IO;
 using System.Globalization;
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+using System.Numerics;
+#endif
 #if !(NET20 || NET35 || SILVERLIGHT)
 using System.Threading.Tasks;
 #endif
@@ -421,6 +424,18 @@ namespace Newtonsoft.Json
       return value.ToString(null, CultureInfo.InvariantCulture);
     }
 
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+    /// <summary>
+    /// Converts the <see cref="BigInteger"/>  to its JSON string representation.
+    /// </summary>
+    /// <param name="value">The value to convert.</param>
+    /// <returns>A JSON string representation of the <see cref="BigInteger"/>.</returns>
+    public static string ToString(BigInteger value)
+    {
+      return value.ToString(null, CultureInfo.InvariantCulture);
+    }
+#endif
+
     /// <summary>
     /// Converts the <see cref="UInt64"/> to its JSON string representation.
     /// </summary>
@@ -670,6 +685,12 @@ namespace Newtonsoft.Json
       {
         return ToString((TimeSpan) value);
       }
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+      else if (value is BigInteger)
+      {
+        return ToString((BigInteger) value);
+      }
+#endif
 
       throw new ArgumentException("Unsupported type: {0}. Use the JsonSerializer class to get the object's JSON representation.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
     }
@@ -719,6 +740,10 @@ namespace Newtonsoft.Json
         return true;
       if (type == typeof (Guid))
         return true;
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+      if (type == typeof (BigInteger))
+        return true;
+#endif
 
       return IsJsonPrimitiveTypeCode(ConvertUtils.GetTypeCode(type));
     }

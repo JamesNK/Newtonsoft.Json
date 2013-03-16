@@ -25,6 +25,9 @@
 
 using System;
 using System.Collections.Generic;
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+using System.Numerics;
+#endif
 using System.Text;
 #if !NETFX_CORE
 using NUnit.Framework;
@@ -680,5 +683,42 @@ namespace Newtonsoft.Json.Tests.Bson
 
       Assert.AreEqual("10-00-00-00-09-30-00-C8-88-07-6B-DC-00-00-00-00", (BitConverter.ToString(ms.ToArray())));
     }
+
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+    [Test]
+    public void WriteBigInteger()
+    {
+      BigInteger i = BigInteger.Parse("1999999999999999999999999999999999999999999999999999999999990");
+
+      MemoryStream ms = new MemoryStream();
+      BsonWriter writer = new BsonWriter(ms);
+
+      writer.WriteStartObject();
+      writer.WritePropertyName("Blah");
+      writer.WriteValue(i);
+      writer.WriteEndObject();
+
+      string bson = MiscellaneousUtils.BytesToHex(ms.ToArray());
+      Assert.AreEqual("2A-00-00-00-05-42-6C-61-68-00-1A-00-00-00-00-F6-FF-FF-FF-FF-FF-FF-1F-B2-21-CB-28-59-84-C4-AE-03-8A-44-34-2F-4C-4E-9E-3E-01-00", bson);
+
+      ms.Seek(0, SeekOrigin.Begin);
+      BsonReader reader = new BsonReader(ms);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Bytes, reader.TokenType);
+      Assert.AreEqual(new byte[] { 246, 255, 255, 255, 255, 255, 255, 31, 178, 33, 203, 40, 89, 132, 196, 174, 3, 138, 68, 52, 47, 76, 78, 158, 62, 1 }, reader.Value);
+      Assert.AreEqual(i, new BigInteger((byte[])reader.Value));
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
+
+      Assert.IsFalse(reader.Read());
+    }
+#endif
   }
 }
