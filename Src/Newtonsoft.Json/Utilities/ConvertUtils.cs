@@ -543,9 +543,13 @@ namespace Newtonsoft.Json.Utilities
     }
 #endif
 
-    public static bool IsInteger(object value)
+    public static bool IsInteger(object value) {
+        return IsInteger(System.Convert.GetTypeCode(value));
+    }
+
+    public static bool IsInteger(TypeCode tc)
     {
-      switch (GetTypeCode(value))
+      switch (tc)
       {
         case TypeCode.SByte:
         case TypeCode.Byte:
@@ -559,6 +563,31 @@ namespace Newtonsoft.Json.Utilities
         default:
           return false;
       }
+    }
+
+    public static bool IsFloat(object value) {
+        return IsInteger(System.Convert.GetTypeCode(value));
+    }
+
+    public static bool IsFloat(TypeCode tc)
+    {
+      switch (tc)
+      {
+        case TypeCode.Single:
+        case TypeCode.Double:
+        case TypeCode.Decimal:
+          return true;
+        default:
+          return false;
+      }
+    }
+
+    public static bool IsSameBasicType(Type t1, Type t2) {
+        TypeCode tc1 = Type.GetTypeCode(t1);
+        TypeCode tc2 = Type.GetTypeCode(t2);
+        return    (tc1 == tc2 && tc1 >= TypeCode.Boolean)
+               || (IsInteger(tc1) && IsInteger(tc2))
+               || (IsFloat(tc1) && IsFloat(tc2));
     }
   }
 }

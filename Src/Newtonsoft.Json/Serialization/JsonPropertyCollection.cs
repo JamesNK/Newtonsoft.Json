@@ -111,10 +111,14 @@ namespace Newtonsoft.Json.Serialization
     /// </summary>
     /// <param name="propertyName">Name of the property.</param>
     /// <returns>A matching property if found.</returns>
-    public JsonProperty GetClosestMatchProperty(string propertyName)
+    public JsonProperty GetClosestMatchProperty(string propertyName) {
+        return GetClosestMatchProperty(propertyName, MemberNameMatchHandling.CaseInsensitive);
+    }
+
+    public JsonProperty GetClosestMatchProperty(string propertyName, MemberNameMatchHandling memberNameMatchHandling)
     {
       JsonProperty property = GetProperty(propertyName, StringComparison.Ordinal);
-      if (property == null)
+      if (property == null && memberNameMatchHandling == MemberNameMatchHandling.CaseInsensitive)
         property = GetProperty(propertyName, StringComparison.OrdinalIgnoreCase);
 
       return property;
