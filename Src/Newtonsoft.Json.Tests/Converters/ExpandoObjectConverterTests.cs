@@ -171,6 +171,62 @@ namespace Newtonsoft.Json.Tests.Converters
     }
 
     [Test]
+    public void DeserializeExpandoObjectUsingArrays()
+    {
+        string json = @"{
+  ""Before"": ""Before!"",
+  ""Expando"": {
+    ""String"": ""String!"",
+    ""Integer"": 234,
+    ""Float"": 1.23,
+    ""List"": [
+      ""First"",
+      ""Second"",
+      ""Third""
+    ],
+    ""Object"": {
+      ""First"": 1
+    }
+  },
+  ""After"": ""After!""
+}";
+
+        ExpandoContainer o = JsonConvert.DeserializeObject<ExpandoContainer>(json, new ExpandoObjectConverter { UseArrayTypeForCollections = true });
+
+      Assert.AreEqual(o.Before, "Before!");
+      Assert.AreEqual(o.After, "After!");
+      Assert.IsNotNull(o.Expando);
+
+      dynamic d = o.Expando;
+      CustomAssert.IsInstanceOfType(typeof(ExpandoObject), d);
+
+      Assert.AreEqual("String!", d.String);
+      CustomAssert.IsInstanceOfType(typeof(string), d.String);
+
+      Assert.AreEqual(234, d.Integer);
+      CustomAssert.IsInstanceOfType(typeof(long), d.Integer);
+
+      Assert.AreEqual(1.23, d.Float);
+      CustomAssert.IsInstanceOfType(typeof(double), d.Float);
+
+      Assert.IsNotNull(d.List);
+      Assert.AreEqual(3, d.List.Length);
+      CustomAssert.IsInstanceOfType(typeof(Array), d.List);
+
+      Assert.AreEqual("First", d.List[0]);
+      CustomAssert.IsInstanceOfType(typeof(string), d.List[0]);
+
+      Assert.AreEqual("Second", d.List[1]);
+      Assert.AreEqual("Third", d.List[2]);
+
+      Assert.IsNotNull(d.Object);
+      CustomAssert.IsInstanceOfType(typeof(ExpandoObject), d.Object);
+
+      Assert.AreEqual(1, d.Object.First);
+      CustomAssert.IsInstanceOfType(typeof(long), d.Object.First);
+    }
+
+    [Test]
     public void DeserializeNullExpandoObject()
     {
       string json = @"{
