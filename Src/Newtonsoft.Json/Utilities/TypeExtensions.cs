@@ -78,6 +78,15 @@ namespace Newtonsoft.Json.Utilities
     }
 #endif
 
+    public static MethodInfo Method(this Delegate d)
+    {
+#if NETFX_CORE
+      return d.GetMethodInfo();
+#else
+      return d.Method;
+#endif
+    }
+
     public static MemberTypes MemberType(this MemberInfo memberInfo)
     {
 #if !(NETFX_CORE || PORTABLE)

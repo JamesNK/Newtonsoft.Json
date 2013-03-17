@@ -368,7 +368,7 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual("9223372036854775807", (string)(new JValue(new BigInteger(long.MaxValue))));
 
       intData = (byte[]) (new JValue(new BigInteger(long.MaxValue)));
-      Assert.AreEqual(new byte[] { 255, 255, 255, 255, 255, 255, 255, 127 }, intData);
+      CollectionAssert.AreEqual(new byte[] { 255, 255, 255, 255, 255, 255, 255, 127 }, intData);
 #endif
     }
 

@@ -711,7 +711,7 @@ namespace Newtonsoft.Json.Tests.Bson
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.Bytes, reader.TokenType);
-      Assert.AreEqual(new byte[] { 246, 255, 255, 255, 255, 255, 255, 31, 178, 33, 203, 40, 89, 132, 196, 174, 3, 138, 68, 52, 47, 76, 78, 158, 62, 1 }, reader.Value);
+      CollectionAssert.AreEqual(new byte[] { 246, 255, 255, 255, 255, 255, 255, 31, 178, 33, 203, 40, 89, 132, 196, 174, 3, 138, 68, 52, 47, 76, 78, 158, 62, 1 }, (byte[])reader.Value);
       Assert.AreEqual(i, new BigInteger((byte[])reader.Value));
 
       Assert.IsTrue(reader.Read());

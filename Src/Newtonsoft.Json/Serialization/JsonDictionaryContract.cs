@@ -168,6 +168,6 @@ namespace Newtonsoft.Json.Serialization
     }
 #endif
 
-    public bool IsReadOnlyDictionary { get; set; }
+    internal bool IsReadOnlyDictionary { get; set; }
   }
 }

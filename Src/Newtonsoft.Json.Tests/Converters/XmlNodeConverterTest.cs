@@ -1902,6 +1902,27 @@ namespace Newtonsoft.Json.Tests.Converters
       Assert.AreEqual(@"{""root"":{""@xmlns"":""http://www.example.com/ns"",""a"":null,""bns:b"":{""@xmlns:bns"":""http://www.example.com/ns""},""c"":null}}", json2);
 #endif
     }
+
+#if !NET20
+    class NullableXml
+    {
+      public string Name;
+      public XElement notNull;
+      public XElement isNull;
+    }
+
+    [Test]
+    public void SerializeAndDeserializeNullableXml()
+    {
+      var xml = new NullableXml { Name = "test", notNull = XElement.Parse("<root>test</root>") };
+      var json = JsonConvert.SerializeObject(xml);
+
+      var w2 = JsonConvert.DeserializeObject<NullableXml>(json);
+      Assert.AreEqual(xml.Name, w2.Name);
+      Assert.AreEqual(xml.isNull, w2.isNull);
+      Assert.AreEqual(xml.notNull.ToString(), w2.notNull.ToString());
+    }
+#endif
   }
 }
 #endif
