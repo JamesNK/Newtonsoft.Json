@@ -111,22 +111,30 @@ namespace Newtonsoft.Json.Converters
         return null;
       }
 
-      if (reader.TokenType == JsonToken.String)
+      try
       {
-        string enumText = reader.Value.ToString();
-        if (enumText == string.Empty && isNullable)
-          return null;
+        if (reader.TokenType == JsonToken.String)
+        {
+          string enumText = reader.Value.ToString();
+          if (enumText == string.Empty && isNullable)
+            return null;
 
-        var map = GetEnumNameMap(t);
-        string resolvedEnumName;
-        map.TryGetBySecond(enumText, out resolvedEnumName);
-        resolvedEnumName = resolvedEnumName ?? enumText;
+          var map = GetEnumNameMap(t);
+          string resolvedEnumName;
+          map.TryGetBySecond(enumText, out resolvedEnumName);
+          resolvedEnumName = resolvedEnumName ?? enumText;
 
-        return Enum.Parse(t, resolvedEnumName, true);
+          return Enum.Parse(t, resolvedEnumName, true);
+        }
+
+        if (reader.TokenType == JsonToken.Integer)
+          return ConvertUtils.ConvertOrCast(reader.Value, CultureInfo.InvariantCulture, t);
+      }
+      catch (Exception ex)
+      {
+        throw JsonSerializationException.Create(reader, "Error converting value {0} to type '{1}'.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.FormatValueForPrint(reader.Value), objectType), ex);
       }
 
-      if (reader.TokenType == JsonToken.Integer)
-        return ConvertUtils.ConvertOrCast(reader.Value, CultureInfo.InvariantCulture, t);
 
       throw JsonSerializationException.Create(reader, "Unexpected token when parsing enum. Expected String or Integer, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
     }

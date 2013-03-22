@@ -183,5 +183,16 @@ namespace Newtonsoft.Json.Utilities
         localName = qualifiedName.Substring(colonPosition + 1);
       }
     }
+
+    internal static string FormatValueForPrint(object value)
+    {
+      if (value == null)
+        return "{null}";
+
+      if (value is string)
+        return @"""" + value + @"""";
+
+      return value.ToString();
+    }
   }
 }

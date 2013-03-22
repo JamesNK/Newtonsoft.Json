@@ -29,7 +29,11 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
+#if !(PORTABLE || WINDOWS_PHONE)
 using System.Reflection;
+#else
+using Microsoft.CSharp.RuntimeBinder;
+#endif
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Globalization;
@@ -41,6 +45,7 @@ namespace Newtonsoft.Json.Utilities
   {
     internal static class BinderWrapper
     {
+#if !(PORTABLE || WINDOWS_PHONE)
 #if !SILVERLIGHT
       public const string CSharpAssemblyName = "Microsoft.CSharp, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a";
 #else
@@ -95,9 +100,9 @@ namespace Newtonsoft.Json.Utilities
 
       private static void CreateMemberCalls()
       {
-        Type csharpArgumentInfoType = Type.GetType(CSharpArgumentInfoTypeName);
-        Type csharpBinderFlagsType = Type.GetType(CSharpBinderFlagsTypeName);
-        Type binderType = Type.GetType(BinderTypeName);
+        Type csharpArgumentInfoType = Type.GetType(CSharpArgumentInfoTypeName, true);
+        Type csharpBinderFlagsType = Type.GetType(CSharpBinderFlagsTypeName, true);
+        Type binderType = Type.GetType(BinderTypeName, true);
 
         Type csharpArgumentInfoTypeEnumerableType = typeof (IEnumerable<>).MakeGenericType(csharpArgumentInfoType);
 
@@ -107,17 +112,32 @@ namespace Newtonsoft.Json.Utilities
         MethodInfo setMemberMethod = binderType.GetMethod("SetMember", new[] {csharpBinderFlagsType, typeof (string), typeof (Type), csharpArgumentInfoTypeEnumerableType});
         _setMemberCall = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(setMemberMethod);
       }
+#endif
 
       public static CallSiteBinder GetMember(string name, Type context)
       {
+#if !(PORTABLE || WINDOWS_PHONE)
         Init();
         return (CallSiteBinder) _getMemberCall(null, 0, name, context, _getCSharpArgumentInfoArray);
+#else
+        return Binder.GetMember(
+          CSharpBinderFlags.None, name, context, new[] {CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null)});
+#endif
       }
 
       public static CallSiteBinder SetMember(string name, Type context)
       {
+#if !(PORTABLE || WINDOWS_PHONE)
         Init();
         return (CallSiteBinder) _setMemberCall(null, 0, name, context, _setCSharpArgumentInfoArray);
+#else
+        return Binder.SetMember(
+          CSharpBinderFlags.None, name, context, new[]
+                                                   {
+                                                     CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.UseCompileTimeType, null),
+                                                     CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.Constant, null)
+                                                   });
+#endif
       }
     }
 

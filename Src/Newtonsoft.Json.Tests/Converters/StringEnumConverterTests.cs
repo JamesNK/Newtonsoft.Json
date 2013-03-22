@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.IO;
 using System.Runtime.Serialization;
 using Newtonsoft.Json.Converters;
 #if !NETFX_CORE
@@ -333,6 +334,31 @@ namespace Newtonsoft.Json.Tests.Converters
 
       EnumClass c = JsonConvert.DeserializeObject<EnumClass>(json, new StringEnumConverter());
       Assert.IsNull(c.NullableStoreColor2);
+    }
+
+    public void DeserializeInvalidString()
+    {
+      string json = "{ \"Value\" : \"Three\" }";
+
+      ExceptionAssert.Throws<JsonSerializationException>(
+        @"Error converting value ""Three"" to type 'Newtonsoft.Json.Tests.Converters.StringEnumConverterTests+MyEnum'. Path 'Value', line 1, position 19.",
+        () =>
+          {
+            var serializer = new JsonSerializer();
+            serializer.Converters.Add(new StringEnumConverter());
+            serializer.Deserialize<Bucket>(new JsonTextReader(new StringReader(json)));
+          });
+    }
+
+    public class Bucket
+    {
+      public MyEnum Value;
+    }
+
+    public enum MyEnum
+    {
+      Alpha,
+      Beta,
     }
   }
 }

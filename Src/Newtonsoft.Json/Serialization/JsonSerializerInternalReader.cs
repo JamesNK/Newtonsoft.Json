@@ -671,22 +671,11 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
         }
         catch (Exception ex)
         {
-          throw JsonSerializationException.Create(reader, "Error converting value {0} to type '{1}'.".FormatWith(CultureInfo.InvariantCulture, FormatValueForPrint(value), targetType), ex);
+          throw JsonSerializationException.Create(reader, "Error converting value {0} to type '{1}'.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.FormatValueForPrint(value), targetType), ex);
         }
       }
 
       return value;
-    }
-
-    private string FormatValueForPrint(object value)
-    {
-      if (value == null)
-        return "{null}";
-
-      if (value is string)
-        return @"""" + value + @"""";
-
-      return value.ToString();
     }
 
     private void SetPropertyValue(JsonProperty property, JsonConverter propertyConverter, JsonContainerContract containerContract, JsonProperty containerProperty, JsonReader reader, object target)

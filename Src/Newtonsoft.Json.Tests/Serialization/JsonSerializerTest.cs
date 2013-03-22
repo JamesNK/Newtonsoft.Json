@@ -90,6 +90,40 @@ namespace Newtonsoft.Json.Tests.Serialization
   [TestFixture]
   public class JsonSerializerTest : TestFixtureBase
   {
+    //[DataContract]
+    //public class BaseDataContract1
+    //{
+    //  [DataMember(Name = "virtualMember")]
+    //  public virtual string VirtualMember { get; set; }
+
+    //  [DataMember(Name = "nonVirtualMember")]
+    //  public string NonVirtualMember { get; set; }
+
+    //  public virtual object NewMember { get; set; }
+    //}
+
+    //public class ChildDataContract1 : BaseDataContract1
+    //{
+    //  [DataMember(Name = "NewMember")]
+    //  public virtual new string NewMember { get; set; }
+    //  public override string VirtualMember { get; set; }
+    //  public string AddedMember { get; set; }
+    //}
+
+    //[Test]
+    //public void ChildDataContractTest1()
+    //{
+    //  var cc = new ChildDataContract1
+    //  {
+    //    VirtualMember = "VirtualMember!",
+    //    NonVirtualMember = "NonVirtualMember!",
+    //    NewMember = "NewMember!"
+    //  };
+
+    //  string result = JsonConvert.SerializeObject(cc);
+    //  Assert.AreEqual(@"{""NewMember"":""NewMember!"",""virtualMember"":""VirtualMember!"",""nonVirtualMember"":""NonVirtualMember!""}", result);
+    //}
+
     [Test]
     public void PersonTypedObjectDeserialization()
     {
@@ -6451,6 +6485,21 @@ Parameter name: value",
     }
 
 #if !(NET20 || NET35)
+    public class IgnoreDataMemberTestClass
+    {
+      [IgnoreDataMember]
+      public int Ignored { get; set; }
+    }
+
+    [Test]
+    public void IgnoreDataMemberTest()
+    {
+      string json = JsonConvert.SerializeObject(new IgnoreDataMemberTestClass() { Ignored = int.MaxValue }, Formatting.Indented);
+      Assert.AreEqual(@"{}", json);
+    }
+#endif
+
+#if !(NET20 || NET35)
     [Test]
     public void SerializeDataContractSerializationAttributes()
     {
@@ -6461,6 +6510,12 @@ Parameter name: value",
           DataMemberAttribute = "Value!",
           IgnoreDataMemberAndDataMemberAttribute = "Value!"
         };
+
+      //MemoryStream ms = new MemoryStream();
+      //DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(DataContractSerializationAttributesClass));
+      //serializer.WriteObject(ms, dataContract);
+
+      //Console.WriteLine(Encoding.UTF8.GetString(ms.ToArray()));
 
       string json = JsonConvert.SerializeObject(dataContract, Formatting.Indented);
       Assert.AreEqual(@"{
