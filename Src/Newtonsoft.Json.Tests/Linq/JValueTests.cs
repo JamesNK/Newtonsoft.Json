@@ -580,7 +580,7 @@ namespace Newtonsoft.Json.Tests.Linq
       v = new JValue(new Uri("http://www.google.com"));
       Assert.AreEqual(TypeCode.Object, v.GetTypeCode());
 
-#if !(NET20 || NET35 || SILVERLIGHT)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
       v = new JValue(new BigInteger(3));
       Assert.AreEqual(TypeCode.Object, v.GetTypeCode());
 #endif
@@ -594,8 +594,10 @@ namespace Newtonsoft.Json.Tests.Linq
       int i = (int)v.ToType(typeof (int), CultureInfo.InvariantCulture);
       Assert.AreEqual(9, i);
 
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
       BigInteger bi = (BigInteger)v.ToType(typeof(BigInteger), CultureInfo.InvariantCulture);
       Assert.AreEqual(new BigInteger(9), bi);
+#endif
     }
 #endif
 
@@ -607,6 +609,7 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual("2013", v.ToString("yyyy"));
     }
 
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
     [Test]
     public void ToStringNewTypes()
     {
@@ -622,5 +625,6 @@ namespace Newtonsoft.Json.Tests.Linq
   1.1
 ]", a.ToString());
     }
+#endif
   }
 }

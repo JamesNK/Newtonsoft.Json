@@ -348,9 +348,9 @@ namespace Newtonsoft.Json.Tests.Linq
 
       Assert.AreEqual(5, (int)(new JValue(StringComparison.OrdinalIgnoreCase)));
 
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
       string bigIntegerText = "1234567899999999999999999999999999999999999999999999999999999999999990";
 
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
       Assert.AreEqual(BigInteger.Parse(bigIntegerText), (BigInteger)(new JValue(bigIntegerText)));
       Assert.AreEqual(new BigInteger(long.MaxValue), (BigInteger)(new JValue(long.MaxValue)));
       Assert.AreEqual(new BigInteger(4.5d), (BigInteger)(new JValue((4.5d))));
