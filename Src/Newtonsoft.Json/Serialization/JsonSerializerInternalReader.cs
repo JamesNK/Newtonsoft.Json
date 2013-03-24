@@ -33,6 +33,7 @@ using System.Dynamic;
 #endif
 using System.Diagnostics;
 using System.Globalization;
+using System.Numerics;
 using System.Reflection;
 using System.Runtime.Serialization;
 using Newtonsoft.Json.Linq;
@@ -657,14 +658,17 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
           if (contract.IsConvertable)
           {
             if (contract.NonNullableUnderlyingType.IsEnum())
-              {
-                if (value is string)
-                  return Enum.Parse(contract.NonNullableUnderlyingType, value.ToString(), true);
-                else if (ConvertUtils.IsInteger(value))
-                  return Enum.ToObject(contract.NonNullableUnderlyingType, value);
-              }
+            {
+              if (value is string)
+                return Enum.Parse(contract.NonNullableUnderlyingType, value.ToString(), true);
+              else if (ConvertUtils.IsInteger(value))
+                return Enum.ToObject(contract.NonNullableUnderlyingType, value);
+            }
 
-              return Convert.ChangeType(value, contract.NonNullableUnderlyingType, culture);
+            if (value is BigInteger)
+              return ConvertUtils.FromBigInteger((BigInteger)value, targetType);
+
+            return Convert.ChangeType(value, contract.NonNullableUnderlyingType, culture);
           }
 
           return ConvertUtils.ConvertOrCast(value, culture, contract.NonNullableUnderlyingType);

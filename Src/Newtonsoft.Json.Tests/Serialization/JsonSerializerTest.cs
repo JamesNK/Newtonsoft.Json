@@ -7501,12 +7501,26 @@ Parameter name: value",
     }
 
     [Test]
+    public void ReadTooLargeInteger()
+    {
+      string json = @"[999999999999999999999999999999999999999999999999]";
+
+      IList<BigInteger> l = JsonConvert.DeserializeObject<IList<BigInteger>>(json);
+
+      Assert.AreEqual(BigInteger.Parse("999999999999999999999999999999999999999999999999"), l[0]);
+
+      ExceptionAssert.Throws<JsonSerializationException>(
+        "Error converting value 999999999999999999999999999999999999999999999999 to type 'System.Int64'. Path '[0]', line 1, position 49.",
+        () => JsonConvert.DeserializeObject<IList<long>>(json));
+    }
+
+    [Test]
     public void ReadStringFloatingPointSymbols()
     {
       string json = @"[
-  'NaN',
-  'Infinity',
-  '-Infinity'
+  ""NaN"",
+  ""Infinity"",
+  ""-Infinity""
 ]";
 
       IList<float> floats = JsonConvert.DeserializeObject<IList<float>>(json);

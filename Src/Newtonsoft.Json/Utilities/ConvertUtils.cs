@@ -317,6 +317,22 @@ namespace Newtonsoft.Json.Utilities
 
       throw new InvalidCastException("Cannot convert {0} to BigInteger.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
     }
+
+    public static object FromBigInteger(BigInteger i, Type targetType)
+    {
+      if (targetType == typeof (decimal))
+        return (decimal) i;
+      if (targetType == typeof (double))
+        return (double) i;
+      if (targetType == typeof (float))
+        return (float) i;
+      if (targetType == typeof (ulong))
+        return (ulong) i;
+      if (IsConvertible(targetType))
+        return System.Convert.ChangeType((long) i, targetType, CultureInfo.InvariantCulture);
+
+      throw new InvalidOperationException("Can not convert from BigInteger to {0}.".FormatWith(CultureInfo.InvariantCulture, targetType));
+    }
 #endif
 
     #region Convert
@@ -377,23 +393,9 @@ namespace Newtonsoft.Json.Utilities
 
 #if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
       if (targetType == typeof(BigInteger))
-      {
         return ToBigInteger(initialValue);
-      }
       if (initialValue is BigInteger)
-      {
-        BigInteger i = (BigInteger) initialValue;
-        if (targetType == typeof(decimal))
-          return (decimal) i;
-        if (targetType == typeof(double))
-          return (double) i;
-        if (targetType == typeof(float))
-          return (float) i;
-        if (targetType == typeof(ulong))
-          return (ulong) i;
-        if (IsConvertible(targetType))
-          return System.Convert.ChangeType((long) i, targetType, CultureInfo.InvariantCulture);
-      }
+        return FromBigInteger((BigInteger)initialValue, targetType);
 #endif
 
 #if !(NETFX_CORE || PORTABLE)
@@ -437,6 +439,7 @@ namespace Newtonsoft.Json.Utilities
 
       throw new InvalidOperationException("Can not convert from {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, initialType, targetType));
     }
+
     #endregion
 
     #region TryConvert
