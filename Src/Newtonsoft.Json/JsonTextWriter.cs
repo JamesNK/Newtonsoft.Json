@@ -214,6 +214,11 @@ namespace Newtonsoft.Json
       _writer.Write(':');
     }
 
+    /// <summary>
+    /// Writes the property name of a name/value pair on a JSON object.
+    /// </summary>
+    /// <param name="name">The name of the property.</param>
+    /// <param name="escape">A flag to indicate whether the text should be escaped when it is written as a JSON property name.</param>
     public override void WritePropertyName(string name, bool escape)
     {
       InternalWritePropertyName(name);

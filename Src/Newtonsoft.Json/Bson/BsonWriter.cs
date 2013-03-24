@@ -463,6 +463,10 @@ namespace Newtonsoft.Json.Bson
     }
 
 #if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+    /// <summary>
+    /// Writes a <see cref="BigInteger"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="BigInteger"/> value to write.</param>
     public override void WriteValue(BigInteger value)
     {
       base.WriteValue(value);

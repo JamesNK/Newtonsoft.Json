@@ -79,7 +79,7 @@ namespace Newtonsoft.Json.Tests.Serialization
           TypeNameHandling = TypeNameHandling.Auto
         };
       var sw = new StringWriter();
-      serializer.Serialize<Person>(new JsonTextWriter(sw) { Formatting = Formatting.Indented }, new WagePerson());
+      serializer.Serialize(new JsonTextWriter(sw) { Formatting = Formatting.Indented }, new WagePerson(), typeof(Person));
       var result = sw.ToString();
       
       Assert.AreEqual(@"{
@@ -102,7 +102,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     [Test]
     public void SerializeRootTypeNameAutoWithJsonConvert()
     {
-      string json = JsonConvert.SerializeObject<object>(new WagePerson(), Formatting.Indented, new JsonSerializerSettings
+      string json = JsonConvert.SerializeObject(new WagePerson(), typeof(object), Formatting.Indented, new JsonSerializerSettings
         {
           TypeNameHandling = TypeNameHandling.Auto
         });

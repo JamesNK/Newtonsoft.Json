@@ -931,7 +931,7 @@ namespace Newtonsoft.Json.Linq
 #endif
 #if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
       if (_value is BigInteger)
-        return TypeCode.Int64;
+        return TypeCode.Object;
 #endif
 
       return System.Type.GetTypeCode(_value.GetType());

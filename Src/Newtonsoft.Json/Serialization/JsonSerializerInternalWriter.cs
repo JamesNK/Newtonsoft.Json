@@ -56,13 +56,13 @@ namespace Newtonsoft.Json.Serialization
     {
     }
 
-    public void Serialize(JsonWriter jsonWriter, object value, Type rootType)
+    public void Serialize(JsonWriter jsonWriter, object value, Type objectType)
     {
       if (jsonWriter == null)
         throw new ArgumentNullException("jsonWriter");
 
-      if (rootType != null)
-        _rootContract = Serializer.ContractResolver.ResolveContract(rootType);
+      if (objectType != null)
+        _rootContract = Serializer.ContractResolver.ResolveContract(objectType);
 
       SerializeValue(jsonWriter, value, GetContractSafe(value), null, null, null);
     }

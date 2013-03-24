@@ -1904,7 +1904,7 @@ namespace Newtonsoft.Json.Tests.Converters
     }
 
 #if !NET20
-    class NullableXml
+    public class NullableXml
     {
       public string Name;
       public XElement notNull;

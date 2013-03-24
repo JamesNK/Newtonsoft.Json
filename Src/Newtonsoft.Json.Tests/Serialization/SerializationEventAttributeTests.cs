@@ -318,8 +318,10 @@ namespace Newtonsoft.Json.Tests.Serialization
       // Verify contract is properly finding our callback
       var resolver = new DefaultContractResolver().ResolveContract(typeof(FooEvent));
 
+#pragma warning disable 612,618
       Debug.Assert(resolver.OnError != null);
       Debug.Assert(resolver.OnError == typeof(FooEvent).GetMethod("OnError", BindingFlags.Instance | BindingFlags.NonPublic));
+#pragma warning restore 612,618
 
       var serializer = JsonSerializer.Create(new JsonSerializerSettings
       {

@@ -575,9 +575,52 @@ namespace Newtonsoft.Json.Tests.Linq
     public void GetTypeCode()
     {
       IConvertible v = new JValue(new Guid("0B5D4F85-E94C-4143-94C8-35F2AAEBB100"));
-
       Assert.AreEqual(TypeCode.Object, v.GetTypeCode());
+
+      v = new JValue(new Uri("http://www.google.com"));
+      Assert.AreEqual(TypeCode.Object, v.GetTypeCode());
+
+#if !(NET20 || NET35 || SILVERLIGHT)
+      v = new JValue(new BigInteger(3));
+      Assert.AreEqual(TypeCode.Object, v.GetTypeCode());
+#endif
+    }
+
+    [Test]
+    public void ToType()
+    {
+      IConvertible v = new JValue(9.0m);
+
+      int i = (int)v.ToType(typeof (int), CultureInfo.InvariantCulture);
+      Assert.AreEqual(9, i);
+
+      BigInteger bi = (BigInteger)v.ToType(typeof(BigInteger), CultureInfo.InvariantCulture);
+      Assert.AreEqual(new BigInteger(9), bi);
     }
 #endif
+
+    [Test]
+    public void ToStringFormat()
+    {
+      JValue v = new JValue(new DateTime(2013, 02, 01, 01, 02, 03, 04));
+
+      Assert.AreEqual("2013", v.ToString("yyyy"));
+    }
+
+    [Test]
+    public void ToStringNewTypes()
+    {
+      JArray a = new JArray(
+        new JValue(new DateTimeOffset(2013, 02, 01, 01, 02, 03, 04, TimeSpan.FromHours(1))),
+        new JValue(new BigInteger(5)),
+        new JValue(1.1f)
+        );
+
+      Assert.AreEqual(@"[
+  ""2013-02-01T01:02:03.004+01:00"",
+  5,
+  1.1
+]", a.ToString());
+    }
   }
 }

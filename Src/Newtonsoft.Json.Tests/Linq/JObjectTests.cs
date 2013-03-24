@@ -30,6 +30,7 @@ using System.ComponentModel;
 #if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
 using System.Numerics;
 #endif
+using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
 #if !NETFX_CORE
 using NUnit.Framework;
@@ -1936,28 +1937,57 @@ Parameter name: arrayIndex",
       Assert.IsFalse(a.TryGetValue(null, StringComparison.Ordinal, out v));
     }
 
-    [Test]
-    public void sdfsdf()
+    public class FooJsonConverter : JsonConverter
     {
-      string json = @"
+      public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+      {
+        var token = JToken.FromObject(value, new JsonSerializer
+          {
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+          });
+        if (token.Type == JTokenType.Object)
+        {
+          var o = (JObject)token;
+          o.AddFirst(new JProperty("foo", "bar"));
+          o.WriteTo(writer);
+        }
+        else
+          token.WriteTo(writer);
+      }
 
+      public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+      {
+        throw new NotSupportedException("This custom converter only supportes serialization and not deserialization.");
+      }
 
-{
- ""resultCount"":1,
- ""results"": [
-{""kind"":""software"", ""features"":[], ""supportedDevices"":[""all""], ""isGameCenterEnabled"":false, 
-""screenshotUrls"":[""http://a1483.phobos.apple.com/us/r1000/080/Purple/v4/97/93/25/9793257e-1508-631c-c867-7075fa4fd55a/mzl.vdfbnbtr.png"", ""http://a1052.phobos.apple.com/us/r1000/087/Purple/v4/8c/63/ec/8c63ecc0-4e1b-e8e5-d936-ac2ab3a5a09b/mzl.tcjeyxaz.png"", ""http://a955.phobos.apple.com/us/r1000/068/Purple/v4/b8/0f/3c/b80f3c4a-ef67-7c09-e7e0-71dd016b24eb/mzl.ytmcfche.png"", ""http://a139.phobos.apple.com/us/r1000/073/Purple/v4/85/22/78/852278c3-4c4f-1dd4-70a1-072722e233b6/mzl.lguhuzlo.png"", ""http://a1136.phobos.apple.com/us/r1000/091/Purple/v4/c7/25/52/c725526f-63d3-bb77-7cad-fce3a1725c1e/mzl.rrftrkgt.png""], ""ipadScreenshotUrls"":[], ""artworkUrl60"":""http://a1115.phobos.apple.com/us/r1000/119/Purple/v4/44/f8/a6/44f8a649-2a7f-05cb-bed1-9288f08f5e74/Icon.png"", ""artworkUrl512"":""http://a380.phobos.apple.com/us/r1000/062/Purple/v4/47/6e/ea/476eea43-10dd-17ae-e972-303e8008eac1/mzl.muprlqbf.png"", ""artistViewUrl"":""https://itunes.apple.com/us/artist/yellowpages.com-llc/id281970042?uo=4"", ""artistId"":281970042, ""artistName"":""YELLOWPAGES.COM LLC"", ""price"":0.00, ""version"":""3.9"", 
-""description"":""Find what\u2019s around you in a flash! Whether you\u2019re looking for a great place to eat or to find cheap gas on the way, the YP app connects you with local businesses, deals and events to help you get things done.\n\n\u2022 Search over 18 million businesses by typing, speaking, or browsing popular categories including movie theaters, hotels, mechanics, dentists, and more.\n\u2022 Add personalized shortcuts for instant access to nearby businesses, deals, gas prices and events.\n\u2022 Craving a specific food? We'll look through over 300,000 menus to figure out who's got what you want.\n\u2022 Find the \u201cbest\u201d gas prices near you with our unique visual gas price search.\n\u2022 Save with thousands of local coupons and deals from businesses near you.*\n\u2022 Get important information before heading out including:\n    - Ratings and reviews\n    - Photos \u2013 plus upload photos to your favorite businesses!\n    - Restaurant and service menus\n    - Movie showtimes\n    - Hours of operation\n    - Phone numbers\n    - Maps and directions \n\nWhatever you need\u2026 Wherever you are\u2026 the YP app covers you locally. What are you waiting for? Try it now! \n\n\n\n* Some restrictions may apply. Please call first to confirm the business will accept this coupon.  Not all businesses accept mobile coupons."", ""currency"":""USD"", ""genres"":[""Travel"", ""Navigation""], ""genreIds"":[""6003"", ""6010""], ""releaseDate"":""2008-07-11T07:00:00Z"", ""sellerName"":""Yellowpages.com"", ""bundleId"":""com.yellowpages.ypmobile"", ""trackId"":284806204, ""trackName"":""YP Local Search & Gas Prices"", ""primaryGenreName"":""Travel"", ""primaryGenreId"":6003, 
-""releaseNotes"":""\u2022 Support for full screen display on iPhone 5\n\u2022 Location Aware Autosuggest \u2013 based on your location, we'll suggest nearby businesses as you type to make searching faster\n\u2022 Crash and bug fixes to make the app more stable"", ""formattedPrice"":""Free"", ""wrapperType"":""software"", ""trackCensoredName"":""YP Local Search & Gas Prices"", ""languageCodesISO2A"":[""EN""], ""fileSizeBytes"":""8728406"", ""sellerUrl"":""http://www.yellowpages.com/products/ypmobile"", ""contentAdvisoryRating"":""4+"", ""averageUserRatingForCurrentVersion"":4.5, ""userRatingCountForCurrentVersion"":168, ""artworkUrl100"":""http://a380.phobos.apple.com/us/r1000/062/Purple/v4/47/6e/ea/476eea43-10dd-17ae-e972-303e8008eac1/mzl.muprlqbf.png"", ""trackViewUrl"":""https://itunes.apple.com/us/app/yp-local-search-gas-prices/id284806204?mt=8&uo=4"", ""trackContentRating"":""4+"", ""averageUserRating"":3.0, ""userRatingCount"":55022}]
-}
+      public override bool CanRead
+      {
+        get { return false; }
+      }
 
-";
+      public override bool CanConvert(Type objectType)
+      {
+        return true;
+      }
+    }
 
-      JObject o = JObject.Parse(json);
+    [Test]
+    public void FromObjectInsideConverterWithCustomSerializer()
+    {
+      var p = new Person
+      {
+        Name = "Daniel Wertheim",
+      };
 
-      string s = (string)o["results"][0]["description"];
+      var settings = new JsonSerializerSettings
+      {
+        Converters = new List<JsonConverter> { new FooJsonConverter() },
+        ContractResolver = new CamelCasePropertyNamesContractResolver()
+      };
 
-      Assert.AreEqual("Find what’s around you in a flash! Whether you’re looking for a great place to eat or to find cheap gas on the way, the YP app connects you with local businesses, deals and events to help you get things done.\n\n• Search over 18 million businesses by typing, speaking, or browsing popular categories including movie theaters, hotels, mechanics, dentists, and more.\n• Add personalized shortcuts for instant access to nearby businesses, deals, gas prices and events.\n• Craving a specific food? We'll look through over 300,000 menus to figure out who's got what you want.\n• Find the “best” gas prices near you with our unique visual gas price search.\n• Save with thousands of local coupons and deals from businesses near you.*\n• Get important information before heading out including:\n    - Ratings and reviews\n    - Photos – plus upload photos to your favorite businesses!\n    - Restaurant and service menus\n    - Movie showtimes\n    - Hours of operation\n    - Phone numbers\n    - Maps and directions \n\nWhatever you need… Wherever you are… the YP app covers you locally. What are you waiting for? Try it now! \n\n\n\n* Some restrictions may apply. Please call first to confirm the business will accept this coupon.  Not all businesses accept mobile coupons.", s);
+      var json = JsonConvert.SerializeObject(p, settings);
+
+      Assert.AreEqual(@"{""foo"":""bar"",""name"":""Daniel Wertheim"",""birthDate"":""0001-01-01T00:00:00"",""lastModified"":""0001-01-01T00:00:00""}", json);
     }
   }
 }

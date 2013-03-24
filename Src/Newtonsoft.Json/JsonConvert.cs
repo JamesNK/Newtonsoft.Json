@@ -933,16 +933,6 @@ namespace Newtonsoft.Json
       return SerializeObject(value, Formatting.None, settings);
     }
 
-    public static string SerializeObject<T>(T value, JsonSerializerSettings settings)
-    {
-      return SerializeObject<T>(value, Formatting.None, settings);
-    }
-
-    public static string SerializeObject<T>(T value, Formatting formatting, JsonSerializerSettings settings)
-    {
-      return SerializeObjectInternal(value, formatting, settings, typeof (T));
-    }
-
     /// <summary>
     /// Serializes the specified object to a JSON string using a collection of <see cref="JsonConverter"/>.
     /// </summary>
@@ -955,10 +945,25 @@ namespace Newtonsoft.Json
     /// </returns>
     public static string SerializeObject(object value, Formatting formatting, JsonSerializerSettings settings)
     {
-      return SerializeObjectInternal(value, formatting, settings, null);
+      return SerializeObject(value, null, formatting, settings);
     }
 
-    public static string SerializeObjectInternal(object value, Formatting formatting, JsonSerializerSettings settings, Type rootType)
+    /// <summary>
+    /// Serializes the specified object to a JSON string using a collection of <see cref="JsonConverter"/>.
+    /// </summary>
+    /// <param name="value">The object to serialize.</param>
+    /// <param name="formatting">Indicates how the output is formatted.</param>
+    /// <param name="settings">The <see cref="JsonSerializerSettings"/> used to serialize the object.
+    /// If this is null, default serialization settings will be is used.</param>
+    /// <param name="type">
+    /// The type of the value being serialized.
+    /// This parameter is used when <see cref="TypeNameHandling"/> is Auto to write out the type name if the type of the value does not match.
+    /// Specifing the type is optional.
+    /// </param>
+    /// <returns>
+    /// A JSON string representation of the object.
+    /// </returns>
+    public static string SerializeObject(object value, Type type, Formatting formatting, JsonSerializerSettings settings)
     {
       JsonSerializer jsonSerializer = JsonSerializer.Create(settings);
 
@@ -968,7 +973,7 @@ namespace Newtonsoft.Json
       {
         jsonWriter.Formatting = formatting;
 
-        jsonSerializer.Serialize(jsonWriter, value, rootType);
+        jsonSerializer.Serialize(jsonWriter, value, type);
       }
 
       return sw.ToString();
@@ -1080,6 +1085,21 @@ namespace Newtonsoft.Json
       return DeserializeObject<T>(value);
     }
 
+    /// <summary>
+    /// Deserializes the JSON to the given anonymous type.
+    /// </summary>
+    /// <typeparam name="T">
+    /// The anonymous type to deserialize to. This can't be specified
+    /// traditionally and must be infered from the anonymous type passed
+    /// as a parameter.
+    /// </typeparam>
+    /// <param name="value">The JSON to deserialize.</param>
+    /// <param name="anonymousTypeObject">The anonymous type object.</param>
+    /// <param name="settings">
+    /// The <see cref="JsonSerializerSettings"/> used to deserialize the object.
+    /// If this is null, default serialization settings will be is used.
+    /// </param>
+    /// <returns>The deserialized anonymous type from the JSON string.</returns>
     public static T DeserializeAnonymousType<T>(string value, T anonymousTypeObject, JsonSerializerSettings settings)
     {
       return DeserializeObject<T>(value, settings);

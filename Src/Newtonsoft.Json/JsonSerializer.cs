@@ -632,14 +632,36 @@ namespace Newtonsoft.Json
       Serialize(new JsonTextWriter(textWriter), value);
     }
 
-    public void Serialize(JsonWriter jsonWriter, object value, Type rootType)
+    /// <summary>
+    /// Serializes the specified <see cref="Object"/> and writes the Json structure
+    /// to a <c>Stream</c> using the specified <see cref="TextWriter"/>. 
+    /// </summary>
+    /// <param name="jsonWriter">The <see cref="JsonWriter"/> used to write the Json structure.</param>
+    /// <param name="value">The <see cref="Object"/> to serialize.</param>
+    /// <param name="objectType">
+    /// The type of the value being serialized.
+    /// This parameter is used when <see cref="TypeNameHandling"/> is Auto to write out the type name if the type of the value does not match.
+    /// Specifing the type is optional.
+    /// </param>
+    public void Serialize(JsonWriter jsonWriter, object value, Type objectType)
     {
-      SerializeInternal(jsonWriter, value, rootType);
+      SerializeInternal(jsonWriter, value, objectType);
     }
 
-    public void Serialize(TextWriter textWriter, object value, Type rootType)
+    /// <summary>
+    /// Serializes the specified <see cref="Object"/> and writes the Json structure
+    /// to a <c>Stream</c> using the specified <see cref="TextWriter"/>. 
+    /// </summary>
+    /// <param name="textWriter">The <see cref="TextWriter"/> used to write the Json structure.</param>
+    /// <param name="value">The <see cref="Object"/> to serialize.</param>
+    /// <param name="objectType">
+    /// The type of the value being serialized.
+    /// This parameter is used when <see cref="TypeNameHandling"/> is Auto to write out the type name if the type of the value does not match.
+    /// Specifing the type is optional.
+    /// </param>
+    public void Serialize(TextWriter textWriter, object value, Type objectType)
     {
-      Serialize(new JsonTextWriter(textWriter), value, rootType);
+      Serialize(new JsonTextWriter(textWriter), value, objectType);
     }
 
     /// <summary>
@@ -653,12 +675,7 @@ namespace Newtonsoft.Json
       SerializeInternal(jsonWriter, value, null);
     }
 
-    public void Serialize<T>(JsonWriter jsonWriter, object value)
-    {
-      SerializeInternal(jsonWriter, value, typeof(T));
-    }
-
-    internal virtual void SerializeInternal(JsonWriter jsonWriter, object value, Type rootType)
+    internal virtual void SerializeInternal(JsonWriter jsonWriter, object value, Type objectType)
     {
       ValidationUtils.ArgumentNotNull(jsonWriter, "jsonWriter");
 
@@ -713,7 +730,7 @@ namespace Newtonsoft.Json
       }
 
       JsonSerializerInternalWriter serializerWriter = new JsonSerializerInternalWriter(this);
-      serializerWriter.Serialize(jsonWriter, value, rootType);
+      serializerWriter.Serialize(jsonWriter, value, objectType);
 
       // reset writer back to previous options
       if (previousFormatting != null)

@@ -51,8 +51,19 @@ namespace Newtonsoft.Json.Serialization
     Linq
   }
 
+  /// <summary>
+  /// Handles <see cref="JsonSerializer"/> serialization callback events.
+  /// </summary>
+  /// <param name="o">The object that raised the callback event.</param>
+  /// <param name="context">The streaming context.</param>
   public delegate void SerializationCallback(object o, StreamingContext context);
 
+  /// <summary>
+  /// Handles <see cref="JsonSerializer"/> serialization error callback events.
+  /// </summary>
+  /// <param name="o">The object that raised the callback event.</param>
+  /// <param name="context">The streaming context.</param>
+  /// <param name="errorContext">The error context.</param>
   public delegate void SerializationErrorCallback(object o, StreamingContext context, ErrorContext errorContext);
 
   /// <summary>
