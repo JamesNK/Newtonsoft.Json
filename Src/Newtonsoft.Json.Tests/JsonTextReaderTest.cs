@@ -45,6 +45,57 @@ namespace Newtonsoft.Json.Tests
   public class JsonTextReaderTest : TestFixtureBase
   {
     [Test]
+    public void FloatParseHandling()
+    {
+      string json = "[1.0,1,9.9,1E-06]";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+      reader.FloatParseHandling = Json.FloatParseHandling.Decimal;
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(1.0d, reader.Value);
+      Assert.AreEqual(typeof(decimal), reader.ValueType);
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(1, reader.Value);
+      Assert.AreEqual(typeof(long), reader.ValueType);
+      Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(9.9d, reader.Value);
+      Assert.AreEqual(typeof(decimal), reader.ValueType);
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(Convert.ToDecimal(1E-06), reader.Value);
+      Assert.AreEqual(typeof(decimal), reader.ValueType);
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+    }
+
+    [Test]
+    public void FloatParseHandling_NaN()
+    {
+      string json = "[NaN]";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+      reader.FloatParseHandling = Json.FloatParseHandling.Decimal;
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+      ExceptionAssert.Throws<JsonReaderException>(
+        "Cannot read NaN as a decimal.",
+        () => reader.Read());
+    }
+
+    [Test]
     public void UnescapeDoubleQuotes()
     {
       string json = @"{""recipe_id"":""12"",""recipe_name"":""Apocalypse Leather Armors"",""recipe_text"":""#C16------------------------------\r\n#C12Ingredients #C20\r\n#C16------------------------------\r\n\r\na piece of Leather Armor\r\n( ie #L \""Enhanced Leather Armor Boots\"" \""85644\"" )\r\n<img src=rdb:\/\/13264>\r\n\r\n#L \""Hacker Tool\"" \""87814\""\r\n<img src=rdb:\/\/99282>\r\n\r\n#L \""Clanalizer\"" \""208313\""\r\n<img src=rdb:\/\/156479>\r\n\r\n#C16------------------------------\r\n#C12Recipe #C16\r\n#C16------------------------------#C20\r\n\r\nHacker Tool\r\n#C15+#C20\r\na piece of Leather Armor\r\n#C15=#C20\r\n<img src=rdb:\/\/13264>\r\na piece of Hacked Leather Armor\r\n( ie : #L \""Hacked Leather Armor Boots\"" \""245979\"" )\r\n#C16Skills: |  BE  |#C20\r\n\r\n#C14------------------------------#C20\r\n\r\nClanalizer\r\n#C15+#C20\r\na piece of Hacked Leather Armor\r\n#C15=#C20\r\n<img src=rdb:\/\/13264>\r\na piece of Apocalypse Leather Armor\r\n( ie : #L \""Apocalypse Leather Armor Boots\"" \""245966\"" )\r\n#C16Skills: |  ??  |#C20\r\n\r\n#C16------------------------------\r\n#C12Details#C16\r\n#C16------------------------------#C20\r\n\r\n#L \""Apocalypse Leather Armor Boots\"" \""245967\""\r\n#L \""Apocalypse Leather Armor Gloves\"" \""245969\""\r\n#L \""Apocalypse Leather Armor Helmet\"" \""245975\""\r\n#L \""Apocalypse Leather Armor Pants\"" \""245971\""\r\n#L \""Apocalypse Leather Armor Sleeves\"" \""245973\""\r\n#L \""Apocalypse Leather Body Armor\"" \""245965\""\r\n\r\n#C16------------------------------\r\n#C12Comments#C16\r\n#C16------------------------------#C20\r\n\r\nNice froob armor.. but ugleh!\r\n\r\n"",""recipe_author"":null}";

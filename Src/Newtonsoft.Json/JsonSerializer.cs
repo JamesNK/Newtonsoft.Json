@@ -63,6 +63,7 @@ namespace Newtonsoft.Json
     private DateTimeZoneHandling? _dateTimeZoneHandling;
     private DateParseHandling? _dateParseHandling;
     private FloatFormatHandling? _floatFormatHandling;
+    private FloatParseHandling? _floatParseHandling;
     private StringEscapeHandling? _stringEscapeHandling;
     private CultureInfo _culture;
     private int? _maxDepth;
@@ -347,9 +348,18 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Get or set how special floating point values, e.g. <see cref="F:System.Double.NaN"/>,
+    /// Get or set how floating point numbers, e.g. 1.0 and 9.9, are parsed when reading JSON text.
+    /// </summary>
+    public virtual FloatParseHandling FloatParseHandling
+    {
+      get { return _floatParseHandling ?? JsonSerializerSettings.DefaultFloatParseHandling; }
+      set { _floatParseHandling = value; }
+    }
+
+    /// <summary>
+    /// Get or set how special floating point numbers, e.g. <see cref="F:System.Double.NaN"/>,
     /// <see cref="F:System.Double.PositiveInfinity"/> and <see cref="F:System.Double.NegativeInfinity"/>,
-    /// are written as JSON.
+    /// are written as JSON text.
     /// </summary>
     public virtual FloatFormatHandling FloatFormatHandling
     {
@@ -476,6 +486,7 @@ namespace Newtonsoft.Json
         jsonSerializer._dateFormatString = settings._dateFormatString;
         jsonSerializer._dateFormatStringSet = settings._dateFormatStringSet;
         jsonSerializer._floatFormatHandling = settings._floatFormatHandling;
+        jsonSerializer._floatParseHandling = settings._floatParseHandling;
         jsonSerializer._stringEscapeHandling = settings._stringEscapeHandling;
         jsonSerializer._culture = settings._culture;
         jsonSerializer._maxDepth = settings._maxDepth;
@@ -598,6 +609,13 @@ namespace Newtonsoft.Json
         reader.DateParseHandling = _dateParseHandling.Value;
       }
 
+      FloatParseHandling? previousFloatParseHandling = null;
+      if (_floatParseHandling != null && reader.FloatParseHandling != _floatParseHandling)
+      {
+        previousFloatParseHandling = reader.FloatParseHandling;
+        reader.FloatParseHandling = _floatParseHandling.Value;
+      }
+
       int? previousMaxDepth = null;
       if (_maxDepthSet && reader.MaxDepth != _maxDepth)
       {
@@ -615,6 +633,8 @@ namespace Newtonsoft.Json
         reader.DateTimeZoneHandling = previousDateTimeZoneHandling.Value;
       if (previousDateParseHandling != null)
         reader.DateParseHandling = previousDateParseHandling.Value;
+      if (previousFloatParseHandling != null)
+        reader.FloatParseHandling = previousFloatParseHandling.Value;
       if (_maxDepthSet)
         reader.MaxDepth = previousMaxDepth;
 

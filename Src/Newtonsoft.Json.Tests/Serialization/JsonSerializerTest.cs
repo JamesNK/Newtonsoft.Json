@@ -3909,6 +3909,21 @@ To fix this error either change the environment to be fully trusted, change the 
     }
 
     [Test]
+    public void DeserializeFloatAsDecimal()
+    {
+      string json = @"{'value':9.9}";
+
+      var dic = JsonConvert.DeserializeObject<IDictionary<string, object>>(
+        json, new JsonSerializerSettings
+                {
+                  FloatParseHandling = FloatParseHandling.Decimal
+                });
+
+      Assert.AreEqual(typeof(decimal), dic["value"].GetType());
+      Assert.AreEqual(9.9d, dic["value"]);
+    }
+
+    [Test]
     public void ShouldSerializeTest()
     {
       ShouldSerializeTestClass c = new ShouldSerializeTestClass();
@@ -6766,6 +6781,41 @@ Parameter name: value",
     }
 
     [Test]
+    public void SerializeFloatingPointHandling()
+    {
+      string json;
+      IList<double> d = new List<double> {1.1, double.NaN, double.PositiveInfinity};
+
+      json = JsonConvert.SerializeObject(d);
+      // [1.1,"NaN","Infinity"]
+
+      json = JsonConvert.SerializeObject(d, new JsonSerializerSettings { FloatFormatHandling = FloatFormatHandling.Symbol });
+      // [1.1,NaN,Infinity]
+
+      json = JsonConvert.SerializeObject(d, new JsonSerializerSettings {FloatFormatHandling = FloatFormatHandling.DefaultValue});
+      // [1.1,0.0,0.0]
+
+      Assert.AreEqual("[1.1,0.0,0.0]", json);
+    }
+
+#if !(NET20 || NET35 || NET40 || PORTABLE || SILVERLIGHT)
+    [Test]
+    public void DeserializeReadOnlyListWithBigInteger()
+    {
+      string json = @"[
+        9000000000000000000000000000000000000000000000000
+      ]";
+
+      var l = JsonConvert.DeserializeObject<IReadOnlyList<BigInteger>>(json);
+
+      BigInteger nineQuindecillion = l[0];
+      // 9000000000000000000000000000000000000000000000000
+
+      Assert.AreEqual(BigInteger.Parse("9000000000000000000000000000000000000000000000000"), nineQuindecillion);
+    }
+#endif
+
+    [Test]
     public void SerializeCustomTupleWithSerializableAttribute()
     {
       var tuple = new MyTuple<int>(500);
@@ -7500,6 +7550,7 @@ Parameter name: value",
 }", json);
     }
 
+#if !(PORTABLE || NET35 || NET20 || SILVERLIGHT)
     [Test]
     public void ReadTooLargeInteger()
     {
@@ -7513,6 +7564,7 @@ Parameter name: value",
         "Error converting value 999999999999999999999999999999999999999999999999 to type 'System.Int64'. Path '[0]', line 1, position 49.",
         () => JsonConvert.DeserializeObject<IList<long>>(json));
     }
+#endif
 
     [Test]
     public void ReadStringFloatingPointSymbols()

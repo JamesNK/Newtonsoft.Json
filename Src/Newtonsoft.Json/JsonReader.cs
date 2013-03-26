@@ -112,6 +112,7 @@ namespace Newtonsoft.Json
     private int? _maxDepth;
     private bool _hasExceededMaxDepth;
     internal DateParseHandling _dateParseHandling;
+    internal FloatParseHandling _floatParseHandling;
     private readonly List<JsonPosition> _stack;
 
     /// <summary>
@@ -158,6 +159,15 @@ namespace Newtonsoft.Json
     {
       get { return _dateParseHandling; }
       set { _dateParseHandling = value; }
+    }
+
+    /// <summary>
+    /// Get or set how floating point numbers, e.g. 1.0 and 9.9, are parsed when reading JSON text.
+    /// </summary>
+    public FloatParseHandling FloatParseHandling
+    {
+      get { return _floatParseHandling; }
+      set { _floatParseHandling = value; }
     }
 
     /// <summary>
@@ -263,6 +273,7 @@ namespace Newtonsoft.Json
       _stack = new List<JsonPosition>(4);
       _dateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
       _dateParseHandling = DateParseHandling.DateTime;
+      _floatParseHandling = FloatParseHandling.Double;
 
       CloseInput = true;
     }

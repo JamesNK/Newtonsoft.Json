@@ -51,6 +51,19 @@ namespace Newtonsoft.Json.Tests.Linq
   public class JValueTests : TestFixtureBase
   {
     [Test]
+    public void FloatParseHandling()
+    {
+      JValue v = (JValue) JToken.ReadFrom(
+        new JsonTextReader(new StringReader("9.9"))
+          {
+            FloatParseHandling = Json.FloatParseHandling.Decimal
+          });
+
+      Assert.AreEqual(9.9d, v.Value);
+      Assert.AreEqual(typeof(decimal), v.Value.GetType());
+    }
+
+    [Test]
     public void ChangeValue()
     {
       JValue v = new JValue(true);

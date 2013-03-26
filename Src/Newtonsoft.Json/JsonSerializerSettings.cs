@@ -52,6 +52,7 @@ namespace Newtonsoft.Json
     internal const DateFormatHandling DefaultDateFormatHandling = DateFormatHandling.IsoDateFormat;
     internal const DateTimeZoneHandling DefaultDateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
     internal const DateParseHandling DefaultDateParseHandling = DateParseHandling.DateTime;
+    internal const FloatParseHandling DefaultFloatParseHandling = FloatParseHandling.Double;
     internal const FloatFormatHandling DefaultFloatFormatHandling = FloatFormatHandling.String;
     internal const StringEscapeHandling DefaultStringEscapeHandling = StringEscapeHandling.Default;
     internal static readonly CultureInfo DefaultCulture;
@@ -63,6 +64,7 @@ namespace Newtonsoft.Json
     internal DateTimeZoneHandling? _dateTimeZoneHandling;
     internal DateParseHandling? _dateParseHandling;
     internal FloatFormatHandling? _floatFormatHandling;
+    internal FloatParseHandling? _floatParseHandling;
     internal StringEscapeHandling? _stringEscapeHandling;
     internal CultureInfo _culture;
     internal bool? _checkAdditionalContent;
@@ -234,7 +236,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Get or set how special floating point values, e.g. <see cref="F:System.Double.NaN"/>,
+    /// Get or set how special floating point numbers, e.g. <see cref="F:System.Double.NaN"/>,
     /// <see cref="F:System.Double.PositiveInfinity"/> and <see cref="F:System.Double.NegativeInfinity"/>,
     /// are written as JSON.
     /// </summary>
@@ -242,6 +244,15 @@ namespace Newtonsoft.Json
     {
       get { return _floatFormatHandling ?? DefaultFloatFormatHandling; }
       set { _floatFormatHandling = value; }
+    }
+
+    /// <summary>
+    /// Get or set how floating point numbers, e.g. 1.0 and 9.9, are parsed when reading JSON text.
+    /// </summary>
+    public FloatParseHandling FloatParseHandling
+    {
+      get { return _floatParseHandling ?? DefaultFloatParseHandling; }
+      set { _floatParseHandling = value; }
     }
 
     /// <summary>

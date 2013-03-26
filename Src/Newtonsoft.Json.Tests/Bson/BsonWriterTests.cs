@@ -115,6 +115,20 @@ namespace Newtonsoft.Json.Tests.Bson
 #endif
 
     [Test]
+    public void WriteDouble()
+    {
+      MemoryStream ms = new MemoryStream();
+      BsonWriter writer = new BsonWriter(ms);
+
+      writer.WriteStartArray();
+      writer.WriteValue(99.99d);
+      writer.WriteEnd();
+
+      string bson = MiscellaneousUtils.BytesToHex(ms.ToArray());
+      Assert.AreEqual("10-00-00-00-01-30-00-8F-C2-F5-28-5C-FF-58-40-00", bson);
+    }
+
+    [Test]
     public void WriteArrayBsonFromSite()
     {
       MemoryStream ms = new MemoryStream();

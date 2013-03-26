@@ -254,7 +254,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Get or set how special floating point values, e.g. <see cref="F:System.Double.NaN"/>,
+    /// Get or set how special floating point numbers, e.g. <see cref="F:System.Double.NaN"/>,
     /// <see cref="F:System.Double.PositiveInfinity"/> and <see cref="F:System.Double.NegativeInfinity"/>,
     /// are written to JSON text.
     /// </summary>

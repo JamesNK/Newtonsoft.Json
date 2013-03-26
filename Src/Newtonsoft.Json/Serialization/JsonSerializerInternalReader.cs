@@ -33,7 +33,9 @@ using System.Dynamic;
 #endif
 using System.Diagnostics;
 using System.Globalization;
+#if !(PORTABLE || NET35 || NET20 || SILVERLIGHT)
 using System.Numerics;
+#endif
 using System.Reflection;
 using System.Runtime.Serialization;
 using Newtonsoft.Json.Linq;
@@ -665,8 +667,10 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                 return Enum.ToObject(contract.NonNullableUnderlyingType, value);
             }
 
+#if !(PORTABLE || NET35 || NET20 || SILVERLIGHT)
             if (value is BigInteger)
               return ConvertUtils.FromBigInteger((BigInteger)value, targetType);
+#endif
 
             return Convert.ChangeType(value, contract.NonNullableUnderlyingType, culture);
           }

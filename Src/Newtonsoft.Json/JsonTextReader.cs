@@ -1243,7 +1243,11 @@ namespace Newtonsoft.Json
           // it's faster to do 3 indexof with single characters than an indexofany
           if (number.IndexOf('.') != -1 || number.IndexOf('E') != -1 || number.IndexOf('e') != -1)
           {
-            numberValue = Convert.ToDouble(number, CultureInfo.InvariantCulture);
+            if (_floatParseHandling == FloatParseHandling.Decimal)
+              numberValue = decimal.Parse(number, NumberStyles.Number | NumberStyles.AllowExponent, CultureInfo.InvariantCulture);
+            else
+              numberValue = Convert.ToDouble(number, CultureInfo.InvariantCulture);
+
             numberType = JsonToken.Float;
           }
           else
@@ -1452,6 +1456,9 @@ namespace Newtonsoft.Json
     {
       if (MatchValueWithTrailingSeperator(JsonConvert.NegativeInfinity))
       {
+        if (_floatParseHandling == FloatParseHandling.Decimal)
+          throw new JsonReaderException("Cannot read -Infinity as a decimal.");
+
         SetToken(JsonToken.Float, double.NegativeInfinity);
       }
       else
@@ -1464,6 +1471,9 @@ namespace Newtonsoft.Json
     {
       if (MatchValueWithTrailingSeperator(JsonConvert.PositiveInfinity))
       {
+        if (_floatParseHandling == FloatParseHandling.Decimal)
+          throw new JsonReaderException("Cannot read Infinity as a decimal.");
+
         SetToken(JsonToken.Float, double.PositiveInfinity);
       }
       else
@@ -1476,6 +1486,9 @@ namespace Newtonsoft.Json
     {
       if (MatchValueWithTrailingSeperator(JsonConvert.NaN))
       {
+        if (_floatParseHandling == FloatParseHandling.Decimal)
+          throw new JsonReaderException("Cannot read NaN as a decimal.");
+
         SetToken(JsonToken.Float, double.NaN);
       }
       else

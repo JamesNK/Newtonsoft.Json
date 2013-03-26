@@ -504,7 +504,12 @@ namespace Newtonsoft.Json.Bson
       switch (type)
       {
         case BsonType.Number:
-          SetToken(JsonToken.Float, ReadDouble());
+          double d = ReadDouble();
+
+          if (_floatParseHandling == FloatParseHandling.Decimal)
+            SetToken(JsonToken.Float, Convert.ToDecimal(d, CultureInfo.InvariantCulture));
+          else
+            SetToken(JsonToken.Float, d);
           break;
         case BsonType.String:
         case BsonType.Symbol:

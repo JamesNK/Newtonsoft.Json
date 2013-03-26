@@ -138,6 +138,7 @@
     <Compile Include="DateTimeZoneHandling.cs" />
     <Compile Include="FloatFormatHandling.cs" />
     <Compile Include="DefaultValueHandling.cs" />
+    <Compile Include="FloatParseHandling.cs" />
     <Compile Include="FormatterAssemblyStyle.cs" />
     <Compile Include="Formatting.cs" />
     <Compile Include="IJsonLineInfo.cs" />
