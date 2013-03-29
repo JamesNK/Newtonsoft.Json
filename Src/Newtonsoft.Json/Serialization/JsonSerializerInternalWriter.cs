@@ -139,7 +139,7 @@ namespace Newtonsoft.Json.Serialization
         case JsonContractType.Array:
           JsonArrayContract arrayContract = (JsonArrayContract) valueContract;
           if (!arrayContract.IsMultidimensionalArray)
-            SerializeList(writer, (value.ShouldCreateWrapper) ? arrayContract.CreateWrapper(value) : (IList) value, arrayContract, member, containerContract, containerProperty);
+            SerializeList(writer, (value is IList) ? (IList)value : arrayContract.CreateWrapper(value), arrayContract, member, containerContract, containerProperty);
           else
             SerializeMultidimensionalArray(writer, (Array)value, arrayContract, member, containerContract, containerProperty);
           break;

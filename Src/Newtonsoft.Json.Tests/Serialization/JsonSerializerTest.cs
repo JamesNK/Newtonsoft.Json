@@ -3922,7 +3922,7 @@ To fix this error either change the environment to be fully trusted, change the 
                 });
 
       Assert.AreEqual(typeof(decimal), dic["value"].GetType());
-      Assert.AreEqual(9.9d, dic["value"]);
+      Assert.AreEqual(9.9m, dic["value"]);
     }
 
     [Test]

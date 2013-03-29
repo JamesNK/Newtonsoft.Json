@@ -129,35 +129,44 @@ namespace Newtonsoft.Json.Serialization
         canDeserialize = true;
         ShouldCreateWrapper = true;
       }
-      else if (underlyingType.IsGenericType() && underlyingType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+#if !(NET40 || NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE)
+      else if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof (IReadOnlyCollection<>), out tempCollectionType))
       {
-        _genericCollectionDefinitionType = typeof(IEnumerable<>);
         CollectionItemType = underlyingType.GetGenericArguments()[0];
-
         IsReadOnlyOrFixedSize = true;
-        canDeserialize = true;
+        TemporaryCollectionType = ReflectionUtils.MakeGenericType(typeof(List<>), CollectionItemType);
+        ShouldCreateWrapper = !typeof(IList).IsAssignableFrom(underlyingType);
+
+        canDeserialize = (ResolveReadOnlyCollectionConstructor(underlyingType, CollectionItemType) != null
+          || underlyingType.GetGenericTypeDefinition() == typeof(IReadOnlyCollection<>)
+          || underlyingType.GetGenericTypeDefinition() == typeof(IReadOnlyList<>));
       }
-      else if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof(IEnumerable<>), out tempCollectionType))
+#endif
+      else if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof (IEnumerable<>), out tempCollectionType))
       {
         CollectionItemType = tempCollectionType.GetGenericArguments()[0];
 
-        IsReadOnlyOrFixedSize = true;
-        canDeserialize = (ResolveReadOnlyCollectionConstructor(underlyingType, CollectionItemType) != null);
-        TemporaryCollectionType = ReflectionUtils.MakeGenericType(typeof(List<>), CollectionItemType);
-      }
-#if !(NET40 || NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE)
-      else if (underlyingType.IsGenericType() && underlyingType.GetGenericTypeDefinition() == typeof(IReadOnlyCollection<>))
-      {
-        CollectionItemType = underlyingType.GetGenericArguments()[0];
-        IsReadOnlyOrFixedSizeCollection = true;
+        if (underlyingType.GetGenericTypeDefinition() == typeof (IEnumerable<>))
+        {
+          _genericCollectionDefinitionType = tempCollectionType;
 
-        _readOnlyCollectionConstructor = ResolveReadOnlyCollectionConstructor(underlyingType, CollectionItemType);
+          IsReadOnlyOrFixedSize = false;
+          ShouldCreateWrapper = false;
+          canDeserialize = true;
+        }
+        else
+        {
+          IsReadOnlyOrFixedSize = true;
+          ShouldCreateWrapper = true;
+          canDeserialize = (ResolveReadOnlyCollectionConstructor(underlyingType, CollectionItemType) != null);
+          TemporaryCollectionType = ReflectionUtils.MakeGenericType(typeof(List<>), CollectionItemType);
+        }
       }
-#endif
       else
       {
         // types that implement IEnumerable and nothing else
         canDeserialize = false;
+        ShouldCreateWrapper = true;
       }
 
       CanDeserialize = canDeserialize;
@@ -183,7 +192,7 @@ namespace Newtonsoft.Json.Serialization
       {
         Type tempCollectionItemType = tempCollectionType.GetGenericArguments()[0];
         if (ReflectionUtils.IsNullableType(tempCollectionItemType))
-          _createWrapper = true;
+          ShouldCreateWrapper = true;
       }
 #endif
 

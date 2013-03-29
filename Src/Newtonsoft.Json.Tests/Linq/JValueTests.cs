@@ -59,7 +59,7 @@ namespace Newtonsoft.Json.Tests.Linq
             FloatParseHandling = Json.FloatParseHandling.Decimal
           });
 
-      Assert.AreEqual(9.9d, v.Value);
+      Assert.AreEqual(9.9m, v.Value);
       Assert.AreEqual(typeof(decimal), v.Value.GetType());
     }
 

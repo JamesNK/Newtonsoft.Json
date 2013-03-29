@@ -56,17 +56,17 @@ namespace Newtonsoft.Json.Tests
       Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
 
       Assert.IsTrue(reader.Read());
-      Assert.AreEqual(1.0d, reader.Value);
+      Assert.AreEqual(1.0m, reader.Value);
       Assert.AreEqual(typeof(decimal), reader.ValueType);
       Assert.AreEqual(JsonToken.Float, reader.TokenType);
 
       Assert.IsTrue(reader.Read());
-      Assert.AreEqual(1, reader.Value);
+      Assert.AreEqual(1l, reader.Value);
       Assert.AreEqual(typeof(long), reader.ValueType);
       Assert.AreEqual(JsonToken.Integer, reader.TokenType);
 
       Assert.IsTrue(reader.Read());
-      Assert.AreEqual(9.9d, reader.Value);
+      Assert.AreEqual(9.9m, reader.Value);
       Assert.AreEqual(typeof(decimal), reader.ValueType);
       Assert.AreEqual(JsonToken.Float, reader.TokenType);
 
