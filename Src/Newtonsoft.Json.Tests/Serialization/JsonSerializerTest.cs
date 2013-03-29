@@ -464,6 +464,8 @@ keyword such as type of business.""
 
       string jsonText = JsonConvert.SerializeObject(r1);
 
+      Assert.AreEqual("[0,1,2,3,4]", jsonText);
+
       ReadOnlyCollection<int> r2 = JsonConvert.DeserializeObject<ReadOnlyCollection<int>>(jsonText);
 
       CollectionAssert.AreEqual(r1, r2);
@@ -4260,8 +4262,8 @@ To fix this error either change the environment to be fully trusted, change the 
 
       string json = JsonConvert.SerializeObject(s1, Formatting.Indented);
 
-      ExceptionAssert.Throws<InvalidOperationException>(
-        "Cannot create and populate list type " + classRef + ".",
+      ExceptionAssert.Throws<JsonSerializationException>(
+        "Cannot create and populate list type " + classRef + ". Path 'StringDictionaryProperty', line 2, position 32.",
         () =>
         {
           JsonConvert.DeserializeObject<StringDictionaryTestClass>(json);
@@ -5311,6 +5313,7 @@ To fix this error either change the environment to be fully trusted, change the 
     {
       BusRun r = JsonConvert.DeserializeObject<BusRun>("{\"Departures\":[\"\\/Date(1309874148734-0400)\\/\",\"\\/Date(1309874148739-0400)\\/\",null],\"WheelchairAccessible\":true}");
 
+      Assert.AreEqual(typeof(List<DateTime?>), r.Departures.GetType());
       Assert.AreEqual(3, r.Departures.Count());
       Assert.IsNotNull(r.Departures.ElementAt(0));
       Assert.IsNotNull(r.Departures.ElementAt(1));
@@ -6746,6 +6749,40 @@ Parameter name: value",
       Assert.AreEqual("One", result.ElementAt(0));
       Assert.AreEqual("II", result.ElementAt(1));
       Assert.AreEqual("3", result.ElementAt(2));
+    }
+
+    public class EnumerableClassFailure<T> : IEnumerable<T>
+    {
+      private readonly IList<T> _values;
+
+      public EnumerableClassFailure()
+      {
+        _values = new List<T>();
+      }
+
+      public IEnumerator<T> GetEnumerator()
+      {
+        return _values.GetEnumerator();
+      }
+
+      IEnumerator IEnumerable.GetEnumerator()
+      {
+        return GetEnumerator();
+      }
+    }
+
+    [Test]
+    public void DeserializeIEnumerableFromConstructor_Failure()
+    {
+      string json = @"[
+  ""One"",
+  ""II"",
+  ""3""
+]";
+
+      ExceptionAssert.Throws<JsonSerializationException>(
+        "Cannot create and populate list type Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+EnumerableClassFailure`1[System.String]. Path '', line 1, position 1.",
+        () => JsonConvert.DeserializeObject<EnumerableClassFailure<string>>(json));
     }
 
     [JsonObject(MemberSerialization.Fields)]

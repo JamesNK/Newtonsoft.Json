@@ -139,7 +139,7 @@ namespace Newtonsoft.Json.Serialization
         case JsonContractType.Array:
           JsonArrayContract arrayContract = (JsonArrayContract) valueContract;
           if (!arrayContract.IsMultidimensionalArray)
-            SerializeList(writer, arrayContract.CreateWrapper(value), arrayContract, member, containerContract, containerProperty);
+            SerializeList(writer, (value.ShouldCreateWrapper) ? arrayContract.CreateWrapper(value) : (IList) value, arrayContract, member, containerContract, containerProperty);
           else
             SerializeMultidimensionalArray(writer, (Array)value, arrayContract, member, containerContract, containerProperty);
           break;
@@ -520,13 +520,16 @@ namespace Newtonsoft.Json.Serialization
       }
     }
 
-    private void SerializeList(JsonWriter writer, IWrappedCollection values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+    private void SerializeList(JsonWriter writer, IList values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
     {
-      OnSerializing(writer, contract, values.UnderlyingCollection);
+      IWrappedCollection wrappedCollection = values as IWrappedCollection;
+      object underlyingList = wrappedCollection != null ? wrappedCollection.UnderlyingCollection : values;
 
-      _serializeStack.Add(values.UnderlyingCollection);
+      OnSerializing(writer, contract, underlyingList);
 
-      bool hasWrittenMetadataObject = WriteStartArray(writer, values.UnderlyingCollection, contract, member, collectionContract, containerProperty);
+      _serializeStack.Add(underlyingList);
+
+      bool hasWrittenMetadataObject = WriteStartArray(writer, underlyingList, contract, member, collectionContract, containerProperty);
 
       writer.WriteStartArray();
 
@@ -554,7 +557,7 @@ namespace Newtonsoft.Json.Serialization
         }
         catch (Exception ex)
         {
-          if (IsErrorHandled(values.UnderlyingCollection, contract, index, null, writer.ContainerPath, ex))
+          if (IsErrorHandled(underlyingList, contract, index, null, writer.ContainerPath, ex))
             HandleError(writer, initialDepth);
           else
             throw;
@@ -572,7 +575,7 @@ namespace Newtonsoft.Json.Serialization
 
       _serializeStack.RemoveAt(_serializeStack.Count - 1);
 
-      OnSerialized(writer, contract, values.UnderlyingCollection);
+      OnSerialized(writer, contract, underlyingList);
     }
 
     private void SerializeMultidimensionalArray(JsonWriter writer, Array values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
@@ -817,22 +820,22 @@ To fix this error either change the environment to be fully trusted, change the 
       return false;
     }
 
-    private void SerializeDictionary(JsonWriter writer, IWrappedDictionary values, JsonDictionaryContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+    private void SerializeDictionary(JsonWriter writer, IDictionary values, JsonDictionaryContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
     {
-      OnSerializing(writer, contract, values.UnderlyingDictionary);
-      _serializeStack.Add(values.UnderlyingDictionary);
+      IWrappedDictionary wrappedDictionary = values as IWrappedDictionary;
+      object underlyingDictionary = wrappedDictionary != null ? wrappedDictionary.UnderlyingDictionary : values;
 
-      WriteObjectStart(writer, values.UnderlyingDictionary, contract, member, collectionContract, containerProperty);
+      OnSerializing(writer, contract, underlyingDictionary);
+      _serializeStack.Add(underlyingDictionary);
+
+      WriteObjectStart(writer, underlyingDictionary, contract, member, collectionContract, containerProperty);
 
       if (contract.ItemContract == null)
         contract.ItemContract = Serializer.ContractResolver.ResolveContract(contract.DictionaryValueType ?? typeof(object));
 
       int initialDepth = writer.Top;
 
-      // Mono Unity 3.0 fix
-      IWrappedDictionary d = values;
-
-      foreach (DictionaryEntry entry in d)
+      foreach (DictionaryEntry entry in values)
       {
         bool escape;
         string propertyName = GetPropertyName(writer, entry, out escape);
@@ -863,7 +866,7 @@ To fix this error either change the environment to be fully trusted, change the 
         }
         catch (Exception ex)
         {
-          if (IsErrorHandled(values.UnderlyingDictionary, contract, propertyName, null, writer.ContainerPath, ex))
+          if (IsErrorHandled(underlyingDictionary, contract, propertyName, null, writer.ContainerPath, ex))
             HandleError(writer, initialDepth);
           else
             throw;
@@ -874,7 +877,7 @@ To fix this error either change the environment to be fully trusted, change the 
 
       _serializeStack.RemoveAt(_serializeStack.Count - 1);
 
-      OnSerialized(writer, contract, values.UnderlyingDictionary);
+      OnSerialized(writer, contract, underlyingDictionary);
     }
 
     private string GetPropertyName(JsonWriter writer, DictionaryEntry entry, out bool escape)

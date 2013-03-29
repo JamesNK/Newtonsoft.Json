@@ -81,9 +81,15 @@ namespace Newtonsoft.Json.Serialization
       if (reader.TokenType == JsonToken.StartArray)
       {
         if (contract.ContractType == JsonContractType.Array)
-          PopulateList(CollectionUtils.CreateCollectionWrapper(target), reader, (JsonArrayContract) contract, null, null);
+        {
+          JsonArrayContract arrayContract = (JsonArrayContract) contract;
+
+          PopulateList((arrayContract.ShouldCreateWrapper) ? arrayContract.CreateWrapper(target) : (IList)target, reader, arrayContract, null, null);
+        }
         else
+        {
           throw JsonSerializationException.Create(reader, "Cannot populate JSON array onto type '{0}'.".FormatWith(CultureInfo.InvariantCulture, objectType));
+        }
       }
       else if (reader.TokenType == JsonToken.StartObject)
       {
@@ -98,11 +104,18 @@ namespace Newtonsoft.Json.Serialization
         }
 
         if (contract.ContractType == JsonContractType.Dictionary)
-          PopulateDictionary(CollectionUtils.CreateDictionaryWrapper(target), reader, (JsonDictionaryContract) contract, null, id);
+        {
+          JsonDictionaryContract dictionaryContract = (JsonDictionaryContract)contract;
+          PopulateDictionary((dictionaryContract.ShouldCreateWrapper) ? dictionaryContract.CreateWrapper(target) : (IDictionary)target, reader, dictionaryContract, null, id);
+        }
         else if (contract.ContractType == JsonContractType.Object)
+        {
           PopulateObject(target, reader, (JsonObjectContract) contract, null, id);
+        }
         else
+        {
           throw JsonSerializationException.Create(reader, "Cannot populate JSON object onto type '{0}'.".FormatWith(CultureInfo.InvariantCulture, objectType));
+        }
       }
       else
       {
@@ -389,21 +402,17 @@ namespace Newtonsoft.Json.Serialization
           break;
         case JsonContractType.Dictionary:
           JsonDictionaryContract dictionaryContract = (JsonDictionaryContract) contract;
-          bool isTemporaryDictionary = false;
           object targetDictionary;
           if (existingValue != null)
-            targetDictionary = existingValue;
+            targetDictionary = dictionaryContract.ShouldCreateWrapper ? dictionaryContract.CreateWrapper(existingValue) : existingValue;
           else
-            targetDictionary = CreateNewDictionary(reader, dictionaryContract, out isTemporaryDictionary);
+            targetDictionary = CreateNewDictionary(reader, dictionaryContract);
 
-          object dictionary = PopulateDictionary(dictionaryContract.CreateWrapper(targetDictionary), reader, dictionaryContract, member, id);
+          object dictionary = PopulateDictionary((IDictionary) targetDictionary, reader, dictionaryContract, member, id);
 
-          if (isTemporaryDictionary)
+          if (dictionaryContract.IsReadOnlyOrFixedSize)
           {
-            if (dictionaryContract.IsReadOnlyDictionary)
-            {
-              dictionary = ReflectionUtils.CreateInstance(contract.CreatedType, dictionary);
-            }
+            dictionary = ReflectionUtils.CreateInstance(contract.CreatedType, dictionary);
           }
 
           return dictionary;
@@ -575,37 +584,33 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
 
         if (existingValue == null)
         {
-          bool isTemporaryListReference;
-          IList list = CollectionUtils.CreateList(contract.CreatedType, out isTemporaryListReference);
-
-          if (id != null && isTemporaryListReference)
+          if (id != null && arrayContract.IsReadOnlyOrFixedSize)
             throw JsonSerializationException.Create(reader, "Cannot preserve reference to array or readonly list: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
-          if (contract.OnSerializingCallbacks.Count > 0 && isTemporaryListReference)
+          if (contract.OnSerializingCallbacks.Count > 0 && arrayContract.IsReadOnlyOrFixedSize)
             throw JsonSerializationException.Create(reader, "Cannot call OnSerializing on an array or readonly list: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
-          if (contract.OnErrorCallbacks.Count > 0 && isTemporaryListReference)
+          if (contract.OnErrorCallbacks.Count > 0 && arrayContract.IsReadOnlyOrFixedSize)
             throw JsonSerializationException.Create(reader, "Cannot call OnError on an array or readonly list: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
+          IList list = CreateNewList(reader, arrayContract);
+
           if (!arrayContract.IsMultidimensionalArray)
-            PopulateList(arrayContract.CreateWrapper(list), reader, arrayContract, member, id);
+            PopulateList(list, reader, arrayContract, member, id);
           else
             PopulateMultidimensionalArray(list, reader, arrayContract, member, id);
 
           // create readonly and fixed sized collections using the temporary list
-          if (isTemporaryListReference)
+          // not needed for IEnumerable<T> properties. temp list is final
+          if (arrayContract.IsReadOnlyOrFixedSize && list.GetType() != contract.CreatedType)
           {
             if (arrayContract.IsMultidimensionalArray)
             {
-              list = CollectionUtils.ToMultidimensionalArray(list, ReflectionUtils.GetCollectionItemType(contract.CreatedType), contract.CreatedType.GetArrayRank());
+              list = CollectionUtils.ToMultidimensionalArray(list, arrayContract.CollectionItemType, contract.CreatedType.GetArrayRank());
             }
             else if (contract.CreatedType.IsArray)
             {
-              list = CollectionUtils.ToArray(((List<object>) list).ToArray(), ReflectionUtils.GetCollectionItemType(contract.CreatedType));
-            }
-            else if (ReflectionUtils.InheritsGenericDefinition(contract.CreatedType, typeof(ReadOnlyCollection<>)))
-            {
-              list = (IList) ReflectionUtils.CreateInstance(contract.CreatedType, list);
+              list = CollectionUtils.ToArray(((List<object>)list).ToArray(), arrayContract.CollectionItemType);
             }
             else
             {
@@ -621,7 +626,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
         }
         else
         {
-          value = PopulateList(arrayContract.CreateWrapper(existingValue), reader, arrayContract, member, id);
+          value = PopulateList((arrayContract.ShouldCreateWrapper) ? arrayContract.CreateWrapper(existingValue) : (IList) existingValue, reader, arrayContract, member, id);
         }
       }
       else
@@ -832,26 +837,47 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
       return true;
     }
 
-    public object CreateNewDictionary(JsonReader reader, JsonDictionaryContract contract, out bool isTemporaryDictionary)
+    private IList CreateNewList(JsonReader reader, JsonArrayContract contract)
+    {
+      if (!contract.CanDeserialize)
+        throw JsonSerializationException.Create(reader, "Cannot create and populate list type {0}.".FormatWith(CultureInfo.InvariantCulture, contract.CreatedType));
+
+      if (contract.IsReadOnlyOrFixedSize && contract.TemporaryCollectionType != null)
+      {
+        return contract.CreateTemporaryCollection();
+      }
+      else
+      {
+        object list = contract.DefaultCreator();
+
+        if (contract.ShouldCreateWrapper)
+          list = contract.CreateWrapper(list);
+
+        return (IList)list;
+      }
+    }
+
+    private IDictionary CreateNewDictionary(JsonReader reader, JsonDictionaryContract contract)
     {
       object dictionary;
 
-      if (contract.DefaultCreator != null && (!contract.DefaultCreatorNonPublic || Serializer.ConstructorHandling == ConstructorHandling.AllowNonPublicDefaultConstructor))
-      {
-        dictionary = contract.DefaultCreator();
-        isTemporaryDictionary = false;
-      }
-      else if (contract.IsReadOnlyDictionary)
+      if (contract.IsReadOnlyOrFixedSize)
       {
         dictionary = contract.CreateTemporaryDictionary();
-        isTemporaryDictionary = true;
+      }
+      else if (contract.DefaultCreator != null && (!contract.DefaultCreatorNonPublic || Serializer.ConstructorHandling == ConstructorHandling.AllowNonPublicDefaultConstructor))
+      {
+        dictionary = contract.DefaultCreator();
+
+        if (contract.ShouldCreateWrapper)
+          dictionary = contract.CreateWrapper(dictionary);
       }
       else
       {
         throw JsonSerializationException.Create(reader, "Unable to find a default constructor to use for type {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
       }
 
-      return dictionary;
+      return (IDictionary)dictionary;
     }
 
     private void OnDeserializing(JsonReader reader, JsonContract contract, object value)
@@ -870,14 +896,15 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
       contract.InvokeOnDeserialized(value, Serializer.Context);
     }
 
-    private object PopulateDictionary(IWrappedDictionary wrappedDictionary, JsonReader reader, JsonDictionaryContract contract, JsonProperty containerProperty, string id)
+    private object PopulateDictionary(IDictionary dictionary, JsonReader reader, JsonDictionaryContract contract, JsonProperty containerProperty, string id)
     {
-      object dictionary = wrappedDictionary.UnderlyingDictionary;
+      IWrappedDictionary wrappedDictionary = dictionary as IWrappedDictionary;
+      object underlyingDictionary = wrappedDictionary != null ? wrappedDictionary.UnderlyingDictionary : dictionary;
 
       if (id != null)
-        AddReference(reader, id, dictionary);
+        AddReference(reader, id, underlyingDictionary);
 
-      OnDeserializing(reader, contract, dictionary);
+      OnDeserializing(reader, contract, underlyingDictionary);
 
       int initialDepth = reader.Depth;
 
@@ -900,6 +927,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
             {
               try
               {
+                // this is for correctly reading ISO and MS formatted dictionary keys
                 if (contract.DictionaryKeyType == typeof(DateTime) && JsonConvert.TryParseDateTime(keyValue.ToString(), DateParseHandling.DateTime, reader.DateTimeZoneHandling, out keyValue))
                 {
                 }
@@ -927,11 +955,11 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
               else
                 itemValue = CreateValueInternal(reader, contract.DictionaryValueType, contract.ItemContract, null, contract, containerProperty, null);
 
-              wrappedDictionary[keyValue] = itemValue;
+              dictionary[keyValue] = itemValue;
             }
             catch (Exception ex)
             {
-              if (IsErrorHandled(dictionary, contract, keyValue, reader as IJsonLineInfo, reader.Path, ex))
+              if (IsErrorHandled(underlyingDictionary, contract, keyValue, reader as IJsonLineInfo, reader.Path, ex))
                 HandleError(reader, true, initialDepth);
               else
                 throw;
@@ -948,10 +976,10 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
       } while (!finished && reader.Read());
 
       if (!finished)
-        ThrowUnexpectedEndException(reader, contract, dictionary, "Unexpected end when deserializing object.");
+        ThrowUnexpectedEndException(reader, contract, underlyingDictionary, "Unexpected end when deserializing object.");
 
-      OnDeserialized(reader, contract, dictionary);
-      return dictionary;
+      OnDeserialized(reader, contract, underlyingDictionary);
+      return underlyingDictionary;
     }
 
     private object PopulateMultidimensionalArray(IList list, JsonReader reader, JsonArrayContract contract, JsonProperty containerProperty, string id)
@@ -1092,21 +1120,22 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
       }
     }
 
-    private object PopulateList(IWrappedCollection wrappedList, JsonReader reader, JsonArrayContract contract, JsonProperty containerProperty, string id)
+    private object PopulateList(IList list, JsonReader reader, JsonArrayContract contract, JsonProperty containerProperty, string id)
     {
-      object list = wrappedList.UnderlyingCollection;
+      IWrappedCollection wrappedCollection = list as IWrappedCollection;
+      object underlyingList = wrappedCollection != null ? wrappedCollection.UnderlyingCollection : list;
 
       if (id != null)
-        AddReference(reader, id, list);
+        AddReference(reader, id, underlyingList);
 
       // can't populate an existing array
-      if (wrappedList.IsFixedSize)
+      if (list.IsFixedSize)
       {
         reader.Skip();
-        return list;
+        return underlyingList;
       }
 
-      OnDeserializing(reader, contract, list);
+      OnDeserializing(reader, contract, underlyingList);
 
       int initialDepth = reader.Depth;
 
@@ -1137,7 +1166,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                 else
                   value = CreateValueInternal(reader, contract.CollectionItemType, collectionItemContract, null, contract, containerProperty, null);
 
-                wrappedList.Add(value);
+                list.Add(value);
                 break;
             }
           }
@@ -1150,7 +1179,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
         {
           JsonPosition errorPosition = reader.GetPosition(initialDepth);
 
-          if (IsErrorHandled(list, contract, errorPosition.Position, reader as IJsonLineInfo, reader.Path, ex))
+          if (IsErrorHandled(underlyingList, contract, errorPosition.Position, reader as IJsonLineInfo, reader.Path, ex))
           {
             HandleError(reader, true, initialDepth);
 
@@ -1173,10 +1202,10 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
       } while (!finished);
 
       if (!finished)
-        ThrowUnexpectedEndException(reader, contract, list, "Unexpected end when deserializing array.");
+        ThrowUnexpectedEndException(reader, contract, underlyingList, "Unexpected end when deserializing array.");
 
-      OnDeserialized(reader, contract, list);
-      return list;
+      OnDeserialized(reader, contract, underlyingList);
+      return underlyingList;
     }
 
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)

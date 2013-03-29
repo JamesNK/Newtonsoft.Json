@@ -67,6 +67,9 @@ namespace Newtonsoft.Json.Serialization
 
     private Func<object> _genericTemporaryDictionaryCreator;
 
+    internal bool ShouldCreateWrapper { get; private set; }
+    internal bool IsReadOnlyOrFixedSize { get; private set; }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonDictionaryContract"/> class.
     /// </summary>
@@ -78,6 +81,7 @@ namespace Newtonsoft.Json.Serialization
 
       Type keyType;
       Type valueType;
+
       if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof(IDictionary<,>), out _genericCollectionDefinitionType))
       {
         keyType = _genericCollectionDefinitionType.GetGenericArguments()[0];
@@ -88,12 +92,16 @@ namespace Newtonsoft.Json.Serialization
       {
         keyType = _genericCollectionDefinitionType.GetGenericArguments()[0];
         valueType = _genericCollectionDefinitionType.GetGenericArguments()[1];
+
+        IsReadOnlyOrFixedSize = true;
       }
 #endif
       else
       {
         ReflectionUtils.GetDictionaryKeyValueTypes(UnderlyingType, out keyType, out valueType);
       }
+
+      ShouldCreateWrapper = !typeof (IDictionary).IsAssignableFrom(underlyingType);
 
       DictionaryKeyType = keyType;
       DictionaryValueType = valueType;
@@ -108,7 +116,6 @@ namespace Newtonsoft.Json.Serialization
 #if !(NET40 || NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE)
       else if (IsTypeGenericReadOnlyDictionaryInterface(UnderlyingType))
       {
-        IsReadOnlyDictionary = true;
         CreatedType = ReflectionUtils.MakeGenericType(typeof(ReadOnlyDictionary<,>), keyType, valueType);
       }
 #endif
@@ -134,7 +141,7 @@ namespace Newtonsoft.Json.Serialization
       return (IWrappedDictionary)_genericWrapperCreator(null, dictionary);
     }
 
-    internal object CreateTemporaryDictionary()
+    internal IDictionary CreateTemporaryDictionary()
     {
       if (_genericTemporaryDictionaryCreator == null)
       {
@@ -143,7 +150,7 @@ namespace Newtonsoft.Json.Serialization
         _genericTemporaryDictionaryCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateDefaultConstructor<object>(temporaryDictionaryType);
       }
 
-      return _genericTemporaryDictionaryCreator();
+      return (IDictionary)_genericTemporaryDictionaryCreator();
     }
 
     private bool IsTypeGenericDictionaryInterface(Type type)
@@ -167,7 +174,5 @@ namespace Newtonsoft.Json.Serialization
       return (genericDefinition == typeof(IReadOnlyDictionary<,>));
     }
 #endif
-
-    internal bool IsReadOnlyDictionary { get; set; }
   }
 }
