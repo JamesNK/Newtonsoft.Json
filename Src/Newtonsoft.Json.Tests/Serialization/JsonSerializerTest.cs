@@ -2723,14 +2723,23 @@ Path '', line 1, position 2.",
     [Test]
     public void DeserializeDictionaryWithNoDefaultConstructor()
     {
-      string json = "{key1:'value',key2:'value',key3:'value'}";
+      string json = "{key1:'value1',key2:'value2',key3:'value3'}";
 
-      ExceptionAssert.Throws<JsonSerializationException>(
-        "Unable to find a default constructor to use for type Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+DictionaryWithNoDefaultConstructor. Path 'key1', line 1, position 6.",
-        () =>
-        {
-          JsonConvert.DeserializeObject<DictionaryWithNoDefaultConstructor>(json);
-        });
+      var dic = JsonConvert.DeserializeObject<DictionaryWithNoDefaultConstructor>(json);
+
+      Assert.AreEqual(3, dic.Count);
+      Assert.AreEqual("value1", dic["key1"]);
+      Assert.AreEqual("value2", dic["key2"]);
+      Assert.AreEqual("value3", dic["key3"]);
+    }
+
+    [Test]
+    public void DeserializeDictionaryWithNoDefaultConstructor_PreserveReferences()
+    {
+      string json = "{'$id':'1',key1:'value1',key2:'value2',key3:'value3'}";
+
+      ExceptionAssert.Throws<JsonSerializationException>("Cannot preserve reference to readonly dictionary, or dictionary created from a non-default constructor: Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+DictionaryWithNoDefaultConstructor. Path 'key1', line 1, position 16.",
+        () => JsonConvert.DeserializeObject<DictionaryWithNoDefaultConstructor>(json, new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.All }));
     }
 
     public class DictionaryWithNoDefaultConstructor : Dictionary<string, string>
@@ -7941,6 +7950,53 @@ Parameter name: value",
 ]", json);
     }
 #endif
+
+    public class PrivateDefaultCtorList<T> : List<T>
+    {
+      private PrivateDefaultCtorList()
+      {
+      }
+    }
+
+    [Test]
+    public void DeserializePrivateListCtor()
+    {
+      ExceptionAssert.Throws<JsonSerializationException>(
+        "Unable to find a constructor to use for type Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+PrivateDefaultCtorList`1[System.Int32]. Path '', line 1, position 1.",
+        () => JsonConvert.DeserializeObject<PrivateDefaultCtorList<int>>("[1,2]")
+        );
+
+      var list = JsonConvert.DeserializeObject<PrivateDefaultCtorList<int>>("[1,2]", new JsonSerializerSettings
+        {
+          ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
+        });
+
+      Assert.AreEqual(2, list.Count);
+    }
+
+    public class PrivateDefaultCtorWithIEnumerableCtorList<T> : List<T>
+    {
+      private PrivateDefaultCtorWithIEnumerableCtorList()
+      {
+      }
+
+      public PrivateDefaultCtorWithIEnumerableCtorList(IEnumerable<T> values)
+        : base(values)
+      {
+        Add(default(T));
+      }
+    }
+
+    [Test]
+    public void DeserializePrivateListConstructor()
+    {
+      var list = JsonConvert.DeserializeObject<PrivateDefaultCtorWithIEnumerableCtorList<int>>("[1,2]");
+
+      Assert.AreEqual(3, list.Count);
+      Assert.AreEqual(1, list[0]);
+      Assert.AreEqual(2, list[1]);
+      Assert.AreEqual(0, list[2]);
+    }
   }
 
   public enum Antworten

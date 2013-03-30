@@ -243,7 +243,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 }";
 
       ExceptionAssert.Throws<JsonSerializationException>(
-        @"Cannot preserve reference to array or readonly list: System.String[][]. Path '$values', line 3, position 15.",
+        @"Cannot preserve reference to array or readonly list, or list created from a non-default constructor: System.String[][]. Path '$values', line 3, position 15.",
         () =>
           {
             JsonConvert.DeserializeObject<string[][]>(json,

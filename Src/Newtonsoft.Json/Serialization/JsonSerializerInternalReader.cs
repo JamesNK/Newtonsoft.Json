@@ -369,53 +369,80 @@ namespace Newtonsoft.Json.Serialization
       switch (contract.ContractType)
       {
         case JsonContractType.Object:
-          bool createdFromNonDefaultConstructor = false;
-          JsonObjectContract objectContract = (JsonObjectContract) contract;
-          object targetObject;
-          if (existingValue != null)
-            targetObject = existingValue;
-          else
-            targetObject = CreateNewObject(reader, objectContract, member, containerMember, id, out createdFromNonDefaultConstructor);
+          {
+            bool createdFromNonDefaultConstructor = false;
+            JsonObjectContract objectContract = (JsonObjectContract) contract;
+            object targetObject;
+            if (existingValue != null)
+              targetObject = existingValue;
+            else
+              targetObject = CreateNewObject(reader, objectContract, member, containerMember, id, out createdFromNonDefaultConstructor);
 
-          // don't populate if read from non-default constructor because the object has already been read
-          if (createdFromNonDefaultConstructor)
-            return targetObject;
+            // don't populate if read from non-default constructor because the object has already been read
+            if (createdFromNonDefaultConstructor)
+              return targetObject;
 
-          return PopulateObject(targetObject, reader, objectContract, member, id);
+            return PopulateObject(targetObject, reader, objectContract, member, id);
+          }
         case JsonContractType.Primitive:
-          JsonPrimitiveContract primitiveContract = (JsonPrimitiveContract)contract;
-          // if the content is inside $value then read past it
-          if (reader.TokenType == JsonToken.PropertyName && string.Equals(reader.Value.ToString(), JsonTypeReflector.ValuePropertyName, StringComparison.Ordinal))
           {
-            CheckedRead(reader);
+            JsonPrimitiveContract primitiveContract = (JsonPrimitiveContract) contract;
+            // if the content is inside $value then read past it
+            if (reader.TokenType == JsonToken.PropertyName && string.Equals(reader.Value.ToString(), JsonTypeReflector.ValuePropertyName, StringComparison.Ordinal))
+            {
+              CheckedRead(reader);
 
-            // the token should not be an object because the $type value could have been included in the object
-            // without needing the $value property
-            if (reader.TokenType == JsonToken.StartObject)
-              throw JsonSerializationException.Create(reader, "Unexpected token when deserializing primitive value: " + reader.TokenType);
+              // the token should not be an object because the $type value could have been included in the object
+              // without needing the $value property
+              if (reader.TokenType == JsonToken.StartObject)
+                throw JsonSerializationException.Create(reader, "Unexpected token when deserializing primitive value: " + reader.TokenType);
 
-            object value = CreateValueInternal(reader, objectType, primitiveContract, member, null, null, existingValue);
+              object value = CreateValueInternal(reader, objectType, primitiveContract, member, null, null, existingValue);
 
-            CheckedRead(reader);
-            return value;
+              CheckedRead(reader);
+              return value;
+            }
+            break;
           }
-          break;
         case JsonContractType.Dictionary:
-          JsonDictionaryContract dictionaryContract = (JsonDictionaryContract) contract;
-          object targetDictionary;
-          if (existingValue != null)
-            targetDictionary = dictionaryContract.ShouldCreateWrapper ? dictionaryContract.CreateWrapper(existingValue) : existingValue;
-          else
-            targetDictionary = CreateNewDictionary(reader, dictionaryContract);
-
-          object dictionary = PopulateDictionary((IDictionary) targetDictionary, reader, dictionaryContract, member, id);
-
-          if (dictionaryContract.IsReadOnlyOrFixedSize)
           {
-            dictionary = ReflectionUtils.CreateInstance(contract.CreatedType, dictionary);
-          }
+            JsonDictionaryContract dictionaryContract = (JsonDictionaryContract) contract;
+            object targetDictionary;
 
-          return dictionary;
+            if (existingValue == null)
+            {
+              bool createdFromNonDefaultConstructor;
+              IDictionary dictionary = CreateNewDictionary(reader, dictionaryContract, out createdFromNonDefaultConstructor);
+
+              if (id != null && createdFromNonDefaultConstructor)
+                throw JsonSerializationException.Create(reader, "Cannot preserve reference to readonly dictionary, or dictionary created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+
+              if (contract.OnSerializingCallbacks.Count > 0 && createdFromNonDefaultConstructor)
+                throw JsonSerializationException.Create(reader, "Cannot call OnSerializing on readonly dictionary, or dictionary created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+
+              if (contract.OnErrorCallbacks.Count > 0 && createdFromNonDefaultConstructor)
+                throw JsonSerializationException.Create(reader, "Cannot call OnError on readonly list, or dictionary created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+
+              PopulateDictionary(dictionary, reader, dictionaryContract, member, id);
+
+              if (createdFromNonDefaultConstructor)
+              {
+                return dictionaryContract.ParametrizedConstructor.Invoke(new object[] {dictionary});
+              }
+              else if (dictionary is IWrappedDictionary)
+              {
+                return ((IWrappedDictionary)dictionary).UnderlyingDictionary;
+              }
+
+              targetDictionary = dictionary;
+            }
+            else
+            {
+              targetDictionary = PopulateDictionary(dictionaryContract.ShouldCreateWrapper ? dictionaryContract.CreateWrapper(existingValue) : (IDictionary) existingValue, reader, dictionaryContract, member, id);
+            }
+
+            return targetDictionary;
+          }
 #if !(NET35 || NET20)
         case JsonContractType.Dynamic:
           JsonDynamicContract dynamicContract = (JsonDynamicContract) contract;
@@ -584,25 +611,24 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
 
         if (existingValue == null)
         {
-          if (id != null && arrayContract.IsReadOnlyOrFixedSize)
-            throw JsonSerializationException.Create(reader, "Cannot preserve reference to array or readonly list: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+          bool createdFromNonDefaultConstructor;
+          IList list = CreateNewList(reader, arrayContract, out createdFromNonDefaultConstructor);
 
-          if (contract.OnSerializingCallbacks.Count > 0 && arrayContract.IsReadOnlyOrFixedSize)
-            throw JsonSerializationException.Create(reader, "Cannot call OnSerializing on an array or readonly list: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+          if (id != null && createdFromNonDefaultConstructor)
+            throw JsonSerializationException.Create(reader, "Cannot preserve reference to array or readonly list, or list created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
-          if (contract.OnErrorCallbacks.Count > 0 && arrayContract.IsReadOnlyOrFixedSize)
-            throw JsonSerializationException.Create(reader, "Cannot call OnError on an array or readonly list: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+          if (contract.OnSerializingCallbacks.Count > 0 && createdFromNonDefaultConstructor)
+            throw JsonSerializationException.Create(reader, "Cannot call OnSerializing on an array or readonly list, or list created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
-          IList list = CreateNewList(reader, arrayContract);
+          if (contract.OnErrorCallbacks.Count > 0 && createdFromNonDefaultConstructor)
+            throw JsonSerializationException.Create(reader, "Cannot call OnError on an array or readonly list, or list created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
           if (!arrayContract.IsMultidimensionalArray)
             PopulateList(list, reader, arrayContract, member, id);
           else
             PopulateMultidimensionalArray(list, reader, arrayContract, member, id);
 
-          // create readonly and fixed sized collections using the temporary list
-          // not needed for IEnumerable<T> properties. temp list is final
-          if (arrayContract.IsReadOnlyOrFixedSize && list.GetType() != contract.CreatedType)
+          if (createdFromNonDefaultConstructor)
           {
             if (arrayContract.IsMultidimensionalArray)
             {
@@ -610,11 +636,14 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
             }
             else if (contract.CreatedType.IsArray)
             {
-              list = CollectionUtils.ToArray(((List<object>)list).ToArray(), arrayContract.CollectionItemType);
+              Array a = Array.CreateInstance(arrayContract.CollectionItemType, list.Count);
+              list.CopyTo(a, 0);
+              list = a;
             }
             else
             {
-              return ReflectionUtils.CreateInstance(contract.CreatedType, list);
+              // call constructor that takes IEnumerable<T>
+              return arrayContract.ParametrizedConstructor.Invoke(new object[] { list });
             }
           }
           else if (list is IWrappedCollection)
@@ -837,47 +866,64 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
       return true;
     }
 
-    private IList CreateNewList(JsonReader reader, JsonArrayContract contract)
+    private IList CreateNewList(JsonReader reader, JsonArrayContract contract, out bool createdFromNonDefaultConstructor)
     {
+      // some types like non-generic IEnumerable can be serialized but not deserialized
       if (!contract.CanDeserialize)
         throw JsonSerializationException.Create(reader, "Cannot create and populate list type {0}.".FormatWith(CultureInfo.InvariantCulture, contract.CreatedType));
 
-      if (contract.IsReadOnlyOrFixedSize && contract.TemporaryCollectionType != null)
+      if (contract.IsReadOnlyOrFixedSize)
       {
+        createdFromNonDefaultConstructor = true;
         return contract.CreateTemporaryCollection();
       }
-      else
+      else if (contract.DefaultCreator != null && (!contract.DefaultCreatorNonPublic || Serializer.ConstructorHandling == ConstructorHandling.AllowNonPublicDefaultConstructor))
       {
         object list = contract.DefaultCreator();
 
         if (contract.ShouldCreateWrapper)
           list = contract.CreateWrapper(list);
 
+        createdFromNonDefaultConstructor = false;
         return (IList)list;
+      }
+      else if (contract.ParametrizedConstructor != null)
+      {
+        createdFromNonDefaultConstructor = true;
+        return contract.CreateTemporaryCollection();
+      }
+      else
+      {
+        throw JsonSerializationException.Create(reader, "Unable to find a constructor to use for type {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
       }
     }
 
-    private IDictionary CreateNewDictionary(JsonReader reader, JsonDictionaryContract contract)
+    private IDictionary CreateNewDictionary(JsonReader reader, JsonDictionaryContract contract, out bool createdFromNonDefaultConstructor)
     {
-      object dictionary;
-
       if (contract.IsReadOnlyOrFixedSize)
       {
-        dictionary = contract.CreateTemporaryDictionary();
+        createdFromNonDefaultConstructor = true;
+        return contract.CreateTemporaryDictionary();
       }
       else if (contract.DefaultCreator != null && (!contract.DefaultCreatorNonPublic || Serializer.ConstructorHandling == ConstructorHandling.AllowNonPublicDefaultConstructor))
       {
-        dictionary = contract.DefaultCreator();
+        object dictionary = contract.DefaultCreator();
 
         if (contract.ShouldCreateWrapper)
           dictionary = contract.CreateWrapper(dictionary);
+
+        createdFromNonDefaultConstructor = false;
+        return (IDictionary) dictionary;
+      }
+      else if (contract.ParametrizedConstructor != null)
+      {
+        createdFromNonDefaultConstructor = true;
+        return contract.CreateTemporaryDictionary();
       }
       else
       {
         throw JsonSerializationException.Create(reader, "Unable to find a default constructor to use for type {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
       }
-
-      return (IDictionary)dictionary;
     }
 
     private void OnDeserializing(JsonReader reader, JsonContract contract, object value)

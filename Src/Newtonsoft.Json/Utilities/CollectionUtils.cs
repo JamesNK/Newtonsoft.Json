@@ -114,6 +114,24 @@ namespace Newtonsoft.Json.Utilities
       return false;
     }
 
+    public static ConstructorInfo ResolveEnumableCollectionConstructor(Type collectionType, Type collectionItemType)
+    {
+      Type genericEnumerable = ReflectionUtils.MakeGenericType(typeof(IEnumerable<>), collectionItemType);
+
+      foreach (ConstructorInfo constructor in collectionType.GetConstructors(BindingFlags.Public | BindingFlags.Instance))
+      {
+        IList<ParameterInfo> parameters = constructor.GetParameters();
+
+        if (parameters.Count == 1)
+        {
+          if (genericEnumerable.IsAssignableFrom(parameters[0].ParameterType))
+            return constructor;
+        }
+      }
+
+      return null;
+    }
+
     public static IWrappedCollection CreateCollectionWrapper(object list)
     {
       ValidationUtils.ArgumentNotNull(list, "list");

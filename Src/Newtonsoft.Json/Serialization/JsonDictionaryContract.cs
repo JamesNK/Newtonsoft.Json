@@ -69,6 +69,7 @@ namespace Newtonsoft.Json.Serialization
 
     internal bool ShouldCreateWrapper { get; private set; }
     internal bool IsReadOnlyOrFixedSize { get; private set; }
+    internal ConstructorInfo ParametrizedConstructor { get; private set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonDictionaryContract"/> class.
@@ -100,6 +101,9 @@ namespace Newtonsoft.Json.Serialization
       {
         ReflectionUtils.GetDictionaryKeyValueTypes(UnderlyingType, out keyType, out valueType);
       }
+
+      if (keyType != null && valueType != null)
+        ParametrizedConstructor = CollectionUtils.ResolveEnumableCollectionConstructor(underlyingType, ReflectionUtils.MakeGenericType(typeof(KeyValuePair<,>), keyType, valueType));
 
       ShouldCreateWrapper = !typeof (IDictionary).IsAssignableFrom(underlyingType);
 
