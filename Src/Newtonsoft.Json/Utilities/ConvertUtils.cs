@@ -573,7 +573,7 @@ namespace Newtonsoft.Json.Utilities
 
       if (isNegative)
       {
-        // just a negative sign
+        // text just a negative sign
         if (length == 1)
           throw new FormatException("Input string was not in a correct format.");
 
@@ -581,22 +581,27 @@ namespace Newtonsoft.Json.Utilities
         length--;
       }
 
-      int result = 0;
-      int end = start + length;
-      for (int i = start; i < end; i++)
+      checked
       {
-        char c = value[i];
+        int result = 0;
+        int end = start + length;
+        for (int i = start; i < end; i++)
+        {
+          char c = value[i];
 
-        if (!(c >= '0' && c <= '9'))
-          throw new FormatException("Input string was not in a correct format.");
+          if (c < '0' || c > '9')
+            throw new FormatException("Input string was not in a correct format.");
 
-        result = 10 * result + (c - 48);
+          result = 10*result + -(c - 48);
+        }
+
+        // go from negative to positive to avoids overflow
+        // negative can be slightly bigger than positive
+        if (!isNegative)
+          result = -result;
+
+        return result;
       }
-
-      if (isNegative)
-        result = 0 - result;
-
-      return result;
     }
   }
 }
