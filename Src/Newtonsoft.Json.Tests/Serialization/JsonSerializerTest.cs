@@ -4186,8 +4186,16 @@ To fix this error either change the environment to be fully trusted, change the 
   4.3,
   null
 ]", jsonText);
+    }
 
-      double?[] d = (double?[])JsonConvert.DeserializeObject(jsonText, typeof(double?[]));
+    [Test]
+    public void DeserializeNullableArray()
+    {
+      double?[] d = (double?[])JsonConvert.DeserializeObject(@"[
+  2.4,
+  4.3,
+  null
+]", typeof(double?[]));
 
       Assert.AreEqual(3, d.Length);
       Assert.AreEqual(2.4, d[0]);
@@ -6747,17 +6755,17 @@ Parameter name: value",
     public void DeserializeIEnumerableFromConstructor()
     {
       string json = @"[
-  ""One"",
-  ""II"",
-  ""3""
+  1,
+  2,
+  null
 ]";
 
-      var result = JsonConvert.DeserializeObject<EnumerableClass<string>>(json);
+      var result = JsonConvert.DeserializeObject<EnumerableClass<int?>>(json);
 
       Assert.AreEqual(3, result.Count());
-      Assert.AreEqual("One", result.ElementAt(0));
-      Assert.AreEqual("II", result.ElementAt(1));
-      Assert.AreEqual("3", result.ElementAt(2));
+      Assert.AreEqual(1, result.ElementAt(0));
+      Assert.AreEqual(2, result.ElementAt(1));
+      Assert.AreEqual(null, result.ElementAt(2));
     }
 
     public class EnumerableClassFailure<T> : IEnumerable<T>
@@ -6858,6 +6866,20 @@ Parameter name: value",
       // 9000000000000000000000000000000000000000000000000
 
       Assert.AreEqual(BigInteger.Parse("9000000000000000000000000000000000000000000000000"), nineQuindecillion);
+    }
+
+    [Test]
+    public void DeserializeReadOnlyListWithNullableType()
+    {
+      string json = @"[
+        1,
+        null
+      ]";
+
+      var l = JsonConvert.DeserializeObject<IReadOnlyList<int?>>(json);
+
+      Assert.AreEqual(1, l[0]);
+      Assert.AreEqual(null, l[1]);
     }
 #endif
 
@@ -7787,7 +7809,18 @@ Parameter name: value",
     }
 #endif
 
+    [Test]
+    public void DeserializeNonGenericList()
+    {
+      IList l = JsonConvert.DeserializeObject<IList>("['string!']");
+
+      Assert.AreEqual(typeof(List<object>), l.GetType());
+      Assert.AreEqual(1, l.Count);
+      Assert.AreEqual("string!", l[0]);
+    }
+
 #if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+    [Test]
     public void SerializeBigInteger()
     {
       BigInteger i = BigInteger.Parse("123456789999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999990");

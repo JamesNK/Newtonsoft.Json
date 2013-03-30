@@ -875,7 +875,12 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
       if (contract.IsReadOnlyOrFixedSize)
       {
         createdFromNonDefaultConstructor = true;
-        return contract.CreateTemporaryCollection();
+        IList list = contract.CreateTemporaryCollection();
+
+        if (contract.ShouldCreateWrapper)
+          list = contract.CreateWrapper(list);
+
+        return list;
       }
       else if (contract.DefaultCreator != null && (!contract.DefaultCreatorNonPublic || Serializer.ConstructorHandling == ConstructorHandling.AllowNonPublicDefaultConstructor))
       {

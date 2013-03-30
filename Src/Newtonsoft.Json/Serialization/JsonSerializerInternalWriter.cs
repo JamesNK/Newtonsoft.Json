@@ -139,7 +139,7 @@ namespace Newtonsoft.Json.Serialization
         case JsonContractType.Array:
           JsonArrayContract arrayContract = (JsonArrayContract) valueContract;
           if (!arrayContract.IsMultidimensionalArray)
-            SerializeList(writer, (value is IList) ? (IList)value : arrayContract.CreateWrapper(value), arrayContract, member, containerContract, containerProperty);
+            SerializeList(writer, (IEnumerable)value, arrayContract, member, containerContract, containerProperty);
           else
             SerializeMultidimensionalArray(writer, (Array)value, arrayContract, member, containerContract, containerProperty);
           break;
@@ -151,7 +151,7 @@ namespace Newtonsoft.Json.Serialization
           break;
         case JsonContractType.Dictionary:
           JsonDictionaryContract dictionaryContract = (JsonDictionaryContract) valueContract;
-          SerializeDictionary(writer, dictionaryContract.CreateWrapper(value), dictionaryContract, member, containerContract, containerProperty);
+          SerializeDictionary(writer, (value is IDictionary) ? (IDictionary) value : dictionaryContract.CreateWrapper(value), dictionaryContract, member, containerContract, containerProperty);
           break;
 #if !(NET35 || NET20)
         case JsonContractType.Dynamic:
@@ -520,7 +520,7 @@ namespace Newtonsoft.Json.Serialization
       }
     }
 
-    private void SerializeList(JsonWriter writer, IList values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
+    private void SerializeList(JsonWriter writer, IEnumerable values, JsonArrayContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
     {
       IWrappedCollection wrappedCollection = values as IWrappedCollection;
       object underlyingList = wrappedCollection != null ? wrappedCollection.UnderlyingCollection : values;

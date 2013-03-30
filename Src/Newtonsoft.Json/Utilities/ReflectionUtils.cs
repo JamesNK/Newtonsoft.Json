@@ -305,6 +305,15 @@ namespace Newtonsoft.Json.Utilities
         : t;
     }
 
+    public static bool IsGenericDefinition(Type type, Type genericInterfaceDefinition)
+    {
+      if (!type.IsGenericType())
+        return false;
+
+      Type t = type.GetGenericTypeDefinition();
+      return (t == genericInterfaceDefinition);
+    }
+
     public static bool ImplementsGenericDefinition(Type type, Type genericInterfaceDefinition)
     {
       Type implementingType;

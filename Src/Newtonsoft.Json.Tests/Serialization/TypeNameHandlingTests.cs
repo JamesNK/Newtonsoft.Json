@@ -867,7 +867,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     [Test]
     public void SerializingIEnumerableOfTShouldRetainGenericTypeInfo()
     {
-      string productClassRef = ReflectionUtils.GetTypeName(typeof (Product[]), FormatterAssemblyStyle.Simple);
+      string productClassRef = ReflectionUtils.GetTypeName(typeof(CustomEnumerable<Product>), FormatterAssemblyStyle.Simple);
 
       CustomEnumerable<Product> products = new CustomEnumerable<Product>();
 
