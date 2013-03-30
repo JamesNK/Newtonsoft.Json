@@ -1185,9 +1185,7 @@ namespace Newtonsoft.Json
         }
         else
         {
-          string number = _stringReference.ToString();
-
-          numberValue = Convert.ToInt32(number, CultureInfo.InvariantCulture);
+          numberValue = ConvertUtils.IntParseFast(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length);
         }
 
         numberType = JsonToken.Integer;

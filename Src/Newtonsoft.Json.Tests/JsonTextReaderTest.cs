@@ -1111,6 +1111,44 @@ bye", reader.Value);
     }
 
     [Test]
+    public void ParseIntegers()
+    {
+      JsonTextReader reader = null;
+
+      reader = new JsonTextReader(new StringReader("1"));
+      Assert.AreEqual(1, reader.ReadAsInt32());
+
+      reader = new JsonTextReader(new StringReader("-1"));
+      Assert.AreEqual(-1, reader.ReadAsInt32());
+
+      reader = new JsonTextReader(new StringReader("0"));
+      Assert.AreEqual(0, reader.ReadAsInt32());
+
+      reader = new JsonTextReader(new StringReader("-0"));
+      Assert.AreEqual(0, reader.ReadAsInt32());
+
+      reader = new JsonTextReader(new StringReader(int.MaxValue.ToString()));
+      Assert.AreEqual(int.MaxValue, reader.ReadAsInt32());
+
+      reader = new JsonTextReader(new StringReader(int.MinValue.ToString()));
+      Assert.AreEqual(int.MinValue, reader.ReadAsInt32());
+
+      reader = new JsonTextReader(new StringReader(long.MaxValue.ToString()));
+
+      reader = new JsonTextReader(new StringReader("1E-06"));
+      ExceptionAssert.Throws<FormatException>("Input string was not in a correct format.", () => reader.ReadAsInt32());
+
+      reader = new JsonTextReader(new StringReader("1.1"));
+      ExceptionAssert.Throws<FormatException>("Input string was not in a correct format.", () => reader.ReadAsInt32());
+
+      reader = new JsonTextReader(new StringReader(""));
+      Assert.AreEqual(null, reader.ReadAsInt32());
+
+      reader = new JsonTextReader(new StringReader("-"));
+      ExceptionAssert.Throws<FormatException>("Input string was not in a correct format.", () => reader.ReadAsInt32());
+    }
+
+    [Test]
     public void WriteReadWrite()
     {
       StringBuilder sb = new StringBuilder();

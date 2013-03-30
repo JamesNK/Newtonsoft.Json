@@ -563,5 +563,40 @@ namespace Newtonsoft.Json.Utilities
           return false;
       }
     }
+
+    public static int IntParseFast(char[] value, int start, int length)
+    {
+      if (length == 0)
+        throw new FormatException("Input string was not in a correct format.");
+
+      bool isNegative = (value[start] == '-');
+
+      if (isNegative)
+      {
+        // just a negative sign
+        if (length == 1)
+          throw new FormatException("Input string was not in a correct format.");
+
+        start++;
+        length--;
+      }
+
+      int result = 0;
+      int end = start + length;
+      for (int i = start; i < end; i++)
+      {
+        char c = value[i];
+
+        if (!(c >= '0' && c <= '9'))
+          throw new FormatException("Input string was not in a correct format.");
+
+        result = 10 * result + (c - 48);
+      }
+
+      if (isNegative)
+        result = 0 - result;
+
+      return result;
+    }
   }
 }
