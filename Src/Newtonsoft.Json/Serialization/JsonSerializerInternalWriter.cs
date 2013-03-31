@@ -320,7 +320,7 @@ namespace Newtonsoft.Json.Serialization
       }
 #endif
 
-#if SILVERLIGHT || NETFX_CORE
+#if SILVERLIGHT || NETFX_CORE || PORTABLE
       if (value is Guid || value is Uri || value is TimeSpan)
       {
         s = value.ToString();

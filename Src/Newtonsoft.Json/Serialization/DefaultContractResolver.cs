@@ -136,7 +136,7 @@ namespace Newtonsoft.Json.Serialization
       get { return JsonTypeReflector.DynamicCodeGeneration; }
     }
 
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
     /// <summary>
     /// Gets or sets the default members search flags.
     /// </summary>
@@ -656,11 +656,7 @@ namespace Newtonsoft.Json.Serialization
       while (current != null && current != typeof(object))
       {
         ret.Add(current);
-#if NETFX_CORE
         current = current.BaseType();
-#else
-        current = current.BaseType;
-#endif
       }
 
       // Return the class list in order of simple => complex

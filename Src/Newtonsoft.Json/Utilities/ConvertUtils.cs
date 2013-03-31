@@ -38,13 +38,13 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
 using System.Data.SqlTypes;
 #endif
-#if NETFX_CORE
+#if NETFX_CORE || PORTABLE
 using IConvertible = Newtonsoft.Json.Utilities.Convertible;
 #endif
 
 namespace Newtonsoft.Json.Utilities
 {
-#if NETFX_CORE
+#if NETFX_CORE || PORTABLE
   internal class Convertible
   {
     private object _underlyingValue;
@@ -130,7 +130,7 @@ namespace Newtonsoft.Json.Utilities
   {
     public static TypeCode GetTypeCode(this IConvertible convertible)
     {
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       return convertible.GetTypeCode();
 #else
       return GetTypeCode((object)convertible);
@@ -148,7 +148,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static TypeCode GetTypeCode(Type t)
     {
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       return Type.GetTypeCode(t);
 #else
       if (t == typeof(bool))
@@ -190,7 +190,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static IConvertible ToConvertible(object o)
     {
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       return o as IConvertible;
 #else
       if (!IsConvertible(o))
@@ -202,7 +202,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static bool IsConvertible(object o)
     {
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       return o is IConvertible;
 #else
       if (o == null)
@@ -216,7 +216,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static bool IsConvertible(Type t)
     {
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       return typeof(IConvertible).IsAssignableFrom(t);
 #else
       return (

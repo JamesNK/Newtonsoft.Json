@@ -91,7 +91,7 @@ namespace Newtonsoft.Json.Serialization
         if (ReflectionUtils.IsGenericDefinition(UnderlyingType, typeof(IDictionary<,>)))
           CreatedType = ReflectionUtils.MakeGenericType(typeof(Dictionary<,>), keyType, valueType);
       }
-#if !(NET40 || NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE)
+#if !(NET40 || NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE)
       else if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof(IReadOnlyDictionary<,>), out _genericCollectionDefinitionType))
       {
         keyType = _genericCollectionDefinitionType.GetGenericArguments()[0];
@@ -114,20 +114,29 @@ namespace Newtonsoft.Json.Serialization
       if (keyType != null && valueType != null)
         ParametrizedConstructor = CollectionUtils.ResolveEnumableCollectionConstructor(CreatedType, ReflectionUtils.MakeGenericType(typeof(KeyValuePair<,>), keyType, valueType));
 
-      ShouldCreateWrapper = !typeof (IDictionary).IsAssignableFrom(underlyingType);
+      ShouldCreateWrapper = !typeof (IDictionary).IsAssignableFrom(CreatedType);
 
       DictionaryKeyType = keyType;
       DictionaryValueType = valueType;
 
       if (DictionaryValueType != null)
         _isDictionaryValueTypeNullableType = ReflectionUtils.IsNullableType(DictionaryValueType);
+
+#if (NET20 || NET35)
+      Type tempDictioanryType;
+
+        // bug in .NET 2.0 & 3.5 that Dictionary<TKey, Nullable<TValue>> throws an error when adding null via IDictionary[key] = object
+      // wrapper will handle calling Add(T) instead
+      if (_isDictionaryValueTypeNullableType
+        && (ReflectionUtils.InheritsGenericDefinition(CreatedType, typeof(Dictionary<,>), out tempDictioanryType)))
+      {
+        ShouldCreateWrapper = true;
+      }
+#endif
     }
 
     internal IWrappedDictionary CreateWrapper(object dictionary)
     {
-      if (dictionary is IDictionary && (DictionaryValueType == null || !_isDictionaryValueTypeNullableType))
-        return new DictionaryWrapper<object, object>((IDictionary)dictionary);
-
       if (_genericWrapperCreator == null)
       {
         _genericWrapperType = ReflectionUtils.MakeGenericType(typeof(DictionaryWrapper<,>), DictionaryKeyType, DictionaryValueType);

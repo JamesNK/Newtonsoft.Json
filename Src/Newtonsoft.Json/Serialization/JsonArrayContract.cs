@@ -89,15 +89,6 @@ namespace Newtonsoft.Json.Serialization
         canDeserialize = true;
         IsMultidimensionalArray = (UnderlyingType.IsArray && UnderlyingType.GetArrayRank() > 1);
       }
-      else if (ReflectionUtils.InheritsGenericDefinition(underlyingType, typeof(ReadOnlyCollection<>), out tempCollectionType))
-      {
-        CollectionItemType = tempCollectionType.GetGenericArguments()[0];
-        ParametrizedConstructor = CollectionUtils.ResolveEnumableCollectionConstructor(underlyingType, CollectionItemType);
-
-        IsReadOnlyOrFixedSize = true;
-
-        canDeserialize = (ParametrizedConstructor != null);
-      }
       else if (typeof(IList).IsAssignableFrom(underlyingType))
       {
         if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof(ICollection<>), out _genericCollectionDefinitionType))
@@ -129,7 +120,7 @@ namespace Newtonsoft.Json.Serialization
         canDeserialize = true;
         ShouldCreateWrapper = true;
       }
-#if !(NET40 || NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE)
+#if !(NET40 || NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE)
       else if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof (IReadOnlyCollection<>), out tempCollectionType))
       {
         CollectionItemType = underlyingType.GetGenericArguments()[0];
@@ -196,45 +187,6 @@ namespace Newtonsoft.Json.Serialization
 
     internal IWrappedCollection CreateWrapper(object list)
     {
-      if (_genericCollectionDefinitionType != null)
-      {
-        EnsureGenericWrapperCreator();
-        return (IWrappedCollection) _genericWrapperCreator(null, list);
-      }
-      else
-      {
-        IList values = ((IEnumerable) list).Cast<object>().ToList();
-
-        if (CollectionItemType != null)
-        {
-          Array array = Array.CreateInstance(CollectionItemType, values.Count);
-          for (int i = 0; i < values.Count; i++)
-          {
-            array.SetValue(values[i], i);
-          }
-
-          values = array;
-        }
-
-        return new CollectionWrapper<object>(values);
-      }
-    }
-
-    internal IList CreateTemporaryCollection()
-    {
-      if (_genericTemporaryCollectionCreator == null)
-      {
-        // multidimensional array will also have array instances in it
-        Type collectionItemType = (IsMultidimensionalArray) ? typeof (object) : CollectionItemType;
-        Type temporaryListType = ReflectionUtils.MakeGenericType(typeof(List<>), collectionItemType);
-        _genericTemporaryCollectionCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateDefaultConstructor<object>(temporaryListType);
-      }
-
-      return (IList)_genericTemporaryCollectionCreator();
-    }
-
-    private void EnsureGenericWrapperCreator()
-    {
       if (_genericWrapperCreator == null)
       {
         _genericWrapperType = ReflectionUtils.MakeGenericType(typeof (CollectionWrapper<>), CollectionItemType);
@@ -250,6 +202,21 @@ namespace Newtonsoft.Json.Serialization
         ConstructorInfo genericWrapperConstructor = _genericWrapperType.GetConstructor(new[] { constructorArgument });
         _genericWrapperCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(genericWrapperConstructor);
       }
+      
+      return (IWrappedCollection) _genericWrapperCreator(null, list);
+    }
+
+    internal IList CreateTemporaryCollection()
+    {
+      if (_genericTemporaryCollectionCreator == null)
+      {
+        // multidimensional array will also have array instances in it
+        Type collectionItemType = (IsMultidimensionalArray) ? typeof (object) : CollectionItemType;
+        Type temporaryListType = ReflectionUtils.MakeGenericType(typeof(List<>), collectionItemType);
+        _genericTemporaryCollectionCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateDefaultConstructor<object>(temporaryListType);
+      }
+
+      return (IList)_genericTemporaryCollectionCreator();
     }
   }
 }

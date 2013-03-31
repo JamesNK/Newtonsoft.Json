@@ -437,7 +437,7 @@ namespace Newtonsoft.Json.Tests.Linq
     }
 #endif
 
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
     [Test]
     public void ConvertsToBoolean()
     {

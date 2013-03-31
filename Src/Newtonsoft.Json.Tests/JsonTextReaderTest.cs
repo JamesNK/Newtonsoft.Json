@@ -61,7 +61,7 @@ namespace Newtonsoft.Json.Tests
       Assert.AreEqual(JsonToken.Float, reader.TokenType);
 
       Assert.IsTrue(reader.Read());
-      Assert.AreEqual(1l, reader.Value);
+      Assert.AreEqual(1L, reader.Value);
       Assert.AreEqual(typeof(long), reader.ValueType);
       Assert.AreEqual(JsonToken.Integer, reader.TokenType);
 

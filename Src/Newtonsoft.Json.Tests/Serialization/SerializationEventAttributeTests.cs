@@ -282,7 +282,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 }", json);
     }
 
-#if !SILVERLIGHT && !NETFX_CORE
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
     public class SerializationEventContextTestObject
     {
       public string TestMember { get; set; }
@@ -313,6 +313,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 #endif
 
+#if !PORTABLE
     public void WhenSerializationErrorDetectedBySerializer_ThenCallbackIsCalled()
     {
       // Verify contract is properly finding our callback
@@ -336,7 +337,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       // When fixed, this would pass.
       Debug.Assert(foo.Identifier == 25);
     }
-
+#endif
     public class FooEvent
     {
       public int Identifier { get; set; }

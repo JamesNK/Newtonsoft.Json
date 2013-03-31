@@ -41,7 +41,7 @@ namespace Newtonsoft.Json.Linq
   /// Represents a value in JSON (string, integer, date, etc).
   /// </summary>
   public class JValue : JToken, IEquatable<JValue>, IFormattable, IComparable, IComparable<JValue>
-#if !(NETFX_CORE)    
+#if !(NETFX_CORE || PORTABLE)
     , IConvertible
 #endif
   {
@@ -919,7 +919,7 @@ namespace Newtonsoft.Json.Linq
       return Compare(_valueType, _value, obj._value);
     }
 
-#if !(NETFX_CORE)    
+#if !(NETFX_CORE || PORTABLE)
     TypeCode IConvertible.GetTypeCode()
     {
       if (_value == null)
@@ -929,7 +929,7 @@ namespace Newtonsoft.Json.Linq
       if (_value is DateTimeOffset)
         return TypeCode.DateTime;
 #endif
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT)
       if (_value is BigInteger)
         return TypeCode.Object;
 #endif

@@ -162,7 +162,7 @@ namespace Newtonsoft.Json.Utilities
         if ((i == 0 || !hasNext) || char.IsUpper(s[i + 1]))
         {
           char lowerCase;
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
           lowerCase = char.ToLower(s[i], CultureInfo.InvariantCulture);
 #else
           lowerCase = char.ToLower(s[i]);

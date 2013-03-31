@@ -72,7 +72,7 @@ namespace Newtonsoft.Json.Utilities
   }
 #endif
 
-#if NETFX_CORE
+#if (NETFX_CORE || PORTABLE)
   internal enum TypeCode
   {
     Empty,
@@ -721,18 +721,12 @@ namespace Newtonsoft.Json.Utilities
       return (attributes != null) ? attributes.SingleOrDefault() : null;
     }
 
-#if !(NETFX_CORE)
+#if !(NETFX_CORE || PORTABLE)
     public static T[] GetAttributes<T>(ICustomAttributeProvider attributeProvider, bool inherit) where T : Attribute
     {
       ValidationUtils.ArgumentNotNull(attributeProvider, "attributeProvider");
 
-      object provider;
-
-#if !PORTABLE
-      provider = attributeProvider;
-#else
-      provider = attributeProvider.UnderlyingObject;
-#endif
+      object provider = attributeProvider;
 
       // http://hyperthink.net/blog/getcustomattributes-gotcha/
       // ICustomAttributeProvider doesn't do inheritance
@@ -746,19 +740,13 @@ namespace Newtonsoft.Json.Utilities
       if (provider is MemberInfo)
         return (T[])Attribute.GetCustomAttributes((MemberInfo)provider, typeof(T), inherit);
 
-#if !PORTABLE
       if (provider is Module)
         return (T[])Attribute.GetCustomAttributes((Module)provider, typeof(T), inherit);
-#endif
 
       if (provider is ParameterInfo)
         return (T[])Attribute.GetCustomAttributes((ParameterInfo)provider, typeof(T), inherit);
 
-#if !PORTABLE
       return (T[])attributeProvider.GetCustomAttributes(typeof(T), inherit);
-#else
-      throw new Exception("Cannot get attributes from '{0}'.".FormatWith(CultureInfo.InvariantCulture, provider));
-#endif
     }
 #else
     public static T[] GetAttributes<T>(ICustomAttributeProvider attributeProvider, bool inherit) where T : Attribute
@@ -886,7 +874,7 @@ namespace Newtonsoft.Json.Utilities
       ValidationUtils.ArgumentNotNull(targetType, "targetType");
 
       List<MemberInfo> fieldInfos = new List<MemberInfo>(targetType.GetFields(bindingAttr));
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       // Type.GetFields doesn't return inherited private fields
       // manually find private fields from base class
       GetChildPrivateFields(fieldInfos, targetType, bindingAttr);
@@ -984,10 +972,7 @@ namespace Newtonsoft.Json.Utilities
              info.Name == method &&
              // check that the method overrides the original on DynamicObjectProxy
              info.DeclaringType != methodDeclaringType
-             // todo - find out whether there is a way to do this in winrt
-#if !NETFX_CORE
              && info.GetBaseDefinition().DeclaringType == methodDeclaringType
-#endif
         );
 
       return isMethodOverriden;

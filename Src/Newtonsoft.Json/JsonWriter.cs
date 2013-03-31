@@ -31,7 +31,7 @@ using System.Numerics;
 #endif
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
-#if NETFX_CORE
+#if NETFX_CORE || PORTABLE
 using IConvertible = Newtonsoft.Json.Utilities.Convertible;
 #endif
 #if NET20

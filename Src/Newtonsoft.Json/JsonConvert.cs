@@ -39,7 +39,7 @@ using System.Text;
 #if !NET20 && (!SILVERLIGHT || WINDOWS_PHONE)
 using System.Xml.Linq;
 #endif
-#if NETFX_CORE
+#if NETFX_CORE || PORTABLE
 using IConvertible = Newtonsoft.Json.Utilities.Convertible;
 #endif
 

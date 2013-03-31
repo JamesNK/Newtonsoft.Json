@@ -182,7 +182,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 }", startingWithB);
     }
 
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
     [Test]
     public void SerializeCompilerGeneratedMembers()
     {

@@ -3336,6 +3336,7 @@ To fix this error either change the environment to be fully trusted, change the 
 }", json);
     }
 
+#if !PORTABLE
     [Test]
     public void DeserializeClassWithInheritedProtectedMember()
     {
@@ -3402,6 +3403,7 @@ To fix this error either change the environment to be fully trusted, change the 
       Assert.AreEqual(3, ReflectionUtils.GetMemberValue(typeof(BB).GetProperty("BB_property7", BindingFlags.Instance | BindingFlags.Public), myB));
       Assert.AreEqual(3, ReflectionUtils.GetMemberValue(typeof(BB).GetProperty("BB_property8", BindingFlags.Instance | BindingFlags.Public), myB));
     }
+#endif
 
     public class AA
     {
@@ -6852,7 +6854,8 @@ Parameter name: value",
       Assert.AreEqual("[1.1,0.0,0.0]", json);
     }
 
-#if !(NET20 || NET35 || NET40 || PORTABLE || SILVERLIGHT)
+#if !(NET20 || NET35 || NET40 || SILVERLIGHT)
+#if !PORTABLE
     [Test]
     public void DeserializeReadOnlyListWithBigInteger()
     {
@@ -6866,6 +6869,22 @@ Parameter name: value",
       // 9000000000000000000000000000000000000000000000000
 
       Assert.AreEqual(BigInteger.Parse("9000000000000000000000000000000000000000000000000"), nineQuindecillion);
+    }
+#endif
+
+    [Test]
+    public void DeserializeReadOnlyListWithInt()
+    {
+      string json = @"[
+        900
+      ]";
+
+      var l = JsonConvert.DeserializeObject<IReadOnlyList<int>>(json);
+
+      int i = l[0];
+      // 900
+
+      Assert.AreEqual(900, i);
     }
 
     [Test]
@@ -7833,9 +7852,9 @@ Parameter name: value",
     }
 #endif
 
-#if !(NET40 || NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE)
+#if !(NET40 || NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE)
     [Test]
-    public void DeserializeReadOnlyList()
+    public void DeserializeReadOnlyListInterface()
     {
       IReadOnlyList<int> list = JsonConvert.DeserializeObject<IReadOnlyList<int>>("[1,2,3]");
 
@@ -7846,7 +7865,7 @@ Parameter name: value",
     }
 
     [Test]
-    public void DeserializeReadOnlyCollection()
+    public void DeserializeReadOnlyCollectionInterface()
     {
       IReadOnlyCollection<int> list = JsonConvert.DeserializeObject<IReadOnlyCollection<int>>("[1,2,3]");
 
@@ -7858,7 +7877,19 @@ Parameter name: value",
     }
 
     [Test]
-    public void DeserializeReadOnlyDictionary()
+    public void DeserializeReadOnlyCollection()
+    {
+      ReadOnlyCollection<int> list = JsonConvert.DeserializeObject<ReadOnlyCollection<int>>("[1,2,3]");
+
+      Assert.AreEqual(3, list.Count);
+
+      Assert.AreEqual(1, list[0]);
+      Assert.AreEqual(2, list[1]);
+      Assert.AreEqual(3, list[2]);
+    }
+
+    [Test]
+    public void DeserializeReadOnlyDictionaryInterface()
     {
       IReadOnlyDictionary<string, int> dic = JsonConvert.DeserializeObject<IReadOnlyDictionary<string, int>>("{'one':1,'two':2}");
 
@@ -7868,6 +7899,17 @@ Parameter name: value",
       Assert.AreEqual(2, dic["two"]);
 
       CustomAssert.IsInstanceOfType(typeof(ReadOnlyDictionary<string, int>), dic);
+    }
+
+    [Test]
+    public void DeserializeReadOnlyDictionary()
+    {
+      ReadOnlyDictionary<string, int> dic = JsonConvert.DeserializeObject<ReadOnlyDictionary<string, int>>("{'one':1,'two':2}");
+
+      Assert.AreEqual(2, dic.Count);
+
+      Assert.AreEqual(1, dic["one"]);
+      Assert.AreEqual(2, dic["two"]);
     }
 
     public class CustomReadOnlyDictionary<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>

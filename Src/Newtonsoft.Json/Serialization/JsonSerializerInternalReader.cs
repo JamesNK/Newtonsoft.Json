@@ -1467,17 +1467,17 @@ To fix this error either change the environment to be fully trusted, change the 
           }
           else if (propertyContract.ContractType == JsonContractType.Dictionary)
           {
-            JsonDictionaryContract jsonDictionaryContract = (JsonDictionaryContract)propertyContract;
+            JsonDictionaryContract dictionaryContract = (JsonDictionaryContract)propertyContract;
 
             object createdObjectDictionary = property.ValueProvider.GetValue(createdObject);
             if (createdObjectDictionary != null)
             {
-              IWrappedDictionary createdObjectDictionaryWrapper = jsonDictionaryContract.CreateWrapper(createdObjectDictionary);
-              IWrappedDictionary newValues = jsonDictionaryContract.CreateWrapper(value);
+              IDictionary targetDictionary = (dictionaryContract.ShouldCreateWrapper) ? dictionaryContract.CreateWrapper(createdObjectDictionary) : (IDictionary) createdObjectDictionary;
+              IDictionary newValues = (dictionaryContract.ShouldCreateWrapper) ? dictionaryContract.CreateWrapper(value) : (IDictionary) value;
 
               foreach (DictionaryEntry newValue in newValues)
               {
-                createdObjectDictionaryWrapper.Add(newValue.Key, newValue.Value);
+                targetDictionary.Add(newValue.Key, newValue.Value);
               }
             }
           }
