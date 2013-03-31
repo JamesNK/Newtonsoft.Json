@@ -5762,6 +5762,46 @@ To fix this error either change the environment to be fully trusted, change the 
         });
     }
 
+    public class ConvertableIntTestClass
+    {
+      public ConvertibleInt Integer { get; set; }
+      public ConvertibleInt? NullableInteger1 { get; set; }
+      public ConvertibleInt? NullableInteger2 { get; set; }
+    }
+
+    [Test]
+    public void SerializeIConvertible()
+    {
+      ConvertableIntTestClass c = new ConvertableIntTestClass
+      {
+        Integer = new ConvertibleInt(1),
+        NullableInteger1 = new ConvertibleInt(2),
+        NullableInteger2 = null
+      };
+
+      string json = JsonConvert.SerializeObject(c, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""Integer"": 1,
+  ""NullableInteger1"": 2,
+  ""NullableInteger2"": null
+}", json);
+    }
+
+    [Test]
+    public void DeserializeIConvertible()
+    {
+      string json = @"{
+  ""Integer"": 1,
+  ""NullableInteger1"": 2,
+  ""NullableInteger2"": null
+}";
+
+      ExceptionAssert.Throws<JsonSerializationException>(
+        "Error converting value 1 to type 'Newtonsoft.Json.Tests.ConvertibleInt'. Path 'Integer', line 2, position 15.",
+        () => JsonConvert.DeserializeObject<ConvertableIntTestClass>(json));
+    }
+
     [Test]
     public void SerializeNullableWidgetStruct()
     {
@@ -6352,7 +6392,7 @@ Parameter name: value",
     [Test]
     public void DateTimeDictionaryKey_DateTimeOffset_MS()
     {
-      IDictionary<DateTimeOffset, int> dic1 = new Dictionary<DateTimeOffset, int>
+      IDictionary<DateTimeOffset?, int> dic1 = new Dictionary<DateTimeOffset?, int>
         {
           {new DateTimeOffset(2000, 12, 12, 12, 12, 12, TimeSpan.Zero), 1},
           {new DateTimeOffset(2013, 12, 12, 12, 12, 12, TimeSpan.Zero), 2}
@@ -6368,7 +6408,7 @@ Parameter name: value",
   ""\/Date(1386850332000+0000)\/"": 2
 }", json);
 
-      IDictionary<DateTimeOffset, int> dic2 = JsonConvert.DeserializeObject<IDictionary<DateTimeOffset, int>>(json);
+      IDictionary<DateTimeOffset?, int> dic2 = JsonConvert.DeserializeObject<IDictionary<DateTimeOffset?, int>>(json);
 
       Assert.AreEqual(2, dic2.Count);
       Assert.AreEqual(1, dic2[new DateTimeOffset(2000, 12, 12, 12, 12, 12, TimeSpan.Zero)]);

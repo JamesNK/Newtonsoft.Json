@@ -31,9 +31,6 @@ using System.Numerics;
 #endif
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
-#if NETFX_CORE || PORTABLE
-using IConvertible = Newtonsoft.Json.Utilities.Convertible;
-#endif
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -250,7 +247,16 @@ namespace Newtonsoft.Json
     public StringEscapeHandling StringEscapeHandling
     {
       get { return _stringEscapeHandling; }
-      set { _stringEscapeHandling = value; }
+      set
+      {
+        _stringEscapeHandling = value;
+        OnStringEscapeHandlingChanged();
+      }
+    }
+
+    internal virtual void OnStringEscapeHandlingChanged()
+    {
+      // hacky but there is a calculated value that relies on StringEscapeHandling
     }
 
     /// <summary>
@@ -1255,175 +1261,10 @@ namespace Newtonsoft.Json
     /// <param name="value">The <see cref="Object"/> value to write.</param>
     public virtual void WriteValue(object value)
     {
-      WriteValueInternal(value, false);
-    }
-
-    /// <summary>
-    /// Writes a <see cref="Object"/> value.
-    /// An error will raised if the value cannot be written as a single JSON token.
-    /// </summary>
-    /// <param name="value">The <see cref="Object"/> value to write.</param>
-    /// <param name="nullable">A flag indicating whether the value is nullable.</param>
-    public virtual void WriteValue(object value, bool nullable)
-    {
-      WriteValueInternal(value, nullable);
-    }
-
-    private void WriteValueInternal(object value, bool nullable)
-    {
       if (value == null)
-      {
         WriteNull();
-        return;
-      }
-
-      IConvertible convertible = ConvertUtils.ToConvertible(value);
-      if (convertible != null)
-      {
-        switch (convertible.GetTypeCode())
-        {
-          case TypeCode.String:
-            WriteValue(convertible.ToString(CultureInfo.InvariantCulture));
-            return;
-          case TypeCode.Char:
-            if (nullable)
-              WriteValue((char?)convertible.ToChar(CultureInfo.InvariantCulture));
-            else
-              WriteValue(convertible.ToChar(CultureInfo.InvariantCulture));
-            return;
-          case TypeCode.Boolean:
-            if (nullable)
-              WriteValue((bool?)convertible.ToBoolean(CultureInfo.InvariantCulture));
-            else
-              WriteValue(convertible.ToBoolean(CultureInfo.InvariantCulture));
-            return;
-          case TypeCode.SByte:
-            if (nullable)
-              WriteValue((sbyte?)convertible.ToSByte(CultureInfo.InvariantCulture));
-            else
-               WriteValue(convertible.ToSByte(CultureInfo.InvariantCulture));
-           return;
-          case TypeCode.Int16:
-            if (nullable)
-              WriteValue((short?)convertible.ToInt16(CultureInfo.InvariantCulture));
-            else
-              WriteValue(convertible.ToInt16(CultureInfo.InvariantCulture));
-            return;
-          case TypeCode.UInt16:
-            if (nullable)
-              WriteValue((ushort?)convertible.ToUInt16(CultureInfo.InvariantCulture));
-            else
-              WriteValue(convertible.ToUInt16(CultureInfo.InvariantCulture));
-            return;
-          case TypeCode.Int32:
-            if (nullable)
-              WriteValue((int?)convertible.ToInt32(CultureInfo.InvariantCulture));
-            else
-              WriteValue(convertible.ToInt32(CultureInfo.InvariantCulture));
-            return;
-          case TypeCode.Byte:
-            if (nullable)
-              WriteValue((byte?)convertible.ToByte(CultureInfo.InvariantCulture));
-            else
-              WriteValue(convertible.ToByte(CultureInfo.InvariantCulture));
-            return;
-          case TypeCode.UInt32:
-            if (nullable)
-              WriteValue((uint?)convertible.ToUInt32(CultureInfo.InvariantCulture));
-            else
-              WriteValue(convertible.ToUInt32(CultureInfo.InvariantCulture));
-            return;
-          case TypeCode.Int64:
-            if (nullable)
-              WriteValue((long?)convertible.ToInt64(CultureInfo.InvariantCulture));
-            else
-              WriteValue(convertible.ToInt64(CultureInfo.InvariantCulture));
-            return;
-          case TypeCode.UInt64:
-            if (nullable)
-              WriteValue((ulong?)convertible.ToUInt64(CultureInfo.InvariantCulture));
-            else
-              WriteValue(convertible.ToUInt64(CultureInfo.InvariantCulture));
-            return;
-          case TypeCode.Single:
-            if (nullable)
-              WriteValue((float?)convertible.ToSingle(CultureInfo.InvariantCulture));
-            else
-              WriteValue(convertible.ToSingle(CultureInfo.InvariantCulture));
-            return;
-          case TypeCode.Double:
-            if (nullable)
-              WriteValue((double?)convertible.ToDouble(CultureInfo.InvariantCulture));
-            else
-              WriteValue(convertible.ToDouble(CultureInfo.InvariantCulture));
-            return;
-          case TypeCode.DateTime:
-            if (nullable)
-              WriteValue((DateTime?)convertible.ToDateTime(CultureInfo.InvariantCulture));
-            else
-              WriteValue(convertible.ToDateTime(CultureInfo.InvariantCulture));
-            return;
-          case TypeCode.Decimal:
-            if (nullable)
-              WriteValue((decimal?)convertible.ToDecimal(CultureInfo.InvariantCulture));
-            else
-              WriteValue(convertible.ToDecimal(CultureInfo.InvariantCulture));
-            return;
-#if !(NETFX_CORE || PORTABLE)
-          case TypeCode.DBNull:
-            WriteNull();
-            return;
-#endif
-        }
-      }
-#if !NET20
-      else if (value is DateTimeOffset)
-      {
-        if (nullable)
-          WriteValue((DateTimeOffset?)value);
-        else
-          WriteValue((DateTimeOffset)value);
-        return;
-      }
-#endif
-      else if (value is byte[])
-      {
-        WriteValue((byte[])value);
-        return;
-      }
-      else if (value is Guid)
-      {
-        if (nullable)
-          WriteValue((Guid?)value);
-        else
-          WriteValue((Guid)value);
-        return;
-      }
-      else if (value is Uri)
-      {
-        WriteValue((Uri)value);
-        return;
-      }
-      else if (value is TimeSpan)
-      {
-        if (nullable)
-          WriteValue((TimeSpan?)value);
-        else
-          WriteValue((TimeSpan)value);
-        return;
-      }
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
-      else if (value is BigInteger)
-      {
-        if (nullable)
-          WriteValue((BigInteger?)value);
-        else
-          WriteValue((BigInteger)value);
-        return;
-      }
-#endif
-
-      throw JsonWriterException.Create(this, "Unsupported type: {0}. Use the JsonSerializer class to get the object's JSON representation.".FormatWith(CultureInfo.InvariantCulture, value.GetType()), null);
+      else
+        WriteValue(this, ConvertUtils.GetTypeCode(value), value);
     }
     #endregion
 
@@ -1468,6 +1309,157 @@ namespace Newtonsoft.Json
     {
       if (_currentState != State.Closed)
         Close();
+    }
+
+    internal static void WriteValue(JsonWriter writer, PrimitiveTypeCode typeCode, object value)
+    {
+      switch (typeCode)
+      {
+        case PrimitiveTypeCode.Char:
+          writer.WriteValue((char)value);
+          break;
+        case PrimitiveTypeCode.CharNullable:
+          writer.WriteValue((value == null) ? (char?)null : (char)value);
+          break;
+        case PrimitiveTypeCode.Boolean:
+          writer.WriteValue((bool)value);
+          break;
+        case PrimitiveTypeCode.BooleanNullable:
+          writer.WriteValue((value == null) ? (bool?)null : (bool)value);
+          break;
+        case PrimitiveTypeCode.SByte:
+          writer.WriteValue((sbyte)value);
+          break;
+        case PrimitiveTypeCode.SByteNullable:
+          writer.WriteValue((value == null) ? (sbyte?)null : (sbyte)value);
+          break;
+        case PrimitiveTypeCode.Int16:
+          writer.WriteValue((short)value);
+          break;
+        case PrimitiveTypeCode.Int16Nullable:
+          writer.WriteValue((value == null) ? (short?)null : (short)value);
+          break;
+        case PrimitiveTypeCode.UInt16:
+          writer.WriteValue((ushort)value);
+          break;
+        case PrimitiveTypeCode.UInt16Nullable:
+          writer.WriteValue((value == null) ? (ushort?)null : (ushort)value);
+          break;
+        case PrimitiveTypeCode.Int32:
+          writer.WriteValue((int)value);
+          break;
+        case PrimitiveTypeCode.Int32Nullable:
+          writer.WriteValue((value == null) ? (int?)null : (int)value);
+          break;
+        case PrimitiveTypeCode.Byte:
+          writer.WriteValue((byte)value);
+          break;
+        case PrimitiveTypeCode.ByteNullable:
+          writer.WriteValue((value == null) ? (byte?)null : (byte)value);
+          break;
+        case PrimitiveTypeCode.UInt32:
+          writer.WriteValue((uint)value);
+          break;
+        case PrimitiveTypeCode.UInt32Nullable:
+          writer.WriteValue((value == null) ? (uint?)null : (uint)value);
+          break;
+        case PrimitiveTypeCode.Int64:
+          writer.WriteValue((long)value);
+          break;
+        case PrimitiveTypeCode.Int64Nullable:
+          writer.WriteValue((value == null) ? (long?)null : (long)value);
+          break;
+        case PrimitiveTypeCode.UInt64:
+          writer.WriteValue((ulong)value);
+          break;
+        case PrimitiveTypeCode.UInt64Nullable:
+          writer.WriteValue((value == null) ? (ulong?)null : (ulong)value);
+          break;
+        case PrimitiveTypeCode.Single:
+          writer.WriteValue((float)value);
+          break;
+        case PrimitiveTypeCode.SingleNullable:
+          writer.WriteValue((value == null) ? (float?)null : (float)value);
+          break;
+        case PrimitiveTypeCode.Double:
+          writer.WriteValue((double)value);
+          break;
+        case PrimitiveTypeCode.DoubleNullable:
+          writer.WriteValue((value == null) ? (double?)null : (double)value);
+          break;
+        case PrimitiveTypeCode.DateTime:
+          writer.WriteValue((DateTime)value);
+          break;
+        case PrimitiveTypeCode.DateTimeNullable:
+          writer.WriteValue((value == null) ? (DateTime?)null : (DateTime)value);
+          break;
+#if !NET20
+        case PrimitiveTypeCode.DateTimeOffset:
+          writer.WriteValue((DateTimeOffset)value);
+          break;
+        case PrimitiveTypeCode.DateTimeOffsetNullable:
+          writer.WriteValue((value == null) ? (DateTimeOffset?)null : (DateTimeOffset)value);
+          break;
+#endif
+        case PrimitiveTypeCode.Decimal:
+          writer.WriteValue((decimal)value);
+          break;
+        case PrimitiveTypeCode.DecimalNullable:
+          writer.WriteValue((value == null) ? (decimal?)null : (decimal)value);
+          break;
+        case PrimitiveTypeCode.Guid:
+          writer.WriteValue((Guid)value);
+          break;
+        case PrimitiveTypeCode.GuidNullable:
+          writer.WriteValue((value == null) ? (Guid?)null : (Guid)value);
+          break;
+        case PrimitiveTypeCode.TimeSpan:
+          writer.WriteValue((TimeSpan)value);
+          break;
+        case PrimitiveTypeCode.TimeSpanNullable:
+          writer.WriteValue((value == null) ? (TimeSpan?)null : (TimeSpan)value);
+          break;
+#if !(PORTABLE || NET35 || NET20 || WINDOWS_PHONE || SILVERLIGHT)
+        case PrimitiveTypeCode.BigInteger:
+          writer.WriteValue((BigInteger)value);
+          break;
+        case PrimitiveTypeCode.BigIntegerNullable:
+          writer.WriteValue((value == null) ? (BigInteger?)null : (BigInteger)value);
+          break;
+#endif
+        case PrimitiveTypeCode.Uri:
+          writer.WriteValue((Uri)value);
+          break;
+        case PrimitiveTypeCode.String:
+          writer.WriteValue((string)value);
+          break;
+        case PrimitiveTypeCode.Bytes:
+          writer.WriteValue((byte[])value);
+          break;
+#if !(PORTABLE || NETFX_CORE)
+        case PrimitiveTypeCode.DBNull:
+          writer.WriteNull();
+          break;
+#endif
+        default:
+#if !(PORTABLE || NETFX_CORE)
+          if (value is IConvertible)
+          {
+            // the value is a non-standard IConvertible
+            // convert to the underlying value and retry
+            IConvertible convertable = (IConvertible)value;
+            TypeInformation typeInformation = ConvertUtils.GetTypeInformation(convertable);
+            object convertedValue = convertable.ToType(typeInformation.Type, CultureInfo.InvariantCulture);
+
+            WriteValue(writer, typeInformation.TypeCode, convertedValue);
+          }
+          else
+#endif
+          {
+            throw JsonWriterException.Create(writer, "Unsupported type: {0}. Use the JsonSerializer class to get the object's JSON representation.".FormatWith(CultureInfo.InvariantCulture, value.GetType()), null);
+          }
+          break;
+      }
     }
   }
 }

@@ -32,15 +32,13 @@ using System.Numerics;
 #if !(NET20 || NET35 || SILVERLIGHT)
 using System.Threading.Tasks;
 #endif
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities;
 using System.Xml;
 using Newtonsoft.Json.Converters;
 using System.Text;
 #if !NET20 && (!SILVERLIGHT || WINDOWS_PHONE)
 using System.Xml.Linq;
-#endif
-#if NETFX_CORE || PORTABLE
-using IConvertible = Newtonsoft.Json.Utilities.Convertible;
 #endif
 
 namespace Newtonsoft.Json
@@ -625,127 +623,77 @@ namespace Newtonsoft.Json
       if (value == null)
         return Null;
 
-      IConvertible convertible = ConvertUtils.ToConvertible(value);
+      PrimitiveTypeCode typeCode = ConvertUtils.GetTypeCode(value);
 
-      if (convertible != null)
+      switch (typeCode)
       {
-        switch (convertible.GetTypeCode())
-        {
-          case TypeCode.String:
-            return ToString(convertible.ToString(CultureInfo.InvariantCulture));
-          case TypeCode.Char:
-            return ToString(convertible.ToChar(CultureInfo.InvariantCulture));
-          case TypeCode.Boolean:
-            return ToString(convertible.ToBoolean(CultureInfo.InvariantCulture));
-          case TypeCode.SByte:
-            return ToString(convertible.ToSByte(CultureInfo.InvariantCulture));
-          case TypeCode.Int16:
-            return ToString(convertible.ToInt16(CultureInfo.InvariantCulture));
-          case TypeCode.UInt16:
-            return ToString(convertible.ToUInt16(CultureInfo.InvariantCulture));
-          case TypeCode.Int32:
-            return ToString(convertible.ToInt32(CultureInfo.InvariantCulture));
-          case TypeCode.Byte:
-            return ToString(convertible.ToByte(CultureInfo.InvariantCulture));
-          case TypeCode.UInt32:
-            return ToString(convertible.ToUInt32(CultureInfo.InvariantCulture));
-          case TypeCode.Int64:
-            return ToString(convertible.ToInt64(CultureInfo.InvariantCulture));
-          case TypeCode.UInt64:
-            return ToString(convertible.ToUInt64(CultureInfo.InvariantCulture));
-          case TypeCode.Single:
-            return ToString(convertible.ToSingle(CultureInfo.InvariantCulture));
-          case TypeCode.Double:
-            return ToString(convertible.ToDouble(CultureInfo.InvariantCulture));
-          case TypeCode.DateTime:
-            return ToString(convertible.ToDateTime(CultureInfo.InvariantCulture));
-          case TypeCode.Decimal:
-            return ToString(convertible.ToDecimal(CultureInfo.InvariantCulture));
+        case PrimitiveTypeCode.String:
+          return ToString((string) value);
+        case PrimitiveTypeCode.Char:
+          return ToString((char) value);
+        case PrimitiveTypeCode.Boolean:
+          return ToString((bool) value);
+        case PrimitiveTypeCode.SByte:
+          return ToString((sbyte) value);
+        case PrimitiveTypeCode.Int16:
+          return ToString((short) value);
+        case PrimitiveTypeCode.UInt16:
+          return ToString((ushort) value);
+        case PrimitiveTypeCode.Int32:
+          return ToString((int) value);
+        case PrimitiveTypeCode.Byte:
+          return ToString((byte) value);
+        case PrimitiveTypeCode.UInt32:
+          return ToString((uint) value);
+        case PrimitiveTypeCode.Int64:
+          return ToString((long) value);
+        case PrimitiveTypeCode.UInt64:
+          return ToString((ulong) value);
+        case PrimitiveTypeCode.Single:
+          return ToString((float) value);
+        case PrimitiveTypeCode.Double:
+          return ToString((double) value);
+        case PrimitiveTypeCode.DateTime:
+          return ToString((DateTime) value);
+        case PrimitiveTypeCode.Decimal:
+          return ToString((decimal) value);
 #if !(NETFX_CORE || PORTABLE)
-          case TypeCode.DBNull:
-            return Null;
+        case PrimitiveTypeCode.DBNull:
+          return Null;
 #endif
-        }
-      }
 #if !NET20
-      else if (value is DateTimeOffset)
-      {
-        return ToString((DateTimeOffset) value);
-      }
+        case PrimitiveTypeCode.DateTimeOffset:
+          return ToString((DateTimeOffset) value);
 #endif
-      else if (value is Guid)
-      {
-        return ToString((Guid) value);
-      }
-      else if (value is Uri)
-      {
-        return ToString((Uri) value);
-      }
-      else if (value is TimeSpan)
-      {
-        return ToString((TimeSpan) value);
-      }
+        case PrimitiveTypeCode.Guid:
+          return ToString((Guid) value);
+        case PrimitiveTypeCode.Uri:
+          return ToString((Uri) value);
+        case PrimitiveTypeCode.TimeSpan:
+          return ToString((TimeSpan) value);
 #if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
-      else if (value is BigInteger)
-      {
-        return ToString((BigInteger) value);
-      }
+        case PrimitiveTypeCode.BigInteger:
+          return ToString((BigInteger) value);
 #endif
+      }
 
       throw new ArgumentException("Unsupported type: {0}. Use the JsonSerializer class to get the object's JSON representation.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
     }
 
-    private static bool IsJsonPrimitiveTypeCode(TypeCode typeCode)
+    internal static bool IsJsonPrimitiveType(Type t)
     {
-      switch (typeCode)
+      PrimitiveTypeCode typeCode = ConvertUtils.GetTypeCode(t);
+
+      if (typeCode != PrimitiveTypeCode.Empty && typeCode != PrimitiveTypeCode.Object)
+        return true;
+
+      if (typeof(IConvertible).IsAssignableFrom(t)
+        || (ReflectionUtils.IsNullableType(t) && typeof(IConvertible).IsAssignableFrom(Nullable.GetUnderlyingType(t))))
       {
-        case TypeCode.String:
-        case TypeCode.Char:
-        case TypeCode.Boolean:
-        case TypeCode.SByte:
-        case TypeCode.Int16:
-        case TypeCode.UInt16:
-        case TypeCode.Int32:
-        case TypeCode.Byte:
-        case TypeCode.UInt32:
-        case TypeCode.Int64:
-        case TypeCode.UInt64:
-        case TypeCode.Single:
-        case TypeCode.Double:
-        case TypeCode.DateTime:
-        case TypeCode.Decimal:
-#if !(NETFX_CORE || PORTABLE)
-        case TypeCode.DBNull:
-#endif
-          return true;
-        default:
-          return false;
+        return !typeof(JToken).IsAssignableFrom(t);
       }
-    }
 
-    internal static bool IsJsonPrimitiveType(Type type)
-    {
-      if (ReflectionUtils.IsNullableType(type))
-        type = Nullable.GetUnderlyingType(type);
-
-#if !NET20
-      if (type == typeof (DateTimeOffset))
-        return true;
-#endif
-      if (type == typeof (byte[]))
-        return true;
-      if (type == typeof (Uri))
-        return true;
-      if (type == typeof (TimeSpan))
-        return true;
-      if (type == typeof (Guid))
-        return true;
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
-      if (type == typeof (BigInteger))
-        return true;
-#endif
-
-      return IsJsonPrimitiveTypeCode(ConvertUtils.GetTypeCode(type));
+      return false;
     }
 
     internal static bool TryParseDateTime(string s, DateParseHandling dateParseHandling, DateTimeZoneHandling dateTimeZoneHandling, out object dt)

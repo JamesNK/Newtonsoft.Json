@@ -781,7 +781,7 @@ namespace Newtonsoft.Json.Serialization
     {
       Type t = ReflectionUtils.EnsureNotNullableType(objectType);
 
-      if (JsonConvert.IsJsonPrimitiveType(t))
+      if (JsonConvert.IsJsonPrimitiveType(objectType))
         return CreatePrimitiveContract(objectType);
 
       if (JsonTypeReflector.GetJsonObjectAttribute(t) != null)

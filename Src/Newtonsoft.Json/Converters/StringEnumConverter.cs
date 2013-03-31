@@ -70,6 +70,7 @@ namespace Newtonsoft.Json.Converters
 
       if (char.IsNumber(enumName[0]) || enumName[0] == '-')
       {
+        // enum value has no name so write number
         writer.WriteValue(value);
       }
       else

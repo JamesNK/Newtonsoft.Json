@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.ComponentModel;
 #if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
@@ -38,181 +39,176 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
 using System.Data.SqlTypes;
 #endif
-#if NETFX_CORE || PORTABLE
-using IConvertible = Newtonsoft.Json.Utilities.Convertible;
-#endif
 
 namespace Newtonsoft.Json.Utilities
 {
-#if NETFX_CORE || PORTABLE
-  internal class Convertible
+  internal enum PrimitiveTypeCode
   {
-    private object _underlyingValue;
-
-    public Convertible(object o)
-    {
-      _underlyingValue = o;
-    }
-
-    public TypeCode GetTypeCode()
-    {
-      return ConvertUtils.GetTypeCode(_underlyingValue);
-    }
-
-    public bool ToBoolean(IFormatProvider provider)
-    {
-      return Convert.ToBoolean(_underlyingValue, provider);
-    }
-    public byte ToByte(IFormatProvider provider)
-    {
-      return Convert.ToByte(_underlyingValue, provider);
-    }
-    public char ToChar(IFormatProvider provider)
-    {
-      return Convert.ToChar(_underlyingValue, provider);
-    }
-    public DateTime ToDateTime(IFormatProvider provider)
-    {
-      return Convert.ToDateTime(_underlyingValue, provider);
-    }
-    public decimal ToDecimal(IFormatProvider provider)
-    {
-      return Convert.ToDecimal(_underlyingValue, provider);
-    }
-    public double ToDouble(IFormatProvider provider)
-    {
-      return Convert.ToDouble(_underlyingValue, provider);
-    }
-    public short ToInt16(IFormatProvider provider)
-    {
-      return Convert.ToInt16(_underlyingValue, provider);
-    }
-    public int ToInt32(IFormatProvider provider)
-    {
-      return Convert.ToInt32(_underlyingValue, provider);
-    }
-    public long ToInt64(IFormatProvider provider)
-    {
-      return Convert.ToInt64(_underlyingValue, provider);
-    }
-    public sbyte ToSByte(IFormatProvider provider)
-    {
-      return Convert.ToSByte(_underlyingValue, provider);
-    }
-    public float ToSingle(IFormatProvider provider)
-    {
-      return Convert.ToSingle(_underlyingValue, provider);
-    }
-    public string ToString(IFormatProvider provider)
-    {
-      return Convert.ToString(_underlyingValue, provider);
-    }
-    public object ToType(Type conversionType, IFormatProvider provider)
-    {
-      return Convert.ChangeType(_underlyingValue, conversionType, provider);
-    }
-    public ushort ToUInt16(IFormatProvider provider)
-    {
-      return Convert.ToUInt16(_underlyingValue, provider);
-    }
-    public uint ToUInt32(IFormatProvider provider)
-    {
-      return Convert.ToUInt32(_underlyingValue, provider);
-    }
-    public ulong ToUInt64(IFormatProvider provider)
-    {
-      return Convert.ToUInt64(_underlyingValue, provider);
-    }
-  }
+    Empty,
+    Object,
+    Char,
+    CharNullable,
+    Boolean,
+    BooleanNullable,
+    SByte,
+    SByteNullable,
+    Int16,
+    Int16Nullable,
+    UInt16,
+    UInt16Nullable,
+    Int32,
+    Int32Nullable,
+    Byte,
+    ByteNullable,
+    UInt32,
+    UInt32Nullable,
+    Int64,
+    Int64Nullable,
+    UInt64,
+    UInt64Nullable,
+    Single,
+    SingleNullable,
+    Double,
+    DoubleNullable,
+    DateTime,
+    DateTimeNullable,
+#if !NET20
+    DateTimeOffset,
+    DateTimeOffsetNullable,
 #endif
+    Decimal,
+    DecimalNullable,
+    Guid,
+    GuidNullable,
+    TimeSpan,
+    TimeSpanNullable,
+#if !(PORTABLE || NET35 || NET20 || WINDOWS_PHONE || SILVERLIGHT)
+    BigInteger,
+    BigIntegerNullable,
+#endif
+    Uri,
+    String,
+    Bytes,
+    DBNull
+  }
+
+  internal class TypeInformation
+  {
+    public Type Type { get; set; }
+    public PrimitiveTypeCode TypeCode { get; set; }
+  }
 
   internal static class ConvertUtils
   {
-    public static TypeCode GetTypeCode(this IConvertible convertible)
-    {
-#if !(NETFX_CORE || PORTABLE)
-      return convertible.GetTypeCode();
-#else
-      return GetTypeCode((object)convertible);
+    private static readonly Dictionary<Type, PrimitiveTypeCode> TypeCodeMap =
+      new Dictionary<Type, PrimitiveTypeCode>
+        {
+          { typeof(char), PrimitiveTypeCode.Char },
+          { typeof(char?), PrimitiveTypeCode.CharNullable },
+          { typeof(bool), PrimitiveTypeCode.Boolean },
+          { typeof(bool?), PrimitiveTypeCode.BooleanNullable },
+          { typeof(sbyte), PrimitiveTypeCode.SByte },
+          { typeof(sbyte?), PrimitiveTypeCode.SByteNullable },
+          { typeof(short), PrimitiveTypeCode.Int16 },
+          { typeof(short?), PrimitiveTypeCode.Int16Nullable },
+          { typeof(ushort), PrimitiveTypeCode.UInt16 },
+          { typeof(ushort?), PrimitiveTypeCode.UInt16Nullable },
+          { typeof(int), PrimitiveTypeCode.Int32 },
+          { typeof(int?), PrimitiveTypeCode.Int32Nullable },
+          { typeof(byte), PrimitiveTypeCode.Byte },
+          { typeof(byte?), PrimitiveTypeCode.ByteNullable },
+          { typeof(uint), PrimitiveTypeCode.UInt32 },
+          { typeof(uint?), PrimitiveTypeCode.UInt32Nullable },
+          { typeof(long), PrimitiveTypeCode.Int64 },
+          { typeof(long?), PrimitiveTypeCode.Int64Nullable },
+          { typeof(ulong), PrimitiveTypeCode.UInt64 },
+          { typeof(ulong?), PrimitiveTypeCode.UInt64Nullable },
+          { typeof(float), PrimitiveTypeCode.Single },
+          { typeof(float?), PrimitiveTypeCode.SingleNullable },
+          { typeof(double), PrimitiveTypeCode.Double },
+          { typeof(double?), PrimitiveTypeCode.DoubleNullable },
+          { typeof(DateTime), PrimitiveTypeCode.DateTime },
+          { typeof(DateTime?), PrimitiveTypeCode.DateTimeNullable },
+#if !NET20
+          { typeof(DateTimeOffset), PrimitiveTypeCode.DateTimeOffset },
+          { typeof(DateTimeOffset?), PrimitiveTypeCode.DateTimeOffsetNullable },
 #endif
-    }
-
-    public static TypeCode GetTypeCode(object o)
-    {
-#if !(NETFX_CORE || PORTABLE)
-      return System.Convert.GetTypeCode(o);
-#else
-      return GetTypeCode(o.GetType());
+          { typeof(decimal), PrimitiveTypeCode.Decimal },
+          { typeof(decimal?), PrimitiveTypeCode.DecimalNullable },
+          { typeof(Guid), PrimitiveTypeCode.Guid },
+          { typeof(Guid?), PrimitiveTypeCode.GuidNullable },
+          { typeof(TimeSpan), PrimitiveTypeCode.TimeSpan },
+          { typeof(TimeSpan?), PrimitiveTypeCode.TimeSpanNullable },
+#if !(PORTABLE || NET35 || NET20 || WINDOWS_PHONE || SILVERLIGHT)
+          { typeof(BigInteger), PrimitiveTypeCode.BigInteger },
+          { typeof(BigInteger?), PrimitiveTypeCode.BigIntegerNullable },
 #endif
-    }
+          { typeof(Uri), PrimitiveTypeCode.Uri },
+          { typeof(string), PrimitiveTypeCode.String },
+          { typeof(byte[]), PrimitiveTypeCode.Bytes },
+#if !(PORTABLE || NETFX_CORE)
+          { typeof(DBNull), PrimitiveTypeCode.DBNull }
+#endif
+        };
 
-    public static TypeCode GetTypeCode(Type t)
+    private static readonly List<TypeInformation> PrimitiveTypeCodes = new List<TypeInformation>
+      {
+        new TypeInformation { Type = typeof(object), TypeCode = PrimitiveTypeCode.Empty },
+        new TypeInformation { Type = typeof(object), TypeCode = PrimitiveTypeCode.Object },
+        new TypeInformation { Type = typeof(object), TypeCode = PrimitiveTypeCode.DBNull },
+        new TypeInformation { Type = typeof(bool), TypeCode = PrimitiveTypeCode.Boolean },
+        new TypeInformation { Type = typeof(char), TypeCode = PrimitiveTypeCode.Char },
+        new TypeInformation { Type = typeof(sbyte), TypeCode = PrimitiveTypeCode.SByte },
+        new TypeInformation { Type = typeof(byte), TypeCode = PrimitiveTypeCode.Byte },
+        new TypeInformation { Type = typeof(short), TypeCode = PrimitiveTypeCode.Int16 },
+        new TypeInformation { Type = typeof(ushort), TypeCode = PrimitiveTypeCode.UInt16 },
+        new TypeInformation { Type = typeof(int), TypeCode = PrimitiveTypeCode.Int32 },
+        new TypeInformation { Type = typeof(uint), TypeCode = PrimitiveTypeCode.UInt32 },
+        new TypeInformation { Type = typeof(long), TypeCode = PrimitiveTypeCode.Int64 },
+        new TypeInformation { Type = typeof(ulong), TypeCode = PrimitiveTypeCode.UInt64 },
+        new TypeInformation { Type = typeof(float), TypeCode = PrimitiveTypeCode.Single },
+        new TypeInformation { Type = typeof(double), TypeCode = PrimitiveTypeCode.Double },
+        new TypeInformation { Type = typeof(decimal), TypeCode = PrimitiveTypeCode.Decimal },
+        new TypeInformation { Type = typeof(DateTime), TypeCode = PrimitiveTypeCode.DateTime },
+        new TypeInformation { Type = typeof(object), TypeCode = PrimitiveTypeCode.Empty }, // no 17 in TypeCode for some reason
+        new TypeInformation { Type = typeof(string), TypeCode = PrimitiveTypeCode.String }
+      };
+
+    public static PrimitiveTypeCode GetTypeCode(Type t)
     {
-#if !(NETFX_CORE || PORTABLE)
-      return Type.GetTypeCode(t);
-#else
-      if (t == typeof(bool))
-        return TypeCode.Boolean;
-      if (t == typeof(byte))
-        return TypeCode.Byte;
-      if (t == typeof(char))
-        return TypeCode.Char;
-      if (t == typeof(DateTime))
-        return TypeCode.DateTime;
-      if (t == typeof(decimal))
-        return TypeCode.Decimal;
-      if (t == typeof(double))
-        return TypeCode.Double;
-      if (t == typeof(short))
-        return TypeCode.Int16;
-      if (t == typeof(int))
-        return TypeCode.Int32;
-      if (t == typeof(long))
-        return TypeCode.Int64;
-      if (t == typeof(sbyte))
-        return TypeCode.SByte;
-      if (t == typeof(float))
-        return TypeCode.Single;
-      if (t == typeof(string))
-        return TypeCode.String;
-      if (t == typeof(ushort))
-        return TypeCode.UInt16;
-      if (t == typeof(uint))
-        return TypeCode.UInt32;
-      if (t == typeof(ulong))
-        return TypeCode.UInt64;
+      PrimitiveTypeCode typeCode;
+      if (TypeCodeMap.TryGetValue(t, out typeCode))
+        return typeCode;
+
       if (t.IsEnum())
         return GetTypeCode(Enum.GetUnderlyingType(t));
 
-      return TypeCode.Object;
-#endif
+      // performance?
+      if (ReflectionUtils.IsNullableType(t))
+      {
+        Type nonNullable = Nullable.GetUnderlyingType(t);
+        if (nonNullable.IsEnum())
+        {
+          Type nullableUnderlyingType = ReflectionUtils.MakeGenericType(typeof (Nullable<>), Enum.GetUnderlyingType(nonNullable));
+          return GetTypeCode(nullableUnderlyingType);
+        }
+      }
+
+      return PrimitiveTypeCode.Object;
     }
 
-    public static IConvertible ToConvertible(object o)
+    public static PrimitiveTypeCode GetTypeCode(object o)
     {
-#if !(NETFX_CORE || PORTABLE)
-      return o as IConvertible;
-#else
-      if (!IsConvertible(o))
-        return null;
-
-      return new IConvertible(o);
-#endif
+      return GetTypeCode(o.GetType());
     }
 
-    public static bool IsConvertible(object o)
+#if !(NETFX_CORE || PORTABLE)
+    public static TypeInformation GetTypeInformation(IConvertible convertable)
     {
-#if !(NETFX_CORE || PORTABLE)
-      return o is IConvertible;
-#else
-      if (o == null)
-        return false;
-
-      return (
-        o is bool || o is byte || o is char || o is DateTime || o is decimal || o is double || o is short || o is int ||
-        o is long || o is sbyte || o is float || o is string || o is ushort || o is uint || o is ulong || o is Enum);
-#endif
+      TypeInformation typeInformation = PrimitiveTypeCodes[(int) convertable.GetTypeCode()];
+      return typeInformation;
     }
+#endif
 
     public static bool IsConvertible(Type t)
     {
@@ -328,10 +324,15 @@ namespace Newtonsoft.Json.Utilities
         return (float) i;
       if (targetType == typeof (ulong))
         return (ulong) i;
-      if (IsConvertible(targetType))
-        return System.Convert.ChangeType((long) i, targetType, CultureInfo.InvariantCulture);
 
-      throw new InvalidOperationException("Can not convert from BigInteger to {0}.".FormatWith(CultureInfo.InvariantCulture, targetType));
+      try
+      {
+        return System.Convert.ChangeType((long)i, targetType, CultureInfo.InvariantCulture);
+      }
+      catch (Exception ex)
+      {
+        throw new InvalidOperationException("Can not convert from BigInteger to {0}.".FormatWith(CultureInfo.InvariantCulture, targetType), ex);
+      }
     }
 #endif
 
@@ -357,7 +358,7 @@ namespace Newtonsoft.Json.Utilities
         return initialValue;
 
       // use Convert.ChangeType if both types are IConvertible
-      if (ConvertUtils.IsConvertible(initialValue) && ConvertUtils.IsConvertible(targetType))
+      if (ConvertUtils.IsConvertible(initialValue.GetType()) && ConvertUtils.IsConvertible(targetType))
       {
         if (targetType.IsEnum())
         {
@@ -550,14 +551,14 @@ namespace Newtonsoft.Json.Utilities
     {
       switch (GetTypeCode(value))
       {
-        case TypeCode.SByte:
-        case TypeCode.Byte:
-        case TypeCode.Int16:
-        case TypeCode.UInt16:
-        case TypeCode.Int32:
-        case TypeCode.UInt32:
-        case TypeCode.Int64:
-        case TypeCode.UInt64:
+        case PrimitiveTypeCode.SByte:
+        case PrimitiveTypeCode.Byte:
+        case PrimitiveTypeCode.Int16:
+        case PrimitiveTypeCode.UInt16:
+        case PrimitiveTypeCode.Int32:
+        case PrimitiveTypeCode.UInt32:
+        case PrimitiveTypeCode.Int64:
+        case PrimitiveTypeCode.UInt64:
           return true;
         default:
           return false;

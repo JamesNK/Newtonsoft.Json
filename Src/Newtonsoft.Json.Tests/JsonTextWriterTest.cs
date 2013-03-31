@@ -63,6 +63,16 @@ namespace Newtonsoft.Json.Tests
       writer.Close();
       Assert.IsTrue(ms.CanRead);
     }
+
+    [Test]
+    public void WriteIConvertable()
+    {
+      var sw = new StringWriter();
+      JsonTextWriter writer = new JsonTextWriter(sw);
+      writer.WriteValue(new ConvertibleInt(1));
+
+      Assert.AreEqual("1", sw.ToString());
+    }
     
     [Test]
     public void ValueFormatting()
@@ -1260,7 +1270,103 @@ _____'propertyName': NaN
       if (appendDelimiters)
         writer.Write(delimiter);
     }
+  }
 
+  public struct ConvertibleInt : IConvertible
+  {
+    private readonly int _value;
 
+    public ConvertibleInt(int value)
+    {
+      _value = value;
+    }
+
+    public TypeCode GetTypeCode()
+    {
+      return TypeCode.Int32;
+    }
+
+    public bool ToBoolean(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+
+    public byte ToByte(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+
+    public char ToChar(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+
+    public DateTime ToDateTime(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+
+    public decimal ToDecimal(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+
+    public double ToDouble(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+
+    public short ToInt16(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+
+    public int ToInt32(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+
+    public long ToInt64(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+
+    public sbyte ToSByte(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+
+    public float ToSingle(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+
+    public string ToString(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+
+    public object ToType(Type conversionType, IFormatProvider provider)
+    {
+      if (conversionType == typeof(int))
+        return _value;
+
+      throw new Exception("Type not supported: " + conversionType.FullName);
+    }
+
+    public ushort ToUInt16(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+
+    public uint ToUInt32(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+
+    public ulong ToUInt64(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
   }
 }

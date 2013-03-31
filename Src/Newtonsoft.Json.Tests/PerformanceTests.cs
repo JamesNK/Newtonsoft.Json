@@ -100,7 +100,7 @@ namespace Newtonsoft.Json.Tests
       DataContractJsonSerializer
     }
 
-    #endregion
+#endregion
 
     [Test]
     public void SerializeSimpleObject()

@@ -25,15 +25,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Reflection;
 using System.Collections;
 using System.Globalization;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
 using System.Text;
-#if NETFX_CORE
-using IConvertible = Newtonsoft.Json.Utilities.Convertible;
-#endif
 #if NETFX_CORE || PORTABLE
 using ICustomAttributeProvider = Newtonsoft.Json.Utilities.CustomAttributeProvider;
 #endif
@@ -69,29 +67,6 @@ namespace Newtonsoft.Json.Utilities
     {
       get { return _underlyingObject; }
     }
-  }
-#endif
-
-#if (NETFX_CORE || PORTABLE)
-  internal enum TypeCode
-  {
-    Empty,
-    Object,
-    String,
-    Char,
-    Boolean,
-    SByte,
-    Int16,
-    UInt16,
-    Int32,
-    Byte,
-    UInt32,
-    Int64,
-    UInt64,
-    Single,
-    Double,
-    DateTime,
-    Decimal
   }
 
   [Flags]
@@ -985,36 +960,34 @@ namespace Newtonsoft.Json.Utilities
 
       switch (ConvertUtils.GetTypeCode(type))
       {
-        case TypeCode.Boolean:
+        case PrimitiveTypeCode.Boolean:
           return false;
-        case TypeCode.Char:
-        case TypeCode.SByte:
-        case TypeCode.Byte:
-        case TypeCode.Int16:
-        case TypeCode.UInt16:
-        case TypeCode.Int32:
-        case TypeCode.UInt32:
+        case PrimitiveTypeCode.Char:
+        case PrimitiveTypeCode.SByte:
+        case PrimitiveTypeCode.Byte:
+        case PrimitiveTypeCode.Int16:
+        case PrimitiveTypeCode.UInt16:
+        case PrimitiveTypeCode.Int32:
+        case PrimitiveTypeCode.UInt32:
           return 0;
-        case TypeCode.Int64:
-        case TypeCode.UInt64:
+        case PrimitiveTypeCode.Int64:
+        case PrimitiveTypeCode.UInt64:
           return 0L;
-        case TypeCode.Single:
+        case PrimitiveTypeCode.Single:
           return 0f;
-        case TypeCode.Double:
+        case PrimitiveTypeCode.Double:
           return 0.0;
-        case TypeCode.Decimal:
+        case PrimitiveTypeCode.Decimal:
           return 0m;
-        case TypeCode.DateTime:
+        case PrimitiveTypeCode.DateTime:
           return new DateTime();
+        case PrimitiveTypeCode.BigInteger:
+          return new BigInteger();
+        case PrimitiveTypeCode.Guid:
+          return new Guid();
+        case PrimitiveTypeCode.DateTimeOffset:
+          return new DateTimeOffset();
       }
-
-      if (type == typeof(Guid))
-        return new Guid();
-
-#if !NET20
-      if (type == typeof(DateTimeOffset))
-        return new DateTimeOffset();
-#endif
 
       if (IsNullable(type))
         return null;

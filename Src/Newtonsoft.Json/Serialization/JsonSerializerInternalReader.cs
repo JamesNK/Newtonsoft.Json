@@ -693,11 +693,13 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
 
           if (contract.IsConvertable)
           {
+            JsonPrimitiveContract primitiveContract = (JsonPrimitiveContract)contract;
+
             if (contract.NonNullableUnderlyingType.IsEnum())
             {
               if (value is string)
                 return Enum.Parse(contract.NonNullableUnderlyingType, value.ToString(), true);
-              else if (ConvertUtils.IsInteger(value))
+              else if (ConvertUtils.IsInteger(primitiveContract.TypeCode))
                 return Enum.ToObject(contract.NonNullableUnderlyingType, value);
             }
 
@@ -706,6 +708,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
               return ConvertUtils.FromBigInteger((BigInteger)value, targetType);
 #endif
 
+            // this won't work when converting to a custom IConvertible
             return Convert.ChangeType(value, contract.NonNullableUnderlyingType, culture);
           }
 
@@ -966,6 +969,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
         contract.ItemContract = GetContractSafe(contract.DictionaryValueType);
 
       JsonConverter dictionaryValueConverter = contract.ItemConverter ?? GetConverter(contract.ItemContract, null, contract, containerProperty);
+      PrimitiveTypeCode keyTypeCode = (contract.KeyContract is JsonPrimitiveContract) ? ((JsonPrimitiveContract)contract.KeyContract).TypeCode : PrimitiveTypeCode.Empty;
 
       bool finished = false;
       do
@@ -979,11 +983,13 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
               try
               {
                 // this is for correctly reading ISO and MS formatted dictionary keys
-                if (contract.DictionaryKeyType == typeof(DateTime) && JsonConvert.TryParseDateTime(keyValue.ToString(), DateParseHandling.DateTime, reader.DateTimeZoneHandling, out keyValue))
+                if ((keyTypeCode == PrimitiveTypeCode.DateTime || keyTypeCode == PrimitiveTypeCode.DateTimeNullable)
+                  && JsonConvert.TryParseDateTime(keyValue.ToString(), DateParseHandling.DateTime, reader.DateTimeZoneHandling, out keyValue))
                 {
                 }
 #if !NET20
-                else if (contract.DictionaryKeyType == typeof(DateTimeOffset) && JsonConvert.TryParseDateTime(keyValue.ToString(), DateParseHandling.DateTimeOffset, reader.DateTimeZoneHandling, out keyValue))
+                else if ((keyTypeCode == PrimitiveTypeCode.DateTimeOffset || keyTypeCode == PrimitiveTypeCode.DateTimeOffsetNullable)
+                  && JsonConvert.TryParseDateTime(keyValue.ToString(), DateParseHandling.DateTimeOffset, reader.DateTimeZoneHandling, out keyValue))
                 {
                 }
 #endif

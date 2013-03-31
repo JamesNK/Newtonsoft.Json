@@ -1636,126 +1636,91 @@ namespace Newtonsoft.Json.Linq
 
     private object ToObject(Type objectType, bool isNullable)
     {
-      TypeCode typeCode = ConvertUtils.GetTypeCode(objectType);
+      PrimitiveTypeCode typeCode = ConvertUtils.GetTypeCode(objectType);
 
       switch (typeCode)
       {
-        case TypeCode.Object:
-          if (!isNullable && ReflectionUtils.IsNullableType(objectType))
-            return ToObject(Nullable.GetUnderlyingType(objectType), true);
-
-          // fall back to standard JsonSerializer
-          break;
-        case TypeCode.Boolean:
-          if (isNullable)
-            return (bool?) this;
-
+        case PrimitiveTypeCode.BooleanNullable:
+          return (bool?) this;
+        case PrimitiveTypeCode.Boolean:
           return (bool) this;
-        case TypeCode.Char:
-          if (isNullable)
-            return (char?) this;
-
+        case PrimitiveTypeCode.CharNullable:
+          return (char?) this;
+        case PrimitiveTypeCode.Char:
           return (char) this;
-        case TypeCode.SByte:
-          if (isNullable)
-            return (sbyte?) this;
-
+        case PrimitiveTypeCode.SByte:
+          return (sbyte?) this;
+        case PrimitiveTypeCode.SByteNullable:
           return (sbyte) this;
-        case TypeCode.Byte:
-          if (isNullable)
-            return (byte?) this;
-
+        case PrimitiveTypeCode.ByteNullable:
+          return (byte?) this;
+        case PrimitiveTypeCode.Byte:
           return (byte) this;
-        case TypeCode.Int16:
-          if (isNullable)
-            return (short?) this;
-
+        case PrimitiveTypeCode.Int16Nullable:
+          return (short?) this;
+        case PrimitiveTypeCode.Int16:
           return (short) this;
-        case TypeCode.UInt16:
-          if (isNullable)
-            return (ushort?) this;
-
+        case PrimitiveTypeCode.UInt16Nullable:
+          return (ushort?) this;
+        case PrimitiveTypeCode.UInt16:
           return (ushort) this;
-        case TypeCode.Int32:
-          if (isNullable)
-            return (int?) this;
-
+        case PrimitiveTypeCode.Int32Nullable:
+          return (int?) this;
+        case PrimitiveTypeCode.Int32:
           return (int) this;
-        case TypeCode.UInt32:
-          if (isNullable)
-            return (uint?) this;
-
+        case PrimitiveTypeCode.UInt32Nullable:
+          return (uint?) this;
+        case PrimitiveTypeCode.UInt32:
           return (uint) this;
-        case TypeCode.Int64:
-          if (isNullable)
-            return (long?) this;
-
+        case PrimitiveTypeCode.Int64Nullable:
+          return (long?) this;
+        case PrimitiveTypeCode.Int64:
           return (long) this;
-        case TypeCode.UInt64:
-          if (isNullable)
-            return (ulong?) this;
-
+        case PrimitiveTypeCode.UInt64Nullable:
+          return (ulong?) this;
+        case PrimitiveTypeCode.UInt64:
           return (ulong) this;
-        case TypeCode.Single:
-          if (isNullable)
-            return (float?) this;
-
+        case PrimitiveTypeCode.SingleNullable:
+          return (float?) this;
+        case PrimitiveTypeCode.Single:
           return (float) this;
-        case TypeCode.Double:
-          if (isNullable)
-            return (double?) this;
-
+        case PrimitiveTypeCode.DoubleNullable:
+          return (double?) this;
+        case PrimitiveTypeCode.Double:
           return (double) this;
-        case TypeCode.Decimal:
-          if (isNullable)
-            return (decimal?) this;
-
+        case PrimitiveTypeCode.DecimalNullable:
+          return (decimal?) this;
+        case PrimitiveTypeCode.Decimal:
           return (decimal) this;
-        case TypeCode.DateTime:
-          if (isNullable)
-            return (DateTime?) this;
-
+        case PrimitiveTypeCode.DateTimeNullable:
+          return (DateTime?) this;
+        case PrimitiveTypeCode.DateTime:
           return (DateTime) this;
-        case TypeCode.String:
-          return (string) this;
-      }
-
 #if !NET20
-      if (objectType == typeof (DateTimeOffset))
-      {
-        if (isNullable)
+        case PrimitiveTypeCode.DateTimeOffsetNullable:
           return (DateTimeOffset?) this;
-
-        return (DateTimeOffset) this;
-      }
+        case PrimitiveTypeCode.DateTimeOffset:
+          return (DateTimeOffset) this;
 #endif
-      if (objectType == typeof (Guid))
-      {
-        if (isNullable)
+        case PrimitiveTypeCode.String:
+          return (string) this;
+        case PrimitiveTypeCode.GuidNullable:
           return (Guid?) this;
-
-        return (Guid) this;
-      }
-      if (objectType == typeof (Uri))
-      {
-        return (Uri) this;
-      }
-      if (objectType == typeof (TimeSpan))
-      {
-        if (isNullable)
-          return (TimeSpan?) this;
-
-        return (TimeSpan) this;
-      }
+        case PrimitiveTypeCode.Guid:
+          return (Guid) this;
+        case PrimitiveTypeCode.Uri:
+          return (Uri) this;
+        case PrimitiveTypeCode.TimeSpanNullable:
+          return (TimeSpan?)this;
+        case PrimitiveTypeCode.TimeSpan:
+          return (TimeSpan)this;
 #if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
-      if (objectType == typeof(BigInteger))
-      {
-        if (isNullable)
+        case PrimitiveTypeCode.BigIntegerNullable:
           return (BigInteger?)this;
-
-        return (BigInteger)this;
-      }
+        case PrimitiveTypeCode.BigInteger:
+          return (BigInteger)this;
 #endif
+      }
 
       return ToObject(objectType, new JsonSerializer());
     }

@@ -47,6 +47,7 @@ namespace Newtonsoft.Json
     private int _indentation;
     private char _quoteChar;
     private bool _quoteName;
+    private bool[] _charEscapeFlags;
 
     private Base64Encoder Base64Encoder
     {
@@ -86,6 +87,7 @@ namespace Newtonsoft.Json
           throw new ArgumentException(@"Invalid JavaScript string quote character. Valid quote characters are ' and "".");
 
         _quoteChar = value;
+        UpdateCharEscapeFlags();
       }
     }
 
@@ -121,6 +123,8 @@ namespace Newtonsoft.Json
       _quoteName = true;
       _indentChar = ' ';
       _indentation = 2;
+
+      UpdateCharEscapeFlags();
     }
 
     /// <summary>
@@ -209,7 +213,7 @@ namespace Newtonsoft.Json
     {
       InternalWritePropertyName(name);
 
-      JavaScriptUtils.WriteEscapedJavaScriptString(_writer, name, _quoteChar, _quoteName, GetCharEscapeFlags(), StringEscapeHandling);
+      JavaScriptUtils.WriteEscapedJavaScriptString(_writer, name, _quoteChar, _quoteName, _charEscapeFlags, StringEscapeHandling);
 
       _writer.Write(':');
     }
@@ -225,7 +229,7 @@ namespace Newtonsoft.Json
 
       if (escape)
       {
-        JavaScriptUtils.WriteEscapedJavaScriptString(_writer, name, _quoteChar, _quoteName, GetCharEscapeFlags(), StringEscapeHandling);
+        JavaScriptUtils.WriteEscapedJavaScriptString(_writer, name, _quoteChar, _quoteName, _charEscapeFlags, StringEscapeHandling);
       }
       else
       {
@@ -241,15 +245,19 @@ namespace Newtonsoft.Json
       _writer.Write(':');
     }
 
-    private bool[] GetCharEscapeFlags()
+    internal override void OnStringEscapeHandlingChanged()
+    {
+      UpdateCharEscapeFlags();
+    }
+
+    private void UpdateCharEscapeFlags()
     {
       if (StringEscapeHandling == StringEscapeHandling.EscapeHtml)
-        return JavaScriptUtils.HtmlCharEscapeFlags;
-
-      if (_quoteChar == '"')
-        return JavaScriptUtils.DoubleQuoteCharEscapeFlags;
-      
-      return JavaScriptUtils.SingleQuoteCharEscapeFlags;
+        _charEscapeFlags = JavaScriptUtils.HtmlCharEscapeFlags;
+      else if (_quoteChar == '"')
+        _charEscapeFlags = JavaScriptUtils.DoubleQuoteCharEscapeFlags;
+      else
+        _charEscapeFlags = JavaScriptUtils.SingleQuoteCharEscapeFlags;
     }
 
     /// <summary>
@@ -335,7 +343,7 @@ namespace Newtonsoft.Json
       if (value == null)
         WriteValueInternal(JsonConvert.Null, JsonToken.Null);
       else
-        JavaScriptUtils.WriteEscapedJavaScriptString(_writer, value, _quoteChar, true, GetCharEscapeFlags(), StringEscapeHandling);
+        JavaScriptUtils.WriteEscapedJavaScriptString(_writer, value, _quoteChar, true, _charEscapeFlags, StringEscapeHandling);
     }
 
     /// <summary>

@@ -94,14 +94,14 @@ namespace Newtonsoft.Json.Serialization
           WriteTypeProperty(writer, contract.CreatedType);
           writer.WritePropertyName(JsonTypeReflector.ValuePropertyName);
 
-          contract.WriteValue(writer, value);
+          JsonWriter.WriteValue(writer, contract.TypeCode, value);
 
           writer.WriteEndObject();
           return;
         }
       }
 
-      contract.WriteValue(writer, value);
+      JsonWriter.WriteValue(writer, contract.TypeCode, value);
     }
 
     private void SerializeValue(JsonWriter writer, object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
@@ -827,12 +827,15 @@ To fix this error either change the environment to be fully trusted, change the 
       if (contract.ItemContract == null)
         contract.ItemContract = Serializer.ContractResolver.ResolveContract(contract.DictionaryValueType ?? typeof(object));
 
+      if (contract.KeyContract == null)
+        contract.KeyContract = Serializer.ContractResolver.ResolveContract(contract.DictionaryKeyType ?? typeof(object));
+
       int initialDepth = writer.Top;
 
       foreach (DictionaryEntry entry in values)
       {
         bool escape;
-        string propertyName = GetPropertyName(writer, entry, out escape);
+        string propertyName = GetPropertyName(writer, entry, contract.KeyContract, out escape);
 
         propertyName = (contract.PropertyNameResolver != null)
                          ? contract.PropertyNameResolver(propertyName)
@@ -874,32 +877,36 @@ To fix this error either change the environment to be fully trusted, change the 
       OnSerialized(writer, contract, underlyingDictionary);
     }
 
-    private string GetPropertyName(JsonWriter writer, DictionaryEntry entry, out bool escape)
+    private string GetPropertyName(JsonWriter writer, DictionaryEntry entry, JsonContract contract, out bool escape)
     {
       object key = entry.Key;
 
       string propertyName;
 
-      if (key is DateTime)
+      JsonPrimitiveContract primitiveContract = contract as JsonPrimitiveContract;
+      if (primitiveContract != null)
       {
-        escape = false;
-        StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
-        JsonConvert.WriteDateTimeString(sw, (DateTime)key, writer.DateFormatHandling, writer.DateFormatString, writer.Culture);
-        return sw.ToString();
-      }
+        if (primitiveContract.TypeCode == PrimitiveTypeCode.DateTime || primitiveContract.TypeCode == PrimitiveTypeCode.DateTimeNullable)
+        {
+          escape = false;
+          StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
+          JsonConvert.WriteDateTimeString(sw, (DateTime)key, writer.DateFormatHandling, writer.DateFormatString, writer.Culture);
+          return sw.ToString();
+        }
 #if !NET20
-      else if (key is DateTimeOffset)
-      {
-        escape = false;
-        StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
-        JsonConvert.WriteDateTimeOffsetString(sw, (DateTimeOffset)key, writer.DateFormatHandling, writer.DateFormatString, writer.Culture);
-        return sw.ToString();
-      }
+        else if (primitiveContract.TypeCode == PrimitiveTypeCode.DateTimeOffset || primitiveContract.TypeCode == PrimitiveTypeCode.DateTimeOffsetNullable)
+        {
+          escape = false;
+          StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
+          JsonConvert.WriteDateTimeOffsetString(sw, (DateTimeOffset)key, writer.DateFormatHandling, writer.DateFormatString, writer.Culture);
+          return sw.ToString();
+        }
 #endif
-      else if (ConvertUtils.IsConvertible(key))
-      {
-        escape = true;
-        return Convert.ToString(key, CultureInfo.InvariantCulture);
+        else
+        {
+          escape = true;
+          return Convert.ToString(key, CultureInfo.InvariantCulture);
+        }
       }
       else if (TryConvertToString(key, key.GetType(), out propertyName))
       {
