@@ -94,20 +94,14 @@ namespace Newtonsoft.Json.Serialization
           WriteTypeProperty(writer, contract.CreatedType);
           writer.WritePropertyName(JsonTypeReflector.ValuePropertyName);
 
-          if (contract.IsNullable)
-            writer.WriteValue(value, true);
-          else
-            writer.WriteValue(value);
+          contract.WriteValue(writer, value);
 
           writer.WriteEndObject();
           return;
         }
       }
 
-      if (contract.IsNullable)
-        writer.WriteValue(value, true);
-      else
-        writer.WriteValue(value);
+      contract.WriteValue(writer, value);
     }
 
     private void SerializeValue(JsonWriter writer, object value, JsonContract valueContract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)

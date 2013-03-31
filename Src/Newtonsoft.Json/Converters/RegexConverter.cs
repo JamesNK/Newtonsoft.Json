@@ -91,7 +91,7 @@ namespace Newtonsoft.Json.Converters
       writer.WritePropertyName("Pattern");
       writer.WriteValue(regex.ToString());
       writer.WritePropertyName("Options");
-      writer.WriteValue(regex.Options);
+      writer.WriteValue((int)regex.Options);
       writer.WriteEndObject();
     }
 

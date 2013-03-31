@@ -1234,6 +1234,18 @@ namespace Newtonsoft.Json
     {
       InternalWriteValue(JsonToken.Integer);
     }
+
+    /// <summary>
+    /// Writes a <see cref="Nullable{BigInteger}"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Nullable{BigInteger}"/> value to write.</param>
+    public virtual void WriteValue(BigInteger? value)
+    {
+      if (value == null)
+        WriteNull();
+      else
+        WriteValue(value.Value);
+    }
 #endif
 
     /// <summary>
@@ -1403,7 +1415,10 @@ namespace Newtonsoft.Json
 #if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
       else if (value is BigInteger)
       {
-        WriteValue((BigInteger)value);
+        if (nullable)
+          WriteValue((BigInteger?)value);
+        else
+          WriteValue((BigInteger)value);
         return;
       }
 #endif
