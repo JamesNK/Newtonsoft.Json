@@ -5762,6 +5762,7 @@ To fix this error either change the environment to be fully trusted, change the 
         });
     }
 
+#if !(PORTABLE || NETFX_CORE)
     public class ConvertableIntTestClass
     {
       public ConvertibleInt Integer { get; set; }
@@ -5801,6 +5802,7 @@ To fix this error either change the environment to be fully trusted, change the 
         "Error converting value 1 to type 'Newtonsoft.Json.Tests.ConvertibleInt'. Path 'Integer', line 2, position 15.",
         () => JsonConvert.DeserializeObject<ConvertableIntTestClass>(json));
     }
+#endif
 
     [Test]
     public void SerializeNullableWidgetStruct()

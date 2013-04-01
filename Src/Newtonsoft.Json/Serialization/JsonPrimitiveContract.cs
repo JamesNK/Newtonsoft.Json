@@ -25,7 +25,6 @@
 
 using System;
 #if !(PORTABLE || NET35 || NET20 || WINDOWS_PHONE || SILVERLIGHT)
-using System.Globalization;
 using System.Numerics;
 #endif
 using Newtonsoft.Json.Utilities;

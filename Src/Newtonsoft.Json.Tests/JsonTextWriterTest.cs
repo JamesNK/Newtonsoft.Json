@@ -64,6 +64,7 @@ namespace Newtonsoft.Json.Tests
       Assert.IsTrue(ms.CanRead);
     }
 
+#if !(PORTABLE || NETFX_CORE)
     [Test]
     public void WriteIConvertable()
     {
@@ -73,6 +74,7 @@ namespace Newtonsoft.Json.Tests
 
       Assert.AreEqual("1", sw.ToString());
     }
+#endif
     
     [Test]
     public void ValueFormatting()
@@ -1272,6 +1274,7 @@ _____'propertyName': NaN
     }
   }
 
+#if !(PORTABLE || NETFX_CORE)
   public struct ConvertibleInt : IConvertible
   {
     private readonly int _value;
@@ -1369,4 +1372,5 @@ _____'propertyName': NaN
       throw new NotImplementedException();
     }
   }
+#endif
 }

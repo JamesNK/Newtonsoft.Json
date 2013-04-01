@@ -443,7 +443,9 @@ namespace Newtonsoft.Json.Schema
         case PrimitiveTypeCode.UInt32:
         case PrimitiveTypeCode.Int64:
         case PrimitiveTypeCode.UInt64:
+#if !(PORTABLE || NET35 || NET20 || WINDOWS_PHONE || SILVERLIGHT)
         case PrimitiveTypeCode.BigInteger:
+#endif
           return schemaType | JsonSchemaType.Integer;
         case PrimitiveTypeCode.Single:
         case PrimitiveTypeCode.Double:
@@ -451,7 +453,9 @@ namespace Newtonsoft.Json.Schema
           return schemaType | JsonSchemaType.Float;
         // convert to string?
         case PrimitiveTypeCode.DateTime:
+#if !NET20
         case PrimitiveTypeCode.DateTimeOffset:
+#endif
           return schemaType | JsonSchemaType.String;
         case PrimitiveTypeCode.String:
         case PrimitiveTypeCode.Uri:

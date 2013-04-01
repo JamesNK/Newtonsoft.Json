@@ -687,11 +687,13 @@ namespace Newtonsoft.Json
       if (typeCode != PrimitiveTypeCode.Empty && typeCode != PrimitiveTypeCode.Object)
         return true;
 
+#if !(PORTABLE || NETFX_CORE)
       if (typeof(IConvertible).IsAssignableFrom(t)
         || (ReflectionUtils.IsNullableType(t) && typeof(IConvertible).IsAssignableFrom(Nullable.GetUnderlyingType(t))))
       {
         return !typeof(JToken).IsAssignableFrom(t);
       }
+#endif
 
       return false;
     }
