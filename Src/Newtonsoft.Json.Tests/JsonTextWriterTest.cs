@@ -358,6 +358,48 @@ namespace Newtonsoft.Json.Tests
     }
 
     [Test]
+    public void AutoQuoteNameHandling()
+    {
+      StringBuilder sb = new StringBuilder();
+      StringWriter sw = new StringWriter(sb);
+
+      using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
+      {
+        jsonWriter.Formatting = Formatting.Indented;
+        jsonWriter.QuoteNameHandling = QuoteNameHandling.Auto;
+
+        jsonWriter.WriteStartObject();
+        jsonWriter.WritePropertyName("Id");
+        jsonWriter.WriteValue("A");
+        jsonWriter.WritePropertyName("Id12_$");
+        jsonWriter.WriteValue("B");
+        jsonWriter.WritePropertyName("Id With Space");
+        jsonWriter.WriteValue("C");
+        jsonWriter.WritePropertyName("?#@!&^*");
+        jsonWriter.WriteValue("D");
+        jsonWriter.WriteEndObject();
+        Assert.AreEqual(WriteState.Start, jsonWriter.WriteState);
+      }
+
+      // {
+      //   Id: "A",
+      //   Id12_$: "B",
+      //   "Id With Space": "C",
+      //   "?#@!&^*": "D"
+      // }
+
+      string expected = @"{
+  Id: ""A"",
+  Id12_$: ""B"",
+  ""Id With Space"": ""C"",
+  ""?#@!&^*"": ""D""
+}";
+      string result = sb.ToString();
+
+      Assert.AreEqual(expected, result);
+    }
+
+    [Test]
     public void State()
     {
       StringBuilder sb = new StringBuilder();
@@ -788,8 +830,8 @@ namespace Newtonsoft.Json.Tests
         Assert.AreEqual(5, jsonWriter.Indentation);
         jsonWriter.IndentChar = '_';
         Assert.AreEqual('_', jsonWriter.IndentChar);
-        jsonWriter.QuoteName = true;
-        Assert.AreEqual(true, jsonWriter.QuoteName);
+        jsonWriter.QuoteNameHandling = QuoteNameHandling.Quoted;
+        Assert.AreEqual(QuoteNameHandling.Quoted, jsonWriter.QuoteNameHandling);
         jsonWriter.QuoteChar = '\'';
         Assert.AreEqual('\'', jsonWriter.QuoteChar);
 
@@ -1138,7 +1180,7 @@ _____'propertyName': NaN
           Console.WriteLine("Position: " + (int)c);
 
         StringWriter swNew = new StringWriter();
-        JavaScriptUtils.WriteEscapedJavaScriptString(swNew, c.ToString(), '"', true, JavaScriptUtils.DoubleQuoteCharEscapeFlags, StringEscapeHandling.Default);
+        JavaScriptUtils.WriteEscapedJavaScriptString(swNew, c.ToString(), '"', QuoteNameHandling.Quoted, JavaScriptUtils.DoubleQuoteCharEscapeFlags, StringEscapeHandling.Default);
 
         StringWriter swOld = new StringWriter();
         WriteEscapedJavaScriptStringOld(swOld, c.ToString(), '"', true);
