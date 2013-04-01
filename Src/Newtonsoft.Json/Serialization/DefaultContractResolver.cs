@@ -44,9 +44,6 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Linq;
 using System.Runtime.CompilerServices;
-#if NETFX_CORE || PORTABLE
-using ICustomAttributeProvider = Newtonsoft.Json.Utilities.CustomAttributeProvider;
-#endif
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -295,10 +292,10 @@ namespace Newtonsoft.Json.Serialization
             {
               // add members that are explicitly marked with JsonProperty/DataMember attribute
               // or are a field if serializing just fields
-              if (JsonTypeReflector.GetAttribute<JsonPropertyAttribute>(member.GetCustomAttributeProvider()) != null)
+              if (JsonTypeReflector.GetAttribute<JsonPropertyAttribute>(member) != null)
                 serializableMembers.Add(member);
 #if !NET20
-              else if (dataContractAttribute != null && JsonTypeReflector.GetAttribute<DataMemberAttribute>(member.GetCustomAttributeProvider()) != null)
+              else if (dataContractAttribute != null && JsonTypeReflector.GetAttribute<DataMemberAttribute>(member) != null)
                 serializableMembers.Add(member);
 #endif
               else if (memberSerialization == MemberSerialization.Fields && member.MemberType() == MemberTypes.Field)
@@ -466,7 +463,7 @@ namespace Newtonsoft.Json.Serialization
       property.PropertyType = parameterInfo.ParameterType;
 
       bool allowNonPublicAccess;
-      SetPropertySettingsFromAttributes(property, parameterInfo.GetCustomAttributeProvider(), parameterInfo.Name, parameterInfo.Member.DeclaringType, MemberSerialization.OptOut, out allowNonPublicAccess);
+      SetPropertySettingsFromAttributes(property, parameterInfo, parameterInfo.Name, parameterInfo.Member.DeclaringType, MemberSerialization.OptOut, out allowNonPublicAccess);
 
       property.Readable = false;
       property.Writable = true;
@@ -500,7 +497,7 @@ namespace Newtonsoft.Json.Serialization
     /// <returns>The contract's default <see cref="JsonConverter" />.</returns>
     protected virtual JsonConverter ResolveContractConverter(Type objectType)
     {
-      return JsonTypeReflector.GetJsonConverter(objectType.GetCustomAttributeProvider(), objectType);
+      return JsonTypeReflector.GetJsonConverter(objectType, objectType);
     }
 
     private Func<object> GetDefaultCreator(Type createdType)
@@ -950,7 +947,7 @@ namespace Newtonsoft.Json.Serialization
       property.ValueProvider = CreateMemberValueProvider(member);
 
       bool allowNonPublicAccess;
-      SetPropertySettingsFromAttributes(property, member.GetCustomAttributeProvider(), member.Name, member.DeclaringType, memberSerialization, out allowNonPublicAccess);
+      SetPropertySettingsFromAttributes(property, member, member.Name, member.DeclaringType, memberSerialization, out allowNonPublicAccess);
 
       if (memberSerialization != MemberSerialization.Fields)
       {
@@ -970,17 +967,12 @@ namespace Newtonsoft.Json.Serialization
       return property;
     }
 
-    private void SetPropertySettingsFromAttributes(JsonProperty property, ICustomAttributeProvider attributeProvider, string name, Type declaringType, MemberSerialization memberSerialization, out bool allowNonPublicAccess)
+    private void SetPropertySettingsFromAttributes(JsonProperty property, object attributeProvider, string name, Type declaringType, MemberSerialization memberSerialization, out bool allowNonPublicAccess)
     {
 #if !NET20
       DataContractAttribute dataContractAttribute = JsonTypeReflector.GetDataContractAttribute(declaringType);
 
-      MemberInfo memberInfo = null;
-#if !(NETFX_CORE || PORTABLE)
-      memberInfo = attributeProvider as MemberInfo;
-#else
-      memberInfo = attributeProvider.UnderlyingObject as MemberInfo;
-#endif
+      MemberInfo memberInfo = attributeProvider as MemberInfo;
 
       DataMemberAttribute dataMemberAttribute;
       if (dataContractAttribute != null && memberInfo != null)

@@ -34,9 +34,6 @@ using System.Globalization;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
 using System.Text;
-#if NETFX_CORE || PORTABLE
-using ICustomAttributeProvider = Newtonsoft.Json.Utilities.CustomAttributeProvider;
-#endif
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -54,21 +51,6 @@ namespace Newtonsoft.Json.Utilities
     Event,
     Method,
     Other
-  }
-
-  internal class CustomAttributeProvider
-  {
-    private readonly object _underlyingObject;
-
-    public CustomAttributeProvider(object o)
-    {
-      _underlyingObject = o;
-    }
-
-    public object UnderlyingObject
-    {
-      get { return _underlyingObject; }
-    }
   }
 
   [Flags]
@@ -107,15 +89,6 @@ namespace Newtonsoft.Json.Utilities
       EmptyTypes = Type.EmptyTypes;
 #else
       EmptyTypes = new Type[0];
-#endif
-    }
-
-    public static ICustomAttributeProvider GetCustomAttributeProvider(this object o)
-    {
-#if !(NETFX_CORE || PORTABLE)
-      return (ICustomAttributeProvider)o;
-#else
-      return new ICustomAttributeProvider(o);
 #endif
     }
 
@@ -582,7 +555,7 @@ namespace Newtonsoft.Json.Utilities
             return true;
           return false;
         case MemberTypes.Property:
-          PropertyInfo propertyInfo = (PropertyInfo) member;
+          PropertyInfo propertyInfo = (PropertyInfo)member;
 
           if (!propertyInfo.CanRead)
             return false;
@@ -686,12 +659,12 @@ namespace Newtonsoft.Json.Utilities
       return true;
     }
 
-    public static T GetAttribute<T>(ICustomAttributeProvider attributeProvider) where T : Attribute
+    public static T GetAttribute<T>(object attributeProvider) where T : Attribute
     {
       return GetAttribute<T>(attributeProvider, true);
     }
 
-    public static T GetAttribute<T>(ICustomAttributeProvider attributeProvider, bool inherit) where T : Attribute
+    public static T GetAttribute<T>(object attributeProvider, bool inherit) where T : Attribute
     {
       T[] attributes = GetAttributes<T>(attributeProvider, inherit);
 
@@ -699,7 +672,7 @@ namespace Newtonsoft.Json.Utilities
     }
 
 #if !(NETFX_CORE || PORTABLE)
-    public static T[] GetAttributes<T>(ICustomAttributeProvider attributeProvider, bool inherit) where T : Attribute
+    public static T[] GetAttributes<T>(object attributeProvider, bool inherit) where T : Attribute
     {
       ValidationUtils.ArgumentNotNull(attributeProvider, "attributeProvider");
 
@@ -723,13 +696,11 @@ namespace Newtonsoft.Json.Utilities
       if (provider is ParameterInfo)
         return (T[])Attribute.GetCustomAttributes((ParameterInfo)provider, typeof(T), inherit);
 
-      return (T[])attributeProvider.GetCustomAttributes(typeof(T), inherit);
+      return (T[])((ICustomAttributeProvider)attributeProvider).GetCustomAttributes(typeof(T), inherit);
     }
 #else
-    public static T[] GetAttributes<T>(ICustomAttributeProvider attributeProvider, bool inherit) where T : Attribute
+    public static T[] GetAttributes<T>(object provider, bool inherit) where T : Attribute
     {
-      object provider = attributeProvider.UnderlyingObject;
-
       if (provider is Type)
         return ((Type)provider).GetTypeInfo().GetCustomAttributes<T>(inherit).ToArray();
 
@@ -760,7 +731,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static object CreateGeneric(Type genericTypeDefinition, Type innerType, params object[] args)
     {
-      return CreateGeneric(genericTypeDefinition, new [] { innerType }, args);
+      return CreateGeneric(genericTypeDefinition, new[] { innerType }, args);
     }
 
     public static object CreateGeneric(Type genericTypeDefinition, IList<Type> innerTypes, params object[] args)
@@ -779,12 +750,12 @@ namespace Newtonsoft.Json.Utilities
       return instanceCreator(specificType, args);
     }
 
-     public static object CreateInstance(Type type, params object[] args)
-     {
-       ValidationUtils.ArgumentNotNull(type, "type");
+    public static object CreateInstance(Type type, params object[] args)
+    {
+      ValidationUtils.ArgumentNotNull(type, "type");
 
-       return Activator.CreateInstance(type, args);
-     }
+      return Activator.CreateInstance(type, args);
+    }
 
     public static void SplitFullyQualifiedTypeName(string fullyQualifiedTypeName, out string typeName, out string assemblyName)
     {
@@ -836,7 +807,7 @@ namespace Newtonsoft.Json.Utilities
       switch (memberInfo.MemberType())
       {
         case MemberTypes.Property:
-          PropertyInfo propertyInfo = (PropertyInfo) memberInfo;
+          PropertyInfo propertyInfo = (PropertyInfo)memberInfo;
 
           Type[] types = propertyInfo.GetIndexParameters().Select(p => p.ParameterType).ToArray();
 
@@ -947,7 +918,7 @@ namespace Newtonsoft.Json.Utilities
       bool isMethodOverriden = currentType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
         .Any(info =>
              info.Name == method &&
-             // check that the method overrides the original on DynamicObjectProxy
+               // check that the method overrides the original on DynamicObjectProxy
              info.DeclaringType != methodDeclaringType
              && info.GetBaseDefinition().DeclaringType == methodDeclaringType
         );
@@ -993,6 +964,7 @@ namespace Newtonsoft.Json.Utilities
         case PrimitiveTypeCode.DateTimeOffset:
           return new DateTimeOffset();
 #endif
+
       }
 
       if (IsNullable(type))
