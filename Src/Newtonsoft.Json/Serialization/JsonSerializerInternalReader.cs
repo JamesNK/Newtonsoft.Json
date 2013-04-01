@@ -686,11 +686,11 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
       // attempt to convert value's type to target's type
       if (valueType != targetType)
       {
+        if (value == null && contract.IsNullable)
+          return null;
+
         try
         {
-          if (value == null && contract.IsNullable)
-            return null;
-
           if (contract.IsConvertable)
           {
             JsonPrimitiveContract primitiveContract = (JsonPrimitiveContract)contract;
@@ -778,20 +778,20 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
         return true;
       }
 
+      if (property.PropertyContract == null)
+        property.PropertyContract = GetContractSafe(property.PropertyType);
+
       ObjectCreationHandling objectCreationHandling =
         property.ObjectCreationHandling.GetValueOrDefault(Serializer.ObjectCreationHandling);
 
-      if ((objectCreationHandling == ObjectCreationHandling.Auto || objectCreationHandling == ObjectCreationHandling.Reuse)
+      if ((objectCreationHandling != ObjectCreationHandling.Replace)
           && (reader.TokenType == JsonToken.StartArray || reader.TokenType == JsonToken.StartObject)
           && property.Readable)
       {
         currentValue = property.ValueProvider.GetValue(target);
         gottenCurrentValue = true;
 
-        useExistingValue = (currentValue != null
-                            && !property.PropertyType.IsArray
-                            && !ReflectionUtils.InheritsGenericDefinition(property.PropertyType, typeof (ReadOnlyCollection<>))
-                            && !property.PropertyType.IsValueType());
+        useExistingValue = (currentValue != null && !property.PropertyContract.IsReadOnlyOrFixedSize && !property.PropertyType.IsValueType());
       }
 
       if (!property.Writable && !useExistingValue)
@@ -815,9 +815,6 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
         reader.Skip();
         return true;
       }
-
-      if (property.PropertyContract == null)
-        property.PropertyContract = GetContractSafe(property.PropertyType);
 
       if (currentValue == null)
       {

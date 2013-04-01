@@ -68,7 +68,6 @@ namespace Newtonsoft.Json.Serialization
     private Func<object> _genericTemporaryDictionaryCreator;
 
     internal bool ShouldCreateWrapper { get; private set; }
-    internal bool IsReadOnlyOrFixedSize { get; private set; }
     internal ConstructorInfo ParametrizedConstructor { get; private set; }
 
     /// <summary>

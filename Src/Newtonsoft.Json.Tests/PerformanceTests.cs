@@ -140,19 +140,19 @@ namespace Newtonsoft.Json.Tests
     [Test]
     public void Deserialize()
     {
-      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.DataContractSerializer, XmlText);
-      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.BinaryFormatter, MiscellaneousUtils.HexToBytes(BinaryFormatterHex));
+      //BenchmarkDeserializeMethod<TestClass>(SerializeMethod.DataContractSerializer, XmlText);
+      //BenchmarkDeserializeMethod<TestClass>(SerializeMethod.BinaryFormatter, MiscellaneousUtils.HexToBytes(BinaryFormatterHex));
       DeserializeTests<TestClass>(JsonText);
-      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JsonNetWithIsoConverter, JsonIsoText);
-      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JsonNetBinary, MiscellaneousUtils.HexToBytes(BsonHex));
+      //BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JsonNetWithIsoConverter, JsonIsoText);
+      //BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JsonNetBinary, MiscellaneousUtils.HexToBytes(BsonHex));
     }
 
     public void DeserializeTests<T>(string json)
     {
-      BenchmarkDeserializeMethod<T>(SerializeMethod.JavaScriptSerializer, json);
-      BenchmarkDeserializeMethod<T>(SerializeMethod.DataContractJsonSerializer, json);
+      //BenchmarkDeserializeMethod<T>(SerializeMethod.JavaScriptSerializer, json);
+      //BenchmarkDeserializeMethod<T>(SerializeMethod.DataContractJsonSerializer, json);
       BenchmarkDeserializeMethod<T>(SerializeMethod.JsonNet, json);
-      BenchmarkDeserializeMethod<T>(SerializeMethod.JsonNetManual, json);
+      //BenchmarkDeserializeMethod<T>(SerializeMethod.JsonNetManual, json);
     }
 
     [Test]
@@ -729,9 +729,9 @@ If attributes are not mentioned, default values are used in each case.
       Type type = typeof (T);
 
       JsonSerializer serializer = new JsonSerializer();
-      serializer.ObjectCreationHandling = Newtonsoft.Json.ObjectCreationHandling.Replace;
-      serializer.MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore;
-      serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+      //serializer.ObjectCreationHandling = Newtonsoft.Json.ObjectCreationHandling.Replace;
+      //serializer.MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore;
+      //serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
       if (isoDateTimeConverter)
         serializer.Converters.Add(new IsoDateTimeConverter());
 

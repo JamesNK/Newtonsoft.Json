@@ -65,7 +65,6 @@ namespace Newtonsoft.Json.Serialization
 
     internal bool ShouldCreateWrapper { get; private set; }
     internal bool CanDeserialize { get; private set; }
-    internal bool IsReadOnlyOrFixedSize { get; private set; }
     internal ConstructorInfo ParametrizedConstructor { get; private set; }
 
     /// <summary>

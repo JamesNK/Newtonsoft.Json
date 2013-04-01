@@ -73,6 +73,7 @@ namespace Newtonsoft.Json.Serialization
     internal Type NonNullableUnderlyingType;
     internal ReadType InternalReadType;
     internal JsonContractType ContractType;
+    internal bool IsReadOnlyOrFixedSize;
 
     /// <summary>
     /// Gets the underlying type for the contract.

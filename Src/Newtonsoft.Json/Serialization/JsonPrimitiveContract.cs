@@ -48,6 +48,7 @@ namespace Newtonsoft.Json.Serialization
       ContractType = JsonContractType.Primitive;
 
       TypeCode = ConvertUtils.GetTypeCode(underlyingType);
+      IsReadOnlyOrFixedSize = true;
     }
   }
 }
