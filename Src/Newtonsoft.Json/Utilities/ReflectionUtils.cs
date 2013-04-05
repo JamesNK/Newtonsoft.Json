@@ -25,7 +25,7 @@
 
 using System;
 using System.Collections.Generic;
-#if !(PORTABLE || NET35 || NET20 || WINDOWS_PHONE || SILVERLIGHT)
+#if !(PORTABLE || PORTABLE40 || NET35 || NET20 || WINDOWS_PHONE || SILVERLIGHT)
 using System.Numerics;
 #endif
 using System.Reflection;
@@ -43,7 +43,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Utilities
 {
-#if NETFX_CORE || PORTABLE
+#if (NETFX_CORE || PORTABLE || PORTABLE40)
   internal enum MemberTypes
   {
     Property,
@@ -52,7 +52,9 @@ namespace Newtonsoft.Json.Utilities
     Method,
     Other
   }
+#endif
 
+#if NETFX_CORE || PORTABLE
   [Flags]
   internal enum BindingFlags
   {
@@ -85,7 +87,7 @@ namespace Newtonsoft.Json.Utilities
 
     static ReflectionUtils()
     {
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
       EmptyTypes = Type.EmptyTypes;
 #else
       EmptyTypes = new Type[0];
@@ -690,13 +692,18 @@ namespace Newtonsoft.Json.Utilities
       if (provider is MemberInfo)
         return (T[])Attribute.GetCustomAttributes((MemberInfo)provider, typeof(T), inherit);
 
+#if !PORTABLE40
       if (provider is Module)
         return (T[])Attribute.GetCustomAttributes((Module)provider, typeof(T), inherit);
+#endif
 
       if (provider is ParameterInfo)
         return (T[])Attribute.GetCustomAttributes((ParameterInfo)provider, typeof(T), inherit);
 
+#if !PORTABLE40
       return (T[])((ICustomAttributeProvider)attributeProvider).GetCustomAttributes(typeof(T), inherit);
+#endif
+      throw new Exception("Cannot get attributes from '{0}'.".FormatWith(CultureInfo.InvariantCulture, provider));
     }
 #else
     public static T[] GetAttributes<T>(object provider, bool inherit) where T : Attribute
@@ -954,7 +961,7 @@ namespace Newtonsoft.Json.Utilities
           return 0m;
         case PrimitiveTypeCode.DateTime:
           return new DateTime();
-#if !(PORTABLE || NET35 || NET20 || WINDOWS_PHONE || SILVERLIGHT)
+#if !(PORTABLE || PORTABLE40 || NET35 || NET20 || WINDOWS_PHONE || SILVERLIGHT)
         case PrimitiveTypeCode.BigInteger:
           return new BigInteger();
 #endif

@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !PORTABLE
+#if !(PORTABLE || PORTABLE40)
 #if !(NET35 || NET20 || PORTABLE)
 using System.Dynamic;
 #endif
@@ -1445,7 +1445,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual(1, (int)j["MyProperty"]);
     }
 
-#if !(NET35 || NET20)
+#if !(NET35 || NET20 || PORTABLE40)
     [Test]
     public void PropertyItemTypeNameHandlingDynamic()
     {
@@ -1651,7 +1651,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     public TypeNameHandlingTestObject Data { get; set; }
   }
 
-#if !(NET35 || NET20)
+#if !(NET35 || NET20 || PORTABLE40)
   public class PropertyItemTypeNameHandlingDynamic
   {
     [JsonProperty(ItemTypeNameHandling = TypeNameHandling.All)]

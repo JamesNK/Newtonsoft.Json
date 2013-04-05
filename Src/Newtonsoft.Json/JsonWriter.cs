@@ -26,7 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
 using System.Numerics;
 #endif
 using Newtonsoft.Json.Utilities;
@@ -1231,7 +1231,7 @@ namespace Newtonsoft.Json
         InternalWriteValue(JsonToken.String);
     }
 
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
     /// <summary>
     /// Writes a <see cref="BigInteger"/> value.
     /// </summary>
@@ -1419,7 +1419,7 @@ namespace Newtonsoft.Json
         case PrimitiveTypeCode.TimeSpanNullable:
           writer.WriteValue((value == null) ? (TimeSpan?)null : (TimeSpan)value);
           break;
-#if !(PORTABLE || NET35 || NET20 || WINDOWS_PHONE || SILVERLIGHT)
+#if !(PORTABLE || PORTABLE40 || NET35 || NET20 || WINDOWS_PHONE || SILVERLIGHT)
         case PrimitiveTypeCode.BigInteger:
           writer.WriteValue((BigInteger)value);
           break;

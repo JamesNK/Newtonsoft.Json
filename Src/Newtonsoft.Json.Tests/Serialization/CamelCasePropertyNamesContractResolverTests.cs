@@ -102,7 +102,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       string json = o.ToString();
     }
 
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
     [Test]
     public void MemberSearchFlags()
     {
@@ -177,7 +177,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 }", json);
     }
 
-#if !(NET35 || NET20)
+#if !(NET35 || NET20 || PORTABLE40)
     [Test]
     public void DynamicCamelCasePropertyNames()
     {

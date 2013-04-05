@@ -36,6 +36,8 @@ using System.Security;
 [assembly: AssemblyTitle("Json.NET Windows Phone")]
 #elif SILVERLIGHT
 [assembly: AssemblyTitle("Json.NET Silverlight")]
+#elif PORTABLE40
+[assembly: AssemblyTitle("Json.NET Portable .NET 4.0")]
 #elif PORTABLE
 [assembly: AssemblyTitle("Json.NET Portable")]
 #elif NETFX_CORE
@@ -70,7 +72,7 @@ using System.Security;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-#if !PORTABLE
+#if !(PORTABLE40 || PORTABLE)
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM componenets.  If you need to access a type in this assembly from 
 // COM, set the ComVisible attribute to true on that type.
@@ -90,6 +92,6 @@ using System.Security;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 [assembly: AssemblyVersion("4.5.0.0")]
-[assembly: AssemblyFileVersion("5.0.1.16001")]
+[assembly: AssemblyFileVersion("5.0.1.16006")]
 
 [assembly: CLSCompliant(true)]

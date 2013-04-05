@@ -686,7 +686,7 @@ Parameter name: arrayIndex",
       Assert.AreEqual(p4, l[1]);
     }
 
-#if !(SILVERLIGHT || NET20 || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NET20 || NETFX_CORE || PORTABLE || PORTABLE40)
     [Test]
     public void PropertyChanging()
     {
@@ -1243,7 +1243,7 @@ Parameter name: arrayIndex",
       });
     }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
     [Test]
     public void IBindingListSortDirection()
     {
@@ -1446,7 +1446,7 @@ Parameter name: arrayIndex",
     }
 #endif
 
-#if SILVERLIGHT || !(NET20 || NET35)
+#if SILVERLIGHT || !(NET20 || NET35 || PORTABLE40)
     [Test]
     public void CollectionChanged()
     {
@@ -1576,7 +1576,7 @@ Parameter name: arrayIndex",
       Assert.AreEqual("Name2", value);
     }
 
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
     [Test]
     public void WriteObjectNullDBNullValue()
     {
@@ -1632,7 +1632,7 @@ Parameter name: arrayIndex",
       });
     }
 
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)
     [Test]
     public void NumberTooBigForInt64()
     {
@@ -1707,7 +1707,7 @@ Parameter name: arrayIndex",
       });
     }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
     [Test]
     public void GetProperties()
     {

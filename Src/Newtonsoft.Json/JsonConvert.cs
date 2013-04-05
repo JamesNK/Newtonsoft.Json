@@ -26,10 +26,10 @@
 using System;
 using System.IO;
 using System.Globalization;
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
 using System.Numerics;
 #endif
-#if !(NET20 || NET35 || SILVERLIGHT)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40)
 using System.Threading.Tasks;
 #endif
 using Newtonsoft.Json.Linq;
@@ -37,7 +37,7 @@ using Newtonsoft.Json.Utilities;
 using System.Xml;
 using Newtonsoft.Json.Converters;
 using System.Text;
-#if !NET20 && (!SILVERLIGHT || WINDOWS_PHONE)
+#if !NET20 && (!SILVERLIGHT || WINDOWS_PHONE) && !PORTABLE40
 using System.Xml.Linq;
 #endif
 
@@ -422,7 +422,7 @@ namespace Newtonsoft.Json
       return value.ToString(null, CultureInfo.InvariantCulture);
     }
 
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
     /// <summary>
     /// Converts the <see cref="BigInteger"/>  to its JSON string representation.
     /// </summary>
@@ -547,7 +547,7 @@ namespace Newtonsoft.Json
     {
       string text = null;
 
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
       text = value.ToString("D", CultureInfo.InvariantCulture);
 #else
       text = value.ToString("D");
@@ -671,7 +671,7 @@ namespace Newtonsoft.Json
           return ToString((Uri) value);
         case PrimitiveTypeCode.TimeSpan:
           return ToString((TimeSpan) value);
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
         case PrimitiveTypeCode.BigInteger:
           return ToString((BigInteger) value);
 #endif
@@ -929,7 +929,7 @@ namespace Newtonsoft.Json
       return sw.ToString();
     }
 
-#if !(NET20 || NET35 || SILVERLIGHT)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40)
     /// <summary>
     /// Asynchronously serializes the specified object to a JSON string using a collection of <see cref="JsonConverter"/>.
     /// </summary>
@@ -1122,7 +1122,7 @@ namespace Newtonsoft.Json
       return jsonSerializer.Deserialize(new JsonTextReader(sr), type);
     }
 
-#if !(NET20 || NET35 || SILVERLIGHT)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40)
     /// <summary>
     /// Asynchronously deserializes the JSON to the specified .NET type.
     /// </summary>
@@ -1217,7 +1217,7 @@ namespace Newtonsoft.Json
       }
     }
 
-#if !(NET20 || NET35 || SILVERLIGHT)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40)
     /// <summary>
     /// Asynchronously populates the object with values from the JSON string.
     /// </summary>
@@ -1236,7 +1236,7 @@ namespace Newtonsoft.Json
     }
 #endif
 
-#if !(SILVERLIGHT || PORTABLE || NETFX_CORE)
+#if !(SILVERLIGHT || PORTABLE40 || PORTABLE || NETFX_CORE)
     /// <summary>
     /// Serializes the XML node to a JSON string.
     /// </summary>
@@ -1315,7 +1315,7 @@ namespace Newtonsoft.Json
     }
 #endif
 
-#if !NET20 && (!(SILVERLIGHT) || WINDOWS_PHONE)
+#if !NET20 && (!(SILVERLIGHT) || WINDOWS_PHONE) && !PORTABLE40
     /// <summary>
     /// Serializes the <see cref="XNode"/> to a JSON string.
     /// </summary>

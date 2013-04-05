@@ -1,4 +1,4 @@
-﻿#if SILVERLIGHT || PocketPC || NETFX_CORE || PORTABLE
+﻿#if SILVERLIGHT || PocketPC || NETFX_CORE || PORTABLE40 || PORTABLE
 namespace System.Runtime.Serialization.Formatters
 {
   /// <summary>

@@ -718,7 +718,7 @@ keyword such as type of business.""
       Assert.AreEqual(new DateTime(2000, 10, 15, 5, 5, 5, DateTimeKind.Utc), d);
     }
 
-#if !(NET20 || NET35 || SILVERLIGHT)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40)
     [Test]
     public void CovariantIJEnumerable()
     {
@@ -730,6 +730,19 @@ keyword such as type of business.""
 
       IJEnumerable<JToken> values = o.Properties();
       Assert.AreEqual(4, values.Count());
+    }
+#endif
+
+#if !NET20
+    [Test]
+    public void LinqCast()
+    {
+      JToken olist = JArray.Parse("[12,55]");
+
+      List<int> list1 = olist.AsEnumerable().Values<int>().ToList();
+
+      Assert.AreEqual(12, list1[0]);
+      Assert.AreEqual(55, list1[1]);
     }
 #endif
 

@@ -179,7 +179,7 @@ namespace Newtonsoft.Json.Schema
       if (containerAttribute != null && !string.IsNullOrEmpty(containerAttribute.Description))
         return containerAttribute.Description;
 
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
       DescriptionAttribute descriptionAttribute = ReflectionUtils.GetAttribute<DescriptionAttribute>(type);
       if (descriptionAttribute != null)
         return descriptionAttribute.Description;

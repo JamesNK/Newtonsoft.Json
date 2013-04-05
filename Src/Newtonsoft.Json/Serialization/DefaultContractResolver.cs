@@ -25,18 +25,18 @@
 
 using System;
 using System.Collections;
-#if !(NET35 || NET20 || SILVERLIGHT || PORTABLE)
+#if !(NET35 || NET20 || SILVERLIGHT || PORTABLE || PORTABLE40)
 using System.Collections.Concurrent;
 #endif
 using System.Collections.Generic;
 using System.ComponentModel;
-#if !(NET35 || NET20)
+#if !(NET35 || NET20 || PORTABLE40)
 using System.Dynamic;
 #endif
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.Serialization;
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
 using System.Security.Permissions;
 #endif
 using System.Xml.Serialization;
@@ -94,16 +94,16 @@ namespace Newtonsoft.Json.Serialization
     }
     private static readonly IList<JsonConverter> BuiltInConverters = new List<JsonConverter>
       {
-#if !(SILVERLIGHT || NET20 || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NET20 || NETFX_CORE || PORTABLE40 || PORTABLE)
         new EntityKeyMemberConverter(),
 #endif
-#if !(NET35 || NET20)
+#if !(NET35 || NET20 || PORTABLE40)
         new ExpandoObjectConverter(),
 #endif
-#if (!(SILVERLIGHT) || WINDOWS_PHONE)
+#if (!(SILVERLIGHT || PORTABLE40) || WINDOWS_PHONE)
         new XmlNodeConverter(),
 #endif
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE40 || PORTABLE)
         new BinaryConverter(),
         new DataSetConverter(),
         new DataTableConverter(),
@@ -133,7 +133,7 @@ namespace Newtonsoft.Json.Serialization
       get { return JsonTypeReflector.DynamicCodeGeneration; }
     }
 
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
     /// <summary>
     /// Gets or sets the default members search flags.
     /// </summary>
@@ -373,7 +373,7 @@ namespace Newtonsoft.Json.Serialization
       }
       else if (contract.MemberSerialization == MemberSerialization.Fields)
       {
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE40 || PORTABLE)
         // mimic DataContractSerializer behaviour when populating fields by overriding default creator to create an uninitialized object
         // note that this is only possible when the application is fully trusted so fall back to using the default constructor (if available) in partial trust
         if (JsonTypeReflector.FullyTrusted)
@@ -571,7 +571,7 @@ namespace Newtonsoft.Json.Serialization
       if (onDeserialized != null)
       {
         // ConcurrentDictionary throws an error here so don't use its OnDeserialized - http://json.codeplex.com/discussions/257093
-#if !(NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE)
+#if !(NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE || PORTABLE40)
         if (!t.IsGenericType() || (t.GetGenericTypeDefinition() != typeof(ConcurrentDictionary<,>)))
           contract.OnDeserializedCallbacks.AddRange(onDeserialized);
 #else
@@ -715,7 +715,7 @@ namespace Newtonsoft.Json.Serialization
       return contract;
     }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE40 || PORTABLE)
     /// <summary>
     /// Creates a <see cref="JsonISerializableContract"/> for the given type.
     /// </summary>
@@ -738,7 +738,7 @@ namespace Newtonsoft.Json.Serialization
     }
 #endif
 
-#if !(NET35 || NET20)
+#if !(NET35 || NET20 || PORTABLE40)
     /// <summary>
     /// Creates a <see cref="JsonDynamicContract"/> for the given type.
     /// </summary>
@@ -802,12 +802,12 @@ namespace Newtonsoft.Json.Serialization
       if (CanConvertToString(t))
         return CreateStringContract(objectType);
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE40 || PORTABLE)
       if (!IgnoreSerializableInterface && typeof(ISerializable).IsAssignableFrom(t))
         return CreateISerializableContract(objectType);
 #endif
 
-#if !(NET35 || NET20)
+#if !(NET35 || NET20 || PORTABLE40)
       if (typeof(IDynamicMetaObjectProvider).IsAssignableFrom(t))
         return CreateDynamicContract(objectType);
 #endif
@@ -817,7 +817,7 @@ namespace Newtonsoft.Json.Serialization
 
     internal static bool CanConvertToString(Type type)
     {
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
       TypeConverter converter = ConvertUtils.GetConverter(type);
 
       // use the objectType's TypeConverter if it has one and can convert to a string
@@ -921,7 +921,7 @@ namespace Newtonsoft.Json.Serialization
       // warning - this method use to cause errors with Intellitrace. Retest in VS Ultimate after changes
       IValueProvider valueProvider;
 
-#if !(SILVERLIGHT || PORTABLE || NETFX_CORE)
+#if !(SILVERLIGHT || PORTABLE40 || PORTABLE || NETFX_CORE)
       if (DynamicCodeGeneration)
         valueProvider = new DynamicValueProvider(member);
       else
@@ -1018,10 +1018,10 @@ namespace Newtonsoft.Json.Serialization
 
       bool hasJsonIgnoreAttribute =
         JsonTypeReflector.GetAttribute<JsonIgnoreAttribute>(attributeProvider) != null
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE40 || PORTABLE)
         || JsonTypeReflector.GetAttribute<NonSerializedAttribute>(attributeProvider) != null
 #endif
-        ;
+;
 
       if (memberSerialization != MemberSerialization.OptIn)
       {

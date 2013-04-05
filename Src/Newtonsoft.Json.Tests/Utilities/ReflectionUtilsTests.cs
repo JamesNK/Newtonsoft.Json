@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !PORTABLE
+#if !(PORTABLE || PORTABLE40)
 using global::System;
 using global::System.Collections.Generic;
 using global::System.Runtime.Serialization.Formatters;

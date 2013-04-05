@@ -27,7 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.ComponentModel;
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
 using System.Numerics;
 #endif
 using Newtonsoft.Json.Serialization;
@@ -36,7 +36,7 @@ using System.Reflection;
 using Newtonsoft.Json.Utilities.LinqBridge;
 #endif
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE40 || PORTABLE)
 using System.Data.SqlTypes;
 #endif
 
@@ -139,14 +139,14 @@ namespace Newtonsoft.Json.Utilities
           { typeof(Guid?), PrimitiveTypeCode.GuidNullable },
           { typeof(TimeSpan), PrimitiveTypeCode.TimeSpan },
           { typeof(TimeSpan?), PrimitiveTypeCode.TimeSpanNullable },
-#if !(PORTABLE || NET35 || NET20 || WINDOWS_PHONE || SILVERLIGHT)
+#if !(PORTABLE || PORTABLE40 || NET35 || NET20 || WINDOWS_PHONE || SILVERLIGHT)
           { typeof(BigInteger), PrimitiveTypeCode.BigInteger },
           { typeof(BigInteger?), PrimitiveTypeCode.BigIntegerNullable },
 #endif
           { typeof(Uri), PrimitiveTypeCode.Uri },
           { typeof(string), PrimitiveTypeCode.String },
           { typeof(byte[]), PrimitiveTypeCode.Bytes },
-#if !(PORTABLE || NETFX_CORE)
+#if !(PORTABLE || PORTABLE40 || NETFX_CORE)
           { typeof(DBNull), PrimitiveTypeCode.DBNull }
 #endif
         };
@@ -223,7 +223,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static TimeSpan ParseTimeSpan(string input)
     {
-#if !(NET35 || NET20)
+#if !(NET35 || NET20 || PORTABLE40)
       return TimeSpan.Parse((string) input, CultureInfo.InvariantCulture);
 #else
       return TimeSpan.Parse((string)input);
@@ -287,7 +287,7 @@ namespace Newtonsoft.Json.Utilities
       return o => call(null, o);
     }
 
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)
     internal static BigInteger ToBigInteger(object value)
     {
       if (value is BigInteger)
@@ -392,14 +392,14 @@ namespace Newtonsoft.Json.Utilities
           return ParseTimeSpan((string) initialValue);
       }
 
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
       if (targetType == typeof(BigInteger))
         return ToBigInteger(initialValue);
       if (initialValue is BigInteger)
         return FromBigInteger((BigInteger)initialValue, targetType);
 #endif
 
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
       // see if source or target types have a TypeConverter that converts between the two
       TypeConverter toConverter = GetConverter(initialType);
 
@@ -423,7 +423,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
       }
 #endif
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
       // handle DBNull and INullable
       if (initialValue == DBNull.Value)
       {
@@ -433,7 +433,7 @@ namespace Newtonsoft.Json.Utilities
         throw new Exception("Can not convert null {0} into non-nullable {1}.".FormatWith(CultureInfo.InvariantCulture, initialType, targetType));
       }
 #endif
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE40 || PORTABLE)
       if (initialValue is INullable)
         return EnsureTypeAssignable(ToValue((INullable)initialValue), initialType, targetType);
 #endif
@@ -520,7 +520,7 @@ namespace Newtonsoft.Json.Utilities
       throw new ArgumentException("Could not cast or convert from {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, (initialType != null) ? initialType.ToString() : "{null}", targetType));
     }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE40 || PORTABLE)
     public static object ToValue(INullable nullableValue)
     {
       if (nullableValue == null)
@@ -540,7 +540,7 @@ namespace Newtonsoft.Json.Utilities
     }
 #endif
 
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
     internal static TypeConverter GetConverter(Type t)
     {
       return JsonTypeReflector.GetTypeConverter(t);

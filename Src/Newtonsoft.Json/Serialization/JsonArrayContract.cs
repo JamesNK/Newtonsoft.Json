@@ -110,7 +110,7 @@ namespace Newtonsoft.Json.Serialization
           || ReflectionUtils.IsGenericDefinition(underlyingType, typeof(IList<>)))
           CreatedType = ReflectionUtils.MakeGenericType(typeof(List<>), CollectionItemType);
 
-#if !(NET20 || NET35)
+#if !(NET20 || NET35 || PORTABLE40)
         if (ReflectionUtils.IsGenericDefinition(underlyingType, typeof(ISet<>)))
           CreatedType = ReflectionUtils.MakeGenericType(typeof(HashSet<>), CollectionItemType);
 #endif
@@ -119,7 +119,7 @@ namespace Newtonsoft.Json.Serialization
         canDeserialize = true;
         ShouldCreateWrapper = true;
       }
-#if !(NET40 || NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE)
+#if !(NET40 || NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE40)
       else if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof (IReadOnlyCollection<>), out tempCollectionType))
       {
         CollectionItemType = underlyingType.GetGenericArguments()[0];

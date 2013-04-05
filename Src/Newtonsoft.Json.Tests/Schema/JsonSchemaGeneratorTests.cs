@@ -90,7 +90,7 @@ namespace Newtonsoft.Json.Tests.Schema
       Assert.IsTrue(o.IsValid(schema));
     }
 
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
     [Test]
     public void Generate_DefaultValueAttributeTestClass()
     {
@@ -310,7 +310,7 @@ namespace Newtonsoft.Json.Tests.Schema
       Assert.IsTrue(v.IsValid(schema));
     }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
     [Test]
     public void GenerateSchemaForISerializable()
     {
@@ -325,7 +325,7 @@ namespace Newtonsoft.Json.Tests.Schema
     }
 #endif
 
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
     [Test]
     public void GenerateSchemaForDBNull()
     {
@@ -519,7 +519,7 @@ namespace Newtonsoft.Json.Tests.Schema
 }", json);
     }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
     [Test]
     public void GenerateSchemaSerializable()
     {

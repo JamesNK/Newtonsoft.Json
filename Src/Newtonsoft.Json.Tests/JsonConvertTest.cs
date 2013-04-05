@@ -242,7 +242,7 @@ now brown cow?", '"', true);
       value = null;
       Assert.AreEqual("null", JsonConvert.ToString(value));
 
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
       value = DBNull.Value;
       Assert.AreEqual("null", JsonConvert.ToString(value));
 #endif
@@ -636,7 +636,7 @@ now brown cow?", '"', true);
       return (T)converter.ReadJson(reader, typeof(T), null, null);
     }
 
-#if !(NET20 || NET35 || SILVERLIGHT)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40)
     [Test]
     public void Async()
     {

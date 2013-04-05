@@ -90,7 +90,7 @@ namespace Newtonsoft.Json.Serialization
         if (ReflectionUtils.IsGenericDefinition(UnderlyingType, typeof(IDictionary<,>)))
           CreatedType = ReflectionUtils.MakeGenericType(typeof(Dictionary<,>), keyType, valueType);
       }
-#if !(NET40 || NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE)
+#if !(NET40 || NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE40)
       else if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof(IReadOnlyDictionary<,>), out _genericCollectionDefinitionType))
       {
         keyType = _genericCollectionDefinitionType.GetGenericArguments()[0];

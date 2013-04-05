@@ -26,7 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
 using System.Numerics;
 #endif
 using System.Text;
@@ -143,7 +143,7 @@ namespace Newtonsoft.Json
       base.Close();
 
       if (CloseOutput && _writer != null)
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
         _writer.Close();
 #else
         _writer.Dispose();
@@ -598,7 +598,7 @@ namespace Newtonsoft.Json
       }
     }
 
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
     /// <summary>
     /// Writes a <see cref="BigInteger"/> value.
     /// </summary>

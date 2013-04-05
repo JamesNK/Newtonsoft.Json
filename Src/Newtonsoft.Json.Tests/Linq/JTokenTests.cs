@@ -348,7 +348,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
       Assert.AreEqual(5, (int)(new JValue(StringComparison.OrdinalIgnoreCase)));
 
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)
       string bigIntegerText = "1234567899999999999999999999999999999999999999999999999999999999999990";
 
       Assert.AreEqual(BigInteger.Parse(bigIntegerText), (BigInteger)(new JValue(bigIntegerText)));
@@ -424,7 +424,7 @@ namespace Newtonsoft.Json.Tests.Linq
 #endif
       ExceptionAssert.Throws<ArgumentException>("Can not convert Boolean to Uri.", () => { var i = (Uri)new JValue(true); });
 
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)
       ExceptionAssert.Throws<ArgumentException>("Can not convert Uri to BigInteger.", () => { var i = (BigInteger)new JValue(new Uri("http://www.google.com")); });
       ExceptionAssert.Throws<ArgumentException>("Can not convert Null to BigInteger.", () => { var i = (BigInteger)new JValue((object)null); });
       ExceptionAssert.Throws<ArgumentException>("Can not convert Guid to BigInteger.", () => { var i = (BigInteger)new JValue(Guid.NewGuid()); });
@@ -488,7 +488,7 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.IsTrue(JToken.DeepEquals(new JValue((DateTimeOffset?)null), (JValue)(DateTimeOffset?)null));
 #endif
 
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)
       Assert.IsTrue(JToken.DeepEquals(new JValue(new BigInteger(1)), (JValue)new BigInteger(1)));
       Assert.IsTrue(JToken.DeepEquals(new JValue((BigInteger?)null), (JValue)(BigInteger?)null));
 #endif
@@ -926,7 +926,7 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.IsTrue(a.DeepEquals(a2));
     }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
     [Test]
     public void Clone()
     {

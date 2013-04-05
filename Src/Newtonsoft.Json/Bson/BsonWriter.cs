@@ -27,7 +27,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
 using System.Numerics;
 #endif
 using System.Text;
@@ -360,7 +360,7 @@ namespace Newtonsoft.Json.Bson
     {
       base.WriteValue(value);
       string s = null;
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
       s = value.ToString(CultureInfo.InvariantCulture);
 #else
       s = value.ToString();
@@ -462,7 +462,7 @@ namespace Newtonsoft.Json.Bson
       AddToken(new BsonString(value.ToString(), true));
     }
 
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
     /// <summary>
     /// Writes a <see cref="BigInteger"/> value.
     /// </summary>
