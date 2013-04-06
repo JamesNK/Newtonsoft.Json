@@ -90,39 +90,245 @@ namespace Newtonsoft.Json.Tests.Serialization
   [TestFixture]
   public class JsonSerializerTest : TestFixtureBase
   {
-    //[DataContract]
-    //public class BaseDataContract1
-    //{
-    //  [DataMember(Name = "virtualMember")]
-    //  public virtual string VirtualMember { get; set; }
+#if !NET20
+    [DataContract]
+    public class BaseDataContractWithHidden
+    {
+      [DataMember(Name = "virtualMember")]
+      public virtual string VirtualMember { get; set; }
 
-    //  [DataMember(Name = "nonVirtualMember")]
-    //  public string NonVirtualMember { get; set; }
+      [DataMember(Name = "nonVirtualMember")]
+      public string NonVirtualMember { get; set; }
 
-    //  public virtual object NewMember { get; set; }
-    //}
+      public virtual object NewMember { get; set; }
+    }
 
-    //public class ChildDataContract1 : BaseDataContract1
-    //{
-    //  [DataMember(Name = "NewMember")]
-    //  public virtual new string NewMember { get; set; }
-    //  public override string VirtualMember { get; set; }
-    //  public string AddedMember { get; set; }
-    //}
+    public class ChildDataContractWithHidden : BaseDataContractWithHidden
+    {
+      [DataMember(Name = "NewMember")]
+      public virtual new string NewMember { get; set; }
+      public override string VirtualMember { get; set; }
+      public string AddedMember { get; set; }
+    }
 
-    //[Test]
-    //public void ChildDataContractTest1()
-    //{
-    //  var cc = new ChildDataContract1
-    //  {
-    //    VirtualMember = "VirtualMember!",
-    //    NonVirtualMember = "NonVirtualMember!",
-    //    NewMember = "NewMember!"
-    //  };
+    [Test]
+    public void ChildDataContractTestWithHidden()
+    {
+      var cc = new ChildDataContractWithHidden
+      {
+        VirtualMember = "VirtualMember!",
+        NonVirtualMember = "NonVirtualMember!",
+        NewMember = "NewMember!"
+      };
 
-    //  string result = JsonConvert.SerializeObject(cc);
-    //  Assert.AreEqual(@"{""NewMember"":""NewMember!"",""virtualMember"":""VirtualMember!"",""nonVirtualMember"":""NonVirtualMember!""}", result);
-    //}
+      string result = JsonConvert.SerializeObject(cc);
+      Assert.AreEqual(@"{""NewMember"":""NewMember!"",""virtualMember"":""VirtualMember!"",""nonVirtualMember"":""NonVirtualMember!""}", result);
+    }
+
+    [DataContract]
+    public class BaseWithContract
+    {
+      [DataMember(Name = "VirtualWithDataMemberBase")]
+      public virtual string VirtualWithDataMember { get; set; }
+      [DataMember]
+      public virtual string Virtual { get; set; }
+      [DataMember(Name = "WithDataMemberBase")]
+      public string WithDataMember { get; set; }
+      [DataMember]
+      public string JustAProperty { get; set; }
+    }
+
+    [DataContract]
+    public class BaseWithoutContract
+    {
+      [DataMember(Name = "VirtualWithDataMemberBase")]
+      public virtual string VirtualWithDataMember { get; set; }
+      [DataMember]
+      public virtual string Virtual { get; set; }
+      [DataMember(Name = "WithDataMemberBase")]
+      public string WithDataMember { get; set; }
+      [DataMember]
+      public string JustAProperty { get; set; }
+    }
+
+    [DataContract]
+    public class SubWithoutContractNewProperties : BaseWithContract
+    {
+      [DataMember(Name = "VirtualWithDataMemberSub")]
+      public string VirtualWithDataMember { get; set; }
+      public string Virtual { get; set; }
+      [DataMember(Name = "WithDataMemberSub")]
+      public string WithDataMember { get; set; }
+      public string JustAProperty { get; set; }
+    }
+
+    [DataContract]
+    public class SubWithoutContractVirtualProperties : BaseWithContract
+    {
+      public override string VirtualWithDataMember { get; set; }
+      [DataMember(Name = "VirtualSub")]
+      public override string Virtual { get; set; }
+    }
+
+    [DataContract]
+    public class SubWithContractNewProperties : BaseWithContract
+    {
+      [DataMember(Name = "VirtualWithDataMemberSub")]
+      public string VirtualWithDataMember { get; set; }
+      [DataMember(Name = "Virtual2")]
+      public string Virtual { get; set; }
+      [DataMember(Name = "WithDataMemberSub")]
+      public string WithDataMember { get; set; }
+      [DataMember(Name = "JustAProperty2")]
+      public string JustAProperty { get; set; }
+    }
+
+    [DataContract]
+    public class SubWithContractVirtualProperties : BaseWithContract
+    {
+      [DataMember(Name = "VirtualWithDataMemberSub")]
+      public virtual string VirtualWithDataMember { get; set; }
+    }
+
+    [Test]
+    public void SubWithoutContractNewPropertiesTest()
+    {
+      BaseWithContract baseWith = new SubWithoutContractNewProperties
+        {
+          JustAProperty = "JustAProperty!",
+          Virtual = "Virtual!",
+          VirtualWithDataMember = "VirtualWithDataMember!",
+          WithDataMember = "WithDataMember!"
+        };
+
+      baseWith.JustAProperty = "JustAProperty2!";
+      baseWith.Virtual = "Virtual2!";
+      baseWith.VirtualWithDataMember = "VirtualWithDataMember2!";
+      baseWith.WithDataMember = "WithDataMember2!";
+
+      string json = AssertSerializeDeserializeEqual(baseWith);
+
+      Assert.AreEqual(@"{
+  ""JustAProperty"": ""JustAProperty2!"",
+  ""Virtual"": ""Virtual2!"",
+  ""VirtualWithDataMemberBase"": ""VirtualWithDataMember2!"",
+  ""VirtualWithDataMemberSub"": ""VirtualWithDataMember!"",
+  ""WithDataMemberBase"": ""WithDataMember2!"",
+  ""WithDataMemberSub"": ""WithDataMember!""
+}", json);
+    }
+
+    [Test]
+    public void SubWithoutContractVirtualPropertiesTest()
+    {
+      BaseWithContract baseWith = new SubWithoutContractVirtualProperties
+      {
+        JustAProperty = "JustAProperty!",
+        Virtual = "Virtual!",
+        VirtualWithDataMember = "VirtualWithDataMember!",
+        WithDataMember = "WithDataMember!"
+      };
+
+      baseWith.JustAProperty = "JustAProperty2!";
+      baseWith.Virtual = "Virtual2!";
+      baseWith.VirtualWithDataMember = "VirtualWithDataMember2!";
+      baseWith.WithDataMember = "WithDataMember2!";
+
+      string json = JsonConvert.SerializeObject(baseWith, Formatting.Indented);
+
+      Console.WriteLine(json);
+
+      Assert.AreEqual(@"{
+  ""VirtualWithDataMemberBase"": ""VirtualWithDataMember2!"",
+  ""VirtualSub"": ""Virtual2!"",
+  ""WithDataMemberBase"": ""WithDataMember2!"",
+  ""JustAProperty"": ""JustAProperty2!""
+}", json);
+    }
+
+    [Test]
+    public void SubWithContractNewPropertiesTest()
+    {
+      BaseWithContract baseWith = new SubWithContractNewProperties
+      {
+        JustAProperty = "JustAProperty!",
+        Virtual = "Virtual!",
+        VirtualWithDataMember = "VirtualWithDataMember!",
+        WithDataMember = "WithDataMember!"
+      };
+
+      baseWith.JustAProperty = "JustAProperty2!";
+      baseWith.Virtual = "Virtual2!";
+      baseWith.VirtualWithDataMember = "VirtualWithDataMember2!";
+      baseWith.WithDataMember = "WithDataMember2!";
+
+      string json = AssertSerializeDeserializeEqual(baseWith);
+
+      Assert.AreEqual(@"{
+  ""JustAProperty"": ""JustAProperty2!"",
+  ""JustAProperty2"": ""JustAProperty!"",
+  ""Virtual"": ""Virtual2!"",
+  ""Virtual2"": ""Virtual!"",
+  ""VirtualWithDataMemberBase"": ""VirtualWithDataMember2!"",
+  ""VirtualWithDataMemberSub"": ""VirtualWithDataMember!"",
+  ""WithDataMemberBase"": ""WithDataMember2!"",
+  ""WithDataMemberSub"": ""WithDataMember!""
+}", json);
+    }
+
+    [Test]
+    public void SubWithContractVirtualPropertiesTest()
+    {
+      BaseWithContract baseWith = new SubWithContractVirtualProperties
+      {
+        JustAProperty = "JustAProperty!",
+        Virtual = "Virtual!",
+        VirtualWithDataMember = "VirtualWithDataMember!",
+        WithDataMember = "WithDataMember!"
+      };
+
+      baseWith.JustAProperty = "JustAProperty2!";
+      baseWith.Virtual = "Virtual2!";
+      baseWith.VirtualWithDataMember = "VirtualWithDataMember2!";
+      baseWith.WithDataMember = "WithDataMember2!";
+
+      string json = AssertSerializeDeserializeEqual(baseWith);
+
+      Assert.AreEqual(@"{
+  ""JustAProperty"": ""JustAProperty2!"",
+  ""Virtual"": ""Virtual2!"",
+  ""VirtualWithDataMemberBase"": ""VirtualWithDataMember2!"",
+  ""VirtualWithDataMemberSub"": ""VirtualWithDataMember!"",
+  ""WithDataMemberBase"": ""WithDataMember2!""
+}", json);
+    }
+
+    private string AssertSerializeDeserializeEqual(object o)
+    {
+      MemoryStream ms = new MemoryStream();
+      DataContractJsonSerializer s = new DataContractJsonSerializer(o.GetType());
+      s.WriteObject(ms, o);
+
+      var data = ms.ToArray();
+      JObject dataContractJson = JObject.Parse(Encoding.UTF8.GetString(data, 0, data.Length));
+      dataContractJson = new JObject(dataContractJson.Properties().OrderBy(p => p.Name));
+
+      JObject jsonNetJson = JObject.Parse(JsonConvert.SerializeObject(o));
+      jsonNetJson = new JObject(jsonNetJson.Properties().OrderBy(p => p.Name));
+
+      Console.WriteLine("Results for " + o.GetType().Name);
+      Console.WriteLine("DataContractJsonSerializer: " + dataContractJson);
+      Console.WriteLine("JsonDotNetSerializer      : " + jsonNetJson);
+
+      Assert.AreEqual(dataContractJson.Count, jsonNetJson.Count);
+      foreach (KeyValuePair<string, JToken> property in dataContractJson)
+      {
+        Assert.IsTrue(JToken.DeepEquals(jsonNetJson[property.Key], property.Value), "Property not equal: " + property.Key);
+      }
+
+      return jsonNetJson.ToString();
+    }
+#endif
 
     [Test]
     public void PersonTypedObjectDeserialization()
@@ -5078,6 +5284,7 @@ To fix this error either change the environment to be fully trusted, change the 
         };
 
       string result = JsonConvert.SerializeObject(cc);
+      Console.WriteLine(result);
       Assert.AreEqual(@"{""differentVirtualMember"":""VirtualMember!"",""nonVirtualMember"":""NonVirtualMember!""}", result);
     }
 
@@ -7015,6 +7222,134 @@ Parameter name: value",
       {
         IgnoreSerializableAttribute = false;
       }
+    }
+#endif
+
+#if !(NET40 || NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE40)
+    public class PopulateReadOnlyTestClass
+    {
+      public IList<int> NonReadOnlyList { get; set; }
+      public IDictionary<string, int> NonReadOnlyDictionary { get; set; }
+
+      public IList<int> Array { get; set; }
+
+      public IList<int> List { get; set; }
+      public IDictionary<string, int> Dictionary { get; set; }
+
+      public IReadOnlyCollection<int> IReadOnlyCollection { get; set; }
+      public ReadOnlyCollection<int> ReadOnlyCollection { get; set; }
+      public IReadOnlyList<int> IReadOnlyList { get; set; }
+
+      public IReadOnlyDictionary<string, int> IReadOnlyDictionary { get; set; }
+      public ReadOnlyDictionary<string, int> ReadOnlyDictionary { get; set; }
+
+      public PopulateReadOnlyTestClass()
+      {
+        NonReadOnlyList = new List<int> { 1 };
+        NonReadOnlyDictionary = new Dictionary<string, int> { { "first", 2 } };
+
+        Array = new[] {3};
+
+        List = new ReadOnlyCollection<int>(new[] { 4 });
+        Dictionary = new ReadOnlyDictionary<string, int>(new Dictionary<string, int> { { "first", 5 } });
+
+        IReadOnlyCollection = new ReadOnlyCollection<int>(new[] { 6 });
+        ReadOnlyCollection = new ReadOnlyCollection<int>(new[] { 7 });
+        IReadOnlyList = new ReadOnlyCollection<int>(new[] { 8 });
+
+        IReadOnlyDictionary = new ReadOnlyDictionary<string, int>(new Dictionary<string, int> { { "first", 9 } });
+        ReadOnlyDictionary = new ReadOnlyDictionary<string, int>(new Dictionary<string, int> { { "first", 10 } });
+      }
+    }
+
+    [Test]
+    public void SerializeReadOnlyCollections()
+    {
+      PopulateReadOnlyTestClass c1 = new PopulateReadOnlyTestClass();
+
+      string json = JsonConvert.SerializeObject(c1, Formatting.Indented);
+
+      Assert.AreEqual(@"{
+  ""NonReadOnlyList"": [
+    1
+  ],
+  ""NonReadOnlyDictionary"": {
+    ""first"": 2
+  },
+  ""Array"": [
+    3
+  ],
+  ""List"": [
+    4
+  ],
+  ""Dictionary"": {
+    ""first"": 5
+  },
+  ""IReadOnlyCollection"": [
+    6
+  ],
+  ""ReadOnlyCollection"": [
+    7
+  ],
+  ""IReadOnlyList"": [
+    8
+  ],
+  ""IReadOnlyDictionary"": {
+    ""first"": 9
+  },
+  ""ReadOnlyDictionary"": {
+    ""first"": 10
+  }
+}", json);
+    }
+
+    [Test]
+    public void PopulateReadOnlyCollections()
+    {
+      string json = @"{
+  ""NonReadOnlyList"": [
+    11
+  ],
+  ""NonReadOnlyDictionary"": {
+    ""first"": 12
+  },
+  ""Array"": [
+    13
+  ],
+  ""List"": [
+    14
+  ],
+  ""Dictionary"": {
+    ""first"": 15
+  },
+  ""IReadOnlyCollection"": [
+    16
+  ],
+  ""ReadOnlyCollection"": [
+    17
+  ],
+  ""IReadOnlyList"": [
+    18
+  ],
+  ""IReadOnlyDictionary"": {
+    ""first"": 19
+  },
+  ""ReadOnlyDictionary"": {
+    ""first"": 20
+  }
+}";
+
+      var c2 = JsonConvert.DeserializeObject<PopulateReadOnlyTestClass>(json);
+
+      Assert.AreEqual(1, c2.NonReadOnlyDictionary.Count);
+      Assert.AreEqual(12, c2.NonReadOnlyDictionary["first"]);
+
+      Assert.AreEqual(2, c2.NonReadOnlyList.Count);
+      Assert.AreEqual(1, c2.NonReadOnlyList[0]);
+      Assert.AreEqual(11, c2.NonReadOnlyList[1]);
+
+      Assert.AreEqual(1, c2.Array.Count);
+      Assert.AreEqual(13, c2.Array[0]);
     }
 #endif
 

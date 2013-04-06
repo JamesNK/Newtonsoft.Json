@@ -30,6 +30,8 @@ using System.IO;
 #if NET20
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Runtime.Serialization.Json;
 #endif
 using System.Text;
 using System.Threading;
@@ -53,6 +55,18 @@ namespace Newtonsoft.Json.Tests
   [TestFixture]
   public abstract class TestFixtureBase
   {
+#if !NET20
+    protected string GetDataContractJsonSerializeResult(object o)
+    {
+      MemoryStream ms = new MemoryStream();
+      DataContractJsonSerializer s = new DataContractJsonSerializer(o.GetType());
+      s.WriteObject(ms, o);
+
+      var data = ms.ToArray();
+      return Encoding.UTF8.GetString(data, 0, data.Length);
+    }
+#endif
+
     protected string GetOffset(DateTime d, DateFormatHandling dateFormatHandling)
     {
       StringWriter sw = new StringWriter();

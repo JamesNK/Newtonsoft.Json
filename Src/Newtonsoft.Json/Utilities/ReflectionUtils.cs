@@ -109,6 +109,31 @@ namespace Newtonsoft.Json.Utilities
       return false;
     }
 
+    public static MethodInfo GetBaseDefinition(this PropertyInfo propertyInfo)
+    {
+      ValidationUtils.ArgumentNotNull(propertyInfo, "propertyInfo");
+
+      MethodInfo m = propertyInfo.GetGetMethod();
+      if (m != null)
+        return m.GetBaseDefinition();
+
+      m = propertyInfo.GetSetMethod();
+      if (m != null)
+        return m.GetBaseDefinition();
+
+      return null;
+    }
+
+    public static bool IsPublic(PropertyInfo property)
+    {
+      if (property.GetGetMethod() != null && property.GetGetMethod().IsPublic)
+        return true;
+      if (property.GetSetMethod() != null && property.GetSetMethod().IsPublic)
+        return true;
+
+      return false;
+    }
+
     public static Type GetObjectType(object v)
     {
       return (v != null) ? v.GetType() : null;
@@ -812,30 +837,51 @@ namespace Newtonsoft.Json.Utilities
     {
       // fix weirdness with private PropertyInfos only being returned for the current Type
       // find base type properties and add them to result
-      if ((bindingAttr & BindingFlags.NonPublic) != 0)
+
+      // also find base properties that have been hidden by subtype properties with the same name
+
+      while ((targetType = targetType.BaseType()) != null)
       {
-        // modify flags to not search for public fields
-        BindingFlags nonPublicBindingAttr = bindingAttr.RemoveFlag(BindingFlags.Public);
-
-        while ((targetType = targetType.BaseType()) != null)
+        foreach (PropertyInfo propertyInfo in targetType.GetProperties(bindingAttr))
         {
-          foreach (PropertyInfo propertyInfo in targetType.GetProperties(nonPublicBindingAttr))
-          {
-            PropertyInfo nonPublicProperty = propertyInfo;
+          PropertyInfo subTypeProperty = propertyInfo;
 
+          if (!IsPublic(subTypeProperty))
+          {
             // have to test on name rather than reference because instances are different
             // depending on the type that GetProperties was called on
-            int index = initialProperties.IndexOf(p => p.Name == nonPublicProperty.Name);
+            int index = initialProperties.IndexOf(p => p.Name == subTypeProperty.Name);
             if (index == -1)
             {
-              initialProperties.Add(nonPublicProperty);
+              initialProperties.Add(subTypeProperty);
             }
             else
             {
               // replace nonpublic properties for a child, but gotten from
               // the parent with the one from the child
               // the property gotten from the child will have access to private getter/setter
-              initialProperties[index] = nonPublicProperty;
+              initialProperties[index] = subTypeProperty;
+            }
+          }
+          else
+          {
+            if (!subTypeProperty.IsVirtual())
+            {
+              int index = initialProperties.IndexOf(p => p.Name == subTypeProperty.Name
+                && p.DeclaringType == subTypeProperty.DeclaringType);
+
+              if (index == -1)
+                initialProperties.Add(subTypeProperty);
+            }
+            else
+            {
+              int index = initialProperties.IndexOf(p => p.Name == subTypeProperty.Name
+                && p.IsVirtual()
+                && p.GetBaseDefinition() != null
+                && p.GetBaseDefinition().DeclaringType.IsAssignableFrom(subTypeProperty.DeclaringType));
+
+              if (index == -1)
+                initialProperties.Add(subTypeProperty);
             }
           }
         }

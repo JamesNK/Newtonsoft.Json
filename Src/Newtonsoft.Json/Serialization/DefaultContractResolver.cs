@@ -1025,8 +1025,8 @@ namespace Newtonsoft.Json.Serialization
 
       if (memberSerialization != MemberSerialization.OptIn)
       {
-       bool hasIgnoreDataMemberAttribute = false;
-        
+        bool hasIgnoreDataMemberAttribute = false;
+
 #if !(NET20 || NET35)
         hasIgnoreDataMemberAttribute = (JsonTypeReflector.GetAttribute<IgnoreDataMemberAttribute>(attributeProvider) != null);
 #endif

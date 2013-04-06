@@ -81,19 +81,21 @@ namespace Newtonsoft.Json.Serialization
           Remove(existingProperty);
           duplicateProperty = false;
         }
-
-        if (property.DeclaringType != null && existingProperty.DeclaringType != null)
+        else
         {
-          if (property.DeclaringType.IsSubclassOf(existingProperty.DeclaringType))
+          if (property.DeclaringType != null && existingProperty.DeclaringType != null)
           {
-            // current property is on a derived class and hides the existing
-            Remove(existingProperty);
-            duplicateProperty = false;
-          }
-          if (existingProperty.DeclaringType.IsSubclassOf(property.DeclaringType))
-          {
-            // current property is hidden by the existing so don't add it
-            return;
+            if (property.DeclaringType.IsSubclassOf(existingProperty.DeclaringType))
+            {
+              // current property is on a derived class and hides the existing
+              Remove(existingProperty);
+              duplicateProperty = false;
+            }
+            if (existingProperty.DeclaringType.IsSubclassOf(property.DeclaringType))
+            {
+              // current property is hidden by the existing so don't add it
+              return;
+            }
           }
         }
 

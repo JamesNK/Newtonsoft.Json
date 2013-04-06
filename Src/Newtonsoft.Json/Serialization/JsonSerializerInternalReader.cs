@@ -791,7 +791,12 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
         currentValue = property.ValueProvider.GetValue(target);
         gottenCurrentValue = true;
 
-        useExistingValue = (currentValue != null && !property.PropertyContract.IsReadOnlyOrFixedSize && !property.PropertyType.IsValueType());
+        if (currentValue != null)
+        {
+          propertyContract = GetContractSafe(currentValue.GetType());
+
+          useExistingValue = (!propertyContract.IsReadOnlyOrFixedSize && !propertyContract.UnderlyingType.IsValueType());
+        }
       }
 
       if (!property.Writable && !useExistingValue)
