@@ -243,7 +243,7 @@ namespace Newtonsoft.Json.Tests.Linq
     {
       JConstructor c = new JConstructor("Blah");
 
-      ExceptionAssert.Throws<IndexOutOfRangeException>(
+      ExceptionAssert.Throws<JsonException>(
         @"Index 1 outside the bounds of JConstructor.",
         () =>
         {
@@ -279,7 +279,7 @@ namespace Newtonsoft.Json.Tests.Linq
     {
       JArray a = new JArray(1, 2, 3, 4, 5);
 
-      ExceptionAssert.Throws<IndexOutOfRangeException>(
+      ExceptionAssert.Throws<JsonException>(
         "Index 1000 outside the bounds of JArray.",
         () =>
         {

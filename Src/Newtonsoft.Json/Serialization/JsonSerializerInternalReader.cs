@@ -301,10 +301,10 @@ namespace Newtonsoft.Json.Serialization
       {
         case JsonContractType.Object:
         case JsonContractType.Dictionary:
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
         case JsonContractType.Serializable:
 #endif
-#if !(NET35 || NET20)
+#if !(NET35 || NET20 || PORTABLE40)
         case JsonContractType.Dynamic:
 #endif
           return @"JSON object (e.g. {""name"":""value""})";

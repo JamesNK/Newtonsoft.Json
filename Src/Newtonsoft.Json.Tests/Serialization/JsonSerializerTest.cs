@@ -2279,7 +2279,7 @@ Path '', line 1, position 2.",
           {
             ContractResolver = new DefaultContractResolver
             {
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
               IgnoreSerializableAttribute = true
 #endif
             }
@@ -2298,7 +2298,7 @@ Path '', line 1, position 2.",
           {
             ContractResolver = new DefaultContractResolver
             {
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
               IgnoreSerializableAttribute = true
 #endif
             }
@@ -2316,9 +2316,9 @@ Path '', line 1, position 2.",
           JsonConvert.DeserializeObject<MemoryStream>("{ReadTimeout:''}", new JsonSerializerSettings
             {
               ContractResolver = new DefaultContractResolver
-                {
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
-                  IgnoreSerializableAttribute = true
+              {
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
+                IgnoreSerializableAttribute = true
 #endif
                 }
             });
@@ -2336,7 +2336,7 @@ Path '', line 1, position 2.",
           {
             ContractResolver = new DefaultContractResolver
             {
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
               IgnoreSerializableAttribute = true
 #endif
             }

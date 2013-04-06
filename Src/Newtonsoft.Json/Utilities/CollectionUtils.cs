@@ -41,13 +41,6 @@ namespace Newtonsoft.Json.Utilities
 {
   internal static class CollectionUtils
   {
-    public static IEnumerable<T> CastValid<T>(this IEnumerable enumerable)
-    {
-      ValidationUtils.ArgumentNotNull(enumerable, "enumerable");
-
-      return enumerable.Cast<object>().Where(o => o is T).Cast<T>();
-    }
-
     /// <summary>
     /// Determines whether the collection is null or empty.
     /// </summary>
@@ -83,20 +76,15 @@ namespace Newtonsoft.Json.Utilities
       }
     }
 
-    public static void AddRange(this IList initial, IEnumerable collection)
+#if (NET20 || NET35 || SILVERLIGHT || PORTABLE40)
+    public static void AddRange<T>(this IList<T> initial, IEnumerable collection)
     {
       ValidationUtils.ArgumentNotNull(initial, "initial");
 
-      ListWrapper<object> wrapper = new ListWrapper<object>(initial);
-      wrapper.AddRange(collection.Cast<object>());
+      // because earlier versions of .NET didn't support covariant generics
+      initial.AddRange(collection.Cast<T>());
     }
-
-    public static IList CreateGenericList(Type listType)
-    {
-      ValidationUtils.ArgumentNotNull(listType, "listType");
-
-      return (IList)ReflectionUtils.CreateGeneric(typeof(List<>), listType);
-    }
+#endif
 
     public static bool IsDictionaryType(Type type)
     {
@@ -116,7 +104,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static ConstructorInfo ResolveEnumableCollectionConstructor(Type collectionType, Type collectionItemType)
     {
-      Type genericEnumerable = ReflectionUtils.MakeGenericType(typeof(IEnumerable<>), collectionItemType);
+      Type genericEnumerable = typeof(IEnumerable<>).MakeGenericType(collectionItemType);
 
       foreach (ConstructorInfo constructor in collectionType.GetConstructors(BindingFlags.Public | BindingFlags.Instance))
       {
@@ -130,73 +118,6 @@ namespace Newtonsoft.Json.Utilities
       }
 
       return null;
-    }
-
-    public static IWrappedCollection CreateCollectionWrapper(object list)
-    {
-      ValidationUtils.ArgumentNotNull(list, "list");
-
-      Type collectionDefinition;
-      if (ReflectionUtils.ImplementsGenericDefinition(list.GetType(), typeof(ICollection<>), out collectionDefinition))
-      {
-        Type collectionItemType = ReflectionUtils.GetCollectionItemType(collectionDefinition);
-
-        // Activator.CreateInstance throws AmbiguousMatchException. Manually invoke constructor
-        Func<Type, IList<object>, object> instanceCreator = (t, a) =>
-        {
-          ConstructorInfo c = t.GetConstructor(new[] { collectionDefinition });
-          return c.Invoke(new[] { list });
-        };
-
-        return (IWrappedCollection)ReflectionUtils.CreateGeneric(typeof(CollectionWrapper<>), new[] { collectionItemType }, instanceCreator, list);
-      }
-      else if (list is IList)
-      {
-        return new CollectionWrapper<object>((IList)list);
-      }
-      else
-      {
-        throw new ArgumentException("Can not create ListWrapper for type {0}.".FormatWith(CultureInfo.InvariantCulture, list.GetType()), "list");
-      }
-    }
-
-    public static IWrappedDictionary CreateDictionaryWrapper(object dictionary)
-    {
-      ValidationUtils.ArgumentNotNull(dictionary, "dictionary");
-
-      Type dictionaryDefinition;
-      if (ReflectionUtils.ImplementsGenericDefinition(dictionary.GetType(), typeof(IDictionary<,>), out dictionaryDefinition))
-      {
-        Type dictionaryKeyType = ReflectionUtils.GetDictionaryKeyType(dictionaryDefinition);
-        Type dictionaryValueType = ReflectionUtils.GetDictionaryValueType(dictionaryDefinition);
-
-        // Activator.CreateInstance throws AmbiguousMatchException. Manually invoke constructor
-        Func<Type, IList<object>, object> instanceCreator = (t, a) =>
-        {
-          ConstructorInfo c = t.GetConstructor(new[] { dictionaryDefinition });
-          return c.Invoke(new[] { dictionary });
-        };
-
-        return (IWrappedDictionary)ReflectionUtils.CreateGeneric(typeof(DictionaryWrapper<,>), new[] { dictionaryKeyType, dictionaryValueType }, instanceCreator, dictionary);
-      }
-      else if (dictionary is IDictionary)
-      {
-        return new DictionaryWrapper<object, object>((IDictionary)dictionary);
-      }
-      else
-      {
-        throw new ArgumentException("Can not create DictionaryWrapper for type {0}.".FormatWith(CultureInfo.InvariantCulture, dictionary.GetType()), "dictionary");
-      }
-    }
-
-    public static Array ToArray(Array initial, Type type)
-    {
-      if (type == null)
-        throw new ArgumentNullException("type");
-
-      Array destinationArray = Array.CreateInstance(type, initial.Length);
-      Array.Copy(initial, 0, destinationArray, 0, initial.Length);
-      return destinationArray;
     }
 
     public static bool AddDistinct<T>(this IList<T> list, T value)

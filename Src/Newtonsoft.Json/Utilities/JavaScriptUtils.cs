@@ -189,11 +189,6 @@ namespace Newtonsoft.Json.Utilities
         writer.Write(delimiter);
     }
 
-    public static string ToEscapedJavaScriptString(string value)
-    {
-      return ToEscapedJavaScriptString(value, '"', true);
-    }
-
     public static string ToEscapedJavaScriptString(string value, char delimiter, bool appendDelimiters)
     {
       using (StringWriter w = StringUtils.CreateStringWriter(StringUtils.GetLength(value) ?? 16))

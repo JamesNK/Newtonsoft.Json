@@ -195,11 +195,6 @@ namespace Newtonsoft.Json.Converters
       get { return _node.NodeType; }
     }
 
-    public string Name
-    {
-      get { return _node.Name; }
-    }
-
     public string LocalName
     {
       get { return _node.LocalName; }
@@ -261,11 +256,6 @@ namespace Newtonsoft.Json.Converters
       _node.AppendChild(xmlNodeWrapper._node);
 
       return newChild;
-    }
-
-    public string Prefix
-    {
-      get { return _node.Prefix; }
     }
 
     public string NamespaceUri
@@ -1308,7 +1298,7 @@ namespace Newtonsoft.Json.Converters
 
       if (count == 1 && WriteArrayAttribute)
       {
-        IXmlElement arrayElement = nestedArrayElement.ChildNodes.CastValid<IXmlElement>().Single(n => n.LocalName == propertyName);
+        IXmlElement arrayElement = nestedArrayElement.ChildNodes.OfType<IXmlElement>().Single(n => n.LocalName == propertyName);
         AddJsonArrayAttribute(arrayElement, document);
       }
     }
@@ -1489,7 +1479,7 @@ namespace Newtonsoft.Json.Converters
 
               if (count == 1 && WriteArrayAttribute)
               {
-                IXmlElement arrayElement = currentNode.ChildNodes.CastValid<IXmlElement>().Single(n => n.LocalName == propertyName);
+                IXmlElement arrayElement = currentNode.ChildNodes.OfType<IXmlElement>().Single(n => n.LocalName == propertyName);
                 AddJsonArrayAttribute(arrayElement, document);
               }
             }

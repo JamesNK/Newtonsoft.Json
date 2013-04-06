@@ -357,7 +357,9 @@ Nice froob armor.. but ugleh!
 ]content";
 
       JsonTextReader reader = new JsonTextReader(new StringReader(json));
+#if DEBUG
       reader.SetCharBuffer(new char[2]);
+#endif
 
       reader.Read();
       Assert.AreEqual(1, reader.LineNumber);
@@ -431,7 +433,9 @@ Nice froob armor.. but ugleh!
 
       using (JsonTextReader jsonReader = new JsonTextReader(sr))
       {
+#if DEBUG
         jsonReader.SetCharBuffer(new char[5]);
+#endif
 
         Assert.AreEqual(jsonReader.TokenType, JsonToken.None);
         Assert.AreEqual(0, jsonReader.LineNumber);
@@ -753,7 +757,9 @@ Parameter name: reader",
 ]";
 
       JsonTextReader reader = new JsonTextReader(new StringReader(json));
+#if DEBUG
       reader.SetCharBuffer(new char[129]);
+#endif
 
       for (int i = 0; i < 15; i++)
       {
@@ -783,7 +789,9 @@ Parameter name: reader",
 ";
 
       JsonTextReader reader = new JsonTextReader(new StringReader(json));
+#if DEBUG
       reader.SetCharBuffer(new char[129]);
+#endif
 
       for (int i = 0; i < 14; i++)
       {
@@ -1274,7 +1282,9 @@ bye", reader.Value);
       string json = @"[""\u003c"",""\u5f20""]";
 
       JsonTextReader reader = new JsonTextReader(new StringReader(json));
+#if DEBUG
       reader.SetCharBuffer(new char[2]);
+#endif
 
       reader.Read();
       Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
@@ -1644,7 +1654,9 @@ bye", reader.Value);
       string json = @"{""Message"":""Hi,I\u0092ve send you smth""}";
 
       JsonTextReader reader = new JsonTextReader(new StringReader(json));
+#if DEBUG
       reader.SetCharBuffer(new char[5]);
+#endif
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
@@ -2034,7 +2046,10 @@ bye", reader.Value);
 ]";
 
       JsonTextReader reader = new JsonTextReader(new StringReader(json));
+#if DEBUG
       reader.SetCharBuffer(new char[5]);
+#endif
+
       for (int i = 0; i < 13; i++)
       {
         reader.Read();
@@ -2059,7 +2074,9 @@ bye", reader.Value);
       } /*comment*/";
 
       JsonTextReader reader = new JsonTextReader(new StringReader(json));
+#if DEBUG
       reader.SetCharBuffer(new char[5]);
+#endif
 
       for (int i = 0; i < 26; i++)
       {
@@ -2077,7 +2094,9 @@ bye", reader.Value);
     {
       string json = "new Date\0()";
       JsonTextReader reader = new JsonTextReader(new StringReader(json));
+#if DEBUG
       reader.SetCharBuffer(new char[7]);
+#endif
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual("Date", reader.Value);

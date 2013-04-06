@@ -81,10 +81,12 @@ namespace Newtonsoft.Json
       _chars = new char[4097];
     }
 
+#if DEBUG
     internal void SetCharBuffer(char[] chars)
     {
       _chars = chars;
     }
+#endif
 
     private StringBuffer GetBuffer()
     {

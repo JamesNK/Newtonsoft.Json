@@ -215,7 +215,7 @@ namespace Newtonsoft.Json.Serialization
       Type converterType = GetTypeConverterType(type);
 
       if (converterType != null)
-        return (TypeConverter)ReflectionUtils.CreateInstance(converterType);
+        return (TypeConverter)Activator.CreateInstance(converterType);
 
       return null;
 #endif

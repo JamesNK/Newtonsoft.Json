@@ -121,8 +121,8 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       Console.WriteLine(json);
 
-      string dynamicChildObjectTypeName = ReflectionUtils.GetTypeName(typeof(DynamicChildObject), FormatterAssemblyStyle.Full);
-      string expandoObjectTypeName = ReflectionUtils.GetTypeName(typeof(ExpandoObject), FormatterAssemblyStyle.Full);
+      string dynamicChildObjectTypeName = ReflectionUtils.GetTypeName(typeof(DynamicChildObject), FormatterAssemblyStyle.Full, null);
+      string expandoObjectTypeName = ReflectionUtils.GetTypeName(typeof(ExpandoObject), FormatterAssemblyStyle.Full, null);
 
       Assert.AreEqual(@"{
   ""$type"": """ + expandoObjectTypeName + @""",

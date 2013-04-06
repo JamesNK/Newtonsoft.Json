@@ -114,11 +114,6 @@ namespace Newtonsoft.Json.Utilities
       return (v != null) ? v.GetType() : null;
     }
 
-    public static string GetTypeName(Type t, FormatterAssemblyStyle assemblyFormat)
-    {
-      return GetTypeName(t, assemblyFormat, null);
-    }
-
     public static string GetTypeName(Type t, FormatterAssemblyStyle assemblyFormat, SerializationBinder binder)
     {
       string fullyQualifiedTypeName;
@@ -189,24 +184,6 @@ namespace Newtonsoft.Json.Utilities
       }
 
       return builder.ToString();
-    }
-
-    public static bool IsInstantiatableType(Type t)
-    {
-      ValidationUtils.ArgumentNotNull(t, "t");
-
-      if (t.IsAbstract() || t.IsInterface() || t.IsArray || t.IsGenericTypeDefinition() || t == typeof(void))
-        return false;
-
-      if (!HasDefaultConstructor(t))
-        return false;
-
-      return true;
-    }
-
-    public static bool HasDefaultConstructor(Type t)
-    {
-      return HasDefaultConstructor(t, false);
     }
 
     public static bool HasDefaultConstructor(Type t, bool nonPublic)
@@ -408,24 +385,6 @@ namespace Newtonsoft.Json.Utilities
       {
         throw new Exception("Type {0} is not a dictionary.".FormatWith(CultureInfo.InvariantCulture, dictionaryType));
       }
-    }
-
-    public static Type GetDictionaryValueType(Type dictionaryType)
-    {
-      Type keyType;
-      Type valueType;
-      GetDictionaryKeyValueTypes(dictionaryType, out keyType, out valueType);
-
-      return valueType;
-    }
-
-    public static Type GetDictionaryKeyType(Type dictionaryType)
-    {
-      Type keyType;
-      Type valueType;
-      GetDictionaryKeyValueTypes(dictionaryType, out keyType, out valueType);
-
-      return keyType;
     }
 
     /// <summary>
@@ -726,43 +685,6 @@ namespace Newtonsoft.Json.Utilities
       throw new Exception("Cannot get attributes from '{0}'.".FormatWith(CultureInfo.InvariantCulture, provider));
     }
 #endif
-
-    public static Type MakeGenericType(Type genericTypeDefinition, params Type[] innerTypes)
-    {
-      ValidationUtils.ArgumentNotNull(genericTypeDefinition, "genericTypeDefinition");
-      ValidationUtils.ArgumentNotNullOrEmpty<Type>(innerTypes, "innerTypes");
-      ValidationUtils.ArgumentConditionTrue(genericTypeDefinition.IsGenericTypeDefinition(), "genericTypeDefinition", "Type {0} is not a generic type definition.".FormatWith(CultureInfo.InvariantCulture, genericTypeDefinition));
-
-      return genericTypeDefinition.MakeGenericType(innerTypes);
-    }
-
-    public static object CreateGeneric(Type genericTypeDefinition, Type innerType, params object[] args)
-    {
-      return CreateGeneric(genericTypeDefinition, new[] { innerType }, args);
-    }
-
-    public static object CreateGeneric(Type genericTypeDefinition, IList<Type> innerTypes, params object[] args)
-    {
-      return CreateGeneric(genericTypeDefinition, innerTypes, (t, a) => CreateInstance(t, a.ToArray()), args);
-    }
-
-    public static object CreateGeneric(Type genericTypeDefinition, IList<Type> innerTypes, Func<Type, IList<object>, object> instanceCreator, params object[] args)
-    {
-      ValidationUtils.ArgumentNotNull(genericTypeDefinition, "genericTypeDefinition");
-      ValidationUtils.ArgumentNotNullOrEmpty(innerTypes, "innerTypes");
-      ValidationUtils.ArgumentNotNull(instanceCreator, "createInstance");
-
-      Type specificType = MakeGenericType(genericTypeDefinition, innerTypes.ToArray());
-
-      return instanceCreator(specificType, args);
-    }
-
-    public static object CreateInstance(Type type, params object[] args)
-    {
-      ValidationUtils.ArgumentNotNull(type, "type");
-
-      return Activator.CreateInstance(type, args);
-    }
 
     public static void SplitFullyQualifiedTypeName(string fullyQualifiedTypeName, out string typeName, out string assemblyName)
     {

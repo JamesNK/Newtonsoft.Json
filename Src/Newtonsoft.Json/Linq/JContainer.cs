@@ -97,7 +97,9 @@ namespace Newtonsoft.Json.Linq
     protected abstract IList<JToken> ChildrenTokens { get; }
 
     private object _syncRoot;
+#if !(PORTABLE40)
     private bool _busy;
+#endif
 
     internal JContainer()
     {
@@ -116,8 +118,10 @@ namespace Newtonsoft.Json.Linq
 
     internal void CheckReentrancy()
     {
+#if !(PORTABLE40)
       if (_busy)
         throw new InvalidOperationException("Cannot change {0} during a collection change event.".FormatWith(CultureInfo.InvariantCulture, GetType()));
+#endif
     }
 
     internal virtual IList<JToken> CreateChildrenCollection()

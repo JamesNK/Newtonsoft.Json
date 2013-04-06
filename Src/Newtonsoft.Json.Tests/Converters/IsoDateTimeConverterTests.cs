@@ -61,6 +61,13 @@ namespace Newtonsoft.Json.Tests.Converters
       Assert.AreEqual(DateTimeStyles.None, converter.DateTimeStyles);
     }
 
+    public static string GetUtcOffsetText(DateTime d)
+    {
+      TimeSpan utcOffset = d.GetUtcOffset();
+
+      return utcOffset.Hours.ToString("+00;-00", CultureInfo.InvariantCulture) + ":" + utcOffset.Minutes.ToString("00;00", CultureInfo.InvariantCulture);
+    }
+
     [Test]
     public void SerializeDateTime()
     {
@@ -76,7 +83,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
       d = new DateTime(2000, 12, 15, 22, 11, 3, 55, DateTimeKind.Local);
       result = JsonConvert.SerializeObject(d, converter);
-      Assert.AreEqual(@"""2000-12-15T22:11:03.055" + d.GetUtcOffsetText() + @"""", result);
+      Assert.AreEqual(@"""2000-12-15T22:11:03.055" + GetUtcOffsetText(d) + @"""", result);
     }
 
     [Test]

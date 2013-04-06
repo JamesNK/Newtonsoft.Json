@@ -133,7 +133,7 @@ namespace Newtonsoft.Json.Serialization
       get { return JsonTypeReflector.DynamicCodeGeneration; }
     }
 
-#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
+#if !(NETFX_CORE || PORTABLE)
     /// <summary>
     /// Gets or sets the default members search flags.
     /// </summary>
@@ -151,7 +151,7 @@ namespace Newtonsoft.Json.Serialization
     /// </value>
     public bool SerializeCompilerGeneratedMembers { get; set; }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
     /// <summary>
     /// Gets or sets a value indicating whether to ignore the <see cref="ISerializable"/> interface when serializing and deserializing types.
     /// </summary>
@@ -191,7 +191,7 @@ namespace Newtonsoft.Json.Serialization
 #if !NETFX_CORE
       DefaultMembersSearchFlags = BindingFlags.Public | BindingFlags.Instance;
 #endif
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
       IgnoreSerializableAttribute = true;
 #endif
 
@@ -256,7 +256,7 @@ namespace Newtonsoft.Json.Serialization
     protected virtual List<MemberInfo> GetSerializableMembers(Type objectType)
     {
       bool ignoreSerializableAttribute;
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
       ignoreSerializableAttribute = IgnoreSerializableAttribute;
 #else
       ignoreSerializableAttribute = true;
@@ -350,7 +350,7 @@ namespace Newtonsoft.Json.Serialization
       InitializeContract(contract);
 
       bool ignoreSerializableAttribute;
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
       ignoreSerializableAttribute = IgnoreSerializableAttribute;
 #else
       ignoreSerializableAttribute = true;
