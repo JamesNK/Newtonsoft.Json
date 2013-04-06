@@ -29,7 +29,7 @@ using System.Text;
 
 namespace Newtonsoft.Json.Utilities
 {
-  internal class MathUtils
+  internal static class MathUtils
   {
     public static int IntLength(int i)
     {
