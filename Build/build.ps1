@@ -113,7 +113,8 @@ task Package -depends Build {
   }
   
   Copy-Item -Path $docDir\readme.txt -Destination $workingDir\Package\
-  Copy-Item -Path $docDir\versions.txt -Destination $workingDir\Package\Bin\
+  Copy-Item -Path $docDir\license.txt -Destination $workingDir\Package\
+  Copy-Item -Path $docDir\versions.txt -Destination $workingDir\Package\
 
   robocopy $sourceDir $workingDir\Package\Source\Src /MIR /NP /XD .svn bin obj TestResults AppPackages /XF *.suo *.user | Out-Default
   robocopy $buildDir $workingDir\Package\Source\Build /MIR /NP /XD .svn | Out-Default
