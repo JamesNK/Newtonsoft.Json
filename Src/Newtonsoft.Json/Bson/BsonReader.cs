@@ -89,6 +89,7 @@ namespace Newtonsoft.Json.Bson
     /// <value>
     /// 	<c>true</c> if binary data reading will be compatible with incorrect Json.NET 3.5 written binary; otherwise, <c>false</c>.
     /// </value>
+    [Obsolete("JsonNet35BinaryCompatibility will be removed in a future version of Json.NET.")]
     public bool JsonNet35BinaryCompatibility
     {
       get { return _jsonNet35BinaryCompatibility; }
@@ -608,7 +609,7 @@ namespace Newtonsoft.Json.Bson
 
 #pragma warning disable 612,618
       // the old binary type has the data length repeated in the data for some reason
-      if (binaryType == BsonBinaryType.Data && !_jsonNet35BinaryCompatibility)
+      if (binaryType == BsonBinaryType.BinaryOld && !_jsonNet35BinaryCompatibility)
       {
         dataLength = ReadInt32();
       }

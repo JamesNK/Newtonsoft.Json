@@ -371,16 +371,13 @@ namespace Newtonsoft.Json.Utilities
         return System.Convert.ChangeType(initialValue, targetType, culture);
       }
 
-      if (initialValue is string && typeof(Type).IsAssignableFrom(targetType))
-        return Type.GetType((string) initialValue, true);
-
-      if (targetType.IsInterface() || targetType.IsGenericTypeDefinition() || targetType.IsAbstract())
-        throw new ArgumentException("Target type {0} is not a value type or a non-abstract class.".FormatWith(CultureInfo.InvariantCulture, targetType), "targetType");
-
 #if !NET20
       if (initialValue is DateTime && targetType == typeof(DateTimeOffset))
         return new DateTimeOffset((DateTime)initialValue);
 #endif
+
+      if (initialValue is byte[] && targetType == typeof(Guid))
+        return new Guid((byte[]) initialValue);
 
       if (initialValue is string)
       {
@@ -390,6 +387,8 @@ namespace Newtonsoft.Json.Utilities
           return new Uri((string) initialValue, UriKind.RelativeOrAbsolute);
         if (targetType == typeof(TimeSpan))
           return ParseTimeSpan((string) initialValue);
+        if (typeof(Type).IsAssignableFrom(targetType))
+          return Type.GetType((string) initialValue, true);
       }
 
 #if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
@@ -398,6 +397,9 @@ namespace Newtonsoft.Json.Utilities
       if (initialValue is BigInteger)
         return FromBigInteger((BigInteger)initialValue, targetType);
 #endif
+
+      if (targetType.IsInterface() || targetType.IsGenericTypeDefinition() || targetType.IsAbstract())
+        throw new ArgumentException("Target type {0} is not a value type or a non-abstract class.".FormatWith(CultureInfo.InvariantCulture, targetType), "targetType");
 
 #if !(NETFX_CORE || PORTABLE40 || PORTABLE)
       // see if source or target types have a TypeConverter that converts between the two

@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 #if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
 using System.Numerics;
@@ -92,6 +93,76 @@ namespace Newtonsoft.Json.Tests.Bson
 
       Assert.IsFalse(reader.Read());
       Assert.AreEqual(JsonToken.None, reader.TokenType);
+    }
+
+    [Test]
+    public void ReadGuid_Text()
+    {
+      byte[] data = HexToBytes("31-00-00-00-02-30-00-25-00-00-00-64-38-32-31-65-65-64-37-2D-34-62-35-63-2D-34-33-63-39-2D-38-61-63-32-2D-36-39-32-38-65-35-37-39-62-37-30-35-00-00");
+
+      MemoryStream ms = new MemoryStream(data);
+      BsonReader reader = new BsonReader(ms);
+      reader.ReadRootValueAsArray = true;
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.String, reader.TokenType);
+      Assert.AreEqual("d821eed7-4b5c-43c9-8ac2-6928e579b705", reader.Value);
+      Assert.AreEqual(typeof(string), reader.ValueType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+
+      Assert.IsFalse(reader.Read());
+      Assert.AreEqual(JsonToken.None, reader.TokenType);
+
+      ms = new MemoryStream(data);
+      reader = new BsonReader(ms);
+      reader.ReadRootValueAsArray = true;
+
+      JsonSerializer serializer = new JsonSerializer();
+      IList<Guid> l = serializer.Deserialize<IList<Guid>>(reader);
+
+      Assert.AreEqual(1, l.Count);
+      Assert.AreEqual(new Guid("D821EED7-4B5C-43C9-8AC2-6928E579B705"), l[0]);
+    }
+
+    [Test]
+    public void ReadGuid_Bytes()
+    {
+      byte[] data = HexToBytes("1D-00-00-00-05-30-00-10-00-00-00-04-D7-EE-21-D8-5C-4B-C9-43-8A-C2-69-28-E5-79-B7-05-00");
+
+      MemoryStream ms = new MemoryStream(data);
+      BsonReader reader = new BsonReader(ms);
+      reader.ReadRootValueAsArray = true;
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+      Guid g = new Guid("D821EED7-4B5C-43C9-8AC2-6928E579B705");
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.Bytes, reader.TokenType);
+      CollectionAssert.AreEqual(g.ToByteArray(), (byte[])reader.Value);
+      Assert.AreEqual(typeof(byte[]), reader.ValueType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+
+      Assert.IsFalse(reader.Read());
+      Assert.AreEqual(JsonToken.None, reader.TokenType);
+
+      ms = new MemoryStream(data);
+      reader = new BsonReader(ms);
+      reader.ReadRootValueAsArray = true;
+
+      JsonSerializer serializer = new JsonSerializer();
+      IList<Guid> l = serializer.Deserialize<IList<Guid>>(reader);
+
+      Assert.AreEqual(1, l.Count);
+      Assert.AreEqual(g, l[0]);
     }
 
     [Test]

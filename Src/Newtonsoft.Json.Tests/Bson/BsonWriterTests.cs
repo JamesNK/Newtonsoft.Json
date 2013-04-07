@@ -129,6 +129,23 @@ namespace Newtonsoft.Json.Tests.Bson
     }
 
     [Test]
+    public void WriteGuid()
+    {
+      Guid g = new Guid("D821EED7-4B5C-43C9-8AC2-6928E579B705");
+
+      MemoryStream ms = new MemoryStream();
+      BsonWriter writer = new BsonWriter(ms);
+
+      writer.WriteStartArray();
+      writer.WriteValue(g);
+      writer.WriteEnd();
+
+      string bson = BytesToHex(ms.ToArray());
+      Console.WriteLine(bson);
+      Assert.AreEqual("1D-00-00-00-05-30-00-10-00-00-00-04-D7-EE-21-D8-5C-4B-C9-43-8A-C2-69-28-E5-79-B7-05-00", bson);
+    }
+
+    [Test]
     public void WriteArrayBsonFromSite()
     {
       MemoryStream ms = new MemoryStream();

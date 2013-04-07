@@ -429,7 +429,7 @@ namespace Newtonsoft.Json.Bson
     public override void WriteValue(byte[] value)
     {
       base.WriteValue(value);
-      AddValue(value, BsonType.Binary);
+      AddToken(new BsonBinary(value, BsonBinaryType.Binary));
     }
 
     /// <summary>
@@ -439,7 +439,7 @@ namespace Newtonsoft.Json.Bson
     public override void WriteValue(Guid value)
     {
       base.WriteValue(value);
-      AddToken(new BsonString(value.ToString(), true));
+      AddToken(new BsonBinary(value.ToByteArray(), BsonBinaryType.Uuid));
     }
 
     /// <summary>
@@ -470,7 +470,7 @@ namespace Newtonsoft.Json.Bson
     public override void WriteValue(BigInteger value)
     {
       base.WriteValue(value);
-      AddToken(new BsonValue(value.ToByteArray(), BsonType.Binary));
+      AddToken(new BsonBinary(value.ToByteArray(), BsonBinaryType.Binary));
     }
 #endif
     #endregion

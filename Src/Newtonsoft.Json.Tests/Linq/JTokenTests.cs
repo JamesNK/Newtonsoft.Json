@@ -319,6 +319,8 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(null, (Uri)(new JValue((object)null)));
       Assert.AreEqual(Convert.ToBase64String(Encoding.UTF8.GetBytes("hi")), (string)(new JValue(Encoding.UTF8.GetBytes("hi"))));
       CollectionAssert.AreEquivalent((byte[])Encoding.UTF8.GetBytes("hi"), (byte[])(new JValue(Convert.ToBase64String(Encoding.UTF8.GetBytes("hi")))));
+      Assert.AreEqual(new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC"), (Guid)(new JValue(new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC").ToByteArray())));
+      Assert.AreEqual(new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC"), (Guid?)(new JValue(new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC").ToByteArray())));
 
       Assert.AreEqual(null, (Uri)(JValue)null);
       Assert.AreEqual(null, (int?)(JValue)null);
