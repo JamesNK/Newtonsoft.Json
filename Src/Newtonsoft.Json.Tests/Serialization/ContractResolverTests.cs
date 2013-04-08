@@ -96,14 +96,13 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
   }
 
-#if !NET20
   public class AddressWithDataMember
   {
+#if !NET20
     [DataMember(Name = "CustomerAddress1")]
-    public string AddressLine1 { get; set; }
-
-  }
 #endif
+    public string AddressLine1 { get; set; }
+  }
 
   [TestFixture]
   public class ContractResolverTests : TestFixtureBase
