@@ -221,6 +221,25 @@ namespace Newtonsoft.Json.Bson
     }
 
     #region WriteValue methods
+    /// <summary>
+    /// Writes a <see cref="Object"/> value.
+    /// An error will raised if the value cannot be written as a single JSON token.
+    /// </summary>
+    /// <param name="value">The <see cref="Object"/> value to write.</param>
+    public override void WriteValue(object value)
+    {
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)
+      if (value is BigInteger)
+      {
+        InternalWriteValue(JsonToken.Integer);
+        AddToken(new BsonBinary(((BigInteger)value).ToByteArray(), BsonBinaryType.Binary));
+      }
+      else
+#endif
+      {
+        base.WriteValue(value);
+      }
+    }
 
     /// <summary>
     /// Writes a null value.
@@ -461,18 +480,6 @@ namespace Newtonsoft.Json.Bson
       base.WriteValue(value);
       AddToken(new BsonString(value.ToString(), true));
     }
-
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
-    /// <summary>
-    /// Writes a <see cref="BigInteger"/> value.
-    /// </summary>
-    /// <param name="value">The <see cref="BigInteger"/> value to write.</param>
-    public override void WriteValue(BigInteger value)
-    {
-      base.WriteValue(value);
-      AddToken(new BsonBinary(value.ToByteArray(), BsonBinaryType.Binary));
-    }
-#endif
     #endregion
 
     /// <summary>

@@ -1177,12 +1177,7 @@ namespace Newtonsoft.Json.Linq
     }
 
 #if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
-    /// <summary>
-    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="System.Numerics.BigInteger"/>.
-    /// </summary>
-    /// <param name="value">The value.</param>
-    /// <returns>The result of the conversion.</returns>
-    public static explicit operator BigInteger(JToken value)
+    private static BigInteger ToBigInteger(JToken value)
     {
       JValue v = EnsureValue(value);
       if (v == null || !ValidateToken(v, BigIntegerTypes, false))
@@ -1191,12 +1186,7 @@ namespace Newtonsoft.Json.Linq
       return ConvertUtils.ToBigInteger(v.Value);
     }
 
-    /// <summary>
-    /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="Nullable{BigInteger}"/>.
-    /// </summary>
-    /// <param name="value">The value.</param>
-    /// <returns>The result of the conversion.</returns>
-    public static explicit operator BigInteger?(JToken value)
+    private static BigInteger? ToBigIntegerNullable(JToken value)
     {
       JValue v = EnsureValue(value);
       if (v == null || !ValidateToken(v, BigIntegerTypes, true))
@@ -1421,18 +1411,6 @@ namespace Newtonsoft.Json.Linq
       return new JValue(value);
     }
 
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
-    /// <summary>
-    /// Performs an implicit conversion from <see cref="Nullable{BigInteger}"/> to <see cref="Newtonsoft.Json.Linq.JToken"/>.
-    /// </summary>
-    /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
-    /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
-    public static implicit operator JToken(BigInteger? value)
-    {
-      return new JValue(value);
-    }
-#endif
-
     /// <summary>
     /// Performs an implicit conversion from <see cref="Double"/> to <see cref="JToken"/>.
     /// </summary>
@@ -1494,18 +1472,6 @@ namespace Newtonsoft.Json.Linq
     {
       return new JValue(value);
     }
-
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
-    /// <summary>
-    /// Performs an implicit conversion from <see cref="T:System.Numerics.BigInteger"/> to <see cref="Newtonsoft.Json.Linq.JToken"/>.
-    /// </summary>
-    /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
-    /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
-    public static implicit operator JToken(BigInteger value)
-    {
-      return new JValue(value);
-    }
-#endif
 
     /// <summary>
     /// Performs an implicit conversion from <see cref="T:System.Uri"/> to <see cref="Newtonsoft.Json.Linq.JToken"/>.
@@ -1722,9 +1688,9 @@ namespace Newtonsoft.Json.Linq
           return (TimeSpan)this;
 #if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
         case PrimitiveTypeCode.BigIntegerNullable:
-          return (BigInteger?)this;
+          return ToBigIntegerNullable(this);
         case PrimitiveTypeCode.BigInteger:
-          return (BigInteger)this;
+          return ToBigInteger(this);
 #endif
       }
 

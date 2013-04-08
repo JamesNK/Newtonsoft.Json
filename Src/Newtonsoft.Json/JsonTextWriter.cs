@@ -303,6 +303,21 @@ namespace Newtonsoft.Json
     }
 
     #region WriteValue methods
+    public override void WriteValue(object value)
+    {
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)
+      if (value is BigInteger)
+      {
+        InternalWriteValue(JsonToken.Integer);
+        WriteValueInternal(((BigInteger)value).ToString(CultureInfo.InvariantCulture), JsonToken.String);
+      }
+      else
+#endif
+      {
+        base.WriteValue(value);
+      }
+    }
+
     /// <summary>
     /// Writes a null value.
     /// </summary>
@@ -597,18 +612,6 @@ namespace Newtonsoft.Json
         WriteValueInternal(JsonConvert.ToString(value, _quoteChar), JsonToken.String);
       }
     }
-
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
-    /// <summary>
-    /// Writes a <see cref="BigInteger"/> value.
-    /// </summary>
-    /// <param name="value">The <see cref="BigInteger"/> value to write.</param>
-    public override void WriteValue(BigInteger value)
-    {
-      InternalWriteValue(JsonToken.Integer);
-      WriteValueInternal(value.ToString(CultureInfo.InvariantCulture), JsonToken.String);
-    }
-#endif
     #endregion
 
     /// <summary>

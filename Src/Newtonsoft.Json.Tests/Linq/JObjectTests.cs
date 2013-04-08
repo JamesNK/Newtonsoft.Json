@@ -1632,18 +1632,6 @@ Parameter name: arrayIndex",
       });
     }
 
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)
-    [Test]
-    public void NumberTooBigForInt64()
-    {
-      string json = @"{""code"": 307953220000517141511}";
-
-      JObject o = JObject.Parse(json);
-
-      BigInteger b = (BigInteger)o["code"];
-    }
-#endif
-
     [Test]
     public void ParseIncomplete()
     {
