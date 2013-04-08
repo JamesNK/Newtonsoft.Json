@@ -324,7 +324,7 @@ If attributes are not mentioned, default values are used in each case.
         {
           using (StringWriter w = StringUtils.CreateStringWriter(StringUtils.GetLength(text) ?? 16))
           {
-            JavaScriptUtils.WriteEscapedJavaScriptString(w, text, '"', true, JavaScriptUtils.DoubleQuoteCharEscapeFlags, StringEscapeHandling.Default);
+            JavaScriptUtils.WriteEscapedJavaScriptString(w, text, '"', QuoteNameHandling.Quoted, JavaScriptUtils.DoubleQuoteCharEscapeFlags, StringEscapeHandling.Default);
           }
         }
 

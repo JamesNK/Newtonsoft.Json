@@ -195,6 +195,7 @@
     <Compile Include="PreserveReferencesHandling.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReferenceLoopHandling.cs" />
+    <Compile Include="QuoteNameHandling.cs" />
     <Compile Include="Required.cs" />
     <Compile Include="Schema\Extensions.cs" />
     <Compile Include="Schema\JsonSchema.cs" />

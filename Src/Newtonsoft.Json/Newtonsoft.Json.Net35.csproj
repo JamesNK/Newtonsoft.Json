@@ -202,6 +202,7 @@
     <Compile Include="MissingMemberHandling.cs" />
     <Compile Include="NullValueHandling.cs" />
     <Compile Include="ReferenceLoopHandling.cs" />
+    <Compile Include="QuoteNameHandling.cs" />
     <Compile Include="Schema\JsonSchema.cs" />
     <Compile Include="Schema\JsonSchemaBuilder.cs" />
     <Compile Include="Schema\JsonSchemaConstants.cs" />

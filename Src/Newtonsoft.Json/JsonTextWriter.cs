@@ -46,7 +46,7 @@ namespace Newtonsoft.Json
     private char _indentChar;
     private int _indentation;
     private char _quoteChar;
-    private bool _quoteName;
+    private QuoteNameHandling _quoteNameHandling;
     private bool[] _charEscapeFlags;
 
     private Base64Encoder Base64Encoder
@@ -103,10 +103,20 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Gets or sets a value indicating whether object names will be surrounded with quotes.
     /// </summary>
+    [Obsolete("This property is obsolete and has been replaced by QuoteNameHandling property.")]
     public bool QuoteName
     {
-      get { return _quoteName; }
-      set { _quoteName = value; }
+      get { return _quoteNameHandling != QuoteNameHandling.Unquoted; }
+      set { _quoteNameHandling = value ? QuoteNameHandling.Quoted : QuoteNameHandling.Unquoted; }
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether object names will be surrounded with quotes.
+    /// </summary>
+    public QuoteNameHandling QuoteNameHandling
+    {
+      get { return _quoteNameHandling; }
+      set { _quoteNameHandling = value; }
     }
 
     /// <summary>
@@ -120,7 +130,7 @@ namespace Newtonsoft.Json
 
       _writer = textWriter;
       _quoteChar = '"';
-      _quoteName = true;
+      _quoteNameHandling = QuoteNameHandling.Quoted;
       _indentChar = ' ';
       _indentation = 2;
 
@@ -213,7 +223,7 @@ namespace Newtonsoft.Json
     {
       InternalWritePropertyName(name);
 
-      JavaScriptUtils.WriteEscapedJavaScriptString(_writer, name, _quoteChar, _quoteName, _charEscapeFlags, StringEscapeHandling);
+      JavaScriptUtils.WriteEscapedJavaScriptString(_writer, name, _quoteChar, _quoteNameHandling, _charEscapeFlags, StringEscapeHandling);
 
       _writer.Write(':');
     }
@@ -229,16 +239,18 @@ namespace Newtonsoft.Json
 
       if (escape)
       {
-        JavaScriptUtils.WriteEscapedJavaScriptString(_writer, name, _quoteChar, _quoteName, _charEscapeFlags, StringEscapeHandling);
+        JavaScriptUtils.WriteEscapedJavaScriptString(_writer, name, _quoteChar, _quoteNameHandling, _charEscapeFlags, StringEscapeHandling);
       }
       else
       {
-        if (_quoteName)
+        bool quoteName = _quoteNameHandling == QuoteNameHandling.Quoted
+          || _quoteNameHandling == QuoteNameHandling.Auto && !JavaScriptUtils.IsValidIdentifier(name);
+        if (quoteName)
           _writer.Write(_quoteChar);
 
         _writer.Write(name);
 
-        if (_quoteName)
+        if (quoteName)
           _writer.Write(_quoteChar);
       }
 
@@ -343,7 +355,7 @@ namespace Newtonsoft.Json
       if (value == null)
         WriteValueInternal(JsonConvert.Null, JsonToken.Null);
       else
-        JavaScriptUtils.WriteEscapedJavaScriptString(_writer, value, _quoteChar, true, _charEscapeFlags, StringEscapeHandling);
+        JavaScriptUtils.WriteEscapedJavaScriptString(_writer, value, _quoteChar, QuoteNameHandling.Quoted, _charEscapeFlags, StringEscapeHandling);
     }
 
     /// <summary>

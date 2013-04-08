@@ -71,9 +71,11 @@ namespace Newtonsoft.Json.Utilities
 
     private const string EscapedUnicodeText = "!";
 
-    public static void WriteEscapedJavaScriptString(TextWriter writer, string s, char delimiter, bool appendDelimiters, bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling)
+    public static void WriteEscapedJavaScriptString(TextWriter writer, string s, char delimiter, QuoteNameHandling appendDelimitersHandling, bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling)
     {
       // leading delimiter
+      bool appendDelimiters = appendDelimitersHandling == QuoteNameHandling.Quoted
+        || appendDelimitersHandling == QuoteNameHandling.Auto && !IsValidIdentifier(s);
       if (appendDelimiters)
         writer.Write(delimiter);
 
@@ -193,9 +195,19 @@ namespace Newtonsoft.Json.Utilities
     {
       using (StringWriter w = StringUtils.CreateStringWriter(StringUtils.GetLength(value) ?? 16))
       {
-        WriteEscapedJavaScriptString(w, value, delimiter, appendDelimiters, (delimiter == '"') ? DoubleQuoteCharEscapeFlags : SingleQuoteCharEscapeFlags, StringEscapeHandling.Default);
+        WriteEscapedJavaScriptString(w, value, delimiter, appendDelimiters ? QuoteNameHandling.Quoted : QuoteNameHandling.Unquoted, (delimiter == '"') ? DoubleQuoteCharEscapeFlags : SingleQuoteCharEscapeFlags, StringEscapeHandling.Default);
         return w.ToString();
       }
+    }
+
+    public static bool IsValidIdentifierChar (char value)
+    {
+      return (Char.IsLetterOrDigit(value) || value == '_' || value == '$');
+    }
+
+    public static bool IsValidIdentifier (string value)
+    {
+      return value.All(IsValidIdentifierChar);
     }
   }
 }

@@ -825,7 +825,7 @@ namespace Newtonsoft.Json
         ShiftBufferIfNeeded();
         ReadStringIntoBuffer(quoteChar);
       }
-      else if (ValidIdentifierChar(firstChar))
+      else if (JavaScriptUtils.IsValidIdentifierChar(firstChar))
       {
         quoteChar = '\0';
         ShiftBufferIfNeeded();
@@ -852,11 +852,6 @@ namespace Newtonsoft.Json
       return true;
     }
 
-    private bool ValidIdentifierChar(char value)
-    {
-      return (char.IsLetterOrDigit(value) || value == '_' || value == '$');
-    }
-
     private void ParseUnquotedProperty()
     {
       int initialPosition = _charPos;
@@ -880,7 +875,7 @@ namespace Newtonsoft.Json
           default:
             char currentChar = _chars[_charPos];
 
-            if (ValidIdentifierChar(currentChar))
+            if (JavaScriptUtils.IsValidIdentifierChar(currentChar))
             {
               _charPos++;
               break;
