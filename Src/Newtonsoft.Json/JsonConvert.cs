@@ -423,12 +423,7 @@ namespace Newtonsoft.Json
     }
 
 #if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
-    /// <summary>
-    /// Converts the <see cref="BigInteger"/>  to its JSON string representation.
-    /// </summary>
-    /// <param name="value">The value to convert.</param>
-    /// <returns>A JSON string representation of the <see cref="BigInteger"/>.</returns>
-    public static string ToString(BigInteger value)
+    private static string ToStringInternal(BigInteger value)
     {
       return value.ToString(null, CultureInfo.InvariantCulture);
     }
@@ -673,7 +668,7 @@ namespace Newtonsoft.Json
           return ToString((TimeSpan) value);
 #if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
         case PrimitiveTypeCode.BigInteger:
-          return ToString((BigInteger) value);
+          return ToStringInternal((BigInteger)value);
 #endif
       }
 
