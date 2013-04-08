@@ -24,7 +24,7 @@ http://james.newtonking.com/projects/json/help/
 
 Versions:
 
-Json.NET comes in different versions for the various .NET frameworks.
+Json.NET has different libaries for the various .NET Framework versions.
 
 -Net45:
   .NET latest (4.5)
@@ -37,9 +37,6 @@ Json.NET comes in different versions for the various .NET frameworks.
 
 -Net20:
   .NET 2.0
-
--WindowsPhone:
-  Windows Phone 8
 
 -WinRT:
   Windows 8 Store

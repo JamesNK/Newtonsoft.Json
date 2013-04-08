@@ -125,6 +125,8 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual(@"{""NewMember"":""NewMember!"",""virtualMember"":""VirtualMember!"",""nonVirtualMember"":""NonVirtualMember!""}", result);
     }
 
+    // ignore hiding members compiler warning
+#pragma warning disable 108,114
     [DataContract]
     public class BaseWithContract
     {
@@ -189,6 +191,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       [DataMember(Name = "VirtualWithDataMemberSub")]
       public virtual string VirtualWithDataMember { get; set; }
     }
+#pragma warning restore 108,114
 
     [Test]
     public void SubWithoutContractNewPropertiesTest()

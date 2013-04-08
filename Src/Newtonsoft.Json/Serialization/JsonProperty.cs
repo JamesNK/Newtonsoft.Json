@@ -41,6 +41,9 @@ namespace Newtonsoft.Json.Serialization
     internal bool _hasExplicitDefaultValue;
     internal object _defaultValue;
 
+    private string _propertyName;
+    private bool _skipPropertyNameEscape;
+
     // use to cache contract during deserialization
     internal JsonContract PropertyContract { get; set; }
     
@@ -48,7 +51,35 @@ namespace Newtonsoft.Json.Serialization
     /// Gets or sets the name of the property.
     /// </summary>
     /// <value>The name of the property.</value>
-    public string PropertyName { get; set; }
+    public string PropertyName
+    {
+      get { return _propertyName; }
+      set
+      {
+        _propertyName = value;
+        CalculateSkipPropertyNameEscape();
+      }
+    }
+
+    private void CalculateSkipPropertyNameEscape()
+    {
+      if (_propertyName == null)
+      {
+        _skipPropertyNameEscape = false;
+      }
+      else
+      {
+        _skipPropertyNameEscape = true;
+        foreach (char c in _propertyName)
+        {
+          if (!char.IsLetterOrDigit(c) && c != '_' && c != '@')
+          {
+            _skipPropertyNameEscape = false;
+            break;
+          }
+        }
+      }
+    }
 
     /// <summary>
     /// Gets or sets the type that declared this property.
@@ -242,5 +273,13 @@ namespace Newtonsoft.Json.Serialization
     /// </summary>
     /// <value>The collection's items reference loop handling.</value>
     public ReferenceLoopHandling? ItemReferenceLoopHandling { get; set; }
+
+    internal void WritePropertyName(JsonWriter writer)
+    {
+      if (_skipPropertyNameEscape)
+        writer.WritePropertyName(PropertyName, false);
+      else
+        writer.WritePropertyName(PropertyName);
+    }
   }
 }

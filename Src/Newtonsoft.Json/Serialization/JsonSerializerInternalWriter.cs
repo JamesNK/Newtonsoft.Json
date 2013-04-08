@@ -93,7 +93,7 @@ namespace Newtonsoft.Json.Serialization
         {
           writer.WriteStartObject();
           WriteTypeProperty(writer, contract.CreatedType);
-          writer.WritePropertyName(JsonTypeReflector.ValuePropertyName);
+          writer.WritePropertyName(JsonTypeReflector.ValuePropertyName, false);
 
           JsonWriter.WriteValue(writer, contract.TypeCode, value);
 
@@ -271,7 +271,7 @@ namespace Newtonsoft.Json.Serialization
         TraceWriter.Trace(TraceLevel.Info, JsonPosition.FormatMessage(null, writer.Path, "Writing object reference to Id '{0}' for {1}.".FormatWith(CultureInfo.InvariantCulture, reference, value.GetType())), null);
 
       writer.WriteStartObject();
-      writer.WritePropertyName(JsonTypeReflector.RefPropertyName);
+      writer.WritePropertyName(JsonTypeReflector.RefPropertyName, false);
       writer.WriteValue(reference);
       writer.WriteEndObject();
     }
@@ -380,7 +380,7 @@ namespace Newtonsoft.Json.Serialization
           if (!CalculatePropertyValues(writer, value, contract, member, property, out memberContract, out memberValue))
             continue;
 
-          writer.WritePropertyName(property.PropertyName);
+          property.WritePropertyName(writer);
           SerializeValue(writer, memberValue, memberContract, property, contract, member);
         }
         catch (Exception ex)
@@ -413,7 +413,7 @@ namespace Newtonsoft.Json.Serialization
         {
           if (ShouldWriteReference(memberValue, property, memberContract, contract, member))
           {
-            writer.WritePropertyName(property.PropertyName);
+            property.WritePropertyName(writer);
             WriteReference(writer, memberValue);
             return false;
           }
@@ -460,7 +460,7 @@ namespace Newtonsoft.Json.Serialization
       if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
         TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, writer.Path, "Writing object reference Id '{0}' for {1}.".FormatWith(CultureInfo.InvariantCulture, reference, type)), null);
 
-      writer.WritePropertyName(JsonTypeReflector.IdPropertyName);
+      writer.WritePropertyName(JsonTypeReflector.IdPropertyName, false);
       writer.WriteValue(reference);
     }
 
@@ -471,7 +471,7 @@ namespace Newtonsoft.Json.Serialization
       if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
         TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, writer.Path, "Writing type name '{0}' for {1}.".FormatWith(CultureInfo.InvariantCulture, typeName, type)), null);
 
-      writer.WritePropertyName(JsonTypeReflector.TypePropertyName);
+      writer.WritePropertyName(JsonTypeReflector.TypePropertyName, false);
       writer.WriteValue(typeName);
     }
 
@@ -662,7 +662,7 @@ namespace Newtonsoft.Json.Serialization
         {
           WriteTypeProperty(writer, values.GetType());
         }
-        writer.WritePropertyName(JsonTypeReflector.ArrayValuesPropertyName);
+        writer.WritePropertyName(JsonTypeReflector.ArrayValuesPropertyName, false);
       }
 
       if (contract.ItemContract == null)
@@ -732,7 +732,7 @@ To fix this error either change the environment to be fully trusted, change the 
             if (!CalculatePropertyValues(writer, value, contract, member, property, out memberContract, out memberValue))
               continue;
 
-            writer.WritePropertyName(property.PropertyName);
+            property.WritePropertyName(writer);
             SerializeValue(writer, memberValue, memberContract, property, contract, member);
           }
           catch (Exception ex)
