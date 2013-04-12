@@ -90,39 +90,73 @@ namespace Newtonsoft.Json.Tests.Serialization
   [TestFixture]
   public class JsonSerializerTest : TestFixtureBase
   {
-    //[DataContract]
-    //public class BaseDataContract1
-    //{
-    //  [DataMember(Name = "virtualMember")]
-    //  public virtual string VirtualMember { get; set; }
+    public class GenericItem<T>
+    {
+      public T Value { get; set; }
+    }
 
-    //  [DataMember(Name = "nonVirtualMember")]
-    //  public string NonVirtualMember { get; set; }
+    public class NonGenericItem : GenericItem<string>
+    {
 
-    //  public virtual object NewMember { get; set; }
-    //}
+    }
 
-    //public class ChildDataContract1 : BaseDataContract1
-    //{
-    //  [DataMember(Name = "NewMember")]
-    //  public virtual new string NewMember { get; set; }
-    //  public override string VirtualMember { get; set; }
-    //  public string AddedMember { get; set; }
-    //}
+    public class GenericClass<T, TValue> : IEnumerable<T>
+      where T : GenericItem<TValue>, new()
+    {
+      public IList<T> Items { get; set; }
 
-    //[Test]
-    //public void ChildDataContractTest1()
-    //{
-    //  var cc = new ChildDataContract1
-    //  {
-    //    VirtualMember = "VirtualMember!",
-    //    NonVirtualMember = "NonVirtualMember!",
-    //    NewMember = "NewMember!"
-    //  };
+      public GenericClass()
+      {
+        Items = new List<T>();
+      }
 
-    //  string result = JsonConvert.SerializeObject(cc);
-    //  Assert.AreEqual(@"{""NewMember"":""NewMember!"",""virtualMember"":""VirtualMember!"",""nonVirtualMember"":""NonVirtualMember!""}", result);
-    //}
+      public IEnumerator<T> GetEnumerator()
+      {
+        if (Items != null)
+        {
+          foreach (T item in Items)
+          {
+            yield return item;
+          }
+        }
+        else
+          yield break;
+      }
+
+      IEnumerator IEnumerable.GetEnumerator()
+      {
+        return GetEnumerator();
+      }
+    }
+
+    public class NonGenericClass : GenericClass<GenericItem<string>, string>
+    {
+
+    }
+
+    [Test]
+    public void GenericCollectionInheritance()
+    {
+      string json;
+
+      GenericClass<GenericItem<string>, string> foo1 = new GenericClass<GenericItem<string>, string>();
+      foo1.Items.Add(new GenericItem<string> {Value = "Hello"});
+
+      json = JsonConvert.SerializeObject(new {selectList = foo1});
+      Assert.AreEqual(@"{""selectList"":[{""Value"":""Hello""}]}", json);
+
+      GenericClass<NonGenericItem, string> foo2 = new GenericClass<NonGenericItem, string>();
+      foo2.Items.Add(new NonGenericItem {Value = "Hello"});
+
+      json = JsonConvert.SerializeObject(new { selectList = foo2 });
+      Assert.AreEqual(@"{""selectList"":[{""Value"":""Hello""}]}", json);
+
+      NonGenericClass foo3 = new NonGenericClass();
+      foo3.Items.Add(new NonGenericItem {Value = "Hello"});
+
+      json = JsonConvert.SerializeObject(new { selectList = foo3 });
+      Assert.AreEqual(@"{""selectList"":[{""Value"":""Hello""}]}", json);
+    }
 
     [Test]
     public void PersonTypedObjectDeserialization()

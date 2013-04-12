@@ -143,7 +143,7 @@ namespace Newtonsoft.Json.Serialization
 
         ParametrizedConstructor = CollectionUtils.ResolveEnumableCollectionConstructor(underlyingType, CollectionItemType);
 
-        if (underlyingType.GetGenericTypeDefinition() == typeof (IEnumerable<>))
+        if (underlyingType.IsGenericType() && underlyingType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
         {
           _genericCollectionDefinitionType = tempCollectionType;
 
