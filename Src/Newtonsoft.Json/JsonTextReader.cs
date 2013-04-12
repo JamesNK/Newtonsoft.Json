@@ -26,7 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
 using System.Numerics;
 #endif
 using System.Text;
@@ -81,10 +81,12 @@ namespace Newtonsoft.Json
       _chars = new char[4097];
     }
 
+#if DEBUG
     internal void SetCharBuffer(char[] chars)
     {
       _chars = chars;
     }
+#endif
 
     private StringBuffer GetBuffer()
     {
@@ -1257,7 +1259,7 @@ namespace Newtonsoft.Json
             }
             else
             {
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
               numberValue = BigInteger.Parse(number, CultureInfo.InvariantCulture);
 #else
               // todo - validate number was a valid integer to make sure overflow was the reason for failure
@@ -1503,7 +1505,7 @@ namespace Newtonsoft.Json
       base.Close();
 
       if (CloseInput && _reader != null)
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
         _reader.Close();
 #else
         _reader.Dispose();

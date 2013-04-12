@@ -81,7 +81,7 @@ namespace Newtonsoft.Json.Tests.Converters
       serializer.Serialize(writer, new RegexTestClass { Regex = regex });
 
       string expected = "13-00-00-00-0B-52-65-67-65-78-00-61-62-63-00-69-75-00-00";
-      string bson = MiscellaneousUtils.BytesToHex(ms.ToArray());
+      string bson = BytesToHex(ms.ToArray());
 
       Assert.AreEqual(expected, bson);
     }
@@ -102,7 +102,7 @@ namespace Newtonsoft.Json.Tests.Converters
     [Test]
     public void DeserializeFromBson()
     {
-      MemoryStream ms = new MemoryStream(MiscellaneousUtils.HexToBytes("13-00-00-00-0B-52-65-67-65-78-00-61-62-63-00-69-75-00-00"));
+      MemoryStream ms = new MemoryStream(HexToBytes("13-00-00-00-0B-52-65-67-65-78-00-61-62-63-00-69-75-00-00"));
       BsonReader reader = new BsonReader(ms);
       JsonSerializer serializer = new JsonSerializer();
       serializer.Converters.Add(new RegexConverter());
@@ -150,7 +150,7 @@ namespace Newtonsoft.Json.Tests.Converters
       serializer.Serialize(writer, new RegexTestClass { Regex = regex });
 
       string expected = "14-00-00-00-0B-52-65-67-65-78-00-2F-00-69-6D-73-75-78-00-00";
-      string bson = MiscellaneousUtils.BytesToHex(ms.ToArray());
+      string bson = BytesToHex(ms.ToArray());
 
       Assert.AreEqual(expected, bson);
 

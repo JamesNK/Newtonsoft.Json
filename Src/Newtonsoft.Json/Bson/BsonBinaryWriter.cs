@@ -54,7 +54,7 @@ namespace Newtonsoft.Json.Bson
 
     public void Close()
     {
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
       _writer.Close();
 #else
       _writer.Dispose();
@@ -161,11 +161,11 @@ namespace Newtonsoft.Json.Bson
           break;
         case BsonType.Binary:
           {
-            BsonValue value = (BsonValue)t;
+            BsonBinary value = (BsonBinary)t;
 
             byte[] data = (byte[])value.Value;
             _writer.Write(data.Length);
-            _writer.Write((byte)BsonBinaryType.Binary);
+            _writer.Write((byte)value.BinaryType);
             _writer.Write(data);
           }
           break;
@@ -298,7 +298,7 @@ namespace Newtonsoft.Json.Bson
           return 8;
         case BsonType.Binary:
           {
-            BsonValue value = (BsonValue)t;
+            BsonBinary value = (BsonBinary)t;
 
             byte[] data = (byte[])value.Value;
             value.CalculatedSize = 4 + 1 + data.Length;

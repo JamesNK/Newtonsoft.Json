@@ -27,11 +27,11 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
-#if !(NET35 || NET20)
+#if !(NET35 || NET20 || PORTABLE40)
 using System.Dynamic;
 using System.Linq.Expressions;
 #endif
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
 using System.Numerics;
 #endif
 
@@ -194,7 +194,7 @@ namespace Newtonsoft.Json.Linq
       get { return false; }
     }
 
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
     private static int CompareBigInteger(BigInteger i1, object i2)
     {
       int result = i1.CompareTo(ConvertUtils.ToBigInteger(i2));
@@ -231,7 +231,7 @@ namespace Newtonsoft.Json.Linq
       switch (valueType)
       {
         case JTokenType.Integer:
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
           if (objA is BigInteger)
             return CompareBigInteger((BigInteger)objA, objB);
           if (objB is BigInteger)
@@ -244,7 +244,7 @@ namespace Newtonsoft.Json.Linq
           else
             return Convert.ToInt64(objA, CultureInfo.InvariantCulture).CompareTo(Convert.ToInt64(objB, CultureInfo.InvariantCulture));
         case JTokenType.Float:
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
           if (objA is BigInteger)
             return CompareBigInteger((BigInteger)objA, objB);
           if (objB is BigInteger)
@@ -347,7 +347,7 @@ namespace Newtonsoft.Json.Linq
       return d1.CompareTo(d2);
     }
 
-#if !(NET35 || NET20)
+#if !(NET35 || NET20 || PORTABLE40)
     private static bool Operation(ExpressionType operation, object objA, object objB, out object result)
     {
       if (objA is string || objB is string)
@@ -359,7 +359,7 @@ namespace Newtonsoft.Json.Linq
         }
       }
 
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
       if (objA is BigInteger || objB is BigInteger)
       {
         if (objA == null || objB == null)
@@ -524,7 +524,7 @@ namespace Newtonsoft.Json.Linq
     {
       if (value == null)
         return JTokenType.Null;
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
       else if (value == DBNull.Value)
         return JTokenType.Null;
 #endif
@@ -535,7 +535,7 @@ namespace Newtonsoft.Json.Linq
         return JTokenType.Integer;
       else if (value is Enum)
         return JTokenType.Integer;
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
       else if (value is BigInteger)
         return JTokenType.Integer;
 #endif
@@ -637,12 +637,12 @@ namespace Newtonsoft.Json.Linq
           writer.WriteUndefined();
           return;
         case JTokenType.Integer:
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
           if (_value is BigInteger)
             writer.WriteValue((BigInteger)_value);
           else
 #endif
-            writer.WriteValue(Convert.ToInt64(_value, CultureInfo.InvariantCulture));
+          writer.WriteValue(Convert.ToInt64(_value, CultureInfo.InvariantCulture));
           return;
         case JTokenType.Float:
           if (_value is decimal)
@@ -802,7 +802,7 @@ namespace Newtonsoft.Json.Linq
         return _value.ToString();
     }
 
-#if !(NET35 || NET20)
+#if !(NET35 || NET20 || PORTABLE40)
     /// <summary>
     /// Returns the <see cref="T:System.Dynamic.DynamicMetaObject"/> responsible for binding operations performed on this object.
     /// </summary>
@@ -929,7 +929,7 @@ namespace Newtonsoft.Json.Linq
       if (_value is DateTimeOffset)
         return TypeCode.DateTime;
 #endif
-#if !(NET20 || NET35 || SILVERLIGHT)
+#if !(NET20 || NET35 || PORTABLE40 || SILVERLIGHT)
       if (_value is BigInteger)
         return TypeCode.Object;
 #endif

@@ -25,7 +25,7 @@
 
 using System;
 using System.Collections.Generic;
-#if !(PORTABLE || NET35 || NET20 || WINDOWS_PHONE || SILVERLIGHT)
+#if !(PORTABLE || PORTABLE40 || NET35 || NET20 || WINDOWS_PHONE || SILVERLIGHT)
 using System.Numerics;
 #endif
 using System.Reflection;
@@ -43,7 +43,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Utilities
 {
-#if NETFX_CORE || PORTABLE
+#if (NETFX_CORE || PORTABLE || PORTABLE40)
   internal enum MemberTypes
   {
     Property,
@@ -52,7 +52,9 @@ namespace Newtonsoft.Json.Utilities
     Method,
     Other
   }
+#endif
 
+#if NETFX_CORE || PORTABLE
   [Flags]
   internal enum BindingFlags
   {
@@ -85,7 +87,7 @@ namespace Newtonsoft.Json.Utilities
 
     static ReflectionUtils()
     {
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
       EmptyTypes = Type.EmptyTypes;
 #else
       EmptyTypes = new Type[0];
@@ -107,14 +109,34 @@ namespace Newtonsoft.Json.Utilities
       return false;
     }
 
+    public static MethodInfo GetBaseDefinition(this PropertyInfo propertyInfo)
+    {
+      ValidationUtils.ArgumentNotNull(propertyInfo, "propertyInfo");
+
+      MethodInfo m = propertyInfo.GetGetMethod();
+      if (m != null)
+        return m.GetBaseDefinition();
+
+      m = propertyInfo.GetSetMethod();
+      if (m != null)
+        return m.GetBaseDefinition();
+
+      return null;
+    }
+
+    public static bool IsPublic(PropertyInfo property)
+    {
+      if (property.GetGetMethod() != null && property.GetGetMethod().IsPublic)
+        return true;
+      if (property.GetSetMethod() != null && property.GetSetMethod().IsPublic)
+        return true;
+
+      return false;
+    }
+
     public static Type GetObjectType(object v)
     {
       return (v != null) ? v.GetType() : null;
-    }
-
-    public static string GetTypeName(Type t, FormatterAssemblyStyle assemblyFormat)
-    {
-      return GetTypeName(t, assemblyFormat, null);
     }
 
     public static string GetTypeName(Type t, FormatterAssemblyStyle assemblyFormat, SerializationBinder binder)
@@ -187,24 +209,6 @@ namespace Newtonsoft.Json.Utilities
       }
 
       return builder.ToString();
-    }
-
-    public static bool IsInstantiatableType(Type t)
-    {
-      ValidationUtils.ArgumentNotNull(t, "t");
-
-      if (t.IsAbstract() || t.IsInterface() || t.IsArray || t.IsGenericTypeDefinition() || t == typeof(void))
-        return false;
-
-      if (!HasDefaultConstructor(t))
-        return false;
-
-      return true;
-    }
-
-    public static bool HasDefaultConstructor(Type t)
-    {
-      return HasDefaultConstructor(t, false);
     }
 
     public static bool HasDefaultConstructor(Type t, bool nonPublic)
@@ -406,24 +410,6 @@ namespace Newtonsoft.Json.Utilities
       {
         throw new Exception("Type {0} is not a dictionary.".FormatWith(CultureInfo.InvariantCulture, dictionaryType));
       }
-    }
-
-    public static Type GetDictionaryValueType(Type dictionaryType)
-    {
-      Type keyType;
-      Type valueType;
-      GetDictionaryKeyValueTypes(dictionaryType, out keyType, out valueType);
-
-      return valueType;
-    }
-
-    public static Type GetDictionaryKeyType(Type dictionaryType)
-    {
-      Type keyType;
-      Type valueType;
-      GetDictionaryKeyValueTypes(dictionaryType, out keyType, out valueType);
-
-      return keyType;
     }
 
     /// <summary>
@@ -690,13 +676,18 @@ namespace Newtonsoft.Json.Utilities
       if (provider is MemberInfo)
         return (T[])Attribute.GetCustomAttributes((MemberInfo)provider, typeof(T), inherit);
 
+#if !PORTABLE40
       if (provider is Module)
         return (T[])Attribute.GetCustomAttributes((Module)provider, typeof(T), inherit);
+#endif
 
       if (provider is ParameterInfo)
         return (T[])Attribute.GetCustomAttributes((ParameterInfo)provider, typeof(T), inherit);
 
+#if !PORTABLE40
       return (T[])((ICustomAttributeProvider)attributeProvider).GetCustomAttributes(typeof(T), inherit);
+#endif
+      throw new Exception("Cannot get attributes from '{0}'.".FormatWith(CultureInfo.InvariantCulture, provider));
     }
 #else
     public static T[] GetAttributes<T>(object provider, bool inherit) where T : Attribute
@@ -719,43 +710,6 @@ namespace Newtonsoft.Json.Utilities
       throw new Exception("Cannot get attributes from '{0}'.".FormatWith(CultureInfo.InvariantCulture, provider));
     }
 #endif
-
-    public static Type MakeGenericType(Type genericTypeDefinition, params Type[] innerTypes)
-    {
-      ValidationUtils.ArgumentNotNull(genericTypeDefinition, "genericTypeDefinition");
-      ValidationUtils.ArgumentNotNullOrEmpty<Type>(innerTypes, "innerTypes");
-      ValidationUtils.ArgumentConditionTrue(genericTypeDefinition.IsGenericTypeDefinition(), "genericTypeDefinition", "Type {0} is not a generic type definition.".FormatWith(CultureInfo.InvariantCulture, genericTypeDefinition));
-
-      return genericTypeDefinition.MakeGenericType(innerTypes);
-    }
-
-    public static object CreateGeneric(Type genericTypeDefinition, Type innerType, params object[] args)
-    {
-      return CreateGeneric(genericTypeDefinition, new[] { innerType }, args);
-    }
-
-    public static object CreateGeneric(Type genericTypeDefinition, IList<Type> innerTypes, params object[] args)
-    {
-      return CreateGeneric(genericTypeDefinition, innerTypes, (t, a) => CreateInstance(t, a.ToArray()), args);
-    }
-
-    public static object CreateGeneric(Type genericTypeDefinition, IList<Type> innerTypes, Func<Type, IList<object>, object> instanceCreator, params object[] args)
-    {
-      ValidationUtils.ArgumentNotNull(genericTypeDefinition, "genericTypeDefinition");
-      ValidationUtils.ArgumentNotNullOrEmpty(innerTypes, "innerTypes");
-      ValidationUtils.ArgumentNotNull(instanceCreator, "createInstance");
-
-      Type specificType = MakeGenericType(genericTypeDefinition, innerTypes.ToArray());
-
-      return instanceCreator(specificType, args);
-    }
-
-    public static object CreateInstance(Type type, params object[] args)
-    {
-      ValidationUtils.ArgumentNotNull(type, "type");
-
-      return Activator.CreateInstance(type, args);
-    }
 
     public static void SplitFullyQualifiedTypeName(string fullyQualifiedTypeName, out string typeName, out string assemblyName)
     {
@@ -883,30 +837,51 @@ namespace Newtonsoft.Json.Utilities
     {
       // fix weirdness with private PropertyInfos only being returned for the current Type
       // find base type properties and add them to result
-      if ((bindingAttr & BindingFlags.NonPublic) != 0)
+
+      // also find base properties that have been hidden by subtype properties with the same name
+
+      while ((targetType = targetType.BaseType()) != null)
       {
-        // modify flags to not search for public fields
-        BindingFlags nonPublicBindingAttr = bindingAttr.RemoveFlag(BindingFlags.Public);
-
-        while ((targetType = targetType.BaseType()) != null)
+        foreach (PropertyInfo propertyInfo in targetType.GetProperties(bindingAttr))
         {
-          foreach (PropertyInfo propertyInfo in targetType.GetProperties(nonPublicBindingAttr))
-          {
-            PropertyInfo nonPublicProperty = propertyInfo;
+          PropertyInfo subTypeProperty = propertyInfo;
 
+          if (!IsPublic(subTypeProperty))
+          {
             // have to test on name rather than reference because instances are different
             // depending on the type that GetProperties was called on
-            int index = initialProperties.IndexOf(p => p.Name == nonPublicProperty.Name);
+            int index = initialProperties.IndexOf(p => p.Name == subTypeProperty.Name);
             if (index == -1)
             {
-              initialProperties.Add(nonPublicProperty);
+              initialProperties.Add(subTypeProperty);
             }
             else
             {
               // replace nonpublic properties for a child, but gotten from
               // the parent with the one from the child
               // the property gotten from the child will have access to private getter/setter
-              initialProperties[index] = nonPublicProperty;
+              initialProperties[index] = subTypeProperty;
+            }
+          }
+          else
+          {
+            if (!subTypeProperty.IsVirtual())
+            {
+              int index = initialProperties.IndexOf(p => p.Name == subTypeProperty.Name
+                && p.DeclaringType == subTypeProperty.DeclaringType);
+
+              if (index == -1)
+                initialProperties.Add(subTypeProperty);
+            }
+            else
+            {
+              int index = initialProperties.IndexOf(p => p.Name == subTypeProperty.Name
+                && p.IsVirtual()
+                && p.GetBaseDefinition() != null
+                && p.GetBaseDefinition().DeclaringType.IsAssignableFrom(subTypeProperty.DeclaringType));
+
+              if (index == -1)
+                initialProperties.Add(subTypeProperty);
             }
           }
         }
@@ -954,7 +929,7 @@ namespace Newtonsoft.Json.Utilities
           return 0m;
         case PrimitiveTypeCode.DateTime:
           return new DateTime();
-#if !(PORTABLE || NET35 || NET20 || WINDOWS_PHONE || SILVERLIGHT)
+#if !(PORTABLE || PORTABLE40 || NET35 || NET20 || WINDOWS_PHONE || SILVERLIGHT)
         case PrimitiveTypeCode.BigInteger:
           return new BigInteger();
 #endif

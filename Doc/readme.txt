@@ -24,31 +24,28 @@ http://james.newtonking.com/projects/json/help/
 
 Versions:
 
-Json.NET comes in different versions for the various .NET frameworks.
+Json.NET has different libaries for the various .NET Framework versions.
 
 -Net45:
-  .NET latest
+  .NET latest (4.5)
 
 -Net40:
-  .NET 4.0, Mono
+  .NET 4.0
 
 -Net35:
-  .NET 3.5 SP1
+  .NET 3.5
 
 -Net20:
   .NET 2.0
 
--Silverlight:
-  Silverlight 5
-
--WindowsPhone:
-  Windows Phone 8
-
--WinRT
+-WinRT:
   Windows 8 Store
 
--Portable
-  Portable Class Library (.NET 4.5, SL5, WP8, Win8 Store)
+-Portable45:
+  .NET 4.5, Windows Phone 8, Windows 8 Store
+
+-Portable40:
+  .NET 4.0, Windows Phone 7, Windows 8 Store, Silverlight 4
 
 
 Notes:
@@ -56,35 +53,4 @@ Notes:
 Microsoft stopped support for the Compact Framework in Visual Studio 2010.
 For a Compact Framework 3.5 build download Json.NET 3.5.
 
-For a Silverlight 3 build download Json.NET 3.5.
-
-For a Silverlight 4 or Windows Phone 7 build download Json.NET 4.5.
-
-
-Instructions:
-
- 1. Extract Newtonsoft.Json.dll and Newtonsoft.Json.xml from the archive's /bin
-    directory into your own applications.
- 2. Add a reference to Newtonsoft.Json.dll within Visual Studio.NET to your project.
-
-
-License:
-
-Copyright (c) 2007 James Newton-King
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this
-software and associated documentation files (the "Software"), to deal in the Software
-without restriction, including without limitation the rights to use, copy, modify,
-merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to the following
-conditions:
-
-The above copyright notice and this permission notice shall be included in all copies
-or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
-CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
-OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+For a Silverlight 3.0 build download Json.NET 3.5.

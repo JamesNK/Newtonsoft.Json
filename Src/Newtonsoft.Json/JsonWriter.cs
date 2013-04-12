@@ -26,7 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
 using System.Numerics;
 #endif
 using Newtonsoft.Json.Utilities;
@@ -1231,29 +1231,6 @@ namespace Newtonsoft.Json
         InternalWriteValue(JsonToken.String);
     }
 
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
-    /// <summary>
-    /// Writes a <see cref="BigInteger"/> value.
-    /// </summary>
-    /// <param name="value">The <see cref="BigInteger"/> value to write.</param>
-    public virtual void WriteValue(BigInteger value)
-    {
-      InternalWriteValue(JsonToken.Integer);
-    }
-
-    /// <summary>
-    /// Writes a <see cref="Nullable{BigInteger}"/> value.
-    /// </summary>
-    /// <param name="value">The <see cref="Nullable{BigInteger}"/> value to write.</param>
-    public virtual void WriteValue(BigInteger? value)
-    {
-      if (value == null)
-        WriteNull();
-      else
-        WriteValue(value.Value);
-    }
-#endif
-
     /// <summary>
     /// Writes a <see cref="Object"/> value.
     /// An error will raised if the value cannot be written as a single JSON token.
@@ -1262,9 +1239,20 @@ namespace Newtonsoft.Json
     public virtual void WriteValue(object value)
     {
       if (value == null)
+      {
         WriteNull();
+      }
       else
+      {
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)
+        // this is here because adding a WriteValue(BigInteger) to JsonWriter will
+        // mean the user has to add a reference to System.Numerics.dll
+        if (value is BigInteger)
+          throw CreateUnsupportedTypeException(this, value);
+#endif
+
         WriteValue(this, ConvertUtils.GetTypeCode(value), value);
+      }
     }
     #endregion
 
@@ -1419,11 +1407,13 @@ namespace Newtonsoft.Json
         case PrimitiveTypeCode.TimeSpanNullable:
           writer.WriteValue((value == null) ? (TimeSpan?)null : (TimeSpan)value);
           break;
-#if !(PORTABLE || NET35 || NET20 || WINDOWS_PHONE || SILVERLIGHT)
+#if !(PORTABLE || PORTABLE40 || NET35 || NET20 || WINDOWS_PHONE || SILVERLIGHT)
         case PrimitiveTypeCode.BigInteger:
+          // this will call to WriteValue(object)
           writer.WriteValue((BigInteger)value);
           break;
         case PrimitiveTypeCode.BigIntegerNullable:
+          // this will call to WriteValue(object)
           writer.WriteValue((value == null) ? (BigInteger?)null : (BigInteger)value);
           break;
 #endif
@@ -1456,10 +1446,15 @@ namespace Newtonsoft.Json
           else
 #endif
           {
-            throw JsonWriterException.Create(writer, "Unsupported type: {0}. Use the JsonSerializer class to get the object's JSON representation.".FormatWith(CultureInfo.InvariantCulture, value.GetType()), null);
+            throw CreateUnsupportedTypeException(writer, value);
           }
           break;
       }
+    }
+
+    private static JsonWriterException CreateUnsupportedTypeException(JsonWriter writer, object value)
+    {
+      return JsonWriterException.Create(writer, "Unsupported type: {0}. Use the JsonSerializer class to get the object's JSON representation.".FormatWith(CultureInfo.InvariantCulture, value.GetType()), null);
     }
   }
 }

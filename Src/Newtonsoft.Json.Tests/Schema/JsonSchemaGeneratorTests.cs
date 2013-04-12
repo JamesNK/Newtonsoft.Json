@@ -90,7 +90,7 @@ namespace Newtonsoft.Json.Tests.Schema
       Assert.IsTrue(o.IsValid(schema));
     }
 
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
     [Test]
     public void Generate_DefaultValueAttributeTestClass()
     {
@@ -310,7 +310,7 @@ namespace Newtonsoft.Json.Tests.Schema
       Assert.IsTrue(v.IsValid(schema));
     }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
     [Test]
     public void GenerateSchemaForISerializable()
     {
@@ -325,7 +325,7 @@ namespace Newtonsoft.Json.Tests.Schema
     }
 #endif
 
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
     [Test]
     public void GenerateSchemaForDBNull()
     {
@@ -357,7 +357,7 @@ namespace Newtonsoft.Json.Tests.Schema
         IList<JsonProperty> properties = base.CreateProperties(type, memberSerialization);
 
         JsonPropertyCollection c = new JsonPropertyCollection(type);
-        CollectionUtils.AddRange(c, (IEnumerable)properties.Where(m => m.PropertyName != "Root"));
+        c.AddRange(properties.Where(m => m.PropertyName != "Root"));
 
         return c;
       }
@@ -473,9 +473,9 @@ namespace Newtonsoft.Json.Tests.Schema
       JsonSchemaGenerator generator = new JsonSchemaGenerator();
       generator.UndefinedSchemaIdHandling = UndefinedSchemaIdHandling.UseTypeName;
       generator.ContractResolver = new CamelCasePropertyNamesContractResolver()
-        {
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
-          IgnoreSerializableAttribute = true
+      {
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
+        IgnoreSerializableAttribute = true
 #endif
         };
 
@@ -519,7 +519,7 @@ namespace Newtonsoft.Json.Tests.Schema
 }", json);
     }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
     [Test]
     public void GenerateSchemaSerializable()
     {

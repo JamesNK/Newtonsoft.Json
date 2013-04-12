@@ -31,13 +31,6 @@ namespace Newtonsoft.Json.Utilities
 {
   internal static class DateTimeUtils
   {
-    public static string GetUtcOffsetText(this DateTime d)
-    {
-      TimeSpan utcOffset = d.GetUtcOffset();
-
-      return utcOffset.Hours.ToString("+00;-00", CultureInfo.InvariantCulture) + ":" + utcOffset.Minutes.ToString("00;00", CultureInfo.InvariantCulture);
-    }
-
     public static TimeSpan GetUtcOffset(this DateTime d)
     {
 #if NET20
@@ -47,7 +40,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
     }
 
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
     public static XmlDateTimeSerializationMode ToSerializationMode(DateTimeKind kind)
     {
       switch (kind)

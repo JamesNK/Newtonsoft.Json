@@ -173,7 +173,7 @@ namespace Newtonsoft.Json.Linq
             if (a.Count <= index)
             {
               if (errorWhenNoMatch)
-                throw new IndexOutOfRangeException("Index {0} outside the bounds of JArray.".FormatWith(CultureInfo.InvariantCulture, index));
+                throw new JsonException("Index {0} outside the bounds of JArray.".FormatWith(CultureInfo.InvariantCulture, index));
               
               return null;
             }
@@ -185,7 +185,7 @@ namespace Newtonsoft.Json.Linq
             if (c.Count <= index)
             {
               if (errorWhenNoMatch)
-                throw new IndexOutOfRangeException("Index {0} outside the bounds of JConstructor.".FormatWith(CultureInfo.InvariantCulture, index));
+                throw new JsonException("Index {0} outside the bounds of JConstructor.".FormatWith(CultureInfo.InvariantCulture, index));
 
               return null;
             }

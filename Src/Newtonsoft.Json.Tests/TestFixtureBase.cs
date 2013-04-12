@@ -30,6 +30,8 @@ using System.IO;
 #if NET20
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Runtime.Serialization.Json;
 #endif
 using System.Text;
 using System.Threading;
@@ -53,6 +55,18 @@ namespace Newtonsoft.Json.Tests
   [TestFixture]
   public abstract class TestFixtureBase
   {
+#if !NET20
+    protected string GetDataContractJsonSerializeResult(object o)
+    {
+      MemoryStream ms = new MemoryStream();
+      DataContractJsonSerializer s = new DataContractJsonSerializer(o.GetType());
+      s.WriteObject(ms, o);
+
+      var data = ms.ToArray();
+      return Encoding.UTF8.GetString(data, 0, data.Length);
+    }
+#endif
+
     protected string GetOffset(DateTime d, DateFormatHandling dateFormatHandling)
     {
       StringWriter sw = new StringWriter();
@@ -60,6 +74,48 @@ namespace Newtonsoft.Json.Tests
       sw.Flush();
 
       return sw.ToString();
+    }
+
+    protected string BytesToHex(byte[] bytes)
+    {
+      return BytesToHex(bytes, false);
+    }
+
+    protected string BytesToHex(byte[] bytes, bool removeDashes)
+    {
+      string hex = BitConverter.ToString(bytes);
+      if (removeDashes)
+        hex = hex.Replace("-", "");
+
+      return hex;
+    }
+
+    protected byte[] HexToBytes(string hex)
+    {
+      string fixedHex = hex.Replace("-", string.Empty);
+
+      // array to put the result in
+      byte[] bytes = new byte[fixedHex.Length / 2];
+      // variable to determine shift of high/low nibble
+      int shift = 4;
+      // offset of the current byte in the array
+      int offset = 0;
+      // loop the characters in the string
+      foreach (char c in fixedHex)
+      {
+        // get character code in range 0-9, 17-22
+        // the % 32 handles lower case characters
+        int b = (c - '0') % 32;
+        // correction for a-f
+        if (b > 9) b -= 7;
+        // store nibble (4 bits) in byte array
+        bytes[offset] |= (byte)(b << shift);
+        // toggle the shift variable between 0 and 4
+        shift ^= 4;
+        // move to next byte
+        if (shift != 0) offset++;
+      }
+      return bytes;
     }
 
 #if !NETFX_CORE

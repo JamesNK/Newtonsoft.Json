@@ -25,7 +25,7 @@
 
 namespace Newtonsoft.Json.Bson
 {
-  internal enum BsonType : sbyte 
+  internal enum BsonType : sbyte
   {
     Number = 1,
     String = 2,

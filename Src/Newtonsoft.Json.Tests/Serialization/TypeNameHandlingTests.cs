@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !PORTABLE
+#if !(PORTABLE || PORTABLE40)
 #if !(NET35 || NET20 || PORTABLE)
 using System.Dynamic;
 #endif
@@ -165,7 +165,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     [Test]
     public void WriteTypeNameForObjects()
     {
-      string employeeRef = ReflectionUtils.GetTypeName(typeof (EmployeeReference), FormatterAssemblyStyle.Simple);
+      string employeeRef = ReflectionUtils.GetTypeName(typeof(EmployeeReference), FormatterAssemblyStyle.Simple, null);
 
       EmployeeReference employee = new EmployeeReference();
 
@@ -185,7 +185,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     [Test]
     public void DeserializeTypeName()
     {
-      string employeeRef = ReflectionUtils.GetTypeName(typeof (EmployeeReference), FormatterAssemblyStyle.Simple);
+      string employeeRef = ReflectionUtils.GetTypeName(typeof(EmployeeReference), FormatterAssemblyStyle.Simple, null);
 
       string json = @"{
   ""$id"": ""1"",
@@ -207,7 +207,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     [Test]
     public void DeserializeTypeNameFromGacAssembly()
     {
-      string cookieRef = ReflectionUtils.GetTypeName(typeof (Cookie), FormatterAssemblyStyle.Simple);
+      string cookieRef = ReflectionUtils.GetTypeName(typeof (Cookie), FormatterAssemblyStyle.Simple, null);
 
       string json = @"{
   ""$id"": ""1"",
@@ -493,7 +493,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     [Test]
     public void WriteObjectTypeNameForProperty()
     {
-      string typeNamePropertyRef = ReflectionUtils.GetTypeName(typeof (TypeNameProperty), FormatterAssemblyStyle.Simple);
+      string typeNamePropertyRef = ReflectionUtils.GetTypeName(typeof (TypeNameProperty), FormatterAssemblyStyle.Simple, null);
 
       TypeNameProperty typeNameProperty = new TypeNameProperty
         {
@@ -527,7 +527,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     [Test]
     public void WriteListTypeNameForProperty()
     {
-      string listRef = ReflectionUtils.GetTypeName(typeof (List<int>), FormatterAssemblyStyle.Simple);
+      string listRef = ReflectionUtils.GetTypeName(typeof (List<int>), FormatterAssemblyStyle.Simple, null);
 
       TypeNameProperty typeNameProperty = new TypeNameProperty
         {
@@ -709,9 +709,9 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       string json = sw.ToString();
 
-      string contentSubClassRef = ReflectionUtils.GetTypeName(typeof (ContentSubClass), FormatterAssemblyStyle.Simple);
-      string dictionaryRef = ReflectionUtils.GetTypeName(typeof (Dictionary<int, IList<ContentBaseClass>>), FormatterAssemblyStyle.Simple);
-      string listRef = ReflectionUtils.GetTypeName(typeof (List<ContentBaseClass>), FormatterAssemblyStyle.Simple);
+      string contentSubClassRef = ReflectionUtils.GetTypeName(typeof (ContentSubClass), FormatterAssemblyStyle.Simple, null);
+      string dictionaryRef = ReflectionUtils.GetTypeName(typeof (Dictionary<int, IList<ContentBaseClass>>), FormatterAssemblyStyle.Simple, null);
+      string listRef = ReflectionUtils.GetTypeName(typeof (List<ContentBaseClass>), FormatterAssemblyStyle.Simple, null);
 
       string expected = @"{
   ""TestMember"": {
@@ -816,7 +816,7 @@ namespace Newtonsoft.Json.Tests.Serialization
           TypeNameAssemblyFormat = FormatterAssemblyStyle.Simple
         });
 
-      string urlStatusTypeName = ReflectionUtils.GetTypeName(typeof (UrlStatus), FormatterAssemblyStyle.Simple);
+      string urlStatusTypeName = ReflectionUtils.GetTypeName(typeof (UrlStatus), FormatterAssemblyStyle.Simple, null);
 
       Assert.AreEqual(@"{
   ""$type"": ""System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib"",
@@ -867,7 +867,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     [Test]
     public void SerializingIEnumerableOfTShouldRetainGenericTypeInfo()
     {
-      string productClassRef = ReflectionUtils.GetTypeName(typeof(CustomEnumerable<Product>), FormatterAssemblyStyle.Simple);
+      string productClassRef = ReflectionUtils.GetTypeName(typeof(CustomEnumerable<Product>), FormatterAssemblyStyle.Simple, null);
 
       CustomEnumerable<Product> products = new CustomEnumerable<Product>();
 
@@ -951,7 +951,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       string output = JsonConvert.SerializeObject(testerObject, Formatting.Indented, jsonSettings);
 
-      string carClassRef = ReflectionUtils.GetTypeName(typeof (Car), FormatterAssemblyStyle.Simple);
+      string carClassRef = ReflectionUtils.GetTypeName(typeof (Car), FormatterAssemblyStyle.Simple, null);
 
       Assert.AreEqual(output, @"{
   ""$type"": """ + carClassRef + @""",
@@ -1445,7 +1445,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual(1, (int)j["MyProperty"]);
     }
 
-#if !(NET35 || NET20)
+#if !(NET35 || NET20 || PORTABLE40)
     [Test]
     public void PropertyItemTypeNameHandlingDynamic()
     {
@@ -1651,7 +1651,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     public TypeNameHandlingTestObject Data { get; set; }
   }
 
-#if !(NET35 || NET20)
+#if !(NET35 || NET20 || PORTABLE40)
   public class PropertyItemTypeNameHandlingDynamic
   {
     [JsonProperty(ItemTypeNameHandling = TypeNameHandling.All)]

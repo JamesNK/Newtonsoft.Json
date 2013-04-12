@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.Serialization;
 #if !NETFX_CORE
 using NUnit.Framework;
@@ -67,6 +68,14 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
   }
 
+  public class EscapedPropertiesContractResolver : DefaultContractResolver
+  {
+    protected internal override string ResolvePropertyName(string propertyName)
+    {
+      return base.ResolvePropertyName(propertyName + @"-'-""-");
+    }
+  }
+
   public class Book
   {
     public string BookName { get; set; }
@@ -87,18 +96,39 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
   }
 
-#if !NET20
   public class AddressWithDataMember
   {
+#if !NET20
     [DataMember(Name = "CustomerAddress1")]
-    public string AddressLine1 { get; set; }
-
-  }
 #endif
+    public string AddressLine1 { get; set; }
+  }
 
   [TestFixture]
   public class ContractResolverTests : TestFixtureBase
   {
+    [Test]
+    public void SerializeWithEscapedPropertyName()
+    {
+      string json = JsonConvert.SerializeObject(
+        new AddressWithDataMember
+          {
+            AddressLine1 = "value!"
+          },
+        new JsonSerializerSettings
+          {
+            ContractResolver = new EscapedPropertiesContractResolver()
+          });
+
+      Assert.AreEqual(@"{""AddressLine1-'-\""-"":""value!""}", json);
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+      reader.Read();
+      reader.Read();
+
+      Assert.AreEqual(@"AddressLine1-'-""-", reader.Value);
+    }
+
 #if !NET20
     [Test]
     public void DeserializeDataMemberClassWithNoDataContract()
@@ -182,7 +212,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 }", startingWithB);
     }
 
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
     [Test]
     public void SerializeCompilerGeneratedMembers()
     {

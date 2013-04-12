@@ -149,7 +149,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 }", json);
     }
 
-#if !(PORTABLE || SILVERLIGHT || NETFX_CORE)
+#if !(PORTABLE || SILVERLIGHT || NETFX_CORE || PORTABLE40)
     public class MainClass : ISerializable
     {
       public ChildClass Child { get; set; }
@@ -210,7 +210,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 #endif
 
-#if !(NET20 || NET35)
+#if !(NET20 || NET35 || PORTABLE40)
     public class DictionaryDynamicObject : DynamicObject
     {
       public IDictionary<string, object> Values { get; private set; }

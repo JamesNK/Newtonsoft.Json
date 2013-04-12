@@ -27,7 +27,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
 using System.Numerics;
 #endif
 using System.Text;
@@ -221,6 +221,25 @@ namespace Newtonsoft.Json.Bson
     }
 
     #region WriteValue methods
+    /// <summary>
+    /// Writes a <see cref="Object"/> value.
+    /// An error will raised if the value cannot be written as a single JSON token.
+    /// </summary>
+    /// <param name="value">The <see cref="Object"/> value to write.</param>
+    public override void WriteValue(object value)
+    {
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)
+      if (value is BigInteger)
+      {
+        InternalWriteValue(JsonToken.Integer);
+        AddToken(new BsonBinary(((BigInteger)value).ToByteArray(), BsonBinaryType.Binary));
+      }
+      else
+#endif
+      {
+        base.WriteValue(value);
+      }
+    }
 
     /// <summary>
     /// Writes a null value.
@@ -360,7 +379,7 @@ namespace Newtonsoft.Json.Bson
     {
       base.WriteValue(value);
       string s = null;
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
       s = value.ToString(CultureInfo.InvariantCulture);
 #else
       s = value.ToString();
@@ -429,7 +448,7 @@ namespace Newtonsoft.Json.Bson
     public override void WriteValue(byte[] value)
     {
       base.WriteValue(value);
-      AddValue(value, BsonType.Binary);
+      AddToken(new BsonBinary(value, BsonBinaryType.Binary));
     }
 
     /// <summary>
@@ -439,7 +458,7 @@ namespace Newtonsoft.Json.Bson
     public override void WriteValue(Guid value)
     {
       base.WriteValue(value);
-      AddToken(new BsonString(value.ToString(), true));
+      AddToken(new BsonBinary(value.ToByteArray(), BsonBinaryType.Uuid));
     }
 
     /// <summary>
@@ -461,18 +480,6 @@ namespace Newtonsoft.Json.Bson
       base.WriteValue(value);
       AddToken(new BsonString(value.ToString(), true));
     }
-
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
-    /// <summary>
-    /// Writes a <see cref="BigInteger"/> value.
-    /// </summary>
-    /// <param name="value">The <see cref="BigInteger"/> value to write.</param>
-    public override void WriteValue(BigInteger value)
-    {
-      base.WriteValue(value);
-      AddToken(new BsonValue(value.ToByteArray(), BsonType.Binary));
-    }
-#endif
     #endregion
 
     /// <summary>

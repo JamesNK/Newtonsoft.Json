@@ -23,12 +23,12 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if (!(SILVERLIGHT) || WINDOWS_PHONE)
+#if (!(SILVERLIGHT) || WINDOWS_PHONE) && !PORTABLE40
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Xml;
-#if !NET20
+#if !(NET20 || PORTABLE40)
 using System.Xml.Linq;
 #endif
 using Newtonsoft.Json.Utilities;
@@ -41,7 +41,7 @@ using System.Linq;
 namespace Newtonsoft.Json.Converters
 {
   #region XmlNodeWrappers
-#if !SILVERLIGHT && !NETFX_CORE && !PORTABLE
+#if !SILVERLIGHT && !NETFX_CORE && !PORTABLE && !PORTABLE40
   internal class XmlDocumentWrapper : XmlNodeWrapper, IXmlDocument
   {
     private readonly XmlDocument _document;
@@ -195,11 +195,6 @@ namespace Newtonsoft.Json.Converters
       get { return _node.NodeType; }
     }
 
-    public string Name
-    {
-      get { return _node.Name; }
-    }
-
     public string LocalName
     {
       get { return _node.LocalName; }
@@ -261,11 +256,6 @@ namespace Newtonsoft.Json.Converters
       _node.AppendChild(xmlNodeWrapper._node);
 
       return newChild;
-    }
-
-    public string Prefix
-    {
-      get { return _node.Prefix; }
     }
 
     public string NamespaceUri
@@ -1308,7 +1298,7 @@ namespace Newtonsoft.Json.Converters
 
       if (count == 1 && WriteArrayAttribute)
       {
-        IXmlElement arrayElement = nestedArrayElement.ChildNodes.CastValid<IXmlElement>().Single(n => n.LocalName == propertyName);
+        IXmlElement arrayElement = nestedArrayElement.ChildNodes.OfType<IXmlElement>().Single(n => n.LocalName == propertyName);
         AddJsonArrayAttribute(arrayElement, document);
       }
     }
@@ -1489,7 +1479,7 @@ namespace Newtonsoft.Json.Converters
 
               if (count == 1 && WriteArrayAttribute)
               {
-                IXmlElement arrayElement = currentNode.ChildNodes.CastValid<IXmlElement>().Single(n => n.LocalName == propertyName);
+                IXmlElement arrayElement = currentNode.ChildNodes.OfType<IXmlElement>().Single(n => n.LocalName == propertyName);
                 AddJsonArrayAttribute(arrayElement, document);
               }
             }

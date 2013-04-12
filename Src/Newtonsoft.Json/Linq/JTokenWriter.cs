@@ -25,7 +25,7 @@
 
 using System;
 using System.Globalization;
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
 using System.Numerics;
 #endif
 using Newtonsoft.Json.Utilities;
@@ -182,6 +182,26 @@ namespace Newtonsoft.Json.Linq
 
     #region WriteValue methods
     /// <summary>
+    /// Writes a <see cref="Object"/> value.
+    /// An error will raised if the value cannot be written as a single JSON token.
+    /// </summary>
+    /// <param name="value">The <see cref="Object"/> value to write.</param>
+    public override void WriteValue(object value)
+    {
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)
+      if (value is BigInteger)
+      {
+        InternalWriteValue(JsonToken.Integer);
+        AddValue(value, JsonToken.Integer);
+      }
+      else
+#endif
+      {
+        base.WriteValue(value);
+      }
+    }
+
+    /// <summary>
     /// Writes a null value.
     /// </summary>
     public override void WriteNull()
@@ -330,7 +350,7 @@ namespace Newtonsoft.Json.Linq
     {
       base.WriteValue(value);
       string s = null;
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
       s = value.ToString(CultureInfo.InvariantCulture);
 #else
       s = value.ToString();
@@ -431,18 +451,6 @@ namespace Newtonsoft.Json.Linq
       base.WriteValue(value);
       AddValue(value, JsonToken.String);
     }
-
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
-    /// <summary>
-    /// Writes a <see cref="BigInteger"/> value.
-    /// </summary>
-    /// <param name="value">The <see cref="BigInteger"/> value to write.</param>
-    public override void WriteValue(BigInteger value)
-    {
-      base.WriteValue(value);
-      AddValue(value, JsonToken.Integer);
-    }
-#endif
     #endregion
   }
 }
