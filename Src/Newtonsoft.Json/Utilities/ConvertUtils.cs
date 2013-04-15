@@ -270,8 +270,29 @@ namespace Newtonsoft.Json.Utilities
       }
     }
 
+#if AOT
+    internal class TypeConvertKeyEqualityComparer : System.Collections.Generic.IEqualityComparer<TypeConvertKey>
+    {
+      public static readonly TypeConvertKeyEqualityComparer Default = new TypeConvertKeyEqualityComparer();
+      
+      public bool Equals(TypeConvertKey x, TypeConvertKey y)
+      {
+        return x.Equals(y);
+      }
+      
+      public int GetHashCode(TypeConvertKey obj)
+      {
+        return obj.GetHashCode();
+      }
+    }
+#endif
+
     private static readonly ThreadSafeStore<TypeConvertKey, Func<object, object>> CastConverters =
-      new ThreadSafeStore<TypeConvertKey, Func<object, object>>(CreateCastConverter);
+      new ThreadSafeStore<TypeConvertKey, Func<object, object>>(CreateCastConverter
+#if AOT
+                                                                , TypeConvertKeyEqualityComparer.Default
+#endif
+                                                                );
 
     private static Func<object, object> CreateCastConverter(TypeConvertKey t)
     {

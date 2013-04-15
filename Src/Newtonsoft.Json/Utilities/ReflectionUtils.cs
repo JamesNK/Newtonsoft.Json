@@ -485,7 +485,12 @@ namespace Newtonsoft.Json.Utilities
         case MemberTypes.Property:
           try
           {
+#if AOT
+            // This approach doesn't JIT (but is a bit slower) compared to below.
+            return ((PropertyInfo)member).GetGetMethod().Invoke(target, null);
+#else
             return ((PropertyInfo)member).GetValue(target, null);
+#endif
           }
           catch (TargetParameterCountException e)
           {
