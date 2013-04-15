@@ -1,0 +1,325 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3E6E2335-B079-4B5B-A65A-9D586914BCBB}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Newtonsoft.Json.Tests</RootNamespace>
+    <AssemblyName>Newtonsoft.Json.Tests</AssemblyName>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <SignAssembly>false</SignAssembly>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\MonoAot35\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NET35;AOT</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\MonoAot35\</OutputPath>
+    <DefineConstants>TRACE;NET35;AOT</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.Entity">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Security" />
+    <Reference Include="System.ServiceModel">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.ServiceModel.Web">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\Lib\NUnit\DotNet\nunit.framework.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Bson\BsonWriterTests.cs" />
+    <Compile Include="Bson\BsonReaderTests.cs" />
+    <Compile Include="Converters\BinaryConverterTests.cs" />
+    <Compile Include="Converters\ExpandoObjectConverterTests.cs" />
+    <Compile Include="Converters\RegexConverterTests.cs" />
+    <Compile Include="Converters\DataTableConverterTests.cs" />
+    <Compile Include="Converters\DataSetConverterTests.cs" />
+    <Compile Include="Converters\CustomCreationConverterTests.cs" />
+    <Compile Include="Converters\ObjectIdConverterTests.cs" />
+    <Compile Include="Converters\StringEnumConverterTests.cs" />
+    <Compile Include="Converters\VersionConverterTests.cs" />
+    <Compile Include="JsonArrayAttributeTests.cs" />
+    <Compile Include="ExceptionTests.cs" />
+    <Compile Include="JsonValidatingReaderTests.cs" />
+    <Compile Include="LinqToSql\Department.cs" />
+    <Compile Include="LinqToSql\DepartmentConverter.cs" />
+    <Compile Include="LinqToSql\GuidByteArrayConverter.cs" />
+    <Compile Include="LinqToSql\Role.cs" />
+    <Compile Include="LinqToSql\LinqToSqlClasses.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LinqToSqlClasses.dbml</DependentUpon>
+    </Compile>
+    <Compile Include="LinqToSql\LinqToSqlClassesSerializationTests.cs" />
+    <Compile Include="LinqToSql\Person.cs" />
+    <Compile Include="Linq\ComponentModel\BindingTests.cs" />
+    <Compile Include="Linq\ComponentModel\JPropertyDescriptorTests.cs" />
+    <Compile Include="Linq\DynamicTests.cs" />
+    <Compile Include="Linq\JPathTests.cs" />
+    <Compile Include="Linq\JRawTests.cs" />
+    <Compile Include="Serialization\ConstructorHandlingTests.cs" />
+    <Compile Include="Serialization\ContractResolverTests.cs" />
+    <Compile Include="Serialization\DefaultValueHandlingTests.cs" />
+    <Compile Include="Serialization\DynamicTests.cs" />
+    <Compile Include="Serialization\JsonPropertyCollectionTests.cs" />
+    <Compile Include="Serialization\NullValueHandlingTests.cs" />
+    <Compile Include="Serialization\ReferenceLoopHandlingTests.cs" />
+    <Compile Include="Serialization\TraceWriterTests.cs" />
+    <Compile Include="Serialization\WebApiIntegrationTests.cs" />
+    <Compile Include="TestObjects\Bar.cs" />
+    <Compile Include="TestObjects\Car.cs" />
+    <Compile Include="TestObjects\Computer.cs" />
+    <Compile Include="TestObjects\ConstructorReadonlyFields.cs" />
+    <Compile Include="TestObjects\Container.cs" />
+    <Compile Include="TestObjects\ContentBaseClass.cs" />
+    <Compile Include="TestObjects\ContentSubClass.cs" />
+    <Compile Include="TestObjects\Foo.cs" />
+    <Compile Include="TestObjects\HolderClass.cs" />
+    <Compile Include="TestObjects\IPrivateImplementationA.cs" />
+    <Compile Include="TestObjects\IPrivateImplementationB.cs" />
+    <Compile Include="TestObjects\IPrivateOverriddenImplementation.cs" />
+    <Compile Include="TestObjects\ListOfIds.cs" />
+    <Compile Include="TestObjects\Movie.cs" />
+    <Compile Include="TestObjects\PrivateImplementationAClass.cs" />
+    <Compile Include="TestObjects\PrivateImplementationBClass.cs" />
+    <Compile Include="TestObjects\PublicParametizedConstructorRequiringConverterTestClass.cs" />
+    <Compile Include="TestObjects\PublicParametizedConstructorTestClass.cs" />
+    <Compile Include="TestObjects\PersonError.cs" />
+    <Compile Include="TestObjects\PersonPropertyClass.cs" />
+    <Compile Include="TestObjects\PrivateConstructorTestClass.cs" />
+    <Compile Include="TestObjects\PrivateConstructorWithPublicParametizedConstructorTestClass.cs" />
+    <Compile Include="TestObjects\Content.cs" />
+    <Compile Include="TestObjects\DateTimeErrorObjectCollection.cs" />
+    <Compile Include="Serialization\EntitiesSerializationTests.cs" />
+    <Compile Include="TestObjects\DictionaryInterfaceClass.cs" />
+    <Compile Include="TestObjects\Event.cs" />
+    <Compile Include="TestObjects\GoogleMapGeocoderStructure.cs" />
+    <Compile Include="TestObjects\InterfacePropertyTestClass.cs" />
+    <Compile Include="TestObjects\JsonPropertyClass.cs" />
+    <Compile Include="TestObjects\ListErrorObject.cs" />
+    <Compile Include="TestObjects\ListErrorObjectCollection.cs" />
+    <Compile Include="Serialization\MissingMemberHandlingTests.cs" />
+    <Compile Include="Serialization\PopulateTests.cs" />
+    <Compile Include="Serialization\SerializationErrorHandlingTests.cs" />
+    <Compile Include="Serialization\SerializationEventAttributeTests.cs" />
+    <Compile Include="Schema\ExtensionsTests.cs" />
+    <Compile Include="Schema\JsonSchemaModelBuilderTests.cs" />
+    <Compile Include="Schema\JsonSchemaNodeTests.cs" />
+    <Compile Include="Serialization\CamelCasePropertyNamesContractResolverTests.cs" />
+    <Compile Include="Serialization\PreserveReferencesHandlingTests.cs" />
+    <Compile Include="Serialization\TypeNameHandlingTests.cs" />
+    <Compile Include="TestObjects\ListTestClass.cs" />
+    <Compile Include="TestObjects\LogEntry.cs" />
+    <Compile Include="TestObjects\NonRequest.cs" />
+    <Compile Include="TestObjects\ObjectArrayPropertyTest.cs" />
+    <Compile Include="TestObjects\PublicParametizedConstructorWithNonPropertyParameterTestClass.cs" />
+    <Compile Include="TestObjects\PublicParametizedConstructorWithPropertyNameConflict.cs" />
+    <Compile Include="TestObjects\SearchResult.cs" />
+    <Compile Include="TestObjects\StructTest.cs" />
+    <Compile Include="TestObjects\WagePerson.cs" />
+    <Compile Include="TestObjects\PropertyCase.cs" />
+    <Compile Include="TestObjects\RequestOnly.cs" />
+    <Compile Include="TestObjects\RoleTransfer.cs" />
+    <Compile Include="TestObjects\SetOnlyPropertyClass2.cs" />
+    <Compile Include="TestObjects\SubKlass.cs" />
+    <Compile Include="TestObjects\SuperKlass.cs" />
+    <Compile Include="TestObjects\VersionKeyedCollection.cs" />
+    <Compile Include="TestObjects\AbstractGenericBase.cs" />
+    <Compile Include="TestObjects\ArgumentConverterPrecedenceClassConverter.cs" />
+    <Compile Include="TestObjects\BadJsonPropertyClass.cs" />
+    <Compile Include="TestObjects\CircularReferenceClass.cs" />
+    <Compile Include="TestObjects\ClassAndMemberConverterClass.cs" />
+    <Compile Include="TestObjects\ClassConverterPrecedenceClassConverter.cs" />
+    <Compile Include="TestObjects\ConstructorCaseSensitivityClass.cs" />
+    <Compile Include="TestObjects\ConverterPrecedenceClass.cs" />
+    <Compile Include="TestObjects\ConverterPrecedenceClassConverter.cs" />
+    <Compile Include="TestObjects\CircularReferenceWithIdClass.cs" />
+    <Compile Include="TestObjects\EmployeeReference.cs" />
+    <Compile Include="TestObjects\JsonPropertyWithHandlingValues.cs" />
+    <Compile Include="TestObjects\DefaultValueAttributeTestClass.cs" />
+    <Compile Include="TestObjects\DoubleClass.cs" />
+    <Compile Include="TestObjects\GenericImpl.cs" />
+    <Compile Include="TestObjects\GenericListAndDictionaryInterfaceProperties.cs" />
+    <Compile Include="TestObjects\GetOnlyPropertyClass.cs" />
+    <Compile Include="TestObjects\IncompatibleJsonAttributeClass.cs" />
+    <Compile Include="TestObjects\Invoice.cs" />
+    <Compile Include="TestObjects\JsonIgnoreAttributeTestClass.cs" />
+    <Compile Include="TestObjects\MemberConverterPrecedenceClassConverter.cs" />
+    <Compile Include="TestObjects\MethodExecutorObject.cs" />
+    <Compile Include="TestObjects\JaggedArray.cs" />
+    <Compile Include="TestObjects\MyClass.cs" />
+    <Compile Include="TestObjects\Name.cs" />
+    <Compile Include="TestObjects\PersonRaw.cs" />
+    <Compile Include="TestObjects\PhoneNumber.cs" />
+    <Compile Include="TestObjects\PrivateMembersClass.cs" />
+    <Compile Include="TestObjects\RequiredMembersClass.cs" />
+    <Compile Include="TestObjects\SerializationEventTestDictionary.cs" />
+    <Compile Include="TestObjects\SerializationEventTestList.cs" />
+    <Compile Include="TestObjects\SerializationEventTestObject.cs" />
+    <Compile Include="TestObjects\SerializationEventTestObjectWithConstructor.cs" />
+    <Compile Include="TestObjects\SetOnlyPropertyClass.cs" />
+    <Compile Include="TestObjects\Article.cs" />
+    <Compile Include="TestObjects\ArticleCollection.cs" />
+    <Compile Include="TestObjects\ClassWithArray.cs" />
+    <Compile Include="TestObjects\ClassWithGuid.cs" />
+    <Compile Include="TestObjects\ConverableMembers.cs" />
+    <Compile Include="TestObjects\JsonIgnoreAttributeOnClassTestClass.cs" />
+    <Compile Include="Linq\JConstructorTests.cs" />
+    <Compile Include="Linq\JPropertyTests.cs" />
+    <Compile Include="TestObjects\MemberConverterClass.cs" />
+    <Compile Include="TestObjects\Product.cs" />
+    <Compile Include="TestObjects\ProductCollection.cs" />
+    <Compile Include="TestObjects\ProductShort.cs" />
+    <Compile Include="TestObjects\Shortie.cs" />
+    <Compile Include="TestObjects\Store.cs" />
+    <Compile Include="TestObjects\StoreColor.cs" />
+    <Compile Include="TestObjects\Person.cs" />
+    <Compile Include="Schema\JsonSchemaBuilderTests.cs" />
+    <Compile Include="Schema\JsonSchemaGeneratorTests.cs" />
+    <Compile Include="Schema\JsonSchemaTests.cs" />
+    <Compile Include="TestObjects\NullableDateTimeTestClass.cs" />
+    <Compile Include="TestObjects\DateTimeTestClass.cs" />
+    <Compile Include="Converters\IsoDateTimeConverterTests.cs" />
+    <Compile Include="JsonConvertTest.cs" />
+    <Compile Include="Converters\JavaScriptDateTimeConverterTests.cs" />
+    <Compile Include="Serialization\JsonSerializerTest.cs" />
+    <Compile Include="JsonTextReaderTest.cs" />
+    <Compile Include="JsonTextWriterTest.cs" />
+    <Compile Include="Linq\JTokenReaderTest.cs" />
+    <Compile Include="Linq\JTokenWriterTest.cs" />
+    <Compile Include="Linq\JArrayTests.cs" />
+    <Compile Include="Linq\JObjectTests.cs" />
+    <Compile Include="Linq\JTokenEqualityComparerTests.cs" />
+    <Compile Include="Linq\JTokenTests.cs" />
+    <Compile Include="Linq\JValueTests.cs" />
+    <Compile Include="Linq\LinqToJsonTest.cs" />
+    <Compile Include="PerformanceTests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SilverlightTests.cs" />
+    <Compile Include="TestFixtureBase.cs" />
+    <Compile Include="Converters\XmlNodeConverterTest.cs" />
+    <Compile Include="TestObjects\TypeClass.cs" />
+    <Compile Include="TestObjects\TypedSubHashtable.cs" />
+    <Compile Include="TestObjects\UserNullable.cs" />
+    <Compile Include="Utilities\DynamicReflectionDelegateFactoryTests.cs" />
+    <Compile Include="Utilities\ReflectionUtilsTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="LinqToSql\LinqToSqlClasses.dbml">
+      <Generator>MSLinqToSQLGenerator</Generator>
+      <LastGenOutput>LinqToSqlClasses.designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="LinqToSql\LinqToSqlClasses.dbml.layout">
+      <DependentUpon>LinqToSqlClasses.dbml</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="bunny_pancake.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.MonoAot35.csproj">
+      <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
+      <Name>Newtonsoft.Json.MonoAot35</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -82,6 +82,23 @@ namespace Newtonsoft.Json.Serialization
     }
   }
 
+#if AOT
+  internal class ResolverContractKeyEqualityComparer : System.Collections.Generic.IEqualityComparer<ResolverContractKey>
+  {
+    public static readonly ResolverContractKeyEqualityComparer Default = new ResolverContractKeyEqualityComparer();
+    
+    public bool Equals(ResolverContractKey x, ResolverContractKey y)
+    {
+      return x.Equals(y);
+    }
+    
+    public int GetHashCode(ResolverContractKey obj)
+    {
+      return obj.GetHashCode();
+    }
+  }
+#endif
+
   /// <summary>
   /// Used by <see cref="JsonSerializer"/> to resolves a <see cref="JsonContract"/> for a given <see cref="Type"/>.
   /// </summary>
@@ -237,8 +254,16 @@ namespace Newtonsoft.Json.Serialization
           cache = GetCache();
           Dictionary<ResolverContractKey, JsonContract> updatedCache =
             (cache != null)
-              ? new Dictionary<ResolverContractKey, JsonContract>(cache)
-              : new Dictionary<ResolverContractKey, JsonContract>();
+              ? new Dictionary<ResolverContractKey, JsonContract>(cache
+#if AOT
+                                                                  , ResolverContractKeyEqualityComparer.Default
+#endif
+                                                                  )
+              : new Dictionary<ResolverContractKey, JsonContract>(
+#if AOT
+                                                                  ResolverContractKeyEqualityComparer.Default
+#endif
+                );
           updatedCache[key] = contract;
 
           UpdateCache(updatedCache);

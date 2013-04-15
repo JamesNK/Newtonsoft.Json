@@ -377,7 +377,7 @@ namespace Newtonsoft.Json.Serialization
       {
         if (_dynamicCodeGeneration == null)
         {
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE40 || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE40 || PORTABLE || AOT)
           try
           {
             new ReflectionPermission(ReflectionPermissionFlag.MemberAccess).Demand();

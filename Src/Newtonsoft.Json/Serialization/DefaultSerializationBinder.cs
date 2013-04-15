@@ -38,7 +38,11 @@ namespace Newtonsoft.Json.Serialization
   {
     internal static readonly DefaultSerializationBinder Instance = new DefaultSerializationBinder();
 
-    private readonly ThreadSafeStore<TypeNameKey, Type> _typeCache = new ThreadSafeStore<TypeNameKey, Type>(GetTypeFromTypeNameKey);
+    private readonly ThreadSafeStore<TypeNameKey, Type> _typeCache = new ThreadSafeStore<TypeNameKey, Type>(GetTypeFromTypeNameKey
+#if AOT
+                                                                                                            , TypeNameKeyEqualityComparer.Default
+#endif
+                                                                                                            );
 
     private static Type GetTypeFromTypeNameKey(TypeNameKey typeNameKey)
     {
@@ -105,6 +109,23 @@ namespace Newtonsoft.Json.Serialization
         return (AssemblyName == other.AssemblyName && TypeName == other.TypeName);
       }
     }
+
+#if AOT
+	internal class TypeNameKeyEqualityComparer : System.Collections.Generic.IEqualityComparer<TypeNameKey>
+	{
+    public static readonly TypeNameKeyEqualityComparer Default = new TypeNameKeyEqualityComparer();
+
+		public bool Equals(TypeNameKey x, TypeNameKey y)
+		{
+			return x.Equals(y);
+		}
+		
+		public int GetHashCode(TypeNameKey obj)
+		{
+			return obj.GetHashCode();
+		}
+	}
+#endif
 
     /// <summary>
     /// When overridden in a derived class, controls the binding of a serialized object to a type.

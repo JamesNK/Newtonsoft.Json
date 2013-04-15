@@ -137,13 +137,29 @@ namespace Newtonsoft.Json.Utilities
       var caseInsensitiveResults = source.Where(s => string.Equals(valueSelector(s), testValue, StringComparison.OrdinalIgnoreCase));
       if (caseInsensitiveResults.Count() <= 1)
       {
+#if !AOT
         return caseInsensitiveResults.SingleOrDefault();
+#else
+        if(caseInsensitiveResults.Count() == 0)
+          return default(TSource);
+        else
+          return caseInsensitiveResults.First();
+#endif
       }
       else
       {
         // multiple results returned. now filter using case sensitivity
         var caseSensitiveResults = source.Where(s => string.Equals(valueSelector(s), testValue, StringComparison.Ordinal));
+#if !AOT
         return caseSensitiveResults.SingleOrDefault();
+#else
+        if(caseInsensitiveResults.Count() == 0)
+          return default(TSource);
+        if(caseInsensitiveResults.Count() == 1)
+          return caseSensitiveResults.First();
+        else
+          throw new InvalidOperationException();
+#endif
       }
     }
 
