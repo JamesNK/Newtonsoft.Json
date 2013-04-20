@@ -217,7 +217,7 @@ namespace Newtonsoft.Json
       }
       else
       {
-        writer.Write(value.ToString(@"yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFF", CultureInfo.InvariantCulture));
+        WriteIsoDate(writer, value);
 
         switch (kind)
         {
@@ -229,6 +229,53 @@ namespace Newtonsoft.Json
             break;
         }
 
+      }
+    }
+
+    internal static void WriteIsoDate(TextWriter writer, DateTime dt)
+    {
+      char[] chars = new char[27];
+      int length = 19;
+
+      IntToCharArray(chars, 0, dt.Year, 4);
+      chars[4] = '-';
+      IntToCharArray(chars, 5, dt.Month, 2);
+      chars[7] = '-';
+      IntToCharArray(chars, 8, dt.Day, 2);
+      chars[10] = 'T';
+      IntToCharArray(chars, 11, dt.Hour, 2);
+      chars[13] = ':';
+      IntToCharArray(chars, 14, dt.Minute, 2);
+      chars[16] = ':';
+      IntToCharArray(chars, 17, dt.Second, 2);
+
+      DateTime time = new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second);
+      int fraction = (int)(dt.Ticks - time.Ticks);
+
+      if (fraction != 0)
+      {
+        int digits = 7;
+        while ((fraction % 10) == 0)
+        {
+          digits--;
+          fraction /= 10;
+        }
+
+        chars[19] = '.';
+        IntToCharArray(chars, 20, fraction, digits);
+
+        length += digits + 1;
+      }
+
+      writer.Write(chars, 0, length);
+    }
+
+    private static void IntToCharArray(char[] text, int start, int value, int digits)
+    {
+      while (digits-- != 0)
+      {
+        text[start + digits] = (char)((value % 10) + 48);
+        value /= 10;
       }
     }
 

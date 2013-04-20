@@ -133,7 +133,6 @@ namespace Newtonsoft.Json.Serialization
       return Dictionary.TryGetValue(key, out item);
     }
 
-
     /// <summary>
     /// Gets a property by property name.
     /// </summary>

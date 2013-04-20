@@ -370,8 +370,9 @@ namespace Newtonsoft.Json.Serialization
 
       int initialDepth = writer.Top;
 
-      foreach (JsonProperty property in contract.Properties)
+      for (int index = 0; index < contract.Properties.Count; index++)
       {
+        JsonProperty property = contract.Properties[index];
         try
         {
           object memberValue;
@@ -407,7 +408,7 @@ namespace Newtonsoft.Json.Serialization
           property.PropertyContract = Serializer.ContractResolver.ResolveContract(property.PropertyType);
 
         memberValue = property.ValueProvider.GetValue(value);
-        memberContract = (property.PropertyContract.UnderlyingType.IsSealed()) ? property.PropertyContract : GetContractSafe(memberValue);
+        memberContract = (property.PropertyContract.IsSealed) ? property.PropertyContract : GetContractSafe(memberValue);
 
         if (ShouldWriteProperty(memberValue, property))
         {
@@ -719,8 +720,10 @@ To fix this error either change the environment to be fully trusted, change the 
 
       int initialDepth = writer.Top;
 
-      foreach (JsonProperty property in contract.Properties)
+      for (int index = 0; index < contract.Properties.Count; index++)
       {
+        JsonProperty property = contract.Properties[index];
+
         // only write non-dynamic properties that have an explicit attribute
         if (property.HasMemberAttribute)
         {

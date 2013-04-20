@@ -78,7 +78,7 @@ namespace Newtonsoft.Json
 
       _reader = reader;
       _lineNumber = 1;
-      _chars = new char[4097];
+      _chars = new char[2049];
     }
 
 #if DEBUG
@@ -92,7 +92,7 @@ namespace Newtonsoft.Json
     {
       if (_buffer == null)
       {
-        _buffer = new StringBuffer(4096);
+        _buffer = new StringBuffer(2048);
       }
       else
       {
@@ -134,7 +134,7 @@ namespace Newtonsoft.Json
         string text = _stringReference.ToString();
 
         SetToken(JsonToken.String, text);
-        QuoteChar = quote;
+        _quoteChar = quote;
       }
       else
       {
@@ -161,7 +161,7 @@ namespace Newtonsoft.Json
         }
 
         SetToken(JsonToken.String, text);
-        QuoteChar = quote;
+        _quoteChar = quote;
       }
     }
 
@@ -846,7 +846,7 @@ namespace Newtonsoft.Json
       _charPos++;
 
       SetToken(JsonToken.PropertyName, propertyName);
-      QuoteChar = quoteChar;
+      _quoteChar = quoteChar;
       ClearRecentString();
 
       return true;

@@ -261,15 +261,17 @@ namespace Newtonsoft.Json.Serialization
           case JsonToken.Bytes:
             return EnsureType(reader, reader.Value, CultureInfo.InvariantCulture, contract, objectType);
           case JsonToken.String:
+            string s = (string)reader.Value;
+
             // convert empty string to null automatically for nullable types
-            if (string.IsNullOrEmpty((string)reader.Value) && objectType != typeof(string) && objectType != typeof(object) && contract != null && contract.IsNullable)
+            if (string.IsNullOrEmpty(s) && objectType != typeof(string) && objectType != typeof(object) && contract != null && contract.IsNullable)
               return null;
 
             // string that needs to be returned as a byte array should be base 64 decoded
             if (objectType == typeof (byte[]))
-              return Convert.FromBase64String((string) reader.Value);
+              return Convert.FromBase64String(s);
 
-            return EnsureType(reader, reader.Value, CultureInfo.InvariantCulture, contract, objectType);
+            return EnsureType(reader, s, CultureInfo.InvariantCulture, contract, objectType);
           case JsonToken.StartConstructor:
             string constructorName = reader.Value.ToString();
 
@@ -778,6 +780,8 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
         return true;
       }
 
+      JsonToken tokenType = reader.TokenType;
+
       if (property.PropertyContract == null)
         property.PropertyContract = GetContractSafe(property.PropertyType);
 
@@ -785,7 +789,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
         property.ObjectCreationHandling.GetValueOrDefault(Serializer.ObjectCreationHandling);
 
       if ((objectCreationHandling != ObjectCreationHandling.Replace)
-          && (reader.TokenType == JsonToken.StartArray || reader.TokenType == JsonToken.StartObject)
+          && (tokenType == JsonToken.StartArray || tokenType == JsonToken.StartObject)
           && property.Readable)
       {
         currentValue = property.ValueProvider.GetValue(target);
@@ -806,7 +810,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
       }
 
       // test tokentype here because null might not be convertable to some types, e.g. ignoring null when applied to DateTime
-      if (property.NullValueHandling.GetValueOrDefault(Serializer.NullValueHandling) == NullValueHandling.Ignore && reader.TokenType == JsonToken.Null)
+      if (property.NullValueHandling.GetValueOrDefault(Serializer.NullValueHandling) == NullValueHandling.Ignore && tokenType == JsonToken.Null)
       {
         reader.Skip();
         return true;
@@ -814,7 +818,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
 
       // test tokentype here because default value might not be convertable to actual type, e.g. default of "" for DateTime
       if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer.DefaultValueHandling), DefaultValueHandling.Ignore)
-          && JsonReader.IsPrimitiveToken(reader.TokenType)
+          && JsonReader.IsPrimitiveToken(tokenType)
           && MiscellaneousUtils.ValueEquals(reader.Value, property.GetResolvedDefaultValue()))
       {
         reader.Skip();
