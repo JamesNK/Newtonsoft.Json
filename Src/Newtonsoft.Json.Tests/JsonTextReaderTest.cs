@@ -2647,10 +2647,10 @@ bye", reader.Value);
 
       Assert.IsTrue(reader.Read());
       Assert.IsTrue(reader.Read());
-      Assert.AreEqual(new DateTime(JsonConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc), reader.Value);
+      Assert.AreEqual(new DateTime(DateTimeUtils.InitialJavaScriptDateTicks, DateTimeKind.Utc), reader.Value);
       Assert.AreEqual(typeof(DateTime), reader.ValueType);
       Assert.IsTrue(reader.Read());
-      Assert.AreEqual(new DateTime(JsonConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc), reader.Value);
+      Assert.AreEqual(new DateTime(DateTimeUtils.InitialJavaScriptDateTicks, DateTimeKind.Utc), reader.Value);
       Assert.AreEqual(typeof(DateTime), reader.ValueType);
       Assert.IsTrue(reader.Read());
 
@@ -2660,10 +2660,10 @@ bye", reader.Value);
 
       Assert.IsTrue(reader.Read());
       Assert.IsTrue(reader.Read());
-      Assert.AreEqual(new DateTimeOffset(JsonConvert.InitialJavaScriptDateTicks, TimeSpan.Zero), reader.Value);
+      Assert.AreEqual(new DateTimeOffset(DateTimeUtils.InitialJavaScriptDateTicks, TimeSpan.Zero), reader.Value);
       Assert.AreEqual(typeof(DateTimeOffset), reader.ValueType);
       Assert.IsTrue(reader.Read());
-      Assert.AreEqual(new DateTimeOffset(JsonConvert.InitialJavaScriptDateTicks, TimeSpan.Zero), reader.Value);
+      Assert.AreEqual(new DateTimeOffset(DateTimeUtils.InitialJavaScriptDateTicks, TimeSpan.Zero), reader.Value);
       Assert.AreEqual(typeof(DateTimeOffset), reader.ValueType);
       Assert.IsTrue(reader.Read());
 #endif
@@ -2686,10 +2686,10 @@ bye", reader.Value);
 
       Assert.IsTrue(reader.Read());
       reader.ReadAsDateTimeOffset();
-      Assert.AreEqual(new DateTimeOffset(JsonConvert.InitialJavaScriptDateTicks, TimeSpan.Zero), reader.Value);
+      Assert.AreEqual(new DateTimeOffset(DateTimeUtils.InitialJavaScriptDateTicks, TimeSpan.Zero), reader.Value);
       Assert.AreEqual(typeof(DateTimeOffset), reader.ValueType);
       reader.ReadAsDateTimeOffset();
-      Assert.AreEqual(new DateTimeOffset(JsonConvert.InitialJavaScriptDateTicks, TimeSpan.Zero), reader.Value);
+      Assert.AreEqual(new DateTimeOffset(DateTimeUtils.InitialJavaScriptDateTicks, TimeSpan.Zero), reader.Value);
       Assert.AreEqual(typeof(DateTimeOffset), reader.ValueType);
       Assert.IsTrue(reader.Read());
 
@@ -2699,10 +2699,10 @@ bye", reader.Value);
 
       Assert.IsTrue(reader.Read());
       reader.ReadAsDateTime();
-      Assert.AreEqual(new DateTime(JsonConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc), reader.Value);
+      Assert.AreEqual(new DateTime(DateTimeUtils.InitialJavaScriptDateTicks, DateTimeKind.Utc), reader.Value);
       Assert.AreEqual(typeof(DateTime), reader.ValueType);
       reader.ReadAsDateTime();
-      Assert.AreEqual(new DateTime(JsonConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc), reader.Value);
+      Assert.AreEqual(new DateTime(DateTimeUtils.InitialJavaScriptDateTicks, DateTimeKind.Utc), reader.Value);
       Assert.AreEqual(typeof(DateTime), reader.ValueType);
       Assert.IsTrue(reader.Read());
 #endif

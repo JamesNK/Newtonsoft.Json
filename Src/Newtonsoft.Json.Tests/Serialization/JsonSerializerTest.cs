@@ -1231,7 +1231,7 @@ keyword such as type of business.""
     [Test]
     public void SerializerShouldUseMemberConverter_IsoDate()
     {
-      DateTime testDate = new DateTime(JsonConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc);
+      DateTime testDate = new DateTime(DateTimeUtils.InitialJavaScriptDateTicks, DateTimeKind.Utc);
       MemberConverterClass m1 = new MemberConverterClass { DefaultConverter = testDate, MemberConverter = testDate };
 
       string json = JsonConvert.SerializeObject(m1);
@@ -1246,7 +1246,7 @@ keyword such as type of business.""
     [Test]
     public void SerializerShouldUseMemberConverter_MsDate()
     {
-      DateTime testDate = new DateTime(JsonConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc);
+      DateTime testDate = new DateTime(DateTimeUtils.InitialJavaScriptDateTicks, DateTimeKind.Utc);
       MemberConverterClass m1 = new MemberConverterClass { DefaultConverter = testDate, MemberConverter = testDate };
 
       string json = JsonConvert.SerializeObject(m1, new JsonSerializerSettings
@@ -1264,7 +1264,7 @@ keyword such as type of business.""
     [Test]
     public void SerializerShouldUseMemberConverter_MsDate_DateParseNone()
     {
-      DateTime testDate = new DateTime(JsonConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc);
+      DateTime testDate = new DateTime(DateTimeUtils.InitialJavaScriptDateTicks, DateTimeKind.Utc);
       MemberConverterClass m1 = new MemberConverterClass { DefaultConverter = testDate, MemberConverter = testDate };
 
       string json = JsonConvert.SerializeObject(m1, new JsonSerializerSettings
@@ -1287,7 +1287,7 @@ keyword such as type of business.""
     [Test]
     public void SerializerShouldUseMemberConverter_IsoDate_DateParseNone()
     {
-      DateTime testDate = new DateTime(JsonConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc);
+      DateTime testDate = new DateTime(DateTimeUtils.InitialJavaScriptDateTicks, DateTimeKind.Utc);
       MemberConverterClass m1 = new MemberConverterClass { DefaultConverter = testDate, MemberConverter = testDate };
 
       string json = JsonConvert.SerializeObject(m1, new JsonSerializerSettings
@@ -1305,7 +1305,7 @@ keyword such as type of business.""
     [Test]
     public void SerializerShouldUseMemberConverterOverArgumentConverter()
     {
-      DateTime testDate = new DateTime(JsonConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc);
+      DateTime testDate = new DateTime(DateTimeUtils.InitialJavaScriptDateTicks, DateTimeKind.Utc);
       MemberConverterClass m1 = new MemberConverterClass { DefaultConverter = testDate, MemberConverter = testDate };
 
       string json = JsonConvert.SerializeObject(m1, new JavaScriptDateTimeConverter());
@@ -6807,9 +6807,9 @@ Parameter name: value",
           Venue = "Gryphon Theatre",
           Performances = new List<DateTime>
             {
-              JsonConvert.ConvertJavaScriptTicksToDateTime(1336458600000),
-              JsonConvert.ConvertJavaScriptTicksToDateTime(1336545000000),
-              JsonConvert.ConvertJavaScriptTicksToDateTime(1336636800000)
+              DateTimeUtils.ConvertJavaScriptTicksToDateTime(1336458600000),
+              DateTimeUtils.ConvertJavaScriptTicksToDateTime(1336545000000),
+              DateTimeUtils.ConvertJavaScriptTicksToDateTime(1336636800000)
             }
         };
 

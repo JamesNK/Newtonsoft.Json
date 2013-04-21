@@ -69,11 +69,10 @@ namespace Newtonsoft.Json.Tests
 
     protected string GetOffset(DateTime d, DateFormatHandling dateFormatHandling)
     {
-      StringWriter sw = new StringWriter();
-      JsonConvert.WriteDateTimeOffset(sw, DateTime.SpecifyKind(d, DateTimeKind.Local).GetUtcOffset(), dateFormatHandling);
-      sw.Flush();
+      char[] chars = new char[8];
+      int pos = DateTimeUtils.WriteDateTimeOffset(chars, 0, DateTime.SpecifyKind(d, DateTimeKind.Local).GetUtcOffset(), dateFormatHandling);
 
-      return sw.ToString();
+      return new string(chars, 0, pos);
     }
 
     protected string BytesToHex(byte[] bytes)

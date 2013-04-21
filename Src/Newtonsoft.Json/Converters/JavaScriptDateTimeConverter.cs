@@ -48,14 +48,14 @@ namespace Newtonsoft.Json.Converters
       {
         DateTime dateTime = (DateTime)value;
         DateTime utcDateTime = dateTime.ToUniversalTime();
-        ticks = JsonConvert.ConvertDateTimeToJavaScriptTicks(utcDateTime);
+        ticks = DateTimeUtils.ConvertDateTimeToJavaScriptTicks(utcDateTime);
       }
 #if !NET20
       else if (value is DateTimeOffset)
       {
         DateTimeOffset dateTimeOffset = (DateTimeOffset)value;
         DateTimeOffset utcDateTimeOffset = dateTimeOffset.ToUniversalTime();
-        ticks = JsonConvert.ConvertDateTimeToJavaScriptTicks(utcDateTimeOffset.UtcDateTime);
+        ticks = DateTimeUtils.ConvertDateTimeToJavaScriptTicks(utcDateTimeOffset.UtcDateTime);
       }
 #endif
       else
@@ -100,7 +100,7 @@ namespace Newtonsoft.Json.Converters
 
       long ticks = (long)reader.Value;
 
-      DateTime d = JsonConvert.ConvertJavaScriptTicksToDateTime(ticks);
+      DateTime d = DateTimeUtils.ConvertJavaScriptTicksToDateTime(ticks);
 
       reader.Read();
 

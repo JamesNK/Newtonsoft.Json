@@ -144,10 +144,10 @@ namespace Newtonsoft.Json.Tests
         jsonWriter.WriteValue((decimal?)null);
         jsonWriter.WriteValue((decimal?)1.1m);
         jsonWriter.WriteValue((DateTime?)null);
-        jsonWriter.WriteValue((DateTime?)new DateTime(JsonConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc));
+        jsonWriter.WriteValue((DateTime?)new DateTime(DateTimeUtils.InitialJavaScriptDateTicks, DateTimeKind.Utc));
 #if !NET20
         jsonWriter.WriteValue((DateTimeOffset?)null);
-        jsonWriter.WriteValue((DateTimeOffset?)new DateTimeOffset(JsonConvert.InitialJavaScriptDateTicks, TimeSpan.Zero));
+        jsonWriter.WriteValue((DateTimeOffset?)new DateTimeOffset(DateTimeUtils.InitialJavaScriptDateTicks, TimeSpan.Zero));
 #endif
         jsonWriter.WriteEndArray();
       }
@@ -729,6 +729,46 @@ namespace Newtonsoft.Json.Tests
       }
 
       Assert.AreEqual(@"[0.0,0.0,0.1,1.0,1.000001,1E-06,4.94065645841247E-324,Infinity,-Infinity,NaN,1.7976931348623157E+308,-1.7976931348623157E+308,Infinity,-Infinity,NaN]", sb.ToString());
+    }
+
+    [Test]
+    public void WriteIntegerNumber()
+    {
+      StringBuilder sb = new StringBuilder();
+      StringWriter sw = new StringWriter(sb);
+
+      using (JsonWriter jsonWriter = new JsonTextWriter(sw) { Formatting = Formatting.Indented })
+      {
+        jsonWriter.WriteStartArray();
+
+        jsonWriter.WriteValue(0);
+        jsonWriter.WriteValue(-0);
+        jsonWriter.WriteValue(9L);
+        jsonWriter.WriteValue(9UL);
+        jsonWriter.WriteValue(int.MaxValue);
+        jsonWriter.WriteValue(int.MinValue);
+        jsonWriter.WriteValue(long.MaxValue);
+        jsonWriter.WriteValue(long.MinValue);
+        jsonWriter.WriteValue(ulong.MaxValue);
+        jsonWriter.WriteValue(ulong.MinValue);
+
+        jsonWriter.WriteEndArray();
+      }
+
+      Console.WriteLine(sb.ToString());
+
+      Assert.AreEqual(@"[
+  0,
+  0,
+  9,
+  9,
+  2147483647,
+  -2147483648,
+  9223372036854775807,
+  -9223372036854775808,
+  18446744073709551615,
+  0
+]", sb.ToString());
     }
 
     [Test]

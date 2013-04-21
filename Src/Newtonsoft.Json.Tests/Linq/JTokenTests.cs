@@ -43,6 +43,7 @@ using System.IO;
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
+using Newtonsoft.Json.Utilities;
 #endif
 
 namespace Newtonsoft.Json.Tests.Linq
@@ -90,7 +91,7 @@ namespace Newtonsoft.Json.Tests.Linq
           DateParseHandling = DateParseHandling.DateTimeOffset
         });
       Assert.AreEqual(typeof(DateTimeOffset), v.Value.GetType());
-      Assert.AreEqual(new DateTimeOffset(JsonConvert.InitialJavaScriptDateTicks, new TimeSpan(12, 31, 0)), v.Value);
+      Assert.AreEqual(new DateTimeOffset(DateTimeUtils.InitialJavaScriptDateTicks, new TimeSpan(12, 31, 0)), v.Value);
 #endif
     }
 

@@ -146,13 +146,13 @@ namespace Newtonsoft.Json.Bson
               else if (DateTimeKindHandling == DateTimeKind.Local)
                 dateTime = dateTime.ToLocalTime();
 
-              ticks = JsonConvert.ConvertDateTimeToJavaScriptTicks(dateTime, false);
+              ticks = DateTimeUtils.ConvertDateTimeToJavaScriptTicks(dateTime, false);
             }
 #if !NET20
             else
             {
               DateTimeOffset dateTimeOffset = (DateTimeOffset)value.Value;
-              ticks = JsonConvert.ConvertDateTimeToJavaScriptTicks(dateTimeOffset.UtcDateTime, dateTimeOffset.Offset);
+              ticks = DateTimeUtils.ConvertDateTimeToJavaScriptTicks(dateTimeOffset.UtcDateTime, dateTimeOffset.Offset);
             }
 #endif
 

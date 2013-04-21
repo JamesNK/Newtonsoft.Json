@@ -572,7 +572,7 @@ namespace Newtonsoft.Json
         throw JsonWriterException.Create(this, "Unexpected token when reading date constructor. Expected Integer, got " + reader.TokenType, null);
 
       long ticks = (long)reader.Value;
-      DateTime date = JsonConvert.ConvertJavaScriptTicksToDateTime(ticks);
+      DateTime date = DateTimeUtils.ConvertJavaScriptTicksToDateTime(ticks);
 
       if (!reader.Read())
         throw JsonWriterException.Create(this, "Unexpected end when reading date constructor.", null);

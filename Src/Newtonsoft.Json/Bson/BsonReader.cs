@@ -550,7 +550,7 @@ namespace Newtonsoft.Json.Bson
           break;
         case BsonType.Date:
           long ticks = ReadInt64();
-          DateTime utcDateTime = JsonConvert.ConvertJavaScriptTicksToDateTime(ticks);
+          DateTime utcDateTime = DateTimeUtils.ConvertJavaScriptTicksToDateTime(ticks);
 
           DateTime dateTime;
           switch (DateTimeKindHandling)

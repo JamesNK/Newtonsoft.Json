@@ -48,6 +48,7 @@ namespace Newtonsoft.Json
     private char _quoteChar;
     private bool _quoteName;
     private bool[] _charEscapeFlags;
+    private char[] _writeBuffer;
 
     private Base64Encoder Base64Encoder
     {
@@ -373,7 +374,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(int value)
     {
       InternalWriteValue(JsonToken.Integer);
-      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Integer);
+      WriteIntegerValue(value);
     }
 
     /// <summary>
@@ -384,7 +385,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(uint value)
     {
       InternalWriteValue(JsonToken.Integer);
-      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Integer);
+      WriteIntegerValue(value);
     }
 
     /// <summary>
@@ -394,7 +395,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(long value)
     {
       InternalWriteValue(JsonToken.Integer);
-      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Integer);
+      WriteIntegerValue(value);
     }
 
     /// <summary>
@@ -405,7 +406,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(ulong value)
     {
       InternalWriteValue(JsonToken.Integer);
-      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Integer);
+      WriteIntegerValue(value);
     }
 
     /// <summary>
@@ -479,7 +480,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(short value)
     {
       InternalWriteValue(JsonToken.Integer);
-      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Integer);
+      WriteIntegerValue(value);
     }
 
     /// <summary>
@@ -490,7 +491,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(ushort value)
     {
       InternalWriteValue(JsonToken.Integer);
-      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Integer);
+      WriteIntegerValue(value);
     }
 
     /// <summary>
@@ -510,7 +511,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(byte value)
     {
       InternalWriteValue(JsonToken.Integer);
-      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Integer);
+      WriteIntegerValue(value);
     }
 
     /// <summary>
@@ -521,7 +522,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(sbyte value)
     {
       InternalWriteValue(JsonToken.Integer);
-      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Integer);
+      WriteIntegerValue(value);
     }
 
     /// <summary>
@@ -541,10 +542,25 @@ namespace Newtonsoft.Json
     public override void WriteValue(DateTime value)
     {
       InternalWriteValue(JsonToken.Date);
-      value = JsonConvert.EnsureDateTime(value, DateTimeZoneHandling);
-      _writer.Write(_quoteChar);
-      JsonConvert.WriteDateTimeString(_writer, value, DateFormatHandling, DateFormatString, Culture);
-      _writer.Write(_quoteChar);
+      value = DateTimeUtils.EnsureDateTime(value, DateTimeZoneHandling);
+
+      if (string.IsNullOrEmpty(DateFormatString))
+      {
+        EnsureWriteBuffer();
+
+        int pos = 0;
+        _writeBuffer[pos++] = _quoteChar;
+        pos = DateTimeUtils.WriteDateTimeString(_writeBuffer, pos, value, null, value.Kind, DateFormatHandling);
+        _writeBuffer[pos++] = _quoteChar;
+
+        _writer.Write(_writeBuffer, 0, pos);
+      }
+      else
+      {
+        _writer.Write(_quoteChar);
+        _writer.Write(value.ToString(DateFormatString, Culture));
+        _writer.Write(_quoteChar);
+      }
     }
 
     /// <summary>
@@ -575,9 +591,24 @@ namespace Newtonsoft.Json
     public override void WriteValue(DateTimeOffset value)
     {
       InternalWriteValue(JsonToken.Date);
-      _writer.Write(_quoteChar);
-      JsonConvert.WriteDateTimeOffsetString(_writer, value, DateFormatHandling, DateFormatString, Culture);
-      _writer.Write(_quoteChar);
+
+      if (string.IsNullOrEmpty(DateFormatString))
+      {
+        EnsureWriteBuffer();
+
+        int pos = 0;
+        _writeBuffer[pos++] = _quoteChar;
+        pos = DateTimeUtils.WriteDateTimeString(_writeBuffer, pos, (DateFormatHandling == DateFormatHandling.IsoDateFormat) ? value.DateTime : value.UtcDateTime, value.Offset, DateTimeKind.Local, DateFormatHandling);
+        _writeBuffer[pos++] = _quoteChar;
+
+        _writer.Write(_writeBuffer, 0, pos);
+      }
+      else
+      {
+        _writer.Write(_quoteChar);
+        _writer.Write(value.ToString(DateFormatString, Culture));
+        _writer.Write(_quoteChar);
+      }
     }
 #endif
 
@@ -641,6 +672,94 @@ namespace Newtonsoft.Json
       InternalWriteWhitespace(ws);
 
       _writer.Write(ws);
+    }
+
+    private void EnsureWriteBuffer()
+    {
+      if (_writeBuffer == null)
+        _writeBuffer = new char[64];
+    }
+
+    private void WriteIntegerValue(int value)
+    {
+      EnsureWriteBuffer();
+
+      if (value >= 0 && value <= 9)
+      {
+        _writer.Write((char)(48 + value));
+      }
+      else
+      {
+        int length = 0;
+
+        uint uvalue = (value < 0) ? (uint)-value : (uint)value;
+
+        do
+        {
+          _writeBuffer[length++] = (char)(48 + (uvalue % 10));
+          uvalue /= 10;
+        } while (uvalue != 0);
+
+        if (value < 0)
+          _writeBuffer[length++] = '-';
+
+        Array.Reverse(_writeBuffer, 0, length);
+
+        _writer.Write(_writeBuffer, 0, length);
+      }
+    }
+
+    private void WriteIntegerValue(long value)
+    {
+      EnsureWriteBuffer();
+
+      if (value >= 0 && value <= 9)
+      {
+        _writer.Write((char)(48 + value));
+      }
+      else
+      {
+        int length = 0;
+
+        ulong uvalue = (value < 0) ? (ulong)-value : (ulong)value;
+
+        do
+        {
+          _writeBuffer[length++] = (char)(48 + (uvalue % 10));
+          uvalue /= 10;
+        } while (uvalue != 0);
+
+        if (value < 0)
+          _writeBuffer[length++] = '-';
+
+        Array.Reverse(_writeBuffer, 0, length);
+
+        _writer.Write(_writeBuffer, 0, length);
+      }
+    }
+
+    private void WriteIntegerValue(ulong uvalue)
+    {
+      EnsureWriteBuffer();
+
+      if (uvalue <= 9)
+      {
+        _writer.Write((char)(48 + uvalue));
+      }
+      else
+      {
+        int length = 0;
+
+        do
+        {
+          _writeBuffer[length++] = (char)(48 + (uvalue % 10));
+          uvalue /= 10;
+        } while (uvalue != 0);
+
+        Array.Reverse(_writeBuffer, 0, length);
+
+        _writer.Write(_writeBuffer, 0, length);
+      }
     }
   }
 }

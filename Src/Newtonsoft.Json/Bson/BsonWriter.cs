@@ -425,7 +425,7 @@ namespace Newtonsoft.Json.Bson
     public override void WriteValue(DateTime value)
     {
       base.WriteValue(value);
-      value = JsonConvert.EnsureDateTime(value, DateTimeZoneHandling);
+      value = DateTimeUtils.EnsureDateTime(value, DateTimeZoneHandling);
       AddValue(value, BsonType.Date);
     }
 

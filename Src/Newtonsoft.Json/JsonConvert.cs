@@ -86,8 +86,6 @@ namespace Newtonsoft.Json
     /// </summary>
     public static readonly string NaN = "NaN";
 
-    internal static readonly long InitialJavaScriptDateTicks = 621355968000000000;
-
     /// <summary>
     /// Converts the <see cref="DateTime"/> to its JSON string representation.
     /// </summary>
@@ -107,37 +105,15 @@ namespace Newtonsoft.Json
     /// <returns>A JSON string representation of the <see cref="DateTime"/>.</returns>
     public static string ToString(DateTime value, DateFormatHandling format, DateTimeZoneHandling timeZoneHandling)
     {
-      DateTime updatedDateTime = EnsureDateTime(value, timeZoneHandling);
+      DateTime updatedDateTime = DateTimeUtils.EnsureDateTime(value, timeZoneHandling);
 
       using (StringWriter writer = StringUtils.CreateStringWriter(64))
       {
         writer.Write('"');
-        WriteDateTimeString(writer, updatedDateTime, updatedDateTime.GetUtcOffset(), updatedDateTime.Kind, format);
+        DateTimeUtils.WriteDateTimeString(writer, updatedDateTime, format, null, CultureInfo.InvariantCulture);
         writer.Write('"');
         return writer.ToString();
       }
-    }
-
-    internal static DateTime EnsureDateTime(DateTime value, DateTimeZoneHandling timeZone)
-    {
-      switch (timeZone)
-      {
-        case DateTimeZoneHandling.Local:
-          value = SwitchToLocalTime(value);
-          break;
-        case DateTimeZoneHandling.Utc:
-          value = SwitchToUtcTime(value);
-          break;
-        case DateTimeZoneHandling.Unspecified:
-          value = new DateTime(value.Ticks, DateTimeKind.Unspecified);
-          break;
-        case DateTimeZoneHandling.RoundtripKind:
-          break;
-        default:
-          throw new ArgumentException("Invalid date time handling value.");
-      }
-
-      return value;
     }
 
 #if !NET20
@@ -162,230 +138,12 @@ namespace Newtonsoft.Json
       using (StringWriter writer = StringUtils.CreateStringWriter(64))
       {
         writer.Write('"');
-        WriteDateTimeOffsetString(writer, value, format, null, CultureInfo.InvariantCulture);
+        DateTimeUtils.WriteDateTimeOffsetString(writer, value, format, null, CultureInfo.InvariantCulture);
         writer.Write('"');
         return writer.ToString();
       }
     }
-
-    internal static void WriteDateTimeOffsetString(TextWriter writer, DateTimeOffset value, DateFormatHandling format, string formatString, CultureInfo culture)
-    {
-      if (string.IsNullOrEmpty(formatString))
-      {
-        WriteDateTimeString(writer, (format == DateFormatHandling.IsoDateFormat) ? value.DateTime : value.UtcDateTime, value.Offset, DateTimeKind.Local, format);
-      }
-      else
-      {
-        writer.Write(value.ToString(formatString, culture));
-      }
-    }
 #endif
-
-    internal static void WriteDateTimeString(TextWriter writer, DateTime value, DateFormatHandling format, string formatString, CultureInfo culture)
-    {
-      if (string.IsNullOrEmpty(formatString))
-      {
-        WriteDateTimeString(writer, value, value.GetUtcOffset(), value.Kind, format);
-      }
-      else
-      {
-        writer.Write(value.ToString(formatString, culture));
-      }
-    }
-
-    internal static void WriteDateTimeString(TextWriter writer, DateTime value, TimeSpan offset, DateTimeKind kind, DateFormatHandling format)
-    {
-      if (format == DateFormatHandling.MicrosoftDateFormat)
-      {
-        long javaScriptTicks = ConvertDateTimeToJavaScriptTicks(value, offset);
-
-        writer.Write(@"\/Date(");
-        writer.Write(javaScriptTicks);
-
-        switch (kind)
-        {
-          case DateTimeKind.Unspecified:
-            if (value != DateTime.MaxValue && value != DateTime.MinValue)
-              WriteDateTimeOffset(writer, offset, format);
-            break;
-          case DateTimeKind.Local:
-            WriteDateTimeOffset(writer, offset, format);
-            break;
-        }
-
-        writer.Write(@")\/");
-      }
-      else
-      {
-        WriteIsoDate(writer, value);
-
-        switch (kind)
-        {
-          case DateTimeKind.Local:
-            WriteDateTimeOffset(writer, offset, format);
-            break;
-          case DateTimeKind.Utc:
-            writer.Write("Z");
-            break;
-        }
-
-      }
-    }
-
-    internal static void WriteIsoDate(TextWriter writer, DateTime dt)
-    {
-      char[] chars = new char[27];
-      int length = 19;
-
-      IntToCharArray(chars, 0, dt.Year, 4);
-      chars[4] = '-';
-      IntToCharArray(chars, 5, dt.Month, 2);
-      chars[7] = '-';
-      IntToCharArray(chars, 8, dt.Day, 2);
-      chars[10] = 'T';
-      IntToCharArray(chars, 11, dt.Hour, 2);
-      chars[13] = ':';
-      IntToCharArray(chars, 14, dt.Minute, 2);
-      chars[16] = ':';
-      IntToCharArray(chars, 17, dt.Second, 2);
-
-      DateTime time = new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second);
-      int fraction = (int)(dt.Ticks - time.Ticks);
-
-      if (fraction != 0)
-      {
-        int digits = 7;
-        while ((fraction % 10) == 0)
-        {
-          digits--;
-          fraction /= 10;
-        }
-
-        chars[19] = '.';
-        IntToCharArray(chars, 20, fraction, digits);
-
-        length += digits + 1;
-      }
-
-      writer.Write(chars, 0, length);
-    }
-
-    private static void IntToCharArray(char[] text, int start, int value, int digits)
-    {
-      while (digits-- != 0)
-      {
-        text[start + digits] = (char)((value % 10) + 48);
-        value /= 10;
-      }
-    }
-
-    internal static void WriteDateTimeOffset(TextWriter writer, TimeSpan offset, DateFormatHandling format)
-    {
-      writer.Write((offset.Ticks >= 0L) ? "+" : "-");
-
-      int absHours = Math.Abs(offset.Hours);
-      if (absHours < 10)
-        writer.Write(0);
-      writer.Write(absHours);
-
-      if (format == DateFormatHandling.IsoDateFormat)
-        writer.Write(':');
-
-      int absMinutes = Math.Abs(offset.Minutes);
-      if (absMinutes < 10)
-        writer.Write(0);
-      writer.Write(absMinutes);
-    }
-
-    private static long ToUniversalTicks(DateTime dateTime)
-    {
-      if (dateTime.Kind == DateTimeKind.Utc)
-        return dateTime.Ticks;
-
-      return ToUniversalTicks(dateTime, dateTime.GetUtcOffset());
-    }
-
-    private static long ToUniversalTicks(DateTime dateTime, TimeSpan offset)
-    {
-      // special case min and max value
-      // they never have a timezone appended to avoid issues
-      if (dateTime.Kind == DateTimeKind.Utc || dateTime == DateTime.MaxValue || dateTime == DateTime.MinValue)
-        return dateTime.Ticks;
-
-      long ticks = dateTime.Ticks - offset.Ticks;
-      if (ticks > 3155378975999999999L)
-        return 3155378975999999999L;
-
-      if (ticks < 0L)
-        return 0L;
-
-      return ticks;
-    }
-
-    internal static long ConvertDateTimeToJavaScriptTicks(DateTime dateTime, TimeSpan offset)
-    {
-      long universialTicks = ToUniversalTicks(dateTime, offset);
-
-      return UniversialTicksToJavaScriptTicks(universialTicks);
-    }
-
-    internal static long ConvertDateTimeToJavaScriptTicks(DateTime dateTime)
-    {
-      return ConvertDateTimeToJavaScriptTicks(dateTime, true);
-    }
-
-    internal static long ConvertDateTimeToJavaScriptTicks(DateTime dateTime, bool convertToUtc)
-    {
-      long ticks = (convertToUtc) ? ToUniversalTicks(dateTime) : dateTime.Ticks;
-
-      return UniversialTicksToJavaScriptTicks(ticks);
-    }
-
-    private static long UniversialTicksToJavaScriptTicks(long universialTicks)
-    {
-      long javaScriptTicks = (universialTicks - InitialJavaScriptDateTicks)/10000;
-
-      return javaScriptTicks;
-    }
-
-    internal static DateTime ConvertJavaScriptTicksToDateTime(long javaScriptTicks)
-    {
-      DateTime dateTime = new DateTime((javaScriptTicks*10000) + InitialJavaScriptDateTicks, DateTimeKind.Utc);
-
-      return dateTime;
-    }
-
-    private static DateTime SwitchToLocalTime(DateTime value)
-    {
-      switch (value.Kind)
-      {
-        case DateTimeKind.Unspecified:
-          return new DateTime(value.Ticks, DateTimeKind.Local);
-
-        case DateTimeKind.Utc:
-          return value.ToLocalTime();
-
-        case DateTimeKind.Local:
-          return value;
-      }
-      return value;
-    }
-
-    private static DateTime SwitchToUtcTime(DateTime value)
-    {
-      switch (value.Kind)
-      {
-        case DateTimeKind.Unspecified:
-          return new DateTime(value.Ticks, DateTimeKind.Utc);
-
-        case DateTimeKind.Utc:
-          return value;
-
-        case DateTimeKind.Local:
-          return value.ToUniversalTime();
-      }
-      return value;
-    }
 
     /// <summary>
     /// Converts the <see cref="Boolean"/> to its JSON string representation.
@@ -738,126 +496,6 @@ namespace Newtonsoft.Json
 #endif
 
       return false;
-    }
-
-    internal static bool TryParseDateTime(string s, DateParseHandling dateParseHandling, DateTimeZoneHandling dateTimeZoneHandling, out object dt)
-    {
-      if (s.Length > 0)
-      {
-        if (s[0] == '/')
-        {
-          if (s.StartsWith("/Date(", StringComparison.Ordinal) && s.EndsWith(")/", StringComparison.Ordinal))
-          {
-            return TryParseDateMicrosoft(s, dateParseHandling, dateTimeZoneHandling, out dt);
-          }
-        }
-        else if (char.IsDigit(s[0]) && s.Length >= 19 && s.Length <= 40)
-        {
-          return TryParseDateIso(s, dateParseHandling, dateTimeZoneHandling, out dt);
-        }
-      }
-
-      dt = null;
-      return false;
-    }
-
-    private static bool TryParseDateIso(string text, DateParseHandling dateParseHandling, DateTimeZoneHandling dateTimeZoneHandling, out object dt)
-    {
-      const string isoDateFormat = "yyyy-MM-ddTHH:mm:ss.FFFFFFFK";
-
-#if !NET20
-      if (dateParseHandling == DateParseHandling.DateTimeOffset)
-      {
-        DateTimeOffset dateTimeOffset;
-        if (DateTimeOffset.TryParseExact(text, isoDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out dateTimeOffset))
-        {
-          dt = dateTimeOffset;
-          return true;
-        }
-      }
-      else
-#endif
-      {
-        DateTime dateTime;
-        if (DateTime.TryParseExact(text, isoDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out dateTime))
-        {
-          dateTime = EnsureDateTime(dateTime, dateTimeZoneHandling);
-
-          dt = dateTime;
-          return true;
-        }
-      }
-
-      dt = null;
-      return false;
-    }
-
-    private static bool TryParseDateMicrosoft(string text, DateParseHandling dateParseHandling, DateTimeZoneHandling dateTimeZoneHandling, out object dt)
-    {
-      string value = text.Substring(6, text.Length - 8);
-      DateTimeKind kind = DateTimeKind.Utc;
-
-      int index = value.IndexOf('+', 1);
-
-      if (index == -1)
-        index = value.IndexOf('-', 1);
-
-      TimeSpan offset = TimeSpan.Zero;
-
-      if (index != -1)
-      {
-        kind = DateTimeKind.Local;
-        offset = ReadOffset(value.Substring(index));
-        value = value.Substring(0, index);
-      }
-
-      long javaScriptTicks = long.Parse(value, NumberStyles.Integer, CultureInfo.InvariantCulture);
-
-      DateTime utcDateTime = ConvertJavaScriptTicksToDateTime(javaScriptTicks);
-
-#if !NET20
-      if (dateParseHandling == DateParseHandling.DateTimeOffset)
-      {
-        dt = new DateTimeOffset(utcDateTime.Add(offset).Ticks, offset);
-        return true;
-      }
-      else
-#endif
-      {
-        DateTime dateTime;
-
-        switch (kind)
-        {
-          case DateTimeKind.Unspecified:
-            dateTime = DateTime.SpecifyKind(utcDateTime.ToLocalTime(), DateTimeKind.Unspecified);
-            break;
-          case DateTimeKind.Local:
-            dateTime = utcDateTime.ToLocalTime();
-            break;
-          default:
-            dateTime = utcDateTime;
-            break;
-        }
-
-        dt = EnsureDateTime(dateTime, dateTimeZoneHandling);
-        return true;
-      }
-    }
-
-    private static TimeSpan ReadOffset(string offsetText)
-    {
-      bool negative = (offsetText[0] == '-');
-
-      int hours = int.Parse(offsetText.Substring(1, 2), NumberStyles.Integer, CultureInfo.InvariantCulture);
-      int minutes = 0;
-      if (offsetText.Length >= 5)
-        minutes = int.Parse(offsetText.Substring(3, 2), NumberStyles.Integer, CultureInfo.InvariantCulture);
-
-      TimeSpan offset = TimeSpan.FromHours(hours) + TimeSpan.FromMinutes(minutes);
-      if (negative)
-        offset = offset.Negate();
-
-      return offset;
     }
 
     #region Serialize

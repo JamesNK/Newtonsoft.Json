@@ -71,6 +71,7 @@ namespace Newtonsoft.Json.Serialization
     internal bool IsNullable;
     internal bool IsConvertable;
     internal bool IsSealed;
+    internal bool IsEnum;
     internal Type NonNullableUnderlyingType;
     internal ReadType InternalReadType;
     internal JsonContractType ContractType;
@@ -286,7 +287,7 @@ namespace Newtonsoft.Json.Serialization
       CreatedType = NonNullableUnderlyingType;
 
       IsConvertable = ConvertUtils.IsConvertible(NonNullableUnderlyingType);
-
+      IsEnum = NonNullableUnderlyingType.IsEnum();
 
       if (NonNullableUnderlyingType == typeof(byte[]))
       {

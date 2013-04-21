@@ -57,6 +57,7 @@
     <CodeAnalysisRules>
     </CodeAnalysisRules>
     <CodeAnalysisRuleSet>Newtonsoft.Json.ruleset</CodeAnalysisRuleSet>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -122,6 +123,7 @@
     <Compile Include="Serialization\JsonContainerContract.cs" />
     <Compile Include="Serialization\MemoryTraceWriter.cs" />
     <Compile Include="StringEscapeHandling.cs" />
+    <Compile Include="Utilities\DateTimeParser.cs" />
     <Compile Include="Utilities\DynamicProxy.cs" />
     <Compile Include="Linq\JPath.cs" />
     <Compile Include="Linq\JRaw.cs" />

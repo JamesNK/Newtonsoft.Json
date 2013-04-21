@@ -42,22 +42,23 @@ namespace Newtonsoft.Json
   /// </summary>
   public class JsonSerializer
   {
-    #region Properties
-    private TypeNameHandling _typeNameHandling;
-    private FormatterAssemblyStyle _typeNameAssemblyFormat;
-    private PreserveReferencesHandling _preserveReferencesHandling;
-    private ReferenceLoopHandling _referenceLoopHandling;
-    private MissingMemberHandling _missingMemberHandling;
-    private ObjectCreationHandling _objectCreationHandling;
-    private NullValueHandling _nullValueHandling;
-    private DefaultValueHandling _defaultValueHandling;
-    private ConstructorHandling _constructorHandling;
-    private JsonConverterCollection _converters;
-    private IContractResolver _contractResolver;
+    #region Properties_binder
+    internal TypeNameHandling _typeNameHandling;
+    internal FormatterAssemblyStyle _typeNameAssemblyFormat;
+    internal PreserveReferencesHandling _preserveReferencesHandling;
+    internal ReferenceLoopHandling _referenceLoopHandling;
+    internal MissingMemberHandling _missingMemberHandling;
+    internal ObjectCreationHandling _objectCreationHandling;
+    internal NullValueHandling _nullValueHandling;
+    internal DefaultValueHandling _defaultValueHandling;
+    internal ConstructorHandling _constructorHandling;
+    internal JsonConverterCollection _converters;
+    internal IContractResolver _contractResolver;
+    internal ITraceWriter _traceWriter;
+    internal SerializationBinder _binder;
+    internal StreamingContext _context;
     private IReferenceResolver _referenceResolver;
-    private ITraceWriter _traceWriter;
-    private SerializationBinder _binder;
-    private StreamingContext _context;
+
     private Formatting? _formatting;
     private DateFormatHandling? _dateFormatHandling;
     private DateTimeZoneHandling? _dateTimeZoneHandling;
@@ -82,13 +83,7 @@ namespace Newtonsoft.Json
     /// </summary>
     public virtual IReferenceResolver ReferenceResolver
     {
-      get
-      {
-        if (_referenceResolver == null)
-          _referenceResolver = new DefaultReferenceResolver();
-
-        return _referenceResolver;
-      }
+      get { return GetReferenceResolver(); }
       set
       {
         if (value == null)
@@ -291,14 +286,8 @@ namespace Newtonsoft.Json
     /// </summary>
     public virtual IContractResolver ContractResolver
     {
-      get
-      {
-        if (_contractResolver == null)
-          _contractResolver = DefaultContractResolver.Instance;
-
-        return _contractResolver;
-      }
-      set { _contractResolver = value; }
+      get { return _contractResolver; }
+      set { _contractResolver = value ?? DefaultContractResolver.Instance; }
     }
 
     /// <summary>
@@ -448,6 +437,9 @@ namespace Newtonsoft.Json
       _typeNameHandling = JsonSerializerSettings.DefaultTypeNameHandling;
       _context = JsonSerializerSettings.DefaultContext;
       _binder = DefaultSerializationBinder.Instance;
+
+      _culture = JsonSerializerSettings.DefaultCulture;
+      _contractResolver = DefaultContractResolver.Instance;
     }
 
     /// <summary>
@@ -767,6 +759,14 @@ namespace Newtonsoft.Json
         jsonWriter.DateFormatString = previousDateFormatString;
       if (previousCulture != null)
         jsonWriter.Culture = previousCulture;
+    }
+
+    internal IReferenceResolver GetReferenceResolver()
+    {
+      if (_referenceResolver == null)
+        _referenceResolver = new DefaultReferenceResolver();
+
+      return _referenceResolver;
     }
 
     internal JsonConverter GetMatchingConverter(Type type)

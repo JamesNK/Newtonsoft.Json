@@ -190,6 +190,7 @@
     <Compile Include="Utilities\CollectionUtils.cs" />
     <Compile Include="Utilities\CollectionWrapper.cs" />
     <Compile Include="Utilities\ConvertUtils.cs" />
+    <Compile Include="Utilities\DateTimeParser.cs" />
     <Compile Include="Utilities\DateTimeUtils.cs" />
     <Compile Include="Utilities\DictionaryWrapper.cs" />
     <Compile Include="Utilities\DynamicProxy.cs" />

@@ -78,7 +78,7 @@ namespace Newtonsoft.Json
 
       _reader = reader;
       _lineNumber = 1;
-      _chars = new char[2049];
+      _chars = new char[1025];
     }
 
 #if DEBUG
@@ -92,7 +92,7 @@ namespace Newtonsoft.Json
     {
       if (_buffer == null)
       {
-        _buffer = new StringBuffer(2048);
+        _buffer = new StringBuffer(1025);
       }
       else
       {
@@ -153,7 +153,7 @@ namespace Newtonsoft.Json
             dateParseHandling = _dateParseHandling;
 
           object dt;
-          if (JsonConvert.TryParseDateTime(text, dateParseHandling, DateTimeZoneHandling, out dt))
+          if (DateTimeUtils.TryParseDateTime(text, dateParseHandling, DateTimeZoneHandling, out dt))
           {
             SetToken(JsonToken.Date, dt);
             return;

@@ -700,7 +700,7 @@ namespace Newtonsoft.Json
 
         if (DateTime.TryParse(s, Culture, DateTimeStyles.RoundtripKind, out dt))
         {
-          dt = JsonConvert.EnsureDateTime(dt, DateTimeZoneHandling);
+          dt = DateTimeUtils.EnsureDateTime(dt, DateTimeZoneHandling);
           SetToken(JsonToken.Date, dt);
           return dt;
         }

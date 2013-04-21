@@ -50,6 +50,7 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
 #endif
+using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Tests.Linq
 {
@@ -419,7 +420,7 @@ Parameter name: arrayIndex",
       JArray a = (JArray)JsonConvert.DeserializeObject(json);
       JValue v = (JValue)a[0];
 
-      Assert.AreEqual(JsonConvert.ConvertJavaScriptTicksToDateTime(1207285200000), (DateTime)v);
+      Assert.AreEqual(DateTimeUtils.ConvertJavaScriptTicksToDateTime(1207285200000), (DateTime)v);
     }
 
     [Test]

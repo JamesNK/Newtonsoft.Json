@@ -64,8 +64,8 @@ namespace Newtonsoft.Json.Tests
   [TestFixture]
   public class PerformanceTests : TestFixtureBase
   {
-    //private const int Iterations = 100;
-    private const int Iterations = 5000;
+    private const int Iterations = 100;
+    //private const int Iterations = 5000;
 
 #region Data
 
@@ -105,7 +105,7 @@ namespace Newtonsoft.Json.Tests
     [Test]
     public void SerializeSimpleObject()
     {
-      var value = CreateSimpleObject();
+      SimpleObject value = CreateSimpleObject();
 
       SerializeTests(value);
     }
@@ -140,19 +140,19 @@ namespace Newtonsoft.Json.Tests
     [Test]
     public void Deserialize()
     {
-      //BenchmarkDeserializeMethod<TestClass>(SerializeMethod.DataContractSerializer, XmlText);
-      //BenchmarkDeserializeMethod<TestClass>(SerializeMethod.BinaryFormatter, MiscellaneousUtils.HexToBytes(BinaryFormatterHex));
+      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.DataContractSerializer, XmlText);
+      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.BinaryFormatter, HexToBytes(BinaryFormatterHex));
       DeserializeTests<TestClass>(JsonText);
-      //BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JsonNetWithIsoConverter, JsonIsoText);
-      //BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JsonNetBinary, MiscellaneousUtils.HexToBytes(BsonHex));
+      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JsonNetWithIsoConverter, JsonIsoText);
+      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JsonNetBinary, HexToBytes(BsonHex));
     }
 
     public void DeserializeTests<T>(string json)
     {
-      //BenchmarkDeserializeMethod<T>(SerializeMethod.JavaScriptSerializer, json);
-      //BenchmarkDeserializeMethod<T>(SerializeMethod.DataContractJsonSerializer, json);
+      BenchmarkDeserializeMethod<T>(SerializeMethod.JavaScriptSerializer, json);
+      BenchmarkDeserializeMethod<T>(SerializeMethod.DataContractJsonSerializer, json);
       BenchmarkDeserializeMethod<T>(SerializeMethod.JsonNet, json);
-      //BenchmarkDeserializeMethod<T>(SerializeMethod.JsonNetManual, json);
+      BenchmarkDeserializeMethod<T>(SerializeMethod.JsonNetManual, json);
     }
 
     [Test]

@@ -73,7 +73,7 @@ namespace Newtonsoft.Json.Serialization
 
       Type objectType = target.GetType();
 
-      JsonContract contract = Serializer.ContractResolver.ResolveContract(objectType);
+      JsonContract contract = Serializer._contractResolver.ResolveContract(objectType);
 
       if (reader.TokenType == JsonToken.None)
         reader.Read();
@@ -128,7 +128,7 @@ namespace Newtonsoft.Json.Serialization
       if (type == null)
         return null;
 
-      return Serializer.ContractResolver.ResolveContract(type);
+      return Serializer._contractResolver.ResolveContract(type);
     }
 
     public object Deserialize(JsonReader reader, Type objectType, bool checkAdditionalContent)
@@ -496,7 +496,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                 if (reader.TokenType == JsonToken.PropertyName)
                   throw JsonSerializationException.Create(reader, "Additional content found in JSON reference object. A JSON reference object should only have a {0} property.".FormatWith(CultureInfo.InvariantCulture, JsonTypeReflector.RefPropertyName));
 
-                newValue = Serializer.ReferenceResolver.ResolveReference(this, reference);
+                newValue = Serializer.GetReferenceResolver().ResolveReference(this, reference);
 
                 if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Info)
                   TraceWriter.Trace(TraceLevel.Info, JsonPosition.FormatMessage(reader as IJsonLineInfo, reader.Path, "Resolved object reference '{0}' to {1}.".FormatWith(CultureInfo.InvariantCulture, reference, newValue.GetType())), null);
@@ -517,7 +517,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                 ((member != null) ? member.TypeNameHandling : null)
                 ?? ((containerContract != null) ? containerContract.ItemTypeNameHandling : null)
                 ?? ((containerMember != null) ? containerMember.ItemTypeNameHandling : null)
-                ?? Serializer.TypeNameHandling;
+                ?? Serializer._typeNameHandling;
 
               if (resolvedTypeNameHandling != TypeNameHandling.None)
               {
@@ -528,7 +528,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                 Type specifiedType;
                 try
                 {
-                  specifiedType = Serializer.Binder.BindToType(assemblyName, typeName);
+                  specifiedType = Serializer._binder.BindToType(assemblyName, typeName);
                 }
                 catch (Exception ex)
                 {
@@ -697,7 +697,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
           {
             JsonPrimitiveContract primitiveContract = (JsonPrimitiveContract)contract;
 
-            if (contract.NonNullableUnderlyingType.IsEnum())
+            if (contract.IsEnum)
             {
               if (value is string)
                 return Enum.Parse(contract.NonNullableUnderlyingType, value.ToString(), true);
@@ -786,7 +786,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
         property.PropertyContract = GetContractSafe(property.PropertyType);
 
       ObjectCreationHandling objectCreationHandling =
-        property.ObjectCreationHandling.GetValueOrDefault(Serializer.ObjectCreationHandling);
+        property.ObjectCreationHandling.GetValueOrDefault(Serializer._objectCreationHandling);
 
       if ((objectCreationHandling != ObjectCreationHandling.Replace)
           && (tokenType == JsonToken.StartArray || tokenType == JsonToken.StartObject)
@@ -810,14 +810,14 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
       }
 
       // test tokentype here because null might not be convertable to some types, e.g. ignoring null when applied to DateTime
-      if (property.NullValueHandling.GetValueOrDefault(Serializer.NullValueHandling) == NullValueHandling.Ignore && tokenType == JsonToken.Null)
+      if (property.NullValueHandling.GetValueOrDefault(Serializer._nullValueHandling) == NullValueHandling.Ignore && tokenType == JsonToken.Null)
       {
         reader.Skip();
         return true;
       }
 
       // test tokentype here because default value might not be convertable to actual type, e.g. default of "" for DateTime
-      if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer.DefaultValueHandling), DefaultValueHandling.Ignore)
+      if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer._defaultValueHandling), DefaultValueHandling.Ignore)
           && JsonReader.IsPrimitiveToken(tokenType)
           && MiscellaneousUtils.ValueEquals(reader.Value, property.GetResolvedDefaultValue()))
       {
@@ -847,7 +847,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
         if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
           TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(reader as IJsonLineInfo, reader.Path, "Read object reference Id '{0}' for {1}.".FormatWith(CultureInfo.InvariantCulture, id, value.GetType())), null);
 
-        Serializer.ReferenceResolver.AddReference(this, id, value);
+        Serializer.GetReferenceResolver().AddReference(this, id, value);
       }
       catch (Exception ex)
       {
@@ -862,10 +862,10 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
 
     private bool ShouldSetPropertyValue(JsonProperty property, object value)
     {
-      if (property.NullValueHandling.GetValueOrDefault(Serializer.NullValueHandling) == NullValueHandling.Ignore && value == null)
+      if (property.NullValueHandling.GetValueOrDefault(Serializer._nullValueHandling) == NullValueHandling.Ignore && value == null)
         return false;
 
-      if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer.DefaultValueHandling), DefaultValueHandling.Ignore)
+      if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer._defaultValueHandling), DefaultValueHandling.Ignore)
         && MiscellaneousUtils.ValueEquals(value, property.GetResolvedDefaultValue()))
         return false;
 
@@ -891,7 +891,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
 
         return list;
       }
-      else if (contract.DefaultCreator != null && (!contract.DefaultCreatorNonPublic || Serializer.ConstructorHandling == ConstructorHandling.AllowNonPublicDefaultConstructor))
+      else if (contract.DefaultCreator != null && (!contract.DefaultCreatorNonPublic || Serializer._constructorHandling == ConstructorHandling.AllowNonPublicDefaultConstructor))
       {
         object list = contract.DefaultCreator();
 
@@ -919,7 +919,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
         createdFromNonDefaultConstructor = true;
         return contract.CreateTemporaryDictionary();
       }
-      else if (contract.DefaultCreator != null && (!contract.DefaultCreatorNonPublic || Serializer.ConstructorHandling == ConstructorHandling.AllowNonPublicDefaultConstructor))
+      else if (contract.DefaultCreator != null && (!contract.DefaultCreatorNonPublic || Serializer._constructorHandling == ConstructorHandling.AllowNonPublicDefaultConstructor))
       {
         object dictionary = contract.DefaultCreator();
 
@@ -945,7 +945,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
       if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Info)
         TraceWriter.Trace(TraceLevel.Info, JsonPosition.FormatMessage(reader as IJsonLineInfo, reader.Path, "Started deserializing {0}".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType)), null);
 
-      contract.InvokeOnDeserializing(value, Serializer.Context);
+      contract.InvokeOnDeserializing(value, Serializer._context);
     }
 
     private void OnDeserialized(JsonReader reader, JsonContract contract, object value)
@@ -953,7 +953,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
       if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Info)
         TraceWriter.Trace(TraceLevel.Info, JsonPosition.FormatMessage(reader as IJsonLineInfo, reader.Path, "Finished deserializing {0}".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType)), null);
 
-      contract.InvokeOnDeserialized(value, Serializer.Context);
+      contract.InvokeOnDeserialized(value, Serializer._context);
     }
 
     private object PopulateDictionary(IDictionary dictionary, JsonReader reader, JsonDictionaryContract contract, JsonProperty containerProperty, string id)
@@ -990,12 +990,12 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
               {
                 // this is for correctly reading ISO and MS formatted dictionary keys
                 if ((keyTypeCode == PrimitiveTypeCode.DateTime || keyTypeCode == PrimitiveTypeCode.DateTimeNullable)
-                  && JsonConvert.TryParseDateTime(keyValue.ToString(), DateParseHandling.DateTime, reader.DateTimeZoneHandling, out keyValue))
+                  && DateTimeUtils.TryParseDateTime(keyValue.ToString(), DateParseHandling.DateTime, reader.DateTimeZoneHandling, out keyValue))
                 {
                 }
 #if !NET20
                 else if ((keyTypeCode == PrimitiveTypeCode.DateTimeOffset || keyTypeCode == PrimitiveTypeCode.DateTimeOffsetNullable)
-                  && JsonConvert.TryParseDateTime(keyValue.ToString(), DateParseHandling.DateTimeOffset, reader.DateTimeZoneHandling, out keyValue))
+                  && DateTimeUtils.TryParseDateTime(keyValue.ToString(), DateParseHandling.DateTimeOffset, reader.DateTimeZoneHandling, out keyValue))
                 {
                 }
 #endif
@@ -1316,7 +1316,7 @@ To fix this error either change the environment to be fully trusted, change the 
       if (contract.ISerializableCreator == null)
         throw JsonSerializationException.Create(reader, "ISerializable type '{0}' does not have a valid constructor. To correctly implement ISerializable a constructor that takes SerializationInfo and StreamingContext parameters should be present.".FormatWith(CultureInfo.InvariantCulture, objectType));
 
-      object createdObject = contract.ISerializableCreator(serializationInfo, Serializer.Context);
+      object createdObject = contract.ISerializableCreator(serializationInfo, Serializer._context);
 
       if (id != null)
         AddReference(reader, id, createdObject);
@@ -1338,7 +1338,7 @@ To fix this error either change the environment to be fully trusted, change the 
         throw JsonSerializationException.Create(reader, "Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantiated.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
       if (contract.DefaultCreator != null &&
-        (!contract.DefaultCreatorNonPublic || Serializer.ConstructorHandling == ConstructorHandling.AllowNonPublicDefaultConstructor))
+        (!contract.DefaultCreatorNonPublic || Serializer._constructorHandling == ConstructorHandling.AllowNonPublicDefaultConstructor))
         newObject = (IDynamicMetaObjectProvider) contract.DefaultCreator();
       else
         throw JsonSerializationException.Create(reader, "Unable to find a default constructor to use for type {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
@@ -1459,7 +1459,7 @@ To fix this error either change the environment to be fully trusted, change the 
         else if (!property.Writable && value != null)
         {
           // handle readonly collection/dictionary properties
-          JsonContract propertyContract = Serializer.ContractResolver.ResolveContract(property.PropertyType);
+          JsonContract propertyContract = Serializer._contractResolver.ResolveContract(property.PropertyType);
 
           if (propertyContract.ContractType == JsonContractType.Array)
           {
@@ -1565,7 +1565,7 @@ To fix this error either change the environment to be fully trusted, change the 
               if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
                 TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(reader as IJsonLineInfo, reader.Path, "Could not find member '{0}' on {1}.".FormatWith(CultureInfo.InvariantCulture, memberName, contract.UnderlyingType)), null);
 
-              if (Serializer.MissingMemberHandling == MissingMemberHandling.Error)
+              if (Serializer._missingMemberHandling == MissingMemberHandling.Error)
                 throw JsonSerializationException.Create(reader, "Could not find member '{0}' on object of type '{1}'".FormatWith(CultureInfo.InvariantCulture, memberName, objectType.Name));
 
               reader.Skip();
@@ -1648,7 +1648,7 @@ To fix this error either change the environment to be fully trusted, change the 
         newObject = objectContract.OverrideConstructor.Invoke(null);
       }
       else if (objectContract.DefaultCreator != null &&
-        (!objectContract.DefaultCreatorNonPublic || Serializer.ConstructorHandling == ConstructorHandling.AllowNonPublicDefaultConstructor || objectContract.ParametrizedConstructor == null))
+        (!objectContract.DefaultCreatorNonPublic || Serializer._constructorHandling == ConstructorHandling.AllowNonPublicDefaultConstructor || objectContract.ParametrizedConstructor == null))
       {
         // use the default constructor if it is...
         // public
@@ -1674,7 +1674,7 @@ To fix this error either change the environment to be fully trusted, change the 
       OnDeserializing(reader, contract, newObject);
 
       // only need to keep a track of properies presence if they are required or a value should be defaulted if missing
-      Dictionary<JsonProperty, PropertyPresence> propertiesPresence = (contract.HasRequiredOrDefaultValueProperties || HasFlag(Serializer.DefaultValueHandling, DefaultValueHandling.Populate))
+      Dictionary<JsonProperty, PropertyPresence> propertiesPresence = (contract.HasRequiredOrDefaultValueProperties || HasFlag(Serializer._defaultValueHandling, DefaultValueHandling.Populate))
         ? contract.Properties.ToDictionary(m => m, m => PropertyPresence.None)
         : null;
 
@@ -1703,7 +1703,7 @@ To fix this error either change the environment to be fully trusted, change the 
                   if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
                     TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(reader as IJsonLineInfo, reader.Path, "Could not find member '{0}' on {1}".FormatWith(CultureInfo.InvariantCulture, memberName, contract.UnderlyingType)), null);
 
-                  if (Serializer.MissingMemberHandling == MissingMemberHandling.Error)
+                  if (Serializer._missingMemberHandling == MissingMemberHandling.Error)
                     throw JsonSerializationException.Create(reader, "Could not find member '{0}' on object of type '{1}'".FormatWith(CultureInfo.InvariantCulture, memberName, contract.UnderlyingType.Name));
 
                   reader.Skip();
@@ -1775,7 +1775,7 @@ To fix this error either change the environment to be fully trusted, change the 
                   if (property.PropertyContract == null)
                     property.PropertyContract = GetContractSafe(property.PropertyType);
 
-                  if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer.DefaultValueHandling), DefaultValueHandling.Populate) && property.Writable)
+                  if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer._defaultValueHandling), DefaultValueHandling.Populate) && property.Writable)
                     property.ValueProvider.SetValue(newObject, EnsureType(reader, property.GetResolvedDefaultValue(), CultureInfo.InvariantCulture, property.PropertyContract, property.PropertyType));
                   break;
                 case PropertyPresence.Null:
