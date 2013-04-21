@@ -26,6 +26,11 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
+#endif
 using System.Runtime.Serialization;
 using System.Text;
 using System.Xml;
@@ -1311,6 +1316,83 @@ _____'propertyName': NaN
       // trailing delimiter
       if (appendDelimiters)
         writer.Write(delimiter);
+    }
+
+    [Test]
+    public void CustomJsonTextWriterTests()
+    {
+      StringWriter sw = new StringWriter();
+      CustomJsonTextWriter writer = new CustomJsonTextWriter(sw) { Formatting = Formatting.Indented };
+      writer.WriteStartObject();
+      Assert.AreEqual(WriteState.Object, writer.WriteState);
+      writer.WritePropertyName("Property1");
+      Assert.AreEqual(WriteState.Property, writer.WriteState);
+      Assert.AreEqual("Property1", writer.Path);
+      writer.WriteNull();
+      Assert.AreEqual(WriteState.Object, writer.WriteState);
+      writer.WriteEndObject();
+      Assert.AreEqual(WriteState.Start, writer.WriteState);
+
+      Assert.AreEqual(@"{{{
+  ""1ytreporP"": NULL!!!
+}}}", sw.ToString());
+    }
+  }
+
+  public class CustomJsonTextWriter : JsonTextWriter
+  {
+    private readonly TextWriter _writer;
+
+    public CustomJsonTextWriter(TextWriter textWriter) : base(textWriter)
+    {
+      _writer = textWriter;
+    }
+
+    public override void WritePropertyName(string name)
+    {
+      WritePropertyName(name, true);
+    }
+
+    public override void WritePropertyName(string name, bool escape)
+    {
+      SetWriteState(JsonToken.PropertyName, name);
+
+      if (QuoteName)
+        _writer.Write(QuoteChar);
+
+      _writer.Write(new string(name.Reverse().ToArray()));
+
+      if (QuoteName)
+        _writer.Write(QuoteChar);
+
+      _writer.Write(':');
+    }
+
+    public override void WriteNull()
+    {
+      SetWriteState(JsonToken.Null, null);
+
+      _writer.Write("NULL!!!");
+    }
+
+    public override void WriteStartObject()
+    {
+      SetWriteState(JsonToken.StartObject, null);
+
+      _writer.Write("{{{");
+    }
+
+    public override void WriteEndObject()
+    {
+      SetWriteState(JsonToken.EndObject, null);
+    }
+
+    protected override void WriteEnd(JsonToken token)
+    {
+      if (token == JsonToken.EndObject)
+        _writer.Write("}}}");
+      else
+        base.WriteEnd(token);
     }
   }
 

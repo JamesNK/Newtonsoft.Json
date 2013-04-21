@@ -329,7 +329,7 @@ namespace Newtonsoft.Json
     /// </summary>
     public override void WriteNull()
     {
-      InternalWriteNull();
+      InternalWriteValue(JsonToken.Null);
       WriteValueInternal(JsonConvert.Null, JsonToken.Null);
     }
 
@@ -338,7 +338,7 @@ namespace Newtonsoft.Json
     /// </summary>
     public override void WriteUndefined()
     {
-      InternalWriteUndefined();
+      InternalWriteValue(JsonToken.Undefined);
       WriteValueInternal(JsonConvert.Undefined, JsonToken.Undefined);
     }
 

@@ -358,13 +358,6 @@ namespace Newtonsoft.Json
       InternalWriteStart(JsonToken.StartObject, JsonContainerType.Object);
     }
 
-    internal void InternalWriteStart(JsonToken token, JsonContainerType container)
-    {
-      UpdateScopeWithFinishedValue();
-      AutoComplete(token);
-      Push(container);
-    }
-
     /// <summary>
     /// Writes the end of a Json object.
     /// </summary>
@@ -406,11 +399,6 @@ namespace Newtonsoft.Json
       InternalWriteEnd(JsonContainerType.Constructor);
     }
 
-    internal void InternalWriteEnd(JsonContainerType container)
-    {
-      AutoCompleteClose(container);
-    }
-
     /// <summary>
     /// Writes the property name of a name/value pair on a JSON object.
     /// </summary>
@@ -428,12 +416,6 @@ namespace Newtonsoft.Json
     public virtual void WritePropertyName(string name, bool escape)
     {
       WritePropertyName(name);
-    }
-
-    internal void InternalWritePropertyName(string name)
-    {
-      _currentPosition.PropertyName = name;
-      AutoComplete(JsonToken.PropertyName);
     }
 
     /// <summary>
@@ -775,13 +757,7 @@ namespace Newtonsoft.Json
     /// </summary>
     public virtual void WriteNull()
     {
-      InternalWriteNull();
-    }
-
-    internal void InternalWriteNull()
-    {
-      UpdateScopeWithFinishedValue();
-      AutoComplete(JsonToken.Null);
+      InternalWriteValue(JsonToken.Null);
     }
 
     /// <summary>
@@ -789,13 +765,7 @@ namespace Newtonsoft.Json
     /// </summary>
     public virtual void WriteUndefined()
     {
-      InternalWriteUndefined();
-    }
-
-    internal void InternalWriteUndefined()
-    {
-      UpdateScopeWithFinishedValue();
-      AutoComplete(JsonToken.Undefined);
+      InternalWriteValue(JsonToken.Undefined);
     }
 
     /// <summary>
@@ -805,10 +775,6 @@ namespace Newtonsoft.Json
     public virtual void WriteRaw(string json)
     {
       InternalWriteRaw();
-    }
-
-    internal void InternalWriteRaw()
-    {
     }
 
     /// <summary>
@@ -830,12 +796,6 @@ namespace Newtonsoft.Json
     public virtual void WriteValue(string value)
     {
       InternalWriteValue(JsonToken.String);
-    }
-
-    internal void InternalWriteValue(JsonToken token)
-    {
-      UpdateScopeWithFinishedValue();
-      AutoComplete(token);
     }
 
     /// <summary>
@@ -1265,11 +1225,6 @@ namespace Newtonsoft.Json
       InternalWriteComment();
     }
 
-    internal void InternalWriteComment()
-    {
-      AutoComplete(JsonToken.Comment);
-    }
-
     /// <summary>
     /// Writes out the given white space.
     /// </summary>
@@ -1277,15 +1232,6 @@ namespace Newtonsoft.Json
     public virtual void WriteWhitespace(string ws)
     {
       InternalWriteWhitespace(ws);
-    }
-
-    internal void InternalWriteWhitespace(string ws)
-    {
-      if (ws != null)
-      {
-        if (!StringUtils.IsWhiteSpace(ws))
-          throw JsonWriterException.Create(this, "Only white space characters should be used.", null);
-      }
     }
 
     void IDisposable.Dispose()
@@ -1455,6 +1401,102 @@ namespace Newtonsoft.Json
     private static JsonWriterException CreateUnsupportedTypeException(JsonWriter writer, object value)
     {
       return JsonWriterException.Create(writer, "Unsupported type: {0}. Use the JsonSerializer class to get the object's JSON representation.".FormatWith(CultureInfo.InvariantCulture, value.GetType()), null);
+    }
+
+    /// <summary>
+    /// Sets the state of the JsonWriter,
+    /// </summary>
+    /// <param name="token">The JsonToken being written.</param>
+    /// <param name="value">The value being written.</param>
+    protected void SetWriteState(JsonToken token, object value)
+    {
+      switch (token)
+      {
+        case JsonToken.StartObject:
+          InternalWriteStart(token, JsonContainerType.Object);
+          break;
+        case JsonToken.StartArray:
+          InternalWriteStart(token, JsonContainerType.Array);
+          break;
+        case JsonToken.StartConstructor:
+          InternalWriteStart(token, JsonContainerType.Constructor);
+          break;
+        case JsonToken.PropertyName:
+          if (!(value is string))
+            throw new ArgumentException("A name is required when setting property name state.", "value");
+
+          InternalWritePropertyName((string)value);
+          break;
+        case JsonToken.Comment:
+          InternalWriteComment();
+          break;
+        case JsonToken.Raw:
+          InternalWriteRaw();
+          break;
+        case JsonToken.Integer:
+        case JsonToken.Float:
+        case JsonToken.String:
+        case JsonToken.Boolean:
+        case JsonToken.Date:
+        case JsonToken.Bytes:
+        case JsonToken.Null:
+        case JsonToken.Undefined:
+          InternalWriteValue(token);
+          break;
+        case JsonToken.EndObject:
+          InternalWriteEnd(JsonContainerType.Object);
+          break;
+        case JsonToken.EndArray:
+          InternalWriteEnd(JsonContainerType.Array);
+          break;
+        case JsonToken.EndConstructor:
+          InternalWriteEnd(JsonContainerType.Constructor);
+          break;
+        default:
+          throw new ArgumentOutOfRangeException("token");
+      }
+    }
+
+    internal void InternalWriteEnd(JsonContainerType container)
+    {
+      AutoCompleteClose(container);
+    }
+
+    internal void InternalWritePropertyName(string name)
+    {
+      _currentPosition.PropertyName = name;
+      AutoComplete(JsonToken.PropertyName);
+    }
+
+    internal void InternalWriteRaw()
+    {
+    }
+
+    internal void InternalWriteStart(JsonToken token, JsonContainerType container)
+    {
+      UpdateScopeWithFinishedValue();
+      AutoComplete(token);
+      Push(container);
+    }
+
+    internal void InternalWriteValue(JsonToken token)
+    {
+      UpdateScopeWithFinishedValue();
+      AutoComplete(token);
+    }
+
+    internal void InternalWriteWhitespace(string ws)
+    {
+      if (ws != null)
+      {
+        if (!StringUtils.IsWhiteSpace(ws))
+          throw JsonWriterException.Create(this, "Only white space characters should be used.", null);
+      }
+    }
+
+    internal void InternalWriteComment()
+    {
+      AutoComplete(JsonToken.Comment);
     }
   }
 }
