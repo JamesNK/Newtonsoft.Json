@@ -26,7 +26,9 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
 using System.Numerics;
+#endif
 using System.Text;
 #if !NETFX_CORE
 using NUnit.Framework;
