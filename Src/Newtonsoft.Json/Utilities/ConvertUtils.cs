@@ -619,7 +619,13 @@ namespace Newtonsoft.Json.Utilities
       // go from negative to positive to avoids overflow
       // negative can be slightly bigger than positive
       if (!isNegative)
+      {
+        // negative integer can be one bigger than positive
+        if (result == int.MinValue)
+          throw new OverflowException();
+
         result = -result;
+      }
 
       return result;
     }
@@ -664,7 +670,13 @@ namespace Newtonsoft.Json.Utilities
       // go from negative to positive to avoids overflow
       // negative can be slightly bigger than positive
       if (!isNegative)
+      {
+        // negative integer can be one bigger than positive
+        if (value == long.MinValue)
+          return ParseResult.Overflow;
+
         value = -value;
+      }
 
       return ParseResult.Success;
     }

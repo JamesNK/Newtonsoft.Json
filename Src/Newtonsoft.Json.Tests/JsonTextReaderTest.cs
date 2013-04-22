@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Numerics;
 using System.Text;
 #if !NETFX_CORE
 using NUnit.Framework;
@@ -769,6 +770,93 @@ Parameter name: reader",
       reader.Read();
       Assert.AreEqual(JsonToken.Null, reader.TokenType);
     }
+
+    [Test]
+    public void ReadInt32Overflow()
+    {
+      long i = int.MaxValue;
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(i.ToString(CultureInfo.InvariantCulture)));
+      reader.Read();
+      Assert.AreEqual(typeof(long), reader.ValueType);
+
+      for (int j = 1; j < 1000; j++)
+      {
+        long total = j + i;
+        ExceptionAssert.Throws<OverflowException>(
+          "Arithmetic operation resulted in an overflow.",
+          () =>
+            {
+              reader = new JsonTextReader(new StringReader(total.ToString(CultureInfo.InvariantCulture)));
+              reader.ReadAsInt32();
+            });
+      }
+    }
+
+    [Test]
+    public void ReadInt32Overflow_Negative()
+    {
+      long i = int.MinValue;
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(i.ToString(CultureInfo.InvariantCulture)));
+      reader.Read();
+      Assert.AreEqual(typeof(long), reader.ValueType);
+      Assert.AreEqual(i, reader.Value);
+
+      for (int j = 1; j < 1000; j++)
+      {
+        long total = -j + i;
+        ExceptionAssert.Throws<OverflowException>(
+          "Arithmetic operation resulted in an overflow.",
+          () =>
+          {
+            reader = new JsonTextReader(new StringReader(total.ToString(CultureInfo.InvariantCulture)));
+            reader.ReadAsInt32();
+          });
+      }
+    }
+
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
+    [Test]
+    public void ReadInt64Overflow()
+    {
+      BigInteger i = new BigInteger(long.MaxValue);
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(i.ToString(CultureInfo.InvariantCulture)));
+      reader.Read();
+      Assert.AreEqual(typeof(long), reader.ValueType);
+      
+      for (int j = 1; j < 1000; j++)
+      {
+        BigInteger total = i + j;
+
+        reader = new JsonTextReader(new StringReader(total.ToString(CultureInfo.InvariantCulture)));
+        reader.Read();
+
+        Assert.AreEqual(typeof(BigInteger), reader.ValueType);
+      }
+    }
+
+    [Test]
+    public void ReadInt64Overflow_Negative()
+    {
+      BigInteger i = new BigInteger(long.MinValue);
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(i.ToString(CultureInfo.InvariantCulture)));
+      reader.Read();
+      Assert.AreEqual(typeof(long), reader.ValueType);
+
+      for (int j = 1; j < 1000; j++)
+      {
+        BigInteger total = i + -j;
+
+        reader = new JsonTextReader(new StringReader(total.ToString(CultureInfo.InvariantCulture)));
+        reader.Read();
+
+        Assert.AreEqual(typeof(BigInteger), reader.ValueType);
+      }
+    }
+#endif
 
     [Test]
     public void AppendCharsWhileReadingNewLine()
