@@ -71,7 +71,8 @@ namespace Newtonsoft.Json.Utilities
 
     private const string EscapedUnicodeText = "!";
 
-    public static void WriteEscapedJavaScriptString(TextWriter writer, string s, char delimiter, bool appendDelimiters, bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling)
+    public static void WriteEscapedJavaScriptString(TextWriter writer, string s, char delimiter, bool appendDelimiters,
+      bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling, ref char[] writeBuffer)
     {
       // leading delimiter
       if (appendDelimiters)
@@ -79,8 +80,6 @@ namespace Newtonsoft.Json.Utilities
 
       if (s != null)
       {
-        char[] chars = null;
-        char[] unicodeBuffer = null;
         int lastWritePosition = 0;
 
         for (int i = 0; i < s.Length; i++)
@@ -134,10 +133,10 @@ namespace Newtonsoft.Json.Utilities
                 }
                 else
                 {
-                  if (unicodeBuffer == null)
-                    unicodeBuffer = new char[6];
+                  if (writeBuffer == null)
+                    writeBuffer = new char[6];
 
-                  StringUtils.ToCharAsUnicode(c, unicodeBuffer);
+                  StringUtils.ToCharAsUnicode(c, writeBuffer);
 
                   // slightly hacky but it saves multiple conditions in if test
                   escapedValue = EscapedUnicodeText;
@@ -153,20 +152,36 @@ namespace Newtonsoft.Json.Utilities
           if (escapedValue == null)
             continue;
 
+          bool isEscapedUnicodeText = string.Equals(escapedValue, EscapedUnicodeText);
+
           if (i > lastWritePosition)
           {
-            if (chars == null)
-              chars = s.ToCharArray();
+            int length = i - lastWritePosition + ((isEscapedUnicodeText) ? 6 : 0);
+            int start = (isEscapedUnicodeText) ? 6 : 0;
+
+            if (writeBuffer == null || writeBuffer.Length < length)
+            {
+              char[] newBuffer = new char[length];
+
+              // the unicode text is already in the buffer
+              // copy it over when creating new buffer
+              if (isEscapedUnicodeText)
+                Array.Copy(writeBuffer, newBuffer, 6);
+
+              writeBuffer = newBuffer;
+            }
+
+            s.CopyTo(lastWritePosition, writeBuffer, start, length - start);
 
             // write unchanged chars before writing escaped text
-            writer.Write(chars, lastWritePosition, i - lastWritePosition);
+            writer.Write(writeBuffer, start, length - start);
           }
 
           lastWritePosition = i + 1;
-          if (!string.Equals(escapedValue, EscapedUnicodeText))
+          if (!isEscapedUnicodeText)
             writer.Write(escapedValue);
           else
-            writer.Write(unicodeBuffer);
+            writer.Write(writeBuffer, 0, 6);
         }
 
         if (lastWritePosition == 0)
@@ -176,11 +191,15 @@ namespace Newtonsoft.Json.Utilities
         }
         else
         {
-          if (chars == null)
-            chars = s.ToCharArray();
+          int length = s.Length - lastWritePosition;
+
+          if (writeBuffer == null || writeBuffer.Length < length)
+            writeBuffer = new char[length];
+
+          s.CopyTo(lastWritePosition, writeBuffer, 0, length);
 
           // write remaining text
-          writer.Write(chars, lastWritePosition, s.Length - lastWritePosition);
+          writer.Write(writeBuffer, 0, length);
         }
       }
 
@@ -193,7 +212,8 @@ namespace Newtonsoft.Json.Utilities
     {
       using (StringWriter w = StringUtils.CreateStringWriter(StringUtils.GetLength(value) ?? 16))
       {
-        WriteEscapedJavaScriptString(w, value, delimiter, appendDelimiters, (delimiter == '"') ? DoubleQuoteCharEscapeFlags : SingleQuoteCharEscapeFlags, StringEscapeHandling.Default);
+        char[] buffer = null;
+        WriteEscapedJavaScriptString(w, value, delimiter, appendDelimiters, (delimiter == '"') ? DoubleQuoteCharEscapeFlags : SingleQuoteCharEscapeFlags, StringEscapeHandling.Default, ref buffer);
         return w.ToString();
       }
     }

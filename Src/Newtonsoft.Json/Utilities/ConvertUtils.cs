@@ -98,6 +98,14 @@ namespace Newtonsoft.Json.Utilities
     public PrimitiveTypeCode TypeCode { get; set; }
   }
 
+  internal enum ParseResult
+  {
+    None,
+    Success,
+    Overflow,
+    Invalid
+  }
+
   internal static class ConvertUtils
   {
     private static readonly Dictionary<Type, PrimitiveTypeCode> TypeCodeMap =
@@ -205,7 +213,7 @@ namespace Newtonsoft.Json.Utilities
 #if !(NETFX_CORE || PORTABLE)
     public static TypeInformation GetTypeInformation(IConvertible convertable)
     {
-      TypeInformation typeInformation = PrimitiveTypeCodes[(int) convertable.GetTypeCode()];
+      TypeInformation typeInformation = PrimitiveTypeCodes[(int)convertable.GetTypeCode()];
       return typeInformation;
     }
 #endif
@@ -224,7 +232,7 @@ namespace Newtonsoft.Json.Utilities
     public static TimeSpan ParseTimeSpan(string input)
     {
 #if !(NET35 || NET20 || PORTABLE40)
-      return TimeSpan.Parse((string) input, CultureInfo.InvariantCulture);
+      return TimeSpan.Parse((string)input, CultureInfo.InvariantCulture);
 #else
       return TimeSpan.Parse((string)input);
 #endif
@@ -316,14 +324,14 @@ namespace Newtonsoft.Json.Utilities
 
     public static object FromBigInteger(BigInteger i, Type targetType)
     {
-      if (targetType == typeof (decimal))
-        return (decimal) i;
-      if (targetType == typeof (double))
-        return (double) i;
-      if (targetType == typeof (float))
-        return (float) i;
-      if (targetType == typeof (ulong))
-        return (ulong) i;
+      if (targetType == typeof(decimal))
+        return (decimal)i;
+      if (targetType == typeof(double))
+        return (double)i;
+      if (targetType == typeof(float))
+        return (float)i;
+      if (targetType == typeof(ulong))
+        return (ulong)i;
 
       try
       {
@@ -337,6 +345,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
 
     #region Convert
+
     /// <summary>
     /// Converts the value to the specified type.
     /// </summary>
@@ -377,18 +386,18 @@ namespace Newtonsoft.Json.Utilities
 #endif
 
       if (initialValue is byte[] && targetType == typeof(Guid))
-        return new Guid((byte[]) initialValue);
+        return new Guid((byte[])initialValue);
 
       if (initialValue is string)
       {
-        if (targetType == typeof (Guid))
-          return new Guid((string) initialValue);
-        if (targetType == typeof (Uri))
-          return new Uri((string) initialValue, UriKind.RelativeOrAbsolute);
+        if (targetType == typeof(Guid))
+          return new Guid((string)initialValue);
+        if (targetType == typeof(Uri))
+          return new Uri((string)initialValue, UriKind.RelativeOrAbsolute);
         if (targetType == typeof(TimeSpan))
-          return ParseTimeSpan((string) initialValue);
+          return ParseTimeSpan((string)initialValue);
         if (typeof(Type).IsAssignableFrom(targetType))
-          return Type.GetType((string) initialValue, true);
+          return Type.GetType((string)initialValue, true);
       }
 
 #if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
@@ -431,7 +440,7 @@ namespace Newtonsoft.Json.Utilities
       {
         if (ReflectionUtils.IsNullable(targetType))
           return EnsureTypeAssignable(null, initialType, targetType);
-        
+
         throw new Exception("Can not convert null {0} into non-nullable {1}.".FormatWith(CultureInfo.InvariantCulture, initialType, targetType));
       }
 #endif
@@ -446,6 +455,7 @@ namespace Newtonsoft.Json.Utilities
     #endregion
 
     #region TryConvert
+
     /// <summary>
     /// Converts the value to the specified type.
     /// </summary>
@@ -469,9 +479,11 @@ namespace Newtonsoft.Json.Utilities
         return false;
       }
     }
+
     #endregion
 
     #region ConvertOrCast
+
     /// <summary>
     /// Converts the value to the specified type. If the value is unable to be converted, the
     /// value is checked whether it assignable to the specified type.
@@ -498,6 +510,7 @@ namespace Newtonsoft.Json.Utilities
 
       return EnsureTypeAssignable(initialValue, ReflectionUtils.GetObjectType(initialValue), targetType);
     }
+
     #endregion
 
     private static object EnsureTypeAssignable(object value, Type initialType, Type targetType)
@@ -567,12 +580,12 @@ namespace Newtonsoft.Json.Utilities
       }
     }
 
-    public static int IntParseFast(char[] value, int start, int length)
+    public static int Int32Parse(char[] chars, int start, int length)
     {
       if (length == 0)
         throw new FormatException("Input string was not in a correct format.");
 
-      bool isNegative = (value[start] == '-');
+      bool isNegative = (chars[start] == '-');
 
       if (isNegative)
       {
@@ -584,27 +597,76 @@ namespace Newtonsoft.Json.Utilities
         length--;
       }
 
-      checked
+      int result = 0;
+      int end = start + length;
+
+      for (int i = start; i < end; i++)
       {
-        int result = 0;
-        int end = start + length;
-        for (int i = start; i < end; i++)
-        {
-          char c = value[i];
+        int c = chars[i] - '0';
 
-          if (c < '0' || c > '9')
-            throw new FormatException("Input string was not in a correct format.");
+        if (c < 0 || c > 9)
+          throw new FormatException("Input string was not in a correct format.");
 
-          result = 10*result + -(c - 48);
-        }
+        int newValue = (10*result) - c;
 
-        // go from negative to positive to avoids overflow
-        // negative can be slightly bigger than positive
-        if (!isNegative)
-          result = -result;
+        // overflow has caused the number to loop around
+        if (newValue > result)
+          throw new OverflowException();
 
-        return result;
+        result = newValue;
       }
+
+      // go from negative to positive to avoids overflow
+      // negative can be slightly bigger than positive
+      if (!isNegative)
+        result = -result;
+
+      return result;
+    }
+
+    public static ParseResult Int64TryParse(char[] chars, int start, int length, out long value)
+    {
+      value = 0;
+
+      if (length == 0)
+        return ParseResult.Invalid;
+
+      bool isNegative = (chars[start] == '-');
+
+      if (isNegative)
+      {
+        // text just a negative sign
+        if (length == 1)
+          return ParseResult.Invalid;
+
+        start++;
+        length--;
+      }
+
+      int end = start + length;
+
+      for (int i = start; i < end; i++)
+      {
+        int c = chars[i] - '0';
+
+        if (c < 0 || c > 9)
+          return ParseResult.Invalid;
+
+        long newValue = (10*value) - c;
+
+        // overflow has caused the number to loop around
+        if (newValue > value)
+          return ParseResult.Overflow;
+
+        value = newValue;
+      }
+
+      // go from negative to positive to avoids overflow
+      // negative can be slightly bigger than positive
+      if (!isNegative)
+        value = -value;
+
+      return ParseResult.Success;
     }
   }
 }

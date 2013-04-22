@@ -648,6 +648,11 @@ namespace Newtonsoft.Json
               if (ReadData(true) == 0)
                 return;
             }
+            else
+            {
+              _charPos = charPos - 1;
+              return;
+            }
             break;
           case '-':
           case '+':
@@ -1187,7 +1192,7 @@ namespace Newtonsoft.Json
         }
         else
         {
-          numberValue = ConvertUtils.IntParseFast(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length);
+          numberValue = ConvertUtils.Int32Parse(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length);
         }
 
         numberType = JsonToken.Integer;
@@ -1238,11 +1243,17 @@ namespace Newtonsoft.Json
         }
         else
         {
-          string number = _stringReference.ToString();
-
-          // it's faster to do 3 indexof with single characters than an indexofany
-          if (number.IndexOf('.') != -1 || number.IndexOf('E') != -1 || number.IndexOf('e') != -1)
+          long value;
+          ParseResult parseResult = ConvertUtils.Int64TryParse(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length, out value);
+          if (parseResult == ParseResult.Success)
           {
+            numberValue = value;
+            numberType = JsonToken.Integer;
+          }
+          else if (parseResult == ParseResult.Invalid)
+          {
+            string number = _stringReference.ToString();
+
             if (_floatParseHandling == FloatParseHandling.Decimal)
               numberValue = decimal.Parse(number, NumberStyles.Number | NumberStyles.AllowExponent, CultureInfo.InvariantCulture);
             else
@@ -1250,24 +1261,20 @@ namespace Newtonsoft.Json
 
             numberType = JsonToken.Float;
           }
+          else if (parseResult == ParseResult.Overflow)
+          {
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
+            string number = _stringReference.ToString();
+            numberValue = BigInteger.Parse(number, CultureInfo.InvariantCulture);
+            numberType = JsonToken.Integer;
+#else
+            // todo - validate number was a valid integer to make sure overflow was the reason for failure
+            throw JsonReaderException.Create(this, "JSON integer {0} is too large or small for an Int64.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
+#endif
+          }
           else
           {
-            long value;
-            if (long.TryParse(number, out value))
-            {
-              numberValue = value;
-            }
-            else
-            {
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
-              numberValue = BigInteger.Parse(number, CultureInfo.InvariantCulture);
-#else
-              // todo - validate number was a valid integer to make sure overflow was the reason for failure
-              throw JsonReaderException.Create(this, "JSON integer {0} is too large or small for an Int64.".FormatWith(CultureInfo.InvariantCulture, number));
-#endif
-            }
-
-            numberType = JsonToken.Integer;
+            throw JsonReaderException.Create(this, "Unknown error parsing integer.");
           }
         }
       }

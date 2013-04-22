@@ -1183,7 +1183,8 @@ _____'propertyName': NaN
           Console.WriteLine("Position: " + (int)c);
 
         StringWriter swNew = new StringWriter();
-        JavaScriptUtils.WriteEscapedJavaScriptString(swNew, c.ToString(), '"', true, JavaScriptUtils.DoubleQuoteCharEscapeFlags, StringEscapeHandling.Default);
+        char[] buffer = null;
+        JavaScriptUtils.WriteEscapedJavaScriptString(swNew, c.ToString(), '"', true, JavaScriptUtils.DoubleQuoteCharEscapeFlags, StringEscapeHandling.Default, ref buffer);
 
         StringWriter swOld = new StringWriter();
         WriteEscapedJavaScriptStringOld(swOld, c.ToString(), '"', true);
