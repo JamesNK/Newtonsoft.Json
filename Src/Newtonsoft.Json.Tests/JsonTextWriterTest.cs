@@ -1361,7 +1361,7 @@ _____'propertyName': NaN
       if (QuoteName)
         _writer.Write(QuoteChar);
 
-      _writer.Write(new string(name.Reverse().ToArray()));
+      _writer.Write(new string(name.ToCharArray().Reverse().ToArray()));
 
       if (QuoteName)
         _writer.Write(QuoteChar);

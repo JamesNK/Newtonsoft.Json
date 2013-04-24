@@ -23,7 +23,13 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-using NUnit.Framework;
+#if !NETFX_CORE
+using global::NUnit.Framework;
+#else
+using global::Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
+using TestFixture = global::Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
+using Test = global::Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
+#endif
 using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Tests.Utilities
