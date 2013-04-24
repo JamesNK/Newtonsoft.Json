@@ -107,6 +107,7 @@
     <Compile Include="Linq\JPropertyKeyedCollection.cs" />
     <Compile Include="SerializationBinder.cs" />
     <Compile Include="Serialization\DiagnosticsTraceWriter.cs" />
+    <Compile Include="Serialization\ExpressionValueProvider.cs" />
     <Compile Include="Serialization\ITraceWriter.cs" />
     <Compile Include="Serialization\JsonContainerContract.cs" />
     <Compile Include="Serialization\JsonDynamicContract.cs" />
@@ -114,6 +115,10 @@
     <Compile Include="StreamingContext.cs" />
     <Compile Include="StringEscapeHandling.cs" />
     <Compile Include="Utilities\DateTimeParser.cs" />
+    <Compile Include="Utilities\DynamicProxy.cs" />
+    <Compile Include="Utilities\DynamicProxyMetaObject.cs" />
+    <Compile Include="Utilities\DynamicUtils.cs" />
+    <Compile Include="Utilities\ExpressionReflectionDelegateFactory.cs" />
     <Compile Include="Utilities\LinqBridge.cs" />
     <Compile Include="Linq\JPath.cs" />
     <Compile Include="Linq\JPropertyDescriptor.cs" />

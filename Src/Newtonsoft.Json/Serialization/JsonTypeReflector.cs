@@ -436,9 +436,13 @@ namespace Newtonsoft.Json.Serialization
 #if !(SILVERLIGHT || PORTABLE40 || PORTABLE || NETFX_CORE)
         if (DynamicCodeGeneration)
           return DynamicReflectionDelegateFactory.Instance;
-#endif
 
         return LateBoundReflectionDelegateFactory.Instance;
+#elif !(PORTABLE40)
+        return ExpressionReflectionDelegateFactory.Instance;
+#else
+        return LateBoundReflectionDelegateFactory.Instance;
+#endif
       }
     }
   }

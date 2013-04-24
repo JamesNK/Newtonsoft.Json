@@ -119,6 +119,7 @@
     <Compile Include="Linq\JPropertyKeyedCollection.cs" />
     <Compile Include="SerializationBinder.cs" />
     <Compile Include="Serialization\DiagnosticsTraceWriter.cs" />
+    <Compile Include="Serialization\ExpressionValueProvider.cs" />
     <Compile Include="Serialization\ITraceWriter.cs" />
     <Compile Include="Serialization\JsonContainerContract.cs" />
     <Compile Include="Serialization\MemoryTraceWriter.cs" />
@@ -226,7 +227,9 @@
     <Compile Include="Utilities\DynamicWrapper.cs" />
     <Compile Include="Utilities\DynamicReflectionDelegateFactory.cs" />
     <Compile Include="Serialization\ObjectConstructor.cs" />
+    <Compile Include="Utilities\ExpressionReflectionDelegateFactory.cs" />
     <Compile Include="Utilities\ILGeneratorExtensions.cs" />
+    <Compile Include="Utilities\LinqBridge.cs" />
     <Compile Include="Utilities\ReflectionDelegateFactory.cs" />
     <Compile Include="Utilities\LateBoundReflectionDelegateFactory.cs" />
     <Compile Include="Utilities\MethodCall.cs" />

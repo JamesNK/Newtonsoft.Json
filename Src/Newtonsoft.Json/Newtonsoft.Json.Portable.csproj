@@ -147,6 +147,7 @@
     <Compile Include="SerializationBinder.cs" />
     <Compile Include="Serialization\CachedAttributeGetter.cs" />
     <Compile Include="Serialization\CamelCasePropertyNamesContractResolver.cs" />
+    <Compile Include="Serialization\ExpressionValueProvider.cs" />
     <Compile Include="Serialization\DefaultContractResolver.cs" />
     <Compile Include="Serialization\DefaultReferenceResolver.cs" />
     <Compile Include="Serialization\DefaultSerializationBinder.cs" />
@@ -190,6 +191,7 @@
     <Compile Include="Utilities\CollectionUtils.cs" />
     <Compile Include="Utilities\CollectionWrapper.cs" />
     <Compile Include="Utilities\ConvertUtils.cs" />
+    <Compile Include="Utilities\ExpressionReflectionDelegateFactory.cs" />
     <Compile Include="Utilities\DateTimeParser.cs" />
     <Compile Include="Utilities\DateTimeUtils.cs" />
     <Compile Include="Utilities\DictionaryWrapper.cs" />

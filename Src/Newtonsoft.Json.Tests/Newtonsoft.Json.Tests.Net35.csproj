@@ -280,6 +280,7 @@
     <Compile Include="TestObjects\UserNullable.cs" />
     <Compile Include="Utilities\DateTimeUtilsTests.cs" />
     <Compile Include="Utilities\DynamicReflectionDelegateFactoryTests.cs" />
+    <Compile Include="Utilities\ExpressionReflectionDelegateFactoryTests.cs" />
     <Compile Include="Utilities\ReflectionUtilsTests.cs" />
     <Compile Include="Utilities\StringUtilsTests.cs" />
   </ItemGroup>
