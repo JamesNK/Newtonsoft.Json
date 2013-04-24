@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
@@ -746,12 +747,12 @@ namespace Newtonsoft.Json.Tests
       {
         jsonWriter.WriteStartArray();
 
+        jsonWriter.WriteValue(int.MaxValue);
+        jsonWriter.WriteValue(int.MinValue);
         jsonWriter.WriteValue(0);
         jsonWriter.WriteValue(-0);
         jsonWriter.WriteValue(9L);
         jsonWriter.WriteValue(9UL);
-        jsonWriter.WriteValue(int.MaxValue);
-        jsonWriter.WriteValue(int.MinValue);
         jsonWriter.WriteValue(long.MaxValue);
         jsonWriter.WriteValue(long.MinValue);
         jsonWriter.WriteValue(ulong.MaxValue);
@@ -763,12 +764,12 @@ namespace Newtonsoft.Json.Tests
       Console.WriteLine(sb.ToString());
 
       Assert.AreEqual(@"[
-  0,
-  0,
-  9,
-  9,
   2147483647,
   -2147483648,
+  0,
+  0,
+  9,
+  9,
   9223372036854775807,
   -9223372036854775808,
   18446744073709551615,

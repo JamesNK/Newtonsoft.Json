@@ -686,61 +686,22 @@ namespace Newtonsoft.Json
         _writeBuffer = new char[64];
     }
 
-    private void WriteIntegerValue(int value)
-    {
-      EnsureWriteBuffer();
-
-      if (value >= 0 && value <= 9)
-      {
-        _writer.Write((char)(48 + value));
-      }
-      else
-      {
-        int length = 0;
-
-        uint uvalue = (value < 0) ? (uint)-value : (uint)value;
-
-        do
-        {
-          _writeBuffer[length++] = (char)(48 + (uvalue % 10));
-          uvalue /= 10;
-        } while (uvalue != 0);
-
-        if (value < 0)
-          _writeBuffer[length++] = '-';
-
-        Array.Reverse(_writeBuffer, 0, length);
-
-        _writer.Write(_writeBuffer, 0, length);
-      }
-    }
-
     private void WriteIntegerValue(long value)
     {
       EnsureWriteBuffer();
 
       if (value >= 0 && value <= 9)
       {
-        _writer.Write((char)(48 + value));
+        _writer.Write((char)('0' + value));
       }
       else
       {
-        int length = 0;
-
         ulong uvalue = (value < 0) ? (ulong)-value : (ulong)value;
 
-        do
-        {
-          _writeBuffer[length++] = (char)(48 + (uvalue % 10));
-          uvalue /= 10;
-        } while (uvalue != 0);
-
         if (value < 0)
-          _writeBuffer[length++] = '-';
+          _writer.Write('-');
 
-        Array.Reverse(_writeBuffer, 0, length);
-
-        _writer.Write(_writeBuffer, 0, length);
+        WriteIntegerValue(uvalue);
       }
     }
 
@@ -750,19 +711,18 @@ namespace Newtonsoft.Json
 
       if (uvalue <= 9)
       {
-        _writer.Write((char)(48 + uvalue));
+        _writer.Write((char)('0' + uvalue));
       }
       else
       {
+        int totalLength = MathUtils.IntLength(uvalue);
         int length = 0;
 
         do
         {
-          _writeBuffer[length++] = (char)(48 + (uvalue % 10));
+          _writeBuffer[totalLength - ++length] = (char)('0' + (uvalue % 10));
           uvalue /= 10;
         } while (uvalue != 0);
-
-        Array.Reverse(_writeBuffer, 0, length);
 
         _writer.Write(_writeBuffer, 0, length);
       }

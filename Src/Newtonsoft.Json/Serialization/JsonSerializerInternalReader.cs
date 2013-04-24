@@ -362,11 +362,13 @@ namespace Newtonsoft.Json.Serialization
       if (ReadSpecialProperties(reader, ref objectType, ref contract, member, containerContract, containerMember, existingValue, out newValue, out id))
         return newValue;
 
-      if (!HasDefinedType(objectType))
-        return CreateJObject(reader);
+      if (contract == null || objectType == typeof(object) || objectType == typeof(IDynamicMetaObjectProvider))
+      {
+        if (!HasDefinedType(objectType))
+          return CreateJObject(reader);
 
-      if (contract == null)
         throw JsonSerializationException.Create(reader, "Could not resolve type '{0}' to a JsonContract.".FormatWith(CultureInfo.InvariantCulture, objectType));
+      }
 
       switch (contract.ContractType)
       {
@@ -1634,7 +1636,7 @@ To fix this error either change the environment to be fully trusted, change the 
     {
       object newObject = null;
 
-      if (objectContract.UnderlyingType.IsInterface() || objectContract.UnderlyingType.IsAbstract())
+      if (!objectContract.IsInstantiable)
         throw JsonSerializationException.Create(reader, "Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantiated.".FormatWith(CultureInfo.InvariantCulture, objectContract.UnderlyingType));
 
       if (objectContract.OverrideConstructor != null)

@@ -88,7 +88,7 @@ namespace Newtonsoft.Json.Bson
           {
             BsonArray value = (BsonArray)t;
             _writer.Write(value.CalculatedSize);
-            int index = 0;
+            ulong index = 0;
             foreach (BsonToken c in value)
             {
               _writer.Write((sbyte)c.Type);
@@ -261,7 +261,7 @@ namespace Newtonsoft.Json.Bson
             BsonArray value = (BsonArray)t;
 
             int size = 4;
-            int index = 0;
+            ulong index = 0;
             foreach (BsonToken c in value)
             {
               size += 1;
