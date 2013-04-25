@@ -96,16 +96,25 @@ namespace Newtonsoft.Json.Utilities
       if (type.IsAbstract())
         return () => (T)Activator.CreateInstance(type);
 
-      Type resultType = typeof(T);
+      try
+      {
+        Type resultType = typeof(T);
 
-      Expression expression = Expression.New(type);
+        Expression expression = Expression.New(type);
 
-      expression = EnsureCastExpression(expression, resultType);
+        expression = EnsureCastExpression(expression, resultType);
 
-      LambdaExpression lambdaExpression = Expression.Lambda(typeof(Func<T>), expression);
+        LambdaExpression lambdaExpression = Expression.Lambda(typeof(Func<T>), expression);
 
-      Func<T> compiled = (Func<T>)lambdaExpression.Compile();
-      return compiled;
+        Func<T> compiled = (Func<T>)lambdaExpression.Compile();
+        return compiled;
+      }
+      catch
+      {
+        // an error can be thrown if constructor is not valid on Win8
+        // will have INVOCATION_FLAGS_NON_W8P_FX_API invocation flag
+        return () => (T)Activator.CreateInstance(type);
+      }
     }
 
     public override Func<T, object> CreateGet<T>(PropertyInfo propertyInfo)

@@ -65,7 +65,7 @@ namespace Newtonsoft.Json.Tests.Utilities
     [Test]
     public void DefaultConstructor_Abstract()
     {
-      ExceptionAssert.Throws<MissingMethodException>("Cannot create an abstract class.",
+      ExceptionAssert.Throws<Exception>("Cannot create an abstract class.",
       () =>
       {
         Func<object> create = ExpressionReflectionDelegateFactory.Instance.CreateDefaultConstructor<object>(typeof(Type));

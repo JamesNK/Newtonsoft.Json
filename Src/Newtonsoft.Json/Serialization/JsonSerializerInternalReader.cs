@@ -362,13 +362,8 @@ namespace Newtonsoft.Json.Serialization
       if (ReadSpecialProperties(reader, ref objectType, ref contract, member, containerContract, containerMember, existingValue, out newValue, out id))
         return newValue;
 
-      if (contract == null || objectType == typeof(object) || objectType == typeof(IDynamicMetaObjectProvider))
-      {
-        if (!HasDefinedType(objectType))
-          return CreateJObject(reader);
-
-        throw JsonSerializationException.Create(reader, "Could not resolve type '{0}' to a JsonContract.".FormatWith(CultureInfo.InvariantCulture, objectType));
-      }
+      if (HasNoDefinedType(contract))
+        return CreateJObject(reader);
 
       switch (contract.ContractType)
       {
@@ -609,72 +604,69 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
     private object CreateList(JsonReader reader, Type objectType, JsonContract contract, JsonProperty member, object existingValue, string id)
     {
       object value;
-      if (HasDefinedType(objectType))
+
+      if (HasNoDefinedType(contract))
+        return CreateJToken(reader, contract);
+
+      JsonArrayContract arrayContract = EnsureArrayContract(reader, objectType, contract);
+
+      if (existingValue == null)
       {
-        JsonArrayContract arrayContract = EnsureArrayContract(reader, objectType, contract);
+        bool createdFromNonDefaultConstructor;
+        IList list = CreateNewList(reader, arrayContract, out createdFromNonDefaultConstructor);
 
-        if (existingValue == null)
-        {
-          bool createdFromNonDefaultConstructor;
-          IList list = CreateNewList(reader, arrayContract, out createdFromNonDefaultConstructor);
+        if (id != null && createdFromNonDefaultConstructor)
+          throw JsonSerializationException.Create(reader, "Cannot preserve reference to array or readonly list, or list created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
-          if (id != null && createdFromNonDefaultConstructor)
-            throw JsonSerializationException.Create(reader, "Cannot preserve reference to array or readonly list, or list created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+        if (contract.OnSerializingCallbacks.Count > 0 && createdFromNonDefaultConstructor)
+          throw JsonSerializationException.Create(reader, "Cannot call OnSerializing on an array or readonly list, or list created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
-          if (contract.OnSerializingCallbacks.Count > 0 && createdFromNonDefaultConstructor)
-            throw JsonSerializationException.Create(reader, "Cannot call OnSerializing on an array or readonly list, or list created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+        if (contract.OnErrorCallbacks.Count > 0 && createdFromNonDefaultConstructor)
+          throw JsonSerializationException.Create(reader, "Cannot call OnError on an array or readonly list, or list created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
-          if (contract.OnErrorCallbacks.Count > 0 && createdFromNonDefaultConstructor)
-            throw JsonSerializationException.Create(reader, "Cannot call OnError on an array or readonly list, or list created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
-
-          if (!arrayContract.IsMultidimensionalArray)
-            PopulateList(list, reader, arrayContract, member, id);
-          else
-            PopulateMultidimensionalArray(list, reader, arrayContract, member, id);
-
-          if (createdFromNonDefaultConstructor)
-          {
-            if (arrayContract.IsMultidimensionalArray)
-            {
-              list = CollectionUtils.ToMultidimensionalArray(list, arrayContract.CollectionItemType, contract.CreatedType.GetArrayRank());
-            }
-            else if (contract.CreatedType.IsArray)
-            {
-              Array a = Array.CreateInstance(arrayContract.CollectionItemType, list.Count);
-              list.CopyTo(a, 0);
-              list = a;
-            }
-            else
-            {
-              // call constructor that takes IEnumerable<T>
-              return arrayContract.ParametrizedConstructor.Invoke(new object[] { list });
-            }
-          }
-          else if (list is IWrappedCollection)
-          {
-            return ((IWrappedCollection)list).UnderlyingCollection;
-          }
-
-          value = list;
-        }
+        if (!arrayContract.IsMultidimensionalArray)
+          PopulateList(list, reader, arrayContract, member, id);
         else
+          PopulateMultidimensionalArray(list, reader, arrayContract, member, id);
+
+        if (createdFromNonDefaultConstructor)
         {
-          value = PopulateList((arrayContract.ShouldCreateWrapper) ? arrayContract.CreateWrapper(existingValue) : (IList) existingValue, reader, arrayContract, member, id);
+          if (arrayContract.IsMultidimensionalArray)
+          {
+            list = CollectionUtils.ToMultidimensionalArray(list, arrayContract.CollectionItemType, contract.CreatedType.GetArrayRank());
+          }
+          else if (contract.CreatedType.IsArray)
+          {
+            Array a = Array.CreateInstance(arrayContract.CollectionItemType, list.Count);
+            list.CopyTo(a, 0);
+            list = a;
+          }
+          else
+          {
+            // call constructor that takes IEnumerable<T>
+            return arrayContract.ParametrizedConstructor.Invoke(new object[] { list });
+          }
         }
+        else if (list is IWrappedCollection)
+        {
+          return ((IWrappedCollection)list).UnderlyingCollection;
+        }
+
+        value = list;
       }
       else
       {
-        value = CreateJToken(reader, contract);
+        value = PopulateList((arrayContract.ShouldCreateWrapper) ? arrayContract.CreateWrapper(existingValue) : (IList) existingValue, reader, arrayContract, member, id);
       }
 
       return value;
     }
 
-    private bool HasDefinedType(Type type)
+    private bool HasNoDefinedType(JsonContract contract)
     {
-      return (type != null && type != typeof (object) && !typeof (JToken).IsSubclassOf(type)
+      return (contract == null || contract.UnderlyingType == typeof (object) || contract.ContractType == JsonContractType.Linq
 #if !(NET35 || NET20 || PORTABLE40)
-        && type != typeof (IDynamicMetaObjectProvider)
+        || contract.UnderlyingType == typeof(IDynamicMetaObjectProvider)
 #endif
         );
     }
@@ -1336,7 +1328,7 @@ To fix this error either change the environment to be fully trusted, change the 
     {
       IDynamicMetaObjectProvider newObject;
 
-      if (contract.UnderlyingType.IsInterface() || contract.UnderlyingType.IsAbstract())
+      if (!contract.IsInstantiable)
         throw JsonSerializationException.Create(reader, "Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantiated.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
       if (contract.DefaultCreator != null &&
