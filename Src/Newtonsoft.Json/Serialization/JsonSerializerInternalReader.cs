@@ -811,7 +811,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
       }
 
       // test tokentype here because default value might not be convertable to actual type, e.g. default of "" for DateTime
-      if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer._defaultValueHandling), DefaultValueHandling.Ignore)
+      if (!HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer._defaultValueHandling), DefaultValueHandling.Populate)
           && JsonReader.IsPrimitiveToken(tokenType)
           && MiscellaneousUtils.ValueEquals(reader.Value, property.GetResolvedDefaultValue()))
       {
@@ -859,7 +859,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
       if (property.NullValueHandling.GetValueOrDefault(Serializer._nullValueHandling) == NullValueHandling.Ignore && value == null)
         return false;
 
-      if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer._defaultValueHandling), DefaultValueHandling.Ignore)
+      if (!HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer._defaultValueHandling), DefaultValueHandling.Populate)
         && MiscellaneousUtils.ValueEquals(value, property.GetResolvedDefaultValue()))
         return false;
 
