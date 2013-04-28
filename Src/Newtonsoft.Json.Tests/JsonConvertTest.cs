@@ -53,142 +53,177 @@ namespace Newtonsoft.Json.Tests
     [Test]
     public void DefaultSettings()
     {
-      JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+      try
       {
-        Formatting = Formatting.Indented
-      };
+        JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+        {
+          Formatting = Formatting.Indented
+        };
 
-      string json = JsonConvert.SerializeObject(new { test = new[] { 1, 2, 3 } });
+        string json = JsonConvert.SerializeObject(new { test = new[] { 1, 2, 3 } });
 
-      Assert.AreEqual(@"{
+        Assert.AreEqual(@"{
   ""test"": [
     1,
     2,
     3
   ]
 }", json);
+      }
+      finally
+      {
+        JsonConvert.DefaultSettings = null;
+      }
     }
 
     [Test]
     public void DefaultSettings_Override()
     {
-      JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+      try
       {
-        Formatting = Formatting.Indented
-      };
+        JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+        {
+          Formatting = Formatting.Indented
+        };
 
-      string json = JsonConvert.SerializeObject(new { test = new[] { 1, 2, 3 } }, new JsonSerializerSettings
+        string json = JsonConvert.SerializeObject(new { test = new[] { 1, 2, 3 } }, new JsonSerializerSettings
+        {
+          Formatting = Formatting.None
+        });
+
+        Assert.AreEqual(@"{""test"":[1,2,3]}", json);
+      }
+      finally
       {
-        Formatting = Formatting.None
-      });
-
-      Assert.AreEqual(@"{""test"":[1,2,3]}", json);
+        JsonConvert.DefaultSettings = null;
+      }
     }
 
     [Test]
     public void DefaultSettings_Override_JsonConverterOrder()
     {
-      JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+      try
       {
-        Formatting = Formatting.Indented,
-        Converters = { new IsoDateTimeConverter { DateTimeFormat = "yyyy" } }
-      };
+        JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+        {
+          Formatting = Formatting.Indented,
+          Converters = { new IsoDateTimeConverter { DateTimeFormat = "yyyy" } }
+        };
 
-      string json = JsonConvert.SerializeObject(new[] { new DateTime(2000, 12, 12, 4, 2, 4, DateTimeKind.Utc) }, new JsonSerializerSettings
-      {
-        Formatting = Formatting.None,
-        Converters =
+        string json = JsonConvert.SerializeObject(new[] { new DateTime(2000, 12, 12, 4, 2, 4, DateTimeKind.Utc) }, new JsonSerializerSettings
+        {
+          Formatting = Formatting.None,
+          Converters =
           {
             // should take precedence
             new JavaScriptDateTimeConverter(),
             new IsoDateTimeConverter { DateTimeFormat = "dd" }
           }
-      });
+        });
 
-      Assert.AreEqual(@"[new Date(976593724000)]", json);
+        Assert.AreEqual(@"[new Date(976593724000)]", json);
+      }
+      finally
+      {
+        JsonConvert.DefaultSettings = null;
+      }
     }
 
     [Test]
     public void DefaultSettings_Create()
     {
-      JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+      try
       {
-        Formatting = Formatting.Indented
-      };
+        JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+        {
+          Formatting = Formatting.Indented
+        };
 
-      IList<int> l = new List<int> { 1, 2, 3 };
+        IList<int> l = new List<int> { 1, 2, 3 };
 
-      StringWriter sw = new StringWriter();
-      JsonSerializer serializer = JsonSerializer.CreateDefault();
-      serializer.Serialize(sw, l);
+        StringWriter sw = new StringWriter();
+        JsonSerializer serializer = JsonSerializer.CreateDefault();
+        serializer.Serialize(sw, l);
 
-      Assert.AreEqual(@"[
+        Assert.AreEqual(@"[
   1,
   2,
   3
 ]", sw.ToString());
 
-      sw = new StringWriter();
-      serializer.Formatting = Formatting.None;
-      serializer.Serialize(sw, l);
+        sw = new StringWriter();
+        serializer.Formatting = Formatting.None;
+        serializer.Serialize(sw, l);
 
-      Assert.AreEqual(@"[1,2,3]", sw.ToString());
+        Assert.AreEqual(@"[1,2,3]", sw.ToString());
 
-      sw = new StringWriter();
-      serializer = new JsonSerializer();
-      serializer.Serialize(sw, l);
+        sw = new StringWriter();
+        serializer = new JsonSerializer();
+        serializer.Serialize(sw, l);
 
-      Assert.AreEqual(@"[1,2,3]", sw.ToString());
+        Assert.AreEqual(@"[1,2,3]", sw.ToString());
 
-      sw = new StringWriter();
-      serializer = JsonSerializer.Create();
-      serializer.Serialize(sw, l);
+        sw = new StringWriter();
+        serializer = JsonSerializer.Create();
+        serializer.Serialize(sw, l);
 
-      Assert.AreEqual(@"[1,2,3]", sw.ToString());
+        Assert.AreEqual(@"[1,2,3]", sw.ToString());
+      }
+      finally
+      {
+        JsonConvert.DefaultSettings = null;
+      }
     }
 
     [Test]
     public void DefaultSettings_CreateWithSettings()
     {
-      JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+      try
       {
-        Formatting = Formatting.Indented
-      };
-
-      IList<int> l = new List<int> { 1, 2, 3 };
-
-      StringWriter sw = new StringWriter();
-      JsonSerializer serializer = JsonSerializer.CreateDefault(new JsonSerializerSettings
+        JsonConvert.DefaultSettings = () => new JsonSerializerSettings
         {
-          Converters = { new IntConverter() }
-        });
-      serializer.Serialize(sw, l);
+          Formatting = Formatting.Indented
+        };
 
-      Assert.AreEqual(@"[
+        IList<int> l = new List<int> { 1, 2, 3 };
+
+        StringWriter sw = new StringWriter();
+        JsonSerializer serializer = JsonSerializer.CreateDefault(new JsonSerializerSettings
+          {
+            Converters = { new IntConverter() }
+          });
+        serializer.Serialize(sw, l);
+
+        Assert.AreEqual(@"[
   2,
   4,
   6
 ]", sw.ToString());
 
-      sw = new StringWriter();
-      serializer.Converters.Clear();
-      serializer.Serialize(sw, l);
+        sw = new StringWriter();
+        serializer.Converters.Clear();
+        serializer.Serialize(sw, l);
 
-      Assert.AreEqual(@"[
+        Assert.AreEqual(@"[
   1,
   2,
   3
 ]", sw.ToString());
 
-      sw = new StringWriter();
-      serializer = JsonSerializer.Create(new JsonSerializerSettings { Formatting = Formatting.Indented });
-      serializer.Serialize(sw, l);
+        sw = new StringWriter();
+        serializer = JsonSerializer.Create(new JsonSerializerSettings { Formatting = Formatting.Indented });
+        serializer.Serialize(sw, l);
 
-      Assert.AreEqual(@"[
+        Assert.AreEqual(@"[
   1,
   2,
   3
 ]", sw.ToString());
+      }
+      finally
+      {
+        JsonConvert.DefaultSettings = null;
+      }
     }
 
     public class IntConverter : JsonConverter

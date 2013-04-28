@@ -41,7 +41,7 @@ using NUnit.Framework;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using TestMethod = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
-using Setup = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestInitialize;
+using SetUp = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestInitializeAttribute;
 #endif
 using Newtonsoft.Json.Utilities;
 using System.Collections;
