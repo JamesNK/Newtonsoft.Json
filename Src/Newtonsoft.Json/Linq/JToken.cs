@@ -1572,7 +1572,7 @@ namespace Newtonsoft.Json.Linq
     /// <returns>A <see cref="JToken"/> with the value of the specified object</returns>
     public static JToken FromObject(object o)
     {
-      return FromObjectInternal(o, new JsonSerializer());
+      return FromObjectInternal(o, JsonSerializer.CreateDefault());
     }
 
     /// <summary>
@@ -1602,11 +1602,6 @@ namespace Newtonsoft.Json.Linq
     /// <param name="objectType">The object type that the token will be deserialized to.</param>
     /// <returns>The new object created from the JSON value.</returns>
     public object ToObject(Type objectType)
-    {
-      return ToObject(objectType, false);
-    }
-
-    private object ToObject(Type objectType, bool isNullable)
     {
       PrimitiveTypeCode typeCode = ConvertUtils.GetTypeCode(objectType);
 
@@ -1694,7 +1689,7 @@ namespace Newtonsoft.Json.Linq
 #endif
       }
 
-      return ToObject(objectType, new JsonSerializer());
+      return ToObject(objectType, JsonSerializer.CreateDefault());
     }
 
     /// <summary>

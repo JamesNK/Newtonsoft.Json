@@ -443,61 +443,146 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
+    /// Creates a new <see cref="JsonSerializer"/> instance.
+    /// The <see cref="JsonSerializer"/> will not use default settings.
+    /// </summary>
+    /// <returns>
+    /// A new <see cref="JsonSerializer"/> instance.
+    /// The <see cref="JsonSerializer"/> will not use default settings.
+    /// </returns>
+    public static JsonSerializer Create()
+    {
+      return new JsonSerializer();
+    }
+
+    /// <summary>
     /// Creates a new <see cref="JsonSerializer"/> instance using the specified <see cref="JsonSerializerSettings"/>.
+    /// The <see cref="JsonSerializer"/> will not use default settings.
     /// </summary>
     /// <param name="settings">The settings to be applied to the <see cref="JsonSerializer"/>.</param>
-    /// <returns>A new <see cref="JsonSerializer"/> instance using the specified <see cref="JsonSerializerSettings"/>.</returns>
+    /// <returns>
+    /// A new <see cref="JsonSerializer"/> instance using the specified <see cref="JsonSerializerSettings"/>.
+    /// The <see cref="JsonSerializer"/> will not use default settings.
+    /// </returns>
     public static JsonSerializer Create(JsonSerializerSettings settings)
     {
-      JsonSerializer jsonSerializer = new JsonSerializer();
+      JsonSerializer serializer = Create();
 
       if (settings != null)
+        ApplySerializerSettings(serializer, settings);
+
+      return serializer;
+    }
+
+    /// <summary>
+    /// Creates a new <see cref="JsonSerializer"/> instance.
+    /// The <see cref="JsonSerializer"/> will use default settings.
+    /// </summary>
+    /// <returns>
+    /// A new <see cref="JsonSerializer"/> instance.
+    /// The <see cref="JsonSerializer"/> will use default settings.
+    /// </returns>
+    public static JsonSerializer CreateDefault()
+    {
+      Func<JsonSerializerSettings> defaultSettingsCreator = JsonConvert.DefaultSettings;
+      JsonSerializerSettings defaultSettings = (defaultSettingsCreator != null) ? defaultSettingsCreator() : null;
+
+      return Create(defaultSettings);
+    }
+
+    /// <summary>
+    /// Creates a new <see cref="JsonSerializer"/> instance using the specified <see cref="JsonSerializerSettings"/>.
+    /// The <see cref="JsonSerializer"/> will use default settings.
+    /// </summary>
+    /// <param name="settings">The settings to be applied to the <see cref="JsonSerializer"/>.</param>
+    /// <returns>
+    /// A new <see cref="JsonSerializer"/> instance using the specified <see cref="JsonSerializerSettings"/>.
+    /// The <see cref="JsonSerializer"/> will use default settings.
+    /// </returns>
+    public static JsonSerializer CreateDefault(JsonSerializerSettings settings)
+    {
+      JsonSerializer serializer = CreateDefault();
+      if (settings != null)
+        ApplySerializerSettings(serializer, settings);
+
+      return serializer;
+    }
+
+    private static void ApplySerializerSettings(JsonSerializer serializer, JsonSerializerSettings settings)
+    {
+      if (!CollectionUtils.IsNullOrEmpty(settings.Converters))
       {
-        if (!CollectionUtils.IsNullOrEmpty(settings.Converters))
-          jsonSerializer.Converters.AddRange(settings.Converters);
-
-        // serializer specific
-        jsonSerializer.TypeNameHandling = settings.TypeNameHandling;
-        jsonSerializer.TypeNameAssemblyFormat = settings.TypeNameAssemblyFormat;
-        jsonSerializer.PreserveReferencesHandling = settings.PreserveReferencesHandling;
-        jsonSerializer.ReferenceLoopHandling = settings.ReferenceLoopHandling;
-        jsonSerializer.MissingMemberHandling = settings.MissingMemberHandling;
-        jsonSerializer.ObjectCreationHandling = settings.ObjectCreationHandling;
-        jsonSerializer.NullValueHandling = settings.NullValueHandling;
-        jsonSerializer.DefaultValueHandling = settings.DefaultValueHandling;
-        jsonSerializer.ConstructorHandling = settings.ConstructorHandling;
-        jsonSerializer.Context = settings.Context;
-        jsonSerializer._checkAdditionalContent = settings._checkAdditionalContent;
-
-        // reader/writer specific
-        // unset values won't override reader/writer set values
-        jsonSerializer._formatting = settings._formatting;
-        jsonSerializer._dateFormatHandling = settings._dateFormatHandling;
-        jsonSerializer._dateTimeZoneHandling = settings._dateTimeZoneHandling;
-        jsonSerializer._dateParseHandling = settings._dateParseHandling;
-        jsonSerializer._dateFormatString = settings._dateFormatString;
-        jsonSerializer._dateFormatStringSet = settings._dateFormatStringSet;
-        jsonSerializer._floatFormatHandling = settings._floatFormatHandling;
-        jsonSerializer._floatParseHandling = settings._floatParseHandling;
-        jsonSerializer._stringEscapeHandling = settings._stringEscapeHandling;
-        jsonSerializer._culture = settings._culture;
-        jsonSerializer._maxDepth = settings._maxDepth;
-        jsonSerializer._maxDepthSet = settings._maxDepthSet;
-
-        if (settings.Error != null)
-          jsonSerializer.Error += settings.Error;
-
-        if (settings.ContractResolver != null)
-          jsonSerializer.ContractResolver = settings.ContractResolver;
-        if (settings.ReferenceResolver != null)
-          jsonSerializer.ReferenceResolver = settings.ReferenceResolver;
-        if (settings.TraceWriter != null)
-          jsonSerializer.TraceWriter = settings.TraceWriter;
-        if (settings.Binder != null)
-          jsonSerializer.Binder = settings.Binder;
+        // insert settings converters at the beginning so they take precedence
+        for (int i = 0; i < settings.Converters.Count; i++)
+        {
+          serializer.Converters.Insert(i, settings.Converters[i]);
+        }
       }
 
-      return jsonSerializer;
+      // serializer specific
+      if (settings._typeNameHandling != null)
+        serializer.TypeNameHandling = settings.TypeNameHandling;
+      if (settings._typeNameAssemblyFormat != null)
+        serializer.TypeNameAssemblyFormat = settings.TypeNameAssemblyFormat;
+      if (settings._preserveReferencesHandling != null)
+        serializer.PreserveReferencesHandling = settings.PreserveReferencesHandling;
+      if (settings._referenceLoopHandling != null)
+        serializer.ReferenceLoopHandling = settings.ReferenceLoopHandling;
+      if (settings._missingMemberHandling != null)
+        serializer.MissingMemberHandling = settings.MissingMemberHandling;
+      if (settings._objectCreationHandling != null)
+        serializer.ObjectCreationHandling = settings.ObjectCreationHandling;
+      if (settings._nullValueHandling != null)
+        serializer.NullValueHandling = settings.NullValueHandling;
+      if (settings._defaultValueHandling != null)
+        serializer.DefaultValueHandling = settings.DefaultValueHandling;
+      if (settings._constructorHandling != null)
+        serializer.ConstructorHandling = settings.ConstructorHandling;
+      if (settings._context != null)
+        serializer.Context = settings.Context;
+      if (settings._checkAdditionalContent != null)
+        serializer._checkAdditionalContent = settings._checkAdditionalContent;
+
+      if (settings.Error != null)
+        serializer.Error += settings.Error;
+
+      if (settings.ContractResolver != null)
+        serializer.ContractResolver = settings.ContractResolver;
+      if (settings.ReferenceResolver != null)
+        serializer.ReferenceResolver = settings.ReferenceResolver;
+      if (settings.TraceWriter != null)
+        serializer.TraceWriter = settings.TraceWriter;
+      if (settings.Binder != null)
+        serializer.Binder = settings.Binder;
+
+      // reader/writer specific
+      // unset values won't override reader/writer set values
+      if (settings._formatting != null)
+        serializer._formatting = settings._formatting;
+      if (settings._dateFormatHandling != null)
+        serializer._dateFormatHandling = settings._dateFormatHandling;
+      if (settings._dateTimeZoneHandling != null)
+        serializer._dateTimeZoneHandling = settings._dateTimeZoneHandling;
+      if (settings._dateParseHandling != null)
+        serializer._dateParseHandling = settings._dateParseHandling;
+      if (settings._dateFormatStringSet)
+      {
+        serializer._dateFormatString = settings._dateFormatString;
+        serializer._dateFormatStringSet = settings._dateFormatStringSet;
+      }
+      if (settings._floatFormatHandling != null)
+        serializer._floatFormatHandling = settings._floatFormatHandling;
+      if (settings._floatParseHandling != null)
+        serializer._floatParseHandling = settings._floatParseHandling;
+      if (settings._stringEscapeHandling != null)
+        serializer._stringEscapeHandling = settings._stringEscapeHandling;
+      if (settings._culture != null)
+        serializer._culture = settings._culture;
+      if (settings._maxDepthSet)
+      {
+        serializer._maxDepth = settings._maxDepth;
+        serializer._maxDepthSet = settings._maxDepthSet;
+      }
     }
 
     /// <summary>

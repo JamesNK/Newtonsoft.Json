@@ -51,6 +51,166 @@ namespace Newtonsoft.Json.Tests
   public class JsonConvertTest : TestFixtureBase
   {
     [Test]
+    public void DefaultSettings()
+    {
+      JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+      {
+        Formatting = Formatting.Indented
+      };
+
+      string json = JsonConvert.SerializeObject(new { test = new[] { 1, 2, 3 } });
+
+      Assert.AreEqual(@"{
+  ""test"": [
+    1,
+    2,
+    3
+  ]
+}", json);
+    }
+
+    [Test]
+    public void DefaultSettings_Override()
+    {
+      JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+      {
+        Formatting = Formatting.Indented
+      };
+
+      string json = JsonConvert.SerializeObject(new { test = new[] { 1, 2, 3 } }, new JsonSerializerSettings
+      {
+        Formatting = Formatting.None
+      });
+
+      Assert.AreEqual(@"{""test"":[1,2,3]}", json);
+    }
+
+    [Test]
+    public void DefaultSettings_Override_JsonConverterOrder()
+    {
+      JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+      {
+        Formatting = Formatting.Indented,
+        Converters = { new IsoDateTimeConverter { DateTimeFormat = "yyyy" } }
+      };
+
+      string json = JsonConvert.SerializeObject(new[] { new DateTime(2000, 12, 12, 4, 2, 4, DateTimeKind.Utc) }, new JsonSerializerSettings
+      {
+        Formatting = Formatting.None,
+        Converters =
+          {
+            // should take precedence
+            new JavaScriptDateTimeConverter(),
+            new IsoDateTimeConverter { DateTimeFormat = "dd" }
+          }
+      });
+
+      Assert.AreEqual(@"[new Date(976593724000)]", json);
+    }
+
+    [Test]
+    public void DefaultSettings_Create()
+    {
+      JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+      {
+        Formatting = Formatting.Indented
+      };
+
+      IList<int> l = new List<int> { 1, 2, 3 };
+
+      StringWriter sw = new StringWriter();
+      JsonSerializer serializer = JsonSerializer.CreateDefault();
+      serializer.Serialize(sw, l);
+
+      Assert.AreEqual(@"[
+  1,
+  2,
+  3
+]", sw.ToString());
+
+      sw = new StringWriter();
+      serializer.Formatting = Formatting.None;
+      serializer.Serialize(sw, l);
+
+      Assert.AreEqual(@"[1,2,3]", sw.ToString());
+
+      sw = new StringWriter();
+      serializer = new JsonSerializer();
+      serializer.Serialize(sw, l);
+
+      Assert.AreEqual(@"[1,2,3]", sw.ToString());
+
+      sw = new StringWriter();
+      serializer = JsonSerializer.Create();
+      serializer.Serialize(sw, l);
+
+      Assert.AreEqual(@"[1,2,3]", sw.ToString());
+    }
+
+    [Test]
+    public void DefaultSettings_CreateWithSettings()
+    {
+      JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+      {
+        Formatting = Formatting.Indented
+      };
+
+      IList<int> l = new List<int> { 1, 2, 3 };
+
+      StringWriter sw = new StringWriter();
+      JsonSerializer serializer = JsonSerializer.CreateDefault(new JsonSerializerSettings
+        {
+          Converters = { new IntConverter() }
+        });
+      serializer.Serialize(sw, l);
+
+      Assert.AreEqual(@"[
+  2,
+  4,
+  6
+]", sw.ToString());
+
+      sw = new StringWriter();
+      serializer.Converters.Clear();
+      serializer.Serialize(sw, l);
+
+      Assert.AreEqual(@"[
+  1,
+  2,
+  3
+]", sw.ToString());
+
+      sw = new StringWriter();
+      serializer = JsonSerializer.Create(new JsonSerializerSettings { Formatting = Formatting.Indented });
+      serializer.Serialize(sw, l);
+
+      Assert.AreEqual(@"[
+  1,
+  2,
+  3
+]", sw.ToString());
+    }
+
+    public class IntConverter : JsonConverter
+    {
+      public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+      {
+        int i = (int)value;
+        writer.WriteValue(i * 2);
+      }
+
+      public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+      {
+        throw new NotImplementedException();
+      }
+
+      public override bool CanConvert(Type objectType)
+      {
+        return objectType == typeof(int);
+      }
+    }
+
+    [Test]
     public void DeserializeObject_EmptyString()
     {
       object result = JsonConvert.DeserializeObject(string.Empty);

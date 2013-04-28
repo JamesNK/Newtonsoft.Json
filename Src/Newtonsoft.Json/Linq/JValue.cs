@@ -617,7 +617,7 @@ namespace Newtonsoft.Json.Linq
         JsonConverter matchingConverter = JsonSerializer.GetMatchingConverter(converters, _value.GetType());
         if (matchingConverter != null)
         {
-          matchingConverter.WriteJson(writer, _value, new JsonSerializer());
+          matchingConverter.WriteJson(writer, _value, JsonSerializer.CreateDefault());
           return;
         }
       }

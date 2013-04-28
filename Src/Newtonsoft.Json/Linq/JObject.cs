@@ -342,7 +342,7 @@ namespace Newtonsoft.Json.Linq
     /// <returns>A <see cref="JObject"/> with the values of the specified object</returns>
     public static new JObject FromObject(object o)
     {
-      return FromObject(o, new JsonSerializer());
+      return FromObject(o, JsonSerializer.CreateDefault());
     }
 
     /// <summary>

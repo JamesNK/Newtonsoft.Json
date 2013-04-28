@@ -160,7 +160,7 @@ namespace Newtonsoft.Json.Linq
     /// <returns>A <see cref="JArray"/> with the values of the specified object</returns>
     public static new JArray FromObject(object o)
     {
-      return FromObject(o, new JsonSerializer());
+      return FromObject(o, JsonSerializer.CreateDefault());
     }
 
     /// <summary>

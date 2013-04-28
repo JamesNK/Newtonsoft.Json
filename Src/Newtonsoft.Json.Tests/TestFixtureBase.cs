@@ -41,6 +41,7 @@ using NUnit.Framework;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using TestMethod = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
+using Setup = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestInitialize;
 #endif
 using Newtonsoft.Json.Utilities;
 using System.Collections;
@@ -117,13 +118,14 @@ namespace Newtonsoft.Json.Tests
       return bytes;
     }
 
-#if !NETFX_CORE
     [SetUp]
     protected void TestSetup()
     {
       //CultureInfo turkey = CultureInfo.CreateSpecificCulture("tr");
       //Thread.CurrentThread.CurrentCulture = turkey;
       //Thread.CurrentThread.CurrentUICulture = turkey;
+
+      JsonConvert.DefaultSettings = null;
     }
 
     protected void WriteEscapedJson(string json)
@@ -135,7 +137,6 @@ namespace Newtonsoft.Json.Tests
     {
       return @"@""" + json.Replace(@"""", @"""""") + @"""";
     }
-#endif
   }
 
 #if NETFX_CORE

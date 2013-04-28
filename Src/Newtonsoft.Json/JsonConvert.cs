@@ -36,6 +36,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities;
 using System.Xml;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using System.Text;
 #if !NET20 && (!SILVERLIGHT || WINDOWS_PHONE) && !PORTABLE40
 using System.Xml.Linq;
@@ -51,6 +52,15 @@ namespace Newtonsoft.Json
   /// </example>
   public static class JsonConvert
   {
+    /// <summary>
+    /// Gets or sets a function that creates default <see cref="JsonSerializerSettings"/>.
+    /// Default settings are automatically used by serialization methods on <see cref="JsonConvert"/>,
+    /// and <see cref="JToken.ToObject{T}()"/> and <see cref="JToken.FromObject(object)"/> on <see cref="JToken"/>.
+    /// To serialize without using any default settings create a <see cref="JsonSerializer"/> with
+    /// <see cref="JsonSerializer.Create()"/>.
+    /// </summary>
+    public static Func<JsonSerializerSettings> DefaultSettings { get; set; }
+
     /// <summary>
     /// Represents JavaScript's boolean value true as a string. This field is read-only.
     /// </summary>
@@ -595,7 +605,7 @@ namespace Newtonsoft.Json
     /// </returns>
     public static string SerializeObject(object value, Type type, Formatting formatting, JsonSerializerSettings settings)
     {
-      JsonSerializer jsonSerializer = JsonSerializer.Create(settings);
+      JsonSerializer jsonSerializer = JsonSerializer.CreateDefault(settings);
 
       StringBuilder sb = new StringBuilder(256);
       StringWriter sw = new StringWriter(sb, CultureInfo.InvariantCulture);
@@ -793,7 +803,7 @@ namespace Newtonsoft.Json
       ValidationUtils.ArgumentNotNull(value, "value");
 
       StringReader sr = new StringReader(value);
-      JsonSerializer jsonSerializer = JsonSerializer.Create(settings);
+      JsonSerializer jsonSerializer = JsonSerializer.CreateDefault(settings);
 
       // by default DeserializeObject should check for additional content
       if (!jsonSerializer.IsCheckAdditionalContentSet())
@@ -886,7 +896,7 @@ namespace Newtonsoft.Json
     public static void PopulateObject(string value, object target, JsonSerializerSettings settings)
     {
       StringReader sr = new StringReader(value);
-      JsonSerializer jsonSerializer = JsonSerializer.Create(settings);
+      JsonSerializer jsonSerializer = JsonSerializer.CreateDefault(settings);
 
       using (JsonReader jsonReader = new JsonTextReader(sr))
       {
