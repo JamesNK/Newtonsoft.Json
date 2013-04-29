@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Serialization;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Serialization
@@ -62,6 +63,14 @@ namespace Newtonsoft.Json.Serialization
   /// <param name="context">The streaming context.</param>
   /// <param name="errorContext">The error context.</param>
   public delegate void SerializationErrorCallback(object o, StreamingContext context, ErrorContext errorContext);
+
+  /// <summary>
+  /// Sets extension data for an object during deserialization.
+  /// </summary>
+  /// <param name="o">The object to set extension data on.</param>
+  /// <param name="key">The extension data key.</param>
+  /// <param name="value">The extension data value.</param>
+  public delegate void ExtensionDataSetter(object o, string key, JToken value);
 
   /// <summary>
   /// Contract details for a <see cref="Type"/> used by the <see cref="JsonSerializer"/>.

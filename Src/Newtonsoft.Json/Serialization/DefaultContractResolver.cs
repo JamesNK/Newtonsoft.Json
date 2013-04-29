@@ -389,7 +389,73 @@ namespace Newtonsoft.Json.Serialization
           contract.ConstructorParameters.AddRange(CreateConstructorParameters(constructor, contract.Properties));
         }
       }
+
+      contract.ExtensionDataSetter = GetExtensionDataForType(contract.NonNullableUnderlyingType);
+
       return contract;
+    }
+
+    private ExtensionDataSetter GetExtensionDataForType(Type type)
+    {
+      ExtensionDataSetter extensionDataSetter = null;
+
+      foreach (Type baseType in GetClassHierarchyForType(type))
+      {
+        IList<MemberInfo> members = new List<MemberInfo>();
+        members.AddRange(baseType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+        members.AddRange(baseType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+
+        foreach (MemberInfo member in members)
+        {
+          MemberTypes memberType = member.MemberType();
+          if (memberType != MemberTypes.Property && memberType != MemberTypes.Field)
+            continue;
+
+          // last instance of attribute wins on type if there are multiple
+          if (!member.IsDefined(typeof(JsonExtensionDataAttribute), false))
+            continue;
+
+          Type t = ReflectionUtils.GetMemberUnderlyingType(member);
+
+          Type dictionaryType;
+          if (ReflectionUtils.ImplementsGenericDefinition(t, typeof(IDictionary<,>), out dictionaryType))
+          {
+            Type keyType = dictionaryType.GetGenericArguments()[0];
+            Type valueType = dictionaryType.GetGenericArguments()[1];
+
+            // change type to a class if it is the base interface so it can be instantiated if needed
+            if (ReflectionUtils.IsGenericDefinition(t, typeof(IDictionary<,>)))
+              t = typeof(Dictionary<,>).MakeGenericType(keyType, valueType);
+
+            if (keyType.IsAssignableFrom(typeof(string)) && valueType.IsAssignableFrom(typeof(JToken)))
+            {
+              MethodInfo addMethod = t.GetMethod("Add", new [] { keyType, valueType });
+              Func<object, object> getExtensionDataDictionary = JsonTypeReflector.ReflectionDelegateFactory.CreateGet<object>(member);
+              Action<object, object> setExtensionDataDictionary = JsonTypeReflector.ReflectionDelegateFactory.CreateSet<object>(member);
+              Func<object> createExtensionDataDictionary = JsonTypeReflector.ReflectionDelegateFactory.CreateDefaultConstructor<object>(t);
+              MethodCall<object, object> setExtensionDataDictionaryValue = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(addMethod);
+
+              extensionDataSetter = (o, key, value) =>
+                {
+                  object dictionary = getExtensionDataDictionary(o);
+                  if (dictionary == null)
+                  {
+                    dictionary = createExtensionDataDictionary();
+                    setExtensionDataDictionary(o, dictionary);
+                  }
+
+                  setExtensionDataDictionaryValue(dictionary, key, value);
+                };
+
+              continue;
+            }
+          }
+
+          throw new JsonException("Invalid extension data attribute on '{0}'. Member '{1}' type must implement IDictionary<string, JToken>.".FormatWith(CultureInfo.InvariantCulture, GetClrTypeFullName(member.DeclaringType), member.Name));
+        }
+      }
+
+      return extensionDataSetter;
     }
 
     private ConstructorInfo GetAttributeConstructor(Type objectType)
@@ -593,8 +659,7 @@ namespace Newtonsoft.Json.Serialization
 
       foreach (Type baseType in GetClassHierarchyForType(type))
       {
-        // while we allow more than one OnSerialized total, only one can be defined
-        // per class
+        // while we allow more than one OnSerialized total, only one can be defined per class
         MethodInfo currentOnSerializing = null;
         MethodInfo currentOnSerialized = null;
         MethodInfo currentOnDeserializing = null;
@@ -1020,6 +1085,8 @@ namespace Newtonsoft.Json.Serialization
 
       bool hasJsonIgnoreAttribute =
         JsonTypeReflector.GetAttribute<JsonIgnoreAttribute>(attributeProvider) != null
+        // automatically ignore extension data dictionary property if it is public
+        || JsonTypeReflector.GetAttribute<JsonExtensionDataAttribute>(attributeProvider) != null
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE40 || PORTABLE)
         || JsonTypeReflector.GetAttribute<NonSerializedAttribute>(attributeProvider) != null
 #endif

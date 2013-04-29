@@ -348,7 +348,11 @@ namespace Newtonsoft.Json.Utilities
 
     public static IEnumerable<PropertyInfo> GetProperties(this Type type, BindingFlags bindingFlags)
     {
-      return type.GetTypeInfo().GetPropertiesRecursive().Where(p => TestAccessibility(p, bindingFlags));
+      IList<PropertyInfo> properties = (bindingFlags.HasFlag(BindingFlags.DeclaredOnly))
+        ? type.GetTypeInfo().DeclaredProperties.ToList()
+        : type.GetTypeInfo().GetPropertiesRecursive();
+
+      return properties.Where(p => TestAccessibility(p, bindingFlags));
     }
 
     private static IList<MemberInfo> GetMembersRecursive(this TypeInfo type)
@@ -424,7 +428,11 @@ namespace Newtonsoft.Json.Utilities
 
     public static IEnumerable<FieldInfo> GetFields(this Type type, BindingFlags bindingFlags)
     {
-      return type.GetTypeInfo().GetFieldsRecursive().Where(f => TestAccessibility(f, bindingFlags)).ToList();
+      IList<FieldInfo> fields = (bindingFlags.HasFlag(BindingFlags.DeclaredOnly))
+        ? type.GetTypeInfo().DeclaredFields.ToList()
+        : type.GetTypeInfo().GetFieldsRecursive();
+
+      return fields.Where(f => TestAccessibility(f, bindingFlags)).ToList();
     }
 
     private static bool TestAccessibility(PropertyInfo member, BindingFlags bindingFlags)

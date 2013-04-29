@@ -116,6 +116,7 @@
     <Compile Include="DateTimeZoneHandling.cs" />
     <Compile Include="Formatting.cs" />
     <Compile Include="JsonConstructorAttribute.cs" />
+    <Compile Include="JsonExtensionDataAttribute.cs" />
     <Compile Include="JsonPosition.cs" />
     <Compile Include="Linq\JPropertyKeyedCollection.cs" />
     <Compile Include="Serialization\DiagnosticsTraceWriter.cs" />

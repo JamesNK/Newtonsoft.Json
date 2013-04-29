@@ -719,7 +719,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
       return value;
     }
 
-    private void SetPropertyValue(JsonProperty property, JsonConverter propertyConverter, JsonContainerContract containerContract, JsonProperty containerProperty, JsonReader reader, object target)
+    private bool SetPropertyValue(JsonProperty property, JsonConverter propertyConverter, JsonContainerContract containerContract, JsonProperty containerProperty, JsonReader reader, object target)
     {
       object currentValue;
       bool useExistingValue;
@@ -727,7 +727,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
       bool gottenCurrentValue;
 
       if (CalculatePropertyDetails(property, ref propertyConverter, containerContract, containerProperty, reader, target, out useExistingValue, out currentValue, out propertyContract, out gottenCurrentValue))
-        return;
+        return false;
 
       object value;
 
@@ -758,7 +758,12 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
 
           property.SetIsSpecified(target, true);
         }
+
+        return true;
       }
+
+      // the value wasn't set be JSON was populated onto the existing value
+      return useExistingValue;
     }
 
     private bool CalculatePropertyDetails(JsonProperty property, ref JsonConverter propertyConverter, JsonContainerContract containerContract, JsonProperty containerProperty, JsonReader reader, object target, out bool useExistingValue, out object currentValue, out JsonContract propertyContract, out bool gottenCurrentValue)
@@ -769,10 +774,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
       gottenCurrentValue = false;
 
       if (property.Ignored)
-      {
-        reader.Skip();
         return true;
-      }
 
       JsonToken tokenType = reader.TokenType;
 
@@ -798,26 +800,17 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
       }
 
       if (!property.Writable && !useExistingValue)
-      {
-        reader.Skip();
         return true;
-      }
 
       // test tokentype here because null might not be convertable to some types, e.g. ignoring null when applied to DateTime
       if (property.NullValueHandling.GetValueOrDefault(Serializer._nullValueHandling) == NullValueHandling.Ignore && tokenType == JsonToken.Null)
-      {
-        reader.Skip();
         return true;
-      }
 
       // test tokentype here because default value might not be convertable to actual type, e.g. default of "" for DateTime
       if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer._defaultValueHandling), DefaultValueHandling.Ignore)
           && JsonReader.IsPrimitiveToken(tokenType)
           && MiscellaneousUtils.ValueEquals(reader.Value, property.GetResolvedDefaultValue()))
-      {
-        reader.Skip();
         return true;
-      }
 
       if (currentValue == null)
       {
@@ -1367,7 +1360,8 @@ To fix this error either change the environment to be fully trusted, change the 
 
                 JsonConverter propertyConverter = GetConverter(property.PropertyContract, property.MemberConverter, null, null);
 
-                SetPropertyValue(property, propertyConverter, null, member, reader, newObject);
+                if (!SetPropertyValue(property, propertyConverter, null, member, reader, newObject))
+                  reader.Skip();
               }
               else
               {
@@ -1700,7 +1694,10 @@ To fix this error either change the environment to be fully trusted, change the 
                   if (Serializer._missingMemberHandling == MissingMemberHandling.Error)
                     throw JsonSerializationException.Create(reader, "Could not find member '{0}' on object of type '{1}'".FormatWith(CultureInfo.InvariantCulture, memberName, contract.UnderlyingType.Name));
 
-                  reader.Skip();
+                  if (!reader.Read())
+                    break;
+
+                  SetExtensionData(contract, reader, memberName, newObject);
                   continue;
                 }
 
@@ -1714,7 +1711,9 @@ To fix this error either change the environment to be fully trusted, change the 
 
                 SetPropertyPresence(reader, property, propertiesPresence);
 
-                SetPropertyValue(property, propertyConverter, contract, member, reader, newObject);
+                // set extension data if property is ignored or readonly
+                if (!SetPropertyValue(property, propertyConverter, contract, member, reader, newObject))
+                  SetExtensionData(contract, reader, memberName, newObject);
               }
               catch (Exception ex)
               {
@@ -1743,6 +1742,27 @@ To fix this error either change the environment to be fully trusted, change the 
 
       OnDeserialized(reader, contract, newObject);
       return newObject;
+    }
+
+    private void SetExtensionData(JsonObjectContract contract, JsonReader reader, string memberName, object o)
+    {
+      if (contract.ExtensionDataSetter != null)
+      {
+        try
+        {
+          JToken extensionDataValue = JToken.ReadFrom(reader);
+
+          contract.ExtensionDataSetter(o, memberName, extensionDataValue);
+        }
+        catch (Exception ex)
+        {
+          throw JsonSerializationException.Create(reader, "Error setting value in extension data for type '{0}'.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType), ex);
+        }
+      }
+      else
+      {
+        reader.Skip();
+      }
     }
 
     private void EndObject(object newObject, JsonReader reader, JsonObjectContract contract, int initialDepth, Dictionary<JsonProperty, PropertyPresence> propertiesPresence)

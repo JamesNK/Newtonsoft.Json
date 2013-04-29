@@ -114,6 +114,7 @@
     <Compile Include="JsonConstructorAttribute.cs" />
     <Compile Include="JsonDictionaryAttribute.cs" />
     <Compile Include="JsonException.cs" />
+    <Compile Include="JsonExtensionDataAttribute.cs" />
     <Compile Include="JsonPosition.cs" />
     <Compile Include="Linq\JPropertyDescriptor.cs" />
     <Compile Include="Linq\JPropertyKeyedCollection.cs" />

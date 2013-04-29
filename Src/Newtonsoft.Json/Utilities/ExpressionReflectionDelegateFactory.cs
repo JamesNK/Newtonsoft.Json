@@ -80,7 +80,13 @@ namespace Newtonsoft.Json.Utilities
       }
 
       if (method is MethodInfo)
-        callExpression = EnsureCastExpression(callExpression, type);
+      {
+        MethodInfo m = (MethodInfo)method;
+        if (m.ReturnType != typeof(void))
+          callExpression = EnsureCastExpression(callExpression, type);
+        else
+          callExpression = Expression.Block(callExpression, Expression.Constant(null));
+      }
 
       LambdaExpression lambdaExpression = Expression.Lambda(typeof(MethodCall<T, object>), callExpression, targetParameterExpression, argsParameterExpression);
 

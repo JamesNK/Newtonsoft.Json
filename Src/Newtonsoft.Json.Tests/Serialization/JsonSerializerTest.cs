@@ -134,6 +134,173 @@ namespace Newtonsoft.Json.Tests.Serialization
 
     }
 
+    public class ExtensionDataTestClass
+    {
+      public string Name { get; set; }
+      [JsonProperty("custom_name")]
+      public string CustomName { get; set; }
+      [JsonIgnore]
+      public IList<int> Ignored { get; set; }
+      public bool GetPrivate { get; internal set; }
+      public bool GetOnly
+      {
+        get { return true; }
+      }
+      public readonly string Readonly = "Readonly";
+      public IList<int> Ints { get; set; }
+        
+      [JsonExtensionData]
+      internal IDictionary<string, JToken> ExtensionData { get; set; }
+
+      public ExtensionDataTestClass()
+      {
+        Ints = new List<int> { 0 };
+      }
+    }
+
+    [Test]
+    public void ExtensionDataTest()
+    {
+      string json = @"{
+  ""Ints"": [1,2,3],
+  ""Ignored"": [1,2,3],
+  ""Readonly"": ""Readonly"",
+  ""Name"": ""Actually set!"",
+  ""CustomName"": ""Wrong name!"",
+  ""GetPrivate"": true,
+  ""GetOnly"": true,
+  ""NewValueSimple"": true,
+  ""NewValueComplex"": [1,2,3]
+}";
+
+      ExtensionDataTestClass c = JsonConvert.DeserializeObject<ExtensionDataTestClass>(json);
+
+      Assert.AreEqual("Actually set!", c.Name);
+      Assert.AreEqual(4, c.Ints.Count);
+      
+      Assert.AreEqual("Readonly", (string)c.ExtensionData["Readonly"]);
+      Assert.AreEqual("Wrong name!", (string)c.ExtensionData["CustomName"]);
+      Assert.AreEqual(true, (bool)c.ExtensionData["GetPrivate"]);
+      Assert.AreEqual(true, (bool)c.ExtensionData["GetOnly"]);
+      Assert.AreEqual(true, (bool)c.ExtensionData["NewValueSimple"]);
+      Assert.IsTrue(JToken.DeepEquals(new JArray(1, 2, 3), c.ExtensionData["NewValueComplex"]));
+      Assert.IsTrue(JToken.DeepEquals(new JArray(1, 2, 3), c.ExtensionData["Ignored"]));
+
+      Assert.AreEqual(7, c.ExtensionData.Count);
+    }
+
+    public class MultipleExtensionDataAttributesTestClass
+    {
+      public string Name { get; set; }
+      [JsonExtensionData]
+      internal IDictionary<string, JToken> ExtensionData1 { get; set; }
+      [JsonExtensionData]
+      internal IDictionary<string, JToken> ExtensionData2 { get; set; }
+    }
+
+    public class ExtensionDataAttributesInheritanceTestClass : MultipleExtensionDataAttributesTestClass
+    {
+      [JsonExtensionData]
+      internal IDictionary<string, JToken> ExtensionData0 { get; set; }
+    }
+
+    public class FieldExtensionDataAttributeTestClass
+    {
+      [JsonExtensionData]
+      internal IDictionary<object, object> ExtensionData;
+    }
+
+    public class PublicExtensionDataAttributeTestClass
+    {
+      public string Name { get; set; }
+      [JsonExtensionData]
+      public IDictionary<object, object> ExtensionData;
+    }
+
+    [Test]
+    public void SerializePublicExtensionData()
+    {
+      string json = JsonConvert.SerializeObject(new PublicExtensionDataAttributeTestClass
+        {
+          Name = "Name!",
+          ExtensionData = new Dictionary<object, object>
+            {
+              { "Test", 1 }
+            }
+        });
+
+      Assert.AreEqual(@"{""Name"":""Name!""}", json);
+    }
+
+    [Test]
+    public void DeserializePublicExtensionData()
+    {
+      string json = @"{
+  'Name':'Name!',
+  'NoMatch':'NoMatch!',
+  'ExtensionData':{'HAI':true}
+}";
+
+      var c = JsonConvert.DeserializeObject<PublicExtensionDataAttributeTestClass>(json);
+
+      Assert.AreEqual("Name!", c.Name);
+      Assert.AreEqual(2, c.ExtensionData.Count);
+
+      Assert.AreEqual("NoMatch!", (string)(JValue)c.ExtensionData["NoMatch"]);
+
+      // the ExtensionData property is put into the extension data
+      // inception
+      var o = (JObject)c.ExtensionData["ExtensionData"];
+      Assert.AreEqual(1, o.Count);
+      Assert.IsTrue(JToken.DeepEquals(new JObject { { "HAI", true } }, o));
+    }
+
+    [Test]
+    public void FieldExtensionDataAttributeTest_Serialize()
+    {
+      FieldExtensionDataAttributeTestClass c = new FieldExtensionDataAttributeTestClass
+        {
+          ExtensionData = new Dictionary<object, object>()
+        };
+
+      string json = JsonConvert.SerializeObject(c);
+
+      Assert.AreEqual("{}", json);
+    }
+
+    [Test]
+    public void FieldExtensionDataAttributeTest_Deserialize()
+    {
+      var c = JsonConvert.DeserializeObject<FieldExtensionDataAttributeTestClass>("{'first':1,'second':2}");
+
+      Assert.AreEqual(2, c.ExtensionData.Count);
+      Assert.AreEqual(1, (int)(JToken)c.ExtensionData["first"]);
+      Assert.AreEqual(2, (int)(JToken)c.ExtensionData["second"]);
+    }
+
+    [Test]
+    public void MultipleExtensionDataAttributesTest()
+    {
+      var c = JsonConvert.DeserializeObject<MultipleExtensionDataAttributesTestClass>("{'first':1,'second':2}");
+
+      Assert.AreEqual(null, c.ExtensionData1);
+      Assert.AreEqual(2, c.ExtensionData2.Count);
+      Assert.AreEqual(1, (int)c.ExtensionData2["first"]);
+      Assert.AreEqual(2, (int)c.ExtensionData2["second"]);
+    }
+
+    [Test]
+    public void ExtensionDataAttributesInheritanceTest()
+    {
+      var c = JsonConvert.DeserializeObject<ExtensionDataAttributesInheritanceTestClass>("{'first':1,'second':2}");
+
+      Assert.AreEqual(null, c.ExtensionData1);
+      Assert.AreEqual(null, c.ExtensionData2);
+      Assert.AreEqual(2, c.ExtensionData0.Count);
+      Assert.AreEqual(1, (int)c.ExtensionData0["first"]);
+      Assert.AreEqual(2, (int)c.ExtensionData0["second"]);
+    }
+
     [Test]
     public void GenericCollectionInheritance()
     {
