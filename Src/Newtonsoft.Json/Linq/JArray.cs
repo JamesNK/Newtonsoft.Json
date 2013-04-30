@@ -269,6 +269,15 @@ namespace Newtonsoft.Json.Linq
     public void RemoveAt(int index)
     {
       RemoveItemAt(index);
+    }  
+    
+    #endregion
+    
+    #region IEnumerable<JToken> Members
+
+    public IEnumerator<JToken> GetEnumerator()
+    {
+        return Children().GetEnumerator();
     }
 
     #endregion
@@ -306,14 +315,14 @@ namespace Newtonsoft.Json.Linq
       return ContainsItem(item);
     }
 
-    void ICollection<JToken>.CopyTo(JToken[] array, int arrayIndex)
+    public void CopyTo(JToken[] array, int arrayIndex)
     {
-      CopyItemsTo(array, arrayIndex);
+        CopyItemsTo(array, arrayIndex);
     }
 
-    bool ICollection<JToken>.IsReadOnly
+    public bool IsReadOnly
     {
-      get { return false; }
+        get { return false; }
     }
 
     /// <summary>
