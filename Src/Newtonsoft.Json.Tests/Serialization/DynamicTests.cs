@@ -250,6 +250,54 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       Assert.AreEqual(false, foo.Values["retweeted"]);
     }
+
+    [Test]
+    public void SerializeDynamicObjectWithNullValueHandlingIgnore()
+    {
+      dynamic o = new TestDynamicObject();
+      o.Text = "Text!";
+      o.Int = int.MaxValue;
+      o.ChildObject = null; // Tests an explicitly defined property of a dynamic object with a null value.
+      o.DynamicChildObject = null; // vs. a completely dynamic defined property.
+
+      string json = JsonConvert.SerializeObject(o, Formatting.Indented, new JsonSerializerSettings
+      {
+        NullValueHandling = NullValueHandling.Ignore,
+      });
+
+      Console.WriteLine(json);
+
+      Assert.AreEqual(@"{
+  ""Explicit"": false,
+  ""Text"": ""Text!"",
+  ""Int"": 2147483647
+}", json);
+    }
+
+    [Test]
+    public void SerializeDynamicObjectWithNullValueHandlingInclude()
+    {
+      dynamic o = new TestDynamicObject();
+      o.Text = "Text!";
+      o.Int = int.MaxValue;
+      o.ChildObject = null; // Tests an explicitly defined property of a dynamic object with a null value.
+      o.DynamicChildObject = null; // vs. a completely dynamic defined property.
+
+      string json = JsonConvert.SerializeObject(o, Formatting.Indented, new JsonSerializerSettings
+      {
+        NullValueHandling = NullValueHandling.Include,
+      });
+
+      Console.WriteLine(json);
+
+      Assert.AreEqual(@"{
+  ""Explicit"": false,
+  ""Text"": ""Text!"",
+  ""DynamicChildObject"": null,
+  ""Int"": 2147483647,
+  ""ChildObject"": null
+}", json);
+    }
   }
 
   public class DynamicChildObject
