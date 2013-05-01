@@ -271,6 +271,17 @@ namespace Newtonsoft.Json.Linq
       RemoveItemAt(index);
     }
 
+    /// <summary>
+    /// Returns an enumerator that iterates through the collection.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
+    /// </returns>
+    public IEnumerator<JToken> GetEnumerator()
+    {
+      return Children().GetEnumerator();
+    }
+
     #endregion
 
     #region ICollection<JToken> Members
@@ -306,12 +317,21 @@ namespace Newtonsoft.Json.Linq
       return ContainsItem(item);
     }
 
-    void ICollection<JToken>.CopyTo(JToken[] array, int arrayIndex)
+    /// <summary>
+    /// Copies to.
+    /// </summary>
+    /// <param name="array">The array.</param>
+    /// <param name="arrayIndex">Index of the array.</param>
+    public void CopyTo(JToken[] array, int arrayIndex)
     {
       CopyItemsTo(array, arrayIndex);
     }
 
-    bool ICollection<JToken>.IsReadOnly
+    /// <summary>
+    /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
+    /// </summary>
+    /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
+    public bool IsReadOnly
     {
       get { return false; }
     }

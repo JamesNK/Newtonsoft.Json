@@ -147,6 +147,33 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual("TestProperty1Value", c.TestProperty1);
     }
 
+    public class DefaultHandler
+    {
+      [DefaultValue(-1)]
+      public int field1;
+
+      [DefaultValue("default")]
+      public string field2;
+    }
+
+    [Test]
+    public void DeserializeIgnoreAndPopulate()
+    {
+      DefaultHandler c1 = JsonConvert.DeserializeObject<DefaultHandler>("{}", new JsonSerializerSettings
+      {
+        DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate
+      });
+      Assert.AreEqual(-1, c1.field1);
+      Assert.AreEqual("default", c1.field2);
+
+      DefaultHandler c2 = JsonConvert.DeserializeObject<DefaultHandler>("{'field1':-1,'field2':'default'}", new JsonSerializerSettings
+      {
+        DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate
+      });
+      Assert.AreEqual(-1, c2.field1);
+      Assert.AreEqual("default", c2.field2);
+    }
+
     [JsonObject]
     public class NetworkUser
     {

@@ -8687,6 +8687,17 @@ Parameter name: value",
       Assert.AreEqual(2, list[1]);
       Assert.AreEqual(0, list[2]);
     }
+
+    [Test]
+    public void DeserializeNonIsoDateDictionaryKey()
+    {
+      Dictionary<DateTime, string> d = JsonConvert.DeserializeObject<Dictionary<DateTime, string>>(@"{""04/28/2013 00:00:00"":""test""}");
+
+      Assert.AreEqual(1, d.Count);
+
+      DateTime key = DateTime.Parse("04/28/2013 00:00:00", CultureInfo.InvariantCulture);
+      Assert.AreEqual("test", d[key]);
+    }
   }
 
   public enum Antworten

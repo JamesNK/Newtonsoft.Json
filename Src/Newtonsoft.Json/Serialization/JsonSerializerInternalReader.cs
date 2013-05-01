@@ -808,6 +808,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
 
       // test tokentype here because default value might not be convertable to actual type, e.g. default of "" for DateTime
       if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer._defaultValueHandling), DefaultValueHandling.Ignore)
+          && !HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer._defaultValueHandling), DefaultValueHandling.Populate)
           && JsonReader.IsPrimitiveToken(tokenType)
           && MiscellaneousUtils.ValueEquals(reader.Value, property.GetResolvedDefaultValue()))
         return true;
@@ -853,7 +854,8 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
         return false;
 
       if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer._defaultValueHandling), DefaultValueHandling.Ignore)
-        && MiscellaneousUtils.ValueEquals(value, property.GetResolvedDefaultValue()))
+          && !HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer._defaultValueHandling), DefaultValueHandling.Populate)
+          && MiscellaneousUtils.ValueEquals(value, property.GetResolvedDefaultValue()))
         return false;
 
       if (!property.Writable)
@@ -975,15 +977,18 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
             {
               try
               {
+                object dt;
                 // this is for correctly reading ISO and MS formatted dictionary keys
                 if ((keyTypeCode == PrimitiveTypeCode.DateTime || keyTypeCode == PrimitiveTypeCode.DateTimeNullable)
-                  && DateTimeUtils.TryParseDateTime(keyValue.ToString(), DateParseHandling.DateTime, reader.DateTimeZoneHandling, out keyValue))
+                  && DateTimeUtils.TryParseDateTime(keyValue.ToString(), DateParseHandling.DateTime, reader.DateTimeZoneHandling, out dt))
                 {
+                  keyValue = dt;
                 }
 #if !NET20
                 else if ((keyTypeCode == PrimitiveTypeCode.DateTimeOffset || keyTypeCode == PrimitiveTypeCode.DateTimeOffsetNullable)
-                  && DateTimeUtils.TryParseDateTime(keyValue.ToString(), DateParseHandling.DateTimeOffset, reader.DateTimeZoneHandling, out keyValue))
+                  && DateTimeUtils.TryParseDateTime(keyValue.ToString(), DateParseHandling.DateTimeOffset, reader.DateTimeZoneHandling, out dt))
                 {
+                  keyValue = dt;
                 }
 #endif
                 else
