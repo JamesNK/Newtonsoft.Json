@@ -755,6 +755,9 @@ To fix this error either change the environment to be fully trusted, change the 
         {
           try
           {
+            if (Serializer.NullValueHandling == NullValueHandling.Ignore && memberValue == null)
+                continue;
+
             JsonContract valueContract = GetContractSafe(memberValue);
 
             if (CheckForCircularReference(writer, memberValue, null, valueContract, contract, member))
