@@ -757,6 +757,9 @@ To fix this error either change the environment to be fully trusted, change the 
           {
             JsonContract valueContract = GetContractSafe(memberValue);
 
+            if (!ShouldWriteDynamicProperty(memberValue))
+              continue;
+
             if (CheckForCircularReference(writer, memberValue, null, valueContract, contract, member))
             {
               string resolvedPropertyName = (contract.PropertyNameResolver != null)
@@ -783,6 +786,18 @@ To fix this error either change the environment to be fully trusted, change the 
       OnSerialized(writer, contract, value);
     }
 #endif
+
+    private bool ShouldWriteDynamicProperty(object memberValue)
+    {
+      if (Serializer._nullValueHandling == NullValueHandling.Ignore && memberValue == null)
+        return false;
+
+      if (HasFlag(Serializer._defaultValueHandling, DefaultValueHandling.Ignore) &&
+        (memberValue == null || MiscellaneousUtils.ValueEquals(memberValue, ReflectionUtils.GetDefaultValue(memberValue.GetType()))))
+        return false;
+
+      return true;
+    }
 
     private bool ShouldWriteType(TypeNameHandling typeNameHandlingFlag, JsonContract contract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
     {
