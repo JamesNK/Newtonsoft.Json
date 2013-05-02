@@ -61,6 +61,22 @@ namespace Newtonsoft.Json.Serialization
         assembly = Assembly.Load(assemblyName);
 #endif
 
+#if !(PORTABLE40 || PORTABLE)
+        if (assembly == null)
+        {
+          // will find assemblies loaded with Assembly.LoadFile outside of the main directory
+          Assembly[] loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+          foreach (Assembly a in loadedAssemblies)
+          {
+            if (a.FullName == assemblyName)
+            {
+              assembly = a;
+              break;
+            }
+          }
+        }
+#endif
+
         if (assembly == null)
           throw new JsonSerializationException("Could not load assembly '{0}'.".FormatWith(CultureInfo.InvariantCulture, assemblyName));
 
