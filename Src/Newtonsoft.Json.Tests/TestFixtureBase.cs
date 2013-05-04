@@ -29,7 +29,6 @@ using System.Globalization;
 using System.IO;
 #if NET20
 using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Runtime.Serialization.Json;
 #endif

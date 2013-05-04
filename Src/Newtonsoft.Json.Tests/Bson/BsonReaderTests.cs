@@ -30,6 +30,7 @@ using System.Globalization;
 using System.Numerics;
 #endif
 using System.Text;
+using System.Text.RegularExpressions;
 #if !NETFX_CORE
 using NUnit.Framework;
 #else
@@ -1469,5 +1470,44 @@ namespace Newtonsoft.Json.Tests.Bson
       Assert.AreEqual(i, c.Blah);
     }
 #endif
+
+    public class RegexTestClass
+    {
+      public Regex Regex { get; set; }
+    }
+
+    [Test]
+    public void DeserializeRegexNonConverterBson()
+    {
+      string hex = "46-00-00-00-03-52-65-67-65-78-00-3A-00-00-00-02-70-61-74-74-65-72-6E-00-05-00-00-00-28-68-69-29-00-10-6F-70-74-69-6F-6E-73-00-05-00-00-00-12-6D-61-74-63-68-54-69-6D-65-6F-75-74-00-F0-D8-FF-FF-FF-FF-FF-FF-00-00";
+      byte[] data = HexToBytes(hex);
+      MemoryStream ms = new MemoryStream(data);
+
+      BsonReader reader = new BsonReader(ms);
+
+      JsonSerializer serializer = new JsonSerializer();
+
+      RegexTestClass c = serializer.Deserialize<RegexTestClass>(reader);
+
+      Assert.AreEqual("(hi)", c.Regex.ToString());
+      Assert.AreEqual(RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase, c.Regex.Options);
+    }
+
+    [Test]
+    public void DeserializeRegexBson()
+    {
+      string hex = "15-00-00-00-0B-52-65-67-65-78-00-28-68-69-29-00-69-75-78-00-00";
+      byte[] data = HexToBytes(hex);
+      MemoryStream ms = new MemoryStream(data);
+
+      BsonReader reader = new BsonReader(ms);
+
+      JsonSerializer serializer = new JsonSerializer();
+
+      RegexTestClass c = serializer.Deserialize<RegexTestClass>(reader);
+
+      Assert.AreEqual("(hi)", c.Regex.ToString());
+      Assert.AreEqual(RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase, c.Regex.Options);
+    }
   }
 }

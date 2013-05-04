@@ -25,8 +25,8 @@
 
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
 using System;
-#if !NETFX_CORE
 using System.Collections.Generic;
+#if !NETFX_CORE
 using NUnit.Framework;
 #else
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -36,6 +36,7 @@ using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAtt
 #if !NETFX_CORE
 using System.Data;
 #endif
+using Newtonsoft.Json.Tests.TestObjects;
 
 namespace Newtonsoft.Json.Tests.Converters
 {
@@ -269,6 +270,36 @@ namespace Newtonsoft.Json.Tests.Converters
       Assert.AreEqual(1, pair2.Value);
       Assert.AreEqual(1, pair2.Key.Rows.Count);
       Assert.AreEqual("item!", pair2.Key.Rows[0]["item"]);
+    }
+
+
+    [Test]
+    public void SerializedTypedDataTable()
+    {
+      CustomerDataSet.CustomersDataTable dt = new CustomerDataSet.CustomersDataTable();
+      dt.AddCustomersRow("432");
+
+      string json = JsonConvert.SerializeObject(dt, Formatting.Indented);
+
+      Assert.AreEqual(@"[
+  {
+    ""CustomerID"": ""432""
+  }
+]", json);
+    }
+
+    [Test]
+    public void DeserializedTypedDataTable()
+    {
+      string json = @"[
+  {
+    ""CustomerID"": ""432""
+  }
+]";
+
+      var dt = JsonConvert.DeserializeObject<CustomerDataSet.CustomersDataTable>(json);
+
+      Assert.AreEqual("432", dt[0].CustomerID);
     }
   }
 }

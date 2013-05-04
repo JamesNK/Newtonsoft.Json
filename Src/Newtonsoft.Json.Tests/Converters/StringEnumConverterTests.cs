@@ -26,6 +26,7 @@
 using System;
 using System.IO;
 using System.Runtime.Serialization;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json.Converters;
 #if !NETFX_CORE
 using NUnit.Framework;
@@ -336,6 +337,7 @@ namespace Newtonsoft.Json.Tests.Converters
       Assert.IsNull(c.NullableStoreColor2);
     }
 
+    [Test]
     public void DeserializeInvalidString()
     {
       string json = "{ \"Value\" : \"Three\" }";

@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Numerics;
 #endif
 using System.Text;
+using System.Text.RegularExpressions;
 #if !NETFX_CORE
 using NUnit.Framework;
 #else
@@ -38,6 +39,7 @@ using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAtt
 #endif
 using Newtonsoft.Json.Bson;
 using System.IO;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Tests.TestObjects;
 using System.Globalization;
@@ -713,6 +715,35 @@ namespace Newtonsoft.Json.Tests.Bson
       writer.WriteEndArray();
 
       Assert.AreEqual("10-00-00-00-09-30-00-C8-88-07-6B-DC-00-00-00-00", (BitConverter.ToString(ms.ToArray())));
+    }
+
+    public class RegexTestClass
+    {
+      public Regex Regex { get; set; }
+    }
+
+    [Test]
+    public void SerializeDeserializeRegex()
+    {
+      Regex r1 = new Regex("(hi)", RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
+      RegexTestClass c = new RegexTestClass { Regex = r1 };
+
+      MemoryStream ms = new MemoryStream();
+      JsonSerializer serializer = new JsonSerializer();
+
+      BsonWriter writer = new BsonWriter(ms);
+      serializer.Serialize(writer, c);
+
+      string hex = BitConverter.ToString(ms.ToArray());
+
+      Assert.AreEqual("15-00-00-00-0B-52-65-67-65-78-00-28-68-69-29-00-69-75-78-00-00", hex);
+
+      JObject o = (JObject)JObject.ReadFrom(new BsonReader(new MemoryStream(ms.ToArray())));
+
+      Console.WriteLine(o.ToString());
+      //{
+      //  "Regex": "/(hi)/iux"
+      //}
     }
 
 #if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)

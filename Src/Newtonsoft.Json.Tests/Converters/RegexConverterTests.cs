@@ -35,6 +35,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
 #if !NETFX_CORE
 using NUnit.Framework;
@@ -66,6 +67,57 @@ namespace Newtonsoft.Json.Tests.Converters
   ""Pattern"": ""abc"",
   ""Options"": 513
 }", json);
+    }
+
+    [Test]
+    public void SerializeCamelCaseAndStringEnums()
+    {
+      Regex regex = new Regex("abc", RegexOptions.IgnoreCase);
+
+      string json = JsonConvert.SerializeObject(regex, Formatting.Indented, new JsonSerializerSettings
+        {
+          Converters = {new RegexConverter(),new StringEnumConverter() { CamelCaseText = true }},
+          ContractResolver = new CamelCasePropertyNamesContractResolver()
+        });
+
+      Assert.AreEqual(@"{
+  ""pattern"": ""abc"",
+  ""options"": ""ignoreCase""
+}", json);
+    }
+
+    [Test]
+    public void DeserializeCamelCaseAndStringEnums()
+    {
+      string json = @"{
+  ""pattern"": ""abc"",
+  ""options"": ""ignoreCase""
+}";
+      
+      Regex regex = JsonConvert.DeserializeObject<Regex>(json, new JsonSerializerSettings
+       {
+         Converters = { new RegexConverter() }
+       });
+
+      Assert.AreEqual("abc", regex.ToString());
+      Assert.AreEqual(RegexOptions.IgnoreCase, regex.Options);
+    }
+
+    [Test]
+    public void DeserializeISerializeRegexJson()
+    {
+      string json = @"{
+                        ""Regex"": {
+                          ""pattern"": ""(hi)"",
+                          ""options"": 5,
+                          ""matchTimeout"": -10000
+                        }
+                      }";
+
+      RegexTestClass r = JsonConvert.DeserializeObject<RegexTestClass>(json);
+
+      Assert.AreEqual("(hi)", r.Regex.ToString());
+      Assert.AreEqual(RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture, r.Regex.Options);
     }
 
     [Test]

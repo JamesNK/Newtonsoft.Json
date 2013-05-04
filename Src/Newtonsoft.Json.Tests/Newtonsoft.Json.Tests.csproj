@@ -263,6 +263,9 @@
     <Compile Include="TestObjects\ConverableMembers.cs" />
     <Compile Include="TestObjects\ConverterPrecedenceClass.cs" />
     <Compile Include="TestObjects\ConverterPrecedenceClassConverter.cs" />
+    <Compile Include="TestObjects\CustomerDataSet.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="TestObjects\DateTimeErrorObjectCollection.cs" />
     <Compile Include="TestObjects\DateTimeTestClass.cs" />
     <Compile Include="TestObjects\DefaultValueAttributeTestClass.cs" />

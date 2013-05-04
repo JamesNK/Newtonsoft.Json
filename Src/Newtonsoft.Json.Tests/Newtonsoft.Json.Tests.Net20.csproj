@@ -109,6 +109,9 @@
     <Compile Include="TestObjects\Content.cs" />
     <Compile Include="TestObjects\ContentBaseClass.cs" />
     <Compile Include="TestObjects\ContentSubClass.cs" />
+    <Compile Include="TestObjects\CustomerDataSet.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="TestObjects\DictionaryInterfaceClass.cs" />
     <Compile Include="Serialization\EntitiesSerializationTests.cs" />
     <Compile Include="TestObjects\Event.cs" />

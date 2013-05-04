@@ -112,7 +112,8 @@ namespace Newtonsoft.Json.Serialization
         new JsonValueConverter(),
 #endif
         new KeyValuePairConverter(),
-        new BsonObjectIdConverter()
+        new BsonObjectIdConverter(),
+        new RegexConverter()
       };
 
     private static Dictionary<ResolverContractKey, JsonContract> _sharedContractCache;

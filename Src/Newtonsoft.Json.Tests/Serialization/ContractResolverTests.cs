@@ -258,5 +258,88 @@ namespace Newtonsoft.Json.Tests.Serialization
 }", includeCompilerGeneratedJson);
     }
 #endif
+
+    //public class NullAsStringValueProvider : IValueProvider
+    //{
+    //  private readonly ReflectionValueProvider _internalProvider;
+
+    //  public NullAsStringValueProvider(MemberInfo memberInfo)
+    //  {
+    //    _internalProvider = new ReflectionValueProvider(memberInfo);
+    //  }
+
+    //  public void SetValue(object target, object value)
+    //  {
+    //    _internalProvider.SetValue(target, value);
+    //  }
+
+    //  public object GetValue(object target)
+    //  {
+    //    object value = _internalProvider.GetValue(target);
+
+    //    if (value == null)
+    //      return string.Empty;
+
+    //    return value;
+    //  }
+    //}
+
+    //public class NullAsStringContractResolver : DefaultContractResolver
+    //{
+    //  protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+    //  {
+    //    JsonProperty property = base.CreateProperty(member, memberSerialization);
+
+    //    //property.ValueProvider = new NullAsStringValueProvider(member);
+    //    //property..Converter = new NullAsStringJsonConverter();
+
+    //    return property;
+    //  }
+
+    //  protected override JsonPrimitiveContract CreatePrimitiveContract(Type objectType)
+    //  {
+    //    return base.CreatePrimitiveContract(objectType);
+    //  }
+    //}
+
+    //public class NullAsStringTestClass
+    //{
+    //  public int? Integer { get; set; }
+    //  public DateTime? DateTime { get; set; }
+    //}
+
+    //public class NullAsStringJsonConverter : JsonConverter
+    //{
+    //  public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    //  {
+    //    if (value == null)
+    //      writer.WriteValue(string.Empty);
+    //  }
+
+    //  public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+    //  {
+    //    throw new NotImplementedException();
+    //  }
+
+    //  public override bool CanRead
+    //  {
+    //    get { return false; }
+    //  }
+
+    //  public override bool CanConvert(Type objectType)
+    //  {
+    //    return ReflectionUtils.IsNullableType(objectType);
+    //  }
+    //}
+
+    //[Test]
+    //public void sdfsdf()
+    //{
+    //  string json = JsonConvert.SerializeObject(
+    //    new NullAsStringTestClass(),
+    //    new JsonSerializerSettings { ContractResolver = new NullAsStringContractResolver()});
+
+    //  Console.WriteLine(json);
+    //}
   }
 }

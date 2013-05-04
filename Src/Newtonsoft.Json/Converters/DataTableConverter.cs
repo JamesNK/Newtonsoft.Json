@@ -75,16 +75,21 @@ namespace Newtonsoft.Json.Converters
     /// <returns>The object value.</returns>
     public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
     {
-      DataTable dt;
+      DataTable dt = existingValue as DataTable;
+
+      if (dt == null)
+      {
+        // handle typed datasets
+        dt = (objectType == typeof(DataTable))
+               ? new DataTable()
+               : (DataTable)Activator.CreateInstance(objectType);
+      }
 
       if (reader.TokenType == JsonToken.PropertyName)
       {
-        dt = new DataTable((string)reader.Value);
+        dt.TableName = (string)reader.Value;
+
         reader.Read();
-      }
-      else
-      {
-        dt = new DataTable();
       }
 
       reader.Read();
@@ -149,7 +154,7 @@ namespace Newtonsoft.Json.Converters
     /// </returns>
     public override bool CanConvert(Type valueType)
     {
-      return (valueType == typeof(DataTable));
+      return typeof(DataTable).IsAssignableFrom(valueType);
     }
   }
 }

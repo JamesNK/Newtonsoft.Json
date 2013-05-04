@@ -150,6 +150,7 @@
     <Compile Include="TestObjects\Container.cs" />
     <Compile Include="TestObjects\ContentBaseClass.cs" />
     <Compile Include="TestObjects\ContentSubClass.cs" />
+    <Compile Include="TestObjects\CustomerDataSet.cs" />
     <Compile Include="TestObjects\Foo.cs" />
     <Compile Include="TestObjects\HolderClass.cs" />
     <Compile Include="TestObjects\IPrivateImplementationA.cs" />

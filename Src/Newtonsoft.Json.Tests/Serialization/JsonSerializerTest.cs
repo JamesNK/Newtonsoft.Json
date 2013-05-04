@@ -40,6 +40,7 @@ using System.Threading;
 using System.Web.Script.Serialization;
 #endif
 using System.Text;
+using System.Text.RegularExpressions;
 #if !NETFX_CORE
 using NUnit.Framework;
 #else
@@ -156,6 +157,19 @@ namespace Newtonsoft.Json.Tests.Serialization
       {
         Ints = new List<int> { 0 };
       }
+    }
+
+    [Test]
+    public void SerializeDeserializeRegex()
+    {
+      Regex regex = new Regex("(hi)", RegexOptions.CultureInvariant);
+
+      string json = JsonConvert.SerializeObject(regex, Formatting.Indented);
+
+      Regex r2 = JsonConvert.DeserializeObject<Regex>(json);
+
+      Assert.AreEqual("(hi)", r2.ToString());
+      Assert.AreEqual(RegexOptions.CultureInvariant, r2.Options);
     }
 
     [Test]
