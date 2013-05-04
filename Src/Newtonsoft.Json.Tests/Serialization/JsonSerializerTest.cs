@@ -8712,6 +8712,135 @@ Parameter name: value",
       DateTime key = DateTime.Parse("04/28/2013 00:00:00", CultureInfo.InvariantCulture);
       Assert.AreEqual("test", d[key]);
     }
+
+    public class IdReferenceResolver : IReferenceResolver
+    {
+      private readonly IDictionary<Guid, PersonReference> _people = new Dictionary<Guid, PersonReference>();
+
+      public object ResolveReference(object context, string reference)
+      {
+        Guid id = new Guid(reference);
+
+        PersonReference p;
+        _people.TryGetValue(id, out p);
+
+        return p;
+      }
+
+      public string GetReference(object context, object value)
+      {
+        PersonReference p = (PersonReference)value;
+        _people[p.Id] = p;
+
+        return p.Id.ToString();
+      }
+
+      public bool IsReferenced(object context, object value)
+      {
+        PersonReference p = (PersonReference)value;
+
+        return _people.ContainsKey(p.Id);
+      }
+
+      public void AddReference(object context, string reference, object value)
+      {
+        Guid id = new Guid(reference);
+
+        _people[id] = (PersonReference)value;
+      }
+    }
+
+    [Test]
+    public void SerializeCustomReferenceResolver()
+    {
+      PersonReference john = new PersonReference
+        {
+          Id = new Guid("0B64FFDF-D155-44AD-9689-58D9ADB137F3"),
+          Name = "John Smith"
+        };
+
+      PersonReference jane = new PersonReference
+        {
+          Id = new Guid("AE3C399C-058D-431D-91B0-A36C266441B9"),
+          Name = "Jane Smith"
+        };
+
+      john.Spouse = jane;
+      jane.Spouse = john;
+
+      IList<PersonReference> people = new List<PersonReference>
+        {
+          john,
+          jane
+        };
+
+      string json = JsonConvert.SerializeObject(people, new JsonSerializerSettings
+        {
+          ReferenceResolver = new IdReferenceResolver(),
+          PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+          Formatting = Formatting.Indented
+        });
+
+      Assert.AreEqual(@"[
+  {
+    ""$id"": ""0b64ffdf-d155-44ad-9689-58d9adb137f3"",
+    ""Name"": ""John Smith"",
+    ""Spouse"": {
+      ""$id"": ""ae3c399c-058d-431d-91b0-a36c266441b9"",
+      ""Name"": ""Jane Smith"",
+      ""Spouse"": {
+        ""$ref"": ""0b64ffdf-d155-44ad-9689-58d9adb137f3""
+      }
+    }
+  },
+  {
+    ""$ref"": ""ae3c399c-058d-431d-91b0-a36c266441b9""
+  }
+]", json);
+    }
+
+    [Test]
+    public void DeserializeCustomReferenceResolver()
+    {
+      string json = @"[
+  {
+    ""$id"": ""0b64ffdf-d155-44ad-9689-58d9adb137f3"",
+    ""Name"": ""John Smith"",
+    ""Spouse"": {
+      ""$id"": ""ae3c399c-058d-431d-91b0-a36c266441b9"",
+      ""Name"": ""Jane Smith"",
+      ""Spouse"": {
+        ""$ref"": ""0b64ffdf-d155-44ad-9689-58d9adb137f3""
+      }
+    }
+  },
+  {
+    ""$ref"": ""ae3c399c-058d-431d-91b0-a36c266441b9""
+  }
+]";
+
+      IList<PersonReference> people = JsonConvert.DeserializeObject<IList<PersonReference>>(json, new JsonSerializerSettings
+      {
+        ReferenceResolver = new IdReferenceResolver(),
+        PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+        Formatting = Formatting.Indented
+      });
+
+      Assert.AreEqual(2, people.Count);
+
+      PersonReference john = people[0];
+      PersonReference jane = people[1];
+
+      Assert.AreEqual(john, jane.Spouse);
+      Assert.AreEqual(jane, john.Spouse);
+    }
+  }
+
+  public class PersonReference
+  {
+    internal Guid Id { get; set; }
+    public string Name { get; set; }
+    public PersonReference Spouse { get; set; } 
   }
 
   public enum Antworten
