@@ -520,7 +520,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Serializes the specified object to a JSON string.
+    /// Serializes the specified object to a JSON string using formatting.
     /// </summary>
     /// <param name="value">The object to serialize.</param>
     /// <param name="formatting">Indicates how the output is formatted.</param>
@@ -544,7 +544,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Serializes the specified object to a JSON string using a collection of <see cref="JsonConverter"/>.
+    /// Serializes the specified object to a JSON string using formatting and a collection of <see cref="JsonConverter"/>.
     /// </summary>
     /// <param name="value">The object to serialize.</param>
     /// <param name="formatting">Indicates how the output is formatted.</param>
@@ -560,7 +560,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Serializes the specified object to a JSON string using a collection of <see cref="JsonConverter"/>.
+    /// Serializes the specified object to a JSON string using <see cref="JsonSerializerSettings"/>.
     /// </summary>
     /// <param name="value">The object to serialize.</param>
     /// <param name="settings">The <see cref="JsonSerializerSettings"/> used to serialize the object.
@@ -574,7 +574,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Serializes the specified object to a JSON string using a collection of <see cref="JsonConverter"/>.
+    /// Serializes the specified object to a JSON string using formatting and <see cref="JsonSerializerSettings"/>.
     /// </summary>
     /// <param name="value">The object to serialize.</param>
     /// <param name="formatting">Indicates how the output is formatted.</param>
@@ -589,7 +589,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Serializes the specified object to a JSON string using a collection of <see cref="JsonConverter"/>.
+    /// Serializes the specified object to a JSON string using a type, formatting and <see cref="JsonSerializerSettings"/>.
     /// </summary>
     /// <param name="value">The object to serialize.</param>
     /// <param name="formatting">Indicates how the output is formatted.</param>
@@ -621,7 +621,8 @@ namespace Newtonsoft.Json
 
 #if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40)
     /// <summary>
-    /// Asynchronously serializes the specified object to a JSON string using a collection of <see cref="JsonConverter"/>.
+    /// Asynchronously serializes the specified object to a JSON string.
+    /// Serialization will happen on a new thread.
     /// </summary>
     /// <param name="value">The object to serialize.</param>
     /// <returns>
@@ -633,7 +634,8 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Asynchronously serializes the specified object to a JSON string using a collection of <see cref="JsonConverter"/>.
+    /// Asynchronously serializes the specified object to a JSON string using formatting.
+    /// Serialization will happen on a new thread.
     /// </summary>
     /// <param name="value">The object to serialize.</param>
     /// <param name="formatting">Indicates how the output is formatted.</param>
@@ -646,7 +648,8 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Asynchronously serializes the specified object to a JSON string using a collection of <see cref="JsonConverter"/>.
+    /// Asynchronously serializes the specified object to a JSON string using formatting and a collection of <see cref="JsonConverter"/>.
+    /// Serialization will happen on a new thread.
     /// </summary>
     /// <param name="value">The object to serialize.</param>
     /// <param name="formatting">Indicates how the output is formatted.</param>
@@ -674,7 +677,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the JSON to a .NET object.
+    /// Deserializes the JSON to a .NET object using <see cref="JsonSerializerSettings"/>.
     /// </summary>
     /// <param name="value">The JSON to deserialize.</param>
     /// <param name="settings">
@@ -726,7 +729,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the JSON to the given anonymous type.
+    /// Deserializes the JSON to the given anonymous type using <see cref="JsonSerializerSettings"/>.
     /// </summary>
     /// <typeparam name="T">
     /// The anonymous type to deserialize to. This can't be specified
@@ -746,7 +749,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the JSON to the specified .NET type.
+    /// Deserializes the JSON to the specified .NET type using a collection of <see cref="JsonConverter"/>.
     /// </summary>
     /// <typeparam name="T">The type of the object to deserialize to.</typeparam>
     /// <param name="value">The JSON to deserialize.</param>
@@ -758,7 +761,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the JSON to the specified .NET type.
+    /// Deserializes the JSON to the specified .NET type using <see cref="JsonSerializerSettings"/>.
     /// </summary>
     /// <typeparam name="T">The type of the object to deserialize to.</typeparam>
     /// <param name="value">The object to deserialize.</param>
@@ -773,7 +776,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the JSON to the specified .NET type.
+    /// Deserializes the JSON to the specified .NET type using a collection of <see cref="JsonConverter"/>.
     /// </summary>
     /// <param name="value">The JSON to deserialize.</param>
     /// <param name="type">The type of the object to deserialize.</param>
@@ -789,7 +792,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the JSON to the specified .NET type.
+    /// Deserializes the JSON to the specified .NET type using <see cref="JsonSerializerSettings"/>.
     /// </summary>
     /// <param name="value">The JSON to deserialize.</param>
     /// <param name="type">The type of the object to deserialize to.</param>
@@ -815,6 +818,7 @@ namespace Newtonsoft.Json
 #if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40)
     /// <summary>
     /// Asynchronously deserializes the JSON to the specified .NET type.
+    /// Deserialization will happen on a new thread.
     /// </summary>
     /// <typeparam name="T">The type of the object to deserialize to.</typeparam>
     /// <param name="value">The JSON to deserialize.</param>
@@ -827,7 +831,8 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Asynchronously deserializes the JSON to the specified .NET type.
+    /// Asynchronously deserializes the JSON to the specified .NET type using <see cref="JsonSerializerSettings"/>.
+    /// Deserialization will happen on a new thread.
     /// </summary>
     /// <typeparam name="T">The type of the object to deserialize to.</typeparam>
     /// <param name="value">The JSON to deserialize.</param>
@@ -845,6 +850,7 @@ namespace Newtonsoft.Json
 
     /// <summary>
     /// Asynchronously deserializes the JSON to the specified .NET type.
+    /// Deserialization will happen on a new thread.
     /// </summary>
     /// <param name="value">The JSON to deserialize.</param>
     /// <returns>
@@ -856,7 +862,8 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Asynchronously deserializes the JSON to the specified .NET type.
+    /// Asynchronously deserializes the JSON to the specified .NET type using <see cref="JsonSerializerSettings"/>.
+    /// Deserialization will happen on a new thread.
     /// </summary>
     /// <param name="value">The JSON to deserialize.</param>
     /// <param name="type">The type of the object to deserialize to.</param>
@@ -885,7 +892,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Populates the object with values from the JSON string.
+    /// Populates the object with values from the JSON string using <see cref="JsonSerializerSettings"/>.
     /// </summary>
     /// <param name="value">The JSON to populate values from.</param>
     /// <param name="target">The target object to populate values onto.</param>
@@ -909,7 +916,7 @@ namespace Newtonsoft.Json
 
 #if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40)
     /// <summary>
-    /// Asynchronously populates the object with values from the JSON string.
+    /// Asynchronously populates the object with values from the JSON string using <see cref="JsonSerializerSettings"/>.
     /// </summary>
     /// <param name="value">The JSON to populate values from.</param>
     /// <param name="target">The target object to populate values onto.</param>
@@ -938,7 +945,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Serializes the XML node to a JSON string.
+    /// Serializes the XML node to a JSON string using formatting.
     /// </summary>
     /// <param name="node">The node to serialize.</param>
     /// <param name="formatting">Indicates how the output is formatted.</param>
@@ -951,7 +958,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Serializes the XML node to a JSON string.
+    /// Serializes the XML node to a JSON string using formatting and omits the root object if <see cref="omitRootObject"/> is <c>true</c>.
     /// </summary>
     /// <param name="node">The node to serialize.</param>
     /// <param name="formatting">Indicates how the output is formatted.</param>
@@ -975,7 +982,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the XmlNode from a JSON string nested in a root elment.
+    /// Deserializes the XmlNode from a JSON string nested in a root elment specified by <see cref="deserializeRootElementName"/>.
     /// </summary>
     /// <param name="value">The JSON string.</param>
     /// <param name="deserializeRootElementName">The name of the root element to append when deserializing.</param>
@@ -986,7 +993,8 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the XmlNode from a JSON string nested in a root elment.
+    /// Deserializes the XmlNode from a JSON string nested in a root elment specified by <see cref="deserializeRootElementName"/>
+    /// and writes a .NET array attribute for collections.
     /// </summary>
     /// <param name="value">The JSON string.</param>
     /// <param name="deserializeRootElementName">The name of the root element to append when deserializing.</param>
@@ -1017,7 +1025,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Serializes the <see cref="XNode"/> to a JSON string.
+    /// Serializes the <see cref="XNode"/> to a JSON string using formatting.
     /// </summary>
     /// <param name="node">The node to convert to JSON.</param>
     /// <param name="formatting">Indicates how the output is formatted.</param>
@@ -1028,7 +1036,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Serializes the <see cref="XNode"/> to a JSON string.
+    /// Serializes the <see cref="XNode"/> to a JSON string using formatting and omits the root object if <see cref="omitRootObject"/> is <c>true</c>.
     /// </summary>
     /// <param name="node">The node to serialize.</param>
     /// <param name="formatting">Indicates how the output is formatted.</param>
@@ -1052,7 +1060,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the <see cref="XNode"/> from a JSON string nested in a root elment.
+    /// Deserializes the <see cref="XNode"/> from a JSON string nested in a root elment specified by <see cref="deserializeRootElementName"/>.
     /// </summary>
     /// <param name="value">The JSON string.</param>
     /// <param name="deserializeRootElementName">The name of the root element to append when deserializing.</param>
@@ -1063,7 +1071,8 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the <see cref="XNode"/> from a JSON string nested in a root elment.
+    /// Deserializes the <see cref="XNode"/> from a JSON string nested in a root elment specified by <see cref="deserializeRootElementName"/>
+    /// and writes a .NET array attribute for collections.
     /// </summary>
     /// <param name="value">The JSON string.</param>
     /// <param name="deserializeRootElementName">The name of the root element to append when deserializing.</param>
