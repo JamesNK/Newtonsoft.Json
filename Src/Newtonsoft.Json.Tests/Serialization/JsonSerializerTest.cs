@@ -232,6 +232,18 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 
     [Test]
+    public void DeserializeDirectoryAccount()
+    {
+      string json = @"{'DisplayName':'John Smith', 'SAMAccountName':'contoso\\johns'}";
+
+      DirectoryAccount account = JsonConvert.DeserializeObject<DirectoryAccount>(json);
+
+      Assert.AreEqual("John Smith", account.DisplayName);
+      Assert.AreEqual("contoso", account.Domain);
+      Assert.AreEqual("johns", account.UserName);
+    }
+
+    [Test]
     public void SerializePublicExtensionData()
     {
       string json = JsonConvert.SerializeObject(new PublicExtensionDataAttributeTestClass
@@ -9312,6 +9324,30 @@ Parameter name: value",
     {
       // get only example
       get { return FavoriteNumber != 0; }
+    }
+  }
+
+  public class DirectoryAccount
+  {
+    // normal deserialization
+    public string DisplayName { get; set; }
+
+    // these properties are set in OnDeserialized
+    public string UserName { get; set; }
+    public string Domain { get; set; }
+
+    [JsonExtensionData]
+    private IDictionary<string, JToken> _additionalData;
+
+    [OnDeserialized]
+    private void OnDeserialized(StreamingContext context)
+    {
+      // SAMAccountName is not deserialized to any property
+      // and so it is added to the extension data dictionary
+      string samAccountName = (string)_additionalData["SAMAccountName"];
+
+      Domain = samAccountName.Split('\\')[0];
+      UserName = samAccountName.Split('\\')[1];
     }
   }
 }
