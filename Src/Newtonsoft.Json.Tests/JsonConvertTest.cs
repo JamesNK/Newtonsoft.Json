@@ -80,13 +80,15 @@ namespace Newtonsoft.Json.Tests
     [Test]
     public void DefaultSettings_Example()
     {
-      JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+      try
+      {
+        JsonConvert.DefaultSettings = () => new JsonSerializerSettings
         {
           Formatting = Formatting.Indented,
           ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
 
-      Employee e = new Employee
+        Employee e = new Employee
         {
           FirstName = "Eric",
           LastName = "Example",
@@ -95,22 +97,27 @@ namespace Newtonsoft.Json.Tests
           JobTitle = "Web Dude"
         };
 
-      string json = JsonConvert.SerializeObject(e);
-      // {
-      //   "firstName": "Eric",
-      //   "lastName": "Example",
-      //   "birthDate": "1980-04-20T00:00:00Z",
-      //   "department": "IT",
-      //   "jobTitle": "Web Dude"
-      // }
+        string json = JsonConvert.SerializeObject(e);
+        // {
+        //   "firstName": "Eric",
+        //   "lastName": "Example",
+        //   "birthDate": "1980-04-20T00:00:00Z",
+        //   "department": "IT",
+        //   "jobTitle": "Web Dude"
+        // }
 
-      Assert.AreEqual(@"{
+        Assert.AreEqual(@"{
   ""firstName"": ""Eric"",
   ""lastName"": ""Example"",
   ""birthDate"": ""1980-04-20T00:00:00Z"",
   ""department"": ""IT"",
   ""jobTitle"": ""Web Dude""
 }", json);
+      }
+      finally
+      {
+        JsonConvert.DefaultSettings = null;
+      }
     }
 
     [Test]
