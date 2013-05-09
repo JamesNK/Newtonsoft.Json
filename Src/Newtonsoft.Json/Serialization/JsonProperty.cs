@@ -25,6 +25,7 @@
 
 using System;
 using Newtonsoft.Json.Utilities;
+using System.Runtime.Serialization;
 
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
@@ -32,7 +33,7 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 
 namespace Newtonsoft.Json.Serialization
 {
-  /// <summary>
+    /// <summary>
   /// Maps a JSON property to a .NET member or constructor parameter.
   /// </summary>
   public class JsonProperty
@@ -273,6 +274,12 @@ namespace Newtonsoft.Json.Serialization
     /// </summary>
     /// <value>The collection's items reference loop handling.</value>
     public ReferenceLoopHandling? ItemReferenceLoopHandling { get; set; }
+
+    /// <summary>
+    /// Gets or sets the the serialization binder for this property.
+    /// </summary>
+    /// <value>The serialization binder.</value>
+    public SerializationBinder SerializationBinder { get; set; }
 
     internal void WritePropertyName(JsonWriter writer)
     {

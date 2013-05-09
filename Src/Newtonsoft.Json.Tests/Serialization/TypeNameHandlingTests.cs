@@ -662,6 +662,56 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual("Elbow Grease", purchase.ProductName);
     }
 
+
+    public class TypeNameSerializationBinderParameterlessConstructor : TypeNameSerializationBinder
+    {
+      public TypeNameSerializationBinderParameterlessConstructor()
+          : base("Newtonsoft.Json.Tests.Serialization.{0}, Newtonsoft.Json.Tests")
+      {
+      }
+    }
+
+    public class TestClassWithSerializationBinderSpecifed
+    {
+      [JsonProperty(SerializationBinderType = typeof(TypeNameSerializationBinderParameterlessConstructor))]
+      public object Customer { get; set; }
+    }
+
+    [Test]
+    public void SerializeUsingCustomBinderSpecifiedByJsonPropertyAttribute()
+    {
+      var obj = new TestClassWithSerializationBinderSpecifed
+      {
+        Customer = new Customer
+        {
+          Name = "Caroline Customer"
+        }
+      };
+        
+      string json = JsonConvert.SerializeObject(obj, Formatting.Indented, new JsonSerializerSettings
+        {
+          TypeNameHandling = TypeNameHandling.Auto
+        });
+
+      Assert.AreEqual(@"{
+  ""Customer"": {
+    ""$type"": ""Customer"",
+    ""Name"": ""Caroline Customer""
+  }
+}", json);
+
+      var newObj = JsonConvert.DeserializeObject<TestClassWithSerializationBinderSpecifed>(json, new JsonSerializerSettings
+        {
+          TypeNameHandling = TypeNameHandling.Auto
+        });
+
+      CustomAssert.IsInstanceOfType(typeof (TestClassWithSerializationBinderSpecifed), newObj);
+
+      CustomAssert.IsInstanceOfType(typeof (Customer), newObj.Customer);
+      Customer customer = (Customer)newObj.Customer;
+      Assert.AreEqual("Caroline Customer", customer.Name);
+    }
+
     public class TypeNameSerializationBinder : SerializationBinder
     {
       public string TypeFormat { get; private set; }

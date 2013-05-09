@@ -520,12 +520,13 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
               {
                 string typeName;
                 string assemblyName;
+                var serializationBinder = ((member != null) ? member.SerializationBinder : null) ?? Serializer._binder;
                 ReflectionUtils.SplitFullyQualifiedTypeName(qualifiedTypeName, out typeName, out assemblyName);
 
                 Type specifiedType;
                 try
                 {
-                  specifiedType = Serializer._binder.BindToType(assemblyName, typeName);
+                  specifiedType = serializationBinder.BindToType(assemblyName, typeName);
                 }
                 catch (Exception ex)
                 {
