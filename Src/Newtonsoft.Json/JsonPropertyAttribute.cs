@@ -24,6 +24,9 @@
 #endregion
 
 using System;
+using System.Globalization;
+using System.Runtime.Serialization;
+using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json
 {
@@ -172,6 +175,12 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
+    /// Gets or sets the serialization binder used for this property
+    /// </summary>
+    /// <value>Serialization binder with parameterless constructor.</value>
+    public Type SerializationBinderType { get; set; }
+
+      /// <summary>
     /// Initializes a new instance of the <see cref="JsonPropertyAttribute"/> class.
     /// </summary>
     public JsonPropertyAttribute()
@@ -185,6 +194,18 @@ namespace Newtonsoft.Json
     public JsonPropertyAttribute(string propertyName)
     {
       PropertyName = propertyName;
+    }
+
+    public static SerializationBinder CreateSerializationBinderInstance(Type serializationBinderType)
+    {
+        try
+        {
+            return (SerializationBinder)Activator.CreateInstance(serializationBinderType);
+        }
+        catch (Exception ex)
+        {
+            throw new JsonException("Error creating {0}".FormatWith(CultureInfo.InvariantCulture, serializationBinderType), ex);
+        }
     }
   }
 }

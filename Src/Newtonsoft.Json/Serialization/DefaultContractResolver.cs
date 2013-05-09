@@ -1123,6 +1123,7 @@ namespace Newtonsoft.Json.Serialization
       property.ReferenceLoopHandling = (propertyAttribute != null) ? propertyAttribute._referenceLoopHandling : null;
       property.ObjectCreationHandling = (propertyAttribute != null) ? propertyAttribute._objectCreationHandling : null;
       property.TypeNameHandling = (propertyAttribute != null) ? propertyAttribute._typeNameHandling : null;
+      property.SerializationBinder = (propertyAttribute != null && propertyAttribute.SerializationBinderType != null) ? JsonPropertyAttribute.CreateSerializationBinderInstance(propertyAttribute.SerializationBinderType) : null;
       property.IsReference = (propertyAttribute != null) ? propertyAttribute._isReference : null;
 
       property.ItemIsReference = (propertyAttribute != null) ? propertyAttribute._itemIsReference : null;
