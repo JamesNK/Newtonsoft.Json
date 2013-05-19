@@ -229,7 +229,7 @@ namespace Newtonsoft.Json.Serialization
         writer.WriteStartObject();
 
         if (reader.TokenType == JsonToken.PropertyName)
-          writer.WriteToken(reader, reader.Depth - 1, true);
+          writer.WriteToken(reader, reader.Depth - 1, true, true);
         else
           writer.WriteEndObject();
 

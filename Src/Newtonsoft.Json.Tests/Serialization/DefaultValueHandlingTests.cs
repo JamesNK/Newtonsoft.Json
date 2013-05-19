@@ -313,7 +313,32 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual(0, o.IntValue2);
       Assert.AreEqual(null, o.ClassValue);
     }
+
+#if !NET20
+    [Test]
+    public void EmitDefaultValueIgnoreAndPopulate()
+    {
+      string str = "{}";
+      TestClass obj = JsonConvert.DeserializeObject<TestClass>(str, new JsonSerializerSettings
+        {
+          DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate
+        });
+
+      Assert.AreEqual("fff", obj.Field1);
+    }
+#endif
   }
+
+#if !NET20
+  [DataContract]
+  public class TestClass
+  {
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [DataMember(EmitDefaultValue = false)]
+    [DefaultValue("fff")]
+    public string Field1 { set; get; }
+  }
+#endif
 
   public class DefaultValueHandlingDeserialize
   {

@@ -432,7 +432,7 @@ namespace Newtonsoft.Json
     /// <param name="reader">The <see cref="JsonReader"/> to read the token from.</param>
     public void WriteToken(JsonReader reader)
     {
-      WriteToken(reader, true);
+      WriteToken(reader, true, true);
     }
 
     /// <summary>
@@ -444,6 +444,11 @@ namespace Newtonsoft.Json
     {
       ValidationUtils.ArgumentNotNull(reader, "reader");
 
+      WriteToken(reader, writeChildren, true);
+    }
+
+    internal void WriteToken(JsonReader reader, bool writeChildren, bool writeDateConstructorAsDate)
+    {
       int initialDepth;
 
       if (reader.TokenType == JsonToken.None)
@@ -453,10 +458,10 @@ namespace Newtonsoft.Json
       else
         initialDepth = reader.Depth;
 
-      WriteToken(reader, initialDepth, writeChildren);
+      WriteToken(reader, initialDepth, writeChildren, writeDateConstructorAsDate);
     }
 
-    internal void WriteToken(JsonReader reader, int initialDepth, bool writeChildren)
+    internal void WriteToken(JsonReader reader, int initialDepth, bool writeChildren, bool writeDateConstructorAsDate)
     {
       do
       {
@@ -474,7 +479,7 @@ namespace Newtonsoft.Json
           case JsonToken.StartConstructor:
             string constructorName = reader.Value.ToString();
             // write a JValue date when the constructor is for a date
-            if (string.Equals(constructorName, "Date", StringComparison.Ordinal))
+            if (writeDateConstructorAsDate && string.Equals(constructorName, "Date", StringComparison.Ordinal))
               WriteConstructorDate(reader);
             else
               WriteStartConstructor(reader.Value.ToString());
@@ -486,7 +491,16 @@ namespace Newtonsoft.Json
             WriteComment((reader.Value != null) ? reader.Value.ToString() : null);
             break;
           case JsonToken.Integer:
-            WriteValue(Convert.ToInt64(reader.Value, CultureInfo.InvariantCulture));
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)
+            if (reader.Value is BigInteger)
+            {
+              WriteValue((BigInteger)reader.Value);
+            }
+            else
+#endif
+            {
+              WriteValue(Convert.ToInt64(reader.Value, CultureInfo.InvariantCulture));
+            }
             break;
           case JsonToken.Float:
             object value = reader.Value;

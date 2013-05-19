@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)
+using System.Numerics;
+#endif
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
 using System.Text;
@@ -68,12 +71,12 @@ Newtonsoft.Json Error: 0 : Error!
 #endif
 
     [Test]
-    public void MemoryTraceWriterTest()
+    public void MemoryTraceWriterSerializeTest()
     {
       Staff staff = new Staff();
       staff.Name = "Arnie Admin";
       staff.Roles = new List<string> {"Administrator"};
-      staff.StartDate = DateTime.Now;
+      staff.StartDate = new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Utc);
 
       ITraceWriter traceWriter = new MemoryTraceWriter();
 
@@ -90,9 +93,74 @@ Newtonsoft.Json Error: 0 : Error!
       // 2012-11-11T12:08:42.799 Info Finished serializing Newtonsoft.Json.Tests.Serialization.Staff. Path ''.
 
       MemoryTraceWriter memoryTraceWriter = (MemoryTraceWriter)traceWriter;
+      string output = memoryTraceWriter.ToString();
 
-      Assert.AreEqual(743, memoryTraceWriter.ToString().Length);
-      Assert.AreEqual(6, memoryTraceWriter.GetTraceMessages().Count());
+      Assert.AreEqual(916, output.Length);
+      Assert.AreEqual(7, memoryTraceWriter.GetTraceMessages().Count());
+
+      string json = @"Serialized JSON: 
+{
+  ""Name"": ""Arnie Admin"",
+  ""StartDate"": new Date(
+    976623132000
+  ),
+  ""Roles"": [
+    ""Administrator""
+  ]
+}";
+
+      Assert.IsTrue(output.Contains(json));
+    }
+
+    [Test]
+    public void MemoryTraceWriterDeserializeTest()
+    {
+      string json = @"{
+  ""Name"": ""Arnie Admin"",
+  ""StartDate"": new Date(
+    976623132000
+  ),
+  ""Roles"": [
+    ""Administrator""
+  ]
+}";
+
+      Staff staff = new Staff();
+      staff.Name = "Arnie Admin";
+      staff.Roles = new List<string> { "Administrator" };
+      staff.StartDate = new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Utc);
+
+      ITraceWriter traceWriter = new MemoryTraceWriter();
+
+      JsonConvert.DeserializeObject<Staff>(
+        json,
+        new JsonSerializerSettings { TraceWriter = traceWriter, Converters = { new JavaScriptDateTimeConverter() } });
+
+      Console.WriteLine(traceWriter);
+      // 2012-11-11T12:08:42.761 Info Started serializing Newtonsoft.Json.Tests.Serialization.Staff. Path ''.
+      // 2012-11-11T12:08:42.785 Info Started serializing System.DateTime with converter Newtonsoft.Json.Converters.JavaScriptDateTimeConverter. Path 'StartDate'.
+      // 2012-11-11T12:08:42.791 Info Finished serializing System.DateTime with converter Newtonsoft.Json.Converters.JavaScriptDateTimeConverter. Path 'StartDate'.
+      // 2012-11-11T12:08:42.797 Info Started serializing System.Collections.Generic.List`1[System.String]. Path 'Roles'.
+      // 2012-11-11T12:08:42.798 Info Finished serializing System.Collections.Generic.List`1[System.String]. Path 'Roles'.
+      // 2012-11-11T12:08:42.799 Info Finished serializing Newtonsoft.Json.Tests.Serialization.Staff. Path ''.
+      // 2013-05-19T00:07:24.360 Verbose Deserialized JSON: 
+      // {
+      //   "Name": "Arnie Admin",
+      //   "StartDate": new Date(
+      //     976623132000
+      //   ),
+      //   "Roles": [
+      //     "Administrator"
+      //   ]
+      // }
+
+      MemoryTraceWriter memoryTraceWriter = (MemoryTraceWriter)traceWriter;
+      string output = memoryTraceWriter.ToString();
+
+      Assert.AreEqual(1059, output.Length);
+      Assert.AreEqual(7, memoryTraceWriter.GetTraceMessages().Count());
+
+      Assert.IsTrue(output.Contains(json));
     }
 
     [Test]
@@ -152,6 +220,8 @@ Newtonsoft.Json Error: 0 : Error!
       Assert.AreEqual("Started serializing System.Collections.Generic.Dictionary`2[System.String,System.String]. Path 'StringDictionary'.", traceWriter.TraceRecords[7].Message);
       Assert.AreEqual("Finished serializing System.Collections.Generic.Dictionary`2[System.String,System.String]. Path 'StringDictionary'.", traceWriter.TraceRecords[8].Message);
       Assert.AreEqual("Finished serializing Newtonsoft.Json.Tests.Serialization.TraceTestObject. Path ''.", traceWriter.TraceRecords[9].Message);
+
+      Assert.IsFalse(traceWriter.TraceRecords.Any(r => r.Level == TraceLevel.Verbose));
     }
 
     [Test]
@@ -208,6 +278,8 @@ Newtonsoft.Json Error: 0 : Error!
       Assert.AreEqual("Started deserializing System.Collections.Generic.IDictionary`2[System.String,System.String]. Path 'StringDictionary.1', line 19, position 9.", traceWriter.TraceRecords[8].Message);
       Assert.AreEqual("Finished deserializing System.Collections.Generic.IDictionary`2[System.String,System.String]. Path 'StringDictionary', line 22, position 4.", traceWriter.TraceRecords[9].Message);
       Assert.AreEqual("Finished deserializing Newtonsoft.Json.Tests.Serialization.TraceTestObject. Path '', line 23, position 2.", traceWriter.TraceRecords[10].Message);
+
+      Assert.IsFalse(traceWriter.TraceRecords.Any(r => r.Level == TraceLevel.Verbose));
     }
 
     [Test]
@@ -644,6 +716,239 @@ Newtonsoft.Json Error: 0 : Error!
       Assert.AreEqual(27, deserialized.Age);
       Assert.AreEqual(23, deserialized.FavoriteNumber);
     }
+
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)
+    [Test]
+    public void TraceJsonWriterTest()
+    {
+      StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
+      JsonTextWriter w = new JsonTextWriter(sw);
+      TraceJsonWriter traceWriter = new TraceJsonWriter(w);
+
+      traceWriter.WriteStartObject();
+      traceWriter.WritePropertyName("Array");
+      traceWriter.WriteStartArray();
+      traceWriter.WriteValue("String!");
+      traceWriter.WriteValue(new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Utc));
+      traceWriter.WriteValue(new DateTimeOffset(2000, 12, 12, 12, 12, 12, TimeSpan.FromHours(2)));
+      traceWriter.WriteValue(1.1f);
+      traceWriter.WriteValue(1.1d);
+      traceWriter.WriteValue(1.1m);
+      traceWriter.WriteValue(1);
+      traceWriter.WriteValue((char)'!');
+      traceWriter.WriteValue((short)1);
+      traceWriter.WriteValue((ushort)1);
+      traceWriter.WriteValue((int)1);
+      traceWriter.WriteValue((uint)1);
+      traceWriter.WriteValue((sbyte)1);
+      traceWriter.WriteValue((byte)1);
+      traceWriter.WriteValue((long)1);
+      traceWriter.WriteValue((ulong)1);
+      traceWriter.WriteValue((bool)true);
+
+      traceWriter.WriteValue((DateTime?)new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Utc));
+      traceWriter.WriteValue((DateTimeOffset?)new DateTimeOffset(2000, 12, 12, 12, 12, 12, TimeSpan.FromHours(2)));
+      traceWriter.WriteValue((float?)1.1f);
+      traceWriter.WriteValue((double?)1.1d);
+      traceWriter.WriteValue((decimal?)1.1m);
+      traceWriter.WriteValue((int?)1);
+      traceWriter.WriteValue((char?)'!');
+      traceWriter.WriteValue((short?)1);
+      traceWriter.WriteValue((ushort?)1);
+      traceWriter.WriteValue((int?)1);
+      traceWriter.WriteValue((uint?)1);
+      traceWriter.WriteValue((sbyte?)1);
+      traceWriter.WriteValue((byte?)1);
+      traceWriter.WriteValue((long?)1);
+      traceWriter.WriteValue((ulong?)1);
+      traceWriter.WriteValue((bool?)true);
+      traceWriter.WriteValue(BigInteger.Parse("9999999990000000000000000000000000000000000"));
+
+      traceWriter.WriteValue((object)true);
+      traceWriter.WriteValue(TimeSpan.FromMinutes(1));
+      traceWriter.WriteValue(Guid.Empty);
+      traceWriter.WriteValue(new Uri("http://www.google.com/"));
+      traceWriter.WriteValue(Encoding.UTF8.GetBytes("String!"));
+      traceWriter.WriteRawValue("[1],");
+      traceWriter.WriteRaw("[1]");
+      traceWriter.WriteNull();
+      traceWriter.WriteUndefined();
+      traceWriter.WriteStartConstructor("ctor");
+      traceWriter.WriteValue(1);
+      traceWriter.WriteEndConstructor();
+      traceWriter.WriteComment("A comment");
+      traceWriter.WriteWhitespace("       ");
+      traceWriter.WriteEnd();
+      traceWriter.WriteEndObject();
+      traceWriter.Flush();
+      traceWriter.Close();
+
+      Console.WriteLine(traceWriter.GetJson());
+
+      Assert.AreEqual(@"{
+  ""Array"": [
+    ""String!"",
+    ""2000-12-12T12:12:12Z"",
+    ""2000-12-12T12:12:12+02:00"",
+    1.1,
+    1.1,
+    1.1,
+    1,
+    ""!"",
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    true,
+    ""2000-12-12T12:12:12Z"",
+    ""2000-12-12T12:12:12+02:00"",
+    1.1,
+    1.1,
+    1.1,
+    1,
+    ""!"",
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    true,
+    9999999990000000000000000000000000000000000,
+    true,
+    true,
+    ""00:01:00"",
+    ""00000000-0000-0000-0000-000000000000"",
+    ""http://www.google.com/"",
+    ""U3RyaW5nIQ=="",
+    [1],[1],[1],
+    null,
+    undefined,
+    new ctor(
+      1
+    )
+    /*A comment*/       
+  ]
+}", traceWriter.GetJson());
+    }
+
+    [Test]
+    public void TraceJsonReaderTest()
+    {
+      string json = @"{
+  ""Array"": [
+    ""String!"",
+    ""2000-12-12T12:12:12Z"",
+    ""2000-12-12T12:12:12Z"",
+    ""2000-12-12T12:12:12+00:00"",
+    ""U3RyaW5nIQ=="",
+    1,
+    1.1,
+    9999999990000000000000000000000000000000000,
+    null,
+    undefined,
+    new ctor(
+      1
+    )
+    /*A comment*/
+  ]
+}";
+
+      StringReader sw = new StringReader(json);
+      JsonTextReader w = new JsonTextReader(sw);
+      TraceJsonReader traceReader = new TraceJsonReader(w);
+
+      traceReader.Read();
+      Assert.AreEqual(JsonToken.StartObject, traceReader.TokenType);
+
+      traceReader.Read();
+      Assert.AreEqual(JsonToken.PropertyName, traceReader.TokenType);
+      Assert.AreEqual("Array", traceReader.Value);
+
+      traceReader.Read();
+      Assert.AreEqual(JsonToken.StartArray, traceReader.TokenType);
+      Assert.AreEqual(null, traceReader.Value);
+
+      traceReader.ReadAsString();
+      Assert.AreEqual(JsonToken.String, traceReader.TokenType);
+      Assert.AreEqual('"', traceReader.QuoteChar);
+      Assert.AreEqual("String!", traceReader.Value);
+
+      // for great code coverage justice!
+      traceReader.QuoteChar = '\'';
+      Assert.AreEqual('\'', traceReader.QuoteChar);
+
+      traceReader.ReadAsString();
+      Assert.AreEqual(JsonToken.String, traceReader.TokenType);
+      Assert.AreEqual("2000-12-12T12:12:12Z", traceReader.Value);
+
+      traceReader.ReadAsDateTime();
+      Assert.AreEqual(JsonToken.Date, traceReader.TokenType);
+      Assert.AreEqual(new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Utc), traceReader.Value);
+
+      traceReader.ReadAsDateTimeOffset();
+      Assert.AreEqual(JsonToken.Date, traceReader.TokenType);
+      Assert.AreEqual(new DateTimeOffset(2000, 12, 12, 12, 12, 12, TimeSpan.Zero), traceReader.Value);
+
+      traceReader.ReadAsBytes();
+      Assert.AreEqual(JsonToken.Bytes, traceReader.TokenType);
+      Assert.AreEqual(Encoding.UTF8.GetBytes("String!"), traceReader.Value);
+
+      traceReader.ReadAsInt32();
+      Assert.AreEqual(JsonToken.Integer, traceReader.TokenType);
+      Assert.AreEqual(1, traceReader.Value);
+
+      traceReader.ReadAsDecimal();
+      Assert.AreEqual(JsonToken.Float, traceReader.TokenType);
+      Assert.AreEqual(1.1m, traceReader.Value);
+
+      traceReader.Read();
+      Assert.AreEqual(JsonToken.Integer, traceReader.TokenType);
+      Assert.AreEqual(typeof(BigInteger), traceReader.ValueType);
+      Assert.AreEqual(BigInteger.Parse("9999999990000000000000000000000000000000000"), traceReader.Value);
+
+      traceReader.Read();
+      Assert.AreEqual(JsonToken.Null, traceReader.TokenType);
+
+      traceReader.Read();
+      Assert.AreEqual(JsonToken.Undefined, traceReader.TokenType);
+
+      traceReader.Read();
+      Assert.AreEqual(JsonToken.StartConstructor, traceReader.TokenType);
+
+      traceReader.Read();
+      Assert.AreEqual(JsonToken.Integer, traceReader.TokenType);
+      Assert.AreEqual(1, traceReader.Value);
+
+      traceReader.Read();
+      Assert.AreEqual(JsonToken.EndConstructor, traceReader.TokenType);
+
+      traceReader.Read();
+      Assert.AreEqual(JsonToken.Comment, traceReader.TokenType);
+      Assert.AreEqual("A comment", traceReader.Value);
+
+      traceReader.Read();
+      Assert.AreEqual(JsonToken.EndArray, traceReader.TokenType);
+
+      traceReader.Read();
+      Assert.AreEqual(JsonToken.EndObject, traceReader.TokenType);
+
+      Assert.IsFalse(traceReader.Read());
+
+      traceReader.Close();
+
+      Console.WriteLine(traceReader.GetJson());
+
+      Assert.AreEqual(json, traceReader.GetJson());
+    }
+#endif
   }
 
   public class TraceRecord

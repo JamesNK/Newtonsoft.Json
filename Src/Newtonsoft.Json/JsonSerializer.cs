@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization.Formatters;
@@ -702,8 +703,15 @@ namespace Newtonsoft.Json
         reader.MaxDepth = _maxDepth;
       }
 
+      TraceJsonReader traceJsonReader = (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
+                                          ? new TraceJsonReader(reader)
+                                          : null;
+
       JsonSerializerInternalReader serializerReader = new JsonSerializerInternalReader(this);
-      object value = serializerReader.Deserialize(reader, objectType, CheckAdditionalContent);
+      object value = serializerReader.Deserialize(traceJsonReader ?? reader, objectType, CheckAdditionalContent);
+
+      if (traceJsonReader != null)
+        TraceWriter.Trace(TraceLevel.Verbose, "Deserialized JSON: " + Environment.NewLine + traceJsonReader.GetJson(), null);
 
       // reset reader back to previous options
       if (previousCulture != null)
@@ -828,8 +836,15 @@ namespace Newtonsoft.Json
         jsonWriter.DateFormatString = _dateFormatString;
       }
 
+      TraceJsonWriter traceJsonWriter = (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
+                                          ? new TraceJsonWriter(jsonWriter)
+                                          : null;
+
       JsonSerializerInternalWriter serializerWriter = new JsonSerializerInternalWriter(this);
-      serializerWriter.Serialize(jsonWriter, value, objectType);
+      serializerWriter.Serialize(traceJsonWriter ?? jsonWriter, value, objectType);
+
+      if (traceJsonWriter != null)
+        TraceWriter.Trace(TraceLevel.Verbose, "Serialized JSON: " + Environment.NewLine + traceJsonWriter.GetJson(), null);
 
       // reset writer back to previous options
       if (previousFormatting != null)

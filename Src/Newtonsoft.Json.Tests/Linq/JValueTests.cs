@@ -44,6 +44,7 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
 #endif
+using Newtonsoft.Json.Tests.Serialization;
 
 namespace Newtonsoft.Json.Tests.Linq
 {
@@ -61,6 +62,30 @@ namespace Newtonsoft.Json.Tests.Linq
 
       Assert.AreEqual(9.9m, v.Value);
       Assert.AreEqual(typeof(decimal), v.Value.GetType());
+    }
+
+    [Test]
+    public void ToObjectWithDefaultSettings()
+    {
+      try
+      {
+        JsonConvert.DefaultSettings = () =>
+          {
+            return new JsonSerializerSettings
+              {
+                Converters = { new MetroStringConverter() }
+              };
+          };
+
+        JValue v = new JValue(":::STRING:::");
+        string s = v.ToObject<string>();
+
+        Assert.AreEqual("string", s);
+      }
+      finally
+      {
+        JsonConvert.DefaultSettings = null;
+      }
     }
 
     [Test]

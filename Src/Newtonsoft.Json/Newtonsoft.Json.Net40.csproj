@@ -124,6 +124,8 @@
     <Compile Include="Serialization\ITraceWriter.cs" />
     <Compile Include="Serialization\JsonContainerContract.cs" />
     <Compile Include="Serialization\MemoryTraceWriter.cs" />
+    <Compile Include="Serialization\TraceJsonReader.cs" />
+    <Compile Include="Serialization\TraceJsonWriter.cs" />
     <Compile Include="StringEscapeHandling.cs" />
     <Compile Include="Utilities\DateTimeParser.cs" />
     <Compile Include="Utilities\DynamicProxy.cs" />
