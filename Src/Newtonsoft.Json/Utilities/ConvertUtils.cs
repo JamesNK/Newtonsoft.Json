@@ -407,9 +407,6 @@ namespace Newtonsoft.Json.Utilities
         return FromBigInteger((BigInteger)initialValue, targetType);
 #endif
 
-      if (targetType.IsInterface() || targetType.IsGenericTypeDefinition() || targetType.IsAbstract())
-        throw new ArgumentException("Target type {0} is not a value type or a non-abstract class.".FormatWith(CultureInfo.InvariantCulture, targetType), "targetType");
-
 #if !(NETFX_CORE || PORTABLE40 || PORTABLE)
       // see if source or target types have a TypeConverter that converts between the two
       TypeConverter toConverter = GetConverter(initialType);
@@ -448,6 +445,9 @@ namespace Newtonsoft.Json.Utilities
       if (initialValue is INullable)
         return EnsureTypeAssignable(ToValue((INullable)initialValue), initialType, targetType);
 #endif
+
+      if (targetType.IsInterface() || targetType.IsGenericTypeDefinition() || targetType.IsAbstract())
+        throw new ArgumentException("Target type {0} is not a value type or a non-abstract class.".FormatWith(CultureInfo.InvariantCulture, targetType), "targetType");
 
       throw new InvalidOperationException("Can not convert from {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, initialType, targetType));
     }

@@ -24,8 +24,11 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization;
+using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Converters;
 #if !NETFX_CORE
@@ -74,6 +77,7 @@ namespace Newtonsoft.Json.Tests.Converters
     {
       [EnumMember(Value = "@first")]
       First,
+
       [EnumMember(Value = "@second")]
       Second,
       Third
@@ -83,6 +87,7 @@ namespace Newtonsoft.Json.Tests.Converters
     {
       [EnumMember(Value = "Third")]
       First,
+
       [EnumMember(Value = "@second")]
       Second,
       Third
@@ -100,24 +105,24 @@ namespace Newtonsoft.Json.Tests.Converters
     public void NamedEnumDuplicateTest()
     {
       ExceptionAssert.Throws<Exception>("Enum name 'Third' already exists on enum 'NamedEnumDuplicate'.",
-      () =>
-      {
-        EnumContainer<NamedEnumDuplicate> c = new EnumContainer<NamedEnumDuplicate>
-        {
-          Enum = NamedEnumDuplicate.First
-        };
+                                        () =>
+                                          {
+                                            EnumContainer<NamedEnumDuplicate> c = new EnumContainer<NamedEnumDuplicate>
+                                                                                    {
+                                                                                      Enum = NamedEnumDuplicate.First
+                                                                                    };
 
-        JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter());
-      });
+                                            JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter());
+                                          });
     }
 
     [Test]
     public void SerializeNameEnumTest()
     {
       EnumContainer<NamedEnum> c = new EnumContainer<NamedEnum>
-        {
-          Enum = NamedEnum.First
-        };
+                                     {
+                                       Enum = NamedEnum.First
+                                     };
 
       string json = JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter());
       Assert.AreEqual(@"{
@@ -125,9 +130,9 @@ namespace Newtonsoft.Json.Tests.Converters
 }", json);
 
       c = new EnumContainer<NamedEnum>
-      {
-        Enum = NamedEnum.Third
-      };
+            {
+              Enum = NamedEnum.Third
+            };
 
       json = JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter());
       Assert.AreEqual(@"{
@@ -179,7 +184,7 @@ namespace Newtonsoft.Json.Tests.Converters
       enumClass.NullableStoreColor1 = StoreColor.DarkGoldenrod;
       enumClass.NullableStoreColor2 = null;
 
-      string json = JsonConvert.SerializeObject(enumClass, Formatting.Indented, new StringEnumConverter { CamelCaseText = true });
+      string json = JsonConvert.SerializeObject(enumClass, Formatting.Indented, new StringEnumConverter {CamelCaseText = true});
 
       Assert.AreEqual(@"{
   ""StoreColor"": ""red"",
@@ -192,8 +197,8 @@ namespace Newtonsoft.Json.Tests.Converters
     public void SerializeEnumClassUndefined()
     {
       EnumClass enumClass = new EnumClass();
-      enumClass.StoreColor = (StoreColor)1000;
-      enumClass.NullableStoreColor1 = (StoreColor)1000;
+      enumClass.StoreColor = (StoreColor) 1000;
+      enumClass.NullableStoreColor1 = (StoreColor) 1000;
       enumClass.NullableStoreColor2 = null;
 
       string json = JsonConvert.SerializeObject(enumClass, Formatting.Indented, new StringEnumConverter());
@@ -248,7 +253,7 @@ namespace Newtonsoft.Json.Tests.Converters
       NegativeEnumClass negativeEnumClass = JsonConvert.DeserializeObject<NegativeEnumClass>(json, new StringEnumConverter());
 
       Assert.AreEqual(NegativeEnum.Negative, negativeEnumClass.Value1);
-      Assert.AreEqual((NegativeEnum)int.MinValue, negativeEnumClass.Value2);
+      Assert.AreEqual((NegativeEnum) int.MinValue, negativeEnumClass.Value2);
     }
 
     [Test]
@@ -263,7 +268,7 @@ namespace Newtonsoft.Json.Tests.Converters
       EnumClass enumClass = JsonConvert.DeserializeObject<EnumClass>(json, new StringEnumConverter());
 
       Assert.AreEqual(StoreColor.Red | StoreColor.White, enumClass.StoreColor);
-      Assert.AreEqual((StoreColor)0, enumClass.NullableStoreColor1);
+      Assert.AreEqual((StoreColor) 0, enumClass.NullableStoreColor1);
       Assert.AreEqual(StoreColor.Red | StoreColor.White | StoreColor.Black, enumClass.NullableStoreColor2);
     }
 
@@ -294,8 +299,8 @@ namespace Newtonsoft.Json.Tests.Converters
 
       EnumClass enumClass = JsonConvert.DeserializeObject<EnumClass>(json, new StringEnumConverter());
 
-      Assert.AreEqual((StoreColor)1000, enumClass.StoreColor);
-      Assert.AreEqual((StoreColor)1000, enumClass.NullableStoreColor1);
+      Assert.AreEqual((StoreColor) 1000, enumClass.StoreColor);
+      Assert.AreEqual((StoreColor) 1000, enumClass.NullableStoreColor1);
       Assert.AreEqual(null, enumClass.NullableStoreColor2);
     }
 
@@ -303,11 +308,11 @@ namespace Newtonsoft.Json.Tests.Converters
     public void CamelCaseTextFlagEnumSerialization()
     {
       EnumContainer<FlagsTestEnum> c = new EnumContainer<FlagsTestEnum>
-      {
-        Enum = FlagsTestEnum.First | FlagsTestEnum.Second
-      };
+                                         {
+                                           Enum = FlagsTestEnum.First | FlagsTestEnum.Second
+                                         };
 
-      string json = JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter { CamelCaseText = true });
+      string json = JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter {CamelCaseText = true});
       Assert.AreEqual(@"{
   ""Enum"": ""first, second""
 }", json);
@@ -320,7 +325,7 @@ namespace Newtonsoft.Json.Tests.Converters
   ""Enum"": ""first, second""
 }";
 
-      EnumContainer<FlagsTestEnum> c = JsonConvert.DeserializeObject<EnumContainer<FlagsTestEnum>>(json, new StringEnumConverter { CamelCaseText = true });
+      EnumContainer<FlagsTestEnum> c = JsonConvert.DeserializeObject<EnumContainer<FlagsTestEnum>>(json, new StringEnumConverter {CamelCaseText = true});
       Assert.AreEqual(FlagsTestEnum.First | FlagsTestEnum.Second, c.Enum);
     }
 
@@ -362,5 +367,84 @@ namespace Newtonsoft.Json.Tests.Converters
       Alpha,
       Beta,
     }
+
+#if !NET20
+    [Test]
+    public void EnumMemberPlusFlags()
+    {
+      List<Foo> lfoo =
+        new List<Foo>
+          {
+            Foo.Bat | Foo.SerializeAsBaz,
+            Foo.FooBar,
+            Foo.Bat,
+            Foo.SerializeAsBaz,
+            Foo.FooBar | Foo.SerializeAsBaz,
+            (Foo) int.MaxValue
+          };
+
+      string json1 = JsonConvert.SerializeObject(lfoo, Formatting.Indented, new StringEnumConverter {CamelCaseText = true});
+
+      Assert.AreEqual(@"[
+  ""Bat, baz"",
+  ""foo_bar"",
+  ""Bat"",
+  ""baz"",
+  ""foo_bar, baz"",
+  2147483647
+]", json1);
+
+      IList<Foo> foos = JsonConvert.DeserializeObject<List<Foo>>(json1);
+
+      Assert.AreEqual(6, foos.Count);
+      Assert.AreEqual(Foo.Bat | Foo.SerializeAsBaz, foos[0]);
+      Assert.AreEqual(Foo.FooBar, foos[1]);
+      Assert.AreEqual(Foo.Bat, foos[2]);
+      Assert.AreEqual(Foo.SerializeAsBaz, foos[3]);
+      Assert.AreEqual(Foo.FooBar | Foo.SerializeAsBaz, foos[4]);
+      Assert.AreEqual((Foo) int.MaxValue, foos[5]);
+
+      List<Bar> lbar = new List<Bar>() {Bar.FooBar, Bar.Bat, Bar.SerializeAsBaz};
+
+      string json2 = JsonConvert.SerializeObject(lbar, Formatting.Indented, new StringEnumConverter {CamelCaseText = true});
+
+      Assert.AreEqual(@"[
+  ""foo_bar"",
+  ""Bat"",
+  ""baz""
+]", json2);
+
+      IList<Bar> bars = JsonConvert.DeserializeObject<List<Bar>>(json2);
+
+      Assert.AreEqual(3, bars.Count);
+      Assert.AreEqual(Bar.FooBar, bars[0]);
+      Assert.AreEqual(Bar.Bat, bars[1]);
+      Assert.AreEqual(Bar.SerializeAsBaz, bars[2]);
+    }
+
+    // Define other methods and classes here
+    [Flags]
+    [JsonConverter(typeof (StringEnumConverter))]
+    private enum Foo
+    {
+      [EnumMember(Value = "foo_bar")]
+      FooBar = 0x01,
+      Bat = 0x02,
+
+      [EnumMember(Value = "baz")]
+      SerializeAsBaz = 0x4,
+    };
+
+    [JsonConverter(typeof (StringEnumConverter))]
+    private enum Bar
+    {
+      [EnumMember(Value = "foo_bar")]
+      FooBar,
+      Bat,
+
+      [EnumMember(Value = "baz")]
+      SerializeAsBaz
+    };
+#endif
   }
 }

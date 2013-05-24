@@ -84,6 +84,7 @@ using System.Linq;
 #endif
 #if !(SILVERLIGHT || NETFX_CORE)
 using System.Drawing;
+using System.Diagnostics;
 #endif
 
 namespace Newtonsoft.Json.Tests.Serialization
@@ -158,6 +159,22 @@ namespace Newtonsoft.Json.Tests.Serialization
         Ints = new List<int> { 0 };
       }
     }
+
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
+    [Test]
+    public void DeserializeISerializableIConvertible()
+    {
+      Ratio ratio = new Ratio(2, 1);
+      string json = JsonConvert.SerializeObject(ratio);
+
+      Assert.AreEqual(@"{""n"":2,""d"":1}", json);
+
+      Ratio ratio2 = JsonConvert.DeserializeObject<Ratio>(json);
+
+      Assert.AreEqual(ratio.Denominator, ratio2.Denominator);
+      Assert.AreEqual(ratio.Numerator, ratio2.Numerator);
+    }
+#endif
 
     [Test]
     public void SerializeDeserializeRegex()
@@ -8846,6 +8863,181 @@ Parameter name: value",
       Assert.AreEqual(john, jane.Spouse);
       Assert.AreEqual(jane, john.Spouse);
     }
+
+#if !(NETFX_CORE || NET35 || NET20 || PORTABLE || PORTABLE40)
+    [TypeConverter(typeof(MyInterfaceConverter))]
+    internal interface IMyInterface
+    {
+      string Name { get; }
+
+      string PrintTest();
+    }
+
+    internal class MyInterfaceConverter : TypeConverter
+    {
+      private readonly List<IMyInterface> _writers = new List<IMyInterface>
+			{
+				new ConsoleWriter(),
+				new TraceWriter()
+			};
+
+      public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+      {
+        return destinationType == typeof(string);
+      }
+
+      public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+      {
+        return sourceType == typeof(string);
+      }
+
+      public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+      {
+        if (value == null)
+          return null;
+
+        return (from w in _writers where w.Name == value.ToString() select w).FirstOrDefault();
+      }
+
+      public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value,
+                                       Type destinationType)
+      {
+        if (value == null)
+          return null;
+        return ((IMyInterface)value).Name;
+      }
+    }
+
+    [TypeConverter(typeof(MyInterfaceConverter))]
+    internal class ConsoleWriter : IMyInterface
+    {
+      public string Name
+      {
+        get { return "Console Writer"; }
+      }
+
+      public string PrintTest()
+      {
+        return "ConsoleWriter";
+      }
+
+      public override string ToString()
+      {
+        return Name;
+      }
+    }
+
+    internal class TraceWriter : IMyInterface
+    {
+      public string Name
+      {
+        get { return "Trace Writer"; }
+      }
+
+      public override string ToString()
+      {
+        return Name;
+      }
+
+      public string PrintTest()
+      {
+        return "TraceWriter";
+      }
+    }
+
+    internal class TypeConverterJsonConverter : JsonConverter
+    {
+      private TypeConverter GetConverter(Type type)
+      {
+        var converters = type.GetCustomAttributes(typeof(TypeConverterAttribute), true).Union(
+          from t in type.GetInterfaces()
+          from c in t.GetCustomAttributes(typeof(TypeConverterAttribute), true)
+          select c).Distinct();
+
+        return
+          (from c in converters
+           let converter =
+             (TypeConverter)Activator.CreateInstance(Type.GetType(((TypeConverterAttribute)c).ConverterTypeName))
+           where converter.CanConvertFrom(typeof(string))
+                 && converter.CanConvertTo(typeof(string))
+           select converter)
+            .FirstOrDefault();
+      }
+
+
+      public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+      {
+        var converter = GetConverter(value.GetType());
+        var text = converter.ConvertToInvariantString(value);
+
+        writer.WriteValue(text);
+      }
+
+      public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+      {
+        var converter = GetConverter(objectType);
+        return converter.ConvertFromInvariantString(reader.Value.ToString());
+      }
+
+      public override bool CanConvert(Type objectType)
+      {
+        return GetConverter(objectType) != null;
+      }
+    }
+
+    [Test]
+    public void TypeConverterOnInterface()
+    {
+      var consoleWriter = new ConsoleWriter();
+
+      // If dynamic type handling is enabled, case 1 and 3 work fine
+      var options = new JsonSerializerSettings
+                      {
+                        Converters = new JsonConverterCollection {new TypeConverterJsonConverter()},
+                        //TypeNameHandling = TypeNameHandling.All
+                      };
+
+      //
+      // Case 1: Serialize the concrete value and restore it from the interface
+      // Therefore we need dynamic handling of type information if the type is not serialized with the type converter directly
+      //
+      var text1 = JsonConvert.SerializeObject(consoleWriter, Formatting.Indented, options);
+      Assert.AreEqual(@"""Console Writer""", text1);
+
+      var restoredWriter = JsonConvert.DeserializeObject<IMyInterface>(text1, options);
+      Assert.AreEqual("ConsoleWriter", restoredWriter.PrintTest());
+
+      //
+      // Case 2: Serialize a dictionary where the interface is the key
+      // The key is always serialized with its ToString() method and therefore needs a mechanism to be restored from that (using the type converter)
+      //
+      var dict2 = new Dictionary<IMyInterface, string>();
+      dict2.Add(consoleWriter, "Console");
+
+      var text2 = JsonConvert.SerializeObject(dict2, Formatting.Indented, options);
+      Assert.AreEqual(@"{
+  ""Console Writer"": ""Console""
+}", text2);
+
+      var restoredObject = JsonConvert.DeserializeObject<Dictionary<IMyInterface, string>>(text2, options);
+      Assert.AreEqual("ConsoleWriter", restoredObject.First().Key.PrintTest());
+
+      //
+      // Case 3 Serialize a dictionary where the interface is the value
+      // The key is always serialized with its ToString() method and therefore needs a mechanism to be restored from that (using the type converter)
+      //
+      var dict3 = new Dictionary<string, IMyInterface>();
+      dict3.Add("Console", consoleWriter);
+
+      var text3 = JsonConvert.SerializeObject(dict3, Formatting.Indented, options);
+      Assert.AreEqual(@"{
+  ""Console"": ""Console Writer""
+}", text3);
+
+      var restoredDict2 = JsonConvert.DeserializeObject<Dictionary<string, IMyInterface>>(text3, options);
+      Assert.AreEqual("ConsoleWriter", restoredDict2.First().Value.PrintTest());
+    }
+#endif
   }
 
   public class PersonReference
@@ -9350,4 +9542,217 @@ Parameter name: value",
       UserName = samAccountName.Split('\\')[1];
     }
   }
+
+#if !NETFX_CORE
+  public struct Ratio : IConvertible, IFormattable, ISerializable
+  {
+    private readonly int _numerator;
+    private readonly int _denominator;
+
+    public Ratio(int numerator, int denominator)
+    {
+      _numerator = numerator;
+      _denominator = denominator;
+    }
+
+    #region Properties
+
+    public int Numerator
+    {
+      get { return _numerator; }
+    }
+
+    public int Denominator
+    {
+      get { return _denominator; }
+    }
+
+    public bool IsNan
+    {
+      get { return _denominator == 0; }
+    }
+
+    #endregion
+
+    #region Serialization operations
+
+    public Ratio(SerializationInfo info, StreamingContext context)
+    {
+      _numerator = info.GetInt32("n");
+      _denominator = info.GetInt32("d");
+    }
+
+    public void GetObjectData(SerializationInfo info, StreamingContext context)
+    {
+      info.AddValue("n", _numerator);
+      info.AddValue("d", _denominator);
+    }
+
+    #endregion
+
+    #region IConvertible Members
+
+    public TypeCode GetTypeCode()
+    {
+      return TypeCode.Object;
+    }
+
+    public bool ToBoolean(IFormatProvider provider)
+    {
+      return this._numerator == 0;
+    }
+
+    public byte ToByte(IFormatProvider provider)
+    {
+      return (byte)(this._numerator / this._denominator);
+    }
+
+    public char ToChar(IFormatProvider provider)
+    {
+      return Convert.ToChar(this._numerator / this._denominator);
+    }
+
+    public DateTime ToDateTime(IFormatProvider provider)
+    {
+      return Convert.ToDateTime(this._numerator / this._denominator);
+    }
+
+    public decimal ToDecimal(IFormatProvider provider)
+    {
+      return (decimal)this._numerator / this._denominator;
+    }
+
+    public double ToDouble(IFormatProvider provider)
+    {
+      return this._denominator == 0
+          ? double.NaN
+          : (double)this._numerator / this._denominator;
+    }
+
+    public short ToInt16(IFormatProvider provider)
+    {
+      return (short)(this._numerator / this._denominator);
+    }
+
+    public int ToInt32(IFormatProvider provider)
+    {
+      return this._numerator / this._denominator;
+    }
+
+    public long ToInt64(IFormatProvider provider)
+    {
+      return this._numerator / this._denominator;
+    }
+
+    public sbyte ToSByte(IFormatProvider provider)
+    {
+      return (sbyte)(this._numerator / this._denominator);
+    }
+
+    public float ToSingle(IFormatProvider provider)
+    {
+      return this._denominator == 0
+          ? float.NaN
+          : (float)this._numerator / this._denominator;
+    }
+
+    public string ToString(IFormatProvider provider)
+    {
+      return this._denominator == 1
+          ? this._numerator.ToString(provider)
+          : this._numerator.ToString(provider) + "/" + this._denominator.ToString(provider);
+    }
+
+    public object ToType(Type conversionType, IFormatProvider provider)
+    {
+      return Convert.ChangeType(ToDouble(provider), conversionType, provider);
+    }
+
+    public ushort ToUInt16(IFormatProvider provider)
+    {
+      return (ushort)(this._numerator / this._denominator);
+    }
+
+    public uint ToUInt32(IFormatProvider provider)
+    {
+      return (uint)(this._numerator / this._denominator);
+    }
+
+    public ulong ToUInt64(IFormatProvider provider)
+    {
+      return (ulong)(this._numerator / this._denominator);
+    }
+
+    #endregion
+
+    #region String operations
+
+    public override string ToString()
+    {
+      return ToString(CultureInfo.InvariantCulture);
+    }
+
+    public string ToString(string format, IFormatProvider formatProvider)
+    {
+      return ToString(CultureInfo.InvariantCulture);
+    }
+
+    public static Ratio Parse(string input)
+    {
+      return Parse(input, CultureInfo.InvariantCulture);
+    }
+
+    public static Ratio Parse(string input, IFormatProvider formatProvider)
+    {
+      Ratio result;
+      if (!TryParse(input, formatProvider, out result))
+      {
+        throw new FormatException(
+            string.Format(
+                CultureInfo.InvariantCulture,
+                "Text '{0}' is invalid text representation of ratio",
+                input));
+      }
+      return result;
+    }
+
+    public static bool TryParse(string input, out Ratio result)
+    {
+      return TryParse(input, CultureInfo.InvariantCulture, out result);
+    }
+
+    public static bool TryParse(string input, IFormatProvider formatProvider, out Ratio result)
+    {
+      if (input != null)
+      {
+        var fractionIndex = input.IndexOf('/');
+
+        int numerator;
+        if (fractionIndex < 0)
+        {
+          if (int.TryParse(input, NumberStyles.Integer, formatProvider, out numerator))
+          {
+            result = new Ratio(numerator, 1);
+            return true;
+          }
+        }
+        else
+        {
+          int denominator;
+          if (int.TryParse(input.Substring(0, fractionIndex), NumberStyles.Integer, formatProvider, out numerator) &&
+              int.TryParse(input.Substring(fractionIndex + 1), NumberStyles.Integer, formatProvider, out denominator))
+          {
+            result = new Ratio(numerator, denominator);
+            return true;
+          }
+        }
+      }
+
+      result = default(Ratio);
+      return false;
+    }
+
+    #endregion
+  }
+#endif
 }

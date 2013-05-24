@@ -844,7 +844,7 @@ namespace Newtonsoft.Json.Serialization
     {
       Type t = ReflectionUtils.EnsureNotNullableType(objectType);
 
-      if (JsonConvert.IsJsonPrimitiveType(objectType))
+      if (IsJsonPrimitiveType(objectType))
         return CreatePrimitiveContract(objectType);
 
       if (JsonTypeReflector.GetJsonObjectAttribute(t) != null)
@@ -878,8 +878,34 @@ namespace Newtonsoft.Json.Serialization
         return CreateDynamicContract(objectType);
 #endif
 
+#if !(PORTABLE || NETFX_CORE)
+      // tested last because it is not possible to automatically deserialize custom IConvertible types
+      if (IsIConvertible(t))
+        return CreatePrimitiveContract(t);
+#endif
+
       return CreateObjectContract(objectType);
     }
+
+    internal static bool IsJsonPrimitiveType(Type t)
+    {
+      PrimitiveTypeCode typeCode = ConvertUtils.GetTypeCode(t);
+
+      return (typeCode != PrimitiveTypeCode.Empty && typeCode != PrimitiveTypeCode.Object);
+    }
+
+#if !(PORTABLE || NETFX_CORE)
+    internal static bool IsIConvertible(Type t)
+    {
+      if (typeof(IConvertible).IsAssignableFrom(t)
+        || (ReflectionUtils.IsNullableType(t) && typeof(IConvertible).IsAssignableFrom(Nullable.GetUnderlyingType(t))))
+      {
+        return !typeof(JToken).IsAssignableFrom(t);
+      }
+
+      return false;
+    }
+#endif
 
     internal static bool CanConvertToString(Type type)
     {

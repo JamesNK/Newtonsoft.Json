@@ -77,17 +77,24 @@ namespace Newtonsoft.Json.Converters
       {
         BidirectionalDictionary<string, string> map = GetEnumNameMap(e.GetType());
 
-        string resolvedEnumName;
-        map.TryGetByFirst(enumName, out resolvedEnumName);
-        resolvedEnumName = resolvedEnumName ?? enumName;
-
-        if (CamelCaseText)
+        string[] names = enumName.Split(',');
+        for (int i = 0; i < names.Length; i++)
         {
-          string[] names = resolvedEnumName.Split(',').Select(item => StringUtils.ToCamelCase(item.Trim())).ToArray();
-          resolvedEnumName = string.Join(", ", names);
+          string name = names[i].Trim();
+
+          string resolvedEnumName;
+          map.TryGetByFirst(name, out resolvedEnumName);
+          resolvedEnumName = resolvedEnumName ?? name;
+
+          if (CamelCaseText)
+            resolvedEnumName = StringUtils.ToCamelCase(resolvedEnumName);
+
+          names[i] = resolvedEnumName;
         }
 
-        writer.WriteValue(resolvedEnumName);
+        string finalName = string.Join(", ", names);
+
+        writer.WriteValue(finalName);
       }
     }
 
@@ -120,12 +127,27 @@ namespace Newtonsoft.Json.Converters
           if (enumText == string.Empty && isNullable)
             return null;
 
-          var map = GetEnumNameMap(t);
-          string resolvedEnumName;
-          map.TryGetBySecond(enumText, out resolvedEnumName);
-          resolvedEnumName = resolvedEnumName ?? enumText;
+          string finalEnumText;
 
-          return Enum.Parse(t, resolvedEnumName, true);
+          BidirectionalDictionary<string, string> map = GetEnumNameMap(t);
+          if (enumText.IndexOf(',') != -1)
+          {
+            string[] names = enumText.Split(',');
+            for (int i = 0; i < names.Length; i++)
+            {
+              string name = names[i].Trim();
+
+              names[i] = ResolvedEnumName(map, name);
+            }
+
+            finalEnumText = string.Join(", ", names);
+          }
+          else
+          {
+            finalEnumText = ResolvedEnumName(map, enumText);
+          }
+
+          return Enum.Parse(t, finalEnumText, true);
         }
 
         if (reader.TokenType == JsonToken.Integer)
@@ -138,6 +160,14 @@ namespace Newtonsoft.Json.Converters
 
 
       throw JsonSerializationException.Create(reader, "Unexpected token when parsing enum. Expected String or Integer, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
+    }
+
+    private static string ResolvedEnumName(BidirectionalDictionary<string, string> map, string enumText)
+    {
+      string resolvedEnumName;
+      map.TryGetBySecond(enumText, out resolvedEnumName);
+      resolvedEnumName = resolvedEnumName ?? enumText;
+      return resolvedEnumName;
     }
 
     private BidirectionalDictionary<string, string> GetEnumNameMap(Type t)

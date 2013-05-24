@@ -490,24 +490,6 @@ namespace Newtonsoft.Json
       throw new ArgumentException("Unsupported type: {0}. Use the JsonSerializer class to get the object's JSON representation.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
     }
 
-    internal static bool IsJsonPrimitiveType(Type t)
-    {
-      PrimitiveTypeCode typeCode = ConvertUtils.GetTypeCode(t);
-
-      if (typeCode != PrimitiveTypeCode.Empty && typeCode != PrimitiveTypeCode.Object)
-        return true;
-
-#if !(PORTABLE || NETFX_CORE)
-      if (typeof(IConvertible).IsAssignableFrom(t)
-        || (ReflectionUtils.IsNullableType(t) && typeof(IConvertible).IsAssignableFrom(Nullable.GetUnderlyingType(t))))
-      {
-        return !typeof(JToken).IsAssignableFrom(t);
-      }
-#endif
-
-      return false;
-    }
-
     #region Serialize
     /// <summary>
     /// Serializes the specified object to a JSON string.
