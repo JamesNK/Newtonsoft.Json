@@ -690,6 +690,22 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       Assert.AreEqual(@"{""Scott"":[],""James"":[]}", output);
     }
+
+    [Test]
+    public void UnquotedStringAsPropertyValue()
+    {
+      // JsonConvert.DeserializeObject<ErrorItem>() should throw upon encountering invalid json.
+      const string json = @"{ ""ItemName"": ""value"", ""u"":netanelsalinger,""r"":9 }";
+      try
+      {
+        JsonConvert.DeserializeObject<ErrorItem>(json);
+        Assert.Fail("Expected an exception of type '{0}' with message '{1}'", "Newtonsoft.Json.JsonReaderException", "Unexpected end while parsing constructor. Path 'u', line 1, position 27.");
+      }
+      catch (JsonReaderException e)
+      {
+        Assert.AreEqual(e.Message, "Unexpected end while parsing constructor. Path 'u', line 1, position 27.");
+      }
+    }
   }
 
   interface IErrorPerson2
