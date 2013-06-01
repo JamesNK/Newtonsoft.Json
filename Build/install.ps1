@@ -1,5 +1,8 @@
 param($installPath, $toolsPath, $package, $project)
 
+# open json.net splash page on package install
+# don't open if json.net is installed as a dependency
+
 # yolo
 
 try
@@ -33,7 +36,7 @@ try
       $lastCommand = $lastCommand.Trim().ToLower()
       if ($lastCommand.StartsWith("install-package") -and $lastCommand.Contains("newtonsoft.json"))
       {
-        $dte2.ItemOperations.Navigate($url)
+        $dte2.ItemOperations.Navigate($url) | Out-Null
       }
     }
   }
@@ -66,8 +69,7 @@ try
 
     $operations = $messages -split "=============================="
 
-    # second to last
-    $lastOperation = $operations | select -last 2 | select -first 1
+    $lastOperation = $operations | select -last 1
 
     if ($lastOperation)
     {
@@ -75,16 +77,17 @@ try
 
       $lines = $lastOperation -split "`r`n"
 
-      $installMatch = $lines | ? { $_.StartsWith("------- installing...newtonsoft.json") } | select -first 1
+      $installMatch = $lines | ? { $_.StartsWith("------- installing...newtonsoft.json ") } | select -first 1
 
       if ($installMatch)
       {
-        $dte2.ItemOperations.Navigate($url)
+        $dte2.ItemOperations.Navigate($url) | Out-Null
       }
     }
   }
 }
 catch
 {
-  # prevent potental errors from bubbling up
+  # stop potential errors from bubbling up
+  # worst case the splash page won't open
 }
