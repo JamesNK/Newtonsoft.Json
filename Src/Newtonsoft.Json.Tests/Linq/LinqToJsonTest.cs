@@ -50,6 +50,17 @@ namespace Newtonsoft.Json.Tests.Linq
   public class LinqToJsonTest : TestFixtureBase
   {
     [Test]
+    public void ForEach()
+    {
+      JArray items = new JArray(new JObject(new JProperty("name", "value!")));
+
+      foreach (JObject friend in items)
+      {
+        Console.WriteLine(friend);
+      }
+    }
+
+    [Test]
     public void DoubleValue()
     {
       JArray j = JArray.Parse("[-1E+4,100.0e-2]");

@@ -48,6 +48,32 @@ namespace Newtonsoft.Json.Tests
   public class JsonTextReaderTest : TestFixtureBase
   {
     [Test]
+    public void ThrowErrorWhenParsingUnquoteStringThatStartsWithNE()
+    {
+      const string json = @"{ ""ItemName"": ""value"", ""u"":netanelsalinger,""r"":9 }";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.String, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      ExceptionAssert.Throws<JsonReaderException>("Unexpected content while parsing JSON. Path 'u', line 1, position 27.",
+        () =>
+          {
+            reader.Read();
+          });
+    }
+
+    [Test]
     public void FloatParseHandling()
     {
       string json = "[1.0,1,9.9,1E-06]";

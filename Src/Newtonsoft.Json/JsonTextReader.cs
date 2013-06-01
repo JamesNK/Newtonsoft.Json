@@ -1150,6 +1150,10 @@ namespace Newtonsoft.Json
 
         SetToken(JsonToken.StartConstructor, constructorName);
       }
+      else
+      {
+        throw JsonReaderException.Create(this, "Unexpected content while parsing JSON.");
+      }
     }
 
     private void ParseNumber()
