@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+
+using NUnit.Framework;
 
 using Newtonsoft.Json.Linq;
 
@@ -52,7 +54,7 @@ namespace Newtonsoft.Json.Tests.Linq
         }
 
         [Test]
-        public void can_merge_objects_with_arrays_by_overwriting()
+        public void can_merge_objects_with_arrays_by_overwriting_as_default()
         {
             var left = JToken.FromObject(new
             {
@@ -73,6 +75,49 @@ namespace Newtonsoft.Json.Tests.Linq
             var result = left.Merge(right);
 
             Assert.AreEqual("{\"Array1\":[{\"Property2\":2},{\"Property3\":3}]}", result.ToString(Formatting.None));
+        }
+
+        [Test]
+        public void can_merge_objects_with_arrays_by_concat()
+        {
+            var left = JToken.FromObject(new
+            {
+                Array1 = new object[]
+                        {
+                            new {Property1 = 1}
+                        }
+            });
+            var right = JToken.FromObject(new
+            {
+                Array1 = new object[]
+                        {
+                            new {Property2 = 2},
+                            new {Property3 = 3}
+                        }
+            });
+
+            var result = left.Merge(right, new MergeOptions{ArrayHandling = MergeOptionArrayHandling.Concat});
+
+            Assert.AreEqual("{\"Array1\":[{\"Property1\":1},{\"Property2\":2},{\"Property3\":3}]}", result.ToString(Formatting.None));
+        }
+
+        [Test]
+        public void can_merge_dictionaries()
+        {
+            var left = JToken.FromObject(new Dictionary<string, object>
+                {
+                    { "Item1", "Value1" }, 
+                    { "Item2", "Value2" }
+                });
+            var right = JToken.FromObject(new Dictionary<string, object>
+                {
+                    { "Item2", "Value2new" }, 
+                    { "Item3", "Value3" }
+                });
+
+            var result = left.Merge(right);
+
+            Assert.AreEqual("{\"Item1\":\"Value1\",\"Item2\":\"Value2new\",\"Item3\":\"Value3\"}", result.ToString(Formatting.None));
         }
     }
 }
