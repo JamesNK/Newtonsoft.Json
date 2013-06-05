@@ -1519,6 +1519,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 #endif
 
+#if !NETFX_CORE
     [Test]
     public void SerializeDeserialize_DictionaryContextContainsGuid_DeserializesItemAsGuid()
     {
@@ -1651,8 +1652,10 @@ namespace Newtonsoft.Json.Tests.Serialization
       CustomAssert.IsInstanceOfType(typeof(MyChild), p2.Child);
       Assert.AreEqual("string!", ((MyChild)p2.Child).MyProperty);
     }
+#endif
   }
 
+#if !NETFX_CORE
   public class ParentParent
   {
     [JsonProperty(ItemTypeNameHandling = TypeNameHandling.Auto)]
@@ -1693,6 +1696,7 @@ namespace Newtonsoft.Json.Tests.Serialization
   public interface ISomeBase
   {
   }
+#endif
 
   public class Message
   {

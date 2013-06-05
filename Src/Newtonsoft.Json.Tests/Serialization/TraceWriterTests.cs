@@ -899,7 +899,7 @@ Newtonsoft.Json Error: 0 : Error!
 
       traceReader.ReadAsBytes();
       Assert.AreEqual(JsonToken.Bytes, traceReader.TokenType);
-      Assert.AreEqual(Encoding.UTF8.GetBytes("String!"), traceReader.Value);
+      CollectionAssert.AreEqual(Encoding.UTF8.GetBytes("String!"), (byte[])traceReader.Value);
 
       traceReader.ReadAsInt32();
       Assert.AreEqual(JsonToken.Integer, traceReader.TokenType);
@@ -925,7 +925,7 @@ Newtonsoft.Json Error: 0 : Error!
 
       traceReader.Read();
       Assert.AreEqual(JsonToken.Integer, traceReader.TokenType);
-      Assert.AreEqual(1, traceReader.Value);
+      Assert.AreEqual(1L, traceReader.Value);
 
       traceReader.Read();
       Assert.AreEqual(JsonToken.EndConstructor, traceReader.TokenType);
