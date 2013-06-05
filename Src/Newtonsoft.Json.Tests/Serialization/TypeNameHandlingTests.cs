@@ -1682,10 +1682,9 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
   }
 
-  [DataContract]
   public class MyChild : ISomeBase
   {
-    [DataMember(Name = "p")]
+    [JsonProperty("p")]
     public String MyProperty { get; internal set; }
   }
 
