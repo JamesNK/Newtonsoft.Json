@@ -17,7 +17,7 @@
   $releaseDir = "$baseDir\Release"
   $workingDir = "$baseDir\Working"
   $builds = @(
-    @{Name = "Newtonsoft.Json"; TestsName = "Newtonsoft.Json.Tests"; Constants=""; FinalDir="Net45"; NuGetDir = "net45"; Framework="net-4.0"; Sign=$true}
+    @{Name = "Newtonsoft.Json"; TestsName = "Newtonsoft.Json.Tests"; Constants=""; FinalDir="Net45"; NuGetDir = "net45"; Framework="net-4.0"; Sign=$true},
     @{Name = "Newtonsoft.Json.Portable"; TestsName = "Newtonsoft.Json.Tests.Portable"; Constants="PORTABLE"; FinalDir="Portable"; NuGetDir = "portable-net45+wp80+win8"; Framework="net-4.0"; Sign=$true},
     @{Name = "Newtonsoft.Json.Portable40"; TestsName = "Newtonsoft.Json.Tests.Portable40"; Constants="PORTABLE40"; FinalDir="Portable40"; NuGetDir = "portable-net40+sl4+wp7+win8"; Framework="net-4.0"; Sign=$true},
     @{Name = "Newtonsoft.Json.WinRT"; TestsName = $null; Constants="NETFX_CORE"; FinalDir="WinRT"; NuGetDir = "netcore45"; Framework="net-4.5"; Sign=$true},
@@ -77,11 +77,11 @@ task Package -depends Build {
   if ($buildNuGet)
   {
     New-Item -Path $workingDir\NuGet -ItemType Directory
-    New-Item -Path $workingDir\NuGet\tools -ItemType Directory
+    #New-Item -Path $workingDir\NuGet\tools -ItemType Directory
 
     Copy-Item -Path "$buildDir\Newtonsoft.Json.nuspec" -Destination $workingDir\NuGet\Newtonsoft.Json.nuspec -recurse
     
-    Copy-Item -Path "$buildDir\install.ps1" -Destination $workingDir\NuGet\tools\install.ps1 -recurse
+    #Copy-Item -Path "$buildDir\install.ps1" -Destination $workingDir\NuGet\tools\install.ps1 -recurse
     
     foreach ($build in $builds)
     {

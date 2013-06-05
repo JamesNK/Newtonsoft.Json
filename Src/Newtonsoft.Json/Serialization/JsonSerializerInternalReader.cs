@@ -450,7 +450,7 @@ namespace Newtonsoft.Json.Serialization
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE40 || PORTABLE)
         case JsonContractType.Serializable:
           JsonISerializableContract serializableContract = (JsonISerializableContract) contract;
-          return CreateISerializable(reader, serializableContract, id);
+          return CreateISerializable(reader, serializableContract, member, id);
 #endif
       }
 
@@ -1264,7 +1264,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
     }
 
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE40 || PORTABLE)
-    private object CreateISerializable(JsonReader reader, JsonISerializableContract contract, string id)
+    private object CreateISerializable(JsonReader reader, JsonISerializableContract contract, JsonProperty member, string id)
     {
       Type objectType = contract.UnderlyingType;
 
@@ -1290,7 +1290,16 @@ To fix this error either change the environment to be fully trusted, change the 
             if (!reader.Read())
               throw JsonSerializationException.Create(reader, "Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
 
-            serializationInfo.AddValue(memberName, JToken.ReadFrom(reader));
+            if (reader.TokenType == JsonToken.StartObject)
+            {
+              // this will read any potential type names embedded in json
+              object o = CreateObject(reader, null, null, null, contract, member, null);
+              serializationInfo.AddValue(memberName, o);
+            }
+            else
+            {
+              serializationInfo.AddValue(memberName, JToken.ReadFrom(reader));
+            }
             break;
           case JsonToken.Comment:
             break;

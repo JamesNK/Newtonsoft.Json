@@ -818,9 +818,9 @@ To fix this error either change the environment to be fully trusted, change the 
           if (contract.UnderlyingType != member.PropertyContract.CreatedType)
             return true;
         }
-        else if (containerContract != null && containerContract.ItemContract != null)
+        else if (containerContract != null)
         {
-          if (contract.UnderlyingType != containerContract.ItemContract.CreatedType)
+          if (containerContract.ItemContract == null || contract.UnderlyingType != containerContract.ItemContract.CreatedType)
             return true;
         }
         else if (_rootContract != null && _serializeStack.Count == 1)

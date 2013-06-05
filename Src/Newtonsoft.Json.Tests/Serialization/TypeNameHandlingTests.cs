@@ -1539,6 +1539,159 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       Assert.AreEqual(someValue, deserializedObject[contextKey]);
     }
+
+    [Test]
+    public void TypeNameHandlingWithISerializableValues()
+    {
+      MyParent p = new MyParent
+      {
+        Child = new MyChild
+        {
+          MyProperty = "string!"
+        }
+      };
+
+      JsonSerializerSettings settings = new JsonSerializerSettings
+      {
+        TypeNameHandling = TypeNameHandling.Auto,
+        DateFormatHandling = DateFormatHandling.IsoDateFormat,
+        MissingMemberHandling = MissingMemberHandling.Ignore,
+        DefaultValueHandling = DefaultValueHandling.Ignore,
+        NullValueHandling = NullValueHandling.Ignore,
+        Formatting = Formatting.Indented
+      };
+
+      string json = JsonConvert.SerializeObject(p, settings);
+
+      Assert.AreEqual(@"{
+  ""c"": {
+    ""$type"": ""Newtonsoft.Json.Tests.Serialization.MyChild, Newtonsoft.Json.Tests"",
+    ""p"": ""string!""
+  }
+}", json);
+
+      MyParent p2 = JsonConvert.DeserializeObject<MyParent>(json, settings);
+      CustomAssert.IsInstanceOfType(typeof(MyChild), p2.Child);
+      Assert.AreEqual("string!", ((MyChild)p2.Child).MyProperty);
+    }
+
+    [Test]
+    public void TypeNameHandlingWithISerializableValuesAndArray()
+    {
+      MyParent p = new MyParent
+      {
+        Child = new MyChildList
+        {
+          "string!"
+        }
+      };
+
+      JsonSerializerSettings settings = new JsonSerializerSettings
+      {
+        TypeNameHandling = TypeNameHandling.Auto,
+        DateFormatHandling = DateFormatHandling.IsoDateFormat,
+        MissingMemberHandling = MissingMemberHandling.Ignore,
+        DefaultValueHandling = DefaultValueHandling.Ignore,
+        NullValueHandling = NullValueHandling.Ignore,
+        Formatting = Formatting.Indented
+      };
+
+      string json = JsonConvert.SerializeObject(p, settings);
+
+      Assert.AreEqual(@"{
+  ""c"": {
+    ""$type"": ""Newtonsoft.Json.Tests.Serialization.MyChildList, Newtonsoft.Json.Tests"",
+    ""$values"": [
+      ""string!""
+    ]
+  }
+}", json);
+
+      MyParent p2 = JsonConvert.DeserializeObject<MyParent>(json, settings);
+      CustomAssert.IsInstanceOfType(typeof(MyChildList), p2.Child);
+      Assert.AreEqual(1, ((MyChildList)p2.Child).Count);
+      Assert.AreEqual("string!", ((MyChildList)p2.Child)[0]);
+    }
+
+    [Test]
+    public void ParentTypeNameHandlingWithISerializableValues()
+    {
+      ParentParent pp = new ParentParent();
+
+      pp.ParentProp = new MyParent
+      {
+        Child = new MyChild
+        {
+          MyProperty = "string!"
+        }
+      };
+
+      JsonSerializerSettings settings = new JsonSerializerSettings
+      {
+        DateFormatHandling = DateFormatHandling.IsoDateFormat,
+        MissingMemberHandling = MissingMemberHandling.Ignore,
+        DefaultValueHandling = DefaultValueHandling.Ignore,
+        NullValueHandling = NullValueHandling.Ignore,
+        Formatting = Formatting.Indented
+      };
+
+      string json = JsonConvert.SerializeObject(pp, settings);
+
+      Assert.AreEqual(@"{
+  ""ParentProp"": {
+    ""c"": {
+      ""$type"": ""Newtonsoft.Json.Tests.Serialization.MyChild, Newtonsoft.Json.Tests"",
+      ""p"": ""string!""
+    }
+  }
+}", json);
+
+      ParentParent pp2 = JsonConvert.DeserializeObject<ParentParent>(json, settings);
+      MyParent p2 = pp2.ParentProp;
+      CustomAssert.IsInstanceOfType(typeof(MyChild), p2.Child);
+      Assert.AreEqual("string!", ((MyChild)p2.Child).MyProperty);
+    }
+  }
+
+  public class ParentParent
+  {
+    [JsonProperty(ItemTypeNameHandling = TypeNameHandling.Auto)]
+    public MyParent ParentProp { get; set; }
+  }
+
+  [Serializable]
+  public class MyParent : ISerializable
+  {
+    public ISomeBase Child { get; internal set; }
+
+    public MyParent(SerializationInfo info, StreamingContext context)
+    {
+      Child = (ISomeBase)info.GetValue("c", typeof(ISomeBase));
+    }
+
+    public MyParent()
+    {
+    }
+
+    void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+    {
+      info.AddValue("c", Child);
+    }
+  }
+
+  [DataContract]
+  public class MyChild : ISomeBase
+  {
+    [DataMember(Name = "p")]
+    public String MyProperty { get; internal set; }
+  }
+
+  public class MyChildList : List<string>, ISomeBase
+  {
+  }
+
+  public interface ISomeBase
+  {
   }
 
   public class Message

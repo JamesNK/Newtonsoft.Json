@@ -3,8 +3,6 @@ param($installPath, $toolsPath, $package, $project)
 # open json.net splash page on package install
 # don't open if json.net is installed as a dependency
 
-# yolo
-
 try
 {
   $url = "http://www.json.net"
@@ -91,3 +89,5 @@ catch
   # stop potential errors from bubbling up
   # worst case the splash page won't open
 }
+
+# yolo
