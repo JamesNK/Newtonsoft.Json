@@ -246,36 +246,42 @@ namespace Newtonsoft.Json.Linq
 
     internal static U Convert<T, U>(this T token) where T : JToken
     {
+        var uType = typeof(U);
+
       if (token == null)
         return default(U);
 
       if (token is U
         // don't want to cast JValue to its interfaces, want to get the internal value
-        && typeof(U) != typeof(IComparable) && typeof(U) != typeof(IFormattable))
+        && uType != typeof(IComparable) && uType != typeof(IFormattable))
       {
         // HACK
         return (U)(object)token;
       }
+      else if (token.Type == JTokenType.Bytes && uType == typeof(Guid))
+      {
+          return (U)(object)(new Guid((byte[])(token as JValue)));
+      }
       else
       {
-        JValue value = token as JValue;
-        if (value == null)
-          throw new InvalidCastException("Cannot cast {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, token.GetType(), typeof(T)));
+          JValue value = token as JValue;
+          if (value == null)
+              throw new InvalidCastException("Cannot cast {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, token.GetType(), typeof(T)));
 
-        if (value.Value is U)
-          return (U)value.Value;
+          if (value.Value is U)
+              return (U)value.Value;
 
-        Type targetType = typeof(U);
+          Type targetType = uType;
 
-        if (ReflectionUtils.IsNullableType(targetType))
-        {
-          if (value.Value == null)
-            return default(U);
+          if (ReflectionUtils.IsNullableType(targetType))
+          {
+              if (value.Value == null)
+                  return default(U);
 
-          targetType = Nullable.GetUnderlyingType(targetType);
-        }
+              targetType = Nullable.GetUnderlyingType(targetType);
+          }
 
-        return (U)System.Convert.ChangeType(value.Value, targetType, CultureInfo.InvariantCulture);
+          return (U)System.Convert.ChangeType(value.Value, targetType, CultureInfo.InvariantCulture);
       }
     }
 
