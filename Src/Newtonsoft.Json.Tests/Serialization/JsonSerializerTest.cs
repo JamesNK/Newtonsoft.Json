@@ -160,6 +160,276 @@ namespace Newtonsoft.Json.Tests.Serialization
       }
     }
 
+    [Test]
+    public void JsonSerializerProperties()
+    {
+      JsonSerializer serializer = new JsonSerializer();
+
+      DefaultSerializationBinder customBinder = new DefaultSerializationBinder();
+      serializer.Binder = customBinder;
+      Assert.AreEqual(customBinder, serializer.Binder);
+
+      serializer.CheckAdditionalContent = true;
+      Assert.AreEqual(true, serializer.CheckAdditionalContent);
+
+      serializer.ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor;
+      Assert.AreEqual(ConstructorHandling.AllowNonPublicDefaultConstructor, serializer.ConstructorHandling);
+
+      serializer.Context = new StreamingContext(StreamingContextStates.Other);
+      Assert.AreEqual(new StreamingContext(StreamingContextStates.Other), serializer.Context);
+
+      CamelCasePropertyNamesContractResolver resolver = new CamelCasePropertyNamesContractResolver();
+      serializer.ContractResolver = resolver;
+      Assert.AreEqual(resolver, serializer.ContractResolver);
+
+      serializer.Converters.Add(new StringEnumConverter());
+      Assert.AreEqual(1, serializer.Converters.Count);
+
+      serializer.Culture = new CultureInfo("en-nz");
+      Assert.AreEqual("en-NZ", serializer.Culture.ToString());
+
+      serializer.DateFormatHandling = DateFormatHandling.MicrosoftDateFormat;
+      Assert.AreEqual(DateFormatHandling.MicrosoftDateFormat, serializer.DateFormatHandling);
+
+      serializer.DateFormatString = "yyyy";
+      Assert.AreEqual("yyyy", serializer.DateFormatString);
+
+      serializer.DateParseHandling = DateParseHandling.None;
+      Assert.AreEqual(DateParseHandling.None, serializer.DateParseHandling);
+
+      serializer.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+      Assert.AreEqual(DateTimeZoneHandling.Utc, serializer.DateTimeZoneHandling);
+
+      serializer.DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate;
+      Assert.AreEqual(DefaultValueHandling.IgnoreAndPopulate, serializer.DefaultValueHandling);
+
+      serializer.FloatFormatHandling = FloatFormatHandling.Symbol;
+      Assert.AreEqual(FloatFormatHandling.Symbol, serializer.FloatFormatHandling);
+
+      serializer.FloatParseHandling = FloatParseHandling.Decimal;
+      Assert.AreEqual(FloatParseHandling.Decimal, serializer.FloatParseHandling);
+
+      serializer.Formatting = Formatting.Indented;
+      Assert.AreEqual(Formatting.Indented, serializer.Formatting);
+
+      serializer.MaxDepth = 9001;
+      Assert.AreEqual(9001, serializer.MaxDepth);
+
+      serializer.MissingMemberHandling = MissingMemberHandling.Error;
+      Assert.AreEqual(MissingMemberHandling.Error, serializer.MissingMemberHandling);
+
+      serializer.NullValueHandling = NullValueHandling.Ignore;
+      Assert.AreEqual(NullValueHandling.Ignore, serializer.NullValueHandling);
+
+      serializer.ObjectCreationHandling = ObjectCreationHandling.Replace;
+      Assert.AreEqual(ObjectCreationHandling.Replace, serializer.ObjectCreationHandling);
+
+      serializer.PreserveReferencesHandling = PreserveReferencesHandling.All;
+      Assert.AreEqual(PreserveReferencesHandling.All, serializer.PreserveReferencesHandling);
+
+      serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+      Assert.AreEqual(ReferenceLoopHandling.Ignore, serializer.ReferenceLoopHandling);
+
+      IdReferenceResolver referenceResolver = new IdReferenceResolver();
+      serializer.ReferenceResolver = referenceResolver;
+      Assert.AreEqual(referenceResolver, serializer.ReferenceResolver);
+
+      serializer.StringEscapeHandling = StringEscapeHandling.EscapeNonAscii;
+      Assert.AreEqual(StringEscapeHandling.EscapeNonAscii, serializer.StringEscapeHandling);
+
+      MemoryTraceWriter traceWriter = new MemoryTraceWriter();
+      serializer.TraceWriter = traceWriter;
+      Assert.AreEqual(traceWriter, serializer.TraceWriter);
+
+#if !(PORTABLE || PORTABLE40 || NETFX_CORE || NET20)
+      serializer.TypeNameAssemblyFormat = FormatterAssemblyStyle.Full;
+      Assert.AreEqual(FormatterAssemblyStyle.Full, serializer.TypeNameAssemblyFormat);
+#endif
+
+      serializer.TypeNameHandling = TypeNameHandling.All;
+      Assert.AreEqual(TypeNameHandling.All, serializer.TypeNameHandling);
+    }
+
+    [Test]
+    public void JsonSerializerSettingsProperties()
+    {
+      JsonSerializerSettings settings = new JsonSerializerSettings();
+
+      DefaultSerializationBinder customBinder = new DefaultSerializationBinder();
+      settings.Binder = customBinder;
+      Assert.AreEqual(customBinder, settings.Binder);
+
+      settings.CheckAdditionalContent = true;
+      Assert.AreEqual(true, settings.CheckAdditionalContent);
+
+      settings.ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor;
+      Assert.AreEqual(ConstructorHandling.AllowNonPublicDefaultConstructor, settings.ConstructorHandling);
+
+      settings.Context = new StreamingContext(StreamingContextStates.Other);
+      Assert.AreEqual(new StreamingContext(StreamingContextStates.Other), settings.Context);
+
+      CamelCasePropertyNamesContractResolver resolver = new CamelCasePropertyNamesContractResolver();
+      settings.ContractResolver = resolver;
+      Assert.AreEqual(resolver, settings.ContractResolver);
+
+      settings.Converters.Add(new StringEnumConverter());
+      Assert.AreEqual(1, settings.Converters.Count);
+
+      settings.Culture = new CultureInfo("en-nz");
+      Assert.AreEqual("en-NZ", settings.Culture.ToString());
+
+      settings.DateFormatHandling = DateFormatHandling.MicrosoftDateFormat;
+      Assert.AreEqual(DateFormatHandling.MicrosoftDateFormat, settings.DateFormatHandling);
+
+      settings.DateFormatString = "yyyy";
+      Assert.AreEqual("yyyy", settings.DateFormatString);
+
+      settings.DateParseHandling = DateParseHandling.None;
+      Assert.AreEqual(DateParseHandling.None, settings.DateParseHandling);
+
+      settings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+      Assert.AreEqual(DateTimeZoneHandling.Utc, settings.DateTimeZoneHandling);
+
+      settings.DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate;
+      Assert.AreEqual(DefaultValueHandling.IgnoreAndPopulate, settings.DefaultValueHandling);
+
+      settings.FloatFormatHandling = FloatFormatHandling.Symbol;
+      Assert.AreEqual(FloatFormatHandling.Symbol, settings.FloatFormatHandling);
+
+      settings.FloatParseHandling = FloatParseHandling.Decimal;
+      Assert.AreEqual(FloatParseHandling.Decimal, settings.FloatParseHandling);
+
+      settings.Formatting = Formatting.Indented;
+      Assert.AreEqual(Formatting.Indented, settings.Formatting);
+
+      settings.MaxDepth = 9001;
+      Assert.AreEqual(9001, settings.MaxDepth);
+
+      settings.MissingMemberHandling = MissingMemberHandling.Error;
+      Assert.AreEqual(MissingMemberHandling.Error, settings.MissingMemberHandling);
+
+      settings.NullValueHandling = NullValueHandling.Ignore;
+      Assert.AreEqual(NullValueHandling.Ignore, settings.NullValueHandling);
+
+      settings.ObjectCreationHandling = ObjectCreationHandling.Replace;
+      Assert.AreEqual(ObjectCreationHandling.Replace, settings.ObjectCreationHandling);
+
+      settings.PreserveReferencesHandling = PreserveReferencesHandling.All;
+      Assert.AreEqual(PreserveReferencesHandling.All, settings.PreserveReferencesHandling);
+
+      settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+      Assert.AreEqual(ReferenceLoopHandling.Ignore, settings.ReferenceLoopHandling);
+
+      IdReferenceResolver referenceResolver = new IdReferenceResolver();
+      settings.ReferenceResolver = referenceResolver;
+      Assert.AreEqual(referenceResolver, settings.ReferenceResolver);
+
+      settings.StringEscapeHandling = StringEscapeHandling.EscapeNonAscii;
+      Assert.AreEqual(StringEscapeHandling.EscapeNonAscii, settings.StringEscapeHandling);
+
+      MemoryTraceWriter traceWriter = new MemoryTraceWriter();
+      settings.TraceWriter = traceWriter;
+      Assert.AreEqual(traceWriter, settings.TraceWriter);
+
+#if !(PORTABLE || PORTABLE40 || NETFX_CORE || NET20)
+      settings.TypeNameAssemblyFormat = FormatterAssemblyStyle.Full;
+      Assert.AreEqual(FormatterAssemblyStyle.Full, settings.TypeNameAssemblyFormat);
+#endif
+
+      settings.TypeNameHandling = TypeNameHandling.All;
+      Assert.AreEqual(TypeNameHandling.All, settings.TypeNameHandling);
+    }
+
+    [Test]
+    public void JsonSerializerProxyProperties()
+    {
+      JsonSerializerProxy serializerProxy = new JsonSerializerProxy(new JsonSerializerInternalReader(new JsonSerializer()));
+
+      DefaultSerializationBinder customBinder = new DefaultSerializationBinder();
+      serializerProxy.Binder = customBinder;
+      Assert.AreEqual(customBinder, serializerProxy.Binder);
+
+      serializerProxy.CheckAdditionalContent = true;
+      Assert.AreEqual(true, serializerProxy.CheckAdditionalContent);
+
+      serializerProxy.ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor;
+      Assert.AreEqual(ConstructorHandling.AllowNonPublicDefaultConstructor, serializerProxy.ConstructorHandling);
+
+      serializerProxy.Context = new StreamingContext(StreamingContextStates.Other);
+      Assert.AreEqual(new StreamingContext(StreamingContextStates.Other), serializerProxy.Context);
+
+      CamelCasePropertyNamesContractResolver resolver = new CamelCasePropertyNamesContractResolver();
+      serializerProxy.ContractResolver = resolver;
+      Assert.AreEqual(resolver, serializerProxy.ContractResolver);
+
+      serializerProxy.Converters.Add(new StringEnumConverter());
+      Assert.AreEqual(1, serializerProxy.Converters.Count);
+
+      serializerProxy.Culture = new CultureInfo("en-nz");
+      Assert.AreEqual("en-NZ", serializerProxy.Culture.ToString());
+
+      serializerProxy.DateFormatHandling = DateFormatHandling.MicrosoftDateFormat;
+      Assert.AreEqual(DateFormatHandling.MicrosoftDateFormat, serializerProxy.DateFormatHandling);
+
+      serializerProxy.DateFormatString = "yyyy";
+      Assert.AreEqual("yyyy", serializerProxy.DateFormatString);
+
+      serializerProxy.DateParseHandling = DateParseHandling.None;
+      Assert.AreEqual(DateParseHandling.None, serializerProxy.DateParseHandling);
+
+      serializerProxy.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+      Assert.AreEqual(DateTimeZoneHandling.Utc, serializerProxy.DateTimeZoneHandling);
+
+      serializerProxy.DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate;
+      Assert.AreEqual(DefaultValueHandling.IgnoreAndPopulate, serializerProxy.DefaultValueHandling);
+
+      serializerProxy.FloatFormatHandling = FloatFormatHandling.Symbol;
+      Assert.AreEqual(FloatFormatHandling.Symbol, serializerProxy.FloatFormatHandling);
+
+      serializerProxy.FloatParseHandling = FloatParseHandling.Decimal;
+      Assert.AreEqual(FloatParseHandling.Decimal, serializerProxy.FloatParseHandling);
+
+      serializerProxy.Formatting = Formatting.Indented;
+      Assert.AreEqual(Formatting.Indented, serializerProxy.Formatting);
+
+      serializerProxy.MaxDepth = 9001;
+      Assert.AreEqual(9001, serializerProxy.MaxDepth);
+
+      serializerProxy.MissingMemberHandling = MissingMemberHandling.Error;
+      Assert.AreEqual(MissingMemberHandling.Error, serializerProxy.MissingMemberHandling);
+
+      serializerProxy.NullValueHandling = NullValueHandling.Ignore;
+      Assert.AreEqual(NullValueHandling.Ignore, serializerProxy.NullValueHandling);
+
+      serializerProxy.ObjectCreationHandling = ObjectCreationHandling.Replace;
+      Assert.AreEqual(ObjectCreationHandling.Replace, serializerProxy.ObjectCreationHandling);
+
+      serializerProxy.PreserveReferencesHandling = PreserveReferencesHandling.All;
+      Assert.AreEqual(PreserveReferencesHandling.All, serializerProxy.PreserveReferencesHandling);
+
+      serializerProxy.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+      Assert.AreEqual(ReferenceLoopHandling.Ignore, serializerProxy.ReferenceLoopHandling);
+
+      IdReferenceResolver referenceResolver = new IdReferenceResolver();
+      serializerProxy.ReferenceResolver = referenceResolver;
+      Assert.AreEqual(referenceResolver, serializerProxy.ReferenceResolver);
+
+      serializerProxy.StringEscapeHandling = StringEscapeHandling.EscapeNonAscii;
+      Assert.AreEqual(StringEscapeHandling.EscapeNonAscii, serializerProxy.StringEscapeHandling);
+
+      MemoryTraceWriter traceWriter = new MemoryTraceWriter();
+      serializerProxy.TraceWriter = traceWriter;
+      Assert.AreEqual(traceWriter, serializerProxy.TraceWriter);
+
+#if !(PORTABLE || PORTABLE40 || NETFX_CORE || NET20)
+      serializerProxy.TypeNameAssemblyFormat = FormatterAssemblyStyle.Full;
+      Assert.AreEqual(FormatterAssemblyStyle.Full, serializerProxy.TypeNameAssemblyFormat);
+#endif
+
+      serializerProxy.TypeNameHandling = TypeNameHandling.All;
+      Assert.AreEqual(TypeNameHandling.All, serializerProxy.TypeNameHandling);
+    }
+
 #if !(NETFX_CORE || PORTABLE || PORTABLE40)
     [Test]
     public void DeserializeISerializableIConvertible()
