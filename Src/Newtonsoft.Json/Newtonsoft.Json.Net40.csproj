@@ -119,6 +119,9 @@
     <Compile Include="JsonExtensionDataAttribute.cs" />
     <Compile Include="JsonPosition.cs" />
     <Compile Include="Linq\JPropertyKeyedCollection.cs" />
+    <Compile Include="Linq\MergeExtensions.cs" />
+    <Compile Include="Linq\MergeOptionArrayHandling.cs" />
+    <Compile Include="Linq\MergeOptions.cs" />
     <Compile Include="Serialization\DiagnosticsTraceWriter.cs" />
     <Compile Include="Serialization\ExpressionValueProvider.cs" />
     <Compile Include="Serialization\ITraceWriter.cs" />
