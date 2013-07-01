@@ -447,6 +447,16 @@ namespace Newtonsoft.Json.Tests.Serialization
 #endif
 
     [Test]
+    public void DeserializeLargeFloat()
+    {
+      object o = JsonConvert.DeserializeObject("100000000000000000000000000000000000000.0");
+
+      CustomAssert.IsInstanceOfType(typeof(double), o);
+
+      Assert.IsTrue(MathUtils.ApproxEquals(1E+38, (double)o));
+    }
+
+    [Test]
     public void SerializeDeserializeRegex()
     {
       Regex regex = new Regex("(hi)", RegexOptions.CultureInvariant);

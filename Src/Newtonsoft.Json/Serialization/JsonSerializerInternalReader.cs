@@ -1194,8 +1194,10 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
 
       int initialDepth = reader.Depth;
 
-      JsonContract collectionItemContract = GetContractSafe(contract.CollectionItemType);
-      JsonConverter collectionItemConverter = GetConverter(collectionItemContract, null, contract, containerProperty);
+      if (contract.ItemContract == null)
+        contract.ItemContract = GetContractSafe(contract.CollectionItemType);
+
+      JsonConverter collectionItemConverter = GetConverter(contract.ItemContract, null, contract, containerProperty);
 
       int? previousErrorIndex = null;
 
@@ -1204,7 +1206,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
       {
         try
         {
-          if (ReadForType(reader, collectionItemContract, collectionItemConverter != null))
+          if (ReadForType(reader, contract.ItemContract, collectionItemConverter != null))
           {
             switch (reader.TokenType)
             {
@@ -1219,7 +1221,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                 if (collectionItemConverter != null && collectionItemConverter.CanRead)
                   value = DeserializeConvertable(collectionItemConverter, reader, contract.CollectionItemType, null);
                 else
-                  value = CreateValueInternal(reader, contract.CollectionItemType, collectionItemContract, null, contract, containerProperty, null);
+                  value = CreateValueInternal(reader, contract.CollectionItemType, contract.ItemContract, null, contract, containerProperty, null);
 
                 list.Add(value);
                 break;

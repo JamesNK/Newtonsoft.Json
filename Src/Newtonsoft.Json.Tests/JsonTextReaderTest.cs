@@ -1260,6 +1260,9 @@ bye", reader.Value);
       reader = new JsonTextReader(new StringReader(long.MaxValue.ToString()));
       ExceptionAssert.Throws<OverflowException>("Arithmetic operation resulted in an overflow.", () => reader.ReadAsInt32());
 
+      reader = new JsonTextReader(new StringReader("9999999999999999999999999999999999999999999999999999999999999999999999999999asdasdasd"));
+      ExceptionAssert.Throws<FormatException>("Input string was not in a correct format.", () => reader.ReadAsInt32());
+
       reader = new JsonTextReader(new StringReader("1E-06"));
       ExceptionAssert.Throws<FormatException>("Input string was not in a correct format.", () => reader.ReadAsInt32());
 

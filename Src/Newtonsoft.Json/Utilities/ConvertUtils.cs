@@ -611,7 +611,21 @@ namespace Newtonsoft.Json.Utilities
 
         // overflow has caused the number to loop around
         if (newValue > result)
+        {
+          i++;
+
+          // double check the rest of the string that there wasn't anything invalid
+          // invalid result takes precedence over overflow result
+          for (; i < end; i++)
+          {
+            c = chars[i] - '0';
+
+            if (c < 0 || c > 9)
+              throw new FormatException("Input string was not in a correct format.");
+          }
+
           throw new OverflowException();
+        }
 
         result = newValue;
       }
@@ -662,7 +676,22 @@ namespace Newtonsoft.Json.Utilities
 
         // overflow has caused the number to loop around
         if (newValue > value)
+        {
+          i++;
+
+          // double check the rest of the string that there wasn't anything invalid
+          // invalid result takes precedence over overflow result
+          for (; i < end; i++)
+          {
+            c = chars[i] - '0';
+
+            if (c < 0 || c > 9)
+              return ParseResult.Invalid;
+          }
+
           return ParseResult.Overflow;
+          
+        }
 
         value = newValue;
       }
