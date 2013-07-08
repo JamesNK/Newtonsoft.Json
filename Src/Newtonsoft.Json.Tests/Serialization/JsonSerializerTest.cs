@@ -175,8 +175,10 @@ namespace Newtonsoft.Json.Tests.Serialization
       serializer.ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor;
       Assert.AreEqual(ConstructorHandling.AllowNonPublicDefaultConstructor, serializer.ConstructorHandling);
 
+#if !NETFX_CORE
       serializer.Context = new StreamingContext(StreamingContextStates.Other);
       Assert.AreEqual(new StreamingContext(StreamingContextStates.Other), serializer.Context);
+#endif
 
       CamelCasePropertyNamesContractResolver resolver = new CamelCasePropertyNamesContractResolver();
       serializer.ContractResolver = resolver;
@@ -265,8 +267,10 @@ namespace Newtonsoft.Json.Tests.Serialization
       settings.ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor;
       Assert.AreEqual(ConstructorHandling.AllowNonPublicDefaultConstructor, settings.ConstructorHandling);
 
+#if !NETFX_CORE
       settings.Context = new StreamingContext(StreamingContextStates.Other);
       Assert.AreEqual(new StreamingContext(StreamingContextStates.Other), settings.Context);
+#endif
 
       CamelCasePropertyNamesContractResolver resolver = new CamelCasePropertyNamesContractResolver();
       settings.ContractResolver = resolver;
@@ -355,8 +359,10 @@ namespace Newtonsoft.Json.Tests.Serialization
       serializerProxy.ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor;
       Assert.AreEqual(ConstructorHandling.AllowNonPublicDefaultConstructor, serializerProxy.ConstructorHandling);
 
+#if !NETFX_CORE
       serializerProxy.Context = new StreamingContext(StreamingContextStates.Other);
       Assert.AreEqual(new StreamingContext(StreamingContextStates.Other), serializerProxy.Context);
+#endif
 
       CamelCasePropertyNamesContractResolver resolver = new CamelCasePropertyNamesContractResolver();
       serializerProxy.ContractResolver = resolver;
