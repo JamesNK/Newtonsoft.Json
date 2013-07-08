@@ -231,6 +231,7 @@
     <Compile Include="Serialization\ObjectConstructor.cs" />
     <Compile Include="Utilities\ExpressionReflectionDelegateFactory.cs" />
     <Compile Include="Utilities\ILGeneratorExtensions.cs" />
+    <Compile Include="Utilities\ImmutableCollectionsUtils.cs" />
     <Compile Include="Utilities\LinqBridge.cs" />
     <Compile Include="Utilities\ReflectionDelegateFactory.cs" />
     <Compile Include="Utilities\LateBoundReflectionDelegateFactory.cs" />

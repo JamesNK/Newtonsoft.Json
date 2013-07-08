@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{B70AD007-4437-44C2-A25A-6D5AE41691F9}</ProjectGuid>
+    <ProjectGuid>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Newtonsoft.Json</RootNamespace>
@@ -232,6 +232,7 @@
     <Compile Include="Serialization\ObjectConstructor.cs" />
     <Compile Include="Utilities\ExpressionReflectionDelegateFactory.cs" />
     <Compile Include="Utilities\ILGeneratorExtensions.cs" />
+    <Compile Include="Utilities\ImmutableCollectionsUtils.cs" />
     <Compile Include="Utilities\LinqBridge.cs" />
     <Compile Include="Utilities\ReflectionDelegateFactory.cs" />
     <Compile Include="Utilities\LateBoundReflectionDelegateFactory.cs" />

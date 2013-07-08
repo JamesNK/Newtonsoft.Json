@@ -30,10 +30,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework">
-      <HintPath>..\Lib\NUnit\DotNet\nunit.framework.dll</HintPath>
+    <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\packages\Microsoft.Bcl.Immutable.1.0.12-beta\lib\portable-net45+win8+wp8\System.Collections.Immutable.dll</HintPath>
+    </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Entity" />
@@ -226,6 +230,7 @@
     <Compile Include="Serialization\DefaultValueHandlingTests.cs" />
     <Compile Include="Serialization\DynamicTests.cs" />
     <Compile Include="Serialization\EntitiesSerializationTests.cs" />
+    <Compile Include="Serialization\ImmutableCollectionsTests.cs" />
     <Compile Include="Serialization\JsonPropertyCollectionTests.cs" />
     <Compile Include="Serialization\JsonSerializerTest.cs" />
     <Compile Include="Serialization\MissingMemberHandlingTests.cs" />
@@ -355,6 +360,7 @@
       <LastGenOutput>LinqToSqlClasses.designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </None>
+    <None Include="packages.config" />
     <None Include="Schema\Specs\additionalItems.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

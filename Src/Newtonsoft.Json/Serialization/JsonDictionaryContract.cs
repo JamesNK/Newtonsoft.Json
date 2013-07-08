@@ -68,7 +68,7 @@ namespace Newtonsoft.Json.Serialization
     private Func<object> _genericTemporaryDictionaryCreator;
 
     internal bool ShouldCreateWrapper { get; private set; }
-    internal ConstructorInfo ParametrizedConstructor { get; private set; }
+    internal MethodBase ParametrizedConstructor { get; private set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonDictionaryContract"/> class.
@@ -117,7 +117,7 @@ namespace Newtonsoft.Json.Serialization
       if (keyType != null && valueType != null)
         ParametrizedConstructor = CollectionUtils.ResolveEnumableCollectionConstructor(CreatedType, typeof(KeyValuePair<,>).MakeGenericType(keyType, valueType));
 
-      ShouldCreateWrapper = !typeof (IDictionary).IsAssignableFrom(CreatedType);
+      ShouldCreateWrapper = !typeof(IDictionary).IsAssignableFrom(CreatedType);
 
       DictionaryKeyType = keyType;
       DictionaryValueType = valueType;
@@ -134,6 +134,17 @@ namespace Newtonsoft.Json.Serialization
         && (ReflectionUtils.InheritsGenericDefinition(CreatedType, typeof(Dictionary<,>), out tempDictioanryType)))
       {
         ShouldCreateWrapper = true;
+      }
+#endif
+
+#if !(NET20 || NET35 || NET40 || PORTABLE40)
+      Type immutableCreatedType;
+      MethodBase immutableParameterizedCreator;
+      if (ImmutableCollectionsUtils.TryBuildImmutableForDictionaryContract(underlyingType, DictionaryKeyType, DictionaryValueType, out immutableCreatedType, out immutableParameterizedCreator))
+      {
+        CreatedType = immutableCreatedType;
+        ParametrizedConstructor = immutableParameterizedCreator;
+        IsReadOnlyOrFixedSize = true;
       }
 #endif
     }

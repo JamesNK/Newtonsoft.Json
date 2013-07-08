@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/01/nuspec.xsd">
+  <metadata minClientVersion="2.5">
+    <id>Microsoft.Bcl.Immutable</id>
+    <version>1.0.12-beta</version>
+    <title>Microsoft Immutable Collections</title>
+    <authors>Microsoft</authors>
+    <owners>Microsoft</owners>
+    <licenseUrl>http://go.microsoft.com/fwlink/?LinkID=272980</licenseUrl>
+    <projectUrl>http://go.microsoft.com/fwlink/?LinkID=310193</projectUrl>
+    <iconUrl>http://go.microsoft.com/fwlink/?LinkID=288859</iconUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>This packages provides collections that are thread safe and guaranteed to never change their contents, also known as immutable collections. Like strings, any methods that perform modifications will not change the existing instance but instead return a new instance. For efficiency reasons, the implementation uses a sharing mechanism to ensure that newly created instances share as much data as possible with the previous instance while ensuring that operations have a predictable time complexity.
+
+Supported Platforms:
+- .NET Framework 4.5
+- .NET for Windows Store apps
+- Windows Phone 8
+- Portable Class Libraries</description>
+    <summary>Provides immutable collections that allow CPU and memory efficient mutation via new references.</summary>
+    <releaseNotes />
+    <copyright>Copyright © Microsoft Corporation</copyright>
+    <language />
+    <tags>BCL Microsoft System Immutable Collections</tags>
+  </metadata>
+</package>

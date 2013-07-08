@@ -68,11 +68,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="nunit.framework, Version=2.4.3.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\NUnit\DotNet\nunit.framework.dll</HintPath>
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\packages\Microsoft.Bcl.Immutable.1.0.12-beta\lib\portable-net45+win8+wp8\System.Collections.Immutable.dll</HintPath>
+    </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -137,6 +139,7 @@
     <Compile Include="Serialization\ContractResolverTests.cs" />
     <Compile Include="Serialization\DefaultValueHandlingTests.cs" />
     <Compile Include="Serialization\DynamicTests.cs" />
+    <Compile Include="Serialization\ImmutableCollectionsTests.cs" />
     <Compile Include="Serialization\ReferenceLoopHandlingTests.cs" />
     <Compile Include="Serialization\TraceWriterTests.cs" />
     <Compile Include="Serialization\WebApiIntegrationTests.cs" />
@@ -149,9 +152,7 @@
     <Compile Include="TestObjects\Container.cs" />
     <Compile Include="TestObjects\ContentBaseClass.cs" />
     <Compile Include="TestObjects\ContentSubClass.cs" />
-    <Compile Include="TestObjects\CustomerDataSet.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="TestObjects\CustomerDataSet.cs" />
     <Compile Include="TestObjects\Foo.cs" />
     <Compile Include="TestObjects\HolderClass.cs" />
     <Compile Include="TestObjects\IPrivateImplementationA.cs" />

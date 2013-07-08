@@ -426,7 +426,11 @@ namespace Newtonsoft.Json.Serialization
 
               if (createdFromNonDefaultConstructor)
               {
-                return dictionaryContract.ParametrizedConstructor.Invoke(new object[] {dictionary});
+                ConstructorInfo constructor = dictionaryContract.ParametrizedConstructor as ConstructorInfo;
+                if (constructor != null)
+                  return constructor.Invoke(new object[] { dictionary });
+
+                return dictionaryContract.ParametrizedConstructor.Invoke(null, new object[] { dictionary });
               }
               else if (dictionary is IWrappedDictionary)
               {
@@ -644,7 +648,11 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
           else
           {
             // call constructor that takes IEnumerable<T>
-            return arrayContract.ParametrizedConstructor.Invoke(new object[] { list });
+            ConstructorInfo constructor = arrayContract.ParametrizedConstructor as ConstructorInfo;
+            if (constructor != null)
+              return constructor.Invoke(new object[] { list });
+
+            return arrayContract.ParametrizedConstructor.Invoke(null, new object[] { list });
           }
         }
         else if (list is IWrappedCollection)
