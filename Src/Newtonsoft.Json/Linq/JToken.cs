@@ -133,7 +133,7 @@ namespace Newtonsoft.Json.Linq
     public abstract JTokenType Type { get; }
 
     /// <summary>
-    /// Gets a value indicating whether this token has childen tokens.
+    /// Gets a value indicating whether this token has child tokens.
     /// </summary>
     /// <value>
     /// 	<c>true</c> if this token has child values; otherwise, <c>false</c>.
