@@ -23,6 +23,8 @@
     <DefineConstants>DEBUG;TRACE;NETFX_CORE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>3</WarningLevel>
+    <CodeAnalysisRuleSet>Newtonsoft.Json.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,6 +34,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\WinRT\Newtonsoft.Json.xml</DocumentationFile>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>Newtonsoft.Json.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
@@ -136,7 +140,9 @@
     <Compile Include="DateFormatHandling.cs" />
     <Compile Include="DateParseHandling.cs" />
     <Compile Include="DateTimeZoneHandling.cs" />
+    <Compile Include="FloatFormatHandling.cs" />
     <Compile Include="DefaultValueHandling.cs" />
+    <Compile Include="FloatParseHandling.cs" />
     <Compile Include="FormatterAssemblyStyle.cs" />
     <Compile Include="Formatting.cs" />
     <Compile Include="IJsonLineInfo.cs" />
@@ -149,6 +155,7 @@
     <Compile Include="JsonConverterCollection.cs" />
     <Compile Include="JsonDictionaryAttribute.cs" />
     <Compile Include="JsonException.cs" />
+    <Compile Include="JsonExtensionDataAttribute.cs" />
     <Compile Include="JsonIgnoreAttribute.cs" />
     <Compile Include="JsonObjectAttribute.cs" />
     <Compile Include="JsonPosition.cs" />
@@ -215,6 +222,7 @@
     <Compile Include="Serialization\DynamicValueProvider.cs" />
     <Compile Include="Serialization\ErrorContext.cs" />
     <Compile Include="Serialization\ErrorEventArgs.cs" />
+    <Compile Include="Serialization\ExpressionValueProvider.cs" />
     <Compile Include="Serialization\IContractResolver.cs" />
     <Compile Include="Serialization\IReferenceResolver.cs" />
     <Compile Include="Serialization\ITraceWriter.cs" />
@@ -243,7 +251,8 @@
     <Compile Include="Serialization\ReflectionValueProvider.cs" />
     <Compile Include="Serialization\DiagnosticsTraceWriter.cs" />
     <Compile Include="Serialization\MemoryTraceWriter.cs" />
-    <Compile Include="StreamingContext.cs" />
+    <Compile Include="Serialization\TraceJsonReader.cs" />
+    <Compile Include="Serialization\TraceJsonWriter.cs" />
     <Compile Include="StringEscapeHandling.cs" />
     <Compile Include="TraceLevel.cs" />
     <Compile Include="TypeNameHandling.cs" />
@@ -252,6 +261,7 @@
     <Compile Include="Utilities\CollectionUtils.cs" />
     <Compile Include="Utilities\CollectionWrapper.cs" />
     <Compile Include="Utilities\ConvertUtils.cs" />
+    <Compile Include="Utilities\DateTimeParser.cs" />
     <Compile Include="Utilities\DateTimeUtils.cs" />
     <Compile Include="Utilities\DictionaryWrapper.cs" />
     <Compile Include="Utilities\DynamicProxy.cs" />
@@ -262,11 +272,12 @@
     <Compile Include="Utilities\EnumUtils.cs" />
     <Compile Include="Utilities\EnumValue.cs" />
     <Compile Include="Utilities\EnumValues.cs" />
+    <Compile Include="Utilities\ExpressionReflectionDelegateFactory.cs" />
     <Compile Include="Utilities\ILGeneratorExtensions.cs" />
+    <Compile Include="Utilities\ImmutableCollectionsUtils.cs" />
     <Compile Include="Utilities\JavaScriptUtils.cs" />
     <Compile Include="Utilities\LateBoundReflectionDelegateFactory.cs" />
     <Compile Include="Utilities\LinqBridge.cs" />
-    <Compile Include="Utilities\ListWrapper.cs" />
     <Compile Include="Utilities\MathUtils.cs" />
     <Compile Include="Utilities\MethodCall.cs" />
     <Compile Include="Utilities\MiscellaneousUtils.cs" />

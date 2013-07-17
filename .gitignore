@@ -1,6 +1,8 @@
 [Bb]in/
 [Oo]bj/
 [Ww]orking/
+Build/runbuild.txt
+Doc/doc.shfbproj_*
 TestResults/
 AppPackages/
 *.suo

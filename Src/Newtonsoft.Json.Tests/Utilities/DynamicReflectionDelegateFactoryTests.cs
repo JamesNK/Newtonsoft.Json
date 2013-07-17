@@ -23,8 +23,9 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(SILVERLIGHT || PORTABLE || NETFX_CORE)
+#if !(SILVERLIGHT || PORTABLE || NETFX_CORE || PORTABLE40)
 using System;
+using System.Diagnostics;
 using System.Reflection;
 #if !NETFX_CORE
 using NUnit.Framework;
@@ -74,6 +75,8 @@ namespace Newtonsoft.Json.Tests.Utilities
         Assert.AreEqual(m.Name, "Hi");
 
         setter(p, "Hi");
+
+        Assert.AreEqual(p.Name, "Hi");
       });
     }
 
@@ -124,42 +127,6 @@ namespace Newtonsoft.Json.Tests.Utilities
       JsonSerializerTest.DictionaryKey key = (JsonSerializerTest.DictionaryKey) result;
       Assert.AreEqual("First!", key.Value);
     }
-
-    //[Test]
-    //public void sdfsdf()
-    //{
-    //  string name = "MyAssembly";
-    //  string filename = name + ".dll";
-
-    //  AssemblyName s = new AssemblyName(name);
-
-    //  AssemblyBuilder assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(s, AssemblyBuilderAccess.RunAndSave);
-    //  ModuleBuilder moduleBuilder = assemblyBuilder.DefineDynamicModule(filename, filename);
-    //  TypeBuilder typeBuilder = moduleBuilder.DefineType("MyType", TypeAttributes.Class, typeof(object));
-    //  MethodBuilder methodBuilder = typeBuilder.DefineMethod("TestSet", MethodAttributes.Public | MethodAttributes.Static, typeof(void), new[] { typeof(object), typeof(object) });
-
-    //  DynamicReflectionDelegateFactory.GenerateCreateSetFieldIL(typeof(ClassWithGuid).GetField("GuidField"), methodBuilder.GetILGenerator());
-    //  typeBuilder.CreateType();
-    //  assemblyBuilder.Save(filename);
-    //}
-
-    //[Test]
-    //public void sdfsdf1()
-    //{
-    //  string name = "MyAssembly1";
-    //  string filename = name + ".dll";
-
-    //  AssemblyName s = new AssemblyName(name);
-
-    //  AssemblyBuilder assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(s, AssemblyBuilderAccess.RunAndSave);
-    //  ModuleBuilder moduleBuilder = assemblyBuilder.DefineDynamicModule(filename, filename);
-    //  TypeBuilder typeBuilder = moduleBuilder.DefineType("MyType", TypeAttributes.Class, typeof(object));
-    //  MethodBuilder methodBuilder = typeBuilder.DefineMethod("TestSet", MethodAttributes.Public | MethodAttributes.Static, typeof(void), new[] { typeof(object), typeof(object) });
-
-    //  DynamicReflectionDelegateFactory.GenerateCreateSetPropertyIL(typeof(Car).GetProperty("Model"), methodBuilder.GetILGenerator());
-    //  typeBuilder.CreateType();
-    //  assemblyBuilder.Save(filename);
-    //}
   }
 }
 #endif

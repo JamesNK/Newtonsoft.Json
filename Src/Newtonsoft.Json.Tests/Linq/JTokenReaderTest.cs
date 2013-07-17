@@ -44,7 +44,7 @@ namespace Newtonsoft.Json.Tests.Linq
   [TestFixture]
   public class JTokenReaderTest : TestFixtureBase
   {
-#if !PocketPC && !NET20
+#if !NET20
     [Test]
     public void YahooFinance()
     {

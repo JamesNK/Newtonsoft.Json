@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if NETFX_CORE
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -145,11 +146,11 @@ namespace Newtonsoft.Json.Converters
           break;
         case JsonToken.Integer:
         case JsonToken.Float:
-          return JsonValue.CreateNumberValue(Convert.ToDouble(reader.Value));
+          return JsonValue.CreateNumberValue(Convert.ToDouble(reader.Value, CultureInfo.InvariantCulture));
         case JsonToken.String:
           return JsonValue.CreateStringValue(reader.Value.ToString());
         case JsonToken.Boolean:
-          return JsonValue.CreateBooleanValue(Convert.ToBoolean(reader.Value));
+          return JsonValue.CreateBooleanValue(Convert.ToBoolean(reader.Value, CultureInfo.InvariantCulture));
         case JsonToken.Null:
           // surely there is a better way to create a null value than this?
           return JsonValue.Parse("null");
@@ -196,3 +197,4 @@ namespace Newtonsoft.Json.Converters
     }
   }
 }
+#endif

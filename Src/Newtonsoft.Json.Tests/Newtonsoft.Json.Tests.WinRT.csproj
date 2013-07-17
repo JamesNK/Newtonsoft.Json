@@ -164,6 +164,7 @@
     <Compile Include="Serialization\DefaultValueHandlingTests.cs" />
     <Compile Include="Serialization\DynamicTests.cs" />
     <Compile Include="Serialization\EntitiesSerializationTests.cs" />
+    <Compile Include="Serialization\ImmutableCollectionsTests.cs" />
     <Compile Include="Serialization\JsonPropertyCollectionTests.cs" />
     <Compile Include="Serialization\JsonSerializerTest.cs" />
     <Compile Include="Serialization\MissingMemberHandlingTests.cs" />
@@ -201,6 +202,7 @@
     <Compile Include="TestObjects\ConverableMembers.cs" />
     <Compile Include="TestObjects\ConverterPrecedenceClass.cs" />
     <Compile Include="TestObjects\ConverterPrecedenceClassConverter.cs" />
+    <Compile Include="TestObjects\CustomerDataSet.cs" />
     <Compile Include="TestObjects\DateTimeErrorObjectCollection.cs" />
     <Compile Include="TestObjects\DateTimeTestClass.cs" />
     <Compile Include="TestObjects\DefaultValueAttributeTestClass.cs" />
@@ -279,8 +281,11 @@
     <Compile Include="TestObjects\VersionKeyedCollection.cs" />
     <Compile Include="TestObjects\WagePerson.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\DateTimeUtilsTests.cs" />
     <Compile Include="Utilities\DynamicReflectionDelegateFactoryTests.cs" />
+    <Compile Include="Utilities\ExpressionReflectionDelegateFactoryTests.cs" />
     <Compile Include="Utilities\ReflectionUtilsTests.cs" />
+    <Compile Include="Utilities\StringUtilsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -309,6 +314,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Newtonsoft.Json.Tests.WinRT_TemporaryKey.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\packages\Microsoft.Bcl.Immutable.1.0.12-beta\lib\portable-net45+win8+wp8\System.Collections.Immutable.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' ">
     <VisualStudioVersion>11.0</VisualStudioVersion>

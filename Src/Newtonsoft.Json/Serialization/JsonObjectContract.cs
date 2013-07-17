@@ -76,6 +76,11 @@ namespace Newtonsoft.Json.Serialization
     /// <value>The parametrized constructor.</value>
     public ConstructorInfo ParametrizedConstructor { get; set; }
 
+    /// <summary>
+    /// Gets or sets the extension data setter.
+    /// </summary>
+    public ExtensionDataSetter ExtensionDataSetter { get; set; }
+
     private bool? _hasRequiredOrDefaultValueProperties;
     internal bool HasRequiredOrDefaultValueProperties
     {
@@ -119,7 +124,7 @@ namespace Newtonsoft.Json.Serialization
       ConstructorParameters = new JsonPropertyCollection(UnderlyingType);
     }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE40 || PORTABLE)
 #if !(NET20 || NET35)
     [SecuritySafeCritical]
 #endif

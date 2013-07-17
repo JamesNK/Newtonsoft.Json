@@ -41,13 +41,6 @@ namespace Newtonsoft.Json.Utilities
 {
   internal static class CollectionUtils
   {
-    public static IEnumerable<T> CastValid<T>(this IEnumerable enumerable)
-    {
-      ValidationUtils.ArgumentNotNull(enumerable, "enumerable");
-
-      return enumerable.Cast<object>().Where(o => o is T).Cast<T>();
-    }
-
     /// <summary>
     /// Determines whether the collection is null or empty.
     /// </summary>
@@ -83,20 +76,15 @@ namespace Newtonsoft.Json.Utilities
       }
     }
 
-    public static void AddRange(this IList initial, IEnumerable collection)
+#if (NET20 || NET35 || SILVERLIGHT || PORTABLE40)
+    public static void AddRange<T>(this IList<T> initial, IEnumerable collection)
     {
       ValidationUtils.ArgumentNotNull(initial, "initial");
 
-      ListWrapper<object> wrapper = new ListWrapper<object>(initial);
-      wrapper.AddRange(collection.Cast<object>());
+      // because earlier versions of .NET didn't support covariant generics
+      initial.AddRange(collection.Cast<T>());
     }
-
-    public static IList CreateGenericList(Type listType)
-    {
-      ValidationUtils.ArgumentNotNull(listType, "listType");
-
-      return (IList)ReflectionUtils.CreateGeneric(typeof(List<>), listType);
-    }
+#endif
 
     public static bool IsDictionaryType(Type type)
     {
@@ -104,147 +92,32 @@ namespace Newtonsoft.Json.Utilities
 
       if (typeof(IDictionary).IsAssignableFrom(type))
         return true;
-      if (ReflectionUtils.ImplementsGenericDefinition(type, typeof (IDictionary<,>)))
+      if (ReflectionUtils.ImplementsGenericDefinition(type, typeof(IDictionary<,>)))
         return true;
+#if !(NET40 || NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE40)
+      if (ReflectionUtils.ImplementsGenericDefinition(type, typeof(IReadOnlyDictionary<,>)))
+        return true;
+#endif
 
       return false;
     }
 
-    public static IWrappedCollection CreateCollectionWrapper(object list)
+    public static ConstructorInfo ResolveEnumableCollectionConstructor(Type collectionType, Type collectionItemType)
     {
-      ValidationUtils.ArgumentNotNull(list, "list");
+      Type genericEnumerable = typeof(IEnumerable<>).MakeGenericType(collectionItemType);
 
-      Type collectionDefinition;
-      if (ReflectionUtils.ImplementsGenericDefinition(list.GetType(), typeof(ICollection<>), out collectionDefinition))
+      foreach (ConstructorInfo constructor in collectionType.GetConstructors(BindingFlags.Public | BindingFlags.Instance))
       {
-        Type collectionItemType = ReflectionUtils.GetCollectionItemType(collectionDefinition);
+        IList<ParameterInfo> parameters = constructor.GetParameters();
 
-        // Activator.CreateInstance throws AmbiguousMatchException. Manually invoke constructor
-        Func<Type, IList<object>, object> instanceCreator = (t, a) =>
+        if (parameters.Count == 1)
         {
-          ConstructorInfo c = t.GetConstructor(new[] { collectionDefinition });
-          return c.Invoke(new[] { list });
-        };
-
-        return (IWrappedCollection)ReflectionUtils.CreateGeneric(typeof(CollectionWrapper<>), new[] { collectionItemType }, instanceCreator, list);
-      }
-      else if (list is IList)
-      {
-        return new CollectionWrapper<object>((IList)list);
-      }
-      else
-      {
-        throw new ArgumentException("Can not create ListWrapper for type {0}.".FormatWith(CultureInfo.InvariantCulture, list.GetType()), "list");
-      }
-    }
-
-    public static IWrappedDictionary CreateDictionaryWrapper(object dictionary)
-    {
-      ValidationUtils.ArgumentNotNull(dictionary, "dictionary");
-
-      Type dictionaryDefinition;
-      if (ReflectionUtils.ImplementsGenericDefinition(dictionary.GetType(), typeof(IDictionary<,>), out dictionaryDefinition))
-      {
-        Type dictionaryKeyType = ReflectionUtils.GetDictionaryKeyType(dictionaryDefinition);
-        Type dictionaryValueType = ReflectionUtils.GetDictionaryValueType(dictionaryDefinition);
-
-        // Activator.CreateInstance throws AmbiguousMatchException. Manually invoke constructor
-        Func<Type, IList<object>, object> instanceCreator = (t, a) =>
-        {
-          ConstructorInfo c = t.GetConstructor(new[] { dictionaryDefinition });
-          return c.Invoke(new[] { dictionary });
-        };
-
-        return (IWrappedDictionary)ReflectionUtils.CreateGeneric(typeof(DictionaryWrapper<,>), new[] { dictionaryKeyType, dictionaryValueType }, instanceCreator, dictionary);
-      }
-      else if (dictionary is IDictionary)
-      {
-        return new DictionaryWrapper<object, object>((IDictionary)dictionary);
-      }
-      else
-      {
-        throw new ArgumentException("Can not create DictionaryWrapper for type {0}.".FormatWith(CultureInfo.InvariantCulture, dictionary.GetType()), "dictionary");
-      }
-    }
-
-    public static IList CreateList(Type listType, out bool isReadOnlyOrFixedSize)
-    {
-      ValidationUtils.ArgumentNotNull(listType, "listType");
-
-      IList list;
-      Type collectionType;
-      isReadOnlyOrFixedSize = false;
-
-      if (listType.IsArray)
-      {
-        // have to use an arraylist when creating array
-        // there is no way to know the size until it is finised
-        list = new List<object>();
-        isReadOnlyOrFixedSize = true;
-      }
-      else if (ReflectionUtils.InheritsGenericDefinition(listType, typeof(ReadOnlyCollection<>), out collectionType))
-      {
-        Type readOnlyCollectionContentsType = collectionType.GetGenericArguments()[0];
-        Type genericEnumerable = ReflectionUtils.MakeGenericType(typeof(IEnumerable<>), readOnlyCollectionContentsType);
-        bool suitableConstructor = false;
-
-        foreach (ConstructorInfo constructor in listType.GetConstructors())
-        {
-          IList<ParameterInfo> parameters = constructor.GetParameters();
-
-          if (parameters.Count == 1)
-          {
-            if (genericEnumerable.IsAssignableFrom(parameters[0].ParameterType))
-            {
-              suitableConstructor = true;
-              break;
-            }
-          }
+          if (genericEnumerable.IsAssignableFrom(parameters[0].ParameterType))
+            return constructor;
         }
-
-        if (!suitableConstructor)
-          throw new Exception("Read-only type {0} does not have a public constructor that takes a type that implements {1}.".FormatWith(CultureInfo.InvariantCulture, listType, genericEnumerable));
-
-        // can't add or modify a readonly list
-        // use List<T> and convert once populated
-        list = CreateGenericList(readOnlyCollectionContentsType);
-        isReadOnlyOrFixedSize = true;
-      }
-      else if (typeof(IList).IsAssignableFrom(listType))
-      {
-        if (ReflectionUtils.IsInstantiatableType(listType))
-          list = (IList)Activator.CreateInstance(listType);
-        else if (listType == typeof(IList))
-          list = new List<object>();
-        else
-          list = null;
-      }
-      else if (ReflectionUtils.ImplementsGenericDefinition(listType, typeof(ICollection<>)))
-      {
-        if (ReflectionUtils.IsInstantiatableType(listType))
-          list = CreateCollectionWrapper(Activator.CreateInstance(listType));
-        else
-          list = null;
-      }
-      else
-      {
-        list = null;
       }
 
-      if (list == null)
-        throw new InvalidOperationException("Cannot create and populate list type {0}.".FormatWith(CultureInfo.InvariantCulture, listType));
-
-      return list;
-    }
-
-    public static Array ToArray(Array initial, Type type)
-    {
-      if (type == null)
-        throw new ArgumentNullException("type");
-
-      Array destinationArray = Array.CreateInstance(type, initial.Length);
-      Array.Copy(initial, 0, destinationArray, 0, initial.Length);
-      return destinationArray;
+      return null;
     }
 
     public static bool AddDistinct<T>(this IList<T> list, T value)

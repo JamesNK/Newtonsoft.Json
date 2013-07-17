@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Tests.Serialization;
@@ -1876,6 +1876,53 @@ namespace Newtonsoft.Json.Tests.Converters
 
       Assert.AreEqual(@"<item action=""update"" itemid=""1"" description=""temp""><elements action=""none"" id=""2"" /><elements action=""none"" id=""3"" /></item>", xmldoc.InnerXml);
     }
+
+    [Test]
+    public void SerializingXmlNamespaceScope()
+    {
+      var xmlString = @"<root xmlns=""http://www.example.com/ns"">
+  <a/>
+  <bns:b xmlns:bns=""http://www.example.com/ns""/>
+  <c/>
+</root>";
+
+#if !NET20
+      var xml = XElement.Parse(xmlString);
+
+      var json1 = JsonConvert.SerializeObject(xml);
+
+      Assert.AreEqual(@"{""root"":{""@xmlns"":""http://www.example.com/ns"",""a"":null,""bns:b"":{""@xmlns:bns"":""http://www.example.com/ns""},""c"":null}}", json1);
+#endif
+#if !(SILVERLIGHT || NETFX_CORE)
+      var xml1 = new XmlDocument();
+      xml1.LoadXml(xmlString);
+
+      var json2 = JsonConvert.SerializeObject(xml1);
+
+      Assert.AreEqual(@"{""root"":{""@xmlns"":""http://www.example.com/ns"",""a"":null,""bns:b"":{""@xmlns:bns"":""http://www.example.com/ns""},""c"":null}}", json2);
+#endif
+    }
+
+#if !NET20
+    public class NullableXml
+    {
+      public string Name;
+      public XElement notNull;
+      public XElement isNull;
+    }
+
+    [Test]
+    public void SerializeAndDeserializeNullableXml()
+    {
+      var xml = new NullableXml { Name = "test", notNull = XElement.Parse("<root>test</root>") };
+      var json = JsonConvert.SerializeObject(xml);
+
+      var w2 = JsonConvert.DeserializeObject<NullableXml>(json);
+      Assert.AreEqual(xml.Name, w2.Name);
+      Assert.AreEqual(xml.isNull, w2.isNull);
+      Assert.AreEqual(xml.notNull.ToString(), w2.notNull.ToString());
+    }
+#endif
   }
 }
 #endif

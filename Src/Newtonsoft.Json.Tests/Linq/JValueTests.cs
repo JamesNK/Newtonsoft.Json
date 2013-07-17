@@ -26,6 +26,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+using System.Numerics;
+#endif
 using System.Text;
 #if !NETFX_CORE
 using NUnit.Framework;
@@ -41,12 +44,50 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
 #endif
+using Newtonsoft.Json.Tests.Serialization;
 
 namespace Newtonsoft.Json.Tests.Linq
 {
   [TestFixture]
   public class JValueTests : TestFixtureBase
   {
+    [Test]
+    public void FloatParseHandling()
+    {
+      JValue v = (JValue) JToken.ReadFrom(
+        new JsonTextReader(new StringReader("9.9"))
+          {
+            FloatParseHandling = Json.FloatParseHandling.Decimal
+          });
+
+      Assert.AreEqual(9.9m, v.Value);
+      Assert.AreEqual(typeof(decimal), v.Value.GetType());
+    }
+
+    [Test]
+    public void ToObjectWithDefaultSettings()
+    {
+      try
+      {
+        JsonConvert.DefaultSettings = () =>
+          {
+            return new JsonSerializerSettings
+              {
+                Converters = { new MetroStringConverter() }
+              };
+          };
+
+        JValue v = new JValue(":::STRING:::");
+        string s = v.ToObject<string>();
+
+        Assert.AreEqual("string", s);
+      }
+      finally
+      {
+        JsonConvert.DefaultSettings = null;
+      }
+    }
+
     [Test]
     public void ChangeValue()
     {
@@ -70,7 +111,7 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual("Pie", v.Value);
       Assert.AreEqual(JTokenType.String, v.Type);
 
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
       v.Value = DBNull.Value;
       Assert.AreEqual(DBNull.Value, v.Value);
       Assert.AreEqual(JTokenType.Null, v.Type);
@@ -98,6 +139,13 @@ namespace Newtonsoft.Json.Tests.Linq
       v.Value = g;
       Assert.AreEqual(g, v.Value);
       Assert.AreEqual(JTokenType.Guid, v.Type);
+
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)
+      BigInteger i = BigInteger.Parse("123456789999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999990");
+      v.Value = i;
+      Assert.AreEqual(i, v.Value);
+      Assert.AreEqual(JTokenType.Integer, v.Type);
+#endif
     }
 
     [Test]
@@ -151,7 +199,23 @@ namespace Newtonsoft.Json.Tests.Linq
 
       v = new JValue(new Guid("B282ADE7-C520-496C-A448-4084F6803DE5"));
       Assert.AreEqual("b282ade7-c520-496c-a448-4084f6803de5", v.ToString(null, CultureInfo.InvariantCulture));
+
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)
+      v = new JValue(BigInteger.Parse("123456789999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999990"));
+      Assert.AreEqual("123456789999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999990", v.ToString(null, CultureInfo.InvariantCulture));
+#endif
     }
+
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)
+    [Test]
+    public void JValueParse()
+    {
+      JValue v = (JValue)JToken.Parse("123456789999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999990");
+      
+      Assert.AreEqual(JTokenType.Integer, v.Type);
+      Assert.AreEqual(BigInteger.Parse("123456789999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999990"), v.Value);
+    }
+#endif
 
     [Test]
     public void Last()
@@ -395,6 +459,209 @@ namespace Newtonsoft.Json.Tests.Linq
       object startDateTime = obj["startDateTime"];
 
       CustomAssert.IsInstanceOfType(typeof(DateTimeOffset), startDateTime);
+    }
+#endif
+
+#if !(NETFX_CORE || PORTABLE)
+    [Test]
+    public void ConvertsToBoolean()
+    {
+      Assert.AreEqual(true, Convert.ToBoolean(new JValue(true)));
+    }
+
+    [Test]
+    public void ConvertsToBoolean_String()
+    {
+      Assert.AreEqual(true, Convert.ToBoolean(new JValue("true")));
+    }
+
+    [Test]
+    public void ConvertsToInt32()
+    {
+      Assert.AreEqual(Int32.MaxValue, Convert.ToInt32(new JValue(Int32.MaxValue)));
+    }
+
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)
+    [Test]
+    public void ConvertsToInt32_BigInteger()
+    {
+      Assert.AreEqual(123, Convert.ToInt32(new JValue(BigInteger.Parse("123"))));
+    }
+#endif
+
+    [Test]
+    public void ConvertsToChar()
+    {
+      Assert.AreEqual('c', Convert.ToChar(new JValue('c')));
+    }
+
+    [Test]
+    public void ConvertsToSByte()
+    {
+      Assert.AreEqual(SByte.MaxValue, Convert.ToSByte(new JValue(SByte.MaxValue)));
+    }
+
+    [Test]
+    public void ConvertsToByte()
+    {
+      Assert.AreEqual(Byte.MaxValue, Convert.ToByte(new JValue(Byte.MaxValue)));
+    }
+
+    [Test]
+    public void ConvertsToInt16()
+    {
+      Assert.AreEqual(Int16.MaxValue, Convert.ToInt16(new JValue(Int16.MaxValue)));
+    }
+
+    [Test]
+    public void ConvertsToUInt16()
+    {
+      Assert.AreEqual(UInt16.MaxValue, Convert.ToUInt16(new JValue(UInt16.MaxValue)));
+    }
+
+    [Test]
+    public void ConvertsToUInt32()
+    {
+      Assert.AreEqual(UInt32.MaxValue, Convert.ToUInt32(new JValue(UInt32.MaxValue)));
+    }
+
+    [Test]
+    public void ConvertsToInt64()
+    {
+      Assert.AreEqual(Int64.MaxValue, Convert.ToInt64(new JValue(Int64.MaxValue)));
+    }
+
+    [Test]
+    public void ConvertsToUInt64()
+    {
+      Assert.AreEqual(UInt64.MaxValue, Convert.ToUInt64(new JValue(UInt64.MaxValue)));
+    }
+
+    [Test]
+    public void ConvertsToSingle()
+    {
+      Assert.AreEqual(Single.MaxValue, Convert.ToSingle(new JValue(Single.MaxValue)));
+    }
+
+    [Test]
+    public void ConvertsToDouble()
+    {
+      Assert.AreEqual(Double.MaxValue, Convert.ToDouble(new JValue(Double.MaxValue)));
+    }
+
+    [Test]
+    public void ConvertsToDecimal()
+    {
+      Assert.AreEqual(Decimal.MaxValue, Convert.ToDecimal(new JValue(Decimal.MaxValue)));
+    }
+
+    [Test]
+    public void ConvertsToDecimal_Int64()
+    {
+      Assert.AreEqual(123, Convert.ToDecimal(new JValue(123)));
+    }
+
+    [Test]
+    public void ConvertsToString_Decimal()
+    {
+      Assert.AreEqual("79228162514264337593543950335", Convert.ToString(new JValue(Decimal.MaxValue)));
+    }
+
+    [Test]
+    public void ConvertsToString_Uri()
+    {
+      Assert.AreEqual("http://www.google.com/", Convert.ToString(new JValue(new Uri("http://www.google.com"))));
+    }
+
+    [Test]
+    public void ConvertsToString_Null()
+    {
+      Assert.AreEqual(string.Empty, Convert.ToString(new JValue((object)null)));
+    }
+
+    [Test]
+    public void ConvertsToString_Guid()
+    {
+      Guid g = new Guid("0B5D4F85-E94C-4143-94C8-35F2AAEBB100");
+
+      Assert.AreEqual("0b5d4f85-e94c-4143-94c8-35f2aaebb100", Convert.ToString(new JValue(g)));
+    }
+
+    [Test]
+    public void ConvertsToType()
+    {
+      Assert.AreEqual(Int32.MaxValue, Convert.ChangeType(new JValue(Int32.MaxValue), typeof(Int32), CultureInfo.InvariantCulture));
+    }
+
+    [Test]
+    public void ConvertsToDateTime()
+    {
+      Assert.AreEqual(new DateTime(2013, 02, 01, 01, 02, 03, 04), Convert.ToDateTime(new JValue(new DateTime(2013, 02, 01, 01, 02, 03, 04))));
+    }
+
+#if !NET20
+    [Test]
+    public void ConvertsToDateTime_DateTimeOffset()
+    {
+      var offset = new DateTimeOffset(2013, 02, 01, 01, 02, 03, 04, TimeSpan.Zero);
+
+      Assert.AreEqual(new DateTime(2013, 02, 01, 01, 02, 03, 04), Convert.ToDateTime(new JValue(offset)));
+    }
+#endif
+
+    [Test]
+    public void GetTypeCode()
+    {
+      IConvertible v = new JValue(new Guid("0B5D4F85-E94C-4143-94C8-35F2AAEBB100"));
+      Assert.AreEqual(TypeCode.Object, v.GetTypeCode());
+
+      v = new JValue(new Uri("http://www.google.com"));
+      Assert.AreEqual(TypeCode.Object, v.GetTypeCode());
+
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)
+      v = new JValue(new BigInteger(3));
+      Assert.AreEqual(TypeCode.Object, v.GetTypeCode());
+#endif
+    }
+
+    [Test]
+    public void ToType()
+    {
+      IConvertible v = new JValue(9.0m);
+
+      int i = (int)v.ToType(typeof (int), CultureInfo.InvariantCulture);
+      Assert.AreEqual(9, i);
+
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+      BigInteger bi = (BigInteger)v.ToType(typeof(BigInteger), CultureInfo.InvariantCulture);
+      Assert.AreEqual(new BigInteger(9), bi);
+#endif
+    }
+#endif
+
+    [Test]
+    public void ToStringFormat()
+    {
+      JValue v = new JValue(new DateTime(2013, 02, 01, 01, 02, 03, 04));
+
+      Assert.AreEqual("2013", v.ToString("yyyy"));
+    }
+
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)
+    [Test]
+    public void ToStringNewTypes()
+    {
+      JArray a = new JArray(
+        new JValue(new DateTimeOffset(2013, 02, 01, 01, 02, 03, 04, TimeSpan.FromHours(1))),
+        new JValue(new BigInteger(5)),
+        new JValue(1.1f)
+        );
+
+      Assert.AreEqual(@"[
+  ""2013-02-01T01:02:03.004+01:00"",
+  5,
+  1.1
+]", a.ToString());
     }
 #endif
   }

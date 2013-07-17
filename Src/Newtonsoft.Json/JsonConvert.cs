@@ -26,18 +26,20 @@
 using System;
 using System.IO;
 using System.Globalization;
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
+using System.Numerics;
+#endif
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40)
 using System.Threading.Tasks;
 #endif
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities;
 using System.Xml;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using System.Text;
-#if !NET20 && (!SILVERLIGHT || WINDOWS_PHONE) && !PORTABLE
+#if !NET20 && (!SILVERLIGHT || WINDOWS_PHONE) && !PORTABLE40
 using System.Xml.Linq;
-#endif
-#if NETFX_CORE
-using IConvertible = Newtonsoft.Json.Utilities.Convertible;
 #endif
 
 namespace Newtonsoft.Json
@@ -50,6 +52,15 @@ namespace Newtonsoft.Json
   /// </example>
   public static class JsonConvert
   {
+    /// <summary>
+    /// Gets or sets a function that creates default <see cref="JsonSerializerSettings"/>.
+    /// Default settings are automatically used by serialization methods on <see cref="JsonConvert"/>,
+    /// and <see cref="JToken.ToObject{T}()"/> and <see cref="JToken.FromObject(object)"/> on <see cref="JToken"/>.
+    /// To serialize without using any default settings create a <see cref="JsonSerializer"/> with
+    /// <see cref="JsonSerializer.Create()"/>.
+    /// </summary>
+    public static Func<JsonSerializerSettings> DefaultSettings { get; set; }
+
     /// <summary>
     /// Represents JavaScript's boolean value true as a string. This field is read-only.
     /// </summary>
@@ -85,8 +96,6 @@ namespace Newtonsoft.Json
     /// </summary>
     public static readonly string NaN = "NaN";
 
-    internal static readonly long InitialJavaScriptDateTicks = 621355968000000000;
-
     /// <summary>
     /// Converts the <see cref="DateTime"/> to its JSON string representation.
     /// </summary>
@@ -106,38 +115,18 @@ namespace Newtonsoft.Json
     /// <returns>A JSON string representation of the <see cref="DateTime"/>.</returns>
     public static string ToString(DateTime value, DateFormatHandling format, DateTimeZoneHandling timeZoneHandling)
     {
-      DateTime updatedDateTime = EnsureDateTime(value, timeZoneHandling);
+      DateTime updatedDateTime = DateTimeUtils.EnsureDateTime(value, timeZoneHandling);
 
       using (StringWriter writer = StringUtils.CreateStringWriter(64))
       {
-        WriteDateTimeString(writer, updatedDateTime, updatedDateTime.GetUtcOffset(), updatedDateTime.Kind, format, '"');
+        writer.Write('"');
+        DateTimeUtils.WriteDateTimeString(writer, updatedDateTime, format, null, CultureInfo.InvariantCulture);
+        writer.Write('"');
         return writer.ToString();
       }
     }
 
-    internal static DateTime EnsureDateTime(DateTime value, DateTimeZoneHandling timeZone)
-    {
-      switch (timeZone)
-      {
-        case DateTimeZoneHandling.Local:
-          value = SwitchToLocalTime(value);
-          break;
-        case DateTimeZoneHandling.Utc:
-          value = SwitchToUtcTime(value);
-          break;
-        case DateTimeZoneHandling.Unspecified:
-          value = new DateTime(value.Ticks, DateTimeKind.Unspecified);
-          break;
-        case DateTimeZoneHandling.RoundtripKind:
-          break;
-        default:
-          throw new ArgumentException("Invalid date time handling value.");
-      }
-
-      return value;
-    }
-
-#if !PocketPC && !NET20
+#if !NET20
     /// <summary>
     /// Converts the <see cref="DateTimeOffset"/> to its JSON string representation.
     /// </summary>
@@ -156,175 +145,15 @@ namespace Newtonsoft.Json
     /// <returns>A JSON string representation of the <see cref="DateTimeOffset"/>.</returns>
     public static string ToString(DateTimeOffset value, DateFormatHandling format)
     {
-      return ToString(value, format, '"');
-    }
-
-    internal static string ToString(DateTimeOffset value, DateFormatHandling format, char quoteChar)
-    {
       using (StringWriter writer = StringUtils.CreateStringWriter(64))
       {
-        WriteDateTimeString(writer, (format == DateFormatHandling.IsoDateFormat) ? value.DateTime : value.UtcDateTime, value.Offset, DateTimeKind.Local, format, quoteChar);
+        writer.Write('"');
+        DateTimeUtils.WriteDateTimeOffsetString(writer, value, format, null, CultureInfo.InvariantCulture);
+        writer.Write('"');
         return writer.ToString();
       }
     }
 #endif
-
-    internal static void WriteDateTimeString(TextWriter writer, DateTime value, DateFormatHandling format, char quoteChar)
-    {
-      WriteDateTimeString(writer, value, value.GetUtcOffset(), value.Kind, format, quoteChar);
-    }
-
-    internal static void WriteDateTimeString(TextWriter writer, DateTime value, TimeSpan offset, DateTimeKind kind, DateFormatHandling format, char quoteChar)
-    {
-      if (format == DateFormatHandling.MicrosoftDateFormat)
-      {
-        long javaScriptTicks = ConvertDateTimeToJavaScriptTicks(value, offset);
-
-        writer.Write(quoteChar);
-        writer.Write(@"\/Date(");
-        writer.Write(javaScriptTicks);
-
-        switch (kind)
-        {
-          case DateTimeKind.Unspecified:
-            if (value != DateTime.MaxValue && value != DateTime.MinValue)
-              WriteDateTimeOffset(writer, offset, format);
-            break;
-          case DateTimeKind.Local:
-            WriteDateTimeOffset(writer, offset, format);
-            break;
-        }
-
-        writer.Write(@")\/");
-        writer.Write(quoteChar);
-      }
-      else
-      {
-        writer.Write(quoteChar);
-        writer.Write(value.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFF", CultureInfo.InvariantCulture));
-
-        switch (kind)
-        {
-          case DateTimeKind.Local:
-            WriteDateTimeOffset(writer, offset, format);
-            break;
-          case DateTimeKind.Utc:
-            writer.Write("Z");
-            break;
-        }
-
-
-        writer.Write(quoteChar);
-      }
-    }
-
-    internal static void WriteDateTimeOffset(TextWriter writer, TimeSpan offset, DateFormatHandling format)
-    {
-      writer.Write((offset.Ticks >= 0L) ? "+" : "-");
-
-      int absHours = Math.Abs(offset.Hours);
-      if (absHours < 10)
-        writer.Write(0);
-      writer.Write(absHours);
-
-      if (format == DateFormatHandling.IsoDateFormat)
-        writer.Write(':');
-
-      int absMinutes = Math.Abs(offset.Minutes);
-      if (absMinutes < 10)
-        writer.Write(0);
-      writer.Write(absMinutes);
-    }
-
-    private static long ToUniversalTicks(DateTime dateTime)
-    {
-      if (dateTime.Kind == DateTimeKind.Utc)
-        return dateTime.Ticks;
-
-      return ToUniversalTicks(dateTime, dateTime.GetUtcOffset());
-    }
-
-    private static long ToUniversalTicks(DateTime dateTime, TimeSpan offset)
-    {
-      // special case min and max value
-      // they never have a timezone appended to avoid issues
-      if (dateTime.Kind == DateTimeKind.Utc || dateTime == DateTime.MaxValue || dateTime == DateTime.MinValue)
-        return dateTime.Ticks;
-
-      long ticks = dateTime.Ticks - offset.Ticks;
-      if (ticks > 3155378975999999999L)
-        return 3155378975999999999L;
-
-      if (ticks < 0L)
-        return 0L;
-
-      return ticks;
-    }
-
-    internal static long ConvertDateTimeToJavaScriptTicks(DateTime dateTime, TimeSpan offset)
-    {
-      long universialTicks = ToUniversalTicks(dateTime, offset);
-
-      return UniversialTicksToJavaScriptTicks(universialTicks);
-    }
-
-    internal static long ConvertDateTimeToJavaScriptTicks(DateTime dateTime)
-    {
-      return ConvertDateTimeToJavaScriptTicks(dateTime, true);
-    }
-
-    internal static long ConvertDateTimeToJavaScriptTicks(DateTime dateTime, bool convertToUtc)
-    {
-      long ticks = (convertToUtc) ? ToUniversalTicks(dateTime) : dateTime.Ticks;
-
-      return UniversialTicksToJavaScriptTicks(ticks);
-    }
-
-    private static long UniversialTicksToJavaScriptTicks(long universialTicks)
-    {
-      long javaScriptTicks = (universialTicks - InitialJavaScriptDateTicks)/10000;
-
-      return javaScriptTicks;
-    }
-
-    internal static DateTime ConvertJavaScriptTicksToDateTime(long javaScriptTicks)
-    {
-      DateTime dateTime = new DateTime((javaScriptTicks*10000) + InitialJavaScriptDateTicks, DateTimeKind.Utc);
-
-      return dateTime;
-    }
-
-    private static DateTime SwitchToLocalTime(DateTime value)
-    {
-      switch (value.Kind)
-      {
-        case DateTimeKind.Unspecified:
-          return new DateTime(value.Ticks, DateTimeKind.Local);
-
-        case DateTimeKind.Utc:
-          return value.ToLocalTime();
-
-        case DateTimeKind.Local:
-          return value;
-      }
-      return value;
-    }
-
-    private static DateTime SwitchToUtcTime(DateTime value)
-    {
-      switch (value.Kind)
-      {
-        case DateTimeKind.Unspecified:
-          return new DateTime(value.Ticks, DateTimeKind.Utc);
-
-        case DateTimeKind.Utc:
-          return value;
-
-        case DateTimeKind.Local:
-          return value.ToUniversalTime();
-      }
-      return value;
-    }
 
     /// <summary>
     /// Converts the <see cref="Boolean"/> to its JSON string representation.
@@ -408,6 +237,13 @@ namespace Newtonsoft.Json
       return value.ToString(null, CultureInfo.InvariantCulture);
     }
 
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
+    private static string ToStringInternal(BigInteger value)
+    {
+      return value.ToString(null, CultureInfo.InvariantCulture);
+    }
+#endif
+
     /// <summary>
     /// Converts the <see cref="UInt64"/> to its JSON string representation.
     /// </summary>
@@ -429,6 +265,22 @@ namespace Newtonsoft.Json
       return EnsureDecimalPlace(value, value.ToString("R", CultureInfo.InvariantCulture));
     }
 
+    internal static string ToString(float value, FloatFormatHandling floatFormatHandling, char quoteChar, bool nullable)
+    {
+      return EnsureFloatFormat(value, EnsureDecimalPlace(value, value.ToString("R", CultureInfo.InvariantCulture)), floatFormatHandling, quoteChar, nullable);
+    }
+
+    private static string EnsureFloatFormat(double value, string text, FloatFormatHandling floatFormatHandling, char quoteChar, bool nullable)
+    {
+      if (floatFormatHandling == FloatFormatHandling.Symbol || !(double.IsInfinity(value) || double.IsNaN(value)))
+        return text;
+
+      if (floatFormatHandling == FloatFormatHandling.DefaultValue)
+        return (!nullable) ? "0.0" : Null;
+      
+      return quoteChar + text + quoteChar;
+    }
+
     /// <summary>
     /// Converts the <see cref="Double"/> to its JSON string representation.
     /// </summary>
@@ -437,6 +289,11 @@ namespace Newtonsoft.Json
     public static string ToString(double value)
     {
       return EnsureDecimalPlace(value, value.ToString("R", CultureInfo.InvariantCulture));
+    }
+
+    internal static string ToString(double value, FloatFormatHandling floatFormatHandling, char quoteChar, bool nullable)
+    {
+      return EnsureFloatFormat(value, EnsureDecimalPlace(value, value.ToString("R", CultureInfo.InvariantCulture)), floatFormatHandling, quoteChar, nullable);
     }
 
     private static string EnsureDecimalPlace(double value, string text)
@@ -500,7 +357,7 @@ namespace Newtonsoft.Json
     {
       string text = null;
 
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
       text = value.ToString("D", CultureInfo.InvariantCulture);
 #else
       text = value.ToString("D");
@@ -576,117 +433,61 @@ namespace Newtonsoft.Json
       if (value == null)
         return Null;
 
-      IConvertible convertible = ConvertUtils.ToConvertible(value);
+      PrimitiveTypeCode typeCode = ConvertUtils.GetTypeCode(value);
 
-      if (convertible != null)
+      switch (typeCode)
       {
-        switch (convertible.GetTypeCode())
-        {
-          case TypeCode.String:
-            return ToString(convertible.ToString(CultureInfo.InvariantCulture));
-          case TypeCode.Char:
-            return ToString(convertible.ToChar(CultureInfo.InvariantCulture));
-          case TypeCode.Boolean:
-            return ToString(convertible.ToBoolean(CultureInfo.InvariantCulture));
-          case TypeCode.SByte:
-            return ToString(convertible.ToSByte(CultureInfo.InvariantCulture));
-          case TypeCode.Int16:
-            return ToString(convertible.ToInt16(CultureInfo.InvariantCulture));
-          case TypeCode.UInt16:
-            return ToString(convertible.ToUInt16(CultureInfo.InvariantCulture));
-          case TypeCode.Int32:
-            return ToString(convertible.ToInt32(CultureInfo.InvariantCulture));
-          case TypeCode.Byte:
-            return ToString(convertible.ToByte(CultureInfo.InvariantCulture));
-          case TypeCode.UInt32:
-            return ToString(convertible.ToUInt32(CultureInfo.InvariantCulture));
-          case TypeCode.Int64:
-            return ToString(convertible.ToInt64(CultureInfo.InvariantCulture));
-          case TypeCode.UInt64:
-            return ToString(convertible.ToUInt64(CultureInfo.InvariantCulture));
-          case TypeCode.Single:
-            return ToString(convertible.ToSingle(CultureInfo.InvariantCulture));
-          case TypeCode.Double:
-            return ToString(convertible.ToDouble(CultureInfo.InvariantCulture));
-          case TypeCode.DateTime:
-            return ToString(convertible.ToDateTime(CultureInfo.InvariantCulture));
-          case TypeCode.Decimal:
-            return ToString(convertible.ToDecimal(CultureInfo.InvariantCulture));
+        case PrimitiveTypeCode.String:
+          return ToString((string) value);
+        case PrimitiveTypeCode.Char:
+          return ToString((char) value);
+        case PrimitiveTypeCode.Boolean:
+          return ToString((bool) value);
+        case PrimitiveTypeCode.SByte:
+          return ToString((sbyte) value);
+        case PrimitiveTypeCode.Int16:
+          return ToString((short) value);
+        case PrimitiveTypeCode.UInt16:
+          return ToString((ushort) value);
+        case PrimitiveTypeCode.Int32:
+          return ToString((int) value);
+        case PrimitiveTypeCode.Byte:
+          return ToString((byte) value);
+        case PrimitiveTypeCode.UInt32:
+          return ToString((uint) value);
+        case PrimitiveTypeCode.Int64:
+          return ToString((long) value);
+        case PrimitiveTypeCode.UInt64:
+          return ToString((ulong) value);
+        case PrimitiveTypeCode.Single:
+          return ToString((float) value);
+        case PrimitiveTypeCode.Double:
+          return ToString((double) value);
+        case PrimitiveTypeCode.DateTime:
+          return ToString((DateTime) value);
+        case PrimitiveTypeCode.Decimal:
+          return ToString((decimal) value);
 #if !(NETFX_CORE || PORTABLE)
-          case TypeCode.DBNull:
-            return Null;
+        case PrimitiveTypeCode.DBNull:
+          return Null;
 #endif
-        }
-      }
-#if !PocketPC && !NET20
-      else if (value is DateTimeOffset)
-      {
-        return ToString((DateTimeOffset) value);
-      }
+#if !NET20
+        case PrimitiveTypeCode.DateTimeOffset:
+          return ToString((DateTimeOffset) value);
 #endif
-      else if (value is Guid)
-      {
-        return ToString((Guid) value);
-      }
-      else if (value is Uri)
-      {
-        return ToString((Uri) value);
-      }
-      else if (value is TimeSpan)
-      {
-        return ToString((TimeSpan) value);
+        case PrimitiveTypeCode.Guid:
+          return ToString((Guid) value);
+        case PrimitiveTypeCode.Uri:
+          return ToString((Uri) value);
+        case PrimitiveTypeCode.TimeSpan:
+          return ToString((TimeSpan) value);
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
+        case PrimitiveTypeCode.BigInteger:
+          return ToStringInternal((BigInteger)value);
+#endif
       }
 
       throw new ArgumentException("Unsupported type: {0}. Use the JsonSerializer class to get the object's JSON representation.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
-    }
-
-    private static bool IsJsonPrimitiveTypeCode(TypeCode typeCode)
-    {
-      switch (typeCode)
-      {
-        case TypeCode.String:
-        case TypeCode.Char:
-        case TypeCode.Boolean:
-        case TypeCode.SByte:
-        case TypeCode.Int16:
-        case TypeCode.UInt16:
-        case TypeCode.Int32:
-        case TypeCode.Byte:
-        case TypeCode.UInt32:
-        case TypeCode.Int64:
-        case TypeCode.UInt64:
-        case TypeCode.Single:
-        case TypeCode.Double:
-        case TypeCode.DateTime:
-        case TypeCode.Decimal:
-#if !(NETFX_CORE || PORTABLE)
-        case TypeCode.DBNull:
-#endif
-          return true;
-        default:
-          return false;
-      }
-    }
-
-    internal static bool IsJsonPrimitiveType(Type type)
-    {
-      if (ReflectionUtils.IsNullableType(type))
-        type = Nullable.GetUnderlyingType(type);
-
-#if !PocketPC && !NET20
-      if (type == typeof (DateTimeOffset))
-        return true;
-#endif
-      if (type == typeof (byte[]))
-        return true;
-      if (type == typeof (Uri))
-        return true;
-      if (type == typeof (TimeSpan))
-        return true;
-      if (type == typeof (Guid))
-        return true;
-
-      return IsJsonPrimitiveTypeCode(ConvertUtils.GetTypeCode(type));
     }
 
     #region Serialize
@@ -701,7 +502,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Serializes the specified object to a JSON string.
+    /// Serializes the specified object to a JSON string using formatting.
     /// </summary>
     /// <param name="value">The object to serialize.</param>
     /// <param name="formatting">Indicates how the output is formatted.</param>
@@ -725,7 +526,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Serializes the specified object to a JSON string using a collection of <see cref="JsonConverter"/>.
+    /// Serializes the specified object to a JSON string using formatting and a collection of <see cref="JsonConverter"/>.
     /// </summary>
     /// <param name="value">The object to serialize.</param>
     /// <param name="formatting">Indicates how the output is formatted.</param>
@@ -741,7 +542,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Serializes the specified object to a JSON string using a collection of <see cref="JsonConverter"/>.
+    /// Serializes the specified object to a JSON string using <see cref="JsonSerializerSettings"/>.
     /// </summary>
     /// <param name="value">The object to serialize.</param>
     /// <param name="settings">The <see cref="JsonSerializerSettings"/> used to serialize the object.
@@ -755,7 +556,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Serializes the specified object to a JSON string using a collection of <see cref="JsonConverter"/>.
+    /// Serializes the specified object to a JSON string using formatting and <see cref="JsonSerializerSettings"/>.
     /// </summary>
     /// <param name="value">The object to serialize.</param>
     /// <param name="formatting">Indicates how the output is formatted.</param>
@@ -766,7 +567,27 @@ namespace Newtonsoft.Json
     /// </returns>
     public static string SerializeObject(object value, Formatting formatting, JsonSerializerSettings settings)
     {
-      JsonSerializer jsonSerializer = JsonSerializer.Create(settings);
+      return SerializeObject(value, null, formatting, settings);
+    }
+
+    /// <summary>
+    /// Serializes the specified object to a JSON string using a type, formatting and <see cref="JsonSerializerSettings"/>.
+    /// </summary>
+    /// <param name="value">The object to serialize.</param>
+    /// <param name="formatting">Indicates how the output is formatted.</param>
+    /// <param name="settings">The <see cref="JsonSerializerSettings"/> used to serialize the object.
+    /// If this is null, default serialization settings will be is used.</param>
+    /// <param name="type">
+    /// The type of the value being serialized.
+    /// This parameter is used when <see cref="TypeNameHandling"/> is Auto to write out the type name if the type of the value does not match.
+    /// Specifing the type is optional.
+    /// </param>
+    /// <returns>
+    /// A JSON string representation of the object.
+    /// </returns>
+    public static string SerializeObject(object value, Type type, Formatting formatting, JsonSerializerSettings settings)
+    {
+      JsonSerializer jsonSerializer = JsonSerializer.CreateDefault(settings);
 
       StringBuilder sb = new StringBuilder(256);
       StringWriter sw = new StringWriter(sb, CultureInfo.InvariantCulture);
@@ -774,15 +595,16 @@ namespace Newtonsoft.Json
       {
         jsonWriter.Formatting = formatting;
 
-        jsonSerializer.Serialize(jsonWriter, value);
+        jsonSerializer.Serialize(jsonWriter, value, type);
       }
 
       return sw.ToString();
     }
 
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40)
     /// <summary>
-    /// Asynchronously serializes the specified object to a JSON string using a collection of <see cref="JsonConverter"/>.
+    /// Asynchronously serializes the specified object to a JSON string.
+    /// Serialization will happen on a new thread.
     /// </summary>
     /// <param name="value">The object to serialize.</param>
     /// <returns>
@@ -794,7 +616,8 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Asynchronously serializes the specified object to a JSON string using a collection of <see cref="JsonConverter"/>.
+    /// Asynchronously serializes the specified object to a JSON string using formatting.
+    /// Serialization will happen on a new thread.
     /// </summary>
     /// <param name="value">The object to serialize.</param>
     /// <param name="formatting">Indicates how the output is formatted.</param>
@@ -807,7 +630,8 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Asynchronously serializes the specified object to a JSON string using a collection of <see cref="JsonConverter"/>.
+    /// Asynchronously serializes the specified object to a JSON string using formatting and a collection of <see cref="JsonConverter"/>.
+    /// Serialization will happen on a new thread.
     /// </summary>
     /// <param name="value">The object to serialize.</param>
     /// <param name="formatting">Indicates how the output is formatted.</param>
@@ -835,7 +659,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the JSON to a .NET object.
+    /// Deserializes the JSON to a .NET object using <see cref="JsonSerializerSettings"/>.
     /// </summary>
     /// <param name="value">The JSON to deserialize.</param>
     /// <param name="settings">
@@ -887,7 +711,27 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the JSON to the specified .NET type.
+    /// Deserializes the JSON to the given anonymous type using <see cref="JsonSerializerSettings"/>.
+    /// </summary>
+    /// <typeparam name="T">
+    /// The anonymous type to deserialize to. This can't be specified
+    /// traditionally and must be infered from the anonymous type passed
+    /// as a parameter.
+    /// </typeparam>
+    /// <param name="value">The JSON to deserialize.</param>
+    /// <param name="anonymousTypeObject">The anonymous type object.</param>
+    /// <param name="settings">
+    /// The <see cref="JsonSerializerSettings"/> used to deserialize the object.
+    /// If this is null, default serialization settings will be is used.
+    /// </param>
+    /// <returns>The deserialized anonymous type from the JSON string.</returns>
+    public static T DeserializeAnonymousType<T>(string value, T anonymousTypeObject, JsonSerializerSettings settings)
+    {
+      return DeserializeObject<T>(value, settings);
+    }
+
+    /// <summary>
+    /// Deserializes the JSON to the specified .NET type using a collection of <see cref="JsonConverter"/>.
     /// </summary>
     /// <typeparam name="T">The type of the object to deserialize to.</typeparam>
     /// <param name="value">The JSON to deserialize.</param>
@@ -899,7 +743,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the JSON to the specified .NET type.
+    /// Deserializes the JSON to the specified .NET type using <see cref="JsonSerializerSettings"/>.
     /// </summary>
     /// <typeparam name="T">The type of the object to deserialize to.</typeparam>
     /// <param name="value">The object to deserialize.</param>
@@ -914,7 +758,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the JSON to the specified .NET type.
+    /// Deserializes the JSON to the specified .NET type using a collection of <see cref="JsonConverter"/>.
     /// </summary>
     /// <param name="value">The JSON to deserialize.</param>
     /// <param name="type">The type of the object to deserialize.</param>
@@ -930,7 +774,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the JSON to the specified .NET type.
+    /// Deserializes the JSON to the specified .NET type using <see cref="JsonSerializerSettings"/>.
     /// </summary>
     /// <param name="value">The JSON to deserialize.</param>
     /// <param name="type">The type of the object to deserialize to.</param>
@@ -944,7 +788,7 @@ namespace Newtonsoft.Json
       ValidationUtils.ArgumentNotNull(value, "value");
 
       StringReader sr = new StringReader(value);
-      JsonSerializer jsonSerializer = JsonSerializer.Create(settings);
+      JsonSerializer jsonSerializer = JsonSerializer.CreateDefault(settings);
 
       // by default DeserializeObject should check for additional content
       if (!jsonSerializer.IsCheckAdditionalContentSet())
@@ -953,9 +797,10 @@ namespace Newtonsoft.Json
       return jsonSerializer.Deserialize(new JsonTextReader(sr), type);
     }
 
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40)
     /// <summary>
     /// Asynchronously deserializes the JSON to the specified .NET type.
+    /// Deserialization will happen on a new thread.
     /// </summary>
     /// <typeparam name="T">The type of the object to deserialize to.</typeparam>
     /// <param name="value">The JSON to deserialize.</param>
@@ -968,7 +813,8 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Asynchronously deserializes the JSON to the specified .NET type.
+    /// Asynchronously deserializes the JSON to the specified .NET type using <see cref="JsonSerializerSettings"/>.
+    /// Deserialization will happen on a new thread.
     /// </summary>
     /// <typeparam name="T">The type of the object to deserialize to.</typeparam>
     /// <param name="value">The JSON to deserialize.</param>
@@ -986,6 +832,7 @@ namespace Newtonsoft.Json
 
     /// <summary>
     /// Asynchronously deserializes the JSON to the specified .NET type.
+    /// Deserialization will happen on a new thread.
     /// </summary>
     /// <param name="value">The JSON to deserialize.</param>
     /// <returns>
@@ -997,7 +844,8 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Asynchronously deserializes the JSON to the specified .NET type.
+    /// Asynchronously deserializes the JSON to the specified .NET type using <see cref="JsonSerializerSettings"/>.
+    /// Deserialization will happen on a new thread.
     /// </summary>
     /// <param name="value">The JSON to deserialize.</param>
     /// <param name="type">The type of the object to deserialize to.</param>
@@ -1026,7 +874,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Populates the object with values from the JSON string.
+    /// Populates the object with values from the JSON string using <see cref="JsonSerializerSettings"/>.
     /// </summary>
     /// <param name="value">The JSON to populate values from.</param>
     /// <param name="target">The target object to populate values onto.</param>
@@ -1037,7 +885,7 @@ namespace Newtonsoft.Json
     public static void PopulateObject(string value, object target, JsonSerializerSettings settings)
     {
       StringReader sr = new StringReader(value);
-      JsonSerializer jsonSerializer = JsonSerializer.Create(settings);
+      JsonSerializer jsonSerializer = JsonSerializer.CreateDefault(settings);
 
       using (JsonReader jsonReader = new JsonTextReader(sr))
       {
@@ -1048,9 +896,9 @@ namespace Newtonsoft.Json
       }
     }
 
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40)
     /// <summary>
-    /// Asynchronously populates the object with values from the JSON string.
+    /// Asynchronously populates the object with values from the JSON string using <see cref="JsonSerializerSettings"/>.
     /// </summary>
     /// <param name="value">The JSON to populate values from.</param>
     /// <param name="target">The target object to populate values onto.</param>
@@ -1067,7 +915,7 @@ namespace Newtonsoft.Json
     }
 #endif
 
-#if !(SILVERLIGHT || PORTABLE || NETFX_CORE)
+#if !(SILVERLIGHT || PORTABLE40 || PORTABLE || NETFX_CORE)
     /// <summary>
     /// Serializes the XML node to a JSON string.
     /// </summary>
@@ -1079,7 +927,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Serializes the XML node to a JSON string.
+    /// Serializes the XML node to a JSON string using formatting.
     /// </summary>
     /// <param name="node">The node to serialize.</param>
     /// <param name="formatting">Indicates how the output is formatted.</param>
@@ -1092,7 +940,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Serializes the XML node to a JSON string.
+    /// Serializes the XML node to a JSON string using formatting and omits the root object if <see cref="omitRootObject"/> is <c>true</c>.
     /// </summary>
     /// <param name="node">The node to serialize.</param>
     /// <param name="formatting">Indicates how the output is formatted.</param>
@@ -1116,7 +964,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the XmlNode from a JSON string nested in a root elment.
+    /// Deserializes the XmlNode from a JSON string nested in a root elment specified by <see cref="deserializeRootElementName"/>.
     /// </summary>
     /// <param name="value">The JSON string.</param>
     /// <param name="deserializeRootElementName">The name of the root element to append when deserializing.</param>
@@ -1127,7 +975,8 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the XmlNode from a JSON string nested in a root elment.
+    /// Deserializes the XmlNode from a JSON string nested in a root elment specified by <see cref="deserializeRootElementName"/>
+    /// and writes a .NET array attribute for collections.
     /// </summary>
     /// <param name="value">The JSON string.</param>
     /// <param name="deserializeRootElementName">The name of the root element to append when deserializing.</param>
@@ -1146,7 +995,7 @@ namespace Newtonsoft.Json
     }
 #endif
 
-#if !NET20 && (!(SILVERLIGHT || PORTABLE) || WINDOWS_PHONE)
+#if !NET20 && (!(SILVERLIGHT) || WINDOWS_PHONE) && !PORTABLE40
     /// <summary>
     /// Serializes the <see cref="XNode"/> to a JSON string.
     /// </summary>
@@ -1158,7 +1007,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Serializes the <see cref="XNode"/> to a JSON string.
+    /// Serializes the <see cref="XNode"/> to a JSON string using formatting.
     /// </summary>
     /// <param name="node">The node to convert to JSON.</param>
     /// <param name="formatting">Indicates how the output is formatted.</param>
@@ -1169,7 +1018,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Serializes the <see cref="XNode"/> to a JSON string.
+    /// Serializes the <see cref="XNode"/> to a JSON string using formatting and omits the root object if <see cref="omitRootObject"/> is <c>true</c>.
     /// </summary>
     /// <param name="node">The node to serialize.</param>
     /// <param name="formatting">Indicates how the output is formatted.</param>
@@ -1193,7 +1042,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the <see cref="XNode"/> from a JSON string nested in a root elment.
+    /// Deserializes the <see cref="XNode"/> from a JSON string nested in a root elment specified by <see cref="deserializeRootElementName"/>.
     /// </summary>
     /// <param name="value">The JSON string.</param>
     /// <param name="deserializeRootElementName">The name of the root element to append when deserializing.</param>
@@ -1204,7 +1053,8 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the <see cref="XNode"/> from a JSON string nested in a root elment.
+    /// Deserializes the <see cref="XNode"/> from a JSON string nested in a root elment specified by <see cref="deserializeRootElementName"/>
+    /// and writes a .NET array attribute for collections.
     /// </summary>
     /// <param name="value">The JSON string.</param>
     /// <param name="deserializeRootElementName">The name of the root element to append when deserializing.</param>

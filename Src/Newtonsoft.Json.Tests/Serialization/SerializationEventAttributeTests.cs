@@ -23,12 +23,18 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !PocketPC
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
+#endif
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Text;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
 #if !NETFX_CORE
@@ -49,41 +55,53 @@ namespace Newtonsoft.Json.Tests.Serialization
     [Test]
     public void ObjectEvents()
     {
-      SerializationEventTestObject obj = new SerializationEventTestObject();
+      SerializationEventTestObject[] objs = new[] {new SerializationEventTestObject(), new DerivedSerializationEventTestObject()};
 
-      Assert.AreEqual(11, obj.Member1);
-      Assert.AreEqual("Hello World!", obj.Member2);
-      Assert.AreEqual("This is a nonserialized value", obj.Member3);
-      Assert.AreEqual(null, obj.Member4);
-      Assert.AreEqual(null, obj.Member5);
+      foreach (SerializationEventTestObject current in objs)
+      {
+        SerializationEventTestObject obj = current;
 
-      string json = JsonConvert.SerializeObject(obj, Formatting.Indented);
-      Assert.AreEqual(@"{
+        Assert.AreEqual(11, obj.Member1);
+        Assert.AreEqual("Hello World!", obj.Member2);
+        Assert.AreEqual("This is a nonserialized value", obj.Member3);
+        Assert.AreEqual(null, obj.Member4);
+        Assert.AreEqual(null, obj.Member5);
+
+        string json = JsonConvert.SerializeObject(obj, Formatting.Indented);
+        Assert.AreEqual(@"{
   ""Member1"": 11,
   ""Member2"": ""This value went into the data file during serialization."",
   ""Member4"": null
 }", json);
 
-      Assert.AreEqual(11, obj.Member1);
-      Assert.AreEqual("This value was reset after serialization.", obj.Member2);
-      Assert.AreEqual("This is a nonserialized value", obj.Member3);
-      Assert.AreEqual(null, obj.Member4);
-      Assert.AreEqual("Error message for member Member6 = Error getting value from 'Member6' on 'Newtonsoft.Json.Tests.TestObjects.SerializationEventTestObject'.", obj.Member5);
+        Assert.AreEqual(11, obj.Member1);
+        Assert.AreEqual("This value was reset after serialization.", obj.Member2);
+        Assert.AreEqual("This is a nonserialized value", obj.Member3);
+        Assert.AreEqual(null, obj.Member4);
 
-      JObject o = JObject.Parse(@"{
+        string expectedError = String.Format("Error message for member Member6 = Error getting value from 'Member6' on '{0}'.", obj.GetType().FullName);
+        Assert.AreEqual(expectedError, obj.Member5);
+
+        JObject o = JObject.Parse(@"{
   ""Member1"": 11,
   ""Member2"": ""This value went into the data file during serialization."",
   ""Member4"": null
 }");
-      o["Member6"] = "Dummy text for error";
+        o["Member6"] = "Dummy text for error";
 
-      obj = JsonConvert.DeserializeObject<SerializationEventTestObject>(o.ToString());
+        obj = (SerializationEventTestObject) JsonConvert.DeserializeObject(o.ToString(), obj.GetType());
 
-      Assert.AreEqual(11, obj.Member1);
-      Assert.AreEqual("This value went into the data file during serialization.", obj.Member2);
-      Assert.AreEqual("This value was set during deserialization", obj.Member3);
-      Assert.AreEqual("This value was set after deserialization.", obj.Member4);
-      Assert.AreEqual("Error message for member Member6 = Error setting value to 'Member6' on 'Newtonsoft.Json.Tests.TestObjects.SerializationEventTestObject'.", obj.Member5);
+        Assert.AreEqual(11, obj.Member1);
+        Assert.AreEqual("This value went into the data file during serialization.", obj.Member2);
+        Assert.AreEqual("This value was set during deserialization", obj.Member3);
+        Assert.AreEqual("This value was set after deserialization.", obj.Member4);
+
+        expectedError = String.Format("Error message for member Member6 = Error setting value to 'Member6' on '{0}'.", obj.GetType());
+        Assert.AreEqual(expectedError, obj.Member5);
+
+        DerivedSerializationEventTestObject derivedObj = obj as DerivedSerializationEventTestObject;
+        if (derivedObj != null) Assert.AreEqual("This value was set after deserialization.", derivedObj.Member7);
+      }
     }
 
     [Test]
@@ -264,7 +282,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 }", json);
     }
 
-#if !SILVERLIGHT && !NETFX_CORE
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
     public class SerializationEventContextTestObject
     {
       public string TestMember { get; set; }
@@ -295,13 +313,16 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 #endif
 
+#if !PORTABLE
     public void WhenSerializationErrorDetectedBySerializer_ThenCallbackIsCalled()
     {
       // Verify contract is properly finding our callback
       var resolver = new DefaultContractResolver().ResolveContract(typeof(FooEvent));
 
+#pragma warning disable 612,618
       Debug.Assert(resolver.OnError != null);
       Debug.Assert(resolver.OnError == typeof(FooEvent).GetMethod("OnError", BindingFlags.Instance | BindingFlags.NonPublic));
+#pragma warning restore 612,618
 
       var serializer = JsonSerializer.Create(new JsonSerializerSettings
       {
@@ -316,7 +337,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       // When fixed, this would pass.
       Debug.Assert(foo.Identifier == 25);
     }
-
+#endif
     public class FooEvent
     {
       public int Identifier { get; set; }
@@ -335,6 +356,170 @@ namespace Newtonsoft.Json.Tests.Serialization
         Console.WriteLine("Error has been fixed");
       }
     }
+
+    [Test]
+    public void DerivedSerializationEvents()
+    {
+      var c = JsonConvert.DeserializeObject<DerivedSerializationEventOrderTestObject>("{}");
+
+      JsonConvert.SerializeObject(c, Formatting.Indented);
+
+      IList<string> e = c.GetEvents();
+
+      Assert.AreEqual(@"OnDeserializing
+OnDeserializing_Derived
+OnDeserialized
+OnDeserialized_Derived
+OnSerializing
+OnSerializing_Derived
+OnSerialized
+OnSerialized_Derived", string.Join(Environment.NewLine, e.ToArray()));
+    }
+
+    [Test]
+    public void DerivedDerivedSerializationEvents()
+    {
+      var c = JsonConvert.DeserializeObject<DerivedDerivedSerializationEventOrderTestObject>("{}");
+
+      JsonConvert.SerializeObject(c, Formatting.Indented);
+
+      IList<string> e = c.GetEvents();
+
+      Assert.AreEqual(@"OnDeserializing
+OnDeserializing_Derived
+OnDeserializing_Derived_Derived
+OnDeserialized
+OnDeserialized_Derived
+OnDeserialized_Derived_Derived
+OnSerializing
+OnSerializing_Derived
+OnSerializing_Derived_Derived
+OnSerialized
+OnSerialized_Derived
+OnSerialized_Derived_Derived", string.Join(Environment.NewLine, e.ToArray()));
+    }
+
+#if !(NET20 || SILVERLIGHT)
+    [Test]
+    public void DerivedDerivedSerializationEvents_DataContractSerializer()
+    {
+      string xml = @"<DerivedDerivedSerializationEventOrderTestObject xmlns=""http://schemas.datacontract.org/2004/07/Newtonsoft.Json.Tests.Serialization"" xmlns:i=""http://www.w3.org/2001/XMLSchema-instance""/>";
+
+      DataContractSerializer ss = new DataContractSerializer(typeof(DerivedDerivedSerializationEventOrderTestObject));
+
+      DerivedDerivedSerializationEventOrderTestObject c = (DerivedDerivedSerializationEventOrderTestObject)ss.ReadObject(new MemoryStream(Encoding.UTF8.GetBytes(xml)));
+
+      MemoryStream ms = new MemoryStream();
+      ss.WriteObject(ms, c);
+
+      IList<string> e = c.GetEvents();
+
+      Assert.AreEqual(@"OnDeserializing
+OnDeserializing_Derived
+OnDeserializing_Derived_Derived
+OnDeserialized
+OnDeserialized_Derived
+OnDeserialized_Derived_Derived
+OnSerializing
+OnSerializing_Derived
+OnSerializing_Derived_Derived
+OnSerialized
+OnSerialized_Derived
+OnSerialized_Derived_Derived", string.Join(Environment.NewLine, e.ToArray()));
+    }
+#endif
+  }
+
+  public class SerializationEventOrderTestObject
+  {
+    protected IList<string> Events { get; private set; }
+
+    public SerializationEventOrderTestObject()
+    {
+      Events = new List<string>();
+    }
+
+    public IList<string> GetEvents()
+    {
+      return Events;
+    }
+
+    [OnSerializing]
+    internal void OnSerializingMethod(StreamingContext context)
+    {
+      Events.Add("OnSerializing");
+    }
+
+    [OnSerialized]
+    internal void OnSerializedMethod(StreamingContext context)
+    {
+      Events.Add("OnSerialized");
+    }
+
+    [OnDeserializing]
+    internal void OnDeserializingMethod(StreamingContext context)
+    {
+      Events.Add("OnDeserializing");
+    }
+
+    [OnDeserialized]
+    internal void OnDeserializedMethod(StreamingContext context)
+    {
+      Events.Add("OnDeserialized");
+    }
+  }
+
+  public class DerivedSerializationEventOrderTestObject : SerializationEventOrderTestObject
+  {
+    [OnSerializing]
+    internal new void OnSerializingMethod(StreamingContext context)
+    {
+      Events.Add("OnSerializing_Derived");
+    }
+
+    [OnSerialized]
+    internal new void OnSerializedMethod(StreamingContext context)
+    {
+      Events.Add("OnSerialized_Derived");
+    }
+
+    [OnDeserializing]
+    internal new void OnDeserializingMethod(StreamingContext context)
+    {
+      Events.Add("OnDeserializing_Derived");
+    }
+
+    [OnDeserialized]
+    internal new void OnDeserializedMethod(StreamingContext context)
+    {
+      Events.Add("OnDeserialized_Derived");
+    }
+  }
+
+  public class DerivedDerivedSerializationEventOrderTestObject : DerivedSerializationEventOrderTestObject
+  {
+    [OnSerializing]
+    internal new void OnSerializingMethod(StreamingContext context)
+    {
+      Events.Add("OnSerializing_Derived_Derived");
+    }
+
+    [OnSerialized]
+    internal new void OnSerializedMethod(StreamingContext context)
+    {
+      Events.Add("OnSerialized_Derived_Derived");
+    }
+
+    [OnDeserializing]
+    internal new void OnDeserializingMethod(StreamingContext context)
+    {
+      Events.Add("OnDeserializing_Derived_Derived");
+    }
+
+    [OnDeserialized]
+    internal new void OnDeserializedMethod(StreamingContext context)
+    {
+      Events.Add("OnDeserialized_Derived_Derived");
+    }
   }
 }
-#endif

@@ -25,7 +25,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
+#endif
 using System.Runtime.Serialization;
 using System.Text;
 using System.Xml;
@@ -63,6 +69,18 @@ namespace Newtonsoft.Json.Tests
       writer.Close();
       Assert.IsTrue(ms.CanRead);
     }
+
+#if !(PORTABLE || NETFX_CORE)
+    [Test]
+    public void WriteIConvertable()
+    {
+      var sw = new StringWriter();
+      JsonTextWriter writer = new JsonTextWriter(sw);
+      writer.WriteValue(new ConvertibleInt(1));
+
+      Assert.AreEqual("1", sw.ToString());
+    }
+#endif
     
     [Test]
     public void ValueFormatting()
@@ -132,10 +150,10 @@ namespace Newtonsoft.Json.Tests
         jsonWriter.WriteValue((decimal?)null);
         jsonWriter.WriteValue((decimal?)1.1m);
         jsonWriter.WriteValue((DateTime?)null);
-        jsonWriter.WriteValue((DateTime?)new DateTime(JsonConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc));
-#if !PocketPC && !NET20
+        jsonWriter.WriteValue((DateTime?)new DateTime(DateTimeUtils.InitialJavaScriptDateTicks, DateTimeKind.Utc));
+#if !NET20
         jsonWriter.WriteValue((DateTimeOffset?)null);
-        jsonWriter.WriteValue((DateTimeOffset?)new DateTimeOffset(JsonConvert.InitialJavaScriptDateTicks, TimeSpan.Zero));
+        jsonWriter.WriteValue((DateTimeOffset?)new DateTimeOffset(DateTimeUtils.InitialJavaScriptDateTicks, TimeSpan.Zero));
 #endif
         jsonWriter.WriteEndArray();
       }
@@ -143,7 +161,7 @@ namespace Newtonsoft.Json.Tests
       string json = sw.ToString();
       string expected;
 
-#if !PocketPC && !NET20
+#if !NET20
       expected = @"[null,""c"",null,true,null,1,null,1,null,1,null,1,null,1,null,1,null,1,null,1,null,1.1,null,1.1,null,1.1,null,""1970-01-01T00:00:00Z"",null,""1970-01-01T00:00:00+00:00""]";
 #else
       expected = @"[null,""c"",null,true,null,1,null,1,null,1,null,1,null,1,null,1,null,1,null,1,null,1.1,null,1.1,null,1.1,null,""1970-01-01T00:00:00Z""]";
@@ -389,7 +407,7 @@ namespace Newtonsoft.Json.Tests
     }
 
     [Test]
-    public void FloatingPointNonFiniteNumbers()
+    public void FloatingPointNonFiniteNumbers_Symbol()
     {
       StringBuilder sb = new StringBuilder();
       StringWriter sw = new StringWriter(sb);
@@ -397,6 +415,7 @@ namespace Newtonsoft.Json.Tests
       using (JsonWriter jsonWriter = new JsonTextWriter(sw))
       {
         jsonWriter.Formatting = Formatting.Indented;
+        jsonWriter.FloatFormatHandling = FloatFormatHandling.Symbol;
 
         jsonWriter.WriteStartArray();
         jsonWriter.WriteValue(double.NaN);
@@ -424,6 +443,127 @@ namespace Newtonsoft.Json.Tests
     }
 
     [Test]
+    public void FloatingPointNonFiniteNumbers_Zero()
+    {
+      StringBuilder sb = new StringBuilder();
+      StringWriter sw = new StringWriter(sb);
+
+      using (JsonWriter jsonWriter = new JsonTextWriter(sw))
+      {
+        jsonWriter.Formatting = Formatting.Indented;
+        jsonWriter.FloatFormatHandling = FloatFormatHandling.DefaultValue;
+
+        jsonWriter.WriteStartArray();
+        jsonWriter.WriteValue(double.NaN);
+        jsonWriter.WriteValue(double.PositiveInfinity);
+        jsonWriter.WriteValue(double.NegativeInfinity);
+        jsonWriter.WriteValue(float.NaN);
+        jsonWriter.WriteValue(float.PositiveInfinity);
+        jsonWriter.WriteValue(float.NegativeInfinity);
+        jsonWriter.WriteValue((double?)double.NaN);
+        jsonWriter.WriteValue((double?)double.PositiveInfinity);
+        jsonWriter.WriteValue((double?)double.NegativeInfinity);
+        jsonWriter.WriteValue((float?)float.NaN);
+        jsonWriter.WriteValue((float?)float.PositiveInfinity);
+        jsonWriter.WriteValue((float?)float.NegativeInfinity);
+        jsonWriter.WriteEndArray();
+
+        jsonWriter.Flush();
+      }
+
+      string expected = @"[
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  0.0,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null
+]";
+      string result = sb.ToString();
+
+      Assert.AreEqual(expected, result);
+    }
+
+    [Test]
+    public void FloatingPointNonFiniteNumbers_String()
+    {
+      StringBuilder sb = new StringBuilder();
+      StringWriter sw = new StringWriter(sb);
+
+      using (JsonWriter jsonWriter = new JsonTextWriter(sw))
+      {
+        jsonWriter.Formatting = Formatting.Indented;
+        jsonWriter.FloatFormatHandling = FloatFormatHandling.String;
+
+        jsonWriter.WriteStartArray();
+        jsonWriter.WriteValue(double.NaN);
+        jsonWriter.WriteValue(double.PositiveInfinity);
+        jsonWriter.WriteValue(double.NegativeInfinity);
+        jsonWriter.WriteValue(float.NaN);
+        jsonWriter.WriteValue(float.PositiveInfinity);
+        jsonWriter.WriteValue(float.NegativeInfinity);
+        jsonWriter.WriteEndArray();
+
+        jsonWriter.Flush();
+      }
+
+      string expected = @"[
+  ""NaN"",
+  ""Infinity"",
+  ""-Infinity"",
+  ""NaN"",
+  ""Infinity"",
+  ""-Infinity""
+]";
+      string result = sb.ToString();
+
+      Assert.AreEqual(expected, result);
+    }
+
+    [Test]
+    public void FloatingPointNonFiniteNumbers_QuoteChar()
+    {
+      StringBuilder sb = new StringBuilder();
+      StringWriter sw = new StringWriter(sb);
+
+      using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
+      {
+        jsonWriter.Formatting = Formatting.Indented;
+        jsonWriter.FloatFormatHandling = FloatFormatHandling.String;
+        jsonWriter.QuoteChar = '\'';
+
+        jsonWriter.WriteStartArray();
+        jsonWriter.WriteValue(double.NaN);
+        jsonWriter.WriteValue(double.PositiveInfinity);
+        jsonWriter.WriteValue(double.NegativeInfinity);
+        jsonWriter.WriteValue(float.NaN);
+        jsonWriter.WriteValue(float.PositiveInfinity);
+        jsonWriter.WriteValue(float.NegativeInfinity);
+        jsonWriter.WriteEndArray();
+
+        jsonWriter.Flush();
+      }
+
+      string expected = @"[
+  'NaN',
+  'Infinity',
+  '-Infinity',
+  'NaN',
+  'Infinity',
+  '-Infinity'
+]";
+      string result = sb.ToString();
+
+      Assert.AreEqual(expected, result);
+    }
+
+    [Test]
     public void WriteRawInStart()
     {
       StringBuilder sb = new StringBuilder();
@@ -432,6 +572,7 @@ namespace Newtonsoft.Json.Tests
       using (JsonWriter jsonWriter = new JsonTextWriter(sw))
       {
         jsonWriter.Formatting = Formatting.Indented;
+        jsonWriter.FloatFormatHandling = FloatFormatHandling.Symbol;
 
         jsonWriter.WriteRaw("[1,2,3,4,5]");
         jsonWriter.WriteWhitespace("  ");
@@ -457,6 +598,7 @@ namespace Newtonsoft.Json.Tests
       using (JsonWriter jsonWriter = new JsonTextWriter(sw))
       {
         jsonWriter.Formatting = Formatting.Indented;
+        jsonWriter.FloatFormatHandling = FloatFormatHandling.Symbol;
 
         jsonWriter.WriteStartArray();
         jsonWriter.WriteValue(double.NaN);
@@ -569,6 +711,8 @@ namespace Newtonsoft.Json.Tests
 
       using (JsonWriter jsonWriter = new JsonTextWriter(sw))
       {
+        jsonWriter.FloatFormatHandling = FloatFormatHandling.Symbol;
+        
         jsonWriter.WriteStartArray();
 
         jsonWriter.WriteValue(0.0);
@@ -591,6 +735,46 @@ namespace Newtonsoft.Json.Tests
       }
 
       Assert.AreEqual(@"[0.0,0.0,0.1,1.0,1.000001,1E-06,4.94065645841247E-324,Infinity,-Infinity,NaN,1.7976931348623157E+308,-1.7976931348623157E+308,Infinity,-Infinity,NaN]", sb.ToString());
+    }
+
+    [Test]
+    public void WriteIntegerNumber()
+    {
+      StringBuilder sb = new StringBuilder();
+      StringWriter sw = new StringWriter(sb);
+
+      using (JsonWriter jsonWriter = new JsonTextWriter(sw) { Formatting = Formatting.Indented })
+      {
+        jsonWriter.WriteStartArray();
+
+        jsonWriter.WriteValue(int.MaxValue);
+        jsonWriter.WriteValue(int.MinValue);
+        jsonWriter.WriteValue(0);
+        jsonWriter.WriteValue(-0);
+        jsonWriter.WriteValue(9L);
+        jsonWriter.WriteValue(9UL);
+        jsonWriter.WriteValue(long.MaxValue);
+        jsonWriter.WriteValue(long.MinValue);
+        jsonWriter.WriteValue(ulong.MaxValue);
+        jsonWriter.WriteValue(ulong.MinValue);
+
+        jsonWriter.WriteEndArray();
+      }
+
+      Console.WriteLine(sb.ToString());
+
+      Assert.AreEqual(@"[
+  2147483647,
+  -2147483648,
+  0,
+  0,
+  9,
+  9,
+  9223372036854775807,
+  -9223372036854775808,
+  18446744073709551615,
+  0
+]", sb.ToString());
     }
 
     [Test]
@@ -642,6 +826,8 @@ namespace Newtonsoft.Json.Tests
       using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
       {
         jsonWriter.Formatting = Formatting.Indented;
+        jsonWriter.FloatFormatHandling = FloatFormatHandling.Symbol;
+
         Assert.AreEqual(Formatting.Indented, jsonWriter.Formatting);
 
         jsonWriter.Indentation = 5;
@@ -936,6 +1122,10 @@ _____'propertyName': NaN
       writer.WriteValue(new DateTime(2000, 1, 1, 1, 1, 1, DateTimeKind.Utc));
       writer.WriteValue(new DateTimeOffset(2000, 1, 1, 1, 1, 1, TimeSpan.Zero));
 
+      writer.DateFormatString = "yyyy gg";
+      writer.WriteValue(new DateTime(2000, 1, 1, 1, 1, 1, DateTimeKind.Utc));
+      writer.WriteValue(new DateTimeOffset(2000, 1, 1, 1, 1, 1, TimeSpan.Zero));
+
       writer.WriteValue(new byte[] { 1, 2, 3 });
       writer.WriteValue(TimeSpan.Zero);
       writer.WriteValue(new Uri("http://www.google.com/"));
@@ -948,10 +1138,35 @@ _____'propertyName': NaN
   '2000-01-01T01:01:01+00:00',
   '\/Date(946688461000)\/',
   '\/Date(946688461000+0000)\/',
+  '2000 A.D.',
+  '2000 A.D.',
   'AQID',
   '00:00:00',
   'http://www.google.com/',
   '00000000-0000-0000-0000-000000000000'
+]", sw.ToString());
+    }
+
+    [Test]
+    public void Culture()
+    {
+      StringWriter sw = new StringWriter();
+      JsonTextWriter writer = new JsonTextWriter(sw);
+      writer.Formatting = Formatting.Indented;
+      writer.DateFormatString = "yyyy tt";
+      writer.Culture = new CultureInfo("en-NZ");
+      writer.QuoteChar = '\'';
+
+      writer.WriteStartArray();
+
+      writer.WriteValue(new DateTime(2000, 1, 1, 1, 1, 1, DateTimeKind.Utc));
+      writer.WriteValue(new DateTimeOffset(2000, 1, 1, 1, 1, 1, TimeSpan.Zero));
+
+      writer.WriteEnd();
+
+      Assert.AreEqual(@"[
+  '2000 a.m.',
+  '2000 a.m.'
 ]", sw.ToString());
     }
 #endif
@@ -969,7 +1184,8 @@ _____'propertyName': NaN
           Console.WriteLine("Position: " + (int)c);
 
         StringWriter swNew = new StringWriter();
-        JavaScriptUtils.WriteEscapedJavaScriptString(swNew, c.ToString(), '"', true, JavaScriptUtils.DoubleQuoteCharEscapeFlags, StringEscapeHandling.Default);
+        char[] buffer = null;
+        JavaScriptUtils.WriteEscapedJavaScriptString(swNew, c.ToString(), '"', true, JavaScriptUtils.DoubleQuoteCharEscapeFlags, StringEscapeHandling.Default, ref buffer);
 
         StringWriter swOld = new StringWriter();
         WriteEscapedJavaScriptStringOld(swOld, c.ToString(), '"', true);
@@ -1104,6 +1320,181 @@ _____'propertyName': NaN
         writer.Write(delimiter);
     }
 
+    [Test]
+    public void CustomJsonTextWriterTests()
+    {
+      StringWriter sw = new StringWriter();
+      CustomJsonTextWriter writer = new CustomJsonTextWriter(sw) { Formatting = Formatting.Indented };
+      writer.WriteStartObject();
+      Assert.AreEqual(WriteState.Object, writer.WriteState);
+      writer.WritePropertyName("Property1");
+      Assert.AreEqual(WriteState.Property, writer.WriteState);
+      Assert.AreEqual("Property1", writer.Path);
+      writer.WriteNull();
+      Assert.AreEqual(WriteState.Object, writer.WriteState);
+      writer.WriteEndObject();
+      Assert.AreEqual(WriteState.Start, writer.WriteState);
 
+      Assert.AreEqual(@"{{{
+  ""1ytreporP"": NULL!!!
+}}}", sw.ToString());
+    }
   }
+
+  public class CustomJsonTextWriter : JsonTextWriter
+  {
+    private readonly TextWriter _writer;
+
+    public CustomJsonTextWriter(TextWriter textWriter) : base(textWriter)
+    {
+      _writer = textWriter;
+    }
+
+    public override void WritePropertyName(string name)
+    {
+      WritePropertyName(name, true);
+    }
+
+    public override void WritePropertyName(string name, bool escape)
+    {
+      SetWriteState(JsonToken.PropertyName, name);
+
+      if (QuoteName)
+        _writer.Write(QuoteChar);
+
+      _writer.Write(new string(name.ToCharArray().Reverse().ToArray()));
+
+      if (QuoteName)
+        _writer.Write(QuoteChar);
+
+      _writer.Write(':');
+    }
+
+    public override void WriteNull()
+    {
+      SetWriteState(JsonToken.Null, null);
+
+      _writer.Write("NULL!!!");
+    }
+
+    public override void WriteStartObject()
+    {
+      SetWriteState(JsonToken.StartObject, null);
+
+      _writer.Write("{{{");
+    }
+
+    public override void WriteEndObject()
+    {
+      SetWriteState(JsonToken.EndObject, null);
+    }
+
+    protected override void WriteEnd(JsonToken token)
+    {
+      if (token == JsonToken.EndObject)
+        _writer.Write("}}}");
+      else
+        base.WriteEnd(token);
+    }
+  }
+
+#if !(PORTABLE || NETFX_CORE)
+  public struct ConvertibleInt : IConvertible
+  {
+    private readonly int _value;
+
+    public ConvertibleInt(int value)
+    {
+      _value = value;
+    }
+
+    public TypeCode GetTypeCode()
+    {
+      return TypeCode.Int32;
+    }
+
+    public bool ToBoolean(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+
+    public byte ToByte(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+
+    public char ToChar(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+
+    public DateTime ToDateTime(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+
+    public decimal ToDecimal(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+
+    public double ToDouble(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+
+    public short ToInt16(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+
+    public int ToInt32(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+
+    public long ToInt64(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+
+    public sbyte ToSByte(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+
+    public float ToSingle(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+
+    public string ToString(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+
+    public object ToType(Type conversionType, IFormatProvider provider)
+    {
+      if (conversionType == typeof(int))
+        return _value;
+
+      throw new Exception("Type not supported: " + conversionType.FullName);
+    }
+
+    public ushort ToUInt16(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+
+    public uint ToUInt32(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+
+    public ulong ToUInt64(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+  }
+#endif
 }

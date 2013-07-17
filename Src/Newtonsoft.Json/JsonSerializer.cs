@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization.Formatters;
@@ -42,30 +43,36 @@ namespace Newtonsoft.Json
   /// </summary>
   public class JsonSerializer
   {
-    #region Properties
-    private TypeNameHandling _typeNameHandling;
-    private FormatterAssemblyStyle _typeNameAssemblyFormat;
-    private PreserveReferencesHandling _preserveReferencesHandling;
-    private ReferenceLoopHandling _referenceLoopHandling;
-    private MissingMemberHandling _missingMemberHandling;
-    private ObjectCreationHandling _objectCreationHandling;
-    private NullValueHandling _nullValueHandling;
-    private DefaultValueHandling _defaultValueHandling;
-    private ConstructorHandling _constructorHandling;
-    private JsonConverterCollection _converters;
-    private IContractResolver _contractResolver;
+    #region Properties_binder
+    internal TypeNameHandling _typeNameHandling;
+    internal FormatterAssemblyStyle _typeNameAssemblyFormat;
+    internal PreserveReferencesHandling _preserveReferencesHandling;
+    internal ReferenceLoopHandling _referenceLoopHandling;
+    internal MissingMemberHandling _missingMemberHandling;
+    internal ObjectCreationHandling _objectCreationHandling;
+    internal NullValueHandling _nullValueHandling;
+    internal DefaultValueHandling _defaultValueHandling;
+    internal ConstructorHandling _constructorHandling;
+    internal JsonConverterCollection _converters;
+    internal IContractResolver _contractResolver;
+    internal ITraceWriter _traceWriter;
+    internal SerializationBinder _binder;
+    internal StreamingContext _context;
     private IReferenceResolver _referenceResolver;
-    private ITraceWriter _traceWriter;
-    private SerializationBinder _binder;
-    private StreamingContext _context;
+
     private Formatting? _formatting;
     private DateFormatHandling? _dateFormatHandling;
     private DateTimeZoneHandling? _dateTimeZoneHandling;
     private DateParseHandling? _dateParseHandling;
+    private FloatFormatHandling? _floatFormatHandling;
+    private FloatParseHandling? _floatParseHandling;
+    private StringEscapeHandling? _stringEscapeHandling;
     private CultureInfo _culture;
     private int? _maxDepth;
     private bool _maxDepthSet;
     private bool? _checkAdditionalContent;
+    private string _dateFormatString;
+    private bool _dateFormatStringSet;
 
     /// <summary>
     /// Occurs when the <see cref="JsonSerializer"/> errors during serialization and deserialization.
@@ -77,13 +84,7 @@ namespace Newtonsoft.Json
     /// </summary>
     public virtual IReferenceResolver ReferenceResolver
     {
-      get
-      {
-        if (_referenceResolver == null)
-          _referenceResolver = new DefaultReferenceResolver();
-
-        return _referenceResolver;
-      }
+      get { return GetReferenceResolver(); }
       set
       {
         if (value == null)
@@ -286,14 +287,8 @@ namespace Newtonsoft.Json
     /// </summary>
     public virtual IContractResolver ContractResolver
     {
-      get
-      {
-        if (_contractResolver == null)
-          _contractResolver = DefaultContractResolver.Instance;
-
-        return _contractResolver;
-      }
-      set { _contractResolver = value; }
+      get { return _contractResolver; }
+      set { _contractResolver = value ?? DefaultContractResolver.Instance; }
     }
 
     /// <summary>
@@ -340,6 +335,48 @@ namespace Newtonsoft.Json
     {
       get { return _dateParseHandling ?? JsonSerializerSettings.DefaultDateParseHandling; }
       set { _dateParseHandling = value; }
+    }
+
+    /// <summary>
+    /// Get or set how floating point numbers, e.g. 1.0 and 9.9, are parsed when reading JSON text.
+    /// </summary>
+    public virtual FloatParseHandling FloatParseHandling
+    {
+      get { return _floatParseHandling ?? JsonSerializerSettings.DefaultFloatParseHandling; }
+      set { _floatParseHandling = value; }
+    }
+
+    /// <summary>
+    /// Get or set how special floating point numbers, e.g. <see cref="F:System.Double.NaN"/>,
+    /// <see cref="F:System.Double.PositiveInfinity"/> and <see cref="F:System.Double.NegativeInfinity"/>,
+    /// are written as JSON text.
+    /// </summary>
+    public virtual FloatFormatHandling FloatFormatHandling
+    {
+      get { return _floatFormatHandling ?? JsonSerializerSettings.DefaultFloatFormatHandling; }
+      set { _floatFormatHandling = value; }
+    }
+
+    /// <summary>
+    /// Get or set how strings are escaped when writing JSON text.
+    /// </summary>
+    public virtual StringEscapeHandling StringEscapeHandling
+    {
+      get { return _stringEscapeHandling ?? JsonSerializerSettings.DefaultStringEscapeHandling; }
+      set { _stringEscapeHandling = value; }
+    }
+
+    /// <summary>
+    /// Get or set how <see cref="DateTime"/> and <see cref="DateTimeOffset"/> values are formatting when writing JSON text.
+    /// </summary>
+    public virtual string DateFormatString
+    {
+      get { return _dateFormatString ?? JsonSerializerSettings.DefaultDateFormatString; }
+      set
+      {
+        _dateFormatString = value;
+        _dateFormatStringSet = true;
+      }
     }
 
     /// <summary>
@@ -401,59 +438,154 @@ namespace Newtonsoft.Json
       _typeNameHandling = JsonSerializerSettings.DefaultTypeNameHandling;
       _context = JsonSerializerSettings.DefaultContext;
       _binder = DefaultSerializationBinder.Instance;
+
+      _culture = JsonSerializerSettings.DefaultCulture;
+      _contractResolver = DefaultContractResolver.Instance;
+    }
+
+    /// <summary>
+    /// Creates a new <see cref="JsonSerializer"/> instance.
+    /// The <see cref="JsonSerializer"/> will not use default settings.
+    /// </summary>
+    /// <returns>
+    /// A new <see cref="JsonSerializer"/> instance.
+    /// The <see cref="JsonSerializer"/> will not use default settings.
+    /// </returns>
+    public static JsonSerializer Create()
+    {
+      return new JsonSerializer();
     }
 
     /// <summary>
     /// Creates a new <see cref="JsonSerializer"/> instance using the specified <see cref="JsonSerializerSettings"/>.
+    /// The <see cref="JsonSerializer"/> will not use default settings.
     /// </summary>
     /// <param name="settings">The settings to be applied to the <see cref="JsonSerializer"/>.</param>
-    /// <returns>A new <see cref="JsonSerializer"/> instance using the specified <see cref="JsonSerializerSettings"/>.</returns>
+    /// <returns>
+    /// A new <see cref="JsonSerializer"/> instance using the specified <see cref="JsonSerializerSettings"/>.
+    /// The <see cref="JsonSerializer"/> will not use default settings.
+    /// </returns>
     public static JsonSerializer Create(JsonSerializerSettings settings)
     {
-      JsonSerializer jsonSerializer = new JsonSerializer();
+      JsonSerializer serializer = Create();
 
       if (settings != null)
+        ApplySerializerSettings(serializer, settings);
+
+      return serializer;
+    }
+
+    /// <summary>
+    /// Creates a new <see cref="JsonSerializer"/> instance.
+    /// The <see cref="JsonSerializer"/> will use default settings.
+    /// </summary>
+    /// <returns>
+    /// A new <see cref="JsonSerializer"/> instance.
+    /// The <see cref="JsonSerializer"/> will use default settings.
+    /// </returns>
+    public static JsonSerializer CreateDefault()
+    {
+      // copy static to local variable to avoid concurrency issues
+      Func<JsonSerializerSettings> defaultSettingsCreator = JsonConvert.DefaultSettings;
+      JsonSerializerSettings defaultSettings = (defaultSettingsCreator != null) ? defaultSettingsCreator() : null;
+
+      return Create(defaultSettings);
+    }
+
+    /// <summary>
+    /// Creates a new <see cref="JsonSerializer"/> instance using the specified <see cref="JsonSerializerSettings"/>.
+    /// The <see cref="JsonSerializer"/> will use default settings.
+    /// </summary>
+    /// <param name="settings">The settings to be applied to the <see cref="JsonSerializer"/>.</param>
+    /// <returns>
+    /// A new <see cref="JsonSerializer"/> instance using the specified <see cref="JsonSerializerSettings"/>.
+    /// The <see cref="JsonSerializer"/> will use default settings.
+    /// </returns>
+    public static JsonSerializer CreateDefault(JsonSerializerSettings settings)
+    {
+      JsonSerializer serializer = CreateDefault();
+      if (settings != null)
+        ApplySerializerSettings(serializer, settings);
+
+      return serializer;
+    }
+
+    private static void ApplySerializerSettings(JsonSerializer serializer, JsonSerializerSettings settings)
+    {
+      if (!CollectionUtils.IsNullOrEmpty(settings.Converters))
       {
-        if (!CollectionUtils.IsNullOrEmpty(settings.Converters))
-          jsonSerializer.Converters.AddRange(settings.Converters);
-
-        // serializer specific
-        jsonSerializer.TypeNameHandling = settings.TypeNameHandling;
-        jsonSerializer.TypeNameAssemblyFormat = settings.TypeNameAssemblyFormat;
-        jsonSerializer.PreserveReferencesHandling = settings.PreserveReferencesHandling;
-        jsonSerializer.ReferenceLoopHandling = settings.ReferenceLoopHandling;
-        jsonSerializer.MissingMemberHandling = settings.MissingMemberHandling;
-        jsonSerializer.ObjectCreationHandling = settings.ObjectCreationHandling;
-        jsonSerializer.NullValueHandling = settings.NullValueHandling;
-        jsonSerializer.DefaultValueHandling = settings.DefaultValueHandling;
-        jsonSerializer.ConstructorHandling = settings.ConstructorHandling;
-        jsonSerializer.Context = settings.Context;
-        jsonSerializer._checkAdditionalContent = settings._checkAdditionalContent;
-
-        // reader/writer specific
-        // unset values won't override reader/writer set values
-        jsonSerializer._formatting = settings._formatting;
-        jsonSerializer._dateFormatHandling = settings._dateFormatHandling;
-        jsonSerializer._dateTimeZoneHandling = settings._dateTimeZoneHandling;
-        jsonSerializer._dateParseHandling = settings._dateParseHandling;
-        jsonSerializer._culture = settings._culture;
-        jsonSerializer._maxDepth = settings._maxDepth;
-        jsonSerializer._maxDepthSet = settings._maxDepthSet;
-
-        if (settings.Error != null)
-          jsonSerializer.Error += settings.Error;
-
-        if (settings.ContractResolver != null)
-          jsonSerializer.ContractResolver = settings.ContractResolver;
-        if (settings.ReferenceResolver != null)
-          jsonSerializer.ReferenceResolver = settings.ReferenceResolver;
-        if (settings.TraceWriter != null)
-          jsonSerializer.TraceWriter = settings.TraceWriter;
-        if (settings.Binder != null)
-          jsonSerializer.Binder = settings.Binder;
+        // insert settings converters at the beginning so they take precedence
+        // if user wants to remove one of the default converters they will have to do it manually
+        for (int i = 0; i < settings.Converters.Count; i++)
+        {
+          serializer.Converters.Insert(i, settings.Converters[i]);
+        }
       }
 
-      return jsonSerializer;
+      // serializer specific
+      if (settings._typeNameHandling != null)
+        serializer.TypeNameHandling = settings.TypeNameHandling;
+      if (settings._typeNameAssemblyFormat != null)
+        serializer.TypeNameAssemblyFormat = settings.TypeNameAssemblyFormat;
+      if (settings._preserveReferencesHandling != null)
+        serializer.PreserveReferencesHandling = settings.PreserveReferencesHandling;
+      if (settings._referenceLoopHandling != null)
+        serializer.ReferenceLoopHandling = settings.ReferenceLoopHandling;
+      if (settings._missingMemberHandling != null)
+        serializer.MissingMemberHandling = settings.MissingMemberHandling;
+      if (settings._objectCreationHandling != null)
+        serializer.ObjectCreationHandling = settings.ObjectCreationHandling;
+      if (settings._nullValueHandling != null)
+        serializer.NullValueHandling = settings.NullValueHandling;
+      if (settings._defaultValueHandling != null)
+        serializer.DefaultValueHandling = settings.DefaultValueHandling;
+      if (settings._constructorHandling != null)
+        serializer.ConstructorHandling = settings.ConstructorHandling;
+      if (settings._context != null)
+        serializer.Context = settings.Context;
+      if (settings._checkAdditionalContent != null)
+        serializer._checkAdditionalContent = settings._checkAdditionalContent;
+
+      if (settings.Error != null)
+        serializer.Error += settings.Error;
+
+      if (settings.ContractResolver != null)
+        serializer.ContractResolver = settings.ContractResolver;
+      if (settings.ReferenceResolver != null)
+        serializer.ReferenceResolver = settings.ReferenceResolver;
+      if (settings.TraceWriter != null)
+        serializer.TraceWriter = settings.TraceWriter;
+      if (settings.Binder != null)
+        serializer.Binder = settings.Binder;
+
+      // reader/writer specific
+      // unset values won't override reader/writer set values
+      if (settings._formatting != null)
+        serializer._formatting = settings._formatting;
+      if (settings._dateFormatHandling != null)
+        serializer._dateFormatHandling = settings._dateFormatHandling;
+      if (settings._dateTimeZoneHandling != null)
+        serializer._dateTimeZoneHandling = settings._dateTimeZoneHandling;
+      if (settings._dateParseHandling != null)
+        serializer._dateParseHandling = settings._dateParseHandling;
+      if (settings._dateFormatStringSet)
+      {
+        serializer._dateFormatString = settings._dateFormatString;
+        serializer._dateFormatStringSet = settings._dateFormatStringSet;
+      }
+      if (settings._floatFormatHandling != null)
+        serializer._floatFormatHandling = settings._floatFormatHandling;
+      if (settings._floatParseHandling != null)
+        serializer._floatParseHandling = settings._floatParseHandling;
+      if (settings._stringEscapeHandling != null)
+        serializer._stringEscapeHandling = settings._stringEscapeHandling;
+      if (settings._culture != null)
+        serializer._culture = settings._culture;
+      if (settings._maxDepthSet)
+      {
+        serializer._maxDepth = settings._maxDepth;
+        serializer._maxDepthSet = settings._maxDepthSet;
+      }
     }
 
     /// <summary>
@@ -537,23 +669,33 @@ namespace Newtonsoft.Json
 
       // set serialization options onto reader
       CultureInfo previousCulture = null;
-      if (_culture != null && reader.Culture != _culture)
+      if (_culture != null && !_culture.Equals(reader.Culture))
       {
         previousCulture = reader.Culture;
         reader.Culture = _culture;
       }
+
       DateTimeZoneHandling? previousDateTimeZoneHandling = null;
       if (_dateTimeZoneHandling != null && reader.DateTimeZoneHandling != _dateTimeZoneHandling)
       {
         previousDateTimeZoneHandling = reader.DateTimeZoneHandling;
         reader.DateTimeZoneHandling = _dateTimeZoneHandling.Value;
       }
+
       DateParseHandling? previousDateParseHandling = null;
       if (_dateParseHandling != null && reader.DateParseHandling != _dateParseHandling)
       {
         previousDateParseHandling = reader.DateParseHandling;
         reader.DateParseHandling = _dateParseHandling.Value;
       }
+
+      FloatParseHandling? previousFloatParseHandling = null;
+      if (_floatParseHandling != null && reader.FloatParseHandling != _floatParseHandling)
+      {
+        previousFloatParseHandling = reader.FloatParseHandling;
+        reader.FloatParseHandling = _floatParseHandling.Value;
+      }
+
       int? previousMaxDepth = null;
       if (_maxDepthSet && reader.MaxDepth != _maxDepth)
       {
@@ -561,8 +703,15 @@ namespace Newtonsoft.Json
         reader.MaxDepth = _maxDepth;
       }
 
+      TraceJsonReader traceJsonReader = (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
+                                          ? new TraceJsonReader(reader)
+                                          : null;
+
       JsonSerializerInternalReader serializerReader = new JsonSerializerInternalReader(this);
-      object value = serializerReader.Deserialize(reader, objectType, CheckAdditionalContent);
+      object value = serializerReader.Deserialize(traceJsonReader ?? reader, objectType, CheckAdditionalContent);
+
+      if (traceJsonReader != null)
+        TraceWriter.Trace(TraceLevel.Verbose, "Deserialized JSON: " + Environment.NewLine + traceJsonReader.GetJson(), null);
 
       // reset reader back to previous options
       if (previousCulture != null)
@@ -571,6 +720,8 @@ namespace Newtonsoft.Json
         reader.DateTimeZoneHandling = previousDateTimeZoneHandling.Value;
       if (previousDateParseHandling != null)
         reader.DateParseHandling = previousDateParseHandling.Value;
+      if (previousFloatParseHandling != null)
+        reader.FloatParseHandling = previousFloatParseHandling.Value;
       if (_maxDepthSet)
         reader.MaxDepth = previousMaxDepth;
 
@@ -590,16 +741,48 @@ namespace Newtonsoft.Json
 
     /// <summary>
     /// Serializes the specified <see cref="Object"/> and writes the Json structure
+    /// to a <c>Stream</c> using the specified <see cref="TextWriter"/>. 
+    /// </summary>
+    /// <param name="jsonWriter">The <see cref="JsonWriter"/> used to write the Json structure.</param>
+    /// <param name="value">The <see cref="Object"/> to serialize.</param>
+    /// <param name="objectType">
+    /// The type of the value being serialized.
+    /// This parameter is used when <see cref="TypeNameHandling"/> is Auto to write out the type name if the type of the value does not match.
+    /// Specifing the type is optional.
+    /// </param>
+    public void Serialize(JsonWriter jsonWriter, object value, Type objectType)
+    {
+      SerializeInternal(jsonWriter, value, objectType);
+    }
+
+    /// <summary>
+    /// Serializes the specified <see cref="Object"/> and writes the Json structure
+    /// to a <c>Stream</c> using the specified <see cref="TextWriter"/>. 
+    /// </summary>
+    /// <param name="textWriter">The <see cref="TextWriter"/> used to write the Json structure.</param>
+    /// <param name="value">The <see cref="Object"/> to serialize.</param>
+    /// <param name="objectType">
+    /// The type of the value being serialized.
+    /// This parameter is used when <see cref="TypeNameHandling"/> is Auto to write out the type name if the type of the value does not match.
+    /// Specifing the type is optional.
+    /// </param>
+    public void Serialize(TextWriter textWriter, object value, Type objectType)
+    {
+      Serialize(new JsonTextWriter(textWriter), value, objectType);
+    }
+
+    /// <summary>
+    /// Serializes the specified <see cref="Object"/> and writes the Json structure
     /// to a <c>Stream</c> using the specified <see cref="JsonWriter"/>. 
     /// </summary>
     /// <param name="jsonWriter">The <see cref="JsonWriter"/> used to write the Json structure.</param>
     /// <param name="value">The <see cref="Object"/> to serialize.</param>
     public void Serialize(JsonWriter jsonWriter, object value)
     {
-      SerializeInternal(jsonWriter, value);
+      SerializeInternal(jsonWriter, value, null);
     }
 
-    internal virtual void SerializeInternal(JsonWriter jsonWriter, object value)
+    internal virtual void SerializeInternal(JsonWriter jsonWriter, object value, Type objectType)
     {
       ValidationUtils.ArgumentNotNull(jsonWriter, "jsonWriter");
 
@@ -610,21 +793,58 @@ namespace Newtonsoft.Json
         previousFormatting = jsonWriter.Formatting;
         jsonWriter.Formatting = _formatting.Value;
       }
+
       DateFormatHandling? previousDateFormatHandling = null;
       if (_dateFormatHandling != null && jsonWriter.DateFormatHandling != _dateFormatHandling)
       {
         previousDateFormatHandling = jsonWriter.DateFormatHandling;
         jsonWriter.DateFormatHandling = _dateFormatHandling.Value;
       }
+
       DateTimeZoneHandling? previousDateTimeZoneHandling = null;
       if (_dateTimeZoneHandling != null && jsonWriter.DateTimeZoneHandling != _dateTimeZoneHandling)
       {
         previousDateTimeZoneHandling = jsonWriter.DateTimeZoneHandling;
         jsonWriter.DateTimeZoneHandling = _dateTimeZoneHandling.Value;
       }
-      
+
+      FloatFormatHandling? previousFloatFormatHandling = null;
+      if (_floatFormatHandling != null && jsonWriter.FloatFormatHandling != _floatFormatHandling)
+      {
+        previousFloatFormatHandling = jsonWriter.FloatFormatHandling;
+        jsonWriter.FloatFormatHandling = _floatFormatHandling.Value;
+      }
+
+      StringEscapeHandling? previousStringEscapeHandling = null;
+      if (_stringEscapeHandling != null && jsonWriter.StringEscapeHandling != _stringEscapeHandling)
+      {
+        previousStringEscapeHandling = jsonWriter.StringEscapeHandling;
+        jsonWriter.StringEscapeHandling = _stringEscapeHandling.Value;
+      }
+
+      CultureInfo previousCulture = null;
+      if (_culture != null && !_culture.Equals(jsonWriter.Culture))
+      {
+        previousCulture = jsonWriter.Culture;
+        jsonWriter.Culture = _culture;
+      }
+
+      string previousDateFormatString = null;
+      if (_dateFormatStringSet && jsonWriter.DateFormatString != _dateFormatString)
+      {
+        previousDateFormatString = jsonWriter.DateFormatString;
+        jsonWriter.DateFormatString = _dateFormatString;
+      }
+
+      TraceJsonWriter traceJsonWriter = (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
+                                          ? new TraceJsonWriter(jsonWriter)
+                                          : null;
+
       JsonSerializerInternalWriter serializerWriter = new JsonSerializerInternalWriter(this);
-      serializerWriter.Serialize(jsonWriter, value);
+      serializerWriter.Serialize(traceJsonWriter ?? jsonWriter, value, objectType);
+
+      if (traceJsonWriter != null)
+        TraceWriter.Trace(TraceLevel.Verbose, "Serialized JSON: " + Environment.NewLine + traceJsonWriter.GetJson(), null);
 
       // reset writer back to previous options
       if (previousFormatting != null)
@@ -633,6 +853,22 @@ namespace Newtonsoft.Json
         jsonWriter.DateFormatHandling = previousDateFormatHandling.Value;
       if (previousDateTimeZoneHandling != null)
         jsonWriter.DateTimeZoneHandling = previousDateTimeZoneHandling.Value;
+      if (previousFloatFormatHandling != null)
+        jsonWriter.FloatFormatHandling = previousFloatFormatHandling.Value;
+      if (previousStringEscapeHandling != null)
+        jsonWriter.StringEscapeHandling = previousStringEscapeHandling.Value;
+      if (_dateFormatStringSet)
+        jsonWriter.DateFormatString = previousDateFormatString;
+      if (previousCulture != null)
+        jsonWriter.Culture = previousCulture;
+    }
+
+    internal IReferenceResolver GetReferenceResolver()
+    {
+      if (_referenceResolver == null)
+        _referenceResolver = new DefaultReferenceResolver();
+
+      return _referenceResolver;
     }
 
     internal JsonConverter GetMatchingConverter(Type type)

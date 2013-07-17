@@ -27,7 +27,7 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.Serialization;
-#if !(SILVERLIGHT || PocketPC || NET20 || NET35 || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NET20 || NET35 || NETFX_CORE || PORTABLE)
 using System.Runtime.Serialization.Json;
 #endif
 using System.Text;
@@ -147,6 +147,33 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual("TestProperty1Value", c.TestProperty1);
     }
 
+    public class DefaultHandler
+    {
+      [DefaultValue(-1)]
+      public int field1;
+
+      [DefaultValue("default")]
+      public string field2;
+    }
+
+    [Test]
+    public void DeserializeIgnoreAndPopulate()
+    {
+      DefaultHandler c1 = JsonConvert.DeserializeObject<DefaultHandler>("{}", new JsonSerializerSettings
+      {
+        DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate
+      });
+      Assert.AreEqual(-1, c1.field1);
+      Assert.AreEqual("default", c1.field2);
+
+      DefaultHandler c2 = JsonConvert.DeserializeObject<DefaultHandler>("{'field1':-1,'field2':'default'}", new JsonSerializerSettings
+      {
+        DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate
+      });
+      Assert.AreEqual(-1, c2.field1);
+      Assert.AreEqual("default", c2.field2);
+    }
+
     [JsonObject]
     public class NetworkUser
     {
@@ -209,7 +236,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     {
       EmitDefaultValueClass c = new EmitDefaultValueClass();
 
-#if !(SILVERLIGHT || PocketPC || NET20 || NET35 || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NET20 || NET35 || NETFX_CORE || PORTABLE)
       DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(EmitDefaultValueClass));
 
       MemoryStream ms = new MemoryStream();
@@ -286,7 +313,32 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual(0, o.IntValue2);
       Assert.AreEqual(null, o.ClassValue);
     }
+
+#if !NET20
+    [Test]
+    public void EmitDefaultValueIgnoreAndPopulate()
+    {
+      string str = "{}";
+      TestClass obj = JsonConvert.DeserializeObject<TestClass>(str, new JsonSerializerSettings
+        {
+          DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate
+        });
+
+      Assert.AreEqual("fff", obj.Field1);
+    }
+#endif
   }
+
+#if !NET20
+  [DataContract]
+  public class TestClass
+  {
+    [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+    [DataMember(EmitDefaultValue = false)]
+    [DefaultValue("fff")]
+    public string Field1 { set; get; }
+  }
+#endif
 
   public class DefaultValueHandlingDeserialize
   {

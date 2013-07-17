@@ -25,6 +25,9 @@
 
 using System;
 using System.Collections.Generic;
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+using System.Numerics;
+#endif
 using System.Text;
 using Newtonsoft.Json.Converters;
 #if !NETFX_CORE
@@ -40,6 +43,7 @@ using System.IO;
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
+using Newtonsoft.Json.Utilities;
 #endif
 
 namespace Newtonsoft.Json.Tests.Linq
@@ -87,7 +91,7 @@ namespace Newtonsoft.Json.Tests.Linq
           DateParseHandling = DateParseHandling.DateTimeOffset
         });
       Assert.AreEqual(typeof(DateTimeOffset), v.Value.GetType());
-      Assert.AreEqual(new DateTimeOffset(JsonConvert.InitialJavaScriptDateTicks, new TimeSpan(12, 31, 0)), v.Value);
+      Assert.AreEqual(new DateTimeOffset(DateTimeUtils.InitialJavaScriptDateTicks, new TimeSpan(12, 31, 0)), v.Value);
 #endif
     }
 
@@ -233,7 +237,7 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(2L, (long)new JArray(1, 2, 3)[1]);
 
       Assert.AreEqual(new DateTime(2000, 12, 20), (DateTime)new JValue(new DateTime(2000, 12, 20)));
-#if !PocketPC && !NET20
+#if !NET20
       Assert.AreEqual(new DateTimeOffset(2000, 12, 20, 0, 0, 0, TimeSpan.Zero), (DateTimeOffset)new JValue(new DateTime(2000, 12, 20, 0, 0, 0, DateTimeKind.Utc)));
       Assert.AreEqual(new DateTimeOffset(2000, 12, 20, 23, 50, 10, TimeSpan.Zero), (DateTimeOffset)new JValue(new DateTimeOffset(2000, 12, 20, 23, 50, 10, TimeSpan.Zero)));
       Assert.AreEqual(null, (DateTimeOffset?)new JValue((DateTimeOffset?)null));
@@ -315,7 +319,9 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(new Uri("http://www.google.com"), (Uri)(new JValue(new Uri("http://www.google.com"))));
       Assert.AreEqual(null, (Uri)(new JValue((object)null)));
       Assert.AreEqual(Convert.ToBase64String(Encoding.UTF8.GetBytes("hi")), (string)(new JValue(Encoding.UTF8.GetBytes("hi"))));
-      Assert.AreEqual(Encoding.UTF8.GetBytes("hi"), (byte[])(new JValue(Convert.ToBase64String(Encoding.UTF8.GetBytes("hi")))));
+      CollectionAssert.AreEquivalent((byte[])Encoding.UTF8.GetBytes("hi"), (byte[])(new JValue(Convert.ToBase64String(Encoding.UTF8.GetBytes("hi")))));
+      Assert.AreEqual(new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC"), (Guid)(new JValue(new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC").ToByteArray())));
+      Assert.AreEqual(new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC"), (Guid?)(new JValue(new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC").ToByteArray())));
 
       Assert.AreEqual(null, (Uri)(JValue)null);
       Assert.AreEqual(null, (int?)(JValue)null);
@@ -344,6 +350,33 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(data, (byte[])(new JValue(data)));
 
       Assert.AreEqual(5, (int)(new JValue(StringComparison.OrdinalIgnoreCase)));
+
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)
+      string bigIntegerText = "1234567899999999999999999999999999999999999999999999999999999999999990";
+
+      Assert.AreEqual(BigInteger.Parse(bigIntegerText), (new JValue(BigInteger.Parse(bigIntegerText))).Value);
+
+      Assert.AreEqual(BigInteger.Parse(bigIntegerText), (new JValue(bigIntegerText)).ToObject<BigInteger>());
+      Assert.AreEqual(new BigInteger(long.MaxValue), (new JValue(long.MaxValue)).ToObject<BigInteger>());
+      Assert.AreEqual(new BigInteger(4.5d), (new JValue((4.5d))).ToObject<BigInteger>());
+      Assert.AreEqual(new BigInteger(4.5f), (new JValue((4.5f))).ToObject<BigInteger>());
+      Assert.AreEqual(new BigInteger(byte.MaxValue), (new JValue(byte.MaxValue)).ToObject<BigInteger>());
+      Assert.AreEqual(new BigInteger(123), (new JValue(123)).ToObject<BigInteger>());
+      Assert.AreEqual(new BigInteger(123), (new JValue(123)).ToObject<BigInteger?>());
+      Assert.AreEqual(null, (new JValue((object)null)).ToObject<BigInteger?>());
+
+      byte[] intData = BigInteger.Parse(bigIntegerText).ToByteArray();
+      Assert.AreEqual(BigInteger.Parse(bigIntegerText), (new JValue(intData)).ToObject<BigInteger>());
+
+      Assert.AreEqual(4.0d, (double)(new JValue(new BigInteger(4.5d))));
+      Assert.AreEqual(true, (bool)(new JValue(new BigInteger(1))));
+      Assert.AreEqual(long.MaxValue, (long)(new JValue(new BigInteger(long.MaxValue))));
+      Assert.AreEqual(long.MaxValue, (long)(new JValue(new BigInteger(new byte[] { 255, 255, 255, 255, 255, 255, 255, 127 }))));
+      Assert.AreEqual("9223372036854775807", (string)(new JValue(new BigInteger(long.MaxValue))));
+
+      intData = (byte[]) (new JValue(new BigInteger(long.MaxValue)));
+      CollectionAssert.AreEqual(new byte[] { 255, 255, 255, 255, 255, 255, 255, 127 }, intData);
+#endif
     }
 
     [Test]
@@ -394,14 +427,26 @@ namespace Newtonsoft.Json.Tests.Linq
       ExceptionAssert.Throws<ArgumentException>("Can not convert Uri to Guid.", () => { var i = (Guid)new JValue(new Uri("http://www.google.com")); });
 
 #if !NET20
-      ExceptionAssert.Throws<Exception>("Can not convert Boolean to DateTimeOffset.", () => { var i = (DateTimeOffset)new JValue(true); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Boolean to DateTimeOffset.", () => { var i = (DateTimeOffset)new JValue(true); });
 #endif
-      ExceptionAssert.Throws<Exception>("Can not convert Boolean to Uri.", () => { var i = (Uri)new JValue(true); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Boolean to Uri.", () => { var i = (Uri)new JValue(true); });
+
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Uri to BigInteger.", () => { var i = (new JValue(new Uri("http://www.google.com"))).ToObject<BigInteger>(); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Null to BigInteger.", () => { var i = (new JValue((object)null)).ToObject<BigInteger>(); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Guid to BigInteger.", () => { var i = (new JValue(Guid.NewGuid())).ToObject<BigInteger>(); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Guid to BigInteger.", () => { var i = (new JValue(Guid.NewGuid())).ToObject<BigInteger?>(); });
+#endif
     }
 
     [Test]
     public void ToObject()
     {
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+      Assert.AreEqual((BigInteger)1, (new JValue(1).ToObject(typeof(BigInteger))));
+      Assert.AreEqual((BigInteger)1, (new JValue(1).ToObject(typeof(BigInteger?))));
+      Assert.AreEqual((BigInteger?)null, (new JValue((object)null).ToObject(typeof(BigInteger?))));
+#endif
       Assert.AreEqual((ushort)1, (new JValue(1).ToObject(typeof(ushort))));
       Assert.AreEqual((ushort)1, (new JValue(1).ToObject(typeof(ushort?))));
       Assert.AreEqual((uint)1L, (new JValue(1).ToObject(typeof(uint))));
@@ -446,11 +491,17 @@ namespace Newtonsoft.Json.Tests.Linq
     public void ImplicitCastingTo()
     {
       Assert.IsTrue(JToken.DeepEquals(new JValue(new DateTime(2000, 12, 20)), (JValue)new DateTime(2000, 12, 20)));
-#if !PocketPC && !NET20
+#if !NET20
       Assert.IsTrue(JToken.DeepEquals(new JValue(new DateTimeOffset(2000, 12, 20, 23, 50, 10, TimeSpan.Zero)), (JValue)new DateTimeOffset(2000, 12, 20, 23, 50, 10, TimeSpan.Zero)));
       Assert.IsTrue(JToken.DeepEquals(new JValue((DateTimeOffset?)null), (JValue)(DateTimeOffset?)null));
 #endif
 
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)
+      // had to remove implicit casting to avoid user reference to System.Numerics.dll
+      Assert.IsTrue(JToken.DeepEquals(new JValue(new BigInteger(1)), new JValue(new BigInteger(1))));
+      Assert.IsTrue(JToken.DeepEquals(new JValue((BigInteger?)null), new JValue((BigInteger?)null)));
+#endif
+      Assert.IsTrue(JToken.DeepEquals(new JValue(true), (JValue)true));
       Assert.IsTrue(JToken.DeepEquals(new JValue(true), (JValue)true));
       Assert.IsTrue(JToken.DeepEquals(new JValue(true), (JValue)(bool?)true));
       Assert.IsTrue(JToken.DeepEquals(new JValue((bool?)null), (JValue)(bool?)null));
@@ -884,7 +935,7 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.IsTrue(a.DeepEquals(a2));
     }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
     [Test]
     public void Clone()
     {

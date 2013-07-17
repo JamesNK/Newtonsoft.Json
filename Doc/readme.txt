@@ -2,19 +2,19 @@ Json.NET
 
 http://james.newtonking.com/projects/json-net.aspx
 http://www.codeplex.com/json/
+https://github.com/JamesNK/Newtonsoft.Json
 
 
 Description:
 
-Json.NET makes working with JSON formatted data in .NET simple. Quickly read and write
-JSON using LINQ to JSON or serialize your .NET objects with a single method call using
-the JsonSerializer.
+Json.NET is a popular high-performance JSON framework for .NET
 
--Flexible JSON serializer to convert .NET objects to JSON and back again 
--LINQ to JSON for reading and writing JSON 
--Writes indented, easy to read JSON 
--Convert JSON to and from XML 
--Supports Silverlight and Windows Phone
+-Flexible JSON serializer for converting between .NET objects and JSON
+-LINQ to JSON for manually reading and writing JSON
+-High performance, faster than .NET's built-in JSON serializers
+-Write indented, easy to read JSON
+-Convert JSON to and from XML
+-Supports .NET 2, .NET 3.5, .NET 4, .NET 4.5, Silverlight, Windows Phone and Windows 8 Store
 
 
 Documentation:
@@ -24,28 +24,28 @@ http://james.newtonking.com/projects/json/help/
 
 Versions:
 
-Json.NET comes in different versions for the various .NET frameworks.
+Json.NET has different libaries for the various .NET Framework versions.
+
+-Net45:
+  .NET latest (4.5)
 
 -Net40:
-  .NET latest (4.0 & 4.5)
+  .NET 4.0
 
 -Net35:
-  .NET 3.5 SP1, Mono
+  .NET 3.5
 
 -Net20:
   .NET 2.0
 
--Silverlight:
-  Silverlight 4 & 5
+-WinRT:
+  Windows 8 Store
 
--WindowsPhone:
-  Windows Phone 7 & 7.1
+-Portable45:
+  .NET 4.5, Windows Phone 8, Windows 8 Store
 
--Metro
-  Windows 8, WinRT 4.5
-
--Portable
-  Portable Class Library (.NET 4.0, WP7, SL4)
+-Portable40:
+  .NET 4.0, Windows Phone 7, Windows 8 Store, Silverlight 4
 
 
 Notes:
@@ -54,33 +54,3 @@ Microsoft stopped support for the Compact Framework in Visual Studio 2010.
 For a Compact Framework 3.5 build download Json.NET 3.5.
 
 For a Silverlight 3.0 build download Json.NET 3.5.
-
-
-Instructions:
-
- 1. Extract Newtonsoft.Json.dll and Newtonsoft.Json.xml from the archive's /bin
-    directory into your own applications.
- 2. Add a reference to Newtonsoft.Json.dll within Visual Studio.NET to your project.
-
-
-
-License:
-
-Copyright (c) 2007 James Newton-King
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this
-software and associated documentation files (the "Software"), to deal in the Software
-without restriction, including without limitation the rights to use, copy, modify,
-merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to the following
-conditions:
-
-The above copyright notice and this permission notice shall be included in all copies
-or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
-CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
-OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

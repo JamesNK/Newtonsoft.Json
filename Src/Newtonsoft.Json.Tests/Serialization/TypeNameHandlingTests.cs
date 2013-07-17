@@ -23,10 +23,11 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !PORTABLE
-#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
+#if !(PORTABLE || PORTABLE40)
+#if !(NET35 || NET20 || PORTABLE)
 using System.Dynamic;
 #endif
+using System.Text;
 using Newtonsoft.Json.Tests.Linq;
 using global::System;
 using global::System.Collections;
@@ -53,6 +54,68 @@ namespace Newtonsoft.Json.Tests.Serialization
   [TestFixture]
   public class TypeNameHandlingTests : TestFixtureBase
   {
+    [Test]
+    public void NestedValueObjects()
+    {
+      StringBuilder sb = new StringBuilder();
+      for (int i = 0; i < 10000; i++)
+      {
+        sb.Append(@"{""$value"":");
+      }
+
+      ExceptionAssert.Throws<JsonSerializationException>("Unexpected token when deserializing primitive value: StartObject. Path '$value', line 1, position 11.", () =>
+        {
+          var reader = new JsonTextReader(new StringReader(sb.ToString()));
+          var ser = new JsonSerializer();
+          ser.Deserialize<bool>(reader);
+        });
+    }
+
+    [Test]
+    public void SerializeRootTypeNameIfDerivedWithAuto()
+    {
+      var serializer = new JsonSerializer()
+        {
+          TypeNameHandling = TypeNameHandling.Auto
+        };
+      var sw = new StringWriter();
+      serializer.Serialize(new JsonTextWriter(sw) { Formatting = Formatting.Indented }, new WagePerson(), typeof(Person));
+      var result = sw.ToString();
+      
+      Assert.AreEqual(@"{
+  ""$type"": ""Newtonsoft.Json.Tests.TestObjects.WagePerson, Newtonsoft.Json.Tests"",
+  ""HourlyWage"": 0.0,
+  ""Name"": null,
+  ""BirthDate"": ""0001-01-01T00:00:00"",
+  ""LastModified"": ""0001-01-01T00:00:00""
+}", result);
+
+      Assert.IsTrue(result.Contains("WagePerson"));
+      using (var rd = new JsonTextReader(new StringReader(result)))
+      {
+        var person = serializer.Deserialize<Person>(rd);
+
+        CustomAssert.IsInstanceOfType(typeof(WagePerson), person);
+      }
+    }
+
+    [Test]
+    public void SerializeRootTypeNameAutoWithJsonConvert()
+    {
+      string json = JsonConvert.SerializeObject(new WagePerson(), typeof(object), Formatting.Indented, new JsonSerializerSettings
+        {
+          TypeNameHandling = TypeNameHandling.Auto
+        });
+
+      Assert.AreEqual(@"{
+  ""$type"": ""Newtonsoft.Json.Tests.TestObjects.WagePerson, Newtonsoft.Json.Tests"",
+  ""HourlyWage"": 0.0,
+  ""Name"": null,
+  ""BirthDate"": ""0001-01-01T00:00:00"",
+  ""LastModified"": ""0001-01-01T00:00:00""
+}", json);
+    }
+
     public class Wrapper
     {
       public IList<EmployeeReference> Array { get; set; }
@@ -102,7 +165,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     [Test]
     public void WriteTypeNameForObjects()
     {
-      string employeeRef = ReflectionUtils.GetTypeName(typeof (EmployeeReference), FormatterAssemblyStyle.Simple);
+      string employeeRef = ReflectionUtils.GetTypeName(typeof(EmployeeReference), FormatterAssemblyStyle.Simple, null);
 
       EmployeeReference employee = new EmployeeReference();
 
@@ -122,7 +185,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     [Test]
     public void DeserializeTypeName()
     {
-      string employeeRef = ReflectionUtils.GetTypeName(typeof (EmployeeReference), FormatterAssemblyStyle.Simple);
+      string employeeRef = ReflectionUtils.GetTypeName(typeof(EmployeeReference), FormatterAssemblyStyle.Simple, null);
 
       string json = @"{
   ""$id"": ""1"",
@@ -144,7 +207,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     [Test]
     public void DeserializeTypeNameFromGacAssembly()
     {
-      string cookieRef = ReflectionUtils.GetTypeName(typeof (Cookie), FormatterAssemblyStyle.Simple);
+      string cookieRef = ReflectionUtils.GetTypeName(typeof (Cookie), FormatterAssemblyStyle.Simple, null);
 
       string json = @"{
   ""$id"": ""1"",
@@ -430,7 +493,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     [Test]
     public void WriteObjectTypeNameForProperty()
     {
-      string typeNamePropertyRef = ReflectionUtils.GetTypeName(typeof (TypeNameProperty), FormatterAssemblyStyle.Simple);
+      string typeNamePropertyRef = ReflectionUtils.GetTypeName(typeof (TypeNameProperty), FormatterAssemblyStyle.Simple, null);
 
       TypeNameProperty typeNameProperty = new TypeNameProperty
         {
@@ -464,7 +527,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     [Test]
     public void WriteListTypeNameForProperty()
     {
-      string listRef = ReflectionUtils.GetTypeName(typeof (List<int>), FormatterAssemblyStyle.Simple);
+      string listRef = ReflectionUtils.GetTypeName(typeof (List<int>), FormatterAssemblyStyle.Simple, null);
 
       TypeNameProperty typeNameProperty = new TypeNameProperty
         {
@@ -646,9 +709,9 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       string json = sw.ToString();
 
-      string contentSubClassRef = ReflectionUtils.GetTypeName(typeof (ContentSubClass), FormatterAssemblyStyle.Simple);
-      string dictionaryRef = ReflectionUtils.GetTypeName(typeof (Dictionary<int, IList<ContentBaseClass>>), FormatterAssemblyStyle.Simple);
-      string listRef = ReflectionUtils.GetTypeName(typeof (List<ContentBaseClass>), FormatterAssemblyStyle.Simple);
+      string contentSubClassRef = ReflectionUtils.GetTypeName(typeof (ContentSubClass), FormatterAssemblyStyle.Simple, null);
+      string dictionaryRef = ReflectionUtils.GetTypeName(typeof (Dictionary<int, IList<ContentBaseClass>>), FormatterAssemblyStyle.Simple, null);
+      string listRef = ReflectionUtils.GetTypeName(typeof (List<ContentBaseClass>), FormatterAssemblyStyle.Simple, null);
 
       string expected = @"{
   ""TestMember"": {
@@ -753,7 +816,7 @@ namespace Newtonsoft.Json.Tests.Serialization
           TypeNameAssemblyFormat = FormatterAssemblyStyle.Simple
         });
 
-      string urlStatusTypeName = ReflectionUtils.GetTypeName(typeof (UrlStatus), FormatterAssemblyStyle.Simple);
+      string urlStatusTypeName = ReflectionUtils.GetTypeName(typeof (UrlStatus), FormatterAssemblyStyle.Simple, null);
 
       Assert.AreEqual(@"{
   ""$type"": ""System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib"",
@@ -804,7 +867,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     [Test]
     public void SerializingIEnumerableOfTShouldRetainGenericTypeInfo()
     {
-      string productClassRef = ReflectionUtils.GetTypeName(typeof (Product[]), FormatterAssemblyStyle.Simple);
+      string productClassRef = ReflectionUtils.GetTypeName(typeof(CustomEnumerable<Product>), FormatterAssemblyStyle.Simple, null);
 
       CustomEnumerable<Product> products = new CustomEnumerable<Product>();
 
@@ -888,7 +951,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       string output = JsonConvert.SerializeObject(testerObject, Formatting.Indented, jsonSettings);
 
-      string carClassRef = ReflectionUtils.GetTypeName(typeof (Car), FormatterAssemblyStyle.Simple);
+      string carClassRef = ReflectionUtils.GetTypeName(typeof (Car), FormatterAssemblyStyle.Simple, null);
 
       Assert.AreEqual(output, @"{
   ""$type"": """ + carClassRef + @""",
@@ -1382,7 +1445,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual(1, (int)j["MyProperty"]);
     }
 
-#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
+#if !(NET35 || NET20 || PORTABLE40)
     [Test]
     public void PropertyItemTypeNameHandlingDynamic()
     {
@@ -1455,7 +1518,184 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual(2, (int)o["MyProperty"]);
     }
 #endif
+
+#if !NETFX_CORE
+    [Test]
+    public void SerializeDeserialize_DictionaryContextContainsGuid_DeserializesItemAsGuid()
+    {
+      const string contextKey = "k1";
+      var someValue = Guid.NewGuid();
+
+      Dictionary<string, Guid> inputContext = new Dictionary<string, Guid>();
+      inputContext.Add(contextKey, someValue);
+
+      JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings()
+        {
+          Formatting = Formatting.Indented,
+          TypeNameHandling = TypeNameHandling.All
+        };
+      string serializedString = JsonConvert.SerializeObject(inputContext, jsonSerializerSettings);
+
+      var deserializedObject = (Dictionary<string, Guid>)JsonConvert.DeserializeObject(serializedString, jsonSerializerSettings);
+
+      Assert.AreEqual(someValue, deserializedObject[contextKey]);
+    }
+
+    [Test]
+    public void TypeNameHandlingWithISerializableValues()
+    {
+      MyParent p = new MyParent
+      {
+        Child = new MyChild
+        {
+          MyProperty = "string!"
+        }
+      };
+
+      JsonSerializerSettings settings = new JsonSerializerSettings
+      {
+        TypeNameHandling = TypeNameHandling.Auto,
+        DateFormatHandling = DateFormatHandling.IsoDateFormat,
+        MissingMemberHandling = MissingMemberHandling.Ignore,
+        DefaultValueHandling = DefaultValueHandling.Ignore,
+        NullValueHandling = NullValueHandling.Ignore,
+        Formatting = Formatting.Indented
+      };
+
+      string json = JsonConvert.SerializeObject(p, settings);
+
+      Assert.AreEqual(@"{
+  ""c"": {
+    ""$type"": ""Newtonsoft.Json.Tests.Serialization.MyChild, Newtonsoft.Json.Tests"",
+    ""p"": ""string!""
   }
+}", json);
+
+      MyParent p2 = JsonConvert.DeserializeObject<MyParent>(json, settings);
+      CustomAssert.IsInstanceOfType(typeof(MyChild), p2.Child);
+      Assert.AreEqual("string!", ((MyChild)p2.Child).MyProperty);
+    }
+
+    [Test]
+    public void TypeNameHandlingWithISerializableValuesAndArray()
+    {
+      MyParent p = new MyParent
+      {
+        Child = new MyChildList
+        {
+          "string!"
+        }
+      };
+
+      JsonSerializerSettings settings = new JsonSerializerSettings
+      {
+        TypeNameHandling = TypeNameHandling.Auto,
+        DateFormatHandling = DateFormatHandling.IsoDateFormat,
+        MissingMemberHandling = MissingMemberHandling.Ignore,
+        DefaultValueHandling = DefaultValueHandling.Ignore,
+        NullValueHandling = NullValueHandling.Ignore,
+        Formatting = Formatting.Indented
+      };
+
+      string json = JsonConvert.SerializeObject(p, settings);
+
+      Assert.AreEqual(@"{
+  ""c"": {
+    ""$type"": ""Newtonsoft.Json.Tests.Serialization.MyChildList, Newtonsoft.Json.Tests"",
+    ""$values"": [
+      ""string!""
+    ]
+  }
+}", json);
+
+      MyParent p2 = JsonConvert.DeserializeObject<MyParent>(json, settings);
+      CustomAssert.IsInstanceOfType(typeof(MyChildList), p2.Child);
+      Assert.AreEqual(1, ((MyChildList)p2.Child).Count);
+      Assert.AreEqual("string!", ((MyChildList)p2.Child)[0]);
+    }
+
+    [Test]
+    public void ParentTypeNameHandlingWithISerializableValues()
+    {
+      ParentParent pp = new ParentParent();
+
+      pp.ParentProp = new MyParent
+      {
+        Child = new MyChild
+        {
+          MyProperty = "string!"
+        }
+      };
+
+      JsonSerializerSettings settings = new JsonSerializerSettings
+      {
+        DateFormatHandling = DateFormatHandling.IsoDateFormat,
+        MissingMemberHandling = MissingMemberHandling.Ignore,
+        DefaultValueHandling = DefaultValueHandling.Ignore,
+        NullValueHandling = NullValueHandling.Ignore,
+        Formatting = Formatting.Indented
+      };
+
+      string json = JsonConvert.SerializeObject(pp, settings);
+
+      Assert.AreEqual(@"{
+  ""ParentProp"": {
+    ""c"": {
+      ""$type"": ""Newtonsoft.Json.Tests.Serialization.MyChild, Newtonsoft.Json.Tests"",
+      ""p"": ""string!""
+    }
+  }
+}", json);
+
+      ParentParent pp2 = JsonConvert.DeserializeObject<ParentParent>(json, settings);
+      MyParent p2 = pp2.ParentProp;
+      CustomAssert.IsInstanceOfType(typeof(MyChild), p2.Child);
+      Assert.AreEqual("string!", ((MyChild)p2.Child).MyProperty);
+    }
+#endif
+  }
+
+#if !NETFX_CORE
+  public class ParentParent
+  {
+    [JsonProperty(ItemTypeNameHandling = TypeNameHandling.Auto)]
+    public MyParent ParentProp { get; set; }
+  }
+
+  [Serializable]
+  public class MyParent : ISerializable
+  {
+    public ISomeBase Child { get; internal set; }
+
+    public MyParent(SerializationInfo info, StreamingContext context)
+    {
+      Child = (ISomeBase)info.GetValue("c", typeof(ISomeBase));
+    }
+
+    public MyParent()
+    {
+    }
+
+    void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+    {
+      info.AddValue("c", Child);
+    }
+  }
+
+  public class MyChild : ISomeBase
+  {
+    [JsonProperty("p")]
+    public String MyProperty { get; internal set; }
+  }
+
+  public class MyChildList : List<string>, ISomeBase
+  {
+  }
+
+  public interface ISomeBase
+  {
+  }
+#endif
 
   public class Message
   {
@@ -1567,7 +1807,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     public TypeNameHandlingTestObject Data { get; set; }
   }
 
-#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
+#if !(NET35 || NET20 || PORTABLE40)
   public class PropertyItemTypeNameHandlingDynamic
   {
     [JsonProperty(ItemTypeNameHandling = TypeNameHandling.All)]

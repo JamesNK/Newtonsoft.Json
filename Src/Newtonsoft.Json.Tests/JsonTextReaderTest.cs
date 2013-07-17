@@ -26,6 +26,9 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
+using System.Numerics;
+#endif
 using System.Text;
 #if !NETFX_CORE
 using NUnit.Framework;
@@ -44,6 +47,170 @@ namespace Newtonsoft.Json.Tests
   [TestFixture]
   public class JsonTextReaderTest : TestFixtureBase
   {
+    [Test]
+    public void ThrowErrorWhenParsingUnquoteStringThatStartsWithNE()
+    {
+      const string json = @"{ ""ItemName"": ""value"", ""u"":netanelsalinger,""r"":9 }";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.String, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      ExceptionAssert.Throws<JsonReaderException>("Unexpected content while parsing JSON. Path 'u', line 1, position 27.",
+        () =>
+          {
+            reader.Read();
+          });
+    }
+
+    [Test]
+    public void FloatParseHandling()
+    {
+      string json = "[1.0,1,9.9,1E-06]";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+      reader.FloatParseHandling = Json.FloatParseHandling.Decimal;
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(1.0m, reader.Value);
+      Assert.AreEqual(typeof(decimal), reader.ValueType);
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(1L, reader.Value);
+      Assert.AreEqual(typeof(long), reader.ValueType);
+      Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(9.9m, reader.Value);
+      Assert.AreEqual(typeof(decimal), reader.ValueType);
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(Convert.ToDecimal(1E-06), reader.Value);
+      Assert.AreEqual(typeof(decimal), reader.ValueType);
+      Assert.AreEqual(JsonToken.Float, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+    }
+
+    [Test]
+    public void FloatParseHandling_NaN()
+    {
+      string json = "[NaN]";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+      reader.FloatParseHandling = Json.FloatParseHandling.Decimal;
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+      ExceptionAssert.Throws<JsonReaderException>(
+        "Cannot read NaN as a decimal.",
+        () => reader.Read());
+    }
+
+    [Test]
+    public void UnescapeDoubleQuotes()
+    {
+      string json = @"{""recipe_id"":""12"",""recipe_name"":""Apocalypse Leather Armors"",""recipe_text"":""#C16------------------------------\r\n#C12Ingredients #C20\r\n#C16------------------------------\r\n\r\na piece of Leather Armor\r\n( ie #L \""Enhanced Leather Armor Boots\"" \""85644\"" )\r\n<img src=rdb:\/\/13264>\r\n\r\n#L \""Hacker Tool\"" \""87814\""\r\n<img src=rdb:\/\/99282>\r\n\r\n#L \""Clanalizer\"" \""208313\""\r\n<img src=rdb:\/\/156479>\r\n\r\n#C16------------------------------\r\n#C12Recipe #C16\r\n#C16------------------------------#C20\r\n\r\nHacker Tool\r\n#C15+#C20\r\na piece of Leather Armor\r\n#C15=#C20\r\n<img src=rdb:\/\/13264>\r\na piece of Hacked Leather Armor\r\n( ie : #L \""Hacked Leather Armor Boots\"" \""245979\"" )\r\n#C16Skills: |  BE  |#C20\r\n\r\n#C14------------------------------#C20\r\n\r\nClanalizer\r\n#C15+#C20\r\na piece of Hacked Leather Armor\r\n#C15=#C20\r\n<img src=rdb:\/\/13264>\r\na piece of Apocalypse Leather Armor\r\n( ie : #L \""Apocalypse Leather Armor Boots\"" \""245966\"" )\r\n#C16Skills: |  ??  |#C20\r\n\r\n#C16------------------------------\r\n#C12Details#C16\r\n#C16------------------------------#C20\r\n\r\n#L \""Apocalypse Leather Armor Boots\"" \""245967\""\r\n#L \""Apocalypse Leather Armor Gloves\"" \""245969\""\r\n#L \""Apocalypse Leather Armor Helmet\"" \""245975\""\r\n#L \""Apocalypse Leather Armor Pants\"" \""245971\""\r\n#L \""Apocalypse Leather Armor Sleeves\"" \""245973\""\r\n#L \""Apocalypse Leather Body Armor\"" \""245965\""\r\n\r\n#C16------------------------------\r\n#C12Comments#C16\r\n#C16------------------------------#C20\r\n\r\nNice froob armor.. but ugleh!\r\n\r\n"",""recipe_author"":null}";
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.String, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.String, reader.TokenType);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+      Assert.AreEqual("recipe_text", reader.Value);
+
+      Assert.IsTrue(reader.Read());
+      Assert.AreEqual(JsonToken.String, reader.TokenType);
+
+      Assert.AreEqual(@"#C16------------------------------
+#C12Ingredients #C20
+#C16------------------------------
+
+a piece of Leather Armor
+( ie #L ""Enhanced Leather Armor Boots"" ""85644"" )
+<img src=rdb://13264>
+
+#L ""Hacker Tool"" ""87814""
+<img src=rdb://99282>
+
+#L ""Clanalizer"" ""208313""
+<img src=rdb://156479>
+
+#C16------------------------------
+#C12Recipe #C16
+#C16------------------------------#C20
+
+Hacker Tool
+#C15+#C20
+a piece of Leather Armor
+#C15=#C20
+<img src=rdb://13264>
+a piece of Hacked Leather Armor
+( ie : #L ""Hacked Leather Armor Boots"" ""245979"" )
+#C16Skills: |  BE  |#C20
+
+#C14------------------------------#C20
+
+Clanalizer
+#C15+#C20
+a piece of Hacked Leather Armor
+#C15=#C20
+<img src=rdb://13264>
+a piece of Apocalypse Leather Armor
+( ie : #L ""Apocalypse Leather Armor Boots"" ""245966"" )
+#C16Skills: |  ??  |#C20
+
+#C16------------------------------
+#C12Details#C16
+#C16------------------------------#C20
+
+#L ""Apocalypse Leather Armor Boots"" ""245967""
+#L ""Apocalypse Leather Armor Gloves"" ""245969""
+#L ""Apocalypse Leather Armor Helmet"" ""245975""
+#L ""Apocalypse Leather Armor Pants"" ""245971""
+#L ""Apocalypse Leather Armor Sleeves"" ""245973""
+#L ""Apocalypse Leather Body Armor"" ""245965""
+
+#C16------------------------------
+#C12Comments#C16
+#C16------------------------------#C20
+
+Nice froob armor.. but ugleh!
+
+", reader.Value);
+    }
+
     [Test]
     public void SurrogatePairValid()
     {
@@ -219,7 +386,9 @@ namespace Newtonsoft.Json.Tests
 ]content";
 
       JsonTextReader reader = new JsonTextReader(new StringReader(json));
+#if DEBUG
       reader.SetCharBuffer(new char[2]);
+#endif
 
       reader.Read();
       Assert.AreEqual(1, reader.LineNumber);
@@ -293,7 +462,9 @@ namespace Newtonsoft.Json.Tests
 
       using (JsonTextReader jsonReader = new JsonTextReader(sr))
       {
+#if DEBUG
         jsonReader.SetCharBuffer(new char[5]);
+#endif
 
         Assert.AreEqual(jsonReader.TokenType, JsonToken.None);
         Assert.AreEqual(0, jsonReader.LineNumber);
@@ -615,7 +786,9 @@ Parameter name: reader",
 ]";
 
       JsonTextReader reader = new JsonTextReader(new StringReader(json));
+#if DEBUG
       reader.SetCharBuffer(new char[129]);
+#endif
 
       for (int i = 0; i < 15; i++)
       {
@@ -625,6 +798,93 @@ Parameter name: reader",
       reader.Read();
       Assert.AreEqual(JsonToken.Null, reader.TokenType);
     }
+
+    [Test]
+    public void ReadInt32Overflow()
+    {
+      long i = int.MaxValue;
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(i.ToString(CultureInfo.InvariantCulture)));
+      reader.Read();
+      Assert.AreEqual(typeof(long), reader.ValueType);
+
+      for (int j = 1; j < 1000; j++)
+      {
+        long total = j + i;
+        ExceptionAssert.Throws<OverflowException>(
+          "Arithmetic operation resulted in an overflow.",
+          () =>
+            {
+              reader = new JsonTextReader(new StringReader(total.ToString(CultureInfo.InvariantCulture)));
+              reader.ReadAsInt32();
+            });
+      }
+    }
+
+    [Test]
+    public void ReadInt32Overflow_Negative()
+    {
+      long i = int.MinValue;
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(i.ToString(CultureInfo.InvariantCulture)));
+      reader.Read();
+      Assert.AreEqual(typeof(long), reader.ValueType);
+      Assert.AreEqual(i, reader.Value);
+
+      for (int j = 1; j < 1000; j++)
+      {
+        long total = -j + i;
+        ExceptionAssert.Throws<OverflowException>(
+          "Arithmetic operation resulted in an overflow.",
+          () =>
+          {
+            reader = new JsonTextReader(new StringReader(total.ToString(CultureInfo.InvariantCulture)));
+            reader.ReadAsInt32();
+          });
+      }
+    }
+
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
+    [Test]
+    public void ReadInt64Overflow()
+    {
+      BigInteger i = new BigInteger(long.MaxValue);
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(i.ToString(CultureInfo.InvariantCulture)));
+      reader.Read();
+      Assert.AreEqual(typeof(long), reader.ValueType);
+      
+      for (int j = 1; j < 1000; j++)
+      {
+        BigInteger total = i + j;
+
+        reader = new JsonTextReader(new StringReader(total.ToString(CultureInfo.InvariantCulture)));
+        reader.Read();
+
+        Assert.AreEqual(typeof(BigInteger), reader.ValueType);
+      }
+    }
+
+    [Test]
+    public void ReadInt64Overflow_Negative()
+    {
+      BigInteger i = new BigInteger(long.MinValue);
+
+      JsonTextReader reader = new JsonTextReader(new StringReader(i.ToString(CultureInfo.InvariantCulture)));
+      reader.Read();
+      Assert.AreEqual(typeof(long), reader.ValueType);
+
+      for (int j = 1; j < 1000; j++)
+      {
+        BigInteger total = i + -j;
+
+        reader = new JsonTextReader(new StringReader(total.ToString(CultureInfo.InvariantCulture)));
+        reader.Read();
+
+        Assert.AreEqual(typeof(BigInteger), reader.ValueType);
+      }
+    }
+#endif
 
     [Test]
     public void AppendCharsWhileReadingNewLine()
@@ -645,7 +905,9 @@ Parameter name: reader",
 ";
 
       JsonTextReader reader = new JsonTextReader(new StringReader(json));
+#if DEBUG
       reader.SetCharBuffer(new char[129]);
+#endif
 
       for (int i = 0; i < 14; i++)
       {
@@ -973,6 +1235,48 @@ bye", reader.Value);
     }
 
     [Test]
+    public void ParseIntegers()
+    {
+      JsonTextReader reader = null;
+
+      reader = new JsonTextReader(new StringReader("1"));
+      Assert.AreEqual(1, reader.ReadAsInt32());
+
+      reader = new JsonTextReader(new StringReader("-1"));
+      Assert.AreEqual(-1, reader.ReadAsInt32());
+
+      reader = new JsonTextReader(new StringReader("0"));
+      Assert.AreEqual(0, reader.ReadAsInt32());
+
+      reader = new JsonTextReader(new StringReader("-0"));
+      Assert.AreEqual(0, reader.ReadAsInt32());
+
+      reader = new JsonTextReader(new StringReader(int.MaxValue.ToString()));
+      Assert.AreEqual(int.MaxValue, reader.ReadAsInt32());
+
+      reader = new JsonTextReader(new StringReader(int.MinValue.ToString()));
+      Assert.AreEqual(int.MinValue, reader.ReadAsInt32());
+
+      reader = new JsonTextReader(new StringReader(long.MaxValue.ToString()));
+      ExceptionAssert.Throws<OverflowException>("Arithmetic operation resulted in an overflow.", () => reader.ReadAsInt32());
+
+      reader = new JsonTextReader(new StringReader("9999999999999999999999999999999999999999999999999999999999999999999999999999asdasdasd"));
+      ExceptionAssert.Throws<FormatException>("Input string was not in a correct format.", () => reader.ReadAsInt32());
+
+      reader = new JsonTextReader(new StringReader("1E-06"));
+      ExceptionAssert.Throws<FormatException>("Input string was not in a correct format.", () => reader.ReadAsInt32());
+
+      reader = new JsonTextReader(new StringReader("1.1"));
+      ExceptionAssert.Throws<FormatException>("Input string was not in a correct format.", () => reader.ReadAsInt32());
+
+      reader = new JsonTextReader(new StringReader(""));
+      Assert.AreEqual(null, reader.ReadAsInt32());
+
+      reader = new JsonTextReader(new StringReader("-"));
+      ExceptionAssert.Throws<FormatException>("Input string was not in a correct format.", () => reader.ReadAsInt32());
+    }
+
+    [Test]
     public void WriteReadWrite()
     {
       StringBuilder sb = new StringBuilder();
@@ -1097,7 +1401,9 @@ bye", reader.Value);
       string json = @"[""\u003c"",""\u5f20""]";
 
       JsonTextReader reader = new JsonTextReader(new StringReader(json));
+#if DEBUG
       reader.SetCharBuffer(new char[2]);
+#endif
 
       reader.Read();
       Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
@@ -1259,6 +1565,36 @@ bye", reader.Value);
       Assert.IsTrue(jsonReader.Read());
       Assert.AreEqual(JsonToken.Integer, jsonReader.TokenType);
       Assert.AreEqual(250L, jsonReader.Value);
+
+      Assert.IsTrue(jsonReader.Read());
+      Assert.AreEqual(JsonToken.EndArray, jsonReader.TokenType);
+
+      Assert.IsFalse(jsonReader.Read());
+    }
+
+    [Test]
+    public void ReadOctalNumberAsInt64()
+    {
+      StringReader s = new StringReader(@"[0372, 0xFA, 0XFA]");
+      JsonTextReader jsonReader = new JsonTextReader(s);
+
+      Assert.IsTrue(jsonReader.Read());
+      Assert.AreEqual(JsonToken.StartArray, jsonReader.TokenType);
+
+      jsonReader.Read();
+      Assert.AreEqual(JsonToken.Integer, jsonReader.TokenType);
+      Assert.AreEqual(typeof(long), jsonReader.ValueType);
+      Assert.AreEqual((long)250, (long)jsonReader.Value);
+
+      jsonReader.Read();
+      Assert.AreEqual(JsonToken.Integer, jsonReader.TokenType);
+      Assert.AreEqual(typeof(long), jsonReader.ValueType);
+      Assert.AreEqual((long)250, (long)jsonReader.Value);
+
+      jsonReader.Read();
+      Assert.AreEqual(JsonToken.Integer, jsonReader.TokenType);
+      Assert.AreEqual(typeof(long), jsonReader.ValueType);
+      Assert.AreEqual((long)250, (long)jsonReader.Value);
 
       Assert.IsTrue(jsonReader.Read());
       Assert.AreEqual(JsonToken.EndArray, jsonReader.TokenType);
@@ -1437,7 +1773,9 @@ bye", reader.Value);
       string json = @"{""Message"":""Hi,I\u0092ve send you smth""}";
 
       JsonTextReader reader = new JsonTextReader(new StringReader(json));
+#if DEBUG
       reader.SetCharBuffer(new char[5]);
+#endif
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
@@ -1827,7 +2165,10 @@ bye", reader.Value);
 ]";
 
       JsonTextReader reader = new JsonTextReader(new StringReader(json));
+#if DEBUG
       reader.SetCharBuffer(new char[5]);
+#endif
+
       for (int i = 0; i < 13; i++)
       {
         reader.Read();
@@ -1852,7 +2193,9 @@ bye", reader.Value);
       } /*comment*/";
 
       JsonTextReader reader = new JsonTextReader(new StringReader(json));
+#if DEBUG
       reader.SetCharBuffer(new char[5]);
+#endif
 
       for (int i = 0; i < 26; i++)
       {
@@ -1870,7 +2213,9 @@ bye", reader.Value);
     {
       string json = "new Date\0()";
       JsonTextReader reader = new JsonTextReader(new StringReader(json));
+#if DEBUG
       reader.SetCharBuffer(new char[7]);
+#endif
 
       Assert.IsTrue(reader.Read());
       Assert.AreEqual("Date", reader.Value);
@@ -2421,10 +2766,10 @@ bye", reader.Value);
 
       Assert.IsTrue(reader.Read());
       Assert.IsTrue(reader.Read());
-      Assert.AreEqual(new DateTime(JsonConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc), reader.Value);
+      Assert.AreEqual(new DateTime(DateTimeUtils.InitialJavaScriptDateTicks, DateTimeKind.Utc), reader.Value);
       Assert.AreEqual(typeof(DateTime), reader.ValueType);
       Assert.IsTrue(reader.Read());
-      Assert.AreEqual(new DateTime(JsonConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc), reader.Value);
+      Assert.AreEqual(new DateTime(DateTimeUtils.InitialJavaScriptDateTicks, DateTimeKind.Utc), reader.Value);
       Assert.AreEqual(typeof(DateTime), reader.ValueType);
       Assert.IsTrue(reader.Read());
 
@@ -2434,10 +2779,10 @@ bye", reader.Value);
 
       Assert.IsTrue(reader.Read());
       Assert.IsTrue(reader.Read());
-      Assert.AreEqual(new DateTimeOffset(JsonConvert.InitialJavaScriptDateTicks, TimeSpan.Zero), reader.Value);
+      Assert.AreEqual(new DateTimeOffset(DateTimeUtils.InitialJavaScriptDateTicks, TimeSpan.Zero), reader.Value);
       Assert.AreEqual(typeof(DateTimeOffset), reader.ValueType);
       Assert.IsTrue(reader.Read());
-      Assert.AreEqual(new DateTimeOffset(JsonConvert.InitialJavaScriptDateTicks, TimeSpan.Zero), reader.Value);
+      Assert.AreEqual(new DateTimeOffset(DateTimeUtils.InitialJavaScriptDateTicks, TimeSpan.Zero), reader.Value);
       Assert.AreEqual(typeof(DateTimeOffset), reader.ValueType);
       Assert.IsTrue(reader.Read());
 #endif
@@ -2460,10 +2805,10 @@ bye", reader.Value);
 
       Assert.IsTrue(reader.Read());
       reader.ReadAsDateTimeOffset();
-      Assert.AreEqual(new DateTimeOffset(JsonConvert.InitialJavaScriptDateTicks, TimeSpan.Zero), reader.Value);
+      Assert.AreEqual(new DateTimeOffset(DateTimeUtils.InitialJavaScriptDateTicks, TimeSpan.Zero), reader.Value);
       Assert.AreEqual(typeof(DateTimeOffset), reader.ValueType);
       reader.ReadAsDateTimeOffset();
-      Assert.AreEqual(new DateTimeOffset(JsonConvert.InitialJavaScriptDateTicks, TimeSpan.Zero), reader.Value);
+      Assert.AreEqual(new DateTimeOffset(DateTimeUtils.InitialJavaScriptDateTicks, TimeSpan.Zero), reader.Value);
       Assert.AreEqual(typeof(DateTimeOffset), reader.ValueType);
       Assert.IsTrue(reader.Read());
 
@@ -2473,10 +2818,10 @@ bye", reader.Value);
 
       Assert.IsTrue(reader.Read());
       reader.ReadAsDateTime();
-      Assert.AreEqual(new DateTime(JsonConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc), reader.Value);
+      Assert.AreEqual(new DateTime(DateTimeUtils.InitialJavaScriptDateTicks, DateTimeKind.Utc), reader.Value);
       Assert.AreEqual(typeof(DateTime), reader.ValueType);
       reader.ReadAsDateTime();
-      Assert.AreEqual(new DateTime(JsonConvert.InitialJavaScriptDateTicks, DateTimeKind.Utc), reader.Value);
+      Assert.AreEqual(new DateTime(DateTimeUtils.InitialJavaScriptDateTicks, DateTimeKind.Utc), reader.Value);
       Assert.AreEqual(typeof(DateTime), reader.ValueType);
       Assert.IsTrue(reader.Read());
 #endif

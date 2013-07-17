@@ -54,7 +54,7 @@ namespace Newtonsoft.Json.Bson
 
     public void Close()
     {
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
       _writer.Close();
 #else
       _writer.Dispose();
@@ -88,7 +88,7 @@ namespace Newtonsoft.Json.Bson
           {
             BsonArray value = (BsonArray)t;
             _writer.Write(value.CalculatedSize);
-            int index = 0;
+            ulong index = 0;
             foreach (BsonToken c in value)
             {
               _writer.Write((sbyte)c.Type);
@@ -146,13 +146,13 @@ namespace Newtonsoft.Json.Bson
               else if (DateTimeKindHandling == DateTimeKind.Local)
                 dateTime = dateTime.ToLocalTime();
 
-              ticks = JsonConvert.ConvertDateTimeToJavaScriptTicks(dateTime, false);
+              ticks = DateTimeUtils.ConvertDateTimeToJavaScriptTicks(dateTime, false);
             }
-#if !PocketPC && !NET20
+#if !NET20
             else
             {
               DateTimeOffset dateTimeOffset = (DateTimeOffset)value.Value;
-              ticks = JsonConvert.ConvertDateTimeToJavaScriptTicks(dateTimeOffset.UtcDateTime, dateTimeOffset.Offset);
+              ticks = DateTimeUtils.ConvertDateTimeToJavaScriptTicks(dateTimeOffset.UtcDateTime, dateTimeOffset.Offset);
             }
 #endif
 
@@ -161,11 +161,11 @@ namespace Newtonsoft.Json.Bson
           break;
         case BsonType.Binary:
           {
-            BsonValue value = (BsonValue)t;
+            BsonBinary value = (BsonBinary)t;
 
             byte[] data = (byte[])value.Value;
             _writer.Write(data.Length);
-            _writer.Write((byte)BsonBinaryType.Binary);
+            _writer.Write((byte)value.BinaryType);
             _writer.Write(data);
           }
           break;
@@ -261,7 +261,7 @@ namespace Newtonsoft.Json.Bson
             BsonArray value = (BsonArray)t;
 
             int size = 4;
-            int index = 0;
+            ulong index = 0;
             foreach (BsonToken c in value)
             {
               size += 1;
@@ -298,7 +298,7 @@ namespace Newtonsoft.Json.Bson
           return 8;
         case BsonType.Binary:
           {
-            BsonValue value = (BsonValue)t;
+            BsonBinary value = (BsonBinary)t;
 
             byte[] data = (byte[])value.Value;
             value.CalculatedSize = 4 + 1 + data.Length;

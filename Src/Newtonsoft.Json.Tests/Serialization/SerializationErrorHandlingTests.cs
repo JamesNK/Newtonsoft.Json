@@ -612,7 +612,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual(@"Unexpected end when deserializing object. Path 'events2.code', line 1, position 49.", errors[1]);
     }
 
-#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
+#if !(NET35 || NET20 || PORTABLE40)
     [Test]
     public void ErrorHandlingEndOfContentDynamic()
     {
@@ -652,20 +652,20 @@ namespace Newtonsoft.Json.Tests.Serialization
     {
       JsonSerializerSettings settings = new JsonSerializerSettings();
       settings.Error += (obj, args) =>
-      {
-        args.ErrorContext.Handled = true;
-      };
-
-      var data = new List<ErrorPerson2>()
                           {
-                              new ErrorPerson2{FirstName = "Scott", LastName = "Hanselman"},
-                              new ErrorPerson2{FirstName = "Scott", LastName = "Hunter"},
-                              new ErrorPerson2{FirstName = "Scott", LastName = "Guthrie"},
+                            args.ErrorContext.Handled = true;
                           };
 
-      var dictionary = data.GroupBy(person => person.FirstName).ToDictionary(group => @group.Key, group => @group.Cast<IErrorPerson2>());
-      var output = JsonConvert.SerializeObject(dictionary, Formatting.None, settings);
-      Assert.AreEqual(@"{""Scott"":null}", output);
+      var data = new List<ErrorPerson2>()
+                   {
+                     new ErrorPerson2 {FirstName = "Scott", LastName = "Hanselman"},
+                     new ErrorPerson2 {FirstName = "Scott", LastName = "Hunter"},
+                     new ErrorPerson2 {FirstName = "Scott", LastName = "Guthrie"},
+                   };
+
+      Dictionary<string, IEnumerable<IErrorPerson2>> dictionary = data.GroupBy(person => person.FirstName).ToDictionary(group => @group.Key, group => @group.Cast<IErrorPerson2>());
+      string output = JsonConvert.SerializeObject(dictionary, Formatting.None, settings);
+      Assert.AreEqual(@"{""Scott"":[]}", output);
     }
 
     [Test]
@@ -685,10 +685,10 @@ namespace Newtonsoft.Json.Tests.Serialization
           new ErrorPerson2 {FirstName = "James", LastName = "Newton-King"},
         };
 
-      var dictionary = data.GroupBy(person => person.FirstName).ToDictionary(group => @group.Key, group => @group.Cast<IErrorPerson2>());
-      var output = JsonConvert.SerializeObject(dictionary, Formatting.None, settings);
+      Dictionary<string, IEnumerable<IErrorPerson2>> dictionary = data.GroupBy(person => person.FirstName).ToDictionary(group => @group.Key, group => @group.Cast<IErrorPerson2>());
+      string output = JsonConvert.SerializeObject(dictionary, Formatting.None, settings);
 
-      Assert.AreEqual(@"{""Scott"":null,""James"":null}", output);
+      Assert.AreEqual(@"{""Scott"":[],""James"":[]}", output);
     }
   }
 

@@ -59,7 +59,7 @@ namespace Newtonsoft.Json.Tests.Serialization
           nonSerializedField = "Error"
         };
 
-#if !(SILVERLIGHT || NETFX_CORE || NET20 || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || NET20 || PORTABLE || PORTABLE40)
       MemoryStream ms = new MemoryStream();
       DataContractJsonSerializer dataContractJsonSerializer = new DataContractJsonSerializer(typeof(SerializableType));
       dataContractJsonSerializer.WriteObject(ms, serializableType);
@@ -74,17 +74,17 @@ namespace Newtonsoft.Json.Tests.Serialization
       string json = JsonConvert.SerializeObject(serializableType, new JsonSerializerSettings
         {
           ContractResolver = new DefaultContractResolver
-            {
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+          {
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
               IgnoreSerializableAttribute = false
 #endif
-            }
+          }
         });
 
       Assert.AreEqual(expected, json);
     }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
     [Test]
     public void SerializeInheritedType()
     {
@@ -114,7 +114,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
   }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
   [Serializable]
 #else
   [JsonObject(MemberSerialization.Fields)]
@@ -144,7 +144,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       }
     }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
     [NonSerialized]
 #else
     [JsonIgnore]

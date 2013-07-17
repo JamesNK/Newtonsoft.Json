@@ -162,7 +162,7 @@ namespace Newtonsoft.Json.Utilities
         if ((i == 0 || !hasNext) || char.IsUpper(s[i + 1]))
         {
           char lowerCase;
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
           lowerCase = char.ToLower(s[i], CultureInfo.InvariantCulture);
 #else
           lowerCase = char.ToLower(s[i]);
@@ -182,7 +182,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static bool IsHighSurrogate(char c)
     {
-#if !(SILVERLIGHT || PORTABLE)
+#if !(SILVERLIGHT || PORTABLE40 || PORTABLE)
       return char.IsHighSurrogate(c);
 #else
       return (c >= 55296 && c <= 56319);
@@ -191,7 +191,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static bool IsLowSurrogate(char c)
     {
-#if !(SILVERLIGHT || PORTABLE)
+#if !(SILVERLIGHT || PORTABLE40 || PORTABLE)
       return char.IsLowSurrogate(c);
 #else
       return (c >= 56320 && c <= 57343);

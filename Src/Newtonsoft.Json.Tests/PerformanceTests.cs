@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(SILVERLIGHT || PocketPC || NET20 || NET35 || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NET20 || NET35 || NETFX_CORE || PORTABLE)
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -64,8 +64,8 @@ namespace Newtonsoft.Json.Tests
   [TestFixture]
   public class PerformanceTests : TestFixtureBase
   {
-    //private const int Iterations = 100;
-    private const int Iterations = 5000;
+    private const int Iterations = 100;
+    //private const int Iterations = 5000;
 
 #region Data
 
@@ -100,12 +100,12 @@ namespace Newtonsoft.Json.Tests
       DataContractJsonSerializer
     }
 
-    #endregion
+#endregion
 
     [Test]
     public void SerializeSimpleObject()
     {
-      var value = CreateSimpleObject();
+      SimpleObject value = CreateSimpleObject();
 
       SerializeTests(value);
     }
@@ -141,10 +141,10 @@ namespace Newtonsoft.Json.Tests
     public void Deserialize()
     {
       BenchmarkDeserializeMethod<TestClass>(SerializeMethod.DataContractSerializer, XmlText);
-      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.BinaryFormatter, MiscellaneousUtils.HexToBytes(BinaryFormatterHex));
+      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.BinaryFormatter, HexToBytes(BinaryFormatterHex));
       DeserializeTests<TestClass>(JsonText);
       BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JsonNetWithIsoConverter, JsonIsoText);
-      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JsonNetBinary, MiscellaneousUtils.HexToBytes(BsonHex));
+      BenchmarkDeserializeMethod<TestClass>(SerializeMethod.JsonNetBinary, HexToBytes(BsonHex));
     }
 
     public void DeserializeTests<T>(string json)
@@ -324,7 +324,8 @@ If attributes are not mentioned, default values are used in each case.
         {
           using (StringWriter w = StringUtils.CreateStringWriter(StringUtils.GetLength(text) ?? 16))
           {
-            JavaScriptUtils.WriteEscapedJavaScriptString(w, text, '"', true, JavaScriptUtils.DoubleQuoteCharEscapeFlags, StringEscapeHandling.Default);
+            char[] buffer = null;
+            JavaScriptUtils.WriteEscapedJavaScriptString(w, text, '"', true, JavaScriptUtils.DoubleQuoteCharEscapeFlags, StringEscapeHandling.Default, ref buffer);
           }
         }
 
@@ -729,9 +730,9 @@ If attributes are not mentioned, default values are used in each case.
       Type type = typeof (T);
 
       JsonSerializer serializer = new JsonSerializer();
-      serializer.ObjectCreationHandling = Newtonsoft.Json.ObjectCreationHandling.Replace;
-      serializer.MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore;
-      serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+      //serializer.ObjectCreationHandling = Newtonsoft.Json.ObjectCreationHandling.Replace;
+      //serializer.MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore;
+      //serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
       if (isoDateTimeConverter)
         serializer.Converters.Add(new IsoDateTimeConverter());
 

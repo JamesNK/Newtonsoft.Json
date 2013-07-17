@@ -90,7 +90,7 @@ namespace Newtonsoft.Json.Converters
 
         text = dateTime.ToString(_dateTimeFormat ?? DefaultDateTimeFormat, Culture);
       }
-#if !PocketPC && !NET20
+#if !NET20
       else if (value is DateTimeOffset)
       {
         DateTimeOffset dateTimeOffset = (DateTimeOffset)value;
@@ -134,7 +134,7 @@ namespace Newtonsoft.Json.Converters
 
       if (reader.TokenType == JsonToken.Date)
       {
-#if !PocketPC && !NET20
+#if !NET20
         if (t == typeof(DateTimeOffset))
           return new DateTimeOffset((DateTime)reader.Value);
 #endif
@@ -150,7 +150,7 @@ namespace Newtonsoft.Json.Converters
       if (string.IsNullOrEmpty(dateText) && nullable)
         return null;
 
-#if !PocketPC && !NET20
+#if !NET20
       if (t == typeof(DateTimeOffset))
       {
         if (!string.IsNullOrEmpty(_dateTimeFormat))

@@ -26,6 +26,9 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
+using System.Numerics;
+#endif
 using System.Text;
 using System.IO;
 using System.Xml;
@@ -44,6 +47,8 @@ namespace Newtonsoft.Json
     private int _indentation;
     private char _quoteChar;
     private bool _quoteName;
+    private bool[] _charEscapeFlags;
+    private char[] _writeBuffer;
 
     private Base64Encoder Base64Encoder
     {
@@ -83,6 +88,7 @@ namespace Newtonsoft.Json
           throw new ArgumentException(@"Invalid JavaScript string quote character. Valid quote characters are ' and "".");
 
         _quoteChar = value;
+        UpdateCharEscapeFlags();
       }
     }
 
@@ -118,6 +124,8 @@ namespace Newtonsoft.Json
       _quoteName = true;
       _indentChar = ' ';
       _indentation = 2;
+
+      UpdateCharEscapeFlags();
     }
 
     /// <summary>
@@ -136,7 +144,7 @@ namespace Newtonsoft.Json
       base.Close();
 
       if (CloseOutput && _writer != null)
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
         _writer.Close();
 #else
         _writer.Dispose();
@@ -206,20 +214,51 @@ namespace Newtonsoft.Json
     {
       InternalWritePropertyName(name);
 
-      JavaScriptUtils.WriteEscapedJavaScriptString(_writer, name, _quoteChar, _quoteName, GetCharEscapeFlags(), StringEscapeHandling);
+      WriteEscapedString(name);
 
       _writer.Write(':');
     }
 
-    private bool[] GetCharEscapeFlags()
+    /// <summary>
+    /// Writes the property name of a name/value pair on a JSON object.
+    /// </summary>
+    /// <param name="name">The name of the property.</param>
+    /// <param name="escape">A flag to indicate whether the text should be escaped when it is written as a JSON property name.</param>
+    public override void WritePropertyName(string name, bool escape)
+    {
+      InternalWritePropertyName(name);
+
+      if (escape)
+      {
+        WriteEscapedString(name);
+      }
+      else
+      {
+        if (_quoteName)
+          _writer.Write(_quoteChar);
+
+        _writer.Write(name);
+
+        if (_quoteName)
+          _writer.Write(_quoteChar);
+      }
+
+      _writer.Write(':');
+    }
+
+    internal override void OnStringEscapeHandlingChanged()
+    {
+      UpdateCharEscapeFlags();
+    }
+
+    private void UpdateCharEscapeFlags()
     {
       if (StringEscapeHandling == StringEscapeHandling.EscapeHtml)
-        return JavaScriptUtils.HtmlCharEscapeFlags;
-
-      if (_quoteChar == '"')
-        return JavaScriptUtils.DoubleQuoteCharEscapeFlags;
-      
-      return JavaScriptUtils.SingleQuoteCharEscapeFlags;
+        _charEscapeFlags = JavaScriptUtils.HtmlCharEscapeFlags;
+      else if (_quoteChar == '"')
+        _charEscapeFlags = JavaScriptUtils.DoubleQuoteCharEscapeFlags;
+      else
+        _charEscapeFlags = JavaScriptUtils.SingleQuoteCharEscapeFlags;
     }
 
     /// <summary>
@@ -266,11 +305,31 @@ namespace Newtonsoft.Json
 
     #region WriteValue methods
     /// <summary>
+    /// Writes a <see cref="Object"/> value.
+    /// An error will raised if the value cannot be written as a single JSON token.
+    /// </summary>
+    /// <param name="value">The <see cref="Object"/> value to write.</param>
+    public override void WriteValue(object value)
+    {
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)
+      if (value is BigInteger)
+      {
+        InternalWriteValue(JsonToken.Integer);
+        WriteValueInternal(((BigInteger)value).ToString(CultureInfo.InvariantCulture), JsonToken.String);
+      }
+      else
+#endif
+      {
+        base.WriteValue(value);
+      }
+    }
+
+    /// <summary>
     /// Writes a null value.
     /// </summary>
     public override void WriteNull()
     {
-      InternalWriteNull();
+      InternalWriteValue(JsonToken.Null);
       WriteValueInternal(JsonConvert.Null, JsonToken.Null);
     }
 
@@ -279,7 +338,7 @@ namespace Newtonsoft.Json
     /// </summary>
     public override void WriteUndefined()
     {
-      InternalWriteUndefined();
+      InternalWriteValue(JsonToken.Undefined);
       WriteValueInternal(JsonConvert.Undefined, JsonToken.Undefined);
     }
 
@@ -305,7 +364,13 @@ namespace Newtonsoft.Json
       if (value == null)
         WriteValueInternal(JsonConvert.Null, JsonToken.Null);
       else
-        JavaScriptUtils.WriteEscapedJavaScriptString(_writer, value, _quoteChar, true, GetCharEscapeFlags(), StringEscapeHandling);
+        WriteEscapedString(value);
+    }
+
+    private void WriteEscapedString(string value)
+    {
+      EnsureWriteBuffer();
+      JavaScriptUtils.WriteEscapedJavaScriptString(_writer, value, _quoteChar, true, _charEscapeFlags, StringEscapeHandling, ref _writeBuffer);
     }
 
     /// <summary>
@@ -315,7 +380,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(int value)
     {
       InternalWriteValue(JsonToken.Integer);
-      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Integer);
+      WriteIntegerValue(value);
     }
 
     /// <summary>
@@ -326,7 +391,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(uint value)
     {
       InternalWriteValue(JsonToken.Integer);
-      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Integer);
+      WriteIntegerValue(value);
     }
 
     /// <summary>
@@ -336,7 +401,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(long value)
     {
       InternalWriteValue(JsonToken.Integer);
-      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Integer);
+      WriteIntegerValue(value);
     }
 
     /// <summary>
@@ -347,7 +412,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(ulong value)
     {
       InternalWriteValue(JsonToken.Integer);
-      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Integer);
+      WriteIntegerValue(value);
     }
 
     /// <summary>
@@ -357,7 +422,24 @@ namespace Newtonsoft.Json
     public override void WriteValue(float value)
     {
       InternalWriteValue(JsonToken.Float);
-      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Float);
+      WriteValueInternal(JsonConvert.ToString(value, FloatFormatHandling, QuoteChar, false), JsonToken.Float);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Nullable{Single}"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Nullable{Single}"/> value to write.</param>
+    public override void WriteValue(float? value)
+    {
+      if (value == null)
+      {
+        WriteNull();
+      }
+      else
+      {
+        InternalWriteValue(JsonToken.Float);
+        WriteValueInternal(JsonConvert.ToString(value.Value, FloatFormatHandling, QuoteChar, true), JsonToken.Float);
+      }
     }
 
     /// <summary>
@@ -367,7 +449,24 @@ namespace Newtonsoft.Json
     public override void WriteValue(double value)
     {
       InternalWriteValue(JsonToken.Float);
-      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Float);
+      WriteValueInternal(JsonConvert.ToString(value, FloatFormatHandling, QuoteChar, false), JsonToken.Float);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="Nullable{Double}"/> value.
+    /// </summary>
+    /// <param name="value">The <see cref="Nullable{Double}"/> value to write.</param>
+    public override void WriteValue(double? value)
+    {
+      if (value == null)
+      {
+        WriteNull();
+      }
+      else
+      {
+        InternalWriteValue(JsonToken.Float);
+        WriteValueInternal(JsonConvert.ToString(value.Value, FloatFormatHandling, QuoteChar, true), JsonToken.Float);
+      }
     }
 
     /// <summary>
@@ -387,7 +486,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(short value)
     {
       InternalWriteValue(JsonToken.Integer);
-      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Integer);
+      WriteIntegerValue(value);
     }
 
     /// <summary>
@@ -398,7 +497,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(ushort value)
     {
       InternalWriteValue(JsonToken.Integer);
-      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Integer);
+      WriteIntegerValue(value);
     }
 
     /// <summary>
@@ -418,7 +517,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(byte value)
     {
       InternalWriteValue(JsonToken.Integer);
-      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Integer);
+      WriteIntegerValue(value);
     }
 
     /// <summary>
@@ -429,7 +528,7 @@ namespace Newtonsoft.Json
     public override void WriteValue(sbyte value)
     {
       InternalWriteValue(JsonToken.Integer);
-      WriteValueInternal(JsonConvert.ToString(value), JsonToken.Integer);
+      WriteIntegerValue(value);
     }
 
     /// <summary>
@@ -449,8 +548,25 @@ namespace Newtonsoft.Json
     public override void WriteValue(DateTime value)
     {
       InternalWriteValue(JsonToken.Date);
-      value = JsonConvert.EnsureDateTime(value, DateTimeZoneHandling);
-      JsonConvert.WriteDateTimeString(_writer, value, DateFormatHandling, _quoteChar);
+      value = DateTimeUtils.EnsureDateTime(value, DateTimeZoneHandling);
+
+      if (string.IsNullOrEmpty(DateFormatString))
+      {
+        EnsureWriteBuffer();
+
+        int pos = 0;
+        _writeBuffer[pos++] = _quoteChar;
+        pos = DateTimeUtils.WriteDateTimeString(_writeBuffer, pos, value, null, value.Kind, DateFormatHandling);
+        _writeBuffer[pos++] = _quoteChar;
+
+        _writer.Write(_writeBuffer, 0, pos);
+      }
+      else
+      {
+        _writer.Write(_quoteChar);
+        _writer.Write(value.ToString(DateFormatString, Culture));
+        _writer.Write(_quoteChar);
+      }
     }
 
     /// <summary>
@@ -473,7 +589,7 @@ namespace Newtonsoft.Json
       }
     }
 
-#if !PocketPC && !NET20
+#if !NET20
     /// <summary>
     /// Writes a <see cref="DateTimeOffset"/> value.
     /// </summary>
@@ -481,7 +597,24 @@ namespace Newtonsoft.Json
     public override void WriteValue(DateTimeOffset value)
     {
       InternalWriteValue(JsonToken.Date);
-      WriteValueInternal(JsonConvert.ToString(value, DateFormatHandling, _quoteChar), JsonToken.Date);
+
+      if (string.IsNullOrEmpty(DateFormatString))
+      {
+        EnsureWriteBuffer();
+
+        int pos = 0;
+        _writeBuffer[pos++] = _quoteChar;
+        pos = DateTimeUtils.WriteDateTimeString(_writeBuffer, pos, (DateFormatHandling == DateFormatHandling.IsoDateFormat) ? value.DateTime : value.UtcDateTime, value.Offset, DateTimeKind.Local, DateFormatHandling);
+        _writeBuffer[pos++] = _quoteChar;
+
+        _writer.Write(_writeBuffer, 0, pos);
+      }
+      else
+      {
+        _writer.Write(_quoteChar);
+        _writer.Write(value.ToString(DateFormatString, Culture));
+        _writer.Write(_quoteChar);
+      }
     }
 #endif
 
@@ -545,6 +678,54 @@ namespace Newtonsoft.Json
       InternalWriteWhitespace(ws);
 
       _writer.Write(ws);
+    }
+
+    private void EnsureWriteBuffer()
+    {
+      if (_writeBuffer == null)
+        _writeBuffer = new char[64];
+    }
+
+    private void WriteIntegerValue(long value)
+    {
+      EnsureWriteBuffer();
+
+      if (value >= 0 && value <= 9)
+      {
+        _writer.Write((char)('0' + value));
+      }
+      else
+      {
+        ulong uvalue = (value < 0) ? (ulong)-value : (ulong)value;
+
+        if (value < 0)
+          _writer.Write('-');
+
+        WriteIntegerValue(uvalue);
+      }
+    }
+
+    private void WriteIntegerValue(ulong uvalue)
+    {
+      EnsureWriteBuffer();
+
+      if (uvalue <= 9)
+      {
+        _writer.Write((char)('0' + uvalue));
+      }
+      else
+      {
+        int totalLength = MathUtils.IntLength(uvalue);
+        int length = 0;
+
+        do
+        {
+          _writeBuffer[totalLength - ++length] = (char)('0' + (uvalue % 10));
+          uvalue /= 10;
+        } while (uvalue != 0);
+
+        _writer.Write(_writeBuffer, 0, length);
+      }
     }
   }
 }

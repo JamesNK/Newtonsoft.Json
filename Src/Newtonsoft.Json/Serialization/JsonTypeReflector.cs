@@ -28,13 +28,10 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
 using System.Security;
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
 using System.Security.Permissions;
 #endif
 using Newtonsoft.Json.Utilities;
-#if NETFX_CORE || PORTABLE
-using ICustomAttributeProvider = Newtonsoft.Json.Utilities.CustomAttributeProvider;
-#endif
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -44,7 +41,7 @@ using System.Runtime.Serialization;
 
 namespace Newtonsoft.Json.Serialization
 {
-#if !SILVERLIGHT && !PocketPC && !NET20 && !NETFX_CORE
+#if !SILVERLIGHT && !NET20 && !NETFX_CORE
   internal interface IMetadataTypeAttribute
   {
     Type MetadataClassType { get; }
@@ -53,6 +50,9 @@ namespace Newtonsoft.Json.Serialization
 
   internal static class JsonTypeReflector
   {
+    private static bool? _dynamicCodeGeneration;
+    private static bool? _fullyTrusted;
+
     public const string IdPropertyName = "$id";
     public const string RefPropertyName = "$ref";
     public const string TypePropertyName = "$type";
@@ -62,8 +62,8 @@ namespace Newtonsoft.Json.Serialization
     public const string ShouldSerializePrefix = "ShouldSerialize";
     public const string SpecifiedPostfix = "Specified";
 
-    private static readonly ThreadSafeStore<ICustomAttributeProvider, Type> JsonConverterTypeCache = new ThreadSafeStore<ICustomAttributeProvider, Type>(GetJsonConverterTypeFromAttribute);
-#if !(SILVERLIGHT || NET20 || NETFX_CORE || PORTABLE)
+    private static readonly ThreadSafeStore<object, Type> JsonConverterTypeCache = new ThreadSafeStore<object, Type>(GetJsonConverterTypeFromAttribute);
+#if !(SILVERLIGHT || NET20 || NETFX_CORE || PORTABLE40 || PORTABLE)
     private static readonly ThreadSafeStore<Type, Type> AssociatedMetadataTypesCache = new ThreadSafeStore<Type, Type>(GetAssociateMetadataTypeFromAttribute);
 
     private const string MetadataTypeAttributeTypeName =
@@ -71,9 +71,9 @@ namespace Newtonsoft.Json.Serialization
     private static Type _cachedMetadataTypeAttributeType;
 #endif
 #if SILVERLIGHT
-    private static readonly ThreadSafeStore<ICustomAttributeProvider, Type> TypeConverterTypeCache = new ThreadSafeStore<ICustomAttributeProvider, Type>(GetTypeConverterTypeFromAttribute);
+    private static readonly ThreadSafeStore<object, Type> TypeConverterTypeCache = new ThreadSafeStore<object, Type>(GetTypeConverterTypeFromAttribute);
 
-    private static Type GetTypeConverterTypeFromAttribute(ICustomAttributeProvider attributeProvider)
+    private static Type GetTypeConverterTypeFromAttribute(object attributeProvider)
     {
       TypeConverterAttribute converterAttribute = GetAttribute<TypeConverterAttribute>(attributeProvider);
       if (converterAttribute == null)
@@ -82,7 +82,7 @@ namespace Newtonsoft.Json.Serialization
       return Type.GetType(converterAttribute.ConverterTypeName);
     }
 
-    private static Type GetTypeConverterType(ICustomAttributeProvider attributeProvider)
+    private static Type GetTypeConverterType(object attributeProvider)
     {
       return TypeConverterTypeCache.Get(attributeProvider);
     }
@@ -90,7 +90,7 @@ namespace Newtonsoft.Json.Serialization
 
     public static JsonContainerAttribute GetJsonContainerAttribute(Type type)
     {
-      return CachedAttributeGetter<JsonContainerAttribute>.GetAttribute(type.GetCustomAttributeProvider());
+      return CachedAttributeGetter<JsonContainerAttribute>.GetAttribute(type);
     }
 
     public static JsonObjectAttribute GetJsonObjectAttribute(Type type)
@@ -108,14 +108,14 @@ namespace Newtonsoft.Json.Serialization
       return GetJsonContainerAttribute(type) as JsonDictionaryAttribute;
     }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
     public static SerializableAttribute GetSerializableAttribute(Type type)
     {
-      return CachedAttributeGetter<SerializableAttribute>.GetAttribute(type.GetCustomAttributeProvider());
+      return CachedAttributeGetter<SerializableAttribute>.GetAttribute(type);
     }
 #endif
 
-#if !PocketPC && !NET20
+#if !NET20
     public static DataContractAttribute GetDataContractAttribute(Type type)
     {
       // DataContractAttribute does not have inheritance
@@ -123,7 +123,7 @@ namespace Newtonsoft.Json.Serialization
 
       while (currentType != null)
       {
-        DataContractAttribute result = CachedAttributeGetter<DataContractAttribute>.GetAttribute(currentType.GetCustomAttributeProvider());
+        DataContractAttribute result = CachedAttributeGetter<DataContractAttribute>.GetAttribute(currentType);
         if (result != null)
           return result;
 
@@ -139,11 +139,11 @@ namespace Newtonsoft.Json.Serialization
 
       // can't override a field
       if (memberInfo.MemberType() == MemberTypes.Field)
-        return CachedAttributeGetter<DataMemberAttribute>.GetAttribute(memberInfo.GetCustomAttributeProvider());
+        return CachedAttributeGetter<DataMemberAttribute>.GetAttribute(memberInfo);
 
       // search property and then search base properties if nothing is returned and the property is virtual
       PropertyInfo propertyInfo = (PropertyInfo)memberInfo;
-      DataMemberAttribute result = CachedAttributeGetter<DataMemberAttribute>.GetAttribute(propertyInfo.GetCustomAttributeProvider());
+      DataMemberAttribute result = CachedAttributeGetter<DataMemberAttribute>.GetAttribute(propertyInfo);
       if (result == null)
       {
         if (propertyInfo.IsVirtual())
@@ -154,7 +154,7 @@ namespace Newtonsoft.Json.Serialization
           {
             PropertyInfo baseProperty = (PropertyInfo)ReflectionUtils.GetMemberInfoFromType(currentType, propertyInfo);
             if (baseProperty != null && baseProperty.IsVirtual())
-              result = CachedAttributeGetter<DataMemberAttribute>.GetAttribute(baseProperty.GetCustomAttributeProvider());
+              result = CachedAttributeGetter<DataMemberAttribute>.GetAttribute(baseProperty);
 
             currentType = currentType.BaseType();
           }
@@ -171,13 +171,13 @@ namespace Newtonsoft.Json.Serialization
       if (objectAttribute != null)
         return objectAttribute.MemberSerialization;
 
-#if !PocketPC && !NET20
+#if !NET20
       DataContractAttribute dataContractAttribute = GetDataContractAttribute(objectType);
       if (dataContractAttribute != null)
         return MemberSerialization.OptIn;
 #endif
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE40 || PORTABLE)
       if (!ignoreSerializableAttribute)
       {
         SerializableAttribute serializableAttribute = GetSerializableAttribute(objectType);
@@ -190,12 +190,12 @@ namespace Newtonsoft.Json.Serialization
       return MemberSerialization.OptOut;
     }
 
-    private static Type GetJsonConverterType(ICustomAttributeProvider attributeProvider)
+    private static Type GetJsonConverterType(object attributeProvider)
     {
       return JsonConverterTypeCache.Get(attributeProvider);
     }
 
-    private static Type GetJsonConverterTypeFromAttribute(ICustomAttributeProvider attributeProvider)
+    private static Type GetJsonConverterTypeFromAttribute(object attributeProvider)
     {
       JsonConverterAttribute converterAttribute = GetAttribute<JsonConverterAttribute>(attributeProvider);
       return (converterAttribute != null)
@@ -203,15 +203,8 @@ namespace Newtonsoft.Json.Serialization
         : null;
     }
 
-    public static JsonConverter GetJsonConverter(ICustomAttributeProvider attributeProvider, Type targetConvertedType)
+    public static JsonConverter GetJsonConverter(object attributeProvider, Type targetConvertedType)
     {
-      object provider = null;
-#if !(NETFX_CORE || PORTABLE)
-      provider = attributeProvider as MemberInfo;
-#else
-      provider = attributeProvider.UnderlyingObject;
-#endif
-
       Type converterType = GetJsonConverterType(attributeProvider);
 
       if (converterType != null)
@@ -224,8 +217,7 @@ namespace Newtonsoft.Json.Serialization
       return null;
     }
 
-#if !(NETFX_CORE || PORTABLE)
-#if !PocketPC
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
     public static TypeConverter GetTypeConverter(Type type)
     {
 #if !SILVERLIGHT
@@ -234,15 +226,14 @@ namespace Newtonsoft.Json.Serialization
       Type converterType = GetTypeConverterType(type);
 
       if (converterType != null)
-        return (TypeConverter)ReflectionUtils.CreateInstance(converterType);
+        return (TypeConverter)Activator.CreateInstance(converterType);
 
       return null;
-#endif
 #endif
     }
 #endif
 
-#if !(SILVERLIGHT || NET20 || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NET20 || NETFX_CORE || PORTABLE40 || PORTABLE)
     private static Type GetAssociatedMetadataType(Type type)
     {
       return AssociatedMetadataTypesCache.Get(type);
@@ -287,7 +278,7 @@ namespace Newtonsoft.Json.Serialization
     {
       T attribute;
 
-#if !(SILVERLIGHT || NET20 || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NET20 || NETFX_CORE || PORTABLE40 || PORTABLE)
       Type metadataType = GetAssociatedMetadataType(type);
       if (metadataType != null)
       {
@@ -297,13 +288,13 @@ namespace Newtonsoft.Json.Serialization
       }
 #endif
 
-      attribute = ReflectionUtils.GetAttribute<T>(type.GetCustomAttributeProvider(), true);
+      attribute = ReflectionUtils.GetAttribute<T>(type, true);
       if (attribute != null)
         return attribute;
 
       foreach (Type typeInterface in type.GetInterfaces())
       {
-        attribute = ReflectionUtils.GetAttribute<T>(typeInterface.GetCustomAttributeProvider(), true);
+        attribute = ReflectionUtils.GetAttribute<T>(typeInterface, true);
         if (attribute != null)
           return attribute;
       }
@@ -315,7 +306,7 @@ namespace Newtonsoft.Json.Serialization
     {
       T attribute;
 
-#if !(SILVERLIGHT || NET20 || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NET20 || NETFX_CORE || PORTABLE40 || PORTABLE)
       Type metadataType = GetAssociatedMetadataType(memberInfo.DeclaringType);
       if (metadataType != null)
       {
@@ -330,7 +321,7 @@ namespace Newtonsoft.Json.Serialization
       }
 #endif
 
-      attribute = ReflectionUtils.GetAttribute<T>(memberInfo.GetCustomAttributeProvider(), true);
+      attribute = ReflectionUtils.GetAttribute<T>(memberInfo, true);
       if (attribute != null)
         return attribute;
 
@@ -342,7 +333,7 @@ namespace Newtonsoft.Json.Serialization
 
           if (interfaceTypeMemberInfo != null)
           {
-            attribute = ReflectionUtils.GetAttribute<T>(interfaceTypeMemberInfo.GetCustomAttributeProvider(), true);
+            attribute = ReflectionUtils.GetAttribute<T>(interfaceTypeMemberInfo, true);
             if (attribute != null)
               return attribute;
           }
@@ -352,15 +343,8 @@ namespace Newtonsoft.Json.Serialization
       return null;
     }
 
-    public static T GetAttribute<T>(ICustomAttributeProvider attributeProvider) where T : Attribute
+    public static T GetAttribute<T>(object provider) where T : Attribute
     {
-      object provider = null;
-#if !(NETFX_CORE || PORTABLE)
-      provider = attributeProvider;
-#else
-      provider = attributeProvider.UnderlyingObject;
-#endif
-
       Type type = provider as Type;
       if (type != null)
         return GetAttribute<T>(type);
@@ -369,11 +353,8 @@ namespace Newtonsoft.Json.Serialization
       if (memberInfo != null)
         return GetAttribute<T>(memberInfo);
 
-      return ReflectionUtils.GetAttribute<T>(attributeProvider, true);
+      return ReflectionUtils.GetAttribute<T>(provider, true);
     }
-
-    private static bool? _dynamicCodeGeneration;
-    private static bool? _fullyTrusted;
 
 #if DEBUG
     internal static void SetFullyTrusted(bool fullyTrusted)
@@ -396,7 +377,7 @@ namespace Newtonsoft.Json.Serialization
       {
         if (_dynamicCodeGeneration == null)
         {
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE40 || PORTABLE)
           try
           {
             new ReflectionPermission(ReflectionPermissionFlag.MemberAccess).Demand();
@@ -425,9 +406,9 @@ namespace Newtonsoft.Json.Serialization
       {
         if (_fullyTrusted == null)
         {
-#if (NETFX_CORE || SILVERLIGHT || PORTABLE)
+#if (NETFX_CORE || SILVERLIGHT || PORTABLE || PORTABLE40)
           _fullyTrusted = false;
-#elif !(NET20 || NET35)
+#elif !(NET20 || NET35 || PORTABLE40)
           AppDomain appDomain = AppDomain.CurrentDomain;
 
           _fullyTrusted = appDomain.IsHomogenous && appDomain.IsFullyTrusted;
@@ -452,12 +433,16 @@ namespace Newtonsoft.Json.Serialization
     {
       get
       {
-#if !(SILVERLIGHT || PORTABLE || NETFX_CORE)
+#if !(SILVERLIGHT || PORTABLE40 || PORTABLE || NETFX_CORE)
         if (DynamicCodeGeneration)
           return DynamicReflectionDelegateFactory.Instance;
-#endif
 
         return LateBoundReflectionDelegateFactory.Instance;
+#elif !(PORTABLE40)
+        return ExpressionReflectionDelegateFactory.Instance;
+#else
+        return LateBoundReflectionDelegateFactory.Instance;
+#endif
       }
     }
   }

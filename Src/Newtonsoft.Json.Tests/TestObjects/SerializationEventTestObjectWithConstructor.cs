@@ -23,7 +23,6 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !PocketPC
 using System;
 using System.Runtime.Serialization;
 using Newtonsoft.Json.Serialization;
@@ -82,4 +81,3 @@ namespace Newtonsoft.Json.Tests.TestObjects
     }
   }
 }
-#endif

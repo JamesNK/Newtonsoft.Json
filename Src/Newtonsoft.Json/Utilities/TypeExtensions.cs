@@ -36,7 +36,7 @@ namespace Newtonsoft.Json.Utilities
 {
   internal static class TypeExtensions
   {
-#if NETFX_CORE
+#if NETFX_CORE || PORTABLE
     private static BindingFlags DefaultFlags = BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance;
 
     public static MethodInfo GetGetMethod(this PropertyInfo propertyInfo)
@@ -78,9 +78,18 @@ namespace Newtonsoft.Json.Utilities
     }
 #endif
 
-    public static MemberTypes MemberType(this MemberInfo memberInfo)
+    public static MethodInfo Method(this Delegate d)
     {
 #if !(NETFX_CORE || PORTABLE)
+      return d.Method;
+#else
+      return d.GetMethodInfo();
+#endif
+    }
+
+    public static MemberTypes MemberType(this MemberInfo memberInfo)
+    {
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
       return memberInfo.MemberType;
 #else
       if (memberInfo is PropertyInfo)
@@ -98,7 +107,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static bool ContainsGenericParameters(this Type type)
     {
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       return type.ContainsGenericParameters;
 #else
       return type.GetTypeInfo().ContainsGenericParameters;
@@ -107,7 +116,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static bool IsInterface(this Type type)
     {
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       return type.IsInterface;
 #else
       return type.GetTypeInfo().IsInterface;
@@ -116,7 +125,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static bool IsGenericType(this Type type)
     {
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       return type.IsGenericType;
 #else
       return type.GetTypeInfo().IsGenericType;
@@ -125,7 +134,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static bool IsGenericTypeDefinition(this Type type)
     {
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       return type.IsGenericTypeDefinition;
 #else
       return type.GetTypeInfo().IsGenericTypeDefinition;
@@ -134,7 +143,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static Type BaseType(this Type type)
     {
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       return type.BaseType;
 #else
       return type.GetTypeInfo().BaseType;
@@ -143,7 +152,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static bool IsEnum(this Type type)
     {
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       return type.IsEnum;
 #else
       return type.GetTypeInfo().IsEnum;
@@ -152,7 +161,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static bool IsClass(this Type type)
     {
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       return type.IsClass;
 #else
       return type.GetTypeInfo().IsClass;
@@ -161,14 +170,14 @@ namespace Newtonsoft.Json.Utilities
 
     public static bool IsSealed(this Type type)
     {
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       return type.IsSealed;
 #else
       return type.GetTypeInfo().IsSealed;
 #endif
     }
 
-#if PORTABLE
+#if PORTABLE40
     public static PropertyInfo GetProperty(this Type type, string name, BindingFlags bindingFlags, object placeholder1, Type propertyType, IList<Type> indexParameters, object placeholder2)
     {
       IList<PropertyInfo> propertyInfos = type.GetProperties(bindingFlags);
@@ -203,7 +212,14 @@ namespace Newtonsoft.Json.Utilities
     }
 #endif
 
-#if NETFX_CORE
+#if (NETFX_CORE || PORTABLE)
+    public static MethodInfo GetBaseDefinition(this MethodInfo method)
+    {
+      return method.GetRuntimeBaseDefinition();
+    }
+#endif
+
+#if (NETFX_CORE || PORTABLE)
     public static bool IsDefined(this Type type, Type attributeType, bool inherit)
     {
       return type.GetTypeInfo().CustomAttributes.Any(a => a.AttributeType == attributeType);
@@ -332,7 +348,11 @@ namespace Newtonsoft.Json.Utilities
 
     public static IEnumerable<PropertyInfo> GetProperties(this Type type, BindingFlags bindingFlags)
     {
-      return type.GetTypeInfo().GetPropertiesRecursive().Where(p => TestAccessibility(p, bindingFlags));
+      IList<PropertyInfo> properties = (bindingFlags.HasFlag(BindingFlags.DeclaredOnly))
+        ? type.GetTypeInfo().DeclaredProperties.ToList()
+        : type.GetTypeInfo().GetPropertiesRecursive();
+
+      return properties.Where(p => TestAccessibility(p, bindingFlags));
     }
 
     private static IList<MemberInfo> GetMembersRecursive(this TypeInfo type)
@@ -408,7 +428,11 @@ namespace Newtonsoft.Json.Utilities
 
     public static IEnumerable<FieldInfo> GetFields(this Type type, BindingFlags bindingFlags)
     {
-      return type.GetTypeInfo().GetFieldsRecursive().Where(f => TestAccessibility(f, bindingFlags)).ToList();
+      IList<FieldInfo> fields = (bindingFlags.HasFlag(BindingFlags.DeclaredOnly))
+        ? type.GetTypeInfo().DeclaredFields.ToList()
+        : type.GetTypeInfo().GetFieldsRecursive();
+
+      return fields.Where(f => TestAccessibility(f, bindingFlags)).ToList();
     }
 
     private static bool TestAccessibility(PropertyInfo member, BindingFlags bindingFlags)
@@ -480,7 +504,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static bool IsAbstract(this Type type)
     {
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       return type.IsAbstract;
 #else
       return type.GetTypeInfo().IsAbstract;
@@ -489,7 +513,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static bool IsVisible(this Type type)
     {
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       return type.IsVisible;
 #else
       return type.GetTypeInfo().IsVisible;
@@ -498,7 +522,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static bool IsValueType(this Type type)
     {
-#if !NETFX_CORE
+#if !(NETFX_CORE || PORTABLE)
       return type.IsValueType;
 #else
       return type.GetTypeInfo().IsValueType;

@@ -32,8 +32,10 @@ namespace Newtonsoft.Json.Bson
     Binary = 0x00,
     Function = 0x01,
     [Obsolete("This type has been deprecated in the BSON specification. Use Binary instead.")]
-    Data = 0x02,
-    Uuid = 0x03,
+    BinaryOld = 0x02,
+    [Obsolete("This type has been deprecated in the BSON specification. Use Uuid instead.")]
+    UuidOld = 0x03,
+    Uuid = 0x04,
     Md5 = 0x05,
     UserDefined = 0x80
   }

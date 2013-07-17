@@ -65,7 +65,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\Net20\Newtonsoft.Json.xml</DocumentationFile>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>Newtonsoft.Json.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -95,21 +96,32 @@
     <Compile Include="DateFormatHandling.cs" />
     <Compile Include="DateParseHandling.cs" />
     <Compile Include="DateTimeZoneHandling.cs" />
+    <Compile Include="FloatFormatHandling.cs" />
+    <Compile Include="FloatParseHandling.cs" />
     <Compile Include="FormatterAssemblyStyle.cs" />
     <Compile Include="Formatting.cs" />
     <Compile Include="JsonConstructorAttribute.cs" />
     <Compile Include="JsonDictionaryAttribute.cs" />
     <Compile Include="JsonException.cs" />
+    <Compile Include="JsonExtensionDataAttribute.cs" />
     <Compile Include="JsonPosition.cs" />
     <Compile Include="Linq\JPropertyKeyedCollection.cs" />
     <Compile Include="SerializationBinder.cs" />
     <Compile Include="Serialization\DiagnosticsTraceWriter.cs" />
+    <Compile Include="Serialization\ExpressionValueProvider.cs" />
     <Compile Include="Serialization\ITraceWriter.cs" />
     <Compile Include="Serialization\JsonContainerContract.cs" />
     <Compile Include="Serialization\JsonDynamicContract.cs" />
     <Compile Include="Serialization\MemoryTraceWriter.cs" />
-    <Compile Include="StreamingContext.cs" />
+    <Compile Include="Serialization\TraceJsonReader.cs" />
+    <Compile Include="Serialization\TraceJsonWriter.cs" />
     <Compile Include="StringEscapeHandling.cs" />
+    <Compile Include="Utilities\DateTimeParser.cs" />
+    <Compile Include="Utilities\DynamicProxy.cs" />
+    <Compile Include="Utilities\DynamicProxyMetaObject.cs" />
+    <Compile Include="Utilities\DynamicUtils.cs" />
+    <Compile Include="Utilities\ExpressionReflectionDelegateFactory.cs" />
+    <Compile Include="Utilities\ImmutableCollectionsUtils.cs" />
     <Compile Include="Utilities\LinqBridge.cs" />
     <Compile Include="Linq\JPath.cs" />
     <Compile Include="Linq\JPropertyDescriptor.cs" />
@@ -229,7 +241,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\StringBuffer.cs" />
     <Compile Include="Utilities\CollectionUtils.cs" />
-    <Compile Include="Utilities\ListWrapper.cs" />
     <Compile Include="Utilities\MathUtils.cs" />
     <Compile Include="Utilities\MiscellaneousUtils.cs" />
     <Compile Include="Utilities\ReflectionUtils.cs" />

@@ -1,0 +1,13 @@
+﻿<UserSettings>
+  <ApplicationIdentity version="11.0"/>
+  <ToolsOptions>
+    <ToolsOptionsCategory name="TextEditor" RegisteredName="TextEditor">
+      <ToolsOptionsSubCategory name="CSharp" RegisteredName="CSharp" PackageName="Text Management Package">
+        <PropertyValue name="TabSize">2</PropertyValue>
+        <PropertyValue name="IndentStyle">2</PropertyValue>
+        <PropertyValue name="InsertTabs">false</PropertyValue>
+        <PropertyValue name="IndentSize">2</PropertyValue>
+      </ToolsOptionsSubCategory>
+    </ToolsOptionsCategory>
+  </ToolsOptions>
+</UserSettings>

@@ -29,7 +29,8 @@ using System.Globalization;
 using System.IO;
 #if NET20
 using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Runtime.Serialization.Json;
 #endif
 using System.Text;
 using System.Threading;
@@ -39,6 +40,7 @@ using NUnit.Framework;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using TestMethod = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
+using SetUp = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestInitializeAttribute;
 #endif
 using Newtonsoft.Json.Utilities;
 using System.Collections;
@@ -53,22 +55,76 @@ namespace Newtonsoft.Json.Tests
   [TestFixture]
   public abstract class TestFixtureBase
   {
+#if !NET20
+    protected string GetDataContractJsonSerializeResult(object o)
+    {
+      MemoryStream ms = new MemoryStream();
+      DataContractJsonSerializer s = new DataContractJsonSerializer(o.GetType());
+      s.WriteObject(ms, o);
+
+      var data = ms.ToArray();
+      return Encoding.UTF8.GetString(data, 0, data.Length);
+    }
+#endif
+
     protected string GetOffset(DateTime d, DateFormatHandling dateFormatHandling)
     {
-      StringWriter sw = new StringWriter();
-      JsonConvert.WriteDateTimeOffset(sw, DateTime.SpecifyKind(d, DateTimeKind.Local).GetUtcOffset(), dateFormatHandling);
-      sw.Flush();
+      char[] chars = new char[8];
+      int pos = DateTimeUtils.WriteDateTimeOffset(chars, 0, DateTime.SpecifyKind(d, DateTimeKind.Local).GetUtcOffset(), dateFormatHandling);
 
-      return sw.ToString();
+      return new string(chars, 0, pos);
     }
 
-#if !NETFX_CORE
+    protected string BytesToHex(byte[] bytes)
+    {
+      return BytesToHex(bytes, false);
+    }
+
+    protected string BytesToHex(byte[] bytes, bool removeDashes)
+    {
+      string hex = BitConverter.ToString(bytes);
+      if (removeDashes)
+        hex = hex.Replace("-", "");
+
+      return hex;
+    }
+
+    protected byte[] HexToBytes(string hex)
+    {
+      string fixedHex = hex.Replace("-", string.Empty);
+
+      // array to put the result in
+      byte[] bytes = new byte[fixedHex.Length / 2];
+      // variable to determine shift of high/low nibble
+      int shift = 4;
+      // offset of the current byte in the array
+      int offset = 0;
+      // loop the characters in the string
+      foreach (char c in fixedHex)
+      {
+        // get character code in range 0-9, 17-22
+        // the % 32 handles lower case characters
+        int b = (c - '0') % 32;
+        // correction for a-f
+        if (b > 9) b -= 7;
+        // store nibble (4 bits) in byte array
+        bytes[offset] |= (byte)(b << shift);
+        // toggle the shift variable between 0 and 4
+        shift ^= 4;
+        // move to next byte
+        if (shift != 0) offset++;
+      }
+      return bytes;
+    }
+
     [SetUp]
     protected void TestSetup()
     {
       //CultureInfo turkey = CultureInfo.CreateSpecificCulture("tr");
       //Thread.CurrentThread.CurrentCulture = turkey;
       //Thread.CurrentThread.CurrentUICulture = turkey;
+
+      JsonConvert.DefaultSettings = null;
     }
 
     protected void WriteEscapedJson(string json)
@@ -80,7 +136,6 @@ namespace Newtonsoft.Json.Tests
     {
       return @"@""" + json.Replace(@"""", @"""""") + @"""";
     }
-#endif
   }
 
 #if NETFX_CORE

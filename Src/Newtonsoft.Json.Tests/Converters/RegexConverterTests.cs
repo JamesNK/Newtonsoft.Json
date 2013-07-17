@@ -25,7 +25,7 @@
 
 using System;
 using System.Collections.Generic;
-#if !SILVERLIGHT && !PocketPC && !NET20 && !NETFX_CORE
+#if !SILVERLIGHT && !NET20 && !NETFX_CORE
 using System.Data.Linq;
 #endif
 #if !SILVERLIGHT && !NETFX_CORE
@@ -35,6 +35,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
 #if !NETFX_CORE
 using NUnit.Framework;
@@ -69,6 +70,57 @@ namespace Newtonsoft.Json.Tests.Converters
     }
 
     [Test]
+    public void SerializeCamelCaseAndStringEnums()
+    {
+      Regex regex = new Regex("abc", RegexOptions.IgnoreCase);
+
+      string json = JsonConvert.SerializeObject(regex, Formatting.Indented, new JsonSerializerSettings
+        {
+          Converters = {new RegexConverter(),new StringEnumConverter() { CamelCaseText = true }},
+          ContractResolver = new CamelCasePropertyNamesContractResolver()
+        });
+
+      Assert.AreEqual(@"{
+  ""pattern"": ""abc"",
+  ""options"": ""ignoreCase""
+}", json);
+    }
+
+    [Test]
+    public void DeserializeCamelCaseAndStringEnums()
+    {
+      string json = @"{
+  ""pattern"": ""abc"",
+  ""options"": ""ignoreCase""
+}";
+      
+      Regex regex = JsonConvert.DeserializeObject<Regex>(json, new JsonSerializerSettings
+       {
+         Converters = { new RegexConverter() }
+       });
+
+      Assert.AreEqual("abc", regex.ToString());
+      Assert.AreEqual(RegexOptions.IgnoreCase, regex.Options);
+    }
+
+    [Test]
+    public void DeserializeISerializeRegexJson()
+    {
+      string json = @"{
+                        ""Regex"": {
+                          ""pattern"": ""(hi)"",
+                          ""options"": 5,
+                          ""matchTimeout"": -10000
+                        }
+                      }";
+
+      RegexTestClass r = JsonConvert.DeserializeObject<RegexTestClass>(json);
+
+      Assert.AreEqual("(hi)", r.Regex.ToString());
+      Assert.AreEqual(RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture, r.Regex.Options);
+    }
+
+    [Test]
     public void SerializeToBson()
     {
       Regex regex = new Regex("abc", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
@@ -81,7 +133,7 @@ namespace Newtonsoft.Json.Tests.Converters
       serializer.Serialize(writer, new RegexTestClass { Regex = regex });
 
       string expected = "13-00-00-00-0B-52-65-67-65-78-00-61-62-63-00-69-75-00-00";
-      string bson = MiscellaneousUtils.BytesToHex(ms.ToArray());
+      string bson = BytesToHex(ms.ToArray());
 
       Assert.AreEqual(expected, bson);
     }
@@ -102,7 +154,7 @@ namespace Newtonsoft.Json.Tests.Converters
     [Test]
     public void DeserializeFromBson()
     {
-      MemoryStream ms = new MemoryStream(MiscellaneousUtils.HexToBytes("13-00-00-00-0B-52-65-67-65-78-00-61-62-63-00-69-75-00-00"));
+      MemoryStream ms = new MemoryStream(HexToBytes("13-00-00-00-0B-52-65-67-65-78-00-61-62-63-00-69-75-00-00"));
       BsonReader reader = new BsonReader(ms);
       JsonSerializer serializer = new JsonSerializer();
       serializer.Converters.Add(new RegexConverter());
@@ -150,7 +202,7 @@ namespace Newtonsoft.Json.Tests.Converters
       serializer.Serialize(writer, new RegexTestClass { Regex = regex });
 
       string expected = "14-00-00-00-0B-52-65-67-65-78-00-2F-00-69-6D-73-75-78-00-00";
-      string bson = MiscellaneousUtils.BytesToHex(ms.ToArray());
+      string bson = BytesToHex(ms.ToArray());
 
       Assert.AreEqual(expected, bson);
 

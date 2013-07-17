@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
+#if !(NET35 || NET20 || PORTABLE40)
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -63,10 +63,13 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       Dictionary<string, object> values = new Dictionary<string, object>();
 
+      IContractResolver c = DefaultContractResolver.Instance;
+      JsonDynamicContract dynamicContract = (JsonDynamicContract)c.ResolveContract(dynamicObject.GetType());
+
       foreach (string memberName in dynamicObject.GetDynamicMemberNames())
       {
         object value;
-        dynamicObject.TryGetMember(memberName, out value);
+        dynamicContract.TryGetMember(dynamicObject, memberName, out value);
 
         values.Add(memberName, value);
       }
@@ -97,6 +100,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual(dynamicObject.ChildObject.Text, d.ChildObject.Text);
     }
 
+#if !(PORTABLE || PORTABLE40)
     [Test]
     public void SerializeDynamicObjectWithObjectTracking()
     {
@@ -117,8 +121,8 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       Console.WriteLine(json);
 
-      string dynamicChildObjectTypeName = ReflectionUtils.GetTypeName(typeof(DynamicChildObject), FormatterAssemblyStyle.Full);
-      string expandoObjectTypeName = ReflectionUtils.GetTypeName(typeof(ExpandoObject), FormatterAssemblyStyle.Full);
+      string dynamicChildObjectTypeName = ReflectionUtils.GetTypeName(typeof(DynamicChildObject), FormatterAssemblyStyle.Full, null);
+      string expandoObjectTypeName = ReflectionUtils.GetTypeName(typeof(ExpandoObject), FormatterAssemblyStyle.Full, null);
 
       Assert.AreEqual(@"{
   ""$type"": """ + expandoObjectTypeName + @""",
@@ -145,6 +149,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual("Child text!", n.DynamicChildObject.Text);
       Assert.AreEqual(int.MinValue, n.DynamicChildObject.Integer);
     }
+#endif
 
     [Test]
     public void NoPublicDefaultConstructor()
@@ -244,6 +249,78 @@ namespace Newtonsoft.Json.Tests.Serialization
       DictionaryDynamicObject foo = JsonConvert.DeserializeObject<DictionaryDynamicObject>(json, settings);
 
       Assert.AreEqual(false, foo.Values["retweeted"]);
+    }
+
+    [Test]
+    public void SerializeDynamicObjectWithNullValueHandlingIgnore()
+    {
+      dynamic o = new TestDynamicObject();
+      o.Text = "Text!";
+      o.Int = int.MaxValue;
+      o.ChildObject = null; // Tests an explicitly defined property of a dynamic object with a null value.
+      o.DynamicChildObject = null; // vs. a completely dynamic defined property.
+
+      string json = JsonConvert.SerializeObject(o, Formatting.Indented, new JsonSerializerSettings
+        {
+          NullValueHandling = NullValueHandling.Ignore,
+        });
+
+      Console.WriteLine(json);
+
+      Assert.AreEqual(@"{
+  ""Explicit"": false,
+  ""Text"": ""Text!"",
+  ""Int"": 2147483647
+}", json);
+    }
+
+    [Test]
+    public void SerializeDynamicObjectWithNullValueHandlingInclude()
+    {
+      dynamic o = new TestDynamicObject();
+      o.Text = "Text!";
+      o.Int = int.MaxValue;
+      o.ChildObject = null; // Tests an explicitly defined property of a dynamic object with a null value.
+      o.DynamicChildObject = null; // vs. a completely dynamic defined property.
+
+      string json = JsonConvert.SerializeObject(o, Formatting.Indented, new JsonSerializerSettings
+        {
+          NullValueHandling = NullValueHandling.Include,
+        });
+
+      Console.WriteLine(json);
+
+      Assert.AreEqual(@"{
+  ""Explicit"": false,
+  ""Text"": ""Text!"",
+  ""DynamicChildObject"": null,
+  ""Int"": 2147483647,
+  ""ChildObject"": null
+}", json);
+    }
+
+    [Test]
+    public void SerializeDynamicObjectWithDefaultValueHandlingIgnore()
+    {
+      dynamic o = new TestDynamicObject();
+      o.Text = "Text!";
+      o.Int = int.MaxValue;
+      o.IntDefault = 0;
+      o.NUllableIntDefault = default(int?);
+      o.ChildObject = null; // Tests an explicitly defined property of a dynamic object with a null value.
+      o.DynamicChildObject = null; // vs. a completely dynamic defined property.
+
+      string json = JsonConvert.SerializeObject(o, Formatting.Indented, new JsonSerializerSettings
+      {
+        DefaultValueHandling = DefaultValueHandling.Ignore,
+      });
+
+      Console.WriteLine(json);
+
+      Assert.AreEqual(@"{
+  ""Text"": ""Text!"",
+  ""Int"": 2147483647
+}", json);
     }
   }
 

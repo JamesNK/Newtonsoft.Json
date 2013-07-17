@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Reflection;
 using Newtonsoft.Json.Utilities;
 using System.Collections;
@@ -60,8 +61,14 @@ namespace Newtonsoft.Json.Serialization
 
     private readonly bool _isDictionaryValueTypeNullableType;
     private readonly Type _genericCollectionDefinitionType;
+
     private Type _genericWrapperType;
     private MethodCall<object, object> _genericWrapperCreator;
+
+    private Func<object> _genericTemporaryDictionaryCreator;
+
+    internal bool ShouldCreateWrapper { get; private set; }
+    internal MethodBase ParametrizedConstructor { get; private set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonDictionaryContract"/> class.
@@ -74,40 +81,79 @@ namespace Newtonsoft.Json.Serialization
 
       Type keyType;
       Type valueType;
+
       if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof(IDictionary<,>), out _genericCollectionDefinitionType))
       {
         keyType = _genericCollectionDefinitionType.GetGenericArguments()[0];
         valueType = _genericCollectionDefinitionType.GetGenericArguments()[1];
+
+        if (ReflectionUtils.IsGenericDefinition(UnderlyingType, typeof(IDictionary<,>)))
+          CreatedType = typeof(Dictionary<,>).MakeGenericType(keyType, valueType);
+
+#if !(NET40 || NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE40)
+        IsReadOnlyOrFixedSize = ReflectionUtils.InheritsGenericDefinition(underlyingType, typeof(ReadOnlyDictionary<,>));
+#endif
       }
+#if !(NET40 || NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE40)
+      else if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof(IReadOnlyDictionary<,>), out _genericCollectionDefinitionType))
+      {
+        keyType = _genericCollectionDefinitionType.GetGenericArguments()[0];
+        valueType = _genericCollectionDefinitionType.GetGenericArguments()[1];
+
+        if (ReflectionUtils.IsGenericDefinition(UnderlyingType, typeof(IReadOnlyDictionary<,>)))
+          CreatedType = typeof(ReadOnlyDictionary<,>).MakeGenericType(keyType, valueType);
+
+        IsReadOnlyOrFixedSize = true;
+      }
+#endif
       else
       {
         ReflectionUtils.GetDictionaryKeyValueTypes(UnderlyingType, out keyType, out valueType);
+
+        if (UnderlyingType == typeof(IDictionary))
+          CreatedType = typeof(Dictionary<object, object>);
       }
+
+      if (keyType != null && valueType != null)
+        ParametrizedConstructor = CollectionUtils.ResolveEnumableCollectionConstructor(CreatedType, typeof(KeyValuePair<,>).MakeGenericType(keyType, valueType));
+
+      ShouldCreateWrapper = !typeof(IDictionary).IsAssignableFrom(CreatedType);
 
       DictionaryKeyType = keyType;
       DictionaryValueType = valueType;
 
       if (DictionaryValueType != null)
         _isDictionaryValueTypeNullableType = ReflectionUtils.IsNullableType(DictionaryValueType);
-      
-      if (IsTypeGenericDictionaryInterface(UnderlyingType))
+
+#if (NET20 || NET35)
+      Type tempDictioanryType;
+
+        // bug in .NET 2.0 & 3.5 that Dictionary<TKey, Nullable<TValue>> throws an error when adding null via IDictionary[key] = object
+      // wrapper will handle calling Add(T) instead
+      if (_isDictionaryValueTypeNullableType
+        && (ReflectionUtils.InheritsGenericDefinition(CreatedType, typeof(Dictionary<,>), out tempDictioanryType)))
       {
-        CreatedType = ReflectionUtils.MakeGenericType(typeof(Dictionary<,>), keyType, valueType);
+        ShouldCreateWrapper = true;
       }
-      else if (UnderlyingType == typeof(IDictionary))
+#endif
+
+#if !(NET20 || NET35 || NET40 || PORTABLE40)
+      Type immutableCreatedType;
+      MethodBase immutableParameterizedCreator;
+      if (ImmutableCollectionsUtils.TryBuildImmutableForDictionaryContract(underlyingType, DictionaryKeyType, DictionaryValueType, out immutableCreatedType, out immutableParameterizedCreator))
       {
-        CreatedType = typeof (Dictionary<object, object>);
+        CreatedType = immutableCreatedType;
+        ParametrizedConstructor = immutableParameterizedCreator;
+        IsReadOnlyOrFixedSize = true;
       }
+#endif
     }
 
     internal IWrappedDictionary CreateWrapper(object dictionary)
     {
-      if (dictionary is IDictionary && (DictionaryValueType == null || !_isDictionaryValueTypeNullableType))
-        return new DictionaryWrapper<object, object>((IDictionary)dictionary);
-
       if (_genericWrapperCreator == null)
       {
-        _genericWrapperType = ReflectionUtils.MakeGenericType(typeof(DictionaryWrapper<,>), DictionaryKeyType, DictionaryValueType);
+        _genericWrapperType = typeof(DictionaryWrapper<,>).MakeGenericType(DictionaryKeyType, DictionaryValueType);
 
         ConstructorInfo genericWrapperConstructor = _genericWrapperType.GetConstructor(new[] { _genericCollectionDefinitionType });
         _genericWrapperCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(genericWrapperConstructor);
@@ -116,14 +162,16 @@ namespace Newtonsoft.Json.Serialization
       return (IWrappedDictionary)_genericWrapperCreator(null, dictionary);
     }
 
-    private bool IsTypeGenericDictionaryInterface(Type type)
+    internal IDictionary CreateTemporaryDictionary()
     {
-      if (!type.IsGenericType())
-        return false;
+      if (_genericTemporaryDictionaryCreator == null)
+      {
+        Type temporaryDictionaryType = typeof(Dictionary<,>).MakeGenericType(DictionaryKeyType, DictionaryValueType);
 
-      Type genericDefinition = type.GetGenericTypeDefinition();
+        _genericTemporaryDictionaryCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateDefaultConstructor<object>(temporaryDictionaryType);
+      }
 
-      return (genericDefinition == typeof(IDictionary<,>));
+      return (IDictionary)_genericTemporaryDictionaryCreator();
     }
   }
 }

@@ -50,6 +50,17 @@ namespace Newtonsoft.Json.Tests.Linq
   public class LinqToJsonTest : TestFixtureBase
   {
     [Test]
+    public void ForEach()
+    {
+      JArray items = new JArray(new JObject(new JProperty("name", "value!")));
+
+      foreach (JObject friend in items)
+      {
+        Console.WriteLine(friend);
+      }
+    }
+
+    [Test]
     public void DoubleValue()
     {
       JArray j = JArray.Parse("[-1E+4,100.0e-2]");
@@ -565,7 +576,7 @@ keyword such as type of business.""
       });
     }
 
-#if !PocketPC && !NET20
+#if !NET20
     [Test]
     public void ToStringJsonConverter()
     {
@@ -718,7 +729,7 @@ keyword such as type of business.""
       Assert.AreEqual(new DateTime(2000, 10, 15, 5, 5, 5, DateTimeKind.Utc), d);
     }
 
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40)
     [Test]
     public void CovariantIJEnumerable()
     {
@@ -730,6 +741,19 @@ keyword such as type of business.""
 
       IJEnumerable<JToken> values = o.Properties();
       Assert.AreEqual(4, values.Count());
+    }
+#endif
+
+#if !NET20
+    [Test]
+    public void LinqCast()
+    {
+      JToken olist = JArray.Parse("[12,55]");
+
+      List<int> list1 = olist.AsEnumerable().Values<int>().ToList();
+
+      Assert.AreEqual(12, list1[0]);
+      Assert.AreEqual(55, list1[1]);
     }
 #endif
 
@@ -865,7 +889,7 @@ keyword such as type of business.""
       Assert.AreEqual("hi!", (string)a[0]);
     }
 
-#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
+#if !(NET35 || NET20 || WINDOWS_PHONE)
     [Test]
     public void ExceptionFromOverloadWithJValue()
     {

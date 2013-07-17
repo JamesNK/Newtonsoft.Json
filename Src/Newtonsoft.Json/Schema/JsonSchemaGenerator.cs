@@ -30,9 +30,6 @@ using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Serialization;
-#if NETFX_CORE
-using IConvertible = Newtonsoft.Json.Utilities.Convertible;
-#endif
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -182,7 +179,7 @@ namespace Newtonsoft.Json.Schema
       if (containerAttribute != null && !string.IsNullOrEmpty(containerAttribute.Description))
         return containerAttribute.Description;
 
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
       DescriptionAttribute descriptionAttribute = ReflectionUtils.GetAttribute<DescriptionAttribute>(type);
       if (descriptionAttribute != null)
         return descriptionAttribute.Description;
@@ -321,21 +318,23 @@ namespace Newtonsoft.Json.Schema
 
             if (keyType != null)
             {
+              JsonContract keyContract = ContractResolver.ResolveContract(keyType);
+
               // can be converted to a string
-              if (ConvertUtils.IsConvertible(keyType))
+              if (keyContract.ContractType == JsonContractType.Primitive)
               {
                 CurrentSchema.AdditionalProperties = GenerateInternal(valueType, Required.Default, false);
               }
             }
             break;
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
           case JsonContractType.Serializable:
             CurrentSchema.Type = AddNullType(JsonSchemaType.Object, valueRequired);
             CurrentSchema.Id = GetTypeId(type, false);
             GenerateISerializableContract(type, (JsonISerializableContract) contract);
             break;
 #endif
-#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE)
+#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE40)
           case JsonContractType.Dynamic:
 #endif
           case JsonContractType.Linq:
@@ -387,7 +386,7 @@ namespace Newtonsoft.Json.Schema
         CurrentSchema.AllowAdditionalProperties = false;
     }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
     private void GenerateISerializableContract(Type type, JsonISerializableContract contract)
     {
       CurrentSchema.AllowAdditionalProperties = true;
@@ -421,38 +420,48 @@ namespace Newtonsoft.Json.Schema
           type = Nullable.GetUnderlyingType(type);
       }
 
-      TypeCode typeCode = ConvertUtils.GetTypeCode(type);
+      PrimitiveTypeCode typeCode = ConvertUtils.GetTypeCode(type);
 
       switch (typeCode)
       {
-        case TypeCode.Empty:
-        case TypeCode.Object:
+        case PrimitiveTypeCode.Empty:
+        case PrimitiveTypeCode.Object:
           return schemaType | JsonSchemaType.String;
 #if !(NETFX_CORE || PORTABLE)
-        case TypeCode.DBNull:
+        case PrimitiveTypeCode.DBNull:
           return schemaType | JsonSchemaType.Null;
 #endif
-        case TypeCode.Boolean:
+        case PrimitiveTypeCode.Boolean:
           return schemaType | JsonSchemaType.Boolean;
-        case TypeCode.Char:
+        case PrimitiveTypeCode.Char:
           return schemaType | JsonSchemaType.String;
-        case TypeCode.SByte:
-        case TypeCode.Byte:
-        case TypeCode.Int16:
-        case TypeCode.UInt16:
-        case TypeCode.Int32:
-        case TypeCode.UInt32:
-        case TypeCode.Int64:
-        case TypeCode.UInt64:
+        case PrimitiveTypeCode.SByte:
+        case PrimitiveTypeCode.Byte:
+        case PrimitiveTypeCode.Int16:
+        case PrimitiveTypeCode.UInt16:
+        case PrimitiveTypeCode.Int32:
+        case PrimitiveTypeCode.UInt32:
+        case PrimitiveTypeCode.Int64:
+        case PrimitiveTypeCode.UInt64:
+#if !(PORTABLE || NET35 || NET20 || WINDOWS_PHONE || SILVERLIGHT)
+        case PrimitiveTypeCode.BigInteger:
+#endif
           return schemaType | JsonSchemaType.Integer;
-        case TypeCode.Single:
-        case TypeCode.Double:
-        case TypeCode.Decimal:
+        case PrimitiveTypeCode.Single:
+        case PrimitiveTypeCode.Double:
+        case PrimitiveTypeCode.Decimal:
           return schemaType | JsonSchemaType.Float;
         // convert to string?
-        case TypeCode.DateTime:
+        case PrimitiveTypeCode.DateTime:
+#if !NET20
+        case PrimitiveTypeCode.DateTimeOffset:
+#endif
           return schemaType | JsonSchemaType.String;
-        case TypeCode.String:
+        case PrimitiveTypeCode.String:
+        case PrimitiveTypeCode.Uri:
+        case PrimitiveTypeCode.Guid:
+        case PrimitiveTypeCode.TimeSpan:
+        case PrimitiveTypeCode.Bytes:
           return schemaType | JsonSchemaType.String;
         default:
           throw new JsonException("Unexpected type code '{0}' for type '{1}'.".FormatWith(CultureInfo.InvariantCulture, typeCode, type));

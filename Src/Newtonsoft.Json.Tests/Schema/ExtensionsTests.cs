@@ -199,10 +199,10 @@ namespace Newtonsoft.Json.Tests.Schema
       GenerateSchemaAndSerializeFromType(new CircularReferenceWithIdClass());
       GenerateSchemaAndSerializeFromType(new ClassWithArray());
       GenerateSchemaAndSerializeFromType(new ClassWithGuid());
-#if !NET20 && !PocketPC
+#if !NET20
       GenerateSchemaAndSerializeFromType(new NullableDateTimeTestClass());
 #endif
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
       GenerateSchemaAndSerializeFromType(new DataSet());
 #endif
       GenerateSchemaAndSerializeFromType(new object());
@@ -210,7 +210,7 @@ namespace Newtonsoft.Json.Tests.Schema
       GenerateSchemaAndSerializeFromType("Hi");
       GenerateSchemaAndSerializeFromType(new DateTime(2000, 12, 29, 23, 59, 0, DateTimeKind.Utc));
       GenerateSchemaAndSerializeFromType(TimeSpan.FromTicks(1000000));
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
       GenerateSchemaAndSerializeFromType(DBNull.Value);
 #endif
       GenerateSchemaAndSerializeFromType(new JsonPropertyWithHandlingValues());
