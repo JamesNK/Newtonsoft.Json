@@ -1339,6 +1339,32 @@ _____'propertyName': NaN
   ""1ytreporP"": NULL!!!
 }}}", sw.ToString());
     }
+
+    [Test]
+    public void QuoteDictionaryNames()
+    {
+      var d = new Dictionary<string, int>
+        {
+          { "a", 1 },
+        };
+      var jsonSerializerSettings = new JsonSerializerSettings
+        {
+          Formatting = Formatting.Indented,
+        };
+      var serializer = JsonSerializer.Create(jsonSerializerSettings);
+      using (var stringWriter = new StringWriter())
+      {
+        using (var writer = new JsonTextWriter(stringWriter) { QuoteName = false })
+        {
+          serializer.Serialize(writer, d);
+          writer.Close();
+        }
+
+        Assert.AreEqual(@"{
+  a: 1
+}", stringWriter.ToString());
+      }
+    }
   }
 
   public class CustomJsonTextWriter : JsonTextWriter

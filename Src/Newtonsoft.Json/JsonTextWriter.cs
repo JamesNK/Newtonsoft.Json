@@ -370,7 +370,7 @@ namespace Newtonsoft.Json
     private void WriteEscapedString(string value)
     {
       EnsureWriteBuffer();
-      JavaScriptUtils.WriteEscapedJavaScriptString(_writer, value, _quoteChar, true, _charEscapeFlags, StringEscapeHandling, ref _writeBuffer);
+      JavaScriptUtils.WriteEscapedJavaScriptString(_writer, value, _quoteChar, _quoteName, _charEscapeFlags, StringEscapeHandling, ref _writeBuffer);
     }
 
     /// <summary>

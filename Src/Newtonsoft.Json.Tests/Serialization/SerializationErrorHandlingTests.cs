@@ -25,7 +25,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
+using System.Text;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
@@ -690,6 +693,40 @@ namespace Newtonsoft.Json.Tests.Serialization
 
       Assert.AreEqual(@"{""Scott"":[],""James"":[]}", output);
     }
+
+    [Test]
+    public void NoObjectWithEvent()
+    {
+      string json = "{\"}";
+      byte[] byteArray = Encoding.UTF8.GetBytes(json);
+      MemoryStream stream = new MemoryStream(byteArray);
+      JsonTextReader jReader = new JsonTextReader(new StreamReader(stream));
+      JsonSerializer s = new JsonSerializer();
+      s.Error += (sender, args) =>
+        {
+          args.ErrorContext.Handled = true;
+        };
+      ErrorPerson2 obj = s.Deserialize<ErrorPerson2>(jReader);
+
+      Assert.IsNull(obj);
+    }
+
+    [Test]
+    public void NoObjectWithAttribute()
+    {
+      string json = "{\"}";
+      byte[] byteArray = Encoding.UTF8.GetBytes(json);
+      MemoryStream stream = new MemoryStream(byteArray);
+      JsonTextReader jReader = new JsonTextReader(new StreamReader(stream));
+      JsonSerializer s = new JsonSerializer();
+
+      ExceptionAssert.Throws<JsonReaderException>(
+        @"Unterminated string. Expected delimiter: "". Path '', line 1, position 3.",
+        () =>
+          {
+            ErrorTestObject obj = s.Deserialize<ErrorTestObject>(jReader);
+          });
+    }
   }
 
   interface IErrorPerson2
@@ -776,5 +813,13 @@ namespace Newtonsoft.Json.Tests.Serialization
   {
     public string Code { get; set; }
     public int Priority { get; set; }
+  }
+
+  public class ErrorTestObject
+  {
+    [OnError]
+    internal void OnError(StreamingContext context, ErrorContext errorContext)
+    {
+    }
   }
 }
