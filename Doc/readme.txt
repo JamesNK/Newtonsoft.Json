@@ -24,7 +24,7 @@ http://james.newtonking.com/projects/json/help/
 
 Versions:
 
-Json.NET has different libaries for the various .NET Framework versions.
+Json.NET has different libraries for the various .NET Framework versions.
 
 -Net45:
   .NET latest (4.5)
