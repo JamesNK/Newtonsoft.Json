@@ -551,6 +551,12 @@ namespace Newtonsoft.Json
 
                 charPos = _charPos;
                 break;
+              case 'x':
+                    charPos++;
+                    _charPos = charPos;
+                    writeChar = ParseXHex();
+                    charPos = _charPos;
+                break;
               default:
                 charPos++;
                 _charPos = charPos;
@@ -613,6 +619,24 @@ namespace Newtonsoft.Json
 
       buffer.Append(writeChar);
     }
+    
+      private char ParseXHex()
+      {
+          char writeChar;
+          if (EnsureChars(2, false))
+          {
+              var values = new string(_chars, _charPos, 2);
+              var hexChar = Convert.ToChar(int.Parse(values, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo));
+              writeChar = hexChar;
+              _charPos += 2;
+          }
+          else
+          {
+              throw JsonReaderException.Create(this, "Unexpected hex parsing error");
+          }
+
+          return writeChar;
+      }
 
     private char ParseUnicode()
     {
