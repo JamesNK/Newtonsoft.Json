@@ -147,6 +147,26 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual("TestProperty1Value", c.TestProperty1);
     }
 
+    [Test]
+    public void PopulateDefaultValueWhenUsingConstructor()
+    {
+      string json = "{ 'testProperty1': 'value' }";
+
+      ConstructorAndDefaultValueAttributeTestClass c = JsonConvert.DeserializeObject<ConstructorAndDefaultValueAttributeTestClass>(json, new JsonSerializerSettings
+      {
+        DefaultValueHandling = DefaultValueHandling.Populate
+      });
+      Assert.AreEqual("value", c.TestProperty1);
+      Assert.AreEqual(21, c.TestProperty2);
+
+      c = JsonConvert.DeserializeObject<ConstructorAndDefaultValueAttributeTestClass>(json, new JsonSerializerSettings
+      {
+        DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate
+      });
+      Assert.AreEqual("value", c.TestProperty1);
+      Assert.AreEqual(21, c.TestProperty2);
+    }
+
     public class DefaultHandler
     {
       [DefaultValue(-1)]
