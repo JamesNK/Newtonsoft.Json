@@ -203,7 +203,7 @@ namespace Newtonsoft.Json
     /// Gets or sets the <see cref="SerializationBinder"/> used by the serializer when resolving type names.
     /// </summary>
     /// <value>The binder.</value>
-    public SerializationBinder Binder { get; set; }
+    public ISerializationBinder Binder { get; set; }
 
     /// <summary>
     /// Gets or sets the error handler called during serialization and deserialization.

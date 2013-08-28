@@ -56,7 +56,7 @@ namespace Newtonsoft.Json
     internal JsonConverterCollection _converters;
     internal IContractResolver _contractResolver;
     internal ITraceWriter _traceWriter;
-    internal SerializationBinder _binder;
+    internal ISerializationBinder _binder;
     internal StreamingContext _context;
     private IReferenceResolver _referenceResolver;
 
@@ -97,7 +97,7 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Gets or sets the <see cref="SerializationBinder"/> used by the serializer when resolving type names.
     /// </summary>
-    public virtual SerializationBinder Binder
+    public virtual ISerializationBinder Binder
     {
       get
       {

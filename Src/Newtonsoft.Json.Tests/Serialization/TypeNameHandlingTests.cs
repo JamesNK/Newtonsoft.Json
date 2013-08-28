@@ -586,7 +586,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual("Name!", person.Name);
     }
 
-    public class CustomSerializationBinder : SerializationBinder
+    public class CustomSerializationBinder : SerializationBinder, ISerializationBinder
     {
       public override Type BindToType(string assemblyName, string typeName)
       {
@@ -662,7 +662,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual("Elbow Grease", purchase.ProductName);
     }
 
-    public class TypeNameSerializationBinder : SerializationBinder
+    public class TypeNameSerializationBinder : SerializationBinder, ISerializationBinder
     {
       public string TypeFormat { get; private set; }
 
@@ -1064,7 +1064,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 }", json);
     }
 
-    public class MetroBinder : SerializationBinder
+    public class MetroBinder : SerializationBinder, ISerializationBinder
     {
       public override Type BindToType(string assemblyName, string typeName)
       {

@@ -139,33 +139,45 @@ namespace Newtonsoft.Json.Utilities
       return (v != null) ? v.GetType() : null;
     }
 
-    public static string GetTypeName(Type t, FormatterAssemblyStyle assemblyFormat, SerializationBinder binder)
+    public static string GetTypeName(Type t, FormatterAssemblyStyle assemblyFormat, ISerializationBinder binder)
     {
-      string fullyQualifiedTypeName;
-#if !(NET20 || NET35)
-      if (binder != null)
-      {
-        string assemblyName, typeName;
-        binder.BindToName(t, out assemblyName, out typeName);
-        fullyQualifiedTypeName = typeName + (assemblyName == null ? "" : ", " + assemblyName);
-      }
-      else
-      {
-        fullyQualifiedTypeName = t.AssemblyQualifiedName;
-      }
-#else
-      fullyQualifiedTypeName = t.AssemblyQualifiedName;
-#endif
+//      string fullyQualifiedTypeName;
+//#if !(NET20 || NET35)
+//      if (binder != null)
+//      {
+//        string assemblyName, typeName;
+//        binder.BindToName(t, out assemblyName, out typeName);
+//        fullyQualifiedTypeName = typeName + (assemblyName == null ? "" : ", " + assemblyName);
+//      }
+//      else
+//      {
+//        fullyQualifiedTypeName = t.AssemblyQualifiedName;
+//      }
+//#else
+//      fullyQualifiedTypeName = t.AssemblyQualifiedName;
+//#endif
 
-      switch (assemblyFormat)
-      {
+        string fullyQualifiedTypeName;
+        if (binder != null)
+        {
+            string assemblyName, typeName;
+            binder.BindToName(t, out assemblyName, out typeName);
+            fullyQualifiedTypeName = typeName + (assemblyName == null ? "" : ", " + assemblyName);
+        }
+        else
+        {
+            fullyQualifiedTypeName = t.AssemblyQualifiedName;
+        }
+
+        switch (assemblyFormat)
+        {
         case FormatterAssemblyStyle.Simple:
-          return RemoveAssemblyDetails(fullyQualifiedTypeName);
+            return RemoveAssemblyDetails(fullyQualifiedTypeName);
         case FormatterAssemblyStyle.Full:
-          return fullyQualifiedTypeName;
+            return fullyQualifiedTypeName;
         default:
-          throw new ArgumentOutOfRangeException();
-      }
+            throw new ArgumentOutOfRangeException();
+        }
     }
 
     private static string RemoveAssemblyDetails(string fullyQualifiedTypeName)

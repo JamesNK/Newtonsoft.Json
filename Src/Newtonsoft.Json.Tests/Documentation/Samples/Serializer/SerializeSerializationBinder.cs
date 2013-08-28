@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
+using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
   public class SerializeSerializationBinder
   {
     #region Types
-    public class KnownTypesBinder : SerializationBinder
+      public class KnownTypesBinder : SerializationBinder, ISerializationBinder
     {
       public IList<Type> KnownTypes { get; set; }
  

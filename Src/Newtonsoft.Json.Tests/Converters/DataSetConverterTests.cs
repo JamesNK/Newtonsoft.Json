@@ -65,7 +65,7 @@ namespace Newtonsoft.Json.Tests.Converters
       dataSet.AcceptChanges();
 
       string json = JsonConvert.SerializeObject(dataSet, Formatting.Indented);
-      
+
       Assert.AreEqual(@"{
   ""Table1"": [
     {
@@ -291,36 +291,7 @@ namespace Newtonsoft.Json.Tests.Converters
           ContractResolver = new CamelCasePropertyNamesContractResolver()
         });
 
-      Assert.AreEqual(@"{
-  ""firstTable"": [
-    {
-      ""stringCol"": ""Item Name"",
-      ""int32Col"": 1,
-      ""booleanCol"": true,
-      ""timeSpanCol"": ""10.22:10:15.1000000"",
-      ""dateTimeCol"": ""2000-12-29T00:00:00Z"",
-      ""decimalCol"": 64.0021
-    },
-    {
-      ""stringCol"": ""Item Name"",
-      ""int32Col"": 2,
-      ""booleanCol"": true,
-      ""timeSpanCol"": ""10.22:10:15.1000000"",
-      ""dateTimeCol"": ""2000-12-29T00:00:00Z"",
-      ""decimalCol"": 64.0021
-    }
-  ],
-  ""secondTable"": [
-    {
-      ""stringCol"": ""Item Name"",
-      ""int32Col"": 1,
-      ""booleanCol"": true,
-      ""timeSpanCol"": ""10.22:10:15.1000000"",
-      ""dateTimeCol"": ""2000-12-29T00:00:00Z"",
-      ""decimalCol"": 64.0021
-    }
-  ]
-}", json);
+      Assert.AreEqual("{\r\n  \"firstTable\": [\r\n    {\r\n      \"stringCol\": \"Item Name\",\r\n      \"int32Col\": 1,\r\n      \"booleanCol\": true,\r\n      \"timeSpanCol\": \"10.22:10:15.1000000\",\r\n      \"dateTimeCol\": \"2000-12-29T00:00:00Z\",\r\n      \"decimalCol\": 64.0021\r\n    },\r\n    {\r\n      \"stringCol\": \"Item Name\",\r\n      \"int32Col\": 2,\r\n      \"booleanCol\": true,\r\n      \"timeSpanCol\": \"10.22:10:15.1000000\",\r\n      \"dateTimeCol\": \"2000-12-29T00:00:00Z\",\r\n      \"decimalCol\": 64.0021\r\n    }\r\n  ],\r\n  \"secondTable\": [\r\n    {\r\n      \"stringCol\": \"Item Name\",\r\n      \"int32Col\": 1,\r\n      \"booleanCol\": true,\r\n      \"timeSpanCol\": \"10.22:10:15.1000000\",\r\n      \"dateTimeCol\": \"2000-12-29T00:00:00Z\",\r\n      \"decimalCol\": 64.0021\r\n    }\r\n  ]\r\n}", json);
     }
 
     [Test]

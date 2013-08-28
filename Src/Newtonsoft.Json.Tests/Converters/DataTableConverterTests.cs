@@ -255,15 +255,7 @@ namespace Newtonsoft.Json.Tests.Converters
       KeyValuePair<DataTable, int> pair = new KeyValuePair<DataTable, int>(table, 1);
       string serializedpair = JsonConvert.SerializeObject(pair, Formatting.Indented);
 
-      Assert.AreEqual(@"{
-  ""Key"": [
-    {
-      ""id"": 0,
-      ""item"": ""item!""
-    }
-  ],
-  ""Value"": 1
-}", serializedpair);
+      Assert.AreEqual("{\r\n  \"Key\": [\r\n    {\r\n      \"id\": 0,\r\n      \"item\": \"item!\"\r\n    }\r\n  ],\r\n  \"Value\": 1\r\n}", serializedpair);
 
       var pair2 = (KeyValuePair<DataTable, int>)JsonConvert.DeserializeObject(serializedpair, typeof(KeyValuePair<DataTable, int>));
 

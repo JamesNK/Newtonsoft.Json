@@ -34,7 +34,7 @@ namespace Newtonsoft.Json.Serialization
   /// <summary>
   /// The default serialization binder used when resolving and loading classes from type names.
   /// </summary>
-  public class DefaultSerializationBinder : SerializationBinder
+    public class DefaultSerializationBinder : SerializationBinder, ISerializationBinder
   {
     internal static readonly DefaultSerializationBinder Instance = new DefaultSerializationBinder();
 

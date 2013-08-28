@@ -98,10 +98,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
       string json = JsonConvert.SerializeObject(binaryClass, Formatting.Indented, new BinaryConverter());
 
-      Assert.AreEqual(@"{
-  ""Binary"": ""VGhpcyBpcyBzb21lIHRlc3QgZGF0YSEhIQ=="",
-  ""NullBinary"": null
-}", json);
+      Assert.AreEqual("{\r\n  \"Binary\": \"VGhpcyBpcyBzb21lIHRlc3QgZGF0YSEhIQ==\",\r\n  \"NullBinary\": null\r\n}", json);
     }
 #endif
 
@@ -114,10 +111,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
       string json = JsonConvert.SerializeObject(byteArrayClass, Formatting.Indented);
 
-      Assert.AreEqual(@"{
-  ""ByteArray"": ""VGhpcyBpcyBzb21lIHRlc3QgZGF0YSEhIQ=="",
-  ""NullByteArray"": null
-}", json);
+      Assert.AreEqual("{\r\n  \"ByteArray\": \"VGhpcyBpcyBzb21lIHRlc3QgZGF0YSEhIQ==\",\r\n  \"NullByteArray\": null\r\n}", json);
     }
 
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
@@ -138,11 +132,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
       string json = JsonConvert.SerializeObject(sqlBinaryClass, Formatting.Indented, new BinaryConverter());
 
-      Assert.AreEqual(@"{
-  ""SqlBinary"": ""VGhpcyBpcyBzb21lIHRlc3QgZGF0YSEhIQ=="",
-  ""NullableSqlBinary1"": ""VGhpcyBpcyBzb21lIHRlc3QgZGF0YSEhIQ=="",
-  ""NullableSqlBinary2"": null
-}", json);
+      Assert.AreEqual("{\r\n  \"SqlBinary\": \"VGhpcyBpcyBzb21lIHRlc3QgZGF0YSEhIQ==\",\r\n  \"NullableSqlBinary1\": \"VGhpcyBpcyBzb21lIHRlc3QgZGF0YSEhIQ==\",\r\n  \"NullableSqlBinary2\": null\r\n}", json);
     }
 
     [Test]

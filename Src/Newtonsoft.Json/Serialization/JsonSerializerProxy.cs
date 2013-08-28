@@ -120,7 +120,7 @@ namespace Newtonsoft.Json.Serialization
       set { _serializer.ConstructorHandling = value; }
     }
 
-    public override SerializationBinder Binder
+    public override ISerializationBinder Binder
     {
       get { return _serializer.Binder; }
       set { _serializer.Binder = value; }
