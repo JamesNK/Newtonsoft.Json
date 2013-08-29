@@ -35,6 +35,7 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading;
 #if !NETFX_CORE
+using System.Xml.Linq;
 using NUnit.Framework;
 #else
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -136,6 +137,12 @@ namespace Newtonsoft.Json.Tests
     {
       return @"@""" + json.Replace(@"""", @"""""") + @"""";
     }
+
+      protected string FormatXmlString(string xml, bool indent)
+      {
+          return XElement.Parse(xml).ToString( indent ? SaveOptions.None : SaveOptions.DisableFormatting );
+      }
+
   }
 
 #if NETFX_CORE

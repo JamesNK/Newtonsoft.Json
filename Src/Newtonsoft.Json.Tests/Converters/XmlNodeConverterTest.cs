@@ -160,45 +160,9 @@ namespace Newtonsoft.Json.Tests.Converters
 	  doc.LoadXml(xml);
 
 	  string jsonText = SerializeXmlNode(doc);
-	  string expected = @"{
-  ""?xml"": {
-	""@version"": ""1.0"",
-	""@standalone"": ""no""
-  },
-  ""?xml-stylesheet"": ""href=\""classic.xsl\"" type=\""text/xml\"""",
-  ""span"": {
-	""@class"": ""vevent"",
-	""a"": {
-	  ""@class"": ""url"",
-	  ""@href"": ""http://www.web2con.com/"",
-	  ""span"": [
-		{
-		  ""@class"": ""summary"",
-		  ""#text"": ""Web 2.0 Conference"",
-		  ""#cdata-section"": ""my escaped text""
-		},
-		{
-		  ""@class"": ""location"",
-		  ""#text"": ""Argent Hotel, San Francisco, CA""
-		}
-	  ],
-	  ""abbr"": [
-		{
-		  ""@class"": ""dtstart"",
-		  ""@title"": ""2005-10-05"",
-		  ""#text"": ""October 5""
-		},
-		{
-		  ""@class"": ""dtend"",
-		  ""@title"": ""2005-10-08"",
-		  ""#text"": ""7""
-		}
-	  ]
-	}
-  }
-}";
+      JToken expected = JToken.Parse("{\r\n  \"?xml\": {\r\n    \"@version\": \"1.0\",\r\n    \"@standalone\": \"no\"\r\n  },\r\n  \"?xml-stylesheet\": \"href=\\\"classic.xsl\\\" type=\\\"text/xml\\\"\",\r\n  \"span\": {\r\n    \"@class\": \"vevent\",\r\n    \"a\": {\r\n      \"@class\": \"url\",\r\n      \"@href\": \"http://www.web2con.com/\",\r\n      \"span\": [\r\n        {\r\n\t        \"@class\": \"summary\",\r\n\t        \"#text\": \"Web 2.0 Conference\",\r\n\t        \"#cdata-section\": \"my escaped text\"\r\n        },\r\n\t\t{\r\n\t\t  \"@class\": \"location\",\r\n\t\t  \"#text\": \"Argent Hotel, San Francisco, CA\"\r\n\t\t}\r\n\t  ],\r\n\t  \"abbr\": [\r\n\t\t{\r\n\t\t  \"@class\": \"dtstart\",\r\n\t\t  \"@title\": \"2005-10-05\",\r\n\t\t  \"#text\": \"October 5\"\r\n\t\t},\r\n\t\t{\r\n\t\t  \"@class\": \"dtend\",\r\n\t\t  \"@title\": \"2005-10-08\",\r\n\t\t  \"#text\": \"7\"\r\n\t\t}\r\n\t  ]\r\n\t}\r\n  }\r\n}");
 
-	  Assert.AreEqual(expected, jsonText);
+	  Assert.AreEqual(expected.ToString(), jsonText);
 
 	  Console.WriteLine("DocumentSerializeIndented");
 	  Console.WriteLine(jsonText);
@@ -343,7 +307,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
 	  string jsonText = SerializeXmlNode(doc);
 
-	  string expected = @"{
+	  string expected = JToken.Parse(@"{
   ""?xml"": {
 	""@version"": ""1.0"",
 	""@encoding"": ""utf-8""
@@ -386,7 +350,7 @@ namespace Newtonsoft.Json.Tests.Converters
 	  }
 	}
   }
-}";
+}").ToString();
 
 	  Assert.AreEqual(expected, jsonText);
 
@@ -424,10 +388,10 @@ namespace Newtonsoft.Json.Tests.Converters
 
 	  XmlDocument doc = (XmlDocument)DeserializeXmlNode(jsonText);
 
-	  string expected = @"<?xml version=""1.0"" standalone=""no""?>
+      string expected = @"<?xml version=""1.0"" standalone=""no""?>
 <span class=""vevent"">
   <a class=""url"" href=""http://www.web2con.com/"">
-	<span class=""summary"">Web 2.0 Conference<![CDATA[my escaped text]]></span>
+    <span class=""summary"">Web 2.0 Conference<![CDATA[my escaped text]]></span>
   </a>
 </span>";
 
@@ -553,16 +517,16 @@ namespace Newtonsoft.Json.Tests.Converters
 	  Assert.AreEqual(expected, newDoc.InnerXml);
 
 	  string json = SerializeXmlNode(newDoc);
-	  expected = @"{
-  ""root"": {
-	""r"": {
-	  ""Date"": [
-		""34343"",
-		""55""
-	  ]
-	}
-  }
-}";
+      expected = JToken.Parse(@"{
+          ""root"": {
+	        ""r"": {
+	          ""Date"": [
+		        ""34343"",
+		        ""55""
+	          ]
+	        }
+          }
+        }").ToString();
 
 	  Assert.AreEqual(expected, json);
 	}
@@ -582,7 +546,7 @@ namespace Newtonsoft.Json.Tests.Converters
 	  arrayDoc.LoadXml(arrayXml);
 
 	  string arrayJsonText = SerializeXmlNode(arrayDoc);
-	  string expected = @"{
+      JToken expected = JToken.Parse(@"{
   ""root"": {
 	""person"": {
 	  ""@id"": ""1"",
@@ -593,8 +557,8 @@ namespace Newtonsoft.Json.Tests.Converters
 	  ]
 	}
   }
-}";
-	  Assert.AreEqual(expected, arrayJsonText);
+}");
+	  Assert.AreEqual(expected.ToString(), arrayJsonText);
 
 	  arrayXml = @"<root xmlns:json=""http://james.newtonking.com/projects/json"">
 			  <person id=""1"">
@@ -609,7 +573,7 @@ namespace Newtonsoft.Json.Tests.Converters
 	  arrayDoc.LoadXml(arrayXml);
 
 	  arrayJsonText = SerializeXmlNode(arrayDoc);
-	  expected = @"{
+	  expected = JToken.Parse(@"{
   ""root"": {
 	""person"": {
 	  ""@id"": ""1"",
@@ -621,8 +585,8 @@ namespace Newtonsoft.Json.Tests.Converters
 	  ]
 	}
   }
-}";
-	  Assert.AreEqual(expected, arrayJsonText);
+}");
+	  Assert.AreEqual(expected.ToString(), arrayJsonText);
 
 	  arrayXml = @"<root xmlns:json=""http://james.newtonking.com/projects/json"">
 			  <person id=""1"">
@@ -636,7 +600,7 @@ namespace Newtonsoft.Json.Tests.Converters
 	  arrayDoc.LoadXml(arrayXml);
 
 	  arrayJsonText = SerializeXmlNode(arrayDoc);
-	  expected = @"{
+	  expected = JToken.Parse(@"{
   ""root"": {
 	""person"": {
 	  ""@id"": ""1"",
@@ -645,8 +609,8 @@ namespace Newtonsoft.Json.Tests.Converters
 	  ""role"": ""Admin1""
 	}
   }
-}";
-	  Assert.AreEqual(expected, arrayJsonText);
+}");
+	  Assert.AreEqual(expected.ToString(), arrayJsonText);
 	}
 
 	[Test]
@@ -716,7 +680,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
 	  string xml = IndentXml(newDoc.InnerXml);
 
-	  Assert.AreEqual(@"<myRoot>
+	  Assert.AreEqual(XElement.Parse(@"<myRoot>
   <available_sizes>
 	<available_sizes>assets/images/resized/0001/1070/11070v1-max-150x150.jpg</available_sizes>
 	<available_sizes>assets/images/resized/0001/1070/11070v1-max-150x150.jpg</available_sizes>
@@ -728,12 +692,12 @@ namespace Newtonsoft.Json.Tests.Converters
   <available_sizes>
 	<available_sizes>assets/images/resized/0001/1070/11070v1-max-250x250.jpg</available_sizes>
   </available_sizes>
-</myRoot>", IndentXml(newDoc.InnerXml));
+</myRoot>").ToString(), IndentXml(newDoc.InnerXml));
 
 #if !NET20
 	  XDocument newXDoc = JsonConvert.DeserializeXNode(json, "myRoot");
 
-	  Assert.AreEqual(@"<myRoot>
+	  Assert.AreEqual(XElement.Parse(@"<myRoot>
   <available_sizes>
 	<available_sizes>assets/images/resized/0001/1070/11070v1-max-150x150.jpg</available_sizes>
 	<available_sizes>assets/images/resized/0001/1070/11070v1-max-150x150.jpg</available_sizes>
@@ -745,7 +709,7 @@ namespace Newtonsoft.Json.Tests.Converters
   <available_sizes>
 	<available_sizes>assets/images/resized/0001/1070/11070v1-max-250x250.jpg</available_sizes>
   </available_sizes>
-</myRoot>", IndentXml(newXDoc.ToString(SaveOptions.DisableFormatting)));
+</myRoot>").ToString(), IndentXml(newXDoc.ToString(SaveOptions.DisableFormatting)));
 #endif
 
 	  string newJson = JsonConvert.SerializeXmlNode(newDoc, Formatting.Indented);
@@ -755,7 +719,7 @@ namespace Newtonsoft.Json.Tests.Converters
 	[Test]
 	public void RoundTripNestedArrays()
 	{
-	  string json = @"{
+	  string json = JToken.Parse(@"{
   ""available_sizes"": [
 	[
 	  ""assets/images/resized/0001/1070/11070v1-max-150x150.jpg"",
@@ -769,11 +733,11 @@ namespace Newtonsoft.Json.Tests.Converters
 	  ""assets/images/resized/0001/1070/11070v1-max-250x250.jpg""
 	]
   ]
-}";
+}").ToString();
 
 	  XmlDocument newDoc = JsonConvert.DeserializeXmlNode(json, "myRoot", true);
 
-	  Assert.AreEqual(@"<myRoot>
+	  Assert.AreEqual(FormatXmlString(@"<myRoot>
   <available_sizes json:Array=""true"" xmlns:json=""http://james.newtonking.com/projects/json"">
 	<available_sizes>assets/images/resized/0001/1070/11070v1-max-150x150.jpg</available_sizes>
 	<available_sizes>assets/images/resized/0001/1070/11070v1-max-150x150.jpg</available_sizes>
@@ -785,14 +749,14 @@ namespace Newtonsoft.Json.Tests.Converters
   <available_sizes json:Array=""true"" xmlns:json=""http://james.newtonking.com/projects/json"">
 	<available_sizes json:Array=""true"">assets/images/resized/0001/1070/11070v1-max-250x250.jpg</available_sizes>
   </available_sizes>
-</myRoot>", IndentXml(newDoc.InnerXml));
+</myRoot>", true), IndentXml(newDoc.InnerXml));
 
 #if !NET20
 	  XDocument newXDoc = JsonConvert.DeserializeXNode(json, "myRoot", true);
 
 	  Console.WriteLine(IndentXml(newXDoc.ToString(SaveOptions.DisableFormatting)));
 
-	  Assert.AreEqual(@"<myRoot>
+      Assert.AreEqual(FormatXmlString(@"<myRoot>
   <available_sizes json:Array=""true"" xmlns:json=""http://james.newtonking.com/projects/json"">
 	<available_sizes>assets/images/resized/0001/1070/11070v1-max-150x150.jpg</available_sizes>
 	<available_sizes>assets/images/resized/0001/1070/11070v1-max-150x150.jpg</available_sizes>
@@ -804,7 +768,7 @@ namespace Newtonsoft.Json.Tests.Converters
   <available_sizes json:Array=""true"" xmlns:json=""http://james.newtonking.com/projects/json"">
 	<available_sizes json:Array=""true"">assets/images/resized/0001/1070/11070v1-max-250x250.jpg</available_sizes>
   </available_sizes>
-</myRoot>", IndentXml(newXDoc.ToString(SaveOptions.DisableFormatting)));
+</myRoot>", true), IndentXml(newXDoc.ToString(SaveOptions.DisableFormatting)));
 #endif
 
 	  string newJson = JsonConvert.SerializeXmlNode(newDoc, Formatting.Indented, true);
@@ -850,9 +814,10 @@ namespace Newtonsoft.Json.Tests.Converters
 	  doc.LoadXml(@"<name>O""Connor</name>"); // i use "" so it will be easier to see the  problem
 
 	  string json = SerializeXmlNode(doc);
-	  Assert.AreEqual(@"{
-  ""name"": ""O\""Connor""
-}", json);
+      Assert.AreEqual(JToken.Parse(@"{
+          ""name"": ""O\""Connor""
+        }").ToString(), json);
+
 	}
 
 	[Test]
@@ -989,17 +954,20 @@ namespace Newtonsoft.Json.Tests.Converters
 	  //   </person>
 	  // </root>
 
-	  Assert.AreEqual(@"<?xml version=""1.0"" standalone=""no""?>
-<root>
-<person id=""1"">
-<name>Alan</name>
-<url>http://www.google.com</url>
-</person>
-<person id=""2"">
-<name>Louis</name>
-<url>http://www.yahoo.com</url>
-</person>
-</root>".Replace(Environment.NewLine, string.Empty), doc.InnerXml);
+		XElement element = XElement.Parse(@"<?xml version=""1.0"" standalone=""no""?>
+		<root>
+		<person id=""1"">
+		<name>Alan</name>
+		<url>http://www.google.com</url>
+		</person>
+		<person id=""2"">
+		<name>Louis</name>
+		<url>http://www.yahoo.com</url>
+		</person>
+		</root>");
+
+
+		Assert.AreEqual(element.ToString(), XElement.Parse(doc.InnerXml).ToString());
 	}
 
 	[Test]
@@ -1186,42 +1154,37 @@ namespace Newtonsoft.Json.Tests.Converters
 	[Test]
 	public void ComplexSingleItemArrayPropertySerialization()
 	{
-	  TestComplexArrayClass o = new TestComplexArrayClass
+		TestComplexArrayClass o = new TestComplexArrayClass
 		{
-		  Name = "Hi",
-		  Products = new List<Product>
+			Name = "Hi",
+			Products = new List<Product>
 			{
-			  new Product { Name = "First" }
+				new Product { Name = "First" }
 			}
 		};
 
-	  string output = JsonConvert.SerializeObject(o, new IsoDateTimeConverter());
+		string output = JsonConvert.SerializeObject(o, new IsoDateTimeConverter());
 
-	  XmlDocument xmlProduct = JsonConvert.DeserializeXmlNode(output, "test", true);
+		XmlDocument xmlProduct = JsonConvert.DeserializeXmlNode(output, "test", true);
+		var element = XElement.Parse("<test>\n        <Name>Hi</Name>\n        <Products json:Array=\"true\" xmlns:json=\"http://james.newtonking.com/projects/json\">\n        <Name>First</Name>\n        <ExpiryDate>2000-01-01T00:00:00Z</ExpiryDate>\n        <Price>0</Price>\n        <Sizes />\n        </Products>\n        </test>");
 
-	  Assert.AreEqual(@"<test>
-  <Name>Hi</Name>
-  <Products json:Array=""true"" xmlns:json=""http://james.newtonking.com/projects/json"">
-	<Name>First</Name>
-	<ExpiryDate>2000-01-01T00:00:00Z</ExpiryDate>
-	<Price>0</Price>
-	<Sizes />
-  </Products>
-</test>", IndentXml(xmlProduct.InnerXml));
+		Assert.AreEqual(element.ToString(), IndentXml(xmlProduct.InnerXml));
 
-	  string output2 = JsonConvert.SerializeXmlNode(xmlProduct.DocumentElement, Formatting.Indented, true);
+		string output2 = JsonConvert.SerializeXmlNode(xmlProduct.DocumentElement, Formatting.Indented, true);
+		JToken token = JToken.Parse(@"{
+		""Name"": ""Hi"",
+		""Products"": [
+		{
+		""Name"": ""First"",
+		""ExpiryDate"": ""2000-01-01T00:00:00Z"",
+		""Price"": ""0"",
+		""Sizes"": null
+		}
+		]
+		}");
 
-	  Assert.AreEqual(@"{
-  ""Name"": ""Hi"",
-  ""Products"": [
-	{
-	  ""Name"": ""First"",
-	  ""ExpiryDate"": ""2000-01-01T00:00:00Z"",
-	  ""Price"": ""0"",
-	  ""Sizes"": null
-	}
-  ]
-}", output2);
+		Assert.AreEqual(token.ToString(), output2);
+
 	}
 
 	private string IndentXml(string xml)
@@ -1260,7 +1223,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
 	  string output = JsonConvert.SerializeXmlNode(d, Formatting.Indented, true);
 
-	  Assert.AreEqual(@"{
+	  Assert.AreEqual(JToken.Parse(@"{
   ""Name"": [
 	""Hi"",
 	""Hi""
@@ -1273,7 +1236,7 @@ namespace Newtonsoft.Json.Tests.Converters
 	  ""Sizes"": null
 	}
   ]
-}", output);
+}").ToString(), output);
 	}
 
 	[Test]
@@ -1293,7 +1256,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
 	  string json = JsonConvert.SerializeXmlNode(d, Formatting.Indented);
 
-	  Assert.AreEqual(@"{
+      Assert.AreEqual(JToken.Parse(@"{
   ""?xml"": {
 	""@version"": ""1.0"",
 	""@encoding"": ""utf-8""
@@ -1311,7 +1274,7 @@ namespace Newtonsoft.Json.Tests.Converters
 	  ]
 	}
   }
-}", json);
+}").ToString(), json);
 	}
 
 	[Test]
@@ -1326,13 +1289,13 @@ namespace Newtonsoft.Json.Tests.Converters
 
 	  string json = JsonConvert.SerializeXmlNode(d, Formatting.Indented);
 
-	  Assert.AreEqual(@"{
+      Assert.AreEqual(JToken.Parse(@"{
   ""root"": {
 	""Reports"": [
 	  {}
 	]
   }
-}", json);
+}").ToString(), json);
 	}
 
 	[Test]
@@ -1418,7 +1381,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
 	  string json = JsonConvert.SerializeXNode(XDocument.Parse(xaml), Formatting.Indented);
 
-	  string expectedJson = @"{
+	  JToken expectedJson = JToken.Parse(@"{
   ""Grid"": {
 	""@xmlns"": ""http://schemas.microsoft.com/winfx/2006/xaml/presentation"",
 	""@xmlns:x"": ""http://schemas.microsoft.com/winfx/2006/xaml"",
@@ -1573,15 +1536,15 @@ namespace Newtonsoft.Json.Tests.Converters
 	  }
 	]
   }
-}";
+}");
 
-	  Assert.AreEqual(expectedJson, json);
+	  Assert.AreEqual(expectedJson.ToString(), json);
 
 	  XNode node = JsonConvert.DeserializeXNode(json);
 
 	  string xaml2 = node.ToString();
 
-	  string expectedXaml = @"<Grid xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns:toolkit=""clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"" Style=""{StaticResource trimFormGrid}"" x:Name=""TrimObjectForm"">
+	  XElement expectedXaml = XElement.Parse(@"<Grid xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns:toolkit=""clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"" Style=""{StaticResource trimFormGrid}"" x:Name=""TrimObjectForm"">
   <Grid.ColumnDefinitions>
 	<ColumnDefinition Width=""63*"" />
 	<ColumnDefinition Width=""320*"" />
@@ -1612,9 +1575,9 @@ namespace Newtonsoft.Json.Tests.Converters
   <TextBlock Grid.Column=""0"" Text=""Container"" Style=""{StaticResource trimFormGrid_LBL}"" Grid.Row=""5"" xmlns="""" />
   <TextBlock Grid.Column=""0"" Text=""Enclosed?"" Style=""{StaticResource trimFormGrid_LBL}"" Grid.Row=""6"" xmlns="""" />
   <TextBlock Grid.Column=""0"" Text=""Assignee"" Style=""{StaticResource trimFormGrid_LBL}"" Grid.Row=""7"" xmlns="""" />
-</Grid>";
+</Grid>");
 
-	  Assert.AreEqual(expectedXaml, xaml2);
+	  Assert.AreEqual(expectedXaml.ToString(), xaml2);
 	}
 #endif
 
@@ -1659,7 +1622,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
 	  string json = JsonConvert.SerializeXmlNode(document, Formatting.Indented);
 
-	  string expectedJson = @"{
+		JToken expectedJson = JToken.Parse(@"{
   ""Grid"": {
 	""@xmlns"": ""http://schemas.microsoft.com/winfx/2006/xaml/presentation"",
 	""@xmlns:x"": ""http://schemas.microsoft.com/winfx/2006/xaml"",
@@ -1667,14 +1630,14 @@ namespace Newtonsoft.Json.Tests.Converters
 	""@Style"": ""{StaticResource trimFormGrid}"",
 	""@x:Name"": ""TrimObjectForm"",
 	""Grid.ColumnDefinitions"": {
-	  ""ColumnDefinition"": [
+		""ColumnDefinition"": [
 		{
-		  ""@Width"": ""63*""
+			""@Width"": ""63*""
 		},
 		{
-		  ""@Width"": ""320*""
+			""@Width"": ""320*""
 		}
-	  ]
+	]
 	},
 	""Grid.RowDefinitions"": {
 	  ""@xmlns"": """",
@@ -1814,9 +1777,9 @@ namespace Newtonsoft.Json.Tests.Converters
 	  }
 	]
   }
-}";
+}");
 
-	  Assert.AreEqual(expectedJson, json);
+	  Assert.AreEqual(expectedJson.ToString(), json);
 
 	  XmlNode node = JsonConvert.DeserializeXmlNode(json);
 
@@ -1831,40 +1794,9 @@ namespace Newtonsoft.Json.Tests.Converters
 
 	  string xaml2 = sw.ToString();
 
-	  string expectedXaml = @"<Grid xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns:toolkit=""clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"" Style=""{StaticResource trimFormGrid}"" x:Name=""TrimObjectForm"">
-  <Grid.ColumnDefinitions>
-	<ColumnDefinition Width=""63*"" />
-	<ColumnDefinition Width=""320*"" />
-  </Grid.ColumnDefinitions>
-  <Grid.RowDefinitions xmlns="""">
-	<RowDefinition />
-	<RowDefinition />
-	<RowDefinition />
-	<RowDefinition />
-	<RowDefinition />
-	<RowDefinition />
-	<RowDefinition />
-	<RowDefinition />
-  </Grid.RowDefinitions>
-  <TextBox Style=""{StaticResource trimFormGrid_TB}"" Text=""{Binding TypedTitle, Converter={StaticResource trimPropertyConverter}}"" Name=""RecordTypedTitle"" Grid.Column=""1"" Grid.Row=""0"" xmlns="""" />
-  <TextBox Style=""{StaticResource trimFormGrid_TB}"" Text=""{Binding ExternalReference, Converter={StaticResource trimPropertyConverter}}"" Name=""RecordExternalReference"" Grid.Column=""1"" Grid.Row=""1"" xmlns="""" />
-  <TextBox Style=""{StaticResource trimFormGrid_TB}"" Text=""{Binding Author, Converter={StaticResource trimPropertyConverter}}"" Name=""RecordAuthor"" Grid.Column=""1"" Grid.Row=""4"" xmlns="""" />
-  <TextBox Style=""{StaticResource trimFormGrid_TB}"" Text=""{Binding Container, Converter={StaticResource trimPropertyConverter}}"" Name=""RecordContainer"" Grid.Column=""1"" Grid.Row=""5"" xmlns="""" />
-  <TextBox Style=""{StaticResource trimFormGrid_TB}"" Text=""{Binding IsEnclosed, Converter={StaticResource trimPropertyConverter}}"" Name=""RecordIsEnclosed"" Grid.Column=""1"" Grid.Row=""6"" xmlns="""" />
-  <TextBox Style=""{StaticResource trimFormGrid_TB}"" Text=""{Binding Assignee, Converter={StaticResource trimPropertyConverter}}"" Name=""RecordAssignee"" Grid.Column=""1"" Grid.Row=""7"" xmlns="""" />
-  <toolkit:DatePicker Style=""{StaticResource trimFormGrid_DP}"" Value=""{Binding DateCreated, Converter={StaticResource trimPropertyConverter}}"" Name=""RecordDateCreated"" Grid.Column=""1"" Grid.Row=""2"" />
-  <toolkit:DatePicker Style=""{StaticResource trimFormGrid_DP}"" Value=""{Binding DateDue, Converter={StaticResource trimPropertyConverter}}"" Name=""RecordDateDue"" Grid.Column=""1"" Grid.Row=""3"" />
-  <TextBlock Grid.Column=""0"" Text=""Title (Free Text Part)"" Style=""{StaticResource trimFormGrid_LBL}"" Grid.Row=""0"" xmlns="""" />
-  <TextBlock Grid.Column=""0"" Text=""External ID"" Style=""{StaticResource trimFormGrid_LBL}"" Grid.Row=""1"" xmlns="""" />
-  <TextBlock Grid.Column=""0"" Text=""Date Created"" Style=""{StaticResource trimFormGrid_LBL}"" Grid.Row=""2"" xmlns="""" />
-  <TextBlock Grid.Column=""0"" Text=""Date Due"" Style=""{StaticResource trimFormGrid_LBL}"" Grid.Row=""3"" xmlns="""" />
-  <TextBlock Grid.Column=""0"" Text=""Author"" Style=""{StaticResource trimFormGrid_LBL}"" Grid.Row=""4"" xmlns="""" />
-  <TextBlock Grid.Column=""0"" Text=""Container"" Style=""{StaticResource trimFormGrid_LBL}"" Grid.Row=""5"" xmlns="""" />
-  <TextBlock Grid.Column=""0"" Text=""Enclosed?"" Style=""{StaticResource trimFormGrid_LBL}"" Grid.Row=""6"" xmlns="""" />
-  <TextBlock Grid.Column=""0"" Text=""Assignee"" Style=""{StaticResource trimFormGrid_LBL}"" Grid.Row=""7"" xmlns="""" />
-</Grid>";
+		XElement expectedXaml = XElement.Parse("<Grid xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\" xmlns:toolkit=\"clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit\" Style=\"{StaticResource trimFormGrid}\" x:Name=\"TrimObjectForm\">\r\n  <Grid.ColumnDefinitions>\r\n\t<ColumnDefinition Width=\"63*\" />\r\n\t<ColumnDefinition Width=\"320*\" />\r\n  </Grid.ColumnDefinitions>\r\n  <Grid.RowDefinitions xmlns=\"\">\r\n\t<RowDefinition />\r\n\t<RowDefinition />\r\n\t<RowDefinition />\r\n\t<RowDefinition />\r\n\t<RowDefinition />\r\n\t<RowDefinition />\r\n\t<RowDefinition />\r\n\t<RowDefinition />\r\n  </Grid.RowDefinitions>\r\n  <TextBox Style=\"{StaticResource trimFormGrid_TB}\" Text=\"{Binding TypedTitle, Converter={StaticResource trimPropertyConverter}}\" Name=\"RecordTypedTitle\" Grid.Column=\"1\" Grid.Row=\"0\" xmlns=\"\" />\r\n  <TextBox Style=\"{StaticResource trimFormGrid_TB}\" Text=\"{Binding ExternalReference, Converter={StaticResource trimPropertyConverter}}\" Name=\"RecordExternalReference\" Grid.Column=\"1\" Grid.Row=\"1\" xmlns=\"\" />\r\n  <TextBox Style=\"{StaticResource trimFormGrid_TB}\" Text=\"{Binding Author, Converter={StaticResource trimPropertyConverter}}\" Name=\"RecordAuthor\" Grid.Column=\"1\" Grid.Row=\"4\" xmlns=\"\" />\r\n  <TextBox Style=\"{StaticResource trimFormGrid_TB}\" Text=\"{Binding Container, Converter={StaticResource trimPropertyConverter}}\" Name=\"RecordContainer\" Grid.Column=\"1\" Grid.Row=\"5\" xmlns=\"\" />\r\n  <TextBox Style=\"{StaticResource trimFormGrid_TB}\" Text=\"{Binding IsEnclosed, Converter={StaticResource trimPropertyConverter}}\" Name=\"RecordIsEnclosed\" Grid.Column=\"1\" Grid.Row=\"6\" xmlns=\"\" />\r\n  <TextBox Style=\"{StaticResource trimFormGrid_TB}\" Text=\"{Binding Assignee, Converter={StaticResource trimPropertyConverter}}\" Name=\"RecordAssignee\" Grid.Column=\"1\" Grid.Row=\"7\" xmlns=\"\" />\r\n  <toolkit:DatePicker Style=\"{StaticResource trimFormGrid_DP}\" Value=\"{Binding DateCreated, Converter={StaticResource trimPropertyConverter}}\" Name=\"RecordDateCreated\" Grid.Column=\"1\" Grid.Row=\"2\" />\r\n  <toolkit:DatePicker Style=\"{StaticResource trimFormGrid_DP}\" Value=\"{Binding DateDue, Converter={StaticResource trimPropertyConverter}}\" Name=\"RecordDateDue\" Grid.Column=\"1\" Grid.Row=\"3\" />\r\n  <TextBlock Grid.Column=\"0\" Text=\"Title (Free Text Part)\" Style=\"{StaticResource trimFormGrid_LBL}\" Grid.Row=\"0\" xmlns=\"\" />\r\n  <TextBlock Grid.Column=\"0\" Text=\"External ID\" Style=\"{StaticResource trimFormGrid_LBL}\" Grid.Row=\"1\" xmlns=\"\" />\r\n  <TextBlock Grid.Column=\"0\" Text=\"Date Created\" Style=\"{StaticResource trimFormGrid_LBL}\" Grid.Row=\"2\" xmlns=\"\" />\r\n  <TextBlock Grid.Column=\"0\" Text=\"Date Due\" Style=\"{StaticResource trimFormGrid_LBL}\" Grid.Row=\"3\" xmlns=\"\" />\r\n  <TextBlock Grid.Column=\"0\" Text=\"Author\" Style=\"{StaticResource trimFormGrid_LBL}\" Grid.Row=\"4\" xmlns=\"\" />\r\n  <TextBlock Grid.Column=\"0\" Text=\"Container\" Style=\"{StaticResource trimFormGrid_LBL}\" Grid.Row=\"5\" xmlns=\"\" />\r\n  <TextBlock Grid.Column=\"0\" Text=\"Enclosed?\" Style=\"{StaticResource trimFormGrid_LBL}\" Grid.Row=\"6\" xmlns=\"\" />\r\n  <TextBlock Grid.Column=\"0\" Text=\"Assignee\" Style=\"{StaticResource trimFormGrid_LBL}\" Grid.Row=\"7\" xmlns=\"\" />\r\n</Grid>");
 
-	  Assert.AreEqual(expectedXaml, xaml2);
+	  Assert.AreEqual(expectedXaml.ToString(), xaml2);
 	}
 
 	[Test]
