@@ -50,12 +50,12 @@ using ErrorEventArgs = Newtonsoft.Json.Serialization.ErrorEventArgs;
 
 namespace Newtonsoft.Json.Tests.Documentation
 {
-  public class ConvertingJsonAndXmlTests
-  {
-	public void SerializeXmlNode()
+	public class ConvertingJsonAndXmlTests
 	{
-	  #region SerializeXmlNode
-	  string xml = @"<?xml version='1.0' standalone='no'?>
+		public void SerializeXmlNode()
+		{
+			#region SerializeXmlNode
+			string xml = @"<?xml version='1.0' standalone='no'?>
 	  <root>
 		<person id='1'>
 		<name>Alan</name>
@@ -67,37 +67,37 @@ namespace Newtonsoft.Json.Tests.Documentation
 		</person>
 	  </root>";
 
-	  XmlDocument doc = new XmlDocument();
-	  doc.LoadXml(xml);
+			XmlDocument doc = new XmlDocument();
+			doc.LoadXml(xml);
 
-	  string jsonText = JsonConvert.SerializeXmlNode(doc);
-	  //{
-	  //  "?xml": {
-	  //    "@version": "1.0",
-	  //    "@standalone": "no"
-	  //  },
-	  //  "root": {
-	  //    "person": [
-	  //      {
-	  //        "@id": "1",
-	  //        "name": "Alan",
-	  //        "url": "http://www.google.com"
-	  //      },
-	  //      {
-	  //        "@id": "2",
-	  //        "name": "Louis",
-	  //        "url": "http://www.yahoo.com"
-	  //      }
-	  //    ]
-	  //  }
-	  //}
-	  #endregion
-	}
+			string jsonText = JsonConvert.SerializeXmlNode(doc);
+			//{
+			//  "?xml": {
+			//    "@version": "1.0",
+			//    "@standalone": "no"
+			//  },
+			//  "root": {
+			//    "person": [
+			//      {
+			//        "@id": "1",
+			//        "name": "Alan",
+			//        "url": "http://www.google.com"
+			//      },
+			//      {
+			//        "@id": "2",
+			//        "name": "Louis",
+			//        "url": "http://www.yahoo.com"
+			//      }
+			//    ]
+			//  }
+			//}
+			#endregion
+		}
 
-	public void DeserializeXmlNode()
-	{
-	  #region DeserializeXmlNode
-	  string json = @"{
+		public void DeserializeXmlNode()
+		{
+			#region DeserializeXmlNode
+			string json = @"{
 		'?xml': {
 		  '@version': '1.0',
 		  '@standalone': 'no'
@@ -118,66 +118,66 @@ namespace Newtonsoft.Json.Tests.Documentation
 		}
 	  }";
 
-	  XmlDocument doc = (XmlDocument)JsonConvert.DeserializeXmlNode(json);
-	  // <?xml version="1.0" standalone="no"?>
-	  // <root>
-	  //   <person id="1">
-	  //   <name>Alan</name>
-	  //   <url>http://www.google.com</url>
-	  //   </person>
-	  //   <person id="2">
-	  //   <name>Louis</name>
-	  //   <url>http://www.yahoo.com</url>
-	  //   </person>
-	  // </root>
-	  #endregion
-	}
+			XmlDocument doc = (XmlDocument)JsonConvert.DeserializeXmlNode(json);
+			// <?xml version="1.0" standalone="no"?>
+			// <root>
+			//   <person id="1">
+			//   <name>Alan</name>
+			//   <url>http://www.google.com</url>
+			//   </person>
+			//   <person id="2">
+			//   <name>Louis</name>
+			//   <url>http://www.yahoo.com</url>
+			//   </person>
+			// </root>
+			#endregion
+		}
 
-	public void ForceJsonArray()
-	{
-	  #region ForceJsonArray
-	  string xml = @"<person id='1'>
+		public void ForceJsonArray()
+		{
+			#region ForceJsonArray
+			string xml = @"<person id='1'>
 			  <name>Alan</name>
 			  <url>http://www.google.com</url>
 			  <role>Admin1</role>
 			</person>";
 
-	  XmlDocument doc = new XmlDocument();
-	  doc.LoadXml(xml);
+			XmlDocument doc = new XmlDocument();
+			doc.LoadXml(xml);
 
-	  string json = JsonConvert.SerializeXmlNode(doc);
-	  //{
-	  //  "person": {
-	  //    "@id": "1",
-	  //    "name": "Alan",
-	  //    "url": "http://www.google.com",
-	  //    "role": "Admin1"
-	  //  }
-	  //}
+			string json = JsonConvert.SerializeXmlNode(doc);
+			//{
+			//  "person": {
+			//    "@id": "1",
+			//    "name": "Alan",
+			//    "url": "http://www.google.com",
+			//    "role": "Admin1"
+			//  }
+			//}
 
-	  xml = @"<person xmlns:json='http://james.newtonking.com/projects/json' id='1'>
+			xml = @"<person xmlns:json='http://james.newtonking.com/projects/json' id='1'>
 			  <name>Alan</name>
 			  <url>http://www.google.com</url>
 			  <role json:Array='true'>Admin</role>
 			</person>";
 
-	  doc = new XmlDocument();
-	  doc.LoadXml(xml);
+			doc = new XmlDocument();
+			doc.LoadXml(xml);
 
-	  json = JsonConvert.SerializeXmlNode(doc);
-	  //{
-	  //  "person": {
-	  //    "@id": "1",
-	  //    "name": "Alan",
-	  //    "url": "http://www.google.com",
-	  //    "role": [
-	  //      "Admin"
-	  //    ]
-	  //  }
-	  //}
-	  #endregion
+			json = JsonConvert.SerializeXmlNode(doc);
+			//{
+			//  "person": {
+			//    "@id": "1",
+			//    "name": "Alan",
+			//    "url": "http://www.google.com",
+			//    "role": [
+			//      "Admin"
+			//    ]
+			//  }
+			//}
+			#endregion
+		}
+
 	}
-
-  }
 }
 #endif

@@ -53,97 +53,103 @@ using System.Linq;
 
 namespace Newtonsoft.Json.Tests
 {
-  [TestFixture]
-  public abstract class TestFixtureBase
-  {
-#if !NET20
-    protected string GetDataContractJsonSerializeResult(object o)
+    [TestFixture]
+    public abstract class TestFixtureBase
     {
-      MemoryStream ms = new MemoryStream();
-      DataContractJsonSerializer s = new DataContractJsonSerializer(o.GetType());
-      s.WriteObject(ms, o);
 
-      var data = ms.ToArray();
-      return Encoding.UTF8.GetString(data, 0, data.Length);
-    }
+        protected TestFixtureBase()
+        {
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-us");
+        }
+
+#if !NET20
+        protected string GetDataContractJsonSerializeResult(object o)
+        {
+            MemoryStream ms = new MemoryStream();
+            DataContractJsonSerializer s = new DataContractJsonSerializer(o.GetType());
+            s.WriteObject(ms, o);
+
+            var data = ms.ToArray();
+            return Encoding.UTF8.GetString(data, 0, data.Length);
+        }
 #endif
 
-    protected string GetOffset(DateTime d, DateFormatHandling dateFormatHandling)
-    {
-      char[] chars = new char[8];
-      int pos = DateTimeUtils.WriteDateTimeOffset(chars, 0, DateTime.SpecifyKind(d, DateTimeKind.Local).GetUtcOffset(), dateFormatHandling);
+        protected string GetOffset(DateTime d, DateFormatHandling dateFormatHandling)
+        {
+            char[] chars = new char[8];
+            int pos = DateTimeUtils.WriteDateTimeOffset(chars, 0, DateTime.SpecifyKind(d, DateTimeKind.Local).GetUtcOffset(), dateFormatHandling);
 
-      return new string(chars, 0, pos);
+            return new string(chars, 0, pos);
+        }
+
+        protected string BytesToHex(byte[] bytes)
+        {
+            return BytesToHex(bytes, false);
+        }
+
+        protected string BytesToHex(byte[] bytes, bool removeDashes)
+        {
+            string hex = BitConverter.ToString(bytes);
+            if (removeDashes)
+                hex = hex.Replace("-", "");
+
+            return hex;
+        }
+
+        protected byte[] HexToBytes(string hex)
+        {
+            string fixedHex = hex.Replace("-", string.Empty);
+
+            // array to put the result in
+            byte[] bytes = new byte[fixedHex.Length / 2];
+            // variable to determine shift of high/low nibble
+            int shift = 4;
+            // offset of the current byte in the array
+            int offset = 0;
+            // loop the characters in the string
+            foreach (char c in fixedHex)
+            {
+                // get character code in range 0-9, 17-22
+                // the % 32 handles lower case characters
+                int b = (c - '0') % 32;
+                // correction for a-f
+                if (b > 9) b -= 7;
+                // store nibble (4 bits) in byte array
+                bytes[offset] |= (byte)(b << shift);
+                // toggle the shift variable between 0 and 4
+                shift ^= 4;
+                // move to next byte
+                if (shift != 0) offset++;
+            }
+            return bytes;
+        }
+
+        [SetUp]
+        protected void TestSetup()
+        {
+            //CultureInfo turkey = CultureInfo.CreateSpecificCulture("tr");
+            //Thread.CurrentThread.CurrentCulture = turkey;
+            //Thread.CurrentThread.CurrentUICulture = turkey;
+
+            JsonConvert.DefaultSettings = null;
+        }
+
+        protected void WriteEscapedJson(string json)
+        {
+            Console.WriteLine(EscapeJson(json));
+        }
+
+        protected string EscapeJson(string json)
+        {
+            return @"@""" + json.Replace(@"""", @"""""") + @"""";
+        }
+
+        protected string FormatXmlString(string xml, bool indent)
+        {
+            return XElement.Parse(xml).ToString(indent ? SaveOptions.None : SaveOptions.DisableFormatting);
+        }
+
     }
-
-    protected string BytesToHex(byte[] bytes)
-    {
-      return BytesToHex(bytes, false);
-    }
-
-    protected string BytesToHex(byte[] bytes, bool removeDashes)
-    {
-      string hex = BitConverter.ToString(bytes);
-      if (removeDashes)
-        hex = hex.Replace("-", "");
-
-      return hex;
-    }
-
-    protected byte[] HexToBytes(string hex)
-    {
-      string fixedHex = hex.Replace("-", string.Empty);
-
-      // array to put the result in
-      byte[] bytes = new byte[fixedHex.Length / 2];
-      // variable to determine shift of high/low nibble
-      int shift = 4;
-      // offset of the current byte in the array
-      int offset = 0;
-      // loop the characters in the string
-      foreach (char c in fixedHex)
-      {
-        // get character code in range 0-9, 17-22
-        // the % 32 handles lower case characters
-        int b = (c - '0') % 32;
-        // correction for a-f
-        if (b > 9) b -= 7;
-        // store nibble (4 bits) in byte array
-        bytes[offset] |= (byte)(b << shift);
-        // toggle the shift variable between 0 and 4
-        shift ^= 4;
-        // move to next byte
-        if (shift != 0) offset++;
-      }
-      return bytes;
-    }
-
-    [SetUp]
-    protected void TestSetup()
-    {
-      //CultureInfo turkey = CultureInfo.CreateSpecificCulture("tr");
-      //Thread.CurrentThread.CurrentCulture = turkey;
-      //Thread.CurrentThread.CurrentUICulture = turkey;
-
-      JsonConvert.DefaultSettings = null;
-    }
-
-    protected void WriteEscapedJson(string json)
-    {
-      Console.WriteLine(EscapeJson(json));
-    }
-
-    protected string EscapeJson(string json)
-    {
-      return @"@""" + json.Replace(@"""", @"""""") + @"""";
-    }
-
-      protected string FormatXmlString(string xml, bool indent)
-      {
-          return XElement.Parse(xml).ToString( indent ? SaveOptions.None : SaveOptions.DisableFormatting );
-      }
-
-  }
 
 #if NETFX_CORE
   public static class Console
@@ -154,51 +160,51 @@ namespace Newtonsoft.Json.Tests
   }
 #endif
 
-  public static class CustomAssert
-  {
-    public static void IsInstanceOfType(Type t, object instance)
+    public static class CustomAssert
     {
+        public static void IsInstanceOfType(Type t, object instance)
+        {
 #if (WINDOWS_PHONE || SILVERLIGHT)
       Assert.IsInstanceOfType(t, instance);
 #elif NETFX_CORE
       if (!instance.GetType().IsAssignableFrom(t))
         throw new Exception("Not instance of type");
 #else
-      Assert.IsInstanceOf(t, instance);
+            Assert.IsInstanceOf(t, instance);
 #endif
-    }
+        }
 
-    public static void Contains(IList collection, object value)
-    {
+        public static void Contains(IList collection, object value)
+        {
 #if !NETFX_CORE
-      Assert.Contains(value, collection);
+            Assert.Contains(value, collection);
 #else
       if (!collection.Cast<object>().Any(i => i.Equals(value)))
         throw new Exception("Value not found in collection.");
 #endif
+        }
     }
-  }
 
-  public static class ExceptionAssert
-  {
-    public static void Throws<TException>(string message, Action action)
-        where TException : Exception
+    public static class ExceptionAssert
     {
-      try
-      {
-        action();
+        public static void Throws<TException>(string message, Action action)
+            where TException : Exception
+        {
+            try
+            {
+                action();
 
-        Assert.Fail("Exception of type {0} expected; got none exception", typeof(TException).Name);
-      }
-      catch (TException ex)
-      {
-        if (message != null)
-          Assert.AreEqual(message, ex.Message, "Unexpected exception message." + Environment.NewLine + "Expected: " + message + Environment.NewLine + "Got: " + ex.Message + Environment.NewLine + Environment.NewLine + ex);
-      }
-      catch (Exception ex)
-      {
-        throw new Exception(string.Format("Exception of type {0} expected; got exception of type {1}.", typeof(TException).Name, ex.GetType().Name), ex);
-      }
+                Assert.Fail("Exception of type {0} expected; got none exception", typeof(TException).Name);
+            }
+            catch (TException ex)
+            {
+                if (message != null)
+                    Assert.AreEqual(message, ex.Message, "Unexpected exception message." + Environment.NewLine + "Expected: " + message + Environment.NewLine + "Got: " + ex.Message + Environment.NewLine + Environment.NewLine + ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format("Exception of type {0} expected; got exception of type {1}.", typeof(TException).Name, ex.GetType().Name), ex);
+            }
+        }
     }
-  }
 }

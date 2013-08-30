@@ -6,12 +6,12 @@ using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Tests.Documentation
 {
-  public class JsonNetVsWindowsDataJsonTests
-  {
-    public void CreatingJson()
+    public class JsonNetVsWindowsDataJsonTests
     {
+        public void CreatingJson()
+        {
 #if NETFX_CORE
-      #region CreatingJSON
+            #region CreatingJSON
       // Windows.Data.Json
       // -----------------
       JsonObject jsonObject = new JsonObject
@@ -41,14 +41,14 @@ namespace Newtonsoft.Json.Tests.Documentation
           }
         };
       string json2 = jObject.ToString();
-      #endregion
+            #endregion
 #endif
-    }
+        }
 
-    public void QueryingJson()
-    {
+        public void QueryingJson()
+        {
 #if NETFX_CORE
-      #region QueryingJSON
+            #region QueryingJSON
       string json = @"{
         'channel': {
           'title': 'James Newton-King',
@@ -77,14 +77,14 @@ namespace Newtonsoft.Json.Tests.Documentation
       // ------------
       JObject jObject = JObject.Parse(json);
       string itemTitle2 = (string)jObject["channel"]["item"][0]["title"];
-      #endregion
+            #endregion
 #endif
-    }
+        }
 
-    public void Converting()
-    {
+        public void Converting()
+        {
 #if NETFX_CORE
-      #region Converting
+            #region Converting
       JsonObject jsonObject = new JsonObject
         {
           {"CPU", JsonValue.CreateStringValue("Intel")},
@@ -101,8 +101,8 @@ namespace Newtonsoft.Json.Tests.Documentation
       // convert LINQ to JSON to Windows.Data.Json
       JArray a = (JArray)o["Drives"];
       JsonArray jsonArray = a.ToObject<JsonArray>();
-      #endregion
+            #endregion
 #endif
+        }
     }
-  }
 }

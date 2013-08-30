@@ -49,52 +49,52 @@ using ErrorEventArgs = Newtonsoft.Json.Serialization.ErrorEventArgs;
 
 namespace Newtonsoft.Json.Tests.Documentation
 {
-  [TestFixture]
-  public class ReadingAndWritingJsonTests : TestFixtureBase
-  {
-    public void ReadingAndWritingJsonText()
+    [TestFixture]
+    public class ReadingAndWritingJsonTests : TestFixtureBase
     {
-      #region ReadingAndWritingJsonText
-      StringBuilder sb = new StringBuilder();
-      StringWriter sw = new StringWriter(sb);
+        public void ReadingAndWritingJsonText()
+        {
+            #region ReadingAndWritingJsonText
+            StringBuilder sb = new StringBuilder();
+            StringWriter sw = new StringWriter(sb);
 
-      using (JsonWriter writer = new JsonTextWriter(sw))
-      {
-        writer.Formatting = Formatting.Indented;
+            using (JsonWriter writer = new JsonTextWriter(sw))
+            {
+                writer.Formatting = Formatting.Indented;
 
-        writer.WriteStartObject();
-        writer.WritePropertyName("CPU");
-        writer.WriteValue("Intel");
-        writer.WritePropertyName("PSU");
-        writer.WriteValue("500W");
-        writer.WritePropertyName("Drives");
-        writer.WriteStartArray();
-        writer.WriteValue("DVD read/writer");
-        writer.WriteComment("(broken)");
-        writer.WriteValue("500 gigabyte hard drive");
-        writer.WriteValue("200 gigabype hard drive");
-        writer.WriteEnd();
-        writer.WriteEndObject();
-      }
+                writer.WriteStartObject();
+                writer.WritePropertyName("CPU");
+                writer.WriteValue("Intel");
+                writer.WritePropertyName("PSU");
+                writer.WriteValue("500W");
+                writer.WritePropertyName("Drives");
+                writer.WriteStartArray();
+                writer.WriteValue("DVD read/writer");
+                writer.WriteComment("(broken)");
+                writer.WriteValue("500 gigabyte hard drive");
+                writer.WriteValue("200 gigabype hard drive");
+                writer.WriteEnd();
+                writer.WriteEndObject();
+            }
 
-      // {
-      //   "CPU": "Intel",
-      //   "PSU": "500W",
-      //   "Drives": [
-      //     "DVD read/writer"
-      //     /*(broken)*/,
-      //     "500 gigabyte hard drive",
-      //     "200 gigabype hard drive"
-      //   ]
-      // }
-      #endregion
-    }
+            // {
+            //   "CPU": "Intel",
+            //   "PSU": "500W",
+            //   "Drives": [
+            //     "DVD read/writer"
+            //     /*(broken)*/,
+            //     "500 gigabyte hard drive",
+            //     "200 gigabype hard drive"
+            //   ]
+            // }
+            #endregion
+        }
 
-    [Test]
-    public void ReadingJsonText()
-    {
-      #region ReadingJsonText
-      string json = @"{
+        [Test]
+        public void ReadingJsonText()
+        {
+            #region ReadingJsonText
+            string json = @"{
          'CPU': 'Intel',
          'PSU': '500W',
          'Drives': [
@@ -105,46 +105,46 @@ namespace Newtonsoft.Json.Tests.Documentation
          ]
       }";
 
-      JsonTextReader reader = new JsonTextReader(new StringReader(json));
-      while (reader.Read())
-      {
-        if (reader.Value != null)
-          Console.WriteLine("Token: {0}, Value: {1}", reader.TokenType, reader.Value);
-        else
-          Console.WriteLine("Token: {0}", reader.TokenType);
-      }
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+            while (reader.Read())
+            {
+                if (reader.Value != null)
+                    Console.WriteLine("Token: {0}, Value: {1}", reader.TokenType, reader.Value);
+                else
+                    Console.WriteLine("Token: {0}", reader.TokenType);
+            }
 
-      // Token: StartObject
-      // Token: PropertyName, Value: CPU
-      // Token: String, Value: Intel
-      // Token: PropertyName, Value: PSU
-      // Token: String, Value: 500W
-      // Token: PropertyName, Value: Drives
-      // Token: StartArray
-      // Token: String, Value: DVD read/writer
-      // Token: Comment, Value: (broken)
-      // Token: String, Value: 500 gigabyte hard drive
-      // Token: String, Value: 200 gigabype hard drive
-      // Token: EndArray
-      // Token: EndObject
-      #endregion
+            // Token: StartObject
+            // Token: PropertyName, Value: CPU
+            // Token: String, Value: Intel
+            // Token: PropertyName, Value: PSU
+            // Token: String, Value: 500W
+            // Token: PropertyName, Value: Drives
+            // Token: StartArray
+            // Token: String, Value: DVD read/writer
+            // Token: Comment, Value: (broken)
+            // Token: String, Value: 500 gigabyte hard drive
+            // Token: String, Value: 200 gigabype hard drive
+            // Token: EndArray
+            // Token: EndObject
+            #endregion
+        }
+
+        public void ReadingAndWritingJsonLinq()
+        {
+            #region ReadingAndWritingJsonLinq
+            JObject o = new JObject(
+              new JProperty("Name", "John Smith"),
+              new JProperty("BirthDate", new DateTime(1983, 3, 20))
+              );
+
+            JsonSerializer serializer = new JsonSerializer();
+            Person p = (Person)serializer.Deserialize(new JTokenReader(o), typeof(Person));
+
+            Console.WriteLine(p.Name);
+            // John Smith
+            #endregion
+        }
     }
-
-    public void ReadingAndWritingJsonLinq()
-    {
-      #region ReadingAndWritingJsonLinq
-      JObject o = new JObject(
-        new JProperty("Name", "John Smith"),
-        new JProperty("BirthDate", new DateTime(1983, 3, 20))
-        );
-
-      JsonSerializer serializer = new JsonSerializer();
-      Person p = (Person)serializer.Deserialize(new JTokenReader(o), typeof(Person));
-
-      Console.WriteLine(p.Name);
-      // John Smith
-      #endregion
-    }
-  }
 }
 #endif

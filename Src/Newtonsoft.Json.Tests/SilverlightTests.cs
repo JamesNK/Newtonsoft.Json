@@ -35,7 +35,7 @@ using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAtt
 
 namespace Newtonsoft.Json.Tests
 {
-  // todo: need to fix this to get WP unit tests running off right dlls
+    // todo: need to fix this to get WP unit tests running off right dlls
 #if SILVERLIGHT
   [TestFixture]
   public class SilverlightTests

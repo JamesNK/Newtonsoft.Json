@@ -35,26 +35,26 @@ using Newtonsoft.Json.Tests.TestObjects;
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
-  [TestFixture]
-  public class JsonPropertyCollectionTests : TestFixtureBase
-  {
-    [Test]
-    public void AddPropertyIncludesPrivateImplementations()
+    [TestFixture]
+    public class JsonPropertyCollectionTests : TestFixtureBase
     {
-      var value = new PrivateImplementationBClass
+        [Test]
+        public void AddPropertyIncludesPrivateImplementations()
         {
-          OverriddenProperty = "OverriddenProperty",
-          PropertyA = "PropertyA",
-          PropertyB = "PropertyB"
-        };
+            var value = new PrivateImplementationBClass
+            {
+                OverriddenProperty = "OverriddenProperty",
+                PropertyA = "PropertyA",
+                PropertyB = "PropertyB"
+            };
 
-      var resolver = new DefaultContractResolver();
-      var contract = (JsonObjectContract) resolver.ResolveContract(value.GetType());
+            var resolver = new DefaultContractResolver();
+            var contract = (JsonObjectContract)resolver.ResolveContract(value.GetType());
 
-      Assert.AreEqual(3, contract.Properties.Count);
-      Assert.IsTrue(contract.Properties.Contains("OverriddenProperty"), "Contract is missing property 'OverriddenProperty'");
-      Assert.IsTrue(contract.Properties.Contains("PropertyA"), "Contract is missing property 'PropertyA'");
-      Assert.IsTrue(contract.Properties.Contains("PropertyB"), "Contract is missing property 'PropertyB'");
+            Assert.AreEqual(3, contract.Properties.Count);
+            Assert.IsTrue(contract.Properties.Contains("OverriddenProperty"), "Contract is missing property 'OverriddenProperty'");
+            Assert.IsTrue(contract.Properties.Contains("PropertyA"), "Contract is missing property 'PropertyA'");
+            Assert.IsTrue(contract.Properties.Contains("PropertyB"), "Contract is missing property 'PropertyB'");
+        }
     }
-  }
 }
