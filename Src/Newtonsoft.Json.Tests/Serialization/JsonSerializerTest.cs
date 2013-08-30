@@ -1662,15 +1662,15 @@ keyword such as type of business.""
 
 			string json = JsonConvert.SerializeObject(name, Formatting.Indented);
 
-			Assert.AreEqual(@"{
+            Assert.AreEqual(@"{
   ""personsName"": ""The Idiot in Next To Me"",
   ""pNumbers"": [
-	{
-	  ""phoneNumber"": ""555-1212""
-	},
-	{
-	  ""phoneNumber"": ""444-1212""
-	}
+    {
+      ""phoneNumber"": ""555-1212""
+    },
+    {
+      ""phoneNumber"": ""444-1212""
+    }
   ]
 }", json);
 
@@ -2632,16 +2632,16 @@ keyword such as type of business.""
 
 			string json = JsonConvert.SerializeObject(content, Formatting.Indented);
 
-			Assert.AreEqual(@"{
+            Assert.AreEqual(@"{
   ""Children"": [
-	{
-	  ""Children"": null,
-	  ""Text"": ""First""
-	},
-	{
-	  ""Children"": null,
-	  ""Text"": ""Second""
-	}
+    {
+      ""Children"": null,
+      ""Text"": ""First""
+    },
+    {
+      ""Children"": null,
+      ""Text"": ""Second""
+    }
   ],
   ""Text"": ""Blah, blah, blah""
 }", json);
@@ -2770,18 +2770,18 @@ keyword such as type of business.""
 			//  }
 			//]
 
-			Assert.AreEqual(@"[
+            Assert.AreEqual(@"[
   {
-	""Name"": ""Product 1"",
-	""ExpiryDate"": ""2000-12-29T00:00:00Z"",
-	""Price"": 99.95,
-	""Sizes"": null
+    ""Name"": ""Product 1"",
+    ""ExpiryDate"": ""2000-12-29T00:00:00Z"",
+    ""Price"": 99.95,
+    ""Sizes"": null
   },
   {
-	""Name"": ""Product 2"",
-	""ExpiryDate"": ""2009-07-31T00:00:00Z"",
-	""Price"": 12.50,
-	""Sizes"": null
+    ""Name"": ""Product 2"",
+    ""ExpiryDate"": ""2009-07-31T00:00:00Z"",
+    ""Price"": 12.50,
+    ""Sizes"": null
   }
 ]", json);
 		}
@@ -3181,11 +3181,11 @@ Path '', line 1, position 2.",
 			f.Bars.Add(new Bar { Id = 2 });
 
 			string json = JsonConvert.SerializeObject(f, Formatting.Indented);
-			Assert.AreEqual(@"{
+            Assert.AreEqual(@"{
   ""Bars"": [
-	0,
-	1,
-	2
+    0,
+    1,
+    2
   ]
 }", json);
 
@@ -3952,15 +3952,15 @@ To fix this error either change the environment to be fully trusted, change the 
 			ISerializableTestObject o = new ISerializableTestObject("String!", int.MinValue, dateTimeOffset, person);
 
 			string json = JsonConvert.SerializeObject(o, Formatting.Indented);
-			Assert.AreEqual(@"{
+            Assert.AreEqual(string.Format(@"{{
   ""stringValue"": ""String!"",
   ""intValue"": -2147483648,
-  ""dateTimeOffsetValue"": """ + dateTimeOffsetText + @""",
-  ""personValue"": {
-	""Name"": ""Name!"",
-	""BirthDate"": ""2000-01-01T01:01:01Z"",
-	""LastModified"": ""2000-01-01T01:01:01Z""
-  },
+  ""dateTimeOffsetValue"": ""{0}"",
+  ""personValue"": {{
+    ""Name"": ""Name!"",
+    ""BirthDate"": ""2000-01-01T01:01:01Z"",
+    ""LastModified"": ""2000-01-01T01:01:01Z""
+  }},
   ""nullPersonValue"": null,
   ""nullableInt"": null,
   ""booleanValue"": false,
@@ -3975,7 +3975,7 @@ To fix this error either change the environment to be fully trusted, change the 
   ""ushortValue"": 0,
   ""uintValue"": 0,
   ""ulongValue"": 0
-}", json);
+}}", dateTimeOffsetText), json);
 
 			ISerializableTestObject o2 = JsonConvert.DeserializeObject<ISerializableTestObject>(json);
 			Assert.AreEqual("String!", o2._stringValue);
@@ -4009,15 +4009,15 @@ To fix this error either change the environment to be fully trusted, change the 
 			{
 				DateFormatHandling = DateFormatHandling.MicrosoftDateFormat
 			});
-			Assert.AreEqual(@"{
+            Assert.AreEqual(string.Format(@"{{
   ""stringValue"": ""String!"",
   ""intValue"": -2147483648,
-  ""dateTimeOffsetValue"": """ + dateTimeOffsetText + @""",
-  ""personValue"": {
-	""Name"": ""Name!"",
-	""BirthDate"": ""\/Date(946688461000)\/"",
-	""LastModified"": ""\/Date(946688461000)\/""
-  },
+  ""dateTimeOffsetValue"": ""{0}"",
+  ""personValue"": {{
+    ""Name"": ""Name!"",
+    ""BirthDate"": ""\/Date(946688461000)\/"",
+    ""LastModified"": ""\/Date(946688461000)\/""
+  }},
   ""nullPersonValue"": null,
   ""nullableInt"": null,
   ""booleanValue"": false,
@@ -4032,7 +4032,7 @@ To fix this error either change the environment to be fully trusted, change the 
   ""ushortValue"": 0,
   ""uintValue"": 0,
   ""ulongValue"": 0
-}", json);
+}}", dateTimeOffsetText), json);
 
 			ISerializableTestObject o2 = JsonConvert.DeserializeObject<ISerializableTestObject>(json);
 			Assert.AreEqual("String!", o2._stringValue);
@@ -4279,16 +4279,16 @@ To fix this error either change the environment to be fully trusted, change the 
 			testObject.Element = XElement.Parse(@"<fifth xmlns:json=""http://json.org"" json:Awesome=""true"">element</fifth>");
 
 			string json = JsonConvert.SerializeObject(testObject, Formatting.Indented);
-			string expected = @"{
+            string expected = @"{
   ""Document"": {
-	""root"": ""hehe, root""
+    ""root"": ""hehe, root""
   },
   ""Element"": {
-	""fifth"": {
-	  ""@xmlns:json"": ""http://json.org"",
-	  ""@json:Awesome"": ""true"",
-	  ""#text"": ""element""
-	}
+    ""fifth"": {
+      ""@xmlns:json"": ""http://json.org"",
+      ""@json:Awesome"": ""true"",
+      ""#text"": ""element""
+    }
   }
 }";
 			Assert.AreEqual(expected, json);
@@ -4311,9 +4311,9 @@ To fix this error either change the environment to be fully trusted, change the 
 			testObject.Document = document;
 
 			string json = JsonConvert.SerializeObject(testObject, Formatting.Indented);
-			string expected = @"{
+            string expected = @"{
   ""Document"": {
-	""root"": ""hehe, root""
+    ""root"": ""hehe, root""
   }
 }";
 			Assert.AreEqual(expected, json);
@@ -5169,12 +5169,12 @@ To fix this error either change the environment to be fully trusted, change the 
 			expando.Complex.DateTime = new DateTime(2000, 12, 20, 18, 55, 0, DateTimeKind.Utc);
 
 			string json = JsonConvert.SerializeObject(expando, Formatting.Indented);
-			Assert.AreEqual(@"{
+            Assert.AreEqual(@"{
   ""Int"": 1,
   ""Decimal"": 99.9,
   ""Complex"": {
-	""String"": ""I am a string"",
-	""DateTime"": ""2000-12-20T18:55:00Z""
+    ""String"": ""I am a string"",
+    ""DateTime"": ""2000-12-20T18:55:00Z""
   }
 }", json);
 
@@ -7820,36 +7820,36 @@ Parameter name: value",
 
 			string json = JsonConvert.SerializeObject(c1, Formatting.Indented);
 
-			Assert.AreEqual(@"{
+            Assert.AreEqual(@"{
   ""NonReadOnlyList"": [
-	1
+    1
   ],
   ""NonReadOnlyDictionary"": {
-	""first"": 2
+    ""first"": 2
   },
   ""Array"": [
-	3
+    3
   ],
   ""List"": [
-	4
+    4
   ],
   ""Dictionary"": {
-	""first"": 5
+    ""first"": 5
   },
   ""IReadOnlyCollection"": [
-	6
+    6
   ],
   ""ReadOnlyCollection"": [
-	7
+    7
   ],
   ""IReadOnlyList"": [
-	8
+    8
   ],
   ""IReadOnlyDictionary"": {
-	""first"": 9
+    ""first"": 9
   },
   ""ReadOnlyDictionary"": {
-	""first"": 10
+    ""first"": 10
   }
 }", json);
 		}
@@ -7940,57 +7940,57 @@ Parameter name: value",
 
 			string json = JsonConvert.SerializeObject(aa, Formatting.Indented);
 
-			Assert.AreEqual(@"{
+            Assert.AreEqual(@"{
   ""Before"": ""Before!"",
   ""Coordinates"": [
-	[
-	  [
-		1.0,
-		1.0,
-		1.0
-	  ],
-	  [
-		1.0,
-		1.0,
-		2.0
-	  ]
-	],
-	[
-	  [
-		1.0,
-		2.0,
-		1.0
-	  ],
-	  [
-		1.0,
-		2.0,
-		2.0
-	  ]
-	],
-	[
-	  [
-		2.0,
-		1.0,
-		1.0
-	  ],
-	  [
-		2.0,
-		1.0,
-		2.0
-	  ]
-	],
-	[
-	  [
-		2.0,
-		2.0,
-		1.0
-	  ],
-	  [
-		2.0,
-		2.0,
-		2.0
-	  ]
-	]
+    [
+      [
+        1.0,
+        1.0,
+        1.0
+      ],
+      [
+        1.0,
+        1.0,
+        2.0
+      ]
+    ],
+    [
+      [
+        1.0,
+        2.0,
+        1.0
+      ],
+      [
+        1.0,
+        2.0,
+        2.0
+      ]
+    ],
+    [
+      [
+        2.0,
+        1.0,
+        1.0
+      ],
+      [
+        2.0,
+        1.0,
+        2.0
+      ]
+    ],
+    [
+      [
+        2.0,
+        2.0,
+        1.0
+      ],
+      [
+        2.0,
+        2.0,
+        2.0
+      ]
+    ]
   ],
   ""After"": ""After!""
 }", json);
@@ -8259,38 +8259,7 @@ Parameter name: value",
 				Formatting = Formatting.Indented
 			});
 
-			Assert.AreEqual(@"{
-  ""$id"": ""1"",
-  ""$values"": [
-	{
-	  ""$id"": ""2"",
-	  ""$values"": [
-		[
-		  {
-			""$id"": ""3"",
-			""EventName"": ""EventName!"",
-			""Venue"": null,
-			""Performances"": null
-		  },
-		  {
-			""$ref"": ""3""
-		  }
-		],
-		[
-		  {
-			""$ref"": ""3""
-		  },
-		  {
-			""$ref"": ""3""
-		  }
-		]
-	  ]
-	},
-	{
-	  ""$ref"": ""2""
-	}
-  ]
-}", json);
+            Assert.AreEqual("{\r\n  \"$id\": \"1\",\r\n  \"$values\": [\r\n    {\r\n      \"$id\": \"2\",\r\n      \"$values\": [\r\n        [\r\n          {\r\n            \"$id\": \"3\",\r\n            \"EventName\": \"EventName!\",\r\n            \"Venue\": null,\r\n            \"Performances\": null\r\n          },\r\n          {\r\n            \"$ref\": \"3\"\r\n          }\r\n        ],\r\n        [\r\n          {\r\n            \"$ref\": \"3\"\r\n          },\r\n          {\r\n            \"$ref\": \"3\"\r\n          }\r\n        ]\r\n      ]\r\n    },\r\n    {\r\n      \"$ref\": \"2\"\r\n    }\r\n  ]\r\n}", json);
 		}
 
 		[Test]
@@ -8313,75 +8282,75 @@ Parameter name: value",
 				Formatting = Formatting.Indented
 			});
 
-			Assert.AreEqual(@"{
+            Assert.AreEqual(@"{
   ""$type"": ""System.Collections.Generic.List`1[[Newtonsoft.Json.Tests.Serialization.Event[,], Newtonsoft.Json.Tests]], mscorlib"",
   ""$values"": [
-	{
-	  ""$type"": ""Newtonsoft.Json.Tests.Serialization.Event[,], Newtonsoft.Json.Tests"",
-	  ""$values"": [
-		[
-		  {
-			""$type"": ""Newtonsoft.Json.Tests.Serialization.Event, Newtonsoft.Json.Tests"",
-			""EventName"": ""EventName!"",
-			""Venue"": null,
-			""Performances"": null
-		  },
-		  {
-			""$type"": ""Newtonsoft.Json.Tests.Serialization.Event, Newtonsoft.Json.Tests"",
-			""EventName"": ""EventName!"",
-			""Venue"": null,
-			""Performances"": null
-		  }
-		],
-		[
-		  {
-			""$type"": ""Newtonsoft.Json.Tests.Serialization.Event, Newtonsoft.Json.Tests"",
-			""EventName"": ""EventName!"",
-			""Venue"": null,
-			""Performances"": null
-		  },
-		  {
-			""$type"": ""Newtonsoft.Json.Tests.Serialization.Event, Newtonsoft.Json.Tests"",
-			""EventName"": ""EventName!"",
-			""Venue"": null,
-			""Performances"": null
-		  }
-		]
-	  ]
-	},
-	{
-	  ""$type"": ""Newtonsoft.Json.Tests.Serialization.Event[,], Newtonsoft.Json.Tests"",
-	  ""$values"": [
-		[
-		  {
-			""$type"": ""Newtonsoft.Json.Tests.Serialization.Event, Newtonsoft.Json.Tests"",
-			""EventName"": ""EventName!"",
-			""Venue"": null,
-			""Performances"": null
-		  },
-		  {
-			""$type"": ""Newtonsoft.Json.Tests.Serialization.Event, Newtonsoft.Json.Tests"",
-			""EventName"": ""EventName!"",
-			""Venue"": null,
-			""Performances"": null
-		  }
-		],
-		[
-		  {
-			""$type"": ""Newtonsoft.Json.Tests.Serialization.Event, Newtonsoft.Json.Tests"",
-			""EventName"": ""EventName!"",
-			""Venue"": null,
-			""Performances"": null
-		  },
-		  {
-			""$type"": ""Newtonsoft.Json.Tests.Serialization.Event, Newtonsoft.Json.Tests"",
-			""EventName"": ""EventName!"",
-			""Venue"": null,
-			""Performances"": null
-		  }
-		]
-	  ]
-	}
+    {
+      ""$type"": ""Newtonsoft.Json.Tests.Serialization.Event[,], Newtonsoft.Json.Tests"",
+      ""$values"": [
+        [
+          {
+            ""$type"": ""Newtonsoft.Json.Tests.Serialization.Event, Newtonsoft.Json.Tests"",
+            ""EventName"": ""EventName!"",
+            ""Venue"": null,
+            ""Performances"": null
+          },
+          {
+            ""$type"": ""Newtonsoft.Json.Tests.Serialization.Event, Newtonsoft.Json.Tests"",
+            ""EventName"": ""EventName!"",
+            ""Venue"": null,
+            ""Performances"": null
+          }
+        ],
+        [
+          {
+            ""$type"": ""Newtonsoft.Json.Tests.Serialization.Event, Newtonsoft.Json.Tests"",
+            ""EventName"": ""EventName!"",
+            ""Venue"": null,
+            ""Performances"": null
+          },
+          {
+            ""$type"": ""Newtonsoft.Json.Tests.Serialization.Event, Newtonsoft.Json.Tests"",
+            ""EventName"": ""EventName!"",
+            ""Venue"": null,
+            ""Performances"": null
+          }
+        ]
+      ]
+    },
+    {
+      ""$type"": ""Newtonsoft.Json.Tests.Serialization.Event[,], Newtonsoft.Json.Tests"",
+      ""$values"": [
+        [
+          {
+            ""$type"": ""Newtonsoft.Json.Tests.Serialization.Event, Newtonsoft.Json.Tests"",
+            ""EventName"": ""EventName!"",
+            ""Venue"": null,
+            ""Performances"": null
+          },
+          {
+            ""$type"": ""Newtonsoft.Json.Tests.Serialization.Event, Newtonsoft.Json.Tests"",
+            ""EventName"": ""EventName!"",
+            ""Venue"": null,
+            ""Performances"": null
+          }
+        ],
+        [
+          {
+            ""$type"": ""Newtonsoft.Json.Tests.Serialization.Event, Newtonsoft.Json.Tests"",
+            ""EventName"": ""EventName!"",
+            ""Venue"": null,
+            ""Performances"": null
+          },
+          {
+            ""$type"": ""Newtonsoft.Json.Tests.Serialization.Event, Newtonsoft.Json.Tests"",
+            ""EventName"": ""EventName!"",
+            ""Venue"": null,
+            ""Performances"": null
+          }
+        ]
+      ]
+    }
   ]
 }", json);
 
@@ -8712,11 +8681,11 @@ Parameter name: value",
 
 			string json = JsonConvert.SerializeObject(joe, Formatting.Indented);
 
-			Assert.AreEqual(@"{
+            Assert.AreEqual(@"{
   ""Age"": 100,
   ""Name"": ""Joe Employee"",
   ""Manager"": {
-	""Name"": ""Mike Manager""
+    ""Name"": ""Mike Manager""
   }
 }", json);
 		}
@@ -8745,7 +8714,7 @@ Parameter name: value",
 				  }
 			  });
 
-			Assert.AreEqual(@"{
+            Assert.AreEqual(@"{
   ""<Active>k__BackingField"": false,
   ""<Ja>k__BackingField"": false,
   ""<Handlungsbedarf>k__BackingField"": false,
@@ -9080,20 +9049,20 @@ Parameter name: value",
 				Formatting = Formatting.Indented
 			});
 
-			Assert.AreEqual(@"[
+            Assert.AreEqual(@"[
   {
-	""$id"": ""0b64ffdf-d155-44ad-9689-58d9adb137f3"",
-	""Name"": ""John Smith"",
-	""Spouse"": {
-	  ""$id"": ""ae3c399c-058d-431d-91b0-a36c266441b9"",
-	  ""Name"": ""Jane Smith"",
-	  ""Spouse"": {
-		""$ref"": ""0b64ffdf-d155-44ad-9689-58d9adb137f3""
-	  }
-	}
+    ""$id"": ""0b64ffdf-d155-44ad-9689-58d9adb137f3"",
+    ""Name"": ""John Smith"",
+    ""Spouse"": {
+      ""$id"": ""ae3c399c-058d-431d-91b0-a36c266441b9"",
+      ""Name"": ""Jane Smith"",
+      ""Spouse"": {
+        ""$ref"": ""0b64ffdf-d155-44ad-9689-58d9adb137f3""
+      }
+    }
   },
   {
-	""$ref"": ""ae3c399c-058d-431d-91b0-a36c266441b9""
+    ""$ref"": ""ae3c399c-058d-431d-91b0-a36c266441b9""
   }
 ]", json);
 		}
