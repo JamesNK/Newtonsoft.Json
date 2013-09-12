@@ -155,6 +155,15 @@ namespace Newtonsoft.Json.Serialization
       typeName = serializedType.AssemblyQualifiedName;
 #endif
     }
+#else
+    public void BindToName(Type serializedType, out string assemblyName, out string typeName)
+    {
+        assemblyName = serializedType.Assembly.FullName;
+        //assemblyName = serializedType.Assembly.GetName().Name;
+        typeName = serializedType.FullName;
+    }
 #endif
+
+
   }
 }

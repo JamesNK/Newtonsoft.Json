@@ -588,6 +588,11 @@ namespace Newtonsoft.Json.Tests.Serialization
 
         public class CustomSerializationBinder : SerializationBinder, ISerializationBinder
         {
+            public void BindToName(Type serializedType, out string assemblyName, out string typeName)
+            {
+                throw new NotImplementedException();
+            }
+
             public override Type BindToType(string assemblyName, string typeName)
             {
                 return typeof(Person);
