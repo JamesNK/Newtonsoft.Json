@@ -8581,6 +8581,39 @@ Parameter name: value",
 }", json);
     }
 
+    public class NoConstructorReadOnlyCollection<T> : ReadOnlyCollection<T>
+    {
+      public NoConstructorReadOnlyCollection() : base(new List<T>())
+      { 
+      }
+    }
+
+    [Test]
+    public void NoConstructorReadOnlyCollectionTest()
+    {
+      ExceptionAssert.Throws<JsonSerializationException>(
+        "Cannot deserialize readonly or fixed size list: Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+NoConstructorReadOnlyCollection`1[System.Int32]. Path '', line 1, position 1.",
+        () => JsonConvert.DeserializeObject<NoConstructorReadOnlyCollection<int>>("[1]"));
+    }
+
+#if !(NET40 || NET35 || NET20 || PORTABLE40)
+    public class NoConstructorReadOnlyDictionary<TKey, TValue> : ReadOnlyDictionary<TKey, TValue>
+    {
+      public NoConstructorReadOnlyDictionary()
+        : base(new Dictionary<TKey, TValue>())
+      {
+      }
+    }
+
+    [Test]
+    public void NoConstructorReadOnlyDictionaryTest()
+    {
+      ExceptionAssert.Throws<JsonSerializationException>(
+        "Cannot deserialize readonly or fixed size dictionary: Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+NoConstructorReadOnlyDictionary`2[System.Int32,System.Int32]. Path '1', line 1, position 5.",
+        () => JsonConvert.DeserializeObject<NoConstructorReadOnlyDictionary<int, int>>("{'1':1}"));
+    }
+#endif
+
 #if !(PORTABLE || NET35 || NET20 || SILVERLIGHT || PORTABLE40)
     [Test]
     public void ReadTooLargeInteger()
@@ -9324,6 +9357,42 @@ Parameter name: value",
       Assert.AreEqual("ConsoleWriter", restoredDict2.First().Value.PrintTest());
     }
 #endif
+
+    [Test]
+    public void Main()
+    {
+      ParticipantEntity product = new ParticipantEntity();
+      product.Properties = new Dictionary<string, string> { { "s", "d" } };
+      string json = JsonConvert.SerializeObject(product);
+      Console.WriteLine(json);
+      ParticipantEntity deserializedProduct = JsonConvert.DeserializeObject<ParticipantEntity>(json);
+    }
+
+    internal class ParticipantEntity
+    {
+      private Dictionary<string, string> _properties;
+
+      [JsonConstructor]
+      public ParticipantEntity()
+      {
+      }
+
+      /// <summary>
+      /// Gets or sets the date and time that the participant was created in the CU.
+      /// </summary>
+      [JsonProperty(PropertyName = "pa_created", DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
+      public DateTimeOffset CreationDate { get; internal set; }
+
+      /// <summary>
+      /// Gets the properties of the participant.
+      /// </summary>
+      [JsonProperty(PropertyName = "pa_info")]
+      public Dictionary<string, string> Properties
+      {
+        get { return _properties ?? (_properties = new Dictionary<string, string>()); }
+        set { _properties = value; }
+      }
+    }
   }
 
   public class PersonReference

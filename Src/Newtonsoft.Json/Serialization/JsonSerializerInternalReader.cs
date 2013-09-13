@@ -413,14 +413,20 @@ namespace Newtonsoft.Json.Serialization
               bool createdFromNonDefaultConstructor;
               IDictionary dictionary = CreateNewDictionary(reader, dictionaryContract, out createdFromNonDefaultConstructor);
 
-              if (id != null && createdFromNonDefaultConstructor)
-                throw JsonSerializationException.Create(reader, "Cannot preserve reference to readonly dictionary, or dictionary created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+              if (createdFromNonDefaultConstructor)
+              {
+                if (id != null)
+                  throw JsonSerializationException.Create(reader, "Cannot preserve reference to readonly dictionary, or dictionary created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
-              if (contract.OnSerializingCallbacks.Count > 0 && createdFromNonDefaultConstructor)
-                throw JsonSerializationException.Create(reader, "Cannot call OnSerializing on readonly dictionary, or dictionary created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+                if (contract.OnSerializingCallbacks.Count > 0)
+                  throw JsonSerializationException.Create(reader, "Cannot call OnSerializing on readonly dictionary, or dictionary created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
-              if (contract.OnErrorCallbacks.Count > 0 && createdFromNonDefaultConstructor)
-                throw JsonSerializationException.Create(reader, "Cannot call OnError on readonly list, or dictionary created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+                if (contract.OnErrorCallbacks.Count > 0)
+                  throw JsonSerializationException.Create(reader, "Cannot call OnError on readonly list, or dictionary created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+
+                if (dictionaryContract.ParametrizedConstructor == null)
+                  throw JsonSerializationException.Create(reader, "Cannot deserialize readonly or fixed size dictionary: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+              }
 
               PopulateDictionary(dictionary, reader, dictionaryContract, member, id);
 
@@ -619,14 +625,20 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
         bool createdFromNonDefaultConstructor;
         IList list = CreateNewList(reader, arrayContract, out createdFromNonDefaultConstructor);
 
-        if (id != null && createdFromNonDefaultConstructor)
-          throw JsonSerializationException.Create(reader, "Cannot preserve reference to array or readonly list, or list created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+        if (createdFromNonDefaultConstructor)
+        {
+          if (id != null)
+            throw JsonSerializationException.Create(reader, "Cannot preserve reference to array or readonly list, or list created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
-        if (contract.OnSerializingCallbacks.Count > 0 && createdFromNonDefaultConstructor)
-          throw JsonSerializationException.Create(reader, "Cannot call OnSerializing on an array or readonly list, or list created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+          if (contract.OnSerializingCallbacks.Count > 0)
+            throw JsonSerializationException.Create(reader, "Cannot call OnSerializing on an array or readonly list, or list created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
-        if (contract.OnErrorCallbacks.Count > 0 && createdFromNonDefaultConstructor)
-          throw JsonSerializationException.Create(reader, "Cannot call OnError on an array or readonly list, or list created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+          if (contract.OnErrorCallbacks.Count > 0)
+            throw JsonSerializationException.Create(reader, "Cannot call OnError on an array or readonly list, or list created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+
+          if (arrayContract.ParametrizedConstructor == null && !arrayContract.IsArray)
+            throw JsonSerializationException.Create(reader, "Cannot deserialize readonly or fixed size list: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+        }
 
         if (!arrayContract.IsMultidimensionalArray)
           PopulateList(list, reader, arrayContract, member, id);
@@ -639,7 +651,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
           {
             list = CollectionUtils.ToMultidimensionalArray(list, arrayContract.CollectionItemType, contract.CreatedType.GetArrayRank());
           }
-          else if (contract.CreatedType.IsArray)
+          else if (arrayContract.IsArray)
           {
             Array a = Array.CreateInstance(arrayContract.CollectionItemType, list.Count);
             list.CopyTo(a, 0);

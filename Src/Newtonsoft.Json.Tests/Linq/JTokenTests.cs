@@ -286,6 +286,8 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.AreEqual(5f, (float?)(new JValue(5m)));
       Assert.AreEqual(5, (byte)(new JValue(5)));
 
+      Assert.AreEqual(null, (sbyte?)new JValue((object)null));
+
       Assert.AreEqual("1", (string)(new JValue(1)));
       Assert.AreEqual("1", (string)(new JValue(1.0)));
       Assert.AreEqual("1.0", (string)(new JValue(1.0m)));
@@ -322,6 +324,7 @@ namespace Newtonsoft.Json.Tests.Linq
       CollectionAssert.AreEquivalent((byte[])Encoding.UTF8.GetBytes("hi"), (byte[])(new JValue(Convert.ToBase64String(Encoding.UTF8.GetBytes("hi")))));
       Assert.AreEqual(new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC"), (Guid)(new JValue(new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC").ToByteArray())));
       Assert.AreEqual(new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC"), (Guid?)(new JValue(new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC").ToByteArray())));
+      Assert.AreEqual(1, (sbyte?)(new JValue((short?)1)));
 
       Assert.AreEqual(null, (Uri)(JValue)null);
       Assert.AreEqual(null, (int?)(JValue)null);
@@ -437,6 +440,9 @@ namespace Newtonsoft.Json.Tests.Linq
       ExceptionAssert.Throws<ArgumentException>("Can not convert Guid to BigInteger.", () => { var i = (new JValue(Guid.NewGuid())).ToObject<BigInteger>(); });
       ExceptionAssert.Throws<ArgumentException>("Can not convert Guid to BigInteger.", () => { var i = (new JValue(Guid.NewGuid())).ToObject<BigInteger?>(); });
 #endif
+
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Date to SByte.", () => { var i = (sbyte?)new JValue(DateTime.Now); });
+      ExceptionAssert.Throws<ArgumentException>("Can not convert Date to SByte.", () => { var i = (sbyte)new JValue(DateTime.Now); });
     }
 
     [Test]
@@ -516,6 +522,9 @@ namespace Newtonsoft.Json.Tests.Linq
       Assert.IsTrue(JToken.DeepEquals(new JValue((decimal?)null), (JValue)(decimal?)null));
       Assert.IsTrue(JToken.DeepEquals(new JValue((ulong?)null), (JValue)(ulong?)null));
       Assert.IsTrue(JToken.DeepEquals(new JValue((sbyte?)null), (JValue)(sbyte?)null));
+      Assert.IsTrue(JToken.DeepEquals(new JValue((sbyte)1), (JValue)(sbyte)1));
+      Assert.IsTrue(JToken.DeepEquals(new JValue((byte?)null), (JValue)(byte?)null));
+      Assert.IsTrue(JToken.DeepEquals(new JValue((byte)1), (JValue)(byte)1));
       Assert.IsTrue(JToken.DeepEquals(new JValue((ushort?)null), (JValue)(ushort?)null));
       Assert.IsTrue(JToken.DeepEquals(new JValue(short.MaxValue), (JValue)short.MaxValue));
       Assert.IsTrue(JToken.DeepEquals(new JValue(ushort.MaxValue), (JValue)ushort.MaxValue));

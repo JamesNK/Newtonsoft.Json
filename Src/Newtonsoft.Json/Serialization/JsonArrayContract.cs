@@ -63,6 +63,7 @@ namespace Newtonsoft.Json.Serialization
     private MethodCall<object, object> _genericWrapperCreator;
     private Func<object> _genericTemporaryCollectionCreator;
 
+    internal bool IsArray { get; private set; }
     internal bool ShouldCreateWrapper { get; private set; }
     internal bool CanDeserialize { get; private set; }
     internal MethodBase ParametrizedConstructor { get; private set; }
@@ -75,18 +76,19 @@ namespace Newtonsoft.Json.Serialization
       : base(underlyingType)
     {
       ContractType = JsonContractType.Array;
+      IsArray = CreatedType.IsArray;
 
       bool canDeserialize;
 
       Type tempCollectionType;
-      if (CreatedType.IsArray)
+      if (IsArray)
       {
         CollectionItemType = ReflectionUtils.GetCollectionItemType(UnderlyingType);
         IsReadOnlyOrFixedSize = true;
         _genericCollectionDefinitionType = typeof(List<>).MakeGenericType(CollectionItemType);
 
         canDeserialize = true;
-        IsMultidimensionalArray = (UnderlyingType.IsArray && UnderlyingType.GetArrayRank() > 1);
+        IsMultidimensionalArray = (IsArray && UnderlyingType.GetArrayRank() > 1);
       }
       else if (typeof(IList).IsAssignableFrom(underlyingType))
       {
@@ -179,7 +181,7 @@ namespace Newtonsoft.Json.Serialization
       // wrapper will handle calling Add(T) instead
       if (_isCollectionItemTypeNullableType
         && (ReflectionUtils.InheritsGenericDefinition(CreatedType, typeof(List<>), out tempCollectionType)
-        || (CreatedType.IsArray && !IsMultidimensionalArray)))
+        || (IsArray && !IsMultidimensionalArray)))
       {
         ShouldCreateWrapper = true;
       }

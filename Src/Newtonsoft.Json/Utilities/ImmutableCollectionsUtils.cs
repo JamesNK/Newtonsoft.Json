@@ -113,7 +113,7 @@ namespace Newtonsoft.Json.Utilities
           Type builderTypeDefinition = Type.GetType(definition.BuilderTypeName + ", System.Collections.Immutable");
           if (createdTypeDefinition != null && builderTypeDefinition != null)
           {
-            MethodInfo mb = builderTypeDefinition.GetMethods().FirstOrDefault(m => m.Name == "From" && m.GetParameters().Length == 1);
+            MethodInfo mb = builderTypeDefinition.GetMethods().FirstOrDefault(m => m.Name == "CreateRange" && m.GetParameters().Length == 1);
             if (mb != null)
             {
               createdType = createdTypeDefinition.MakeGenericType(collectionItemType);
@@ -145,7 +145,7 @@ namespace Newtonsoft.Json.Utilities
             {
               ParameterInfo[] parameters = m.GetParameters();
 
-              return m.Name == "Create" && parameters.Length == 1 && parameters[0].ParameterType.IsGenericType() && parameters[0].ParameterType.GetGenericTypeDefinition() == typeof(IEnumerable<>);
+              return m.Name == "CreateRange" && parameters.Length == 1 && parameters[0].ParameterType.IsGenericType() && parameters[0].ParameterType.GetGenericTypeDefinition() == typeof(IEnumerable<>);
             });
             if (mb != null)
             {

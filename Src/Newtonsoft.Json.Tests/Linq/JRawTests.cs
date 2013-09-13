@@ -24,6 +24,7 @@
 #endregion
 
 #if !NETFX_CORE
+using System;
 using NUnit.Framework;
 #else
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -55,6 +56,15 @@ namespace Newtonsoft.Json.Tests.Linq
       JToken r2 = r1.CloneToken();
 
       CustomAssert.IsInstanceOfType(typeof(JRaw), r2);
+    }
+
+    [Test]
+    public void RawToObject()
+    {
+      JRaw r1 = new JRaw("1");
+      int i = r1.ToObject<int>();
+
+      Assert.AreEqual(1, i);
     }
   }
 }
