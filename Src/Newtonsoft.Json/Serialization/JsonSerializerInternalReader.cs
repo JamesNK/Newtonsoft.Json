@@ -162,6 +162,8 @@ namespace Newtonsoft.Json.Serialization
           if (reader.Read() && reader.TokenType != JsonToken.Comment)
             throw new JsonSerializationException("Additional text found in JSON string after finishing deserializing object.");
         }
+        else
+          reader.Reset();
 
         return deserializedValue;
       }
