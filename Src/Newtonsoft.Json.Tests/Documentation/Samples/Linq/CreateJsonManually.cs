@@ -19,8 +19,6 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
       o["MyArray"] = array;
 
       string json = o.ToString();
-
-      Console.WriteLine(json);
       // {
       //   "MyArray": [
       //     "Manual text",

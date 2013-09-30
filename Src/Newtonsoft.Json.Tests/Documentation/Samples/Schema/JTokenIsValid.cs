@@ -12,7 +12,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Schema
     public void Example()
     {
       #region Usage
-      string schemaJson = @"{
+      JsonSchema schema = JsonSchema.Parse(@"{
         'description': 'A person',
         'type': 'object',
         'properties': {
@@ -22,9 +22,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Schema
             'items': {'type':'string'}
           }
         }
-      }";
-
-      JsonSchema schema = JsonSchema.Parse(schemaJson);
+      }");
 
       JObject person = JObject.Parse(@"{
         'name': 'James',

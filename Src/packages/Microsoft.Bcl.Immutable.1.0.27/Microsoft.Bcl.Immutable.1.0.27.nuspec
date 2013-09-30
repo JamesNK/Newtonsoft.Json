@@ -2,11 +2,11 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/01/nuspec.xsd">
   <metadata minClientVersion="2.5">
     <id>Microsoft.Bcl.Immutable</id>
-    <version>1.0.23-rc</version>
+    <version>1.0.27</version>
     <title>Microsoft Immutable Collections</title>
     <authors>Microsoft</authors>
     <owners>Microsoft</owners>
-    <licenseUrl>http://go.microsoft.com/fwlink/?LinkID=279007</licenseUrl>
+    <licenseUrl>http://go.microsoft.com/fwlink/?LinkID=313707</licenseUrl>
     <projectUrl>http://go.microsoft.com/fwlink/?LinkID=310193</projectUrl>
     <iconUrl>http://go.microsoft.com/fwlink/?LinkID=288859</iconUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
@@ -18,7 +18,9 @@ Supported Platforms:
 - Windows Phone 8
 - Portable Class Libraries</description>
     <summary>Provides immutable collections that allow CPU and memory efficient mutation via new references.</summary>
+    <releaseNotes />
     <copyright>Copyright © Microsoft Corporation</copyright>
+    <language />
     <tags>BCL Microsoft System Immutable Collections</tags>
   </metadata>
 </package>
