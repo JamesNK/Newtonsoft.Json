@@ -43,6 +43,7 @@ namespace Newtonsoft.Json.Schema
     public int? MinimumItems { get; set; }
     public int? MaximumItems { get; set; }
     public IList<string> Patterns { get; set; }
+    public string Format { get; set; }
     public IList<JsonSchemaModel> Items { get; set; }
     public IDictionary<string, JsonSchemaModel> Properties { get; set; }
     public IDictionary<string, JsonSchemaModel> PatternProperties { get; set; }
@@ -114,6 +115,9 @@ namespace Newtonsoft.Json.Schema
 
         model.Patterns.AddDistinct(schema.Pattern);
       }
+
+      if (schema.Format != null)
+          model.Format = schema.Format;
     }
   }
 }
