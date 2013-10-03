@@ -378,7 +378,7 @@ namespace Newtonsoft.Json.Serialization
 
     internal void InvokeOnError(object o, StreamingContext context, ErrorContext errorContext)
     {
-      if (_onErrorCallbacks != null)
+      if (o != null && _onErrorCallbacks != null)
       {
         foreach (SerializationErrorCallback callback in _onErrorCallbacks)
         {
