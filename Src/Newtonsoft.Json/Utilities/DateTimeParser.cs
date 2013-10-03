@@ -176,26 +176,38 @@ namespace Newtonsoft.Json.Utilities
         }
         else
         {
-          if (start + 5 < _length
-              && Parse2Digit(start + Lz_, out ZoneHour)
-              && ZoneHour <= 99
-              && ParseChar(start + Lz_zz, ':')
-              && Parse2Digit(start + Lz_zz_, out ZoneMinute)
-              && ZoneMinute <= 99)
-          {
-            switch (ch)
-            {
-              case '-':
-                Zone = ParserTimeZone.LocalWestOfUtc;
-                start += Lz_zz_zz;
-                break;
 
-              case '+':
-                Zone = ParserTimeZone.LocalEastOfUtc;
-                start += Lz_zz_zz;
-                break;
-            }
+          switch (ch)
+          {
+            case '-':
+              Zone = ParserTimeZone.LocalWestOfUtc;
+              break;
+
+            case '+':
+              Zone = ParserTimeZone.LocalEastOfUtc;
+              break;
+            default:
+              return false;
           }
+
+          start++;
+          if (!Parse2Digit(start, out ZoneHour))
+            return false;
+
+          start += 2;
+
+          if (_text.Length == start)
+            return true;
+
+          ch = _text[start];
+
+          if (ch == ':')
+            start++;
+
+          if (!Parse2Digit(start, out ZoneMinute))
+            return false;
+
+          start += 2;
         }
       }
 
