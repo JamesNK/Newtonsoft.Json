@@ -555,5 +555,30 @@ namespace Newtonsoft.Json.Tests.Schema
   }
 }", json);
     }
+
+    [Test]
+    public void IntegerValidatesAgainstFloatFlags()
+    {
+      JsonSchema schema = JsonSchema.Parse(@"{
+  ""type"": ""object"",
+  ""$schema"": ""http://json-schema.org/draft-03/schema"",
+  ""required"": false,
+  ""properties"": {
+  ""NumberProperty"": {
+    ""required"": false,
+    ""type"": [
+        ""number"",
+        ""null""
+      ]
+    }
+  }
+}");
+
+      JObject json = JObject.Parse(@"{
+        ""NumberProperty"": 23
+      }");
+
+      Assert.IsTrue(json.IsValid(schema));
+    }
   }
 }

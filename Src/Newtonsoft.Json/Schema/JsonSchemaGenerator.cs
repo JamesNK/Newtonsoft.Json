@@ -404,7 +404,7 @@ namespace Newtonsoft.Json.Schema
         return true;
 
       // integer is a subset of float
-      if (value == JsonSchemaType.Float && flag == JsonSchemaType.Integer)
+      if (flag == JsonSchemaType.Integer && (value & JsonSchemaType.Float) == JsonSchemaType.Float)
         return true;
 
       return false;

@@ -1398,10 +1398,16 @@ namespace Newtonsoft.Json
             // the value is a non-standard IConvertible
             // convert to the underlying value and retry
             IConvertible convertable = (IConvertible)value;
-            TypeInformation typeInformation = ConvertUtils.GetTypeInformation(convertable);
-            object convertedValue = convertable.ToType(typeInformation.Type, CultureInfo.InvariantCulture);
 
-            WriteValue(writer, typeInformation.TypeCode, convertedValue);
+            TypeInformation typeInformation = ConvertUtils.GetTypeInformation(convertable);
+
+            // if convertable has an underlying typecode of Object then attempt to convert it to a string
+            PrimitiveTypeCode resolvedTypeCode = (typeInformation.TypeCode == PrimitiveTypeCode.Object) ? PrimitiveTypeCode.String : typeInformation.TypeCode;
+            Type resolvedType = (typeInformation.TypeCode == PrimitiveTypeCode.Object) ? typeof(string) : typeInformation.Type;
+
+            object convertedValue = convertable.ToType(resolvedType, CultureInfo.InvariantCulture);
+
+            WriteValue(writer, resolvedTypeCode, convertedValue);
           }
           else
 #endif

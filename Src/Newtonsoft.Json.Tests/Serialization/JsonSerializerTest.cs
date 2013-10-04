@@ -8559,6 +8559,25 @@ Parameter name: value",
 ]", json);
     }
 
+#if !(NET20 || NET35)
+    [Test]
+    public void SerializeDeserializeTuple()
+    {
+      Tuple<int, int> tuple = Tuple.Create(500, 20);
+      string json = JsonConvert.SerializeObject(tuple);
+      Assert.AreEqual(@"{""Item1"":500,""Item2"":20}", json);
+
+      Tuple<int, int> tuple2 = JsonConvert.DeserializeObject<Tuple<int, int>>(json);
+      Assert.AreEqual(500, tuple2.Item1);
+      Assert.AreEqual(20, tuple2.Item2);
+    }
+#endif
+
+    public class MessageWithIsoDate
+    {
+      public String IsoDate { get; set; }
+    }
+
     [Test]
     public void JsonSerializerStringEscapeHandling()
     {
@@ -9393,6 +9412,57 @@ Parameter name: value",
         set { _properties = value; }
       }
     }
+
+#if !(PORTABLE || NETFX_CORE)
+    public class ConvertibleId : IConvertible
+    {
+      public int Value;
+
+      TypeCode IConvertible.GetTypeCode() { return TypeCode.Object; }
+
+      object IConvertible.ToType(Type conversionType, IFormatProvider provider)
+      {
+        if (conversionType == typeof(object)) { return this; }
+        if (conversionType == typeof(int)) { return (int)Value; }
+        if (conversionType == typeof(long)) { return (long)Value; }
+        if (conversionType == typeof(string)) { return Value.ToString(CultureInfo.InvariantCulture); }
+        throw new InvalidCastException();
+      }
+
+      bool IConvertible.ToBoolean(IFormatProvider provider) { throw new InvalidCastException(); }
+      byte IConvertible.ToByte(IFormatProvider provider) { throw new InvalidCastException(); }
+      char IConvertible.ToChar(IFormatProvider provider) { throw new InvalidCastException(); }
+      DateTime IConvertible.ToDateTime(IFormatProvider provider) { throw new InvalidCastException(); }
+      decimal IConvertible.ToDecimal(IFormatProvider provider) { throw new InvalidCastException(); }
+      double IConvertible.ToDouble(IFormatProvider provider) { throw new InvalidCastException(); }
+      short IConvertible.ToInt16(IFormatProvider provider) { return (short)Value; }
+      int IConvertible.ToInt32(IFormatProvider provider) { return Value; }
+      long IConvertible.ToInt64(IFormatProvider provider) { return (long)Value; }
+      sbyte IConvertible.ToSByte(IFormatProvider provider) { throw new InvalidCastException(); }
+      float IConvertible.ToSingle(IFormatProvider provider) { throw new InvalidCastException(); }
+      string IConvertible.ToString(IFormatProvider provider) { throw new InvalidCastException(); }
+      ushort IConvertible.ToUInt16(IFormatProvider provider) { throw new InvalidCastException(); }
+      uint IConvertible.ToUInt32(IFormatProvider provider) { throw new InvalidCastException(); }
+      ulong IConvertible.ToUInt64(IFormatProvider provider) { throw new InvalidCastException(); }
+    }
+
+    public class TestClassConvertable
+    {
+      public ConvertibleId Id;
+      public int X;
+    }
+
+    [Test]
+    public void ConvertibleIdTest()
+    {
+      var c = new TestClassConvertable { Id = new ConvertibleId { Value = 1 }, X = 2 };
+      var s = JsonConvert.SerializeObject(c, Formatting.Indented);
+      Assert.AreEqual(@"{
+  ""Id"": ""1"",
+  ""X"": 2
+}", s);
+    }
+#endif
   }
 
   public class PersonReference

@@ -664,5 +664,23 @@ namespace Newtonsoft.Json.Tests.Linq
 ]", a.ToString());
     }
 #endif
+
+#if !NET20
+    [Test]
+    public void ParseIsoTimeZones()
+    {
+      DateTimeOffset expectedDate = new DateTimeOffset(2013, 08, 14, 4, 38, 31, TimeSpan.FromHours(12).Add(TimeSpan.FromMinutes(30)));
+      JsonTextReader reader = new JsonTextReader(new StringReader("'2013-08-14T04:38:31.000+1230'"));
+      reader.DateParseHandling = DateParseHandling.DateTimeOffset;
+      JValue date = (JValue)JToken.ReadFrom(reader);
+      Assert.AreEqual(expectedDate, date.Value);
+
+      DateTimeOffset expectedDate2 = new DateTimeOffset(2013, 08, 14, 4, 38, 31, TimeSpan.FromHours(12));
+      JsonTextReader reader2 = new JsonTextReader(new StringReader("'2013-08-14T04:38:31.000+12'"));
+      reader2.DateParseHandling = DateParseHandling.DateTimeOffset;
+      JValue date2 = (JValue)JToken.ReadFrom(reader2);
+      Assert.AreEqual(expectedDate2, date2.Value);
+    }
+#endif
   }
 }
