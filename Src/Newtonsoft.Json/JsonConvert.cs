@@ -940,7 +940,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Serializes the XML node to a JSON string using formatting and omits the root object if <see cref="omitRootObject"/> is <c>true</c>.
+    /// Serializes the XML node to a JSON string using formatting and omits the root object if <paramref name="omitRootObject"/> is <c>true</c>.
     /// </summary>
     /// <param name="node">The node to serialize.</param>
     /// <param name="formatting">Indicates how the output is formatted.</param>
@@ -964,7 +964,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the XmlNode from a JSON string nested in a root elment specified by <see cref="deserializeRootElementName"/>.
+    /// Deserializes the XmlNode from a JSON string nested in a root elment specified by <paramref name="deserializeRootElementName"/>.
     /// </summary>
     /// <param name="value">The JSON string.</param>
     /// <param name="deserializeRootElementName">The name of the root element to append when deserializing.</param>
@@ -975,7 +975,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the XmlNode from a JSON string nested in a root elment specified by <see cref="deserializeRootElementName"/>
+    /// Deserializes the XmlNode from a JSON string nested in a root elment specified by <paramref name="deserializeRootElementName"/>
     /// and writes a .NET array attribute for collections.
     /// </summary>
     /// <param name="value">The JSON string.</param>
@@ -1018,7 +1018,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Serializes the <see cref="XNode"/> to a JSON string using formatting and omits the root object if <see cref="omitRootObject"/> is <c>true</c>.
+    /// Serializes the <see cref="XNode"/> to a JSON string using formatting and omits the root object if <paramref name="omitRootObject"/> is <c>true</c>.
     /// </summary>
     /// <param name="node">The node to serialize.</param>
     /// <param name="formatting">Indicates how the output is formatted.</param>
@@ -1042,7 +1042,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the <see cref="XNode"/> from a JSON string nested in a root elment specified by <see cref="deserializeRootElementName"/>.
+    /// Deserializes the <see cref="XNode"/> from a JSON string nested in a root elment specified by <paramref name="deserializeRootElementName"/>.
     /// </summary>
     /// <param name="value">The JSON string.</param>
     /// <param name="deserializeRootElementName">The name of the root element to append when deserializing.</param>
@@ -1053,7 +1053,7 @@ namespace Newtonsoft.Json
     }
 
     /// <summary>
-    /// Deserializes the <see cref="XNode"/> from a JSON string nested in a root elment specified by <see cref="deserializeRootElementName"/>
+    /// Deserializes the <see cref="XNode"/> from a JSON string nested in a root elment specified by <paramref name="deserializeRootElementName"/>
     /// and writes a .NET array attribute for collections.
     /// </summary>
     /// <param name="value">The JSON string.</param>

@@ -69,7 +69,6 @@ using Newtonsoft.Json.Utilities;
 using System.Reflection;
 #if !NET20 && !SILVERLIGHT
 using System.Xml.Linq;
-using System.Text.RegularExpressions;
 using System.Collections.Specialized;
 using System.Linq.Expressions;
 #endif
@@ -10191,6 +10190,11 @@ Parameter name: value",
 
       Domain = samAccountName.Split('\\')[0];
       UserName = samAccountName.Split('\\')[1];
+    }
+
+    public DirectoryAccount()
+    {
+      _additionalData = new Dictionary<string, JToken>();
     }
   }
 
