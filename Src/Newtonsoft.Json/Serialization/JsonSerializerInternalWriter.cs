@@ -393,6 +393,37 @@ namespace Newtonsoft.Json.Serialization
         }
       }
 
+      if (contract.ExtensionDataGetter != null)
+      {
+        IEnumerable<KeyValuePair<object, object>> extensionData = contract.ExtensionDataGetter(value);
+        if (extensionData != null)
+        {
+          foreach (KeyValuePair<object, object> e in extensionData)
+          {
+            JsonContract keyContract = GetContractSafe(e.Key);
+            JsonContract valueContract = GetContractSafe(e.Value);
+
+            bool escape;
+            string propertyName = GetPropertyName(writer, e.Key, keyContract, out escape);
+
+            if (ShouldWriteReference(e.Value, null, valueContract, contract, member))
+            {
+              writer.WritePropertyName(propertyName);
+              WriteReference(writer, e.Value);
+            }
+            else
+            {
+              if (!CheckForCircularReference(writer, e.Value, null, valueContract, contract, member))
+                continue;
+
+              writer.WritePropertyName(propertyName);
+
+              SerializeValue(writer, e.Value, valueContract, null, contract, member);
+            }
+          }
+        }
+      }
+
       writer.WriteEndObject();
 
       _serializeStack.RemoveAt(_serializeStack.Count - 1);
@@ -854,7 +885,7 @@ To fix this error either change the environment to be fully trusted, change the 
       foreach (DictionaryEntry entry in values)
       {
         bool escape;
-        string propertyName = GetPropertyName(writer, entry, contract.KeyContract, out escape);
+        string propertyName = GetPropertyName(writer, entry.Key, contract.KeyContract, out escape);
 
         propertyName = (contract.PropertyNameResolver != null)
                          ? contract.PropertyNameResolver(propertyName)
@@ -896,20 +927,18 @@ To fix this error either change the environment to be fully trusted, change the 
       OnSerialized(writer, contract, underlyingDictionary);
     }
 
-    private string GetPropertyName(JsonWriter writer, DictionaryEntry entry, JsonContract contract, out bool escape)
+    private string GetPropertyName(JsonWriter writer, object name, JsonContract contract, out bool escape)
     {
-      object key = entry.Key;
-
       string propertyName;
 
-      JsonPrimitiveContract primitiveContract = contract as JsonPrimitiveContract;
-      if (primitiveContract != null)
+      if (contract.ContractType == JsonContractType.Primitive)
       {
+        JsonPrimitiveContract primitiveContract = (JsonPrimitiveContract)contract;
         if (primitiveContract.TypeCode == PrimitiveTypeCode.DateTime || primitiveContract.TypeCode == PrimitiveTypeCode.DateTimeNullable)
         {
           escape = false;
           StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
-          DateTimeUtils.WriteDateTimeString(sw, (DateTime)key, writer.DateFormatHandling, writer.DateFormatString, writer.Culture);
+          DateTimeUtils.WriteDateTimeString(sw, (DateTime)name, writer.DateFormatHandling, writer.DateFormatString, writer.Culture);
           return sw.ToString();
         }
 #if !NET20
@@ -917,17 +946,17 @@ To fix this error either change the environment to be fully trusted, change the 
         {
           escape = false;
           StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
-          DateTimeUtils.WriteDateTimeOffsetString(sw, (DateTimeOffset)key, writer.DateFormatHandling, writer.DateFormatString, writer.Culture);
+          DateTimeUtils.WriteDateTimeOffsetString(sw, (DateTimeOffset)name, writer.DateFormatHandling, writer.DateFormatString, writer.Culture);
           return sw.ToString();
         }
 #endif
         else
         {
           escape = true;
-          return Convert.ToString(key, CultureInfo.InvariantCulture);
+          return Convert.ToString(name, CultureInfo.InvariantCulture);
         }
       }
-      else if (TryConvertToString(key, key.GetType(), out propertyName))
+      else if (TryConvertToString(name, name.GetType(), out propertyName))
       {
         escape = true;
         return propertyName;
@@ -935,7 +964,7 @@ To fix this error either change the environment to be fully trusted, change the 
       else
       {
         escape = true;
-        return key.ToString();
+        return name.ToString();
       }
     }
 

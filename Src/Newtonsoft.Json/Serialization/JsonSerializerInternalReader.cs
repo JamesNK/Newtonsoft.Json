@@ -1733,7 +1733,7 @@ To fix this error either change the environment to be fully trusted, change the 
                   if (!reader.Read())
                     break;
 
-                  SetExtensionData(contract, reader, memberName, newObject);
+                  SetExtensionData(contract, member, reader, memberName, newObject);
                   continue;
                 }
 
@@ -1749,7 +1749,7 @@ To fix this error either change the environment to be fully trusted, change the 
 
                 // set extension data if property is ignored or readonly
                 if (!SetPropertyValue(property, propertyConverter, contract, member, reader, newObject))
-                  SetExtensionData(contract, reader, memberName, newObject);
+                  SetExtensionData(contract, member, reader, memberName, newObject);
               }
               catch (Exception ex)
               {
@@ -1780,15 +1780,15 @@ To fix this error either change the environment to be fully trusted, change the 
       return newObject;
     }
 
-    private void SetExtensionData(JsonObjectContract contract, JsonReader reader, string memberName, object o)
+    private void SetExtensionData(JsonObjectContract contract, JsonProperty member, JsonReader reader, string memberName, object o)
     {
       if (contract.ExtensionDataSetter != null)
       {
         try
         {
-          JToken extensionDataValue = JToken.ReadFrom(reader);
+          object value = CreateValueInternal(reader, null, null, null, contract, member, null);
 
-          contract.ExtensionDataSetter(o, memberName, extensionDataValue);
+          contract.ExtensionDataSetter(o, memberName, value);
         }
         catch (Exception ex)
         {

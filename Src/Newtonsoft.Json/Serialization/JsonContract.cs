@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -70,7 +71,13 @@ namespace Newtonsoft.Json.Serialization
   /// <param name="o">The object to set extension data on.</param>
   /// <param name="key">The extension data key.</param>
   /// <param name="value">The extension data value.</param>
-  public delegate void ExtensionDataSetter(object o, string key, JToken value);
+  public delegate void ExtensionDataSetter(object o, string key, object value);
+
+  /// <summary>
+  /// Gets extension data for an object during serialization.
+  /// </summary>
+  /// <param name="o">The object to set extension data on.</param>
+  public delegate IEnumerable<KeyValuePair<object, object>> ExtensionDataGetter(object o);
 
   /// <summary>
   /// Contract details for a <see cref="Type"/> used by the <see cref="JsonSerializer"/>.

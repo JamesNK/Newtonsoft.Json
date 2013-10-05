@@ -81,6 +81,11 @@ namespace Newtonsoft.Json.Serialization
     /// </summary>
     public ExtensionDataSetter ExtensionDataSetter { get; set; }
 
+    /// <summary>
+    /// Gets or sets the extension data getter.
+    /// </summary>
+    public ExtensionDataGetter ExtensionDataGetter { get; set; }
+
     private bool? _hasRequiredOrDefaultValueProperties;
     internal bool HasRequiredOrDefaultValueProperties
     {

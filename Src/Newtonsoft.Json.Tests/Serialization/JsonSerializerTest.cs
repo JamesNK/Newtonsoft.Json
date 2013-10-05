@@ -534,6 +534,27 @@ namespace Newtonsoft.Json.Tests.Serialization
       public IDictionary<object, object> ExtensionData;
     }
 
+    public class PublicNoReadExtensionDataAttributeTestClass
+    {
+      public string Name { get; set; }
+      [JsonExtensionData(ReadData = false)]
+      public IDictionary<object, object> ExtensionData;
+    }
+
+    public class PublicNoWriteExtensionDataAttributeTestClass
+    {
+      public string Name { get; set; }
+      [JsonExtensionData(WriteData = false)]
+      public IDictionary<object, object> ExtensionData;
+    }
+
+    public class PublicJTokenExtensionDataAttributeTestClass
+    {
+      public string Name { get; set; }
+      [JsonExtensionData]
+      public IDictionary<string, JToken> ExtensionData;
+    }
+
     [Test]
     public void DeserializeDirectoryAccount()
     {
@@ -558,7 +579,173 @@ namespace Newtonsoft.Json.Tests.Serialization
             }
         });
 
+      Assert.AreEqual(@"{""Name"":""Name!"",""Test"":1}", json);
+    }
+
+    [Test]
+    public void SerializePublicExtensionDataNull()
+    {
+      string json = JsonConvert.SerializeObject(new PublicExtensionDataAttributeTestClass
+      {
+        Name = "Name!"
+      });
+
       Assert.AreEqual(@"{""Name"":""Name!""}", json);
+    }
+
+    [Test]
+    public void SerializePublicNoWriteExtensionData()
+    {
+      string json = JsonConvert.SerializeObject(new PublicNoWriteExtensionDataAttributeTestClass
+      {
+        Name = "Name!",
+        ExtensionData = new Dictionary<object, object>
+            {
+              { "Test", 1 }
+            }
+      });
+
+      Assert.AreEqual(@"{""Name"":""Name!""}", json);
+    }
+
+    [Test]
+    public void DeserializeNoReadPublicExtensionData()
+    {
+      PublicNoReadExtensionDataAttributeTestClass c = JsonConvert.DeserializeObject<PublicNoReadExtensionDataAttributeTestClass>(@"{""Name"":""Name!"",""Test"":1}");
+
+      Assert.AreEqual(null, c.ExtensionData);
+    }
+
+    [Test]
+    public void SerializePublicExtensionDataCircularReference()
+    {
+      var c = new PublicExtensionDataAttributeTestClass
+        {
+          Name = "Name!",
+          ExtensionData = new Dictionary<object, object>
+            {
+              { "Test", 1 }
+            }
+        };
+      c.ExtensionData["Self"] = c;
+
+      string json = JsonConvert.SerializeObject(c, new JsonSerializerSettings
+        {
+          PreserveReferencesHandling = PreserveReferencesHandling.All,
+          Formatting = Formatting.Indented
+        });
+
+      Assert.AreEqual(@"{
+  ""$id"": ""1"",
+  ""Name"": ""Name!"",
+  ""Test"": 1,
+  ""Self"": {
+    ""$ref"": ""1""
+  }
+}", json);
+
+      var c2 = JsonConvert.DeserializeObject<PublicExtensionDataAttributeTestClass>(json, new JsonSerializerSettings
+        {
+          PreserveReferencesHandling = PreserveReferencesHandling.All
+        });
+
+      Assert.AreEqual("Name!", c2.Name);
+
+      PublicExtensionDataAttributeTestClass bizzaroC2 = (PublicExtensionDataAttributeTestClass)c2.ExtensionData["Self"];
+
+      Assert.AreEqual(c2, bizzaroC2);
+      Assert.AreEqual(1, (long)bizzaroC2.ExtensionData["Test"]);
+    }
+
+    [Test]
+    public void DeserializePublicJTokenExtensionDataCircularReference()
+    {
+      string json = @"{
+  ""$id"": ""1"",
+  ""Name"": ""Name!"",
+  ""Test"": 1,
+  ""Self"": {
+    ""$ref"": ""1""
+  }
+}";
+
+      var c2 = JsonConvert.DeserializeObject<PublicJTokenExtensionDataAttributeTestClass>(json, new JsonSerializerSettings
+      {
+        PreserveReferencesHandling = PreserveReferencesHandling.All
+      });
+
+      Assert.AreEqual("Name!", c2.Name);
+
+      JObject bizzaroC2 = (JObject)c2.ExtensionData["Self"];
+
+      Assert.AreEqual("Name!", (string)bizzaroC2["Name"]);
+      Assert.AreEqual(1, (int)bizzaroC2["Test"]);
+
+      Assert.AreEqual(1, (int)c2.ExtensionData["Test"]);
+    }
+
+    [Test]
+    public void DeserializePublicExtensionDataTypeNamdHandling()
+    {
+      string json = @"{
+  ""$id"": ""1"",
+  ""Name"": ""Name!"",
+  ""Test"": 1,
+  ""Self"": {
+    ""$type"": ""Newtonsoft.Json.Tests.TestObjects.WagePerson, Newtonsoft.Json.Tests"",
+    ""HourlyWage"": 2.0,
+    ""Name"": null,
+    ""BirthDate"": ""0001-01-01T00:00:00"",
+    ""LastModified"": ""0001-01-01T00:00:00""
+  }
+}";
+
+      PublicExtensionDataAttributeTestClass c2 = JsonConvert.DeserializeObject<PublicExtensionDataAttributeTestClass>(json, new JsonSerializerSettings
+      {
+        TypeNameHandling = TypeNameHandling.Objects
+      });
+
+      Assert.AreEqual("Name!", c2.Name);
+
+      WagePerson bizzaroC2 = (WagePerson)c2.ExtensionData["Self"];
+
+      Assert.AreEqual(2m, bizzaroC2.HourlyWage);
+    }
+
+    [Test]
+    public void SerializePublicExtensionDataTypeNamdHandling()
+    {
+      PublicExtensionDataAttributeTestClass c = new PublicExtensionDataAttributeTestClass
+        {
+          Name = "Name!",
+          ExtensionData = new Dictionary<object, object>
+            {
+              {
+                "Test", new WagePerson
+                  {
+                    HourlyWage = 2.1m
+                  }
+              }
+            }
+        };
+
+      string json = JsonConvert.SerializeObject(c, new JsonSerializerSettings
+        {
+          TypeNameHandling = TypeNameHandling.Objects,
+          Formatting = Formatting.Indented
+        });
+
+      Assert.AreEqual(@"{
+  ""$type"": ""Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+PublicExtensionDataAttributeTestClass, Newtonsoft.Json.Tests"",
+  ""Name"": ""Name!"",
+  ""Test"": {
+    ""$type"": ""Newtonsoft.Json.Tests.TestObjects.WagePerson, Newtonsoft.Json.Tests"",
+    ""HourlyWage"": 2.1,
+    ""Name"": null,
+    ""BirthDate"": ""0001-01-01T00:00:00"",
+    ""LastModified"": ""0001-01-01T00:00:00""
+  }
+}", json);
     }
 
     [Test]
@@ -575,7 +762,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       Assert.AreEqual("Name!", c.Name);
       Assert.AreEqual(2, c.ExtensionData.Count);
 
-      Assert.AreEqual("NoMatch!", (string)(JValue)c.ExtensionData["NoMatch"]);
+      Assert.AreEqual("NoMatch!", (string)c.ExtensionData["NoMatch"]);
 
       // the ExtensionData property is put into the extension data
       // inception
@@ -603,19 +790,19 @@ namespace Newtonsoft.Json.Tests.Serialization
       var c = JsonConvert.DeserializeObject<FieldExtensionDataAttributeTestClass>("{'first':1,'second':2}");
 
       Assert.AreEqual(2, c.ExtensionData.Count);
-      Assert.AreEqual(1, (int)(JToken)c.ExtensionData["first"]);
-      Assert.AreEqual(2, (int)(JToken)c.ExtensionData["second"]);
+      Assert.AreEqual(1, (long)c.ExtensionData["first"]);
+      Assert.AreEqual(2, (long)c.ExtensionData["second"]);
     }
 
     [Test]
     public void MultipleExtensionDataAttributesTest()
     {
-      var c = JsonConvert.DeserializeObject<MultipleExtensionDataAttributesTestClass>("{'first':1,'second':2}");
+      var c = JsonConvert.DeserializeObject<MultipleExtensionDataAttributesTestClass>("{'first':[1],'second':[2]}");
 
       Assert.AreEqual(null, c.ExtensionData1);
       Assert.AreEqual(2, c.ExtensionData2.Count);
-      Assert.AreEqual(1, (int)c.ExtensionData2["first"]);
-      Assert.AreEqual(2, (int)c.ExtensionData2["second"]);
+      Assert.AreEqual(1, (int)((JArray)c.ExtensionData2["first"])[0]);
+      Assert.AreEqual(2, (int)((JArray)c.ExtensionData2["second"])[0]);
     }
 
     [Test]
@@ -9165,6 +9352,45 @@ Parameter name: value",
   }
 ]", json);
     }
+
+    public class Foo2 
+    {
+      public string Name { get; set; }
+    }
+
+    [Test]
+    [Ignore]
+    public void SerializeMultipleObjectsFromStream()
+    {
+      StringReader sr = new StringReader(@"{ ""name"": ""bar"" }{ ""name"": ""baz"" }");
+
+      var reader1 = new JsonTextReader(sr);
+      var serializer1 = new JsonSerializer { };
+      var foo1 = serializer1.Deserialize<Foo2>(reader1);
+      Assert.AreEqual("bar", foo1.Name);
+
+      var reader2 = new JsonTextReader(sr);
+      var serializer2 = new JsonSerializer { };
+      var foo2 = serializer2.Deserialize<Foo2>(reader2);
+      Assert.AreEqual("baz", foo2.Name);
+    }
+
+#if !(PORTABLE || PORTABLE40)
+    [Test]
+    public void SerializeDictionaryWithStructKey()
+    {
+      string json = JsonConvert.SerializeObject(
+        new Dictionary<Size, Size> { { new Size(1, 2), new Size(3, 4) } }
+        );
+
+      Assert.AreEqual(@"{""1, 2"":""3, 4""}", json);
+
+      Dictionary<Size, Size> d = JsonConvert.DeserializeObject<Dictionary<Size, Size>>(json);
+
+      Assert.AreEqual(new Size(1, 2), d.Keys.First());
+      Assert.AreEqual(new Size(3, 4), d.Values.First());
+    }
+#endif
 
     [Test]
     public void DeserializeCustomReferenceResolver()

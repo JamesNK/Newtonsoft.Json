@@ -391,32 +391,35 @@ namespace Newtonsoft.Json.Serialization
         }
       }
 
-      contract.ExtensionDataSetter = GetExtensionDataForType(contract.NonNullableUnderlyingType);
+      MemberInfo extensionDataMember = GetExtensionDataMemberForType(contract.NonNullableUnderlyingType);
+      if (extensionDataMember != null)
+        SetExtensionDataDelegates(contract, extensionDataMember);
 
       return contract;
     }
 
-    private ExtensionDataSetter GetExtensionDataForType(Type type)
+    private MemberInfo GetExtensionDataMemberForType(Type type)
     {
-      ExtensionDataSetter extensionDataSetter = null;
-
-      foreach (Type baseType in GetClassHierarchyForType(type))
-      {
-        IList<MemberInfo> members = new List<MemberInfo>();
-        members.AddRange(baseType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
-        members.AddRange(baseType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
-
-        foreach (MemberInfo member in members)
+      IEnumerable<MemberInfo> members = GetClassHierarchyForType(type).SelectMany(baseType =>
         {
-          MemberTypes memberType = member.MemberType();
+          IList<MemberInfo> m = new List<MemberInfo>();
+          m.AddRange(baseType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+          m.AddRange(baseType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+
+          return m;
+        });
+
+      MemberInfo extensionDataMember = members.LastOrDefault(m =>
+        {
+          MemberTypes memberType = m.MemberType();
           if (memberType != MemberTypes.Property && memberType != MemberTypes.Field)
-            continue;
+            return false;
 
           // last instance of attribute wins on type if there are multiple
-          if (!member.IsDefined(typeof(JsonExtensionDataAttribute), false))
-            continue;
+          if (!m.IsDefined(typeof(JsonExtensionDataAttribute), false))
+            return false;
 
-          Type t = ReflectionUtils.GetMemberUnderlyingType(member);
+          Type t = ReflectionUtils.GetMemberUnderlyingType(m);
 
           Type dictionaryType;
           if (ReflectionUtils.ImplementsGenericDefinition(t, typeof(IDictionary<,>), out dictionaryType))
@@ -424,39 +427,122 @@ namespace Newtonsoft.Json.Serialization
             Type keyType = dictionaryType.GetGenericArguments()[0];
             Type valueType = dictionaryType.GetGenericArguments()[1];
 
-            // change type to a class if it is the base interface so it can be instantiated if needed
-            if (ReflectionUtils.IsGenericDefinition(t, typeof(IDictionary<,>)))
-              t = typeof(Dictionary<,>).MakeGenericType(keyType, valueType);
-
             if (keyType.IsAssignableFrom(typeof(string)) && valueType.IsAssignableFrom(typeof(JToken)))
-            {
-              MethodInfo addMethod = t.GetMethod("Add", new [] { keyType, valueType });
-              Func<object, object> getExtensionDataDictionary = JsonTypeReflector.ReflectionDelegateFactory.CreateGet<object>(member);
-              Action<object, object> setExtensionDataDictionary = JsonTypeReflector.ReflectionDelegateFactory.CreateSet<object>(member);
-              Func<object> createExtensionDataDictionary = JsonTypeReflector.ReflectionDelegateFactory.CreateDefaultConstructor<object>(t);
-              MethodCall<object, object> setExtensionDataDictionaryValue = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(addMethod);
-
-              extensionDataSetter = (o, key, value) =>
-                {
-                  object dictionary = getExtensionDataDictionary(o);
-                  if (dictionary == null)
-                  {
-                    dictionary = createExtensionDataDictionary();
-                    setExtensionDataDictionary(o, dictionary);
-                  }
-
-                  setExtensionDataDictionaryValue(dictionary, key, value);
-                };
-
-              continue;
-            }
+              return true;
           }
 
-          throw new JsonException("Invalid extension data attribute on '{0}'. Member '{1}' type must implement IDictionary<string, JToken>.".FormatWith(CultureInfo.InvariantCulture, GetClrTypeFullName(member.DeclaringType), member.Name));
-        }
+          throw new JsonException("Invalid extension data attribute on '{0}'. Member '{1}' type must implement IDictionary<string, JToken>.".FormatWith(CultureInfo.InvariantCulture, GetClrTypeFullName(m.DeclaringType), m.Name));
+        });
+
+      return extensionDataMember;
+    }
+
+    private static void SetExtensionDataDelegates(JsonObjectContract contract, MemberInfo member)
+    {
+      JsonExtensionDataAttribute extensionDataAttribute = ReflectionUtils.GetAttribute<JsonExtensionDataAttribute>(member);
+      if (extensionDataAttribute == null)
+        return;
+
+      Type t = ReflectionUtils.GetMemberUnderlyingType(member);
+
+      Type dictionaryType;
+      ReflectionUtils.ImplementsGenericDefinition(t, typeof(IDictionary<,>), out dictionaryType);
+
+      Type keyType = dictionaryType.GetGenericArguments()[0];
+      Type valueType = dictionaryType.GetGenericArguments()[1];
+      bool isJTokenValueType = typeof(JToken).IsAssignableFrom(valueType);
+
+      // change type to a class if it is the base interface so it can be instantiated if needed
+      if (ReflectionUtils.IsGenericDefinition(t, typeof(IDictionary<,>)))
+        t = typeof(Dictionary<,>).MakeGenericType(keyType, valueType);
+
+      MethodInfo addMethod = t.GetMethod("Add", new[] { keyType, valueType });
+      Func<object, object> getExtensionDataDictionary = JsonTypeReflector.ReflectionDelegateFactory.CreateGet<object>(member);
+      Action<object, object> setExtensionDataDictionary = JsonTypeReflector.ReflectionDelegateFactory.CreateSet<object>(member);
+      Func<object> createExtensionDataDictionary = JsonTypeReflector.ReflectionDelegateFactory.CreateDefaultConstructor<object>(t);
+      MethodCall<object, object> setExtensionDataDictionaryValue = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(addMethod);
+
+      ExtensionDataSetter extensionDataSetter = (o, key, value) =>
+        {
+          object dictionary = getExtensionDataDictionary(o);
+          if (dictionary == null)
+          {
+            dictionary = createExtensionDataDictionary();
+            setExtensionDataDictionary(o, dictionary);
+          }
+
+          // convert object value to JToken so it is compatible with dictionary
+          // could happen because of primitive types, type name handling and references
+          if (isJTokenValueType && !(value is JToken))
+            value = JToken.FromObject(value);
+
+          setExtensionDataDictionaryValue(dictionary, key, value);
+        };
+
+      Type enumerableWrapper = typeof(DictionaryEnumerator<,>).MakeGenericType(keyType, valueType);
+      ConstructorInfo constructors = enumerableWrapper.GetConstructors().First();
+      MethodCall<object, object> createEnumerableWrapper = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(constructors);
+
+      ExtensionDataGetter extensionDataGetter = o =>
+        {
+          object dictionary = getExtensionDataDictionary(o);
+          if (dictionary == null)
+            return null;
+
+          return (IEnumerable<KeyValuePair<object, object>>)createEnumerableWrapper(null, dictionary);
+        };
+
+      if (extensionDataAttribute.ReadData)
+        contract.ExtensionDataSetter = extensionDataSetter;
+
+      if (extensionDataAttribute.WriteData)
+        contract.ExtensionDataGetter = extensionDataGetter;
+    }
+
+    internal struct DictionaryEnumerator<TEnumeratorKey, TEnumeratorValue> : IEnumerable<KeyValuePair<object, object>>, IEnumerator<KeyValuePair<object, object>>
+    {
+      private readonly IEnumerator<KeyValuePair<TEnumeratorKey, TEnumeratorValue>> _e;
+
+      public DictionaryEnumerator(IEnumerable<KeyValuePair<TEnumeratorKey, TEnumeratorValue>> e)
+      {
+        ValidationUtils.ArgumentNotNull(e, "e");
+        _e = e.GetEnumerator();
       }
 
-      return extensionDataSetter;
+      public bool MoveNext()
+      {
+        return _e.MoveNext();
+      }
+
+      public void Reset()
+      {
+        _e.Reset();
+      }
+
+      public KeyValuePair<object, object> Current
+      {
+        get { return new KeyValuePair<object, object>(_e.Current.Key, _e.Current.Value); }
+      }
+
+      public void Dispose()
+      {
+        _e.Dispose();
+      }
+
+      object IEnumerator.Current
+      {
+        get { return Current; }
+      }
+
+      public IEnumerator<KeyValuePair<object, object>> GetEnumerator()
+      {
+        return this;
+      }
+
+      IEnumerator IEnumerable.GetEnumerator()
+      {
+        return this;
+      }
     }
 
     private ConstructorInfo GetAttributeConstructor(Type objectType)

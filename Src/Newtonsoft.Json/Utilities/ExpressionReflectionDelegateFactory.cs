@@ -87,6 +87,10 @@ namespace Newtonsoft.Json.Utilities
         else
           callExpression = Expression.Block(callExpression, Expression.Constant(null));
       }
+      else
+      {
+        callExpression = EnsureCastExpression(callExpression, type);
+      }
 
       LambdaExpression lambdaExpression = Expression.Lambda(typeof(MethodCall<T, object>), callExpression, targetParameterExpression, argsParameterExpression);
 
