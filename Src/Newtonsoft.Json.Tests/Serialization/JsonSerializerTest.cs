@@ -159,6 +159,33 @@ namespace Newtonsoft.Json.Tests.Serialization
       }
     }
 
+    public class JObjectExtensionDataTestClass
+    {
+      public string Name { get; set; }
+      [JsonExtensionData]
+      public JObject ExtensionData { get; set; }
+    }
+
+    [Test]
+    public void RoundTripJObjectExtensionData()
+    {
+      JObjectExtensionDataTestClass c = new JObjectExtensionDataTestClass();
+      c.Name = "Name!";
+      c.ExtensionData = new JObject
+        {
+          {"one",1},
+          {"two","II"},
+          {"three",new JArray(1,1,1)}
+        };
+
+      string json = JsonConvert.SerializeObject(c, Formatting.Indented);
+
+      JObjectExtensionDataTestClass c2 = JsonConvert.DeserializeObject<JObjectExtensionDataTestClass>(json);
+
+      Assert.AreEqual("Name!", c2.Name);
+      Assert.IsTrue(JToken.DeepEquals(c.ExtensionData, c2.ExtensionData));
+    }
+
     [Test]
     public void JsonSerializerProperties()
     {
