@@ -212,6 +212,12 @@ namespace Newtonsoft.Json
     public EventHandler<ErrorEventArgs> Error { get; set; }
 
     /// <summary>
+    /// Gets or sets the constructor fallback handler called during serialization and deserialization.
+    /// </summary>
+    /// <value>The constructor fallback handler called during serialization and deserialization.</value>
+    public EventHandler<ConstructorHandlingFallbackEventArgs> ConstructorHandlingFallback { get; set; }
+
+    /// <summary>
     /// Gets or sets the <see cref="StreamingContext"/> used by the serializer when invoking serialization callback methods.
     /// </summary>
     /// <value>The context.</value>

@@ -37,6 +37,7 @@ using ErrorEventArgs=Newtonsoft.Json.Serialization.ErrorEventArgs;
 
 namespace Newtonsoft.Json
 {
+
   /// <summary>
   /// Serializes and deserializes objects into and from the JSON format.
   /// The <see cref="JsonSerializer"/> enables you to control how objects are encoded into JSON.
@@ -78,6 +79,22 @@ namespace Newtonsoft.Json
     /// Occurs when the <see cref="JsonSerializer"/> errors during serialization and deserialization.
     /// </summary>
     public virtual event EventHandler<ErrorEventArgs> Error;
+
+    /// <summary>
+    /// Occurs when no Default constructor could me found
+    /// </summary>
+    public virtual event EventHandler<ConstructorHandlingFallbackEventArgs> ConstructorHandlingFallback;
+
+    internal object OnConstructorHandlingFallback(JsonObjectContract objectContract) {
+      var arg = new ConstructorHandlingFallbackEventArgs(objectContract);
+
+      if( ConstructorHandlingFallback != null )
+        ConstructorHandlingFallback(this, arg);
+
+      if( arg.Handled )
+        return arg.Object;
+      else return null;
+    }
 
     /// <summary>
     /// Gets or sets the <see cref="IReferenceResolver"/> used by the serializer when resolving references.
@@ -548,6 +565,9 @@ namespace Newtonsoft.Json
 
       if (settings.Error != null)
         serializer.Error += settings.Error;
+
+      if( settings.ConstructorHandlingFallback != null )
+        serializer.ConstructorHandlingFallback += settings.ConstructorHandlingFallback;
 
       if (settings.ContractResolver != null)
         serializer.ContractResolver = settings.ContractResolver;

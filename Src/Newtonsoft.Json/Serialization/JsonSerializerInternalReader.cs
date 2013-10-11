@@ -1686,6 +1686,9 @@ To fix this error either change the environment to be fully trusted, change the 
         return CreateObjectFromNonDefaultConstructor(reader, objectContract, containerMember, objectContract.ParametrizedConstructor, id);
       }
 
+      if( newObject == null )
+        newObject = Serializer.OnConstructorHandlingFallback(objectContract);
+
       if (newObject == null)
         throw JsonSerializationException.Create(reader, "Unable to find a constructor to use for type {0}. A class should either have a default constructor, one constructor with arguments or a constructor marked with the JsonConstructor attribute.".FormatWith(CultureInfo.InvariantCulture, objectContract.UnderlyingType));
 
