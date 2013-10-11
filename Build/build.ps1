@@ -1,7 +1,7 @@
 ﻿properties { 
-  $zipFileName = "Json50r6.zip"
+  $zipFileName = "Json50r7.zip"
   $majorVersion = "4.5"
-  $majorWithReleaseVersion = "5.0.6"
+  $majorWithReleaseVersion = "5.0.7"
   $version = GetVersion $majorWithReleaseVersion
   $signAssemblies = $false
   $signKeyPath = "D:\Development\Releases\newtonsoft.snk"
@@ -76,12 +76,11 @@ task Package -depends Build {
   
   if ($buildNuGet)
   {
-    New-Item -Path $workingDir\NuGet -ItemType Directory
-    #New-Item -Path $workingDir\NuGet\tools -ItemType Directory
-
+    New-Item -Path $workingDir\NuGet -ItemType Directory    
     Copy-Item -Path "$buildDir\Newtonsoft.Json.nuspec" -Destination $workingDir\NuGet\Newtonsoft.Json.nuspec -recurse
-    
-    #Copy-Item -Path "$buildDir\install.ps1" -Destination $workingDir\NuGet\tools\install.ps1 -recurse
+
+    New-Item -Path $workingDir\NuGet\tools -ItemType Directory
+    Copy-Item -Path "$buildDir\install.ps1" -Destination $workingDir\NuGet\tools\install.ps1 -recurse
     
     foreach ($build in $builds)
     {

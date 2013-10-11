@@ -2,13 +2,13 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Newtonsoft.Json</id>
-    <version>5.0.6</version>
+    <version>5.0.7</version>
     <title>Json.NET</title>
     <description>Json.NET is a popular high-performance JSON framework for .NET</description>
     <authors>James Newton-King</authors>
     <language>en-US</language>
-    <projectUrl>http://james.newtonking.com/projects/json-net.aspx</projectUrl>
-    <licenseUrl>http://json.codeplex.com/license</licenseUrl>
+    <projectUrl>http://james.newtonking.com/json</projectUrl>
+    <licenseUrl>https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md</licenseUrl>
     <tags>json</tags>
   </metadata>
 </package>

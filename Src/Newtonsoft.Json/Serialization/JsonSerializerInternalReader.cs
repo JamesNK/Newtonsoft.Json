@@ -1444,6 +1444,11 @@ To fix this error either change the environment to be fully trusted, change the 
     {
       ValidationUtils.ArgumentNotNull(constructorInfo, "constructorInfo");
 
+      // only need to keep a track of properies presence if they are required or a value should be defaulted if missing
+      Dictionary<JsonProperty, PropertyPresence> propertiesPresence = (contract.HasRequiredOrDefaultValueProperties || HasFlag(Serializer._defaultValueHandling, DefaultValueHandling.Populate))
+        ? contract.Properties.ToDictionary(m => m, m => PropertyPresence.None)
+        : null;
+
       Type objectType = contract.UnderlyingType;
 
       if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Info)
@@ -1461,6 +1466,14 @@ To fix this error either change the environment to be fully trusted, change the 
           constructorParameters[matchingConstructorParameter] = propertyValue.Value;
         else
           remainingPropertyValues.Add(propertyValue);
+
+        if (propertiesPresence != null)
+        {
+          // map from constructor property to normal property
+          var property = propertiesPresence.Keys.FirstOrDefault(p => p.PropertyName == propertyValue.Key.PropertyName);
+          if (property != null)
+            propertiesPresence[property] = (propertyValue.Value == null) ? PropertyPresence.Null : PropertyPresence.Value;
+        }
       }
 
       object createdObject = constructorInfo.Invoke(constructorParameters.Values.ToArray());
@@ -1519,6 +1532,8 @@ To fix this error either change the environment to be fully trusted, change the 
           }
         }
       }
+
+      EndObject(createdObject, reader, contract, reader.Depth, propertiesPresence);
 
       OnDeserialized(reader, contract, createdObject);
       return createdObject;

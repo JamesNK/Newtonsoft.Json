@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.ComponentModel;
 #if !(NET35 || NET20 || SILVERLIGHT)
 using System.Collections.Concurrent;
 #endif
@@ -2466,6 +2467,62 @@ keyword such as type of business.""
       Assert.AreEqual("FirstName", o.FirstName);
       Assert.AreEqual("LastName", o.LastName);
       Assert.AreEqual("lastName", o.lastName);
+    }
+
+    public sealed class ConstructorAndDefaultValueAttributeTestClass
+    {
+      public ConstructorAndDefaultValueAttributeTestClass(string testProperty1)
+      {
+        this.TestProperty1 = testProperty1;
+      }
+
+      public string TestProperty1 { get; set; }
+
+      [DefaultValue(21)]
+      public int TestProperty2 { get; set; }
+
+    }
+
+    [Test]
+    public void PopulateDefaultValueWhenUsingConstructor()
+    {
+      string json = "{ 'testProperty1': 'value' }";
+
+      ConstructorAndDefaultValueAttributeTestClass c = JsonConvert.DeserializeObject<ConstructorAndDefaultValueAttributeTestClass>(json, new JsonSerializerSettings
+      {
+        DefaultValueHandling = DefaultValueHandling.Populate
+      });
+      Assert.AreEqual("value", c.TestProperty1);
+      Assert.AreEqual(21, c.TestProperty2);
+
+      c = JsonConvert.DeserializeObject<ConstructorAndDefaultValueAttributeTestClass>(json, new JsonSerializerSettings
+      {
+        DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate
+      });
+      Assert.AreEqual("value", c.TestProperty1);
+      Assert.AreEqual(21, c.TestProperty2);
+    }
+
+    public sealed class ConstructorAndRequiredTestClass
+    {
+      public ConstructorAndRequiredTestClass(string testProperty1)
+      {
+        this.TestProperty1 = testProperty1;
+      }
+
+      public string TestProperty1 { get; set; }
+
+      [JsonProperty(Required = Required.AllowNull)]
+      public int TestProperty2 { get; set; }
+    }
+
+    [Test]
+    public void RequiredWhenUsingConstructor()
+    {
+      string json = "{ 'testProperty1': 'value' }";
+
+      ExceptionAssert.Throws<JsonSerializationException>("Required property 'TestProperty2' not found in JSON. Path '', line 1, position 28.",
+        () => JsonConvert.DeserializeObject<ConstructorAndRequiredTestClass>(json));
     }
 
     [Test]
