@@ -378,8 +378,15 @@ namespace Newtonsoft.Json.Serialization
               targetObject = CreateNewObject(reader, objectContract, member, containerMember, id, out createdFromNonDefaultConstructor);
 
             // don't populate if read from non-default constructor because the object has already been read
+            // NOTE: even if we don't populate properties from serialization, it's quite valuable and 
+            // expected to populate default values for properties, to keep the experience consistent 
+            // with default constructor classes.
             if (createdFromNonDefaultConstructor)
+            {
+              // populate only default values in this case
+              PopulateDefaultValues(targetObject, reader, objectContract, reader.Depth);
               return targetObject;
+            }
 
             return PopulateObject(targetObject, reader, objectContract, member, id);
           }
@@ -1848,6 +1855,43 @@ To fix this error either change the environment to be fully trusted, change the 
                     throw JsonSerializationException.Create(reader, "Required property '{0}' expects a value but got null.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName));
                   break;
               }
+            }
+            catch (Exception ex)
+            {
+              if (IsErrorHandled(newObject, contract, property.PropertyName, reader as IJsonLineInfo, reader.Path, ex))
+                HandleError(reader, true, initialDepth);
+              else
+                throw;
+            }
+          }
+        }
+      }
+    }
+
+    private void PopulateDefaultValues(object newObject, JsonReader reader, JsonObjectContract contract, int initialDepth)
+    {
+      // only need to keep a track of properies presence if they are required or a value should be defaulted if missing
+      Dictionary<JsonProperty, PropertyPresence> propertiesPresence = (contract.HasRequiredOrDefaultValueProperties || HasFlag(Serializer._defaultValueHandling, DefaultValueHandling.Populate))
+        ? contract.Properties.ToDictionary(m => m, m => PropertyPresence.None)
+        : null;
+
+      if (propertiesPresence != null)
+      {
+        foreach (KeyValuePair<JsonProperty, PropertyPresence> propertyPresence in propertiesPresence)
+        {
+          JsonProperty property = propertyPresence.Key;
+          PropertyPresence presence = propertyPresence.Value;
+
+          // We only process missing properties here since this is for custom constructor only.
+          if (presence == PropertyPresence.None)
+          {
+            try
+            {
+              if (property.PropertyContract == null)
+                property.PropertyContract = GetContractSafe(property.PropertyType);
+
+              if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer._defaultValueHandling), DefaultValueHandling.Populate) && property.Writable)
+                property.ValueProvider.SetValue(newObject, EnsureType(reader, property.GetResolvedDefaultValue(), CultureInfo.InvariantCulture, property.PropertyContract, property.PropertyType));
             }
             catch (Exception ex)
             {

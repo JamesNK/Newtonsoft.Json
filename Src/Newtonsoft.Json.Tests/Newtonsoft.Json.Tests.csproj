@@ -269,6 +269,7 @@
     <Compile Include="TestObjects\ConverableMembers.cs" />
     <Compile Include="TestObjects\ConverterPrecedenceClass.cs" />
     <Compile Include="TestObjects\ConverterPrecedenceClassConverter.cs" />
+    <Compile Include="TestObjects\ConstructorAndDefaultValueAttributeTestClass.cs" />
     <Compile Include="TestObjects\CustomerDataSet.cs">
       <SubType>Component</SubType>
     </Compile>
