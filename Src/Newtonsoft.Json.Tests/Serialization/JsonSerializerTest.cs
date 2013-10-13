@@ -75,7 +75,6 @@ using System.Linq.Expressions;
 #endif
 #if !(NET35 || NET20)
 using System.Dynamic;
-using System.ComponentModel;
 #endif
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
