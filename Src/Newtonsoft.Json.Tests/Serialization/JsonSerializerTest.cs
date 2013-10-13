@@ -9457,7 +9457,7 @@ Parameter name: value",
       Assert.AreEqual("baz", foo2.Name);
     }
 
-#if !(PORTABLE || PORTABLE40)
+#if !(PORTABLE || PORTABLE40 || NETFX_CORE)
     [Test]
     public void SerializeDictionaryWithStructKey()
     {
