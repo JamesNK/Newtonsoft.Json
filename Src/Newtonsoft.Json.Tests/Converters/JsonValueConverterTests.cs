@@ -319,8 +319,6 @@ namespace Newtonsoft.Json.Tests.Converters
       string jsonnet = timer.Elapsed.TotalSeconds.ToString();
 
       throw new Exception(string.Format("winrt: {0}, jsonnet: {1}, jsonnet linq: {2}", winrt, jsonnet, linq));
-      Console.WriteLine(winrt);
-      Console.WriteLine(jsonnet);
     }
 
     [Test]
@@ -368,8 +366,6 @@ namespace Newtonsoft.Json.Tests.Converters
       string jsonnet = timer.Elapsed.TotalSeconds.ToString();
 
       throw new Exception(string.Format("winrt: {0}, jsonnet: {1}, jsonnet linq: {2}", winrt, jsonnet, linq));
-      Console.WriteLine(winrt);
-      Console.WriteLine(jsonnet);
     }
 
     [Test]
