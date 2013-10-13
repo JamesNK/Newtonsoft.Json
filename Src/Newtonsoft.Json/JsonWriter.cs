@@ -1408,13 +1408,13 @@ namespace Newtonsoft.Json
             object convertedValue = convertable.ToType(resolvedType, CultureInfo.InvariantCulture);
 
             WriteValue(writer, resolvedTypeCode, convertedValue);
+            break;
           }
           else
 #endif
           {
             throw CreateUnsupportedTypeException(writer, value);
           }
-          break;
       }
     }
 
