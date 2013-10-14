@@ -8,7 +8,7 @@
     <authors>James Newton-King</authors>
     <language>en-US</language>
     <projectUrl>http://james.newtonking.com/json</projectUrl>
-    <licenseUrl>https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md</licenseUrl>
+    <licenseUrl>https://raw.github.com/JamesNK/Newtonsoft.Json/master/LICENSE.md</licenseUrl>
     <tags>json</tags>
   </metadata>
 </package>
