@@ -84,17 +84,21 @@ namespace Newtonsoft.Json.Tests.Serialization
     public void DeserializeListInterface()
     {
       string json = @"[
-  ""One"",
-  ""II"",
-  ""3""
-]";
+        'Volibear',
+        'Teemo',
+        'Katarina'
+      ]";
 
-      IImmutableList<string> l = JsonConvert.DeserializeObject<IImmutableList<string>>(json);
+      // what sorcery is this?!
+      IImmutableList<string> champions = JsonConvert.DeserializeObject<IImmutableList<string>>(json);
 
-      Assert.AreEqual(3, l.Count);
-      Assert.AreEqual("One", l[0]);
-      Assert.AreEqual("II", l[1]);
-      Assert.AreEqual("3", l[2]);
+      Console.WriteLine(champions[0]);
+      // Volibear
+
+      Assert.AreEqual(3, champions.Count);
+      Assert.AreEqual("Volibear", champions[0]);
+      Assert.AreEqual("Teemo", champions[1]);
+      Assert.AreEqual("Katarina", champions[2]);
     }
     #endregion
 

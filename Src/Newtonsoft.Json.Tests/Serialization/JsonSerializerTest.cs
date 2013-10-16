@@ -135,6 +135,40 @@ namespace Newtonsoft.Json.Tests.Serialization
 
     }
 
+    public class CustomerInvoice
+    {
+      // we're only modifing the tax rate
+      public decimal TaxRate { get; set; }
+
+      // everything else gets stored here
+      [JsonExtensionData]
+      private IDictionary<string, JToken> _additionalData;
+    }
+
+    [Test]
+    public void ExtensionDataExample()
+    {
+      string json = @"{
+        'HourlyRate': 150,
+        'Hours': 40,
+        'TaxRate': 0.125
+      }";
+
+      var invoice = JsonConvert.DeserializeObject<CustomerInvoice>(json);
+
+      // increase tax to 15%
+      invoice.TaxRate = 0.15m;
+
+      string result = JsonConvert.SerializeObject(invoice);
+      // {
+      //   'TaxRate': 0.15,
+      //   'HourlyRate': 150,
+      //   'Hours': 40
+      // }
+
+      Assert.AreEqual(@"{""TaxRate"":0.15,""HourlyRate"":150,""Hours"":40}", result);
+    }
+
     public class ExtensionDataTestClass
     {
       public string Name { get; set; }
