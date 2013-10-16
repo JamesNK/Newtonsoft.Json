@@ -135,6 +135,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
     }
 
+#pragma warning disable 169
     public class CustomerInvoice
     {
       // we're only modifing the tax rate
@@ -144,6 +145,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       [JsonExtensionData]
       private IDictionary<string, JToken> _additionalData;
     }
+#pragma warning restore 169
 
     [Test]
     public void ExtensionDataExample()
