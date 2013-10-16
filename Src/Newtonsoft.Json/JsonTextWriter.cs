@@ -214,7 +214,7 @@ namespace Newtonsoft.Json
     {
       InternalWritePropertyName(name);
 
-      WriteEscapedString(name);
+      WriteEscapedString(name, _quoteName);
 
       _writer.Write(':');
     }
@@ -230,7 +230,7 @@ namespace Newtonsoft.Json
 
       if (escape)
       {
-        WriteEscapedString(name);
+        WriteEscapedString(name, _quoteName);
       }
       else
       {
@@ -364,13 +364,13 @@ namespace Newtonsoft.Json
       if (value == null)
         WriteValueInternal(JsonConvert.Null, JsonToken.Null);
       else
-        WriteEscapedString(value);
+        WriteEscapedString(value, true);
     }
 
-    private void WriteEscapedString(string value)
+    private void WriteEscapedString(string value, bool quote)
     {
       EnsureWriteBuffer();
-      JavaScriptUtils.WriteEscapedJavaScriptString(_writer, value, _quoteChar, _quoteName, _charEscapeFlags, StringEscapeHandling, ref _writeBuffer);
+      JavaScriptUtils.WriteEscapedJavaScriptString(_writer, value, _quoteChar, quote, _charEscapeFlags, StringEscapeHandling, ref _writeBuffer);
     }
 
     /// <summary>

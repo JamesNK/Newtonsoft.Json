@@ -53,6 +53,24 @@ namespace Newtonsoft.Json.Tests
   public class JsonTextWriterTest : TestFixtureBase
   {
     [Test]
+    public void QuoteNameAndStrings()
+    {
+      StringBuilder sb = new StringBuilder();
+      StringWriter sw = new StringWriter(sb);
+      JsonTextWriter writer = new JsonTextWriter(sw) { QuoteName = false };
+
+      writer.WriteStartObject();
+
+      writer.WritePropertyName("name");
+      writer.WriteValue("value");
+
+      writer.WriteEndObject();
+      writer.Flush();
+
+      Assert.AreEqual(@"{name:""value""}", sb.ToString());
+    }
+
+    [Test]
     public void CloseOutput()
     {
       MemoryStream ms = new MemoryStream();
