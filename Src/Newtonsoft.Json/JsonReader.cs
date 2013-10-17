@@ -940,5 +940,14 @@ namespace Newtonsoft.Json
       _tokenType = JsonToken.None;
       _value = null;
     }
+
+    internal void Reset()
+    {
+      if (_currentState != State.Finished)
+        throw new InvalidOperationException();
+
+      _currentState = State.Start;
+      Read();
+    }
   }
 }
