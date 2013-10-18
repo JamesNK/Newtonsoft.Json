@@ -155,7 +155,12 @@ namespace Newtonsoft.Json.Converters
       }
       catch (Exception ex)
       {
-        throw JsonSerializationException.Create(reader, "Error converting value {0} to type '{1}'.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.FormatValueForPrint(reader.Value), objectType), ex);
+        throw JsonSerializationException.Create(reader, "Error converting value {0} to type '{1}' (must be{2} in [{3}]).".FormatWith(
+          CultureInfo.InvariantCulture,
+          MiscellaneousUtils.FormatValueForPrint(reader.Value),
+          objectType,
+          EnumUtils.IsFlagsEnum(objectType) ? " flags" : null,
+          string.Join(", ", EnumUtils.GetValues(objectType))), ex);
       }
 
 

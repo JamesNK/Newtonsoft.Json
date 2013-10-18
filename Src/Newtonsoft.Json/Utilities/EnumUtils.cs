@@ -41,7 +41,7 @@ namespace Newtonsoft.Json.Utilities
     {
       Type enumType = typeof(T);
 
-      if (!enumType.IsDefined(typeof(FlagsAttribute), false))
+      if (!IsFlagsEnum(enumType))
         throw new ArgumentException("Enum type {0} is not a set of flags.".FormatWith(CultureInfo.InvariantCulture, enumType));
 
       Type underlyingType = Enum.GetUnderlyingType(value.GetType());
@@ -142,6 +142,11 @@ namespace Newtonsoft.Json.Utilities
       }
 
       return values;
+    }
+
+    public static bool IsFlagsEnum(Type objectType)
+    {
+      return objectType.IsDefined(typeof (FlagsAttribute), false);
     }
   }
 }

@@ -348,12 +348,26 @@ namespace Newtonsoft.Json.Tests.Converters
       string json = "{ \"Value\" : \"Three\" }";
 
       ExceptionAssert.Throws<JsonSerializationException>(
-        @"Error converting value ""Three"" to type 'Newtonsoft.Json.Tests.Converters.StringEnumConverterTests+MyEnum'. Path 'Value', line 1, position 19.",
+        @"Error converting value ""Three"" to type 'Newtonsoft.Json.Tests.Converters.StringEnumConverterTests+MyEnum' (must be in [Alpha, Beta]). Path 'Value', line 1, position 19.",
         () =>
           {
             var serializer = new JsonSerializer();
             serializer.Converters.Add(new StringEnumConverter());
             serializer.Deserialize<Bucket>(new JsonTextReader(new StringReader(json)));
+          });
+    }
+
+    [Test]
+    public void DeserializeInvalidFlagEnum()
+    {
+      ExceptionAssert.Throws<JsonSerializationException>(
+        @"Error converting value ""NotInFlags"" to type 'Newtonsoft.Json.Tests.TestObjects.StoreColor' (must be flags in [Black, Red, Yellow, White, DarkGoldenrod]). Path 'StoreColor', line 2, position 29.",
+        () =>
+          {
+            string json = @"{
+  ""StoreColor"": ""NotInFlags""
+}";
+            JsonConvert.DeserializeObject<EnumClass>(json, new StringEnumConverter());
           });
     }
 
