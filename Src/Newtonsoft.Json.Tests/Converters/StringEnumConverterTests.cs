@@ -357,6 +357,22 @@ namespace Newtonsoft.Json.Tests.Converters
           });
     }
 
+    [Test]
+    public void DeserializeIntegerButNotAllowed()
+    {
+      string json = "{ \"Value\" : 123 }";
+
+      ExceptionAssert.Throws<JsonSerializationException>(
+        @"Integer value 123 is not allowed (AllowIntegerValues == false). Path 'Value', line 1, position 15.",
+        () =>
+        {
+          var serializer = new JsonSerializer();
+          serializer.Converters.Add(new StringEnumConverter {AllowIntegerValues = false});
+          serializer.Deserialize<Bucket>(new JsonTextReader(new StringReader(json)));
+        });
+      
+    }
+
     public class Bucket
     {
       public MyEnum Value;

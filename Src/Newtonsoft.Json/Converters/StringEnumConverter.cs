@@ -42,6 +42,14 @@ namespace Newtonsoft.Json.Converters
   /// </summary>
   public class StringEnumConverter : JsonConverter
   {
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    public StringEnumConverter()
+    {
+      AllowIntegerValues = true;
+    }
+
     private readonly Dictionary<Type, BidirectionalDictionary<string, string>> _enumMemberNamesPerType = new Dictionary<Type, BidirectionalDictionary<string, string>>();
 
     /// <summary>
@@ -49,7 +57,13 @@ namespace Newtonsoft.Json.Converters
     /// </summary>
     /// <value><c>true</c> if the written enum text will be camel case; otherwise, <c>false</c>.</value>
     public bool CamelCaseText { get; set; }
-    
+
+    /// <summary>
+    /// Gets or sets a value indicating whether or not integer values are allowed.
+    /// </summary>
+    /// <value><c>true</c> if integers are allowed; otherwise, <c>false</c>.</value>
+    public bool AllowIntegerValues { get; set; }
+
     /// <summary>
     /// Writes the JSON representation of the object.
     /// </summary>
@@ -119,6 +133,9 @@ namespace Newtonsoft.Json.Converters
         return null;
       }
 
+      if (!AllowIntegerValues && reader.TokenType == JsonToken.Integer)
+        throw JsonSerializationException.Create(reader, "Integer value {0} is not allowed (AllowIntegerValues == false).".FormatWith(CultureInfo.InvariantCulture, reader.Value));
+
       try
       {
         if (reader.TokenType == JsonToken.String)
@@ -158,8 +175,8 @@ namespace Newtonsoft.Json.Converters
         throw JsonSerializationException.Create(reader, "Error converting value {0} to type '{1}'.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.FormatValueForPrint(reader.Value), objectType), ex);
       }
 
-
-      throw JsonSerializationException.Create(reader, "Unexpected token when parsing enum. Expected String or Integer, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
+      // we don't actually expect to get here.
+      throw JsonSerializationException.Create(reader, "Unexpected token ({0}) when parsing enum.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
     }
 
     private static string ResolvedEnumName(BidirectionalDictionary<string, string> map, string enumText)
