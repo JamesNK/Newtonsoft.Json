@@ -33,8 +33,8 @@ namespace Newtonsoft.Json.Tests.TestObjects
         [JsonProperty("PropertyA")]
         string IPrivateImplementationA.PropertyA
         {
-            get { return this.PropertyA; }
-            set { this.PropertyA = value; }
+            get { return PropertyA; }
+            set { PropertyA = value; }
         }
     }
 }

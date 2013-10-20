@@ -27,11 +27,11 @@ using System;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class ProductShort
-  {
-    public string Name;
-    public DateTime ExpiryDate;
-    //public decimal Price;
-    public string[] Sizes;
-  }
+    public class ProductShort
+    {
+        public string Name;
+        public DateTime ExpiryDate;
+        //public decimal Price;
+        public string[] Sizes;
+    }
 }

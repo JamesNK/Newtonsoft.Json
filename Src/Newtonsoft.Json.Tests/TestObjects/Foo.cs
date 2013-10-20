@@ -27,14 +27,14 @@ using System.Collections.Generic;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class Foo
-  {
-    public Foo()
+    public class Foo
     {
-      Bars = new List<Bar>();
-    }
+        public Foo()
+        {
+            Bars = new List<Bar>();
+        }
 
-    [JsonConverter(typeof(ListOfIds<Bar>))]
-    public List<Bar> Bars { get; set; }
-  }
+        [JsonConverter(typeof(ListOfIds<Bar>))]
+        public List<Bar> Bars { get; set; }
+    }
 }

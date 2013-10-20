@@ -28,10 +28,10 @@ using System.Collections.Generic;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class NonRequest
-  {
-    public Guid Sid { get; set; }
-    public Guid Uid { get; set; }
-    public IList<string> FidOrder { get; set; }
-  }
+    public class NonRequest
+    {
+        public Guid Sid { get; set; }
+        public Guid Uid { get; set; }
+        public IList<string> FidOrder { get; set; }
+    }
 }

@@ -7,53 +7,53 @@ using System.Text;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Schema
 {
-  public class CreateJsonSchemaManually
-  {
-    public void Example()
+    public class CreateJsonSchemaManually
     {
-      #region Usage
-      JsonSchema schema = new JsonSchema();
-      schema.Type = JsonSchemaType.Object;
-      schema.Properties = new Dictionary<string, JsonSchema>
+        public void Example()
         {
-          {"name", new JsonSchema {Type = JsonSchemaType.String}},
-          {
-            "hobbies", new JsonSchema
-              {
-                Type = JsonSchemaType.Array,
-                Items = new List<JsonSchema> { new JsonSchema {Type = JsonSchemaType.String} }
-              }
-          },
-        };
+            #region Usage
+            JsonSchema schema = new JsonSchema();
+            schema.Type = JsonSchemaType.Object;
+            schema.Properties = new Dictionary<string, JsonSchema>
+            {
+                { "name", new JsonSchema { Type = JsonSchemaType.String } },
+                {
+                    "hobbies", new JsonSchema
+                    {
+                        Type = JsonSchemaType.Array,
+                        Items = new List<JsonSchema> { new JsonSchema { Type = JsonSchemaType.String } }
+                    }
+                },
+            };
 
-      string schemaJson = schema.ToString();
+            string schemaJson = schema.ToString();
 
-      Console.WriteLine(schemaJson);
-      // {
-      //   "type": "object",
-      //   "properties": {
-      //     "name": {
-      //       "type": "string"
-      //     },
-      //     "hobbies": {
-      //       "type": "array",
-      //       "items": {
-      //         "type": "string"
-      //       }
-      //     }
-      //   }
-      // }
+            Console.WriteLine(schemaJson);
+            // {
+            //   "type": "object",
+            //   "properties": {
+            //     "name": {
+            //       "type": "string"
+            //     },
+            //     "hobbies": {
+            //       "type": "array",
+            //       "items": {
+            //         "type": "string"
+            //       }
+            //     }
+            //   }
+            // }
 
-      JObject person = JObject.Parse(@"{
+            JObject person = JObject.Parse(@"{
         'name': 'James',
         'hobbies': ['.NET', 'Blogging', 'Reading', 'Xbox', 'LOLCATS']
       }");
 
-      bool valid = person.IsValid(schema);
+            bool valid = person.IsValid(schema);
 
-      Console.WriteLine(valid);
-      // true
-      #endregion
+            Console.WriteLine(valid);
+            // true
+            #endregion
+        }
     }
-  }
 }

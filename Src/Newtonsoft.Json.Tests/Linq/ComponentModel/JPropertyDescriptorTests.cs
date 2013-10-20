@@ -29,59 +29,60 @@ using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Tests.Linq.ComponentModel
 {
-  [TestFixture]
-  public class JPropertyDescriptorTests : TestFixtureBase
-  {
-    [Test]
-    public void GetValue()
+    [TestFixture]
+    public class JPropertyDescriptorTests : TestFixtureBase
     {
-      JObject o = JObject.Parse("{prop1:'12345!',prop2:[1,'two','III']}");
+        [Test]
+        public void GetValue()
+        {
+            JObject o = JObject.Parse("{prop1:'12345!',prop2:[1,'two','III']}");
 
-      JPropertyDescriptor prop1 = new JPropertyDescriptor("prop1", typeof(string));
-      JPropertyDescriptor prop2 = new JPropertyDescriptor("prop2", typeof(JArray));
+            JPropertyDescriptor prop1 = new JPropertyDescriptor("prop1", typeof(string));
+            JPropertyDescriptor prop2 = new JPropertyDescriptor("prop2", typeof(JArray));
 
-      Assert.AreEqual("12345!", ((JValue) prop1.GetValue(o)).Value);
-      Assert.AreEqual(o["prop2"], prop2.GetValue(o));
+            Assert.AreEqual("12345!", ((JValue)prop1.GetValue(o)).Value);
+            Assert.AreEqual(o["prop2"], prop2.GetValue(o));
+        }
+
+        [Test]
+        public void SetValue()
+        {
+            JObject o = JObject.Parse("{prop1:'12345!'}");
+
+            JPropertyDescriptor propertyDescriptor1 = new JPropertyDescriptor("prop1", typeof(string));
+
+            propertyDescriptor1.SetValue(o, "54321!");
+
+            Assert.AreEqual("54321!", (string)o["prop1"]);
+        }
+
+        [Test]
+        public void ResetValue()
+        {
+            JObject o = JObject.Parse("{prop1:'12345!'}");
+
+            JPropertyDescriptor propertyDescriptor1 = new JPropertyDescriptor("prop1", typeof(string));
+            propertyDescriptor1.ResetValue(o);
+
+            Assert.AreEqual("12345!", (string)o["prop1"]);
+        }
+
+        [Test]
+        public void IsReadOnly()
+        {
+            JPropertyDescriptor propertyDescriptor1 = new JPropertyDescriptor("prop1", typeof(string));
+
+            Assert.AreEqual(false, propertyDescriptor1.IsReadOnly);
+        }
+
+        [Test]
+        public void PropertyType()
+        {
+            JPropertyDescriptor propertyDescriptor1 = new JPropertyDescriptor("prop1", typeof(string));
+
+            Assert.AreEqual(typeof(string), propertyDescriptor1.PropertyType);
+        }
     }
-
-    [Test]
-    public void SetValue()
-    {
-      JObject o = JObject.Parse("{prop1:'12345!'}");
-
-      JPropertyDescriptor propertyDescriptor1 = new JPropertyDescriptor("prop1", typeof(string));
-
-      propertyDescriptor1.SetValue(o, "54321!");
-
-      Assert.AreEqual("54321!", (string)o["prop1"]);
-    }
-
-    [Test]
-    public void ResetValue()
-    {
-      JObject o = JObject.Parse("{prop1:'12345!'}");
-
-      JPropertyDescriptor propertyDescriptor1 = new JPropertyDescriptor("prop1", typeof(string));
-      propertyDescriptor1.ResetValue(o);
-
-      Assert.AreEqual("12345!", (string)o["prop1"]);
-    }
-
-    [Test]
-    public void IsReadOnly()
-    {
-      JPropertyDescriptor propertyDescriptor1 = new JPropertyDescriptor("prop1", typeof(string));
-
-      Assert.AreEqual(false, propertyDescriptor1.IsReadOnly);
-    }
-
-    [Test]
-    public void PropertyType()
-    {
-      JPropertyDescriptor propertyDescriptor1 = new JPropertyDescriptor("prop1", typeof(string));
-
-      Assert.AreEqual(typeof(string), propertyDescriptor1.PropertyType);
-    }
-  }
 }
+
 #endif

@@ -27,15 +27,15 @@ using System.Collections.Generic;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class Name
-  {
-    public string personsName;
-
-    public List<PhoneNumber> pNumbers = new List<PhoneNumber>();
-
-    public Name(string personsName)
+    public class Name
     {
-      this.personsName = personsName;
+        public string personsName;
+
+        public List<PhoneNumber> pNumbers = new List<PhoneNumber>();
+
+        public Name(string personsName)
+        {
+            this.personsName = personsName;
+        }
     }
-  }
 }

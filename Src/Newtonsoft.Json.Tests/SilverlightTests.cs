@@ -27,6 +27,7 @@ using System;
 using System.Reflection;
 #if !NETFX_CORE
 using NUnit.Framework;
+
 #else
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
@@ -35,7 +36,7 @@ using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAtt
 
 namespace Newtonsoft.Json.Tests
 {
-  // todo: need to fix this to get WP unit tests running off right dlls
+    // todo: need to fix this to get WP unit tests running off right dlls
 #if SILVERLIGHT
   [TestFixture]
   public class SilverlightTests

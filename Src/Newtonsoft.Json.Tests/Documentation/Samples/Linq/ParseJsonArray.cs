@@ -6,26 +6,26 @@ using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-  public class ParseJsonArray
-  {
-    public void Example()
+    public class ParseJsonArray
     {
-      #region Usage
-      string json = @"[
-        'Small',
-        'Medium',
-        'Large'
-      ]";
+        public void Example()
+        {
+            #region Usage
+            string json = @"[
+              'Small',
+              'Medium',
+              'Large'
+            ]";
 
-      JArray a = JArray.Parse(json);
+            JArray a = JArray.Parse(json);
 
-      Console.WriteLine(a.ToString());
-      // [
-      //   "Small",
-      //   "Medium",
-      //   "Large"
-      // ]
-      #endregion
+            Console.WriteLine(a.ToString());
+            // [
+            //   "Small",
+            //   "Medium",
+            //   "Large"
+            // ]
+            #endregion
+        }
     }
-  }
 }

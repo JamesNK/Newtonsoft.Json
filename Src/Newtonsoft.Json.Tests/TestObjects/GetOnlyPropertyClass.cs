@@ -25,13 +25,13 @@
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class GetOnlyPropertyClass
-  {
-    public string Field = "Field";
-
-    public string GetOnlyProperty
+    public class GetOnlyPropertyClass
     {
-      get { return "GetOnlyProperty"; }
+        public string Field = "Field";
+
+        public string GetOnlyProperty
+        {
+            get { return "GetOnlyProperty"; }
+        }
     }
-  }
 }

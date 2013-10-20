@@ -28,28 +28,28 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Serialization
 {
-  /// <summary>
-  /// Resolves member mappings for a type, camel casing property names.
-  /// </summary>
-  public class CamelCasePropertyNamesContractResolver : DefaultContractResolver
-  {
     /// <summary>
-    /// Initializes a new instance of the <see cref="CamelCasePropertyNamesContractResolver"/> class.
+    /// Resolves member mappings for a type, camel casing property names.
     /// </summary>
-    public CamelCasePropertyNamesContractResolver()
-      : base(true)
+    public class CamelCasePropertyNamesContractResolver : DefaultContractResolver
     {
-    }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CamelCasePropertyNamesContractResolver"/> class.
+        /// </summary>
+        public CamelCasePropertyNamesContractResolver()
+            : base(true)
+        {
+        }
 
-    /// <summary>
-    /// Resolves the name of the property.
-    /// </summary>
-    /// <param name="propertyName">Name of the property.</param>
-    /// <returns>The property name camel cased.</returns>
-    protected internal override string ResolvePropertyName(string propertyName)
-    {
-      // lower case the first letter of the passed in name
-      return StringUtils.ToCamelCase(propertyName);
+        /// <summary>
+        /// Resolves the name of the property.
+        /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <returns>The property name camel cased.</returns>
+        protected internal override string ResolvePropertyName(string propertyName)
+        {
+            // lower case the first letter of the passed in name
+            return StringUtils.ToCamelCase(propertyName);
+        }
     }
-  }
 }

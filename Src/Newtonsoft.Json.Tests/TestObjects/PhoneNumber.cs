@@ -25,13 +25,13 @@
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class PhoneNumber
-  {
-    public string phoneNumber;
-
-    public PhoneNumber(string phoneNumber)
+    public class PhoneNumber
     {
-      this.phoneNumber = phoneNumber;
+        public string phoneNumber;
+
+        public PhoneNumber(string phoneNumber)
+        {
+            this.phoneNumber = phoneNumber;
+        }
     }
-  }
 }

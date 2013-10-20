@@ -25,15 +25,15 @@
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class ConstructorReadonlyFields
-  {
-    public readonly string A;
-    public readonly int B;
-
-    public ConstructorReadonlyFields(string a, int b)
+    public class ConstructorReadonlyFields
     {
-      A = a;
-      B = b;
+        public readonly string A;
+        public readonly int B;
+
+        public ConstructorReadonlyFields(string a, int b)
+        {
+            A = a;
+            B = b;
+        }
     }
-  }
 }

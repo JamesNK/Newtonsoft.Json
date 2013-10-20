@@ -6,42 +6,42 @@ using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-  public class SerializeContractResolver
-  {
-    #region Types
-    public class Person
+    public class SerializeContractResolver
     {
-      public string FirstName { get; set; }
-      public string LastName { get; set; }
-
-      public string FullName
-      {
-        get { return FirstName + " " + LastName; }
-      }
-    }
-    #endregion
-
-    public void Example()
-    {
-      #region Usage
-      Person person = new Person
+        #region Types
+        public class Person
         {
-          FirstName = "Sarah",
-          LastName = "Security"
-        };
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
 
-      string json = JsonConvert.SerializeObject(person, Formatting.Indented, new JsonSerializerSettings
+            public string FullName
+            {
+                get { return FirstName + " " + LastName; }
+            }
+        }
+        #endregion
+
+        public void Example()
         {
-          ContractResolver = new CamelCasePropertyNamesContractResolver()
-        });
+            #region Usage
+            Person person = new Person
+            {
+                FirstName = "Sarah",
+                LastName = "Security"
+            };
 
-      Console.WriteLine(json);
-      // {
-      //   "firstName": "Sarah",
-      //   "lastName": "Security",
-      //   "fullName": "Sarah Security"
-      // }
-      #endregion
+            string json = JsonConvert.SerializeObject(person, Formatting.Indented, new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            });
+
+            Console.WriteLine(json);
+            // {
+            //   "firstName": "Sarah",
+            //   "lastName": "Security",
+            //   "fullName": "Sarah Security"
+            // }
+            #endregion
+        }
     }
-  }
 }

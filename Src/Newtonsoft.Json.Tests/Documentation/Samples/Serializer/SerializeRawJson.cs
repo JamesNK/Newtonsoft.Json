@@ -6,33 +6,33 @@ using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-  public class SerializeRawJson
-  {
-    #region Types
-    public class JavaScriptSettings
+    public class SerializeRawJson
     {
-      public JRaw OnLoadFunction { get; set; }
-      public JRaw OnUnloadFunction { get; set; }
-    }
-    #endregion
-
-    public void Example()
-    {
-      #region Usage
-      JavaScriptSettings settings = new JavaScriptSettings
+        #region Types
+        public class JavaScriptSettings
         {
-          OnLoadFunction = new JRaw("OnLoad"),
-          OnUnloadFunction = new JRaw("function(e) { alert(e); }")
-        };
+            public JRaw OnLoadFunction { get; set; }
+            public JRaw OnUnloadFunction { get; set; }
+        }
+        #endregion
 
-      string json = JsonConvert.SerializeObject(settings, Formatting.Indented);
+        public void Example()
+        {
+            #region Usage
+            JavaScriptSettings settings = new JavaScriptSettings
+            {
+                OnLoadFunction = new JRaw("OnLoad"),
+                OnUnloadFunction = new JRaw("function(e) { alert(e); }")
+            };
 
-      Console.WriteLine(json);
-      // {
-      //   "OnLoadFunction": OnLoad,
-      //   "OnUnloadFunction": function(e) { alert(e); }
-      // }
-      #endregion
+            string json = JsonConvert.SerializeObject(settings, Formatting.Indented);
+
+            Console.WriteLine(json);
+            // {
+            //   "OnLoadFunction": OnLoad,
+            //   "OnUnloadFunction": function(e) { alert(e); }
+            // }
+            #endregion
+        }
     }
-  }
 }

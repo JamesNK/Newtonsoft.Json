@@ -27,9 +27,9 @@ using System;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class LogEntry
-  {
-    public string Details { get; set; }
-    public DateTime LogDate { get; set; }
-  }
+    public class LogEntry
+    {
+        public string Details { get; set; }
+        public DateTime LogDate { get; set; }
+    }
 }

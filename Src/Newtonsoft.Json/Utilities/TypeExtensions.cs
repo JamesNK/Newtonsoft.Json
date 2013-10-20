@@ -30,12 +30,13 @@ using System.Reflection;
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
+
 #endif
 
 namespace Newtonsoft.Json.Utilities
 {
-  internal static class TypeExtensions
-  {
+    internal static class TypeExtensions
+    {
 #if NETFX_CORE || PORTABLE
     private static BindingFlags DefaultFlags = BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance;
 
@@ -78,138 +79,138 @@ namespace Newtonsoft.Json.Utilities
     }
 #endif
 
-    public static MethodInfo Method(this Delegate d)
-    {
+        public static MethodInfo Method(this Delegate d)
+        {
 #if !(NETFX_CORE || PORTABLE)
-      return d.Method;
+            return d.Method;
 #else
       return d.GetMethodInfo();
 #endif
-    }
+        }
 
-    public static MemberTypes MemberType(this MemberInfo memberInfo)
-    {
+        public static MemberTypes MemberType(this MemberInfo memberInfo)
+        {
 #if !(NETFX_CORE || PORTABLE || PORTABLE40)
-      return memberInfo.MemberType;
+            return memberInfo.MemberType;
 #else
-      if (memberInfo is PropertyInfo)
-        return MemberTypes.Property;
-      else if (memberInfo is FieldInfo)
-        return MemberTypes.Field;
-      else if (memberInfo is EventInfo)
-        return MemberTypes.Event;
-      else if (memberInfo is MethodInfo)
-        return MemberTypes.Method;
-      else
-        return MemberTypes.Other;
+            if (memberInfo is PropertyInfo)
+                return MemberTypes.Property;
+            else if (memberInfo is FieldInfo)
+                return MemberTypes.Field;
+            else if (memberInfo is EventInfo)
+                return MemberTypes.Event;
+            else if (memberInfo is MethodInfo)
+                return MemberTypes.Method;
+            else
+                return MemberTypes.Other;
 #endif
-    }
+        }
 
-    public static bool ContainsGenericParameters(this Type type)
-    {
+        public static bool ContainsGenericParameters(this Type type)
+        {
 #if !(NETFX_CORE || PORTABLE)
-      return type.ContainsGenericParameters;
+            return type.ContainsGenericParameters;
 #else
       return type.GetTypeInfo().ContainsGenericParameters;
 #endif
-    }
+        }
 
-    public static bool IsInterface(this Type type)
-    {
+        public static bool IsInterface(this Type type)
+        {
 #if !(NETFX_CORE || PORTABLE)
-      return type.IsInterface;
+            return type.IsInterface;
 #else
       return type.GetTypeInfo().IsInterface;
 #endif
-    }
+        }
 
-    public static bool IsGenericType(this Type type)
-    {
+        public static bool IsGenericType(this Type type)
+        {
 #if !(NETFX_CORE || PORTABLE)
-      return type.IsGenericType;
+            return type.IsGenericType;
 #else
       return type.GetTypeInfo().IsGenericType;
 #endif
-    }
+        }
 
-    public static bool IsGenericTypeDefinition(this Type type)
-    {
+        public static bool IsGenericTypeDefinition(this Type type)
+        {
 #if !(NETFX_CORE || PORTABLE)
-      return type.IsGenericTypeDefinition;
+            return type.IsGenericTypeDefinition;
 #else
       return type.GetTypeInfo().IsGenericTypeDefinition;
 #endif
-    }
+        }
 
-    public static Type BaseType(this Type type)
-    {
+        public static Type BaseType(this Type type)
+        {
 #if !(NETFX_CORE || PORTABLE)
-      return type.BaseType;
+            return type.BaseType;
 #else
       return type.GetTypeInfo().BaseType;
 #endif
-    }
+        }
 
-    public static bool IsEnum(this Type type)
-    {
+        public static bool IsEnum(this Type type)
+        {
 #if !(NETFX_CORE || PORTABLE)
-      return type.IsEnum;
+            return type.IsEnum;
 #else
       return type.GetTypeInfo().IsEnum;
 #endif
-    }
+        }
 
-    public static bool IsClass(this Type type)
-    {
+        public static bool IsClass(this Type type)
+        {
 #if !(NETFX_CORE || PORTABLE)
-      return type.IsClass;
+            return type.IsClass;
 #else
       return type.GetTypeInfo().IsClass;
 #endif
-    }
+        }
 
-    public static bool IsSealed(this Type type)
-    {
+        public static bool IsSealed(this Type type)
+        {
 #if !(NETFX_CORE || PORTABLE)
-      return type.IsSealed;
+            return type.IsSealed;
 #else
       return type.GetTypeInfo().IsSealed;
 #endif
-    }
-
-#if PORTABLE40
-    public static PropertyInfo GetProperty(this Type type, string name, BindingFlags bindingFlags, object placeholder1, Type propertyType, IList<Type> indexParameters, object placeholder2)
-    {
-      IList<PropertyInfo> propertyInfos = type.GetProperties(bindingFlags);
-
-      return propertyInfos.Where(p =>
-      {
-        if (name != null && name != p.Name)
-          return false;
-        if (propertyType != null && propertyType != p.PropertyType)
-          return false;
-        if (indexParameters != null)
-        {
-          if (!p.GetIndexParameters().Select(ip => ip.ParameterType).SequenceEqual(indexParameters))
-            return false;
         }
 
-        return true;
-      }).SingleOrDefault();
-    }
-
-    public static IEnumerable<MemberInfo> GetMember(this Type type, string name, MemberTypes memberType, BindingFlags bindingFlags)
-    {
-      return type.GetMembers(bindingFlags).Where(m =>
+#if PORTABLE40
+        public static PropertyInfo GetProperty(this Type type, string name, BindingFlags bindingFlags, object placeholder1, Type propertyType, IList<Type> indexParameters, object placeholder2)
         {
-          if (name != null && name != m.Name)
-            return false;
-          if (m.MemberType() != memberType)
-            return false;
+            IList<PropertyInfo> propertyInfos = type.GetProperties(bindingFlags);
 
-          return true;
-        });
-    }
+            return propertyInfos.Where(p =>
+            {
+                if (name != null && name != p.Name)
+                    return false;
+                if (propertyType != null && propertyType != p.PropertyType)
+                    return false;
+                if (indexParameters != null)
+                {
+                    if (!p.GetIndexParameters().Select(ip => ip.ParameterType).SequenceEqual(indexParameters))
+                        return false;
+                }
+
+                return true;
+            }).SingleOrDefault();
+        }
+
+        public static IEnumerable<MemberInfo> GetMember(this Type type, string name, MemberTypes memberType, BindingFlags bindingFlags)
+        {
+            return type.GetMembers(bindingFlags).Where(m =>
+            {
+                if (name != null && name != m.Name)
+                    return false;
+                if (m.MemberType() != memberType)
+                    return false;
+
+                return true;
+            });
+        }
 #endif
 
 #if (NETFX_CORE || PORTABLE)
@@ -502,114 +503,114 @@ namespace Newtonsoft.Json.Utilities
     }
 #endif
 
-    public static bool IsAbstract(this Type type)
-    {
+        public static bool IsAbstract(this Type type)
+        {
 #if !(NETFX_CORE || PORTABLE)
-      return type.IsAbstract;
+            return type.IsAbstract;
 #else
       return type.GetTypeInfo().IsAbstract;
 #endif
-    }
+        }
 
-    public static bool IsVisible(this Type type)
-    {
+        public static bool IsVisible(this Type type)
+        {
 #if !(NETFX_CORE || PORTABLE)
-      return type.IsVisible;
+            return type.IsVisible;
 #else
       return type.GetTypeInfo().IsVisible;
 #endif
-    }
+        }
 
-    public static bool IsValueType(this Type type)
-    {
+        public static bool IsValueType(this Type type)
+        {
 #if !(NETFX_CORE || PORTABLE)
-      return type.IsValueType;
+            return type.IsValueType;
 #else
       return type.GetTypeInfo().IsValueType;
 #endif
-    }
-
-    public static bool AssignableToTypeName(this Type type, string fullTypeName, out Type match)
-    {
-      Type current = type;
-
-      while (current != null)
-      {
-        if (string.Equals(current.FullName, fullTypeName, StringComparison.Ordinal))
-        {
-          match = current;
-          return true;
         }
 
-        current = current.BaseType();
-      }
-
-      foreach (Type i in type.GetInterfaces())
-      {
-        if (string.Equals(i.Name, fullTypeName, StringComparison.Ordinal))
+        public static bool AssignableToTypeName(this Type type, string fullTypeName, out Type match)
         {
-          match = type;
-          return true;
+            Type current = type;
+
+            while (current != null)
+            {
+                if (string.Equals(current.FullName, fullTypeName, StringComparison.Ordinal))
+                {
+                    match = current;
+                    return true;
+                }
+
+                current = current.BaseType();
+            }
+
+            foreach (Type i in type.GetInterfaces())
+            {
+                if (string.Equals(i.Name, fullTypeName, StringComparison.Ordinal))
+                {
+                    match = type;
+                    return true;
+                }
+            }
+
+            match = null;
+            return false;
         }
-      }
 
-      match = null;
-      return false;
-    }
-
-    public static bool AssignableToTypeName(this Type type, string fullTypeName)
-    {
-      Type match;
-      return type.AssignableToTypeName(fullTypeName, out match);
-    }
-
-    public static MethodInfo GetGenericMethod(this Type type, string name, params Type[] parameterTypes)
-    {
-      var methods = type.GetMethods().Where(method => method.Name == name);
-
-      foreach (var method in methods)
-      {
-        if (method.HasParameters(parameterTypes))
-          return method;
-      }
-
-      return null;
-    }
-
-    public static bool HasParameters(this MethodInfo method, params Type[] parameterTypes)
-    {
-      var methodParameters = method.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
-
-      if (methodParameters.Length != parameterTypes.Length)
-        return false;
-
-      for (int i = 0; i < methodParameters.Length; i++)
-        if (methodParameters[i].ToString() != parameterTypes[i].ToString())
-          return false;
-
-      return true;
-    }
-
-    public static IEnumerable<Type> GetAllInterfaces(this Type target)
-    {
-      foreach (var i in target.GetInterfaces())
-      {
-        yield return i;
-        foreach (var ci in i.GetInterfaces())
+        public static bool AssignableToTypeName(this Type type, string fullTypeName)
         {
-          yield return ci;
+            Type match;
+            return type.AssignableToTypeName(fullTypeName, out match);
         }
-      }
-    }
 
-    public static IEnumerable<MethodInfo> GetAllMethods(this Type target)
-    {
-      var allTypes = target.GetAllInterfaces().ToList();
-      allTypes.Add(target);
+        public static MethodInfo GetGenericMethod(this Type type, string name, params Type[] parameterTypes)
+        {
+            var methods = type.GetMethods().Where(method => method.Name == name);
 
-      return from type in allTypes
-             from method in type.GetMethods()
-             select method;
+            foreach (var method in methods)
+            {
+                if (method.HasParameters(parameterTypes))
+                    return method;
+            }
+
+            return null;
+        }
+
+        public static bool HasParameters(this MethodInfo method, params Type[] parameterTypes)
+        {
+            var methodParameters = method.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
+
+            if (methodParameters.Length != parameterTypes.Length)
+                return false;
+
+            for (int i = 0; i < methodParameters.Length; i++)
+                if (methodParameters[i].ToString() != parameterTypes[i].ToString())
+                    return false;
+
+            return true;
+        }
+
+        public static IEnumerable<Type> GetAllInterfaces(this Type target)
+        {
+            foreach (var i in target.GetInterfaces())
+            {
+                yield return i;
+                foreach (var ci in i.GetInterfaces())
+                {
+                    yield return ci;
+                }
+            }
+        }
+
+        public static IEnumerable<MethodInfo> GetAllMethods(this Type target)
+        {
+            var allTypes = target.GetAllInterfaces().ToList();
+            allTypes.Add(target);
+
+            return from type in allTypes
+                from method in type.GetMethods()
+                select method;
+        }
     }
-  }
 }

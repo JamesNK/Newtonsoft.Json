@@ -7,55 +7,55 @@ using System.Text;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Schema
 {
-  public class JsonValidatingReaderAndSerializer
-  {
-    #region Types
-    public class Person
+    public class JsonValidatingReaderAndSerializer
     {
-      public string Name { get; set; }
-      public IList<string> Hobbies { get; set; }
-    }
-    #endregion
-
-    public void Example()
-    {
-      #region Usage
-      string schemaJson = @"{
-        'description': 'A person',
-        'type': 'object',
-        'properties': {
-          'name': {'type':'string'},
-          'hobbies': {
-            'type': 'array',
-            'items': {'type':'string'}
-          }
+        #region Types
+        public class Person
+        {
+            public string Name { get; set; }
+            public IList<string> Hobbies { get; set; }
         }
-      }";
+        #endregion
 
-      string json = @"{
-        'name': 'James',
-        'hobbies': ['.NET', 'Blogging', 'Reading', 'Xbox', 'LOLCATS']
-      }";
+        public void Example()
+        {
+            #region Usage
+            string schemaJson = @"{
+              'description': 'A person',
+              'type': 'object',
+              'properties': {
+                'name': {'type':'string'},
+                'hobbies': {
+                  'type': 'array',
+                  'items': {'type':'string'}
+                }
+              }
+            }";
 
-      JsonTextReader reader = new JsonTextReader(new StringReader(json));
+            string json = @"{
+              'name': 'James',
+              'hobbies': ['.NET', 'Blogging', 'Reading', 'Xbox', 'LOLCATS']
+            }";
 
-      JsonValidatingReader validatingReader = new JsonValidatingReader(reader);
-      validatingReader.Schema = JsonSchema.Parse(schemaJson);
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
 
-      IList<string> messages = new List<string>();
-      validatingReader.ValidationEventHandler += (o, a) => messages.Add(a.Message);
+            JsonValidatingReader validatingReader = new JsonValidatingReader(reader);
+            validatingReader.Schema = JsonSchema.Parse(schemaJson);
 
-      JsonSerializer serializer = new JsonSerializer();
-      Person p = serializer.Deserialize<Person>(validatingReader);
+            IList<string> messages = new List<string>();
+            validatingReader.ValidationEventHandler += (o, a) => messages.Add(a.Message);
 
-      Console.WriteLine(p.Name);
-      // James
+            JsonSerializer serializer = new JsonSerializer();
+            Person p = serializer.Deserialize<Person>(validatingReader);
 
-      bool isValid = (messages.Count == 0);
+            Console.WriteLine(p.Name);
+            // James
 
-      Console.WriteLine(isValid);
-      // true
-      #endregion
+            bool isValid = (messages.Count == 0);
+
+            Console.WriteLine(isValid);
+            // true
+            #endregion
+        }
     }
-  }
 }

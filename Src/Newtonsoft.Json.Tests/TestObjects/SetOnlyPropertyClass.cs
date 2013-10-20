@@ -25,13 +25,13 @@
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class SetOnlyPropertyClass
-  {
-    public string Field = "Field";
-
-    public string SetOnlyProperty
+    public class SetOnlyPropertyClass
     {
-      set { }
+        public string Field = "Field";
+
+        public string SetOnlyProperty
+        {
+            set { }
+        }
     }
-  }
 }

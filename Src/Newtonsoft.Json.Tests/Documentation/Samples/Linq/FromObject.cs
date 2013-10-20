@@ -6,65 +6,65 @@ using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-  public class FromObject
-  {
-    #region Types
-    public class Computer
+    public class FromObject
     {
-      public string Cpu { get; set; }
-      public int Memory { get; set; }
-      public IList<string> Drives { get; set; } 
-    }
-    #endregion
-
-    public void Example()
-    {
-      #region Usage
-      JValue i = (JValue)JToken.FromObject(12345);
-
-      Console.WriteLine(i.Type);
-      // Integer
-      Console.WriteLine(i.ToString());
-      // 12345
-
-      JValue s = (JValue)JToken.FromObject("A string");
-
-      Console.WriteLine(s.Type);
-      // String
-      Console.WriteLine(s.ToString());
-      // A string
-
-      Computer computer = new Computer
+        #region Types
+        public class Computer
         {
-          Cpu = "Intel",
-          Memory = 32,
-          Drives = new List<string>
+            public string Cpu { get; set; }
+            public int Memory { get; set; }
+            public IList<string> Drives { get; set; }
+        }
+        #endregion
+
+        public void Example()
+        {
+            #region Usage
+            JValue i = (JValue)JToken.FromObject(12345);
+
+            Console.WriteLine(i.Type);
+            // Integer
+            Console.WriteLine(i.ToString());
+            // 12345
+
+            JValue s = (JValue)JToken.FromObject("A string");
+
+            Console.WriteLine(s.Type);
+            // String
+            Console.WriteLine(s.ToString());
+            // A string
+
+            Computer computer = new Computer
             {
-              "DVD",
-              "SSD"
-            }
-        };
+                Cpu = "Intel",
+                Memory = 32,
+                Drives = new List<string>
+                {
+                    "DVD",
+                    "SSD"
+                }
+            };
 
-      JObject o = (JObject)JToken.FromObject(computer);
+            JObject o = (JObject)JToken.FromObject(computer);
 
-      Console.WriteLine(o.ToString());
-      // {
-      //   "Cpu": "Intel",
-      //   "Memory": 32,
-      //   "Drives": [
-      //     "DVD",
-      //     "SSD"
-      //   ]
-      // }
+            Console.WriteLine(o.ToString());
+            // {
+            //   "Cpu": "Intel",
+            //   "Memory": 32,
+            //   "Drives": [
+            //     "DVD",
+            //     "SSD"
+            //   ]
+            // }
 
-      JArray a = (JArray)JToken.FromObject(computer.Drives);
+            JArray a = (JArray)JToken.FromObject(computer.Drives);
 
-      Console.WriteLine(a.ToString());
-      // [
-      //   "DVD",
-      //   "SSD"
-      // ]
-      #endregion
+            Console.WriteLine(a.ToString());
+            // [
+            //   "DVD",
+            //   "SSD"
+            // ]
+            #endregion
+        }
     }
-  }
 }

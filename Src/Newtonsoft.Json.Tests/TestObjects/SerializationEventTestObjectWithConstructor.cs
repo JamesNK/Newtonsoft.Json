@@ -29,55 +29,55 @@ using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class SerializationEventTestObjectWithConstructor
-  {
-    // This member is serialized and deserialized with no change.
-    public int Member1 { get; private set; }
-
-    // The value of this field is set and reset during and 
-    // after serialization.
-    public string Member2 { get; private set; }
-
-    // This field is not serialized. The OnDeserializedAttribute 
-    // is used to set the member value after serialization.
-    [JsonIgnore]
-    public string Member3 { get; private set; }
-
-    // This field is set to null, but populated after deserialization.
-    public string Member4 { get; private set; }
-
-    public SerializationEventTestObjectWithConstructor(int member1,
-                                                       string member2,
-                                                       string member4)
+    public class SerializationEventTestObjectWithConstructor
     {
-      Member1 = member1;
-      Member2 = member2;
-      Member3 = "This is a nonserialized value";
-      Member4 = member4;
-    }
+        // This member is serialized and deserialized with no change.
+        public int Member1 { get; private set; }
 
-    [OnSerializing]
-    internal void OnSerializingMethod(StreamingContext context)
-    {
-      Member2 = "This value went into the data file during serialization.";
-    }
+        // The value of this field is set and reset during and 
+        // after serialization.
+        public string Member2 { get; private set; }
 
-    [OnSerialized]
-    internal void OnSerializedMethod(StreamingContext context)
-    {
-      Member2 = "This value was reset after serialization.";
-    }
+        // This field is not serialized. The OnDeserializedAttribute 
+        // is used to set the member value after serialization.
+        [JsonIgnore]
+        public string Member3 { get; private set; }
 
-    [OnDeserializing]
-    internal void OnDeserializingMethod(StreamingContext context)
-    {
-      Member3 = "This value was set during deserialization";
-    }
+        // This field is set to null, but populated after deserialization.
+        public string Member4 { get; private set; }
 
-    [OnDeserialized]
-    internal void OnDeserializedMethod(StreamingContext context)
-    {
-      Member4 = "This value was set after deserialization.";
+        public SerializationEventTestObjectWithConstructor(int member1,
+            string member2,
+            string member4)
+        {
+            Member1 = member1;
+            Member2 = member2;
+            Member3 = "This is a nonserialized value";
+            Member4 = member4;
+        }
+
+        [OnSerializing]
+        internal void OnSerializingMethod(StreamingContext context)
+        {
+            Member2 = "This value went into the data file during serialization.";
+        }
+
+        [OnSerialized]
+        internal void OnSerializedMethod(StreamingContext context)
+        {
+            Member2 = "This value was reset after serialization.";
+        }
+
+        [OnDeserializing]
+        internal void OnDeserializingMethod(StreamingContext context)
+        {
+            Member3 = "This value was set during deserialization";
+        }
+
+        [OnDeserialized]
+        internal void OnDeserializedMethod(StreamingContext context)
+        {
+            Member4 = "This value was set after deserialization.";
+        }
     }
-  }
 }

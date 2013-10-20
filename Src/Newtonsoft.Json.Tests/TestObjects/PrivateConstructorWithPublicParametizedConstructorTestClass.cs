@@ -27,19 +27,19 @@ using System;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class PrivateConstructorWithPublicParametizedConstructorTestClass
-  {
-    public string Name { get; set; }
-    public int Age { get; set; }
-
-    private PrivateConstructorWithPublicParametizedConstructorTestClass()
+    public class PrivateConstructorWithPublicParametizedConstructorTestClass
     {
-      Age = 1;
-    }
+        public string Name { get; set; }
+        public int Age { get; set; }
 
-    public PrivateConstructorWithPublicParametizedConstructorTestClass(string dummy)
-    {
-      throw new Exception("Should never get here.");
+        private PrivateConstructorWithPublicParametizedConstructorTestClass()
+        {
+            Age = 1;
+        }
+
+        public PrivateConstructorWithPublicParametizedConstructorTestClass(string dummy)
+        {
+            throw new Exception("Should never get here.");
+        }
     }
-  }
 }

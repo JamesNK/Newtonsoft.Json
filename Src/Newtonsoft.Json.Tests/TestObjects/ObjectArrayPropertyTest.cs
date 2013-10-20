@@ -25,10 +25,10 @@
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class ObjectArrayPropertyTest
-  {
-    public string Action { get; set; }
-    public string Method { get; set; }
-    public object[] Data { get; set; }
-  }
+    public class ObjectArrayPropertyTest
+    {
+        public string Action { get; set; }
+        public string Method { get; set; }
+        public object[] Data { get; set; }
+    }
 }

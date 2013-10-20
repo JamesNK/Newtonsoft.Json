@@ -27,8 +27,8 @@ using System;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class TypeClass
-  {
-    public Type TypeProperty { get; set; }
-  }
+    public class TypeClass
+    {
+        public Type TypeProperty { get; set; }
+    }
 }

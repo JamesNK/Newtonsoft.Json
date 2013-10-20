@@ -6,34 +6,34 @@ using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-  public class CreateJsonCollectionInitializer
-  {
-    public void Example()
+    public class CreateJsonCollectionInitializer
     {
-      #region Usage
-      JObject o = new JObject
+        public void Example()
         {
-          {"Cpu", "Intel"},
-          {"Memory", 32},
-          {
-            "Drives", new JArray
-              {
-                "DVD",
-                "SSD"
-              }
-          }
-        };
- 
-      Console.WriteLine(o.ToString());
-      // {
-      //   "Cpu": "Intel",
-      //   "Memory": 32,
-      //   "Drives": [
-      //     "DVD",
-      //     "SSD"
-      //   ]
-      // }
-      #endregion
+            #region Usage
+            JObject o = new JObject
+            {
+                { "Cpu", "Intel" },
+                { "Memory", 32 },
+                {
+                    "Drives", new JArray
+                    {
+                        "DVD",
+                        "SSD"
+                    }
+                }
+            };
+
+            Console.WriteLine(o.ToString());
+            // {
+            //   "Cpu": "Intel",
+            //   "Memory": 32,
+            //   "Drives": [
+            //     "DVD",
+            //     "SSD"
+            //   ]
+            // }
+            #endregion
+        }
     }
-  }
 }

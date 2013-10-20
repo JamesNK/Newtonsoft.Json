@@ -6,10 +6,10 @@ using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Tests.Documentation
 {
-  public class JsonNetVsWindowsDataJsonTests
-  {
-    public void CreatingJson()
+    public class JsonNetVsWindowsDataJsonTests
     {
+        public void CreatingJson()
+        {
 #if NETFX_CORE
       #region CreatingJSON
       // Windows.Data.Json
@@ -43,10 +43,10 @@ namespace Newtonsoft.Json.Tests.Documentation
       string json2 = jObject.ToString();
       #endregion
 #endif
-    }
+        }
 
-    public void QueryingJson()
-    {
+        public void QueryingJson()
+        {
 #if NETFX_CORE
       #region QueryingJSON
       string json = @"{
@@ -79,10 +79,10 @@ namespace Newtonsoft.Json.Tests.Documentation
       string itemTitle2 = (string)jObject["channel"]["item"][0]["title"];
       #endregion
 #endif
-    }
+        }
 
-    public void Converting()
-    {
+        public void Converting()
+        {
 #if NETFX_CORE
       #region Converting
       JsonObject jsonObject = new JsonObject
@@ -103,6 +103,6 @@ namespace Newtonsoft.Json.Tests.Documentation
       JsonArray jsonArray = a.ToObject<JsonArray>();
       #endregion
 #endif
+        }
     }
-  }
 }

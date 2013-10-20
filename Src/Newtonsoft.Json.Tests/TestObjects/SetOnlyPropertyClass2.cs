@@ -25,16 +25,18 @@
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class SetOnlyPropertyClass2
-  {
-    private object _value;
-    public object SetOnlyProperty
+    public class SetOnlyPropertyClass2
     {
-      set { _value = value; }
+        private object _value;
+
+        public object SetOnlyProperty
+        {
+            set { _value = value; }
+        }
+
+        public object GetValue()
+        {
+            return _value;
+        }
     }
-    public object GetValue()
-    {
-      return _value;
-    }
-  }
 }
