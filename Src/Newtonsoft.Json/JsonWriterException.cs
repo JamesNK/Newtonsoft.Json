@@ -33,7 +33,7 @@ namespace Newtonsoft.Json
     /// <summary>
     /// The exception thrown when an error occurs while reading Json text.
     /// </summary>
-#if !(SILVERLIGHT || WINDOWS_PHONE || NETFX_CORE || PORTABLE40 || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
     [Serializable]
 #endif
     public class JsonWriterException : JsonException
@@ -72,7 +72,7 @@ namespace Newtonsoft.Json
         {
         }
 
-#if !(WINDOWS_PHONE || SILVERLIGHT || NETFX_CORE || PORTABLE40 || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonWriterException"/> class.
         /// </summary>

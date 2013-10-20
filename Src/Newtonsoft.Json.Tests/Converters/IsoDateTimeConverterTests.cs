@@ -122,7 +122,7 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual(2006, d.Year);
         }
 
-#if !SILVERLIGHT && !NETFX_CORE
+#if !NETFX_CORE
         [Test]
         public void SerializeFormattedDateTimeNewZealandCulture()
         {

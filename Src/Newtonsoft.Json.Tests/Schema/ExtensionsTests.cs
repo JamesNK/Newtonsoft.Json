@@ -36,7 +36,7 @@ using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Linq;
 using System.IO;
 using Newtonsoft.Json.Tests.TestObjects;
-#if !(SILVERLIGHT || NETFX_CORE)
+#if !(NETFX_CORE)
 using System.Data;
 
 #endif
@@ -200,7 +200,7 @@ namespace Newtonsoft.Json.Tests.Schema
 #if !NET20
             GenerateSchemaAndSerializeFromType(new NullableDateTimeTestClass());
 #endif
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
             GenerateSchemaAndSerializeFromType(new DataSet());
 #endif
             GenerateSchemaAndSerializeFromType(new object());

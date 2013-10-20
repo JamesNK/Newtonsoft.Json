@@ -732,7 +732,7 @@ keyword such as type of business.""
             Assert.AreEqual(new DateTime(2000, 10, 15, 5, 5, 5, DateTimeKind.Utc), d);
         }
 
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40)
+#if !(NET20 || NET35 || PORTABLE40)
         [Test]
         public void CovariantIJEnumerable()
         {
@@ -892,7 +892,7 @@ keyword such as type of business.""
             Assert.AreEqual("hi!", (string)a[0]);
         }
 
-#if !(NET35 || NET20 || WINDOWS_PHONE)
+#if !(NET35 || NET20)
         [Test]
         public void ExceptionFromOverloadWithJValue()
         {

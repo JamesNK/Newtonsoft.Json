@@ -203,7 +203,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual("Name!", ((EmployeeReference)employee).Name);
         }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE)
         [Test]
         public void DeserializeTypeNameFromGacAssembly()
         {
@@ -977,7 +977,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             CollectionAssert.AreEquivalent(data, d);
         }
 
-#if !(WINDOWS_PHONE || SILVERLIGHT || NETFX_CORE)
+#if !(NETFX_CORE)
         [Test]
         public void ISerializableTypeNameHandlingTest()
         {
@@ -1043,7 +1043,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 Binder = new MetroBinder(),
                 ContractResolver = new DefaultContractResolver
                 {
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE)
                     IgnoreSerializableAttribute = true
 #endif
                 }
@@ -1723,7 +1723,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         public int Quantity { get; set; }
     }
 
-#if !(WINDOWS_PHONE || SILVERLIGHT || NETFX_CORE)
+#if !(NETFX_CORE)
     public class SerializableWrapper
     {
         public object Content { get; set; }

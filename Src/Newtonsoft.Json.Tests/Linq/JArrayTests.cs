@@ -450,7 +450,7 @@ Parameter name: index",
         }
 
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
         [Test]
         public void ITypedListGetItemProperties()
         {

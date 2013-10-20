@@ -311,7 +311,7 @@ namespace Newtonsoft.Json.Tests.Schema
             Assert.IsTrue(v.IsValid(schema));
         }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
         [Test]
         public void GenerateSchemaForISerializable()
         {
@@ -371,7 +371,7 @@ namespace Newtonsoft.Json.Tests.Schema
             generator.UndefinedSchemaIdHandling = UndefinedSchemaIdHandling.UseTypeName;
             generator.ContractResolver = new CustomDirectoryInfoMapper
             {
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE)
                 IgnoreSerializableAttribute = true
 #endif
             };
@@ -455,7 +455,7 @@ namespace Newtonsoft.Json.Tests.Schema
             serializer.Converters.Add(new IsoDateTimeConverter());
             serializer.ContractResolver = new CustomDirectoryInfoMapper
             {
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE)
                 IgnoreSerializableInterface = true
 #endif
             };
@@ -475,7 +475,7 @@ namespace Newtonsoft.Json.Tests.Schema
             generator.UndefinedSchemaIdHandling = UndefinedSchemaIdHandling.UseTypeName;
             generator.ContractResolver = new CamelCasePropertyNamesContractResolver()
             {
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
                 IgnoreSerializableAttribute = true
 #endif
             };
@@ -520,7 +520,7 @@ namespace Newtonsoft.Json.Tests.Schema
 }", json);
         }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
         [Test]
         public void GenerateSchemaSerializable()
         {

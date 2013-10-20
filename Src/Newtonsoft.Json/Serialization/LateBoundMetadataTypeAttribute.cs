@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !SILVERLIGHT && !NET20 && !NETFX_CORE
+#if !NET20 && !NETFX_CORE
 using System;
 using System.Collections.Generic;
 using System.Linq;

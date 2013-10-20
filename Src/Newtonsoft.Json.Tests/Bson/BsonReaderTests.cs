@@ -26,7 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE)
 using System.Numerics;
 #endif
 using System.Text;
@@ -1428,7 +1428,7 @@ namespace Newtonsoft.Json.Tests.Bson
             }
         }
 
-#if !(WINDOWS_PHONE || SILVERLIGHT || NET20 || NET35 || NETFX_CORE)
+#if !(NET20 || NET35 || NETFX_CORE)
         public void Utf8Text()
         {
             string badText = System.IO.File.ReadAllText(@"PoisonText.txt");
@@ -1447,7 +1447,7 @@ namespace Newtonsoft.Json.Tests.Bson
         }
 #endif
 
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)
+#if !(NET20 || NET35 || PORTABLE || PORTABLE40)
         public class BigIntegerTestClass
         {
             public BigInteger Blah { get; set; }

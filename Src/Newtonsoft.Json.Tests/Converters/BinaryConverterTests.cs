@@ -25,10 +25,10 @@
 
 using System;
 using System.Collections.Generic;
-#if !SILVERLIGHT && !NET20 && !NETFX_CORE
+#if !NET20 && !NETFX_CORE
 using System.Data.Linq;
 #endif
-#if !(SILVERLIGHT || NETFX_CORE)
+#if !(NETFX_CORE)
 using System.Data.SqlTypes;
 #endif
 using System.Text;
@@ -55,7 +55,7 @@ namespace Newtonsoft.Json.Tests.Converters
             public byte[] NullByteArray { get; set; }
         }
 
-#if !(SILVERLIGHT || NET20 || NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NET20 || NETFX_CORE || PORTABLE || PORTABLE40)
         [Test]
         public void DeserializeBinaryClass()
         {
@@ -121,7 +121,7 @@ namespace Newtonsoft.Json.Tests.Converters
 }", json);
         }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
         public class SqlBinaryClass
         {
             public SqlBinary SqlBinary { get; set; }

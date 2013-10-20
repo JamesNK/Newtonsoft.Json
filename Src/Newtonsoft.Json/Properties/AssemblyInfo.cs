@@ -32,12 +32,7 @@ using System.Security;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-#if WINDOWS_PHONE
-[assembly: AssemblyTitle("Json.NET Windows Phone")]
-#elif SILVERLIGHT
-[assembly: AssemblyTitle("Json.NET Silverlight")]
-#elif PORTABLE40
-
+#if PORTABLE40
 [assembly: AssemblyTitle("Json.NET Portable .NET 4.0")]
 #elif PORTABLE
 [assembly: AssemblyTitle("Json.NET Portable")]
@@ -53,7 +48,6 @@ using System.Security;
 [assembly: AssemblyTitle("Json.NET .NET 4.0")]
 [assembly: AllowPartiallyTrustedCallers]
 #else
-
 [assembly: AssemblyTitle("Json.NET")]
 [assembly: AllowPartiallyTrustedCallers]
 #endif

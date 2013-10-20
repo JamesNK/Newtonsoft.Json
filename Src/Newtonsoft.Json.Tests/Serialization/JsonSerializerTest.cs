@@ -25,14 +25,14 @@
 
 using System;
 using System.ComponentModel;
-#if !(NET35 || NET20 || SILVERLIGHT)
+#if !(NET35 || NET20)
 using System.Collections.Concurrent;
 #endif
 using System.Collections.Generic;
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE)
 using System.Numerics;
 #endif
-#if !SILVERLIGHT && !NET20 && !NETFX_CORE
+#if !NET20 && !NETFX_CORE
 using System.ComponentModel.DataAnnotations;
 using System.Configuration;
 using System.Runtime.CompilerServices;
@@ -68,7 +68,7 @@ using System.Runtime.Serialization;
 using System.Globalization;
 using Newtonsoft.Json.Utilities;
 using System.Reflection;
-#if !NET20 && !SILVERLIGHT
+#if !NET20
 using System.Xml.Linq;
 using System.Collections.Specialized;
 using System.Linq.Expressions;
@@ -81,7 +81,7 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
 #endif
-#if !(SILVERLIGHT || NETFX_CORE)
+#if !(NETFX_CORE)
 using System.Drawing;
 using System.Diagnostics;
 
@@ -1291,7 +1291,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(executorObject2.clientGetResultFunction, "ClientBanSubsCB");
         }
 
-#if !SILVERLIGHT && !NETFX_CORE
+#if !NETFX_CORE
         [Test]
         public void HashtableDeserialization()
         {
@@ -1535,7 +1535,7 @@ keyword such as type of business.""
         {
             string json = @"[""vvv\/vvv\tvvv\""vvv\bvvv\nvvv\rvvv\\vvv\fvvv""]";
 
-#if !SILVERLIGHT && !NETFX_CORE
+#if !NETFX_CORE
             JavaScriptSerializer javaScriptSerializer = new JavaScriptSerializer();
             List<string> javaScriptSerializerResult = javaScriptSerializer.Deserialize<List<string>>(json);
 #endif
@@ -1547,7 +1547,7 @@ keyword such as type of business.""
 
             Assert.AreEqual(1, jsonNetResult.Count);
             Assert.AreEqual(dataContractResult[0], jsonNetResult[0]);
-#if !SILVERLIGHT && !NETFX_CORE
+#if !NETFX_CORE
             Assert.AreEqual(javaScriptSerializerResult[0], jsonNetResult[0]);
 #endif
         }
@@ -1904,7 +1904,7 @@ keyword such as type of business.""
             Assert.AreEqual(99, c.Field);
         }
 
-#if !SILVERLIGHT && !NETFX_CORE
+#if !NETFX_CORE
         [Test]
         public void SerializeArrayAsArrayList()
         {
@@ -2704,7 +2704,7 @@ keyword such as type of business.""
             Assert.AreEqual("titleId", n.FidOrder[n.FidOrder.Count - 1]);
         }
 
-#if !(SILVERLIGHT || NET20 || NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NET20 || NETFX_CORE || PORTABLE || PORTABLE40)
         [MetadataType(typeof(OptInClassMetadata))]
         public class OptInClass
         {
@@ -3214,7 +3214,7 @@ Path '', line 1, position 1.",
                 () => { JsonConvert.DeserializeObject<Dictionary<string, string>>(json); });
         }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE)
         [Test]
         public void CannotDeserializeArrayIntoSerializable()
         {
@@ -3336,7 +3336,7 @@ Path '', line 1, position 2.",
                     {
                         ContractResolver = new DefaultContractResolver
                         {
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
                             IgnoreSerializableAttribute = true
 #endif
                         }
@@ -3355,7 +3355,7 @@ Path '', line 1, position 2.",
                     {
                         ContractResolver = new DefaultContractResolver
                         {
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
                             IgnoreSerializableAttribute = true
 #endif
                         }
@@ -3374,7 +3374,7 @@ Path '', line 1, position 2.",
                     {
                         ContractResolver = new DefaultContractResolver
                         {
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
                             IgnoreSerializableAttribute = true
 #endif
                         }
@@ -3393,7 +3393,7 @@ Path '', line 1, position 2.",
                     {
                         ContractResolver = new DefaultContractResolver
                         {
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
                             IgnoreSerializableAttribute = true
 #endif
                         }
@@ -4063,7 +4063,7 @@ Path '', line 1, position 2.",
             Assert.AreEqual("value", newModelStateDictionary["key"]);
         }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
         public class ISerializableTestObject : ISerializable
         {
             internal string _stringValue;
@@ -4547,7 +4547,7 @@ To fix this error either change the environment to be fully trusted, change the 
             }
         }
 
-#if !NET20 && !SILVERLIGHT
+#if !NET20
         public class XNodeTestObject
         {
             public XDocument Document { get; set; }
@@ -4555,14 +4555,14 @@ To fix this error either change the environment to be fully trusted, change the 
         }
 #endif
 
-#if !SILVERLIGHT && !NETFX_CORE
+#if !NETFX_CORE
         public class XmlNodeTestObject
         {
             public XmlDocument Document { get; set; }
         }
 #endif
 
-#if !(NET20 || SILVERLIGHT || PORTABLE40)
+#if !(NET20 || PORTABLE40)
         [Test]
         public void SerializeDeserializeXNodeProperties()
         {
@@ -4593,7 +4593,7 @@ To fix this error either change the environment to be fully trusted, change the 
         }
 #endif
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
         [Test]
         public void SerializeDeserializeXmlNodeProperties()
         {
@@ -5260,7 +5260,7 @@ To fix this error either change the environment to be fully trusted, change the 
             Assert.AreEqual(null, d[2]);
         }
 
-#if !SILVERLIGHT && !NET20
+#if !NET20
         [Test]
         public void SerializeHashSet()
         {
@@ -5313,7 +5313,7 @@ To fix this error either change the environment to be fully trusted, change the 
             Assert.AreEqual(0, z[1].Prop1.Length);
         }
 
-#if !NET20 && !SILVERLIGHT && !NETFX_CORE
+#if !NET20 && !NETFX_CORE
         public class StringDictionaryTestClass
         {
             public StringDictionary StringDictionaryProperty { get; set; }
@@ -5605,7 +5605,7 @@ To fix this error either change the environment to be fully trusted, change the 
             Assert.AreEqual(meh.IDontWork, "meh");
         }
 
-#if !(SILVERLIGHT || NET20 || NETFX_CORE)
+#if !(NET20 || NETFX_CORE)
         [DataContract]
         public struct StructISerializable : ISerializable
         {
@@ -6025,7 +6025,7 @@ To fix this error either change the environment to be fully trusted, change the 
             JsonConvert.DeserializeObject<EnumerableArrayPropertyClass>(json);
         }
 
-#if !(NET20 || SILVERLIGHT)
+#if !(NET20)
         [DataContract]
         public class BaseDataContract
         {
@@ -6452,7 +6452,7 @@ To fix this error either change the environment to be fully trusted, change the 
             }
         }
 
-#if !(SILVERLIGHT || WINDOWS_PHONE || NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
         [Test]
         public void SerializeException1()
         {
@@ -6582,7 +6582,7 @@ To fix this error either change the environment to be fully trusted, change the 
             }
         }
 
-#if !(NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE || PORTABLE40)
+#if !(NET35 || NET20 || PORTABLE || PORTABLE40)
         [Test]
         public void DeserializeConcurrentDictionary()
         {
@@ -6713,7 +6713,7 @@ To fix this error either change the environment to be fully trusted, change the 
             }
         }
 
-#if !(SILVERLIGHT || WINDOWS_PHONE || NET20 || NETFX_CORE)
+#if !(NET20 || NETFX_CORE)
         [Test]
         public void DeserializeDecimalsWithCulture()
         {
@@ -7177,7 +7177,7 @@ Parameter name: value",
         }
 #endif
 
-#if !(SILVERLIGHT || NETFX_CORE)
+#if !(NETFX_CORE)
         [Test]
         public void MetroBlogPost()
         {
@@ -7509,7 +7509,7 @@ Parameter name: value",
             Assert.AreEqual("", s);
         }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
         [Test]
         public void SerializeAndDeserializeWithAttributes()
         {
@@ -7672,7 +7672,7 @@ Parameter name: value",
                 () => { s.Deserialize<Dictionary<string, int>>(new JsonTextReader(new StringReader(json))); });
         }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
         [Test]
         public void DeserializeException()
         {
@@ -7928,7 +7928,7 @@ Parameter name: value",
             Assert.AreEqual("[1.1,0.0,0.0]", json);
         }
 
-#if !(NET20 || NET35 || NET40 || SILVERLIGHT || PORTABLE40)
+#if !(NET20 || NET35 || NET40 || PORTABLE40)
 #if !PORTABLE
         [Test]
         public void DeserializeReadOnlyListWithBigInteger()
@@ -7987,7 +7987,7 @@ Parameter name: value",
 
             Action doStuff = () => { obj = JsonConvert.DeserializeObject<MyTuple<int>>(json); };
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
             doStuff();
             Assert.AreEqual(500, obj.Item1);
 #else
@@ -8020,7 +8020,7 @@ Parameter name: value",
         }
 #endif
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || NET35 || NET20 || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || NET35 || NET20 || PORTABLE40)
         [Test]
         public void SerializeTupleWithSerializableAttribute()
         {
@@ -8047,7 +8047,7 @@ Parameter name: value",
         }
 #endif
 
-#if !(NET40 || NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE40)
+#if !(NET40 || NET35 || NET20 || PORTABLE40)
         public class PopulateReadOnlyTestClass
         {
             public IList<int> NonReadOnlyList { get; set; }
@@ -8888,7 +8888,7 @@ Parameter name: value",
         }
 #endif
 
-#if !(PORTABLE || NET35 || NET20 || SILVERLIGHT || PORTABLE40)
+#if !(PORTABLE || NET35 || NET20 || PORTABLE40)
         [Test]
         public void ReadTooLargeInteger()
         {
@@ -9055,7 +9055,7 @@ Parameter name: value",
             Assert.AreEqual(1234567890.123456m, d);
         }
 
-#if !(PORTABLE || SILVERLIGHT || NETFX_CORE || WINDOWS_PHONE || PORTABLE40)
+#if !(PORTABLE || NETFX_CORE || PORTABLE40)
         [Test]
         public void DontSerializeStaticFields()
         {
@@ -9089,7 +9089,7 @@ Parameter name: value",
             Assert.AreEqual("string!", l[0]);
         }
 
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)
+#if !(NET20 || NET35 || PORTABLE || PORTABLE40)
         [Test]
         public void SerializeBigInteger()
         {
@@ -9103,7 +9103,7 @@ Parameter name: value",
         }
 #endif
 
-#if !(NET40 || NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE || PORTABLE40)
+#if !(NET40 || NET35 || NET20 || PORTABLE40)
         [Test]
         public void DeserializeReadOnlyListInterface()
         {
@@ -9853,7 +9853,7 @@ Parameter name: value",
         public bool Selected { get; set; }
     }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE)
     [Serializable]
     public class AnswerFilterModel
     {
@@ -10086,7 +10086,7 @@ Parameter name: value",
         public new bool no;
     }
 
-#if !(NET35 || NET20 || SILVERLIGHT || WINDOWS_PHONE)
+#if !(NET35 || NET20)
     [JsonObject(MemberSerialization.OptIn)]
     public class GameObject
     {
@@ -10161,7 +10161,7 @@ Parameter name: value",
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-#if !(SILVERLIGHT || NETFX_CORE)
+#if !(NETFX_CORE)
             writer.WriteValue(":::" + value.ToString().ToUpper(CultureInfo.InvariantCulture) + ":::");
 #else
       writer.WriteValue(":::" + value.ToString().ToUpper() + ":::");
@@ -10174,7 +10174,7 @@ Parameter name: value",
             if (s == null)
                 return null;
 
-#if !(SILVERLIGHT || NETFX_CORE)
+#if !(NETFX_CORE)
             return s.ToLower(CultureInfo.InvariantCulture).Trim(new[] { ':' });
 #else
       return s.ToLower().Trim(new[] { ':' });
@@ -10191,7 +10191,7 @@ Parameter name: value",
     {
         protected internal override string ResolvePropertyName(string propertyName)
         {
-#if !(SILVERLIGHT || NETFX_CORE)
+#if !(NETFX_CORE)
             return ":::" + propertyName.ToUpper(CultureInfo.InvariantCulture) + ":::";
 #else
       return ":::" + propertyName.ToUpper() + ":::";

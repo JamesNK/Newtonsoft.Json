@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if (!(SILVERLIGHT) || WINDOWS_PHONE) && !PORTABLE40
+#if !PORTABLE40
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -43,7 +43,7 @@ namespace Newtonsoft.Json.Converters
 {
 
     #region XmlNodeWrappers
-#if !SILVERLIGHT && !NETFX_CORE && !PORTABLE && !PORTABLE40
+#if !NETFX_CORE && !PORTABLE && !PORTABLE40
     internal class XmlDocumentWrapper : XmlNodeWrapper, IXmlDocument
     {
         private readonly XmlDocument _document;
@@ -799,7 +799,7 @@ namespace Newtonsoft.Json.Converters
             if (value is XObject)
                 return XContainerWrapper.WrapNode((XObject)value);
 #endif
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE)
             if (value is XmlNode)
                 return new XmlNodeWrapper((XmlNode)value);
 #endif
@@ -1092,7 +1092,7 @@ namespace Newtonsoft.Json.Converters
                 rootNode = document;
             }
 #endif
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE)
             if (typeof(XmlNode).IsAssignableFrom(objectType))
             {
                 if (objectType != typeof(XmlDocument))
@@ -1555,7 +1555,7 @@ namespace Newtonsoft.Json.Converters
             if (typeof(XObject).IsAssignableFrom(valueType))
                 return true;
 #endif
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE)
             if (typeof(XmlNode).IsAssignableFrom(valueType))
                 return true;
 #endif

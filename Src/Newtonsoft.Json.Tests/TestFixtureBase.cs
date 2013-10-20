@@ -152,11 +152,9 @@ namespace Newtonsoft.Json.Tests
     {
         public static void IsInstanceOfType(Type t, object instance)
         {
-#if (WINDOWS_PHONE || SILVERLIGHT)
-      Assert.IsInstanceOfType(t, instance);
-#elif NETFX_CORE
-      if (!instance.GetType().IsAssignableFrom(t))
-        throw new Exception("Not instance of type");
+#if NETFX_CORE
+            if (!instance.GetType().IsAssignableFrom(t))
+                throw new Exception("Not instance of type");
 #else
             Assert.IsInstanceOf(t, instance);
 #endif
@@ -167,8 +165,8 @@ namespace Newtonsoft.Json.Tests
 #if !NETFX_CORE
             Assert.Contains(value, collection);
 #else
-      if (!collection.Cast<object>().Any(i => i.Equals(value)))
-        throw new Exception("Value not found in collection.");
+            if (!collection.Cast<object>().Any(i => i.Equals(value)))
+                throw new Exception("Value not found in collection.");
 #endif
         }
     }

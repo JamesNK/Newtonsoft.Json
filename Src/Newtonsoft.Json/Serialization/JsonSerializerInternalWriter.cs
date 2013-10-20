@@ -154,7 +154,7 @@ namespace Newtonsoft.Json.Serialization
                     SerializeDynamic(writer, (IDynamicMetaObjectProvider)value, (JsonDynamicContract)valueContract, member, containerContract, containerProperty);
                     break;
 #endif
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE40 || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
                 case JsonContractType.Serializable:
                     SerializeISerializable(writer, (ISerializable)value, (JsonISerializableContract)valueContract, member, containerContract, containerProperty);
                     break;
@@ -298,25 +298,18 @@ namespace Newtonsoft.Json.Serialization
 
             // use the objectType's TypeConverter if it has one and can convert to a string
             if (converter != null
-#if !SILVERLIGHT
                 && !(converter is ComponentConverter)
-#endif
                 && converter.GetType() != typeof(TypeConverter))
             {
                 if (converter.CanConvertTo(typeof(string)))
                 {
-#if !SILVERLIGHT
                     s = converter.ConvertToInvariantString(value);
-#else
-          s = converter.ConvertToString(value);
-#endif
-
                     return true;
                 }
             }
 #endif
 
-#if SILVERLIGHT || NETFX_CORE || PORTABLE
+#if NETFX_CORE || PORTABLE
       if (value is Guid || value is Uri || value is TimeSpan)
       {
         s = value.ToString();
@@ -704,7 +697,7 @@ namespace Newtonsoft.Json.Serialization
             return writeMetadataObject;
         }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE40 || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
 #if !(NET20 || NET35)
         [SecuritySafeCritical]
 #endif

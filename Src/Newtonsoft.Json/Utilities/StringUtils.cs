@@ -182,7 +182,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsHighSurrogate(char c)
         {
-#if !(SILVERLIGHT || PORTABLE40 || PORTABLE)
+#if !(PORTABLE40 || PORTABLE)
             return char.IsHighSurrogate(c);
 #else
             return (c >= 55296 && c <= 56319);
@@ -191,7 +191,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsLowSurrogate(char c)
         {
-#if !(SILVERLIGHT || PORTABLE40 || PORTABLE)
+#if !(PORTABLE40 || PORTABLE)
             return char.IsLowSurrogate(c);
 #else
             return (c >= 56320 && c <= 57343);

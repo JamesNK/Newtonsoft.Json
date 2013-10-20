@@ -282,7 +282,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 }", json);
         }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE)
         public class SerializationEventContextTestObject
         {
             public string TestMember { get; set; }
@@ -400,7 +400,7 @@ OnSerialized_Derived
 OnSerialized_Derived_Derived", string.Join(Environment.NewLine, e.ToArray()));
         }
 
-#if !(NET20 || SILVERLIGHT)
+#if !(NET20)
         [Test]
         public void DerivedDerivedSerializationEvents_DataContractSerializer()
         {

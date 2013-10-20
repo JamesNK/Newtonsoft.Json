@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)
+#if !(NET20 || NET35 || PORTABLE || PORTABLE40)
 using System.Numerics;
 #endif
 using System.Runtime.Serialization;
@@ -38,7 +38,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class TraceWriterTests : TestFixtureBase
     {
-#if !(SILVERLIGHT || PORTABLE || NETFX_CORE || PORTABLE40)
+#if !(PORTABLE || NETFX_CORE || PORTABLE40)
         [Test]
         public void DiagnosticsTraceWriterTest()
         {
@@ -531,7 +531,7 @@ Newtonsoft.Json Error: 0 : Error!
             Assert.AreEqual("Finished deserializing System.Collections.Generic.List`1[System.Object]. Path '$values', line 17, position 4.", traceWriter.TraceRecords[9].Message);
         }
 
-#if !(NETFX_CORE || PORTABLE || SILVERLIGHT || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
         [Test]
         public void DeserializeISerializable()
         {
@@ -718,7 +718,7 @@ Newtonsoft.Json Error: 0 : Error!
             Assert.AreEqual(23, deserialized.FavoriteNumber);
         }
 
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)
+#if !(NET20 || NET35 || PORTABLE || PORTABLE40)
         [Test]
         public void TraceJsonWriterTest()
         {

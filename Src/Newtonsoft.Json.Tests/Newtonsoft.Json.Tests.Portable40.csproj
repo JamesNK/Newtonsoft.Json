@@ -271,7 +271,6 @@
     <Compile Include="Linq\LinqToJsonTest.cs" />
     <Compile Include="PerformanceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SilverlightTests.cs" />
     <Compile Include="TestFixtureBase.cs" />
     <Compile Include="Converters\XmlNodeConverterTest.cs" />
     <Compile Include="TestObjects\TypeClass.cs" />

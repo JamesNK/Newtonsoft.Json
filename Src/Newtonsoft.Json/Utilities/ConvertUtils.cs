@@ -27,7 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.ComponentModel;
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
 using System.Numerics;
 #endif
 using Newtonsoft.Json.Serialization;
@@ -35,7 +35,7 @@ using System.Reflection;
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
 #endif
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE40 || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
 using System.Data.SqlTypes;
 
 #endif
@@ -82,7 +82,7 @@ namespace Newtonsoft.Json.Utilities
         GuidNullable,
         TimeSpan,
         TimeSpanNullable,
-#if !(PORTABLE || NET35 || NET20 || WINDOWS_PHONE || SILVERLIGHT)
+#if !(PORTABLE || NET35 || NET20)
         BigInteger,
         BigIntegerNullable,
 #endif
@@ -147,7 +147,7 @@ namespace Newtonsoft.Json.Utilities
                 { typeof(Guid?), PrimitiveTypeCode.GuidNullable },
                 { typeof(TimeSpan), PrimitiveTypeCode.TimeSpan },
                 { typeof(TimeSpan?), PrimitiveTypeCode.TimeSpanNullable },
-#if !(PORTABLE || PORTABLE40 || NET35 || NET20 || WINDOWS_PHONE || SILVERLIGHT)
+#if !(PORTABLE || PORTABLE40 || NET35 || NET20)
                 { typeof(BigInteger), PrimitiveTypeCode.BigInteger },
                 { typeof(BigInteger?), PrimitiveTypeCode.BigIntegerNullable },
 #endif
@@ -295,7 +295,7 @@ namespace Newtonsoft.Json.Utilities
             return o => call(null, o);
         }
 
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE || PORTABLE40)
+#if !(NET20 || NET35 || PORTABLE || PORTABLE40)
         internal static BigInteger ToBigInteger(object value)
         {
             if (value is BigInteger)
@@ -399,7 +399,7 @@ namespace Newtonsoft.Json.Utilities
                     return Type.GetType((string)initialValue, true);
             }
 
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             if (targetType == typeof(BigInteger))
                 return ToBigInteger(initialValue);
             if (initialValue is BigInteger)
@@ -411,24 +411,12 @@ namespace Newtonsoft.Json.Utilities
             TypeConverter toConverter = GetConverter(initialType);
 
             if (toConverter != null && toConverter.CanConvertTo(targetType))
-            {
-#if !SILVERLIGHT
                 return toConverter.ConvertTo(null, culture, initialValue, targetType);
-#else
-        return toConverter.ConvertTo(initialValue, targetType);
-#endif
-            }
 
             TypeConverter fromConverter = GetConverter(targetType);
 
             if (fromConverter != null && fromConverter.CanConvertFrom(initialType))
-            {
-#if !SILVERLIGHT
                 return fromConverter.ConvertFrom(null, culture, initialValue);
-#else
-        return fromConverter.ConvertFrom(initialValue);
-#endif
-            }
 #endif
 #if !(NETFX_CORE || PORTABLE40 || PORTABLE)
             // handle DBNull and INullable
@@ -440,7 +428,7 @@ namespace Newtonsoft.Json.Utilities
                 throw new Exception("Can not convert null {0} into non-nullable {1}.".FormatWith(CultureInfo.InvariantCulture, initialType, targetType));
             }
 #endif
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE40 || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
             if (initialValue is INullable)
                 return EnsureTypeAssignable(ToValue((INullable)initialValue), initialType, targetType);
 #endif
@@ -529,7 +517,7 @@ namespace Newtonsoft.Json.Utilities
             throw new ArgumentException("Could not cast or convert from {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, (initialType != null) ? initialType.ToString() : "{null}", targetType));
         }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE40 || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
         public static object ToValue(INullable nullableValue)
         {
             if (nullableValue == null)

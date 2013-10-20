@@ -33,7 +33,7 @@ using System.Dynamic;
 #endif
 using System.Diagnostics;
 using System.Globalization;
-#if !(PORTABLE || PORTABLE40 || NET35 || NET20 || SILVERLIGHT)
+#if !(PORTABLE || PORTABLE40 || NET35 || NET20)
 using System.Numerics;
 #endif
 using System.Reflection;
@@ -59,7 +59,7 @@ namespace Newtonsoft.Json.Serialization
         }
 
         private JsonSerializerProxy _internalSerializer;
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE40 || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
         private JsonFormatterConverter _formatterConverter;
 #endif
 
@@ -188,7 +188,7 @@ namespace Newtonsoft.Json.Serialization
             return _internalSerializer;
         }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE40 || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
         private JsonFormatterConverter GetFormatterConverter()
         {
             if (_formatterConverter == null)
@@ -304,7 +304,7 @@ namespace Newtonsoft.Json.Serialization
             {
                 case JsonContractType.Object:
                 case JsonContractType.Dictionary:
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
                 case JsonContractType.Serializable:
 #endif
 #if !(NET35 || NET20 || PORTABLE40)
@@ -458,7 +458,7 @@ namespace Newtonsoft.Json.Serialization
                     JsonDynamicContract dynamicContract = (JsonDynamicContract)contract;
                     return CreateDynamic(reader, dynamicContract, member, id);
 #endif
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE40 || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
                 case JsonContractType.Serializable:
                     JsonISerializableContract serializableContract = (JsonISerializableContract)contract;
                     return CreateISerializable(reader, serializableContract, member, id);
@@ -720,7 +720,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                                 return Enum.ToObject(contract.NonNullableUnderlyingType, value);
                         }
 
-#if !(PORTABLE || PORTABLE40 || NET35 || NET20 || SILVERLIGHT)
+#if !(PORTABLE || PORTABLE40 || NET35 || NET20)
                         if (value is BigInteger)
                             return ConvertUtils.FromBigInteger((BigInteger)value, targetType);
 #endif
@@ -1286,7 +1286,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
             return underlyingList;
         }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE40 || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
         private object CreateISerializable(JsonReader reader, JsonISerializableContract contract, JsonProperty member, string id)
         {
             Type objectType = contract.UnderlyingType;

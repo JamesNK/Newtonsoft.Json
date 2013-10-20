@@ -28,7 +28,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
-#if !(NET20 || NET35 || SILVERLIGHT)
+#if !(NET20 || NET35)
 using System.Threading.Tasks;
 #endif
 using System.Xml;
@@ -873,7 +873,7 @@ now brown cow?", '"', true);
             return (T)converter.ReadJson(reader, typeof(T), null, null);
         }
 
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40)
+#if !(NET20 || NET35 || PORTABLE40)
         [Test]
         public void Async()
         {

@@ -27,10 +27,10 @@
 
 using System;
 using System.Collections.Generic;
-#if !SILVERLIGHT && !NET20 && !NETFX_CORE
+#if !NET20 && !NETFX_CORE
 using System.Data.Linq;
 #endif
-#if !SILVERLIGHT && !NETFX_CORE
+#if !NETFX_CORE
 using System.Data.SqlTypes;
 #endif
 using System.Dynamic;

@@ -27,7 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-#if !(NET20 || NET35 || SILVERLIGHT || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE)
 using System.Numerics;
 #endif
 using Newtonsoft.Json.Serialization;
@@ -42,7 +42,7 @@ using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAtt
 using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Collections;
-#if !SILVERLIGHT && !NETFX_CORE
+#if !NETFX_CORE
 using System.Web.UI;
 #endif
 #if NET20
@@ -684,7 +684,7 @@ Parameter name: arrayIndex",
             Assert.AreEqual(p4, l[1]);
         }
 
-#if !(SILVERLIGHT || NET20 || NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NET20 || NETFX_CORE || PORTABLE || PORTABLE40)
         [Test]
         public void PropertyChanging()
         {
@@ -1241,7 +1241,7 @@ Parameter name: arrayIndex",
                 });
         }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
         [Test]
         public void IBindingListSortDirection()
         {
@@ -1444,7 +1444,7 @@ Parameter name: arrayIndex",
         }
 #endif
 
-#if SILVERLIGHT || !(NET20 || NET35 || PORTABLE40)
+#if !(NET20 || NET35 || PORTABLE40)
         [Test]
         public void CollectionChanged()
         {
@@ -1690,7 +1690,7 @@ Parameter name: arrayIndex",
                 });
         }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
         [Test]
         public void GetProperties()
         {

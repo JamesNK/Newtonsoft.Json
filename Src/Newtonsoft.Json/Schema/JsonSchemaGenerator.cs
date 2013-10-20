@@ -329,14 +329,14 @@ namespace Newtonsoft.Json.Schema
                             }
                         }
                         break;
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
                     case JsonContractType.Serializable:
                         CurrentSchema.Type = AddNullType(JsonSchemaType.Object, valueRequired);
                         CurrentSchema.Id = GetTypeId(type, false);
                         GenerateISerializableContract(type, (JsonISerializableContract)contract);
                         break;
 #endif
-#if !(NET35 || NET20 || WINDOWS_PHONE || PORTABLE40)
+#if !(NET35 || NET20 || PORTABLE40)
                     case JsonContractType.Dynamic:
 #endif
                     case JsonContractType.Linq:
@@ -388,7 +388,7 @@ namespace Newtonsoft.Json.Schema
                 CurrentSchema.AllowAdditionalProperties = false;
         }
 
-#if !(SILVERLIGHT || NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
         private void GenerateISerializableContract(Type type, JsonISerializableContract contract)
         {
             CurrentSchema.AllowAdditionalProperties = true;
@@ -445,7 +445,7 @@ namespace Newtonsoft.Json.Schema
                 case PrimitiveTypeCode.UInt32:
                 case PrimitiveTypeCode.Int64:
                 case PrimitiveTypeCode.UInt64:
-#if !(PORTABLE || NET35 || NET20 || WINDOWS_PHONE || SILVERLIGHT)
+#if !(PORTABLE || NET35 || NET20)
                 case PrimitiveTypeCode.BigInteger:
 #endif
                     return schemaType | JsonSchemaType.Integer;
