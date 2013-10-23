@@ -37,8 +37,8 @@ namespace Newtonsoft.Json.Tests.Linq.ComponentModel
         {
             JObject o = JObject.Parse("{prop1:'12345!',prop2:[1,'two','III']}");
 
-            JPropertyDescriptor prop1 = new JPropertyDescriptor("prop1", typeof(string));
-            JPropertyDescriptor prop2 = new JPropertyDescriptor("prop2", typeof(JArray));
+            JPropertyDescriptor prop1 = new JPropertyDescriptor("prop1");
+            JPropertyDescriptor prop2 = new JPropertyDescriptor("prop2");
 
             Assert.AreEqual("12345!", ((JValue)prop1.GetValue(o)).Value);
             Assert.AreEqual(o["prop2"], prop2.GetValue(o));
@@ -49,7 +49,7 @@ namespace Newtonsoft.Json.Tests.Linq.ComponentModel
         {
             JObject o = JObject.Parse("{prop1:'12345!'}");
 
-            JPropertyDescriptor propertyDescriptor1 = new JPropertyDescriptor("prop1", typeof(string));
+            JPropertyDescriptor propertyDescriptor1 = new JPropertyDescriptor("prop1");
 
             propertyDescriptor1.SetValue(o, "54321!");
 
@@ -61,7 +61,7 @@ namespace Newtonsoft.Json.Tests.Linq.ComponentModel
         {
             JObject o = JObject.Parse("{prop1:'12345!'}");
 
-            JPropertyDescriptor propertyDescriptor1 = new JPropertyDescriptor("prop1", typeof(string));
+            JPropertyDescriptor propertyDescriptor1 = new JPropertyDescriptor("prop1");
             propertyDescriptor1.ResetValue(o);
 
             Assert.AreEqual("12345!", (string)o["prop1"]);
@@ -70,7 +70,7 @@ namespace Newtonsoft.Json.Tests.Linq.ComponentModel
         [Test]
         public void IsReadOnly()
         {
-            JPropertyDescriptor propertyDescriptor1 = new JPropertyDescriptor("prop1", typeof(string));
+            JPropertyDescriptor propertyDescriptor1 = new JPropertyDescriptor("prop1");
 
             Assert.AreEqual(false, propertyDescriptor1.IsReadOnly);
         }
@@ -78,9 +78,9 @@ namespace Newtonsoft.Json.Tests.Linq.ComponentModel
         [Test]
         public void PropertyType()
         {
-            JPropertyDescriptor propertyDescriptor1 = new JPropertyDescriptor("prop1", typeof(string));
+            JPropertyDescriptor propertyDescriptor1 = new JPropertyDescriptor("prop1");
 
-            Assert.AreEqual(typeof(string), propertyDescriptor1.PropertyType);
+            Assert.AreEqual(typeof(object), propertyDescriptor1.PropertyType);
         }
     }
 }

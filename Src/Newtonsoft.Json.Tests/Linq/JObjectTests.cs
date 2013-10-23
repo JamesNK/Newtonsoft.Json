@@ -1694,40 +1694,26 @@ Parameter name: arrayIndex",
         [Test]
         public void GetProperties()
         {
-            JObject o = JObject.Parse("{'prop1':12,'prop2':'hi!','prop3':null,'prop4':[1,2,3]}");
+            JObject o = JObject.Parse("{'prop1':12,'prop2':'hi!'}");
 
             ICustomTypeDescriptor descriptor = o;
 
             PropertyDescriptorCollection properties = descriptor.GetProperties();
-            Assert.AreEqual(4, properties.Count);
+            Assert.AreEqual(2, properties.Count);
 
             PropertyDescriptor prop1 = properties[0];
             Assert.AreEqual("prop1", prop1.Name);
-            Assert.AreEqual(typeof(long), prop1.PropertyType);
+            Assert.AreEqual(typeof(object), prop1.PropertyType);
             Assert.AreEqual(typeof(JObject), prop1.ComponentType);
             Assert.AreEqual(false, prop1.CanResetValue(o));
             Assert.AreEqual(false, prop1.ShouldSerializeValue(o));
 
             PropertyDescriptor prop2 = properties[1];
             Assert.AreEqual("prop2", prop2.Name);
-            Assert.AreEqual(typeof(string), prop2.PropertyType);
+            Assert.AreEqual(typeof(object), prop2.PropertyType);
             Assert.AreEqual(typeof(JObject), prop2.ComponentType);
             Assert.AreEqual(false, prop2.CanResetValue(o));
             Assert.AreEqual(false, prop2.ShouldSerializeValue(o));
-
-            PropertyDescriptor prop3 = properties[2];
-            Assert.AreEqual("prop3", prop3.Name);
-            Assert.AreEqual(typeof(object), prop3.PropertyType);
-            Assert.AreEqual(typeof(JObject), prop3.ComponentType);
-            Assert.AreEqual(false, prop3.CanResetValue(o));
-            Assert.AreEqual(false, prop3.ShouldSerializeValue(o));
-
-            PropertyDescriptor prop4 = properties[3];
-            Assert.AreEqual("prop4", prop4.Name);
-            Assert.AreEqual(typeof(JArray), prop4.PropertyType);
-            Assert.AreEqual(typeof(JObject), prop4.ComponentType);
-            Assert.AreEqual(false, prop4.CanResetValue(o));
-            Assert.AreEqual(false, prop4.ShouldSerializeValue(o));
         }
 #endif
 
