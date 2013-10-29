@@ -2,6 +2,8 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
+    <SourceLinkRepoUrl>https://raw.github.com/ctaggart/Newtonsoft.Json/{0}/%var2%</SourceLinkRepoUrl>
+    <SourceLinkRepoDir>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)\..\..'))</SourceLinkRepoDir>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{EEEA67F9-9089-481D-A4DC-0966DEC9FD7D}</ProjectGuid>
@@ -26,6 +28,7 @@
     <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <SourceLink>true</SourceLink>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\Net45\</OutputPath>
@@ -227,7 +230,11 @@
   <ItemGroup>
     <EmbeddedResource Include="Dynamic.snk" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\SourceLink.Build.0.2\build\SourceLink.Build.targets" Condition="Exists('..\packages\SourceLink.Build.0.2\build\SourceLink.Build.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
