@@ -254,7 +254,7 @@ namespace Newtonsoft.Json.Schema
             if (explicitId != null)
                 CurrentSchema.Id = explicitId;
 
-            if (required)
+            if (valueRequired == Required.Always)
                 CurrentSchema.Required = true;
             CurrentSchema.Title = GetTitle(type);
             CurrentSchema.Description = GetDescription(type);
