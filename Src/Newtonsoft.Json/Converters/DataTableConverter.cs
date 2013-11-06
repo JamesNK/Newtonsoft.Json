@@ -92,10 +92,10 @@ namespace Newtonsoft.Json.Converters
                 reader.Read();
             }
 
-			if (reader.TokenType != JsonToken.StartObject)
-			{
-				reader.Read();
-			}
+            if (reader.TokenType != JsonToken.StartObject)
+            {
+                reader.Read();
+            }
 
             while (reader.TokenType == JsonToken.StartObject)
             {
@@ -108,28 +108,28 @@ namespace Newtonsoft.Json.Converters
 
                     reader.Read();
 
-					if (reader.TokenType == JsonToken.StartArray || reader.TokenType == JsonToken.StartObject)
-					{
-						DataTable innerTable = new DataTable();
-						innerTable.TableName = columnName;
-						if (!dt.Columns.Contains(columnName))
-						{
-							dt.Columns.Add(new DataColumn(columnName, typeof(DataTable)));
-						}
-						dr[columnName] = ReadJson(reader, typeof(DataTable), innerTable, serializer);
-					}
-					else
-					{
-						if (!dt.Columns.Contains(columnName))
-						{
-							Type columnType = GetColumnDataType(reader.TokenType);
-							dt.Columns.Add(new DataColumn(columnName, columnType));
-						}
-
-						dr[columnName] = reader.Value ?? DBNull.Value;
+                if (reader.TokenType == JsonToken.StartArray || reader.TokenType == JsonToken.StartObject)
+                {
+                    DataTable innerTable = new DataTable();
+                    innerTable.TableName = columnName;
+                    if (!dt.Columns.Contains(columnName))
+                    {
+                        dt.Columns.Add(new DataColumn(columnName, typeof(DataTable)));
                     }
-                    reader.Read();
+                    dr[columnName] = ReadJson(reader, typeof(DataTable), innerTable, serializer);
                 }
+                else
+                {
+                    if (!dt.Columns.Contains(columnName))
+                    {
+                        Type columnType = GetColumnDataType(reader.TokenType);
+                        dt.Columns.Add(new DataColumn(columnName, columnType));
+                    }
+                    dr[columnName] = reader.Value ?? DBNull.Value;
+                }
+
+                reader.Read();
+            }
 
                 dr.EndEdit();
                 dt.Rows.Add(dr);
