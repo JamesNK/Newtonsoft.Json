@@ -747,6 +747,75 @@ namespace Newtonsoft.Json.Tests.Bson
             //}
         }
 
+        [Test]
+        public void SerializeByteArray_ErrorWhenTopLevel()
+        {
+            byte[] b = Encoding.UTF8.GetBytes("Hello world");
+
+            MemoryStream ms = new MemoryStream();
+            JsonSerializer serializer = new JsonSerializer();
+
+            BsonWriter writer = new BsonWriter(ms);
+
+            ExceptionAssert.Throws<JsonWriterException>("Error writing Binary value. BSON must start with an Object or Array. Path ''.",
+                () =>
+                {
+                    serializer.Serialize(writer, b);
+                });
+        }
+
+        public class GuidTestClass
+        {
+            public Guid AGuid { get; set; }
+        }
+
+        public class StringTestClass
+        {
+            public string AGuid { get; set; }
+        }
+
+        [Test]
+        public void WriteReadGuid()
+        {
+            GuidTestClass c = new GuidTestClass();
+            c.AGuid = new Guid("af45dccf-df13-44fe-82be-6212c09eda84");
+
+            MemoryStream ms = new MemoryStream();
+            JsonSerializer serializer = new JsonSerializer();
+
+            BsonWriter writer = new BsonWriter(ms);
+
+            serializer.Serialize(writer, c);
+
+            ms.Seek(0, SeekOrigin.Begin);
+            BsonReader reader = new BsonReader(ms);
+
+            GuidTestClass c2 = serializer.Deserialize<GuidTestClass>(reader);
+
+            Assert.AreEqual(c.AGuid, c2.AGuid);
+        }
+
+        [Test]
+        public void WriteStringReadGuid()
+        {
+            StringTestClass c = new StringTestClass();
+            c.AGuid = new Guid("af45dccf-df13-44fe-82be-6212c09eda84").ToString();
+
+            MemoryStream ms = new MemoryStream();
+            JsonSerializer serializer = new JsonSerializer();
+
+            BsonWriter writer = new BsonWriter(ms);
+
+            serializer.Serialize(writer, c);
+
+            ms.Seek(0, SeekOrigin.Begin);
+            BsonReader reader = new BsonReader(ms);
+
+            GuidTestClass c2 = serializer.Deserialize<GuidTestClass>(reader);
+
+            Assert.AreEqual(c.AGuid, c2.AGuid.ToString());
+        }
+
 #if !(NET20 || NET35 || PORTABLE || PORTABLE40)
         [Test]
         public void WriteBigInteger()
