@@ -1,0 +1,1 @@
+..\Tools\NUnit\nunit-console.exe "..\Working\Deployed\Bin\Net45\Newtonsoft.Json.Tests.dll" /framework=net-4.0 /noshadow

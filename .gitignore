@@ -10,3 +10,6 @@ AppPackages/
 _ReSharper.*
 *.ReSharper.user
 *.resharper.user
+/Build/TestResult.xml
+/Build/reports
+/Build/results.xml
