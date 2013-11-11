@@ -110,6 +110,14 @@ namespace Newtonsoft.Json.Tests
         }
 
         [Test]
+        public void SerializeAnonymous()
+        {
+            var helloWorld = new { message = "Hello, World!" };
+
+            BenchmarkSerializeMethod(SerializeMethod.JsonNet, helloWorld);
+        }
+
+        [Test]
         public void DeserializeSimpleObject()
         {
             DeserializeTests<SimpleObject>(SimpleJsonText);
