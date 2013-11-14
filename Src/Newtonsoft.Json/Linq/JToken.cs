@@ -1934,6 +1934,23 @@ namespace Newtonsoft.Json.Linq
         public JToken SelectToken(string path, bool errorWhenNoMatch)
         {
             JPath p = new JPath(path);
+
+            // todo change this to a foreach
+            List<JToken> result = p.Evaluate(this, errorWhenNoMatch).ToList();
+            if (result.Count > 1)
+                throw new Exception("TODO");
+
+            return result.SingleOrDefault();
+        }
+
+        public IEnumerable<JToken> SelectTokens(string path)
+        {
+            return SelectTokens(path, false);
+        }
+
+        public IEnumerable<JToken> SelectTokens(string path, bool errorWhenNoMatch)
+        {
+            JPath p = new JPath(path);
             return p.Evaluate(this, errorWhenNoMatch);
         }
 
