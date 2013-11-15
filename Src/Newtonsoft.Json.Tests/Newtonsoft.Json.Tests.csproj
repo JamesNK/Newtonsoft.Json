@@ -207,7 +207,8 @@
     <Compile Include="Linq\JArrayTests.cs" />
     <Compile Include="Linq\JConstructorTests.cs" />
     <Compile Include="Linq\JObjectTests.cs" />
-    <Compile Include="Linq\JPathTests.cs" />
+    <Compile Include="Linq\JsonPath\JPathExecuteTests.cs" />
+    <Compile Include="Linq\JsonPath\JPathParseTests.cs" />
     <Compile Include="Linq\JPropertyTests.cs" />
     <Compile Include="Linq\JRawTests.cs" />
     <Compile Include="Linq\JTokenEqualityComparerTests.cs" />

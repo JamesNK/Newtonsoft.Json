@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq.JsonPath;
 #if !NETFX_CORE
 using NUnit.Framework;
 #else
@@ -40,219 +41,11 @@ using System.Linq;
 
 #endif
 
-namespace Newtonsoft.Json.Tests.Linq
+namespace Newtonsoft.Json.Tests.Linq.JsonPath
 {
     [TestFixture]
-    public class JPathTests : TestFixtureBase
+    public class JPathExecuteTests : TestFixtureBase
     {
-        [Test]
-        public void SingleProperty()
-        {
-            JPath path = new JPath("Blah");
-            Assert.AreEqual(1, path.Parts.Count);
-            Assert.AreEqual("Blah", ((FieldFilter)path.Parts[0]).Name);
-        }
-
-        [Test]
-        public void SinglePropertyWithRoot()
-        {
-            JPath path = new JPath("$.Blah");
-            Assert.AreEqual(1, path.Parts.Count);
-            Assert.AreEqual("Blah", ((FieldFilter)path.Parts[0]).Name);
-        }
-
-        [Test]
-        public void WildcardPropertyWithRoot()
-        {
-            JPath path = new JPath("$.*");
-            Assert.AreEqual(1, path.Parts.Count);
-            Assert.AreEqual(null, ((FieldFilter)path.Parts[0]).Name);
-        }
-
-        [Test]
-        public void WildcardArrayWithRoot()
-        {
-            JPath path = new JPath("$.[*]");
-            Assert.AreEqual(1, path.Parts.Count);
-            Assert.AreEqual(null, ((ArrayIndexFilter)path.Parts[0]).Index);
-        }
-
-        [Test]
-        public void WildcardArray()
-        {
-            JPath path = new JPath("[*]");
-            Assert.AreEqual(1, path.Parts.Count);
-            Assert.AreEqual(null, ((ArrayIndexFilter)path.Parts[0]).Index);
-        }
-
-        [Test]
-        public void WildcardArrayWithProperty()
-        {
-            JPath path = new JPath("[*].derp");
-            Assert.AreEqual(2, path.Parts.Count);
-            Assert.AreEqual(null, ((ArrayIndexFilter)path.Parts[0]).Index);
-            Assert.AreEqual("derp", ((FieldFilter)path.Parts[1]).Name);
-        }
-
-        [Test]
-        public void QuotedWildcardPropertyWithRoot()
-        {
-            JPath path = new JPath("$.['*']");
-            Assert.AreEqual(1, path.Parts.Count);
-            Assert.AreEqual("*", ((FieldFilter)path.Parts[0]).Name);
-        }
-
-        [Test]
-        public void SingleScanWithRoot()
-        {
-            JPath path = new JPath("$..Blah");
-            Assert.AreEqual(1, path.Parts.Count);
-            Assert.AreEqual("Blah", ((ScanFilter)path.Parts[0]).Name);
-        }
-
-        [Test]
-        public void WildcardScanWithRoot()
-        {
-            JPath path = new JPath("$..*");
-            Assert.AreEqual(1, path.Parts.Count);
-            Assert.AreEqual(null, ((ScanFilter)path.Parts[0]).Name);
-        }
-
-        [Test]
-        public void TwoProperties()
-        {
-            JPath path = new JPath("Blah.Two");
-            Assert.AreEqual(2, path.Parts.Count);
-            Assert.AreEqual("Blah", ((FieldFilter)path.Parts[0]).Name);
-            Assert.AreEqual("Two", ((FieldFilter)path.Parts[1]).Name);
-        }
-
-        [Test]
-        public void OnePropertyOneScan()
-        {
-            JPath path = new JPath("Blah..Two");
-            Assert.AreEqual(2, path.Parts.Count);
-            Assert.AreEqual("Blah", ((FieldFilter)path.Parts[0]).Name);
-            Assert.AreEqual("Two", ((ScanFilter)path.Parts[1]).Name);
-        }
-
-        [Test]
-        public void SinglePropertyAndIndexer()
-        {
-            JPath path = new JPath("Blah[0]");
-            Assert.AreEqual(2, path.Parts.Count);
-            Assert.AreEqual("Blah", ((FieldFilter)path.Parts[0]).Name);
-            Assert.AreEqual(0, ((ArrayIndexFilter)path.Parts[1]).Index);
-        }
-
-        [Test]
-        public void SinglePropertyAndFilter()
-        {
-            JPath path = new JPath("Blah[?(@.name=='hi')]");
-            Assert.AreEqual(2, path.Parts.Count);
-            Assert.AreEqual("Blah", ((FieldFilter)path.Parts[0]).Name);
-            List<object> expressions = ((QueryFilter)path.Parts[1]).Expression;
-            Assert.AreEqual(1, expressions.Count);
-        }
-
-        [Test]
-        public void MultiplePropertiesAndIndexers()
-        {
-            JPath path = new JPath("Blah[0]..Two.Three[1].Four");
-            Assert.AreEqual(6, path.Parts.Count);
-            Assert.AreEqual(FilterType.Field, path.Parts[0].Type);
-            Assert.AreEqual("Blah", ((FieldFilter) path.Parts[0]).Name);
-            Assert.AreEqual(FilterType.ArrayIndex, path.Parts[1].Type);
-            Assert.AreEqual(0, ((ArrayIndexFilter) path.Parts[1]).Index);
-            Assert.AreEqual(FilterType.Scan, path.Parts[2].Type);
-            Assert.AreEqual("Two", ((ScanFilter)path.Parts[2]).Name);
-            Assert.AreEqual("Three", ((FieldFilter)path.Parts[3]).Name);
-            Assert.AreEqual(1, ((ArrayIndexFilter)path.Parts[4]).Index);
-            Assert.AreEqual("Four", ((FieldFilter)path.Parts[5]).Name);
-        }
-
-        [Test]
-        public void BadCharactersInIndexer()
-        {
-            ExceptionAssert.Throws<JsonException>(
-                @"Unexpected character while parsing path indexer: [",
-                () => { new JPath("Blah[[0]].Two.Three[1].Four"); });
-        }
-
-        [Test]
-        public void UnclosedIndexer()
-        {
-            ExceptionAssert.Throws<JsonException>(
-                @"Path ended with open indexer.",
-                () => { new JPath("Blah[0"); });
-        }
-
-        //[Test]
-        //public void AdditionalDots()
-        //{
-        //    JPath path = new JPath(".Blah..[0]..Two.Three....[1].Four.");
-        //    Assert.AreEqual(6, path.Parts.Count);
-        //    Assert.AreEqual("Blah", path.Parts[0]);
-        //    Assert.AreEqual(0, path.Parts[1]);
-        //    Assert.AreEqual("Two", path.Parts[2]);
-        //    Assert.AreEqual("Three", path.Parts[3]);
-        //    Assert.AreEqual(1, path.Parts[4]);
-        //    Assert.AreEqual("Four", path.Parts[5]);
-        //}
-
-        [Test]
-        public void IndexerOnly()
-        {
-            JPath path = new JPath("[111119990]");
-            Assert.AreEqual(1, path.Parts.Count);
-            Assert.AreEqual(111119990, ((ArrayIndexFilter)path.Parts[0]).Index);
-        }
-
-        [Test]
-        public void MultipleIndexes()
-        {
-            JPath path = new JPath("[111119990,3]");
-            Assert.AreEqual(1, path.Parts.Count);
-            Assert.AreEqual(2, ((ArrayMultipleIndexFilter)path.Parts[0]).Indexes.Count);
-            Assert.AreEqual(111119990, ((ArrayMultipleIndexFilter)path.Parts[0]).Indexes[0]);
-            Assert.AreEqual(3, ((ArrayMultipleIndexFilter)path.Parts[0]).Indexes[1]);
-        }
-
-        [Test]
-        public void EmptyIndexer()
-        {
-            ExceptionAssert.Throws<JsonException>(
-                "Array index expected.",
-                () => { new JPath("[]"); });
-        }
-
-        [Test]
-        public void IndexerCloseInProperty()
-        {
-            ExceptionAssert.Throws<JsonException>(
-                "Unexpected character while parsing path: ]",
-                () => { new JPath("]"); });
-        }
-
-        [Test]
-        public void AdjacentIndexers()
-        {
-            JPath path = new JPath("[1][0][0][" + int.MaxValue + "]");
-            Assert.AreEqual(4, path.Parts.Count);
-            Assert.AreEqual(1, ((ArrayIndexFilter)path.Parts[0]).Index);
-            Assert.AreEqual(0, ((ArrayIndexFilter)path.Parts[1]).Index);
-            Assert.AreEqual(0, ((ArrayIndexFilter)path.Parts[2]).Index);
-            Assert.AreEqual(int.MaxValue, ((ArrayIndexFilter)path.Parts[3]).Index);
-        }
-
-        [Test]
-        public void MissingDotAfterIndexer()
-        {
-            ExceptionAssert.Throws<JsonException>(
-                "Unexpected character following indexer: B",
-                () => { new JPath("[1]Blah"); });
-        }
-
         [Test]
         public void EvaluateSingleProperty()
         {
@@ -390,6 +183,54 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.IsNotNull(t);
             Assert.AreEqual(JTokenType.Integer, t.Type);
             Assert.AreEqual(2, (int)t);
+        }
+
+        [Test]
+        public void EvaluateArraySlice()
+        {
+            JArray a = new JArray(1, 2, 3, 4, 5, 6, 7, 8, 9);
+            IList<JToken> t = null;
+
+            t = a.SelectTokens("[-3:]").ToList();
+            Assert.AreEqual(3, t.Count);
+            Assert.AreEqual(7, (int)t[0]);
+            Assert.AreEqual(8, (int)t[1]);
+            Assert.AreEqual(9, (int)t[2]);
+
+            t = a.SelectTokens("[-1:-2:-1]").ToList();
+            Assert.AreEqual(1, t.Count);
+            Assert.AreEqual(9, (int)t[0]);
+
+            t = a.SelectTokens("[-2:-1]").ToList();
+            Assert.AreEqual(1, t.Count);
+            Assert.AreEqual(8, (int)t[0]);
+
+            t = a.SelectTokens("[1:1]").ToList();
+            Assert.AreEqual(0, t.Count);
+
+            t = a.SelectTokens("[1:2]").ToList();
+            Assert.AreEqual(1, t.Count);
+            Assert.AreEqual(2, (int)t[0]);
+
+            t = a.SelectTokens("[::-1]").ToList();
+            Assert.AreEqual(9, t.Count);
+            Assert.AreEqual(9, (int)t[0]);
+            Assert.AreEqual(8, (int)t[1]);
+            Assert.AreEqual(7, (int)t[2]);
+            Assert.AreEqual(6, (int)t[3]);
+            Assert.AreEqual(5, (int)t[4]);
+            Assert.AreEqual(4, (int)t[5]);
+            Assert.AreEqual(3, (int)t[6]);
+            Assert.AreEqual(2, (int)t[7]);
+            Assert.AreEqual(1, (int)t[8]);
+
+            t = a.SelectTokens("[::-2]").ToList();
+            Assert.AreEqual(5, t.Count);
+            Assert.AreEqual(9, (int)t[0]);
+            Assert.AreEqual(7, (int)t[1]);
+            Assert.AreEqual(5, (int)t[2]);
+            Assert.AreEqual(3, (int)t[3]);
+            Assert.AreEqual(1, (int)t[4]);
         }
 
         [Test]

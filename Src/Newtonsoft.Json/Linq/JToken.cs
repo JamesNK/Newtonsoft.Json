@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq.JsonPath;
 #if !(NET35 || NET20 || PORTABLE40)
 using System.Dynamic;
 using System.Linq.Expressions;
