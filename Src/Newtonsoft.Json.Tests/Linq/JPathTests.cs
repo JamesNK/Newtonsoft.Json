@@ -62,11 +62,60 @@ namespace Newtonsoft.Json.Tests.Linq
         }
 
         [Test]
+        public void WildcardPropertyWithRoot()
+        {
+            JPath path = new JPath("$.*");
+            Assert.AreEqual(1, path.Parts.Count);
+            Assert.AreEqual(null, ((FieldFilter)path.Parts[0]).Name);
+        }
+
+        [Test]
+        public void WildcardArrayWithRoot()
+        {
+            JPath path = new JPath("$.[*]");
+            Assert.AreEqual(1, path.Parts.Count);
+            Assert.AreEqual(null, ((ArrayIndexFilter)path.Parts[0]).Index);
+        }
+
+        [Test]
+        public void WildcardArray()
+        {
+            JPath path = new JPath("[*]");
+            Assert.AreEqual(1, path.Parts.Count);
+            Assert.AreEqual(null, ((ArrayIndexFilter)path.Parts[0]).Index);
+        }
+
+        [Test]
+        public void WildcardArrayWithProperty()
+        {
+            JPath path = new JPath("[*].derp");
+            Assert.AreEqual(2, path.Parts.Count);
+            Assert.AreEqual(null, ((ArrayIndexFilter)path.Parts[0]).Index);
+            Assert.AreEqual("derp", ((FieldFilter)path.Parts[1]).Name);
+        }
+
+        [Test]
+        public void QuotedWildcardPropertyWithRoot()
+        {
+            JPath path = new JPath("$.['*']");
+            Assert.AreEqual(1, path.Parts.Count);
+            Assert.AreEqual("*", ((FieldFilter)path.Parts[0]).Name);
+        }
+
+        [Test]
         public void SingleScanWithRoot()
         {
             JPath path = new JPath("$..Blah");
             Assert.AreEqual(1, path.Parts.Count);
             Assert.AreEqual("Blah", ((ScanFilter)path.Parts[0]).Name);
+        }
+
+        [Test]
+        public void WildcardScanWithRoot()
+        {
+            JPath path = new JPath("$..*");
+            Assert.AreEqual(1, path.Parts.Count);
+            Assert.AreEqual(null, ((ScanFilter)path.Parts[0]).Name);
         }
 
         [Test]
@@ -217,6 +266,20 @@ namespace Newtonsoft.Json.Tests.Linq
         }
 
         [Test]
+        public void EvaluateWildcardProperty()
+        {
+            JObject o = new JObject(
+                new JProperty("Blah", 1),
+                new JProperty("Blah2", 2));
+
+            IList<JToken> t = o.SelectTokens("$.*").ToList();
+            Assert.IsNotNull(t);
+            Assert.AreEqual(2, t.Count);
+            Assert.AreEqual(1, (int)t[0]);
+            Assert.AreEqual(2, (int)t[1]);
+        }
+
+        [Test]
         public void QuoteName()
         {
             JObject o = new JObject(
@@ -330,6 +393,20 @@ namespace Newtonsoft.Json.Tests.Linq
         }
 
         [Test]
+        public void EvaluateWildcardArray()
+        {
+            JArray a = new JArray(1, 2, 3, 4);
+
+            List<JToken> t = a.SelectTokens("[*]").ToList();
+            Assert.IsNotNull(t);
+            Assert.AreEqual(4, t.Count);
+            Assert.AreEqual(1, (int)t[0]);
+            Assert.AreEqual(2, (int)t[1]);
+            Assert.AreEqual(3, (int)t[2]);
+            Assert.AreEqual(4, (int)t[3]);
+        }
+
+        [Test]
         public void EvaluateArrayMultipleIndexes()
         {
             JArray a = new JArray(1, 2, 3, 4);
@@ -340,6 +417,77 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(2, (int)t.ElementAt(0));
             Assert.AreEqual(3, (int)t.ElementAt(1));
             Assert.AreEqual(1, (int)t.ElementAt(2));
+        }
+
+        [Test]
+        public void EvaluateScan()
+        {
+            JObject o1 = new JObject{ {"Name", 1} };
+            JObject o2 = new JObject{ {"Name", 2} };
+            JArray a = new JArray(o1, o2);
+
+            IList<JToken> t = a.SelectTokens("$..Name").ToList();
+            Assert.IsNotNull(t);
+            Assert.AreEqual(2, t.Count);
+            Assert.AreEqual(1, (int)t[0]);
+            Assert.AreEqual(2, (int)t[1]);
+        }
+
+        [Test]
+        public void EvaluateWildcardScan()
+        {
+            JObject o1 = new JObject { { "Name", 1 } };
+            JObject o2 = new JObject { { "Name", 2 } };
+            JArray a = new JArray(o1, o2);
+
+            IList<JToken> t = a.SelectTokens("$..*").ToList();
+            Assert.IsNotNull(t);
+            Assert.AreEqual(5, t.Count);
+            Assert.IsTrue(JToken.DeepEquals(a, t[0]));
+            Assert.IsTrue(JToken.DeepEquals(o1, t[1]));
+            Assert.AreEqual(1, (int)t[2]);
+            Assert.IsTrue(JToken.DeepEquals(o2, t[3]));
+            Assert.AreEqual(2, (int)t[4]);
+        }
+
+        [Test]
+        public void EvaluateScanNestResults()
+        {
+            JObject o1 = new JObject { { "Name", 1 } };
+            JObject o2 = new JObject { { "Name", 2 } };
+            JObject o3 = new JObject { { "Name", new JObject { { "Name", new JArray(3) } } } };
+            JArray a = new JArray(o1, o2, o3);
+
+            IList<JToken> t = a.SelectTokens("$..Name").ToList();
+            Assert.IsNotNull(t);
+            Assert.AreEqual(4, t.Count);
+            Assert.AreEqual(1, (int)t[0]);
+            Assert.AreEqual(2, (int)t[1]);
+            Assert.IsTrue(JToken.DeepEquals(new JObject { { "Name", new JArray(3) } }, t[2]));
+            Assert.IsTrue(JToken.DeepEquals(new JArray(3), t[3]));
+        }
+
+        [Test]
+        public void EvaluateWildcardScanNestResults()
+        {
+            JObject o1 = new JObject { { "Name", 1 } };
+            JObject o2 = new JObject { { "Name", 2 } };
+            JObject o3 = new JObject { { "Name", new JObject { { "Name", new JArray(3) } } } };
+            JArray a = new JArray(o1, o2, o3);
+
+            IList<JToken> t = a.SelectTokens("$..*").ToList();
+            Assert.IsNotNull(t);
+            Assert.AreEqual(9, t.Count);
+
+            Assert.IsTrue(JToken.DeepEquals(a, t[0]));
+            Assert.IsTrue(JToken.DeepEquals(o1, t[1]));
+            Assert.AreEqual(1, (int)t[2]);
+            Assert.IsTrue(JToken.DeepEquals(o2, t[3]));
+            Assert.AreEqual(2, (int)t[4]);
+            Assert.IsTrue(JToken.DeepEquals(o3, t[5]));
+            Assert.IsTrue(JToken.DeepEquals(new JObject { { "Name", new JArray(3) } }, t[6]));
+            Assert.IsTrue(JToken.DeepEquals(new JArray(3), t[7]));
+            Assert.AreEqual(3, (int)t[8]);
         }
 
         [Test]

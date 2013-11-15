@@ -433,7 +433,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             [EnumMember(Value = "baz")]
             SerializeAsBaz = 0x4,
-        };
+        }
 
         [JsonConverter(typeof(StringEnumConverter))]
         private enum Bar
@@ -444,7 +444,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             [EnumMember(Value = "baz")]
             SerializeAsBaz
-        };
+        }
 #endif
     }
 }

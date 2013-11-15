@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Xml.Linq;
 using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Linq
@@ -48,7 +49,7 @@ namespace Newtonsoft.Json.Linq
 
     internal class ArrayIndexFilter : PathFilter
     {
-        public int Index { get; set; }
+        public int? Index { get; set; }
 
         public override FilterType Type
         {
@@ -184,6 +185,8 @@ namespace Newtonsoft.Json.Linq
                         if (_currentIndex > currentPartStartIndex)
                         {
                             string member = _expression.Substring(currentPartStartIndex, _currentIndex - currentPartStartIndex);
+                            if (member == "*")
+                                member = null;
                             PathFilter filter = (scan) ? (PathFilter)new ScanFilter() { Name = member } : new FieldFilter() { Name = member };
                             Parts.Add(filter);
                             scan = false;
@@ -208,6 +211,8 @@ namespace Newtonsoft.Json.Linq
             if (_currentIndex > currentPartStartIndex)
             {
                 string member = _expression.Substring(currentPartStartIndex, _currentIndex - currentPartStartIndex);
+                if (member == "*")
+                    member = null;
                 PathFilter filter = (scan) ? (PathFilter)new ScanFilter() { Name = member } : new FieldFilter() { Name = member };
                 Parts.Add(filter);
             }
@@ -284,6 +289,17 @@ namespace Newtonsoft.Json.Linq
                     indexes.Add(Convert.ToInt32(indexer, CultureInfo.InvariantCulture));
 
                     start = _currentIndex + 1;
+                }
+                else if (currentCharacter == '*')
+                {
+                    _currentIndex++;
+                    EnsureLength("Path ended with open indexer.");
+
+                    if (_expression[_currentIndex] != indexerCloseChar)
+                        throw new JsonException("Unexpected character while parsing path indexer: " + currentCharacter);
+
+                    Parts.Add(new ArrayIndexFilter());
+                    return;
                 }
                 else if (!char.IsDigit(currentCharacter))
                 {
@@ -397,13 +413,16 @@ namespace Newtonsoft.Json.Linq
                 switch (filter.Type)
                 {
                     case FilterType.ArrayIndex:
-                        current = ExecuteArrayIndexFilter(current, errorWhenNoMatch, (ArrayIndexFilter)filter);
+                        current = ExecuteArrayIndexFilter(current, errorWhenNoMatch, (ArrayIndexFilter) filter);
                         break;
                     case FilterType.ArrayMultipleIndex:
-                        current = ExecuteArrayMultipleIndexFilter(current, errorWhenNoMatch, (ArrayMultipleIndexFilter)filter);
+                        current = ExecuteArrayMultipleIndexFilter(current, errorWhenNoMatch, (ArrayMultipleIndexFilter) filter);
                         break;
                     case FilterType.Field:
-                        current = ExecuteFieldFilter(current, errorWhenNoMatch, (FieldFilter)filter);
+                        current = ExecuteFieldFilter(current, errorWhenNoMatch, (FieldFilter) filter);
+                        break;
+                    case FilterType.Scan:
+                        current = ExecuteScanFilter(current, errorWhenNoMatch, (ScanFilter) filter);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -411,6 +430,56 @@ namespace Newtonsoft.Json.Linq
             }
 
             return current;
+        }
+
+        private static IEnumerable<JToken> GetDescendants(IEnumerable<JToken> source, string name)
+        {
+            foreach (JToken root in source)
+            {
+                if (name == null)
+                    yield return root;
+
+                JToken current = root;
+                JToken container = root;
+
+                while (true)
+                {
+                    if (container != null)
+                    {
+                        current = container.First;
+                    }
+                    else
+                    {
+                        while (current != null && current != root && current == current.Parent.Last)
+                        {
+                            current = current.Parent;
+                        }
+
+                        if (current == null || current == root)
+                            break;
+                        current = current.Next;
+                    }
+
+                    JProperty e = current as JProperty;
+                    if (e != null)
+                    {
+                        if (e.Name == name)
+                            yield return e.Value;
+                    }
+                    else
+                    {
+                        if (name == null)
+                            yield return current;
+                    }
+
+                    container = current as JContainer;
+                }
+            }
+        }
+
+        private IEnumerable<JToken> ExecuteScanFilter(IEnumerable<JToken> current, bool errorWhenNoMatch, ScanFilter scanFilter)
+        {
+            return GetDescendants(current, scanFilter.Name);
         }
 
         private IEnumerable<JToken> ExecuteArrayMultipleIndexFilter(IEnumerable<JToken> current, bool errorWhenNoMatch, ArrayMultipleIndexFilter arrayMultipleIndexFilter)
@@ -434,17 +503,29 @@ namespace Newtonsoft.Json.Linq
                 JObject o = t as JObject;
                 if (o != null)
                 {
-                    JToken v = o[fieldFilter.Name];
+                    if (fieldFilter.Name != null)
+                    {
+                        JToken v = o[fieldFilter.Name];
 
-                    if (v == null && errorWhenNoMatch)
-                        throw new JsonException("Property '{0}' does not exist on JObject.".FormatWith(CultureInfo.InvariantCulture, fieldFilter.Name));
+                        if (v == null && errorWhenNoMatch)
+                            throw new JsonException("Property '{0}' does not exist on JObject.".FormatWith(CultureInfo.InvariantCulture, fieldFilter.Name));
 
-                    yield return v;
+                        yield return v;
+                    }
+                    else
+                    {
+                        // todo - error when no results
+
+                        foreach (KeyValuePair<string, JToken> p in o)
+                        {
+                            yield return p.Value;
+                        }
+                    }
                 }
                 else
                 {
                     if (errorWhenNoMatch)
-                        throw new JsonException("Property '{0}' not valid on {1}.".FormatWith(CultureInfo.InvariantCulture, fieldFilter.Name, t.GetType().Name));
+                        throw new JsonException("Property '{0}' not valid on {1}.".FormatWith(CultureInfo.InvariantCulture, fieldFilter.Name ?? "*", t.GetType().Name));
                 }
             }
         }
@@ -453,10 +534,28 @@ namespace Newtonsoft.Json.Linq
         {
             foreach (JToken t in current)
             {
-                JToken v = GetTokenIndex(t, errorWhenNoMatch, arrayIndexFilter.Index);
+                if (arrayIndexFilter.Index != null)
+                {
+                    JToken v = GetTokenIndex(t, errorWhenNoMatch, arrayIndexFilter.Index.Value);
 
-                if (v != null)
-                    yield return v;
+                    if (v != null)
+                        yield return v;
+                }
+                else
+                {
+                    if (t is JArray || t is JConstructor)
+                    {
+                        foreach (JToken v in t)
+                        {
+                            yield return v;
+                        }
+                    }
+                    else
+                    {
+                        if (errorWhenNoMatch)
+                            throw new JsonException("Index * not valid on {0}.".FormatWith(CultureInfo.InvariantCulture, t.GetType().Name));
+                    }
+                }
             }
         }
 
