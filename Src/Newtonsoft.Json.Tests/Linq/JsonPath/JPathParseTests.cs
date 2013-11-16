@@ -38,7 +38,6 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
-
 #endif
 
 namespace Newtonsoft.Json.Tests.Linq.JsonPath
@@ -211,13 +210,184 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
         }
 
         [Test]
-        public void SinglePropertyAndFilter()
+        public void SinglePropertyAndExistsQuery()
         {
-            JPath path = new JPath("Blah[?(@.name=='hi')]");
+            JPath path = new JPath("Blah[ ?( @..name ) ]");
             Assert.AreEqual(2, path.Filters.Count);
             Assert.AreEqual("Blah", ((FieldFilter)path.Filters[0]).Name);
-            List<object> expressions = ((QueryFilter)path.Filters[1]).Expression;
+            List<QueryExpression> expressions = ((QueryFilter)path.Filters[1]).Expression;
             Assert.AreEqual(1, expressions.Count);
+            Assert.AreEqual(QueryOperator.Exists, expressions[0].Operator);
+            Assert.AreEqual(1, expressions[0].Path.Count);
+            Assert.AreEqual("name", ((ScanFilter)expressions[0].Path[0]).Name);
+        }
+
+        [Test]
+        public void SinglePropertyAndFilterWithWhitespace()
+        {
+            JPath path = new JPath("Blah[ ?( @.name=='hi' ) ]");
+            Assert.AreEqual(2, path.Filters.Count);
+            Assert.AreEqual("Blah", ((FieldFilter)path.Filters[0]).Name);
+            List<QueryExpression> expressions = ((QueryFilter)path.Filters[1]).Expression;
+            Assert.AreEqual(1, expressions.Count);
+            Assert.AreEqual(QueryOperator.Equals, expressions[0].Operator);
+            Assert.AreEqual("hi", (string)expressions[0].Value);
+        }
+
+        [Test]
+        public void SinglePropertyAndFilterWithEscapeQuote()
+        {
+            JPath path = new JPath(@"Blah[ ?( @.name=='h\'i' ) ]");
+            Assert.AreEqual(2, path.Filters.Count);
+            Assert.AreEqual("Blah", ((FieldFilter)path.Filters[0]).Name);
+            List<QueryExpression> expressions = ((QueryFilter)path.Filters[1]).Expression;
+            Assert.AreEqual(1, expressions.Count);
+            Assert.AreEqual(QueryOperator.Equals, expressions[0].Operator);
+            Assert.AreEqual("h'i", (string)expressions[0].Value);
+        }
+
+        [Test]
+        public void SinglePropertyAndFilterWithDoubleEscape()
+        {
+            JPath path = new JPath(@"Blah[ ?( @.name=='h\\i' ) ]");
+            Assert.AreEqual(2, path.Filters.Count);
+            Assert.AreEqual("Blah", ((FieldFilter)path.Filters[0]).Name);
+            List<QueryExpression> expressions = ((QueryFilter)path.Filters[1]).Expression;
+            Assert.AreEqual(1, expressions.Count);
+            Assert.AreEqual(QueryOperator.Equals, expressions[0].Operator);
+            Assert.AreEqual("h\\i", (string)expressions[0].Value);
+        }
+
+        [Test]
+        public void SinglePropertyAndFilterWithUnknownEscape()
+        {
+            ExceptionAssert.Throws<JsonException>(
+                @"Unknown escape chracter: \i",
+                () => { new JPath(@"Blah[ ?( @.name=='h\i' ) ]"); });
+        }
+
+        [Test]
+        public void SinglePropertyAndFilterWithFalse()
+        {
+            JPath path = new JPath("Blah[ ?( @.name==false ) ]");
+            Assert.AreEqual(2, path.Filters.Count);
+            Assert.AreEqual("Blah", ((FieldFilter)path.Filters[0]).Name);
+            List<QueryExpression> expressions = ((QueryFilter)path.Filters[1]).Expression;
+            Assert.AreEqual(1, expressions.Count);
+            Assert.AreEqual(QueryOperator.Equals, expressions[0].Operator);
+            Assert.AreEqual(false, (bool)expressions[0].Value);
+        }
+
+        [Test]
+        public void SinglePropertyAndFilterWithTrue()
+        {
+            JPath path = new JPath("Blah[ ?( @.name==true ) ]");
+            Assert.AreEqual(2, path.Filters.Count);
+            Assert.AreEqual("Blah", ((FieldFilter)path.Filters[0]).Name);
+            List<QueryExpression> expressions = ((QueryFilter)path.Filters[1]).Expression;
+            Assert.AreEqual(1, expressions.Count);
+            Assert.AreEqual(QueryOperator.Equals, expressions[0].Operator);
+            Assert.AreEqual(true, (bool)expressions[0].Value);
+        }
+
+        [Test]
+        public void SinglePropertyAndFilterWithNull()
+        {
+            JPath path = new JPath("Blah[ ?( @.name==null ) ]");
+            Assert.AreEqual(2, path.Filters.Count);
+            Assert.AreEqual("Blah", ((FieldFilter)path.Filters[0]).Name);
+            List<QueryExpression> expressions = ((QueryFilter)path.Filters[1]).Expression;
+            Assert.AreEqual(1, expressions.Count);
+            Assert.AreEqual(QueryOperator.Equals, expressions[0].Operator);
+            Assert.AreEqual(null, expressions[0].Value.Value);
+        }
+
+        [Test]
+        public void FilterWithScan()
+        {
+            JPath path = new JPath("[?(@..name<>null)]");
+            List<QueryExpression> expressions = ((QueryFilter)path.Filters[0]).Expression;
+            Assert.AreEqual("name", ((ScanFilter)expressions[0].Path[0]).Name);
+        }
+
+        [Test]
+        public void FilterWithNotEquals()
+        {
+            JPath path = new JPath("[?(@.name<>null)]");
+            List<QueryExpression> expressions = ((QueryFilter)path.Filters[0]).Expression;
+            Assert.AreEqual(QueryOperator.NotEquals, expressions[0].Operator);
+        }
+
+        [Test]
+        public void FilterWithNotEquals2()
+        {
+            JPath path = new JPath("[?(@.name!=null)]");
+            List<QueryExpression> expressions = ((QueryFilter)path.Filters[0]).Expression;
+            Assert.AreEqual(QueryOperator.NotEquals, expressions[0].Operator);
+        }
+
+        [Test]
+        public void FilterWithLessThan()
+        {
+            JPath path = new JPath("[?(@.name<null)]");
+            List<QueryExpression> expressions = ((QueryFilter)path.Filters[0]).Expression;
+            Assert.AreEqual(QueryOperator.LessThan, expressions[0].Operator);
+        }
+
+        [Test]
+        public void FilterWithLessThanOrEquals()
+        {
+            JPath path = new JPath("[?(@.name<=null)]");
+            List<QueryExpression> expressions = ((QueryFilter)path.Filters[0]).Expression;
+            Assert.AreEqual(QueryOperator.LessThanOrEquals, expressions[0].Operator);
+        }
+
+        [Test]
+        public void FilterWithGreaterThan()
+        {
+            JPath path = new JPath("[?(@.name>null)]");
+            List<QueryExpression> expressions = ((QueryFilter)path.Filters[0]).Expression;
+            Assert.AreEqual(QueryOperator.GreaterThan, expressions[0].Operator);
+        }
+
+        [Test]
+        public void FilterWithGreaterThanOrEquals()
+        {
+            JPath path = new JPath("[?(@.name>=null)]");
+            List<QueryExpression> expressions = ((QueryFilter)path.Filters[0]).Expression;
+            Assert.AreEqual(QueryOperator.GreaterThanOrEquals, expressions[0].Operator);
+        }
+
+        [Test]
+        public void FilterWithInteger()
+        {
+            JPath path = new JPath("[?(@.name>=12)]");
+            List<QueryExpression> expressions = ((QueryFilter)path.Filters[0]).Expression;
+            Assert.AreEqual(12, (int)expressions[0].Value);
+        }
+
+        [Test]
+        public void FilterWithNegativeInteger()
+        {
+            JPath path = new JPath("[?(@.name>=-12)]");
+            List<QueryExpression> expressions = ((QueryFilter)path.Filters[0]).Expression;
+            Assert.AreEqual(-12, (int)expressions[0].Value);
+        }
+
+        [Test]
+        public void FilterWithFloat()
+        {
+            JPath path = new JPath("[?(@.name>=12.1)]");
+            List<QueryExpression> expressions = ((QueryFilter)path.Filters[0]).Expression;
+            Assert.AreEqual(12.1d, (double)expressions[0].Value);
+        }
+
+        [Test]
+        public void FilterWithFloatExp()
+        {
+            JPath path = new JPath("[?(@.name>=5.56789e+0)]");
+            List<QueryExpression> expressions = ((QueryFilter)path.Filters[0]).Expression;
+            Assert.AreEqual(5.56789e+0, (double)expressions[0].Value);
         }
 
         [Test]

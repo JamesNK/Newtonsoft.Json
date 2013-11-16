@@ -356,6 +356,111 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
         }
 
         [Test]
+        public void ExistsQuery()
+        {
+            JArray a = new JArray(new JObject(new JProperty("hi", "ho")), new JObject(new JProperty("hi2", "ha")));
+
+            IList<JToken> t = a.SelectTokens("[ ?( @.hi ) ]").ToList();
+            Assert.IsNotNull(t);
+            Assert.AreEqual(1, t.Count);
+            Assert.IsTrue(JToken.DeepEquals(new JObject(new JProperty("hi", "ho")), t[0]));
+        }
+
+        [Test]
+        public void EqualsQuery()
+        {
+            JArray a = new JArray(
+                new JObject(new JProperty("hi", "ho")),
+                new JObject(new JProperty("hi", "ha")));
+
+            IList<JToken> t = a.SelectTokens("[ ?( @.['hi'] == 'ha' ) ]").ToList();
+            Assert.IsNotNull(t);
+            Assert.AreEqual(1, t.Count);
+            Assert.IsTrue(JToken.DeepEquals(new JObject(new JProperty("hi", "ha")), t[0]));
+        }
+
+        [Test]
+        public void NotEqualsQuery()
+        {
+            JArray a = new JArray(
+                new JArray(new JObject(new JProperty("hi", "ho"))),
+                new JArray(new JObject(new JProperty("hi", "ha"))));
+
+            IList<JToken> t = a.SelectTokens("[ ?( @..hi <> 'ha' ) ]").ToList();
+            Assert.IsNotNull(t);
+            Assert.AreEqual(1, t.Count);
+            Assert.IsTrue(JToken.DeepEquals(new JArray(new JObject(new JProperty("hi", "ho"))), t[0]));
+        }
+
+        [Test]
+        public void NoPathQuery()
+        {
+            JArray a = new JArray(1, 2, 3);
+
+            IList<JToken> t = a.SelectTokens("[ ?( @ > 1 ) ]").ToList();
+            Assert.IsNotNull(t);
+            Assert.AreEqual(2, t.Count);
+            Assert.AreEqual(2, (int)t[0]);
+            Assert.AreEqual(3, (int)t[1]);
+        }
+
+        [Test]
+        public void GreaterQuery()
+        {
+            JArray a = new JArray(
+                new JObject(new JProperty("hi", 1)),
+                new JObject(new JProperty("hi", 2)),
+                new JObject(new JProperty("hi", 3)));
+
+            IList<JToken> t = a.SelectTokens("[ ?( @.hi > 1 ) ]").ToList();
+            Assert.IsNotNull(t);
+            Assert.AreEqual(2, t.Count);
+            Assert.IsTrue(JToken.DeepEquals(new JObject(new JProperty("hi", 2)), t[0]));
+            Assert.IsTrue(JToken.DeepEquals(new JObject(new JProperty("hi", 3)), t[1]));
+        }
+
+        [Test]
+        public void GreaterOrEqualQuery()
+        {
+            JArray a = new JArray(
+                new JObject(new JProperty("hi", 1)),
+                new JObject(new JProperty("hi", 2)),
+                new JObject(new JProperty("hi", 3)));
+
+            IList<JToken> t = a.SelectTokens("[ ?( @.hi >= 1 ) ]").ToList();
+            Assert.IsNotNull(t);
+            Assert.AreEqual(3, t.Count);
+            Assert.IsTrue(JToken.DeepEquals(new JObject(new JProperty("hi", 1)), t[0]));
+            Assert.IsTrue(JToken.DeepEquals(new JObject(new JProperty("hi", 2)), t[1]));
+            Assert.IsTrue(JToken.DeepEquals(new JObject(new JProperty("hi", 3)), t[2]));
+        }
+
+        [Test]
+        public void NestedQuery()
+        {
+            JArray a = new JArray(
+                new JObject(
+                    new JProperty("name", "Bad Boys"),
+                    new JProperty("cast", new JArray(
+                        new JObject(new JProperty("name", "Will Smith"))))),
+                new JObject(
+                    new JProperty("name", "Independence Day"),
+                    new JProperty("cast", new JArray(
+                        new JObject(new JProperty("name", "Will Smith"))))),
+                new JObject(
+                    new JProperty("name", "The Rock"),
+                    new JProperty("cast", new JArray(
+                        new JObject(new JProperty("name", "Nick Cage")))))
+                        );
+
+            IList<JToken> t = a.SelectTokens("[?(@.cast[?(@.name=='Will Smith')])].name").ToList();
+            Assert.IsNotNull(t);
+            Assert.AreEqual(2, t.Count);
+            Assert.AreEqual("Bad Boys", (string)t[0]);
+            Assert.AreEqual("Independence Day", (string)t[1]);
+        }
+
+        [Test]
         public void PathWithConstructor()
         {
             JArray a = JArray.Parse(@"[

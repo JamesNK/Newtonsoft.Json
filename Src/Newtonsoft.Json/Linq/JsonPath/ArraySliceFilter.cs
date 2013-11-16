@@ -14,13 +14,10 @@ namespace Newtonsoft.Json.Linq.JsonPath
             if (Step == 0)
                 throw new JsonException("Step cannot be zero.");
 
+            // todo error when no match
             foreach (JToken t in current)
             {
                 IList<JToken> sourceCollection = t as IList<JToken> ?? new List<JToken>(t);
-
-                // nothing to slice
-                if (sourceCollection.Count == 0)
-                    yield break;
 
                 // set defaults for null arguments
                 int stepCount = Step ?? 1;

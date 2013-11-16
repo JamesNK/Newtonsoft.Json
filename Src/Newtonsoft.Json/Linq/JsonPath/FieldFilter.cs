@@ -19,10 +19,11 @@ namespace Newtonsoft.Json.Linq.JsonPath
                     {
                         JToken v = o[Name];
 
-                        if (v == null && errorWhenNoMatch)
-                            throw new JsonException("Property '{0}' does not exist on JObject.".FormatWith(CultureInfo.InvariantCulture, Name));
+                        if (v != null)
+                            yield return v;
 
-                        yield return v;
+                        if (errorWhenNoMatch)
+                            throw new JsonException("Property '{0}' does not exist on JObject.".FormatWith(CultureInfo.InvariantCulture, Name));
                     }
                     else
                     {
