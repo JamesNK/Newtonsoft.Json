@@ -85,6 +85,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
         {
             bool scan = false;
             bool followingIndexer = false;
+            bool followingDot = false;
 
             bool ended = false;
             while (_currentIndex < _expression.Length && !ended)
@@ -107,6 +108,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                         _currentIndex++;
                         currentPartStartIndex = _currentIndex;
                         followingIndexer = true;
+                        followingDot = false;
                         break;
                     case ']':
                     case ')':
@@ -135,9 +137,10 @@ namespace Newtonsoft.Json.Linq.JsonPath
                         _currentIndex++;
                         currentPartStartIndex = _currentIndex;
                         followingIndexer = false;
+                        followingDot = true;
                         break;
                     default:
-                        if (query && (currentChar == '=' || currentChar == '<' || currentChar == '!' || currentChar == '>'))
+                        if (query && (currentChar == '=' || currentChar == '<' || currentChar == '!' || currentChar == '>' || currentChar == '|' || currentChar == '&'))
                         {
                             ended = true;
                         }
@@ -152,6 +155,8 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 }
             }
 
+            bool atPathEnd = (_currentIndex == _expression.Length);
+
             if (_currentIndex > currentPartStartIndex)
             {
                 string member = _expression.Substring(currentPartStartIndex, _currentIndex - currentPartStartIndex).TrimEnd();
@@ -160,8 +165,14 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 PathFilter filter = (scan) ? (PathFilter)new ScanFilter() { Name = member } : new FieldFilter() { Name = member };
                 filters.Add(filter);
             }
+            else
+            {
+                // no field name following dot in path and at end of base path/query
+                if (followingDot && (atPathEnd || query))
+                    throw new JsonException("Unexpected end while parsing path.");
+            }
 
-            return (_currentIndex == _expression.Length);
+            return atPathEnd;
         }
 
         private PathFilter ParseIndexer(char indexerOpenChar)
@@ -344,75 +355,118 @@ namespace Newtonsoft.Json.Linq.JsonPath
 
             _currentIndex++;
 
-            List<QueryExpression> expressions = new List<QueryExpression>();
+            QueryExpression expression = ParseExpression();
 
-            while (true)
+            _currentIndex++;
+            EnsureLength("Path ended with open indexer.");
+            EatWhitespace();
+
+            if (_expression[_currentIndex] != indexerCloseChar)
+                throw new JsonException("Unexpected character while parsing path indexer: " + _expression[_currentIndex]);
+
+            return new QueryFilter
             {
-                expressions.Add(ParseExpression());
-
-                if (_expression[_currentIndex] == ')')
-                {
-                    _currentIndex++;
-                    EnsureLength("Path ended with open indexer.");
-                    EatWhitespace();
-
-                    if (_expression[_currentIndex] != indexerCloseChar)
-                        throw new JsonException("Unexpected character while parsing path indexer: " + _expression[_currentIndex]);
-                    
-                    return new QueryFilter
-                    {
-                        Expression = expressions
-                    };
-                }
-                else
-                {
-                    _currentIndex++;
-                }
-            }
+                Expression = expression
+            };
         }
 
         private QueryExpression ParseExpression()
         {
-            EatWhitespace();
+            QueryExpression rootExpression = null;
+            CompositeExpression parentExpression = null;
 
-            if (_expression[_currentIndex] != '@')
-                throw new JsonException("Unexpected character while parsing path query: " + _expression[_currentIndex]);
-
-            _currentIndex++;
-
-            List<PathFilter> expressionPath = new List<PathFilter>();
-
-            if (ParsePath(expressionPath, _currentIndex, true))
-                throw new JsonException("Path ended with open query.");
-
-            EatWhitespace();
-            EnsureLength("Path ended with open query.");
-
-            QueryOperator op;
-            object value = null;
-            if (_expression[_currentIndex] == ')')
+            while (_currentIndex < _expression.Length)
             {
-                op = QueryOperator.Exists;
-            }
-            else
-            {
-                op = ParseOperator();
+                EatWhitespace();
+
+                if (_expression[_currentIndex] != '@')
+                    throw new JsonException("Unexpected character while parsing path query: " + _expression[_currentIndex]);
+
+                _currentIndex++;
+
+                List<PathFilter> expressionPath = new List<PathFilter>();
+
+                if (ParsePath(expressionPath, _currentIndex, true))
+                    throw new JsonException("Path ended with open query.");
 
                 EatWhitespace();
                 EnsureLength("Path ended with open query.");
 
-                value = ParseValue();
+                QueryOperator op;
+                object value = null;
+                if (_expression[_currentIndex] == ')'
+                    || _expression[_currentIndex] == '|'
+                    || _expression[_currentIndex] == '&')
+                {
+                    op = QueryOperator.Exists;
+                }
+                else
+                {
+                    op = ParseOperator();
 
-                EatWhitespace();
-                EnsureLength("Path ended with open query.");
+                    EatWhitespace();
+                    EnsureLength("Path ended with open query.");
+
+                    value = ParseValue();
+
+                    EatWhitespace();
+                    EnsureLength("Path ended with open query.");
+                }
+
+                BooleanQueryExpression booleanExpression = new BooleanQueryExpression
+                {
+                    Path = expressionPath,
+                    Operator = op,
+                    Value = (op != QueryOperator.Exists) ? new JValue(value) : null
+                };
+
+                if (_expression[_currentIndex] == ')')
+                {
+                    if (parentExpression != null)
+                    {
+                        parentExpression.Expressions.Add(booleanExpression);
+                        return rootExpression;
+                    }
+                    
+                    return booleanExpression;
+                }
+                if (_expression[_currentIndex] == '&' && Match("&&"))
+                {
+                    if (parentExpression == null || parentExpression.Operator != QueryOperator.And)
+                    {
+                        CompositeExpression andExpression = new CompositeExpression { Operator = QueryOperator.And };
+
+                        if (parentExpression != null)
+                            parentExpression.Expressions.Add(andExpression);
+
+                        parentExpression = andExpression;
+
+                        if (rootExpression == null)
+                            rootExpression = parentExpression;
+                    }
+
+                    parentExpression.Expressions.Add(booleanExpression);
+                }
+                if (_expression[_currentIndex] == '|' && Match("||"))
+                {
+                    if (parentExpression == null || parentExpression.Operator != QueryOperator.Or)
+                    {
+                        CompositeExpression orExpression = new CompositeExpression { Operator = QueryOperator.Or };
+
+                        if (parentExpression != null)
+                            parentExpression.Expressions.Add(orExpression);
+
+                        parentExpression = orExpression;
+
+                        if (rootExpression == null)
+                            rootExpression = parentExpression;
+                    }
+
+                    parentExpression.Expressions.Add(booleanExpression);
+                }
             }
 
-            return new QueryExpression
-            {
-                Path = expressionPath,
-                Operator = op,
-                Value = (op != QueryOperator.Exists) ? new JValue(value) : null
-            };
+            throw new JsonException("Path ended with open query.");
         }
 
         private object ParseValue()

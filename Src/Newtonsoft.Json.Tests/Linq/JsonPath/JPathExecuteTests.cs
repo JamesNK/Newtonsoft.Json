@@ -25,7 +25,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using Newtonsoft.Json.Linq.JsonPath;
+using Newtonsoft.Json.Tests.Bson;
 #if !NETFX_CORE
 using NUnit.Framework;
 #else
@@ -405,6 +407,19 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
         }
 
         [Test]
+        public void MultipleQueries()
+        {
+            JArray a = new JArray(1, 2, 3, 4, 5, 6, 7, 8, 9);
+
+            // json path does item based evaluation - http://www.sitepen.com/blog/2008/03/17/jsonpath-support/
+            // first query resolves array to ints
+            // int has no children to query
+            IList<JToken> t = a.SelectTokens("[?(@ <> 1)][?(@ <> 4)][?(@ < 7)]").ToList();
+            Assert.IsNotNull(t);
+            Assert.AreEqual(0, t.Count);
+        }
+
+        [Test]
         public void GreaterQuery()
         {
             JArray a = new JArray(
@@ -420,19 +435,36 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
         }
 
         [Test]
+        public void GreaterQueryBigInteger()
+        {
+            JArray a = new JArray(
+                new JObject(new JProperty("hi", new BigInteger(1))),
+                new JObject(new JProperty("hi", new BigInteger(2))),
+                new JObject(new JProperty("hi", new BigInteger(3))));
+
+            IList<JToken> t = a.SelectTokens("[ ?( @.hi > 1 ) ]").ToList();
+            Assert.IsNotNull(t);
+            Assert.AreEqual(2, t.Count);
+            Assert.IsTrue(JToken.DeepEquals(new JObject(new JProperty("hi", 2)), t[0]));
+            Assert.IsTrue(JToken.DeepEquals(new JObject(new JProperty("hi", 3)), t[1]));
+        }
+
+        [Test]
         public void GreaterOrEqualQuery()
         {
             JArray a = new JArray(
                 new JObject(new JProperty("hi", 1)),
                 new JObject(new JProperty("hi", 2)),
+                new JObject(new JProperty("hi", 2.0)),
                 new JObject(new JProperty("hi", 3)));
 
             IList<JToken> t = a.SelectTokens("[ ?( @.hi >= 1 ) ]").ToList();
             Assert.IsNotNull(t);
-            Assert.AreEqual(3, t.Count);
+            Assert.AreEqual(4, t.Count);
             Assert.IsTrue(JToken.DeepEquals(new JObject(new JProperty("hi", 1)), t[0]));
             Assert.IsTrue(JToken.DeepEquals(new JObject(new JProperty("hi", 2)), t[1]));
-            Assert.IsTrue(JToken.DeepEquals(new JObject(new JProperty("hi", 3)), t[2]));
+            Assert.IsTrue(JToken.DeepEquals(new JObject(new JProperty("hi", 2.0)), t[2]));
+            Assert.IsTrue(JToken.DeepEquals(new JObject(new JProperty("hi", 3)), t[3]));
         }
 
         [Test]

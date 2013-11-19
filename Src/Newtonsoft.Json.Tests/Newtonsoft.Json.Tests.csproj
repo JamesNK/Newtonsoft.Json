@@ -211,6 +211,7 @@
     <Compile Include="Linq\JsonPath\JPathParseTests.cs" />
     <Compile Include="Linq\JPropertyTests.cs" />
     <Compile Include="Linq\JRawTests.cs" />
+    <Compile Include="Linq\JsonPath\QueryExpressionTests.cs" />
     <Compile Include="Linq\JTokenEqualityComparerTests.cs" />
     <Compile Include="Linq\JTokenReaderTest.cs" />
     <Compile Include="Linq\JTokenTests.cs" />

@@ -111,6 +111,7 @@
     <Compile Include="Linq\JContainer.cs" />
     <Compile Include="Linq\JEnumerable.cs" />
     <Compile Include="Linq\JObject.cs" />
+    <Compile Include="Linq\JsonPath\AndFilter.cs" />
     <Compile Include="Linq\JsonPath\ArrayIndexFilter.cs" />
     <Compile Include="Linq\JsonPath\ArrayMultipleIndexFilter.cs" />
     <Compile Include="Linq\JsonPath\ArraySliceFilter.cs" />
@@ -120,6 +121,7 @@
     <Compile Include="Linq\JPropertyDescriptor.cs" />
     <Compile Include="Linq\JPropertyKeyedCollection.cs" />
     <Compile Include="Linq\JRaw.cs" />
+    <Compile Include="Linq\JsonPath\OrFilter.cs" />
     <Compile Include="Linq\JsonPath\PathFilter.cs" />
     <Compile Include="Linq\JsonPath\QueryFilter.cs" />
     <Compile Include="Linq\JsonPath\ScanFilter.cs" />
