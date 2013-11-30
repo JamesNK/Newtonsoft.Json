@@ -544,6 +544,16 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
         }
 
         [Test]
+        public void MultipleQuotedIndexes()
+        {
+            JPath path = new JPath("['111119990','3']");
+            Assert.AreEqual(1, path.Filters.Count);
+            Assert.AreEqual(2, ((ArrayMultipleIndexFilter)path.Filters[0]).Indexes.Count);
+            Assert.AreEqual(111119990, ((ArrayMultipleIndexFilter)path.Filters[0]).Indexes[0]);
+            Assert.AreEqual(3, ((ArrayMultipleIndexFilter)path.Filters[0]).Indexes[1]);
+        }
+
+        [Test]
         public void SlicingIndexAll()
         {
             JPath path = new JPath("[111119990:3:2]");
