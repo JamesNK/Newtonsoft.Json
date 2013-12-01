@@ -103,7 +103,7 @@ namespace Newtonsoft.Json.Serialization
 #if !(NET35 || NET20 || PORTABLE40)
             new ExpandoObjectConverter(),
 #endif
-#if (!(PORTABLE40))
+#if !(PORTABLE40)
             new XmlNodeConverter(),
 #endif
 #if !(NETFX_CORE || PORTABLE40 || PORTABLE)
@@ -112,11 +112,12 @@ namespace Newtonsoft.Json.Serialization
             new DataTableConverter(),
 #endif
 #if NETFX_CORE
-        new JsonValueConverter(),
+            new JsonValueConverter(),
 #endif
             new KeyValuePairConverter(),
             new BsonObjectIdConverter(),
-            new RegexConverter()
+            new RegexConverter(),
+            new DiscriminatedUnionConverter()
         };
 
         private static Dictionary<ResolverContractKey, JsonContract> _sharedContractCache;

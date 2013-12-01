@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+using Newtonsoft.Json.Serialization;
 #if !(NET35 || NET20 || NETFX_CORE || PORTABLE || PORTABLE40)
 using System;
 using System.Collections.Generic;
@@ -117,6 +118,96 @@ namespace Newtonsoft.Json.Tests.Serialization
         ""Key"": ""FolderId"",
         ""Type"": ""System.Guid"",
         ""Value"": ""a4e8ba80-eb24-4591-bb1c-62d3ad83701e""
+      }
+    ]
+  }
+}";
+
+            Assert.AreEqual(expected, json);
+        }
+
+        [Test]
+        public void SerializeEntityCamelCase()
+        {
+            Folder rootFolder = CreateEntitiesTestData();
+
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented,
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                Converters = { new IsoDateTimeConverter() }
+            };
+
+            string json = JsonConvert.SerializeObject(rootFolder, Formatting.None, settings);
+
+            Console.WriteLine(json);
+
+            string expected = @"{
+  ""$id"": ""1"",
+  ""folderId"": ""a4e8ba80-eb24-4591-bb1c-62d3ad83701e"",
+  ""name"": ""Root folder"",
+  ""description"": ""Description!"",
+  ""createdDate"": ""2000-12-10T10:50:00Z"",
+  ""files"": [],
+  ""childFolders"": [
+    {
+      ""$id"": ""2"",
+      ""folderId"": ""484936e2-7cbb-4592-93ff-b2103e5705e4"",
+      ""name"": ""Child folder"",
+      ""description"": ""Description!"",
+      ""createdDate"": ""2001-11-20T10:50:00Z"",
+      ""files"": [
+        {
+          ""$id"": ""3"",
+          ""fileId"": ""cc76d734-49f1-4616-bb38-41514228ac6c"",
+          ""name"": ""File 1"",
+          ""description"": ""Description!"",
+          ""createdDate"": ""2002-10-30T10:50:00Z"",
+          ""folder"": {
+            ""$ref"": ""2""
+          },
+          ""entityKey"": {
+            ""$id"": ""4"",
+            ""entitySetName"": ""File"",
+            ""entityContainerName"": ""DataServicesTestDatabaseEntities"",
+            ""entityKeyValues"": [
+              {
+                ""key"": ""FileId"",
+                ""type"": ""System.Guid"",
+                ""value"": ""cc76d734-49f1-4616-bb38-41514228ac6c""
+              }
+            ]
+          }
+        }
+      ],
+      ""childFolders"": [],
+      ""parentFolder"": {
+        ""$ref"": ""1""
+      },
+      ""entityKey"": {
+        ""$id"": ""5"",
+        ""entitySetName"": ""Folder"",
+        ""entityContainerName"": ""DataServicesTestDatabaseEntities"",
+        ""entityKeyValues"": [
+          {
+            ""key"": ""FolderId"",
+            ""type"": ""System.Guid"",
+            ""value"": ""484936e2-7cbb-4592-93ff-b2103e5705e4""
+          }
+        ]
+      }
+    }
+  ],
+  ""parentFolder"": null,
+  ""entityKey"": {
+    ""$id"": ""6"",
+    ""entitySetName"": ""Folder"",
+    ""entityContainerName"": ""DataServicesTestDatabaseEntities"",
+    ""entityKeyValues"": [
+      {
+        ""key"": ""FolderId"",
+        ""type"": ""System.Guid"",
+        ""value"": ""a4e8ba80-eb24-4591-bb1c-62d3ad83701e""
       }
     ]
   }
@@ -227,6 +318,76 @@ namespace Newtonsoft.Json.Tests.Serialization
 
         [Test]
         public void SerializeMultiValueEntityKey()
+        {
+            EntityKey e = new EntityKey("DataServicesTestDatabaseEntities.Folder",
+                new List<EntityKeyMember>
+                {
+                    new EntityKeyMember("GuidId", new Guid("A4E8BA80-EB24-4591-BB1C-62D3AD83701E")),
+                    new EntityKeyMember("IntId", int.MaxValue),
+                    new EntityKeyMember("LongId", long.MaxValue),
+                    new EntityKeyMember("StringId", "String!"),
+                    new EntityKeyMember("DateTimeId", new DateTime(2000, 12, 10, 10, 50, 0, DateTimeKind.Utc))
+                });
+
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented,
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
+
+            string json = JsonConvert.SerializeObject(e, settings);
+
+            Assert.AreEqual(@"{
+  ""$id"": ""1"",
+  ""entitySetName"": ""Folder"",
+  ""entityContainerName"": ""DataServicesTestDatabaseEntities"",
+  ""entityKeyValues"": [
+    {
+      ""key"": ""GuidId"",
+      ""type"": ""System.Guid"",
+      ""value"": ""a4e8ba80-eb24-4591-bb1c-62d3ad83701e""
+    },
+    {
+      ""key"": ""IntId"",
+      ""type"": ""System.Int32"",
+      ""value"": ""2147483647""
+    },
+    {
+      ""key"": ""LongId"",
+      ""type"": ""System.Int64"",
+      ""value"": ""9223372036854775807""
+    },
+    {
+      ""key"": ""StringId"",
+      ""type"": ""System.String"",
+      ""value"": ""String!""
+    },
+    {
+      ""key"": ""DateTimeId"",
+      ""type"": ""System.DateTime"",
+      ""value"": ""12/10/2000 10:50:00""
+    }
+  ]
+}", json);
+
+            EntityKey newKey = JsonConvert.DeserializeObject<EntityKey>(json);
+            Assert.IsFalse(ReferenceEquals(e, newKey));
+
+            Assert.AreEqual(5, newKey.EntityKeyValues.Length);
+            Assert.AreEqual("GuidId", newKey.EntityKeyValues[0].Key);
+            Assert.AreEqual(new Guid("A4E8BA80-EB24-4591-BB1C-62D3AD83701E"), newKey.EntityKeyValues[0].Value);
+            Assert.AreEqual("IntId", newKey.EntityKeyValues[1].Key);
+            Assert.AreEqual(int.MaxValue, newKey.EntityKeyValues[1].Value);
+            Assert.AreEqual("LongId", newKey.EntityKeyValues[2].Key);
+            Assert.AreEqual(long.MaxValue, newKey.EntityKeyValues[2].Value);
+            Assert.AreEqual("StringId", newKey.EntityKeyValues[3].Key);
+            Assert.AreEqual("String!", newKey.EntityKeyValues[3].Value);
+            Assert.AreEqual("DateTimeId", newKey.EntityKeyValues[4].Key);
+            Assert.AreEqual(new DateTime(2000, 12, 10, 10, 50, 0, DateTimeKind.Utc), newKey.EntityKeyValues[4].Value);
+        }
+
+        [Test]
+        public void SerializeMultiValueEntityKeyCameCase()
         {
             EntityKey e = new EntityKey("DataServicesTestDatabaseEntities.Folder",
                 new List<EntityKeyMember>

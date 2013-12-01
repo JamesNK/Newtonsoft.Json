@@ -44,6 +44,10 @@ namespace Newtonsoft.Json.Converters
     {
         private const string EntityKeyMemberFullTypeName = "System.Data.EntityKeyMember";
 
+        private const string KeyPropertyName = "Key";
+        private const string TypePropertyName = "Type";
+        private const string ValuePropertyName = "Value";
+
         /// <summary>
         /// Writes the JSON representation of the object.
         /// </summary>
@@ -52,16 +56,18 @@ namespace Newtonsoft.Json.Converters
         /// <param name="serializer">The calling serializer.</param>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
+            DefaultContractResolver resolver = serializer.ContractResolver as DefaultContractResolver;
+
             IEntityKeyMember entityKeyMember = DynamicWrapper.CreateWrapper<IEntityKeyMember>(value);
             Type keyType = (entityKeyMember.Value != null) ? entityKeyMember.Value.GetType() : null;
 
             writer.WriteStartObject();
-            writer.WritePropertyName("Key");
+            writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(KeyPropertyName) : KeyPropertyName);
             writer.WriteValue(entityKeyMember.Key);
-            writer.WritePropertyName("Type");
+            writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(TypePropertyName) : TypePropertyName);
             writer.WriteValue((keyType != null) ? keyType.FullName : null);
 
-            writer.WritePropertyName("Value");
+            writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(ValuePropertyName) : ValuePropertyName);
 
             if (keyType != null)
             {
@@ -83,7 +89,7 @@ namespace Newtonsoft.Json.Converters
         {
             ReadAndAssert(reader);
 
-            if (reader.TokenType != JsonToken.PropertyName || reader.Value.ToString() != propertyName)
+            if (reader.TokenType != JsonToken.PropertyName || !string.Equals(reader.Value.ToString(), propertyName, StringComparison.OrdinalIgnoreCase))
                 throw new JsonSerializationException("Expected JSON property '{0}'.".FormatWith(CultureInfo.InvariantCulture, propertyName));
         }
 
@@ -105,17 +111,17 @@ namespace Newtonsoft.Json.Converters
         {
             IEntityKeyMember entityKeyMember = DynamicWrapper.CreateWrapper<IEntityKeyMember>(Activator.CreateInstance(objectType));
 
-            ReadAndAssertProperty(reader, "Key");
+            ReadAndAssertProperty(reader, KeyPropertyName);
             ReadAndAssert(reader);
             entityKeyMember.Key = reader.Value.ToString();
 
-            ReadAndAssertProperty(reader, "Type");
+            ReadAndAssertProperty(reader, TypePropertyName);
             ReadAndAssert(reader);
             string type = reader.Value.ToString();
 
             Type t = Type.GetType(type);
 
-            ReadAndAssertProperty(reader, "Value");
+            ReadAndAssertProperty(reader, ValuePropertyName);
             ReadAndAssert(reader);
             entityKeyMember.Value = serializer.Deserialize(reader, t);
 
@@ -133,9 +139,8 @@ namespace Newtonsoft.Json.Converters
         /// </returns>
         public override bool CanConvert(Type objectType)
         {
-            return (objectType.AssignableToTypeName(EntityKeyMemberFullTypeName));
+            return objectType.AssignableToTypeName(EntityKeyMemberFullTypeName);
         }
     }
 }
-
 #endif

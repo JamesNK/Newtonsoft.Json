@@ -60,6 +60,7 @@
     <Compile Include="Converters\DataSetConverter.cs" />
     <Compile Include="Converters\DataTableConverter.cs" />
     <Compile Include="Converters\DateTimeConverterBase.cs" />
+    <Compile Include="Converters\DiscriminatedUnionConverter.cs" />
     <Compile Include="Converters\EntityKeyMemberConverter.cs" />
     <Compile Include="Converters\ExpandoObjectConverter.cs" />
     <Compile Include="Converters\IsoDateTimeConverter.cs" />
@@ -121,6 +122,7 @@
     <Compile Include="Linq\JPropertyKeyedCollection.cs" />
     <Compile Include="Linq\JRaw.cs" />
     <Compile Include="Linq\JsonPath\PathFilter.cs" />
+    <Compile Include="Linq\JsonPath\QueryExpression.cs" />
     <Compile Include="Linq\JsonPath\QueryFilter.cs" />
     <Compile Include="Linq\JsonPath\ScanFilter.cs" />
     <Compile Include="Linq\JToken.cs" />
