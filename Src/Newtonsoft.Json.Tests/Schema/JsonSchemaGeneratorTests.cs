@@ -626,6 +626,38 @@ namespace Newtonsoft.Json.Tests.Schema
 }", json);
         }
 
+        public class Y
+        {
+            [JsonConverter(typeof(StringEnumConverter))]
+            public SortTypeFlag y;
+        }
+
+        [Test]
+        public void GenerateSchemaWithStringEnum()
+        {
+            JsonSchemaGenerator jsonSchemaGenerator = new JsonSchemaGenerator();
+            JsonSchema schema = jsonSchemaGenerator.Generate(typeof(Y));
+
+            string json = schema.ToString();
+
+            // NOTE: This fails because the enum is serialized as an integer and not a string.
+            // NOTE: There should exist a way to serialize the enum as lowercase strings.
+            Assert.AreEqual(@"{
+  ""type"": ""object"",
+  ""properties"": {
+    ""y"": {
+      ""required"": true,
+      ""type"": ""string"",
+      ""enum"": [
+        ""no"",
+        ""asc"",
+        ""desc""
+      ]
+    }
+  }
+}", json);
+        }
+
         [Test]
         public void CircularCollectionReferences()
         {
