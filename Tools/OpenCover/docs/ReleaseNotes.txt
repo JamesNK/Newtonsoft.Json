@@ -1,0 +1,74 @@
+Version 4.5.1923
+#168 - skip auto implemented properties
+#164 - allow registryless loading
+#163 - imporved error messages
+
+Version 4.5.1604
+#156 - prepend targetdir when applying test strategies (silverlight)
+
+Version 4.5.1528
+#158 - fix app domain crash due to timeout of proxy
+
+Version 4.5.1403
+#154 - Add xUnit to the list of supported strategies for the Cover by Test feature
+#150 - fix for Xslt issue
+Build Environment now uses BDD tests to ensure the packages have all assemblies required to run
+
+Version 4.5.1314
+#148 - Fix issue with nuget and zip packages and missing Autofac assembly.
+
+Version 4.5.1313
+#118 - Fix communication issue between profiler and host when many processes are vying for the channel
+			- improved thread management
+			- only check if method needs tracing if coverbytest option is utilised 
+
+Version 4.5.1310
+#128 - Add threshold limits (optional commandline) to reduce reporting of visits
+#135 - Add performance counters (admin privileges required) around the memory processing queues
+
+Version 4.5.1302
+Update version number to reflect 4.5 support
+Fix bug in summaries
+
+Version 4.0.1229
+Supports .NET 4.5 (not windows store apps)
+#120 - Built in Summary Reports - useful for build systems
+
+Version 4.0.1128
+#125 - Hide compiler generated method when no source remains after skipping
+#107 - fix 'sporadic' crash when dealing with Generic methods. 
+
+Version 4.0.1118
+#137 - Fix instrumentation issue when dealing with typed clauses
+#107 - fix 'sporadic' crash when dealing with Generic methods. 
+
+Version 4.0.1107
+#133 - Remove skipped File/Module/Class/Methods from report
+#130 - Support for 'returntargetcode' switch in msbuild task
+#126, #127, #132 - ReportGenerator upgrades
+#122 - filter from file instead of command line list option (#123 patch)
+
+Version 4.0.804
+#117 - fix filter crash with anonymous types
+#110 - fix timeout issues due to performance woes in dealing with large number of types/methods
+
+Version 4.0.724
+#94 - remove thread that "may" have been the cause of the nunit-agent.exe closedown issue - switched to a shared memory buffer per child process/profiler object instantiated
+#108 - merge pull request - ToolPath property for MSBuild command
+
+Version 4.0.519
+#102 - add msbuild parts to zip and nuget package
+#99 - exclude anonymous functions if containing method is excluded
+#97 - fix crash based on receiving corrupt data (sequence point with id==0)
+#88 - only use COR_PRF_DISABLE_TRANSPARENCY_CHECKS_UNDER_FULL_TRUST if oldStyle instrumentation
+
+Version 4.0.408
+#83 - build a zip package
+#88 - provide a switch for "old school" instrumentation
+#95 - fix for namespaces with spaces
+
+Version 4.0.301.10 
+#78 - fix for endfault/endfinally
+#71 - detect disabled service
+
+
