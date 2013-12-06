@@ -119,31 +119,31 @@ namespace Newtonsoft.Json.Serialization
         public JsonConverter Converter { get; set; }
 
         /// <summary>
-        /// Gets the member converter.
+        /// Gets or sets the member converter.
         /// </summary>
         /// <value>The member converter.</value>
         public JsonConverter MemberConverter { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="JsonProperty"/> is ignored.
+        /// Gets or sets a value indicating whether this <see cref="JsonProperty"/> is ignored.
         /// </summary>
         /// <value><c>true</c> if ignored; otherwise, <c>false</c>.</value>
         public bool Ignored { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="JsonProperty"/> is readable.
+        /// Gets or sets a value indicating whether this <see cref="JsonProperty"/> is readable.
         /// </summary>
         /// <value><c>true</c> if readable; otherwise, <c>false</c>.</value>
         public bool Readable { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="JsonProperty"/> is writable.
+        /// Gets or sets a value indicating whether this <see cref="JsonProperty"/> is writable.
         /// </summary>
         /// <value><c>true</c> if writable; otherwise, <c>false</c>.</value>
         public bool Writable { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="JsonProperty"/> has a member attribute.
+        /// Gets or sets a value indicating whether this <see cref="JsonProperty"/> has a member attribute.
         /// </summary>
         /// <value><c>true</c> if has a member attribute; otherwise, <c>false</c>.</value>
         public bool HasMemberAttribute { get; set; }
@@ -171,7 +171,7 @@ namespace Newtonsoft.Json.Serialization
         }
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="JsonProperty"/> is required.
+        /// Gets or sets a value indicating whether this <see cref="JsonProperty"/> is required.
         /// </summary>
         /// <value>A value indicating whether this <see cref="JsonProperty"/> is required.</value>
         public Required Required
@@ -181,7 +181,7 @@ namespace Newtonsoft.Json.Serialization
         }
 
         /// <summary>
-        /// Gets a value indicating whether this property preserves object references.
+        /// Gets or sets a value indicating whether this property preserves object references.
         /// </summary>
         /// <value>
         /// 	<c>true</c> if this instance is reference; otherwise, <c>false</c>.
@@ -189,31 +189,31 @@ namespace Newtonsoft.Json.Serialization
         public bool? IsReference { get; set; }
 
         /// <summary>
-        /// Gets the property null value handling.
+        /// Gets or sets the property null value handling.
         /// </summary>
         /// <value>The null value handling.</value>
         public NullValueHandling? NullValueHandling { get; set; }
 
         /// <summary>
-        /// Gets the property default value handling.
+        /// Gets or sets the property default value handling.
         /// </summary>
         /// <value>The default value handling.</value>
         public DefaultValueHandling? DefaultValueHandling { get; set; }
 
         /// <summary>
-        /// Gets the property reference loop handling.
+        /// Gets or sets the property reference loop handling.
         /// </summary>
         /// <value>The reference loop handling.</value>
         public ReferenceLoopHandling? ReferenceLoopHandling { get; set; }
 
         /// <summary>
-        /// Gets the property object creation handling.
+        /// Gets or sets the property object creation handling.
         /// </summary>
         /// <value>The object creation handling.</value>
         public ObjectCreationHandling? ObjectCreationHandling { get; set; }
 
         /// <summary>
-        /// Gets or sets the type name handling.
+        /// Gets or sets or sets the type name handling.
         /// </summary>
         /// <value>The type name handling.</value>
         public TypeNameHandling? TypeNameHandling { get; set; }

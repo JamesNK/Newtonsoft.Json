@@ -682,5 +682,40 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(expectedDate2, date2.Value);
         }
 #endif
+
+        public class ReadOnlyStringConverter : JsonConverter
+        {
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                throw new NotSupportedException();
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                return reader.Value + "!";
+            }
+
+            public override bool CanConvert(Type objectType)
+            {
+                return objectType == typeof(string);
+            }
+
+            public override bool CanWrite
+            {
+                get { return false; }
+            }
+        }
+
+        [Test]
+        public void ReadOnlyConverterTest()
+        {
+            JObject o = new JObject(new JProperty("name", "Hello World"));
+
+            string json = o.ToString(Formatting.Indented, new ReadOnlyStringConverter());
+
+            Assert.AreEqual(@"{
+  ""name"": ""Hello World""
+}", json);
+        }
     }
 }

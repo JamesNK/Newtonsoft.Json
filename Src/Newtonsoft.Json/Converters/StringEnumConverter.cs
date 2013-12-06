@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.Serialization;
+using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Utilities;
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
@@ -197,7 +198,7 @@ namespace Newtonsoft.Json.Converters
                             .Select(a => a.Value)
                             .SingleOrDefault() ?? f.Name;
 #else
-            n2 = f.Name;
+                        n2 = f.Name;
 #endif
 
                         string s;
