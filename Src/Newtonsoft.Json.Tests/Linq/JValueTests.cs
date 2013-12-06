@@ -610,6 +610,29 @@ namespace Newtonsoft.Json.Tests.Linq
 #endif
 
         [Test]
+        public void ExpicitConversionTest()
+        {
+            const string example = "Hello";
+            dynamic obj = new
+                {
+                    data = Encoding.UTF8.GetBytes(example)
+                };
+            byte[] bytes;
+            using (var ms = new MemoryStream())
+            {
+                using (TextWriter tw = new StreamWriter(ms))
+                {
+                    JsonSerializer.Create().Serialize(tw,obj);
+                    tw.Flush();
+                    bytes = ms.ToArray();
+                }
+            }
+            dynamic o = JObject.Parse(Encoding.UTF8.GetString(bytes));
+            var dataBytes = (byte[]) o.data;
+            Assert.AreEqual(example,Encoding.UTF8.GetString(dataBytes));
+        }
+
+        [Test]
         public void GetTypeCode()
         {
             IConvertible v = new JValue(new Guid("0B5D4F85-E94C-4143-94C8-35F2AAEBB100"));
