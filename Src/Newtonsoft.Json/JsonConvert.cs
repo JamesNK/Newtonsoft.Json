@@ -499,7 +499,7 @@ namespace Newtonsoft.Json
         /// <returns>A JSON string representation of the object.</returns>
         public static string SerializeObject(object value)
         {
-            return SerializeObject(value, Formatting.None, (JsonSerializerSettings)null);
+            return SerializeObject(value, null, (JsonSerializerSettings)null);
         }
 
         /// <summary>
@@ -523,7 +523,11 @@ namespace Newtonsoft.Json
         /// <returns>A JSON string representation of the object.</returns>
         public static string SerializeObject(object value, params JsonConverter[] converters)
         {
-            return SerializeObject(value, Formatting.None, converters);
+            JsonSerializerSettings settings = (converters != null && converters.Length > 0)
+                ? new JsonSerializerSettings { Converters = converters }
+                : null;
+
+            return SerializeObject(value, null, settings);
         }
 
         /// <summary>
@@ -539,7 +543,7 @@ namespace Newtonsoft.Json
                 ? new JsonSerializerSettings { Converters = converters }
                 : null;
 
-            return SerializeObject(value, formatting, settings);
+            return SerializeObject(value, null, formatting, settings);
         }
 
         /// <summary>
@@ -553,7 +557,28 @@ namespace Newtonsoft.Json
         /// </returns>
         public static string SerializeObject(object value, JsonSerializerSettings settings)
         {
-            return SerializeObject(value, Formatting.None, settings);
+            return SerializeObject(value, null, settings);
+        }
+
+        /// <summary>
+        /// Serializes the specified object to a JSON string using a type, formatting and <see cref="JsonSerializerSettings"/>.
+        /// </summary>
+        /// <param name="value">The object to serialize.</param>
+        /// <param name="settings">The <see cref="JsonSerializerSettings"/> used to serialize the object.
+        /// If this is null, default serialization settings will be is used.</param>
+        /// <param name="type">
+        /// The type of the value being serialized.
+        /// This parameter is used when <see cref="TypeNameHandling"/> is Auto to write out the type name if the type of the value does not match.
+        /// Specifing the type is optional.
+        /// </param>
+        /// <returns>
+        /// A JSON string representation of the object.
+        /// </returns>
+        public static string SerializeObject(object value, Type type, JsonSerializerSettings settings)
+        {
+            JsonSerializer jsonSerializer = JsonSerializer.CreateDefault(settings);
+
+            return SerializeObjectInternal(value, type, jsonSerializer);
         }
 
         /// <summary>
@@ -589,12 +614,18 @@ namespace Newtonsoft.Json
         public static string SerializeObject(object value, Type type, Formatting formatting, JsonSerializerSettings settings)
         {
             JsonSerializer jsonSerializer = JsonSerializer.CreateDefault(settings);
+            jsonSerializer.Formatting = formatting;
 
+            return SerializeObjectInternal(value, type, jsonSerializer);
+        }
+
+        private static string SerializeObjectInternal(object value, Type type, JsonSerializer jsonSerializer)
+        {
             StringBuilder sb = new StringBuilder(256);
             StringWriter sw = new StringWriter(sb, CultureInfo.InvariantCulture);
             using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
             {
-                jsonWriter.Formatting = formatting;
+                jsonWriter.Formatting = jsonSerializer.Formatting;
 
                 jsonSerializer.Serialize(jsonWriter, value, type);
             }

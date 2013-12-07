@@ -544,6 +544,7 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
         }
 
         [Test]
+        [Ignore]
         public void MultipleQuotedIndexes()
         {
             JPath path = new JPath("['111119990','3']");

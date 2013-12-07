@@ -138,7 +138,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 Converters = { new IsoDateTimeConverter() }
             };
 
-            string json = JsonConvert.SerializeObject(rootFolder, Formatting.None, settings);
+            string json = JsonConvert.SerializeObject(rootFolder, settings);
 
             Console.WriteLine(json);
 

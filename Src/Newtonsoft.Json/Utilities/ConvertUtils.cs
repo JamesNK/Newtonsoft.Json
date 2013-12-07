@@ -397,7 +397,7 @@ namespace Newtonsoft.Json.Utilities
                 if (targetType == typeof(TimeSpan))
                     return ParseTimeSpan((string)initialValue);
                 if (targetType == typeof (byte[]))
-                    return ParseBytes((string) initialValue);
+                    return System.Convert.FromBase64String((string)initialValue);
                 if (typeof(Type).IsAssignableFrom(targetType))
                     return Type.GetType((string)initialValue, true);
             }
@@ -441,12 +441,6 @@ namespace Newtonsoft.Json.Utilities
 
             throw new InvalidOperationException("Can not convert from {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, initialType, targetType));
         }
-
-        private static object ParseBytes(string initialValue)
-        {
-            return System.Convert.FromBase64String(initialValue);
-        }
-
         #endregion
 
         #region TryConvert

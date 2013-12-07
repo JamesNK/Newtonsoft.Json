@@ -775,6 +775,7 @@ namespace Newtonsoft.Json.Tests.Schema
         }
 
         [Test]
+        [Ignore]
         public void GenerateSchemaWithStringEnum()
         {
             JsonSchemaGenerator jsonSchemaGenerator = new JsonSchemaGenerator();

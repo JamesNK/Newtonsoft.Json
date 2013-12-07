@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+using System.Text;
 #if !(NETFX_CORE || PORTABLE || PORTABLE40)
 using System;
 using System.Collections.Generic;
@@ -48,11 +49,27 @@ namespace Newtonsoft.Json.Tests.Converters
             string json = @"[
   {
     ""id"": 0,
-    ""item"": ""item 0""
+    ""item"": ""item 0"",
+    ""DataTableCol"": [
+      {
+        ""NestedStringCol"": ""0!""
+      }
+    ],
+    ""ArrayCol"": [
+      0
+    ]
   },
   {
     ""id"": 1,
-    ""item"": ""item 1""
+    ""item"": ""item 1"",
+    ""DataTableCol"": [
+      {
+        ""NestedStringCol"": ""1!""
+      }
+    ],
+    ""ArrayCol"": [
+      1
+    ]
   }
 ]";
 
@@ -60,21 +77,29 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.IsNotNull(deserializedDataTable);
 
             Assert.AreEqual(string.Empty, deserializedDataTable.TableName);
-            Assert.AreEqual(2, deserializedDataTable.Columns.Count);
+            Assert.AreEqual(4, deserializedDataTable.Columns.Count);
             Assert.AreEqual("id", deserializedDataTable.Columns[0].ColumnName);
             Assert.AreEqual(typeof(long), deserializedDataTable.Columns[0].DataType);
             Assert.AreEqual("item", deserializedDataTable.Columns[1].ColumnName);
             Assert.AreEqual(typeof(string), deserializedDataTable.Columns[1].DataType);
+            Assert.AreEqual("DataTableCol", deserializedDataTable.Columns[2].ColumnName);
+            Assert.AreEqual(typeof(DataTable), deserializedDataTable.Columns[2].DataType);
+            Assert.AreEqual("ArrayCol", deserializedDataTable.Columns[3].ColumnName);
+            Assert.AreEqual(typeof(long[]), deserializedDataTable.Columns[3].DataType);
 
             Assert.AreEqual(2, deserializedDataTable.Rows.Count);
 
             DataRow dr1 = deserializedDataTable.Rows[0];
             Assert.AreEqual(0, dr1["id"]);
             Assert.AreEqual("item 0", dr1["item"]);
+            Assert.AreEqual("0!", ((DataTable)dr1["DataTableCol"]).Rows[0]["NestedStringCol"]);
+            Assert.AreEqual(0, ((long[])dr1["ArrayCol"])[0]);
 
             DataRow dr2 = deserializedDataTable.Rows[1];
             Assert.AreEqual(1, dr2["id"]);
             Assert.AreEqual("item 1", dr2["item"]);
+            Assert.AreEqual("1!", ((DataTable)dr2["DataTableCol"]).Rows[0]["NestedStringCol"]);
+            Assert.AreEqual(1, ((long[])dr2["ArrayCol"])[0]);
         }
 
         [Test]
@@ -109,6 +134,18 @@ namespace Newtonsoft.Json.Tests.Converters
             colDecimal.DataType = typeof(decimal);
             myTable.Columns.Add(colDecimal);
 
+            DataColumn colDataTable = new DataColumn("DataTableCol");
+            colDataTable.DataType = typeof(DataTable);
+            myTable.Columns.Add(colDataTable);
+
+            DataColumn colArray = new DataColumn("ArrayCol");
+            colArray.DataType = typeof(int[]);
+            myTable.Columns.Add(colArray);
+
+            DataColumn colBytes = new DataColumn("BytesCol");
+            colBytes.DataType = typeof(byte[]);
+            myTable.Columns.Add(colBytes);
+
             // populate one row with values.
             DataRow myNewRow = myTable.NewRow();
 
@@ -118,6 +155,18 @@ namespace Newtonsoft.Json.Tests.Converters
             myNewRow["TimeSpanCol"] = new TimeSpan(10, 22, 10, 15, 100);
             myNewRow["DateTimeCol"] = new DateTime(2000, 12, 29, 0, 0, 0, DateTimeKind.Utc);
             myNewRow["DecimalCol"] = 64.0021;
+            myNewRow["ArrayCol"] = new[] { 1 };
+            myNewRow["BytesCol"] = Encoding.UTF8.GetBytes("Hello world");
+
+            DataTable nestedTable = new DataTable("Nested");
+            DataColumn nestedColString = new DataColumn("NestedStringCol");
+            nestedColString.DataType = typeof(string);
+            nestedTable.Columns.Add(nestedColString);
+            DataRow myNewNestedRow = nestedTable.NewRow();
+            myNewNestedRow["NestedStringCol"] = "Nested!";
+            nestedTable.Rows.Add(myNewNestedRow);
+
+            myNewRow["DataTableCol"] = nestedTable;
             myTable.Rows.Add(myNewRow);
 
             string json = JsonConvert.SerializeObject(myTable, Formatting.Indented);
@@ -128,7 +177,16 @@ namespace Newtonsoft.Json.Tests.Converters
     ""BooleanCol"": true,
     ""TimeSpanCol"": ""10.22:10:15.1000000"",
     ""DateTimeCol"": ""2000-12-29T00:00:00Z"",
-    ""DecimalCol"": 64.0021
+    ""DecimalCol"": 64.0021,
+    ""DataTableCol"": [
+      {
+        ""NestedStringCol"": ""Nested!""
+      }
+    ],
+    ""ArrayCol"": [
+      1
+    ],
+    ""BytesCol"": ""SGVsbG8gd29ybGQ=""
   }
 ]", json);
         }

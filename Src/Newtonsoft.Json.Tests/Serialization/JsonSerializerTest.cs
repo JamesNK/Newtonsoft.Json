@@ -1851,6 +1851,27 @@ keyword such as type of business.""
         }
 
         [Test]
+        public void FormattingOverride()
+        {
+            var obj = new { Formatting = "test" };
+
+            JsonSerializerSettings settings = new JsonSerializerSettings { Formatting = Formatting.Indented };
+            string indented = JsonConvert.SerializeObject(obj, settings);
+
+            string none = JsonConvert.SerializeObject(obj, Formatting.None, settings);
+            Assert.AreNotEqual(indented, none);
+        }
+
+        [Test]
+        public void DateTimeTimeZone()
+        {
+            var date = new DateTime(2001, 4, 4, 0, 0, 0, DateTimeKind.Utc);
+
+            string json = JsonConvert.SerializeObject(date);
+            Assert.AreEqual(@"""2001-04-04T00:00:00Z""", json);
+        }
+
+        [Test]
         public void GuidTest()
         {
             Guid guid = new Guid("BED7F4EA-1A96-11d2-8F08-00A0C9A6186D");

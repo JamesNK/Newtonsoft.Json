@@ -23,6 +23,10 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using Newtonsoft.Json.Utilities;
 #if !(NETFX_CORE || PORTABLE40 || PORTABLE)
 using System;
 using System.Data;
@@ -92,31 +96,12 @@ namespace Newtonsoft.Json.Converters
                 reader.Read();
             }
 
-            reader.Read();
-
-            while (reader.TokenType == JsonToken.StartObject)
-            {
-                DataRow dr = dt.NewRow();
+            if (reader.TokenType == JsonToken.StartArray)
                 reader.Read();
 
-                while (reader.TokenType == JsonToken.PropertyName)
-                {
-                    string columnName = (string)reader.Value;
-
-                    reader.Read();
-
-                    if (!dt.Columns.Contains(columnName))
-                    {
-                        Type columnType = GetColumnDataType(reader.TokenType);
-                        dt.Columns.Add(new DataColumn(columnName, columnType));
-                    }
-
-                    dr[columnName] = reader.Value ?? DBNull.Value;
-                    reader.Read();
-                }
-
-                dr.EndEdit();
-                dt.Rows.Add(dr);
+            while (reader.TokenType != JsonToken.EndArray)
+            {
+                CreateRow(reader, dt);
 
                 reader.Read();
             }
@@ -124,8 +109,75 @@ namespace Newtonsoft.Json.Converters
             return dt;
         }
 
-        private static Type GetColumnDataType(JsonToken tokenType)
+        private static void CreateRow(JsonReader reader, DataTable dt)
         {
+            DataRow dr = dt.NewRow();
+            reader.Read();
+
+            while (reader.TokenType == JsonToken.PropertyName)
+            {
+                string columnName = (string)reader.Value;
+
+                reader.Read();
+
+                DataColumn column = dt.Columns[columnName];
+                if (column == null)
+                {
+                    Type columnType = GetColumnDataType(reader);
+                    column = new DataColumn(columnName, columnType);
+                    dt.Columns.Add(column);
+                }
+
+                if (column.DataType == typeof(DataTable))
+                {
+                    if (reader.TokenType == JsonToken.StartArray)
+                        reader.Read();
+
+                    DataTable nestedDt = new DataTable();
+
+                    while (reader.TokenType != JsonToken.EndArray)
+                    {
+                        CreateRow(reader, nestedDt);
+
+                        reader.Read();
+                    }
+
+                    dr[columnName] = nestedDt;
+                }
+                else if (column.DataType.IsArray)
+                {
+                    if (reader.TokenType == JsonToken.StartArray)
+                        reader.Read();
+
+                    List<object> o = new List<object>();
+
+                    while (reader.TokenType != JsonToken.EndArray)
+                    {
+                        o.Add(reader.Value);
+                        reader.Read();
+                    }
+
+                    Array destinationArray = Array.CreateInstance(column.DataType.GetElementType(), o.Count);
+                    Array.Copy(o.ToArray(), destinationArray, o.Count);
+
+                    dr[columnName] = destinationArray;
+                }
+                else
+                {
+                    dr[columnName] = reader.Value ?? DBNull.Value;
+                }
+                
+                reader.Read();
+            }
+
+            dr.EndEdit();
+            dt.Rows.Add(dr);
+        }
+
+        private static Type GetColumnDataType(JsonReader reader)
+        {
+            JsonToken tokenType = reader.TokenType;
+
             switch (tokenType)
             {
                 case JsonToken.Integer:
@@ -140,8 +192,15 @@ namespace Newtonsoft.Json.Converters
                     return typeof(bool);
                 case JsonToken.Date:
                     return typeof(DateTime);
+                case JsonToken.StartArray:
+                    reader.Read();
+                    if (reader.TokenType == JsonToken.StartObject)
+                        return typeof(DataTable); // nested datatable
+
+                    Type arrayType = GetColumnDataType(reader);
+                    return arrayType.MakeArrayType();
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new JsonException("Unexpected JSON token while reading DataTable: {0}".FormatWith(CultureInfo.InvariantCulture, tokenType));
             }
         }
 

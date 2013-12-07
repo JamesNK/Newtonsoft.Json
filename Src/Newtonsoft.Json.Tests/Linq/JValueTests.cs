@@ -614,22 +614,22 @@ namespace Newtonsoft.Json.Tests.Linq
         {
             const string example = "Hello";
             dynamic obj = new
-                {
-                    data = Encoding.UTF8.GetBytes(example)
-                };
+            {
+                data = Encoding.UTF8.GetBytes(example)
+            };
             byte[] bytes;
             using (var ms = new MemoryStream())
             {
                 using (TextWriter tw = new StreamWriter(ms))
                 {
-                    JsonSerializer.Create().Serialize(tw,obj);
+                    JsonSerializer.Create().Serialize(tw, obj);
                     tw.Flush();
                     bytes = ms.ToArray();
                 }
             }
             dynamic o = JObject.Parse(Encoding.UTF8.GetString(bytes));
-            var dataBytes = (byte[]) o.data;
-            Assert.AreEqual(example,Encoding.UTF8.GetString(dataBytes));
+            byte[] dataBytes = (byte[])o.data;
+            Assert.AreEqual(example, Encoding.UTF8.GetString(dataBytes));
         }
 
         [Test]
