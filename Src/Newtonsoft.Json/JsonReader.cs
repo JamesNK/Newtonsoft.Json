@@ -148,6 +148,15 @@ namespace Newtonsoft.Json
         public bool CloseInput { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether multiple pieces of JSON content can
+        /// be read from a stream of content without erroring.
+        /// </summary>
+        /// <value>
+        /// true to support reading multiple pieces of JSON content; otherwise false. The default is false.
+        /// </value>
+        public bool SupportMultipleContent { get; set; }
+
+        /// <summary>
         /// Gets the quotation mark character used to enclose the value of a string.
         /// </summary>
         public virtual char QuoteChar
@@ -831,7 +840,10 @@ namespace Newtonsoft.Json
                 case JsonToken.String:
                 case JsonToken.Raw:
                 case JsonToken.Bytes:
-                    _currentState = (Peek() != JsonContainerType.None) ? State.PostValue : State.Finished;
+                    if (Peek() != JsonContainerType.None)
+                        _currentState = State.PostValue;
+                    else
+                        SetFinished();
 
                     UpdateScopeWithFinishedValue();
                     break;
@@ -851,7 +863,10 @@ namespace Newtonsoft.Json
             if (GetTypeForCloseToken(endToken) != currentObject)
                 throw JsonReaderException.Create(this, "JsonToken {0} is not valid for closing JsonType {1}.".FormatWith(CultureInfo.InvariantCulture, endToken, currentObject));
 
-            _currentState = (Peek() != JsonContainerType.None) ? State.PostValue : State.Finished;
+            if (Peek() != JsonContainerType.None)
+                _currentState = State.PostValue;
+            else
+                SetFinished();
         }
 
         /// <summary>
@@ -873,11 +888,19 @@ namespace Newtonsoft.Json
                     _currentState = State.Constructor;
                     break;
                 case JsonContainerType.None:
-                    _currentState = State.Finished;
+                    SetFinished();
                     break;
                 default:
                     throw JsonReaderException.Create(this, "While setting the reader state back to current object an unexpected JsonType was encountered: {0}".FormatWith(CultureInfo.InvariantCulture, currentObject));
             }
+        }
+
+        private void SetFinished()
+        {
+            if (SupportMultipleContent)
+                _currentState = State.Start;
+            else
+                _currentState = State.Finished;
         }
 
         internal static bool IsPrimitiveToken(JsonToken token)

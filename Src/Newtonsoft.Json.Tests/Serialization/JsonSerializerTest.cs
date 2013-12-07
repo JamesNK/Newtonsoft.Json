@@ -7280,6 +7280,35 @@ Parameter name: value",
         }
 #endif
 
+        public class MultipleItemsClass
+        {
+            public string Name { get; set; }
+        }
+
+        [Test]
+        public void MultipleItems()
+        {
+            IList<MultipleItemsClass> values = new List<MultipleItemsClass>();
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(@"{ ""name"": ""bar"" }{ ""name"": ""baz"" }"));
+            reader.SupportMultipleContent = true;
+
+            while (true)
+            {
+                if (!reader.Read())
+                    break;
+
+                JsonSerializer serializer = new JsonSerializer();
+                MultipleItemsClass foo = serializer.Deserialize<MultipleItemsClass>(reader);
+                
+                values.Add(foo);
+            }
+
+            Assert.AreEqual(2, values.Count);
+            Assert.AreEqual("bar", values[0].Name);
+            Assert.AreEqual("baz", values[1].Name);
+        }
+
         private class FooBar
         {
             public DateTimeOffset Foo { get; set; }

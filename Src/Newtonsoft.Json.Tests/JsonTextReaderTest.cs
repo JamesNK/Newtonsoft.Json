@@ -2195,6 +2195,54 @@ bye", reader.Value);
         }
 
         [Test]
+        public void SupportMultipleContent()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader(@"1 2 ""name"" [][]null {}{} 1.1"));
+            reader.SupportMultipleContent = true;
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.String, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Null, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Float, reader.TokenType);
+
+            Assert.IsFalse(reader.Read());
+        }
+
+        [Test]
         public void ParseBooleanWithNoExtraContent()
         {
             string json = "[true ";
