@@ -26,7 +26,6 @@
 #if !(NETFX_CORE || PORTABLE || PORTABLE40)
 using System;
 using System.ComponentModel;
-using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Linq
 {
@@ -35,20 +34,13 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     public class JPropertyDescriptor : PropertyDescriptor
     {
-        private readonly Type _propertyType;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="JPropertyDescriptor"/> class.
         /// </summary>
         /// <param name="name">The name.</param>
-        /// <param name="propertyType">Type of the property.</param>
-        public JPropertyDescriptor(string name, Type propertyType)
+        public JPropertyDescriptor(string name)
             : base(name, null)
         {
-            ValidationUtils.ArgumentNotNull(name, "name");
-            ValidationUtils.ArgumentNotNull(propertyType, "propertyType");
-
-            _propertyType = propertyType;
         }
 
         private static JObject CastInstance(object instance)
@@ -149,7 +141,7 @@ namespace Newtonsoft.Json.Linq
         /// </returns>
         public override Type PropertyType
         {
-            get { return _propertyType; }
+            get { return typeof(object); }
         }
 
         /// <summary>

@@ -611,17 +611,6 @@ namespace Newtonsoft.Json.Linq
             return ((ICustomTypeDescriptor)this).GetProperties(null);
         }
 
-        private static Type GetTokenPropertyType(JToken token)
-        {
-            if (token is JValue)
-            {
-                JValue v = (JValue)token;
-                return (v.Value != null) ? v.Value.GetType() : typeof(object);
-            }
-
-            return token.GetType();
-        }
-
         /// <summary>
         /// Returns the properties for this instance of a component using the attribute array as a filter.
         /// </summary>
@@ -635,7 +624,7 @@ namespace Newtonsoft.Json.Linq
 
             foreach (KeyValuePair<string, JToken> propertyValue in this)
             {
-                descriptors.Add(new JPropertyDescriptor(propertyValue.Key, GetTokenPropertyType(propertyValue.Value)));
+                descriptors.Add(new JPropertyDescriptor(propertyValue.Key));
             }
 
             return descriptors;
