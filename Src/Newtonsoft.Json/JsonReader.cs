@@ -149,7 +149,7 @@ namespace Newtonsoft.Json
 
         /// <summary>
         /// Gets or sets a value indicating whether multiple pieces of JSON content can
-        /// be read from a stream of content without erroring.
+        /// be read from a continuous stream without erroring.
         /// </summary>
         /// <value>
         /// true to support reading multiple pieces of JSON content; otherwise false. The default is false.

@@ -26,6 +26,9 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Reflection;
+using System.Runtime.Serialization;
+using Newtonsoft.Json.Serialization;
 #if !(NET20 || NET35 || PORTABLE)
 using System.Numerics;
 #endif
@@ -1508,6 +1511,92 @@ namespace Newtonsoft.Json.Tests.Bson
 
             Assert.AreEqual("(hi)", c.Regex.ToString());
             Assert.AreEqual(RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase, c.Regex.Options);
+        }
+
+        class Zoo
+        {
+            public List<Animal> Animals { get; set; }
+        }
+
+        class Animal
+        {
+            public Animal(string name)
+            {
+                Name = name;
+            }
+
+            public string Name { get; private set; }
+        }
+
+        class Dog : Animal
+        {
+            public Dog(string name)
+                : base(name)
+            {
+            }
+        }
+
+        class Cat : Animal
+        {
+            public Cat(string name)
+                : base(name)
+            {
+            }
+        }
+
+        public class MyBinder : DefaultSerializationBinder
+        {
+            public bool BindToNameCalled { get; set; }
+            public bool BindToTypeCalled { get; set; }
+
+            public override void BindToName(Type serializedType, out string assemblyName, out string typeName)
+            {
+                BindToNameCalled = true;
+                base.BindToName(serializedType, out assemblyName, out typeName);
+            }
+
+            public override Type BindToType(string assemblyName, string typeName)
+            {
+                BindToTypeCalled = true;
+                return base.BindToType(assemblyName, typeName);
+            }
+        }
+
+        [Test]
+        public void TypeNameHandlingAuto()
+        {
+            var binder = new MyBinder();
+
+            var settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                Binder = binder
+            };
+
+            Zoo zoo = new Zoo
+            {
+                Animals = new List<Animal>
+                {
+                    new Dog("Dog!")
+                }
+            };
+
+            JsonSerializer serializer = JsonSerializer.Create(settings);
+
+            MemoryStream ms = new MemoryStream();
+            BsonWriter bsonWriter = new BsonWriter(ms);
+            serializer.Serialize(bsonWriter, zoo);
+
+            ms.Seek(0, SeekOrigin.Begin);
+
+            var deserialized = serializer.Deserialize<Zoo>(new BsonReader(ms));
+
+            Assert.AreEqual(1, deserialized.Animals.Count);
+            Assert.AreEqual("Dog!", deserialized.Animals[0].Name);
+            Assert.IsTrue(deserialized.Animals[0] is Dog);
+
+            Assert.IsTrue(binder.BindToNameCalled);
+            Assert.IsTrue(binder.BindToTypeCalled);
         }
     }
 }

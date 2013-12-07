@@ -368,6 +368,28 @@ namespace Newtonsoft.Json.Tests.Converters
             Beta,
         }
 
+        [Test]
+        public void DeserializeIntegerButNotAllowed()
+        {
+            string json = "{ \"Value\" : 123 }";
+
+            try
+            {
+                var serializer = new JsonSerializer();
+                serializer.Converters.Add(new StringEnumConverter { DisallowIntegerValues = true });
+                serializer.Deserialize<Bucket>(new JsonTextReader(new StringReader(json)));
+            }
+            catch (JsonSerializationException ex)
+            {
+                Assert.AreEqual("Error converting value 123 to type 'Newtonsoft.Json.Tests.Converters.StringEnumConverterTests+MyEnum'. Path 'Value', line 1, position 15.", ex.Message);
+                Assert.AreEqual(@"Integer value 123 is not allowed. Path 'Value', line 1, position 15.", ex.InnerException.Message);
+
+                return;
+            }
+
+            Assert.Fail();
+        }
+
 #if !NET20
         [Test]
         public void EnumMemberPlusFlags()
