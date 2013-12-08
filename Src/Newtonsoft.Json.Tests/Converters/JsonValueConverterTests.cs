@@ -33,13 +33,13 @@ using NUnit.Framework;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
+#endif
 using Windows.Data.Json;
 using System.IO;
 using System.Diagnostics;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
-#endif
 
 namespace Newtonsoft.Json.Tests.Converters
 {

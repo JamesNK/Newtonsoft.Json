@@ -27,7 +27,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data.Odbc;
+using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json.Serialization;
 using System.Globalization;
@@ -145,7 +145,12 @@ namespace Newtonsoft.Json.Converters
 
             // all fsharp objects have CompilationMappingAttribute
             // get the fsharp assembly from the attribute and initialize latebound methods
-            object[] attributes = objectType.GetCustomAttributes(true);
+            object[] attributes;
+#if !(NETFX_CORE || PORTABLE)
+            attributes = objectType.GetCustomAttributes(true);
+#else
+            attributes = objectType.GetTypeInfo().GetCustomAttributes(true).ToArray();
+#endif
             bool isFSharpType = false;
             foreach (object attribute in attributes)
             {
@@ -171,7 +176,7 @@ namespace Newtonsoft.Json.Converters
             {
                 _initialized = true;
 
-                Assembly fsharpCoreAssembly = attributeType.Assembly;
+                Assembly fsharpCoreAssembly = attributeType.Assembly();
                 Type fsharpType = fsharpCoreAssembly.GetType("Microsoft.FSharp.Reflection.FSharpType");
 
                 MethodInfo isUnionMethodInfo = fsharpType.GetMethod("IsUnion", BindingFlags.Public | BindingFlags.Static);

@@ -55,30 +55,30 @@ namespace Newtonsoft.Json.Utilities
 #endif
 
 #if NETFX_CORE || PORTABLE
-  [Flags]
-  internal enum BindingFlags
-  {
-    Default = 0,
-    IgnoreCase = 1,
-    DeclaredOnly = 2,
-    Instance = 4,
-    Static = 8,
-    Public = 16,
-    NonPublic = 32,
-    FlattenHierarchy = 64,
-    InvokeMethod = 256,
-    CreateInstance = 512,
-    GetField = 1024,
-    SetField = 2048,
-    GetProperty = 4096,
-    SetProperty = 8192,
-    PutDispProperty = 16384,
-    ExactBinding = 65536,
-    PutRefDispProperty = 32768,
-    SuppressChangeType = 131072,
-    OptionalParamBinding = 262144,
-    IgnoreReturn = 16777216
-  }
+    [Flags]
+    internal enum BindingFlags
+    {
+        Default = 0,
+        IgnoreCase = 1,
+        DeclaredOnly = 2,
+        Instance = 4,
+        Static = 8,
+        Public = 16,
+        NonPublic = 32,
+        FlattenHierarchy = 64,
+        InvokeMethod = 256,
+        CreateInstance = 512,
+        GetField = 1024,
+        SetField = 2048,
+        GetProperty = 4096,
+        SetProperty = 8192,
+        PutDispProperty = 16384,
+        ExactBinding = 65536,
+        PutRefDispProperty = 32768,
+        SuppressChangeType = 131072,
+        OptionalParamBinding = 262144,
+        IgnoreReturn = 16777216
+    }
 #endif
 
     internal static class ReflectionUtils
@@ -154,7 +154,7 @@ namespace Newtonsoft.Json.Utilities
                 fullyQualifiedTypeName = t.AssemblyQualifiedName;
             }
 #else
-      fullyQualifiedTypeName = t.AssemblyQualifiedName;
+            fullyQualifiedTypeName = t.AssemblyQualifiedName;
 #endif
 
             switch (assemblyFormat)
@@ -690,25 +690,25 @@ namespace Newtonsoft.Json.Utilities
             throw new Exception("Cannot get attributes from '{0}'.".FormatWith(CultureInfo.InvariantCulture, provider));
         }
 #else
-    public static T[] GetAttributes<T>(object provider, bool inherit) where T : Attribute
-    {
-      if (provider is Type)
-        return ((Type)provider).GetTypeInfo().GetCustomAttributes<T>(inherit).ToArray();
+        public static T[] GetAttributes<T>(object provider, bool inherit) where T : Attribute
+        {
+            if (provider is Type)
+                return ((Type) provider).GetTypeInfo().GetCustomAttributes<T>(inherit).ToArray();
 
-      if (provider is Assembly)
-        return ((Assembly)provider).GetCustomAttributes<T>().ToArray();
+            if (provider is Assembly)
+                return ((Assembly) provider).GetCustomAttributes<T>().ToArray();
 
-      if (provider is MemberInfo)
-        return ((MemberInfo)provider).GetCustomAttributes<T>(inherit).ToArray();
+            if (provider is MemberInfo)
+                return ((MemberInfo) provider).GetCustomAttributes<T>(inherit).ToArray();
 
-      if (provider is Module)
-        return ((Module)provider).GetCustomAttributes<T>().ToArray();
+            if (provider is Module)
+                return ((Module) provider).GetCustomAttributes<T>().ToArray();
 
-      if (provider is ParameterInfo)
-        return ((ParameterInfo)provider).GetCustomAttributes<T>(inherit).ToArray();
+            if (provider is ParameterInfo)
+                return ((ParameterInfo) provider).GetCustomAttributes<T>(inherit).ToArray();
 
-      throw new Exception("Cannot get attributes from '{0}'.".FormatWith(CultureInfo.InvariantCulture, provider));
-    }
+            throw new Exception("Cannot get attributes from '{0}'.".FormatWith(CultureInfo.InvariantCulture, provider));
+        }
 #endif
 
         public static void SplitFullyQualifiedTypeName(string fullyQualifiedTypeName, out string typeName, out string assemblyName)

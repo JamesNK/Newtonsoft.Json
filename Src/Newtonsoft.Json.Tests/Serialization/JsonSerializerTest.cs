@@ -9471,28 +9471,6 @@ Parameter name: value",
 ]", json);
         }
 
-        public class Foo2
-        {
-            public string Name { get; set; }
-        }
-
-        [Test]
-        [Ignore]
-        public void SerializeMultipleObjectsFromStream()
-        {
-            StringReader sr = new StringReader(@"{ ""name"": ""bar"" }{ ""name"": ""baz"" }");
-
-            var reader1 = new JsonTextReader(sr);
-            var serializer1 = new JsonSerializer { };
-            var foo1 = serializer1.Deserialize<Foo2>(reader1);
-            Assert.AreEqual("bar", foo1.Name);
-
-            var reader2 = new JsonTextReader(sr);
-            var serializer2 = new JsonSerializer { };
-            var foo2 = serializer2.Deserialize<Foo2>(reader2);
-            Assert.AreEqual("baz", foo2.Name);
-        }
-
 #if !(PORTABLE || PORTABLE40 || NETFX_CORE)
         [Test]
         public void SerializeDictionaryWithStructKey()
