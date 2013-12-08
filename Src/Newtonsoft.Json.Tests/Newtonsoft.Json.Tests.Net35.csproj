@@ -132,8 +132,10 @@
     <Compile Include="Linq\ComponentModel\BindingTests.cs" />
     <Compile Include="Linq\ComponentModel\JPropertyDescriptorTests.cs" />
     <Compile Include="Linq\DynamicTests.cs" />
-    <Compile Include="Linq\JPathTests.cs" />
     <Compile Include="Linq\JRawTests.cs" />
+    <Compile Include="Linq\JsonPath\JPathExecuteTests.cs" />
+    <Compile Include="Linq\JsonPath\JPathParseTests.cs" />
+    <Compile Include="Linq\JsonPath\QueryExpressionTests.cs" />
     <Compile Include="Serialization\ConstructorHandlingTests.cs" />
     <Compile Include="Serialization\ContractResolverTests.cs" />
     <Compile Include="Serialization\DefaultValueHandlingTests.cs" />

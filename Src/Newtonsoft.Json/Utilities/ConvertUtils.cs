@@ -232,10 +232,10 @@ namespace Newtonsoft.Json.Utilities
 
         public static TimeSpan ParseTimeSpan(string input)
         {
-#if !(NET35 || NET20 || PORTABLE40)
-            return TimeSpan.Parse((string)input, CultureInfo.InvariantCulture);
+#if !(NET35 || NET20)
+            return TimeSpan.Parse(input, CultureInfo.InvariantCulture);
 #else
-            return TimeSpan.Parse((string)input);
+            return TimeSpan.Parse(input);
 #endif
         }
 

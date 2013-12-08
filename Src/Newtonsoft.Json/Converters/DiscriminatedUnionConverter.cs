@@ -27,7 +27,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
 using System.Linq;
+#endif
 using System.Reflection;
 using Newtonsoft.Json.Serialization;
 using System.Globalization;

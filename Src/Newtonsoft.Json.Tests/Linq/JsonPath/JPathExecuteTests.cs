@@ -25,7 +25,9 @@
 
 using System;
 using System.Collections.Generic;
+#if !(PORTABLE || PORTABLE40 || NET35 || NET20)
 using System.Numerics;
+#endif
 using Newtonsoft.Json.Linq.JsonPath;
 using Newtonsoft.Json.Tests.Bson;
 #if !NETFX_CORE
@@ -434,6 +436,7 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
             Assert.IsTrue(JToken.DeepEquals(new JObject(new JProperty("hi", 3)), t[1]));
         }
 
+#if !(PORTABLE || PORTABLE40 || NET35 || NET20)
         [Test]
         public void GreaterQueryBigInteger()
         {
@@ -448,6 +451,7 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
             Assert.IsTrue(JToken.DeepEquals(new JObject(new JProperty("hi", 2)), t[0]));
             Assert.IsTrue(JToken.DeepEquals(new JObject(new JProperty("hi", 3)), t[1]));
         }
+#endif
 
         [Test]
         public void GreaterOrEqualQuery()

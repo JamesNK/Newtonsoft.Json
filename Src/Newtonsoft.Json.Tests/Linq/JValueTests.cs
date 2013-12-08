@@ -609,6 +609,7 @@ namespace Newtonsoft.Json.Tests.Linq
         }
 #endif
 
+#if !(PORTABLE40 || NET35 || NET20)
         [Test]
         public void ExpicitConversionTest()
         {
@@ -631,6 +632,7 @@ namespace Newtonsoft.Json.Tests.Linq
             byte[] dataBytes = (byte[])o.data;
             Assert.AreEqual(example, Encoding.UTF8.GetString(dataBytes));
         }
+#endif
 
         [Test]
         public void GetTypeCode()

@@ -25,7 +25,6 @@
 
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using Newtonsoft.Json.Utilities;
 #if !(NETFX_CORE || PORTABLE40 || PORTABLE)
 using System;
