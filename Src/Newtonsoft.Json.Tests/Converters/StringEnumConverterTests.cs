@@ -376,7 +376,7 @@ namespace Newtonsoft.Json.Tests.Converters
             try
             {
                 var serializer = new JsonSerializer();
-                serializer.Converters.Add(new StringEnumConverter { DisallowIntegerValues = true });
+                serializer.Converters.Add(new StringEnumConverter { AllowIntegerValues = false });
                 serializer.Deserialize<Bucket>(new JsonTextReader(new StringReader(json)));
             }
             catch (JsonSerializationException ex)

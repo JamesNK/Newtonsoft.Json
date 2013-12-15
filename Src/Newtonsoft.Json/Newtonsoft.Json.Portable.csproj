@@ -115,6 +115,7 @@
     <Compile Include="Linq\JsonPath\ArrayIndexFilter.cs" />
     <Compile Include="Linq\JsonPath\ArrayMultipleIndexFilter.cs" />
     <Compile Include="Linq\JsonPath\ArraySliceFilter.cs" />
+    <Compile Include="Linq\JsonPath\FieldMultipleFilter.cs" />
     <Compile Include="Linq\JsonPath\FieldFilter.cs" />
     <Compile Include="Linq\JsonPath\JPath.cs" />
     <Compile Include="Linq\JsonPath\PathFilter.cs" />

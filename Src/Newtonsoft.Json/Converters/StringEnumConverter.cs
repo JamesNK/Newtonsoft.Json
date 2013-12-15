@@ -52,10 +52,18 @@ namespace Newtonsoft.Json.Converters
         public bool CamelCaseText { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether integer values are disallowed.
+        /// Gets or sets a value indicating whether integer values are allowed.
         /// </summary>
-        /// <value><c>true</c> if integers are disallowed; otherwise, <c>false</c>.</value>
-        public bool DisallowIntegerValues { get; set; }
+        /// <value><c>true</c> if integers are allowed; otherwise, <c>false</c>.</value>
+        public bool AllowIntegerValues { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StringEnumConverter"/> class.
+        /// </summary>
+        public StringEnumConverter()
+        {
+            AllowIntegerValues = true;
+        }
 
         /// <summary>
         /// Writes the JSON representation of the object.
@@ -159,7 +167,7 @@ namespace Newtonsoft.Json.Converters
 
                 if (reader.TokenType == JsonToken.Integer)
                 {
-                    if (DisallowIntegerValues)
+                    if (!AllowIntegerValues)
                         throw JsonSerializationException.Create(reader, "Integer value {0} is not allowed.".FormatWith(CultureInfo.InvariantCulture, reader.Value));
 
                     return ConvertUtils.ConvertOrCast(reader.Value, CultureInfo.InvariantCulture, t);

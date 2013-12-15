@@ -472,36 +472,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
             char currentChar = _expression[_currentIndex];
             if (currentChar == '\'')
             {
-                StringBuilder sb = new StringBuilder();
-
-                _currentIndex++;
-                while (_currentIndex < _expression.Length)
-                {
-                    currentChar = _expression[_currentIndex];
-                    if (currentChar == '\\' && _currentIndex + 1 < _expression.Length)
-                    {
-                        _currentIndex++;
-
-                        if (_expression[_currentIndex] == '\'')
-                            sb.Append('\'');
-                        else if (_expression[_currentIndex] == '\\')
-                            sb.Append('\\');
-                        else
-                            throw new JsonException(@"Unknown escape chracter: \" + _expression[_currentIndex]);
-
-                        _currentIndex++;
-                    }
-                    else if (currentChar == '\'')
-                    {
-                        _currentIndex++;
-                        return sb.ToString();
-                    }
-                    else
-                    {
-                        _currentIndex++;
-                        sb.Append(currentChar);
-                    }
-                }
+                return ReadQuotedString();
             }
             else if (char.IsDigit(currentChar) || currentChar == '-')
             {
@@ -559,6 +530,44 @@ namespace Newtonsoft.Json.Linq.JsonPath
             throw new JsonException("Could not read query value.");
         }
 
+        private string ReadQuotedString()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            _currentIndex++;
+            while (_currentIndex < _expression.Length)
+            {
+                char currentChar = _expression[_currentIndex];
+                if (currentChar == '\\' && _currentIndex + 1 < _expression.Length)
+                {
+                    _currentIndex++;
+
+                    if (_expression[_currentIndex] == '\'')
+                        sb.Append('\'');
+                    else if (_expression[_currentIndex] == '\\')
+                        sb.Append('\\');
+                    else
+                        throw new JsonException(@"Unknown escape chracter: \" + _expression[_currentIndex]);
+
+                    _currentIndex++;
+                }
+                else if (currentChar == '\'')
+                {
+                    _currentIndex++;
+                    {
+                        return sb.ToString();
+                    }
+                }
+                else
+                {
+                    _currentIndex++;
+                    sb.Append(currentChar);
+                }
+            }
+
+            throw new JsonException("Path ended with an open string.");
+        }
+
         private bool Match(string s)
         {
             int currentPosition = _currentIndex;
@@ -595,34 +604,50 @@ namespace Newtonsoft.Json.Linq.JsonPath
             throw new JsonException("Could not read query operator.");
         }
 
-        private FieldFilter ParseQuotedField(char indexerCloseChar)
+        private PathFilter ParseQuotedField(char indexerCloseChar)
         {
-            _currentIndex++;
-            int start = _currentIndex;
+            //_currentIndex++;
+            //int start = _currentIndex;
+
+            List<string> fields = null;
 
             while (_currentIndex < _expression.Length)
             {
-                char currentCharacter = _expression[_currentIndex];
-                if (currentCharacter == '\'')
+                string field = ReadQuotedString();
+
+                //_currentIndex++;
+                //EnsureLength("Path ended with open indexer.");
+                EatWhitespace();
+                EnsureLength("Path ended with open indexer.");
+
+                if (_expression[_currentIndex] == indexerCloseChar)
                 {
-                    int length = _currentIndex - start;
-
-                    if (length == 0)
-                        throw new JsonException("Empty path indexer.");
-
-                    // check that character after the quote is to close the index
                     _currentIndex++;
-                    EnsureLength("Path ended with open indexer.");
+
+                    if (fields != null)
+                    {
+                        fields.Add(field);
+                        return new FieldMultipleFilter { Names = fields };
+                    }
+                    else
+                    {
+                        return new FieldFilter { Name = field };
+                    }
+                }
+                else if (_expression[_currentIndex] == ',')
+                {
+                    _currentIndex++;
                     EatWhitespace();
 
-                    if (_expression[_currentIndex] != indexerCloseChar)
-                        throw new JsonException("Unexpected character while parsing path indexer: " + currentCharacter);
+                    if (fields == null)
+                        fields = new List<string>();
 
-                    string indexer = _expression.Substring(start, length);
-                    return new FieldFilter { Name = indexer };
+                    fields.Add(field);
                 }
-
-                _currentIndex++;
+                else
+                {
+                    throw new JsonException("Unexpected character while parsing path indexer: " + _expression[_currentIndex]);
+                }
             }
 
             throw new JsonException("Path ended with open indexer.");
