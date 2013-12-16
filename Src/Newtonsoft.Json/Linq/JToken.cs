@@ -1907,7 +1907,7 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Selects the token that matches the object path.
+        /// Selects the token that matches the JSON path.
         /// </summary>
         /// <param name="path">
         /// The object path from the current <see cref="JToken"/> to the <see cref="JToken"/>
@@ -1922,7 +1922,7 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Selects the token that matches the object path.
+        /// Selects the token that matches the JSON path.
         /// </summary>
         /// <param name="path">
         /// The object path from the current <see cref="JToken"/> to the <see cref="JToken"/>
@@ -1944,11 +1944,22 @@ namespace Newtonsoft.Json.Linq
             return result.SingleOrDefault();
         }
 
+        /// <summary>
+        /// Selects tokens that match the JSON path.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public IEnumerable<JToken> SelectTokens(string path)
         {
             return SelectTokens(path, false);
         }
 
+        /// <summary>
+        /// Selects tokens that match the JSON path.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="errorWhenNoMatch"></param>
+        /// <returns></returns>
         public IEnumerable<JToken> SelectTokens(string path, bool errorWhenNoMatch)
         {
             JPath p = new JPath(path);
