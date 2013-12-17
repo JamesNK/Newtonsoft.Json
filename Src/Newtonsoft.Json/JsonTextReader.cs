@@ -1268,7 +1268,7 @@ namespace Newtonsoft.Json
                     {
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
                         string number = _stringReference.ToString();
-                        numberValue = BigInteger.Parse(number, CultureInfo.InvariantCulture);
+                        numberValue = BigInteger.Parse(number);
                         numberType = JsonToken.Integer;
 #else
     // todo - validate number was a valid integer to make sure overflow was the reason for failure
