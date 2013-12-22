@@ -143,14 +143,15 @@ namespace Newtonsoft.Json.Linq
         /// </example>
         public new static JArray Parse(string json)
         {
-            JsonReader reader = new JsonTextReader(new StringReader(json));
+            using (JsonReader reader = new JsonTextReader(new StringReader(json)))
+            {
+                JArray a = Load(reader);
 
-            JArray a = Load(reader);
+                if (reader.Read() && reader.TokenType != JsonToken.Comment)
+                    throw JsonReaderException.Create(reader, "Additional text found in JSON string after parsing content.");
 
-            if (reader.Read() && reader.TokenType != JsonToken.Comment)
-                throw JsonReaderException.Create(reader, "Additional text found in JSON string after parsing content.");
-
-            return a;
+                return a;
+            }
         }
 
         /// <summary>

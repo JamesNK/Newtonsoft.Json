@@ -1853,14 +1853,15 @@ namespace Newtonsoft.Json.Linq
         /// <returns>A <see cref="JToken"/> populated from the string that contains JSON.</returns>
         public static JToken Parse(string json)
         {
-            JsonReader reader = new JsonTextReader(new StringReader(json));
+            using (JsonReader reader = new JsonTextReader(new StringReader(json)))
+            {
+                JToken t = Load(reader);
 
-            JToken t = Load(reader);
+                if (reader.Read() && reader.TokenType != JsonToken.Comment)
+                    throw JsonReaderException.Create(reader, "Additional text found in JSON string after parsing content.");
 
-            if (reader.Read() && reader.TokenType != JsonToken.Comment)
-                throw JsonReaderException.Create(reader, "Additional text found in JSON string after parsing content.");
-
-            return t;
+                return t;
+            }
         }
 
         /// <summary>
@@ -1907,48 +1908,61 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Selects the token that matches the object path.
+        /// Selects a <see cref="JToken"/> using a JPath expression. Selects the token that matches the object path.
         /// </summary>
         /// <param name="path">
-        /// The object path from the current <see cref="JToken"/> to the <see cref="JToken"/>
-        /// to be returned. This must be a string of property names or array indexes separated
-        /// by periods, such as <code>Tables[0].DefaultView[0].Price</code> in C# or
-        /// <code>Tables(0).DefaultView(0).Price</code> in Visual Basic.
+        /// A <see cref="String"/> that contains a JPath expression.
         /// </param>
-        /// <returns>The <see cref="JToken"/> that matches the object path or a null reference if no matching token is found.</returns>
+        /// <returns>A <see cref="JToken"/>, or null.</returns>
         public JToken SelectToken(string path)
         {
             return SelectToken(path, false);
         }
 
         /// <summary>
-        /// Selects the token that matches the object path.
+        /// Selects a <see cref="JToken"/> using a JPath expression. Selects the token that matches the object path.
         /// </summary>
         /// <param name="path">
-        /// The object path from the current <see cref="JToken"/> to the <see cref="JToken"/>
-        /// to be returned. This must be a string of property names or array indexes separated
-        /// by periods, such as <code>Tables[0].DefaultView[0].Price</code> in C# or
-        /// <code>Tables(0).DefaultView(0).Price</code> in Visual Basic.
+        /// A <see cref="String"/> that contains a JPath expression.
         /// </param>
-        /// <param name="errorWhenNoMatch">A flag to indicate whether an error should be thrown if no token is found.</param>
-        /// <returns>The <see cref="JToken"/> that matches the object path.</returns>
+        /// <param name="errorWhenNoMatch">A flag to indicate whether an error should be thrown if no tokens are found when evaluating part of the expression.</param>
+        /// <returns>A <see cref="JToken"/>.</returns>
         public JToken SelectToken(string path, bool errorWhenNoMatch)
         {
             JPath p = new JPath(path);
 
-            // todo change this to a foreach
-            List<JToken> result = p.Evaluate(this, errorWhenNoMatch).ToList();
-            if (result.Count > 1)
-                throw new Exception("TODO");
+            JToken token = null;
+            foreach (JToken t in p.Evaluate(this, errorWhenNoMatch))
+            {
+                if (token != null)
+                    throw new JsonException("Path returned multiple tokens.");
 
-            return result.SingleOrDefault();
+                token = t;
+            }
+
+            return token;
         }
 
+        /// <summary>
+        /// Selects a collection of elements using a JPath expression.
+        /// </summary>
+        /// <param name="path">
+        /// A <see cref="String"/> that contains a JPath expression.
+        /// </param>
+        /// <returns>An <see cref="IEnumerable{JToken}"/> that contains the selected elements.</returns>
         public IEnumerable<JToken> SelectTokens(string path)
         {
             return SelectTokens(path, false);
         }
 
+        /// <summary>
+        /// Selects a collection of elements using a JPath expression.
+        /// </summary>
+        /// <param name="path">
+        /// A <see cref="String"/> that contains a JPath expression.
+        /// </param>
+        /// <param name="errorWhenNoMatch">A flag to indicate whether an error should be thrown if no tokens are found when evaluating part of the expression.</param>
+        /// <returns>An <see cref="IEnumerable{JToken}"/> that contains the selected elements.</returns>
         public IEnumerable<JToken> SelectTokens(string path, bool errorWhenNoMatch)
         {
             JPath p = new JPath(path);

@@ -1653,6 +1653,35 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual("string!", ((MyChild)p2.Child).MyProperty);
         }
 #endif
+
+        [Test]
+        public void ListOfStackWithFullAssemblyName()
+        {
+            var input = new List<Stack<string>>();
+
+            input.Add(new Stack<string>(new List<string> { "One", "Two", "Three" }));
+            input.Add(new Stack<string>(new List<string> { "Four", "Five", "Six" }));
+            input.Add(new Stack<string>(new List<string> { "Seven", "Eight", "Nine" }));
+
+            string serialized = JsonConvert.SerializeObject(input,
+                Newtonsoft.Json.Formatting.Indented,
+                new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All, TypeNameAssemblyFormat = FormatterAssemblyStyle.Full } // TypeNameHandling.Auto will work
+            );
+
+            Console.WriteLine(serialized);
+
+            var output = JsonConvert.DeserializeObject<List<Stack<string>>>(serialized,
+                new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All }
+            );
+
+            foreach (var stack in output)
+            {
+                foreach (var value in stack)
+                {
+                    Console.WriteLine(value);
+                }
+            }
+        }
     }
 
 #if !NETFX_CORE

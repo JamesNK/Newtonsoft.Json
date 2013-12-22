@@ -27,8 +27,6 @@ namespace Newtonsoft.Json.Linq.JsonPath
                     }
                     else
                     {
-                        // todo - error when no results
-
                         foreach (KeyValuePair<string, JToken> p in o)
                         {
                             yield return p.Value;

@@ -819,14 +819,16 @@ namespace Newtonsoft.Json
         {
             ValidationUtils.ArgumentNotNull(value, "value");
 
-            StringReader sr = new StringReader(value);
             JsonSerializer jsonSerializer = JsonSerializer.CreateDefault(settings);
 
             // by default DeserializeObject should check for additional content
             if (!jsonSerializer.IsCheckAdditionalContentSet())
                 jsonSerializer.CheckAdditionalContent = true;
 
-            return jsonSerializer.Deserialize(new JsonTextReader(sr), type);
+            using (var reader = new JsonTextReader(new StringReader(value)))
+            {
+                return jsonSerializer.Deserialize(reader, type);
+            }
         }
 
 #if !(NET20 || NET35 || PORTABLE40)
@@ -916,10 +918,9 @@ namespace Newtonsoft.Json
         /// </param>
         public static void PopulateObject(string value, object target, JsonSerializerSettings settings)
         {
-            StringReader sr = new StringReader(value);
             JsonSerializer jsonSerializer = JsonSerializer.CreateDefault(settings);
 
-            using (JsonReader jsonReader = new JsonTextReader(sr))
+            using (JsonReader jsonReader = new JsonTextReader(new StringReader(value)))
             {
                 jsonSerializer.Populate(jsonReader, target);
 

@@ -120,12 +120,44 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
         }
 
         [Test]
+        public void EvaluateWildcardIndexOnObjectWithError()
+        {
+            JObject o = new JObject(
+                new JProperty("Blah", 1));
+
+            ExceptionAssert.Throws<JsonException>(
+                @"Index * not valid on JObject.",
+                () => { o.SelectToken("[*]", true); });
+        }
+
+        [Test]
+        public void EvaluateSliceOnObjectWithError()
+        {
+            JObject o = new JObject(
+                new JProperty("Blah", 1));
+
+            ExceptionAssert.Throws<JsonException>(
+                @"Array slice is not valid on JObject.",
+                () => { o.SelectToken("[:]", true); });
+        }
+
+        [Test]
         public void EvaluatePropertyOnArray()
         {
             JArray a = new JArray(1, 2, 3, 4, 5);
 
             JToken t = a.SelectToken("BlahBlah");
             Assert.IsNull(t);
+        }
+
+        [Test]
+        public void EvaluateMultipleResultsError()
+        {
+            JArray a = new JArray(1, 2, 3, 4, 5);
+
+            ExceptionAssert.Throws<JsonException>(
+                @"Path returned multiple tokens.",
+                () => { a.SelectToken("[0, 1]"); });
         }
 
         [Test]
@@ -139,6 +171,16 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
         }
 
         [Test]
+        public void EvaluateNoResultsWithMultipleArrayIndexes()
+        {
+            JArray a = new JArray(1, 2, 3, 4, 5);
+
+            ExceptionAssert.Throws<JsonException>(
+                @"Index 9 outside the bounds of JArray.",
+                () => { a.SelectToken("[9,10]", true); });
+        }
+
+        [Test]
         public void EvaluateConstructorOutOfBoundsIndxerWithError()
         {
             JConstructor c = new JConstructor("Blah");
@@ -146,6 +188,14 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
             ExceptionAssert.Throws<JsonException>(
                 @"Index 1 outside the bounds of JConstructor.",
                 () => { c.SelectToken("[1]", true); });
+        }
+
+        [Test]
+        public void EvaluateConstructorOutOfBoundsIndxer()
+        {
+            JConstructor c = new JConstructor("Blah");
+
+            Assert.IsNull(c.SelectToken("[1]"));
         }
 
         [Test]
@@ -157,6 +207,51 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
             ExceptionAssert.Throws<JsonException>(
                 "Property 'Missing' does not exist on JObject.",
                 () => { o.SelectToken("Missing", true); });
+        }
+
+        [Test]
+        public void EvaluateMissingPropertyIndexWithError()
+        {
+            JObject o = new JObject(
+                new JProperty("Blah", 1));
+
+            ExceptionAssert.Throws<JsonException>(
+                "Property 'Missing' does not exist on JObject.",
+                () => { o.SelectToken("['Missing','Missing2']", true); });
+        }
+
+        [Test]
+        public void EvaluateMultiPropertyIndexOnArrayWithError()
+        {
+            JArray a = new JArray(1, 2, 3, 4, 5);
+
+            ExceptionAssert.Throws<JsonException>(
+                "Properties 'Missing', 'Missing2' not valid on JArray.",
+                () => { a.SelectToken("['Missing','Missing2']", true); });
+        }
+
+        [Test]
+        public void EvaluateArraySliceWithError()
+        {
+            JArray a = new JArray(1, 2, 3, 4, 5);
+
+            ExceptionAssert.Throws<JsonException>(
+                "Array slice of 99 to * returned no results.",
+                () => { a.SelectToken("[99:]", true); });
+
+            ExceptionAssert.Throws<JsonException>(
+                "Array slice of 1 to -19 returned no results.",
+                () => { a.SelectToken("[1:-19]", true); });
+
+            ExceptionAssert.Throws<JsonException>(
+                "Array slice of * to -19 returned no results.",
+                () => { a.SelectToken("[:-19]", true); });
+
+            a = new JArray();
+
+            ExceptionAssert.Throws<JsonException>(
+                "Array slice of * to * returned no results.",
+                () => { a.SelectToken("[:]", true); });
         }
 
         [Test]
