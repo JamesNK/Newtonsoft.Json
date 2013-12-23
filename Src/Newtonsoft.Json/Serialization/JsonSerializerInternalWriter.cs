@@ -65,7 +65,28 @@ namespace Newtonsoft.Json.Serialization
             if (objectType != null)
                 _rootContract = Serializer._contractResolver.ResolveContract(objectType);
 
-            SerializeValue(jsonWriter, value, GetContractSafe(value), null, null, null);
+            JsonContract contract = GetContractSafe(value);
+
+            try
+            {
+
+                SerializeValue(jsonWriter, value, contract, null, null, null);
+            }
+            catch (Exception ex)
+            {
+                if (IsErrorHandled(null, contract, null, null, jsonWriter.Path, ex))
+                {
+                    HandleError(jsonWriter, 0);
+                }
+                else
+                {
+                    // clear context in case serializer is being used inside a converter
+                    // if the converter wraps the error then not clearing the context will cause this error:
+                    // "Current error context error is different to requested error."
+                    ClearErrorContext();
+                    throw;
+                }
+            }
         }
 
         private JsonSerializerProxy GetInternalSerializer()

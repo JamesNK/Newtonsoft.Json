@@ -1,6 +1,10 @@
 using System.Collections.Generic;
 using System.Globalization;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
 using System.Linq;
+#endif
 using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Linq.JsonPath
@@ -30,7 +34,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 else
                 {
                     if (errorWhenNoMatch)
-                        throw new JsonException("Properties {0} not valid on {1}.".FormatWith(CultureInfo.InvariantCulture, string.Join(", ", Names.Select(n => "'" + n + "'")), t.GetType().Name));
+                        throw new JsonException("Properties {0} not valid on {1}.".FormatWith(CultureInfo.InvariantCulture, string.Join(", ", Names.Select(n => "'" + n + "'").ToArray()), t.GetType().Name));
                 }
             }
         }

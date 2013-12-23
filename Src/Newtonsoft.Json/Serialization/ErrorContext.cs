@@ -43,7 +43,7 @@ namespace Newtonsoft.Json.Serialization
         internal bool Traced { get; set; }
 
         /// <summary>
-        /// Gets or sets the error.
+        /// Gets the error.
         /// </summary>
         /// <value>The error.</value>
         public Exception Error { get; private set; }

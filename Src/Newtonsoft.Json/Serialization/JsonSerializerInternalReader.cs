@@ -174,6 +174,10 @@ namespace Newtonsoft.Json.Serialization
                 }
                 else
                 {
+                    // clear context in case serializer is being used inside a converter
+                    // if the converter wraps the error then not clearing the context will cause this error:
+                    // "Current error context error is different to requested error."
+                    ClearErrorContext();
                     throw;
                 }
             }
