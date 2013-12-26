@@ -799,8 +799,8 @@ Parameter name: reader",
             for (int j = 1; j < 1000; j++)
             {
                 long total = j + i;
-                ExceptionAssert.Throws<OverflowException>(
-                    "Arithmetic operation resulted in an overflow.",
+                ExceptionAssert.Throws<JsonReaderException>(
+                    "JSON integer " + total + " is too large or small for an Int32. Path '', line 1, position 10.",
                     () =>
                     {
                         reader = new JsonTextReader(new StringReader(total.ToString(CultureInfo.InvariantCulture)));
@@ -822,8 +822,8 @@ Parameter name: reader",
             for (int j = 1; j < 1000; j++)
             {
                 long total = -j + i;
-                ExceptionAssert.Throws<OverflowException>(
-                    "Arithmetic operation resulted in an overflow.",
+                ExceptionAssert.Throws<JsonReaderException>(
+                    "JSON integer " + total + " is too large or small for an Int32. Path '', line 1, position 11.",
                     () =>
                     {
                         reader = new JsonTextReader(new StringReader(total.ToString(CultureInfo.InvariantCulture)));
@@ -1230,22 +1230,96 @@ bye", reader.Value);
             Assert.AreEqual(int.MinValue, reader.ReadAsInt32());
 
             reader = new JsonTextReader(new StringReader(long.MaxValue.ToString()));
-            ExceptionAssert.Throws<OverflowException>("Arithmetic operation resulted in an overflow.", () => reader.ReadAsInt32());
+            ExceptionAssert.Throws<JsonReaderException>("JSON integer 9223372036854775807 is too large or small for an Int32. Path '', line 1, position 19.", () => reader.ReadAsInt32());
 
             reader = new JsonTextReader(new StringReader("9999999999999999999999999999999999999999999999999999999999999999999999999999asdasdasd"));
-            ExceptionAssert.Throws<FormatException>("Input string was not in a correct format.", () => reader.ReadAsInt32());
+            ExceptionAssert.Throws<JsonReaderException>("Input string '9999999999999999999999999999999999999999999999999999999999999999999999999999a' is not a valid integer. Path '', line 1, position 77.", () => reader.ReadAsInt32());
 
             reader = new JsonTextReader(new StringReader("1E-06"));
-            ExceptionAssert.Throws<FormatException>("Input string was not in a correct format.", () => reader.ReadAsInt32());
+            ExceptionAssert.Throws<JsonReaderException>("Input string '1E-06' is not a valid integer. Path '', line 1, position 5.", () => reader.ReadAsInt32());
 
             reader = new JsonTextReader(new StringReader("1.1"));
-            ExceptionAssert.Throws<FormatException>("Input string was not in a correct format.", () => reader.ReadAsInt32());
+            ExceptionAssert.Throws<JsonReaderException>("Input string '1.1' is not a valid integer. Path '', line 1, position 3.", () => reader.ReadAsInt32());
 
             reader = new JsonTextReader(new StringReader(""));
             Assert.AreEqual(null, reader.ReadAsInt32());
 
             reader = new JsonTextReader(new StringReader("-"));
-            ExceptionAssert.Throws<FormatException>("Input string was not in a correct format.", () => reader.ReadAsInt32());
+            ExceptionAssert.Throws<JsonReaderException>("Input string '-' is not a valid integer. Path '', line 1, position 1.", () => reader.ReadAsInt32());
+        }
+
+        [Test]
+        public void ParseDecimals()
+        {
+            JsonTextReader reader = null;
+
+            reader = new JsonTextReader(new StringReader("1.1"));
+            Assert.AreEqual(1.1m, reader.ReadAsDecimal());
+
+            reader = new JsonTextReader(new StringReader("-1.1"));
+            Assert.AreEqual(-1.1m, reader.ReadAsDecimal());
+
+            reader = new JsonTextReader(new StringReader("0.0"));
+            Assert.AreEqual(0.0m, reader.ReadAsDecimal());
+
+            reader = new JsonTextReader(new StringReader("-0.0"));
+            Assert.AreEqual(0, reader.ReadAsDecimal());
+
+            reader = new JsonTextReader(new StringReader("9999999999999999999999999999999999999999999999999999999999999999999999999999asdasdasd"));
+            ExceptionAssert.Throws<JsonReaderException>("Input string '9999999999999999999999999999999999999999999999999999999999999999999999999999a' is not a valid decimal. Path '', line 1, position 77.", () => reader.ReadAsDecimal());
+
+            reader = new JsonTextReader(new StringReader("9999999999999999999999999999999999999999999999999999999999999999999999999999asdasdasd"));
+            reader.FloatParseHandling = Json.FloatParseHandling.Decimal;
+            ExceptionAssert.Throws<JsonReaderException>("Input string '9999999999999999999999999999999999999999999999999999999999999999999999999999a' is not a valid decimal. Path '', line 1, position 77.", () => reader.Read());
+
+            reader = new JsonTextReader(new StringReader("1E-06"));
+            Assert.AreEqual(0.000001m, reader.ReadAsDecimal());
+
+            reader = new JsonTextReader(new StringReader(""));
+            Assert.AreEqual(null, reader.ReadAsDecimal());
+
+            reader = new JsonTextReader(new StringReader("-"));
+            ExceptionAssert.Throws<JsonReaderException>("Input string '-' is not a valid decimal. Path '', line 1, position 1.", () => reader.ReadAsDecimal());
+        }
+
+        [Test]
+        public void ParseDoubles()
+        {
+            JsonTextReader reader = null;
+
+            reader = new JsonTextReader(new StringReader("1.1"));
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(typeof(double), reader.ValueType);
+            Assert.AreEqual(1.1d, reader.Value);
+
+            reader = new JsonTextReader(new StringReader("-1.1"));
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(typeof(double), reader.ValueType);
+            Assert.AreEqual(-1.1d, reader.Value);
+
+            reader = new JsonTextReader(new StringReader("0.0"));
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(typeof(double), reader.ValueType);
+            Assert.AreEqual(0.0d, reader.Value);
+
+            reader = new JsonTextReader(new StringReader("-0.0"));
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(typeof(double), reader.ValueType);
+            Assert.AreEqual(-0.0m, reader.Value);
+
+            reader = new JsonTextReader(new StringReader("9999999999999999999999999999999999999999999999999999999999999999999999999999asdasdasd"));
+            ExceptionAssert.Throws<JsonReaderException>("Input string '9999999999999999999999999999999999999999999999999999999999999999999999999999a' is not a valid number. Path '', line 1, position 77.", () => reader.Read());
+
+            reader = new JsonTextReader(new StringReader("1E-06"));
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(typeof(double), reader.ValueType);
+            Assert.AreEqual(0.000001m, reader.Value);
+
+            reader = new JsonTextReader(new StringReader(""));
+            Assert.IsFalse(reader.Read());
+
+            reader = new JsonTextReader(new StringReader("-"));
+            ExceptionAssert.Throws<JsonReaderException>("Input string '-' is not a valid number. Path '', line 1, position 1.", () => reader.Read());
         }
 
         [Test]
@@ -1975,8 +2049,8 @@ bye", reader.Value);
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
 
-            ExceptionAssert.Throws<FormatException>(
-                "Input string was not in a correct format.",
+            ExceptionAssert.Throws<JsonReaderException>(
+                "Input string '1.1' is not a valid integer. Path 'Name', line 1, position 12.",
                 () => { reader.ReadAsInt32(); });
         }
 

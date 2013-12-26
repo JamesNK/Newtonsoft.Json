@@ -1195,7 +1195,14 @@ namespace Newtonsoft.Json
                 }
                 else
                 {
-                    numberValue = ConvertUtils.Int32Parse(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length);
+                    int value;
+                    ParseResult parseResult = ConvertUtils.Int32TryParse(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length, out value);
+                    if (parseResult == ParseResult.Success)
+                        numberValue = value;
+                    else if (parseResult == ParseResult.Overflow)
+                        throw JsonReaderException.Create(this, "JSON integer {0} is too large or small for an Int32.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
+                    else
+                        throw JsonReaderException.Create(this, "Input string '{0}' is not a valid integer.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
                 }
 
                 numberType = JsonToken.Integer;
@@ -1222,7 +1229,11 @@ namespace Newtonsoft.Json
                 {
                     string number = _stringReference.ToString();
 
-                    numberValue = decimal.Parse(number, NumberStyles.Number | NumberStyles.AllowExponent, CultureInfo.InvariantCulture);
+                    decimal value;
+                    if (decimal.TryParse(number, NumberStyles.Number | NumberStyles.AllowExponent, CultureInfo.InvariantCulture, out value))
+                        numberValue = value;
+                    else
+                        throw JsonReaderException.Create(this, "Input string '{0}' is not a valid decimal.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
                 }
 
                 numberType = JsonToken.Float;
@@ -1253,17 +1264,6 @@ namespace Newtonsoft.Json
                         numberValue = value;
                         numberType = JsonToken.Integer;
                     }
-                    else if (parseResult == ParseResult.Invalid)
-                    {
-                        string number = _stringReference.ToString();
-
-                        if (_floatParseHandling == FloatParseHandling.Decimal)
-                            numberValue = decimal.Parse(number, NumberStyles.Number | NumberStyles.AllowExponent, CultureInfo.InvariantCulture);
-                        else
-                            numberValue = Convert.ToDouble(number, CultureInfo.InvariantCulture);
-
-                        numberType = JsonToken.Float;
-                    }
                     else if (parseResult == ParseResult.Overflow)
                     {
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
@@ -1271,13 +1271,31 @@ namespace Newtonsoft.Json
                         numberValue = BigInteger.Parse(number, CultureInfo.InvariantCulture);
                         numberType = JsonToken.Integer;
 #else
-    // todo - validate number was a valid integer to make sure overflow was the reason for failure
                         throw JsonReaderException.Create(this, "JSON integer {0} is too large or small for an Int64.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
 #endif
                     }
                     else
                     {
-                        throw JsonReaderException.Create(this, "Unknown error parsing integer.");
+                        string number = _stringReference.ToString();
+
+                        if (_floatParseHandling == FloatParseHandling.Decimal)
+                        {
+                            decimal d;
+                            if (decimal.TryParse(number, NumberStyles.Number | NumberStyles.AllowExponent, CultureInfo.InvariantCulture, out d))
+                                numberValue = d;
+                            else
+                                throw JsonReaderException.Create(this, "Input string '{0}' is not a valid decimal.".FormatWith(CultureInfo.InvariantCulture, number));
+                        }
+                        else
+                        {
+                            double d;
+                            if (double.TryParse(number, NumberStyles.Float | NumberStyles.AllowThousands, NumberFormatInfo.CurrentInfo, out d))
+                                numberValue = d;
+                            else
+                                throw JsonReaderException.Create(this, "Input string '{0}' is not a valid number.".FormatWith(CultureInfo.InvariantCulture, number));
+                        }
+
+                        numberType = JsonToken.Float;
                     }
                 }
             }

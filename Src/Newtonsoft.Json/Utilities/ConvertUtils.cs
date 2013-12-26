@@ -565,10 +565,12 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
-        public static int Int32Parse(char[] chars, int start, int length)
+        public static ParseResult Int32TryParse(char[] chars, int start, int length, out int value)
         {
+            value = 0;
+
             if (length == 0)
-                throw new FormatException("Input string was not in a correct format.");
+                return ParseResult.Invalid;
 
             bool isNegative = (chars[start] == '-');
 
@@ -576,13 +578,12 @@ namespace Newtonsoft.Json.Utilities
             {
                 // text just a negative sign
                 if (length == 1)
-                    throw new FormatException("Input string was not in a correct format.");
+                    return ParseResult.Invalid;
 
                 start++;
                 length--;
             }
 
-            int result = 0;
             int end = start + length;
 
             for (int i = start; i < end; i++)
@@ -590,12 +591,12 @@ namespace Newtonsoft.Json.Utilities
                 int c = chars[i] - '0';
 
                 if (c < 0 || c > 9)
-                    throw new FormatException("Input string was not in a correct format.");
+                    return ParseResult.Invalid;
 
-                int newValue = (10 * result) - c;
+                int newValue = (10 * value) - c;
 
                 // overflow has caused the number to loop around
-                if (newValue > result)
+                if (newValue > value)
                 {
                     i++;
 
@@ -606,13 +607,13 @@ namespace Newtonsoft.Json.Utilities
                         c = chars[i] - '0';
 
                         if (c < 0 || c > 9)
-                            throw new FormatException("Input string was not in a correct format.");
+                            return ParseResult.Invalid;
                     }
 
-                    throw new OverflowException();
+                    return ParseResult.Overflow;
                 }
 
-                result = newValue;
+                value = newValue;
             }
 
             // go from negative to positive to avoids overflow
@@ -620,13 +621,13 @@ namespace Newtonsoft.Json.Utilities
             if (!isNegative)
             {
                 // negative integer can be one bigger than positive
-                if (result == int.MinValue)
-                    throw new OverflowException();
+                if (value == int.MinValue)
+                    return ParseResult.Overflow;
 
-                result = -result;
+                value = -value;
             }
 
-            return result;
+            return ParseResult.Success;
         }
 
         public static ParseResult Int64TryParse(char[] chars, int start, int length, out long value)
