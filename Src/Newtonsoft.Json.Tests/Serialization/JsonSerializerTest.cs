@@ -604,6 +604,19 @@ namespace Newtonsoft.Json.Tests.Serialization
             public IDictionary<object, object> ExtensionData;
         }
 
+        public class PublicExtensionDataAttributeTestClassWithNonDefaultConstructor
+        {
+            public string Name { get; set; }
+
+            public PublicExtensionDataAttributeTestClassWithNonDefaultConstructor(string name)
+            {
+                Name = name;
+            }
+
+            [JsonExtensionData]
+            public IDictionary<object, object> ExtensionData;
+        }
+
         public class PublicNoReadExtensionDataAttributeTestClass
         {
             public string Name { get; set; }
@@ -774,6 +787,34 @@ namespace Newtonsoft.Json.Tests.Serialization
 }";
 
             PublicExtensionDataAttributeTestClass c2 = JsonConvert.DeserializeObject<PublicExtensionDataAttributeTestClass>(json, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Objects
+            });
+
+            Assert.AreEqual("Name!", c2.Name);
+
+            WagePerson bizzaroC2 = (WagePerson)c2.ExtensionData["Self"];
+
+            Assert.AreEqual(2m, bizzaroC2.HourlyWage);
+        }
+
+        [Test]
+        public void DeserializePublicExtensionDataTypeNamdHandlingNonDefaultConstructor()
+        {
+            string json = @"{
+  ""$id"": ""1"",
+  ""Name"": ""Name!"",
+  ""Test"": 1,
+  ""Self"": {
+    ""$type"": ""Newtonsoft.Json.Tests.TestObjects.WagePerson, Newtonsoft.Json.Tests"",
+    ""HourlyWage"": 2.0,
+    ""Name"": null,
+    ""BirthDate"": ""0001-01-01T00:00:00"",
+    ""LastModified"": ""0001-01-01T00:00:00""
+  }
+}";
+
+            PublicExtensionDataAttributeTestClassWithNonDefaultConstructor c2 = JsonConvert.DeserializeObject<PublicExtensionDataAttributeTestClassWithNonDefaultConstructor>(json, new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Objects
             });
@@ -8713,6 +8754,43 @@ Parameter name: value",
 
             Assert.AreEqual(2, values2.Count);
             Assert.AreEqual("EventName!", values2[0][0, 0].EventName);
+        }
+
+        public class ExtensionDataDeserializeWithNonDefaultConstructor
+        {
+            public ExtensionDataDeserializeWithNonDefaultConstructor(string name)
+            {
+                Name = name;
+            }
+
+            [JsonExtensionData]
+            public IDictionary<string, JToken> _extensionData;
+
+            public string Name { get; set; }
+        }
+
+        [Test]
+        public void ExtensionDataDeserializeWithNonDefaultConstructorTest()
+        {
+            ExtensionDataDeserializeWithNonDefaultConstructor c = new ExtensionDataDeserializeWithNonDefaultConstructor("Name!");
+            c._extensionData = new Dictionary<string, JToken>
+            {
+                {"Key!", "Value!"}
+            };
+
+            string json = JsonConvert.SerializeObject(c, Formatting.Indented);
+
+            Assert.AreEqual(@"{
+  ""Name"": ""Name!"",
+  ""Key!"": ""Value!""
+}", json);
+
+            var c2 = JsonConvert.DeserializeObject<ExtensionDataDeserializeWithNonDefaultConstructor>(json);
+
+            Assert.AreEqual("Name!", c2.Name);
+            Assert.IsNotNull(c2._extensionData);
+            Assert.AreEqual(1, c2._extensionData.Count);
+            Assert.AreEqual("Value!", (string)c2._extensionData["Key!"]);
         }
 
 #if NETFX_CORE
