@@ -114,6 +114,15 @@ namespace Newtonsoft.Json.Linq
         /// Initializes a new instance of the <see cref="JValue"/> class with the given value.
         /// </summary>
         /// <param name="value">The value.</param>
+        public JValue(decimal value)
+            : this(value, JTokenType.Float)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JValue"/> class with the given value.
+        /// </summary>
+        /// <param name="value">The value.</param>
         public JValue(DateTime value)
             : this(value, JTokenType.Date)
         {
