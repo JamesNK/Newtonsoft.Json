@@ -132,6 +132,15 @@ namespace Newtonsoft.Json.Linq
         /// Initializes a new instance of the <see cref="JValue"/> class with the given value.
         /// </summary>
         /// <param name="value">The value.</param>
+        public JValue(DateTimeOffset value)
+            : this(value, JTokenType.Date)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JValue"/> class with the given value.
+        /// </summary>
+        /// <param name="value">The value.</param>
         public JValue(bool value)
             : this(value, JTokenType.Boolean)
         {
