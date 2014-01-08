@@ -173,6 +173,10 @@ namespace Newtonsoft.Json.Converters
                     return ConvertUtils.ConvertOrCast(reader.Value, CultureInfo.InvariantCulture, t);
                 }
             }
+            catch (JsonSerializationException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 throw JsonSerializationException.Create(reader, "Error converting value {0} to type '{1}'.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.FormatValueForPrint(reader.Value), objectType), ex);
