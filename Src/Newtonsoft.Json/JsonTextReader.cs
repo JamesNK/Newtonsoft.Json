@@ -1289,7 +1289,7 @@ namespace Newtonsoft.Json
                         else
                         {
                             double d;
-                            if (double.TryParse(number, NumberStyles.Float | NumberStyles.AllowThousands, NumberFormatInfo.CurrentInfo, out d))
+                            if (double.TryParse(number, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out d))
                                 numberValue = d;
                             else
                                 throw JsonReaderException.Create(this, "Input string '{0}' is not a valid number.".FormatWith(CultureInfo.InvariantCulture, number));

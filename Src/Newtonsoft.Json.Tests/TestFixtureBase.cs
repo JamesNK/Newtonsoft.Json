@@ -178,7 +178,7 @@ namespace Newtonsoft.Json.Tests
         {
             try
             {
-                ; action();
+                action();
 
                 Assert.Fail("Exception of type {0} expected; got none exception", typeof(TException).Name);
             }
