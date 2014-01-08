@@ -39,10 +39,10 @@ namespace Newtonsoft.Json.Bson
   public class BsonReader : JsonReader
   {
     private const int MaxCharBytesSize = 128;
-    private static readonly byte[] SeqRange1 = new byte[] {0, 127}; // range of 1-byte sequence
-    private static readonly byte[] SeqRange2 = new byte[] {194, 223}; // range of 2-byte sequence
-    private static readonly byte[] SeqRange3 = new byte[] {224, 239}; // range of 3-byte sequence
-    private static readonly byte[] SeqRange4 = new byte[] {240, 244}; // range of 4-byte sequence
+    private static readonly byte[] SeqRange1 = new byte[] { 0, 127 }; // range of 1-byte sequence
+    private static readonly byte[] SeqRange2 = new byte[] { 194, 223 }; // range of 2-byte sequence
+    private static readonly byte[] SeqRange3 = new byte[] { 224, 239 }; // range of 3-byte sequence
+    private static readonly byte[] SeqRange4 = new byte[] { 240, 244 }; // range of 4-byte sequence
 
     private readonly BinaryReader _reader;
     private readonly List<ContainerContext> _stack;
@@ -575,7 +575,7 @@ namespace Newtonsoft.Json.Bson
           string expression = ReadString();
           string modifiers = ReadString();
 
-          string regex = @"/" + expression + @"/" + modifiers;
+          string regex = string.Concat(@"/", expression, @"/", modifiers);
           SetToken(JsonToken.String, regex);
           break;
         case BsonType.Reference:
@@ -590,7 +590,7 @@ namespace Newtonsoft.Json.Bson
           _bsonReaderState = BsonReaderState.CodeWScopeStart;
           break;
         case BsonType.Integer:
-          SetToken(JsonToken.Integer, (long) ReadInt32());
+          SetToken(JsonToken.Integer, (long)ReadInt32());
           break;
         case BsonType.TimeStamp:
         case BsonType.Long:
@@ -605,7 +605,7 @@ namespace Newtonsoft.Json.Bson
     {
       int dataLength = ReadInt32();
 
-      BsonBinaryType binaryType = (BsonBinaryType) ReadByte();
+      BsonBinaryType binaryType = (BsonBinaryType)ReadByte();
 
 #pragma warning disable 612,618
       // the old binary type has the data length repeated in the data for some reason
@@ -655,7 +655,7 @@ namespace Newtonsoft.Json.Bson
           int charCount = Encoding.UTF8.GetChars(_byteBuffer, 0, lastFullCharStop + 1, _charBuffer, 0);
 
           if (builder == null)
-            builder = new StringBuilder(MaxCharBytesSize*2);
+            builder = new StringBuilder(MaxCharBytesSize * 2);
 
           builder.Append(_charBuffer, 0, charCount);
 
@@ -831,7 +831,7 @@ namespace Newtonsoft.Json.Bson
     private BsonType ReadType()
     {
       MovePosition(1);
-      return (BsonType) _reader.ReadSByte();
+      return (BsonType)_reader.ReadSByte();
     }
 
     private void MovePosition(int count)

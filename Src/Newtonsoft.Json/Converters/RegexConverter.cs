@@ -28,6 +28,7 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json.Bson;
 using System.Globalization;
 using Newtonsoft.Json.Serialization;
+using System.Text;
 
 namespace Newtonsoft.Json.Converters
 {
@@ -47,7 +48,7 @@ namespace Newtonsoft.Json.Converters
     /// <param name="serializer">The calling serializer.</param>
     public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {
-      Regex regex = (Regex) value;
+      Regex regex = (Regex)value;
 
       BsonWriter bsonWriter = writer as BsonWriter;
       if (bsonWriter != null)
@@ -70,23 +71,23 @@ namespace Newtonsoft.Json.Converters
       // 'l' to make \w, \W, etc. locale dependent, 's' for dotall mode 
       // ('.' matches everything), and 'u' to make \w, \W, etc. match unicode.
 
-      string options = null;
+      StringBuilder options = null;
 
       if (HasFlag(regex.Options, RegexOptions.IgnoreCase))
-        options += "i";
+        options.Append("i");
 
       if (HasFlag(regex.Options, RegexOptions.Multiline))
-        options += "m";
+        options.Append("m");
 
       if (HasFlag(regex.Options, RegexOptions.Singleline))
-        options += "s";
+        options.Append("s");
 
-      options += "u";
+      options.Append("u");
 
       if (HasFlag(regex.Options, RegexOptions.ExplicitCapture))
-        options += "x";
+        options.Append("x");
 
-      writer.WriteRegex(regex.ToString(), options);
+      writer.WriteRegex(regex.ToString(), options.ToString());
     }
 
     private void WriteJson(JsonWriter writer, Regex regex, JsonSerializer serializer)
@@ -113,7 +114,7 @@ namespace Newtonsoft.Json.Converters
     {
       if (reader.TokenType == JsonToken.StartObject)
         return ReadRegexObject(reader, serializer);
-      
+
       if (reader.TokenType == JsonToken.String)
         return ReadRegexString(reader);
 
@@ -195,7 +196,7 @@ namespace Newtonsoft.Json.Converters
     /// </returns>
     public override bool CanConvert(Type objectType)
     {
-      return (objectType == typeof (Regex));
+      return (objectType == typeof(Regex));
     }
   }
 }

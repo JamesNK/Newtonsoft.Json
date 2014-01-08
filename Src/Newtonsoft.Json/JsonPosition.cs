@@ -91,25 +91,149 @@ namespace Newtonsoft.Json
 
     internal static string FormatMessage(IJsonLineInfo lineInfo, string path, string message)
     {
+      return FormatMessage(lineInfo, path, new StringBuilder(message)).ToString();
+    }
+
+    internal static StringBuilder FormatMessage(IJsonLineInfo lineInfo, string path, StringBuilder message)
+    {
       // don't add a fullstop and space when message ends with a new line
       if (!message.EndsWith(Environment.NewLine))
       {
         message = message.Trim();
 
         if (!message.EndsWith("."))
-          message += ".";
+          message.Append(".");
 
-        message += " ";
+        message.Append(" ");
       }
 
-      message += "Path '{0}'".FormatWith(CultureInfo.InvariantCulture, path);
+      message.AppendFormat(CultureInfo.InvariantCulture, "Path '{0}'", path);
 
       if (lineInfo != null && lineInfo.HasLineInfo())
-        message += ", line {0}, position {1}".FormatWith(CultureInfo.InvariantCulture, lineInfo.LineNumber, lineInfo.LinePosition);
+        message.AppendFormat(CultureInfo.InvariantCulture, ", line {0}, position {1}", lineInfo.LineNumber, lineInfo.LinePosition);
 
-      message += ".";
+      message.Append(".");
 
       return message;
+    }
+  }
+
+  internal static class StringBuilderExtensions
+  {
+    /// <summary>
+    /// Determines whether the end of this <see cref="System.Text.StringBuilder"/> instance matches the specified string.
+    /// </summary>
+    /// <param name="sb">A <see cref="System.Text.StringBuilder"/> to compare.</param>
+    /// <param name="value">The string to compare to the substring at the end of this instance.</param>
+    /// <param name="ignoreCase">true to ignore case during the comparison; otherwise, false.</param>
+    /// <returns>
+    /// true if the <paramref name="value"/> parameter matches the beginning of this string; otherwise, false.
+    /// </returns>
+    /// <exception cref="System.ArgumentNullException"><paramref name="value"/> is null.</exception>
+    public static bool EndsWith(this StringBuilder sb, string value, bool ignoreCase = false)
+    {
+      if (value == null)
+        throw new ArgumentNullException("value cannot be null.");
+
+      int length = value.Length;
+      int maxSBIndex = sb.Length - 1;
+      int maxValueIndex = length - 1;
+      if (length > sb.Length)
+        return false;
+
+      if (ignoreCase == false)
+      {
+        for (int i = 0; i < length; i++)
+        {
+          if (sb[maxSBIndex - i] != value[maxValueIndex - i])
+          {
+            return false;
+          }
+        }
+      }
+      else
+      {
+        for (int j = length - 1; j >= 0; j--)
+        {
+          if (char.ToLower(sb[maxSBIndex - j]) != char.ToLower(value[maxValueIndex - j]))
+          {
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+
+    /// <summary>
+    /// Removes all leading and trailing white-space characters from the current <see cref="System.Text.StringBuilder"/> object.
+    /// </summary>
+    /// <param name="sb">A <see cref="System.Text.StringBuilder"/> to remove from.</param>
+    /// <returns>
+    /// The <see cref="System.Text.StringBuilder"/> object that contains a list of characters 
+    /// that remains after all white-space characters are removed 
+    /// from the start and end of the current StringBuilder.
+    /// </returns>
+    public static StringBuilder Trim(this StringBuilder sb)
+    {
+      return sb.TrimHelper(2);
+    }
+
+    private static bool IsBOMWhitespace(char c)
+    {
+      return false;
+    }
+
+    private static StringBuilder TrimHelper(this StringBuilder sb, int trimType)
+    {
+      int end = sb.Length - 1;
+      int start = 0;
+      if (trimType != 1)
+      {
+        start = 0;
+        while (start < sb.Length)
+        {
+          if (!char.IsWhiteSpace(sb[start]) && !IsBOMWhitespace(sb[start]))
+          {
+            break;
+          }
+          start++;
+        }
+      }
+      if (trimType != 0)
+      {
+        end = sb.Length - 1;
+        while (end >= start)
+        {
+          if (!char.IsWhiteSpace(sb[end]) && !IsBOMWhitespace(sb[start]))
+          {
+            break;
+          }
+          end--;
+        }
+      }
+      return sb.CreateTrimmedString(start, end);
+    }
+
+    private static StringBuilder CreateTrimmedString(this StringBuilder sb, int start, int end)
+    {
+      int length = (end - start) + 1;
+      if (length == sb.Length)
+      {
+        return sb;
+      }
+      if (length == 0)
+      {
+        sb.Length = 0;
+        return sb;
+      }
+      return sb.InternalSubString(start, end);
+    }
+
+    private static StringBuilder InternalSubString(this StringBuilder sb, int startIndex, int end)
+    {
+      sb.Length = end + 1;
+      sb.Remove(0, startIndex);
+      return sb;
     }
   }
 }

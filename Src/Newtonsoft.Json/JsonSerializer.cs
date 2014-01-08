@@ -33,7 +33,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
 using System.Runtime.Serialization;
-using ErrorEventArgs=Newtonsoft.Json.Serialization.ErrorEventArgs;
+using ErrorEventArgs = Newtonsoft.Json.Serialization.ErrorEventArgs;
 
 namespace Newtonsoft.Json
 {
@@ -711,7 +711,7 @@ namespace Newtonsoft.Json
       object value = serializerReader.Deserialize(traceJsonReader ?? reader, objectType, CheckAdditionalContent);
 
       if (traceJsonReader != null)
-        TraceWriter.Trace(TraceLevel.Verbose, "Deserialized JSON: " + Environment.NewLine + traceJsonReader.GetJson(), null);
+        TraceWriter.Trace(TraceLevel.Verbose, string.Concat("Deserialized JSON: ", Environment.NewLine, traceJsonReader.GetJson()), null);
 
       // reset reader back to previous options
       if (previousCulture != null)
@@ -844,7 +844,7 @@ namespace Newtonsoft.Json
       serializerWriter.Serialize(traceJsonWriter ?? jsonWriter, value, objectType);
 
       if (traceJsonWriter != null)
-        TraceWriter.Trace(TraceLevel.Verbose, "Serialized JSON: " + Environment.NewLine + traceJsonWriter.GetJson(), null);
+        TraceWriter.Trace(TraceLevel.Verbose, string.Concat("Serialized JSON: ", Environment.NewLine, traceJsonWriter.GetJson()), null);
 
       // reset writer back to previous options
       if (previousFormatting != null)

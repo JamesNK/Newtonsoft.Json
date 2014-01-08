@@ -51,10 +51,10 @@ namespace Newtonsoft.Json.Linq
   /// </summary>
   public abstract class JToken : IJEnumerable<JToken>, IJsonLineInfo
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE40 || PORTABLE)
-    , ICloneable
+, ICloneable
 #endif
 #if !(NET35 || NET20 || PORTABLE40)
-    , IDynamicMetaObjectProvider
+, IDynamicMetaObjectProvider
 #endif
   {
     private JContainer _parent;
@@ -74,7 +74,7 @@ namespace Newtonsoft.Json.Linq
     private static readonly JTokenType[] UriTypes = new[] { JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Uri };
     private static readonly JTokenType[] CharTypes = new[] { JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Raw };
     private static readonly JTokenType[] DateTimeTypes = new[] { JTokenType.Date, JTokenType.String, JTokenType.Comment, JTokenType.Raw };
-    private static readonly JTokenType[] BytesTypes = new[] { JTokenType.Bytes, JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Integer  };
+    private static readonly JTokenType[] BytesTypes = new[] { JTokenType.Bytes, JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Integer };
 
     /// <summary>
     /// Gets a comparer that can compare two tokens for value equality.
@@ -206,7 +206,7 @@ namespace Newtonsoft.Json.Linq
               case JTokenType.Constructor:
                 int index = ((IList<JToken>)current).IndexOf(next);
 
-                sb.Append("[" + index + "]");
+                sb.AppendFormat("[{0}]", index);
                 break;
             }
           }
@@ -877,7 +877,7 @@ namespace Newtonsoft.Json.Linq
 
 #if !NET20
       if (v.Value is DateTimeOffset)
-        return ((DateTimeOffset) v.Value).DateTime;
+        return ((DateTimeOffset)v.Value).DateTime;
 #endif
 
       return Convert.ToDateTime(v.Value, CultureInfo.InvariantCulture);
@@ -1005,7 +1005,7 @@ namespace Newtonsoft.Json.Linq
 
 #if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
       if (v.Value is BigInteger)
-        return (double) (BigInteger) v.Value;
+        return (double)(BigInteger)v.Value;
 #endif
 
       return Convert.ToDouble(v.Value, CultureInfo.InvariantCulture);
@@ -1047,7 +1047,7 @@ namespace Newtonsoft.Json.Linq
       if (v.Value == null)
         return null;
       if (v.Value is byte[])
-        return Convert.ToBase64String((byte[]) v.Value);
+        return Convert.ToBase64String((byte[])v.Value);
 #if !(NET20 || NET35 || SILVERLIGHT || PORTABLE40 || PORTABLE)
       if (v.Value is BigInteger)
         return ((BigInteger)v.Value).ToString(CultureInfo.InvariantCulture);
@@ -1135,9 +1135,9 @@ namespace Newtonsoft.Json.Linq
         throw new ArgumentException("Can not convert {0} to Guid.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
 
       if (v.Value is byte[])
-        return new Guid((byte[]) v.Value);
+        return new Guid((byte[])v.Value);
 
-      return (v.Value is Guid) ? (Guid) v.Value : new Guid(Convert.ToString(v.Value, CultureInfo.InvariantCulture));
+      return (v.Value is Guid) ? (Guid)v.Value : new Guid(Convert.ToString(v.Value, CultureInfo.InvariantCulture));
     }
 
     /// <summary>

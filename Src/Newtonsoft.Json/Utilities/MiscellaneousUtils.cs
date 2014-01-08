@@ -63,7 +63,7 @@ namespace Newtonsoft.Json.Utilities
 
     public static ArgumentOutOfRangeException CreateArgumentOutOfRangeException(string paramName, object actualValue, string message)
     {
-      string newMessage = message + Environment.NewLine + @"Actual value was {0}.".FormatWith(CultureInfo.InvariantCulture, actualValue);
+      string newMessage = string.Concat(message, Environment.NewLine, @"Actual value was {0}.".FormatWith(CultureInfo.InvariantCulture, actualValue));
 
       return new ArgumentOutOfRangeException(paramName, newMessage);
     }
@@ -73,7 +73,7 @@ namespace Newtonsoft.Json.Utilities
       if (value == null)
         return "{null}";
 
-      return (value is string) ? @"""" + value.ToString() + @"""" : value.ToString();
+      return (value is string) ? string.Concat(@"""", value.ToString(), @"""") : value.ToString();
     }
 
     public static int ByteArrayCompare(byte[] a1, byte[] a2)
@@ -132,7 +132,7 @@ namespace Newtonsoft.Json.Utilities
         return "{null}";
 
       if (value is string)
-        return @"""" + value + @"""";
+        return string.Concat(@"""", value, @"""");
 
       return value.ToString();
     }

@@ -41,7 +41,7 @@ namespace Newtonsoft.Json.Serialization
     /// <param name="ex">The trace exception. This parameter is optional.</param>
     public void Trace(TraceLevel level, string message, Exception ex)
     {
-      string traceMessage = DateTime.Now.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff", CultureInfo.InvariantCulture) + " " + level.ToString("g") + " " + message;
+      string traceMessage = string.Format("{0:yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff} {1:g} {2}", DateTime.Now, level, message);
 
       if (_traceMessages.Count >= 1000)
         _traceMessages.Dequeue();

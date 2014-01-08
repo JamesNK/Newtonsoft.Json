@@ -41,6 +41,7 @@ using System.Runtime.Serialization;
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
+using System.Text;
 #endif
 
 namespace Newtonsoft.Json.Serialization
@@ -132,7 +133,7 @@ namespace Newtonsoft.Json.Serialization
           SerializeObject(writer, value, (JsonObjectContract)valueContract, member, containerContract, containerProperty);
           break;
         case JsonContractType.Array:
-          JsonArrayContract arrayContract = (JsonArrayContract) valueContract;
+          JsonArrayContract arrayContract = (JsonArrayContract)valueContract;
           if (!arrayContract.IsMultidimensionalArray)
             SerializeList(writer, (IEnumerable)value, arrayContract, member, containerContract, containerProperty);
           else
@@ -145,8 +146,8 @@ namespace Newtonsoft.Json.Serialization
           SerializeString(writer, value, (JsonStringContract)valueContract);
           break;
         case JsonContractType.Dictionary:
-          JsonDictionaryContract dictionaryContract = (JsonDictionaryContract) valueContract;
-          SerializeDictionary(writer, (value is IDictionary) ? (IDictionary) value : dictionaryContract.CreateWrapper(value), dictionaryContract, member, containerContract, containerProperty);
+          JsonDictionaryContract dictionaryContract = (JsonDictionaryContract)valueContract;
+          SerializeDictionary(writer, (value is IDictionary) ? (IDictionary)value : dictionaryContract.CreateWrapper(value), dictionaryContract, member, containerContract, containerProperty);
           break;
 #if !(NET35 || NET20 || PORTABLE40)
         case JsonContractType.Dynamic:
@@ -159,7 +160,7 @@ namespace Newtonsoft.Json.Serialization
           break;
 #endif
         case JsonContractType.Linq:
-          ((JToken) value).WriteTo(writer, Serializer.Converters.ToArray());
+          ((JToken)value).WriteTo(writer, Serializer.Converters.ToArray());
           break;
       }
     }
@@ -238,23 +239,23 @@ namespace Newtonsoft.Json.Serialization
 
       if (_serializeStack.IndexOf(value) != -1)
       {
-        string message = "Self referencing loop detected";
+        StringBuilder message = new StringBuilder("Self referencing loop detected");
         if (property != null)
-          message += " for property '{0}'".FormatWith(CultureInfo.InvariantCulture, property.PropertyName);
-        message += " with type '{0}'.".FormatWith(CultureInfo.InvariantCulture, value.GetType());
+          message.AppendFormat(CultureInfo.InvariantCulture, " for property '{0}'", property.PropertyName);
+        message.AppendFormat(CultureInfo.InvariantCulture, " with type '{0}'.", value.GetType());
 
         switch (referenceLoopHandling.GetValueOrDefault(Serializer._referenceLoopHandling))
         {
           case ReferenceLoopHandling.Error:
-            throw JsonSerializationException.Create(null, writer.ContainerPath, message, null);
+            throw JsonSerializationException.Create(null, writer.ContainerPath, message.ToString(), null);
           case ReferenceLoopHandling.Ignore:
             if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
-              TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, writer.Path, message + ". Skipping serializing self referenced value."), null);
+              TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, writer.Path, message.Append(". Skipping serializing self referenced value.")).ToString(), null);
 
             return false;
           case ReferenceLoopHandling.Serialize:
             if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
-              TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, writer.Path, message + ". Serializing self referenced value."), null);
+              TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, writer.Path, message.Append(". Serializing self referenced value.")).ToString(), null);
 
             return true;
         }
@@ -309,7 +310,7 @@ namespace Newtonsoft.Json.Serialization
 #else
           s = converter.ConvertToString(value);
 #endif
-          
+
           return true;
         }
       }
@@ -667,7 +668,7 @@ namespace Newtonsoft.Json.Serialization
       }
 
       if (contract.ItemContract == null)
-        contract.ItemContract = Serializer._contractResolver.ResolveContract(contract.CollectionItemType ?? typeof (object));
+        contract.ItemContract = Serializer._contractResolver.ResolveContract(contract.CollectionItemType ?? typeof(object));
 
       return writeMetadataObject;
     }

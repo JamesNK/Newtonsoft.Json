@@ -139,7 +139,7 @@ namespace Newtonsoft.Json.Converters
     {
       XmlNodeWrapper xmlAttributeWrapper = (XmlNodeWrapper)attribute;
 
-      _element.SetAttributeNode((XmlAttribute) xmlAttributeWrapper.WrappedNode);
+      _element.SetAttributeNode((XmlAttribute)xmlAttributeWrapper.WrappedNode);
     }
 
     public string GetPrefixOfNamespace(string namespaceUri)
@@ -210,9 +210,9 @@ namespace Newtonsoft.Json.Converters
       switch (node.NodeType)
       {
         case XmlNodeType.Element:
-          return new XmlElementWrapper((XmlElement) node);
+          return new XmlElementWrapper((XmlElement)node);
         case XmlNodeType.XmlDeclaration:
-          return new XmlDeclarationWrapper((XmlDeclaration) node);
+          return new XmlDeclarationWrapper((XmlDeclaration)node);
         default:
           return new XmlNodeWrapper(node);
       }
@@ -234,9 +234,9 @@ namespace Newtonsoft.Json.Converters
       get
       {
         XmlNode node = (_node is XmlAttribute)
-                         ? ((XmlAttribute) _node).OwnerElement
+                         ? ((XmlAttribute)_node).OwnerElement
                          : _node.ParentNode;
-        
+
         if (node == null)
           return null;
 
@@ -252,7 +252,7 @@ namespace Newtonsoft.Json.Converters
 
     public IXmlNode AppendChild(IXmlNode newChild)
     {
-      XmlNodeWrapper xmlNodeWrapper = (XmlNodeWrapper) newChild;
+      XmlNodeWrapper xmlNodeWrapper = (XmlNodeWrapper)newChild;
       _node.AppendChild(xmlNodeWrapper._node);
 
       return newChild;
@@ -478,7 +478,7 @@ namespace Newtonsoft.Json.Converters
       {
         if (Text.Parent == null)
           return null;
-        
+
         return XContainerWrapper.WrapNode(Text.Parent);
       }
     }
@@ -561,7 +561,7 @@ namespace Newtonsoft.Json.Converters
       {
         if (Container.Parent == null)
           return null;
-        
+
         return WrapNode(Container.Parent);
       }
     }
@@ -581,7 +581,7 @@ namespace Newtonsoft.Json.Converters
       else if (node is XComment)
         return new XCommentWrapper((XComment)node);
       else if (node is XAttribute)
-        return new XAttributeWrapper((XAttribute) node);
+        return new XAttributeWrapper((XAttribute)node);
       else
         return new XObjectWrapper(node);
     }
@@ -693,7 +693,7 @@ namespace Newtonsoft.Json.Converters
   {
     private XElement Element
     {
-      get { return (XElement) WrappedNode; }
+      get { return (XElement)WrappedNode; }
     }
 
     public XElementWrapper(XElement element)
@@ -786,7 +786,7 @@ namespace Newtonsoft.Json.Converters
         writer.WriteStartObject();
 
       SerializeNode(writer, node, manager, !OmitRootObject);
-      
+
       if (!OmitRootObject)
         writer.WriteEndObject();
     }
@@ -801,7 +801,7 @@ namespace Newtonsoft.Json.Converters
       if (value is XmlNode)
         return new XmlNodeWrapper((XmlNode)value);
 #endif
-      
+
       throw new ArgumentException("Value must be an XML object.", "value");
     }
 
@@ -844,7 +844,7 @@ namespace Newtonsoft.Json.Converters
                         : manager.LookupPrefix(node.NamespaceUri);
 
       if (!string.IsNullOrEmpty(prefix))
-        return prefix + ":" + node.LocalName;
+        return string.Concat(prefix, ":", node.LocalName);
       else
         return node.LocalName;
     }
@@ -884,7 +884,7 @@ namespace Newtonsoft.Json.Converters
       IXmlNode jsonArrayAttribute = (node.Attributes != null)
                                       ? node.Attributes.SingleOrDefault(a => a.LocalName == "Array" && a.NamespaceUri == JsonNamespaceUri)
                                       : null;
-      
+
       return (jsonArrayAttribute != null && XmlConvert.ToBoolean(jsonArrayAttribute.Value));
     }
 
@@ -1082,7 +1082,7 @@ namespace Newtonsoft.Json.Converters
 #if !NET20
       if (typeof(XObject).IsAssignableFrom(objectType))
       {
-        if (objectType != typeof (XDocument) && objectType != typeof (XElement))
+        if (objectType != typeof(XDocument) && objectType != typeof(XElement))
           throw new JsonSerializationException("XmlNodeConverter only supports deserializing XDocument or XElement.");
 
         XDocument d = new XDocument();
@@ -1093,7 +1093,7 @@ namespace Newtonsoft.Json.Converters
 #if !(SILVERLIGHT || NETFX_CORE || PORTABLE)
       if (typeof(XmlNode).IsAssignableFrom(objectType))
       {
-        if (objectType != typeof (XmlDocument))
+        if (objectType != typeof(XmlDocument))
           throw new JsonSerializationException("XmlNodeConverter only supports deserializing XmlDocuments");
 
         XmlDocument d = new XmlDocument();
@@ -1101,7 +1101,7 @@ namespace Newtonsoft.Json.Converters
         rootNode = document;
       }
 #endif
-      
+
       if (document == null || rootNode == null)
         throw new JsonSerializationException("Unexpected type when converting XML: " + objectType);
 
@@ -1264,7 +1264,7 @@ namespace Newtonsoft.Json.Converters
         return XmlConvert.ToString(d, DateTimeUtils.ToSerializationMode(d.Kind));
 #else
         return XmlConvert.ToString(d);
-#endif   
+#endif
       }
       else if (reader.TokenType == JsonToken.Null)
       {
@@ -1383,7 +1383,7 @@ namespace Newtonsoft.Json.Converters
                       manager.AddNamespace(jsonPrefix, JsonNamespaceUri);
                     }
 
-                    attributeNameValues.Add(jsonPrefix + ":" + attributeName, attributeValue);
+                    attributeNameValues.Add(string.Concat(jsonPrefix, ":", attributeName), attributeValue);
                     break;
                   default:
                     finishedAttributes = true;
