@@ -25,9 +25,13 @@
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class SuperKlass
-  {
-    public string SuperProp { get; set; }
-    public SuperKlass() { SuperProp = "default superprop"; }
-  }
+    public class SuperKlass
+    {
+        public string SuperProp { get; set; }
+
+        public SuperKlass()
+        {
+            SuperProp = "default superprop";
+        }
+    }
 }

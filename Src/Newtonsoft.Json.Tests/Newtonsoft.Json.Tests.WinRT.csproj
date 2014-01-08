@@ -15,7 +15,7 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PackageCertificateKeyFile>Newtonsoft.Json.Tests.WinRT_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <PackageCertificateThumbprint>E58487D6BF8E40BC44C9BE962D19FB3EFBEB81BD</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>AEA73E2A196157405965DDB6EC14CE11CEE9A331</PackageCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -142,9 +142,11 @@
     <Compile Include="Linq\JArrayTests.cs" />
     <Compile Include="Linq\JConstructorTests.cs" />
     <Compile Include="Linq\JObjectTests.cs" />
-    <Compile Include="Linq\JPathTests.cs" />
     <Compile Include="Linq\JPropertyTests.cs" />
     <Compile Include="Linq\JRawTests.cs" />
+    <Compile Include="Linq\JsonPath\JPathExecuteTests.cs" />
+    <Compile Include="Linq\JsonPath\JPathParseTests.cs" />
+    <Compile Include="Linq\JsonPath\QueryExpressionTests.cs" />
     <Compile Include="Linq\JTokenEqualityComparerTests.cs" />
     <Compile Include="Linq\JTokenReaderTest.cs" />
     <Compile Include="Linq\JTokenTests.cs" />
@@ -177,7 +179,6 @@
     <Compile Include="Serialization\TraceWriterTests.cs" />
     <Compile Include="Serialization\TypeNameHandlingTests.cs" />
     <Compile Include="Serialization\WebApiIntegrationTests.cs" />
-    <Compile Include="SilverlightTests.cs" />
     <Compile Include="TestFixtureBase.cs" />
     <Compile Include="TestObjects\AbstractGenericBase.cs" />
     <Compile Include="TestObjects\ArgumentConverterPrecedenceClassConverter.cs" />
@@ -317,7 +318,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Collections.Immutable">
-      <HintPath>..\packages\Microsoft.Bcl.Immutable.1.0.12-beta\lib\portable-net45+win8+wp8\System.Collections.Immutable.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Bcl.Immutable.1.0.27\lib\portable-net45+win8+wp8\System.Collections.Immutable.dll</HintPath>
     </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' ">

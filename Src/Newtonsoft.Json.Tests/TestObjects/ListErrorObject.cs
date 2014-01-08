@@ -27,32 +27,33 @@ using System;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class ListErrorObject
-  {
-    public string Member { get; set; }
-
-    private string _throwError;
-    public string ThrowError
+    public class ListErrorObject
     {
-      get
-      {
-        if (_throwError != null)
-          return _throwError;
+        public string Member { get; set; }
 
-        throw new Exception("ListErrorObject.ThrowError get error!");
-      }
-      set
-      {
-        if (value != null && value.StartsWith("Handle"))
+        private string _throwError;
+
+        public string ThrowError
         {
-          _throwError = value;
-          return;
+            get
+            {
+                if (_throwError != null)
+                    return _throwError;
+
+                throw new Exception("ListErrorObject.ThrowError get error!");
+            }
+            set
+            {
+                if (value != null && value.StartsWith("Handle"))
+                {
+                    _throwError = value;
+                    return;
+                }
+
+                throw new Exception("ListErrorObject.ThrowError set error!");
+            }
         }
 
-        throw new Exception("ListErrorObject.ThrowError set error!");
-      }
+        public string Member2 { get; set; }
     }
-
-    public string Member2 { get; set; }
-  }
 }

@@ -27,14 +27,14 @@ using System;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class UserNullable
-  {
-    public Guid Id;
-    public string FName;
-    public string LName;
-    public int RoleId;
-    public int? NullableRoleId;
-    public int? NullRoleId;
-    public bool? Active;
-  }
+    public class UserNullable
+    {
+        public Guid Id;
+        public string FName;
+        public string LName;
+        public int RoleId;
+        public int? NullableRoleId;
+        public int? NullRoleId;
+        public bool? Active;
+    }
 }

@@ -25,11 +25,11 @@
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public struct StructTest
-  {
-    public string StringProperty { get; set; }
-    public string StringField;
-    public int IntProperty { get; set; }
-    public int IntField;
-  }
+    public struct StructTest
+    {
+        public string StringProperty { get; set; }
+        public string StringField;
+        public int IntProperty { get; set; }
+        public int IntField;
+    }
 }

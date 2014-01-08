@@ -28,44 +28,44 @@ using System.ComponentModel;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  [JsonObject(Id = "Person", Title = "Title!", Description = "JsonObjectAttribute description!", MemberSerialization = MemberSerialization.OptIn)]
+    [JsonObject(Id = "Person", Title = "Title!", Description = "JsonObjectAttribute description!", MemberSerialization = MemberSerialization.OptIn)]
 #if !NETFX_CORE
-  [Description("DescriptionAttribute description!")]
+    [Description("DescriptionAttribute description!")]
 #endif
-  public class Person
-  {
-    // "John Smith"
-    [JsonProperty]
-    public string Name { get; set; }
+    public class Person
+    {
+        // "John Smith"
+        [JsonProperty]
+        public string Name { get; set; }
 
-    // "2000-12-15T22:11:03"
-    [JsonProperty]
-    //[JsonConverter(typeof(IsoDateTimeConverter))]
-    public DateTime BirthDate { get; set; }
+        // "2000-12-15T22:11:03"
+        [JsonProperty]
+        //[JsonConverter(typeof(IsoDateTimeConverter))]
+        public DateTime BirthDate { get; set; }
 
-    // new Date(976918263055)
-    [JsonProperty]
-    //[JsonConverter(typeof(JavaScriptDateTimeConverter))]
-    public DateTime LastModified { get; set; }
+        // new Date(976918263055)
+        [JsonProperty]
+        //[JsonConverter(typeof(JavaScriptDateTimeConverter))]
+        public DateTime LastModified { get; set; }
 
-    // not serialized
-    public string Department { get; set; }
-  }
+        // not serialized
+        public string Department { get; set; }
+    }
 
-  public interface IPerson
-  {
-    string FirstName { get; set; }
-    string LastName { get; set; }
-    DateTime BirthDate { get; set; }
-  }
+    public interface IPerson
+    {
+        string FirstName { get; set; }
+        string LastName { get; set; }
+        DateTime BirthDate { get; set; }
+    }
 
-  public class Employee : IPerson
-  {
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public DateTime BirthDate { get; set; }
+    public class Employee : IPerson
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public DateTime BirthDate { get; set; }
 
-    public string Department { get; set; }
-    public string JobTitle { get; set; }
-  }
+        public string Department { get; set; }
+        public string JobTitle { get; set; }
+    }
 }

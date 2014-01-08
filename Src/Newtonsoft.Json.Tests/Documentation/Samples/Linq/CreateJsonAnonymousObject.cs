@@ -6,76 +6,76 @@ using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-  public class CreateJsonAnonymousObject
-  {
-    #region Types
-    public class Post
+    public class CreateJsonAnonymousObject
     {
-      public string Title { get; set; }
-      public string Description { get; set; }
-      public string Link { get; set; }
-      public IList<string> Categories { get; set; }
-    }
-    #endregion
-
-    public void Example()
-    {
-      #region Usage
-      List<Post> posts = new List<Post>
+        #region Types
+        public class Post
         {
-          new Post
+            public string Title { get; set; }
+            public string Description { get; set; }
+            public string Link { get; set; }
+            public IList<string> Categories { get; set; }
+        }
+        #endregion
+
+        public void Example()
+        {
+            #region Usage
+            List<Post> posts = new List<Post>
             {
-              Title = "Episode VII",
-              Description = "Episode VII production",
-              Categories = new List<string>
+                new Post
                 {
-                  "episode-vii",
-                  "movie"
-                },
-              Link = "episode-vii-production.aspx"
-            }
-        };
+                    Title = "Episode VII",
+                    Description = "Episode VII production",
+                    Categories = new List<string>
+                    {
+                        "episode-vii",
+                        "movie"
+                    },
+                    Link = "episode-vii-production.aspx"
+                }
+            };
 
-      JObject o = JObject.FromObject(new
-        {
-          channel = new
+            JObject o = JObject.FromObject(new
             {
-              title = "Star Wars",
-              link = "http://www.starwars.com",
-              description = "Star Wars blog.",
-              item =
-                from p in posts
-                orderby p.Title
-                select new
-                  {
-                    title = p.Title,
-                    description = p.Description,
-                    link = p.Link,
-                    category = p.Categories
-                  }
-            }
-        });
+                channel = new
+                {
+                    title = "Star Wars",
+                    link = "http://www.starwars.com",
+                    description = "Star Wars blog.",
+                    item =
+                        from p in posts
+                        orderby p.Title
+                        select new
+                        {
+                            title = p.Title,
+                            description = p.Description,
+                            link = p.Link,
+                            category = p.Categories
+                        }
+                }
+            });
 
-      Console.WriteLine(o.ToString());
-      // {
-      //   "channel": {
-      //     "title": "Star Wars",
-      //     "link": "http://www.starwars.com",
-      //     "description": "Star Wars blog.",
-      //     "item": [
-      //       {
-      //         "title": "Episode VII",
-      //         "description": "Episode VII production",
-      //         "link": "episode-vii-production.aspx",
-      //         "category": [
-      //           "episode-vii",
-      //           "movie"
-      //         ]
-      //       }
-      //     ]
-      //   }
-      // }
-      #endregion
+            Console.WriteLine(o.ToString());
+            // {
+            //   "channel": {
+            //     "title": "Star Wars",
+            //     "link": "http://www.starwars.com",
+            //     "description": "Star Wars blog.",
+            //     "item": [
+            //       {
+            //         "title": "Episode VII",
+            //         "description": "Episode VII production",
+            //         "link": "episode-vii-production.aspx",
+            //         "category": [
+            //           "episode-vii",
+            //           "movie"
+            //         ]
+            //       }
+            //     ]
+            //   }
+            // }
+            #endregion
+        }
     }
-  }
 }

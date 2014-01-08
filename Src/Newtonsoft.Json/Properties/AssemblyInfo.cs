@@ -32,11 +32,7 @@ using System.Security;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-#if WINDOWS_PHONE
-[assembly: AssemblyTitle("Json.NET Windows Phone")]
-#elif SILVERLIGHT
-[assembly: AssemblyTitle("Json.NET Silverlight")]
-#elif PORTABLE40
+#if PORTABLE40
 [assembly: AssemblyTitle("Json.NET Portable .NET 4.0")]
 #elif PORTABLE
 [assembly: AssemblyTitle("Json.NET Portable")]
@@ -57,13 +53,13 @@ using System.Security;
 #endif
 
 #if !SIGNED
+
 [assembly: InternalsVisibleTo("Newtonsoft.Json.Tests")]
 #else
 [assembly: InternalsVisibleTo("Newtonsoft.Json.Tests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100f561df277c6c0b497d629032b410cdcf286e537c054724f7ffa0164345f62b3e642029d7a80cc351918955328c4adc8a048823ef90b0cf38ea7db0d729caf2b633c3babe08b0310198c1081995c19029bc675193744eab9d7345b8a67258ec17d112cebdbbb2a281487dceeafb9d83aa930f32103fbe1d2911425bc5744002c7")]
 #endif
 
 [assembly: InternalsVisibleTo("Newtonsoft.Json.Dynamic, PublicKey=0024000004800000940000000602000000240000525341310004000001000100cbd8d53b9d7de30f1f1278f636ec462cf9c254991291e66ebb157a885638a517887633b898ccbcf0d5c5ff7be85a6abe9e765d0ac7cd33c68dac67e7e64530e8222101109f154ab14a941c490ac155cd1d4fcba0fabb49016b4ef28593b015cab5937da31172f03f67d09edda404b88a60023f062ae71d0b2e4438b74cc11dc9")]
-
 [assembly: AssemblyDescription("Json.NET is a popular high-performance JSON framework for .NET")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Newtonsoft")]
@@ -76,9 +72,11 @@ using System.Security;
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM componenets.  If you need to access a type in this assembly from 
 // COM, set the ComVisible attribute to true on that type.
+
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
+
 [assembly: Guid("9ca358aa-317b-4925-8ada-4a29e943a363")]
 #endif
 
@@ -91,7 +89,7 @@ using System.Security;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("4.5.0.0")]
-[assembly: AssemblyFileVersion("5.0.6.16513")]
 
+[assembly: AssemblyVersion("4.5.0.0")]
+[assembly: AssemblyFileVersion("5.0.8.16826")]
 [assembly: CLSCompliant(true)]

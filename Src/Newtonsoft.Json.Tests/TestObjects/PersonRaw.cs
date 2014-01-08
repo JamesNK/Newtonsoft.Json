@@ -28,38 +28,38 @@ using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class PersonRaw
-  {
-    private Guid _internalId;
-    private string _firstName;
-    private string _lastName;
-    private JRaw _rawContent;
-
-    [JsonIgnore]
-    public Guid InternalId
+    public class PersonRaw
     {
-      get { return _internalId; }
-      set { _internalId = value; }
-    }
+        private Guid _internalId;
+        private string _firstName;
+        private string _lastName;
+        private JRaw _rawContent;
 
-    [JsonProperty("first_name")]
-    public string FirstName
-    {
-      get { return _firstName; }
-      set { _firstName = value; }
-    }
+        [JsonIgnore]
+        public Guid InternalId
+        {
+            get { return _internalId; }
+            set { _internalId = value; }
+        }
 
-    public JRaw RawContent
-    {
-      get { return _rawContent; }
-      set { _rawContent = value; }
-    }
+        [JsonProperty("first_name")]
+        public string FirstName
+        {
+            get { return _firstName; }
+            set { _firstName = value; }
+        }
 
-    [JsonProperty("last_name")]
-    public string LastName
-    {
-      get { return _lastName; }
-      set { _lastName = value; }
+        public JRaw RawContent
+        {
+            get { return _rawContent; }
+            set { _rawContent = value; }
+        }
+
+        [JsonProperty("last_name")]
+        public string LastName
+        {
+            get { return _lastName; }
+            set { _lastName = value; }
+        }
     }
-  }
 }

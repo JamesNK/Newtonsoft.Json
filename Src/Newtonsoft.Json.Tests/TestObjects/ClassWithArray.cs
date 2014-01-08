@@ -28,27 +28,27 @@ using System.Collections.Generic;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class ClassWithArray
-  {
-    private readonly IList<long> bar;
-    private string foo;
-
-    public ClassWithArray()
+    public class ClassWithArray
     {
-      bar = new List<Int64>() { int.MaxValue };
-    }
+        private readonly IList<long> bar;
+        private string foo;
 
-    [JsonProperty("foo")]
-    public string Foo
-    {
-      get { return foo; }
-      set { foo = value; }
-    }
+        public ClassWithArray()
+        {
+            bar = new List<Int64>() { int.MaxValue };
+        }
 
-    [JsonProperty(PropertyName = "bar")]
-    public IList<long> Bar
-    {
-      get { return bar; }
+        [JsonProperty("foo")]
+        public string Foo
+        {
+            get { return foo; }
+            set { foo = value; }
+        }
+
+        [JsonProperty(PropertyName = "bar")]
+        public IList<long> Bar
+        {
+            get { return bar; }
+        }
     }
-  }
 }

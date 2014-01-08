@@ -27,24 +27,24 @@ using System;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  [JsonObject]
-  public class ConverableMembers
-  {
-    public string String = "string";
-    public int Int32 = int.MaxValue;
-    public uint UInt32 = uint.MaxValue;
-    public byte Byte = byte.MaxValue;
-    public sbyte SByte = sbyte.MaxValue;
-    public short Short = short.MaxValue;
-    public ushort UShort = ushort.MaxValue;
-    public long Long = long.MaxValue;
-    public ulong ULong = long.MaxValue;
-    public double Double = double.MaxValue;
-    public float Float = float.MaxValue;
+    [JsonObject]
+    public class ConverableMembers
+    {
+        public string String = "string";
+        public int Int32 = int.MaxValue;
+        public uint UInt32 = uint.MaxValue;
+        public byte Byte = byte.MaxValue;
+        public sbyte SByte = sbyte.MaxValue;
+        public short Short = short.MaxValue;
+        public ushort UShort = ushort.MaxValue;
+        public long Long = long.MaxValue;
+        public ulong ULong = long.MaxValue;
+        public double Double = double.MaxValue;
+        public float Float = float.MaxValue;
 #if !(NETFX_CORE || PORTABLE)
-    public DBNull DBNull = DBNull.Value;
+        public DBNull DBNull = DBNull.Value;
 #endif
-    public bool Bool = true;
-    public char Char = '\0';
-  }
+        public bool Bool = true;
+        public char Char = '\0';
+    }
 }

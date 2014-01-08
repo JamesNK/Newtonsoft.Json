@@ -27,18 +27,18 @@ using System;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class RequiredMembersClass
-  {
-    [JsonProperty(Required = Required.Always)]
-    public string FirstName { get; set; }
+    public class RequiredMembersClass
+    {
+        [JsonProperty(Required = Required.Always)]
+        public string FirstName { get; set; }
 
-    [JsonProperty]
-    public string MiddleName { get; set; }
+        [JsonProperty]
+        public string MiddleName { get; set; }
 
-    [JsonProperty(Required = Required.AllowNull)]
-    public string LastName { get; set; }
+        [JsonProperty(Required = Required.AllowNull)]
+        public string LastName { get; set; }
 
-    [JsonProperty(Required = Required.Default)]
-    public DateTime BirthDate { get; set; }
-  }
+        [JsonProperty(Required = Required.Default)]
+        public DateTime BirthDate { get; set; }
+    }
 }

@@ -27,69 +27,69 @@ using System.Collections.Generic;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class GoogleMapGeocoderStructure
-  {
-    public string Name;
-    public Status Status;
-    public List<Placemark> Placemark;
-  }
+    public class GoogleMapGeocoderStructure
+    {
+        public string Name;
+        public Status Status;
+        public List<Placemark> Placemark;
+    }
 
-  public class Status
-  {
-    public string Request;
-    public string Code;
-  }
+    public class Status
+    {
+        public string Request;
+        public string Code;
+    }
 
-  public class Placemark
-  {
-    public string Address;
-    public AddressDetails AddressDetails;
-    public Point Point;
-  }
+    public class Placemark
+    {
+        public string Address;
+        public AddressDetails AddressDetails;
+        public Point Point;
+    }
 
-  public class AddressDetails
-  {
-    public int Accuracy;
-    public Country Country;
-  }
+    public class AddressDetails
+    {
+        public int Accuracy;
+        public Country Country;
+    }
 
-  public class Country
-  {
-    public string CountryNameCode;
-    public AdministrativeArea AdministrativeArea;
-  }
+    public class Country
+    {
+        public string CountryNameCode;
+        public AdministrativeArea AdministrativeArea;
+    }
 
-  public class AdministrativeArea
-  {
-    public string AdministrativeAreaName;
-    public SubAdministrativeArea SubAdministrativeArea;
-  }
+    public class AdministrativeArea
+    {
+        public string AdministrativeAreaName;
+        public SubAdministrativeArea SubAdministrativeArea;
+    }
 
-  public class SubAdministrativeArea
-  {
-    public string SubAdministrativeAreaName;
-    public Locality Locality;
-  }
+    public class SubAdministrativeArea
+    {
+        public string SubAdministrativeAreaName;
+        public Locality Locality;
+    }
 
-  public class Locality
-  {
-    public string LocalityName;
-    public Thoroughfare Thoroughfare;
-    public PostalCode PostalCode;
-  }
+    public class Locality
+    {
+        public string LocalityName;
+        public Thoroughfare Thoroughfare;
+        public PostalCode PostalCode;
+    }
 
-  public class Thoroughfare
-  {
-    public string ThoroughfareName;
-  }
+    public class Thoroughfare
+    {
+        public string ThoroughfareName;
+    }
 
-  public class PostalCode
-  {
-    public string PostalCodeNumber;
-  }
+    public class PostalCode
+    {
+        public string PostalCodeNumber;
+    }
 
-  public class Point
-  {
-    public List<decimal> Coordinates;
-  }
+    public class Point
+    {
+        public List<decimal> Coordinates;
+    }
 }

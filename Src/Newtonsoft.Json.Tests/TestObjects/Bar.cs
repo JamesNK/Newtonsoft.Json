@@ -25,8 +25,8 @@
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class Bar
-  {
-    public int Id { get; set; }
-  }
+    public class Bar
+    {
+        public int Id { get; set; }
+    }
 }

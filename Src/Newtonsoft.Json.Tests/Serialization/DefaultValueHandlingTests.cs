@@ -27,7 +27,7 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.Serialization;
-#if !(SILVERLIGHT || NET20 || NET35 || NETFX_CORE || PORTABLE)
+#if !(NET20 || NET35 || NETFX_CORE || PORTABLE)
 using System.Runtime.Serialization.Json;
 #endif
 using System.Text;
@@ -43,27 +43,27 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
-  [TestFixture]
-  public class DefaultValueHandlingTests : TestFixtureBase
-  {
-    [Test]
-    public void Include()
+    [TestFixture]
+    public class DefaultValueHandlingTests : TestFixtureBase
     {
-      Invoice invoice = new Invoice
-      {
-        Company = "Acme Ltd.",
-        Amount = 50.0m,
-        Paid = false,
-        FollowUpDays = 30,
-        FollowUpEmailAddress = string.Empty,
-        PaidDate = null
-      };
+        [Test]
+        public void Include()
+        {
+            Invoice invoice = new Invoice
+            {
+                Company = "Acme Ltd.",
+                Amount = 50.0m,
+                Paid = false,
+                FollowUpDays = 30,
+                FollowUpEmailAddress = string.Empty,
+                PaidDate = null
+            };
 
-      string included = JsonConvert.SerializeObject(invoice,
-        Formatting.Indented,
-        new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Include });
+            string included = JsonConvert.SerializeObject(invoice,
+                Formatting.Indented,
+                new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Include });
 
-      Assert.AreEqual(@"{
+            Assert.AreEqual(@"{
   ""Company"": ""Acme Ltd."",
   ""Amount"": 50.0,
   ""Paid"": false,
@@ -71,26 +71,26 @@ namespace Newtonsoft.Json.Tests.Serialization
   ""FollowUpDays"": 30,
   ""FollowUpEmailAddress"": """"
 }", included);
-    }
+        }
 
-    [Test]
-    public void SerializeInvoice()
-    {
-      Invoice invoice = new Invoice
-      {
-        Company = "Acme Ltd.",
-        Amount = 50.0m,
-        Paid = false,
-        FollowUpDays = 30,
-        FollowUpEmailAddress = string.Empty,
-        PaidDate = null
-      };
+        [Test]
+        public void SerializeInvoice()
+        {
+            Invoice invoice = new Invoice
+            {
+                Company = "Acme Ltd.",
+                Amount = 50.0m,
+                Paid = false,
+                FollowUpDays = 30,
+                FollowUpEmailAddress = string.Empty,
+                PaidDate = null
+            };
 
-      string included = JsonConvert.SerializeObject(invoice,
-        Formatting.Indented,
-        new JsonSerializerSettings { });
+            string included = JsonConvert.SerializeObject(invoice,
+                Formatting.Indented,
+                new JsonSerializerSettings { });
 
-      Assert.AreEqual(@"{
+            Assert.AreEqual(@"{
   ""Company"": ""Acme Ltd."",
   ""Amount"": 50.0,
   ""Paid"": false,
@@ -99,356 +99,379 @@ namespace Newtonsoft.Json.Tests.Serialization
   ""FollowUpEmailAddress"": """"
 }", included);
 
-      string ignored = JsonConvert.SerializeObject(invoice,
-        Formatting.Indented,
-        new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
+            string ignored = JsonConvert.SerializeObject(invoice,
+                Formatting.Indented,
+                new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
 
-      Assert.AreEqual(@"{
+            Assert.AreEqual(@"{
   ""Company"": ""Acme Ltd."",
   ""Amount"": 50.0
 }", ignored);
-    }
+        }
 
-    [Test]
-    public void SerializeDefaultValueAttributeTest()
-    {
-      string json = JsonConvert.SerializeObject(new DefaultValueAttributeTestClass(),
-        Formatting.None, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
-      Assert.AreEqual(@"{""TestField1"":0,""TestProperty1"":null}", json);
-
-      json = JsonConvert.SerializeObject(new DefaultValueAttributeTestClass { TestField1 = int.MinValue, TestProperty1 = "NotDefault" },
-        Formatting.None, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
-      Assert.AreEqual(@"{""TestField1"":-2147483648,""TestProperty1"":""NotDefault""}", json);
-
-      json = JsonConvert.SerializeObject(new DefaultValueAttributeTestClass { TestField1 = 21, TestProperty1 = "NotDefault" },
-        Formatting.None, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
-      Assert.AreEqual(@"{""TestProperty1"":""NotDefault""}", json);
-
-      json = JsonConvert.SerializeObject(new DefaultValueAttributeTestClass { TestField1 = 21, TestProperty1 = "TestProperty1Value" },
-        Formatting.None, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
-      Assert.AreEqual(@"{}", json);
-    }
-
-    [Test]
-    public void DeserializeDefaultValueAttributeTest()
-    {
-      string json = "{}";
-
-      DefaultValueAttributeTestClass c = JsonConvert.DeserializeObject<DefaultValueAttributeTestClass>(json, new JsonSerializerSettings
+        [Test]
+        public void SerializeDefaultValueAttributeTest()
         {
-          DefaultValueHandling = DefaultValueHandling.Populate
-        });
-      Assert.AreEqual("TestProperty1Value", c.TestProperty1);
+            string json = JsonConvert.SerializeObject(new DefaultValueAttributeTestClass(),
+                Formatting.None, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
+            Assert.AreEqual(@"{""TestField1"":0,""TestProperty1"":null}", json);
 
-      c = JsonConvert.DeserializeObject<DefaultValueAttributeTestClass>(json, new JsonSerializerSettings
-      {
-        DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate
-      });
-      Assert.AreEqual("TestProperty1Value", c.TestProperty1);
-    }
+            json = JsonConvert.SerializeObject(new DefaultValueAttributeTestClass { TestField1 = int.MinValue, TestProperty1 = "NotDefault" },
+                Formatting.None, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
+            Assert.AreEqual(@"{""TestField1"":-2147483648,""TestProperty1"":""NotDefault""}", json);
 
-    public class DefaultHandler
-    {
-      [DefaultValue(-1)]
-      public int field1;
+            json = JsonConvert.SerializeObject(new DefaultValueAttributeTestClass { TestField1 = 21, TestProperty1 = "NotDefault" },
+                Formatting.None, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
+            Assert.AreEqual(@"{""TestProperty1"":""NotDefault""}", json);
 
-      [DefaultValue("default")]
-      public string field2;
-    }
+            json = JsonConvert.SerializeObject(new DefaultValueAttributeTestClass { TestField1 = 21, TestProperty1 = "TestProperty1Value" },
+                Formatting.None, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore });
+            Assert.AreEqual(@"{}", json);
+        }
 
-    [Test]
-    public void DeserializeIgnoreAndPopulate()
-    {
-      DefaultHandler c1 = JsonConvert.DeserializeObject<DefaultHandler>("{}", new JsonSerializerSettings
-      {
-        DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate
-      });
-      Assert.AreEqual(-1, c1.field1);
-      Assert.AreEqual("default", c1.field2);
+        [Test]
+        public void DeserializeDefaultValueAttributeTest()
+        {
+            string json = "{}";
 
-      DefaultHandler c2 = JsonConvert.DeserializeObject<DefaultHandler>("{'field1':-1,'field2':'default'}", new JsonSerializerSettings
-      {
-        DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate
-      });
-      Assert.AreEqual(-1, c2.field1);
-      Assert.AreEqual("default", c2.field2);
-    }
+            DefaultValueAttributeTestClass c = JsonConvert.DeserializeObject<DefaultValueAttributeTestClass>(json, new JsonSerializerSettings
+            {
+                DefaultValueHandling = DefaultValueHandling.Populate
+            });
+            Assert.AreEqual("TestProperty1Value", c.TestProperty1);
 
-    [JsonObject]
-    public class NetworkUser
-    {
-      [JsonProperty(PropertyName = "userId")]
-      [DefaultValue(-1)]
-      public long GlobalId { get; set; }
+            c = JsonConvert.DeserializeObject<DefaultValueAttributeTestClass>(json, new JsonSerializerSettings
+            {
+                DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate
+            });
+            Assert.AreEqual("TestProperty1Value", c.TestProperty1);
+        }
 
-      [JsonProperty(PropertyName = "age")]
-      [DefaultValue(0)]
-      public int Age { get; set; }
+        public class DefaultHandler
+        {
+            [DefaultValue(-1)]
+            public int field1;
 
-      [JsonProperty(PropertyName = "amount")]
-      [DefaultValue(0.0)]
-      public decimal Amount { get; set; }
+            [DefaultValue("default")]
+            public string field2;
+        }
 
-      [JsonProperty(PropertyName = "floatUserId")]
-      [DefaultValue(-1.0d)]
-      public float FloatGlobalId { get; set; }
+        [Test]
+        public void DeserializeIgnoreAndPopulate()
+        {
+            DefaultHandler c1 = JsonConvert.DeserializeObject<DefaultHandler>("{}", new JsonSerializerSettings
+            {
+                DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate
+            });
+            Assert.AreEqual(-1, c1.field1);
+            Assert.AreEqual("default", c1.field2);
 
-      [JsonProperty(PropertyName = "firstName")]
-      public string Firstname { get; set; }
-      [JsonProperty(PropertyName = "lastName")]
-      public string Lastname { get; set; }
+            DefaultHandler c2 = JsonConvert.DeserializeObject<DefaultHandler>("{'field1':-1,'field2':'default'}", new JsonSerializerSettings
+            {
+                DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate
+            });
+            Assert.AreEqual(-1, c2.field1);
+            Assert.AreEqual("default", c2.field2);
+        }
 
-      public NetworkUser()
-      {
-        GlobalId = -1;
-        FloatGlobalId = -1.0f;
-        Amount = 0.0m;
-        Age = 0;
-      }
-    }
+        [JsonObject]
+        public class NetworkUser
+        {
+            [JsonProperty(PropertyName = "userId")]
+            [DefaultValue(-1)]
+            public long GlobalId { get; set; }
 
-    [Test]
-    public void IgnoreNumberTypeDifferencesWithDefaultValue()
-    {
-      NetworkUser user = new NetworkUser
-      {
-        Firstname = "blub"
-      };
+            [JsonProperty(PropertyName = "age")]
+            [DefaultValue(0)]
+            public int Age { get; set; }
 
-      string json = JsonConvert.SerializeObject(user, Formatting.None, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore });
+            [JsonProperty(PropertyName = "amount")]
+            [DefaultValue(0.0)]
+            public decimal Amount { get; set; }
 
-      Assert.AreEqual(@"{""firstName"":""blub""}", json);
-    }
+            [JsonProperty(PropertyName = "floatUserId")]
+            [DefaultValue(-1.0d)]
+            public float FloatGlobalId { get; set; }
 
-    [Test]
-    public void ApproxEquals()
-    {
-      Assert.IsTrue(MathUtils.ApproxEquals(0.0, 0.0));
-      Assert.IsTrue(MathUtils.ApproxEquals(1000.0, 1000.0000000000001));
+            [JsonProperty(PropertyName = "firstName")]
+            public string Firstname { get; set; }
 
-      Assert.IsFalse(MathUtils.ApproxEquals(1000.0, 1000.000000000001));
-      Assert.IsFalse(MathUtils.ApproxEquals(0.0, 0.00001));
-    }
+            [JsonProperty(PropertyName = "lastName")]
+            public string Lastname { get; set; }
+
+            public NetworkUser()
+            {
+                GlobalId = -1;
+                FloatGlobalId = -1.0f;
+                Amount = 0.0m;
+                Age = 0;
+            }
+        }
+
+        [Test]
+        public void IgnoreNumberTypeDifferencesWithDefaultValue()
+        {
+            NetworkUser user = new NetworkUser
+            {
+                Firstname = "blub"
+            };
+
+            string json = JsonConvert.SerializeObject(user, Formatting.None, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore });
+
+            Assert.AreEqual(@"{""firstName"":""blub""}", json);
+        }
+
+        [Test]
+        public void ApproxEquals()
+        {
+            Assert.IsTrue(MathUtils.ApproxEquals(0.0, 0.0));
+            Assert.IsTrue(MathUtils.ApproxEquals(1000.0, 1000.0000000000001));
+
+            Assert.IsFalse(MathUtils.ApproxEquals(1000.0, 1000.000000000001));
+            Assert.IsFalse(MathUtils.ApproxEquals(0.0, 0.00001));
+        }
 
 #if !NET20
-    [Test]
-    public void EmitDefaultValueTest()
-    {
-      EmitDefaultValueClass c = new EmitDefaultValueClass();
+        [Test]
+        public void EmitDefaultValueTest()
+        {
+            EmitDefaultValueClass c = new EmitDefaultValueClass();
 
-#if !(SILVERLIGHT || NET20 || NET35 || NETFX_CORE || PORTABLE)
-      DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(EmitDefaultValueClass));
+#if !(NET20 || NET35 || NETFX_CORE || PORTABLE)
+            DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(EmitDefaultValueClass));
 
-      MemoryStream ms = new MemoryStream();
-      jsonSerializer.WriteObject(ms, c);
+            MemoryStream ms = new MemoryStream();
+            jsonSerializer.WriteObject(ms, c);
 
-      Assert.AreEqual("{}", Encoding.UTF8.GetString(ms.ToArray()));
+            Assert.AreEqual("{}", Encoding.UTF8.GetString(ms.ToArray()));
 #endif
 
-      string json = JsonConvert.SerializeObject(c);
+            string json = JsonConvert.SerializeObject(c);
 
-      Assert.AreEqual("{}", json);
-    }
+            Assert.AreEqual("{}", json);
+        }
 #endif
 
-    [Test]
-    public void DefaultValueHandlingPropertyTest()
-    {
-      DefaultValueHandlingPropertyClass c = new DefaultValueHandlingPropertyClass();
+        [Test]
+        public void DefaultValueHandlingPropertyTest()
+        {
+            DefaultValueHandlingPropertyClass c = new DefaultValueHandlingPropertyClass();
 
-      string json = JsonConvert.SerializeObject(c, Formatting.Indented);
+            string json = JsonConvert.SerializeObject(c, Formatting.Indented);
 
-      Assert.AreEqual(@"{
+            Assert.AreEqual(@"{
   ""IntInclude"": 0,
   ""IntDefault"": 0
 }", json);
 
-      json = JsonConvert.SerializeObject(c, Formatting.Indented, new JsonSerializerSettings
-        {
-          DefaultValueHandling = DefaultValueHandling.Ignore
-        });
+            json = JsonConvert.SerializeObject(c, Formatting.Indented, new JsonSerializerSettings
+            {
+                DefaultValueHandling = DefaultValueHandling.Ignore
+            });
 
-      Assert.AreEqual(@"{
+            Assert.AreEqual(@"{
   ""IntInclude"": 0
 }", json);
 
-      json = JsonConvert.SerializeObject(c, Formatting.Indented, new JsonSerializerSettings
-      {
-        DefaultValueHandling = DefaultValueHandling.Include
-      });
+            json = JsonConvert.SerializeObject(c, Formatting.Indented, new JsonSerializerSettings
+            {
+                DefaultValueHandling = DefaultValueHandling.Include
+            });
 
-      Assert.AreEqual(@"{
+            Assert.AreEqual(@"{
   ""IntInclude"": 0,
   ""IntDefault"": 0
 }", json);
-    }
+        }
 
-    [Test]
-    public void DeserializeWithIgnore()
-    {
-      string json = @"{'Value':null,'IntValue1':1,'IntValue2':0,'IntValue3':null}";
-
-      var o = JsonConvert.DeserializeObject<DefaultValueHandlingDeserializeHolder>(json, new JsonSerializerSettings
+        [Test]
+        public void DeserializeWithIgnore()
         {
-          DefaultValueHandling = DefaultValueHandling.Ignore
-        });
+            string json = @"{'Value':null,'IntValue1':1,'IntValue2':0,'IntValue3':null}";
 
-      Assert.AreEqual(int.MaxValue, o.IntValue1);
-      Assert.AreEqual(int.MinValue, o.IntValue2);
-      Assert.AreEqual(int.MaxValue, o.IntValue3);
-      Assert.AreEqual("Derp!", o.ClassValue.Derp);
-    }
+            var o = JsonConvert.DeserializeObject<DefaultValueHandlingDeserializeHolder>(json, new JsonSerializerSettings
+            {
+                DefaultValueHandling = DefaultValueHandling.Ignore
+            });
 
-    [Test]
-    public void DeserializeWithPopulate()
-    {
-      string json = @"{}";
+            Assert.AreEqual(int.MaxValue, o.IntValue1);
+            Assert.AreEqual(int.MinValue, o.IntValue2);
+            Assert.AreEqual(int.MaxValue, o.IntValue3);
+            Assert.AreEqual("Derp!", o.ClassValue.Derp);
+        }
 
-      var o = JsonConvert.DeserializeObject<DefaultValueHandlingDeserializePopulate>(json, new JsonSerializerSettings
-      {
-        DefaultValueHandling = DefaultValueHandling.Populate
-      });
+        [Test]
+        public void DeserializeWithPopulate()
+        {
+            string json = @"{}";
 
-      Assert.AreEqual(1, o.IntValue1);
-      Assert.AreEqual(0, o.IntValue2);
-      Assert.AreEqual(null, o.ClassValue);
+            var o = JsonConvert.DeserializeObject<DefaultValueHandlingDeserializePopulate>(json, new JsonSerializerSettings
+            {
+                DefaultValueHandling = DefaultValueHandling.Populate
+            });
+
+            Assert.AreEqual(1, o.IntValue1);
+            Assert.AreEqual(0, o.IntValue2);
+            Assert.AreEqual(null, o.ClassValue);
+        }
+
+#if !NET20
+        [Test]
+        public void EmitDefaultValueIgnoreAndPopulate()
+        {
+            string str = "{}";
+            TestClass obj = JsonConvert.DeserializeObject<TestClass>(str, new JsonSerializerSettings
+            {
+                DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate
+            });
+
+            Assert.AreEqual("fff", obj.Field1);
+        }
+#endif
     }
 
 #if !NET20
-    [Test]
-    public void EmitDefaultValueIgnoreAndPopulate()
+    [DataContract]
+    public class TestClass
     {
-      string str = "{}";
-      TestClass obj = JsonConvert.DeserializeObject<TestClass>(str, new JsonSerializerSettings
-        {
-          DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate
-        });
-
-      Assert.AreEqual("fff", obj.Field1);
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+        [DataMember(EmitDefaultValue = false)]
+        [DefaultValue("fff")]
+        public string Field1 { set; get; }
     }
 #endif
-  }
 
-#if !NET20
-  [DataContract]
-  public class TestClass
-  {
-    [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-    [DataMember(EmitDefaultValue = false)]
-    [DefaultValue("fff")]
-    public string Field1 { set; get; }
-  }
-#endif
-
-  public class DefaultValueHandlingDeserialize
-  {
-    public string Derp { get; set; }
-  }
-
-  public class DefaultValueHandlingDeserializeHolder
-  {
-    public DefaultValueHandlingDeserializeHolder()
+    public class DefaultValueHandlingDeserialize
     {
-      ClassValue = new DefaultValueHandlingDeserialize
+        public string Derp { get; set; }
+    }
+
+    public class DefaultValueHandlingDeserializeHolder
+    {
+        public DefaultValueHandlingDeserializeHolder()
         {
-          Derp = "Derp!"
-        };
-      IntValue1 = int.MaxValue;
-      IntValue2 = int.MinValue;
-      IntValue3 = int.MaxValue;
+            ClassValue = new DefaultValueHandlingDeserialize
+            {
+                Derp = "Derp!"
+            };
+            IntValue1 = int.MaxValue;
+            IntValue2 = int.MinValue;
+            IntValue3 = int.MaxValue;
+        }
+
+        [DefaultValue(1)]
+        public int IntValue1 { get; set; }
+
+        public int IntValue2 { get; set; }
+
+        [DefaultValue(null)]
+        public int IntValue3 { get; set; }
+
+        public DefaultValueHandlingDeserialize ClassValue { get; set; }
     }
 
-    [DefaultValue(1)]
-    public int IntValue1 { get; set; }
-    public int IntValue2 { get; set; }
-    [DefaultValue(null)]
-    public int IntValue3 { get; set; }
-    public DefaultValueHandlingDeserialize ClassValue { get; set; }
-  }
-
-  public class DefaultValueHandlingDeserializePopulate
-  {
-    public DefaultValueHandlingDeserializePopulate()
+    public class DefaultValueHandlingDeserializePopulate
     {
-      ClassValue = new DefaultValueHandlingDeserialize
-      {
-        Derp = "Derp!"
-      };
-      IntValue1 = int.MaxValue;
-      IntValue2 = int.MinValue;
+        public DefaultValueHandlingDeserializePopulate()
+        {
+            ClassValue = new DefaultValueHandlingDeserialize
+            {
+                Derp = "Derp!"
+            };
+            IntValue1 = int.MaxValue;
+            IntValue2 = int.MinValue;
+        }
+
+        [DefaultValue(1)]
+        public int IntValue1 { get; set; }
+
+        public int IntValue2 { get; set; }
+        public DefaultValueHandlingDeserialize ClassValue { get; set; }
     }
 
-    [DefaultValue(1)]
-    public int IntValue1 { get; set; }
-    public int IntValue2 { get; set; }
-    public DefaultValueHandlingDeserialize ClassValue { get; set; }
-  }
+    public struct DefaultStruct
+    {
+        public string Default { get; set; }
+    }
 
-  public struct DefaultStruct
-  {
-    public string Default { get; set; }
-  }
+    public class DefaultValueHandlingPropertyClass
+    {
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public int IntIgnore { get; set; }
 
-  public class DefaultValueHandlingPropertyClass
-  {
-    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-    public int IntIgnore { get; set; }
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
+        public int IntInclude { get; set; }
 
-    [JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
-    public int IntInclude { get; set; }
-
-    [JsonProperty]
-    public int IntDefault { get; set; }
-  }
+        [JsonProperty]
+        public int IntDefault { get; set; }
+    }
 
 #if !NET20
-  [DataContract]
-  public class EmitDefaultValueClass
-  {
-    [DataMember(EmitDefaultValue = false)]
-    public Guid Guid { get; set; }
-    [DataMember(EmitDefaultValue = false)]
-    public TimeSpan TimeSpan { get; set; }
-    [DataMember(EmitDefaultValue = false)]
-    public DateTime DateTime { get; set; }
-    [DataMember(EmitDefaultValue = false)]
-    public DateTimeOffset DateTimeOffset { get; set; }
-    [DataMember(EmitDefaultValue = false)]
-    public decimal Decimal { get; set; }
-    [DataMember(EmitDefaultValue = false)]
-    public int Integer { get; set; }
-    [DataMember(EmitDefaultValue = false)]
-    public double Double { get; set; }
-    [DataMember(EmitDefaultValue = false)]
-    public bool Boolean { get; set; }
-    [DataMember(EmitDefaultValue = false)]
-    public DefaultStruct Struct { get; set; }
-    [DataMember(EmitDefaultValue = false)]
-    public StringComparison Enum { get; set; }
+    [DataContract]
+    public class EmitDefaultValueClass
+    {
+        [DataMember(EmitDefaultValue = false)]
+        public Guid Guid { get; set; }
 
-    [DataMember(EmitDefaultValue = false)]
-    public Guid? NullableGuid { get; set; }
-    [DataMember(EmitDefaultValue = false)]
-    public TimeSpan? NullableTimeSpan { get; set; }
-    [DataMember(EmitDefaultValue = false)]
-    public DateTime? NullableDateTime { get; set; }
-    [DataMember(EmitDefaultValue = false)]
-    public DateTimeOffset? NullableDateTimeOffset { get; set; }
-    [DataMember(EmitDefaultValue = false)]
-    public decimal? NullableDecimal { get; set; }
-    [DataMember(EmitDefaultValue = false)]
-    public int? NullableInteger { get; set; }
-    [DataMember(EmitDefaultValue = false)]
-    public double? NullableDouble { get; set; }
-    [DataMember(EmitDefaultValue = false)]
-    public bool? NullableBoolean { get; set; }
-    [DataMember(EmitDefaultValue = false)]
-    public DefaultStruct? NullableStruct { get; set; }
-    [DataMember(EmitDefaultValue = false)]
-    public StringComparison? NullableEnum { get; set; }
+        [DataMember(EmitDefaultValue = false)]
+        public TimeSpan TimeSpan { get; set; }
 
-    [DataMember(EmitDefaultValue = false)]
-    public object Object { get; set; }
-  }
+        [DataMember(EmitDefaultValue = false)]
+        public DateTime DateTime { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public DateTimeOffset DateTimeOffset { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public decimal Decimal { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public int Integer { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public double Double { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public bool Boolean { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public DefaultStruct Struct { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public StringComparison Enum { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public Guid? NullableGuid { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public TimeSpan? NullableTimeSpan { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public DateTime? NullableDateTime { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public DateTimeOffset? NullableDateTimeOffset { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public decimal? NullableDecimal { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public int? NullableInteger { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public double? NullableDouble { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public bool? NullableBoolean { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public DefaultStruct? NullableStruct { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public StringComparison? NullableEnum { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public object Object { get; set; }
+    }
 #endif
 }

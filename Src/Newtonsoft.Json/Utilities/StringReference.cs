@@ -25,37 +25,37 @@
 
 namespace Newtonsoft.Json.Utilities
 {
-  internal struct StringReference
-  {
-    private readonly char[] _chars;
-    private readonly int _startIndex;
-    private readonly int _length;
-
-    public char[] Chars
+    internal struct StringReference
     {
-      get { return _chars; }
-    }
+        private readonly char[] _chars;
+        private readonly int _startIndex;
+        private readonly int _length;
 
-    public int StartIndex
-    {
-      get { return _startIndex; }
-    }
+        public char[] Chars
+        {
+            get { return _chars; }
+        }
 
-    public int Length
-    {
-      get { return _length; }
-    }
+        public int StartIndex
+        {
+            get { return _startIndex; }
+        }
 
-    public StringReference(char[] chars, int startIndex, int length)
-    {
-      _chars = chars;
-      _startIndex = startIndex;
-      _length = length;
-    }
+        public int Length
+        {
+            get { return _length; }
+        }
 
-    public override string ToString()
-    {
-      return new string(_chars, _startIndex, _length);
+        public StringReference(char[] chars, int startIndex, int length)
+        {
+            _chars = chars;
+            _startIndex = startIndex;
+            _length = length;
+        }
+
+        public override string ToString()
+        {
+            return new string(_chars, _startIndex, _length);
+        }
     }
-  }
 }

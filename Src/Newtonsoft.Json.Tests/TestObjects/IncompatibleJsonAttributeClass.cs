@@ -27,8 +27,8 @@ using Newtonsoft.Json.Converters;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  [JsonConverter(typeof(IsoDateTimeConverter))]
-  public class IncompatibleJsonAttributeClass
-  {
-  }
+    [JsonConverter(typeof(IsoDateTimeConverter))]
+    public class IncompatibleJsonAttributeClass
+    {
+    }
 }

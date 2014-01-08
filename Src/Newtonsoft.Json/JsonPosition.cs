@@ -31,90 +31,90 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json
 {
-  internal enum JsonContainerType
-  {
-    None,
-    Object,
-    Array,
-    Constructor
-  }
-
-  internal struct JsonPosition
-  {
-    internal JsonContainerType Type;
-    internal int Position;
-    internal string PropertyName;
-    internal bool HasIndex;
-
-    public JsonPosition(JsonContainerType type)
+    internal enum JsonContainerType
     {
-      Type = type;
-      HasIndex = TypeHasIndex(type);
-      Position = -1;
-      PropertyName = null;
+        None,
+        Object,
+        Array,
+        Constructor
     }
 
-    internal void WriteTo(StringBuilder sb)
+    internal struct JsonPosition
     {
-      switch (Type)
-      {
-        case JsonContainerType.Object:
-          if (sb.Length > 0)
-            sb.Append(".");
-          sb.Append(PropertyName);
-          break;
-        case JsonContainerType.Array:
-        case JsonContainerType.Constructor:
-          sb.Append("[");
-          sb.Append(Position);
-          sb.Append("]");
-          break;
-      }
-    }
+        internal JsonContainerType Type;
+        internal int Position;
+        internal string PropertyName;
+        internal bool HasIndex;
 
-    internal static bool TypeHasIndex(JsonContainerType type)
-    {
-      return (type == JsonContainerType.Array || type == JsonContainerType.Constructor);
-    }
+        public JsonPosition(JsonContainerType type)
+        {
+            Type = type;
+            HasIndex = TypeHasIndex(type);
+            Position = -1;
+            PropertyName = null;
+        }
 
-    internal static string BuildPath(IEnumerable<JsonPosition> positions)
-    {
-      StringBuilder sb = new StringBuilder();
+        internal void WriteTo(StringBuilder sb)
+        {
+            switch (Type)
+            {
+                case JsonContainerType.Object:
+                    if (sb.Length > 0)
+                        sb.Append(".");
+                    sb.Append(PropertyName);
+                    break;
+                case JsonContainerType.Array:
+                case JsonContainerType.Constructor:
+                    sb.Append("[");
+                    sb.Append(Position);
+                    sb.Append("]");
+                    break;
+            }
+        }
 
-      foreach (JsonPosition state in positions)
-      {
-        state.WriteTo(sb);
-      }
+        internal static bool TypeHasIndex(JsonContainerType type)
+        {
+            return (type == JsonContainerType.Array || type == JsonContainerType.Constructor);
+        }
 
-      return sb.ToString();
-    }
+        internal static string BuildPath(IEnumerable<JsonPosition> positions)
+        {
+            StringBuilder sb = new StringBuilder();
 
-    internal static string FormatMessage(IJsonLineInfo lineInfo, string path, string message)
-    {
+            foreach (JsonPosition state in positions)
+            {
+                state.WriteTo(sb);
+            }
+
+            return sb.ToString();
+        }
+
+        internal static string FormatMessage(IJsonLineInfo lineInfo, string path, string message)
+        {
       return FormatMessage(lineInfo, path, new StringBuilder(message)).ToString();
     }
 
     internal static StringBuilder FormatMessage(IJsonLineInfo lineInfo, string path, StringBuilder message)
     {
-      // don't add a fullstop and space when message ends with a new line
-      if (!message.EndsWith(Environment.NewLine))
-      {
-        message = message.Trim();
+            // don't add a fullstop and space when message ends with a new line
+            if (!message.EndsWith(Environment.NewLine))
+            {
+                message = message.Trim();
 
-        if (!message.EndsWith("."))
-          message.Append(".");
+                if (!message.EndsWith("."))
+                    message.Append(".");
 
-        message.Append(" ");
-      }
+                message.Append(" ");
+            }
 
-      message.AppendFormat(CultureInfo.InvariantCulture, "Path '{0}'", path);
+            message.AppendFormat(CultureInfo.InvariantCulture, "Path '{0}'", path);
 
-      if (lineInfo != null && lineInfo.HasLineInfo())
-        message.AppendFormat(CultureInfo.InvariantCulture, ", line {0}, position {1}", lineInfo.LineNumber, lineInfo.LinePosition);
+            if (lineInfo != null && lineInfo.HasLineInfo())
+                message.AppendFormat(CultureInfo.InvariantCulture, ", line {0}, position {1}", lineInfo.LineNumber, lineInfo.LinePosition);
 
-      message.Append(".");
+            message.Append(".");
 
-      return message;
+            return message;
     }
   }
 
@@ -234,6 +234,6 @@ namespace Newtonsoft.Json
       sb.Length = end + 1;
       sb.Remove(0, startIndex);
       return sb;
+        }
     }
-  }
 }

@@ -25,28 +25,28 @@
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  [JsonObject(MemberSerialization.OptIn)]
-  public class JsonIgnoreAttributeOnClassTestClass
-  {
-    private int _property = 21;
-    private int _ignoredProperty = 12;
-
-    [JsonProperty("TheField")]
-    public int Field;
-
-    [JsonProperty]
-    public int Property
+    [JsonObject(MemberSerialization.OptIn)]
+    public class JsonIgnoreAttributeOnClassTestClass
     {
-      get { return _property; }
-    }
+        private int _property = 21;
+        private int _ignoredProperty = 12;
 
-    public int IgnoredField;
+        [JsonProperty("TheField")]
+        public int Field;
 
-    [JsonProperty]
-    [JsonIgnore] // JsonIgnore should take priority
-      public int IgnoredProperty
-    {
-      get { return _ignoredProperty; }
+        [JsonProperty]
+        public int Property
+        {
+            get { return _property; }
+        }
+
+        public int IgnoredField;
+
+        [JsonProperty]
+        [JsonIgnore] // JsonIgnore should take priority
+        public int IgnoredProperty
+        {
+            get { return _ignoredProperty; }
+        }
     }
-  }
 }

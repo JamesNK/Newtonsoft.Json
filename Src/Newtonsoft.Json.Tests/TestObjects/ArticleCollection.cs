@@ -27,7 +27,7 @@ using System.Collections.Generic;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class ArticleCollection : List<Article>
-  {
-  }
+    public class ArticleCollection : List<Article>
+    {
+    }
 }

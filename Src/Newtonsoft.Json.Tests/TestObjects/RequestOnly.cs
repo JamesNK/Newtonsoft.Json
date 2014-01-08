@@ -25,8 +25,8 @@
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class RequestOnly
-  {
-    public string Request { get; set; }
-  }
+    public class RequestOnly
+    {
+        public string Request { get; set; }
+    }
 }

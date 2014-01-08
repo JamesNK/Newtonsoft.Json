@@ -5,24 +5,24 @@ using System.Text;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-  public class DeserializeDictionary
-  {
-    public void Example()
+    public class DeserializeDictionary
     {
-      #region Usage
-      string json = @"{
-        'href': '/account/login.aspx',
-        'target': '_blank'
-      }";
+        public void Example()
+        {
+            #region Usage
+            string json = @"{
+              'href': '/account/login.aspx',
+              'target': '_blank'
+            }";
 
-      Dictionary<string, string> htmlAttributes = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+            Dictionary<string, string> htmlAttributes = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
 
-      Console.WriteLine(htmlAttributes["href"]);
-      // /account/login.aspx
+            Console.WriteLine(htmlAttributes["href"]);
+            // /account/login.aspx
 
-      Console.WriteLine(htmlAttributes["target"]);
-      // _blank
-      #endregion
+            Console.WriteLine(htmlAttributes["target"]);
+            // _blank
+            #endregion
+        }
     }
-  }
 }

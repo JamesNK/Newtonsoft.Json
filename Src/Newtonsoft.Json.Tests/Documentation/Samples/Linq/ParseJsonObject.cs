@@ -6,30 +6,30 @@ using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-  public class ParseJsonObject
-  {
-    public void Example()
+    public class ParseJsonObject
     {
-      #region Usage
-      string json = @"{
-        CPU: 'Intel',
-        Drives: [
-          'DVD read/writer',
-          '500 gigabyte hard drive'
-        ]
-      }";
+        public void Example()
+        {
+            #region Usage
+            string json = @"{
+              CPU: 'Intel',
+              Drives: [
+                'DVD read/writer',
+                '500 gigabyte hard drive'
+              ]
+            }";
 
-      JObject o = JObject.Parse(json);
+            JObject o = JObject.Parse(json);
 
-      Console.WriteLine(o.ToString());
-      // {
-      //   "CPU": "Intel",
-      //   "Drives": [
-      //     "DVD read/writer",
-      //     "500 gigabyte hard drive"
-      //   ]
-      // }
-      #endregion
+            Console.WriteLine(o.ToString());
+            // {
+            //   "CPU": "Intel",
+            //   "Drives": [
+            //     "DVD read/writer",
+            //     "500 gigabyte hard drive"
+            //   ]
+            // }
+            #endregion
+        }
     }
-  }
 }

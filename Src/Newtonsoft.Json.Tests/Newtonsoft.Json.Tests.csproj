@@ -35,9 +35,9 @@
       <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Collections.Immutable, Version=1.0.23.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+    <Reference Include="System.Collections.Immutable, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.Bcl.Immutable.1.0.23-rc\lib\portable-net45+win8+wp8\System.Collections.Immutable.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Bcl.Immutable.1.0.27\lib\portable-net45+win8+wp8\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -207,9 +207,11 @@
     <Compile Include="Linq\JArrayTests.cs" />
     <Compile Include="Linq\JConstructorTests.cs" />
     <Compile Include="Linq\JObjectTests.cs" />
-    <Compile Include="Linq\JPathTests.cs" />
+    <Compile Include="Linq\JsonPath\JPathExecuteTests.cs" />
+    <Compile Include="Linq\JsonPath\JPathParseTests.cs" />
     <Compile Include="Linq\JPropertyTests.cs" />
     <Compile Include="Linq\JRawTests.cs" />
+    <Compile Include="Linq\JsonPath\QueryExpressionTests.cs" />
     <Compile Include="Linq\JTokenEqualityComparerTests.cs" />
     <Compile Include="Linq\JTokenReaderTest.cs" />
     <Compile Include="Linq\JTokenTests.cs" />
@@ -244,7 +246,6 @@
     <Compile Include="Serialization\TraceWriterTests.cs" />
     <Compile Include="Serialization\TypeNameHandlingTests.cs" />
     <Compile Include="Serialization\WebApiIntegrationTests.cs" />
-    <Compile Include="SilverlightTests.cs" />
     <Compile Include="TestFixtureBase.cs" />
     <Compile Include="TestObjects\AbstractGenericBase.cs" />
     <Compile Include="TestObjects\ArgumentConverterPrecedenceClassConverter.cs" />

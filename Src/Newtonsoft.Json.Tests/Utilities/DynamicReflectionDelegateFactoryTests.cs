@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(SILVERLIGHT || PORTABLE || NETFX_CORE || PORTABLE40)
+#if !(PORTABLE || NETFX_CORE || PORTABLE40)
 using System;
 using System.Diagnostics;
 using System.Reflection;
@@ -41,92 +41,93 @@ using Newtonsoft.Json.Tests.Serialization;
 
 namespace Newtonsoft.Json.Tests.Utilities
 {
-  [TestFixture]
-  public class DynamicReflectionDelegateFactoryTests : TestFixtureBase
-  {
-    [Test]
-    public void CreateGetWithBadObjectTarget()
+    [TestFixture]
+    public class DynamicReflectionDelegateFactoryTests : TestFixtureBase
     {
-      ExceptionAssert.Throws<InvalidCastException>("Unable to cast object of type 'Newtonsoft.Json.Tests.TestObjects.Person' to type 'Newtonsoft.Json.Tests.TestObjects.Movie'.",
-      () =>
-      {
-        Person p = new Person();
-        p.Name = "Hi";
+        [Test]
+        public void CreateGetWithBadObjectTarget()
+        {
+            ExceptionAssert.Throws<InvalidCastException>("Unable to cast object of type 'Newtonsoft.Json.Tests.TestObjects.Person' to type 'Newtonsoft.Json.Tests.TestObjects.Movie'.",
+                () =>
+                {
+                    Person p = new Person();
+                    p.Name = "Hi";
 
-        Func<object, object> setter = DynamicReflectionDelegateFactory.Instance.CreateGet<object>(typeof(Movie).GetProperty("Name"));
+                    Func<object, object> setter = DynamicReflectionDelegateFactory.Instance.CreateGet<object>(typeof(Movie).GetProperty("Name"));
 
-        setter(p);
-      });
+                    setter(p);
+                });
+        }
+
+        [Test]
+        public void CreateSetWithBadObjectTarget()
+        {
+            ExceptionAssert.Throws<InvalidCastException>("Unable to cast object of type 'Newtonsoft.Json.Tests.TestObjects.Person' to type 'Newtonsoft.Json.Tests.TestObjects.Movie'.",
+                () =>
+                {
+                    Person p = new Person();
+                    Movie m = new Movie();
+
+                    Action<object, object> setter = DynamicReflectionDelegateFactory.Instance.CreateSet<object>(typeof(Movie).GetProperty("Name"));
+
+                    setter(m, "Hi");
+
+                    Assert.AreEqual(m.Name, "Hi");
+
+                    setter(p, "Hi");
+
+                    Assert.AreEqual(p.Name, "Hi");
+                });
+        }
+
+        [Test]
+        public void CreateSetWithBadTarget()
+        {
+            ExceptionAssert.Throws<InvalidCastException>("Specified cast is not valid.",
+                () =>
+                {
+                    object structTest = new StructTest();
+
+                    Action<object, object> setter = DynamicReflectionDelegateFactory.Instance.CreateSet<object>(typeof(StructTest).GetProperty("StringProperty"));
+
+                    setter(structTest, "Hi");
+
+                    Assert.AreEqual("Hi", ((StructTest)structTest).StringProperty);
+
+                    setter(new TimeSpan(), "Hi");
+                });
+        }
+
+        [Test]
+        public void CreateSetWithBadObjectValue()
+        {
+            ExceptionAssert.Throws<InvalidCastException>("Unable to cast object of type 'System.Version' to type 'System.String'.",
+                () =>
+                {
+                    Movie m = new Movie();
+
+                    Action<object, object> setter = DynamicReflectionDelegateFactory.Instance.CreateSet<object>(typeof(Movie).GetProperty("Name"));
+
+                    setter(m, new Version("1.1.1.1"));
+                });
+        }
+
+        [Test]
+        public void CreateStaticMethodCall()
+        {
+            MethodInfo castMethodInfo = typeof(JsonSerializerTest.DictionaryKey).GetMethod("op_Implicit", new[] { typeof(string) });
+
+            Assert.IsNotNull(castMethodInfo);
+
+            MethodCall<object, object> call = DynamicReflectionDelegateFactory.Instance.CreateMethodCall<object>(castMethodInfo);
+
+            object result = call(null, "First!");
+            Assert.IsNotNull(result);
+
+            JsonSerializerTest.DictionaryKey key = (JsonSerializerTest.DictionaryKey)result;
+            Assert.AreEqual("First!", key.Value);
+        }
     }
-
-    [Test]
-    public void CreateSetWithBadObjectTarget()
-    {
-      ExceptionAssert.Throws<InvalidCastException>("Unable to cast object of type 'Newtonsoft.Json.Tests.TestObjects.Person' to type 'Newtonsoft.Json.Tests.TestObjects.Movie'.",
-      () =>
-      {
-        Person p = new Person();
-        Movie m = new Movie();
-
-        Action<object, object> setter = DynamicReflectionDelegateFactory.Instance.CreateSet<object>(typeof(Movie).GetProperty("Name"));
-
-        setter(m, "Hi");
-
-        Assert.AreEqual(m.Name, "Hi");
-
-        setter(p, "Hi");
-
-        Assert.AreEqual(p.Name, "Hi");
-      });
-    }
-
-    [Test]
-    public void CreateSetWithBadTarget()
-    {
-      ExceptionAssert.Throws<InvalidCastException>("Specified cast is not valid.",
-      () =>
-      {
-        object structTest = new StructTest();
-
-        Action<object, object> setter = DynamicReflectionDelegateFactory.Instance.CreateSet<object>(typeof(StructTest).GetProperty("StringProperty"));
-
-        setter(structTest, "Hi");
-
-        Assert.AreEqual("Hi", ((StructTest)structTest).StringProperty);
-
-        setter(new TimeSpan(), "Hi");
-      });
-    }
-
-    [Test]
-    public void CreateSetWithBadObjectValue()
-    {
-      ExceptionAssert.Throws<InvalidCastException>("Unable to cast object of type 'System.Version' to type 'System.String'.",
-      () =>
-      {
-        Movie m = new Movie();
-
-        Action<object, object> setter = DynamicReflectionDelegateFactory.Instance.CreateSet<object>(typeof(Movie).GetProperty("Name"));
-
-        setter(m, new Version("1.1.1.1"));
-      });
-    }
-
-    [Test]
-    public void CreateStaticMethodCall()
-    {
-      MethodInfo castMethodInfo = typeof(JsonSerializerTest.DictionaryKey).GetMethod("op_Implicit", new[] { typeof(string) });
-
-      Assert.IsNotNull(castMethodInfo);
-
-      MethodCall<object, object> call = DynamicReflectionDelegateFactory.Instance.CreateMethodCall<object>(castMethodInfo);
-
-      object result = call(null, "First!");
-      Assert.IsNotNull(result);
-
-      JsonSerializerTest.DictionaryKey key = (JsonSerializerTest.DictionaryKey) result;
-      Assert.AreEqual("First!", key.Value);
-    }
-  }
 }
+
 #endif

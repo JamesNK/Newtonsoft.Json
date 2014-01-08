@@ -28,10 +28,11 @@ using Newtonsoft.Json.Converters;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class MemberConverterClass
-  {
-    public DateTime DefaultConverter { get; set; }
-    [JsonConverter(typeof(IsoDateTimeConverter))]
-    public DateTime MemberConverter { get; set; }
-  }
+    public class MemberConverterClass
+    {
+        public DateTime DefaultConverter { get; set; }
+
+        [JsonConverter(typeof(IsoDateTimeConverter))]
+        public DateTime MemberConverter { get; set; }
+    }
 }

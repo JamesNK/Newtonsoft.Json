@@ -6,28 +6,28 @@ using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-  public class ToObjectType
-  {
-    public void Example()
+    public class ToObjectType
     {
-      #region Usage
-      JValue v1 = new JValue(true);
+        public void Example()
+        {
+            #region Usage
+            JValue v1 = new JValue(true);
 
-      bool b = (bool)v1.ToObject(typeof(bool));
+            bool b = (bool)v1.ToObject(typeof(bool));
 
-      Console.WriteLine(b);
-      // true
+            Console.WriteLine(b);
+            // true
 
-      int i = (int)v1.ToObject(typeof(int));
+            int i = (int)v1.ToObject(typeof(int));
 
-      Console.WriteLine(i);
-      // 1
+            Console.WriteLine(i);
+            // 1
 
-      string s = (string)v1.ToObject(typeof(string));
+            string s = (string)v1.ToObject(typeof(string));
 
-      Console.WriteLine(s);
-      // "True"
-      #endregion
+            Console.WriteLine(s);
+            // "True"
+            #endregion
+        }
     }
-  }
 }

@@ -28,6 +28,7 @@ using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Utilities;
 #if !NETFX_CORE
 using NUnit.Framework;
+
 #else
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
@@ -36,50 +37,51 @@ using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAtt
 
 namespace Newtonsoft.Json.Tests.Converters
 {
-  [TestFixture]
-  public class ObjectIdConverterTests : TestFixtureBase
-  {
-    public class ObjectIdTestClass
+    [TestFixture]
+    public class ObjectIdConverterTests : TestFixtureBase
     {
-      [JsonProperty("_id")]
-      public BsonObjectId Id { get; set; }
-      [JsonProperty("test")]
-      public string Test { get; set; }
+        public class ObjectIdTestClass
+        {
+            [JsonProperty("_id")]
+            public BsonObjectId Id { get; set; }
+
+            [JsonProperty("test")]
+            public string Test { get; set; }
+        }
+
+        [Test]
+        public void Serialize()
+        {
+            ObjectIdTestClass c = new ObjectIdTestClass
+            {
+                Id = new BsonObjectId(HexToBytes("4ABBED9D1D8B0F0218000001")),
+                Test = "1234£56"
+            };
+
+            MemoryStream ms = new MemoryStream();
+            JsonSerializer serializer = new JsonSerializer();
+
+            // serialize product to BSON
+            BsonWriter writer = new BsonWriter(ms);
+            serializer.Serialize(writer, c);
+
+            byte[] expected = HexToBytes("29000000075F6964004ABBED9D1D8B0F02180000010274657374000900000031323334C2A335360000");
+
+            CollectionAssert.AreEquivalent(expected, ms.ToArray());
+        }
+
+        [Test]
+        public void Deserialize()
+        {
+            byte[] bson = HexToBytes("29000000075F6964004ABBED9D1D8B0F02180000010274657374000900000031323334C2A335360000");
+
+            JsonSerializer serializer = new JsonSerializer();
+
+            BsonReader reader = new BsonReader(new MemoryStream(bson));
+            ObjectIdTestClass c = serializer.Deserialize<ObjectIdTestClass>(reader);
+
+            CollectionAssert.AreEquivalent(c.Id.Value, HexToBytes("4ABBED9D1D8B0F0218000001"));
+            Assert.AreEqual(c.Test, "1234£56");
+        }
     }
-
-    [Test]
-    public void Serialize()
-    {
-      ObjectIdTestClass c = new ObjectIdTestClass
-                              {
-                                Id = new BsonObjectId(HexToBytes("4ABBED9D1D8B0F0218000001")),
-                                Test = "1234£56"
-                              };
-
-      MemoryStream ms = new MemoryStream();
-      JsonSerializer serializer = new JsonSerializer();
-
-      // serialize product to BSON
-      BsonWriter writer = new BsonWriter(ms);
-      serializer.Serialize(writer, c);
-
-      byte[] expected = HexToBytes("29000000075F6964004ABBED9D1D8B0F02180000010274657374000900000031323334C2A335360000");
-
-      CollectionAssert.AreEquivalent(expected, ms.ToArray());
-    }
-
-    [Test]
-    public void Deserialize()
-    {
-      byte[] bson = HexToBytes("29000000075F6964004ABBED9D1D8B0F02180000010274657374000900000031323334C2A335360000");
-
-      JsonSerializer serializer = new JsonSerializer();
-
-      BsonReader reader = new BsonReader(new MemoryStream(bson));
-      ObjectIdTestClass c = serializer.Deserialize<ObjectIdTestClass>(reader);
-
-      CollectionAssert.AreEquivalent(c.Id.Value, HexToBytes("4ABBED9D1D8B0F0218000001"));
-      Assert.AreEqual(c.Test, "1234£56");
-    }
-  }
 }
