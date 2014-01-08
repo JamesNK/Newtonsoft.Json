@@ -1,0 +1,12 @@
+; Top-most EditorConfig file
+root = true
+
+[*]
+end_of_line = CRLF
+indent_style = space
+indent_size = 4
+
+; Match VS' default XML formatting
+[*.csproj]
+indent_style = space
+indent_size = 2

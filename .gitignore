@@ -10,3 +10,4 @@ AppPackages/
 _ReSharper.*
 *.ReSharper.user
 *.resharper.user
+*.ide
