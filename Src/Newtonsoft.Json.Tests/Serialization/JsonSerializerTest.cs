@@ -9937,6 +9937,20 @@ Parameter name: value",
 }", s);
         }
 #endif
+
+        [Test]
+        public void RoundtripUriOriginalString()
+        {
+            string originalUri = "https://test.com?m=a%2bb";
+
+            Uri uriWithPlus = new Uri(originalUri);
+
+            string jsonWithPlus = JsonConvert.SerializeObject(uriWithPlus);
+
+            Uri uriWithPlus2 = JsonConvert.DeserializeObject<Uri>(jsonWithPlus);
+
+            Assert.AreEqual(originalUri, uriWithPlus2.OriginalString);
+        }
     }
 
     public class PersonReference

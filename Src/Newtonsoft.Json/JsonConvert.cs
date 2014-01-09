@@ -397,7 +397,7 @@ namespace Newtonsoft.Json
 
         internal static string ToString(Uri value, char quoteChar)
         {
-            return ToString(value.ToString(), quoteChar);
+            return ToString(value.OriginalString, quoteChar);
         }
 
         /// <summary>
