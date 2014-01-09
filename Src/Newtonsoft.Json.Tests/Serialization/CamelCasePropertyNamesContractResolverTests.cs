@@ -102,6 +102,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
 #if !(NETFX_CORE || PORTABLE || PORTABLE40)
+#pragma warning disable 618
         [Test]
         public void MemberSearchFlags()
         {
@@ -133,6 +134,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             // readonly
             Assert.AreEqual(0, ReflectionUtils.GetMemberValue(typeof(PrivateMembersClass).GetField("i", BindingFlags.Instance | BindingFlags.NonPublic), deserializedPrivateMembersClass));
         }
+#pragma warning restore 618
 #endif
 
         [Test]
