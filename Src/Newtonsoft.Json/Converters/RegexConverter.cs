@@ -28,6 +28,7 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json.Bson;
 using System.Globalization;
 using Newtonsoft.Json.Serialization;
+using System.Text;
 
 namespace Newtonsoft.Json.Converters
 {
@@ -70,23 +71,23 @@ namespace Newtonsoft.Json.Converters
             // 'l' to make \w, \W, etc. locale dependent, 's' for dotall mode 
             // ('.' matches everything), and 'u' to make \w, \W, etc. match unicode.
 
-            string options = null;
+            StringBuilder options = null;
 
             if (HasFlag(regex.Options, RegexOptions.IgnoreCase))
-                options += "i";
+                options.Append("i");
 
             if (HasFlag(regex.Options, RegexOptions.Multiline))
-                options += "m";
+                options.Append("m");
 
             if (HasFlag(regex.Options, RegexOptions.Singleline))
-                options += "s";
+                options.Append("s");
 
-            options += "u";
+            options.Append("u");
 
             if (HasFlag(regex.Options, RegexOptions.ExplicitCapture))
-                options += "x";
+                options.Append("x");
 
-            writer.WriteRegex(regex.ToString(), options);
+            writer.WriteRegex(regex.ToString(), options.ToString());
         }
 
         private void WriteJson(JsonWriter writer, Regex regex, JsonSerializer serializer)

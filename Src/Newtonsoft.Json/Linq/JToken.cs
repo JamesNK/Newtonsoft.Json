@@ -208,7 +208,7 @@ namespace Newtonsoft.Json.Linq
                             case JTokenType.Constructor:
                                 int index = ((IList<JToken>)current).IndexOf(next);
 
-                                sb.Append("[" + index + "]");
+                                sb.AppendFormat("[{0}]", index);
                                 break;
                         }
                     }

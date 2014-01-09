@@ -29,6 +29,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json.Utilities;
+using System.Text;
 
 namespace Newtonsoft.Json.Serialization
 {
@@ -116,16 +117,20 @@ namespace Newtonsoft.Json.Serialization
                 // only write error once
                 errorContext.Traced = true;
 
-                string message = (_serializing) ? "Error serializing" : "Error deserializing";
+                StringBuilder message = new StringBuilder((_serializing) ? "Error serializing" : "Error deserializing");
                 if (contract != null)
-                    message += " " + contract.UnderlyingType;
-                message += ". " + ex.Message;
+                {
+                    message.Append(" ");
+                    message.Append(contract.UnderlyingType);
+                }
+                message.Append(". ");
+                message.Append(ex.Message);
 
                 // add line information to non-json.net exception message
                 if (!(ex is JsonException))
                     message = JsonPosition.FormatMessage(lineInfo, path, message);
 
-                TraceWriter.Trace(TraceLevel.Error, message, ex);
+                TraceWriter.Trace(TraceLevel.Error, message.ToString(), ex);
             }
 
             // attribute method is non-static so don't invoke if no object

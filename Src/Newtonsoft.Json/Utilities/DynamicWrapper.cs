@@ -86,7 +86,7 @@ namespace Newtonsoft.Json.Utilities
             using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(name))
             {
                 if (stream == null)
-                    throw new MissingManifestResourceException("Should have " + name + " as an embedded resource.");
+                    throw new MissingManifestResourceException(string.Concat("Should have ", name, " as an embedded resource."));
 
                 int length = (int)stream.Length;
                 byte[] buffer = new byte[length];
@@ -206,7 +206,7 @@ namespace Newtonsoft.Json.Utilities
             MethodInfo srcMethod = GetMethod(newMethod, parameterTypes);
 
             if (srcMethod == null)
-                throw new MissingMethodException("Unable to find method " + newMethod.Name + " on " + _realObjectType.FullName);
+                throw new MissingMethodException(string.Concat("Unable to find method ", newMethod.Name, " on ", _realObjectType.FullName));
 
             ilGenerator.Emit(OpCodes.Call, srcMethod);
         }
@@ -238,7 +238,7 @@ namespace Newtonsoft.Json.Utilities
 
         private static string GenerateKey(Type interfaceType, Type realObjectType)
         {
-            return interfaceType.Name + "_" + realObjectType.Name;
+            return string.Concat(interfaceType.Name, "_", realObjectType.Name);
         }
 
         public Type GetType(Type interfaceType, Type realObjectType)

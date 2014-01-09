@@ -575,7 +575,7 @@ namespace Newtonsoft.Json.Bson
                     string expression = ReadString();
                     string modifiers = ReadString();
 
-                    string regex = @"/" + expression + @"/" + modifiers;
+                    string regex = string.Concat(@"/", expression, @"/", modifiers);
                     SetToken(JsonToken.String, regex);
                     break;
                 case BsonType.Reference:

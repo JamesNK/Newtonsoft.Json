@@ -846,7 +846,7 @@ namespace Newtonsoft.Json.Converters
                 : manager.LookupPrefix(node.NamespaceUri);
 
             if (!string.IsNullOrEmpty(prefix))
-                return prefix + ":" + node.LocalName;
+                return string.Concat(prefix, ":", node.LocalName);
             else
                 return node.LocalName;
         }
@@ -1385,7 +1385,7 @@ namespace Newtonsoft.Json.Converters
                                             manager.AddNamespace(jsonPrefix, JsonNamespaceUri);
                                         }
 
-                                        attributeNameValues.Add(jsonPrefix + ":" + attributeName, attributeValue);
+                                        attributeNameValues.Add(string.Concat(jsonPrefix, ":", attributeName), attributeValue);
                                         break;
                                     default:
                                         finishedAttributes = true;
