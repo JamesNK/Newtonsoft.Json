@@ -1305,7 +1305,7 @@ bye", reader.Value);
             reader = new JsonTextReader(new StringReader("-0.0"));
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(typeof(double), reader.ValueType);
-            Assert.AreEqual(-0.0m, reader.Value);
+            Assert.AreEqual(-0.0d, reader.Value);
 
             reader = new JsonTextReader(new StringReader("9999999999999999999999999999999999999999999999999999999999999999999999999999asdasdasd"));
             ExceptionAssert.Throws<JsonReaderException>("Input string '9999999999999999999999999999999999999999999999999999999999999999999999999999a' is not a valid number. Path '', line 1, position 77.", () => reader.Read());
@@ -1313,7 +1313,7 @@ bye", reader.Value);
             reader = new JsonTextReader(new StringReader("1E-06"));
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(typeof(double), reader.ValueType);
-            Assert.AreEqual(0.000001m, reader.Value);
+            Assert.AreEqual(0.000001d, reader.Value);
 
             reader = new JsonTextReader(new StringReader(""));
             Assert.IsFalse(reader.Read());
