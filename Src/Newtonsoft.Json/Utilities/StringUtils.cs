@@ -165,7 +165,7 @@ namespace Newtonsoft.Json.Utilities
 #if !(NETFX_CORE || PORTABLE)
                     lowerCase = char.ToLower(s[i], CultureInfo.InvariantCulture);
 #else
-          lowerCase = char.ToLower(s[i]);
+                    lowerCase = char.ToLower(s[i]);
 #endif
 
                     sb.Append(lowerCase);
