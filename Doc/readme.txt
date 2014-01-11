@@ -50,7 +50,5 @@ Json.NET has different libraries for the various .NET Framework versions.
 
 Notes:
 
-For a Compact Framework 3.5 build download Json.NET 3.5
-For a Silverlight 3.0 build download Json.NET 3.5
-For a Silverlight 4.0 build download Json.NET 5
-For a Windows Phone 7 build download Json.NET 5
+For a Compact Framework 3.5 and Silverlight 3.0 builds download Json.NET 3.5
+For a Silverlight 4.0 and Windows Phone 7 builds download Json.NET 5
