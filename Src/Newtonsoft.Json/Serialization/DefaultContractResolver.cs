@@ -173,6 +173,11 @@ namespace Newtonsoft.Json.Serialization
         /// 	<c>true</c> if the <see cref="SerializableAttribute"/> attribute will be ignored when serializing and deserializing types; otherwise, <c>false</c>.
         /// </value>
         public bool IgnoreSerializableAttribute { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to ignore the <see cref="DataContractAttribute"/> attribute when serializing and deserializing types.
+        /// </summary>
+        public bool IgnoreDataContractAttribute { get; set; }
 #endif
 
         /// <summary>
@@ -270,7 +275,7 @@ namespace Newtonsoft.Json.Serialization
             ignoreSerializableAttribute = true;
 #endif
 
-            MemberSerialization memberSerialization = JsonTypeReflector.GetObjectMemberSerialization(objectType, ignoreSerializableAttribute);
+            MemberSerialization memberSerialization = JsonTypeReflector.GetObjectMemberSerialization(objectType, ignoreSerializableAttribute,IgnoreDataContractAttribute);
 
             List<MemberInfo> allMembers = ReflectionUtils.GetFieldsAndProperties(objectType, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)
                 .Where(m => !ReflectionUtils.IsIndexedProperty(m)).ToList();
@@ -366,7 +371,7 @@ namespace Newtonsoft.Json.Serialization
             ignoreSerializableAttribute = true;
 #endif
 
-            contract.MemberSerialization = JsonTypeReflector.GetObjectMemberSerialization(contract.NonNullableUnderlyingType, ignoreSerializableAttribute);
+            contract.MemberSerialization = JsonTypeReflector.GetObjectMemberSerialization(contract.NonNullableUnderlyingType, ignoreSerializableAttribute, IgnoreDataContractAttribute);
             contract.Properties.AddRange(CreateProperties(contract.NonNullableUnderlyingType, contract.MemberSerialization));
 
             JsonObjectAttribute attribute = JsonTypeReflector.GetJsonObjectAttribute(contract.NonNullableUnderlyingType);

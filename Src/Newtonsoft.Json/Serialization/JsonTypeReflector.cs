@@ -149,16 +149,19 @@ namespace Newtonsoft.Json.Serialization
         }
 #endif
 
-        public static MemberSerialization GetObjectMemberSerialization(Type objectType, bool ignoreSerializableAttribute)
+        public static MemberSerialization GetObjectMemberSerialization(Type objectType, bool ignoreSerializableAttribute, bool ignoreDataContractAttribute)
         {
             JsonObjectAttribute objectAttribute = GetJsonObjectAttribute(objectType);
             if (objectAttribute != null)
                 return objectAttribute.MemberSerialization;
 
 #if !NET20
-            DataContractAttribute dataContractAttribute = GetDataContractAttribute(objectType);
-            if (dataContractAttribute != null)
-                return MemberSerialization.OptIn;
+            if (!ignoreDataContractAttribute)
+            {
+                DataContractAttribute dataContractAttribute = GetDataContractAttribute(objectType);
+                if (dataContractAttribute != null)
+                    return MemberSerialization.OptIn;
+            }
 #endif
 
 #if !(NETFX_CORE || PORTABLE40 || PORTABLE)
