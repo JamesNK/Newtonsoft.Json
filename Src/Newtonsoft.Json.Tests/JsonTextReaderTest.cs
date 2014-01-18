@@ -2523,6 +2523,170 @@ bye", reader.Value);
         }
 
         [Test]
+        public void SingleLineComments()
+        {
+            string json = @"//comment*//*hi*/
+{//comment
+Name://comment
+true//comment after true" + StringUtils.CarriageReturn + @"
+,//comment after comma" + StringUtils.CarriageReturnLineFeed + @"
+""ExpiryDate""://comment"  + StringUtils.LineFeed + @"
+new
+" + StringUtils.LineFeed +
+                          @"Date
+(//comment
+null//comment
+),
+        ""Price"": 3.99,
+        ""Sizes"": //comment
+[//comment
+
+          ""Small""//comment
+]//comment
+}//comment 
+//comment 1 ";
+
+            JsonTextReader reader = new JsonTextReader(new StreamReader(new SlowStream(json, new UTF8Encoding(false), 1)));
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Comment, reader.TokenType);
+            Assert.AreEqual("comment*//*hi*/", reader.Value);
+            Assert.AreEqual(2, reader.LineNumber);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(2, reader.LineNumber);
+            Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Comment, reader.TokenType);
+            Assert.AreEqual(3, reader.LineNumber);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+            Assert.AreEqual("Name", reader.Value);
+            Assert.AreEqual(3, reader.LineNumber);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Comment, reader.TokenType);
+            Assert.AreEqual(4, reader.LineNumber);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Boolean, reader.TokenType);
+            Assert.AreEqual(true, reader.Value);
+            Assert.AreEqual(4, reader.LineNumber);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Comment, reader.TokenType);
+            Assert.AreEqual("comment after true", reader.Value);
+            Assert.AreEqual(5, reader.LineNumber);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Comment, reader.TokenType);
+            Assert.AreEqual("comment after comma", reader.Value);
+            Assert.AreEqual(7, reader.LineNumber);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+            Assert.AreEqual("ExpiryDate", reader.Value);
+            Assert.AreEqual(8, reader.LineNumber);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Comment, reader.TokenType);
+            Assert.AreEqual(9, reader.LineNumber);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.StartConstructor, reader.TokenType);
+            Assert.AreEqual(13, reader.LineNumber);
+            Assert.AreEqual("Date", reader.Value);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Comment, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Null, reader.TokenType);
+            Assert.AreEqual(14, reader.LineNumber);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Comment, reader.TokenType);
+            Assert.AreEqual(15, reader.LineNumber);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.EndConstructor, reader.TokenType);
+            Assert.AreEqual(15, reader.LineNumber);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+            Assert.AreEqual("Price", reader.Value);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Float, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+            Assert.AreEqual("Sizes", reader.Value);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Comment, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Comment, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.String, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Comment, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Comment, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Comment, reader.TokenType);
+            Assert.AreEqual("comment ", reader.Value);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Comment, reader.TokenType);
+            Assert.AreEqual("comment 1 ", reader.Value);
+
+            Assert.IsFalse(reader.Read());
+        }
+
+        [Test]
+        public void JustSinglelineComment()
+        {
+            string json = @"//comment";
+
+            JsonTextReader reader = new JsonTextReader(new StreamReader(new SlowStream(json, new UTF8Encoding(false), 1)));
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Comment, reader.TokenType);
+            Assert.AreEqual("comment", reader.Value);
+
+            Assert.IsFalse(reader.Read());
+        }
+
+        [Test]
+        public void ErrorReadingComment()
+        {
+            string json = @"/";
+
+            JsonTextReader reader = new JsonTextReader(new StreamReader(new SlowStream(json, new UTF8Encoding(false), 1)));
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                "Unexpected end while parsing comment. Path '', line 1, position 1.",
+                () => { reader.Read(); });
+        }
+
+        [Test]
         public void ParseOctalNumber()
         {
             string json = @"010";

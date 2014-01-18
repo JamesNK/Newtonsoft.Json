@@ -1310,10 +1310,19 @@ namespace Newtonsoft.Json
             // should have already parsed / character before reaching this method
             _charPos++;
 
-            if (!EnsureChars(1, false) || _chars[_charPos] != '*')
-                throw JsonReaderException.Create(this, "Error parsing comment. Expected: *, got {0}.".FormatWith(CultureInfo.InvariantCulture, _chars[_charPos]));
+            if (!EnsureChars(1, false))
+                throw JsonReaderException.Create(this, "Unexpected end while parsing comment.");
+
+            bool singlelineComment;
+
+            if (_chars[_charPos] == '*')
+                singlelineComment = false;
+            else if (_chars[_charPos] == '/')
+                singlelineComment = true;
             else
-                _charPos++;
+                throw JsonReaderException.Create(this, "Error parsing comment. Expected: *, got {0}.".FormatWith(CultureInfo.InvariantCulture, _chars[_charPos]));
+
+            _charPos++;
 
             int initialPosition = _charPos;
 
@@ -1327,7 +1336,13 @@ namespace Newtonsoft.Json
                         if (_charsUsed == _charPos)
                         {
                             if (ReadData(true) == 0)
-                                throw JsonReaderException.Create(this, "Unexpected end while parsing comment.");
+                            {
+                                if (!singlelineComment)
+                                    throw JsonReaderException.Create(this, "Unexpected end while parsing comment.");
+
+                                _stringReference = new StringReference(_chars, initialPosition, _charPos - initialPosition);
+                                commentFinished = true;
+                            }
                         }
                         else
                         {
@@ -1337,21 +1352,34 @@ namespace Newtonsoft.Json
                     case '*':
                         _charPos++;
 
-                        if (EnsureChars(0, true))
+                        if (!singlelineComment)
                         {
-                            if (_chars[_charPos] == '/')
+                            if (EnsureChars(0, true))
                             {
-                                _stringReference = new StringReference(_chars, initialPosition, _charPos - initialPosition - 1);
+                                if (_chars[_charPos] == '/')
+                                {
+                                    _stringReference = new StringReference(_chars, initialPosition, _charPos - initialPosition - 1);
 
-                                _charPos++;
-                                commentFinished = true;
+                                    _charPos++;
+                                    commentFinished = true;
+                                }
                             }
                         }
                         break;
                     case StringUtils.CarriageReturn:
+                        if (singlelineComment)
+                        {
+                            _stringReference = new StringReference(_chars, initialPosition, _charPos - initialPosition);
+                            commentFinished = true;
+                        }
                         ProcessCarriageReturn(true);
                         break;
                     case StringUtils.LineFeed:
+                        if (singlelineComment)
+                        {
+                            _stringReference = new StringReference(_chars, initialPosition, _charPos - initialPosition);
+                            commentFinished = true;
+                        }
                         ProcessLineFeed();
                         break;
                     default:
@@ -1410,7 +1438,9 @@ namespace Newtonsoft.Json
                     if (!EnsureChars(1, false))
                         return false;
 
-                    return (_chars[_charPos + 1] == '*');
+                    var nextChart = _chars[_charPos + 1];
+
+                    return (nextChart == '*' || nextChart == '/');
                 case ')':
                     if (CurrentState == State.Constructor || CurrentState == State.ConstructorStart)
                         return true;
