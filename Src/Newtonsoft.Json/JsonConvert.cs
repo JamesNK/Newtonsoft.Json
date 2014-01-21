@@ -29,7 +29,7 @@ using System.Globalization;
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
 using System.Numerics;
 #endif
-#if !(NET20 || NET35 || PORTABLE40)
+#if !(NET20 || NET35)
 using System.Threading.Tasks;
 #endif
 using Newtonsoft.Json.Linq;
@@ -633,7 +633,7 @@ namespace Newtonsoft.Json
             return sw.ToString();
         }
 
-#if !(NET20 || NET35 || PORTABLE40)
+#if !(NET20 || NET35)
         /// <summary>
         /// Asynchronously serializes the specified object to a JSON string.
         /// Serialization will happen on a new thread.
@@ -831,7 +831,7 @@ namespace Newtonsoft.Json
             }
         }
 
-#if !(NET20 || NET35 || PORTABLE40)
+#if !(NET20 || NET35)
         /// <summary>
         /// Asynchronously deserializes the JSON to the specified .NET type.
         /// Deserialization will happen on a new thread.
@@ -929,7 +929,7 @@ namespace Newtonsoft.Json
             }
         }
 
-#if !(NET20 || NET35 || PORTABLE40)
+#if !(NET20 || NET35)
         /// <summary>
         /// Asynchronously populates the object with values from the JSON string using <see cref="JsonSerializerSettings"/>.
         /// </summary>

@@ -336,7 +336,7 @@ namespace Newtonsoft.Json.Schema
                         GenerateISerializableContract(type, (JsonISerializableContract)contract);
                         break;
 #endif
-#if !(NET35 || NET20 || PORTABLE40)
+#if !(NET35 || NET20)
                     case JsonContractType.Dynamic:
 #endif
                     case JsonContractType.Linq:
