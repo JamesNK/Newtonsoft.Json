@@ -383,7 +383,7 @@ namespace Newtonsoft.Json.Serialization
                 {
 #if (NETFX_CORE || PORTABLE || PORTABLE40)
                     _fullyTrusted = false;
-#elif !(NET20 || NET35 || PORTABLE40)
+#elif !(NET20 || NET35)
                     AppDomain appDomain = AppDomain.CurrentDomain;
 
                     _fullyTrusted = appDomain.IsHomogenous && appDomain.IsFullyTrusted;
