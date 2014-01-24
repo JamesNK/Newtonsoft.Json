@@ -4203,7 +4203,79 @@ Path '', line 1, position 2.",
             }
         }
 
+		[Serializable]
+		public class ISerializableSingleton : ISerializable
+		{
+			private static ISerializableSingleton _instance;
+			static ISerializableSingleton()
+			{
+				_instance = new ISerializableSingleton();
+			}
+
+			private ISerializableSingleton() { }
+
+			public static ISerializableSingleton Instance
+			{
+				get { return _instance; }
+			}
+
+			[Serializable]
+			private class Reference : IObjectReference
+			{
+				public object GetRealObject(StreamingContext context)
+				{
+					return ISerializableSingleton.Instance;
+				}
+			}
+
+			void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+			{
+				info.SetType(typeof(Reference));
+			}
+
+		}
+
+		[Serializable]
+		public class ISerializableSingletonWithSerializationCtor : ISerializable
+		{
+			private static ISerializableSingletonWithSerializationCtor _instance;
+			static ISerializableSingletonWithSerializationCtor()
+			{
+				_instance = new ISerializableSingletonWithSerializationCtor();
+			}
+
+			private ISerializableSingletonWithSerializationCtor() { }
+
+			public static ISerializableSingletonWithSerializationCtor Instance
+			{
+				get { return _instance; }
+			}
+
+			private ISerializableSingletonWithSerializationCtor(SerializationInfo info, StreamingContext context)
+			{
+				//this method should never be called
+				throw new InvalidOperationException();
+			}
+
+			[Serializable]
+			private class Reference : IObjectReference
+			{
+				public object GetRealObject(StreamingContext context)
+				{
+					return ISerializableSingletonWithSerializationCtor.Instance;
+				}
+			}
+
+			void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+			{
+				info.SetType(typeof(Reference));
+			}
+
+		}
+
 #if DEBUG
+
+
         [Test]
         public void SerializeISerializableInPartialTrustWithIgnoreInterface()
         {
@@ -4337,6 +4409,58 @@ To fix this error either change the environment to be fully trusted, change the 
             Assert.AreEqual(null, o2._nullPersonValue);
             Assert.AreEqual(null, o2._nullableInt);
         }
+
+		[Test]
+		public void SerializeISerializableSingleton_SanityCheckAgainstBinaryFormatter()
+		{
+			var formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+			var stream = new MemoryStream();
+			formatter.Serialize(stream, ISerializableSingleton.Instance);
+			stream.Position = 0;
+			var notClone = (ISerializableSingleton)formatter.Deserialize(stream);
+
+			Assert.AreSame(ISerializableSingleton.Instance, notClone);
+		}
+
+		[Test]
+		public void SerializeISerializableSingleton()
+		{
+			var writer = new StringWriter();
+			var settings = new JsonSerializerSettings()
+			{
+				TypeNameHandling = TypeNameHandling.Objects
+			};
+			var json = JsonConvert.SerializeObject(ISerializableSingleton.Instance, settings);
+			var notClone = (ISerializableSingleton)JsonConvert.DeserializeObject(json, settings);
+
+			Assert.AreSame(ISerializableSingleton.Instance, notClone);
+		}
+
+		[Test]
+		public void SerializeISerializableSingletonWithCtor_SanityCheckAgainstBinaryFormatter()
+		{
+			var formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+			var stream = new MemoryStream();
+			formatter.Serialize(stream, ISerializableSingletonWithSerializationCtor.Instance);
+			stream.Position = 0;
+			var notClone = (ISerializableSingletonWithSerializationCtor)formatter.Deserialize(stream);
+
+			Assert.AreSame(ISerializableSingletonWithSerializationCtor.Instance, notClone);
+		}
+
+		[Test]
+		public void SerializeISerializableSingletonWithCtor()
+		{
+			var settings = new JsonSerializerSettings()
+			{
+				TypeNameHandling = TypeNameHandling.Objects
+			};
+			var json = JsonConvert.SerializeObject(ISerializableSingletonWithSerializationCtor.Instance, settings);
+			var notClone = (ISerializableSingletonWithSerializationCtor)JsonConvert.DeserializeObject(json, settings);
+
+			Assert.AreSame(ISerializableSingletonWithSerializationCtor.Instance, notClone);
+		}
+
 
         [Test]
         public void SerializeISerializableTestObject_MsAjax()
