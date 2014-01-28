@@ -1,6 +1,6 @@
 ﻿properties { 
   $zipFileName = "Json60r1.zip"
-  $majorVersion = "4.5"
+  $majorVersion = "6.0"
   $majorWithReleaseVersion = "6.0.1"
   $version = GetVersion $majorWithReleaseVersion
   $signAssemblies = $false

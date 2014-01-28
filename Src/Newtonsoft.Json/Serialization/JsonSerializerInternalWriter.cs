@@ -49,6 +49,7 @@ namespace Newtonsoft.Json.Serialization
     internal class JsonSerializerInternalWriter : JsonSerializerInternalBase
     {
         private JsonContract _rootContract;
+        private int _rootLevel;
         private readonly List<object> _serializeStack = new List<object>();
         private JsonSerializerProxy _internalSerializer;
 
@@ -62,14 +63,13 @@ namespace Newtonsoft.Json.Serialization
             if (jsonWriter == null)
                 throw new ArgumentNullException("jsonWriter");
 
-            if (objectType != null)
-                _rootContract = Serializer._contractResolver.ResolveContract(objectType);
+            _rootContract = (objectType != null) ? Serializer._contractResolver.ResolveContract(objectType) : null;
+            _rootLevel = _serializeStack.Count + 1;
 
             JsonContract contract = GetContractSafe(value);
 
             try
             {
-
                 SerializeValue(jsonWriter, value, contract, null, null, null);
             }
             catch (Exception ex)
@@ -86,6 +86,12 @@ namespace Newtonsoft.Json.Serialization
                     ClearErrorContext();
                     throw;
                 }
+            }
+            finally
+            {
+                // clear root contract to ensure that if level was > 1 then it won't
+                // accidently be used for non root values
+                _rootContract = null;
             }
         }
 
@@ -869,7 +875,7 @@ To fix this error either change the environment to be fully trusted, change the 
                     if (containerContract.ItemContract == null || contract.UnderlyingType != containerContract.ItemContract.CreatedType)
                         return true;
                 }
-                else if (_rootContract != null && _serializeStack.Count == 1)
+                else if (_rootContract != null && _serializeStack.Count == _rootLevel)
                 {
                     if (contract.UnderlyingType != _rootContract.CreatedType)
                         return true;

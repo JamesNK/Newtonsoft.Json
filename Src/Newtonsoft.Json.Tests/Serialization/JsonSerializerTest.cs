@@ -7341,7 +7341,7 @@ Parameter name: value",
 
                 JsonSerializer serializer = new JsonSerializer();
                 MultipleItemsClass foo = serializer.Deserialize<MultipleItemsClass>(reader);
-                
+
                 values.Add(foo);
             }
 
@@ -8775,7 +8775,7 @@ Parameter name: value",
             ExtensionDataDeserializeWithNonDefaultConstructor c = new ExtensionDataDeserializeWithNonDefaultConstructor("Name!");
             c._extensionData = new Dictionary<string, JToken>
             {
-                {"Key!", "Value!"}
+                { "Key!", "Value!" }
             };
 
             string json = JsonConvert.SerializeObject(c, Formatting.Indented);

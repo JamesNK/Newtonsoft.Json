@@ -55,6 +55,61 @@ namespace Newtonsoft.Json.Tests.Serialization
     public class TypeNameHandlingTests : TestFixtureBase
     {
         [Test]
+        public void DictionaryAuto()
+        {
+            Dictionary<string, object> dic = new Dictionary<string, object>
+            {
+                { "movie", new Movie { Name = "Die Hard"}}
+            };
+
+            string json = JsonConvert.SerializeObject(dic, Formatting.Indented, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto
+            });
+
+            Assert.AreEqual(@"{
+  ""movie"": {
+    ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Movie, Newtonsoft.Json.Tests"",
+    ""Name"": ""Die Hard"",
+    ""Description"": null,
+    ""Classification"": null,
+    ""Studio"": null,
+    ""ReleaseDate"": null,
+    ""ReleaseCountries"": null
+  }
+}", json);
+        }
+
+        [Test]
+        public void KeyValuePairAuto()
+        {
+            IList<KeyValuePair<string, object>> dic = new List<KeyValuePair<string, object>>
+            {
+                new KeyValuePair<string, object>("movie", new Movie { Name = "Die Hard"})
+            };
+
+            string json = JsonConvert.SerializeObject(dic, Formatting.Indented, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto
+            });
+
+            Assert.AreEqual(@"[
+  {
+    ""Key"": ""movie"",
+    ""Value"": {
+      ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Movie, Newtonsoft.Json.Tests"",
+      ""Name"": ""Die Hard"",
+      ""Description"": null,
+      ""Classification"": null,
+      ""Studio"": null,
+      ""ReleaseDate"": null,
+      ""ReleaseCountries"": null
+    }
+  }
+]", json);
+        }
+
+        [Test]
         public void NestedValueObjects()
         {
             StringBuilder sb = new StringBuilder();
