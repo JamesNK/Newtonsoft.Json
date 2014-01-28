@@ -635,46 +635,60 @@ namespace Newtonsoft.Json
 
 #if !(NET20 || NET35 || PORTABLE40)
         /// <summary>
-        /// Asynchronously serializes the specified object to a JSON string.
-        /// Serialization will happen on a new thread.
+        /// Serializes the specified object to a JSON string.
+        /// Serialization will happen synchronously and a pre-completed task will be returned.
         /// </summary>
         /// <param name="value">The object to serialize.</param>
         /// <returns>
-        /// A task that represents the asynchronous serialize operation. The value of the <c>TResult</c> parameter contains a JSON string representation of the object.
+        /// A pre-completed task that represents the serialize operation. The value of the <c>TResult</c> parameter contains a JSON string representation of the object.
         /// </returns>
+        [Obsolete("This will be removed on the next major version release as an asynchronous wrapper for a synchronous method is a bad idea. Refer to http://blogs.msdn.com/b/pfxteam/archive/2012/03/24/10287244.aspx for more information.")]
         public static Task<string> SerializeObjectAsync(object value)
         {
             return SerializeObjectAsync(value, Formatting.None, null);
         }
 
         /// <summary>
-        /// Asynchronously serializes the specified object to a JSON string using formatting.
-        /// Serialization will happen on a new thread.
+        /// Serializes the specified object to a JSON string using formatting.
+        /// Serialization will happen synchronously and a pre-completed task will be returned.
         /// </summary>
         /// <param name="value">The object to serialize.</param>
         /// <param name="formatting">Indicates how the output is formatted.</param>
         /// <returns>
-        /// A task that represents the asynchronous serialize operation. The value of the <c>TResult</c> parameter contains a JSON string representation of the object.
+        /// A pre-completed task that represents the serialize operation. The value of the <c>TResult</c> parameter contains a JSON string representation of the object.
         /// </returns>
+        [Obsolete("This will be removed on the next major version release as an asynchronous wrapper for a synchronous method is a bad idea. Refer to http://blogs.msdn.com/b/pfxteam/archive/2012/03/24/10287244.aspx for more information.")]
         public static Task<string> SerializeObjectAsync(object value, Formatting formatting)
         {
             return SerializeObjectAsync(value, formatting, null);
         }
 
         /// <summary>
-        /// Asynchronously serializes the specified object to a JSON string using formatting and a collection of <see cref="JsonConverter"/>.
-        /// Serialization will happen on a new thread.
+        /// Serializes the specified object to a JSON string using formatting and a collection of <see cref="JsonConverter"/>.
+        /// Serialization will happen synchronously and a pre-completed task will be returned.
         /// </summary>
         /// <param name="value">The object to serialize.</param>
         /// <param name="formatting">Indicates how the output is formatted.</param>
         /// <param name="settings">The <see cref="JsonSerializerSettings"/> used to serialize the object.
         /// If this is null, default serialization settings will be is used.</param>
         /// <returns>
-        /// A task that represents the asynchronous serialize operation. The value of the <c>TResult</c> parameter contains a JSON string representation of the object.
+        /// A pre-completed task that represents the serialize operation. The value of the <c>TResult</c> parameter contains a JSON string representation of the object.
         /// </returns>
+        [Obsolete("This will be removed on the next major version release as an asynchronous wrapper for a synchronous method is a bad idea. Refer to http://blogs.msdn.com/b/pfxteam/archive/2012/03/24/10287244.aspx for more information.")]
         public static Task<string> SerializeObjectAsync(object value, Formatting formatting, JsonSerializerSettings settings)
         {
-            return Task.Factory.StartNew(() => SerializeObject(value, formatting, settings));
+            TaskCompletionSource<string> tcs = new TaskCompletionSource<string>();
+            try
+            {
+                string result = SerializeObject(value, formatting, settings);
+                tcs.SetResult(result);
+            }
+            catch (Exception ex)
+            {
+                tcs.SetException(ex);
+            }
+
+            return tcs.Task;
         }
 #endif
         #endregion
@@ -833,22 +847,23 @@ namespace Newtonsoft.Json
 
 #if !(NET20 || NET35 || PORTABLE40)
         /// <summary>
-        /// Asynchronously deserializes the JSON to the specified .NET type.
-        /// Deserialization will happen on a new thread.
+        /// Deserializes the JSON to the specified .NET type.
+        /// Deserialization will happen synchronously and a pre-completed task will be returned.
         /// </summary>
         /// <typeparam name="T">The type of the object to deserialize to.</typeparam>
         /// <param name="value">The JSON to deserialize.</param>
         /// <returns>
-        /// A task that represents the asynchronous deserialize operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
+        /// A pre-completed task that represents the deserialize operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
         /// </returns>
+        [Obsolete("This will be removed on the next major version release as an asynchronous wrapper for a synchronous method is a bad idea. Refer to http://blogs.msdn.com/b/pfxteam/archive/2012/03/24/10287244.aspx for more information.")]
         public static Task<T> DeserializeObjectAsync<T>(string value)
         {
             return DeserializeObjectAsync<T>(value, null);
         }
 
         /// <summary>
-        /// Asynchronously deserializes the JSON to the specified .NET type using <see cref="JsonSerializerSettings"/>.
-        /// Deserialization will happen on a new thread.
+        /// Deserializes the JSON to the specified .NET type using <see cref="JsonSerializerSettings"/>.
+        /// Deserialization will happen synchronously and a pre-completed task will be returned.
         /// </summary>
         /// <typeparam name="T">The type of the object to deserialize to.</typeparam>
         /// <param name="value">The JSON to deserialize.</param>
@@ -857,29 +872,42 @@ namespace Newtonsoft.Json
         /// If this is null, default serialization settings will be is used.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous deserialize operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
+        /// A pre-completed task that represents the deserialize operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
         /// </returns>
+        [Obsolete("This will be removed on the next major version release as an asynchronous wrapper for a synchronous method is a bad idea. Refer to http://blogs.msdn.com/b/pfxteam/archive/2012/03/24/10287244.aspx for more information.")]
         public static Task<T> DeserializeObjectAsync<T>(string value, JsonSerializerSettings settings)
         {
-            return Task.Factory.StartNew(() => DeserializeObject<T>(value, settings));
+            TaskCompletionSource<T> tcs = new TaskCompletionSource<T>();
+            try
+            {
+                T result = DeserializeObject<T>(value, settings);
+                tcs.SetResult(result);
+            }
+            catch (Exception ex)
+            {
+                tcs.SetException(ex);
+            }
+
+            return tcs.Task;
         }
 
         /// <summary>
-        /// Asynchronously deserializes the JSON to the specified .NET type.
-        /// Deserialization will happen on a new thread.
+        /// Deserializes the JSON to the specified .NET type.
+        /// Deserialization will happen synchronously and a pre-completed task will be returned.
         /// </summary>
         /// <param name="value">The JSON to deserialize.</param>
         /// <returns>
-        /// A task that represents the asynchronous deserialize operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
+        /// A pre-completed task that represents the deserialize operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
         /// </returns>
+        [Obsolete("This will be removed on the next major version release as an asynchronous wrapper for a synchronous method is a bad idea. Refer to http://blogs.msdn.com/b/pfxteam/archive/2012/03/24/10287244.aspx for more information.")]
         public static Task<object> DeserializeObjectAsync(string value)
         {
             return DeserializeObjectAsync(value, null, null);
         }
 
         /// <summary>
-        /// Asynchronously deserializes the JSON to the specified .NET type using <see cref="JsonSerializerSettings"/>.
-        /// Deserialization will happen on a new thread.
+        /// Deserializes the JSON to the specified .NET type using <see cref="JsonSerializerSettings"/>.
+        /// Deserialization will happen synchronously and a pre-completed task will be returned.
         /// </summary>
         /// <param name="value">The JSON to deserialize.</param>
         /// <param name="type">The type of the object to deserialize to.</param>
@@ -888,11 +916,23 @@ namespace Newtonsoft.Json
         /// If this is null, default serialization settings will be is used.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous deserialize operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
+        /// A pre-completed task that represents the deserialize operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
         /// </returns>
+        [Obsolete("This will be removed on the next major version release as an asynchronous wrapper for a synchronous method is a bad idea. Refer to http://blogs.msdn.com/b/pfxteam/archive/2012/03/24/10287244.aspx for more information.")]
         public static Task<object> DeserializeObjectAsync(string value, Type type, JsonSerializerSettings settings)
         {
-            return Task.Factory.StartNew(() => DeserializeObject(value, type, settings));
+            TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
+            try
+            {
+                object result = DeserializeObject(value, type, settings);
+                tcs.SetResult(result);
+            }
+            catch (Exception ex)
+            {
+                tcs.SetException(ex);
+            }
+
+            return tcs.Task;
         }
 #endif
         #endregion
@@ -931,7 +971,8 @@ namespace Newtonsoft.Json
 
 #if !(NET20 || NET35 || PORTABLE40)
         /// <summary>
-        /// Asynchronously populates the object with values from the JSON string using <see cref="JsonSerializerSettings"/>.
+        /// Populates the object with values from the JSON string using <see cref="JsonSerializerSettings"/>.
+        /// The operation will happen synchronously and a pre-completed task will be returned.
         /// </summary>
         /// <param name="value">The JSON to populate values from.</param>
         /// <param name="target">The target object to populate values onto.</param>
@@ -940,11 +981,23 @@ namespace Newtonsoft.Json
         /// If this is null, default serialization settings will be is used.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous populate operation.
+        /// A pre-completed task that represents the populate operation.
         /// </returns>
+        [Obsolete("This will be removed on the next major version release as an asynchronous wrapper for a synchronous method is a bad idea. Refer to http://blogs.msdn.com/b/pfxteam/archive/2012/03/24/10287244.aspx for more information.")]
         public static Task PopulateObjectAsync(string value, object target, JsonSerializerSettings settings)
         {
-            return Task.Factory.StartNew(() => PopulateObject(value, target, settings));
+            TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+            try
+            {
+                PopulateObject(value, target, settings);
+                tcs.SetResult(true);
+            }
+            catch (Exception ex)
+            {
+                tcs.TrySetException(ex);
+            }
+
+            return tcs.Task;
         }
 #endif
 
