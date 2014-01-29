@@ -949,6 +949,7 @@ namespace Newtonsoft.Json
         /// <returns>
         /// A task that represents the asynchronous populate operation.
         /// </returns>
+        [ObsoleteAttribute("PopulateObjectAsync is obsolete. Use the Task.Factory.StartNew method to populate an object with JSON values asynchronously: Task.Factory.StartNew(() => PopulateObject(value, target, settings))")]
         public static Task PopulateObjectAsync(string value, object target, JsonSerializerSettings settings)
         {
             return Task.Factory.StartNew(() => PopulateObject(value, target, settings));
