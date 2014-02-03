@@ -244,7 +244,7 @@ namespace Newtonsoft.Json.Schema
             JsonConverter converter;
             if ((converter = contract.Converter) != null || (converter = contract.InternalConverter) != null)
             {
-                JsonSchema converterSchema = converter.GetSchema();
+                JsonSchema converterSchema = converter.GetSchema(type);
                 if (converterSchema != null)
                     return converterSchema;
             }

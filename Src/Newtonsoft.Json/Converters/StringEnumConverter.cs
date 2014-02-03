@@ -28,6 +28,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.Serialization;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Utilities;
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
@@ -250,6 +252,26 @@ namespace Newtonsoft.Json.Converters
                 : objectType;
 
             return t.IsEnum();
+        }
+
+        public override JsonSchema GetSchema(Type objectType)
+        {
+            if (!objectType.IsEnum())
+                return null;
+            
+            var schema = new JsonSchema { Type = JsonSchemaType.String };
+
+            schema.Enum = new List<JToken>();
+
+            var enumNames = EnumUtils.GetNames(objectType);
+            foreach (var enumName in enumNames)
+            {
+                JToken value = JToken.FromObject(enumName);
+
+                schema.Enum.Add(value);
+            }
+
+            return schema;
         }
     }
 }
