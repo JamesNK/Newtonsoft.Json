@@ -246,7 +246,11 @@ namespace Newtonsoft.Json.Schema
             {
                 JsonSchema converterSchema = converter.GetSchema(type);
                 if (converterSchema != null)
+                {
+                    if (required && converterSchema.Required != true)
+                        converterSchema.Required = true;
                     return converterSchema;
+                }
             }
 
             Push(new TypeSchema(type, new JsonSchema()));
