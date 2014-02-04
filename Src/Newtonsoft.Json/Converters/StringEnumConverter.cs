@@ -266,7 +266,12 @@ namespace Newtonsoft.Json.Converters
             var enumNames = EnumUtils.GetNames(objectType);
             foreach (var enumName in enumNames)
             {
-                JToken value = JToken.FromObject(enumName);
+                string resolvedEnumName = enumName;
+
+                if (CamelCaseText)
+                    resolvedEnumName = StringUtils.ToCamelCase(resolvedEnumName);
+
+                JToken value = JToken.FromObject(resolvedEnumName);
 
                 schema.Enum.Add(value);
             }
