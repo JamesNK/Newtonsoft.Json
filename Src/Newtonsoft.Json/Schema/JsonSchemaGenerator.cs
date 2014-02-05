@@ -244,9 +244,13 @@ namespace Newtonsoft.Json.Schema
             JsonConverter converter;
             if ((converter = contract.Converter) != null || (converter = contract.InternalConverter) != null)
             {
-                JsonSchema converterSchema = converter.GetSchema();
+                JsonSchema converterSchema = converter.GetSchema(type);
                 if (converterSchema != null)
+                {
+                    if (required && converterSchema.Required != true)
+                        converterSchema.Required = true;
                     return converterSchema;
+                }
             }
 
             Push(new TypeSchema(type, new JsonSchema()));
@@ -376,6 +380,12 @@ namespace Newtonsoft.Json.Schema
                                     property.GetIsSpecified != null;
 
                     JsonSchema propertySchema = GenerateInternal(property.PropertyType, property.Required, !optional);
+
+                    if (property.Title != null)
+                        propertySchema.Title = property.Title;
+
+                    if (property.Description != null)
+                        propertySchema.Description = property.Description;
 
                     if (property.DefaultValue != null)
                         propertySchema.Default = JToken.FromObject(property.DefaultValue);
