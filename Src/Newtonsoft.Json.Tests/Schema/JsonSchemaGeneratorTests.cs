@@ -836,6 +836,33 @@ namespace Newtonsoft.Json.Tests.Schema
   }
 }", json);
         }
+
+        public class Z
+        {
+            [JsonProperty(Title = "title", Description = "description")]
+            public int z;
+        }
+
+        [Test]
+        public void GenerateSchemaForPropertyWithTitleAndDescription()
+        {
+            JsonSchemaGenerator jsonSchemaGenerator = new JsonSchemaGenerator();
+            JsonSchema schema = jsonSchemaGenerator.Generate(typeof(Z));
+
+            string json = schema.ToString();
+
+            Assert.AreEqual(@"{
+  ""type"": ""object"",
+  ""properties"": {
+    ""z"": {
+      ""title"": ""title"",
+      ""description"": ""description"",
+      ""required"": true,
+      ""type"": ""integer""
+    }
+  }
+}", json);
+        }
     }
 
     public class NullableInt32TestClass

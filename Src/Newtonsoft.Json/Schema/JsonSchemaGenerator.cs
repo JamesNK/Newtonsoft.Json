@@ -381,6 +381,12 @@ namespace Newtonsoft.Json.Schema
 
                     JsonSchema propertySchema = GenerateInternal(property.PropertyType, property.Required, !optional);
 
+                    if (property.Title != null)
+                        propertySchema.Title = property.Title;
+
+                    if (property.Description != null)
+                        propertySchema.Description = property.Description;
+
                     if (property.DefaultValue != null)
                         propertySchema.Default = JToken.FromObject(property.DefaultValue);
 
