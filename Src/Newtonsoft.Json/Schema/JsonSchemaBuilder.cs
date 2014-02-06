@@ -133,6 +133,11 @@ namespace Newtonsoft.Json.Schema
                         if (currentToken != null)
                             resolvedSchema = BuildSchema(currentToken);
                     }
+                    else
+                    {
+                        string remoteSchema = new System.Net.WebClient().DownloadString(schema.DeferredReference);
+                        resolvedSchema = JsonSchema.Parse(remoteSchema);
+                    }
 
                     if (resolvedSchema == null)
                         throw new JsonException("Could not resolve schema reference '{0}'.".FormatWith(CultureInfo.InvariantCulture, schema.DeferredReference));

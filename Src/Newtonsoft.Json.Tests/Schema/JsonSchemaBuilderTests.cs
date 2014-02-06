@@ -34,6 +34,7 @@ using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAtt
 using Newtonsoft.Json.Schema;
 using System.IO;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace Newtonsoft.Json.Tests.Schema
 {
@@ -644,6 +645,47 @@ namespace Newtonsoft.Json.Tests.Schema
                     JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
                     builder.Read(new JsonTextReader(new StringReader(json)));
                 });
+        }
+
+        [Test]
+        public void References_RemoteReference()
+        {
+            var remoteURI = new System.Uri(System.IO.Path.GetFullPath("remoteSchema.json"));
+            string schemaString = @"
+            {
+                 ""properties"": {
+                        ""forceSensitives"":
+                        { 
+                            ""$ref"": """ + remoteURI.ToString() + @"""
+                        }
+                }
+            }
+            ";
+
+            JsonSchema schema = JsonSchema.Parse(schemaString);
+
+            JObject testObj = JObject.Parse(@"
+            {
+                ""forceSensitives"": 
+                {
+                    ""jedis"": ""obi-wan""
+                }
+            }");
+
+            IList<string> errors;
+            bool valid = testObj.IsValid(schema, out errors);
+            Assert.IsTrue(valid);
+
+            testObj = JObject.Parse(@"
+            { 
+                ""forceSensitives"": 
+                {
+                    ""jedis"": ""vader""
+                }
+            }");
+
+            valid = testObj.IsValid(schema, out errors);
+            Assert.IsFalse(valid);
         }
     }
 }
