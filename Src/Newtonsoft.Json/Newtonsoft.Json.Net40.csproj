@@ -139,6 +139,7 @@
     <Compile Include="Serialization\TraceJsonWriter.cs" />
     <Compile Include="StringEscapeHandling.cs" />
     <Compile Include="Utilities\DateTimeParser.cs" />
+    <Compile Include="Utilities\DynamicConcrete.cs" />
     <Compile Include="Utilities\DynamicProxy.cs" />
     <Compile Include="Linq\JRaw.cs" />
     <Compile Include="Required.cs" />

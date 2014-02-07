@@ -256,6 +256,7 @@
     <Compile Include="Schema\JsonSchemaSpecTests.cs" />
     <Compile Include="Serialization\ConstructorHandlingTests.cs" />
     <Compile Include="Serialization\ContractResolverTests.cs" />
+    <Compile Include="Serialization\InterfaceHandlingTests.cs" />
     <Compile Include="Serialization\DefaultValueHandlingTests.cs" />
     <Compile Include="Serialization\DynamicTests.cs" />
     <Compile Include="Serialization\ImmutableCollectionsTests.cs" />

@@ -92,7 +92,7 @@ namespace Newtonsoft.Json.Serialization
         internal ReadType InternalReadType;
         internal JsonContractType ContractType;
         internal bool IsReadOnlyOrFixedSize;
-        internal bool IsInstantiable;
+        internal bool IsInterfaceOrAbstract;
 
         private List<SerializationCallback> _onDeserializedCallbacks;
         private IList<SerializationCallback> _onDeserializingCallbacks;
@@ -297,7 +297,7 @@ namespace Newtonsoft.Json.Serialization
             UnderlyingType = underlyingType;
 
             IsSealed = underlyingType.IsSealed();
-            IsInstantiable = !(underlyingType.IsInterface() || underlyingType.IsAbstract());
+            IsInterfaceOrAbstract = !(underlyingType.IsInterface() || underlyingType.IsAbstract());
 
             IsNullable = ReflectionUtils.IsNullable(underlyingType);
             NonNullableUnderlyingType = (IsNullable && ReflectionUtils.IsNullableType(underlyingType)) ? Nullable.GetUnderlyingType(underlyingType) : underlyingType;
