@@ -110,15 +110,6 @@ namespace Newtonsoft.Json.Utilities
                 {
                     methodILGen.Emit(OpCodes.Ldc_I4_0);
                 }
-                else if (methodInfo.ReturnType.UnderlyingSystemType == typeof(DateTime))
-                {
-                    var getMethod = typeof(DateTime).GetMethod(".ctor", BindingFlags.CreateInstance);
-                    var lb = methodILGen.DeclareLocal(methodInfo.ReturnType);
-                    methodILGen.Emit(OpCodes.Ldtoken, lb.LocalType);
-                    methodILGen.Emit(OpCodes.Ldc_I8, 0L);
-                    methodILGen.Emit(OpCodes.Callvirt, getMethod);
-                    methodILGen.Emit(OpCodes.Unbox_Any, lb.LocalType);
-                }
                 else if (methodInfo.ReturnType.IsValueType || methodInfo.ReturnType.IsEnum)
                 {
                     var getMethod = typeof(Activator).GetMethod("CreateInstance",

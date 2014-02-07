@@ -74,7 +74,6 @@ namespace Newtonsoft.Json.Tests.Serialization
                 c.FuncWithRefType(10, null);
                 c.FuncWithValType_1();
                 c.FuncWithValType_2();
-                c.FuncWithValType_3();
             }
             catch (Exception ex)
             {
@@ -95,6 +94,5 @@ namespace Newtonsoft.Json.Tests.Serialization
         object FuncWithRefType(int a, object b);
         int FuncWithValType_1();
         bool FuncWithValType_2();
-        DateTime FuncWithValType_3();
     }
 }
