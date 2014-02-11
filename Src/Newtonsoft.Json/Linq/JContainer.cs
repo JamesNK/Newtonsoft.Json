@@ -687,7 +687,7 @@ namespace Newtonsoft.Json.Linq
                         break;
                     case JsonToken.StartConstructor:
                         JConstructor constructor = new JConstructor(r.Value.ToString());
-                        constructor.SetLineInfo(constructor);
+                        constructor.SetLineInfo(lineInfo);
                         parent.Add(constructor);
                         parent = constructor;
                         break;

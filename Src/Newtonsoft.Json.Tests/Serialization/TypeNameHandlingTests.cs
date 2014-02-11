@@ -1591,6 +1591,8 @@ namespace Newtonsoft.Json.Tests.Serialization
             };
             string serializedString = JsonConvert.SerializeObject(inputContext, jsonSerializerSettings);
 
+            Console.WriteLine(serializedString);
+
             var deserializedObject = (Dictionary<string, Guid>)JsonConvert.DeserializeObject(serializedString, jsonSerializerSettings);
 
             Assert.AreEqual(someValue, deserializedObject[contextKey]);

@@ -44,6 +44,21 @@ namespace Newtonsoft.Json.Tests.Linq
     [TestFixture]
     public class JTokenReaderTest : TestFixtureBase
     {
+        [Test]
+        public void ErrorTokenIndex()
+        {
+            JObject json = JObject.Parse(@"{""IntList"":[1, ""two""]}");
+
+            ExceptionAssert.Throws<Exception>(
+                "Could not convert string to integer: two. Path 'IntList[1]', line 1, position 20.",
+                () =>
+                {
+                    JsonSerializer serializer = new JsonSerializer();
+
+                    serializer.Deserialize<TraceTestObject>(json.CreateReader());
+                });
+        }
+
 #if !NET20
         [Test]
         public void YahooFinance()

@@ -2345,19 +2345,22 @@ keyword such as type of business.""
         [Test]
         public void DeserializeRequiredMembersClassNullRequiredValueProperty()
         {
-            ExceptionAssert.Throws<JsonSerializationException>(
-                "Required property 'FirstName' expects a value but got null. Path '', line 6, position 2.",
-                () =>
-                {
-                    string json = @"{
+            try
+            {
+                string json = @"{
   ""FirstName"": null,
   ""MiddleName"": null,
   ""LastName"": null,
   ""BirthDate"": ""\/Date(977309755000)\/""
 }";
 
-                    JsonConvert.DeserializeObject<RequiredMembersClass>(json);
-                });
+                JsonConvert.DeserializeObject<RequiredMembersClass>(json);
+                Assert.Fail();
+            }
+            catch (JsonSerializationException ex)
+            {
+                Assert.IsTrue(ex.Message.StartsWith("Required property 'FirstName' expects a value but got null. Path ''"));
+            }
         }
 
         [Test]
@@ -2383,16 +2386,19 @@ keyword such as type of business.""
         [Test]
         public void RequiredMembersClassMissingRequiredProperty()
         {
-            ExceptionAssert.Throws<JsonSerializationException>(
-                "Required property 'LastName' not found in JSON. Path '', line 3, position 2.",
-                () =>
-                {
-                    string json = @"{
+            try
+            {
+                string json = @"{
   ""FirstName"": ""Bob""
 }";
 
-                    JsonConvert.DeserializeObject<RequiredMembersClass>(json);
-                });
+                JsonConvert.DeserializeObject<RequiredMembersClass>(json);
+                Assert.Fail();
+            }
+            catch (JsonSerializationException ex)
+            {
+                Assert.IsTrue(ex.Message.StartsWith("Required property 'LastName' not found in JSON. Path ''"));
+            }
         }
 
         [Test]
@@ -2631,10 +2637,17 @@ keyword such as type of business.""
         [Test]
         public void RequiredWhenUsingConstructor()
         {
-            string json = "{ 'testProperty1': 'value' }";
+            try
+            {
+                string json = "{ 'testProperty1': 'value' }";
+                JsonConvert.DeserializeObject<ConstructorAndRequiredTestClass>(json);
 
-            ExceptionAssert.Throws<JsonSerializationException>("Required property 'TestProperty2' not found in JSON. Path '', line 1, position 28.",
-                () => JsonConvert.DeserializeObject<ConstructorAndRequiredTestClass>(json));
+                Assert.Fail();
+            }
+            catch (JsonSerializationException ex)
+            {
+                Assert.IsTrue(ex.Message.StartsWith("Required property 'TestProperty2' not found in JSON. Path ''"));
+            }
         }
 
         [Test]
@@ -3351,11 +3364,17 @@ Path '', line 1, position 1.",
         {
             string json = @"{}";
 
-            ExceptionAssert.Throws<JsonSerializationException>(
-                @"Cannot deserialize the current JSON object (e.g. {""name"":""value""}) into type 'System.Collections.Generic.List`1[Newtonsoft.Json.Tests.TestObjects.Person]' because the type requires a JSON array (e.g. [1,2,3]) to deserialize correctly.
+            try
+            {
+                JsonConvert.DeserializeObject<List<Person>>(json);
+                Assert.Fail();
+            }
+            catch (JsonSerializationException ex)
+            {
+                Assert.IsTrue(ex.Message.StartsWith(@"Cannot deserialize the current JSON object (e.g. {""name"":""value""}) into type 'System.Collections.Generic.List`1[Newtonsoft.Json.Tests.TestObjects.Person]' because the type requires a JSON array (e.g. [1,2,3]) to deserialize correctly.
 To fix this error either change the JSON to a JSON array (e.g. [1,2,3]) or change the deserialized type so that it is a normal .NET type (e.g. not a primitive type like integer, not a collection type like an array or List<T>) that can be deserialized from a JSON object. JsonObjectAttribute can also be added to the type to force it to deserialize from a JSON object.
-Path '', line 1, position 2.",
-                () => { JsonConvert.DeserializeObject<List<Person>>(json); });
+Path ''"));
+            }
         }
 
         [Test]
@@ -3574,17 +3593,21 @@ Path '', line 1, position 2.",
         [Test]
         public void DeserializePersonKeyedDictionary()
         {
-            ExceptionAssert.Throws<JsonSerializationException>("Could not convert string 'Newtonsoft.Json.Tests.TestObjects.Person' to dictionary key type 'Newtonsoft.Json.Tests.TestObjects.Person'. Create a TypeConverter to convert from the string to the key type object. Path 'Newtonsoft.Json.Tests.TestObjects.Person', line 2, position 46.",
-                () =>
-                {
-                    string json =
-                        @"{
+            try
+            {
+                string json =
+                    @"{
   ""Newtonsoft.Json.Tests.TestObjects.Person"": 1,
   ""Newtonsoft.Json.Tests.TestObjects.Person"": 2
 }";
 
-                    JsonConvert.DeserializeObject<Dictionary<Person, int>>(json);
-                });
+                JsonConvert.DeserializeObject<Dictionary<Person, int>>(json);
+                Assert.Fail();
+            }
+            catch (JsonSerializationException ex)
+            {
+                Assert.IsTrue(ex.Message.StartsWith("Could not convert string 'Newtonsoft.Json.Tests.TestObjects.Person' to dictionary key type 'Newtonsoft.Json.Tests.TestObjects.Person'. Create a TypeConverter to convert from the string to the key type object. Path 'Newtonsoft.Json.Tests.TestObjects.Person'"));
+            }
         }
 
         [Test]
@@ -5004,7 +5027,10 @@ To fix this error either change the environment to be fully trusted, change the 
             child.Add("Name", "Isabell");
             child.Add("Father", reference);
 
-            var json = JsonConvert.SerializeObject(child);
+            string json = JsonConvert.SerializeObject(child);
+
+            Console.WriteLine(json);
+
             Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
 
             Assert.AreEqual(3, result.Count);
@@ -5447,7 +5473,14 @@ To fix this error either change the environment to be fully trusted, change the 
             });
 
             Assert.AreEqual("{\"Offset\":\"2000-01-01T00:00:00+06:00\"}", serializeObject);
-            var deserializeObject = JsonConvert.DeserializeObject<TimeZoneOffsetObject>(serializeObject);
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(serializeObject));
+            reader.DateParseHandling = DateParseHandling.None;
+            
+            JsonSerializer serializer = new JsonSerializer();
+
+            var deserializeObject = serializer.Deserialize<TimeZoneOffsetObject>(reader);
+
             Assert.AreEqual(TimeSpan.FromHours(6), deserializeObject.Offset.Offset);
             Assert.AreEqual(new DateTime(2000, 1, 1), deserializeObject.Offset.Date);
         }
@@ -5468,7 +5501,13 @@ To fix this error either change the environment to be fully trusted, change the 
             }, Formatting.None, new JsonSerializerSettings { DateFormatHandling = DateFormatHandling.MicrosoftDateFormat });
 
             Assert.AreEqual("{\"Offset\":\"\\/Date(946663200000+0600)\\/\"}", serializeObject);
-            var deserializeObject = JsonConvert.DeserializeObject<TimeZoneOffsetObject>(serializeObject);
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(serializeObject));
+
+            JsonSerializer serializer = new JsonSerializer();
+
+            var deserializeObject = serializer.Deserialize<TimeZoneOffsetObject>(reader);
+
             Assert.AreEqual(TimeSpan.FromHours(6), deserializeObject.Offset.Offset);
             Assert.AreEqual(new DateTime(2000, 1, 1), deserializeObject.Offset.Date);
         }
@@ -5563,7 +5602,12 @@ To fix this error either change the environment to be fully trusted, change the 
         public void DeserializeDecimalPropertyExact()
         {
             string json = "{Amount:123456789876543.21}";
-            Invoice i = JsonConvert.DeserializeObject<Invoice>(json);
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+            reader.FloatParseHandling = FloatParseHandling.Decimal;
+
+            JsonSerializer serializer = new JsonSerializer();
+
+            Invoice i = serializer.Deserialize<Invoice>(reader);
             Assert.AreEqual(123456789876543.21m, i.Amount);
         }
 
@@ -5579,7 +5623,12 @@ To fix this error either change the environment to be fully trusted, change the 
         public void DeserializeDecimalDictionaryExact()
         {
             string json = "{'Value':123456789876543.21}";
-            IDictionary<string, decimal> d = JsonConvert.DeserializeObject<IDictionary<string, decimal>>(json);
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+            reader.FloatParseHandling = FloatParseHandling.Decimal;
+
+            JsonSerializer serializer = new JsonSerializer();
+
+            IDictionary<string, decimal> d = serializer.Deserialize<IDictionary<string, decimal>>(reader);
             Assert.AreEqual(123456789876543.21m, d["Value"]);
         }
 
@@ -5794,7 +5843,7 @@ To fix this error either change the environment to be fully trusted, change the 
         }
 
         [Test]
-        public void OnError()
+        public void DeserializeMinValueDecimal()
         {
             var data = new DecimalTest(decimal.MinValue);
             var json = JsonConvert.SerializeObject(data);
@@ -6957,8 +7006,8 @@ To fix this error either change the environment to be fully trusted, change the 
         [Test]
         public void DeserializeUnexpectedEndInt()
         {
-            ExceptionAssert.Throws<JsonSerializationException>(
-                "Unexpected end when setting PreProperty's value. Path 'PreProperty', line 2, position 18.",
+            ExceptionAssert.Throws<JsonException>(
+                null,
                 () =>
                 {
                     string json = @"{
@@ -7395,10 +7444,10 @@ Parameter name: value",
 
             Assert.IsNotNull(o);
             Assert.AreEqual(4, errors.Count);
-            Assert.AreEqual("Required property 'NonAttributeProperty' not found in JSON. Path '', line 1, position 2.", errors[0]);
-            Assert.AreEqual("Required property 'UnsetProperty' not found in JSON. Path '', line 1, position 2.", errors[1]);
-            Assert.AreEqual("Required property 'AllowNullProperty' not found in JSON. Path '', line 1, position 2.", errors[2]);
-            Assert.AreEqual("Required property 'AlwaysProperty' not found in JSON. Path '', line 1, position 2.", errors[3]);
+            Assert.IsTrue(errors[0].StartsWith("Required property 'NonAttributeProperty' not found in JSON. Path ''"));
+            Assert.IsTrue(errors[1].StartsWith("Required property 'UnsetProperty' not found in JSON. Path ''"));
+            Assert.IsTrue(errors[2].StartsWith("Required property 'AllowNullProperty' not found in JSON. Path ''"));
+            Assert.IsTrue(errors[3].StartsWith("Required property 'AlwaysProperty' not found in JSON. Path ''"));
         }
 
         [Test]
@@ -7420,9 +7469,9 @@ Parameter name: value",
 
             Assert.IsNotNull(o);
             Assert.AreEqual(3, errors.Count);
-            Assert.AreEqual("Required property 'NonAttributeProperty' expects a value but got null. Path '', line 1, position 97.", errors[0]);
-            Assert.AreEqual("Required property 'UnsetProperty' expects a value but got null. Path '', line 1, position 97.", errors[1]);
-            Assert.AreEqual("Required property 'AlwaysProperty' expects a value but got null. Path '', line 1, position 97.", errors[2]);
+            Assert.IsTrue(errors[0].StartsWith("Required property 'NonAttributeProperty' expects a value but got null. Path ''"));
+            Assert.IsTrue(errors[1].StartsWith("Required property 'UnsetProperty' expects a value but got null. Path ''"));
+            Assert.IsTrue(errors[2].StartsWith("Required property 'AlwaysProperty' expects a value but got null. Path ''"));
         }
 
         [Test]
@@ -8552,8 +8601,8 @@ Parameter name: value",
         {
             string json = @"{""Before"":""Before!"",""Coordinates"":[/*hi*/[/*hi*/[1/*hi*/,/*hi*/1/*hi*/,1]/*hi*/,/*hi*/[1,1";
 
-            ExceptionAssert.Throws<JsonSerializationException>(
-                "Unexpected end when deserializing array. Path 'Coordinates[0][1][1]', line 1, position 90.",
+            ExceptionAssert.Throws<JsonException>(
+                null,
                 () => JsonConvert.DeserializeObject<Array3D>(json));
         }
 
@@ -8562,8 +8611,8 @@ Parameter name: value",
         {
             string json = @"{""Before"":""Before!"",""Coordinates"":[/*hi*/[/*hi*/";
 
-            ExceptionAssert.Throws<JsonSerializationException>(
-                "Unexpected end when deserializing array. Path 'Coordinates[0]', line 1, position 48.",
+            ExceptionAssert.Throws<JsonException>(
+                null,
                 () => JsonConvert.DeserializeObject<Array3D>(json));
         }
 

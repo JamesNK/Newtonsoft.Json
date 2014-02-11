@@ -50,6 +50,24 @@ namespace Newtonsoft.Json.Tests.Linq
     public class LinqToJsonTest : TestFixtureBase
     {
         [Test]
+        public void JPropertyPath()
+        {
+            JObject o = new JObject
+            {
+                {
+                    "person",
+                    new JObject
+                    {
+                        { "$id", 1 }
+                    }
+                }
+            };
+
+            JContainer idProperty = o["person"]["$id"].Parent;
+            Assert.AreEqual("person.$id", idProperty.Path);
+        }
+
+        [Test]
         public void ForEach()
         {
             JArray items = new JArray(new JObject(new JProperty("name", "value!")));

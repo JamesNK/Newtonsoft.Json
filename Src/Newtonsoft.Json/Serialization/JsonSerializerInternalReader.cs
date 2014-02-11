@@ -359,12 +359,31 @@ namespace Newtonsoft.Json.Serialization
 
         private object CreateObject(JsonReader reader, Type objectType, JsonContract contract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerMember, object existingValue)
         {
-            CheckedRead(reader);
-
             string id;
             object newValue;
-            if (ReadSpecialProperties(reader, ref objectType, ref contract, member, containerContract, containerMember, existingValue, out newValue, out id))
-                return newValue;
+
+            if (Serializer.SpecialPropertyHandling == SpecialPropertyHandling.ReadAhead)
+            {
+                var tokenReader = reader as JTokenReader;
+                if (tokenReader == null)
+                {
+                    JToken t = JToken.ReadFrom(reader);
+                    tokenReader = (JTokenReader)t.CreateReader();
+                    reader = tokenReader;
+
+                    // start
+                    CheckedRead(reader);
+                }
+
+                if (ReadSpecialPropertiesToken(tokenReader, ref objectType, ref contract, member, containerContract, containerMember, existingValue, out newValue, out id))
+                    return newValue;
+            }
+            else
+            {
+                CheckedRead(reader);
+                if (ReadSpecialProperties(reader, ref objectType, ref contract, member, containerContract, containerMember, existingValue, out newValue, out id))
+                    return newValue;
+            }
 
             if (HasNoDefinedType(contract))
                 return CreateJObject(reader);
@@ -473,6 +492,80 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
 ".FormatWith(CultureInfo.InvariantCulture, objectType, GetExpectedDescription(contract)));
         }
 
+        private bool ReadSpecialPropertiesToken(JTokenReader reader, ref Type objectType, ref JsonContract contract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerMember, object existingValue, out object newValue, out string id)
+        {
+            id = null;
+            newValue = null;
+
+            if (reader.TokenType == JsonToken.StartObject)
+            {
+                JObject current = (JObject)reader._current;
+
+                JToken refToken = current[JsonTypeReflector.RefPropertyName];
+                if (refToken != null)
+                {
+                    if (refToken.Type != JTokenType.String && refToken.Type != JTokenType.Null)
+                        throw JsonSerializationException.Create(refToken, refToken.Path, "JSON reference {0} property must have a string or null value.".FormatWith(CultureInfo.InvariantCulture, JsonTypeReflector.RefPropertyName), null);
+
+                    JToken property = refToken.Parent;
+                    JToken additionalContent = null;
+                    if (property.Next != null)
+                        additionalContent = property.Next;
+                    else if (property.Previous != null)
+                        additionalContent = property.Previous;
+
+                    string reference = (string)refToken;
+
+                    refToken.Parent.Remove();
+
+                    if (reference != null)
+                    {
+                        if (additionalContent != null)
+                            throw JsonSerializationException.Create(additionalContent, additionalContent.Path, "Additional content found in JSON reference object. A JSON reference object should only have a {0} property.".FormatWith(CultureInfo.InvariantCulture, JsonTypeReflector.RefPropertyName), null);
+
+                        newValue = Serializer.GetReferenceResolver().ResolveReference(this, reference);
+
+                        if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Info)
+                            TraceWriter.Trace(TraceLevel.Info, JsonPosition.FormatMessage(reader as IJsonLineInfo, reader.Path, "Resolved object reference '{0}' to {1}.".FormatWith(CultureInfo.InvariantCulture, reference, newValue.GetType())), null);
+
+                        CheckedRead(reader);
+                        return true;
+                    }
+                }
+                JToken typeToken = current[JsonTypeReflector.TypePropertyName];
+                if (typeToken != null)
+                {
+                    string qualifiedTypeName = (string)typeToken;
+                    JsonReader typeTokenReader = typeToken.CreateReader();
+                    CheckedRead(typeTokenReader);
+                    ResolveTypeName(typeTokenReader, ref objectType, ref contract, member, containerContract, containerMember, qualifiedTypeName);
+
+                    typeToken.Parent.Remove();
+                }
+                JToken idToken = current[JsonTypeReflector.IdPropertyName];
+                if (idToken != null)
+                {
+                    id = (string)idToken;
+
+                    idToken.Parent.Remove();
+                }
+                JToken valuesToken = current[JsonTypeReflector.ArrayValuesPropertyName];
+                if (valuesToken != null)
+                {
+                    JsonReader listReader = valuesToken.CreateReader();
+                    CheckedRead(listReader);
+                    newValue = CreateList(listReader, objectType, contract, member, existingValue, id);
+
+                    valuesToken.Parent.Remove();
+                    CheckedRead(reader);
+                    return true;
+                }
+            }
+
+            CheckedRead(reader);
+            return false;
+        }
+
         private bool ReadSpecialProperties(JsonReader reader, ref Type objectType, ref JsonContract contract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerMember, object existingValue, out object newValue, out string id)
         {
             id = null;
@@ -524,44 +617,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                             CheckedRead(reader);
                             string qualifiedTypeName = reader.Value.ToString();
 
-                            TypeNameHandling resolvedTypeNameHandling =
-                                ((member != null) ? member.TypeNameHandling : null)
-                                ?? ((containerContract != null) ? containerContract.ItemTypeNameHandling : null)
-                                ?? ((containerMember != null) ? containerMember.ItemTypeNameHandling : null)
-                                ?? Serializer._typeNameHandling;
-
-                            if (resolvedTypeNameHandling != TypeNameHandling.None)
-                            {
-                                string typeName;
-                                string assemblyName;
-                                ReflectionUtils.SplitFullyQualifiedTypeName(qualifiedTypeName, out typeName, out assemblyName);
-
-                                Type specifiedType;
-                                try
-                                {
-                                    specifiedType = Serializer._binder.BindToType(assemblyName, typeName);
-                                }
-                                catch (Exception ex)
-                                {
-                                    throw JsonSerializationException.Create(reader, "Error resolving type specified in JSON '{0}'.".FormatWith(CultureInfo.InvariantCulture, qualifiedTypeName), ex);
-                                }
-
-                                if (specifiedType == null)
-                                    throw JsonSerializationException.Create(reader, "Type specified in JSON '{0}' was not resolved.".FormatWith(CultureInfo.InvariantCulture, qualifiedTypeName));
-
-                                if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
-                                    TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(reader as IJsonLineInfo, reader.Path, "Resolved type '{0}' to {1}.".FormatWith(CultureInfo.InvariantCulture, qualifiedTypeName, specifiedType)), null);
-
-                                if (objectType != null
-#if !(NET35 || NET20 || PORTABLE40)
-                                    && objectType != typeof(IDynamicMetaObjectProvider)
-#endif
-                                    && !objectType.IsAssignableFrom(specifiedType))
-                                    throw JsonSerializationException.Create(reader, "Type specified in JSON '{0}' is not compatible with '{1}'.".FormatWith(CultureInfo.InvariantCulture, specifiedType.AssemblyQualifiedName, objectType.AssemblyQualifiedName));
-
-                                objectType = specifiedType;
-                                contract = GetContractSafe(specifiedType);
-                            }
+                            ResolveTypeName(reader, ref objectType, ref contract, member, containerContract, containerMember, qualifiedTypeName);
 
                             CheckedRead(reader);
 
@@ -593,6 +649,48 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                 }
             }
             return false;
+        }
+
+        private void ResolveTypeName(JsonReader reader, ref Type objectType, ref JsonContract contract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerMember, string qualifiedTypeName)
+        {
+            TypeNameHandling resolvedTypeNameHandling =
+                ((member != null) ? member.TypeNameHandling : null)
+                ?? ((containerContract != null) ? containerContract.ItemTypeNameHandling : null)
+                ?? ((containerMember != null) ? containerMember.ItemTypeNameHandling : null)
+                ?? Serializer._typeNameHandling;
+
+            if (resolvedTypeNameHandling != TypeNameHandling.None)
+            {
+                string typeName;
+                string assemblyName;
+                ReflectionUtils.SplitFullyQualifiedTypeName(qualifiedTypeName, out typeName, out assemblyName);
+
+                Type specifiedType;
+                try
+                {
+                    specifiedType = Serializer._binder.BindToType(assemblyName, typeName);
+                }
+                catch (Exception ex)
+                {
+                    throw JsonSerializationException.Create(reader, "Error resolving type specified in JSON '{0}'.".FormatWith(CultureInfo.InvariantCulture, qualifiedTypeName), ex);
+                }
+
+                if (specifiedType == null)
+                    throw JsonSerializationException.Create(reader, "Type specified in JSON '{0}' was not resolved.".FormatWith(CultureInfo.InvariantCulture, qualifiedTypeName));
+
+                if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
+                    TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(reader as IJsonLineInfo, reader.Path, "Resolved type '{0}' to {1}.".FormatWith(CultureInfo.InvariantCulture, qualifiedTypeName, specifiedType)), null);
+
+                if (objectType != null
+#if !(NET35 || NET20 || PORTABLE40)
+                    && objectType != typeof(IDynamicMetaObjectProvider)
+#endif
+                    && !objectType.IsAssignableFrom(specifiedType))
+                    throw JsonSerializationException.Create(reader, "Type specified in JSON '{0}' is not compatible with '{1}'.".FormatWith(CultureInfo.InvariantCulture, specifiedType.AssemblyQualifiedName, objectType.AssemblyQualifiedName));
+
+                objectType = specifiedType;
+                contract = GetContractSafe(specifiedType);
+            }
         }
 
         private JsonArrayContract EnsureArrayContract(JsonReader reader, Type objectType, JsonContract contract)

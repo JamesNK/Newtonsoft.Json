@@ -420,7 +420,7 @@ namespace Newtonsoft.Json
             if (t == JsonToken.Date)
             {
                 if (Value is DateTime)
-                    SetToken(JsonToken.Date, new DateTimeOffset((DateTime)Value));
+                    SetToken(JsonToken.Date, new DateTimeOffset((DateTime)Value), false);
 
                 return (DateTimeOffset)Value;
             }
@@ -440,7 +440,7 @@ namespace Newtonsoft.Json
 
                 if (DateTimeOffset.TryParse(s, Culture, DateTimeStyles.RoundtripKind, out dt))
                 {
-                    SetToken(JsonToken.Date, dt);
+                    SetToken(JsonToken.Date, dt, false);
                     return dt;
                 }
                 else
@@ -479,7 +479,7 @@ namespace Newtonsoft.Json
             {
                 byte[] data = ReadAsBytes();
                 ReadInternal();
-                SetToken(JsonToken.Bytes, data);
+                SetToken(JsonToken.Bytes, data, false);
                 return data;
             }
 
@@ -488,7 +488,7 @@ namespace Newtonsoft.Json
             {
                 string s = (string)Value;
                 byte[] data = (s.Length == 0) ? new byte[0] : Convert.FromBase64String(s);
-                SetToken(JsonToken.Bytes, data);
+                SetToken(JsonToken.Bytes, data, false);
                 return data;
             }
 
@@ -512,7 +512,7 @@ namespace Newtonsoft.Json
                             break;
                         case JsonToken.EndArray:
                             byte[] d = data.ToArray();
-                            SetToken(JsonToken.Bytes, d);
+                            SetToken(JsonToken.Bytes, d, false);
                             return d;
                         case JsonToken.Comment:
                             // skip
@@ -553,7 +553,7 @@ namespace Newtonsoft.Json
             if (t == JsonToken.Integer || t == JsonToken.Float)
             {
                 if (!(Value is decimal))
-                    SetToken(JsonToken.Float, Convert.ToDecimal(Value, CultureInfo.InvariantCulture));
+                    SetToken(JsonToken.Float, Convert.ToDecimal(Value, CultureInfo.InvariantCulture), false);
 
                 return (decimal)Value;
             }
@@ -573,7 +573,7 @@ namespace Newtonsoft.Json
 
                 if (decimal.TryParse(s, NumberStyles.Number, Culture, out d))
                 {
-                    SetToken(JsonToken.Float, d);
+                    SetToken(JsonToken.Float, d, false);
                     return d;
                 }
                 else
@@ -610,7 +610,7 @@ namespace Newtonsoft.Json
             if (t == JsonToken.Integer || t == JsonToken.Float)
             {
                 if (!(Value is int))
-                    SetToken(JsonToken.Integer, Convert.ToInt32(Value, CultureInfo.InvariantCulture));
+                    SetToken(JsonToken.Integer, Convert.ToInt32(Value, CultureInfo.InvariantCulture), false);
 
                 return (int)Value;
             }
@@ -630,7 +630,7 @@ namespace Newtonsoft.Json
 
                 if (int.TryParse(s, NumberStyles.Integer, Culture, out i))
                 {
-                    SetToken(JsonToken.Integer, i);
+                    SetToken(JsonToken.Integer, i, false);
                     return i;
                 }
                 else
@@ -680,7 +680,7 @@ namespace Newtonsoft.Json
                     else
                         s = Value.ToString();
 
-                    SetToken(JsonToken.String, s);
+                    SetToken(JsonToken.String, s, false);
                     return s;
                 }
             }
@@ -723,7 +723,7 @@ namespace Newtonsoft.Json
                 if (DateTime.TryParse(s, Culture, DateTimeStyles.RoundtripKind, out dt))
                 {
                     dt = DateTimeUtils.EnsureDateTime(dt, DateTimeZoneHandling);
-                    SetToken(JsonToken.Date, dt);
+                    SetToken(JsonToken.Date, dt, false);
                     return dt;
                 }
                 else
@@ -790,7 +790,7 @@ namespace Newtonsoft.Json
         /// <param name="newToken">The new token.</param>
         protected void SetToken(JsonToken newToken)
         {
-            SetToken(newToken, null);
+            SetToken(newToken, null, true);
         }
 
         /// <summary>
@@ -799,6 +799,11 @@ namespace Newtonsoft.Json
         /// <param name="newToken">The new token.</param>
         /// <param name="value">The value.</param>
         protected void SetToken(JsonToken newToken, object value)
+        {
+            SetToken(newToken, value, true);
+        }
+
+        internal void SetToken(JsonToken newToken, object value, bool updateIndex)
         {
             _tokenType = newToken;
             _value = value;
@@ -845,7 +850,8 @@ namespace Newtonsoft.Json
                     else
                         SetFinished();
 
-                    UpdateScopeWithFinishedValue();
+                    if (updateIndex)
+                        UpdateScopeWithFinishedValue();
                     break;
             }
         }

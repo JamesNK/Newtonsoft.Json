@@ -136,6 +136,7 @@
     <Compile Include="MissingMemberHandling.cs" />
     <Compile Include="NullValueHandling.cs" />
     <Compile Include="ObjectCreationHandling.cs" />
+    <Compile Include="SpecialPropertyHandling.cs" />
     <Compile Include="PreserveReferencesHandling.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReferenceLoopHandling.cs" />
