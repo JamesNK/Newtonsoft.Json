@@ -33,6 +33,29 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 namespace Newtonsoft.Json.Serialization
 {
     /// <summary>
+    /// An instance of a JsonProperty prepared for serialization
+    /// </summary>
+    public class JsonPropertyInstance
+    {
+        public JsonPropertyInstance(JsonProperty property)
+        {
+            Ignored = true;
+            ShouldSerialize = false;
+            IsSpecified = false;
+            Readable = false;
+            Property = property;
+            Exception = null;
+        }
+        public object Value { get; set; }
+        public JsonContract Contract { get; set; }
+        public bool Ignored { get; set; }
+        public bool ShouldSerialize { get; set; }
+        public bool IsSpecified { get; set; }
+        public bool Readable { get; set; }
+        public JsonProperty Property { get; set; }
+        public Exception Exception { get; set; }
+    }
+    /// <summary>
     /// Maps a JSON property to a .NET member or constructor parameter.
     /// </summary>
     public class JsonProperty
