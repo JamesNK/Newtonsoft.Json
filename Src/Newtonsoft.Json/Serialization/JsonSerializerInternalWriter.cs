@@ -450,9 +450,10 @@ namespace Newtonsoft.Json.Serialization
             Dictionary<JsonProperty, JsonPropertyInstance> instances = new Dictionary<JsonProperty, JsonPropertyInstance>();
             Parallel.ForEach(contract.Properties, (property) =>
             {
+                var propertyInstance = GetPropertyInstance(property, value);
                 lock (instances)
                 {
-                    instances.Add(property, GetPropertyInstance(property, value));
+                    instances.Add(property, propertyInstance);
                 }
             });
 
