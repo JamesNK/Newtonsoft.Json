@@ -1361,7 +1361,7 @@ To fix this error either change the environment to be fully trusted, change the 
         {
             IDynamicMetaObjectProvider newObject;
 
-            if (!contract.IsInterfaceOrAbstract)
+            if (!contract.IsConcreteType)
                 throw JsonSerializationException.Create(reader, "Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantiated.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
             if (contract.DefaultCreator != null &&
@@ -1693,9 +1693,9 @@ To fix this error either change the environment to be fully trusted, change the 
         {
             object newObject = null;
 
-            if (!objectContract.IsInterfaceOrAbstract)
+            if (!objectContract.IsConcreteType)
             {
-#if PORTABLE40
+#if (PORTABLE40 || PORTABLE)
                 throw JsonSerializationException.Create(reader, "Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantiated.".FormatWith(CultureInfo.InvariantCulture, objectContract.UnderlyingType));
 #else
                 createdFromNonDefaultConstructor = false;
