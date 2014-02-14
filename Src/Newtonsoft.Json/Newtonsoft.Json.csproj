@@ -207,6 +207,7 @@
     <Compile Include="Utilities\DateTimeParser.cs" />
     <Compile Include="Utilities\DateTimeUtils.cs" />
     <Compile Include="Utilities\DictionaryWrapper.cs" />
+    <Compile Include="Utilities\DynamicConcrete.cs" />
     <Compile Include="Utilities\DynamicProxy.cs" />
     <Compile Include="Utilities\DynamicProxyMetaObject.cs" />
     <Compile Include="Utilities\DynamicReflectionDelegateFactory.cs" />

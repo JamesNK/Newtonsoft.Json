@@ -1695,10 +1695,13 @@ To fix this error either change the environment to be fully trusted, change the 
 
             if (!objectContract.IsInterfaceOrAbstract)
             {
+#if PORTABLE40
+                throw JsonSerializationException.Create(reader, "Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantiated.".FormatWith(CultureInfo.InvariantCulture, objectContract.UnderlyingType));
+#else
                 createdFromNonDefaultConstructor = false;
                 return DynamicConcrete.GetInstanceFor(objectContract.UnderlyingType);
+#endif
             }
-                //throw JsonSerializationException.Create(reader, "Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantiated.".FormatWith(CultureInfo.InvariantCulture, objectContract.UnderlyingType));
 
             if (objectContract.OverrideConstructor != null)
             {

@@ -234,6 +234,7 @@
     <Compile Include="Serialization\DynamicTests.cs" />
     <Compile Include="Serialization\EntitiesSerializationTests.cs" />
     <Compile Include="Serialization\ImmutableCollectionsTests.cs" />
+    <Compile Include="Serialization\InterfaceHandlingTests.cs" />
     <Compile Include="Serialization\JsonPropertyCollectionTests.cs" />
     <Compile Include="Serialization\JsonSerializerTest.cs" />
     <Compile Include="Serialization\MissingMemberHandlingTests.cs" />

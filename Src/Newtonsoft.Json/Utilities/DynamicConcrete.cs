@@ -1,7 +1,11 @@
 ﻿using System;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
+#endif
 
 namespace Newtonsoft.Json.Utilities
 {
@@ -115,10 +119,13 @@ namespace Newtonsoft.Json.Utilities
                     var getMethod = typeof(Activator).GetMethod("CreateInstance",
                                                                        new[] { typeof(Type) });
                     var lb = methodILGen.DeclareLocal(methodInfo.ReturnType);
-                    methodILGen.Emit(OpCodes.Ldtoken, lb.LocalType);
-                    methodILGen.Emit(OpCodes.Call, typeof(Type).GetMethod("GetTypeFromHandle"));
-                    methodILGen.Emit(OpCodes.Callvirt, getMethod);
-                    methodILGen.Emit(OpCodes.Unbox_Any, lb.LocalType);
+                    if (lb.LocalType != null)
+                    {
+                        methodILGen.Emit(OpCodes.Ldtoken, lb.LocalType);
+                        methodILGen.Emit(OpCodes.Call, typeof(Type).GetMethod("GetTypeFromHandle"));
+                        methodILGen.Emit(OpCodes.Callvirt, getMethod);
+                        methodILGen.Emit(OpCodes.Unbox_Any, lb.LocalType);
+                    }
                 }
                 else
                 {
