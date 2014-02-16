@@ -92,6 +92,29 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class JsonSerializerTest : TestFixtureBase
     {
+
+        [Test]
+        public void ExtensionDataWithNull()
+        {
+            string json = @"{
+            'TaxRate': 0.125,
+            'a':null
+            }";
+
+            var invoice = JsonConvert.DeserializeObject<ExtendedObject>(json);
+
+            string result = JsonConvert.SerializeObject(invoice);
+
+            Assert.AreEqual(@"{""TaxRate"":0.125,""a"":null}", result);
+        }
+
+
+        class ExtendedObject
+        {
+            [JsonExtensionData]
+            private IDictionary<string, JToken> _additionalData;
+        }
+
         public class GenericItem<T>
         {
             public T Value { get; set; }

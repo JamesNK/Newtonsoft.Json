@@ -482,7 +482,7 @@ namespace Newtonsoft.Json.Serialization
 
                 // convert object value to JToken so it is compatible with dictionary
                 // could happen because of primitive types, type name handling and references
-                if (isJTokenValueType && !(value is JToken))
+                if (isJTokenValueType && !(value is JToken) && value!=null)
                     value = JToken.FromObject(value);
 
                 setExtensionDataDictionaryValue(dictionary, key, value);
