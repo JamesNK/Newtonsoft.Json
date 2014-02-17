@@ -34,6 +34,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Security;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities;
 using System.Runtime.Serialization;
@@ -212,6 +213,11 @@ namespace Newtonsoft.Json.Serialization
             return isReference;
         }
 
+        private bool ShouldWriteReference(JsonPropertyInstance instance, JsonContainerContract collectionContract, JsonProperty containerProperty)
+        {
+            return ShouldWriteReference(instance.Value, instance.Property, instance.Contract, collectionContract, containerProperty);
+        }
+
         private bool ShouldWriteReference(object value, JsonProperty property, JsonContract valueContract, JsonContainerContract collectionContract, JsonProperty containerProperty)
         {
             if (value == null)
@@ -235,6 +241,11 @@ namespace Newtonsoft.Json.Serialization
             return Serializer.GetReferenceResolver().IsReferenced(this, value);
         }
 
+        private bool ShouldWriteProperty(JsonPropertyInstance instance)
+        {
+            return ShouldWriteProperty(instance.Value, instance.Property);
+        }
+
         private bool ShouldWriteProperty(object memberValue, JsonProperty property)
         {
             if (property.NullValueHandling.GetValueOrDefault(Serializer._nullValueHandling) == NullValueHandling.Ignore &&
@@ -246,6 +257,11 @@ namespace Newtonsoft.Json.Serialization
                 return false;
 
             return true;
+        }
+
+        private bool CheckForCircularReference(JsonWriter writer, JsonPropertyInstance instance, JsonContainerContract containerContract, JsonProperty containerProperty)
+        {
+            return CheckForCircularReference(writer, instance.Value, instance.Property, instance.Contract, containerContract, containerProperty);
         }
 
         private bool CheckForCircularReference(JsonWriter writer, object value, JsonProperty property, JsonContract contract, JsonContainerContract containerContract, JsonProperty containerProperty)
@@ -381,6 +397,46 @@ namespace Newtonsoft.Json.Serialization
             contract.InvokeOnSerialized(value, Serializer._context);
         }
 
+        private JsonPropertyInstance GetPropertyInstance(JsonProperty property, object target)
+        {
+            JsonPropertyInstance instance = new JsonPropertyInstance(property)
+            {
+                Ignored = property.Ignored,
+                Readable = property.Readable
+            };
+            try
+            {
+                if (instance.Ignored)
+                {
+                    return instance;
+                }
+                instance.ShouldSerialize = ShouldSerialize(property, target);
+                if (instance.ShouldSerialize == false)
+                {
+                    return instance;
+                }
+                instance.IsSpecified = IsSpecified(property, target);
+                if (instance.IsSpecified == false)
+                {
+                    return instance;
+                }
+
+                if (!instance.Ignored && instance.Readable && instance.ShouldSerialize && instance.IsSpecified)
+                {
+                    if (property.PropertyContract == null)
+                        property.PropertyContract = Serializer._contractResolver.ResolveContract(property.PropertyType);
+                    var value = property.ValueProvider.GetValue(target);
+                    instance.Value = value;
+                    instance.Contract = (property.PropertyContract.IsSealed) ? property.PropertyContract : GetContractSafe(value);
+                }
+            }
+            catch (Exception ex)
+            {
+                instance.Exception = ex;
+            }
+            return instance;
+        }
+
         private void SerializeObject(JsonWriter writer, object value, JsonObjectContract contract, JsonProperty member, JsonContainerContract collectionContract, JsonProperty containerProperty)
         {
             OnSerializing(writer, contract, value);
@@ -391,19 +447,28 @@ namespace Newtonsoft.Json.Serialization
 
             int initialDepth = writer.Top;
 
+            Dictionary<JsonProperty, JsonPropertyInstance> instances = new Dictionary<JsonProperty, JsonPropertyInstance>();
+            Parallel.ForEach(contract.Properties, (property) =>
+            {
+                var propertyInstance = GetPropertyInstance(property, value);
+                lock (instances)
+                {
+                    instances.Add(property, propertyInstance);
+                }
+            });
+
             for (int index = 0; index < contract.Properties.Count; index++)
             {
                 JsonProperty property = contract.Properties[index];
+                JsonPropertyInstance instance = instances[property];
+
                 try
                 {
-                    object memberValue;
-                    JsonContract memberContract;
-
-                    if (!CalculatePropertyValues(writer, value, contract, member, property, out memberContract, out memberValue))
+                    if (!CalculatePropertyValues(writer, instance, contract, member))
                         continue;
-
+                    
                     property.WritePropertyName(writer);
-                    SerializeValue(writer, memberValue, memberContract, property, contract, member);
+                    SerializeValue(writer, instance.Value, instance.Contract, property, contract, member);
                 }
                 catch (Exception ex)
                 {
@@ -450,6 +515,41 @@ namespace Newtonsoft.Json.Serialization
             _serializeStack.RemoveAt(_serializeStack.Count - 1);
 
             OnSerialized(writer, contract, value);
+        }
+
+        private bool CalculatePropertyValues(JsonWriter writer, JsonPropertyInstance instance, JsonContainerContract contract, JsonProperty member)
+        {
+            if (instance.Exception != null)
+            {
+                throw instance.Exception;
+            }
+            if (!instance.Ignored && instance.Readable && ShouldSerialize(writer, instance) && IsSpecified(writer, instance))
+            {
+                if (ShouldWriteProperty(instance))
+                {
+                    if (ShouldWriteReference(instance, contract, member))
+                    {
+                        instance.Property.WritePropertyName(writer);
+                        WriteReference(writer, instance.Value);
+                        return false;
+                    }
+
+                    if (!CheckForCircularReference(writer, instance, contract, member))
+                        return false;
+
+                    if (instance.Value == null)
+                    {
+                        JsonObjectContract objectContract = contract as JsonObjectContract;
+                        Required resolvedRequired = instance.Property._required ?? ((objectContract != null) ? objectContract.ItemRequired : null) ?? Required.Default;
+                        if (resolvedRequired == Required.Always)
+                            throw JsonSerializationException.Create(null, writer.ContainerPath, "Cannot write a null value for property '{0}'. Property requires a value.".FormatWith(CultureInfo.InvariantCulture, instance.Property.PropertyName), null);
+                    }
+                    return true;
+                }
+            }
+            instance.Value = null;
+            instance.Contract = null;
+            return false;
         }
 
         private bool CalculatePropertyValues(JsonWriter writer, object value, JsonContainerContract contract, JsonProperty member, JsonProperty property, out JsonContract memberContract, out object memberValue)
@@ -1002,6 +1102,26 @@ To fix this error either change the environment to be fully trusted, change the 
             }
         }
 
+        private bool ShouldSerialize(JsonWriter writer, JsonPropertyInstance instance)
+        {
+            if (instance.Property.ShouldSerialize != null)
+            {
+                if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
+                    TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, writer.Path, "ShouldSerialize result for property '{0}' on {1}: {2}".FormatWith(CultureInfo.InvariantCulture, instance.Property.PropertyName, instance.Property.DeclaringType, instance.ShouldSerialize)), null);
+            }
+            return instance.ShouldSerialize;
+        }
+
+        private bool ShouldSerialize(JsonProperty property, object target)
+        {
+            if (property.ShouldSerialize == null)
+                return true;
+
+            bool shouldSerialize = property.ShouldSerialize(target);
+
+            return shouldSerialize;
+        }
+
         private bool ShouldSerialize(JsonWriter writer, JsonProperty property, object target)
         {
             if (property.ShouldSerialize == null)
@@ -1013,6 +1133,25 @@ To fix this error either change the environment to be fully trusted, change the 
                 TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, writer.Path, "ShouldSerialize result for property '{0}' on {1}: {2}".FormatWith(CultureInfo.InvariantCulture, property.PropertyName, property.DeclaringType, shouldSerialize)), null);
 
             return shouldSerialize;
+        }
+
+        private bool IsSpecified(JsonProperty property, object target)
+        {
+            if (property.GetIsSpecified == null)
+                return true;
+
+            bool isSpecified = property.GetIsSpecified(target);
+            return isSpecified;
+        }
+
+        private bool IsSpecified(JsonWriter writer, JsonPropertyInstance instance)
+        {
+            if (instance.Property.GetIsSpecified != null)
+            {
+                if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
+                    TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, writer.Path, "IsSpecified result for property '{0}' on {1}: {2}".FormatWith(CultureInfo.InvariantCulture, instance.Property.PropertyName, instance.Property.DeclaringType, instance.IsSpecified)), null);
+            }
+            return instance.IsSpecified;
         }
 
         private bool IsSpecified(JsonWriter writer, JsonProperty property, object target)
