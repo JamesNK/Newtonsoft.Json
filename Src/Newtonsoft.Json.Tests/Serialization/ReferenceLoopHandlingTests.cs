@@ -56,6 +56,23 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Test]
+        public void HandleObjectReferenceLoopBadEquality()
+        {
+            ReferenceLoopHandlingObjectBadEquality o = new ReferenceLoopHandlingObjectBadEquality();
+            o.Value = new ReferenceLoopHandlingObjectBadEquality();
+
+            string json = JsonConvert.SerializeObject(o, Formatting.Indented, new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Error
+            });
+            Assert.AreEqual(@"{
+  ""Value"": {
+    ""Value"": null
+  }
+}", json);
+        }
+
+        [Test]
         public void IgnoreObjectReferenceLoop()
         {
             ReferenceLoopHandlingObjectContainerAttribute o = new ReferenceLoopHandlingObjectContainerAttribute();
@@ -304,6 +321,22 @@ namespace Newtonsoft.Json.Tests.Serialization
     [JsonDictionary(ItemReferenceLoopHandling = ReferenceLoopHandling.Ignore)]
     public class ReferenceLoopHandlingDictionary : Dictionary<string, ReferenceLoopHandlingDictionary>
     {
+    }
+
+    [JsonObject(ItemReferenceLoopHandling = ReferenceLoopHandling.Error)]
+    public class ReferenceLoopHandlingObjectBadEquality
+    {
+        public override bool Equals(object obj)
+        {
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            return 0;
+        }
+
+        public ReferenceLoopHandlingObjectBadEquality Value { get; set; }
     }
 
     [JsonObject(ItemReferenceLoopHandling = ReferenceLoopHandling.Ignore)]
