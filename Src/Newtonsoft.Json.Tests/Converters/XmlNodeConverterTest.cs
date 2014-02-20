@@ -43,6 +43,7 @@ using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Linq;
 #if !NET20
 using System.Xml.Linq;
+using System.Diagnostics;
 
 #endif
 
@@ -1909,7 +1910,27 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual(xml.notNull.ToString(), w2.notNull.ToString());
         }
 #endif
+
+        [Test]
+        public void SerializeAndDeserializeXmlWithNamespaceInChildrenRootDontHaveNameSpace()
+        {
+            var xmlString = @"<root>
+                              <b xmlns='http://www.example.com/ns'>Asd</b>
+                              <c>AAA</c>
+                              <test>adad</test>
+                              </root>";
+
+            var xml = XElement.Parse(xmlString);
+
+            var json1 = JsonConvert.SerializeXNode(xml);
+            var xmlBack = JsonConvert.DeserializeObject<XElement>(json1);
+
+            var equals = XElement.DeepEquals(xmlBack, xml);
+            Assert.IsTrue(equals);
+        }
     }
 }
 
 #endif
+
+

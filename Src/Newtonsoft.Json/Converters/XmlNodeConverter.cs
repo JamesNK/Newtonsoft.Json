@@ -1232,10 +1232,9 @@ namespace Newtonsoft.Json.Converters
                     if (reader.TokenType != JsonToken.EndObject)
                     {
                         manager.PushScope();
-
                         DeserializeNode(reader, document, manager, element);
-
                         manager.PopScope();
+                        manager.RemoveNamespace(string.Empty, manager.DefaultNamespace);
                     }
                 }
             }
@@ -1394,6 +1393,7 @@ namespace Newtonsoft.Json.Converters
                             }
                             else
                             {
+                               
                                 finishedAttributes = true;
                             }
 
