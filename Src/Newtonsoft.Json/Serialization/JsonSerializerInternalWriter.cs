@@ -264,7 +264,7 @@ namespace Newtonsoft.Json.Serialization
             if (referenceLoopHandling == null && containerContract != null)
                 referenceLoopHandling = containerContract.ItemReferenceLoopHandling;
 
-            if (_serializeStack.IndexOf(value) != -1)
+            if (_serializeStack.IndexOf(o => ReferenceEquals(o,value)) != -1)
             {
                 string message = "Self referencing loop detected";
                 if (property != null)
