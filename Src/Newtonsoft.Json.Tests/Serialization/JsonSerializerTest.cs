@@ -84,7 +84,6 @@ using System.Linq;
 #if !(NETFX_CORE)
 using System.Drawing;
 using System.Diagnostics;
-
 #endif
 
 namespace Newtonsoft.Json.Tests.Serialization
@@ -92,27 +91,44 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class JsonSerializerTest : TestFixtureBase
     {
-
         [Test]
         public void ExtensionDataWithNull()
         {
             string json = @"{
-            'TaxRate': 0.125,
-            'a':null
+              'TaxRate': 0.125,
+              'a':null
             }";
 
             var invoice = JsonConvert.DeserializeObject<ExtendedObject>(json);
+
+            Assert.AreEqual(JTokenType.Null, invoice._additionalData["a"].Type);
+            Assert.AreEqual(typeof(double), ((JValue)invoice._additionalData["TaxRate"]).Value.GetType());
 
             string result = JsonConvert.SerializeObject(invoice);
 
             Assert.AreEqual(@"{""TaxRate"":0.125,""a"":null}", result);
         }
 
+        [Test]
+        public void ExtensionDataFloatParseHandling()
+        {
+            string json = @"{
+              'TaxRate': 0.125,
+              'a':null
+            }";
+
+            var invoice = JsonConvert.DeserializeObject<ExtendedObject>(json, new JsonSerializerSettings
+            {
+                FloatParseHandling = FloatParseHandling.Decimal
+            });
+
+            Assert.AreEqual(typeof(decimal), ((JValue)invoice._additionalData["TaxRate"]).Value.GetType());
+        }
 
         class ExtendedObject
         {
             [JsonExtensionData]
-            private IDictionary<string, JToken> _additionalData;
+            internal IDictionary<string, JToken> _additionalData;
         }
 
         public class GenericItem<T>
