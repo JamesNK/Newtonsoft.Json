@@ -1911,8 +1911,9 @@ namespace Newtonsoft.Json.Tests.Converters
         }
 #endif
 
+#if !NET20
         [Test]
-        public void SerializeAndDeserializeXmlWithNamespaceInChildrenRootDontHaveNameSpace()
+        public void SerializeAndDeserializeXElementWithNamespaceInChildrenRootDontHaveNameSpace()
         {
             var xmlString = @"<root>
                               <b xmlns='http://www.example.com/ns'>Asd</b>
@@ -1927,6 +1928,25 @@ namespace Newtonsoft.Json.Tests.Converters
 
             var equals = XElement.DeepEquals(xmlBack, xml);
             Assert.IsTrue(equals);
+        }
+#endif
+
+        [Test]
+        public void SerializeAndDeserializeXmlElementWithNamespaceInChildrenRootDontHaveNameSpace()
+        {
+            var xmlString = @"<root>
+                              <b xmlns='http://www.example.com/ns'>Asd</b>
+                              <c>AAA</c>
+                              <test>adad</test>
+                              </root>";
+
+            XmlDocument xml = new XmlDocument();
+            xml.LoadXml(xmlString);
+
+            var json1 = JsonConvert.SerializeXmlNode(xml);
+            var xmlBack = JsonConvert.DeserializeObject<XmlDocument>(json1);
+
+            Assert.AreEqual(@"<root><b xmlns=""http://www.example.com/ns"">Asd</b><c>AAA</c><test>adad</test></root>", xmlBack.OuterXml);
         }
     }
 }
