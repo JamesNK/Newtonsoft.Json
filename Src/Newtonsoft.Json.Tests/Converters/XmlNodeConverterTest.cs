@@ -1928,6 +1928,24 @@ namespace Newtonsoft.Json.Tests.Converters
             var equals = XElement.DeepEquals(xmlBack, xml);
             Assert.IsTrue(equals);
         }
+
+        [Test]
+        public void SerializeAndDeserializeXmlWithNamespaceInChildrenAndNoValueInChildren()
+        {
+            var xmlString = @"<root>
+                              <b xmlns='http://www.example.com/ns'/>
+                              <c>AAA</c>
+                              <test>adad</test>
+                              </root>";
+
+            var xml = XElement.Parse(xmlString);
+
+            var json1 = JsonConvert.SerializeXNode(xml);
+            var xmlBack = JsonConvert.DeserializeObject<XElement>(json1);
+
+            var equals = XElement.DeepEquals(xmlBack, xml);
+            Assert.IsTrue(equals);
+        }
     }
 }
 
