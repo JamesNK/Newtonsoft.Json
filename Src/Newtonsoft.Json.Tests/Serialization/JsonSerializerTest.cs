@@ -125,11 +125,13 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(typeof(decimal), ((JValue)invoice._additionalData["TaxRate"]).Value.GetType());
         }
 
+#pragma warning disable 649
         class ExtendedObject
         {
             [JsonExtensionData]
             internal IDictionary<string, JToken> _additionalData;
         }
+#pragma warning restore 649
 
         public class GenericItem<T>
         {

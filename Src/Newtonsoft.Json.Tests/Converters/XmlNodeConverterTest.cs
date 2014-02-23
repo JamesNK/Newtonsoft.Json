@@ -43,8 +43,6 @@ using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Linq;
 #if !NET20
 using System.Xml.Linq;
-
-
 #endif
 
 namespace Newtonsoft.Json.Tests.Converters
