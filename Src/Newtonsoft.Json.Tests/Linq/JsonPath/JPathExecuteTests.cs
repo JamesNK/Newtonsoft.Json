@@ -51,6 +51,46 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
     public class JPathExecuteTests : TestFixtureBase
     {
         [Test]
+        public void EvaluateEmptyString()
+        {
+            JObject o = new JObject(
+                new JProperty("Blah", 1));
+
+            JToken t = o.SelectToken("");
+            Assert.AreEqual(o, t);
+        }
+
+        [Test]
+        public void EvaluateWhitespaceString()
+        {
+            JObject o = new JObject(
+                new JProperty("Blah", 1));
+
+            JToken t = o.SelectToken(" ");
+            Assert.AreEqual(o, t);
+        }
+
+        [Test]
+        public void EvaluateDollarString()
+        {
+            JObject o = new JObject(
+                new JProperty("Blah", 1));
+
+            JToken t = o.SelectToken("$");
+            Assert.AreEqual(o, t);
+        }
+
+        [Test]
+        public void EvaluateDollarTypeString()
+        {
+            JObject o = new JObject(
+                new JProperty("$values", new JArray(1, 2, 3)));
+
+            JToken t = o.SelectToken("$values[1]");
+            Assert.AreEqual(2, (int)t);
+        }
+
+        [Test]
         public void EvaluateSingleProperty()
         {
             JObject o = new JObject(

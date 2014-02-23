@@ -51,21 +51,24 @@ namespace Newtonsoft.Json.Linq.JsonPath
         {
             int currentPartStartIndex = _currentIndex;
 
-            if (_expression.Length == 0)
-                return;
-
             EatWhitespace();
+
+            if (_expression.Length == _currentIndex)
+                return;
 
             if (_expression[_currentIndex] == '$')
             {
-                _currentIndex++;
+                if (_expression.Length == 1)
+                    return;
 
-                EnsureLength("Unexpected end while parsing path.");
-
-                if (_expression[_currentIndex] != '.')
-                    throw new JsonException("Unexpected character while parsing path: " + _expression[_currentIndex]);
-
-                currentPartStartIndex = _currentIndex;
+                // only increment position for "$." or "$["
+                // otherwise assume property that starts with $
+                char c = _expression[_currentIndex + 1];
+                if (c == '.' || c == '[')
+                {
+                    _currentIndex++;
+                    currentPartStartIndex = _currentIndex;
+                }
             }
 
             if (!ParsePath(Filters, currentPartStartIndex, false))

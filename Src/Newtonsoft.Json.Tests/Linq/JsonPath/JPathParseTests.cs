@@ -142,6 +142,14 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
         }
 
         [Test]
+        public void RootArrayNoDot()
+        {
+            JPath path = new JPath("$[1]");
+            Assert.AreEqual(1, path.Filters.Count);
+            Assert.AreEqual(1, ((ArrayIndexFilter)path.Filters[0]).Index);
+        }
+
+        [Test]
         public void WildcardArray()
         {
             JPath path = new JPath("[*]");
