@@ -122,6 +122,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             {
                 var reader = new JsonTextReader(new StringReader(sb.ToString()));
                 var ser = new JsonSerializer();
+                ser.SpecialPropertyHandling = SpecialPropertyHandling.Default;
                 ser.Deserialize<bool>(reader);
             });
         }

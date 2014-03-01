@@ -136,7 +136,12 @@ Newtonsoft.Json Error: 0 : Error!
 
             JsonConvert.DeserializeObject<Staff>(
                 json,
-                new JsonSerializerSettings { TraceWriter = traceWriter, Converters = { new JavaScriptDateTimeConverter() } });
+                new JsonSerializerSettings
+                {
+                    TraceWriter = traceWriter,
+                    Converters = { new JavaScriptDateTimeConverter() },
+                    SpecialPropertyHandling = SpecialPropertyHandling.Default
+                });
 
             Console.WriteLine(traceWriter);
             // 2012-11-11T12:08:42.761 Info Started serializing Newtonsoft.Json.Tests.Serialization.Staff. Path ''.
@@ -398,6 +403,7 @@ Newtonsoft.Json Error: 0 : Error!
                 new JsonSerializerSettings
                 {
                     PreserveReferencesHandling = PreserveReferencesHandling.All,
+                    SpecialPropertyHandling = SpecialPropertyHandling.Default,
                     TraceWriter = traceWriter
                 });
 
@@ -517,6 +523,7 @@ Newtonsoft.Json Error: 0 : Error!
             JsonConvert.DeserializeObject(json, null, new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.All,
+                SpecialPropertyHandling = SpecialPropertyHandling.Default,
                 TraceWriter = traceWriter
             });
 

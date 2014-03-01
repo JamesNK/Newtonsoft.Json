@@ -2099,15 +2099,13 @@ keyword such as type of business.""
             });
             Assert.AreEqual(@"{""DefaultConverter"":""\/Date(0)\/"",""MemberConverter"":""1970-01-01T00:00:00Z""}", json);
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Could not convert string to DateTime: /Date(0)/. Path 'DefaultConverter', line 1, position 33.",
-                () =>
-                {
-                    JsonConvert.DeserializeObject<MemberConverterClass>(json, new JsonSerializerSettings
-                    {
-                        DateParseHandling = DateParseHandling.None
-                    });
-                });
+            var m2 = JsonConvert.DeserializeObject<MemberConverterClass>(json, new JsonSerializerSettings
+            {
+                DateParseHandling = DateParseHandling.None
+            });
+
+            Assert.AreEqual(new DateTime(1970, 1, 1), m2.DefaultConverter);
+            Assert.AreEqual(new DateTime(1970, 1, 1), m2.MemberConverter);
         }
 
         [Test]
@@ -2941,16 +2939,16 @@ keyword such as type of business.""
         [Test]
         public void TypedObjectDeserializationWithComments()
         {
-            string json = @"/*comment*/ { /*comment*/
-        ""Name"": /*comment*/ ""Apple"" /*comment*/, /*comment*/
+            string json = @"/*comment1*/ { /*comment2*/
+        ""Name"": /*comment3*/ ""Apple"" /*comment4*/, /*comment5*/
         ""ExpiryDate"": ""\/Date(1230422400000)\/"",
         ""Price"": 3.99,
-        ""Sizes"": /*comment*/ [ /*comment*/
-          ""Small"", /*comment*/
-          ""Medium"" /*comment*/,
-          /*comment*/ ""Large""
-        /*comment*/ ] /*comment*/
-      } /*comment*/";
+        ""Sizes"": /*comment6*/ [ /*comment7*/
+          ""Small"", /*comment8*/
+          ""Medium"" /*comment9*/,
+          /*comment10*/ ""Large""
+        /*comment11*/ ] /*comment12*/
+      } /*comment13*/";
 
             Product deserializedProduct = (Product)JsonConvert.DeserializeObject(json, typeof(Product));
 
@@ -3881,7 +3879,11 @@ Path ''"));
             string json = "{'$id':'1',key1:'value1',key2:'value2',key3:'value3'}";
 
             ExceptionAssert.Throws<JsonSerializationException>("Cannot preserve reference to readonly dictionary, or dictionary created from a non-default constructor: Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+DictionaryWithNoDefaultConstructor. Path 'key1', line 1, position 16.",
-                () => JsonConvert.DeserializeObject<DictionaryWithNoDefaultConstructor>(json, new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.All }));
+                () => JsonConvert.DeserializeObject<DictionaryWithNoDefaultConstructor>(json, new JsonSerializerSettings
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.All,
+                    SpecialPropertyHandling = SpecialPropertyHandling.Default
+                }));
         }
 
         public class DictionaryWithNoDefaultConstructor : Dictionary<string, string>
@@ -5505,6 +5507,7 @@ To fix this error either change the environment to be fully trusted, change the 
             JsonTextReader reader = new JsonTextReader(new StringReader(serializeObject));
 
             JsonSerializer serializer = new JsonSerializer();
+            serializer.DateParseHandling = DateParseHandling.None;
 
             var deserializeObject = serializer.Deserialize<TimeZoneOffsetObject>(reader);
 
@@ -5847,7 +5850,7 @@ To fix this error either change the environment to be fully trusted, change the 
         {
             var data = new DecimalTest(decimal.MinValue);
             var json = JsonConvert.SerializeObject(data);
-            var obj = JsonConvert.DeserializeObject<DecimalTest>(json);
+            var obj = JsonConvert.DeserializeObject<DecimalTest>(json, new JsonSerializerSettings { SpecialPropertyHandling = SpecialPropertyHandling.Default });
 
             Assert.AreEqual(decimal.MinValue, obj.Value);
         }

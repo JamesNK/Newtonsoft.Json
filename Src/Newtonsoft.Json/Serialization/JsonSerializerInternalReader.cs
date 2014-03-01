@@ -227,20 +227,33 @@ namespace Newtonsoft.Json.Serialization
             ValidationUtils.ArgumentNotNull(reader, "reader");
 
             // this is needed because we've already read inside the object, looking for special properties
-            JToken token;
             using (JTokenWriter writer = new JTokenWriter())
             {
                 writer.WriteStartObject();
 
-                if (reader.TokenType == JsonToken.PropertyName)
-                    writer.WriteToken(reader, reader.Depth - 1, true, true);
-                else
-                    writer.WriteEndObject();
+                do
+                {
+                    if (reader.TokenType == JsonToken.PropertyName)
+                    {
+                        string propertyName = (string)reader.Value;
+                        if (!reader.Read())
+                            break;
 
-                token = writer.Token;
+                        if (CheckPropertyName(reader, propertyName))
+                            continue;
+
+                        writer.WritePropertyName(propertyName);
+                        writer.WriteToken(reader, true, true);
+                    }
+                    else
+                    {
+                        writer.WriteEndObject();
+                        return writer.Token;
+                    }
+                } while (reader.Read());
+
+                throw JsonSerializationException.Create(reader, "Unexpected end when deserializing object.");
             }
-
-            return token;
         }
 
         private object CreateValueInternal(JsonReader reader, Type objectType, JsonContract contract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerMember, object existingValue)
@@ -252,8 +265,8 @@ namespace Newtonsoft.Json.Serialization
             {
                 switch (reader.TokenType)
                 {
-                        // populate a typed object or generic dictionary/array
-                        // depending upon whether an objectType was supplied
+                    // populate a typed object or generic dictionary/array
+                    // depending upon whether an objectType was supplied
                     case JsonToken.StartObject:
                         return CreateObject(reader, objectType, contract, member, containerContract, containerMember, existingValue);
                     case JsonToken.StartArray:
@@ -369,10 +382,11 @@ namespace Newtonsoft.Json.Serialization
                 {
                     JToken t = JToken.ReadFrom(reader);
                     tokenReader = (JTokenReader)t.CreateReader();
-                    reader = tokenReader;
 
                     // start
-                    CheckedRead(reader);
+                    CheckedRead(tokenReader);
+
+                    reader = tokenReader;
                 }
 
                 if (ReadSpecialPropertiesToken(tokenReader, ref objectType, ref contract, member, containerContract, containerMember, existingValue, out newValue, out id))
@@ -516,8 +530,6 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
 
                     string reference = (string)refToken;
 
-                    refToken.Parent.Remove();
-
                     if (reference != null)
                     {
                         if (additionalContent != null)
@@ -528,7 +540,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                         if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Info)
                             TraceWriter.Trace(TraceLevel.Info, JsonPosition.FormatMessage(reader as IJsonLineInfo, reader.Path, "Resolved object reference '{0}' to {1}.".FormatWith(CultureInfo.InvariantCulture, reference, newValue.GetType())), null);
 
-                        CheckedRead(reader);
+                        reader.Skip();
                         return true;
                     }
                 }
@@ -540,14 +552,27 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                     CheckedRead(typeTokenReader);
                     ResolveTypeName(typeTokenReader, ref objectType, ref contract, member, containerContract, containerMember, qualifiedTypeName);
 
-                    typeToken.Parent.Remove();
+                    JToken valueToken = current[JsonTypeReflector.ValuePropertyName];
+                    if (valueToken != null)
+                    {
+                        while (true)
+                        {
+                            CheckedRead(reader);
+                            if (reader.TokenType == JsonToken.PropertyName)
+                            {
+                                if ((string)reader.Value == JsonTypeReflector.ValuePropertyName)
+                                    return false;
+                            }
+
+                            CheckedRead(reader);
+                            reader.Skip();
+                        }
+                    }
                 }
                 JToken idToken = current[JsonTypeReflector.IdPropertyName];
                 if (idToken != null)
                 {
                     id = (string)idToken;
-
-                    idToken.Parent.Remove();
                 }
                 JToken valuesToken = current[JsonTypeReflector.ArrayValuesPropertyName];
                 if (valuesToken != null)
@@ -556,8 +581,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                     CheckedRead(listReader);
                     newValue = CreateList(listReader, objectType, contract, member, existingValue, id);
 
-                    valuesToken.Parent.Remove();
-                    CheckedRead(reader);
+                    reader.Skip();
                     return true;
                 }
             }
@@ -1095,6 +1119,8 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                 {
                     case JsonToken.PropertyName:
                         object keyValue = reader.Value;
+                        if (CheckPropertyName(reader, keyValue.ToString()))
+                            continue;
                         try
                         {
                             try
@@ -1849,6 +1875,9 @@ To fix this error either change the environment to be fully trusted, change the 
                     {
                         string memberName = reader.Value.ToString();
 
+                        if (CheckPropertyName(reader, memberName))
+                            continue;
+
                         try
                         {
                             // attempt exact case match first
@@ -1891,8 +1920,8 @@ To fix this error either change the environment to be fully trusted, change the 
                             else
                                 throw;
                         }
-                    }
                         break;
+                    }
                     case JsonToken.EndObject:
                         finished = true;
                         break;
@@ -1911,6 +1940,23 @@ To fix this error either change the environment to be fully trusted, change the 
 
             OnDeserialized(reader, contract, newObject);
             return newObject;
+        }
+
+        private bool CheckPropertyName(JsonReader reader, string memberName)
+        {
+            if (Serializer.SpecialPropertyHandling == SpecialPropertyHandling.ReadAhead)
+            {
+                switch (memberName)
+                {
+                    case "$type":
+                    case "$id":
+                    case "$ref":
+                    case "$values":
+                        reader.Skip();
+                        return true;
+                }
+            }
+            return false;
         }
 
         private void SetExtensionData(JsonObjectContract contract, JsonProperty member, JsonReader reader, string memberName, object o)

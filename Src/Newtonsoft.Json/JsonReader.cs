@@ -438,15 +438,21 @@ namespace Newtonsoft.Json
                     return null;
                 }
 
+                object temp;
+                if (DateTimeUtils.TryParseDateTime(s, DateParseHandling.DateTimeOffset, DateTimeZoneHandling, out temp))
+                {
+                    dt = (DateTimeOffset)temp;
+                    SetToken(JsonToken.Date, dt, false);
+                    return dt;
+                }
+
                 if (DateTimeOffset.TryParse(s, Culture, DateTimeStyles.RoundtripKind, out dt))
                 {
                     SetToken(JsonToken.Date, dt, false);
                     return dt;
                 }
-                else
-                {
-                    throw JsonReaderException.Create(this, "Could not convert string to DateTimeOffset: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
-                }
+                
+                throw JsonReaderException.Create(this, "Could not convert string to DateTimeOffset: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
             }
 
             if (t == JsonToken.EndArray)
@@ -720,16 +726,23 @@ namespace Newtonsoft.Json
                     return null;
                 }
 
+                object temp;
+                if (DateTimeUtils.TryParseDateTime(s, DateParseHandling.DateTime, DateTimeZoneHandling, out temp))
+                {
+                    dt = (DateTime)temp;
+                    dt = DateTimeUtils.EnsureDateTime(dt, DateTimeZoneHandling);
+                    SetToken(JsonToken.Date, dt, false);
+                    return dt;
+                }
+
                 if (DateTime.TryParse(s, Culture, DateTimeStyles.RoundtripKind, out dt))
                 {
                     dt = DateTimeUtils.EnsureDateTime(dt, DateTimeZoneHandling);
                     SetToken(JsonToken.Date, dt, false);
                     return dt;
                 }
-                else
-                {
-                    throw JsonReaderException.Create(this, "Could not convert string to DateTime: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
-                }
+
+                throw JsonReaderException.Create(this, "Could not convert string to DateTime: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
             }
 
             if (TokenType == JsonToken.EndArray)
