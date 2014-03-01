@@ -1948,10 +1948,10 @@ To fix this error either change the environment to be fully trusted, change the 
             {
                 switch (memberName)
                 {
-                    case "$type":
-                    case "$id":
-                    case "$ref":
-                    case "$values":
+                    case JsonTypeReflector.IdPropertyName:
+                    case JsonTypeReflector.RefPropertyName:
+                    case JsonTypeReflector.TypePropertyName:
+                    case JsonTypeReflector.ArrayValuesPropertyName:
                         reader.Skip();
                         return true;
                 }

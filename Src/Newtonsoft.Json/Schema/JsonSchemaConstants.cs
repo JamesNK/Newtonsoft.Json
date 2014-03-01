@@ -63,8 +63,6 @@ namespace Newtonsoft.Json.Schema
         public const string OptionValuePropertyName = "value";
         public const string OptionLabelPropertyName = "label";
 
-        public const string ReferencePropertyName = "$ref";
-
         public static readonly IDictionary<string, JsonSchemaType> JsonSchemaTypeMapping = new Dictionary<string, JsonSchemaType>
         {
             { "string", JsonSchemaType.String },

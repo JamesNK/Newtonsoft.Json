@@ -25,6 +25,7 @@
 
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
@@ -52,7 +53,7 @@ namespace Newtonsoft.Json.Schema
             if (schema.Id != null && _resolver.GetSchema(schema.Id) != null)
             {
                 _writer.WriteStartObject();
-                _writer.WritePropertyName(JsonSchemaConstants.ReferencePropertyName);
+                _writer.WritePropertyName(JsonTypeReflector.RefPropertyName);
                 _writer.WriteValue(schema.Id);
                 _writer.WriteEndObject();
             }

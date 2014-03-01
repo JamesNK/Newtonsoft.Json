@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Globalization;
+using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
@@ -760,13 +761,13 @@ namespace Newtonsoft.Json
                 if (!ReadInternal())
                     throw JsonReaderException.Create(this, "Unexpected end when reading bytes.");
 
-                if (Value.ToString() == "$type")
+                if (Value.ToString() == JsonTypeReflector.TypePropertyName)
                 {
                     ReadInternal();
                     if (Value != null && Value.ToString().StartsWith("System.Byte[]"))
                     {
                         ReadInternal();
-                        if (Value.ToString() == "$value")
+                        if (Value.ToString() == JsonTypeReflector.ValuePropertyName)
                         {
                             return true;
                         }
