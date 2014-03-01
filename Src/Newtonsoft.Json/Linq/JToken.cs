@@ -190,7 +190,11 @@ namespace Newtonsoft.Json.Linq
                 for (int i = 0; i < ancestors.Count; i++)
                 {
                     JToken current = ancestors[i];
-                    JToken next = (i + 1 < ancestors.Count) ? ancestors[i + 1] : null;
+                    JToken next = null;
+                    if (i + 1 < ancestors.Count)
+                        next = ancestors[i + 1];
+                    else if (ancestors[i].Type == JTokenType.Property)
+                        next = ancestors[i];
 
                     if (next != null)
                     {
@@ -1636,7 +1640,7 @@ namespace Newtonsoft.Json.Linq
         /// <returns>An <see cref="JsonReader"/> that can be used to read this token and its descendants.</returns>
         public JsonReader CreateReader()
         {
-            return new JTokenReader(this);
+            return new JTokenReader(this, Path);
         }
 
         internal static JToken FromObjectInternal(object o, JsonSerializer jsonSerializer)

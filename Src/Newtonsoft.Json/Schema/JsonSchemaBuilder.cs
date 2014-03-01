@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json.Serialization;
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -194,7 +195,7 @@ namespace Newtonsoft.Json.Schema
                 throw JsonException.Create(token, token.Path, "Expected object while parsing schema object, got {0}.".FormatWith(CultureInfo.InvariantCulture, token.Type));
 
             JToken referenceToken;
-            if (schemaObject.TryGetValue(JsonSchemaConstants.ReferencePropertyName, out referenceToken))
+            if (schemaObject.TryGetValue(JsonTypeReflector.RefPropertyName, out referenceToken))
             {
                 JsonSchema deferredSchema = new JsonSchema();
                 deferredSchema.DeferredReference = (string)referenceToken;

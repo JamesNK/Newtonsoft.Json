@@ -130,6 +130,10 @@ namespace Newtonsoft.Json.Linq
 
         internal override void InsertItem(int index, JToken item, bool skipParentCheck)
         {
+            // don't add comments to JProperty
+            if (item != null && item.Type == JTokenType.Comment)
+                return;
+
             if (Value != null)
                 throw new JsonException("{0} cannot have multiple values.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
 

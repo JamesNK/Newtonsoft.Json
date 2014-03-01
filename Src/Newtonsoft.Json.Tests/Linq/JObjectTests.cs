@@ -58,6 +58,25 @@ namespace Newtonsoft.Json.Tests.Linq
     public class JObjectTests : TestFixtureBase
     {
         [Test]
+        public void JObjectWithComments()
+        {
+            string json = @"{ /*comment2*/
+        ""Name"": /*comment3*/ ""Apple"" /*comment4*/, /*comment5*/
+        ""ExpiryDate"": ""\/Date(1230422400000)\/"",
+        ""Price"": 3.99,
+        ""Sizes"": /*comment6*/ [ /*comment7*/
+          ""Small"", /*comment8*/
+          ""Medium"" /*comment9*/,
+          /*comment10*/ ""Large""
+        /*comment11*/ ] /*comment12*/
+      } /*comment13*/";
+
+            JToken o = JToken.Parse(json);
+
+            Assert.AreEqual("Apple", (string) o["Name"]);
+        }
+
+        [Test]
         public void WritePropertyWithNoValue()
         {
             var o = new JObject();

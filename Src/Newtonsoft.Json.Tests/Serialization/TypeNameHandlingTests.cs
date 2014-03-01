@@ -122,6 +122,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             {
                 var reader = new JsonTextReader(new StringReader(sb.ToString()));
                 var ser = new JsonSerializer();
+                ser.SpecialPropertyHandling = SpecialPropertyHandling.Default;
                 ser.Deserialize<bool>(reader);
             });
         }
@@ -1590,6 +1591,8 @@ namespace Newtonsoft.Json.Tests.Serialization
                 TypeNameHandling = TypeNameHandling.All
             };
             string serializedString = JsonConvert.SerializeObject(inputContext, jsonSerializerSettings);
+
+            Console.WriteLine(serializedString);
 
             var deserializedObject = (Dictionary<string, Guid>)JsonConvert.DeserializeObject(serializedString, jsonSerializerSettings);
 

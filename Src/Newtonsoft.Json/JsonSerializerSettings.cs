@@ -45,6 +45,7 @@ namespace Newtonsoft.Json
         internal const PreserveReferencesHandling DefaultPreserveReferencesHandling = PreserveReferencesHandling.None;
         internal const ConstructorHandling DefaultConstructorHandling = ConstructorHandling.Default;
         internal const TypeNameHandling DefaultTypeNameHandling = TypeNameHandling.None;
+        internal const SpecialPropertyHandling DefaultSpecialPropertyHandling = SpecialPropertyHandling.Default;
         internal const FormatterAssemblyStyle DefaultTypeNameAssemblyFormat = FormatterAssemblyStyle.Simple;
         internal static readonly StreamingContext DefaultContext;
 
@@ -83,6 +84,7 @@ namespace Newtonsoft.Json
         internal StreamingContext? _context;
         internal ConstructorHandling? _constructorHandling;
         internal TypeNameHandling? _typeNameHandling;
+        internal SpecialPropertyHandling? _specialPropertyHandling;
 
         /// <summary>
         /// Gets or sets how reference loops (e.g. a class referencing itself) is handled.
@@ -158,6 +160,16 @@ namespace Newtonsoft.Json
         {
             get { return _typeNameHandling ?? DefaultTypeNameHandling; }
             set { _typeNameHandling = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets how special properties are used during deserialization.
+        /// </summary>
+        /// <value>The special properties handling.</value>
+        public SpecialPropertyHandling SpecialPropertyHandling
+        {
+            get { return _specialPropertyHandling ?? DefaultSpecialPropertyHandling; }
+            set { _specialPropertyHandling = value; }
         }
 
         /// <summary>

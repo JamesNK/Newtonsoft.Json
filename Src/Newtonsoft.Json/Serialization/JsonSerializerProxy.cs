@@ -108,6 +108,12 @@ namespace Newtonsoft.Json.Serialization
             set { _serializer.TypeNameHandling = value; }
         }
 
+        public override SpecialPropertyHandling SpecialPropertyHandling
+        {
+            get { return _serializer.SpecialPropertyHandling; }
+            set { _serializer.SpecialPropertyHandling = value; }
+        }
+
         public override FormatterAssemblyStyle TypeNameAssemblyFormat
         {
             get { return _serializer.TypeNameAssemblyFormat; }

@@ -33,9 +33,10 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     public class JTokenReader : JsonReader, IJsonLineInfo
     {
+        private readonly string _initialPath;
         private readonly JToken _root;
         private JToken _parent;
-        private JToken _current;
+        internal JToken _current;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JTokenReader"/> class.
@@ -47,6 +48,12 @@ namespace Newtonsoft.Json.Linq
 
             _root = token;
             _current = token;
+        }
+
+        internal JTokenReader(JToken token, string initialPath)
+            : this(token)
+        {
+            _initialPath = initialPath;
         }
 
         /// <summary>
@@ -227,7 +234,7 @@ namespace Newtonsoft.Json.Linq
                     SetToken(JsonToken.StartArray);
                     break;
                 case JTokenType.Constructor:
-                    SetToken(JsonToken.StartConstructor);
+                    SetToken(JsonToken.StartConstructor, ((JConstructor)token).Name);
                     break;
                 case JTokenType.Property:
                     SetToken(JsonToken.PropertyName, ((JProperty)token).Name);
@@ -317,6 +324,31 @@ namespace Newtonsoft.Json.Linq
                     return info.LinePosition;
 
                 return 0;
+            }
+        }
+
+        /// <summary>
+        /// Gets the path of the current JSON token. 
+        /// </summary>
+        public override string Path
+        {
+            get
+            {
+                string path = base.Path;
+
+                if (!string.IsNullOrEmpty(_initialPath))
+                {
+                    if (string.IsNullOrEmpty(path))
+                        return _initialPath;
+
+                    if (_initialPath.EndsWith("]", StringComparison.OrdinalIgnoreCase)
+                        || path.StartsWith("[", StringComparison.OrdinalIgnoreCase))
+                        path = _initialPath + path;
+                    else
+                        path = _initialPath + "." + path;
+                }
+
+                return path;
             }
         }
     }

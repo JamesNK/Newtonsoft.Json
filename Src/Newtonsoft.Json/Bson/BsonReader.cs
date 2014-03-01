@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.IO;
+using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Linq;
 
@@ -356,7 +357,7 @@ namespace Newtonsoft.Json.Bson
             {
                 case State.ObjectStart:
                 {
-                    SetToken(JsonToken.PropertyName, "$ref");
+                    SetToken(JsonToken.PropertyName, JsonTypeReflector.RefPropertyName);
                     _bsonReaderState = BsonReaderState.ReferenceRef;
                     return true;
                 }
@@ -381,7 +382,7 @@ namespace Newtonsoft.Json.Bson
                 {
                     if (_bsonReaderState == BsonReaderState.ReferenceRef)
                     {
-                        SetToken(JsonToken.PropertyName, "$id");
+                        SetToken(JsonToken.PropertyName, JsonTypeReflector.IdPropertyName);
                         _bsonReaderState = BsonReaderState.ReferenceId;
                         return true;
                     }

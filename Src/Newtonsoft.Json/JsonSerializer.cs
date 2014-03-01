@@ -53,6 +53,7 @@ namespace Newtonsoft.Json
         internal NullValueHandling _nullValueHandling;
         internal DefaultValueHandling _defaultValueHandling;
         internal ConstructorHandling _constructorHandling;
+        internal SpecialPropertyHandling _specialPropertyHandling;
         internal JsonConverterCollection _converters;
         internal IContractResolver _contractResolver;
         internal ITraceWriter _traceWriter;
@@ -258,6 +259,22 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
+        /// Gets or sets how special properties are used during deserialization.
+        /// </summary>
+        /// <value>The special properties handling.</value>
+        public virtual SpecialPropertyHandling SpecialPropertyHandling
+        {
+            get { return _specialPropertyHandling; }
+            set
+            {
+                if (value < SpecialPropertyHandling.Default || value > SpecialPropertyHandling.ReadAhead)
+                    throw new ArgumentOutOfRangeException("value");
+
+                _specialPropertyHandling = value;
+            }
+        }
+
+        /// <summary>
         /// Gets a collection <see cref="JsonConverter"/> that will be used during serialization.
         /// </summary>
         /// <value>Collection <see cref="JsonConverter"/> that will be used during serialization.</value>
@@ -426,6 +443,7 @@ namespace Newtonsoft.Json
             _preserveReferencesHandling = JsonSerializerSettings.DefaultPreserveReferencesHandling;
             _constructorHandling = JsonSerializerSettings.DefaultConstructorHandling;
             _typeNameHandling = JsonSerializerSettings.DefaultTypeNameHandling;
+            _specialPropertyHandling = JsonSerializerSettings.DefaultSpecialPropertyHandling;
             _context = JsonSerializerSettings.DefaultContext;
             _binder = DefaultSerializationBinder.Instance;
 
@@ -515,6 +533,8 @@ namespace Newtonsoft.Json
             // serializer specific
             if (settings._typeNameHandling != null)
                 serializer.TypeNameHandling = settings.TypeNameHandling;
+            if (settings._specialPropertyHandling != null)
+                serializer.SpecialPropertyHandling = settings.SpecialPropertyHandling;
             if (settings._typeNameAssemblyFormat != null)
                 serializer.TypeNameAssemblyFormat = settings.TypeNameAssemblyFormat;
             if (settings._preserveReferencesHandling != null)
