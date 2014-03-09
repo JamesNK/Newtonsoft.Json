@@ -141,6 +141,24 @@ namespace Newtonsoft.Json.Tests.Converters
             json = JsonConvert.SerializeXNode(doc1, Formatting.Indented, true);
             Assert.AreEqual("null", json);
         }
+
+        [Test]
+        public void SerializeAndDeserializeXmlWithNamespaceInChildrenAndNoValueInChildren()
+        {
+            var xmlString = @"<root>
+                              <b xmlns='http://www.example.com/ns'/>
+                              <c>AAA</c>
+                              <test>adad</test>
+                              </root>";
+
+            var xml = XElement.Parse(xmlString);
+
+            var json1 = JsonConvert.SerializeXNode(xml);
+            var xmlBack = JsonConvert.DeserializeObject<XElement>(json1);
+
+            var equals = XElement.DeepEquals(xmlBack, xml);
+            Assert.IsTrue(equals);
+        }
 #endif
 
         [Test]

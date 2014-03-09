@@ -1234,8 +1234,9 @@ namespace Newtonsoft.Json.Converters
                         manager.PushScope();
                         DeserializeNode(reader, document, manager, element);
                         manager.PopScope();
-                        manager.RemoveNamespace(string.Empty, manager.DefaultNamespace);
                     }
+
+                    manager.RemoveNamespace(string.Empty, manager.DefaultNamespace);
                 }
             }
         }

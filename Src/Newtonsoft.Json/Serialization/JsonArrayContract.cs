@@ -148,6 +148,14 @@ namespace Newtonsoft.Json.Serialization
 
                 ParametrizedConstructor = CollectionUtils.ResolveEnumableCollectionConstructor(underlyingType, CollectionItemType);
 
+#if !(NET35 || NET20 || NETFX_CORE)
+                if (ParametrizedConstructor == null && underlyingType.Name == FSharpUtils.FSharpListTypeName)
+                {
+                    FSharpUtils.EnsureInitialized(underlyingType.Assembly());
+                    ParametrizedConstructor = FSharpUtils.CreateSeq(CollectionItemType);
+                }
+#endif
+
                 if (underlyingType.IsGenericType() && underlyingType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
                 {
                     _genericCollectionDefinitionType = tempCollectionType;

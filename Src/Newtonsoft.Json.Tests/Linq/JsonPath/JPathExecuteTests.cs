@@ -51,6 +51,16 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
     public class JPathExecuteTests : TestFixtureBase
     {
         [Test]
+        public void EvaluateEmptyPropertyIndexer()
+        {
+            JObject o = new JObject(
+                new JProperty("", 1));
+
+            JToken t = o.SelectToken("['']");
+            Assert.AreEqual(1, (int)t);
+        }
+
+        [Test]
         public void EvaluateEmptyString()
         {
             JObject o = new JObject(
@@ -58,6 +68,19 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
 
             JToken t = o.SelectToken("");
             Assert.AreEqual(o, t);
+
+            t = o.SelectToken("['']");
+            Assert.AreEqual(null, t);
+        }
+
+        [Test]
+        public void EvaluateEmptyStringWithMatchingEmptyProperty()
+        {
+            JObject o = new JObject(
+                new JProperty(" ", 1));
+
+            JToken t = o.SelectToken("[' ']");
+            Assert.AreEqual(1, (int)t);
         }
 
         [Test]

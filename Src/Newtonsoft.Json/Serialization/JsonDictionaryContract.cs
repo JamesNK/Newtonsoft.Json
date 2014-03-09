@@ -117,7 +117,17 @@ namespace Newtonsoft.Json.Serialization
             }
 
             if (keyType != null && valueType != null)
+            {
                 ParametrizedConstructor = CollectionUtils.ResolveEnumableCollectionConstructor(CreatedType, typeof(KeyValuePair<,>).MakeGenericType(keyType, valueType));
+
+#if !(NET35 || NET20 || NETFX_CORE)
+                if (ParametrizedConstructor == null && underlyingType.Name == FSharpUtils.FSharpMapTypeName)
+                {
+                    FSharpUtils.EnsureInitialized(underlyingType.Assembly());
+                    ParametrizedConstructor = FSharpUtils.CreateMap(keyType, valueType);
+                }
+#endif
+            }
 
             ShouldCreateWrapper = !typeof(IDictionary).IsAssignableFrom(CreatedType);
 

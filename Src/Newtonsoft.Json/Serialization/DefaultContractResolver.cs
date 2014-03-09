@@ -114,10 +114,12 @@ namespace Newtonsoft.Json.Serialization
 #if NETFX_CORE
             new JsonValueConverter(),
 #endif
+#if !(NET35 || NET20 || NETFX_CORE)
+            new DiscriminatedUnionConverter(),
+#endif
             new KeyValuePairConverter(),
             new BsonObjectIdConverter(),
-            new RegexConverter(),
-            new DiscriminatedUnionConverter()
+            new RegexConverter()
         };
 
         private static Dictionary<ResolverContractKey, JsonContract> _sharedContractCache;
@@ -721,29 +723,41 @@ namespace Newtonsoft.Json.Serialization
 
             if (onSerializing != null)
             {
-#if NETFX_CORE
-        if (!t.IsGenericType() || (t.GetGenericTypeDefinition() != typeof(ConcurrentDictionary<,>)))
-          contract.OnSerializingCallbacks.AddRange(onSerializing);
-#else
-                contract.OnSerializingCallbacks.AddRange(onSerializing);
+#if !(NET35 || NET20 || NETFX_CORE)
+                if (t.Name != FSharpUtils.FSharpSetTypeName && t.Name != FSharpUtils.FSharpMapTypeName)
 #endif
+                {
+#if NETFX_CORE
+                    if (!t.IsGenericType() || (t.GetGenericTypeDefinition() != typeof(ConcurrentDictionary<,>)))
+                         contract.OnSerializingCallbacks.AddRange(onSerializing);
+#else
+                    contract.OnSerializingCallbacks.AddRange(onSerializing);
+#endif
+                }
             }
 
             if (onSerialized != null)
                 contract.OnSerializedCallbacks.AddRange(onSerialized);
 
             if (onDeserializing != null)
+            {
                 contract.OnDeserializingCallbacks.AddRange(onDeserializing);
+            }
 
             if (onDeserialized != null)
             {
-                // ConcurrentDictionary throws an error here so don't use its OnDeserialized - http://json.codeplex.com/discussions/257093
-#if !(NET35 || NET20 || PORTABLE || PORTABLE40)
-                if (!t.IsGenericType() || (t.GetGenericTypeDefinition() != typeof(ConcurrentDictionary<,>)))
-                    contract.OnDeserializedCallbacks.AddRange(onDeserialized);
-#else
-                contract.OnDeserializedCallbacks.AddRange(onDeserialized);
+#if !(NET35 || NET20 || NETFX_CORE)
+                if (t.Name != FSharpUtils.FSharpSetTypeName && t.Name != FSharpUtils.FSharpMapTypeName)
 #endif
+                {
+                    // ConcurrentDictionary throws an error here so don't use its OnDeserialized - http://json.codeplex.com/discussions/257093
+#if !(NET35 || NET20 || PORTABLE || PORTABLE40)
+                    if (!t.IsGenericType() || (t.GetGenericTypeDefinition() != typeof(ConcurrentDictionary<,>)))
+                        contract.OnDeserializedCallbacks.AddRange(onDeserialized);
+#else
+                    contract.OnDeserializedCallbacks.AddRange(onDeserialized);
+#endif
+                }
             }
 
             if (onError != null)

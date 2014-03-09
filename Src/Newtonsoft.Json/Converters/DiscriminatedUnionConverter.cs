@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if !(NET35 || NET20 || NETFX_CORE)
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -44,16 +45,6 @@ namespace Newtonsoft.Json.Converters
     /// </summary>
     public class DiscriminatedUnionConverter : JsonConverter
     {
-        private static bool _initialized;
-        private static MethodCall<object, object> _isUnion;
-        private static MethodCall<object, object> _getUnionFields;
-        private static MethodCall<object, object> _getUnionCases;
-        private static MethodCall<object, object> _makeUnion;
-        private static Func<object, object> _getUnionCaseInfoName;
-        private static Func<object, object> _getUnionCaseInfo;
-        private static Func<object, object> _getUnionCaseFields;
-        private static MethodCall<object, object> _getUnionCaseInfoFields;
-
         private const string CasePropertyName = "Case";
         private const string FieldsPropertyName = "Fields";
 
@@ -69,10 +60,10 @@ namespace Newtonsoft.Json.Converters
 
             Type t = value.GetType();
 
-            object result = _getUnionFields(null, value, t, null);
-            object info = _getUnionCaseInfo(result);
-            object fields = _getUnionCaseFields(result);
-            object caseName = _getUnionCaseInfoName(info);
+            object result = FSharpUtils.GetUnionFields(null, value, t, null);
+            object info = FSharpUtils.GetUnionCaseInfo(result);
+            object fields = FSharpUtils.GetUnionCaseFields(result);
+            object caseName = FSharpUtils.GetUnionCaseInfoName(info);
 
             writer.WriteStartObject();
             writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(CasePropertyName) : CasePropertyName);
@@ -95,7 +86,7 @@ namespace Newtonsoft.Json.Converters
             if (reader.TokenType == JsonToken.Null)
                 return null;
 
-            IEnumerable cases = (IEnumerable)_getUnionCases(null, objectType, null);
+            IEnumerable cases = (IEnumerable)FSharpUtils.GetUnionCases(null, objectType, null);
 
             ReadAndAssertProperty(reader, CasePropertyName);
             ReadAndAssert(reader);
@@ -105,7 +96,7 @@ namespace Newtonsoft.Json.Converters
             object matchingCaseInfo = null;
             foreach (object c in cases)
             {
-                if ((string)_getUnionCaseInfoName(c) == caseName)
+                if ((string)FSharpUtils.GetUnionCaseInfoName(c) == caseName)
                 {
                     matchingCaseInfo = c;
                     break;
@@ -121,7 +112,7 @@ namespace Newtonsoft.Json.Converters
             // first value
             ReadAndAssert(reader);
 
-            PropertyInfo[] fieldProperties = (PropertyInfo[])_getUnionCaseInfoFields(matchingCaseInfo);
+            PropertyInfo[] fieldProperties = (PropertyInfo[])FSharpUtils.GetUnionCaseInfoFields(matchingCaseInfo);
             List<object> fieldValues = new List<object>();
             foreach (PropertyInfo field in fieldProperties)
             {
@@ -132,7 +123,7 @@ namespace Newtonsoft.Json.Converters
             // end object
             ReadAndAssert(reader);
 
-            return _makeUnion(null, matchingCaseInfo, fieldValues.ToArray(), null);
+            return FSharpUtils.MakeUnion(null, matchingCaseInfo, fieldValues.ToArray(), null);
         }
 
         /// <summary>
@@ -161,7 +152,7 @@ namespace Newtonsoft.Json.Converters
                 Type attributeType = attribute.GetType();
                 if (attributeType.Name == "CompilationMappingAttribute")
                 {
-                    EnsureInitialized(attributeType);
+                    FSharpUtils.EnsureInitialized(attributeType.Assembly());
 
                     isFSharpType = true;
                     break;
@@ -171,40 +162,7 @@ namespace Newtonsoft.Json.Converters
             if (!isFSharpType)
                 return false;
 
-            return (bool)_isUnion(null, objectType, null);
-        }
-
-        private static void EnsureInitialized(Type attributeType)
-        {
-            if (!_initialized)
-            {
-                _initialized = true;
-
-                Assembly fsharpCoreAssembly = attributeType.Assembly();
-                Type fsharpType = fsharpCoreAssembly.GetType("Microsoft.FSharp.Reflection.FSharpType");
-
-                MethodInfo isUnionMethodInfo = fsharpType.GetMethod("IsUnion", BindingFlags.Public | BindingFlags.Static);
-                _isUnion = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(isUnionMethodInfo);
-
-                MethodInfo getUnionCasesMethodInfo = fsharpType.GetMethod("GetUnionCases", BindingFlags.Public | BindingFlags.Static);
-                _getUnionCases = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(getUnionCasesMethodInfo);
-
-                Type fsharpValue = fsharpCoreAssembly.GetType("Microsoft.FSharp.Reflection.FSharpValue");
-
-                MethodInfo getUnionFieldsMethodInfo = fsharpValue.GetMethod("GetUnionFields", BindingFlags.Public | BindingFlags.Static);
-                _getUnionFields = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(getUnionFieldsMethodInfo);
-
-                _getUnionCaseInfo = JsonTypeReflector.ReflectionDelegateFactory.CreateGet<object>(getUnionFieldsMethodInfo.ReturnType.GetProperty("Item1"));
-                _getUnionCaseFields = JsonTypeReflector.ReflectionDelegateFactory.CreateGet<object>(getUnionFieldsMethodInfo.ReturnType.GetProperty("Item2"));
-
-                MethodInfo makeUnionMethodInfo = fsharpValue.GetMethod("MakeUnion", BindingFlags.Public | BindingFlags.Static);
-                _makeUnion = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(makeUnionMethodInfo);
-
-                Type unionCaseInfo = fsharpCoreAssembly.GetType("Microsoft.FSharp.Reflection.UnionCaseInfo");
-
-                _getUnionCaseInfoName = JsonTypeReflector.ReflectionDelegateFactory.CreateGet<object>(unionCaseInfo.GetProperty("Name"));
-                _getUnionCaseInfoFields = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(unionCaseInfo.GetMethod("GetFields"));
-            }
+            return (bool)FSharpUtils.IsUnion(null, objectType, null);
         }
 
         private static void ReadAndAssertProperty(JsonReader reader, string propertyName)
@@ -222,3 +180,4 @@ namespace Newtonsoft.Json.Converters
         }
     }
 }
+#endif
