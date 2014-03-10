@@ -2075,7 +2075,7 @@ bye", reader.Value);
         }
 
         [Test]
-        public void MatchWithNoTrailingSeperator()
+        public void MatchWithNoTrailingSeparator()
         {
             JsonTextReader reader = new JsonTextReader(new StringReader(@"nullz"));
 
@@ -2388,7 +2388,7 @@ bye", reader.Value);
         }
 
         [Test]
-        public void ParseIncompleteCommentSeperator()
+        public void ParseIncompleteCommentSeparator()
         {
             JsonTextReader reader = new JsonTextReader(new StringReader("true/"));
 

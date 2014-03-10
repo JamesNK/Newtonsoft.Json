@@ -1078,7 +1078,7 @@ namespace Newtonsoft.Json
 
         private void ParseConstructor()
         {
-            if (MatchValueWithTrailingSeperator("new"))
+            if (MatchValueWithTrailingSeparator("new"))
             {
                 EatWhitespace(false);
 
@@ -1411,9 +1411,9 @@ namespace Newtonsoft.Json
             return true;
         }
 
-        private bool MatchValueWithTrailingSeperator(string value)
+        private bool MatchValueWithTrailingSeparator(string value)
         {
-            // will match value and then move to the next character, checking that it is a seperator character
+            // will match value and then move to the next character, checking that it is a separator character
             bool match = MatchValue(value);
 
             if (!match)
@@ -1422,10 +1422,10 @@ namespace Newtonsoft.Json
             if (!EnsureChars(0, false))
                 return true;
 
-            return IsSeperator(_chars[_charPos]) || _chars[_charPos] == '\0';
+            return IsSeparator(_chars[_charPos]) || _chars[_charPos] == '\0';
         }
 
-        private bool IsSeperator(char c)
+        private bool IsSeparator(char c)
         {
             switch (c)
             {
@@ -1462,9 +1462,9 @@ namespace Newtonsoft.Json
         private void ParseTrue()
         {
             // check characters equal 'true'
-            // and that it is followed by either a seperator character
+            // and that it is followed by either a separator character
             // or the text ends
-            if (MatchValueWithTrailingSeperator(JsonConvert.True))
+            if (MatchValueWithTrailingSeparator(JsonConvert.True))
             {
                 SetToken(JsonToken.Boolean, true);
             }
@@ -1476,7 +1476,7 @@ namespace Newtonsoft.Json
 
         private void ParseNull()
         {
-            if (MatchValueWithTrailingSeperator(JsonConvert.Null))
+            if (MatchValueWithTrailingSeparator(JsonConvert.Null))
             {
                 SetToken(JsonToken.Null);
             }
@@ -1488,7 +1488,7 @@ namespace Newtonsoft.Json
 
         private void ParseUndefined()
         {
-            if (MatchValueWithTrailingSeperator(JsonConvert.Undefined))
+            if (MatchValueWithTrailingSeparator(JsonConvert.Undefined))
             {
                 SetToken(JsonToken.Undefined);
             }
@@ -1500,7 +1500,7 @@ namespace Newtonsoft.Json
 
         private void ParseFalse()
         {
-            if (MatchValueWithTrailingSeperator(JsonConvert.False))
+            if (MatchValueWithTrailingSeparator(JsonConvert.False))
             {
                 SetToken(JsonToken.Boolean, false);
             }
@@ -1512,7 +1512,7 @@ namespace Newtonsoft.Json
 
         private void ParseNumberNegativeInfinity()
         {
-            if (MatchValueWithTrailingSeperator(JsonConvert.NegativeInfinity))
+            if (MatchValueWithTrailingSeparator(JsonConvert.NegativeInfinity))
             {
                 if (_floatParseHandling == FloatParseHandling.Decimal)
                     throw new JsonReaderException("Cannot read -Infinity as a decimal.");
@@ -1527,7 +1527,7 @@ namespace Newtonsoft.Json
 
         private void ParseNumberPositiveInfinity()
         {
-            if (MatchValueWithTrailingSeperator(JsonConvert.PositiveInfinity))
+            if (MatchValueWithTrailingSeparator(JsonConvert.PositiveInfinity))
             {
                 if (_floatParseHandling == FloatParseHandling.Decimal)
                     throw new JsonReaderException("Cannot read Infinity as a decimal.");
@@ -1542,7 +1542,7 @@ namespace Newtonsoft.Json
 
         private void ParseNumberNaN()
         {
-            if (MatchValueWithTrailingSeperator(JsonConvert.NaN))
+            if (MatchValueWithTrailingSeparator(JsonConvert.NaN))
             {
                 if (_floatParseHandling == FloatParseHandling.Decimal)
                     throw new JsonReaderException("Cannot read NaN as a decimal.");
