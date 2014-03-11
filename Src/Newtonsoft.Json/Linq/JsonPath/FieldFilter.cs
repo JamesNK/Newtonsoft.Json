@@ -21,8 +21,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
 
                         if (v != null)
                             yield return v;
-
-                        if (errorWhenNoMatch)
+                        else if (errorWhenNoMatch)
                             throw new JsonException("Property '{0}' does not exist on JObject.".FormatWith(CultureInfo.InvariantCulture, Name));
                     }
                     else

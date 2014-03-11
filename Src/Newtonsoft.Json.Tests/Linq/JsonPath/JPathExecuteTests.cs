@@ -273,6 +273,16 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
         }
 
         [Test]
+        public void EvaluatePropertyWithoutError()
+        {
+            JObject o = new JObject(
+                new JProperty("Blah", 1));
+
+            JValue v = (JValue)o.SelectToken("Blah", true);
+            Assert.AreEqual(1L, v.Value);
+        }
+
+        [Test]
         public void EvaluateMissingPropertyIndexWithError()
         {
             JObject o = new JObject(
