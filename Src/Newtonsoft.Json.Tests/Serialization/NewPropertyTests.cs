@@ -17,6 +17,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         public string Message { get; set; }
         public object Data { get; set; }
 
+        //just in case - changing constructors to public does not make tests pass
         protected SimpleBaseClass()
         {
             
@@ -31,6 +32,11 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class NewGenericPropertyOnADerivedClassTests: TestFixtureBase
     {
+        //possible problems
+        //0. constructors may need to be public - not the case
+        //1. base class should be concrete - not the case
+        //2. serialization can't handle new keyword properly - got rid of new and Data property in parent class, still tests failed
+        //3. serialization can't handle classes with generic properties properly
         [Test]
         public void CanSerializeWithBuiltInTypeAsGenericArgument()
         {
