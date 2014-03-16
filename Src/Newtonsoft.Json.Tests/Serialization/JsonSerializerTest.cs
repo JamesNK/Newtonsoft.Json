@@ -306,6 +306,110 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(true, childClass.IsTransient);
         }
 
+        public class ResponseWithNewGenericProperty<T> : SimpleResponse
+        {
+            public new T Data { get; set; }
+        }
+
+        public class ResponseWithNewGenericPropertyVirtual<T> : SimpleResponse
+        {
+            public virtual new T Data { get; set; }
+        }
+
+        public class ResponseWithNewGenericPropertyOverride<T> : ResponseWithNewGenericPropertyVirtual<T>
+        {
+            public override T Data { get; set; }
+        }
+
+        public abstract class SimpleResponse
+        {
+            public string Result { get; set; }
+            public string Message { get; set; }
+            public object Data { get; set; }
+
+            protected SimpleResponse()
+            {
+
+            }
+
+            protected SimpleResponse(string message)
+            {
+                Message = message;
+            }
+        }
+
+        [Test]
+        public void CanSerializeWithBuiltInTypeAsGenericArgument()
+        {
+            var input = new ResponseWithNewGenericProperty<int>()
+            {
+                Message = "Trying out integer as type parameter",
+                Data = 25,
+                Result = "This should be fine"
+            };
+
+            var json = JsonConvert.SerializeObject(input);
+            var deserialized = JsonConvert.DeserializeObject<ResponseWithNewGenericProperty<int>>(json);
+
+            Assert.AreEqual(input.Data, deserialized.Data);
+            Assert.AreEqual(input.Message, deserialized.Message);
+            Assert.AreEqual(input.Result, deserialized.Result);
+        }
+
+        [Test]
+        public void CanSerializeWithBuiltInTypeAsGenericArgumentVirtual()
+        {
+            var input = new ResponseWithNewGenericPropertyVirtual<int>()
+            {
+                Message = "Trying out integer as type parameter",
+                Data = 25,
+                Result = "This should be fine"
+            };
+
+            var json = JsonConvert.SerializeObject(input);
+            var deserialized = JsonConvert.DeserializeObject<ResponseWithNewGenericPropertyVirtual<int>>(json);
+
+            Assert.AreEqual(input.Data, deserialized.Data);
+            Assert.AreEqual(input.Message, deserialized.Message);
+            Assert.AreEqual(input.Result, deserialized.Result);
+        }
+
+        [Test]
+        public void CanSerializeWithBuiltInTypeAsGenericArgumentOverride()
+        {
+            var input = new ResponseWithNewGenericPropertyOverride<int>()
+            {
+                Message = "Trying out integer as type parameter",
+                Data = 25,
+                Result = "This should be fine"
+            };
+
+            var json = JsonConvert.SerializeObject(input);
+            var deserialized = JsonConvert.DeserializeObject<ResponseWithNewGenericPropertyOverride<int>>(json);
+
+            Assert.AreEqual(input.Data, deserialized.Data);
+            Assert.AreEqual(input.Message, deserialized.Message);
+            Assert.AreEqual(input.Result, deserialized.Result);
+        }
+
+        [Test]
+        public void CanSerializedWithGenericClosedTypeAsArgument()
+        {
+            var input = new ResponseWithNewGenericProperty<List<int>>()
+            {
+                Message = "More complex case - generic list of int",
+                Data = Enumerable.Range(50, 70).ToList(),
+                Result = "This should be fine too"
+            };
+
+            var json = JsonConvert.SerializeObject(input);
+            var deserialized = JsonConvert.DeserializeObject<ResponseWithNewGenericProperty<List<int>>>(json);
+
+            Assert.AreEqual(input.Data, deserialized.Data);
+            Assert.AreEqual(input.Message, deserialized.Message);
+            Assert.AreEqual(input.Result, deserialized.Result);
+        }
+
         [Test]
         public void JsonSerializerProperties()
         {
