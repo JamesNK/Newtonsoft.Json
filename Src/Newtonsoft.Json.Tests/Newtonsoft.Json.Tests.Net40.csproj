@@ -264,6 +264,7 @@
     <Compile Include="Serialization\DynamicTests.cs" />
     <Compile Include="Serialization\FSharpTests.cs" />
     <Compile Include="Serialization\ImmutableCollectionsTests.cs" />
+    <Compile Include="Serialization\NewPropertyTests.cs" />
     <Compile Include="Serialization\ReferenceLoopHandlingTests.cs" />
     <Compile Include="Serialization\SpecialPropertyHandlingTests.cs" />
     <Compile Include="Serialization\TraceWriterTests.cs" />
@@ -407,6 +408,7 @@
     <Compile Include="TestObjects\TypeClass.cs" />
     <Compile Include="TestObjects\TypedSubHashtable.cs" />
     <Compile Include="TestObjects\UserNullable.cs" />
+    <Compile Include="TestObjects\WebResponse.cs" />
     <Compile Include="Utilities\DateTimeUtilsTests.cs" />
     <Compile Include="Utilities\DynamicReflectionDelegateFactoryTests.cs" />
     <Compile Include="Utilities\ExpressionReflectionDelegateFactoryTests.cs" />

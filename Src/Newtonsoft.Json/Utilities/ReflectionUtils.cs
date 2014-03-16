@@ -591,58 +591,12 @@ namespace Newtonsoft.Json.Utilities
 
         public static List<MemberInfo> GetFieldsAndProperties(Type type, BindingFlags bindingAttr)
         {
-            List<MemberInfo> targetMembers = new List<MemberInfo>();
+            var targetMembers = new List<MemberInfo>();
 
             targetMembers.AddRange(GetFields(type, bindingAttr));
             targetMembers.AddRange(GetProperties(type, bindingAttr));
 
-            // for some reason .NET returns multiple members when overriding a generic member on a base class
-            // http://forums.msdn.microsoft.com/en-US/netfxbcl/thread/b5abbfee-e292-4a64-8907-4e3f0fb90cd9/
-            // filter members to only return the override on the topmost class
-            // update: I think this is fixed in .NET 3.5 SP1 - leave this in for now...
-            List<MemberInfo> distinctMembers = new List<MemberInfo>(targetMembers.Count);
-
-            foreach (var groupedMember in targetMembers.GroupBy(m => m.Name))
-            {
-                int count = groupedMember.Count();
-                IList<MemberInfo> members = groupedMember.ToList();
-
-                if (count == 1)
-                {
-                    distinctMembers.Add(members.First());
-                }
-                else
-                {
-                    var resolvedMembers = members.Where(m => !IsOverridenGenericMember(m, bindingAttr) || m.Name == "Item");
-
-                    distinctMembers.AddRange(resolvedMembers);
-                }
-            }
-
-            return distinctMembers;
-        }
-
-
-        private static bool IsOverridenGenericMember(MemberInfo memberInfo, BindingFlags bindingAttr)
-        {
-            MemberTypes memberType = memberInfo.MemberType();
-            if (memberType != MemberTypes.Field && memberType != MemberTypes.Property)
-                throw new ArgumentException("Member must be a field or property.");
-
-            Type declaringType = memberInfo.DeclaringType;
-            if (!declaringType.IsGenericType())
-                return false;
-            Type genericTypeDefinition = declaringType.GetGenericTypeDefinition();
-            if (genericTypeDefinition == null)
-                return false;
-            MemberInfo[] members = genericTypeDefinition.GetMember(memberInfo.Name, bindingAttr);
-            if (members.Length == 0)
-                return false;
-            Type memberUnderlyingType = GetMemberUnderlyingType(members[0]);
-            if (!memberUnderlyingType.IsGenericParameter)
-                return false;
-
-            return true;
+            return targetMembers;
         }
 
         public static T GetAttribute<T>(object attributeProvider) where T : Attribute
