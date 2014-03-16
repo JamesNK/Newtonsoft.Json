@@ -856,10 +856,15 @@ namespace Newtonsoft.Json.Utilities
                         }
                         else
                         {
-                            // replace nonpublic properties for a child, but gotten from
-                            // the parent with the one from the child
-                            // the property gotten from the child will have access to private getter/setter
-                            initialProperties[index] = subTypeProperty;
+                            PropertyInfo childProperty = initialProperties[index];
+                            // don't replace public child with private base
+                            if (!IsPublic(childProperty))
+                            {
+                                // replace nonpublic properties for a child, but gotten from
+                                // the parent with the one from the child
+                                // the property gotten from the child will have access to private getter/setter
+                                initialProperties[index] = subTypeProperty;
+                            }
                         }
                     }
                     else

@@ -268,6 +268,44 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.IsTrue(JToken.DeepEquals(c.ExtensionData, c2.ExtensionData));
         }
 
+        public class BaseClass
+        {
+            internal bool IsTransient { get; set; }
+        }
+
+        public class ChildClass : BaseClass
+        {
+            public new bool IsTransient { get; set; }
+        }
+
+        [Test]
+        public void NewProperty()
+        {
+            Assert.AreEqual(@"{""IsTransient"":true}", JsonConvert.SerializeObject(new ChildClass { IsTransient = true }));
+
+            var childClass = JsonConvert.DeserializeObject<ChildClass>(@"{""IsTransient"":true}");
+            Assert.AreEqual(true, childClass.IsTransient);
+        }
+
+        public class BaseClassVirtual
+        {
+            internal virtual bool IsTransient { get; set; }
+        }
+
+        public class ChildClassVirtual : BaseClassVirtual
+        {
+            public virtual new bool IsTransient { get; set; }
+        }
+
+        [Test]
+        public void NewPropertyVirtual()
+        {
+            Assert.AreEqual(@"{""IsTransient"":true}", JsonConvert.SerializeObject(new ChildClassVirtual { IsTransient = true }));
+
+            var childClass = JsonConvert.DeserializeObject<ChildClassVirtual>(@"{""IsTransient"":true}");
+            Assert.AreEqual(true, childClass.IsTransient);
+        }
+
         [Test]
         public void JsonSerializerProperties()
         {

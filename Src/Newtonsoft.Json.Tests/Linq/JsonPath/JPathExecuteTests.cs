@@ -435,8 +435,8 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
         [Test]
         public void EvaluateScan()
         {
-            JObject o1 = new JObject{ {"Name", 1} };
-            JObject o2 = new JObject{ {"Name", 2} };
+            JObject o1 = new JObject { { "Name", 1 } };
+            JObject o2 = new JObject { { "Name", 2 } };
             JArray a = new JArray(o1, o2);
 
             IList<JToken> t = a.SelectTokens("$..Name").ToList();
@@ -655,7 +655,7 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
                     new JProperty("name", "The Rock"),
                     new JProperty("cast", new JArray(
                         new JObject(new JProperty("name", "Nick Cage")))))
-                        );
+                );
 
             IList<JToken> t = a.SelectTokens("[?(@.cast[?(@.name=='Will Smith')])].name").ToList();
             Assert.IsNotNull(t);
