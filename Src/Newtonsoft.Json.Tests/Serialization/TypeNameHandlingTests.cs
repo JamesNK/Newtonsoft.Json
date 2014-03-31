@@ -1173,7 +1173,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             string json = JsonConvert.SerializeObject(l, Formatting.Indented);
             Assert.AreEqual(@"[
   {
-    ""$type"": ""Newtonsoft.Json.Tests.Serialization.TestComponentSimple, Newtonsoft.Json.Tests"",
+    ""$type"": ""Newtonsoft.Json.Tests.TestObjects.TestComponentSimple, Newtonsoft.Json.Tests"",
     ""MyProperty"": 0
   },
   {
@@ -1208,7 +1208,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             string json = JsonConvert.SerializeObject(l, Formatting.Indented);
             Assert.AreEqual(@"{
   ""First"": {
-    ""$type"": ""Newtonsoft.Json.Tests.Serialization.TestComponentSimple, Newtonsoft.Json.Tests"",
+    ""$type"": ""Newtonsoft.Json.Tests.TestObjects.TestComponentSimple, Newtonsoft.Json.Tests"",
     ""MyProperty"": 1
   },
   ""Second"": ""String!"",
@@ -1238,7 +1238,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             string json = JsonConvert.SerializeObject(o1, Formatting.Indented);
             string expected = @"{
   ""Object1"": {
-    ""$type"": ""Newtonsoft.Json.Tests.Serialization.TestComponentSimple, Newtonsoft.Json.Tests"",
+    ""$type"": ""Newtonsoft.Json.Tests.TestObjects.TestComponentSimple, Newtonsoft.Json.Tests"",
     ""MyProperty"": 1
   },
   ""Object2"": 123,
@@ -1279,7 +1279,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     1,
     ""two"",
     {
-      ""$type"": ""Newtonsoft.Json.Tests.Serialization.TestComponentSimple, Newtonsoft.Json.Tests"",
+      ""$type"": ""Newtonsoft.Json.Tests.TestObjects.TestComponentSimple, Newtonsoft.Json.Tests"",
       ""MyProperty"": 1
     }
   ]
@@ -1317,7 +1317,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(@"{
   ""Data"": [
     {
-      ""$type"": ""Newtonsoft.Json.Tests.Serialization.TestComponentSimple, Newtonsoft.Json.Tests"",
+      ""$type"": ""Newtonsoft.Json.Tests.TestObjects.TestComponentSimple, Newtonsoft.Json.Tests"",
       ""MyProperty"": 1
     },
     {
@@ -1342,14 +1342,14 @@ namespace Newtonsoft.Json.Tests.Serialization
             json = @"{
   ""Data"": [
     {
-      ""$type"": ""Newtonsoft.Json.Tests.Serialization.TestComponentSimple, Newtonsoft.Json.Tests"",
+      ""$type"": ""Newtonsoft.Json.Tests.TestObjects.TestComponentSimple, Newtonsoft.Json.Tests"",
       ""MyProperty"": 1
     },
     {
       ""$type"": ""System.Collections.Generic.List`1[[System.Object, mscorlib]], mscorlib"",
       ""$values"": [
         {
-          ""$type"": ""Newtonsoft.Json.Tests.Serialization.TestComponentSimple, Newtonsoft.Json.Tests"",
+          ""$type"": ""Newtonsoft.Json.Tests.TestObjects.TestComponentSimple, Newtonsoft.Json.Tests"",
           ""MyProperty"": 1
         }
       ]
@@ -1396,7 +1396,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(@"{
   ""Data"": {
     ""one"": {
-      ""$type"": ""Newtonsoft.Json.Tests.Serialization.TestComponentSimple, Newtonsoft.Json.Tests"",
+      ""$type"": ""Newtonsoft.Json.Tests.TestObjects.TestComponentSimple, Newtonsoft.Json.Tests"",
       ""MyProperty"": 1
     },
     ""two"": {
@@ -1419,13 +1419,13 @@ namespace Newtonsoft.Json.Tests.Serialization
             json = @"{
   ""Data"": {
     ""one"": {
-      ""$type"": ""Newtonsoft.Json.Tests.Serialization.TestComponentSimple, Newtonsoft.Json.Tests"",
+      ""$type"": ""Newtonsoft.Json.Tests.TestObjects.TestComponentSimple, Newtonsoft.Json.Tests"",
       ""MyProperty"": 1
     },
     ""two"": {
       ""$type"": ""System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib"",
       ""one"": {
-        ""$type"": ""Newtonsoft.Json.Tests.Serialization.TestComponentSimple, Newtonsoft.Json.Tests"",
+        ""$type"": ""Newtonsoft.Json.Tests.TestObjects.TestComponentSimple, Newtonsoft.Json.Tests"",
         ""MyProperty"": 1
       }
     }
@@ -1479,7 +1479,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       ]
     },
     ""Prop2"": {
-      ""$type"": ""Newtonsoft.Json.Tests.Serialization.TestComponentSimple, Newtonsoft.Json.Tests"",
+      ""$type"": ""Newtonsoft.Json.Tests.TestObjects.TestComponentSimple, Newtonsoft.Json.Tests"",
       ""MyProperty"": 1
     },
     ""Prop3"": 3,
@@ -1527,7 +1527,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(@"{
   ""Data"": {
     ""one"": {
-      ""$type"": ""Newtonsoft.Json.Tests.Serialization.TestComponentSimple, Newtonsoft.Json.Tests"",
+      ""$type"": ""Newtonsoft.Json.Tests.TestObjects.TestComponentSimple, Newtonsoft.Json.Tests"",
       ""MyProperty"": 1
     },
     ""two"": {
@@ -1554,13 +1554,13 @@ namespace Newtonsoft.Json.Tests.Serialization
             json = @"{
   ""Data"": {
     ""one"": {
-      ""$type"": ""Newtonsoft.Json.Tests.Serialization.TestComponentSimple, Newtonsoft.Json.Tests"",
+      ""$type"": ""Newtonsoft.Json.Tests.TestObjects.TestComponentSimple, Newtonsoft.Json.Tests"",
       ""MyProperty"": 1
     },
     ""two"": {
       ""$type"": ""Newtonsoft.Json.Tests.Linq.DynamicDictionary, Newtonsoft.Json.Tests"",
       ""one"": {
-        ""$type"": ""Newtonsoft.Json.Tests.Serialization.TestComponentSimple, Newtonsoft.Json.Tests"",
+        ""$type"": ""Newtonsoft.Json.Tests.TestObjects.TestComponentSimple, Newtonsoft.Json.Tests"",
         ""MyProperty"": 2
       }
     }

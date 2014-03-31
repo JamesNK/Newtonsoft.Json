@@ -29,6 +29,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.Serialization;
 using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json.Tests.TestObjects;
 #if !(NET20 || NET35 || PORTABLE)
 using System.Numerics;
 #endif

@@ -616,6 +616,9 @@ namespace Newtonsoft.Json.Utilities
                     IList<MemberInfo> resolvedMembers = new List<MemberInfo>();
                     foreach (MemberInfo memberInfo in members)
                     {
+                        // this is a bit hacky
+                        // if the hiding property is hiding a base property and it is virtual
+                        // then this ensures the derived property gets used
                         if (resolvedMembers.Count == 0)
                             resolvedMembers.Add(memberInfo);
                         else if (!IsOverridenGenericMember(memberInfo, bindingAttr) || memberInfo.Name == "Item")

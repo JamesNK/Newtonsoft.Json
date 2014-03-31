@@ -146,6 +146,7 @@ namespace Newtonsoft.Json.Converters
 #else
             attributes = objectType.GetTypeInfo().GetCustomAttributes(true).ToArray();
 #endif
+
             bool isFSharpType = false;
             foreach (object attribute in attributes)
             {

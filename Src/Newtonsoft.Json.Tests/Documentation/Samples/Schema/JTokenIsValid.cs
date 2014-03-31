@@ -13,7 +13,6 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Schema
         {
             #region Usage
             JsonSchema schema = JsonSchema.Parse(@"{
-              'description': 'A person',
               'type': 'object',
               'properties': {
                 'name': {'type':'string'},
@@ -29,7 +28,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Schema
               'hobbies': ['.NET', 'Blogging', 'Reading', 'Xbox', 'LOLCATS']
             }");
 
-            bool valid = person.IsValid(schema);
+            IList<string> errorMessages;
+            bool valid = person.IsValid(schema, out errorMessages);
 
             Console.WriteLine(valid);
             // true

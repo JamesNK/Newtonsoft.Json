@@ -89,7 +89,7 @@ namespace Newtonsoft.Json.Utilities
 
             if (method.IsConstructor)
                 generator.Emit(OpCodes.Newobj, (ConstructorInfo)method);
-            else if (method.IsFinal || !method.IsVirtual)
+            else
                 generator.CallMethod((MethodInfo)method);
 
             Type returnType = method.IsConstructor

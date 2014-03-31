@@ -116,6 +116,22 @@ namespace Newtonsoft.Json.Tests.Converters
 
 #if !NET20
         [Test]
+        public void GroupElementsOfTheSameName()
+        {
+            string xml = "<root><p>Text1<span>Span1</span> <span>Span2</span> Text2</p></root>";
+
+            string json = JsonConvert.SerializeXNode(XElement.Parse(xml));
+
+            Assert.AreEqual(@"{""root"":{""p"":{""#text"":[""Text1"","" Text2""],""span"":[""Span1"",""Span2""]}}}", json);
+
+            XDocument doc = JsonConvert.DeserializeXNode(json);
+
+            Assert.AreEqual(@"<root>
+  <p>Text1 Text2<span>Span1</span><span>Span2</span></p>
+</root>", doc.ToString());
+        }
+
+        [Test]
         public void SerializeEmptyDocument()
         {
             XmlDocument doc = new XmlDocument();

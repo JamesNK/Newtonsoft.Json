@@ -952,7 +952,7 @@ now brown cow?", '"', true);
 #pragma warning disable 612,618
             Task taskVoid = JsonConvert.PopulateObjectAsync("{'Name':'Appended'}", p, new JsonSerializerSettings
             {
-                Converters = new List<JsonConverter> { new JsonSerializerTest.StringAppenderConverter() }
+                Converters = new List<JsonConverter> { new StringAppenderConverter() }
             });
 #pragma warning restore 612,618
 

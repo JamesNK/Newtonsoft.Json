@@ -309,6 +309,16 @@ namespace Newtonsoft.Json.Tests.Schema
         }
 
         [Test]
+        public void DivisibleBy_Approx()
+        {
+            JsonSchema schema = new JsonSchema();
+            schema.DivisibleBy = 0.01;
+
+            JValue v = new JValue(20.49);
+            v.Validate(schema);
+        }
+
+        [Test]
         public void UniqueItems_SimpleUnique()
         {
             JsonSchema schema = new JsonSchema();

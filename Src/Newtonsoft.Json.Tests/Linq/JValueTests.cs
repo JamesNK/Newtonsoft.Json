@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Newtonsoft.Json.Tests.TestObjects;
 #if !(NET20 || NET35 || PORTABLE)
 using System.Numerics;
 #endif

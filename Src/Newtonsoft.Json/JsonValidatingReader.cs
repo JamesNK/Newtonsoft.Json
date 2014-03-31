@@ -822,7 +822,7 @@ namespace Newtonsoft.Json
         {
             const double epsilon = 2.2204460492503131e-016;
 
-            return Math.Abs(value) < 10.0 * epsilon;
+            return Math.Abs(value) < 20.0 * epsilon;
         }
 
         private void ValidatePropertyName(JsonSchemaModel schema)
