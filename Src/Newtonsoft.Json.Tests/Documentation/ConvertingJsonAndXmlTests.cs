@@ -56,16 +56,16 @@ namespace Newtonsoft.Json.Tests.Documentation
         {
             #region SerializeXmlNode
             string xml = @"<?xml version='1.0' standalone='no'?>
-      <root>
-        <person id='1'>
-        <name>Alan</name>
-        <url>http://www.google.com</url>
-        </person>
-        <person id='2'>
-        <name>Louis</name>
-        <url>http://www.yahoo.com</url>
-        </person>
-      </root>";
+            <root>
+              <person id='1'>
+              <name>Alan</name>
+              <url>http://www.google.com</url>
+              </person>
+              <person id='2'>
+              <name>Louis</name>
+              <url>http://www.yahoo.com</url>
+              </person>
+            </root>";
 
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(xml);
@@ -98,25 +98,25 @@ namespace Newtonsoft.Json.Tests.Documentation
         {
             #region DeserializeXmlNode
             string json = @"{
-        '?xml': {
-          '@version': '1.0',
-          '@standalone': 'no'
-        },
-        'root': {
-          'person': [
-            {
-              '@id': '1',
-              'name': 'Alan',
-              'url': 'http://www.google.com'
-            },
-            {
-              '@id': '2',
-              'name': 'Louis',
-              'url': 'http://www.yahoo.com'
-            }
-          ]
-        }
-      }";
+              '?xml': {
+                '@version': '1.0',
+                '@standalone': 'no'
+              },
+              'root': {
+                'person': [
+                  {
+                    '@id': '1',
+                    'name': 'Alan',
+                    'url': 'http://www.google.com'
+                  },
+                  {
+                    '@id': '2',
+                    'name': 'Louis',
+                    'url': 'http://www.yahoo.com'
+                  }
+                ]
+              }
+            }";
 
             XmlDocument doc = (XmlDocument)JsonConvert.DeserializeXmlNode(json);
             // <?xml version="1.0" standalone="no"?>
@@ -179,5 +179,4 @@ namespace Newtonsoft.Json.Tests.Documentation
         }
     }
 }
-
 #endif

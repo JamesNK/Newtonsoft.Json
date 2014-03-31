@@ -220,15 +220,15 @@ namespace Newtonsoft.Json.Tests.Documentation
             List<string> errors = new List<string>();
 
             List<DateTime> c = JsonConvert.DeserializeObject<List<DateTime>>(@"[
-          '2009-09-09T00:00:00Z',
-          'I am not a date and will error!',
-          [
-            1
-          ],
-          '1977-02-20T00:00:00Z',
-          null,
-          '2000-12-01T00:00:00Z'
-        ]",
+                  '2009-09-09T00:00:00Z',
+                  'I am not a date and will error!',
+                  [
+                    1
+                  ],
+                  '1977-02-20T00:00:00Z',
+                  null,
+                  '2000-12-01T00:00:00Z'
+                ]",
                 new JsonSerializerSettings
                 {
                     Error = delegate(object sender, ErrorEventArgs args)
@@ -533,19 +533,19 @@ namespace Newtonsoft.Json.Tests.Documentation
         {
             #region SerializingCollectionsDeserializing
             string json = @"[
-        {
-          'Name': 'Product 1',
-          'ExpiryDate': '2000-12-29T00:00Z',
-          'Price': 99.95,
-          'Sizes': null
-        },
-        {
-          'Name': 'Product 2',
-          'ExpiryDate': '2009-07-31T00:00Z',
-          'Price': 12.50,
-          'Sizes': null
-        }
-      ]";
+              {
+                'Name': 'Product 1',
+                'ExpiryDate': '2000-12-29T00:00Z',
+                'Price': 99.95,
+                'Sizes': null
+              },
+              {
+                'Name': 'Product 2',
+                'ExpiryDate': '2009-07-31T00:00Z',
+                'Price': 12.50,
+                'Sizes': null
+              }
+            ]";
 
             List<Product> products = JsonConvert.DeserializeObject<List<Product>>(json);
 
@@ -814,56 +814,56 @@ namespace Newtonsoft.Json.Tests.Documentation
         {
             #region SerializingPartialJsonFragmentsExample
             string googleSearchText = @"{
-        'responseData': {
-          'results': [
-            {
-              'GsearchResultClass': 'GwebSearch',
-              'unescapedUrl': 'http://en.wikipedia.org/wiki/Paris_Hilton',
-              'url': 'http://en.wikipedia.org/wiki/Paris_Hilton',
-              'visibleUrl': 'en.wikipedia.org',
-              'cacheUrl': 'http://www.google.com/search?q=cache:TwrPfhd22hYJ:en.wikipedia.org',
-              'title': '<b>Paris Hilton</b> - Wikipedia, the free encyclopedia',
-              'titleNoFormatting': 'Paris Hilton - Wikipedia, the free encyclopedia',
-              'content': '[1] In 2006, she released her debut album...'
-            },
-            {
-              'GsearchResultClass': 'GwebSearch',
-              'unescapedUrl': 'http://www.imdb.com/name/nm0385296/',
-              'url': 'http://www.imdb.com/name/nm0385296/',
-              'visibleUrl': 'www.imdb.com',
-              'cacheUrl': 'http://www.google.com/search?q=cache:1i34KkqnsooJ:www.imdb.com',
-              'title': '<b>Paris Hilton</b>',
-              'titleNoFormatting': 'Paris Hilton',
-              'content': 'Self: Zoolander. Socialite <b>Paris Hilton</b>...'
-            }
-          ],
-          'cursor': {
-            'pages': [
-              {
-                'start': '0',
-                'label': 1
+              'responseData': {
+                'results': [
+                  {
+                    'GsearchResultClass': 'GwebSearch',
+                    'unescapedUrl': 'http://en.wikipedia.org/wiki/Paris_Hilton',
+                    'url': 'http://en.wikipedia.org/wiki/Paris_Hilton',
+                    'visibleUrl': 'en.wikipedia.org',
+                    'cacheUrl': 'http://www.google.com/search?q=cache:TwrPfhd22hYJ:en.wikipedia.org',
+                    'title': '<b>Paris Hilton</b> - Wikipedia, the free encyclopedia',
+                    'titleNoFormatting': 'Paris Hilton - Wikipedia, the free encyclopedia',
+                    'content': '[1] In 2006, she released her debut album...'
+                  },
+                  {
+                    'GsearchResultClass': 'GwebSearch',
+                    'unescapedUrl': 'http://www.imdb.com/name/nm0385296/',
+                    'url': 'http://www.imdb.com/name/nm0385296/',
+                    'visibleUrl': 'www.imdb.com',
+                    'cacheUrl': 'http://www.google.com/search?q=cache:1i34KkqnsooJ:www.imdb.com',
+                    'title': '<b>Paris Hilton</b>',
+                    'titleNoFormatting': 'Paris Hilton',
+                    'content': 'Self: Zoolander. Socialite <b>Paris Hilton</b>...'
+                  }
+                ],
+                'cursor': {
+                  'pages': [
+                    {
+                      'start': '0',
+                      'label': 1
+                    },
+                    {
+                      'start': '4',
+                      'label': 2
+                    },
+                    {
+                      'start': '8',
+                      'label': 3
+                    },
+                    {
+                      'start': '12',
+                      'label': 4
+                    }
+                  ],
+                  'estimatedResultCount': '59600000',
+                  'currentPageIndex': 0,
+                  'moreResultsUrl': 'http://www.google.com/search?oe=utf8&ie=utf8...'
+                }
               },
-              {
-                'start': '4',
-                'label': 2
-              },
-              {
-                'start': '8',
-                'label': 3
-              },
-              {
-                'start': '12',
-                'label': 4
-              }
-            ],
-            'estimatedResultCount': '59600000',
-            'currentPageIndex': 0,
-            'moreResultsUrl': 'http://www.google.com/search?oe=utf8&ie=utf8...'
-          }
-        },
-        'responseDetails': null,
-        'responseStatus': 200
-      }";
+              'responseDetails': null,
+              'responseStatus': 200
+            }";
 
             JObject googleSearch = JObject.Parse(googleSearchText);
 
@@ -913,5 +913,4 @@ namespace Newtonsoft.Json.Tests.Documentation
         }
     }
 }
-
 #endif

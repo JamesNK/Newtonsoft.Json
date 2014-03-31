@@ -79,12 +79,12 @@ namespace Newtonsoft.Json.Tests.Documentation
         {
             #region LinqToJsonBasic
             JObject o = JObject.Parse(@"{
-        'CPU': 'Intel',
-        'Drives': [
-          'DVD read/writer',
-          '500 gigabyte hard drive'
-        ]
-      }");
+              'CPU': 'Intel',
+              'Drives': [
+                'DVD read/writer',
+                '500 gigabyte hard drive'
+              ]
+            }");
 
             string cpu = (string)o["CPU"];
             // Intel
@@ -217,12 +217,12 @@ namespace Newtonsoft.Json.Tests.Documentation
         {
             #region LinqToJsonCreateParse
             string json = @"{
-        CPU: 'Intel',
-        Drives: [
-          'DVD read/writer',
-          '500 gigabyte hard drive'
-        ]
-      }";
+              CPU: 'Intel',
+              Drives: [
+                'DVD read/writer',
+                '500 gigabyte hard drive'
+              ]
+            }";
 
             JObject o = JObject.Parse(json);
             #endregion
@@ -232,10 +232,10 @@ namespace Newtonsoft.Json.Tests.Documentation
         {
             #region LinqToJsonCreateParseArray
             string json = @"[
-        'Small',
-        'Medium',
-        'Large'
-      ]";
+              'Small',
+              'Medium',
+              'Large'
+            ]";
 
             JArray a = JArray.Parse(json);
             #endregion
@@ -256,32 +256,32 @@ namespace Newtonsoft.Json.Tests.Documentation
         {
             #region LinqToJsonSimpleQuerying
             string json = @"{
-        'channel': {
-          'title': 'James Newton-King',
-          'link': 'http://james.newtonking.com',
-          'description': 'James Newton-King's blog.',
-          'item': [
-            {
-              'title': 'Json.NET 1.3 + New license + Now on CodePlex',
-              'description': 'Annoucing the release of Json.NET 1.3, the MIT license and the source on CodePlex',
-              'link': 'http://james.newtonking.com/projects/json-net.aspx',
-              'categories': [
-                'Json.NET',
-                'CodePlex'
-              ]
-            },
-            {
-              'title': 'LINQ to JSON beta',
-              'description': 'Annoucing LINQ to JSON',
-              'link': 'http://james.newtonking.com/projects/json-net.aspx',
-              'categories': [
-                'Json.NET',
-                'LINQ'
-              ]
-            }
-          ]
-        }
-      }";
+              'channel': {
+                'title': 'James Newton-King',
+                'link': 'http://james.newtonking.com',
+                'description': 'James Newton-King's blog.',
+                'item': [
+                  {
+                    'title': 'Json.NET 1.3 + New license + Now on CodePlex',
+                    'description': 'Annoucing the release of Json.NET 1.3, the MIT license and the source on CodePlex',
+                    'link': 'http://james.newtonking.com/projects/json-net.aspx',
+                    'categories': [
+                      'Json.NET',
+                      'CodePlex'
+                    ]
+                  },
+                  {
+                    'title': 'LINQ to JSON beta',
+                    'description': 'Annoucing LINQ to JSON',
+                    'link': 'http://james.newtonking.com/projects/json-net.aspx',
+                    'categories': [
+                      'Json.NET',
+                      'LINQ'
+                    ]
+                  }
+                ]
+              }
+            }";
 
             JObject rss = JObject.Parse(json);
 
@@ -398,35 +398,35 @@ namespace Newtonsoft.Json.Tests.Documentation
         {
             #region SelectTokenComplex
             JObject o = JObject.Parse(@"{
-        'Stores': [
-          'Lambton Quay',
-          'Willis Street'
-        ],
-        'Manufacturers': [
-          {
-            'Name': 'Acme Co',
-            'Products': [
-              {
-                'Name': 'Anvil',
-                'Price': 50
-              }
-            ]
-          },
-          {
-            'Name': 'Contoso',
-            'Products': [
-              {
-                'Name': 'Elbow Grease',
-                'Price': 99.95
-              },
-              {
-                'Name': 'Headlight Fluid',
-                'Price': 4
-              }
-            ]
-          }
-        ]
-      }");
+              'Stores': [
+                'Lambton Quay',
+                'Willis Street'
+              ],
+              'Manufacturers': [
+                {
+                  'Name': 'Acme Co',
+                  'Products': [
+                    {
+                      'Name': 'Anvil',
+                      'Price': 50
+                    }
+                  ]
+                },
+                {
+                  'Name': 'Contoso',
+                  'Products': [
+                    {
+                      'Name': 'Elbow Grease',
+                      'Price': 99.95
+                    },
+                    {
+                      'Name': 'Headlight Fluid',
+                      'Price': 4
+                    }
+                  ]
+                }
+              ]
+            }");
 
             string name = (string)o.SelectToken("Manufacturers[0].Name");
             // Acme Co

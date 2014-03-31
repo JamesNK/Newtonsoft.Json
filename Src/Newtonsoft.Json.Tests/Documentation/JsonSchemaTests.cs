@@ -84,25 +84,25 @@ namespace Newtonsoft.Json.Tests.Documentation
         public void IsValidMessages()
         {
             string schemaJson = @"{
-        'description': 'A person',
-        'type': 'object',
-        'properties':
-        {
-          'name': {'type':'string'},
-          'hobbies': {
-            'type': 'array',
-            'items': {'type':'string'}
-          }
-        }
-      }";
+               'description': 'A person',
+               'type': 'object',
+               'properties':
+               {
+                 'name': {'type':'string'},
+                 'hobbies': {
+                   'type': 'array',
+                   'items': {'type':'string'}
+                 }
+               }
+             }";
 
             #region IsValidMessages
             JsonSchema schema = JsonSchema.Parse(schemaJson);
 
             JObject person = JObject.Parse(@"{
-        'name': null,
-        'hobbies': ['Invalid content', 0.123456789]
-      }");
+              'name': null,
+              'hobbies': ['Invalid content', 0.123456789]
+            }");
 
             IList<string> messages;
             bool valid = person.IsValid(schema, out messages);
@@ -118,9 +118,9 @@ namespace Newtonsoft.Json.Tests.Documentation
 
             #region JsonValidatingReader
             string json = @"{
-        'name': 'James',
-        'hobbies': ['.NET', 'Blogging', 'Reading', 'Xbox', 'LOLCATS']
-      }";
+              'name': 'James',
+              'hobbies': ['.NET', 'Blogging', 'Reading', 'Xbox', 'LOLCATS']
+            }";
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 
@@ -169,9 +169,9 @@ namespace Newtonsoft.Json.Tests.Documentation
             };
 
             JObject person = JObject.Parse(@"{
-        'name': 'James',
-        'hobbies': ['.NET', 'Blogging', 'Reading', 'Xbox', 'LOLCATS']
-      }");
+              'name': 'James',
+              'hobbies': ['.NET', 'Blogging', 'Reading', 'Xbox', 'LOLCATS']
+            }");
 
             bool valid = person.IsValid(schema);
             // true

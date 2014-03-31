@@ -95,15 +95,15 @@ namespace Newtonsoft.Json.Tests.Documentation
         {
             #region ReadingJsonText
             string json = @"{
-         'CPU': 'Intel',
-         'PSU': '500W',
-         'Drives': [
-           'DVD read/writer'
-           /*(broken)*/,
-           '500 gigabyte hard drive',
-           '200 gigabype hard drive'
-         ]
-      }";
+               'CPU': 'Intel',
+               'PSU': '500W',
+               'Drives': [
+                 'DVD read/writer'
+                 /*(broken)*/,
+                 '500 gigabyte hard drive',
+                 '200 gigabype hard drive'
+               ]
+            }";
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
             while (reader.Read())
