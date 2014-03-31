@@ -435,11 +435,12 @@ namespace Newtonsoft.Json.Utilities
             if (initialValue is INullable)
                 return EnsureTypeAssignable(ToValue((INullable)initialValue), initialType, targetType);
 #endif
+            // returning null here to save time instead of throwing the exceptions. The exception messages could be logged somehow?
+            return null;
+            //if (targetType.IsInterface() || targetType.IsGenericTypeDefinition() || targetType.IsAbstract())
+            //    throw new ArgumentException("Target type {0} is not a value type or a non-abstract class.".FormatWith(CultureInfo.InvariantCulture, targetType), "targetType");
 
-            if (targetType.IsInterface() || targetType.IsGenericTypeDefinition() || targetType.IsAbstract())
-                throw new ArgumentException("Target type {0} is not a value type or a non-abstract class.".FormatWith(CultureInfo.InvariantCulture, targetType), "targetType");
-
-            throw new InvalidOperationException("Can not convert from {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, initialType, targetType));
+            //throw new InvalidOperationException("Can not convert from {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, initialType, targetType));
         }
         #endregion
 
@@ -459,7 +460,7 @@ namespace Newtonsoft.Json.Utilities
             try
             {
                 convertedValue = Convert(initialValue, culture, targetType);
-                return true;
+                return convertedValue != null;
             }
             catch
             {
