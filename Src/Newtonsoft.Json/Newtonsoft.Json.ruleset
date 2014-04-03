@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="Newtonsoft.Json.ruleset" ToolsVersion="10.0">
+<RuleSet Name="Newtonsoft.Json.ruleset" ToolsVersion="12.0">
   <IncludeAll Action="Warning" />
   <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
     <Rule Id="CA1000" Action="None" />
@@ -67,6 +67,8 @@
     <Rule Id="CA1301" Action="None" />
     <Rule Id="CA1302" Action="None" />
     <Rule Id="CA1303" Action="None" />
+    <Rule Id="CA1304" Action="Error" />
+    <Rule Id="CA1305" Action="Error" />
     <Rule Id="CA1306" Action="None" />
     <Rule Id="CA1307" Action="None" />
     <Rule Id="CA1308" Action="None" />

@@ -48,6 +48,10 @@ namespace Newtonsoft.Json.Converters
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             Type t = value.GetType();
+            IList<Type> genericArguments = t.GetGenericArguments();
+            Type keyType = genericArguments[0];
+            Type valueType = genericArguments[1];
+
             PropertyInfo keyProperty = t.GetProperty(KeyName);
             PropertyInfo valueProperty = t.GetProperty(ValueName);
 
@@ -56,9 +60,9 @@ namespace Newtonsoft.Json.Converters
             writer.WriteStartObject();
 
             writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(KeyName) : KeyName);
-            serializer.Serialize(writer, ReflectionUtils.GetMemberValue(keyProperty, value));
+            serializer.Serialize(writer, ReflectionUtils.GetMemberValue(keyProperty, value), keyType);
             writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(ValueName) : ValueName);
-            serializer.Serialize(writer, ReflectionUtils.GetMemberValue(valueProperty, value));
+            serializer.Serialize(writer, ReflectionUtils.GetMemberValue(valueProperty, value), valueType);
             writer.WriteEndObject();
         }
 

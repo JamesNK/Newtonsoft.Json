@@ -131,5 +131,39 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
 
             Assert.IsFalse(compositeExpression.IsMatch(o3));
         }
+
+        [Test]
+        public void BooleanExpressionTest()
+        {
+            BooleanQueryExpression e1 = new BooleanQueryExpression
+            {
+                Operator = QueryOperator.LessThan,
+                Value = new JValue(3),
+                Path = new List<PathFilter>
+                {
+                    new ArrayIndexFilter()
+                }
+            };
+
+            Assert.IsTrue(e1.IsMatch(new JArray(1, 2, 3, 4, 5)));
+            Assert.IsTrue(e1.IsMatch(new JArray(2, 3, 4, 5)));
+            Assert.IsFalse(e1.IsMatch(new JArray(3, 4, 5)));
+            Assert.IsFalse(e1.IsMatch(new JArray(4, 5)));
+
+            BooleanQueryExpression e2 = new BooleanQueryExpression
+            {
+                Operator = QueryOperator.LessThanOrEquals,
+                Value = new JValue(3),
+                Path = new List<PathFilter>
+                {
+                    new ArrayIndexFilter()
+                }
+            };
+
+            Assert.IsTrue(e2.IsMatch(new JArray(1, 2, 3, 4, 5)));
+            Assert.IsTrue(e2.IsMatch(new JArray(2, 3, 4, 5)));
+            Assert.IsTrue(e2.IsMatch(new JArray(3, 4, 5)));
+            Assert.IsFalse(e2.IsMatch(new JArray(4, 5)));
+        }
     }
 }

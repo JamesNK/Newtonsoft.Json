@@ -1,5 +1,10 @@
 using System.Collections.Generic;
 using System.Globalization;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
+#endif
 using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Linq.JsonPath
@@ -21,13 +26,16 @@ namespace Newtonsoft.Json.Linq.JsonPath
 
                         if (v != null)
                             yield return v;
+
+                        if (errorWhenNoMatch)
+                            throw new JsonException("Property '{0}' does not exist on JObject.".FormatWith(CultureInfo.InvariantCulture, name));
                     }
                 }
-                //else
-                //{
-                //    if (errorWhenNoMatch)
-                //        throw new JsonException("Property '{0}' not valid on {1}.".FormatWith(CultureInfo.InvariantCulture, Name ?? "*", t.GetType().Name));
-                //}
+                else
+                {
+                    if (errorWhenNoMatch)
+                        throw new JsonException("Properties {0} not valid on {1}.".FormatWith(CultureInfo.InvariantCulture, string.Join(", ", Names.Select(n => "'" + n + "'").ToArray()), t.GetType().Name));
+                }
             }
         }
     }

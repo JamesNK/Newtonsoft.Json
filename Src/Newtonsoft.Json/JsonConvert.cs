@@ -397,7 +397,7 @@ namespace Newtonsoft.Json
 
         internal static string ToString(Uri value, char quoteChar)
         {
-            return ToString(value.ToString(), quoteChar);
+            return ToString(value.OriginalString, quoteChar);
         }
 
         /// <summary>
@@ -642,6 +642,7 @@ namespace Newtonsoft.Json
         /// <returns>
         /// A task that represents the asynchronous serialize operation. The value of the <c>TResult</c> parameter contains a JSON string representation of the object.
         /// </returns>
+        [ObsoleteAttribute("SerializeObjectAsync is obsolete. Use the Task.Factory.StartNew method to serialize JSON asynchronously: Task.Factory.StartNew(() => SerializeObject(value))")]
         public static Task<string> SerializeObjectAsync(object value)
         {
             return SerializeObjectAsync(value, Formatting.None, null);
@@ -656,6 +657,7 @@ namespace Newtonsoft.Json
         /// <returns>
         /// A task that represents the asynchronous serialize operation. The value of the <c>TResult</c> parameter contains a JSON string representation of the object.
         /// </returns>
+        [ObsoleteAttribute("SerializeObjectAsync is obsolete. Use the Task.Factory.StartNew method to serialize JSON asynchronously: Task.Factory.StartNew(() => SerializeObject(value, formatting))")]
         public static Task<string> SerializeObjectAsync(object value, Formatting formatting)
         {
             return SerializeObjectAsync(value, formatting, null);
@@ -672,6 +674,7 @@ namespace Newtonsoft.Json
         /// <returns>
         /// A task that represents the asynchronous serialize operation. The value of the <c>TResult</c> parameter contains a JSON string representation of the object.
         /// </returns>
+        [ObsoleteAttribute("SerializeObjectAsync is obsolete. Use the Task.Factory.StartNew method to serialize JSON asynchronously: Task.Factory.StartNew(() => SerializeObject(value, formatting, settings))")]
         public static Task<string> SerializeObjectAsync(object value, Formatting formatting, JsonSerializerSettings settings)
         {
             return Task.Factory.StartNew(() => SerializeObject(value, formatting, settings));
@@ -819,14 +822,16 @@ namespace Newtonsoft.Json
         {
             ValidationUtils.ArgumentNotNull(value, "value");
 
-            StringReader sr = new StringReader(value);
             JsonSerializer jsonSerializer = JsonSerializer.CreateDefault(settings);
 
             // by default DeserializeObject should check for additional content
             if (!jsonSerializer.IsCheckAdditionalContentSet())
                 jsonSerializer.CheckAdditionalContent = true;
 
-            return jsonSerializer.Deserialize(new JsonTextReader(sr), type);
+            using (var reader = new JsonTextReader(new StringReader(value)))
+            {
+                return jsonSerializer.Deserialize(reader, type);
+            }
         }
 
 #if !(NET20 || NET35 || PORTABLE40)
@@ -839,6 +844,7 @@ namespace Newtonsoft.Json
         /// <returns>
         /// A task that represents the asynchronous deserialize operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
         /// </returns>
+        [ObsoleteAttribute("DeserializeObjectAsync is obsolete. Use the Task.Factory.StartNew method to deserialize JSON asynchronously: Task.Factory.StartNew(() => DeserializeObject<T>(value))")]
         public static Task<T> DeserializeObjectAsync<T>(string value)
         {
             return DeserializeObjectAsync<T>(value, null);
@@ -857,6 +863,7 @@ namespace Newtonsoft.Json
         /// <returns>
         /// A task that represents the asynchronous deserialize operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
         /// </returns>
+        [ObsoleteAttribute("DeserializeObjectAsync is obsolete. Use the Task.Factory.StartNew method to deserialize JSON asynchronously: Task.Factory.StartNew(() => DeserializeObject<T>(value, settings))")]
         public static Task<T> DeserializeObjectAsync<T>(string value, JsonSerializerSettings settings)
         {
             return Task.Factory.StartNew(() => DeserializeObject<T>(value, settings));
@@ -870,6 +877,7 @@ namespace Newtonsoft.Json
         /// <returns>
         /// A task that represents the asynchronous deserialize operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
         /// </returns>
+        [ObsoleteAttribute("DeserializeObjectAsync is obsolete. Use the Task.Factory.StartNew method to deserialize JSON asynchronously: Task.Factory.StartNew(() => DeserializeObject(value))")]
         public static Task<object> DeserializeObjectAsync(string value)
         {
             return DeserializeObjectAsync(value, null, null);
@@ -888,6 +896,7 @@ namespace Newtonsoft.Json
         /// <returns>
         /// A task that represents the asynchronous deserialize operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
         /// </returns>
+        [ObsoleteAttribute("DeserializeObjectAsync is obsolete. Use the Task.Factory.StartNew method to deserialize JSON asynchronously: Task.Factory.StartNew(() => DeserializeObject(value, type, settings))")]
         public static Task<object> DeserializeObjectAsync(string value, Type type, JsonSerializerSettings settings)
         {
             return Task.Factory.StartNew(() => DeserializeObject(value, type, settings));
@@ -916,10 +925,9 @@ namespace Newtonsoft.Json
         /// </param>
         public static void PopulateObject(string value, object target, JsonSerializerSettings settings)
         {
-            StringReader sr = new StringReader(value);
             JsonSerializer jsonSerializer = JsonSerializer.CreateDefault(settings);
 
-            using (JsonReader jsonReader = new JsonTextReader(sr))
+            using (JsonReader jsonReader = new JsonTextReader(new StringReader(value)))
             {
                 jsonSerializer.Populate(jsonReader, target);
 
@@ -941,6 +949,7 @@ namespace Newtonsoft.Json
         /// <returns>
         /// A task that represents the asynchronous populate operation.
         /// </returns>
+        [ObsoleteAttribute("PopulateObjectAsync is obsolete. Use the Task.Factory.StartNew method to populate an object with JSON values asynchronously: Task.Factory.StartNew(() => PopulateObject(value, target, settings))")]
         public static Task PopulateObjectAsync(string value, object target, JsonSerializerSettings settings)
         {
             return Task.Factory.StartNew(() => PopulateObject(value, target, settings));

@@ -49,6 +49,7 @@ namespace Newtonsoft.Json.Serialization
     internal class JsonSerializerInternalWriter : JsonSerializerInternalBase
     {
         private JsonContract _rootContract;
+        private int _rootLevel;
         private readonly List<object> _serializeStack = new List<object>();
         private JsonSerializerProxy _internalSerializer;
 
@@ -62,10 +63,36 @@ namespace Newtonsoft.Json.Serialization
             if (jsonWriter == null)
                 throw new ArgumentNullException("jsonWriter");
 
-            if (objectType != null)
-                _rootContract = Serializer._contractResolver.ResolveContract(objectType);
+            _rootContract = (objectType != null) ? Serializer._contractResolver.ResolveContract(objectType) : null;
+            _rootLevel = _serializeStack.Count + 1;
 
-            SerializeValue(jsonWriter, value, GetContractSafe(value), null, null, null);
+            JsonContract contract = GetContractSafe(value);
+
+            try
+            {
+                SerializeValue(jsonWriter, value, contract, null, null, null);
+            }
+            catch (Exception ex)
+            {
+                if (IsErrorHandled(null, contract, null, null, jsonWriter.Path, ex))
+                {
+                    HandleError(jsonWriter, 0);
+                }
+                else
+                {
+                    // clear context in case serializer is being used inside a converter
+                    // if the converter wraps the error then not clearing the context will cause this error:
+                    // "Current error context error is different to requested error."
+                    ClearErrorContext();
+                    throw;
+                }
+            }
+            finally
+            {
+                // clear root contract to ensure that if level was > 1 then it won't
+                // accidently be used for non root values
+                _rootContract = null;
+            }
         }
 
         private JsonSerializerProxy GetInternalSerializer()
@@ -848,7 +875,7 @@ To fix this error either change the environment to be fully trusted, change the 
                     if (containerContract.ItemContract == null || contract.UnderlyingType != containerContract.ItemContract.CreatedType)
                         return true;
                 }
-                else if (_rootContract != null && _serializeStack.Count == 1)
+                else if (_rootContract != null && _serializeStack.Count == _rootLevel)
                 {
                     if (contract.UnderlyingType != _rootContract.CreatedType)
                         return true;

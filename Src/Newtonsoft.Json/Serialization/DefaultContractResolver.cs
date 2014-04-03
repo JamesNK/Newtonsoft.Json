@@ -143,9 +143,10 @@ namespace Newtonsoft.Json.Serialization
         /// Gets or sets the default members search flags.
         /// </summary>
         /// <value>The default members search flags.</value>
+        [ObsoleteAttribute("DefaultMembersSearchFlags is obsolete. To modify the members serialized inherit from DefaultContractResolver and override the GetSerializableMembers method instead.")] 
         public BindingFlags DefaultMembersSearchFlags { get; set; }
 #else
-    private BindingFlags DefaultMembersSearchFlags = BindingFlags.Instance | BindingFlags.Public;
+        private BindingFlags DefaultMembersSearchFlags = BindingFlags.Instance | BindingFlags.Public;
 #endif
 
         /// <summary>
@@ -194,7 +195,9 @@ namespace Newtonsoft.Json.Serialization
         public DefaultContractResolver(bool shareCache)
         {
 #if !NETFX_CORE
+#pragma warning disable 618
             DefaultMembersSearchFlags = BindingFlags.Public | BindingFlags.Instance;
+#pragma warning restore 618
 #endif
 #if !(NETFX_CORE || PORTABLE || PORTABLE40)
             IgnoreSerializableAttribute = true;
@@ -280,8 +283,10 @@ namespace Newtonsoft.Json.Serialization
                 DataContractAttribute dataContractAttribute = JsonTypeReflector.GetDataContractAttribute(objectType);
 #endif
 
+#pragma warning disable 618
                 List<MemberInfo> defaultMembers = ReflectionUtils.GetFieldsAndProperties(objectType, DefaultMembersSearchFlags)
                     .Where(m => !ReflectionUtils.IsIndexedProperty(m)).ToList();
+#pragma warning restore 618
 
                 foreach (MemberInfo member in allMembers)
                 {
@@ -1248,8 +1253,10 @@ namespace Newtonsoft.Json.Serialization
             property.ItemTypeNameHandling = (propertyAttribute != null) ? propertyAttribute._itemTypeNameHandling : null;
 
             allowNonPublicAccess = false;
+#pragma warning disable 618
             if ((DefaultMembersSearchFlags & BindingFlags.NonPublic) == BindingFlags.NonPublic)
                 allowNonPublicAccess = true;
+#pragma warning restore 618
             if (propertyAttribute != null)
                 allowNonPublicAccess = true;
             if (memberSerialization == MemberSerialization.Fields)

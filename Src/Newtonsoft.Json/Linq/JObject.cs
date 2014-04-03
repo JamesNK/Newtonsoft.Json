@@ -326,14 +326,15 @@ namespace Newtonsoft.Json.Linq
         /// </example>
         public new static JObject Parse(string json)
         {
-            JsonReader reader = new JsonTextReader(new StringReader(json));
+            using (JsonReader reader = new JsonTextReader(new StringReader(json)))
+            {
+                JObject o = Load(reader);
 
-            JObject o = Load(reader);
+                if (reader.Read() && reader.TokenType != JsonToken.Comment)
+                    throw JsonReaderException.Create(reader, "Additional text found in JSON string after parsing content.");
 
-            if (reader.Read() && reader.TokenType != JsonToken.Comment)
-                throw JsonReaderException.Create(reader, "Additional text found in JSON string after parsing content.");
-
-            return o;
+                return o;
+            }
         }
 
         /// <summary>

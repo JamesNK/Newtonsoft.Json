@@ -174,6 +174,10 @@ namespace Newtonsoft.Json.Serialization
                 }
                 else
                 {
+                    // clear context in case serializer is being used inside a converter
+                    // if the converter wraps the error then not clearing the context will cause this error:
+                    // "Current error context error is different to requested error."
+                    ClearErrorContext();
                     throw;
                 }
             }
@@ -1454,7 +1458,8 @@ To fix this error either change the environment to be fully trusted, change the 
             if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Info)
                 TraceWriter.Trace(TraceLevel.Info, JsonPosition.FormatMessage(reader as IJsonLineInfo, reader.Path, "Deserializing {0} using a non-default constructor '{1}'.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType, constructorInfo)), null);
 
-            IDictionary<JsonProperty, object> propertyValues = ResolvePropertyAndConstructorValues(contract, containerProperty, reader, objectType);
+            IDictionary<string, object> extensionData;
+            IDictionary<JsonProperty, object> propertyValues = ResolvePropertyAndConstructorValues(contract, containerProperty, reader, objectType, out extensionData);
 
             IDictionary<ParameterInfo, object> constructorParameters = constructorInfo.GetParameters().ToDictionary(p => p, p => (object)null);
             IDictionary<JsonProperty, object> remainingPropertyValues = new Dictionary<JsonProperty, object>();
@@ -1489,7 +1494,7 @@ To fix this error either change the environment to be fully trusted, change the 
                 JsonProperty property = remainingPropertyValue.Key;
                 object value = remainingPropertyValue.Value;
 
-                if (ShouldSetPropertyValue(remainingPropertyValue.Key, remainingPropertyValue.Value))
+                if (ShouldSetPropertyValue(property, value))
                 {
                     property.ValueProvider.SetValue(createdObject, value);
                 }
@@ -1533,6 +1538,14 @@ To fix this error either change the environment to be fully trusted, change the 
                 }
             }
 
+            if (extensionData != null)
+            {
+                foreach (KeyValuePair<string, object> e in extensionData)
+                {
+                    contract.ExtensionDataSetter(createdObject, e.Key, e.Value);
+                }
+            }
+
             EndObject(createdObject, reader, contract, reader.Depth, propertiesPresence);
 
             OnDeserialized(reader, contract, createdObject);
@@ -1552,8 +1565,10 @@ To fix this error either change the environment to be fully trusted, change the 
             return value;
         }
 
-        private IDictionary<JsonProperty, object> ResolvePropertyAndConstructorValues(JsonObjectContract contract, JsonProperty containerProperty, JsonReader reader, Type objectType)
+        private IDictionary<JsonProperty, object> ResolvePropertyAndConstructorValues(JsonObjectContract contract, JsonProperty containerProperty, JsonReader reader, Type objectType, out IDictionary<string, object> extensionData)
         {
+            extensionData = (contract.ExtensionDataSetter != null) ? new Dictionary<string, object>() : null;
+
             IDictionary<JsonProperty, object> propertyValues = new Dictionary<JsonProperty, object>();
             bool exit = false;
             do
@@ -1590,10 +1605,7 @@ To fix this error either change the environment to be fully trusted, change the 
                                     propertyValue = CreateValueInternal(reader, property.PropertyType, property.PropertyContract, property, contract, containerProperty, null);
 
                                 propertyValues[property] = propertyValue;
-                            }
-                            else
-                            {
-                                reader.Skip();
+                                continue;
                             }
                         }
                         else
@@ -1606,7 +1618,15 @@ To fix this error either change the environment to be fully trusted, change the 
 
                             if (Serializer._missingMemberHandling == MissingMemberHandling.Error)
                                 throw JsonSerializationException.Create(reader, "Could not find member '{0}' on object of type '{1}'".FormatWith(CultureInfo.InvariantCulture, memberName, objectType.Name));
+                        }
 
+                        if (extensionData != null)
+                        {
+                            object value = CreateValueInternal(reader, null, null, null, contract, containerProperty, null);
+                            extensionData[memberName] = value;
+                        }
+                        else
+                        {
                             reader.Skip();
                         }
                         break;

@@ -214,6 +214,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
 #if !(NETFX_CORE || PORTABLE || PORTABLE40)
+#pragma warning disable 618
         [Test]
         public void SerializeCompilerGeneratedMembers()
         {
@@ -258,6 +259,7 @@ namespace Newtonsoft.Json.Tests.Serialization
   ""IntProperty"": 2
 }", includeCompilerGeneratedJson);
         }
+#pragma warning restore 618
 #endif
     }
 }

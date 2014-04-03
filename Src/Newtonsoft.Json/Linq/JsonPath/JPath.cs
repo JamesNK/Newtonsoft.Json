@@ -490,7 +490,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                         if (numberText.IndexOfAny(new char[] { '.', 'E', 'e' }) != -1)
                         {
                             double d;
-                            if (double.TryParse(numberText, out d))
+                            if (double.TryParse(numberText, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out d))
                                 return d;
                             else
                                 throw new JsonException("Could not read query value.");
@@ -498,7 +498,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                         else
                         {
                             long l;
-                            if (long.TryParse(numberText, out l))
+                            if (long.TryParse(numberText, NumberStyles.Integer, CultureInfo.InvariantCulture, out l))
                                 return l;
                             else
                                 throw new JsonException("Could not read query value.");

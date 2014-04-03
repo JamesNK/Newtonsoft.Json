@@ -715,6 +715,157 @@ namespace Newtonsoft.Json.Tests.Serialization
                 @"Unterminated string. Expected delimiter: "". Path '', line 1, position 3.",
                 () => { ErrorTestObject obj = s.Deserialize<ErrorTestObject>(jReader); });
         }
+
+        public class RootThing
+        {
+            public Something Something { get; set; }
+        }
+
+        public class RootSomethingElse
+        {
+            public SomethingElse SomethingElse { get; set; }
+        }
+
+        /// <summary>
+        /// This could be an object we are passing up in an interface.
+        /// </summary>
+        [JsonConverter(typeof(SomethingConverter))]
+        public class Something
+        {
+            public class SomethingConverter : JsonConverter
+            {
+                public override bool CanConvert(Type objectType)
+                {
+                    return true;
+                }
+
+                public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+                {
+                    try
+                    {
+                        // Do own stuff.
+                        // Then call deserialise for inner object.
+                        var innerObject = serializer.Deserialize(reader, typeof(SomethingElse));
+
+                        return null;
+                    }
+                    catch (Exception ex)
+                    {
+                        // If we get an error wrap it in something less scary.
+                        throw new Exception("An error occurred.", ex);
+                    }
+                }
+
+                public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+                {
+                    try
+                    {
+                        Something s = (Something)value;
+
+                        // Do own stuff.
+                        // Then call serialise for inner object.
+                        serializer.Serialize(writer, s.RootSomethingElse);
+                    }
+                    catch (Exception ex)
+                    {
+                        // If we get an error wrap it in something less scary.
+                        throw new Exception("An error occurred.", ex);
+                    }
+                }
+            }
+
+            public RootSomethingElse RootSomethingElse { get; set; }
+
+            public Something()
+            {
+                this.RootSomethingElse = new RootSomethingElse();
+            }
+        }
+
+        /// <summary>
+        /// This is an object that is contained in the interface object.
+        /// </summary>
+        [JsonConverter(typeof(SomethingElseConverter))]
+        public class SomethingElse
+        {
+            public class SomethingElseConverter : JsonConverter
+            {
+                public override bool CanConvert(Type objectType)
+                {
+                    return true;
+                }
+
+                public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+                {
+                    throw new NotImplementedException();
+                }
+
+                public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
+        }
+
+        [Test]
+        public void DeserializeWrappingErrorsAndErrorHandling()
+        {
+            var serialiser = JsonSerializer.Create(new JsonSerializerSettings() { });
+
+            string foo = "{ something: { rootSomethingElse { somethingElse: 0 } } }";
+            var reader = new System.IO.StringReader(foo);
+
+            ExceptionAssert.Throws<Exception>(
+                "An error occurred.",
+                () => { serialiser.Deserialize(reader, typeof(Something)); });
+        }
+
+        [Test]
+        public void SerializeWrappingErrorsAndErrorHandling()
+        {
+            var serialiser = JsonSerializer.Create(new JsonSerializerSettings() { });
+
+            Something s = new Something
+            {
+                RootSomethingElse = new RootSomethingElse
+                {
+                    SomethingElse = new SomethingElse()
+                }
+            };
+            RootThing r = new RootThing
+            {
+                Something = s
+            };
+            
+            var writer = new System.IO.StringWriter();
+
+            ExceptionAssert.Throws<Exception>(
+                "An error occurred.",
+                () => { serialiser.Serialize(writer, r); });
+        }
+
+        [Test]
+        public void DeserializeRootConverter()
+        {
+            SomethingElse result = JsonConvert.DeserializeObject<SomethingElse>("{}", new JsonSerializerSettings
+            {
+                Error = (o, e) => { e.ErrorContext.Handled = true; }
+            });
+
+            Assert.IsNull(result);
+        }
+
+        [Test]
+        public void SerializeRootConverter()
+        {
+            string result = JsonConvert.SerializeObject(new SomethingElse(), new JsonSerializerSettings
+            {
+                Error = (o, e) => { e.ErrorContext.Handled = true; }
+            });
+
+            Assert.AreEqual(string.Empty, result);
+        }
     }
 
     internal interface IErrorPerson2

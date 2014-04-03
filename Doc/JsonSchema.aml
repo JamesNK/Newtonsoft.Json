@@ -13,6 +13,22 @@
         <linkTarget>_blank</linkTarget>
       </externalLink></para>
     </introduction>
+
+<alert class="caution">
+  <para>
+    The JSON Schema standard isn't final.
+
+    Json.NET implements 
+      <externalLink>
+        <linkText>JSON Schema Draft 3</linkText>
+        <linkUri>http://tools.ietf.org/search/draft-zyp-json-schema-03/</linkUri>
+        <linkTarget>_blank</linkTarget>
+      </externalLink>.
+
+    There will be breaking changes to some parts of Json.NET's JSON Schema API when it is updated to implement newer drafts of JSON Schema.
+  </para>
+</alert>
+
     <!-- Optional procedures followed by optional code example but must have
          at least one procedure or code example -->
 <section>

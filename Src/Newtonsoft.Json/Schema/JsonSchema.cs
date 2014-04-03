@@ -301,9 +301,10 @@ namespace Newtonsoft.Json.Schema
         {
             ValidationUtils.ArgumentNotNull(json, "json");
 
-            JsonReader reader = new JsonTextReader(new StringReader(json));
-
-            return Read(reader, resolver);
+            using (JsonReader reader = new JsonTextReader(new StringReader(json)))
+            {
+                return Read(reader, resolver);
+            }
         }
 
         /// <summary>

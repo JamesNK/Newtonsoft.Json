@@ -55,6 +55,61 @@ namespace Newtonsoft.Json.Tests.Serialization
     public class TypeNameHandlingTests : TestFixtureBase
     {
         [Test]
+        public void DictionaryAuto()
+        {
+            Dictionary<string, object> dic = new Dictionary<string, object>
+            {
+                { "movie", new Movie { Name = "Die Hard"}}
+            };
+
+            string json = JsonConvert.SerializeObject(dic, Formatting.Indented, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto
+            });
+
+            Assert.AreEqual(@"{
+  ""movie"": {
+    ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Movie, Newtonsoft.Json.Tests"",
+    ""Name"": ""Die Hard"",
+    ""Description"": null,
+    ""Classification"": null,
+    ""Studio"": null,
+    ""ReleaseDate"": null,
+    ""ReleaseCountries"": null
+  }
+}", json);
+        }
+
+        [Test]
+        public void KeyValuePairAuto()
+        {
+            IList<KeyValuePair<string, object>> dic = new List<KeyValuePair<string, object>>
+            {
+                new KeyValuePair<string, object>("movie", new Movie { Name = "Die Hard"})
+            };
+
+            string json = JsonConvert.SerializeObject(dic, Formatting.Indented, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto
+            });
+
+            Assert.AreEqual(@"[
+  {
+    ""Key"": ""movie"",
+    ""Value"": {
+      ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Movie, Newtonsoft.Json.Tests"",
+      ""Name"": ""Die Hard"",
+      ""Description"": null,
+      ""Classification"": null,
+      ""Studio"": null,
+      ""ReleaseDate"": null,
+      ""ReleaseCountries"": null
+    }
+  }
+]", json);
+        }
+
+        [Test]
         public void NestedValueObjects()
         {
             StringBuilder sb = new StringBuilder();
@@ -1653,6 +1708,35 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual("string!", ((MyChild)p2.Child).MyProperty);
         }
 #endif
+
+        [Test]
+        public void ListOfStackWithFullAssemblyName()
+        {
+            var input = new List<Stack<string>>();
+
+            input.Add(new Stack<string>(new List<string> { "One", "Two", "Three" }));
+            input.Add(new Stack<string>(new List<string> { "Four", "Five", "Six" }));
+            input.Add(new Stack<string>(new List<string> { "Seven", "Eight", "Nine" }));
+
+            string serialized = JsonConvert.SerializeObject(input,
+                Newtonsoft.Json.Formatting.Indented,
+                new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All, TypeNameAssemblyFormat = FormatterAssemblyStyle.Full } // TypeNameHandling.Auto will work
+            );
+
+            Console.WriteLine(serialized);
+
+            var output = JsonConvert.DeserializeObject<List<Stack<string>>>(serialized,
+                new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All }
+            );
+
+            foreach (var stack in output)
+            {
+                foreach (var value in stack)
+                {
+                    Console.WriteLine(value);
+                }
+            }
+        }
     }
 
 #if !NETFX_CORE

@@ -1383,6 +1383,54 @@ _____'propertyName': NaN
 }", stringWriter.ToString());
             }
         }
+
+        [Test]
+        public void WriteComments()
+        {
+            string json = @"//comment*//*hi*/
+{//comment
+Name://comment
+true//comment after true" + StringUtils.CarriageReturn + @"
+,//comment after comma" + StringUtils.CarriageReturnLineFeed + @"
+""ExpiryDate""://comment" + StringUtils.LineFeed + @"
+new
+" + StringUtils.LineFeed +
+                  @"Constructor
+(//comment
+null//comment
+),
+        ""Price"": 3.99,
+        ""Sizes"": //comment
+[//comment
+
+          ""Small""//comment
+]//comment
+}//comment 
+//comment 1 ";
+
+            JsonTextReader r = new JsonTextReader(new StringReader(json));
+
+            StringWriter sw = new StringWriter();
+            JsonTextWriter w = new JsonTextWriter(sw);
+            w.Formatting = Formatting.Indented;
+
+            w.WriteToken(r, true);
+
+            Assert.AreEqual(@"/*comment*//*hi*/*/{/*comment*/
+  ""Name"": /*comment*/ true/*comment after true*//*comment after comma*/,
+  ""ExpiryDate"": /*comment*/ new Constructor(
+    /*comment*/,
+    null
+    /*comment*/
+  ),
+  ""Price"": 3.99,
+  ""Sizes"": /*comment*/ [
+    /*comment*/
+    ""Small""
+    /*comment*/
+  ]/*comment*/
+}/*comment *//*comment 1 */", sw.ToString());
+        }
     }
 
     public class CustomJsonTextWriter : JsonTextWriter
