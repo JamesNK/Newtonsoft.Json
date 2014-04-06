@@ -274,5 +274,23 @@ namespace Newtonsoft.Json.Tests.Converters
 
             Console.WriteLine(jsonText);
         }
+
+        [Test]
+        public void DeserializeDateTimeOffset()
+        {
+            var settings = new JsonSerializerSettings();
+            settings.DateParseHandling = DateParseHandling.DateTimeOffset;
+            settings.Converters.Add(new IsoDateTimeConverter());
+
+            // Intentionally use an offset that is unlikely in the real world,
+            // so the test will be accurate regardless of the local time zone setting.
+            var offset = new TimeSpan(2, 15, 0);
+            var dto = new DateTimeOffset(2014, 1, 1, 0, 0, 0, 0, offset);
+
+            var test = JsonConvert.DeserializeObject<DateTimeOffset>("\"2014-01-01T00:00:00+02:15\"", settings);
+
+            Assert.AreEqual(dto, test);
+            Assert.AreEqual(dto.ToString("o"), test.ToString("o"));
+        }
     }
 }
