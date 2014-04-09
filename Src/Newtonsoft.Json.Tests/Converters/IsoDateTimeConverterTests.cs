@@ -275,6 +275,7 @@ namespace Newtonsoft.Json.Tests.Converters
             Console.WriteLine(jsonText);
         }
 
+#if !NET20
         [Test]
         public void DeserializeDateTimeOffset()
         {
@@ -292,5 +293,6 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual(dto, test);
             Assert.AreEqual(dto.ToString("o"), test.ToString("o"));
         }
+#endif
     }
 }

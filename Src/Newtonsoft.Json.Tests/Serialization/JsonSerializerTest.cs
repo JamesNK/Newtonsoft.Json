@@ -548,6 +548,55 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(RegexOptions.CultureInvariant, r2.Options);
         }
 
+        [Test]
+        public void ConversionOperator()
+        {
+            // Creating a simple dictionary that has a non-string key
+            var dictStore = new Dictionary<DictionaryKeyCast, int>();
+            for (var i = 0; i < 800; i++)
+            {
+                dictStore.Add(new DictionaryKeyCast(i.ToString(CultureInfo.InvariantCulture), i), i);
+            }
+            var settings = new JsonSerializerSettings { Formatting = Formatting.Indented };
+            var jsonSerializer = JsonSerializer.Create(settings);
+            var ms = new MemoryStream();
+
+            var streamWriter = new StreamWriter(ms);
+            jsonSerializer.Serialize(streamWriter, dictStore);
+            streamWriter.Flush();
+
+            ms.Seek(0, SeekOrigin.Begin);
+
+            var stopWatch = Stopwatch.StartNew();
+            var deserialize = jsonSerializer.Deserialize(new StreamReader(ms), typeof(Dictionary<DictionaryKeyCast, int>));
+            stopWatch.Stop();
+
+            Console.WriteLine("Time elapsed: " + stopWatch.ElapsedMilliseconds);
+        }
+
+        internal class DictionaryKeyCast
+        {
+            private String _name;
+            private int _number;
+
+            public DictionaryKeyCast(String name, int number)
+            {
+                _name = name;
+                _number = number;
+            }
+
+            public override string ToString()
+            {
+                return _name + " " + _number;
+            }
+
+            public static implicit operator DictionaryKeyCast(string dictionaryKey)
+            {
+                var strings = dictionaryKey.Split(' ');
+                return new DictionaryKeyCast(strings[0], Convert.ToInt32(strings[1]));
+            }
+        }
+
 #if !NET20
         [DataContract]
         public class BaseDataContractWithHidden
