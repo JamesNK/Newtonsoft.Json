@@ -242,14 +242,16 @@ namespace Newtonsoft.Json.Converters
         /// Gets a schema for the given type using this converter.
         /// </summary>
         /// <param name="objectType">The enum type for which to generate a schema.</param>
-        /// <param name="generator">The calling generator.</param>
         /// <returns>Schema object for the specified type.</returns>
-        public override JsonSchema GetSchema(Type objectType, JsonSchemaGenerator generator)
+        public override JsonSchema GetSchema(Type objectType)
         {
             if (!objectType.IsEnum())
                 return null;
             
             var schema = new JsonSchema { Type = JsonSchemaType.String };
+
+            if (AllowIntegerValues)
+                schema.Type |= JsonSchemaType.Integer;
 	
             schema.Enum = new List<JToken>();
 
@@ -277,34 +279,6 @@ namespace Newtonsoft.Json.Converters
                     schema.Enum.Add(value);
                 }
             }
-
-            return schema;
-        }
-
-        public override JsonSchema GetSchema(Type objectType)
-        {
-            if (!objectType.IsEnum())
-                return null;
-            
-            var schema = new JsonSchema { Type = JsonSchemaType.String };
-            if (AllowIntegerValues)
-                schema.Type |= JsonSchemaType.Integer;
-	
-            schema.Enum = new List<JToken>();
-
-            var enumNames = EnumUtils.GetNames(objectType);
-            foreach (var enumName in enumNames)
-            {
-                string resolvedEnumName = enumName;
-
-                if (CamelCaseText)
-                    resolvedEnumName = StringUtils.ToCamelCase(resolvedEnumName);
-
-                JToken value = JToken.FromObject(resolvedEnumName);
-
-                schema.Enum.Add(value);
-            }
-
             return schema;
         }
     }
