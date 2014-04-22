@@ -244,9 +244,13 @@ namespace Newtonsoft.Json.Schema
             JsonConverter converter;
             if ((converter = contract.Converter) != null || (converter = contract.InternalConverter) != null)
             {
-                JsonSchema converterSchema = converter.GetSchema();
+                JsonSchema converterSchema = converter.GetSchema(type);
                 if (converterSchema != null)
+                {
+                    if (required && converterSchema.Required != true)
+                        converterSchema.Required = true;
                     return converterSchema;
+                }
             }
 
             Push(new TypeSchema(type, new JsonSchema()));
