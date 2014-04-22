@@ -280,5 +280,32 @@ namespace Newtonsoft.Json.Converters
 
             return schema;
         }
+
+        public override JsonSchema GetSchema(Type objectType)
+        {
+            if (!objectType.IsEnum())
+                return null;
+            
+            var schema = new JsonSchema { Type = JsonSchemaType.String };
+            if (AllowIntegerValues)
+                schema.Type |= JsonSchemaType.Integer;
+	
+            schema.Enum = new List<JToken>();
+
+            var enumNames = EnumUtils.GetNames(objectType);
+            foreach (var enumName in enumNames)
+            {
+                string resolvedEnumName = enumName;
+
+                if (CamelCaseText)
+                    resolvedEnumName = StringUtils.ToCamelCase(resolvedEnumName);
+
+                JToken value = JToken.FromObject(resolvedEnumName);
+
+                schema.Enum.Add(value);
+            }
+
+            return schema;
+        }
     }
 }
