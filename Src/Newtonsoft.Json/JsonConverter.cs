@@ -73,7 +73,6 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// <summary>
         /// Gets the <see cref="JsonSchema"/> of the JSON produced by the JsonConverter for the specified object type.
         /// </summary>
         /// <param name="objectType">
