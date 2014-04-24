@@ -154,6 +154,14 @@ namespace Newtonsoft.Json.Schema
                     _writer.WriteEndArray();
                 }
             }
+            if (schema.ExtraProperties != null)
+            {
+                foreach (KeyValuePair<string, JToken> property in schema.ExtraProperties)
+                {
+                    _writer.WritePropertyName(property.Key);
+                    property.Value.WriteTo(_writer);
+                }
+            }
             _writer.WriteEndObject();
         }
 
