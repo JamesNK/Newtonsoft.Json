@@ -233,6 +233,12 @@ namespace Newtonsoft.Json.Schema
         /// <value>The format.</value>
         public string Format { get; set; }
 
+        /// <summary>
+        /// Gets or sets the extra properties in the schema that are not schema keywords.
+        /// </summary>
+        /// <value>A dictionary of extra property tokens keyed by property name.</value>
+        public IDictionary<string, JToken> ExtraProperties { get; set; } 
+
         internal string Location { get; set; }
 
         private readonly string _internalId = Guid.NewGuid().ToString("N");
