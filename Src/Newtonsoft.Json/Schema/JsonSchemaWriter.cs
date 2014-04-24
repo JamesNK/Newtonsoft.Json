@@ -159,7 +159,10 @@ namespace Newtonsoft.Json.Schema
                 foreach (KeyValuePair<string, JToken> property in schema.ExtraProperties)
                 {
                     _writer.WritePropertyName(property.Key);
-                    property.Value.WriteTo(_writer);
+                    if (property.Value == null)
+                        _writer.WriteNull();
+                    else
+                        property.Value.WriteTo(_writer);
                 }
             }
             _writer.WriteEndObject();
