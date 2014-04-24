@@ -103,5 +103,14 @@ namespace Newtonsoft.Json
         {
             get { return true; }
         }
+
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="JsonConverter"/> can be used for schema generation.
+        /// </summary>
+        /// <value><c>true</c> if this <see cref="JsonConverter"/> can be used for schema generation; otherwise, <c>false</c>.</value>
+        public virtual bool CanGenerateSchema
+        {
+            get { return true; }
+        }
     }
 }

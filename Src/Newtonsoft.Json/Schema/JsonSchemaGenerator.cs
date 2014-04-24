@@ -241,19 +241,25 @@ namespace Newtonsoft.Json.Schema
             }
 
             JsonContract contract = ContractResolver.ResolveContract(type);
-            JsonConverter converter;
-            if ((converter = contract.Converter) != null || (converter = contract.InternalConverter) != null)
+            JsonConverter converter = contract.Converter ?? contract.InternalConverter;
+
+            if (converter != null && converter.CanGenerateSchema)
             {
                 JsonSchema converterSchema = converter.GetSchema(type);
                 if (converterSchema != null)
                 {
-                    if (required && converterSchema.Required != true)
-                        converterSchema.Required = true;
-                    return converterSchema;
+                    Push(new TypeSchema(type, converterSchema));
+                }
+                else
+                {
+                    //use the legacy behavior in this case ("type": "any")
+                    Push(new TypeSchema(type, new JsonSchema() {Type = JsonSchemaType.Any}));
                 }
             }
-
-            Push(new TypeSchema(type, new JsonSchema()));
+            else
+            {
+                Push(new TypeSchema(type, new JsonSchema()));
+            }
 
             if (explicitId != null)
                 CurrentSchema.Id = explicitId;
@@ -263,12 +269,7 @@ namespace Newtonsoft.Json.Schema
             CurrentSchema.Title = GetTitle(type);
             CurrentSchema.Description = GetDescription(type);
 
-            if (converter != null)
-            {
-                // todo: Add GetSchema to JsonConverter and use here?
-                CurrentSchema.Type = JsonSchemaType.Any;
-            }
-            else
+            if (converter == null || !converter.CanGenerateSchema)
             {
                 switch (contract.ContractType)
                 {
