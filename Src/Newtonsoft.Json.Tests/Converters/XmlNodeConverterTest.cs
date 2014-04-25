@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+using System.Text;
 #if !(NETFX_CORE || PORTABLE || PORTABLE40)
 using System;
 using System.Collections.Generic;
@@ -144,8 +145,7 @@ namespace Newtonsoft.Json.Tests.Converters
             doc.LoadXml("<root></root>");
 
             json = JsonConvert.SerializeXmlNode(doc, Formatting.Indented, true);
-            Assert.AreEqual("null", json);
-
+            Assert.AreEqual(@"""""", json);
 
             XDocument doc1 = XDocument.Parse("<root />");
 
@@ -155,7 +155,7 @@ namespace Newtonsoft.Json.Tests.Converters
             doc1 = XDocument.Parse("<root></root>");
 
             json = JsonConvert.SerializeXNode(doc1, Formatting.Indented, true);
-            Assert.AreEqual("null", json);
+            Assert.AreEqual(@"""""", json);
         }
 
         [Test]
@@ -343,6 +343,137 @@ namespace Newtonsoft.Json.Tests.Converters
             Console.WriteLine("DocumentFragmentSerialize");
             Console.WriteLine(jsonText);
             Console.WriteLine();
+        }
+
+        [Test]
+        public void XmlDocumentTypeSerialize()
+        {
+            string xml = @"<?xml version=""1.0"" encoding=""utf-8""?><!DOCTYPE STOCKQUOTE PUBLIC ""-//W3C//DTD StockQuote 1.5//EN"" ""http://www.irxml.org/dtd/stockquote_1.5.dtd""><STOCKQUOTE ROWCOUNT=""2""><RESULT><ROW><ASK>0</ASK><BID>0</BID><CHANGE>-16.310</CHANGE><COMPANYNAME>Dow Jones</COMPANYNAME><DATETIME>2014-04-17 15:50:37</DATETIME><DIVIDEND>0</DIVIDEND><EPS>0</EPS><EXCHANGE></EXCHANGE><HIGH>16460.490</HIGH><LASTDATETIME>2014-04-17 15:50:37</LASTDATETIME><LASTPRICE>16408.540</LASTPRICE><LOW>16368.140</LOW><OPEN>16424.140</OPEN><PCHANGE>-0.099</PCHANGE><PE>0</PE><PREVIOUSCLOSE>16424.850</PREVIOUSCLOSE><SHARES>0</SHARES><TICKER>DJII</TICKER><TRADES>0</TRADES><VOLUME>136188700</VOLUME><YEARHIGH>11309.000</YEARHIGH><YEARLOW>9302.280</YEARLOW><YIELD>0</YIELD></ROW><ROW><ASK>0</ASK><BID>0</BID><CHANGE>9.290</CHANGE><COMPANYNAME>NASDAQ</COMPANYNAME><DATETIME>2014-04-17 15:40:01</DATETIME><DIVIDEND>0</DIVIDEND><EPS>0</EPS><EXCHANGE></EXCHANGE><HIGH>4110.460</HIGH><LASTDATETIME>2014-04-17 15:40:01</LASTDATETIME><LASTPRICE>4095.520</LASTPRICE><LOW>4064.700</LOW><OPEN>4080.300</OPEN><PCHANGE>0.227</PCHANGE><PE>0</PE><PREVIOUSCLOSE>4086.230</PREVIOUSCLOSE><SHARES>0</SHARES><TICKER>COMP</TICKER><TRADES>0</TRADES><VOLUME>1784210100</VOLUME><YEARHIGH>4371.710</YEARHIGH><YEARLOW>3154.960</YEARLOW><YIELD>0</YIELD></ROW></RESULT><STATUS>Couldn't find ticker: SPIC?</STATUS><STATUSCODE>2</STATUSCODE></STOCKQUOTE>";
+
+            string expected = @"{
+  ""?xml"": {
+    ""@version"": ""1.0"",
+    ""@encoding"": ""utf-8""
+  },
+  ""!DOCTYPE"": {
+    ""@name"": ""STOCKQUOTE"",
+    ""@public"": ""-//W3C//DTD StockQuote 1.5//EN"",
+    ""@system"": ""http://www.irxml.org/dtd/stockquote_1.5.dtd""
+  },
+  ""STOCKQUOTE"": {
+    ""@ROWCOUNT"": ""2"",
+    ""RESULT"": {
+      ""ROW"": [
+        {
+          ""ASK"": ""0"",
+          ""BID"": ""0"",
+          ""CHANGE"": ""-16.310"",
+          ""COMPANYNAME"": ""Dow Jones"",
+          ""DATETIME"": ""2014-04-17 15:50:37"",
+          ""DIVIDEND"": ""0"",
+          ""EPS"": ""0"",
+          ""EXCHANGE"": """",
+          ""HIGH"": ""16460.490"",
+          ""LASTDATETIME"": ""2014-04-17 15:50:37"",
+          ""LASTPRICE"": ""16408.540"",
+          ""LOW"": ""16368.140"",
+          ""OPEN"": ""16424.140"",
+          ""PCHANGE"": ""-0.099"",
+          ""PE"": ""0"",
+          ""PREVIOUSCLOSE"": ""16424.850"",
+          ""SHARES"": ""0"",
+          ""TICKER"": ""DJII"",
+          ""TRADES"": ""0"",
+          ""VOLUME"": ""136188700"",
+          ""YEARHIGH"": ""11309.000"",
+          ""YEARLOW"": ""9302.280"",
+          ""YIELD"": ""0""
+        },
+        {
+          ""ASK"": ""0"",
+          ""BID"": ""0"",
+          ""CHANGE"": ""9.290"",
+          ""COMPANYNAME"": ""NASDAQ"",
+          ""DATETIME"": ""2014-04-17 15:40:01"",
+          ""DIVIDEND"": ""0"",
+          ""EPS"": ""0"",
+          ""EXCHANGE"": """",
+          ""HIGH"": ""4110.460"",
+          ""LASTDATETIME"": ""2014-04-17 15:40:01"",
+          ""LASTPRICE"": ""4095.520"",
+          ""LOW"": ""4064.700"",
+          ""OPEN"": ""4080.300"",
+          ""PCHANGE"": ""0.227"",
+          ""PE"": ""0"",
+          ""PREVIOUSCLOSE"": ""4086.230"",
+          ""SHARES"": ""0"",
+          ""TICKER"": ""COMP"",
+          ""TRADES"": ""0"",
+          ""VOLUME"": ""1784210100"",
+          ""YEARHIGH"": ""4371.710"",
+          ""YEARLOW"": ""3154.960"",
+          ""YIELD"": ""0""
+        }
+      ]
+    },
+    ""STATUS"": ""Couldn't find ticker: SPIC?"",
+    ""STATUSCODE"": ""2""
+  }
+}";
+
+            XmlDocument doc1 = new XmlDocument();
+            doc1.LoadXml(xml);
+
+            string json1 = JsonConvert.SerializeXmlNode(doc1, Formatting.Indented);
+
+            Assert.AreEqual(expected, json1);
+
+            XmlDocument doc11 = JsonConvert.DeserializeXmlNode(json1);
+
+            Assert.AreEqual(xml, ToStringWithDeclaration(doc11));
+
+#if !NET20
+            XDocument doc2 = XDocument.Parse(xml);
+
+            string json2 = JsonConvert.SerializeXNode(doc2, Formatting.Indented);
+
+            Assert.AreEqual(expected, json2);
+
+            XDocument doc22 = JsonConvert.DeserializeXNode(json2);
+
+            Assert.AreEqual(xml, ToStringWithDeclaration(doc22));
+#endif
+        }
+
+        public class Utf8StringWriter : StringWriter
+        {
+            public override Encoding Encoding { get { return Encoding.UTF8; } }
+
+            public Utf8StringWriter(StringBuilder sb) : base(sb)
+            {
+            }
+        }
+
+#if !NET20
+        public static string ToStringWithDeclaration(XDocument doc, bool indent = false)
+        {
+            StringBuilder builder = new StringBuilder();
+            using (var writer = XmlWriter.Create(new Utf8StringWriter(builder), new XmlWriterSettings { Indent = indent }))
+            {
+                doc.Save(writer);
+            }
+            return builder.ToString();
+        }
+#endif
+
+        public static string ToStringWithDeclaration(XmlDocument doc, bool indent = false)
+        {
+            StringBuilder builder = new StringBuilder();
+            using (var writer = XmlWriter.Create(new Utf8StringWriter(builder), new XmlWriterSettings { Indent = indent }))
+            {
+                doc.Save(writer);
+            }
+            return builder.ToString();
         }
 
         [Test]
@@ -1325,12 +1456,23 @@ namespace Newtonsoft.Json.Tests.Converters
         }
       ],
       ""C"": [
-        null,
-        null
+        """",
+        """"
       ]
     }
   }
 }", json);
+
+            XmlDocument d2 = JsonConvert.DeserializeXmlNode(json);
+
+            Assert.AreEqual(@"<?xml version=""1.0"" encoding=""utf-8""?>
+<root>
+  <A>
+    <B name=""sample"" />
+    <C></C>
+    <C></C>
+  </A>
+</root>", ToStringWithDeclaration(d2, true));
         }
 
         [Test]

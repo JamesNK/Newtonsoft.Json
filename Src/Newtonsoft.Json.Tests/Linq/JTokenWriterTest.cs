@@ -88,7 +88,7 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(0.99, (double)root[5]);
             Assert.AreEqual(0.000000000000000001d, (double)root[6]);
             Assert.AreEqual(0.000000000000000001m, (decimal)root[7]);
-            Assert.AreEqual(string.Empty, (string)root[8]);
+            Assert.AreEqual(null, (string)root[8]);
             Assert.AreEqual("This is a string.", (string)root[9]);
             Assert.AreEqual(null, ((JValue)root[10]).Value);
             Assert.AreEqual(null, ((JValue)root[11]).Value);

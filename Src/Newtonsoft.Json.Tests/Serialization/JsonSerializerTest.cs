@@ -549,6 +549,109 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Test]
+        public void EmbedJValueStringInNewJObject()
+        {
+            string s = null;
+            var v = new JValue(s);
+            var o = JObject.FromObject(new { title = v });
+
+            JObject oo = new JObject
+            {
+                {"title", v}
+            };
+
+            string output = o.ToString();
+
+            Assert.AreEqual(null, v.Value);
+            Assert.AreEqual(JTokenType.String, v.Type);
+            
+            Assert.AreEqual(@"{
+  ""title"": null
+}", output);
+        }
+
+        // bug: the generic member (T) that hides the base member will not
+        // be used when serializing and deserializing the object,
+        // resulting in unexpected behavior during serialization and deserialization.
+
+        public class Foo1
+        {
+            public object foo { get; set; }
+        }
+
+        public class Bar1
+        {
+            public object bar { get; set; }
+        }
+
+        public class Foo1<T> : Foo1
+        {
+            public new T foo { get; set; }
+
+            public T foo2 { get; set; }
+        }
+
+        public class FooBar1 : Foo1
+        {
+            public new Bar1 foo { get; set; }
+        }
+
+        [Test]
+        public void BaseClassSerializesAsExpected()
+        {
+            var original = new Foo1 { foo = "value" };
+            var json = JsonConvert.SerializeObject(original);
+            var expectedJson = @"{""foo"":""value""}";
+            Assert.AreEqual(expectedJson, json); // passes
+        }
+
+        [Test]
+        public void BaseClassDeserializesAsExpected()
+        {
+            var json = @"{""foo"":""value""}";
+            var deserialized = JsonConvert.DeserializeObject<Foo1>(json);
+            Assert.AreEqual("value", deserialized.foo); // passes
+        }
+
+        [Test]
+        public void DerivedClassHidingBasePropertySerializesAsExpected()
+        {
+            var original = new FooBar1 { foo = new Bar1 { bar = "value" } };
+            var json = JsonConvert.SerializeObject(original);
+            var expectedJson = @"{""foo"":{""bar"":""value""}}";
+            Assert.AreEqual(expectedJson, json); // passes
+        }
+
+        [Test]
+        public void DerivedClassHidingBasePropertyDeserializesAsExpected()
+        {
+            var json = @"{""foo"":{""bar"":""value""}}";
+            var deserialized = JsonConvert.DeserializeObject<FooBar1>(json);
+            Assert.IsNotNull(deserialized.foo); // passes
+            Assert.AreEqual("value", deserialized.foo.bar); // passes
+        }
+
+        [Test]
+        public void DerivedGenericClassHidingBasePropertySerializesAsExpected()
+        {
+            var original = new Foo1<Bar1> { foo = new Bar1 { bar = "value" }, foo2 = new Bar1 { bar = "value2" } };
+            var json = JsonConvert.SerializeObject(original);
+            var expectedJson = @"{""foo"":{""bar"":""value""},""foo2"":{""bar"":""value2""}}";
+            Assert.AreEqual(expectedJson, json);
+        }
+
+        [Test]
+        public void DerivedGenericClassHidingBasePropertyDeserializesAsExpected()
+        {
+            var json = @"{""foo"":{""bar"":""value""},""foo2"":{""bar"":""value2""}}";
+            var deserialized = JsonConvert.DeserializeObject<Foo1<Bar1>>(json);
+            Assert.IsNotNull(deserialized.foo2); // passes (bug only occurs for generics that /hide/ another property)
+            Assert.AreEqual("value2", deserialized.foo2.bar); // also passes, with no issue
+            Assert.IsNotNull(deserialized.foo);
+            Assert.AreEqual("value", deserialized.foo.bar);
+        }
+
+        [Test]
         public void ConversionOperator()
         {
             // Creating a simple dictionary that has a non-string key

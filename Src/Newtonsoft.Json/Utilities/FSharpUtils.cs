@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+using System.Threading;
 #if !(NET35 || NET20 || NETFX_CORE)
 using System;
 using System.Collections.Generic;
@@ -91,6 +92,9 @@ namespace Newtonsoft.Json.Utilities
                         Type listModule = fsharpCoreAssembly.GetType("Microsoft.FSharp.Collections.ListModule");
                         _ofSeq = listModule.GetMethod("OfSeq");
 
+#if !(NETFX_CORE || PORTABLE)
+                        Thread.MemoryBarrier();
+#endif
                         _initialized = true;
                     }
                 }

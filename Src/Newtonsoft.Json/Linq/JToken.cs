@@ -313,7 +313,8 @@ namespace Newtonsoft.Json.Linq
         {
             JToken token = this[key];
 
-            return Extensions.Convert<JToken, T>(token);
+            // null check to fix MonoTouch issue - https://github.com/dolbz/Newtonsoft.Json/commit/a24e3062846b30ee505f3271ac08862bb471b822
+            return token == null ? default(T) : Extensions.Convert<JToken, T>(token);
         }
 
         /// <summary>
