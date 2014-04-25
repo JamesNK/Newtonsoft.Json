@@ -115,6 +115,64 @@ namespace Newtonsoft.Json.Tests.Converters
             return node;
         }
 
+        public class DecimalContainer
+        {
+            public decimal Number { get; set; }
+        }
+
+        [Test]
+        public void FloatParseHandlingDecimal()
+        {
+            decimal d = (decimal)Math.PI + 1000000000m;
+            var x = new DecimalContainer { Number = d };
+
+            var json = JsonConvert.SerializeObject(x, Formatting.Indented);
+
+            XDocument doc1 = JsonConvert.DeserializeObject<XDocument>(json, new JsonSerializerSettings
+            {
+                Converters = { new XmlNodeConverter() },
+                FloatParseHandling = FloatParseHandling.Decimal
+            });
+
+            var xml = doc1.ToString();
+            Assert.AreEqual("<Number>1000000003.14159265358979</Number>", xml);
+
+            string json2 = JsonConvert.SerializeObject(doc1, Formatting.Indented);
+
+            DecimalContainer x2 = JsonConvert.DeserializeObject<DecimalContainer>(json2);
+
+            Assert.AreEqual(x.Number, x2.Number);
+        }
+
+        public class DateTimeOffsetContainer
+        {
+            public DateTimeOffset Date { get; set; }
+        }
+
+        [Test]
+        public void DateTimeParseHandlingOffset()
+        {
+            DateTimeOffset d = new DateTimeOffset(2012, 12, 12, 12, 44, 1, TimeSpan.FromHours(12).Add(TimeSpan.FromMinutes(34)));
+            var x = new DateTimeOffsetContainer { Date = d };
+
+            var json = JsonConvert.SerializeObject(x, Formatting.Indented);
+
+            XDocument doc1 = JsonConvert.DeserializeObject<XDocument>(json, new JsonSerializerSettings
+            {
+                Converters = { new XmlNodeConverter() },
+                DateParseHandling = DateParseHandling.DateTimeOffset
+            });
+
+            var xml = doc1.ToString();
+            Assert.AreEqual("<Date>2012-12-12T12:44:01+12:34</Date>", xml);
+
+            string json2 = JsonConvert.SerializeObject(doc1, Formatting.Indented);
+
+            DateTimeOffsetContainer x2 = JsonConvert.DeserializeObject<DateTimeOffsetContainer>(json2);
+
+            Assert.AreEqual(x.Date, x2.Date);
+        }
+
 #if !NET20
         [Test]
         public void GroupElementsOfTheSameName()

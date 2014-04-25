@@ -51,6 +51,17 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
     public class JPathExecuteTests : TestFixtureBase
     {
         [Test]
+        public void EvaluatePropertyWithRequired()
+        {
+            string json = "{\"bookId\":\"1000\"}";
+            JObject o = JObject.Parse(json);
+
+            string bookId = (string)o.SelectToken("bookId", true);
+
+            Assert.AreEqual("1000", bookId);
+        }
+
+        [Test]
         public void EvaluateEmptyPropertyIndexer()
         {
             JObject o = new JObject(

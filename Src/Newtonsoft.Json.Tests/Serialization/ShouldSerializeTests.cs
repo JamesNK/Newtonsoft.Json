@@ -36,6 +36,27 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class ShouldSerializeTests : TestFixtureBase
     {
+        public class A
+        {
+        }
+
+        public class B
+        {
+            public A A { get; set; }
+            public virtual bool ShouldSerializeA()
+            {
+                return false;
+            }
+        }
+
+        [Test]
+        public void VirtualShouldSerializeSimple()
+        {
+            string json = JsonConvert.SerializeObject(new B());
+
+            Assert.AreEqual("{}", json);
+        }
+
         [Test]
         public void VirtualShouldSerialize()
         {
