@@ -115,6 +115,7 @@ namespace Newtonsoft.Json.Tests.Converters
             return node;
         }
 
+#if !NET20
         public class DecimalContainer
         {
             public decimal Number { get; set; }
@@ -173,7 +174,6 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual(x.Date, x2.Date);
         }
 
-#if !NET20
         [Test]
         public void GroupElementsOfTheSameName()
         {
