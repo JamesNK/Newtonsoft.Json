@@ -374,6 +374,7 @@ namespace Newtonsoft.Json.Serialization
         {
             string id;
             object newValue;
+            Type resolvedObjectType = objectType;
 
             if (Serializer.SpecialPropertyHandling == SpecialPropertyHandling.ReadAhead)
             {
@@ -389,13 +390,13 @@ namespace Newtonsoft.Json.Serialization
                     reader = tokenReader;
                 }
 
-                if (ReadSpecialPropertiesToken(tokenReader, ref objectType, ref contract, member, containerContract, containerMember, existingValue, out newValue, out id))
+                if (ReadSpecialPropertiesToken(tokenReader, ref resolvedObjectType, ref contract, member, containerContract, containerMember, existingValue, out newValue, out id))
                     return newValue;
             }
             else
             {
                 CheckedRead(reader);
-                if (ReadSpecialProperties(reader, ref objectType, ref contract, member, containerContract, containerMember, existingValue, out newValue, out id))
+                if (ReadSpecialProperties(reader, ref resolvedObjectType, ref contract, member, containerContract, containerMember, existingValue, out newValue, out id))
                     return newValue;
             }
 
@@ -409,7 +410,8 @@ namespace Newtonsoft.Json.Serialization
                     bool createdFromNonDefaultConstructor = false;
                     JsonObjectContract objectContract = (JsonObjectContract)contract;
                     object targetObject;
-                    if (existingValue != null)
+                    // check that if type name handling is being used that the existing value is compatible with the specified type
+                    if (existingValue != null && (resolvedObjectType == objectType || resolvedObjectType.IsInstanceOfType(existingValue)))
                         targetObject = existingValue;
                     else
                         targetObject = CreateNewObject(reader, objectContract, member, containerMember, id, out createdFromNonDefaultConstructor);
@@ -433,7 +435,7 @@ namespace Newtonsoft.Json.Serialization
                         if (reader.TokenType == JsonToken.StartObject)
                             throw JsonSerializationException.Create(reader, "Unexpected token when deserializing primitive value: " + reader.TokenType);
 
-                        object value = CreateValueInternal(reader, objectType, primitiveContract, member, null, null, existingValue);
+                        object value = CreateValueInternal(reader, resolvedObjectType, primitiveContract, member, null, null, existingValue);
 
                         CheckedRead(reader);
                         return value;
@@ -503,7 +505,7 @@ namespace Newtonsoft.Json.Serialization
 
             throw JsonSerializationException.Create(reader, @"Cannot deserialize the current JSON object (e.g. {{""name"":""value""}}) into type '{0}' because the type requires a {1} to deserialize correctly.
 To fix this error either change the JSON to a {1} or change the deserialized type so that it is a normal .NET type (e.g. not a primitive type like integer, not a collection type like an array or List<T>) that can be deserialized from a JSON object. JsonObjectAttribute can also be added to the type to force it to deserialize from a JSON object.
-".FormatWith(CultureInfo.InvariantCulture, objectType, GetExpectedDescription(contract)));
+".FormatWith(CultureInfo.InvariantCulture, resolvedObjectType, GetExpectedDescription(contract)));
         }
 
         private bool ReadSpecialPropertiesToken(JTokenReader reader, ref Type objectType, ref JsonContract contract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerMember, object existingValue, out object newValue, out string id)

@@ -1740,6 +1740,34 @@ namespace Newtonsoft.Json.Tests.Serialization
                 }
             }
         }
+
+#if !NET20
+        [Test]
+        public void ExistingBaseValue()
+        {
+            string json = @"{
+    ""itemIdentifier"": {
+        ""$type"": ""Newtonsoft.Json.Tests.Serialization.ReportItemKeys, Newtonsoft.Json.Tests"",
+        ""dataType"": 0,
+        ""wantedUnitID"": 1,
+        ""application"": 3,
+        ""id"": 101,
+        ""name"": ""Machine""
+    },
+    ""isBusinessEntity"": false,
+    ""isKeyItem"": true,
+    ""summarizeOnThisItem"": false
+}";
+
+            GroupingInfo g = JsonConvert.DeserializeObject<GroupingInfo>(json, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Objects
+            });
+
+            ReportItemKeys item = (ReportItemKeys)g.ItemIdentifier;
+            Assert.AreEqual(1, item.WantedUnitID);
+        }
+#endif
     }
 
 #if !NETFX_CORE
@@ -1941,6 +1969,42 @@ namespace Newtonsoft.Json.Tests.Serialization
         public string String { get; set; }
         public int Integer { get; set; }
     }
+
+#if !NET20
+    [DataContract]
+    public class GroupingInfo
+    {
+        [DataMember]
+        public ApplicationItemKeys ItemIdentifier { get; set; }
+
+        public GroupingInfo()
+        {
+            ItemIdentifier = new ApplicationItemKeys();
+        }
+    }
+
+    [DataContract]
+    public class ApplicationItemKeys
+    {
+        [DataMember]
+        public int ID { get; set; }
+        [DataMember]
+        public string Name { get; set; }
+    }
+
+    [DataContract]
+    public class ReportItemKeys : ApplicationItemKeys
+    {
+        protected ulong _wantedUnit;
+
+        [DataMember]
+        public ulong WantedUnitID
+        {
+            get { return _wantedUnit; }
+            set { _wantedUnit = value; }
+        }
+    }
+#endif
 }
 
 #endif
