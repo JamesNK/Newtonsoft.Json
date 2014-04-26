@@ -1121,28 +1121,35 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                         object keyValue = reader.Value;
                         if (CheckPropertyName(reader, keyValue.ToString()))
                             continue;
+
                         try
                         {
                             try
                             {
-                                object dt;
-                                // this is for correctly reading ISO and MS formatted dictionary keys
-                                if ((keyTypeCode == PrimitiveTypeCode.DateTime || keyTypeCode == PrimitiveTypeCode.DateTimeNullable)
-                                    && DateTimeUtils.TryParseDateTime(keyValue.ToString(), DateParseHandling.DateTime, reader.DateTimeZoneHandling, out dt))
+                                DateParseHandling dateParseHandling;
+                                switch (keyTypeCode)
                                 {
-                                    keyValue = dt;
-                                }
+                                    case PrimitiveTypeCode.DateTime:
+                                    case PrimitiveTypeCode.DateTimeNullable:
+                                        dateParseHandling = DateParseHandling.DateTime;
+                                        break;
 #if !NET20
-                                else if ((keyTypeCode == PrimitiveTypeCode.DateTimeOffset || keyTypeCode == PrimitiveTypeCode.DateTimeOffsetNullable)
-                                         && DateTimeUtils.TryParseDateTime(keyValue.ToString(), DateParseHandling.DateTimeOffset, reader.DateTimeZoneHandling, out dt))
-                                {
-                                    keyValue = dt;
-                                }
+                                    case PrimitiveTypeCode.DateTimeOffset:
+                                    case PrimitiveTypeCode.DateTimeOffsetNullable:
+                                        dateParseHandling = DateParseHandling.DateTimeOffset;
+                                        break;
 #endif
-                                else
-                                {
-                                    keyValue = EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract, contract.DictionaryKeyType);
+                                    default:
+                                        dateParseHandling = DateParseHandling.None;
+                                        break;
                                 }
+
+                                // this is for correctly reading ISO and MS formatted dictionary keys
+                                object dt;
+                                if (dateParseHandling != DateParseHandling.None && DateTimeUtils.TryParseDateTime(keyValue.ToString(), dateParseHandling, reader.DateTimeZoneHandling, reader.DateFormatString, reader.Culture, out dt))
+                                    keyValue = dt;
+                                else
+                                    keyValue = EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract, contract.DictionaryKeyType);
                             }
                             catch (Exception ex)
                             {

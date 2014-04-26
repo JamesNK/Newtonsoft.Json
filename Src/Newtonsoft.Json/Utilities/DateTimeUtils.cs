@@ -284,7 +284,7 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
-        internal static bool TryParseDateTime(string s, DateParseHandling dateParseHandling, DateTimeZoneHandling dateTimeZoneHandling, out object dt)
+        internal static bool TryParseDateTime(string s, DateParseHandling dateParseHandling, DateTimeZoneHandling dateTimeZoneHandling, string dateFormatString, CultureInfo culture, out object dt)
         {
             if (s.Length > 0)
             {
@@ -292,12 +292,20 @@ namespace Newtonsoft.Json.Utilities
                 {
                     if (s.StartsWith("/Date(", StringComparison.Ordinal) && s.EndsWith(")/", StringComparison.Ordinal))
                     {
-                        return TryParseDateMicrosoft(s, dateParseHandling, dateTimeZoneHandling, out dt);
+                        if (TryParseDateMicrosoft(s, dateParseHandling, dateTimeZoneHandling, out dt))
+                            return true;
                     }
                 }
                 else if (s.Length >= 19 && s.Length <= 40 && char.IsDigit(s[0]) && s[10] == 'T')
                 {
-                    return TryParseDateIso(s, dateParseHandling, dateTimeZoneHandling, out dt);
+                    if (TryParseDateIso(s, dateParseHandling, dateTimeZoneHandling, out dt))
+                        return true;
+                }
+
+                if (!string.IsNullOrEmpty(dateFormatString))
+                {
+                    if (TryParseDateExact(s, dateParseHandling, dateTimeZoneHandling, dateFormatString, culture, out dt))
+                        return true;
                 }
             }
 
@@ -355,6 +363,34 @@ namespace Newtonsoft.Json.Utilities
                 dt = EnsureDateTime(dateTime, dateTimeZoneHandling);
                 return true;
             }
+        }
+
+        private static bool TryParseDateExact(string text, DateParseHandling dateParseHandling, DateTimeZoneHandling dateTimeZoneHandling, string dateFormatString, CultureInfo culture, out object dt)
+        {
+#if !NET20
+            if (dateParseHandling == DateParseHandling.DateTimeOffset)
+            {
+                DateTimeOffset temp;
+                if (DateTimeOffset.TryParseExact(text, dateFormatString, culture, DateTimeStyles.RoundtripKind, out temp))
+                {
+                    dt = temp;
+                    return true;
+                }
+            }
+            else
+#endif
+            {
+                DateTime temp;
+                if (DateTime.TryParseExact(text, dateFormatString, culture, DateTimeStyles.RoundtripKind, out temp))
+                {
+                    temp = EnsureDateTime(temp, dateTimeZoneHandling);
+                    dt = temp;
+                    return true;
+                }
+            }
+
+            dt = null;
+            return false;
         }
 
         private static TimeSpan ReadOffset(string offsetText)

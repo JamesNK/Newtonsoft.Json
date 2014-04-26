@@ -7818,5 +7818,76 @@ Parameter name: value",
 
             Assert.AreEqual(originalUri, uriWithPlus2.OriginalString);
         }
+
+        [Test]
+        public void DateFormatStringWithDateTime()
+        {
+            DateTime dt = new DateTime(2000, 12, 22);
+            string dateFormatString = "yyyy'-pie-'MMM'-'dddd'-'dd";
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                DateFormatString = dateFormatString
+            };
+
+            string json = JsonConvert.SerializeObject(dt, settings);
+
+            Assert.AreEqual(@"""2000-pie-Dec-Friday-22""", json);
+
+            DateTime dt1 = JsonConvert.DeserializeObject<DateTime>(json, settings);
+
+            Assert.AreEqual(dt, dt1);
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(json))
+            {
+                DateFormatString = dateFormatString
+            };
+            JValue v = (JValue)JToken.ReadFrom(reader);
+
+            Assert.AreEqual(JTokenType.Date, v.Type);
+            Assert.AreEqual(typeof(DateTime), v.Value.GetType());
+            Assert.AreEqual(dt, (DateTime)v.Value);
+            
+            reader = new JsonTextReader(new StringReader(@"""abc"""))
+            {
+                DateFormatString = dateFormatString
+            };
+            v = (JValue)JToken.ReadFrom(reader);
+
+            Assert.AreEqual(JTokenType.String, v.Type);
+            Assert.AreEqual(typeof(string), v.Value.GetType());
+            Assert.AreEqual("abc", v.Value);
+        }
+
+#if !NET20
+        [Test]
+        public void DateFormatStringWithDateTimeOffset()
+        {
+            DateTimeOffset dt = new DateTimeOffset(new DateTime(2000, 12, 22));
+            string dateFormatString = "yyyy'-pie-'MMM'-'dddd'-'dd";
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                DateFormatString = dateFormatString
+            };
+
+            string json = JsonConvert.SerializeObject(dt, settings);
+
+            Assert.AreEqual(@"""2000-pie-Dec-Friday-22""", json);
+
+            DateTimeOffset dt1 = JsonConvert.DeserializeObject<DateTimeOffset>(json, settings);
+
+            Assert.AreEqual(dt, dt1);
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(json))
+            {
+                DateFormatString = dateFormatString,
+                DateParseHandling = DateParseHandling.DateTimeOffset
+            };
+            JValue v = (JValue)JToken.ReadFrom(reader);
+
+            Assert.AreEqual(JTokenType.Date, v.Type);
+            Assert.AreEqual(typeof(DateTimeOffset), v.Value.GetType());
+            Assert.AreEqual(dt, (DateTimeOffset)v.Value);
+        }
+#endif
     }
 }

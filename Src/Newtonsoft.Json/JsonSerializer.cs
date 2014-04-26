@@ -713,6 +713,13 @@ namespace Newtonsoft.Json
                 reader.MaxDepth = _maxDepth;
             }
 
+            string previousDateFormatString = null;
+            if (_dateFormatStringSet && reader.DateFormatString != _dateFormatString)
+            {
+                previousDateFormatString = reader.DateFormatString;
+                reader.DateFormatString = _dateFormatString;
+            }
+
             TraceJsonReader traceJsonReader = (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
                 ? new TraceJsonReader(reader)
                 : null;
@@ -734,6 +741,8 @@ namespace Newtonsoft.Json
                 reader.FloatParseHandling = previousFloatParseHandling.Value;
             if (_maxDepthSet)
                 reader.MaxDepth = previousMaxDepth;
+            if (_dateFormatStringSet)
+                reader.DateFormatString = previousDateFormatString;
 
             return value;
         }

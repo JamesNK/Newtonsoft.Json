@@ -153,7 +153,7 @@ namespace Newtonsoft.Json
                         dateParseHandling = _dateParseHandling;
 
                     object dt;
-                    if (DateTimeUtils.TryParseDateTime(text, dateParseHandling, DateTimeZoneHandling, out dt))
+                    if (DateTimeUtils.TryParseDateTime(text, dateParseHandling, DateTimeZoneHandling, DateFormatString, Culture, out dt))
                     {
                         SetToken(JsonToken.Date, dt);
                         return;
