@@ -7846,7 +7846,7 @@ Parameter name: value",
             Assert.AreEqual(JTokenType.Date, v.Type);
             Assert.AreEqual(typeof(DateTime), v.Value.GetType());
             Assert.AreEqual(dt, (DateTime)v.Value);
-            
+
             reader = new JsonTextReader(new StringReader(@"""abc"""))
             {
                 DateFormatString = dateFormatString
@@ -7856,6 +7856,31 @@ Parameter name: value",
             Assert.AreEqual(JTokenType.String, v.Type);
             Assert.AreEqual(typeof(string), v.Value.GetType());
             Assert.AreEqual("abc", v.Value);
+        }
+
+        [Test]
+        public void DateFormatStringWithDictionaryKey()
+        {
+            DateTime dt = new DateTime(2000, 12, 22);
+            string dateFormatString = "yyyy'-pie-'MMM'-'dddd'-'dd";
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                DateFormatString = dateFormatString,
+                Formatting = Formatting.Indented
+            };
+
+            string json = JsonConvert.SerializeObject(new Dictionary<DateTime, string>
+            {
+                { dt, "123" }
+            }, settings);
+
+            Assert.AreEqual(@"{
+  ""2000-pie-Dec-Friday-22"": ""123""
+}", json);
+
+            Dictionary<DateTime, string> d = JsonConvert.DeserializeObject<Dictionary<DateTime, string>>(json, settings);
+
+            Assert.AreEqual(dt, d.Keys.ElementAt(0));
         }
 
 #if !NET20
