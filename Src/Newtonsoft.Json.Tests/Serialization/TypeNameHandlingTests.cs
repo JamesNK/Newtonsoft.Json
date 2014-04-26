@@ -650,6 +650,56 @@ namespace Newtonsoft.Json.Tests.Serialization
             }
         }
 
+        [Test]
+        public void DeserializeUsingTypeJsonConverter()
+        {
+            const String json = "{\"$type\":\"Newtonsoft.Json.Tests.Serialization.TypeNameHandlingTests+CustomTestClass, Newtonsoft.Json.Tests\",\"n\":\"Test\",\"v\":\"Class\"}";
+            dynamic result;
+
+            using (var stringReader = new StringReader(json))
+            using (var jsonReader = new JsonTextReader(stringReader))
+            {
+                var serializer = new JsonSerializer();
+
+                serializer.Converters.Add(new CustomTestConverter());
+                serializer.TypeNameHandling = TypeNameHandling.Auto;
+
+                result = serializer.Deserialize<Object>(jsonReader);
+            }
+
+            Assert.AreEqual("Test", result.Name);
+            Assert.AreEqual("Class", result.Value); 
+        }
+
+        public class CustomTestClass
+        {
+            public String Name { get; set; }
+            public String Value { get; set; }
+        }
+
+        private class CustomTestConverter : JsonConverter
+        {
+            public override bool CanWrite { get { return false; } }
+
+            public override bool CanConvert(Type objectType)
+            {
+                return objectType == typeof(CustomTestClass);
+            }
+
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                throw new NotSupportedException();
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                var name = reader.TokenType == JsonToken.PropertyName && reader.Read() ? reader.Value.ToString() : null;
+                var value = reader.Read() && reader.TokenType == JsonToken.PropertyName && reader.Read() ? reader.Value.ToString() : null;
+
+                return reader.Read() ? new CustomTestClass { Name = name, Value = value } : null;
+            }
+        }
+
 #if !(NET20 || NET35)
         [Test]
         public void SerializeUsingCustomBinder()

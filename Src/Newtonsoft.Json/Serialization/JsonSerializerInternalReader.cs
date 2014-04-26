@@ -406,6 +406,11 @@ namespace Newtonsoft.Json.Serialization
             {
                 case JsonContractType.Object:
                 {
+                    var converter = GetConverter(contract, null, null, null);
+                    if (converter != null && converter.CanRead)
+                        return DeserializeConvertable(converter, reader, objectType, existingValue);
+
+
                     bool createdFromNonDefaultConstructor = false;
                     JsonObjectContract objectContract = (JsonObjectContract)contract;
                     object targetObject;
