@@ -1765,7 +1765,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             });
 
             ReportItemKeys item = (ReportItemKeys)g.ItemIdentifier;
-            Assert.AreEqual(1, item.WantedUnitID);
+            Assert.AreEqual(1UL, item.WantedUnitID);
         }
 #endif
     }

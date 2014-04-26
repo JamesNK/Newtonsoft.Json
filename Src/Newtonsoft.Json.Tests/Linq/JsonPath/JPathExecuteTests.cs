@@ -290,7 +290,7 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
                 new JProperty("Blah", 1));
 
             JValue v = (JValue)o.SelectToken("Blah", true);
-            Assert.AreEqual(1L, v.Value);
+            Assert.AreEqual(1, v.Value);
         }
 
         [Test]

@@ -411,7 +411,7 @@ namespace Newtonsoft.Json.Serialization
                     JsonObjectContract objectContract = (JsonObjectContract)contract;
                     object targetObject;
                     // check that if type name handling is being used that the existing value is compatible with the specified type
-                    if (existingValue != null && (resolvedObjectType == objectType || resolvedObjectType.IsInstanceOfType(existingValue)))
+                    if (existingValue != null && (resolvedObjectType == objectType || resolvedObjectType.IsAssignableFrom(existingValue.GetType())))
                         targetObject = existingValue;
                     else
                         targetObject = CreateNewObject(reader, objectContract, member, containerMember, id, out createdFromNonDefaultConstructor);

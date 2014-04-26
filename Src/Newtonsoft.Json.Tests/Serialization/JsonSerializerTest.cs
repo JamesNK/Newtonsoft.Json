@@ -228,7 +228,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             var json = JsonConvert.SerializeObject(input);
             var deserialized = JsonConvert.DeserializeObject<ResponseWithNewGenericProperty<List<int>>>(json);
 
-            Assert.AreEqual(input.Data, deserialized.Data);
+            CollectionAssert.AreEqual(input.Data, deserialized.Data);
             Assert.AreEqual(input.Message, deserialized.Message);
             Assert.AreEqual(input.Result, deserialized.Result);
         }
@@ -651,6 +651,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual("value", deserialized.foo.bar);
         }
 
+#if !NETFX_CORE
         [Test]
         public void ConversionOperator()
         {
@@ -676,6 +677,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Console.WriteLine("Time elapsed: " + stopWatch.ElapsedMilliseconds);
         }
+#endif
 
         internal class DictionaryKeyCast
         {

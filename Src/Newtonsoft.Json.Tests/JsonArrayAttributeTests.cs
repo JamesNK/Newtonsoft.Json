@@ -25,7 +25,6 @@
 
 #if !NETFX_CORE
 using NUnit.Framework;
-
 #else
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
