@@ -41,7 +41,7 @@ using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAtt
 namespace Newtonsoft.Json.Tests.Serialization
 {
     [TestFixture]
-    public class SpecialPropertyHandlingTests : TestFixtureBase
+    public class MetadataPropertyHandlingTests : TestFixtureBase
     {
         [Test]
         public void DeserializeArraysWithPreserveObjectReferences()
@@ -80,7 +80,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                         new JsonSerializerSettings
                         {
                             PreserveReferencesHandling = PreserveReferencesHandling.All,
-                            SpecialPropertyHandling = SpecialPropertyHandling.ReadAhead
+                            MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
                         });
                 });
         }
@@ -99,7 +99,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             {
                 Formatting = Formatting.Indented,
                 TypeNameHandling = TypeNameHandling.All,
-                SpecialPropertyHandling = SpecialPropertyHandling.ReadAhead
+                MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
             };
             string serializedString = JsonConvert.SerializeObject(inputContext, jsonSerializerSettings);
 
@@ -140,7 +140,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Item actual = JsonConvert.DeserializeObject<Item>(jsonString, new JsonSerializerSettings
             {
-                SpecialPropertyHandling = SpecialPropertyHandling.ReadAhead
+                MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
             });
 
             Assert.AreEqual(new Guid("d8220a4b-75b1-4b7a-8112-b7bdae956a45"), actual.SourceTypeID);
@@ -182,7 +182,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 new JsonSerializerSettings
                 {
                     PreserveReferencesHandling = PreserveReferencesHandling.All,
-                    SpecialPropertyHandling = SpecialPropertyHandling.ReadAhead
+                    MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
                 });
 
             Assert.AreEqual(3, circularList.Count);
@@ -210,7 +210,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                     JsonConvert.DeserializeObject(json, null, new JsonSerializerSettings
                     {
                         TypeNameHandling = TypeNameHandling.Objects,
-                        SpecialPropertyHandling = SpecialPropertyHandling.ReadAhead
+                        MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
                     });
                 });
         }
@@ -234,7 +234,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(json, new JsonSerializerSettings
             {
-                SpecialPropertyHandling = SpecialPropertyHandling.ReadAhead
+                MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
             });
 
             Assert.AreEqual(3, result.Count);
@@ -262,7 +262,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             List<EmployeeReference> employees = JsonConvert.DeserializeObject<List<EmployeeReference>>(json, new JsonSerializerSettings
             {
-                SpecialPropertyHandling = SpecialPropertyHandling.ReadAhead
+                MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
             });
 
             Assert.AreEqual(2, employees.Count);
@@ -294,7 +294,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             List<EmployeeReference> employees = t1.ToObject<List<EmployeeReference>>(JsonSerializer.Create(new JsonSerializerSettings
             {
-                SpecialPropertyHandling = SpecialPropertyHandling.ReadAhead
+                MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
             }));
 
             Assert.AreEqual(2, employees.Count);
@@ -338,7 +338,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             {
                 TypeNameHandling = TypeNameHandling.Objects,
                 TypeNameAssemblyFormat = FormatterAssemblyStyle.Full,
-                SpecialPropertyHandling = SpecialPropertyHandling.ReadAhead
+                MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
             });
 
             Assert.AreEqual(4, values.Count);
@@ -386,7 +386,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             TypeNameHandlingTests.TypeNameProperty deserialized = JsonConvert.DeserializeObject<TypeNameHandlingTests.TypeNameProperty>(json, new JsonSerializerSettings
             {
-                SpecialPropertyHandling = SpecialPropertyHandling.ReadAhead
+                MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
             });
             Assert.AreEqual("Name!", deserialized.Name);
             CustomAssert.IsInstanceOfType(typeof(List<int>), deserialized.Value);

@@ -226,7 +226,7 @@ namespace Newtonsoft.Json.Serialization
         {
             ValidationUtils.ArgumentNotNull(reader, "reader");
 
-            // this is needed because we've already read inside the object, looking for special properties
+            // this is needed because we've already read inside the object, looking for metadata properties
             using (JTokenWriter writer = new JTokenWriter())
             {
                 writer.WriteStartObject();
@@ -376,7 +376,7 @@ namespace Newtonsoft.Json.Serialization
             object newValue;
             Type resolvedObjectType = objectType;
 
-            if (Serializer.SpecialPropertyHandling == SpecialPropertyHandling.ReadAhead)
+            if (Serializer.MetadataPropertyHandling == MetadataPropertyHandling.ReadAhead)
             {
                 var tokenReader = reader as JTokenReader;
                 if (tokenReader == null)
@@ -390,13 +390,13 @@ namespace Newtonsoft.Json.Serialization
                     reader = tokenReader;
                 }
 
-                if (ReadSpecialPropertiesToken(tokenReader, ref resolvedObjectType, ref contract, member, containerContract, containerMember, existingValue, out newValue, out id))
+                if (ReadMetadataPropertiesToken(tokenReader, ref resolvedObjectType, ref contract, member, containerContract, containerMember, existingValue, out newValue, out id))
                     return newValue;
             }
             else
             {
                 CheckedRead(reader);
-                if (ReadSpecialProperties(reader, ref resolvedObjectType, ref contract, member, containerContract, containerMember, existingValue, out newValue, out id))
+                if (ReadMetadataProperties(reader, ref resolvedObjectType, ref contract, member, containerContract, containerMember, existingValue, out newValue, out id))
                     return newValue;
             }
 
@@ -508,7 +508,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
 ".FormatWith(CultureInfo.InvariantCulture, resolvedObjectType, GetExpectedDescription(contract)));
         }
 
-        private bool ReadSpecialPropertiesToken(JTokenReader reader, ref Type objectType, ref JsonContract contract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerMember, object existingValue, out object newValue, out string id)
+        private bool ReadMetadataPropertiesToken(JTokenReader reader, ref Type objectType, ref JsonContract contract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerMember, object existingValue, out object newValue, out string id)
         {
             id = null;
             newValue = null;
@@ -592,7 +592,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
             return false;
         }
 
-        private bool ReadSpecialProperties(JsonReader reader, ref Type objectType, ref JsonContract contract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerMember, object existingValue, out object newValue, out string id)
+        private bool ReadMetadataProperties(JsonReader reader, ref Type objectType, ref JsonContract contract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerMember, object existingValue, out object newValue, out string id)
         {
             id = null;
             newValue = null;
@@ -603,9 +603,9 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
 
                 if (propertyName.Length > 0 && propertyName[0] == '$')
                 {
-                    // read 'special' properties
+                    // read metadata properties
                     // $type, $id, $ref, etc
-                    bool specialProperty;
+                    bool metadataProperty;
 
                     do
                     {
@@ -635,7 +635,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                             }
                             else
                             {
-                                specialProperty = true;
+                                metadataProperty = true;
                             }
                         }
                         else if (string.Equals(propertyName, JsonTypeReflector.TypePropertyName, StringComparison.Ordinal))
@@ -647,7 +647,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
 
                             CheckedRead(reader);
 
-                            specialProperty = true;
+                            metadataProperty = true;
                         }
                         else if (string.Equals(propertyName, JsonTypeReflector.IdPropertyName, StringComparison.Ordinal))
                         {
@@ -656,7 +656,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                             id = (reader.Value != null) ? reader.Value.ToString() : null;
 
                             CheckedRead(reader);
-                            specialProperty = true;
+                            metadataProperty = true;
                         }
                         else if (string.Equals(propertyName, JsonTypeReflector.ArrayValuesPropertyName, StringComparison.Ordinal))
                         {
@@ -668,10 +668,9 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                         }
                         else
                         {
-                            specialProperty = false;
+                            metadataProperty = false;
                         }
-                    } while (specialProperty
-                             && reader.TokenType == JsonToken.PropertyName);
+                    } while (metadataProperty && reader.TokenType == JsonToken.PropertyName);
                 }
             }
             return false;
@@ -1953,7 +1952,7 @@ To fix this error either change the environment to be fully trusted, change the 
 
         private bool CheckPropertyName(JsonReader reader, string memberName)
         {
-            if (Serializer.SpecialPropertyHandling == SpecialPropertyHandling.ReadAhead)
+            if (Serializer.MetadataPropertyHandling == MetadataPropertyHandling.ReadAhead)
             {
                 switch (memberName)
                 {

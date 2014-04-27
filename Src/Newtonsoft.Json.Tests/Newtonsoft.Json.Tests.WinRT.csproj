@@ -180,7 +180,7 @@
     <Compile Include="Serialization\SerializationErrorHandlingTests.cs" />
     <Compile Include="Serialization\SerializationEventAttributeTests.cs" />
     <Compile Include="Serialization\ShouldSerializeTests.cs" />
-    <Compile Include="Serialization\SpecialPropertyHandlingTests.cs" />
+    <Compile Include="Serialization\MetadataPropertyHandlingTests.cs" />
     <Compile Include="Serialization\TraceWriterTests.cs" />
     <Compile Include="Serialization\TypeNameHandlingTests.cs" />
     <Compile Include="Serialization\WebApiIntegrationTests.cs" />

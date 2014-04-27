@@ -3407,7 +3407,7 @@ Path ''"));
                 () => JsonConvert.DeserializeObject<DictionaryWithNoDefaultConstructor>(json, new JsonSerializerSettings
                 {
                     PreserveReferencesHandling = PreserveReferencesHandling.All,
-                    SpecialPropertyHandling = SpecialPropertyHandling.Default
+                    MetadataPropertyHandling = MetadataPropertyHandling.Default
                 }));
         }
 
@@ -4978,7 +4978,7 @@ To fix this error either change the environment to be fully trusted, change the 
         {
             var data = new DecimalTest(decimal.MinValue);
             var json = JsonConvert.SerializeObject(data);
-            var obj = JsonConvert.DeserializeObject<DecimalTest>(json, new JsonSerializerSettings { SpecialPropertyHandling = SpecialPropertyHandling.Default });
+            var obj = JsonConvert.DeserializeObject<DecimalTest>(json, new JsonSerializerSettings { MetadataPropertyHandling = MetadataPropertyHandling.Default });
 
             Assert.AreEqual(decimal.MinValue, obj.Value);
         }

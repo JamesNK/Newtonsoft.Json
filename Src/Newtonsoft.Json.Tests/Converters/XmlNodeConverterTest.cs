@@ -1214,7 +1214,7 @@ namespace Newtonsoft.Json.Tests.Converters
         }
 
         [Test]
-        public void SerializeDeserializeSpecialProperties()
+        public void SerializeDeserializeMetadataProperties()
         {
             PreserveReferencesHandlingTests.CircularDictionary circularDictionary = new PreserveReferencesHandlingTests.CircularDictionary();
             circularDictionary.Add("other", new PreserveReferencesHandlingTests.CircularDictionary { { "blah", null } });

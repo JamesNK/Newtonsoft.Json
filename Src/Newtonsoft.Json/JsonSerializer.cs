@@ -53,7 +53,7 @@ namespace Newtonsoft.Json
         internal NullValueHandling _nullValueHandling;
         internal DefaultValueHandling _defaultValueHandling;
         internal ConstructorHandling _constructorHandling;
-        internal SpecialPropertyHandling _specialPropertyHandling;
+        internal MetadataPropertyHandling _metadataPropertyHandling;
         internal JsonConverterCollection _converters;
         internal IContractResolver _contractResolver;
         internal ITraceWriter _traceWriter;
@@ -259,18 +259,18 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Gets or sets how special properties are used during deserialization.
+        /// Gets or sets how metadata properties are used during deserialization.
         /// </summary>
-        /// <value>The special properties handling.</value>
-        public virtual SpecialPropertyHandling SpecialPropertyHandling
+        /// <value>The metadata properties handling.</value>
+        public virtual MetadataPropertyHandling MetadataPropertyHandling
         {
-            get { return _specialPropertyHandling; }
+            get { return _metadataPropertyHandling; }
             set
             {
-                if (value < SpecialPropertyHandling.Default || value > SpecialPropertyHandling.ReadAhead)
+                if (value < MetadataPropertyHandling.Default || value > MetadataPropertyHandling.ReadAhead)
                     throw new ArgumentOutOfRangeException("value");
 
-                _specialPropertyHandling = value;
+                _metadataPropertyHandling = value;
             }
         }
 
@@ -443,7 +443,7 @@ namespace Newtonsoft.Json
             _preserveReferencesHandling = JsonSerializerSettings.DefaultPreserveReferencesHandling;
             _constructorHandling = JsonSerializerSettings.DefaultConstructorHandling;
             _typeNameHandling = JsonSerializerSettings.DefaultTypeNameHandling;
-            _specialPropertyHandling = JsonSerializerSettings.DefaultSpecialPropertyHandling;
+            _metadataPropertyHandling = JsonSerializerSettings.DefaultMetadataPropertyHandling;
             _context = JsonSerializerSettings.DefaultContext;
             _binder = DefaultSerializationBinder.Instance;
 
@@ -533,8 +533,8 @@ namespace Newtonsoft.Json
             // serializer specific
             if (settings._typeNameHandling != null)
                 serializer.TypeNameHandling = settings.TypeNameHandling;
-            if (settings._specialPropertyHandling != null)
-                serializer.SpecialPropertyHandling = settings.SpecialPropertyHandling;
+            if (settings._metadataPropertyHandling != null)
+                serializer.MetadataPropertyHandling = settings.MetadataPropertyHandling;
             if (settings._typeNameAssemblyFormat != null)
                 serializer.TypeNameAssemblyFormat = settings.TypeNameAssemblyFormat;
             if (settings._preserveReferencesHandling != null)

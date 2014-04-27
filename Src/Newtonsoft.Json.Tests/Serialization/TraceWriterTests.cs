@@ -140,7 +140,7 @@ Newtonsoft.Json Error: 0 : Error!
                 {
                     TraceWriter = traceWriter,
                     Converters = { new JavaScriptDateTimeConverter() },
-                    SpecialPropertyHandling = SpecialPropertyHandling.Default
+                    MetadataPropertyHandling = MetadataPropertyHandling.Default
                 });
 
             Console.WriteLine(traceWriter);
@@ -403,7 +403,7 @@ Newtonsoft.Json Error: 0 : Error!
                 new JsonSerializerSettings
                 {
                     PreserveReferencesHandling = PreserveReferencesHandling.All,
-                    SpecialPropertyHandling = SpecialPropertyHandling.Default,
+                    MetadataPropertyHandling = MetadataPropertyHandling.Default,
                     TraceWriter = traceWriter
                 });
 
@@ -523,7 +523,7 @@ Newtonsoft.Json Error: 0 : Error!
             JsonConvert.DeserializeObject(json, null, new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.All,
-                SpecialPropertyHandling = SpecialPropertyHandling.Default,
+                MetadataPropertyHandling = MetadataPropertyHandling.Default,
                 TraceWriter = traceWriter
             });
 

@@ -242,6 +242,7 @@
     <Compile Include="Serialization\ImmutableCollectionsTests.cs" />
     <Compile Include="Serialization\JsonPropertyCollectionTests.cs" />
     <Compile Include="Serialization\JsonSerializerTest.cs" />
+    <Compile Include="Serialization\MetadataPropertyHandlingTests.cs" />
     <Compile Include="Serialization\MissingMemberHandlingTests.cs" />
     <Compile Include="Serialization\NullValueHandlingTests.cs" />
     <Compile Include="Serialization\PopulateTests.cs" />
@@ -251,7 +252,6 @@
     <Compile Include="Serialization\SerializationEventAttributeTests.cs" />
     <Compile Include="Serialization\JsonSerializerCollectionsTests.cs" />
     <Compile Include="Serialization\ShouldSerializeTests.cs" />
-    <Compile Include="Serialization\SpecialPropertyHandlingTests.cs" />
     <Compile Include="Serialization\TraceWriterTests.cs" />
     <Compile Include="Serialization\TypeNameHandlingTests.cs" />
     <Compile Include="Serialization\WebApiIntegrationTests.cs" />
