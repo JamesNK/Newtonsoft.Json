@@ -7861,6 +7861,50 @@ Parameter name: value",
         }
 
         [Test]
+        public void DateFormatStringWithDateTimeAndCulture()
+        {
+            CultureInfo culture = new CultureInfo("tr-TR");
+
+            DateTime dt = new DateTime(2000, 12, 22);
+            string dateFormatString = "yyyy'-pie-'MMM'-'dddd'-'dd";
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                DateFormatString = dateFormatString,
+                Culture = culture
+            };
+
+            string json = JsonConvert.SerializeObject(dt, settings);
+
+            Assert.AreEqual(@"""2000-pie-Ara-Cuma-22""", json);
+
+            DateTime dt1 = JsonConvert.DeserializeObject<DateTime>(json, settings);
+
+            Assert.AreEqual(dt, dt1);
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(json))
+            {
+                DateFormatString = dateFormatString,
+                Culture = culture
+            };
+            JValue v = (JValue)JToken.ReadFrom(reader);
+
+            Assert.AreEqual(JTokenType.Date, v.Type);
+            Assert.AreEqual(typeof(DateTime), v.Value.GetType());
+            Assert.AreEqual(dt, (DateTime)v.Value);
+
+            reader = new JsonTextReader(new StringReader(@"""2000-pie-Dec-Friday-22"""))
+            {
+                DateFormatString = dateFormatString,
+                Culture = culture
+            };
+            v = (JValue)JToken.ReadFrom(reader);
+
+            Assert.AreEqual(JTokenType.String, v.Type);
+            Assert.AreEqual(typeof(string), v.Value.GetType());
+            Assert.AreEqual("2000-pie-Dec-Friday-22", v.Value);
+        }
+
+        [Test]
         public void DateFormatStringWithDictionaryKey()
         {
             DateTime dt = new DateTime(2000, 12, 22);
