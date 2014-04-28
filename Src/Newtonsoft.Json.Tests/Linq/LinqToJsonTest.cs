@@ -50,6 +50,81 @@ namespace Newtonsoft.Json.Tests.Linq
     public class LinqToJsonTest : TestFixtureBase
     {
         [Test]
+        public void CommentsAndReadFrom()
+        {
+            StringReader textReader = new StringReader(@"[
+    // hi
+    1,
+    2,
+    3
+]");
+
+            JsonTextReader jsonReader = new JsonTextReader(textReader);
+            JArray a = (JArray)JToken.ReadFrom(jsonReader);
+
+            Assert.AreEqual(4, a.Count);
+            Assert.AreEqual(JTokenType.Comment, a[0].Type);
+            Assert.AreEqual(" hi", ((JValue)a[0]).Value);
+        }
+
+        [Test]
+        public void StartingCommentAndReadFrom()
+        {
+            StringReader textReader = new StringReader(@"
+// hi
+[
+    1,
+    2,
+    3
+]");
+
+            JsonTextReader jsonReader = new JsonTextReader(textReader);
+            JValue v = (JValue)JToken.ReadFrom(jsonReader);
+
+            Assert.AreEqual(JTokenType.Comment, v.Type);
+
+            IJsonLineInfo lineInfo = v;
+            Assert.AreEqual(true, lineInfo.HasLineInfo());
+            Assert.AreEqual(3, lineInfo.LineNumber);
+            Assert.AreEqual(1, lineInfo.LinePosition);
+        }
+
+        [Test]
+        public void StartingUndefinedAndReadFrom()
+        {
+            StringReader textReader = new StringReader(@"
+undefined
+[
+    1,
+    2,
+    3
+]");
+
+            JsonTextReader jsonReader = new JsonTextReader(textReader);
+            JValue v = (JValue)JToken.ReadFrom(jsonReader);
+
+            Assert.AreEqual(JTokenType.Undefined, v.Type);
+
+            IJsonLineInfo lineInfo = v;
+            Assert.AreEqual(true, lineInfo.HasLineInfo());
+            Assert.AreEqual(2, lineInfo.LineNumber);
+            Assert.AreEqual(10, lineInfo.LinePosition);
+        }
+
+        [Test]
+        public void StartingEndArrayAndReadFrom()
+        {
+            StringReader textReader = new StringReader(@"[]");
+
+            JsonTextReader jsonReader = new JsonTextReader(textReader);
+            jsonReader.Read();
+            jsonReader.Read();
+
+            ExceptionAssert.Throws<JsonReaderException>(@"Error reading JToken from JsonReader. Unexpected token: EndArray. Path '', line 1, position 2.",
+                () => JToken.ReadFrom(jsonReader));
+        }
+
+        [Test]
         public void JPropertyPath()
         {
             JObject o = new JObject

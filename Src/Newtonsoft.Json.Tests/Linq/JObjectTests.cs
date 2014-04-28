@@ -58,6 +58,23 @@ namespace Newtonsoft.Json.Tests.Linq
     public class JObjectTests : TestFixtureBase
     {
         [Test]
+        public void EmbedJValueStringInNewJObject()
+        {
+            string s = null;
+            var v = new JValue(s);
+            dynamic o = JObject.FromObject(new { title = v });
+
+            string output = o.ToString();
+
+            Assert.AreEqual(@"{
+  ""title"": null
+}", output);
+
+            Assert.AreEqual(null, v.Value);
+            Assert.IsNull((string)o.title);
+        }
+
+        [Test]
         public void JObjectWithComments()
         {
             string json = @"{ /*comment2*/
