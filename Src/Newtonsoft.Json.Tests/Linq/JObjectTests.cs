@@ -57,6 +57,7 @@ namespace Newtonsoft.Json.Tests.Linq
     [TestFixture]
     public class JObjectTests : TestFixtureBase
     {
+#if !(NET35 || NET20 || PORTABLE40)
         [Test]
         public void EmbedJValueStringInNewJObject()
         {
@@ -73,6 +74,7 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(null, v.Value);
             Assert.IsNull((string)o.title);
         }
+#endif
 
         [Test]
         public void JObjectWithComments()
@@ -156,7 +158,7 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(1, o.Children().Count());
 
             Assert.AreEqual(true, o.TryGetValue("PropertyNameValue", out t));
-            Assert.AreEqual(true, JToken.DeepEquals(new JValue((object)null), t));
+            Assert.AreEqual(true, JToken.DeepEquals(JValue.CreateNull(), t));
         }
 
         [Test]
@@ -771,7 +773,7 @@ Parameter name: arrayIndex",
             o["NullValue"] = null;
             Assert.AreEqual(null, changing);
             Assert.AreEqual(null, changed);
-            Assert.AreEqual(new JValue((object)null), o["NullValue"]);
+            Assert.AreEqual(JValue.CreateNull(), o["NullValue"]);
             Assert.AreEqual(4, changingCount);
             Assert.AreEqual(4, changedCount);
 
@@ -815,7 +817,7 @@ Parameter name: arrayIndex",
 
             o["NullValue"] = null;
             Assert.AreEqual(null, changed);
-            Assert.AreEqual(new JValue((object)null), o["NullValue"]);
+            Assert.AreEqual(JValue.CreateNull(), o["NullValue"]);
             Assert.AreEqual(4, changedCount);
 
             o["NullValue"] = null;

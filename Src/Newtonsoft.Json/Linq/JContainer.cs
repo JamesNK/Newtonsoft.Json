@@ -292,7 +292,7 @@ namespace Newtonsoft.Json.Linq
         internal JToken EnsureParentToken(JToken item, bool skipParentCheck)
         {
             if (item == null)
-                return new JValue((object)null);
+                return JValue.CreateNull();
 
             if (skipParentCheck)
                 return item;
@@ -713,12 +713,12 @@ namespace Newtonsoft.Json.Linq
                         parent.Add(v);
                         break;
                     case JsonToken.Null:
-                        v = new JValue(null, JTokenType.Null);
+                        v = JValue.CreateNull();
                         v.SetLineInfo(lineInfo);
                         parent.Add(v);
                         break;
                     case JsonToken.Undefined:
-                        v = new JValue(null, JTokenType.Undefined);
+                        v = JValue.CreateUndefined();
                         v.SetLineInfo(lineInfo);
                         parent.Add(v);
                         break;

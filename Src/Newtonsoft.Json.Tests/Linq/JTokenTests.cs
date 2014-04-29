@@ -247,7 +247,7 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(true, (bool)new JValue(true));
             Assert.AreEqual(true, (bool?)new JValue(true));
             Assert.AreEqual(null, (bool?)((JValue)null));
-            Assert.AreEqual(null, (bool?)new JValue((object)null));
+            Assert.AreEqual(null, (bool?)JValue.CreateNull());
             Assert.AreEqual(10, (long)new JValue(10));
             Assert.AreEqual(null, (long?)new JValue((long?)null));
             Assert.AreEqual(null, (long?)(JValue)null);
@@ -287,13 +287,13 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(5f, (float?)(new JValue(5m)));
             Assert.AreEqual(5, (byte)(new JValue(5)));
 
-            Assert.AreEqual(null, (sbyte?)new JValue((object)null));
+            Assert.AreEqual(null, (sbyte?)JValue.CreateNull());
 
             Assert.AreEqual("1", (string)(new JValue(1)));
             Assert.AreEqual("1", (string)(new JValue(1.0)));
             Assert.AreEqual("1.0", (string)(new JValue(1.0m)));
             Assert.AreEqual("True", (string)(new JValue(true)));
-            Assert.AreEqual(null, (string)(new JValue((object)null)));
+            Assert.AreEqual(null, (string)(JValue.CreateNull()));
             Assert.AreEqual(null, (string)(JValue)null);
             Assert.AreEqual("12/12/2000 12:12:12", (string)(new JValue(new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Utc))));
 #if !NET20
@@ -320,7 +320,7 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC"), (Guid)(new JValue(new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC"))));
             Assert.AreEqual(new Uri("http://www.google.com"), (Uri)(new JValue("http://www.google.com")));
             Assert.AreEqual(new Uri("http://www.google.com"), (Uri)(new JValue(new Uri("http://www.google.com"))));
-            Assert.AreEqual(null, (Uri)(new JValue((object)null)));
+            Assert.AreEqual(null, (Uri)(JValue.CreateNull()));
             Assert.AreEqual(Convert.ToBase64String(Encoding.UTF8.GetBytes("hi")), (string)(new JValue(Encoding.UTF8.GetBytes("hi"))));
             CollectionAssert.AreEquivalent((byte[])Encoding.UTF8.GetBytes("hi"), (byte[])(new JValue(Convert.ToBase64String(Encoding.UTF8.GetBytes("hi")))));
             Assert.AreEqual(new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC"), (Guid)(new JValue(new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC").ToByteArray())));
@@ -367,7 +367,7 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(new BigInteger(byte.MaxValue), (new JValue(byte.MaxValue)).ToObject<BigInteger>());
             Assert.AreEqual(new BigInteger(123), (new JValue(123)).ToObject<BigInteger>());
             Assert.AreEqual(new BigInteger(123), (new JValue(123)).ToObject<BigInteger?>());
-            Assert.AreEqual(null, (new JValue((object)null)).ToObject<BigInteger?>());
+            Assert.AreEqual(null, (JValue.CreateNull()).ToObject<BigInteger?>());
 
             byte[] intData = BigInteger.Parse(bigIntegerText).ToByteArray();
             Assert.AreEqual(BigInteger.Parse(bigIntegerText), (new JValue(intData)).ToObject<BigInteger>());
@@ -392,7 +392,7 @@ namespace Newtonsoft.Json.Tests.Linq
             ExceptionAssert.Throws<ArgumentException>("Can not convert Float to DateTime.", () => { var i = (DateTime)new JValue(1.1m); });
             ExceptionAssert.Throws<ArgumentException>("Can not convert TimeSpan to DateTime.", () => { var i = (DateTime)new JValue(TimeSpan.Zero); });
             ExceptionAssert.Throws<ArgumentException>("Can not convert Uri to DateTime.", () => { var i = (DateTime)new JValue(new Uri("http://www.google.com")); });
-            ExceptionAssert.Throws<ArgumentException>("Can not convert Null to DateTime.", () => { var i = (DateTime)new JValue((object)null); });
+            ExceptionAssert.Throws<ArgumentException>("Can not convert Null to DateTime.", () => { var i = (DateTime)JValue.CreateNull(); });
             ExceptionAssert.Throws<ArgumentException>("Can not convert Guid to DateTime.", () => { var i = (DateTime)new JValue(Guid.NewGuid()); });
 
             ExceptionAssert.Throws<ArgumentException>("Can not convert Boolean to Uri.", () => { var i = (Uri)new JValue(true); });
@@ -410,7 +410,7 @@ namespace Newtonsoft.Json.Tests.Linq
             ExceptionAssert.Throws<ArgumentException>("Can not convert Integer to TimeSpan.", () => { var i = (TimeSpan)new JValue(1); });
             ExceptionAssert.Throws<ArgumentException>("Can not convert Float to TimeSpan.", () => { var i = (TimeSpan)new JValue(1.1); });
             ExceptionAssert.Throws<ArgumentException>("Can not convert Float to TimeSpan.", () => { var i = (TimeSpan)new JValue(1.1m); });
-            ExceptionAssert.Throws<ArgumentException>("Can not convert Null to TimeSpan.", () => { var i = (TimeSpan)new JValue((object)null); });
+            ExceptionAssert.Throws<ArgumentException>("Can not convert Null to TimeSpan.", () => { var i = (TimeSpan)JValue.CreateNull(); });
             ExceptionAssert.Throws<ArgumentException>("Can not convert Guid to TimeSpan.", () => { var i = (TimeSpan)new JValue(Guid.NewGuid()); });
             ExceptionAssert.Throws<ArgumentException>("Can not convert Date to TimeSpan.", () => { var i = (TimeSpan)new JValue(DateTime.Now); });
 #if !NET20
@@ -422,7 +422,7 @@ namespace Newtonsoft.Json.Tests.Linq
             ExceptionAssert.Throws<ArgumentException>("Can not convert Integer to Guid.", () => { var i = (Guid)new JValue(1); });
             ExceptionAssert.Throws<ArgumentException>("Can not convert Float to Guid.", () => { var i = (Guid)new JValue(1.1); });
             ExceptionAssert.Throws<ArgumentException>("Can not convert Float to Guid.", () => { var i = (Guid)new JValue(1.1m); });
-            ExceptionAssert.Throws<ArgumentException>("Can not convert Null to Guid.", () => { var i = (Guid)new JValue((object)null); });
+            ExceptionAssert.Throws<ArgumentException>("Can not convert Null to Guid.", () => { var i = (Guid)JValue.CreateNull(); });
             ExceptionAssert.Throws<ArgumentException>("Can not convert Date to Guid.", () => { var i = (Guid)new JValue(DateTime.Now); });
 #if !NET20
             ExceptionAssert.Throws<ArgumentException>("Can not convert Date to Guid.", () => { var i = (Guid)new JValue(DateTimeOffset.Now); });
@@ -437,7 +437,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
 #if !(NET20 || NET35 || PORTABLE || PORTABLE40)
             ExceptionAssert.Throws<ArgumentException>("Can not convert Uri to BigInteger.", () => { var i = (new JValue(new Uri("http://www.google.com"))).ToObject<BigInteger>(); });
-            ExceptionAssert.Throws<ArgumentException>("Can not convert Null to BigInteger.", () => { var i = (new JValue((object)null)).ToObject<BigInteger>(); });
+            ExceptionAssert.Throws<ArgumentException>("Can not convert Null to BigInteger.", () => { var i = (JValue.CreateNull()).ToObject<BigInteger>(); });
             ExceptionAssert.Throws<ArgumentException>("Can not convert Guid to BigInteger.", () => { var i = (new JValue(Guid.NewGuid())).ToObject<BigInteger>(); });
             ExceptionAssert.Throws<ArgumentException>("Can not convert Guid to BigInteger.", () => { var i = (new JValue(Guid.NewGuid())).ToObject<BigInteger?>(); });
 #endif
@@ -452,7 +452,7 @@ namespace Newtonsoft.Json.Tests.Linq
 #if !(NET20 || NET35 || PORTABLE)
             Assert.AreEqual((BigInteger)1, (new JValue(1).ToObject(typeof(BigInteger))));
             Assert.AreEqual((BigInteger)1, (new JValue(1).ToObject(typeof(BigInteger?))));
-            Assert.AreEqual((BigInteger?)null, (new JValue((object)null).ToObject(typeof(BigInteger?))));
+            Assert.AreEqual((BigInteger?)null, (JValue.CreateNull().ToObject(typeof(BigInteger?))));
 #endif
             Assert.AreEqual((ushort)1, (new JValue(1).ToObject(typeof(ushort))));
             Assert.AreEqual((ushort)1, (new JValue(1).ToObject(typeof(ushort?))));
@@ -542,10 +542,10 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.IsTrue(JToken.DeepEquals(new JValue(decimal.MinValue), (JValue)decimal.MinValue));
             Assert.IsTrue(JToken.DeepEquals(new JValue(float.MaxValue), (JValue)(float?)float.MaxValue));
             Assert.IsTrue(JToken.DeepEquals(new JValue(double.MaxValue), (JValue)(double?)double.MaxValue));
-            Assert.IsTrue(JToken.DeepEquals(new JValue((object)null), (JValue)(double?)null));
+            Assert.IsTrue(JToken.DeepEquals(JValue.CreateNull(), (JValue)(double?)null));
 
             Assert.IsFalse(JToken.DeepEquals(new JValue(true), (JValue)(bool?)null));
-            Assert.IsFalse(JToken.DeepEquals(new JValue((object)null), (JValue)(object)null));
+            Assert.IsFalse(JToken.DeepEquals(JValue.CreateNull(), (JValue)(object)null));
 
             byte[] emptyData = new byte[0];
             Assert.IsTrue(JToken.DeepEquals(new JValue(emptyData), (JValue)emptyData));
@@ -553,12 +553,12 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.IsTrue(JToken.DeepEquals(new JValue(Encoding.UTF8.GetBytes("Hi")), (JValue)Encoding.UTF8.GetBytes("Hi")));
 
             Assert.IsTrue(JToken.DeepEquals(new JValue(TimeSpan.FromMinutes(1)), (JValue)TimeSpan.FromMinutes(1)));
-            Assert.IsTrue(JToken.DeepEquals(new JValue((object)null), (JValue)(TimeSpan?)null));
+            Assert.IsTrue(JToken.DeepEquals(JValue.CreateNull(), (JValue)(TimeSpan?)null));
             Assert.IsTrue(JToken.DeepEquals(new JValue(TimeSpan.FromMinutes(1)), (JValue)(TimeSpan?)TimeSpan.FromMinutes(1)));
             Assert.IsTrue(JToken.DeepEquals(new JValue(new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC")), (JValue)new Guid("46EFE013-B56A-4E83-99E4-4DCE7678A5BC")));
             Assert.IsTrue(JToken.DeepEquals(new JValue(new Uri("http://www.google.com")), (JValue)new Uri("http://www.google.com")));
-            Assert.IsTrue(JToken.DeepEquals(new JValue((object)null), (JValue)(Uri)null));
-            Assert.IsTrue(JToken.DeepEquals(new JValue((object)null), (JValue)(Guid?)null));
+            Assert.IsTrue(JToken.DeepEquals(JValue.CreateNull(), (JValue)(Uri)null));
+            Assert.IsTrue(JToken.DeepEquals(JValue.CreateNull(), (JValue)(Guid?)null));
         }
 
         [Test]

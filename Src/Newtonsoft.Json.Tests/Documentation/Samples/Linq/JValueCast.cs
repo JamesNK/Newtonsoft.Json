@@ -41,7 +41,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             Console.WriteLine(u);
             // http://www.bing.com/
 
-            JValue v6 = new JValue((object)null);
+            JValue v6 = JValue.CreateNull();
             u = (Uri)v6;
 
             Console.WriteLine((u != null) ? u.ToString() : "{null}");

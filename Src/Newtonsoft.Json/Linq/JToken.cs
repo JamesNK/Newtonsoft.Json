@@ -1861,11 +1861,11 @@ namespace Newtonsoft.Json.Linq
                     v.SetLineInfo(lineInfo);
                     return v;
                 case JsonToken.Null:
-                    v = new JValue(null, JTokenType.Null);
+                    v = JValue.CreateNull();
                     v.SetLineInfo(lineInfo);
                     return v;
                 case JsonToken.Undefined:
-                    v = new JValue(null, JTokenType.Undefined);
+                    v = JValue.CreateUndefined();
                     v.SetLineInfo(lineInfo);
                     return v;
                 default:

@@ -176,7 +176,7 @@ namespace Newtonsoft.Json.Linq
             }
             else
             {
-                _value = value ?? new JValue((object)null);
+                _value = value ?? JValue.CreateNull();
             }
         }
 
