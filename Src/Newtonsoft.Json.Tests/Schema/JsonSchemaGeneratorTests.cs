@@ -789,9 +789,9 @@ namespace Newtonsoft.Json.Tests.Schema
       ""required"": true,
       ""type"": ""string"",
        ""enum"": [
-        ""No"",
-        ""Asc"",
-        ""Desc""
+        ""no"",
+        ""asc"",
+        ""desc""
       ]
     }
   }
@@ -827,9 +827,9 @@ namespace Newtonsoft.Json.Tests.Schema
       ""required"": true,
       ""type"": ""string"",
       ""enum"": [
-        ""no"",
-        ""asc"",
-        ""desc""
+        ""No"",
+        ""Asc"",
+        ""Desc""
       ]
     }
   }
