@@ -40,6 +40,7 @@ namespace Newtonsoft.Json.Utilities
 
         private static bool _initialized;
         private static MethodInfo _ofSeq;
+        private static Type _mapType;
 
         public static Assembly FSharpCoreAssembly { get; private set; }
         public static MethodCall<object, object> IsUnion { get; private set; }
@@ -92,6 +93,8 @@ namespace Newtonsoft.Json.Utilities
                         Type listModule = fsharpCoreAssembly.GetType("Microsoft.FSharp.Collections.ListModule");
                         _ofSeq = listModule.GetMethod("OfSeq");
 
+                        _mapType = fsharpCoreAssembly.GetType("Microsoft.FSharp.Collections.FSharpMap`2");
+
 #if !(NETFX_CORE || PORTABLE)
                         Thread.MemoryBarrier();
 #endif
@@ -101,55 +104,38 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
-        public static MethodInfo CreateSeq(Type t)
+        public static MethodCall<object, object> CreateSeq(Type t)
         {
             MethodInfo seqType = _ofSeq.MakeGenericMethod(t);
 
-            return seqType;
+            return JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(seqType);
         }
 
-        public static MethodInfo CreateMap(Type keyType, Type valueType)
+        public static MethodCall<object, object> CreateMap(Type keyType, Type valueType)
         {
-            Type t = typeof(FSharpMapCreator<,>).MakeGenericType(keyType, valueType);
+            MethodInfo creatorDefinition = typeof (FSharpUtils).GetMethod("BuildMapCreator");
 
-            MethodInfo initializeMethod = t.GetMethod("EnsureInitialized");
+            MethodInfo creatorGeneric = creatorDefinition.MakeGenericMethod(keyType, valueType);
 
-            initializeMethod.Invoke(null, new object[] { FSharpCoreAssembly });
-
-            MethodInfo typedCreateMethod = t.GetMethod("CreateMapGeneric");
-
-            return typedCreateMethod;
+            return (MethodCall<object, object>)creatorGeneric.Invoke(null, null);
         }
 
-    }
-
-    internal static class FSharpMapCreator<TKey, TValue>
-    {
-        private static bool _initialized;
-        private static MethodCall<object, object> _createMap;
-
-        public static void EnsureInitialized(Assembly fsharpCoreAssembly)
+        public static MethodCall<object, object> BuildMapCreator<TKey, TValue>()
         {
-            if (!_initialized)
+            Type genericMapType = _mapType.MakeGenericType(typeof(TKey), typeof(TValue));
+            ConstructorInfo ctor = genericMapType.GetConstructor(new[] { typeof(IEnumerable<Tuple<TKey, TValue>>) });
+            MethodCall<object, object> ctorDelegate = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(ctor);
+
+            MethodCall<object, object> creator = (target, args) =>
             {
-                Type mapType = fsharpCoreAssembly.GetType("Microsoft.FSharp.Collections.FSharpMap`2");
+                // convert dictionary KeyValuePairs to Tuples
+                IEnumerable<KeyValuePair<TKey, TValue>> values = (IEnumerable<KeyValuePair<TKey, TValue>>)args[0];
+                IEnumerable<Tuple<TKey, TValue>> tupleValues = values.Select(kv => new Tuple<TKey, TValue>(kv.Key, kv.Value));
 
-                Type genericMapType = mapType.MakeGenericType(typeof(TKey), typeof(TValue));
+                return ctorDelegate(null, tupleValues);
+            };
 
-                ConstructorInfo ctor = genericMapType.GetConstructor(new[] { typeof(IEnumerable<Tuple<TKey, TValue>>) });
-
-                _createMap = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(ctor);
-                
-                _initialized = true;
-            }
-        }
-
-        public static object CreateMapGeneric(IEnumerable<KeyValuePair<TKey, TValue>> values)
-        {
-            IEnumerable<Tuple<TKey, TValue>> tupleValues = values.Select(kv => new Tuple<TKey, TValue>(kv.Key, kv.Value));
-
-            object map = _createMap(null, tupleValues);
-            return map;
+            return creator;
         }
     }
 }

@@ -67,7 +67,7 @@ namespace Newtonsoft.Json.Serialization
         internal bool IsArray { get; private set; }
         internal bool ShouldCreateWrapper { get; private set; }
         internal bool CanDeserialize { get; private set; }
-        internal MethodBase ParametrizedConstructor { get; private set; }
+        internal MethodCall<object, object> ParametrizedConstructor { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonArrayContract"/> class.
@@ -198,7 +198,7 @@ namespace Newtonsoft.Json.Serialization
 
 #if !(NET20 || NET35 || NET40 || PORTABLE40)
             Type immutableCreatedType;
-            MethodBase immutableParameterizedCreator;
+            MethodCall<object, object> immutableParameterizedCreator;
             if (ImmutableCollectionsUtils.TryBuildImmutableForArrayContract(underlyingType, CollectionItemType, out immutableCreatedType, out immutableParameterizedCreator))
             {
                 CreatedType = immutableCreatedType;

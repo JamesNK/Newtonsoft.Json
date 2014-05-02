@@ -471,11 +471,7 @@ namespace Newtonsoft.Json.Serialization
 
                         if (createdFromNonDefaultConstructor)
                         {
-                            ConstructorInfo constructor = dictionaryContract.ParametrizedConstructor as ConstructorInfo;
-                            if (constructor != null)
-                                return constructor.Invoke(new object[] { dictionary });
-
-                            return dictionaryContract.ParametrizedConstructor.Invoke(null, new object[] { dictionary });
+                            return dictionaryContract.ParametrizedConstructor(null , new object[] { dictionary });
                         }
                         else if (dictionary is IWrappedDictionary)
                         {
@@ -763,7 +759,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                     if (contract.OnErrorCallbacks.Count > 0)
                         throw JsonSerializationException.Create(reader, "Cannot call OnError on an array or readonly list, or list created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
-                    if (arrayContract.ParametrizedConstructor == null && !arrayContract.IsArray)
+                    if (arrayContract.ParametrizedCreator == null && !arrayContract.IsArray)
                         throw JsonSerializationException.Create(reader, "Cannot deserialize readonly or fixed size list: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
                 }
 
@@ -787,11 +783,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                     else
                     {
                         // call constructor that takes IEnumerable<T>
-                        ConstructorInfo constructor = arrayContract.ParametrizedConstructor as ConstructorInfo;
-                        if (constructor != null)
-                            return constructor.Invoke(new object[] { list });
-
-                        return arrayContract.ParametrizedConstructor.Invoke(null, new object[] { list });
+                        return arrayContract.ParametrizedCreator(null, new object[] {list});
                     }
                 }
                 else if (list is IWrappedCollection)
@@ -1037,7 +1029,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                 createdFromNonDefaultConstructor = false;
                 return (IList)list;
             }
-            else if (contract.ParametrizedConstructor != null)
+            else if (contract.ParametrizedCreator != null)
             {
                 createdFromNonDefaultConstructor = true;
                 return contract.CreateTemporaryCollection();

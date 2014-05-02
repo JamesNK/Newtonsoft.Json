@@ -43,6 +43,33 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class MetadataPropertyHandlingTests : TestFixtureBase
     {
+        public class User
+        {
+            public string Name { get; set; }
+        }
+
+        [Test]
+        public void Demo()
+        {
+            string json = @"{
+	            'Name': 'James',
+	            'Password': 'Password1',
+	            '$type': 'Newtonsoft.Json.Tests.Serialization.MetadataPropertyHandlingTests+User, Newtonsoft.Json.Tests'
+            }";
+
+            object o = JsonConvert.DeserializeObject(json, new JsonSerializerSettings
+            {
+	            TypeNameHandling = TypeNameHandling.All,
+	            // no longer needs to be first
+	            MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
+            });
+
+            User u = (User)o;
+
+            Console.WriteLine(u.Name);
+            // James
+        }
+
         [Test]
         public void DeserializeArraysWithPreserveObjectReferences()
         {

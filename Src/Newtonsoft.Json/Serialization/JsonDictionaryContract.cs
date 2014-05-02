@@ -70,7 +70,7 @@ namespace Newtonsoft.Json.Serialization
         private Func<object> _genericTemporaryDictionaryCreator;
 
         internal bool ShouldCreateWrapper { get; private set; }
-        internal MethodBase ParametrizedConstructor { get; private set; }
+        internal MethodCall<object, object> ParametrizedCreator { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonDictionaryContract"/> class.
@@ -118,13 +118,13 @@ namespace Newtonsoft.Json.Serialization
 
             if (keyType != null && valueType != null)
             {
-                ParametrizedConstructor = CollectionUtils.ResolveEnumableCollectionConstructor(CreatedType, typeof(KeyValuePair<,>).MakeGenericType(keyType, valueType));
+                ParametrizedCreator = CollectionUtils.ResolveEnumableCollectionConstructor(CreatedType, typeof(KeyValuePair<,>).MakeGenericType(keyType, valueType));
 
 #if !(NET35 || NET20 || NETFX_CORE)
-                if (ParametrizedConstructor == null && underlyingType.Name == FSharpUtils.FSharpMapTypeName)
+                if (ParametrizedCreator == null && underlyingType.Name == FSharpUtils.FSharpMapTypeName)
                 {
                     FSharpUtils.EnsureInitialized(underlyingType.Assembly());
-                    ParametrizedConstructor = FSharpUtils.CreateMap(keyType, valueType);
+                    ParametrizedCreator = FSharpUtils.CreateMap(keyType, valueType);
                 }
 #endif
             }
@@ -151,11 +151,11 @@ namespace Newtonsoft.Json.Serialization
 
 #if !(NET20 || NET35 || NET40 || PORTABLE40)
             Type immutableCreatedType;
-            MethodBase immutableParameterizedCreator;
+            MethodCall<object, object> immutableParameterizedCreator;
             if (ImmutableCollectionsUtils.TryBuildImmutableForDictionaryContract(underlyingType, DictionaryKeyType, DictionaryValueType, out immutableCreatedType, out immutableParameterizedCreator))
             {
                 CreatedType = immutableCreatedType;
-                ParametrizedConstructor = immutableParameterizedCreator;
+                ParametrizedCreator = immutableParameterizedCreator;
                 IsReadOnlyOrFixedSize = true;
             }
 #endif

@@ -52,7 +52,6 @@ namespace Newtonsoft.Json.Tests.Linq
     [TestFixture]
     public class JValueTests : TestFixtureBase
     {
-
         [Test]
         public void UndefinedTests()
         {
