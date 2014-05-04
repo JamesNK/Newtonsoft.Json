@@ -57,7 +57,9 @@ namespace Newtonsoft.Json.Serialization
         /// <value><c>true</c> if the collection type is a multidimensional array; otherwise, <c>false</c>.</value>
         public bool IsMultidimensionalArray { get; private set; }
 
+        #pragma warning disable 414
         private readonly bool _isCollectionItemTypeNullableType;
+        #pragma warning restore 414
         private readonly Type _genericCollectionDefinitionType;
 
         private Type _genericWrapperType;

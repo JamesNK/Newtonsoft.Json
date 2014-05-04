@@ -61,7 +61,9 @@ namespace Newtonsoft.Json.Serialization
 
         internal JsonContract KeyContract { get; set; }
 
+        #pragma warning disable 414
         private readonly bool _isDictionaryValueTypeNullableType;
+        #pragma warning restore 414
         private readonly Type _genericCollectionDefinitionType;
 
         private Type _genericWrapperType;
