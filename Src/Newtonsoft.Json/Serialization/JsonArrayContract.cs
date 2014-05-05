@@ -67,7 +67,7 @@ namespace Newtonsoft.Json.Serialization
         internal bool IsArray { get; private set; }
         internal bool ShouldCreateWrapper { get; private set; }
         internal bool CanDeserialize { get; private set; }
-        internal MethodCall<object, object> ParametrizedConstructor { get; private set; }
+        internal MethodCall<object, object> ParametrizedCreator { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonArrayContract"/> class.
@@ -102,7 +102,7 @@ namespace Newtonsoft.Json.Serialization
                     CreatedType = typeof(List<object>);
 
                 if (CollectionItemType != null)
-                    ParametrizedConstructor = CollectionUtils.ResolveEnumableCollectionConstructor(underlyingType, CollectionItemType);
+                    ParametrizedCreator = CollectionUtils.ResolveEnumableCollectionConstructor(underlyingType, CollectionItemType);
 
                 IsReadOnlyOrFixedSize = ReflectionUtils.InheritsGenericDefinition(underlyingType, typeof(ReadOnlyCollection<>));
                 canDeserialize = true;
@@ -120,7 +120,7 @@ namespace Newtonsoft.Json.Serialization
                     CreatedType = typeof(HashSet<>).MakeGenericType(CollectionItemType);
 #endif
 
-                ParametrizedConstructor = CollectionUtils.ResolveEnumableCollectionConstructor(underlyingType, CollectionItemType);
+                ParametrizedCreator = CollectionUtils.ResolveEnumableCollectionConstructor(underlyingType, CollectionItemType);
                 canDeserialize = true;
                 ShouldCreateWrapper = true;
             }
@@ -134,9 +134,9 @@ namespace Newtonsoft.Json.Serialization
                     CreatedType = typeof(ReadOnlyCollection<>).MakeGenericType(CollectionItemType);
 
                 _genericCollectionDefinitionType = typeof(List<>).MakeGenericType(CollectionItemType);
-                ParametrizedConstructor = CollectionUtils.ResolveEnumableCollectionConstructor(CreatedType, CollectionItemType);
+                ParametrizedCreator = CollectionUtils.ResolveEnumableCollectionConstructor(CreatedType, CollectionItemType);
                 IsReadOnlyOrFixedSize = true;
-                canDeserialize = (ParametrizedConstructor != null);
+                canDeserialize = (ParametrizedCreator != null);
             }
 #endif
             else if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof(IEnumerable<>), out tempCollectionType))
@@ -146,13 +146,13 @@ namespace Newtonsoft.Json.Serialization
                 if (ReflectionUtils.IsGenericDefinition(UnderlyingType, typeof(IEnumerable<>)))
                     CreatedType = typeof(List<>).MakeGenericType(CollectionItemType);
 
-                ParametrizedConstructor = CollectionUtils.ResolveEnumableCollectionConstructor(underlyingType, CollectionItemType);
+                ParametrizedCreator = CollectionUtils.ResolveEnumableCollectionConstructor(underlyingType, CollectionItemType);
 
 #if !(NET35 || NET20 || NETFX_CORE)
-                if (ParametrizedConstructor == null && underlyingType.Name == FSharpUtils.FSharpListTypeName)
+                if (ParametrizedCreator == null && underlyingType.Name == FSharpUtils.FSharpListTypeName)
                 {
                     FSharpUtils.EnsureInitialized(underlyingType.Assembly());
-                    ParametrizedConstructor = FSharpUtils.CreateSeq(CollectionItemType);
+                    ParametrizedCreator = FSharpUtils.CreateSeq(CollectionItemType);
                 }
 #endif
 
@@ -170,7 +170,7 @@ namespace Newtonsoft.Json.Serialization
 
                     IsReadOnlyOrFixedSize = true;
                     ShouldCreateWrapper = true;
-                    canDeserialize = (ParametrizedConstructor != null);
+                    canDeserialize = (ParametrizedCreator != null);
                 }
             }
             else
@@ -202,7 +202,7 @@ namespace Newtonsoft.Json.Serialization
             if (ImmutableCollectionsUtils.TryBuildImmutableForArrayContract(underlyingType, CollectionItemType, out immutableCreatedType, out immutableParameterizedCreator))
             {
                 CreatedType = immutableCreatedType;
-                ParametrizedConstructor = immutableParameterizedCreator;
+                ParametrizedCreator = immutableParameterizedCreator;
                 IsReadOnlyOrFixedSize = true;
                 CanDeserialize = true;
             }

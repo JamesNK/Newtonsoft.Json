@@ -463,7 +463,7 @@ namespace Newtonsoft.Json.Serialization
                             if (contract.OnErrorCallbacks.Count > 0)
                                 throw JsonSerializationException.Create(reader, "Cannot call OnError on readonly list, or dictionary created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
-                            if (dictionaryContract.ParametrizedConstructor == null)
+                            if (dictionaryContract.ParametrizedCreator == null)
                                 throw JsonSerializationException.Create(reader, "Cannot deserialize readonly or fixed size dictionary: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
                         }
 
@@ -471,7 +471,7 @@ namespace Newtonsoft.Json.Serialization
 
                         if (createdFromNonDefaultConstructor)
                         {
-                            return dictionaryContract.ParametrizedConstructor(null , new object[] { dictionary });
+                            return dictionaryContract.ParametrizedCreator(null, new object[] { dictionary });
                         }
                         else if (dictionary is IWrappedDictionary)
                         {
@@ -1057,7 +1057,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                 createdFromNonDefaultConstructor = false;
                 return (IDictionary)dictionary;
             }
-            else if (contract.ParametrizedConstructor != null)
+            else if (contract.ParametrizedCreator != null)
             {
                 createdFromNonDefaultConstructor = true;
                 return contract.CreateTemporaryDictionary();
