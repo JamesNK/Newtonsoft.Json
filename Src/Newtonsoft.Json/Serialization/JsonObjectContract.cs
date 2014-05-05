@@ -68,13 +68,31 @@ namespace Newtonsoft.Json.Serialization
         /// JsonConstructor attribute.
         /// </summary>
         /// <value>The override constructor.</value>
-        public ConstructorInfo OverrideConstructor { get; set; }
+        public ConstructorInfo OverrideConstructor
+        {
+            get { return _overrideConstructor; }
+            set
+            {
+                _overrideConstructor = value;
+                ParametrizedCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(value);
+            }
+        }
 
         /// <summary>
         /// Gets or sets the parametrized constructor used to create the object.
         /// </summary>
         /// <value>The parametrized constructor.</value>
-        public ConstructorInfo ParametrizedConstructor { get; set; }
+        public ConstructorInfo ParametrizedConstructor
+        {
+            get { return _parametrizedConstructor; }
+            set
+            {
+                _parametrizedConstructor = value;
+                ParametrizedCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(value);
+            }
+        }
+
+        internal MethodCall<object, object> ParametrizedCreator { get; set; }
 
         /// <summary>
         /// Gets or sets the extension data setter.
@@ -87,6 +105,8 @@ namespace Newtonsoft.Json.Serialization
         public ExtensionDataGetter ExtensionDataGetter { get; set; }
 
         private bool? _hasRequiredOrDefaultValueProperties;
+        private ConstructorInfo _parametrizedConstructor;
+        private ConstructorInfo _overrideConstructor;
 
         internal bool HasRequiredOrDefaultValueProperties
         {

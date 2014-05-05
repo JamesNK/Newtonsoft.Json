@@ -463,7 +463,7 @@ namespace Newtonsoft.Json.Serialization
                             if (contract.OnErrorCallbacks.Count > 0)
                                 throw JsonSerializationException.Create(reader, "Cannot call OnError on readonly list, or dictionary created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
-                            if (dictionaryContract.ParametrizedConstructor == null)
+                            if (dictionaryContract.ParametrizedCreator == null)
                                 throw JsonSerializationException.Create(reader, "Cannot deserialize readonly or fixed size dictionary: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
                         }
 
@@ -471,7 +471,7 @@ namespace Newtonsoft.Json.Serialization
 
                         if (createdFromNonDefaultConstructor)
                         {
-                            return dictionaryContract.ParametrizedConstructor(null , new object[] { dictionary });
+                            return dictionaryContract.ParametrizedCreator(null , new object[] { dictionary });
                         }
                         else if (dictionary is IWrappedDictionary)
                         {
@@ -1057,7 +1057,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                 createdFromNonDefaultConstructor = false;
                 return (IDictionary)dictionary;
             }
-            else if (contract.ParametrizedConstructor != null)
+            else if (contract.ParametrizedCreator != null)
             {
                 createdFromNonDefaultConstructor = true;
                 return contract.CreateTemporaryDictionary();
@@ -1568,7 +1568,7 @@ To fix this error either change the environment to be fully trusted, change the 
         }
 #endif
 
-        private object CreateObjectFromNonDefaultConstructor(JsonReader reader, JsonObjectContract contract, JsonProperty containerProperty, ConstructorInfo constructorInfo, string id)
+        private object CreateObjectFromNonDefaultConstructor(JsonReader reader, JsonObjectContract contract, JsonProperty containerProperty, MethodCall<object, object> constructorInfo, string id)
         {
             ValidationUtils.ArgumentNotNull(constructorInfo, "constructorInfo");
 
@@ -1580,17 +1580,20 @@ To fix this error either change the environment to be fully trusted, change the 
             Type objectType = contract.UnderlyingType;
 
             if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Info)
-                TraceWriter.Trace(TraceLevel.Info, JsonPosition.FormatMessage(reader as IJsonLineInfo, reader.Path, "Deserializing {0} using a non-default constructor '{1}'.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType, constructorInfo)), null);
+            {
+                string underlyingMethodName = constructorInfo.GetMethodInfo().Name;
+                TraceWriter.Trace(TraceLevel.Info, JsonPosition.FormatMessage(reader as IJsonLineInfo, reader.Path, "Deserializing {0} using custom method '{1}'.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType, underlyingMethodName)), null);
+            }
 
             IDictionary<string, object> extensionData;
             IDictionary<JsonProperty, object> propertyValues = ResolvePropertyAndConstructorValues(contract, containerProperty, reader, objectType, out extensionData);
 
-            IDictionary<ParameterInfo, object> constructorParameters = constructorInfo.GetParameters().ToDictionary(p => p, p => (object)null);
+            IDictionary<JsonProperty, object> constructorParameters = contract.ConstructorParameters.ToDictionary(p => p, p => (object)null);
             IDictionary<JsonProperty, object> remainingPropertyValues = new Dictionary<JsonProperty, object>();
 
             foreach (KeyValuePair<JsonProperty, object> propertyValue in propertyValues)
             {
-                ParameterInfo matchingConstructorParameter = constructorParameters.ForgivingCaseSensitiveFind(kv => kv.Key.Name, propertyValue.Key.UnderlyingName).Key;
+                JsonProperty matchingConstructorParameter = constructorParameters.ForgivingCaseSensitiveFind(kv => kv.Key.PropertyName, propertyValue.Key.UnderlyingName).Key;
                 if (matchingConstructorParameter != null)
                     constructorParameters[matchingConstructorParameter] = propertyValue.Value;
                 else
@@ -1605,7 +1608,7 @@ To fix this error either change the environment to be fully trusted, change the 
                 }
             }
 
-            object createdObject = constructorInfo.Invoke(constructorParameters.Values.ToArray());
+            object createdObject = constructorInfo(null, constructorParameters.Values.ToArray());
 
             if (id != null)
                 AddReference(reader, id, createdObject);
@@ -1825,7 +1828,7 @@ To fix this error either change the environment to be fully trusted, change the 
                 if (objectContract.OverrideConstructor.GetParameters().Length > 0)
                 {
                     createdFromNonDefaultConstructor = true;
-                    return CreateObjectFromNonDefaultConstructor(reader, objectContract, containerMember, objectContract.OverrideConstructor, id);
+                    return CreateObjectFromNonDefaultConstructor(reader, objectContract, containerMember, objectContract.ParametrizedCreator, id);
                 }
 
                 newObject = objectContract.OverrideConstructor.Invoke(null);
@@ -1839,10 +1842,10 @@ To fix this error either change the environment to be fully trusted, change the 
                 // non-public and there is no other constructor
                 newObject = objectContract.DefaultCreator();
             }
-            else if (objectContract.ParametrizedConstructor != null)
+            else if (objectContract.ParametrizedCreator != null)
             {
                 createdFromNonDefaultConstructor = true;
-                return CreateObjectFromNonDefaultConstructor(reader, objectContract, containerMember, objectContract.ParametrizedConstructor, id);
+                return CreateObjectFromNonDefaultConstructor(reader, objectContract, containerMember, objectContract.ParametrizedCreator, id);
             }
 
             if (newObject == null)
