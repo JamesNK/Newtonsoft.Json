@@ -78,13 +78,49 @@ namespace Newtonsoft.Json.Utilities
             if (!method.IsConstructor && !method.IsStatic)
                 generator.PushInstance(method.DeclaringType);
 
+            int localVariableCount = 0;
+
             for (int i = 0; i < args.Length; i++)
             {
+                Type parameterType = args[i].ParameterType;
+
                 generator.Emit(OpCodes.Ldarg_1);
+
                 generator.Emit(OpCodes.Ldc_I4, i);
                 generator.Emit(OpCodes.Ldelem_Ref);
 
-                generator.UnboxIfNeeded(args[i].ParameterType);
+                if (parameterType.IsValueType())
+                {
+                    // have to check that value type parameters aren't null
+                    // otherwise they will error when unboxed
+                    Label skipSettingDefault = generator.DefineLabel();
+                    Label finishedProcessingParameter = generator.DefineLabel();
+
+                    // check if parameter is not null
+                    generator.Emit(OpCodes.Brtrue_S, skipSettingDefault);
+
+                    // parameter has no value, initialize to default
+                    LocalBuilder localVariable = generator.DeclareLocal(parameterType);
+                    generator.Emit(OpCodes.Ldloca_S, localVariable);
+                    generator.Emit(OpCodes.Initobj, parameterType);
+                    generator.Emit(OpCodes.Ldloc, localVariableCount);
+                    generator.Emit(OpCodes.Br_S, finishedProcessingParameter);
+
+                    // parameter has value, get value from array again and unbox
+                    generator.MarkLabel(skipSettingDefault);
+                    generator.Emit(OpCodes.Ldarg_1);
+                    generator.Emit(OpCodes.Ldc_I4, i);
+                    generator.Emit(OpCodes.Ldelem_Ref);
+                    generator.UnboxIfNeeded(parameterType);
+
+                    // parameter finished, we out!
+                    generator.MarkLabel(finishedProcessingParameter);
+                    localVariableCount++;
+                }
+                else
+                {
+                    generator.UnboxIfNeeded(parameterType);
+                }
             }
 
             if (method.IsConstructor)
