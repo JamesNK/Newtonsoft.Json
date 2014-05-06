@@ -533,7 +533,7 @@ Newtonsoft.Json Error: 0 : Error!
             Assert.AreEqual("Started deserializing System.Collections.Generic.Dictionary`2[System.String,System.String]. Path '$values[0].key!', line 6, position 14.", traceWriter.TraceRecords[3].Message);
             Assert.IsTrue(traceWriter.TraceRecords[4].Message.StartsWith("Finished deserializing System.Collections.Generic.Dictionary`2[System.String,System.String]. Path '$values[0]'"));
             Assert.AreEqual("Resolved type 'System.Version, mscorlib' to System.Version. Path '$values[1].$type', line 9, position 42.", traceWriter.TraceRecords[5].Message);
-            Assert.AreEqual("Deserializing System.Version using a non-default constructor 'Void .ctor(Int32, Int32, Int32, Int32)'. Path '$values[1].Major', line 10, position 15.", traceWriter.TraceRecords[6].Message);
+            Assert.AreEqual("Deserializing System.Version using a custom method 'Void .ctor(Int32, Int32, Int32, Int32)'. Path '$values[1].Major', line 10, position 15.", traceWriter.TraceRecords[6].Message);
             Assert.IsTrue(traceWriter.TraceRecords[7].Message.StartsWith("Started deserializing System.Version. Path '$values[1]'"));
             Assert.IsTrue(traceWriter.TraceRecords[8].Message.StartsWith("Finished deserializing System.Version. Path '$values[1]'"));
             Assert.IsTrue(traceWriter.TraceRecords[9].Message.StartsWith("Finished deserializing System.Collections.Generic.List`1[System.Object]. Path '$values'"));
@@ -610,7 +610,7 @@ Newtonsoft.Json Error: 0 : Error!
                 TraceWriter = traceWriter
             });
 
-            Assert.AreEqual("Deserializing System.Version using a non-default constructor 'Void .ctor(Int32, Int32, Int32, Int32)'. Path 'Major', line 2, position 11.", traceWriter.TraceRecords[0].Message);
+            Assert.AreEqual("Deserializing System.Version using a custom method 'Void .ctor(Int32, Int32, Int32, Int32)'. Path 'Major', line 2, position 11.", traceWriter.TraceRecords[0].Message);
             Assert.AreEqual("Could not find member 'MissingMemberProperty' on System.Version. Path 'MissingMemberProperty', line 8, position 32.", traceWriter.TraceRecords[1].Message);
             Assert.IsTrue(traceWriter.TraceRecords[2].Message.StartsWith("Started deserializing System.Version. Path ''"));
             Assert.IsTrue(traceWriter.TraceRecords[3].Message.StartsWith("Finished deserializing System.Version. Path ''"));

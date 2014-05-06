@@ -1593,7 +1593,7 @@ To fix this error either change the environment to be fully trusted, change the 
 
             foreach (KeyValuePair<JsonProperty, object> propertyValue in propertyValues)
             {
-                JsonProperty matchingConstructorParameter = constructorParameters.ForgivingCaseSensitiveFind(kv => kv.Key.PropertyName, propertyValue.Key.UnderlyingName).Key;
+                JsonProperty matchingConstructorParameter = constructorParameters.ForgivingCaseSensitiveFind(kv => kv.Key.PropertyName, propertyValue.Key.PropertyName).Key;
                 if (matchingConstructorParameter != null)
                     constructorParameters[matchingConstructorParameter] = propertyValue.Value;
                 else
