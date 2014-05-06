@@ -788,7 +788,7 @@ namespace Newtonsoft.Json.Tests.Schema
     ""y"": {
       ""required"": true,
       ""type"": ""string"",
-       ""enum"": [
+      ""enum"": [
         ""no"",
         ""asc"",
         ""desc""
