@@ -4952,27 +4952,6 @@ To fix this error either change the environment to be fully trusted, change the 
             Assert.IsTrue(deserializedResponse.Data.DeepEquals(response.Data));
         }
 
-        public abstract class Test<T>
-        {
-            public abstract T Value { get; set; }
-        }
-
-        [JsonObject(MemberSerialization.OptIn)]
-        public class DecimalTest : Test<decimal>
-        {
-            protected DecimalTest()
-            {
-            }
-
-            public DecimalTest(decimal val)
-            {
-                Value = val;
-            }
-
-            [JsonProperty]
-            public override decimal Value { get; set; }
-        }
-
         [Test]
         public void DeserializeMinValueDecimal()
         {
@@ -4983,47 +4962,11 @@ To fix this error either change the environment to be fully trusted, change the 
             Assert.AreEqual(decimal.MinValue, obj.Value);
         }
 
-        public class NonPublicConstructorWithJsonConstructor
-        {
-            public string Value { get; private set; }
-            public string Constructor { get; private set; }
-
-            [JsonConstructor]
-            private NonPublicConstructorWithJsonConstructor()
-            {
-                Constructor = "NonPublic";
-            }
-
-            public NonPublicConstructorWithJsonConstructor(string value)
-            {
-                Value = value;
-                Constructor = "Public Paramatized";
-            }
-        }
-
         [Test]
         public void NonPublicConstructorWithJsonConstructorTest()
         {
             NonPublicConstructorWithJsonConstructor c = JsonConvert.DeserializeObject<NonPublicConstructorWithJsonConstructor>("{}");
             Assert.AreEqual("NonPublic", c.Constructor);
-        }
-
-        public class PublicConstructorOverridenByJsonConstructor
-        {
-            public string Value { get; private set; }
-            public string Constructor { get; private set; }
-
-            public PublicConstructorOverridenByJsonConstructor()
-            {
-                Constructor = "NonPublic";
-            }
-
-            [JsonConstructor]
-            public PublicConstructorOverridenByJsonConstructor(string value)
-            {
-                Value = value;
-                Constructor = "Public Paramatized";
-            }
         }
 
         [Test]
@@ -5034,27 +4977,6 @@ To fix this error either change the environment to be fully trusted, change the 
             Assert.AreEqual("value!", c.Value);
         }
 
-        public class MultipleParamatrizedConstructorsJsonConstructor
-        {
-            public string Value { get; private set; }
-            public int Age { get; private set; }
-            public string Constructor { get; private set; }
-
-            public MultipleParamatrizedConstructorsJsonConstructor(string value)
-            {
-                Value = value;
-                Constructor = "Public Paramatized 1";
-            }
-
-            [JsonConstructor]
-            public MultipleParamatrizedConstructorsJsonConstructor(string value, int age)
-            {
-                Value = value;
-                Age = age;
-                Constructor = "Public Paramatized 2";
-            }
-        }
-
         [Test]
         public void MultipleParamatrizedConstructorsJsonConstructorTest()
         {
@@ -5062,11 +4984,6 @@ To fix this error either change the environment to be fully trusted, change the 
             Assert.AreEqual("Public Paramatized 2", c.Constructor);
             Assert.AreEqual("value!", c.Value);
             Assert.AreEqual(1, c.Age);
-        }
-
-        public class EnumerableClass
-        {
-            public IEnumerable<string> Enumerable { get; set; }
         }
 
         [Test]
@@ -5094,18 +5011,6 @@ To fix this error either change the environment to be fully trusted, change the 
             Assert.AreEqual("Three", c2.Enumerable.ElementAt(2));
         }
 
-        [JsonObject(MemberSerialization.OptIn)]
-        public class ItemBase
-        {
-            [JsonProperty]
-            public string Name { get; set; }
-        }
-
-        public class ComplexItem : ItemBase
-        {
-            public Stream Source { get; set; }
-        }
-
         [Test]
         public void SerializeAttributesOnBase()
         {
@@ -5116,14 +5021,6 @@ To fix this error either change the environment to be fully trusted, change the 
             Assert.AreEqual(@"{
   ""Name"": null
 }", json);
-        }
-
-        public class DeserializeStringConvert
-        {
-            public string Name { get; set; }
-            public int Age { get; set; }
-            public double Height { get; set; }
-            public decimal Price { get; set; }
         }
 
         [Test]
@@ -7960,5 +7857,108 @@ Parameter name: value",
             Assert.AreEqual(dt, (DateTimeOffset)v.Value);
         }
 #endif
+    }
+
+    public abstract class Test<T>
+    {
+        public abstract T Value { get; set; }
+    }
+
+    [JsonObject(MemberSerialization.OptIn)]
+    public class DecimalTest : Test<decimal>
+    {
+        protected DecimalTest()
+        {
+        }
+
+        public DecimalTest(decimal val)
+        {
+            Value = val;
+        }
+
+        [JsonProperty]
+        public override decimal Value { get; set; }
+    }
+
+    public class NonPublicConstructorWithJsonConstructor
+    {
+        public string Value { get; private set; }
+        public string Constructor { get; private set; }
+
+        [JsonConstructor]
+        private NonPublicConstructorWithJsonConstructor()
+        {
+            Constructor = "NonPublic";
+        }
+
+        public NonPublicConstructorWithJsonConstructor(string value)
+        {
+            Value = value;
+            Constructor = "Public Paramatized";
+        }
+    }
+
+    public class PublicConstructorOverridenByJsonConstructor
+    {
+        public string Value { get; private set; }
+        public string Constructor { get; private set; }
+
+        public PublicConstructorOverridenByJsonConstructor()
+        {
+            Constructor = "NonPublic";
+        }
+
+        [JsonConstructor]
+        public PublicConstructorOverridenByJsonConstructor(string value)
+        {
+            Value = value;
+            Constructor = "Public Paramatized";
+        }
+    }
+
+    public class MultipleParamatrizedConstructorsJsonConstructor
+    {
+        public string Value { get; private set; }
+        public int Age { get; private set; }
+        public string Constructor { get; private set; }
+
+        public MultipleParamatrizedConstructorsJsonConstructor(string value)
+        {
+            Value = value;
+            Constructor = "Public Paramatized 1";
+        }
+
+        [JsonConstructor]
+        public MultipleParamatrizedConstructorsJsonConstructor(string value, int age)
+        {
+            Value = value;
+            Age = age;
+            Constructor = "Public Paramatized 2";
+        }
+    }
+
+    public class EnumerableClass
+    {
+        public IEnumerable<string> Enumerable { get; set; }
+    }
+
+    [JsonObject(MemberSerialization.OptIn)]
+    public class ItemBase
+    {
+        [JsonProperty]
+        public string Name { get; set; }
+    }
+
+    public class ComplexItem : ItemBase
+    {
+        public Stream Source { get; set; }
+    }
+
+    public class DeserializeStringConvert
+    {
+        public string Name { get; set; }
+        public int Age { get; set; }
+        public double Height { get; set; }
+        public decimal Price { get; set; }
     }
 }

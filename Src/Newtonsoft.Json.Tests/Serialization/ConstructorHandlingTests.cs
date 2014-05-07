@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+using System;
 using System.Reflection;
 using Newtonsoft.Json.Tests.TestObjects;
 #if !NETFX_CORE
@@ -66,7 +67,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void FailWithPrivateConstructorPlusParametizedAndDefault()
         {
-            ExceptionAssert.Throws<TargetInvocationException>(
+            ExceptionAssert.Throws<Exception>(
                 null,
                 () =>
                 {
