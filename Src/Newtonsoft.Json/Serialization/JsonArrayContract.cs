@@ -67,7 +67,7 @@ namespace Newtonsoft.Json.Serialization
         internal bool IsArray { get; private set; }
         internal bool ShouldCreateWrapper { get; private set; }
         internal bool CanDeserialize { get; private set; }
-        internal MethodCall<object, object> ParametrizedCreator { get; private set; }
+        internal ObjectConstructor<object> ParametrizedCreator { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonArrayContract"/> class.
@@ -186,19 +186,19 @@ namespace Newtonsoft.Json.Serialization
                 _isCollectionItemTypeNullableType = ReflectionUtils.IsNullableType(CollectionItemType);
 
 #if (NET20 || NET35)
-    // bug in .NET 2.0 & 3.5 that List<Nullable<T>> throws an error when adding null via IList.Add(object)
-    // wrapper will handle calling Add(T) instead
-      if (_isCollectionItemTypeNullableType
-        && (ReflectionUtils.InheritsGenericDefinition(CreatedType, typeof(List<>), out tempCollectionType)
-        || (IsArray && !IsMultidimensionalArray)))
-      {
-        ShouldCreateWrapper = true;
-      }
+            // bug in .NET 2.0 & 3.5 that List<Nullable<T>> throws an error when adding null via IList.Add(object)
+            // wrapper will handle calling Add(T) instead
+            if (_isCollectionItemTypeNullableType
+                && (ReflectionUtils.InheritsGenericDefinition(CreatedType, typeof(List<>), out tempCollectionType)
+                || (IsArray && !IsMultidimensionalArray)))
+            {
+                ShouldCreateWrapper = true;
+            }
 #endif
 
 #if !(NET20 || NET35 || NET40 || PORTABLE40)
             Type immutableCreatedType;
-            MethodCall<object, object> immutableParameterizedCreator;
+            ObjectConstructor<object> immutableParameterizedCreator;
             if (ImmutableCollectionsUtils.TryBuildImmutableForArrayContract(underlyingType, CollectionItemType, out immutableCreatedType, out immutableParameterizedCreator))
             {
                 CreatedType = immutableCreatedType;

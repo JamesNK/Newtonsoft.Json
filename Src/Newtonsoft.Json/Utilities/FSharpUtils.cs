@@ -104,35 +104,35 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
-        public static MethodCall<object, object> CreateSeq(Type t)
+        public static ObjectConstructor<object> CreateSeq(Type t)
         {
             MethodInfo seqType = _ofSeq.MakeGenericMethod(t);
 
-            return JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(seqType);
+            return JsonTypeReflector.ReflectionDelegateFactory.CreateParametrizedConstructor(seqType);
         }
 
-        public static MethodCall<object, object> CreateMap(Type keyType, Type valueType)
+        public static ObjectConstructor<object> CreateMap(Type keyType, Type valueType)
         {
             MethodInfo creatorDefinition = typeof (FSharpUtils).GetMethod("BuildMapCreator");
 
             MethodInfo creatorGeneric = creatorDefinition.MakeGenericMethod(keyType, valueType);
 
-            return (MethodCall<object, object>)creatorGeneric.Invoke(null, null);
+            return (ObjectConstructor<object>)creatorGeneric.Invoke(null, null);
         }
 
-        public static MethodCall<object, object> BuildMapCreator<TKey, TValue>()
+        public static ObjectConstructor<object> BuildMapCreator<TKey, TValue>()
         {
             Type genericMapType = _mapType.MakeGenericType(typeof(TKey), typeof(TValue));
             ConstructorInfo ctor = genericMapType.GetConstructor(new[] { typeof(IEnumerable<Tuple<TKey, TValue>>) });
-            MethodCall<object, object> ctorDelegate = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(ctor);
+            ObjectConstructor<object> ctorDelegate = JsonTypeReflector.ReflectionDelegateFactory.CreateParametrizedConstructor(ctor);
 
-            MethodCall<object, object> creator = (target, args) =>
+            ObjectConstructor<object> creator = args =>
             {
                 // convert dictionary KeyValuePairs to Tuples
                 IEnumerable<KeyValuePair<TKey, TValue>> values = (IEnumerable<KeyValuePair<TKey, TValue>>)args[0];
                 IEnumerable<Tuple<TKey, TValue>> tupleValues = values.Select(kv => new Tuple<TKey, TValue>(kv.Key, kv.Value));
 
-                return ctorDelegate(null, tupleValues);
+                return ctorDelegate(tupleValues);
             };
 
             return creator;

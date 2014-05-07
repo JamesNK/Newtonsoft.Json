@@ -27,6 +27,7 @@
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Utilities
 {
@@ -39,6 +40,22 @@ namespace Newtonsoft.Json.Utilities
             get { return _instance; }
         }
 
+        public override ObjectConstructor<object> CreateParametrizedConstructor(MethodBase method)
+        {
+            ValidationUtils.ArgumentNotNull(method, "method");
+
+            Type type = typeof(object);
+
+            ParameterExpression argsParameterExpression = Expression.Parameter(typeof(object[]), "args");
+
+            Expression callExpression = BuildMethodCall(method, type, null, argsParameterExpression);
+
+            LambdaExpression lambdaExpression = Expression.Lambda(typeof(ObjectConstructor<object>), callExpression, argsParameterExpression);
+
+            ObjectConstructor<object> compiled = (ObjectConstructor<object>)lambdaExpression.Compile();
+            return compiled;
+        }
+
         public override MethodCall<T, object> CreateMethodCall<T>(MethodBase method)
         {
             ValidationUtils.ArgumentNotNull(method, "method");
@@ -48,6 +65,16 @@ namespace Newtonsoft.Json.Utilities
             ParameterExpression targetParameterExpression = Expression.Parameter(type, "target");
             ParameterExpression argsParameterExpression = Expression.Parameter(typeof(object[]), "args");
 
+            Expression callExpression = BuildMethodCall(method, type, targetParameterExpression, argsParameterExpression);
+
+            LambdaExpression lambdaExpression = Expression.Lambda(typeof(MethodCall<T, object>), callExpression, targetParameterExpression, argsParameterExpression);
+
+            MethodCall<T, object> compiled = (MethodCall<T, object>)lambdaExpression.Compile();
+            return compiled;
+        }
+
+        private Expression BuildMethodCall(MethodBase method, Type type, ParameterExpression targetParameterExpression, ParameterExpression argsParameterExpression)
+        {
             ParameterInfo[] parametersInfo = method.GetParameters();
 
             Expression[] argsExpression = new Expression[parametersInfo.Length];
@@ -79,23 +106,23 @@ namespace Newtonsoft.Json.Utilities
             Expression callExpression;
             if (method.IsConstructor)
             {
-                callExpression = Expression.New((ConstructorInfo)method, argsExpression);
+                callExpression = Expression.New((ConstructorInfo) method, argsExpression);
             }
             else if (method.IsStatic)
             {
-                callExpression = Expression.Call((MethodInfo)method, argsExpression);
+                callExpression = Expression.Call((MethodInfo) method, argsExpression);
             }
             else
             {
                 Expression readParameter = EnsureCastExpression(targetParameterExpression, method.DeclaringType);
 
-                callExpression = Expression.Call(readParameter, (MethodInfo)method, argsExpression);
+                callExpression = Expression.Call(readParameter, (MethodInfo) method, argsExpression);
             }
 
             if (method is MethodInfo)
             {
-                MethodInfo m = (MethodInfo)method;
-                if (m.ReturnType != typeof(void))
+                MethodInfo m = (MethodInfo) method;
+                if (m.ReturnType != typeof (void))
                     callExpression = EnsureCastExpression(callExpression, type);
                 else
                     callExpression = Expression.Block(callExpression, Expression.Constant(null));
@@ -105,10 +132,7 @@ namespace Newtonsoft.Json.Utilities
                 callExpression = EnsureCastExpression(callExpression, type);
             }
 
-            LambdaExpression lambdaExpression = Expression.Lambda(typeof(MethodCall<T, object>), callExpression, targetParameterExpression, argsParameterExpression);
-
-            MethodCall<T, object> compiled = (MethodCall<T, object>)lambdaExpression.Compile();
-            return compiled;
+            return callExpression;
         }
 
         public override Func<T> CreateDefaultConstructor<T>(Type type)

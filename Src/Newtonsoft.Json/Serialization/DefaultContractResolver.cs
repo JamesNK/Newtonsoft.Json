@@ -496,7 +496,7 @@ namespace Newtonsoft.Json.Serialization
 
             Type enumerableWrapper = typeof(DictionaryEnumerator<,>).MakeGenericType(keyType, valueType);
             ConstructorInfo constructors = enumerableWrapper.GetConstructors().First();
-            MethodCall<object, object> createEnumerableWrapper = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(constructors);
+            ObjectConstructor<object> createEnumerableWrapper = JsonTypeReflector.ReflectionDelegateFactory.CreateParametrizedConstructor(constructors);
 
             ExtensionDataGetter extensionDataGetter = o =>
             {
@@ -504,7 +504,7 @@ namespace Newtonsoft.Json.Serialization
                 if (dictionary == null)
                     return null;
 
-                return (IEnumerable<KeyValuePair<object, object>>)createEnumerableWrapper(null, dictionary);
+                return (IEnumerable<KeyValuePair<object, object>>)createEnumerableWrapper(dictionary);
             };
 
             if (extensionDataAttribute.ReadData)

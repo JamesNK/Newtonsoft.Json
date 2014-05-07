@@ -471,7 +471,7 @@ namespace Newtonsoft.Json.Serialization
 
                         if (createdFromNonDefaultCreator)
                         {
-                            return dictionaryContract.ParametrizedCreator(null, new object[] { dictionary });
+                            return dictionaryContract.ParametrizedCreator(dictionary);
                         }
                         else if (dictionary is IWrappedDictionary)
                         {
@@ -783,7 +783,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                     else
                     {
                         // call constructor that takes IEnumerable<T>
-                        return arrayContract.ParametrizedCreator(null, new object[] {list});
+                        return arrayContract.ParametrizedCreator(list);
                     }
                 }
                 else if (list is IWrappedCollection)
@@ -1568,7 +1568,7 @@ To fix this error either change the environment to be fully trusted, change the 
         }
 #endif
 
-        private object CreateObjectUsingCreatorWithParameters(JsonReader reader, JsonObjectContract contract, JsonProperty containerProperty, Func<object[], object> creator, string id)
+        private object CreateObjectUsingCreatorWithParameters(JsonReader reader, JsonObjectContract contract, JsonProperty containerProperty, ObjectConstructor<object> creator, string id)
         {
             ValidationUtils.ArgumentNotNull(creator, "creator");
 

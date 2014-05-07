@@ -63,6 +63,7 @@ namespace Newtonsoft.Json.Utilities
         }
 
         public abstract MethodCall<T, object> CreateMethodCall<T>(MethodBase method);
+        public abstract ObjectConstructor<object> CreateParametrizedConstructor(MethodBase method);
         public abstract Func<T> CreateDefaultConstructor<T>(Type type);
         public abstract Func<T, object> CreateGet<T>(PropertyInfo propertyInfo);
         public abstract Func<T, object> CreateGet<T>(FieldInfo fieldInfo);

@@ -84,16 +84,7 @@ namespace Newtonsoft.Json.Serialization
             set
             {
                 _overrideConstructor = value;
-
-                if (value != null)
-                {
-                    MethodCall<object, object> ctor = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(value);
-                    _overrideCreator = args => ctor(null, args);
-                }
-                else
-                {
-                    _overrideCreator = null;
-                }
+                _overrideCreator = (value != null) ? JsonTypeReflector.ReflectionDelegateFactory.CreateParametrizedConstructor(value) : null;
             }
         }
 
@@ -108,24 +99,16 @@ namespace Newtonsoft.Json.Serialization
             set
             {
                 _parametrizedConstructor = value;
-                if (value != null)
-                {
-                    MethodCall<object, object> ctor = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(value);
-                    _parametrizedCreator = args => ctor(null, args);
-                }
-                else
-                {
-                    _parametrizedCreator = null;
-                }
+                _parametrizedCreator = (value != null) ? JsonTypeReflector.ReflectionDelegateFactory.CreateParametrizedConstructor(value) : null;
             }
         }
 
         /// <summary>
         /// Gets or sets the function used to create the object. When set this function will override <see cref="P:DefaultCreator"/>.
-        /// This function can be called with a collection of arguments which are defined by the <see cref="CreatorParameters"/> collection.
+        /// This function is called with a collection of arguments which are defined by the <see cref="CreatorParameters"/> collection.
         /// </summary>
         /// <value>The function used to create the object.</value>
-        public Func<object[], object> OverrideCreator
+        public ObjectConstructor<object> OverrideCreator
         {
             get { return _overrideCreator; }
             set
@@ -135,7 +118,7 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
-        internal Func<object[], object> ParametrizedCreator
+        internal ObjectConstructor<object> ParametrizedCreator
         {
             get { return _parametrizedCreator; }
         }
@@ -153,8 +136,8 @@ namespace Newtonsoft.Json.Serialization
         private bool? _hasRequiredOrDefaultValueProperties;
         private ConstructorInfo _parametrizedConstructor;
         private ConstructorInfo _overrideConstructor;
-        private Func<object[], object> _overrideCreator;
-        private Func<object[], object> _parametrizedCreator;
+        private ObjectConstructor<object> _overrideCreator;
+        private ObjectConstructor<object> _parametrizedCreator;
 
         internal bool HasRequiredOrDefaultValueProperties
         {

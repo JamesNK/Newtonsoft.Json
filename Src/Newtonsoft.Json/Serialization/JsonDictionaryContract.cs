@@ -70,7 +70,7 @@ namespace Newtonsoft.Json.Serialization
         private Func<object> _genericTemporaryDictionaryCreator;
 
         internal bool ShouldCreateWrapper { get; private set; }
-        internal MethodCall<object, object> ParametrizedCreator { get; private set; }
+        internal ObjectConstructor<object> ParametrizedCreator { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonDictionaryContract"/> class.
@@ -138,20 +138,20 @@ namespace Newtonsoft.Json.Serialization
                 _isDictionaryValueTypeNullableType = ReflectionUtils.IsNullableType(DictionaryValueType);
 
 #if (NET20 || NET35)
-      Type tempDictioanryType;
+            Type tempDictioanryType;
 
-        // bug in .NET 2.0 & 3.5 that Dictionary<TKey, Nullable<TValue>> throws an error when adding null via IDictionary[key] = object
-      // wrapper will handle calling Add(T) instead
-      if (_isDictionaryValueTypeNullableType
-        && (ReflectionUtils.InheritsGenericDefinition(CreatedType, typeof(Dictionary<,>), out tempDictioanryType)))
-      {
-        ShouldCreateWrapper = true;
-      }
+            // bug in .NET 2.0 & 3.5 that Dictionary<TKey, Nullable<TValue>> throws an error when adding null via IDictionary[key] = object
+            // wrapper will handle calling Add(T) instead
+            if (_isDictionaryValueTypeNullableType
+                && (ReflectionUtils.InheritsGenericDefinition(CreatedType, typeof(Dictionary<,>), out tempDictioanryType)))
+            {
+                ShouldCreateWrapper = true;
+            }
 #endif
 
 #if !(NET20 || NET35 || NET40 || PORTABLE40)
             Type immutableCreatedType;
-            MethodCall<object, object> immutableParameterizedCreator;
+            ObjectConstructor<object> immutableParameterizedCreator;
             if (ImmutableCollectionsUtils.TryBuildImmutableForDictionaryContract(underlyingType, DictionaryKeyType, DictionaryValueType, out immutableCreatedType, out immutableParameterizedCreator))
             {
                 CreatedType = immutableCreatedType;

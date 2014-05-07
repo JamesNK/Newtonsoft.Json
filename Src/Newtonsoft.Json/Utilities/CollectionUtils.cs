@@ -102,7 +102,7 @@ namespace Newtonsoft.Json.Utilities
             return false;
         }
 
-        public static MethodCall<object, object> ResolveEnumableCollectionConstructor(Type collectionType, Type collectionItemType)
+        public static ObjectConstructor<object> ResolveEnumableCollectionConstructor(Type collectionType, Type collectionItemType)
         {
             Type genericEnumerable = typeof(IEnumerable<>).MakeGenericType(collectionItemType);
 
@@ -113,7 +113,7 @@ namespace Newtonsoft.Json.Utilities
                 if (parameters.Count == 1)
                 {
                     if (genericEnumerable.IsAssignableFrom(parameters[0].ParameterType))
-                        return JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(constructor);
+                        return JsonTypeReflector.ReflectionDelegateFactory.CreateParametrizedConstructor(constructor);
                 }
             }
 

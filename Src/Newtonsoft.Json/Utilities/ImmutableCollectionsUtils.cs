@@ -102,7 +102,7 @@ namespace Newtonsoft.Json.Utilities
             new ImmutableCollectionTypeInfo(ImmutableDictionaryGenericTypeName, ImmutableDictionaryGenericTypeName, ImmutableDictionaryTypeName)
         };
 
-        internal static bool TryBuildImmutableForArrayContract(Type underlyingType, Type collectionItemType, out Type createdType, out MethodCall<object, object> parameterizedCreator)
+        internal static bool TryBuildImmutableForArrayContract(Type underlyingType, Type collectionItemType, out Type createdType, out ObjectConstructor<object> parameterizedCreator)
         {
             if (underlyingType.IsGenericType())
             {
@@ -119,7 +119,7 @@ namespace Newtonsoft.Json.Utilities
                         {
                             createdType = createdTypeDefinition.MakeGenericType(collectionItemType);
                             MethodInfo method = mb.MakeGenericMethod(collectionItemType);
-                            parameterizedCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(method);
+                            parameterizedCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateParametrizedConstructor(method);
                             return true;
                         }
                     }
@@ -131,7 +131,7 @@ namespace Newtonsoft.Json.Utilities
             return false;
         }
 
-        internal static bool TryBuildImmutableForDictionaryContract(Type underlyingType, Type keyItemType, Type valueItemType, out Type createdType, out MethodCall<object, object> parameterizedCreator)
+        internal static bool TryBuildImmutableForDictionaryContract(Type underlyingType, Type keyItemType, Type valueItemType, out Type createdType, out ObjectConstructor<object> parameterizedCreator)
         {
             if (underlyingType.IsGenericType())
             {
@@ -153,7 +153,7 @@ namespace Newtonsoft.Json.Utilities
                         {
                             createdType = createdTypeDefinition.MakeGenericType(keyItemType, valueItemType);
                             MethodInfo method = mb.MakeGenericMethod(keyItemType, valueItemType);
-                            parameterizedCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(method);
+                            parameterizedCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateParametrizedConstructor(method);
                             return true;
                         }
                     }
