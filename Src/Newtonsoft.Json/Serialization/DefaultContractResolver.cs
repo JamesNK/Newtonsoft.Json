@@ -380,8 +380,10 @@ namespace Newtonsoft.Json.Serialization
             // check if a JsonConstructorAttribute has been defined and use that
             if (overrideConstructor != null)
             {
+#pragma warning disable 618
                 contract.OverrideConstructor = overrideConstructor;
-                contract.ConstructorParameters.AddRange(CreateConstructorParameters(overrideConstructor, contract.Properties));
+#pragma warning restore 618
+                contract.CreatorParameters.AddRange(CreateConstructorParameters(overrideConstructor, contract.Properties));
             }
             else if (contract.MemberSerialization == MemberSerialization.Fields)
             {
@@ -397,8 +399,10 @@ namespace Newtonsoft.Json.Serialization
                 ConstructorInfo constructor = GetParametrizedConstructor(contract.NonNullableUnderlyingType);
                 if (constructor != null)
                 {
+#pragma warning disable 618
                     contract.ParametrizedConstructor = constructor;
-                    contract.ConstructorParameters.AddRange(CreateConstructorParameters(constructor, contract.Properties));
+#pragma warning restore 618
+                    contract.CreatorParameters.AddRange(CreateConstructorParameters(constructor, contract.Properties));
                 }
             }
 

@@ -151,6 +151,74 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Test]
+        public void ParametrizedCreator()
+        {
+            var resolver = new DefaultContractResolver();
+            var contract = (JsonObjectContract)resolver.ResolveContract(typeof(PublicParametizedConstructorWithPropertyNameConflictWithAttribute));
+
+            Assert.IsNull(contract.DefaultCreator);
+            Assert.IsNotNull(contract.ParametrizedCreator);
+#pragma warning disable 618
+            Assert.AreEqual(contract.ParametrizedConstructor, typeof(PublicParametizedConstructorWithPropertyNameConflictWithAttribute).GetConstructor(new[] { typeof(string) }));
+#pragma warning restore 618
+            Assert.AreEqual(1, contract.CreatorParameters.Count);
+            Assert.AreEqual("name", contract.CreatorParameters[0].PropertyName);
+
+#pragma warning disable 618
+            contract.ParametrizedConstructor = null;
+#pragma warning restore 618
+            Assert.IsNull(contract.ParametrizedCreator);
+        }
+
+        [Test]
+        public void OverrideCreator()
+        {
+            var resolver = new DefaultContractResolver();
+            var contract = (JsonObjectContract)resolver.ResolveContract(typeof(MultipleParamatrizedConstructorsJsonConstructor));
+
+            Assert.IsNull(contract.DefaultCreator);
+            Assert.IsNotNull(contract.OverrideCreator);
+#pragma warning disable 618
+            Assert.AreEqual(contract.OverrideConstructor, typeof(MultipleParamatrizedConstructorsJsonConstructor).GetConstructor(new[] { typeof(string), typeof(int) }));
+#pragma warning restore 618
+            Assert.AreEqual(2, contract.CreatorParameters.Count);
+            Assert.AreEqual("Value", contract.CreatorParameters[0].PropertyName);
+            Assert.AreEqual("Age", contract.CreatorParameters[1].PropertyName);
+
+#pragma warning disable 618
+            contract.OverrideConstructor = null;
+#pragma warning restore 618
+            Assert.IsNull(contract.OverrideCreator);
+        }
+
+        [Test]
+        public void CustomOverrideCreator()
+        {
+            var resolver = new DefaultContractResolver();
+            var contract = (JsonObjectContract)resolver.ResolveContract(typeof(MultipleParamatrizedConstructorsJsonConstructor));
+
+            bool ensureCustomCreatorCalled = false;
+
+            contract.OverrideCreator = args =>
+            {
+                ensureCustomCreatorCalled = true;
+                return new MultipleParamatrizedConstructorsJsonConstructor((string) args[0], (int) args[1]);
+            };
+#pragma warning disable 618
+            Assert.IsNull(contract.OverrideConstructor);
+#pragma warning restore 618
+
+            var o = JsonConvert.DeserializeObject<MultipleParamatrizedConstructorsJsonConstructor>("{Value:'value!', Age:1}", new JsonSerializerSettings
+            {
+                ContractResolver = resolver
+            });
+
+            Assert.AreEqual("value!", o.Value);
+            Assert.AreEqual(1, o.Age);
+            Assert.IsTrue(ensureCustomCreatorCalled);
+        }
+
+        [Test]
         public void SerializeInterface()
         {
             Employee employee = new Employee

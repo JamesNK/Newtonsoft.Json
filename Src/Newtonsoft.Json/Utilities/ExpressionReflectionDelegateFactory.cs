@@ -54,13 +54,26 @@ namespace Newtonsoft.Json.Utilities
 
             for (int i = 0; i < parametersInfo.Length; i++)
             {
+                Type parameterType = parametersInfo[i].ParameterType;
+
                 Expression indexExpression = Expression.Constant(i);
 
                 Expression paramAccessorExpression = Expression.ArrayIndex(argsParameterExpression, indexExpression);
 
-                paramAccessorExpression = EnsureCastExpression(paramAccessorExpression, parametersInfo[i].ParameterType);
+                Expression argExpression;
 
-                argsExpression[i] = paramAccessorExpression;
+                if (parameterType.IsValueType())
+                {
+                    BinaryExpression ensureValueTypeNotNull = Expression.Coalesce(paramAccessorExpression, Expression.New(parameterType));
+
+                    argExpression = EnsureCastExpression(ensureValueTypeNotNull, parameterType);
+                }
+                else
+                {
+                    argExpression = EnsureCastExpression(paramAccessorExpression, parameterType);
+                }
+
+                argsExpression[i] = argExpression;
             }
 
             Expression callExpression;
