@@ -1588,16 +1588,21 @@ To fix this error either change the environment to be fully trusted, change the 
             IDictionary<string, object> extensionData;
             IDictionary<JsonProperty, object> propertyValues = ResolvePropertyAndCreatorValues(contract, containerProperty, reader, objectType, out extensionData);
 
-            IDictionary<JsonProperty, object> creatorParameters = contract.CreatorParameters.ToDictionary(p => p, p => (object)null);
+            object[] creatorParameterValues = new object[contract.CreatorParameters.Count];
             IDictionary<JsonProperty, object> remainingPropertyValues = new Dictionary<JsonProperty, object>();
 
             foreach (KeyValuePair<JsonProperty, object> propertyValue in propertyValues)
             {
-                JsonProperty matchingCreatorParameter = creatorParameters.ForgivingCaseSensitiveFind(kv => kv.Key.PropertyName, propertyValue.Key.PropertyName).Key;
+                JsonProperty matchingCreatorParameter = contract.CreatorParameters.ForgivingCaseSensitiveFind(p => p.PropertyName, propertyValue.Key.PropertyName);
                 if (matchingCreatorParameter != null)
-                    creatorParameters[matchingCreatorParameter] = propertyValue.Value;
+                {
+                    int i = contract.CreatorParameters.IndexOf(matchingCreatorParameter);
+                    creatorParameterValues[i] = propertyValue.Value;
+                }
                 else
+                {
                     remainingPropertyValues.Add(propertyValue);
+                }
 
                 if (propertiesPresence != null)
                 {
@@ -1608,7 +1613,7 @@ To fix this error either change the environment to be fully trusted, change the 
                 }
             }
 
-            object createdObject = creator(creatorParameters.Values.ToArray());
+            object createdObject = creator(creatorParameterValues);
 
             if (id != null)
                 AddReference(reader, id, createdObject);
