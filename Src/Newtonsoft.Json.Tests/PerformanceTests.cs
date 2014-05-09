@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+using System.Xml;
 #if !(NET20 || NET35 || NETFX_CORE || PORTABLE)
 using System;
 using System.Collections;
@@ -179,6 +180,32 @@ namespace Newtonsoft.Json.Tests
 
             SerializeSize(image);
         }
+
+#if !(PORTABLE40)
+        [Test]
+        public void ConvertXmlNode()
+        {
+            XmlDocument doc = new XmlDocument();
+            using (FileStream file = System.IO.File.OpenRead("large_sample.xml"))
+            {
+                doc.Load(file);
+            }
+
+            JsonConvert.SerializeXmlNode(doc);
+        }
+
+        [Test]
+        public void ConvertXNode()
+        {
+            XDocument doc;
+            using (FileStream file = System.IO.File.OpenRead("large_sample.xml"))
+            {
+                doc = XDocument.Load(file);
+            }
+
+            JsonConvert.SerializeXNode(doc);
+        }
+#endif
 
         private T TimeOperation<T>(Func<T> operation, string name)
         {

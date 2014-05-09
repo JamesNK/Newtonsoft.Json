@@ -226,6 +226,7 @@ namespace Newtonsoft.Json.Converters
     internal class XmlNodeWrapper : IXmlNode
     {
         private readonly XmlNode _node;
+        private IList<IXmlNode> _childNodes;
 
         public XmlNodeWrapper(XmlNode node)
         {
@@ -249,7 +250,15 @@ namespace Newtonsoft.Json.Converters
 
         public IList<IXmlNode> ChildNodes
         {
-            get { return _node.ChildNodes.Cast<XmlNode>().Select(n => WrapNode(n)).ToList(); }
+            get
+            {
+                // childnodes is read multiple times
+                // cache results to prevent multiple reads which kills perf in large documents
+                if (_childNodes == null)
+                    _childNodes = _node.ChildNodes.Cast<XmlNode>().Select(WrapNode).ToList();
+
+                return _childNodes;
+            }
         }
 
         private IXmlNode WrapNode(XmlNode node)
@@ -257,11 +266,11 @@ namespace Newtonsoft.Json.Converters
             switch (node.NodeType)
             {
                 case XmlNodeType.Element:
-                    return new XmlElementWrapper((XmlElement)node);
+                    return new XmlElementWrapper((XmlElement) node);
                 case XmlNodeType.XmlDeclaration:
-                    return new XmlDeclarationWrapper((XmlDeclaration)node);
+                    return new XmlDeclarationWrapper((XmlDeclaration) node);
                 case XmlNodeType.DocumentType:
-                    return new XmlDocumentTypeWrapper((XmlDocumentType)node);
+                    return new XmlDocumentTypeWrapper((XmlDocumentType) node);
                 default:
                     return new XmlNodeWrapper(node);
             }
@@ -274,7 +283,7 @@ namespace Newtonsoft.Json.Converters
                 if (_node.Attributes == null)
                     return null;
 
-                return _node.Attributes.Cast<XmlAttribute>().Select(a => WrapNode(a)).ToList();
+                return _node.Attributes.Cast<XmlAttribute>().Select(WrapNode).ToList();
             }
         }
 
@@ -283,7 +292,7 @@ namespace Newtonsoft.Json.Converters
             get
             {
                 XmlNode node = (_node is XmlAttribute)
-                    ? ((XmlAttribute)_node).OwnerElement
+                    ? ((XmlAttribute) _node).OwnerElement
                     : _node.ParentNode;
 
                 if (node == null)
@@ -301,8 +310,9 @@ namespace Newtonsoft.Json.Converters
 
         public IXmlNode AppendChild(IXmlNode newChild)
         {
-            XmlNodeWrapper xmlNodeWrapper = (XmlNodeWrapper)newChild;
+            XmlNodeWrapper xmlNodeWrapper = (XmlNodeWrapper) newChild;
             _node.AppendChild(xmlNodeWrapper._node);
+            _childNodes = null;
 
             return newChild;
         }
@@ -459,7 +469,7 @@ namespace Newtonsoft.Json.Converters
             {
                 IList<IXmlNode> childNodes = base.ChildNodes;
 
-                if (Document.Declaration != null)
+                if (Document.Declaration != null && childNodes[0].NodeType != XmlNodeType.XmlDeclaration)
                     childNodes.Insert(0, new XDeclarationWrapper(Document.Declaration));
 
                 return childNodes;
@@ -640,6 +650,8 @@ namespace Newtonsoft.Json.Converters
 
     internal class XContainerWrapper : XObjectWrapper
     {
+        private IList<IXmlNode> _childNodes;
+
         private XContainer Container
         {
             get { return (XContainer)WrappedNode; }
@@ -652,7 +664,15 @@ namespace Newtonsoft.Json.Converters
 
         public override IList<IXmlNode> ChildNodes
         {
-            get { return Container.Nodes().Select(n => WrapNode(n)).ToList(); }
+            get
+            {
+                // childnodes is read multiple times
+                // cache results to prevent multiple reads which kills perf in large documents
+                if (_childNodes == null)
+                    _childNodes = Container.Nodes().Select(WrapNode).ToList();
+
+                return _childNodes;
+            }
         }
 
         public override IXmlNode ParentNode
@@ -691,6 +711,8 @@ namespace Newtonsoft.Json.Converters
         public override IXmlNode AppendChild(IXmlNode newChild)
         {
             Container.Add(newChild.WrappedNode);
+            _childNodes = null;
+
             return newChild;
         }
     }

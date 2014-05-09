@@ -1432,7 +1432,7 @@ namespace Newtonsoft.Json.Tests.Bson
             }
         }
 
-#if !(NET20 || NET35 || NETFX_CORE)
+#if !(NETFX_CORE)
         public void Utf8Text()
         {
             string badText = System.IO.File.ReadAllText(@"PoisonText.txt");
