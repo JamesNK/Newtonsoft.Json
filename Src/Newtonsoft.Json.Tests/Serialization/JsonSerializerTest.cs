@@ -7898,6 +7898,31 @@ Parameter name: value",
         }
     }
 
+    public abstract class AbstractTestClass
+    {
+        public string Value { get; set; }
+    }
+
+    public class AbstractImplementationTestClass : AbstractTestClass
+    {
+    }
+
+    public abstract class AbstractListTestClass<T> : List<T>
+    {
+    }
+
+    public class AbstractImplementationListTestClass<T> : AbstractListTestClass<T>
+    {
+    }
+
+    public abstract class AbstractDictionaryTestClass<TKey, TValue> : Dictionary<TKey, TValue>
+    {
+    }
+
+    public class AbstractImplementationDictionaryTestClass<TKey, TValue> : AbstractDictionaryTestClass<TKey, TValue>
+    {
+    }
+
     public class PublicConstructorOverridenByJsonConstructor
     {
         public string Value { get; private set; }

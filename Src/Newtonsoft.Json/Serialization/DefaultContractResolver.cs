@@ -375,34 +375,37 @@ namespace Newtonsoft.Json.Serialization
             if (attribute != null)
                 contract.ItemRequired = attribute._itemRequired;
 
-            ConstructorInfo overrideConstructor = GetAttributeConstructor(contract.NonNullableUnderlyingType);
+            if (contract.IsInstantiable)
+            {
+                ConstructorInfo overrideConstructor = GetAttributeConstructor(contract.NonNullableUnderlyingType);
 
-            // check if a JsonConstructorAttribute has been defined and use that
-            if (overrideConstructor != null)
-            {
-#pragma warning disable 618
-                contract.OverrideConstructor = overrideConstructor;
-#pragma warning restore 618
-                contract.CreatorParameters.AddRange(CreateConstructorParameters(overrideConstructor, contract.Properties));
-            }
-            else if (contract.MemberSerialization == MemberSerialization.Fields)
-            {
-#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
-                // mimic DataContractSerializer behaviour when populating fields by overriding default creator to create an uninitialized object
-                // note that this is only possible when the application is fully trusted so fall back to using the default constructor (if available) in partial trust
-                if (JsonTypeReflector.FullyTrusted)
-                    contract.DefaultCreator = contract.GetUninitializedObject;
-#endif
-            }
-            else if (contract.DefaultCreator == null || contract.DefaultCreatorNonPublic)
-            {
-                ConstructorInfo constructor = GetParametrizedConstructor(contract.NonNullableUnderlyingType);
-                if (constructor != null)
+                // check if a JsonConstructorAttribute has been defined and use that
+                if (overrideConstructor != null)
                 {
 #pragma warning disable 618
-                    contract.ParametrizedConstructor = constructor;
+                    contract.OverrideConstructor = overrideConstructor;
 #pragma warning restore 618
-                    contract.CreatorParameters.AddRange(CreateConstructorParameters(constructor, contract.Properties));
+                    contract.CreatorParameters.AddRange(CreateConstructorParameters(overrideConstructor, contract.Properties));
+                }
+                else if (contract.MemberSerialization == MemberSerialization.Fields)
+                {
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
+                    // mimic DataContractSerializer behaviour when populating fields by overriding default creator to create an uninitialized object
+                    // note that this is only possible when the application is fully trusted so fall back to using the default constructor (if available) in partial trust
+                    if (JsonTypeReflector.FullyTrusted)
+                        contract.DefaultCreator = contract.GetUninitializedObject;
+#endif
+                }
+                else if (contract.DefaultCreator == null || contract.DefaultCreatorNonPublic)
+                {
+                    ConstructorInfo constructor = GetParametrizedConstructor(contract.NonNullableUnderlyingType);
+                    if (constructor != null)
+                    {
+#pragma warning disable 618
+                        contract.ParametrizedConstructor = constructor;
+#pragma warning restore 618
+                        contract.CreatorParameters.AddRange(CreateConstructorParameters(constructor, contract.Properties));
+                    }
                 }
             }
 
@@ -703,8 +706,8 @@ namespace Newtonsoft.Json.Serialization
             // then see whether object is compadible with any of the built in converters
             contract.InternalConverter = JsonSerializer.GetMatchingConverter(BuiltInConverters, contract.NonNullableUnderlyingType);
 
-            if (ReflectionUtils.HasDefaultConstructor(contract.CreatedType, true)
-                || contract.CreatedType.IsValueType())
+            if (contract.IsInstantiable
+                && (ReflectionUtils.HasDefaultConstructor(contract.CreatedType, true) || contract.CreatedType.IsValueType()))
             {
                 contract.DefaultCreator = GetDefaultCreator(contract.CreatedType);
 

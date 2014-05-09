@@ -1036,6 +1036,9 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
             }
             else
             {
+                if (!contract.IsInstantiable)
+                    throw JsonSerializationException.Create(reader, "Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantiated.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+
                 throw JsonSerializationException.Create(reader, "Unable to find a constructor to use for type {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
             }
         }
@@ -1064,6 +1067,9 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
             }
             else
             {
+                if (!contract.IsInstantiable)
+                    throw JsonSerializationException.Create(reader, "Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantiated.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+
                 throw JsonSerializationException.Create(reader, "Unable to find a default constructor to use for type {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
             }
         }
@@ -1825,9 +1831,6 @@ To fix this error either change the environment to be fully trusted, change the 
         {
             object newObject = null;
 
-            if (!objectContract.IsInstantiable)
-                throw JsonSerializationException.Create(reader, "Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantiated.".FormatWith(CultureInfo.InvariantCulture, objectContract.UnderlyingType));
-
             if (objectContract.OverrideCreator != null)
             {
                 if (objectContract.CreatorParameters.Count > 0)
@@ -1854,7 +1857,12 @@ To fix this error either change the environment to be fully trusted, change the 
             }
 
             if (newObject == null)
+            {
+                if (!objectContract.IsInstantiable)
+                    throw JsonSerializationException.Create(reader, "Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantiated.".FormatWith(CultureInfo.InvariantCulture, objectContract.UnderlyingType));
+                
                 throw JsonSerializationException.Create(reader, "Unable to find a constructor to use for type {0}. A class should either have a default constructor, one constructor with arguments or a constructor marked with the JsonConstructor attribute.".FormatWith(CultureInfo.InvariantCulture, objectContract.UnderlyingType));
+            }
 
             createdFromNonDefaultCreator = false;
             return newObject;
