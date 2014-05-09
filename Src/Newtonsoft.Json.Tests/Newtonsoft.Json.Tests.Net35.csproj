@@ -143,6 +143,7 @@
     <Compile Include="Serialization\ExtensionDataTests.cs" />
     <Compile Include="Serialization\FSharpTests.cs" />
     <Compile Include="Serialization\ImmutableCollectionsTests.cs" />
+    <Compile Include="Serialization\InterfaceHandlingTests.cs" />
     <Compile Include="Serialization\JsonPropertyCollectionTests.cs" />
     <Compile Include="Serialization\JsonSerializerCollectionsTests.cs" />
     <Compile Include="Serialization\MetadataPropertyHandlingTests.cs" />

@@ -2115,18 +2115,6 @@ keyword such as type of business.""
             GoogleMapGeocoderStructure jsonGoogleMapGeocoder = JsonConvert.DeserializeObject<GoogleMapGeocoderStructure>(json);
         }
 
-        [Test]
-        public void DeserializeInterfaceProperty()
-        {
-            InterfacePropertyTestClass testClass = new InterfacePropertyTestClass();
-            testClass.co = new Co();
-            String strFromTest = JsonConvert.SerializeObject(testClass);
-
-            ExceptionAssert.Throws<JsonSerializationException>(
-                @"Could not create an instance of type Newtonsoft.Json.Tests.TestObjects.ICo. Type is an interface or abstract class and cannot be instantiated. Path 'co.Name', line 1, position 14.",
-                () => { InterfacePropertyTestClass testFromDe = (InterfacePropertyTestClass)JsonConvert.DeserializeObject(strFromTest, typeof(InterfacePropertyTestClass)); });
-        }
-
         private Person GetPerson()
         {
             Person person = new Person
