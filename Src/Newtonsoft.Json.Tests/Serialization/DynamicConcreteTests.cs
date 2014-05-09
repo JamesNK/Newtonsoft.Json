@@ -43,6 +43,20 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class DynamicConcreteTests : TestFixtureBase
     {
+        public class DynamicConcreteContractResolver : DefaultContractResolver
+        {
+            protected override JsonContract CreateContract(Type objectType)
+            {
+                JsonContract contract = base.CreateContract(objectType);
+
+                // create a dynamic mock object for interfaces or abstract classes
+                if (contract.CreatedType.IsInterface || contract.CreatedType.IsAbstract)
+                    contract.DefaultCreator = () => DynamicConcrete.GetInstanceFor(contract.CreatedType);
+
+                return contract;
+            }
+        }
+
         [Test]
         public void UseDynamicConcreteIfTargetObjectTypeIsAnInterfaceWithNoBackingClass()
         {
@@ -98,18 +112,6 @@ namespace Newtonsoft.Json.Tests.Serialization
         object FuncWithRefType(int a, object b);
         int FuncWithValType_1();
         bool FuncWithValType_2();
-    }
-
-    public class DynamicConcreteContractResolver : DefaultContractResolver
-    {
-        protected override JsonContract CreateContract(Type objectType)
-        {
-            JsonContract contract = base.CreateContract(objectType);
-            if (contract.CreatedType.IsAbstract || contract.CreatedType.IsInterface)
-                contract.DefaultCreator = () => DynamicConcrete.GetInstanceFor(contract.CreatedType);
-
-            return contract;
-        }
     }
 
     /// <summary>
