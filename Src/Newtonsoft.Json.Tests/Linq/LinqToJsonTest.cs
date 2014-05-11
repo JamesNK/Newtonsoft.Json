@@ -508,6 +508,77 @@ keyword such as type of business.""
         }
 
         [Test]
+        public void FromObjectExample()
+        {
+            Post p = new Post
+            {
+                Title = "How to use FromObject",
+                Categories = new [] { "LINQ to JSON" }
+            };
+
+            // serialize Post to JSON then parse JSON – SLOW!
+            //JObject o = JObject.Parse(JsonConvert.SerializeObject(p));
+
+            // create JObject directly from the Post
+            JObject o = JObject.FromObject(p);
+
+            o["Title"] = o["Title"] + " - Super effective!";
+
+            string json = o.ToString();
+            // {
+            //   "Title": "How to use FromObject - It's super effective!",
+            //   "Categories": [
+            //     "LINQ to JSON"
+            //   ]
+            // }
+
+            Assert.AreEqual(@"{
+  ""Title"": ""How to use FromObject - Super effective!"",
+  ""Description"": null,
+  ""Link"": null,
+  ""Categories"": [
+    ""LINQ to JSON""
+  ]
+}", json);
+        }
+
+        [Test]
+        public void QueryingExample()
+        {
+            JArray posts = JArray.Parse(@"[
+              {
+                'Title': 'JSON Serializer Basics',
+                'Date': '2013-12-21T00:00:00',
+                'Categories': []
+              },
+              {
+                'Title': 'Querying LINQ to JSON',
+                'Date': '2014-06-03T00:00:00',
+                'Categories': [
+                  'LINQ to JSON'
+                ]
+              }
+            ]");
+
+            JToken serializerBasics = posts
+                .Single(p => (string)p["Title"] == "JSON Serializer Basics");
+            // JSON Serializer Basics
+
+            IList<JToken> since2012 = posts
+                .Where(p => (DateTime)p["Date"] > new DateTime(2012, 1, 1)).ToList();
+            // JSON Serializer Basics
+            // Querying LINQ to JSON
+
+            IList<JToken> linqToJson = posts
+                .Where(p => p["Categories"].Any(c => (string)c == "LINQ to JSON")).ToList();
+            // Querying LINQ to JSON
+
+            Assert.IsNotNull(serializerBasics);
+            Assert.AreEqual(2, since2012.Count);
+            Assert.AreEqual(1, linqToJson.Count);
+        }
+
+        [Test]
         public void CreateJTokenTreeNested()
         {
             List<Post> posts = GetPosts();
