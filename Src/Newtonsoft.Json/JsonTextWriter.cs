@@ -266,7 +266,7 @@ namespace Newtonsoft.Json
         /// </summary>
         protected override void WriteIndent()
         {
-            _writer.Write(Environment.NewLine);
+            _writer.WriteLine();
 
             // levels of indentation multiplied by the indent count
             int currentIndentCount = Top * _indentation;
