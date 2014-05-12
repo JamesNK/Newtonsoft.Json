@@ -71,7 +71,9 @@ namespace Newtonsoft.Json.Tests
                 jsonWriter.WriteEndObject();
             }
 
-            string json = Encoding.UTF8.GetString(ms.ToArray());
+            byte[] data = ms.ToArray();
+
+            string json = Encoding.UTF8.GetString(data, 0, data.Length);
 
             Assert.AreEqual(@"{" + '\n' + @"  ""prop"": true" + '\n' + "}", json);
         }

@@ -127,7 +127,7 @@ namespace Newtonsoft.Json.Serialization
 #if !(NET40 || NET35 || NET20 || PORTABLE40)
             else if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof(IReadOnlyCollection<>), out tempCollectionType))
             {
-                CollectionItemType = underlyingType.GetGenericArguments()[0];
+                CollectionItemType = tempCollectionType.GetGenericArguments()[0];
 
                 if (ReflectionUtils.IsGenericDefinition(underlyingType, typeof(IReadOnlyCollection<>))
                     || ReflectionUtils.IsGenericDefinition(underlyingType, typeof(IReadOnlyList<>)))
