@@ -96,7 +96,7 @@ namespace Newtonsoft.Json
             {
                 message = message.Trim();
 
-                if (!message.EndsWith("."))
+                if (!message.EndsWith(".", StringComparison.Ordinal))
                     message += ".";
 
                 message += " ";
