@@ -5569,13 +5569,13 @@ To fix this error either change the environment to be fully trusted, change the 
             string json = JsonConvert.SerializeObject(d, Formatting.Indented);
 
             Assert.AreEqual(@"{
-  ""dinosaur"": null,
-  ""dog"": null,
-  ""cat"": null,
   ""zebra"": null,
+  ""dinosaur"": null,
+  ""cat"": null,
+  ""dog"": null,
   ""bird"": null,
-  ""parrot"": null,
   ""albatross"": null,
+  ""parrot"": null,
   ""antelope"": null
 }", json);
         }

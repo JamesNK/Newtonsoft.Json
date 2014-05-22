@@ -1103,6 +1103,7 @@ namespace Newtonsoft.Json.Serialization
             if (members == null)
                 throw new JsonSerializationException("Null collection of seralizable members returned.");
 
+            IDictionary<Type, int> typeHierarchyLevels = GetInheritanceHierarchyLevels(type);
             JsonPropertyCollection properties = new JsonPropertyCollection(type);
 
             foreach (MemberInfo member in members)
@@ -1110,10 +1111,16 @@ namespace Newtonsoft.Json.Serialization
                 JsonProperty property = CreateProperty(member, memberSerialization);
 
                 if (property != null)
+                {
+                    property.InheritanceHierarchyLevel = member.DeclaringType == null ? 0 : typeHierarchyLevels[member.DeclaringType];
                     properties.AddProperty(property);
+                }
             }
 
-            IList<JsonProperty> orderedProperties = properties.OrderBy(p => p.Order ?? -1).ToList();
+            IList<JsonProperty> orderedProperties = properties
+                .OrderByDescending(p => p.InheritanceHierarchyLevel)
+                .ThenBy(p => p.Order ?? -1)
+                .ThenBy(p => p.PropertyName).ToList();
             return orderedProperties;
         }
 
@@ -1173,6 +1180,20 @@ namespace Newtonsoft.Json.Serialization
             SetIsSpecifiedActions(property, member, allowNonPublicAccess);
 
             return property;
+        }
+
+        private IDictionary<Type, int> GetInheritanceHierarchyLevels(Type reflectedType)
+        {
+            Dictionary<Type, int> hierarchyLevels = new Dictionary<Type, int> { { reflectedType, 0 } };
+            Type baseType = reflectedType.BaseType;
+            int i = 0;
+            while (baseType != null)
+            {
+                hierarchyLevels.Add(baseType, ++i);
+                baseType = baseType.BaseType;
+            }
+
+            return hierarchyLevels;
         }
 
         private void SetPropertySettingsFromAttributes(JsonProperty property, object attributeProvider, string name, Type declaringType, MemberSerialization memberSerialization, out bool allowNonPublicAccess)

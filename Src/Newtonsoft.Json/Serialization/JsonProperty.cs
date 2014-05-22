@@ -271,6 +271,14 @@ namespace Newtonsoft.Json.Serialization
         /// <value>The collection's items reference loop handling.</value>
         public ReferenceLoopHandling? ItemReferenceLoopHandling { get; set; }
 
+        /// <summary>
+        /// Gets or sets the level within the inheritance hierarchy, based on the reflected and declaring types.
+        /// If the property is declared by the reflected type, the level will be 0.
+        /// A level of n indicates that the property was declared by the n-th base class of the reflected type.
+        /// </summary>
+        /// <value>The inheritance hierarchy level of this property.</value>
+        public int InheritanceHierarchyLevel { get; set; }
+
         internal void WritePropertyName(JsonWriter writer)
         {
             if (_skipPropertyNameEscape)
