@@ -995,6 +995,18 @@ now brown cow?", '"', true);
             Assert.AreEqual("Bad Boys", m.Name);
         }
 
+        [Test]
+        public void IntegerLengthOverflows()
+        {
+            // Maximum javascript number length (in characters) is 380
+
+            dynamic d = JObject.Parse(@"{""biginteger"":" + new String('9', 380) + "}");
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                "JSON integer " + new String('9', 381) + " is too large to parse. Path 'biginteger', line 1, position 395.",
+                () => JObject.Parse(@"{""biginteger"":" + new String('9', 381) + "}"));
+        }
+
         //[Test]
         public void StackOverflowTest()
         {

@@ -57,6 +57,8 @@ namespace Newtonsoft.Json
     {
         private const char UnicodeReplacementChar = '\uFFFD';
 
+        private const int MaximumJavascriptIntegerLengthInCharacters = 380;
+
         private readonly TextReader _reader;
         private char[] _chars;
         private int _charsUsed;
@@ -1268,6 +1270,10 @@ namespace Newtonsoft.Json
                     {
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
                         string number = _stringReference.ToString();
+                        if (number.Length > MaximumJavascriptIntegerLengthInCharacters)
+                            throw JsonReaderException.Create(this, "JSON integer {0} is too large to parse.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
+
+                        
                         numberValue = BigInteger.Parse(number, CultureInfo.InvariantCulture);
                         numberType = JsonToken.Integer;
 #else
