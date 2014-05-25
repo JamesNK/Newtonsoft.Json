@@ -27,19 +27,20 @@ using System.Collections.Generic;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  [JsonObject(MemberSerialization.OptIn)]
-  public class ListTestClass
-  {
-    [JsonProperty]
-    public string id { get; set; }
-    [JsonProperty]
-    public List<ListItem> items { get; set; }
-  }
+    [JsonObject(MemberSerialization.OptIn)]
+    public class ListTestClass
+    {
+        [JsonProperty]
+        public string id { get; set; }
 
-  [JsonObject(MemberSerialization.OptIn)]
-  public class ListItem
-  {
-    [JsonProperty]
-    public string id { get; set; }
-  }
+        [JsonProperty]
+        public List<ListItem> items { get; set; }
+    }
+
+    [JsonObject(MemberSerialization.OptIn)]
+    public class ListItem
+    {
+        [JsonProperty]
+        public string id { get; set; }
+    }
 }

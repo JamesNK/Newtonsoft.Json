@@ -25,14 +25,14 @@
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  [JsonConverter(typeof(ClassConverterPrecedenceClassConverter))]
-  public class ConverterPrecedenceClass
-  {
-    public string TestValue { get; set; }
-
-    public ConverterPrecedenceClass(string testValue)
+    [JsonConverter(typeof(ClassConverterPrecedenceClassConverter))]
+    public class ConverterPrecedenceClass
     {
-      TestValue = testValue;
+        public string TestValue { get; set; }
+
+        public ConverterPrecedenceClass(string testValue)
+        {
+            TestValue = testValue;
+        }
     }
-  }
 }

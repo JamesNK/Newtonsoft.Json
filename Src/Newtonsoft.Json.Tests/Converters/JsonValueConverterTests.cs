@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+
 #if NETFX_CORE
 using System;
 using Newtonsoft.Json.Converters;
@@ -32,13 +33,13 @@ using NUnit.Framework;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
+#endif
 using Windows.Data.Json;
 using System.IO;
 using System.Diagnostics;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
-#endif
 
 namespace Newtonsoft.Json.Tests.Converters
 {
@@ -319,8 +320,6 @@ namespace Newtonsoft.Json.Tests.Converters
       string jsonnet = timer.Elapsed.TotalSeconds.ToString();
 
       throw new Exception(string.Format("winrt: {0}, jsonnet: {1}, jsonnet linq: {2}", winrt, jsonnet, linq));
-      Console.WriteLine(winrt);
-      Console.WriteLine(jsonnet);
     }
 
     [Test]
@@ -368,8 +367,6 @@ namespace Newtonsoft.Json.Tests.Converters
       string jsonnet = timer.Elapsed.TotalSeconds.ToString();
 
       throw new Exception(string.Format("winrt: {0}, jsonnet: {1}, jsonnet linq: {2}", winrt, jsonnet, linq));
-      Console.WriteLine(winrt);
-      Console.WriteLine(jsonnet);
     }
 
     [Test]

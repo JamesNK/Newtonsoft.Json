@@ -67,6 +67,10 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\FSharp.Core.4.0.0\lib\FSharp.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -102,7 +106,6 @@
     <Reference Include="System.Web.Extensions">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Windows" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -131,33 +134,65 @@
     <Compile Include="Linq\ComponentModel\BindingTests.cs" />
     <Compile Include="Linq\ComponentModel\JPropertyDescriptorTests.cs" />
     <Compile Include="Linq\DynamicTests.cs" />
-    <Compile Include="Linq\JPathTests.cs" />
     <Compile Include="Linq\JRawTests.cs" />
+    <Compile Include="Linq\JsonPath\JPathExecuteTests.cs" />
+    <Compile Include="Linq\JsonPath\JPathParseTests.cs" />
+    <Compile Include="Linq\JsonPath\QueryExpressionTests.cs" />
     <Compile Include="Serialization\ConstructorHandlingTests.cs" />
     <Compile Include="Serialization\ContractResolverTests.cs" />
     <Compile Include="Serialization\DefaultValueHandlingTests.cs" />
     <Compile Include="Serialization\DynamicTests.cs" />
+    <Compile Include="Serialization\ExtensionDataTests.cs" />
+    <Compile Include="Serialization\FSharpTests.cs" />
+    <Compile Include="Serialization\ImmutableCollectionsTests.cs" />
+    <Compile Include="Serialization\JsonSerializerCollectionsTests.cs" />
+    <Compile Include="Serialization\MetadataPropertyHandlingTests.cs" />
     <Compile Include="Serialization\ReferenceLoopHandlingTests.cs" />
+    <Compile Include="Serialization\ShouldSerializeTests.cs" />
     <Compile Include="Serialization\TraceWriterTests.cs" />
     <Compile Include="Serialization\WebApiIntegrationTests.cs" />
     <Compile Include="Serialization\JsonPropertyCollectionTests.cs" />
     <Compile Include="Serialization\NullValueHandlingTests.cs" />
+    <Compile Include="TestObjects\Aa.cs" />
+    <Compile Include="TestObjects\AnswerFilterModel.cs" />
+    <Compile Include="TestObjects\Antworten.cs" />
     <Compile Include="TestObjects\Bar.cs" />
+    <Compile Include="TestObjects\Bb.cs" />
     <Compile Include="TestObjects\Car.cs" />
+    <Compile Include="TestObjects\Component.cs" />
     <Compile Include="TestObjects\Computer.cs" />
     <Compile Include="TestObjects\ConstructorReadonlyFields.cs" />
     <Compile Include="TestObjects\Container.cs" />
     <Compile Include="TestObjects\ContentBaseClass.cs" />
     <Compile Include="TestObjects\ContentSubClass.cs" />
+    <Compile Include="TestObjects\CustomerDataSet.cs" />
+    <Compile Include="TestObjects\DataContractSerializationAttributesClass.cs" />
+    <Compile Include="TestObjects\DateTimeWrapper.cs" />
+    <Compile Include="TestObjects\DecimalTestClass.cs" />
+    <Compile Include="TestObjects\DirectoryAccount.cs" />
+    <Compile Include="TestObjects\Event1.cs" />
     <Compile Include="TestObjects\Foo.cs" />
+    <Compile Include="TestObjects\GameObject.cs" />
     <Compile Include="TestObjects\HolderClass.cs" />
+    <Compile Include="TestObjects\IdReferenceResolver.cs" />
+    <Compile Include="TestObjects\IMyInterface.cs" />
+    <Compile Include="TestObjects\IntToFloatConverter.cs" />
     <Compile Include="TestObjects\IPrivateImplementationA.cs" />
     <Compile Include="TestObjects\IPrivateImplementationB.cs" />
     <Compile Include="TestObjects\IPrivateOverriddenImplementation.cs" />
+    <Compile Include="TestObjects\Item.cs" />
     <Compile Include="TestObjects\ListOfIds.cs" />
+    <Compile Include="TestObjects\MetroPropertyNameResolver.cs" />
+    <Compile Include="TestObjects\MetroStringConverter.cs" />
     <Compile Include="TestObjects\Movie.cs" />
+    <Compile Include="TestObjects\NullableGuid.cs" />
+    <Compile Include="TestObjects\ParticipantEntity.cs" />
     <Compile Include="TestObjects\PersonError.cs" />
     <Compile Include="TestObjects\PersonPropertyClass.cs" />
+    <Compile Include="TestObjects\PersonReference.cs" />
+    <Compile Include="TestObjects\PersonSerializable.cs" />
+    <Compile Include="TestObjects\PersonWithPrivateConstructor.cs" />
+    <Compile Include="TestObjects\PocoDataContractSerializationAttributesClass.cs" />
     <Compile Include="TestObjects\PrivateConstructorTestClass.cs" />
     <Compile Include="TestObjects\PrivateConstructorWithPublicParametizedConstructorTestClass.cs" />
     <Compile Include="TestObjects\Content.cs" />
@@ -186,12 +221,20 @@
     <Compile Include="TestObjects\ObjectArrayPropertyTest.cs" />
     <Compile Include="TestObjects\PrivateImplementationAClass.cs" />
     <Compile Include="TestObjects\PrivateImplementationBClass.cs" />
+    <Compile Include="TestObjects\PropertyItemConverter.cs" />
     <Compile Include="TestObjects\PublicParametizedConstructorRequiringConverterTestClass.cs" />
     <Compile Include="TestObjects\PublicParametizedConstructorTestClass.cs" />
     <Compile Include="TestObjects\PublicParametizedConstructorWithNonPropertyParameterTestClass.cs" />
     <Compile Include="TestObjects\PublicParametizedConstructorWithPropertyNameConflict.cs" />
+    <Compile Include="TestObjects\Ratio.cs" />
+    <Compile Include="TestObjects\RequiredObject.cs" />
     <Compile Include="TestObjects\SearchResult.cs" />
+    <Compile Include="TestObjects\SelectListItem.cs" />
     <Compile Include="TestObjects\StructTest.cs" />
+    <Compile Include="TestObjects\TestComponent.cs" />
+    <Compile Include="TestObjects\TestComponentSimple.cs" />
+    <Compile Include="TestObjects\TestObject.cs" />
+    <Compile Include="TestObjects\UriGuidTimeSpanTestClass.cs" />
     <Compile Include="TestObjects\WagePerson.cs" />
     <Compile Include="TestObjects\PropertyCase.cs" />
     <Compile Include="TestObjects\RequestOnly.cs" />
@@ -271,12 +314,17 @@
     <Compile Include="Linq\LinqToJsonTest.cs" />
     <Compile Include="PerformanceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SilverlightTests.cs" />
     <Compile Include="TestFixtureBase.cs" />
     <Compile Include="Converters\XmlNodeConverterTest.cs" />
     <Compile Include="TestObjects\TypeClass.cs" />
     <Compile Include="TestObjects\TypedSubHashtable.cs" />
     <Compile Include="TestObjects\UserNullable.cs" />
+    <Compile Include="TestObjects\Widget.cs" />
+    <Compile Include="TestObjects\Widget1.cs" />
+    <Compile Include="TestObjects\WidgetId.cs" />
+    <Compile Include="TestObjects\WidgetId1.cs" />
+    <Compile Include="TestObjects\WidgetIdJsonConverter.cs" />
+    <Compile Include="TestObjects\WithEnums.cs" />
     <Compile Include="Utilities\DateTimeUtilsTests.cs" />
     <Compile Include="Utilities\DynamicReflectionDelegateFactoryTests.cs" />
     <Compile Include="Utilities\ExpressionReflectionDelegateFactoryTests.cs" />
@@ -294,10 +342,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="bunny_pancake.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="large_sample.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="PoisonText.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>

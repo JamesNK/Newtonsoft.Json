@@ -89,6 +89,7 @@
     <Compile Include="Converters\DataSetConverter.cs" />
     <Compile Include="Converters\DataTableConverter.cs" />
     <Compile Include="Converters\DateTimeConverterBase.cs" />
+    <Compile Include="Converters\DiscriminatedUnionConverter.cs" />
     <Compile Include="Converters\EntityKeyMemberConverter.cs" />
     <Compile Include="Converters\KeyValuePairConverter.cs" />
     <Compile Include="Converters\RegexConverter.cs" />
@@ -107,6 +108,17 @@
     <Compile Include="JsonExtensionDataAttribute.cs" />
     <Compile Include="JsonPosition.cs" />
     <Compile Include="Linq\JPropertyKeyedCollection.cs" />
+    <Compile Include="Linq\JsonPath\ArrayIndexFilter.cs" />
+    <Compile Include="Linq\JsonPath\ArrayMultipleIndexFilter.cs" />
+    <Compile Include="Linq\JsonPath\ArraySliceFilter.cs" />
+    <Compile Include="Linq\JsonPath\FieldFilter.cs" />
+    <Compile Include="Linq\JsonPath\FieldMultipleFilter.cs" />
+    <Compile Include="Linq\JsonPath\JPath.cs" />
+    <Compile Include="Linq\JsonPath\PathFilter.cs" />
+    <Compile Include="Linq\JsonPath\QueryExpression.cs" />
+    <Compile Include="Linq\JsonPath\QueryFilter.cs" />
+    <Compile Include="Linq\JsonPath\ScanFilter.cs" />
+    <Compile Include="MetadataPropertyHandling.cs" />
     <Compile Include="SerializationBinder.cs" />
     <Compile Include="Serialization\DiagnosticsTraceWriter.cs" />
     <Compile Include="Serialization\ExpressionValueProvider.cs" />
@@ -124,7 +136,6 @@
     <Compile Include="Utilities\ExpressionReflectionDelegateFactory.cs" />
     <Compile Include="Utilities\ImmutableCollectionsUtils.cs" />
     <Compile Include="Utilities\LinqBridge.cs" />
-    <Compile Include="Linq\JPath.cs" />
     <Compile Include="Linq\JPropertyDescriptor.cs" />
     <Compile Include="Linq\JRaw.cs" />
     <Compile Include="Required.cs" />

@@ -28,22 +28,23 @@ using System.Collections.Generic;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-  public class Content : IEnumerable<Content>
-  {
-    [JsonProperty]
-    public List<Content> Children;
-    [JsonProperty]
-    public string Text;
-
-    public IEnumerator GetEnumerator()
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
+    public class Content : IEnumerable<Content>
     {
-      return Children.GetEnumerator();
-    }
+        [JsonProperty]
+        public List<Content> Children;
 
-    IEnumerator<Content> IEnumerable<Content>.GetEnumerator()
-    {
-      return Children.GetEnumerator();
+        [JsonProperty]
+        public string Text;
+
+        public IEnumerator GetEnumerator()
+        {
+            return Children.GetEnumerator();
+        }
+
+        IEnumerator<Content> IEnumerable<Content>.GetEnumerator()
+        {
+            return Children.GetEnumerator();
+        }
     }
-  }
 }

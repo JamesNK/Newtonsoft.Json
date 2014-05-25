@@ -6,46 +6,46 @@ using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-  public class CreateReader
-  {
-    public void Example()
+    public class CreateReader
     {
-      #region Usage
-      JObject o = new JObject
+        public void Example()
         {
-          {"Cpu", "Intel"},
-          {"Memory", 32},
-          {
-            "Drives", new JArray
-              {
-                "DVD",
-                "SSD"
-              }
-          }
-        };
+            #region Usage
+            JObject o = new JObject
+            {
+                { "Cpu", "Intel" },
+                { "Memory", 32 },
+                {
+                    "Drives", new JArray
+                    {
+                        "DVD",
+                        "SSD"
+                    }
+                }
+            };
 
-      JsonReader reader = o.CreateReader();
-      while (reader.Read())
-      {
-        Console.Write(reader.TokenType);
-        if (reader.Value != null)
-          Console.Write(" - " + reader.Value);
+            JsonReader reader = o.CreateReader();
+            while (reader.Read())
+            {
+                Console.Write(reader.TokenType);
+                if (reader.Value != null)
+                    Console.Write(" - " + reader.Value);
 
-        Console.WriteLine();
-      }
+                Console.WriteLine();
+            }
 
-      // StartObject
-      // PropertyName - Cpu
-      // String - Intel
-      // PropertyName - Memory
-      // Integer - 32
-      // PropertyName - Drives
-      // StartArray
-      // String - DVD
-      // String - SSD
-      // EndArray
-      // EndObject
-      #endregion
+            // StartObject
+            // PropertyName - Cpu
+            // String - Intel
+            // PropertyName - Memory
+            // Integer - 32
+            // PropertyName - Drives
+            // StartArray
+            // String - DVD
+            // String - SSD
+            // EndArray
+            // EndObject
+            #endregion
+        }
     }
-  }
 }

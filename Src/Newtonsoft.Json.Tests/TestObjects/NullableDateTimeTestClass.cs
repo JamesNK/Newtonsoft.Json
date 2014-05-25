@@ -31,12 +31,13 @@ using System.Text;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class NullableDateTimeTestClass
-  {
-    public string PreField { get; set; }
-    public DateTime? DateTimeField { get; set; }
-    public DateTimeOffset? DateTimeOffsetField { get; set; }
-    public string PostField { get; set; }
-  }
+    public class NullableDateTimeTestClass
+    {
+        public string PreField { get; set; }
+        public DateTime? DateTimeField { get; set; }
+        public DateTimeOffset? DateTimeOffsetField { get; set; }
+        public string PostField { get; set; }
+    }
 }
+
 #endif

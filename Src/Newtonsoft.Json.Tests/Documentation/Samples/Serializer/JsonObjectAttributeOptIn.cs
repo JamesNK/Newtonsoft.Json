@@ -5,41 +5,42 @@ using System.Text;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-  public class JsonObjectAttributeOptIn
-  {
-    #region Types
-    [JsonObject(MemberSerialization.OptIn)]
-    public class File
+    public class JsonObjectAttributeOptIn
     {
-      // excluded from serialization
-      // does not have JsonPropertyAttribute
-      public Guid Id { get; set; }
-
-      [JsonProperty]
-      public string Name { get; set; }
-      [JsonProperty]
-      public int Size { get; set; }
-    }
-    #endregion
-
-    public void Example()
-    {
-      #region Usage
-      File file = new File
+        #region Types
+        [JsonObject(MemberSerialization.OptIn)]
+        public class File
         {
-          Id = Guid.NewGuid(),
-          Name = "ImportantLegalDocuments.docx",
-          Size = 50 * 1024
-        };
+            // excluded from serialization
+            // does not have JsonPropertyAttribute
+            public Guid Id { get; set; }
 
-      string json = JsonConvert.SerializeObject(file, Formatting.Indented);
+            [JsonProperty]
+            public string Name { get; set; }
 
-      Console.WriteLine(json);
-      // {
-      //   "Name": "ImportantLegalDocuments.docx",
-      //   "Size": 51200
-      // }
-      #endregion
+            [JsonProperty]
+            public int Size { get; set; }
+        }
+        #endregion
+
+        public void Example()
+        {
+            #region Usage
+            File file = new File
+            {
+                Id = Guid.NewGuid(),
+                Name = "ImportantLegalDocuments.docx",
+                Size = 50 * 1024
+            };
+
+            string json = JsonConvert.SerializeObject(file, Formatting.Indented);
+
+            Console.WriteLine(json);
+            // {
+            //   "Name": "ImportantLegalDocuments.docx",
+            //   "Size": 51200
+            // }
+            #endregion
+        }
     }
-  }
 }

@@ -25,8 +25,8 @@
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public interface IPrivateImplementationB
-  {
-    string PropertyB { get; set; }
-  }
+    public interface IPrivateImplementationB
+    {
+        string PropertyB { get; set; }
+    }
 }

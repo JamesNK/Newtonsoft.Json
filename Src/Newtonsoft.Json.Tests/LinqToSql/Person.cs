@@ -31,13 +31,13 @@ using System.Text;
 
 namespace Newtonsoft.Json.Tests.LinqToSql
 {
-  [MetadataType(typeof(PersonMetadata))]
-  public partial class Person
-  {
-    public class PersonMetadata
+    [MetadataType(typeof(PersonMetadata))]
+    public partial class Person
     {
-      [JsonProperty("first_name")]
-      public string FirstName { get; set; }
+        public class PersonMetadata
+        {
+            [JsonProperty("first_name")]
+            public string FirstName { get; set; }
+        }
     }
-  }
 }

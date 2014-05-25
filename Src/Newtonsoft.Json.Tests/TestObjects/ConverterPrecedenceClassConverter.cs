@@ -30,34 +30,34 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public abstract class ConverterPrecedenceClassConverter : JsonConverter
-  {
-    public abstract string ConverterType { get; }
-
-    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    public abstract class ConverterPrecedenceClassConverter : JsonConverter
     {
-      ConverterPrecedenceClass c = (ConverterPrecedenceClass)value;
+        public abstract string ConverterType { get; }
 
-      JToken j = new JArray(ConverterType, c.TestValue);
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            ConverterPrecedenceClass c = (ConverterPrecedenceClass)value;
 
-      j.WriteTo(writer);
+            JToken j = new JArray(ConverterType, c.TestValue);
+
+            j.WriteTo(writer);
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            JToken j = JArray.Load(reader);
+
+            string converter = (string)j[0];
+            if (converter != ConverterType)
+                throw new Exception(StringUtils.FormatWith("Serialize converter {0} and deserialize converter {1} do not match.", CultureInfo.InvariantCulture, converter, ConverterType));
+
+            string testValue = (string)j[1];
+            return new ConverterPrecedenceClass(testValue);
+        }
+
+        public override bool CanConvert(Type objectType)
+        {
+            return (objectType == typeof(ConverterPrecedenceClass));
+        }
     }
-
-    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-    {
-      JToken j = JArray.Load(reader);
-
-      string converter = (string)j[0];
-      if (converter != ConverterType)
-        throw new Exception(StringUtils.FormatWith("Serialize converter {0} and deserialize converter {1} do not match.", CultureInfo.InvariantCulture, converter, ConverterType));
-
-      string testValue = (string)j[1];
-      return new ConverterPrecedenceClass(testValue);
-    }
-
-    public override bool CanConvert(Type objectType)
-    {
-      return (objectType == typeof(ConverterPrecedenceClass));
-    }
-  }
 }

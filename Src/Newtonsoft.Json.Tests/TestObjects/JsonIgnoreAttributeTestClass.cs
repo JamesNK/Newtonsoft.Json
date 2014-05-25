@@ -25,27 +25,28 @@
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class JsonIgnoreAttributeTestClass
-  {
-    private int _property = 21;
-    private int _ignoredProperty = 12;
-
-    public int Field;
-    public int Property
+    public class JsonIgnoreAttributeTestClass
     {
-      get { return _property; }
+        private int _property = 21;
+        private int _ignoredProperty = 12;
+
+        public int Field;
+
+        public int Property
+        {
+            get { return _property; }
+        }
+
+        [JsonIgnore]
+        public int IgnoredField;
+
+        [JsonIgnore]
+        public int IgnoredProperty
+        {
+            get { return _ignoredProperty; }
+        }
+
+        [JsonIgnore]
+        public Product IgnoredObject = new Product();
     }
-
-    [JsonIgnore]
-    public int IgnoredField;
-
-    [JsonIgnore]
-    public int IgnoredProperty
-    {
-      get { return _ignoredProperty; }
-    }
-
-    [JsonIgnore]
-    public Product IgnoredObject = new Product();
-  }
 }

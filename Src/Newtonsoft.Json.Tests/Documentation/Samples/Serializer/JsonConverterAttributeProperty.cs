@@ -6,42 +6,42 @@ using Newtonsoft.Json.Converters;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-  public class JsonConverterAttributeProperty
-  {
-    #region Types
-    public enum UserStatus
+    public class JsonConverterAttributeProperty
     {
-      NotConfirmed,
-      Active,
-      Deleted
-    }
-
-    public class User
-    {
-      public string UserName { get; set; }
-
-      [JsonConverter(typeof(StringEnumConverter))]
-      public UserStatus Status { get; set; }
-    }
-    #endregion
-
-    public void Example()
-    {
-      #region Usage
-      User user = new User
+        #region Types
+        public enum UserStatus
         {
-          UserName = @"domain\username",
-          Status = UserStatus.Deleted
-        };
+            NotConfirmed,
+            Active,
+            Deleted
+        }
 
-      string json = JsonConvert.SerializeObject(user, Formatting.Indented);
+        public class User
+        {
+            public string UserName { get; set; }
 
-      Console.WriteLine(json);
-      // {
-      //   "UserName": "domain\\username",
-      //   "Status": "Deleted"
-      // }
-      #endregion
+            [JsonConverter(typeof(StringEnumConverter))]
+            public UserStatus Status { get; set; }
+        }
+        #endregion
+
+        public void Example()
+        {
+            #region Usage
+            User user = new User
+            {
+                UserName = @"domain\username",
+                Status = UserStatus.Deleted
+            };
+
+            string json = JsonConvert.SerializeObject(user, Formatting.Indented);
+
+            Console.WriteLine(json);
+            // {
+            //   "UserName": "domain\\username",
+            //   "Status": "Deleted"
+            // }
+            #endregion
+        }
     }
-  }
 }

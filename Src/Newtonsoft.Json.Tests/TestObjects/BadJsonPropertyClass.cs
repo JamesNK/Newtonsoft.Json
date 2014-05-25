@@ -25,11 +25,11 @@
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class BadJsonPropertyClass
-  {
-    [JsonProperty("pie")]
-    public string Pie = "Yum";
+    public class BadJsonPropertyClass
+    {
+        [JsonProperty("pie")]
+        public string Pie = "Yum";
 
-    public string pie = "PieChart!";
-  }
+        public string pie = "PieChart!";
+    }
 }

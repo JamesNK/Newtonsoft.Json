@@ -30,12 +30,12 @@ using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class DateTimeErrorObjectCollection : Collection<DateTime>
-  {
-    [OnError]
-    internal void OnErrorMethod(StreamingContext context, ErrorContext errorContext)
+    public class DateTimeErrorObjectCollection : Collection<DateTime>
     {
-      errorContext.Handled = true;
+        [OnError]
+        internal void OnErrorMethod(StreamingContext context, ErrorContext errorContext)
+        {
+            errorContext.Handled = true;
+        }
     }
-  }
 }

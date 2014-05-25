@@ -25,33 +25,33 @@
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class PrivateImplementationBClass : PrivateImplementationAClass, IPrivateImplementationB, IPrivateOverriddenImplementation
-  {
-    [JsonIgnore]
-    public string PropertyB { get; set; }
-
-    [JsonProperty("PropertyB")]
-    string IPrivateImplementationB.PropertyB
+    public class PrivateImplementationBClass : PrivateImplementationAClass, IPrivateImplementationB, IPrivateOverriddenImplementation
     {
-      get { return this.PropertyB; }
-      set { this.PropertyB = value; }
-    }
+        [JsonIgnore]
+        public string PropertyB { get; set; }
 
-    [JsonProperty("OverriddenProperty")]
-    private string OverriddenPropertyString
-    {
-      get { return this.OverriddenProperty.ToString(); }
-      set { this.OverriddenProperty = value; }
-    }
+        [JsonProperty("PropertyB")]
+        string IPrivateImplementationB.PropertyB
+        {
+            get { return PropertyB; }
+            set { PropertyB = value; }
+        }
 
-    [JsonIgnore]
-    public object OverriddenProperty { get; set; }
+        [JsonProperty("OverriddenProperty")]
+        private string OverriddenPropertyString
+        {
+            get { return OverriddenProperty.ToString(); }
+            set { OverriddenProperty = value; }
+        }
 
-    [JsonIgnore]
-    object IPrivateOverriddenImplementation.OverriddenProperty
-    {
-      get { return this.OverriddenProperty; }
-      set { this.OverriddenProperty = value; }
+        [JsonIgnore]
+        public object OverriddenProperty { get; set; }
+
+        [JsonIgnore]
+        object IPrivateOverriddenImplementation.OverriddenProperty
+        {
+            get { return OverriddenProperty; }
+            set { OverriddenProperty = value; }
+        }
     }
-  }
 }

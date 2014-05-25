@@ -28,30 +28,30 @@ using Newtonsoft.Json.Tests.TestObjects;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class DictionaryInterfaceClass
-  {
-    public string Name { get; set; }
-    public IDictionary<string, int> Dictionary { get; set; }
-    public ICollection<int> Collection { get; set; }
-    public EmployeeReference Employee { get; set; }
-    public object Random { get; set; }
-
-    public DictionaryInterfaceClass()
+    public class DictionaryInterfaceClass
     {
-      Dictionary = new Dictionary<string, int>
+        public string Name { get; set; }
+        public IDictionary<string, int> Dictionary { get; set; }
+        public ICollection<int> Collection { get; set; }
+        public EmployeeReference Employee { get; set; }
+        public object Random { get; set; }
+
+        public DictionaryInterfaceClass()
         {
-          { "existing", 1 }
-        };
-      Collection = new List<int>
-        {
-          1,
-          2,
-          3
-        };
-      Employee = new EmployeeReference
-        {
-          Name = "EmployeeName!"
-        };
+            Dictionary = new Dictionary<string, int>
+            {
+                { "existing", 1 }
+            };
+            Collection = new List<int>
+            {
+                1,
+                2,
+                3
+            };
+            Employee = new EmployeeReference
+            {
+                Name = "EmployeeName!"
+            };
+        }
     }
-  }
 }

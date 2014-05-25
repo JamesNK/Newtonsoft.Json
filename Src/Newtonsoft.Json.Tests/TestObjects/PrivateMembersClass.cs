@@ -25,26 +25,26 @@
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class PrivateMembersClass
-  {
-    public PrivateMembersClass(string privateString, string internalString)
+    public class PrivateMembersClass
     {
-      _privateString = privateString;
-      _internalString = internalString;
-    }
+        public PrivateMembersClass(string privateString, string internalString)
+        {
+            _privateString = privateString;
+            _internalString = internalString;
+        }
 
-    public PrivateMembersClass()
-    {
-      i = default(int);
-    }
+        public PrivateMembersClass()
+        {
+            i = default(int);
+        }
 
-    private string _privateString;
-    private readonly int i;
-    internal string _internalString;
+        private string _privateString;
+        private readonly int i;
+        internal string _internalString;
 
-    public int UseValue()
-    {
-      return i;
+        public int UseValue()
+        {
+            return i;
+        }
     }
-  }
 }

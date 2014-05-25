@@ -25,11 +25,11 @@
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class ArgumentConverterPrecedenceClassConverter : ConverterPrecedenceClassConverter
-  {
-    public override string ConverterType
+    public class ArgumentConverterPrecedenceClassConverter : ConverterPrecedenceClassConverter
     {
-      get { return "Argument"; }
+        public override string ConverterType
+        {
+            get { return "Argument"; }
+        }
     }
-  }
 }

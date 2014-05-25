@@ -27,8 +27,8 @@ using System;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class ClassWithGuid
-  {
-    public Guid GuidField;
-  }
+    public class ClassWithGuid
+    {
+        public Guid GuidField;
+    }
 }

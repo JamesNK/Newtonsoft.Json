@@ -38,26 +38,27 @@ using global::Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Tests.Utilities
 {
-  [TestFixture]
-  public class ReflectionUtilsTests : TestFixtureBase
-  {
-    [Test]
-    public void GetTypeNameSimpleForGenericTypes()
+    [TestFixture]
+    public class ReflectionUtilsTests : TestFixtureBase
     {
-      string typeName;
+        [Test]
+        public void GetTypeNameSimpleForGenericTypes()
+        {
+            string typeName;
 
-      typeName = ReflectionUtils.GetTypeName(typeof(IList<Type>), FormatterAssemblyStyle.Simple, null);
-      Assert.AreEqual("System.Collections.Generic.IList`1[[System.Type, mscorlib]], mscorlib", typeName);
+            typeName = ReflectionUtils.GetTypeName(typeof(IList<Type>), FormatterAssemblyStyle.Simple, null);
+            Assert.AreEqual("System.Collections.Generic.IList`1[[System.Type, mscorlib]], mscorlib", typeName);
 
-      typeName = ReflectionUtils.GetTypeName(typeof(IDictionary<IList<Type>, IList<Type>>), FormatterAssemblyStyle.Simple, null);
-      Assert.AreEqual("System.Collections.Generic.IDictionary`2[[System.Collections.Generic.IList`1[[System.Type, mscorlib]], mscorlib],[System.Collections.Generic.IList`1[[System.Type, mscorlib]], mscorlib]], mscorlib", typeName);
+            typeName = ReflectionUtils.GetTypeName(typeof(IDictionary<IList<Type>, IList<Type>>), FormatterAssemblyStyle.Simple, null);
+            Assert.AreEqual("System.Collections.Generic.IDictionary`2[[System.Collections.Generic.IList`1[[System.Type, mscorlib]], mscorlib],[System.Collections.Generic.IList`1[[System.Type, mscorlib]], mscorlib]], mscorlib", typeName);
 
-      typeName = ReflectionUtils.GetTypeName(typeof(IList<>), FormatterAssemblyStyle.Simple, null);
-      Assert.AreEqual("System.Collections.Generic.IList`1, mscorlib", typeName);
+            typeName = ReflectionUtils.GetTypeName(typeof(IList<>), FormatterAssemblyStyle.Simple, null);
+            Assert.AreEqual("System.Collections.Generic.IList`1, mscorlib", typeName);
 
-      typeName = ReflectionUtils.GetTypeName(typeof(IDictionary<,>), FormatterAssemblyStyle.Simple, null);
-      Assert.AreEqual("System.Collections.Generic.IDictionary`2, mscorlib", typeName);
+            typeName = ReflectionUtils.GetTypeName(typeof(IDictionary<,>), FormatterAssemblyStyle.Simple, null);
+            Assert.AreEqual("System.Collections.Generic.IDictionary`2, mscorlib", typeName);
+        }
     }
-  }
 }
+
 #endif

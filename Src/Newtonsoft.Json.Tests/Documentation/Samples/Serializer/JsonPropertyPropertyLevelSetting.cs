@@ -5,36 +5,36 @@ using System.Text;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-  public class JsonPropertyPropertyLevelSetting
-  {
-    #region Types
-    public class Vessel
+    public class JsonPropertyPropertyLevelSetting
     {
-      public string Name { get; set; }
-      public string Class { get; set; }
-
-      [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-      public DateTime? LaunchDate { get; set; }
-    }
-    #endregion
-
-    public void Example()
-    {
-      #region Usage
-      Vessel vessel = new Vessel
+        #region Types
+        public class Vessel
         {
-          Name = "Red October",
-          Class = "Typhoon"
-        };
+            public string Name { get; set; }
+            public string Class { get; set; }
 
-      string json = JsonConvert.SerializeObject(vessel, Formatting.Indented);
+            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+            public DateTime? LaunchDate { get; set; }
+        }
+        #endregion
 
-      Console.WriteLine(json);
-      // {
-      //   "Name": "Red October",
-      //   "Class": "Typhoon"
-      // }
-      #endregion
+        public void Example()
+        {
+            #region Usage
+            Vessel vessel = new Vessel
+            {
+                Name = "Red October",
+                Class = "Typhoon"
+            };
+
+            string json = JsonConvert.SerializeObject(vessel, Formatting.Indented);
+
+            Console.WriteLine(json);
+            // {
+            //   "Name": "Red October",
+            //   "Class": "Typhoon"
+            // }
+            #endregion
+        }
     }
-  }
 }

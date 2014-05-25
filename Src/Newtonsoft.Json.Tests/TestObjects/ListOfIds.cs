@@ -29,43 +29,43 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class ListOfIds<T> : JsonConverter where T : Bar, new()
-  {
-    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    public class ListOfIds<T> : JsonConverter where T : Bar, new()
     {
-      IList<T> list = (IList<T>)value;
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            IList<T> list = (IList<T>)value;
 
-      writer.WriteStartArray();
-      foreach (T item in list)
-      {
-        writer.WriteValue(item.Id);
-      }
-      writer.WriteEndArray();
+            writer.WriteStartArray();
+            foreach (T item in list)
+            {
+                writer.WriteValue(item.Id);
+            }
+            writer.WriteEndArray();
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            IList<T> list = new List<T>();
+
+            reader.Read();
+            while (reader.TokenType != JsonToken.EndArray)
+            {
+                long id = (long)reader.Value;
+
+                list.Add(new T
+                {
+                    Id = Convert.ToInt32(id)
+                });
+
+                reader.Read();
+            }
+
+            return list;
+        }
+
+        public override bool CanConvert(Type objectType)
+        {
+            return typeof(IList<T>).IsAssignableFrom(objectType);
+        }
     }
-
-    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-    {
-      IList<T> list = new List<T>();
-
-      reader.Read();
-      while (reader.TokenType != JsonToken.EndArray)
-      {
-        long id = (long)reader.Value;
-
-        list.Add(new T
-                   {
-                     Id = Convert.ToInt32(id)
-                   });
-
-        reader.Read();
-      }
-
-      return list;
-    }
-
-    public override bool CanConvert(Type objectType)
-    {
-      return typeof(IList<T>).IsAssignableFrom(objectType);
-    }
-  }
 }

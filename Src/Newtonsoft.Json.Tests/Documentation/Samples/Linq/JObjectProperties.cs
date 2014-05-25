@@ -6,31 +6,31 @@ using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-  public class JObjectProperties
-  {
-    public void Example()
+    public class JObjectProperties
     {
-      #region Usage
-      JObject o = new JObject
+        public void Example()
         {
-          { "name1", "value1" },
-          { "name2", "value2"}
-        };
+            #region Usage
+            JObject o = new JObject
+            {
+                { "name1", "value1" },
+                { "name2", "value2" }
+            };
 
-      foreach (JProperty property in o.Properties())
-      {
-        Console.WriteLine(property.Name + " - " + property.Value);
-      }
-      // name1 - value1
-      // name2 - value2
+            foreach (JProperty property in o.Properties())
+            {
+                Console.WriteLine(property.Name + " - " + property.Value);
+            }
+            // name1 - value1
+            // name2 - value2
 
-      foreach (KeyValuePair<string, JToken> property in o)
-      {
-        Console.WriteLine(property.Key + " - " + property.Value);
-      }
-      // name1 - value1
-      // name2 - value2
-      #endregion
+            foreach (KeyValuePair<string, JToken> property in o)
+            {
+                Console.WriteLine(property.Key + " - " + property.Value);
+            }
+            // name1 - value1
+            // name2 - value2
+            #endregion
+        }
     }
-  }
 }

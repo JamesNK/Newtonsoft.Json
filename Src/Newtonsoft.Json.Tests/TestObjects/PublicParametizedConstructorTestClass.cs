@@ -25,18 +25,18 @@
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-  public class PublicParametizedConstructorTestClass
-  {
-    private readonly string _name;
-
-    public PublicParametizedConstructorTestClass(string name)
+    public class PublicParametizedConstructorTestClass
     {
-      _name = name;
-    }
+        private readonly string _name;
 
-    public string Name
-    {
-      get { return _name; }
+        public PublicParametizedConstructorTestClass(string name)
+        {
+            _name = name;
+        }
+
+        public string Name
+        {
+            get { return _name; }
+        }
     }
-  }
 }

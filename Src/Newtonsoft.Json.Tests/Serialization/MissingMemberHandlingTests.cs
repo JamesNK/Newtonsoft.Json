@@ -29,6 +29,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Tests.TestObjects;
 #if !NETFX_CORE
 using NUnit.Framework;
+
 #else
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
@@ -37,116 +38,110 @@ using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAtt
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
-  [TestFixture]
-  public class MissingMemberHandlingTests : TestFixtureBase
-  {
-    [Test]
-    public void MissingMemberDeserialize()
+    [TestFixture]
+    public class MissingMemberHandlingTests : TestFixtureBase
     {
-      Product product = new Product();
-
-      product.Name = "Apple";
-      product.ExpiryDate = new DateTime(2008, 12, 28);
-      product.Price = 3.99M;
-      product.Sizes = new string[] { "Small", "Medium", "Large" };
-
-      string output = JsonConvert.SerializeObject(product, Formatting.Indented);
-      //{
-      //  "Name": "Apple",
-      //  "ExpiryDate": new Date(1230422400000),
-      //  "Price": 3.99,
-      //  "Sizes": [
-      //    "Small",
-      //    "Medium",
-      //    "Large"
-      //  ]
-      //}
-
-      ExceptionAssert.Throws<JsonSerializationException>(
-        @"Could not find member 'Price' on object of type 'ProductShort'. Path 'Price', line 4, position 11.",
-        () =>
-          {
-            ProductShort deserializedProductShort = (ProductShort)JsonConvert.DeserializeObject(output, typeof(ProductShort), new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error });
-          });
-    }
-
-    [Test]
-    public void MissingMemberDeserializeOkay()
-    {
-      Product product = new Product();
-
-      product.Name = "Apple";
-      product.ExpiryDate = new DateTime(2008, 12, 28);
-      product.Price = 3.99M;
-      product.Sizes = new string[] { "Small", "Medium", "Large" };
-
-      string output = JsonConvert.SerializeObject(product);
-      //{
-      //  "Name": "Apple",
-      //  "ExpiryDate": new Date(1230422400000),
-      //  "Price": 3.99,
-      //  "Sizes": [
-      //    "Small",
-      //    "Medium",
-      //    "Large"
-      //  ]
-      //}
-
-      JsonSerializer jsonSerializer = new JsonSerializer();
-      jsonSerializer.MissingMemberHandling = MissingMemberHandling.Ignore;
-
-      object deserializedValue;
-
-      using (JsonReader jsonReader = new JsonTextReader(new StringReader(output)))
-      {
-        deserializedValue = jsonSerializer.Deserialize(jsonReader, typeof(ProductShort));
-      }
-
-      ProductShort deserializedProductShort = (ProductShort)deserializedValue;
-
-      Assert.AreEqual("Apple", deserializedProductShort.Name);
-      Assert.AreEqual(new DateTime(2008, 12, 28), deserializedProductShort.ExpiryDate);
-      Assert.AreEqual("Small", deserializedProductShort.Sizes[0]);
-      Assert.AreEqual("Medium", deserializedProductShort.Sizes[1]);
-      Assert.AreEqual("Large", deserializedProductShort.Sizes[2]);
-    }
-
-    [Test]
-    public void MissingMemberIgnoreComplexValue()
-    {
-      JsonSerializer serializer = new JsonSerializer { MissingMemberHandling = MissingMemberHandling.Ignore };
-      serializer.Converters.Add(new JavaScriptDateTimeConverter());
-
-      string response = @"{""PreProperty"":1,""DateProperty"":new Date(1225962698973),""PostProperty"":2}";
-
-      MyClass myClass = (MyClass)serializer.Deserialize(new StringReader(response), typeof(MyClass));
-
-      Assert.AreEqual(1, myClass.PreProperty);
-      Assert.AreEqual(2, myClass.PostProperty);
-    }
-
-    [Test]
-    public void MissingMemeber()
-    {
-      string json = @"{""Missing"":1}";
-
-      ExceptionAssert.Throws<JsonSerializationException>(
-        "Could not find member 'Missing' on object of type 'DoubleClass'. Path 'Missing', line 1, position 11.",
-        () =>
-          {
-            JsonConvert.DeserializeObject<DoubleClass>(json, new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error });
-          });
-    }
-
-    [Test]
-    public void MissingJson()
-    {
-      string json = @"{}";
-
-      JsonConvert.DeserializeObject<DoubleClass>(json, new JsonSerializerSettings
+        [Test]
+        public void MissingMemberDeserialize()
         {
-          MissingMemberHandling = MissingMemberHandling.Error
-        });
+            Product product = new Product();
+
+            product.Name = "Apple";
+            product.ExpiryDate = new DateTime(2008, 12, 28);
+            product.Price = 3.99M;
+            product.Sizes = new string[] { "Small", "Medium", "Large" };
+
+            string output = JsonConvert.SerializeObject(product, Formatting.Indented);
+            //{
+            //  "Name": "Apple",
+            //  "ExpiryDate": new Date(1230422400000),
+            //  "Price": 3.99,
+            //  "Sizes": [
+            //    "Small",
+            //    "Medium",
+            //    "Large"
+            //  ]
+            //}
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                @"Could not find member 'Price' on object of type 'ProductShort'. Path 'Price', line 4, position 11.",
+                () => { ProductShort deserializedProductShort = (ProductShort)JsonConvert.DeserializeObject(output, typeof(ProductShort), new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error }); });
+        }
+
+        [Test]
+        public void MissingMemberDeserializeOkay()
+        {
+            Product product = new Product();
+
+            product.Name = "Apple";
+            product.ExpiryDate = new DateTime(2008, 12, 28);
+            product.Price = 3.99M;
+            product.Sizes = new string[] { "Small", "Medium", "Large" };
+
+            string output = JsonConvert.SerializeObject(product);
+            //{
+            //  "Name": "Apple",
+            //  "ExpiryDate": new Date(1230422400000),
+            //  "Price": 3.99,
+            //  "Sizes": [
+            //    "Small",
+            //    "Medium",
+            //    "Large"
+            //  ]
+            //}
+
+            JsonSerializer jsonSerializer = new JsonSerializer();
+            jsonSerializer.MissingMemberHandling = MissingMemberHandling.Ignore;
+
+            object deserializedValue;
+
+            using (JsonReader jsonReader = new JsonTextReader(new StringReader(output)))
+            {
+                deserializedValue = jsonSerializer.Deserialize(jsonReader, typeof(ProductShort));
+            }
+
+            ProductShort deserializedProductShort = (ProductShort)deserializedValue;
+
+            Assert.AreEqual("Apple", deserializedProductShort.Name);
+            Assert.AreEqual(new DateTime(2008, 12, 28), deserializedProductShort.ExpiryDate);
+            Assert.AreEqual("Small", deserializedProductShort.Sizes[0]);
+            Assert.AreEqual("Medium", deserializedProductShort.Sizes[1]);
+            Assert.AreEqual("Large", deserializedProductShort.Sizes[2]);
+        }
+
+        [Test]
+        public void MissingMemberIgnoreComplexValue()
+        {
+            JsonSerializer serializer = new JsonSerializer { MissingMemberHandling = MissingMemberHandling.Ignore };
+            serializer.Converters.Add(new JavaScriptDateTimeConverter());
+
+            string response = @"{""PreProperty"":1,""DateProperty"":new Date(1225962698973),""PostProperty"":2}";
+
+            MyClass myClass = (MyClass)serializer.Deserialize(new StringReader(response), typeof(MyClass));
+
+            Assert.AreEqual(1, myClass.PreProperty);
+            Assert.AreEqual(2, myClass.PostProperty);
+        }
+
+        [Test]
+        public void MissingMemeber()
+        {
+            string json = @"{""Missing"":1}";
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                "Could not find member 'Missing' on object of type 'DoubleClass'. Path 'Missing', line 1, position 11.",
+                () => { JsonConvert.DeserializeObject<DoubleClass>(json, new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error }); });
+        }
+
+        [Test]
+        public void MissingJson()
+        {
+            string json = @"{}";
+
+            JsonConvert.DeserializeObject<DoubleClass>(json, new JsonSerializerSettings
+            {
+                MissingMemberHandling = MissingMemberHandling.Error
+            });
+        }
     }
-  }
 }

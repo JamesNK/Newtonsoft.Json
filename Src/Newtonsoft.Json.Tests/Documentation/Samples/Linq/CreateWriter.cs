@@ -6,34 +6,34 @@ using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-  public class CreateWriter
-  {
-    public void Example()
+    public class CreateWriter
     {
-      #region Usage
-      JObject o = new JObject
+        public void Example()
         {
-          {"name1", "value1"},
-          {"name2", "value2"}
-        };
+            #region Usage
+            JObject o = new JObject
+            {
+                { "name1", "value1" },
+                { "name2", "value2" }
+            };
 
-      JsonWriter writer = o.CreateWriter();
-      writer.WritePropertyName("name3");
-      writer.WriteStartArray();
-      writer.WriteValue(1);
-      writer.WriteValue(2);
-      writer.WriteEndArray();
+            JsonWriter writer = o.CreateWriter();
+            writer.WritePropertyName("name3");
+            writer.WriteStartArray();
+            writer.WriteValue(1);
+            writer.WriteValue(2);
+            writer.WriteEndArray();
 
-      Console.WriteLine(o.ToString());
-      // {
-      //   "name1": "value1",
-      //   "name2": "value2",
-      //   "name3": [
-      //     1,
-      //     2
-      //   ]
-      // }
-      #endregion
+            Console.WriteLine(o.ToString());
+            // {
+            //   "name1": "value1",
+            //   "name2": "value2",
+            //   "name3": [
+            //     1,
+            //     2
+            //   ]
+            // }
+            #endregion
+        }
     }
-  }
 }
