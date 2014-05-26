@@ -47,7 +47,7 @@ namespace Newtonsoft.Json.Converters
                 case JsonToken.StartObject:
                     return ReadObject(reader);
                 case JsonToken.StartArray:
-                    return ReadArray(reader);
+                    return ReadList(reader);
                 default:
                     if (JsonReader.IsPrimitiveToken(reader.TokenType))
                         return reader.Value;
@@ -56,7 +56,7 @@ namespace Newtonsoft.Json.Converters
             }
         }
 
-        private object ReadArray(JsonReader reader)
+        private object ReadList(JsonReader reader)
         {
             List<object> list = new List<object>();
 
@@ -72,7 +72,7 @@ namespace Newtonsoft.Json.Converters
                         list.Add(v);
                         break;
                     case JsonToken.EndArray:
-                        return list.ToArray();
+                        return list;
                 }
             }
 
