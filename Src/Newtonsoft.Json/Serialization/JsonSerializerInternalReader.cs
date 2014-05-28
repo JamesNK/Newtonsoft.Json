@@ -2020,7 +2020,7 @@ To fix this error either change the environment to be fully trusted, change the 
                                     if (property.PropertyContract == null)
                                         property.PropertyContract = GetContractSafe(property.PropertyType);
 
-                                    if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer._defaultValueHandling), DefaultValueHandling.Populate) && property.Writable)
+                                    if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer._defaultValueHandling), DefaultValueHandling.Populate) && property.Writable && !property.Ignored)
                                         property.ValueProvider.SetValue(newObject, EnsureType(reader, property.GetResolvedDefaultValue(), CultureInfo.InvariantCulture, property.PropertyContract, property.PropertyType));
                                     break;
                                 case PropertyPresence.Null:
