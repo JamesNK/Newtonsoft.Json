@@ -147,7 +147,7 @@ namespace Newtonsoft.Json
         /// true to close the underlying stream or <see cref="TextReader"/> when
         /// the reader is closed; otherwise false. The default is true.
         /// </value>
-        public bool CloseInput { get; set; }
+        public virtual bool CloseInput { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether multiple pieces of JSON content can
