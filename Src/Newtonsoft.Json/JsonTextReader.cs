@@ -1611,5 +1611,29 @@ namespace Newtonsoft.Json
         {
             get { return _charPos - _lineStartPos; }
         }
+
+        /// <summary>
+        /// Clones the reader. Cloning can be used to return to parsing position at time when clone was created
+        /// given that source stream is in same position/buffer as when clone was created.
+        /// </summary>
+        public override JsonReader Clone()
+        {
+            var clone = new JsonTextReader(_reader, _grabDelimiters);
+            Clone(clone);
+            return clone;
+        }
+
+        /// <summary>
+        /// Internal implementation of cloning the reader.
+        /// </summary>
+        /// <param name="clone">The new clone.</param>
+        protected override void Clone(JsonReader clone)
+        {
+            base.Clone(clone);
+            var temp = (JsonTextReader)clone;
+            temp._lineStartPos = _lineStartPos;
+            temp._lineNumber = _lineNumber;
+            temp._isEndOfFile = _isEndOfFile;
+        }
     }
 }

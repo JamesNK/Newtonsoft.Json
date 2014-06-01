@@ -1006,5 +1006,37 @@ namespace Newtonsoft.Json
             _tokenType = JsonToken.None;
             _value = null;
         }
+
+        /// <summary>
+        /// Clones the reader. Cloning can be used to return to parsing position at time when clone was created
+        /// given that source stream is in same position/buffer as when clone was created.
+        /// </summary>
+        public virtual JsonReader Clone()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Internal implementation of cloning the reader.
+        /// </summary>
+        /// <param name="clone">The new clone.</param>
+        protected virtual void Clone(JsonReader clone)
+        {
+            clone._tokenType = _tokenType;
+            clone._value = _value;
+            clone._quoteChar = _quoteChar;
+            clone._currentState = _currentState;
+            clone._readType = _readType;
+            clone._currentPosition = _currentPosition;
+            clone._culture = _culture;
+            clone._dateTimeZoneHandling = _dateTimeZoneHandling;
+            clone._maxDepth = _maxDepth;
+            clone._hasExceededMaxDepth = _hasExceededMaxDepth;
+            clone._dateParseHandling = _dateParseHandling;
+            clone._floatParseHandling = _floatParseHandling;
+            clone._stack.AddRange(_stack);
+            clone.CloseInput = CloseInput;
+            clone.SupportMultipleContent = SupportMultipleContent;
+        }
     }
 }
