@@ -1611,5 +1611,13 @@ namespace Newtonsoft.Json
         {
             get { return _charPos - _lineStartPos; }
         }
+
+        /// <summary>
+        /// Gets the number of characters in internal reading buffer which were not yet been parsed.
+        /// </summary>
+        public override int RemainingBufferedCharacters
+        {
+            get { return _charsUsed - _charPos; }
+        }
     }
 }
