@@ -3100,7 +3100,7 @@ null//comment
             string json = @"[ { ""string"": ""how now brown cow?"" } ]";
 
             var streamReader = new StreamReader(new MemoryStream(Encoding.ASCII.GetBytes(json)));
-            JsonTextReader reader = new JsonTextReader(streamReader, grabDelimiters: true);
+            JsonTextReader reader = new JsonTextReader(streamReader);
 
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.StartArray, reader.TokenType);

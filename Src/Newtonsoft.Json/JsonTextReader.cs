@@ -1618,7 +1618,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public override JsonReader Clone()
         {
-            var clone = new JsonTextReader(_reader, _grabDelimiters);
+            var clone = new JsonTextReader(_reader);
             Clone(clone);
             return clone;
         }
