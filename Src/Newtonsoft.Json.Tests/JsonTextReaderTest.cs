@@ -3100,7 +3100,7 @@ null//comment
             string json = "{\r\n}";
 
             var streamReader = new StreamReader(new MemoryStream(Encoding.Unicode.GetBytes(json)), Encoding.Unicode);
-            JsonTextReader reader = new JsonTextReader(streamReader, grabDelimiters: true);
+            JsonTextReader reader = new JsonTextReader(streamReader);
 
             Assert.AreEqual(0, reader.RemainingBufferedCharacters);
             Assert.IsTrue(reader.Read());
