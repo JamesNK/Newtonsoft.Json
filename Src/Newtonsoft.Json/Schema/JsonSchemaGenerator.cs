@@ -245,7 +245,7 @@ namespace Newtonsoft.Json.Schema
 
             if (converter != null && converter.CanGenerateSchema)
             {
-                JsonSchema converterSchema = converter.GetSchema(type);
+                JsonSchema converterSchema = converter.GetSchema(type, this);
                 if (converterSchema != null)
                 {
                     Push(new TypeSchema(type, converterSchema));

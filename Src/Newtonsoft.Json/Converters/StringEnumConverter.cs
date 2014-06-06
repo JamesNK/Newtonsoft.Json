@@ -242,8 +242,9 @@ namespace Newtonsoft.Json.Converters
         /// Gets a schema for the given type using this converter.
         /// </summary>
         /// <param name="objectType">The enum type for which to generate a schema.</param>
+        /// <param name="generator">The calling generator.</param>
         /// <returns>Schema object for the specified type.</returns>
-        public override JsonSchema GetSchema(Type objectType)
+        public override JsonSchema GetSchema(Type objectType, JsonSchemaGenerator generator)
         {
             if (!objectType.IsEnum())
                 return null;
