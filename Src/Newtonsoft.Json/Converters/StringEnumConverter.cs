@@ -249,8 +249,6 @@ namespace Newtonsoft.Json.Converters
                 return null;
             
             var schema = new JsonSchema { Type = JsonSchemaType.String };
-            if (AllowIntegerValues)
-                schema.Type |= JsonSchemaType.Integer;
 	
             schema.Enum = new List<JToken>();
 
@@ -265,6 +263,18 @@ namespace Newtonsoft.Json.Converters
                 JToken value = JToken.FromObject(resolvedEnumName);
 
                 schema.Enum.Add(value);
+            }
+
+            if (AllowIntegerValues)
+            {
+                schema.Type |= JsonSchemaType.Integer;
+                foreach (var enumVal in EnumUtils.GetValues(objectType))
+                {
+                    int val = (int) enumVal;
+                    JToken value = JToken.FromObject(val);
+
+                    schema.Enum.Add(value);
+                }
             }
 
             return schema;
