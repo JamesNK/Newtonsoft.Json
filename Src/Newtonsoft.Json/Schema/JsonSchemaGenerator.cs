@@ -371,6 +371,7 @@ namespace Newtonsoft.Json.Schema
         private void GenerateObjectSchema(Type type, JsonObjectContract contract)
         {
             CurrentSchema.Properties = new Dictionary<string, JsonSchema>();
+            var memberinfos = type.GetFields();
             foreach (JsonProperty property in contract.Properties)
             {
                 if (!property.Ignored)
@@ -384,6 +385,14 @@ namespace Newtonsoft.Json.Schema
 
                     if (property.DefaultValue != null)
                         propertySchema.Default = JToken.FromObject(property.DefaultValue);
+
+                    var curMemberInfo = memberinfos.FirstOrDefault(m => m.Name == property.UnderlyingName);
+                    if (curMemberInfo != null)
+                    {
+                        var maybeDescription = (DescriptionAttribute)Attribute.GetCustomAttribute(curMemberInfo, typeof(DescriptionAttribute));
+                        if (maybeDescription != null)
+                            CurrentSchema.Description = maybeDescription.Description;
+                    }
 
                     CurrentSchema.Properties.Add(property.PropertyName, propertySchema);
                 }
