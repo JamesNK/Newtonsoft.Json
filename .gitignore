@@ -10,3 +10,7 @@ AppPackages/
 _ReSharper.*
 *.ReSharper.user
 *.resharper.user
+
+#NuGet
+packages
+!packages/repositories.config

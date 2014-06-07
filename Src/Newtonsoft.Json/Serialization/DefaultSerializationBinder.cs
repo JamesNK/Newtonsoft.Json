@@ -105,7 +105,8 @@ namespace Newtonsoft.Json.Serialization
 
             public override int GetHashCode()
             {
-                return ((AssemblyName != null) ? AssemblyName.GetHashCode() : 0) ^ ((TypeName != null) ? TypeName.GetHashCode() : 0);
+                return ((AssemblyName != null) ? AssemblyName.GetHashCode() : 0)
+                    ^ ((TypeName != null) ? TypeName.GetHashCode() : 0);
             }
 
             public override bool Equals(object obj)
