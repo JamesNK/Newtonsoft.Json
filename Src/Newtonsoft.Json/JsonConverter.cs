@@ -64,18 +64,26 @@ namespace Newtonsoft.Json
         public abstract bool CanConvert(Type objectType);
 
         /// <summary>
+        /// Gets the <see cref="JsonSchema"/> of the JSON produced by the JsonConverter.
+        /// </summary>
+        /// <returns>The <see cref="JsonSchema"/> of the JSON produced by the JsonConverter.</returns>
+        public virtual JsonSchema GetSchema()
+        {
+            return null;
+        }
+
+        /// <summary>
         /// Gets the <see cref="JsonSchema"/> of the JSON produced by the JsonConverter for the specified object type.
         /// </summary>
         /// <param name="objectType">
         /// Type of the object.
         /// </param>
-        /// <param name="generator">The calling schema generator.</param>
         /// <returns>
         /// The <see cref="JsonSchema"/> of the JSON produced by the JsonConverter for the specified object type.
         /// </returns>
-        public virtual JsonSchema GetSchema(Type objectType, JsonSchemaGenerator generator)
+        public virtual JsonSchema GetSchema(Type objectType)
         {
-            return null;
+            return GetSchema();
         }
 
         /// <summary>
