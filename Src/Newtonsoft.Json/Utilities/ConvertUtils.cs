@@ -440,6 +440,12 @@ namespace Newtonsoft.Json.Utilities
                 return ConvertResult.Success;
             }
 
+            if (initialValue is Guid && targetType == typeof(byte[]))
+            {
+                value = ((Guid)initialValue).ToByteArray();
+                return ConvertResult.Success;
+            }
+
             if (initialValue is string)
             {
                 if (targetType == typeof(Guid))

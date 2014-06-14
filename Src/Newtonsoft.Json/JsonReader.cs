@@ -513,7 +513,16 @@ namespace Newtonsoft.Json
                 return null;
 
             if (t == JsonToken.Bytes)
+            {
+                if (ValueType == typeof(Guid))
+                {
+                    byte[] data = ((Guid)Value).ToByteArray();
+                    SetToken(JsonToken.Bytes, data, false);
+                    return data;
+                }
+
                 return (byte[])Value;
+            }
 
             if (t == JsonToken.StartArray)
             {
