@@ -1187,12 +1187,18 @@ namespace Newtonsoft.Json
                 {
                     string number = _stringReference.ToString();
 
-                    // decimal.Parse doesn't support parsing hexadecimal values
-                    int integer = number.StartsWith("0x", StringComparison.OrdinalIgnoreCase)
-                        ? Convert.ToInt32(number, 16)
-                        : Convert.ToInt32(number, 8);
+                    try
+                    {
+                        int integer = number.StartsWith("0x", StringComparison.OrdinalIgnoreCase)
+                            ? Convert.ToInt32(number, 16)
+                            : Convert.ToInt32(number, 8);
 
-                    numberValue = integer;
+                        numberValue = integer;
+                    }
+                    catch (Exception ex)
+                    {
+                        throw JsonReaderException.Create(this, "Input string '{0}' is not a valid integer.".FormatWith(CultureInfo.InvariantCulture, number), ex);
+                    }
                 }
                 else
                 {
@@ -1219,12 +1225,19 @@ namespace Newtonsoft.Json
                 {
                     string number = _stringReference.ToString();
 
-                    // decimal.Parse doesn't support parsing hexadecimal values
-                    long integer = number.StartsWith("0x", StringComparison.OrdinalIgnoreCase)
-                        ? Convert.ToInt64(number, 16)
-                        : Convert.ToInt64(number, 8);
+                    try
+                    {
+                        // decimal.Parse doesn't support parsing hexadecimal values
+                        long integer = number.StartsWith("0x", StringComparison.OrdinalIgnoreCase)
+                            ? Convert.ToInt64(number, 16)
+                            : Convert.ToInt64(number, 8);
 
-                    numberValue = Convert.ToDecimal(integer);
+                        numberValue = Convert.ToDecimal(integer);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw JsonReaderException.Create(this, "Input string '{0}' is not a valid decimal.".FormatWith(CultureInfo.InvariantCulture, number), ex);
+                    }
                 }
                 else
                 {
@@ -1251,9 +1264,17 @@ namespace Newtonsoft.Json
                 {
                     string number = _stringReference.ToString();
 
-                    numberValue = number.StartsWith("0x", StringComparison.OrdinalIgnoreCase)
-                        ? Convert.ToInt64(number, 16)
-                        : Convert.ToInt64(number, 8);
+                    try
+                    {
+                        numberValue = number.StartsWith("0x", StringComparison.OrdinalIgnoreCase)
+                            ? Convert.ToInt64(number, 16)
+                            : Convert.ToInt64(number, 8);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw JsonReaderException.Create(this, "Input string '{0}' is not a valid number.".FormatWith(CultureInfo.InvariantCulture, number), ex);
+                    }
+
                     numberType = JsonToken.Integer;
                 }
                 else
