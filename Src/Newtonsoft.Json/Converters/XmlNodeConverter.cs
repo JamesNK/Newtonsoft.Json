@@ -1261,6 +1261,9 @@ namespace Newtonsoft.Json.Converters
                     throw new JsonSerializationException("XmlNodeConverter only supports deserializing XmlDocuments");
 
                 XmlDocument d = new XmlDocument();
+                // prevent http request when resolving any DTD references
+                d.XmlResolver = null;
+
                 document = new XmlDocumentWrapper(d);
                 rootNode = document;
             }

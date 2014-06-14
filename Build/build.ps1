@@ -59,7 +59,13 @@ task Build -depends Clean {
 
     Write-Host -ForegroundColor Green "Building " $name
     Write-Host -ForegroundColor Green "Signed " $sign
+
     Write-Host
+    Write-Host "Restoring"
+    exec { .\Tools\NuGet\NuGet.exe restore ".\Src\$name.sln" | Out-Default } "Error restoring $name"
+
+    Write-Host
+    Write-Host "Building"
     exec { msbuild "/t:Clean;Rebuild" /p:Configuration=Release "/p:Platform=Any CPU" /p:OutputPath=bin\Release\$finalDir\ /p:AssemblyOriginatorKeyFile=$signKeyPath "/p:SignAssembly=$sign" "/p:TreatWarningsAsErrors=$treatWarningsAsErrors" "/p:VisualStudioVersion=12.0" (GetConstants $build.Constants $sign) ".\Src\$name.sln" | Out-Default } "Error building $name"
   }
 }
