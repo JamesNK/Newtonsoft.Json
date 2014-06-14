@@ -1866,6 +1866,22 @@ keyword such as type of business.""
         }
 
         [Test]
+        public void SerializeJsonRawEmptyJRaw()
+        {
+            PersonRaw personRaw = new PersonRaw
+            {
+                FirstName = "FirstNameValue",
+                RawContent = new JRaw(""),
+                LastName = "LastNameValue"
+            };
+
+            string json;
+
+            json = JsonConvert.SerializeObject(personRaw);
+            Assert.AreEqual(@"{""first_name"":""FirstNameValue"",""RawContent"":"""",""last_name"":""LastNameValue""}", json);
+        }
+
+        [Test]
         public void DeserializeJsonRaw()
         {
             string json = @"{""first_name"":""FirstNameValue"",""RawContent"":[1,2,3,4,5],""last_name"":""LastNameValue""}";
