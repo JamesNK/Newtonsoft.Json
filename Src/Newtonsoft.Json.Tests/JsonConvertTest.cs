@@ -26,6 +26,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+using System.Numerics;
+#endif
 using System.Runtime.Serialization;
 using System.Text;
 #if !(NET20 || NET35)
@@ -995,17 +998,22 @@ now brown cow?", '"', true);
             Assert.AreEqual("Bad Boys", m.Name);
         }
 
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
         [Test]
         public void IntegerLengthOverflows()
         {
             // Maximum javascript number length (in characters) is 380
-
-            dynamic d = JObject.Parse(@"{""biginteger"":" + new String('9', 380) + "}");
+            JObject o = JObject.Parse(@"{""biginteger"":" + new String('9', 380) + "}");
+            JValue v = (JValue)o["biginteger"];
+            Assert.AreEqual(JTokenType.Integer, v.Type);
+            Assert.AreEqual(typeof(BigInteger), v.Value.GetType());
+            Assert.AreEqual(BigInteger.Parse(new String('9', 380)), (BigInteger)v.Value);
 
             ExceptionAssert.Throws<JsonReaderException>(
                 "JSON integer " + new String('9', 381) + " is too large to parse. Path 'biginteger', line 1, position 395.",
                 () => JObject.Parse(@"{""biginteger"":" + new String('9', 381) + "}"));
         }
+#endif
 
         //[Test]
         public void StackOverflowTest()
