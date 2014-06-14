@@ -3093,6 +3093,66 @@ null//comment
 
             Assert.IsTrue(reader.Read());
         }
+
+        [Test]
+        public void Clone()
+        {
+            string json = @"[ { ""string"": ""how now brown cow?"" } ]";
+
+            var streamReader = new StreamReader(new MemoryStream(Encoding.ASCII.GetBytes(json)));
+            JsonTextReader reader = new JsonTextReader(streamReader);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+            var clone = reader.Clone();
+            Assert.AreEqual(JsonToken.StartArray, clone.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+            streamReader.BaseStream.Position = 1;
+            streamReader.DiscardBufferedData();
+
+            Assert.IsTrue(clone.Read());
+            Assert.AreEqual(JsonToken.StartObject, clone.TokenType);
+
+            Assert.IsTrue(clone.Read());
+            Assert.AreEqual(JsonToken.PropertyName, clone.TokenType);
+
+            Assert.IsTrue(clone.Read());
+            Assert.AreEqual(JsonToken.String, clone.TokenType);
+            Assert.AreEqual("how now brown cow?", clone.Value);
+
+            var cloneOfClone = clone.Clone();
+            Assert.AreEqual(JsonToken.String, cloneOfClone.TokenType);
+            Assert.AreEqual("how now brown cow?", cloneOfClone.Value);
+
+            Assert.IsTrue(clone.Read());
+            Assert.AreEqual(JsonToken.EndObject, clone.TokenType);
+
+            Assert.IsTrue(clone.Read());
+            Assert.AreEqual(JsonToken.EndArray, clone.TokenType);
+
+            Assert.IsFalse(clone.Read());
+
+            streamReader.BaseStream.Position = 34;
+            streamReader.DiscardBufferedData();
+
+            Assert.IsTrue(cloneOfClone.Read());
+            Assert.AreEqual(JsonToken.EndObject, cloneOfClone.TokenType);
+
+            Assert.IsTrue(cloneOfClone.Read());
+            Assert.AreEqual(JsonToken.EndArray, cloneOfClone.TokenType);
+
+            Assert.IsFalse(cloneOfClone.Read());
+
+            var cloneOfCloneOfClone = cloneOfClone.Clone();
+            Assert.IsFalse(cloneOfCloneOfClone.Read());
+        }
     }
 
     public class ToggleReaderError : TextReader
