@@ -73,6 +73,34 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
+        /// Gets the <see cref="JsonSchema"/> of the JSON produced by the JsonConverter for the specified object type.
+        /// </summary>
+        /// <param name="objectType">
+        /// Type of the object.
+        /// </param>
+        /// <returns>
+        /// The <see cref="JsonSchema"/> of the JSON produced by the JsonConverter for the specified object type.
+        /// </returns>
+        public virtual JsonSchema GetSchema(Type objectType)
+        {
+            return GetSchema();
+        }
+
+        /// <summary>
+        /// Gets the <see cref="JsonSchema"/> of the JSON produced by the JsonConverter for the specified object type.
+        /// </summary>
+        /// <param name="objectType">
+        /// Type of the object.
+        /// </param>
+        /// <returns>
+        /// The <see cref="JsonSchema"/> of the JSON produced by the JsonConverter for the specified object type.
+        /// </returns>
+        public virtual JsonSchema GetSchema(Type objectType)
+        {
+            return GetSchema();
+        }
+
+        /// <summary>
         /// Gets a value indicating whether this <see cref="JsonConverter"/> can read JSON.
         /// </summary>
         /// <value><c>true</c> if this <see cref="JsonConverter"/> can read JSON; otherwise, <c>false</c>.</value>
@@ -86,6 +114,15 @@ namespace Newtonsoft.Json
         /// </summary>
         /// <value><c>true</c> if this <see cref="JsonConverter"/> can write JSON; otherwise, <c>false</c>.</value>
         public virtual bool CanWrite
+        {
+            get { return true; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="JsonConverter"/> can be used for schema generation.
+        /// </summary>
+        /// <value><c>true</c> if this <see cref="JsonConverter"/> can be used for schema generation; otherwise, <c>false</c>.</value>
+        public virtual bool CanGenerateSchema
         {
             get { return true; }
         }
