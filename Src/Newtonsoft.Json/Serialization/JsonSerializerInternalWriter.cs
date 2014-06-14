@@ -141,7 +141,7 @@ namespace Newtonsoft.Json.Serialization
                 return;
             }
 
-            JsonConverter converter;
+            JsonConverter converter = null;
             if ((((converter = (member != null) ? member.Converter : null) != null)
                  || ((converter = (containerProperty != null) ? containerProperty.ItemConverter : null) != null)
                  || ((converter = (containerContract != null) ? containerContract.ItemConverter : null) != null)
