@@ -698,8 +698,9 @@ namespace Newtonsoft.Json.Utilities
 
 #if !PORTABLE40
             return (T[])((ICustomAttributeProvider)attributeProvider).GetCustomAttributes(typeof(T), inherit);
-#endif
+#else
             throw new Exception("Cannot get attributes from '{0}'.".FormatWith(CultureInfo.InvariantCulture, provider));
+#endif
         }
 #else
         public static T[] GetAttributes<T>(object provider, bool inherit) where T : Attribute

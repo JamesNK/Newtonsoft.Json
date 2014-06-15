@@ -187,7 +187,7 @@ namespace Newtonsoft.Json.Serialization
                 : null;
         }
 
-        public static JsonConverter GetJsonConverter(object attributeProvider, Type targetConvertedType)
+        public static JsonConverter GetJsonConverter(object attributeProvider)
         {
             Type converterType = GetJsonConverterType(attributeProvider);
 

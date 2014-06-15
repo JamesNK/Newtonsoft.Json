@@ -783,7 +783,7 @@ namespace Newtonsoft.Json
                 if (Value.ToString() == JsonTypeReflector.TypePropertyName)
                 {
                     ReadInternal();
-                    if (Value != null && Value.ToString().StartsWith("System.Byte[]"))
+                    if (Value != null && Value.ToString().StartsWith("System.Byte[]", StringComparison.Ordinal))
                     {
                         ReadInternal();
                         if (Value.ToString() == JsonTypeReflector.ValuePropertyName)

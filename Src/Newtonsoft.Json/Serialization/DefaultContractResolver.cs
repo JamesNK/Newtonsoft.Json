@@ -673,7 +673,7 @@ namespace Newtonsoft.Json.Serialization
         /// <returns>The contract's default <see cref="JsonConverter" />.</returns>
         protected virtual JsonConverter ResolveContractConverter(Type objectType)
         {
-            return JsonTypeReflector.GetJsonConverter(objectType, objectType);
+            return JsonTypeReflector.GetJsonConverter(objectType);
         }
 
         private Func<object> GetDefaultCreator(Type createdType)
@@ -1252,8 +1252,8 @@ namespace Newtonsoft.Json.Serialization
 
             // resolve converter for property
             // the class type might have a converter but the property converter takes presidence
-            property.Converter = JsonTypeReflector.GetJsonConverter(attributeProvider, property.PropertyType);
-            property.MemberConverter = JsonTypeReflector.GetJsonConverter(attributeProvider, property.PropertyType);
+            property.Converter = JsonTypeReflector.GetJsonConverter(attributeProvider);
+            property.MemberConverter = JsonTypeReflector.GetJsonConverter(attributeProvider);
 
             DefaultValueAttribute defaultValueAttribute = JsonTypeReflector.GetAttribute<DefaultValueAttribute>(attributeProvider);
             if (defaultValueAttribute != null)

@@ -61,7 +61,6 @@ namespace Newtonsoft.Json.Serialization
 
         internal JsonContract KeyContract { get; set; }
 
-        private readonly bool _isDictionaryValueTypeNullableType;
         private readonly Type _genericCollectionDefinitionType;
 
         private Type _genericWrapperType;
@@ -134,18 +133,17 @@ namespace Newtonsoft.Json.Serialization
             DictionaryKeyType = keyType;
             DictionaryValueType = valueType;
 
-            if (DictionaryValueType != null)
-                _isDictionaryValueTypeNullableType = ReflectionUtils.IsNullableType(DictionaryValueType);
-
 #if (NET20 || NET35)
-            Type tempDictioanryType;
-
-            // bug in .NET 2.0 & 3.5 that Dictionary<TKey, Nullable<TValue>> throws an error when adding null via IDictionary[key] = object
-            // wrapper will handle calling Add(T) instead
-            if (_isDictionaryValueTypeNullableType
-                && (ReflectionUtils.InheritsGenericDefinition(CreatedType, typeof(Dictionary<,>), out tempDictioanryType)))
+            if (DictionaryValueType != null && ReflectionUtils.IsNullableType(DictionaryValueType))
             {
-                ShouldCreateWrapper = true;
+                Type tempDictioanryType;
+
+                // bug in .NET 2.0 & 3.5 that Dictionary<TKey, Nullable<TValue>> throws an error when adding null via IDictionary[key] = object
+                // wrapper will handle calling Add(T) instead
+                if (ReflectionUtils.InheritsGenericDefinition(CreatedType, typeof(Dictionary<,>), out tempDictioanryType))
+                {
+                    ShouldCreateWrapper = true;
+                }
             }
 #endif
 
