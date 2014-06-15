@@ -998,6 +998,28 @@ now brown cow?", '"', true);
             Assert.AreEqual("Bad Boys", m.Name);
         }
 
+#if !NET20
+        [Test]
+        public void TestJsonDateTimeOffsetRoundtrip()
+        {
+            var now = DateTimeOffset.Now;
+            var dict = new Dictionary<string, object> { { "foo", now } };
+
+            var settings = new JsonSerializerSettings();
+            settings.DateFormatHandling = DateFormatHandling.IsoDateFormat;
+            settings.DateParseHandling = DateParseHandling.DateTimeOffset;
+            settings.DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
+            var json = JsonConvert.SerializeObject(dict, settings);
+
+            var newDict = new Dictionary<string, object>();
+            JsonConvert.PopulateObject(json, newDict, settings);
+
+            var date = newDict["foo"];
+
+            Assert.AreEqual(date, now);
+        }
+#endif
+
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
         [Test]
         public void IntegerLengthOverflows()

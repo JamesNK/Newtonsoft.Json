@@ -290,6 +290,66 @@ Newtonsoft.Json Error: 0 : Error!
         }
 
         [Test]
+        public void Populate()
+        {
+            InMemoryTraceWriter traceWriter = new InMemoryTraceWriter
+            {
+                LevelFilter = TraceLevel.Info
+            };
+
+            TraceTestObject o2 = new TraceTestObject();
+
+            JsonConvert.PopulateObject(@"{
+  ""IntList"": [
+    1,
+    2
+  ],
+  ""StringArray"": [
+    ""1"",
+    ""2""
+  ],
+  ""Version"": {
+    ""Major"": 1,
+    ""Minor"": 2,
+    ""Build"": 3,
+    ""Revision"": 4,
+    ""MajorRevision"": 0,
+    ""MinorRevision"": 4
+  },
+  ""StringDictionary"": {
+    ""1"": ""!"",
+    ""Two"": ""!!"",
+    ""III"": ""!!!""
+  }
+}",
+                o2,
+                new JsonSerializerSettings
+                {
+                    TraceWriter = traceWriter
+                });
+
+            Assert.AreEqual(2, o2.IntList.Count);
+            Assert.AreEqual(2, o2.StringArray.Length);
+            Assert.AreEqual(1, o2.Version.Major);
+            Assert.AreEqual(2, o2.Version.Minor);
+            Assert.AreEqual(3, o2.StringDictionary.Count);
+
+            Assert.AreEqual("Started deserializing Newtonsoft.Json.Tests.Serialization.TraceTestObject. Path 'IntList', line 2, position 13.", traceWriter.TraceRecords[0].Message);
+            Assert.AreEqual("Started deserializing System.Collections.Generic.IList`1[System.Int32]. Path 'IntList', line 2, position 15.", traceWriter.TraceRecords[1].Message);
+            Assert.IsTrue(traceWriter.TraceRecords[2].Message.StartsWith("Finished deserializing System.Collections.Generic.IList`1[System.Int32]. Path 'IntList'"));
+            Assert.AreEqual("Started deserializing System.String[]. Path 'StringArray', line 6, position 19.", traceWriter.TraceRecords[3].Message);
+            Assert.IsTrue(traceWriter.TraceRecords[4].Message.StartsWith("Finished deserializing System.String[]. Path 'StringArray'"));
+            Assert.AreEqual("Deserializing System.Version using creator with parameters: Major, Minor, Build, Revision. Path 'Version.Major', line 11, position 13.", traceWriter.TraceRecords[5].Message);
+            Assert.IsTrue(traceWriter.TraceRecords[6].Message.StartsWith("Started deserializing System.Version. Path 'Version'"));
+            Assert.IsTrue(traceWriter.TraceRecords[7].Message.StartsWith("Finished deserializing System.Version. Path 'Version'"));
+            Assert.AreEqual("Started deserializing System.Collections.Generic.IDictionary`2[System.String,System.String]. Path 'StringDictionary.1', line 19, position 9.", traceWriter.TraceRecords[8].Message);
+            Assert.IsTrue(traceWriter.TraceRecords[9].Message.StartsWith("Finished deserializing System.Collections.Generic.IDictionary`2[System.String,System.String]. Path 'StringDictionary'"));
+            Assert.IsTrue(traceWriter.TraceRecords[10].Message.StartsWith("Finished deserializing Newtonsoft.Json.Tests.Serialization.TraceTestObject. Path ''"));
+
+            Assert.IsFalse(traceWriter.TraceRecords.Any(r => r.Level == TraceLevel.Verbose));
+        }
+
+        [Test]
         public void ErrorDeserializing()
         {
             string json = @"{""Integer"":""hi""}";

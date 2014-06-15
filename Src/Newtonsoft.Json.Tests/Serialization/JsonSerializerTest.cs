@@ -91,6 +91,26 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class JsonSerializerTest : TestFixtureBase
     {
+#if !NET20
+        [Test]
+        public void PopulateResetSettings()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader(@"[""2000-01-01T01:01:01+00:00""]"));
+            Assert.AreEqual(DateParseHandling.DateTime, reader.DateParseHandling);
+
+            JsonSerializer serializer = new JsonSerializer();
+            serializer.DateParseHandling = DateParseHandling.DateTimeOffset;
+
+            IList<object> l = new List<object>();
+            serializer.Populate(reader, l);
+
+            Assert.AreEqual(typeof(DateTimeOffset), l[0].GetType());
+            Assert.AreEqual(new DateTimeOffset(2000, 1, 1, 1, 1, 1, TimeSpan.Zero), l[0]);
+
+            Assert.AreEqual(DateParseHandling.DateTime, reader.DateParseHandling);
+        }
+#endif
+
         public class BaseClass
         {
             internal bool IsTransient { get; set; }
