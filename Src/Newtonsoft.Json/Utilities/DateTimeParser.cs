@@ -87,8 +87,10 @@ namespace Newtonsoft.Json.Utilities
         private static readonly int LzHH_mm_ss;
         private static readonly int Lz_;
         private static readonly int Lz_zz;
+        #pragma warning disable 414
         private static readonly int Lz_zz_;
         private static readonly int Lz_zz_zz;
+        #pragma warning restore 414
 
         private const short MaxFractionDigits = 7;
 
