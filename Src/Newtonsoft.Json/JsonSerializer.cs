@@ -81,6 +81,11 @@ namespace Newtonsoft.Json
         public virtual event EventHandler<ErrorEventArgs> Error;
 
         /// <summary>
+        /// Occurs when no Default constructor could me found
+        /// </summary>
+        public virtual event EventHandler<ConstructorHandlingFallbackEventArgs> ConstructorHandlingFallback;
+ 
+        /// <summary>
         /// Gets or sets the <see cref="IReferenceResolver"/> used by the serializer when resolving references.
         /// </summary>
         public virtual IReferenceResolver ReferenceResolver
@@ -559,6 +564,9 @@ namespace Newtonsoft.Json
             if (settings.Error != null)
                 serializer.Error += settings.Error;
 
+            if( settings.ConstructorHandlingFallback != null )
+                serializer.ConstructorHandlingFallback += settings.ConstructorHandlingFallback;
+
             if (settings.ContractResolver != null)
                 serializer.ContractResolver = settings.ContractResolver;
             if (settings.ReferenceResolver != null)
@@ -920,6 +928,29 @@ namespace Newtonsoft.Json
             EventHandler<ErrorEventArgs> error = Error;
             if (error != null)
                 error(this, e);
+        }
+
+        internal object OnConstructorHandlingFallback(JsonObjectContract objectContract) {
+          var arg = new ConstructorHandlingFallbackEventArgs(objectContract);
+
+          if( ConstructorHandlingFallback != null )
+            ConstructorHandlingFallback(this, arg);
+
+          if( arg.Handled )
+            return arg.Object;
+          else return null;
+        }
+
+        internal System.Dynamic.IDynamicMetaObjectProvider OnConstructorHandlingFallback(JsonDynamicContract contract) {
+          return null; // TODO
+          //var arg = new ConstructorHandlingFallbackEventArgs(objectContract);
+
+          //if( ConstructorHandlingFallback != null )
+          //  ConstructorHandlingFallback(this, arg);
+
+          //if( arg.Handled )
+          //  return arg.Object;
+          //else return null;
         }
     }
 }

@@ -91,6 +91,7 @@
     <Compile Include="Bson\BsonType.cs" />
     <Compile Include="Bson\BsonWriter.cs" />
     <Compile Include="Bson\BsonObjectId.cs" />
+    <Compile Include="ConstructorHandlingFallbackEventArgs.cs" />
     <Compile Include="Converters\BinaryConverter.cs" />
     <Compile Include="Converters\DataSetConverter.cs" />
     <Compile Include="Converters\DataTableConverter.cs" />

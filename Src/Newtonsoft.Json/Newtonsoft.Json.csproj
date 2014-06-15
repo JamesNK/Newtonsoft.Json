@@ -54,6 +54,7 @@
     <Compile Include="Bson\BsonType.cs" />
     <Compile Include="Bson\BsonWriter.cs" />
     <Compile Include="ConstructorHandling.cs" />
+    <Compile Include="ConstructorHandlingFallbackEventArgs.cs" />
     <Compile Include="Converters\BinaryConverter.cs" />
     <Compile Include="Converters\BsonObjectIdConverter.cs" />
     <Compile Include="Converters\CustomCreationConverter.cs" />

@@ -1497,8 +1497,12 @@ To fix this error either change the environment to be fully trusted, change the 
             if (contract.DefaultCreator != null &&
                 (!contract.DefaultCreatorNonPublic || Serializer._constructorHandling == ConstructorHandling.AllowNonPublicDefaultConstructor))
                 newObject = (IDynamicMetaObjectProvider)contract.DefaultCreator();
-            else
+            else {
+              newObject = Serializer.OnConstructorHandlingFallback(contract);
+
+              if( newObject == null )
                 throw JsonSerializationException.Create(reader, "Unable to find a default constructor to use for type {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+            }
 
             if (id != null)
                 AddReference(reader, id, newObject);
@@ -1860,8 +1864,11 @@ To fix this error either change the environment to be fully trusted, change the 
             {
                 if (!objectContract.IsInstantiable)
                     throw JsonSerializationException.Create(reader, "Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantiated.".FormatWith(CultureInfo.InvariantCulture, objectContract.UnderlyingType));
-                
-                throw JsonSerializationException.Create(reader, "Unable to find a constructor to use for type {0}. A class should either have a default constructor, one constructor with arguments or a constructor marked with the JsonConstructor attribute.".FormatWith(CultureInfo.InvariantCulture, objectContract.UnderlyingType));
+
+                newObject = Serializer.OnConstructorHandlingFallback(objectContract);
+
+                if( newObject == null )
+                  throw JsonSerializationException.Create(reader, "Unable to find a constructor to use for type {0}. A class should either have a default constructor, one constructor with arguments or a constructor marked with the JsonConstructor attribute.".FormatWith(CultureInfo.InvariantCulture, objectContract.UnderlyingType));
             }
 
             createdFromNonDefaultCreator = false;
