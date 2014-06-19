@@ -601,6 +601,7 @@ namespace Newtonsoft.Json.Serialization
 
             JsonPropertyCollection parameterCollection = new JsonPropertyCollection(constructor.DeclaringType);
 
+            int index = 0;
             foreach (ParameterInfo parameterInfo in constructorParameters)
             {
                 // it is possible to generate a ParameterInfo with a null name using Reflection.Emit
@@ -619,6 +620,8 @@ namespace Newtonsoft.Json.Serialization
 
                     if (property != null)
                     {
+                        //set the obfuscated property name.
+                        property.MinName = GetObfuscatedName(index++);
                         parameterCollection.AddProperty(property);
                     }
                 }
@@ -1110,11 +1113,38 @@ namespace Newtonsoft.Json.Serialization
                 JsonProperty property = CreateProperty(member, memberSerialization);
 
                 if (property != null)
+                {
+                    //set the obfuscated property name.
+                    property.MinName = GetObfuscatedName(members.IndexOf(member));
+
                     properties.AddProperty(property);
+                }
             }
 
             IList<JsonProperty> orderedProperties = properties.OrderBy(p => p.Order ?? -1).ToList();
             return orderedProperties;
+        }
+
+        /// <summary>
+        /// Generates an obfuscated name based on the passed index
+        /// </summary>
+        /// <param name="index">Index to derive name from.  Generally, this will be the position of the property in a class.</param>
+        /// <returns>Returns the obfuscated name.</returns>
+        static protected string GetObfuscatedName (int index)
+        {
+            //get the letter of the property position.
+            var letterPos = (index) % (26);
+            string letter = ((Char)(97 + letterPos)).ToString();
+
+            if (index >= 26) //26 letters in the english alphabet
+            {
+                //get the next set of letters
+                var nextSet = (index / 26) - 1; 
+
+                letter = GetObfuscatedName(nextSet) + letter;
+            }
+
+            return letter;
         }
 
         /// <summary>

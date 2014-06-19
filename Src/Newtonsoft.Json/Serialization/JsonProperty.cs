@@ -271,9 +271,18 @@ namespace Newtonsoft.Json.Serialization
         /// <value>The collection's items reference loop handling.</value>
         public ReferenceLoopHandling? ItemReferenceLoopHandling { get; set; }
 
+        /// <summary>
+        /// Gets or sets the obfuscated name of this property
+        /// </summary>
+        public string MinName { get; set; }
+
         internal void WritePropertyName(JsonWriter writer)
         {
-            if (_skipPropertyNameEscape)
+            if (writer.ObfuscationEnabled)
+            {
+                writer.WritePropertyName(MinName);
+            }
+            else if (_skipPropertyNameEscape)
                 writer.WritePropertyName(PropertyName, false);
             else
                 writer.WritePropertyName(PropertyName);

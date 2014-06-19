@@ -85,6 +85,7 @@ namespace Newtonsoft.Json
         internal ConstructorHandling? _constructorHandling;
         internal TypeNameHandling? _typeNameHandling;
         internal MetadataPropertyHandling? _metadataPropertyHandling;
+        internal bool _obfuscationEnabled;
 
         /// <summary>
         /// Gets or sets how reference loops (e.g. a class referencing itself) is handled.
@@ -346,6 +347,12 @@ namespace Newtonsoft.Json
         {
             get { return _checkAdditionalContent ?? DefaultCheckAdditionalContent; }
             set { _checkAdditionalContent = value; }
+        }
+
+        public bool ObfuscationEnabled
+        {
+            get { return _obfuscationEnabled; }
+            set { _obfuscationEnabled = value; }
         }
 
         static JsonSerializerSettings()

@@ -73,6 +73,7 @@ namespace Newtonsoft.Json
         private bool? _checkAdditionalContent;
         private string _dateFormatString;
         private bool _dateFormatStringSet;
+        private bool _obfuscationEnabled;
 
         /// <summary>
         /// Occurs when the <see cref="JsonSerializer"/> errors during serialization and deserialization.
@@ -429,6 +430,15 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
+        /// Gets or sets whether obfuscation is enabled or not.
+        /// </summary>
+        public virtual bool ObfuscationEnabled
+        {
+            get { return _obfuscationEnabled; }
+            set { _obfuscationEnabled = value; }
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="JsonSerializer"/> class.
         /// </summary>
         public JsonSerializer()
@@ -594,6 +604,8 @@ namespace Newtonsoft.Json
                 serializer._maxDepth = settings._maxDepth;
                 serializer._maxDepthSet = settings._maxDepthSet;
             }
+            if (settings._obfuscationEnabled)
+                serializer._obfuscationEnabled = settings._obfuscationEnabled;
         }
 
         /// <summary>
@@ -905,6 +917,13 @@ namespace Newtonsoft.Json
                 jsonWriter.DateFormatString = _dateFormatString;
             }
 
+            bool previousObfuscationEnabled = false;
+            if(_obfuscationEnabled && jsonWriter.ObfuscationEnabled != _obfuscationEnabled)
+            {
+                previousObfuscationEnabled = jsonWriter.ObfuscationEnabled;
+                jsonWriter.ObfuscationEnabled = _obfuscationEnabled;
+            }
+
             TraceJsonWriter traceJsonWriter = (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
                 ? new TraceJsonWriter(jsonWriter)
                 : null;
@@ -930,6 +949,8 @@ namespace Newtonsoft.Json
                 jsonWriter.DateFormatString = previousDateFormatString;
             if (previousCulture != null)
                 jsonWriter.Culture = previousCulture;
+            if (previousObfuscationEnabled != _obfuscationEnabled)
+                jsonWriter.ObfuscationEnabled = previousObfuscationEnabled;
         }
 
         internal IReferenceResolver GetReferenceResolver()
