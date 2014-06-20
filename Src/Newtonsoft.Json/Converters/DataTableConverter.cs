@@ -182,7 +182,10 @@ namespace Newtonsoft.Json.Converters
                 case JsonToken.Integer:
                     return typeof(long);
                 case JsonToken.Float:
-                    return typeof(double);
+                    if (reader._floatParseHandling == FloatParseHandling.Decimal)
+                        return typeof(decimal);
+                    else
+                    	return typeof(double);
                 case JsonToken.String:
                 case JsonToken.Null:
                 case JsonToken.Undefined:
