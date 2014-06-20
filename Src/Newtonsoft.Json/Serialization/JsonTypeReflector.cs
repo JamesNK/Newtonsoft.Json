@@ -41,13 +41,6 @@ using System.Runtime.Serialization;
 
 namespace Newtonsoft.Json.Serialization
 {
-#if !NET20 && !NETFX_CORE
-    internal interface IMetadataTypeAttribute
-    {
-        Type MetadataClassType { get; }
-    }
-#endif
-
     internal static class JsonTypeReflector
     {
         private static bool? _dynamicCodeGeneration;
@@ -63,7 +56,7 @@ namespace Newtonsoft.Json.Serialization
         public const string SpecifiedPostfix = "Specified";
 
         private static readonly ThreadSafeStore<object, Type> JsonConverterTypeCache = new ThreadSafeStore<object, Type>(GetJsonConverterTypeFromAttribute);
-#if !(NET20 || NETFX_CORE || PORTABLE40 || PORTABLE)
+#if !(NET20 || NETFX_CORE)
         private static readonly ThreadSafeStore<Type, Type> AssociatedMetadataTypesCache = new ThreadSafeStore<Type, Type>(GetAssociateMetadataTypeFromAttribute);
 
         private const string MetadataTypeAttributeTypeName =
@@ -208,11 +201,13 @@ namespace Newtonsoft.Json.Serialization
         }
 #endif
 
-#if !(NET20 || NETFX_CORE || PORTABLE40 || PORTABLE)
+#if !(NET20 || NETFX_CORE)
         private static Type GetAssociatedMetadataType(Type type)
         {
             return AssociatedMetadataTypesCache.Get(type);
         }
+
+        private static ReflectionObject _metadataTypeAttributeReflectionObject;
 
         private static Type GetAssociateMetadataTypeFromAttribute(Type type)
         {
@@ -220,15 +215,16 @@ namespace Newtonsoft.Json.Serialization
             if (metadataTypeAttributeType == null)
                 return null;
 
-            object attribute = type.GetCustomAttributes(metadataTypeAttributeType, true).SingleOrDefault();
+            Attribute attribute = ReflectionUtils.GetAttributes(type, metadataTypeAttributeType, true).SingleOrDefault();
             if (attribute == null)
                 return null;
 
-            IMetadataTypeAttribute metadataTypeAttribute = (DynamicCodeGeneration)
-                ? DynamicWrapper.CreateWrapper<IMetadataTypeAttribute>(attribute)
-                : new LateBoundMetadataTypeAttribute(attribute);
+            const string metadataClassTypeName = "MetadataClassType";
 
-            return metadataTypeAttribute.MetadataClassType;
+            if (_metadataTypeAttributeReflectionObject == null)
+                _metadataTypeAttributeReflectionObject = ReflectionObject.Create(metadataTypeAttributeType, metadataClassTypeName);
+
+            return (Type)_metadataTypeAttributeReflectionObject.GetValue(attribute, metadataClassTypeName);
         }
 
         private static Type GetMetadataTypeAttributeType()
@@ -253,7 +249,7 @@ namespace Newtonsoft.Json.Serialization
         {
             T attribute;
 
-#if !(NET20 || NETFX_CORE || PORTABLE40 || PORTABLE)
+#if !(NET20 || NETFX_CORE)
             Type metadataType = GetAssociatedMetadataType(type);
             if (metadataType != null)
             {
@@ -281,7 +277,7 @@ namespace Newtonsoft.Json.Serialization
         {
             T attribute;
 
-#if !(NET20 || NETFX_CORE || PORTABLE40 || PORTABLE)
+#if !(NET20 || NETFX_CORE)
             Type metadataType = GetAssociatedMetadataType(memberInfo.DeclaringType);
             if (metadataType != null)
             {
@@ -388,15 +384,15 @@ namespace Newtonsoft.Json.Serialization
 
                     _fullyTrusted = appDomain.IsHomogenous && appDomain.IsFullyTrusted;
 #else
-          try
-          {
-            new SecurityPermission(PermissionState.Unrestricted).Demand();
-            _fullyTrusted = true;
-          }
-          catch (Exception)
-          {
-            _fullyTrusted = false;
-          }
+                    try
+                    {
+                        new SecurityPermission(PermissionState.Unrestricted).Demand();
+                        _fullyTrusted = true;
+                    }
+                    catch (Exception)
+                    {
+                        _fullyTrusted = false;
+                    }
 #endif
                 }
 
@@ -414,7 +410,7 @@ namespace Newtonsoft.Json.Serialization
 
                 return LateBoundReflectionDelegateFactory.Instance;
 #elif !(PORTABLE40)
-        return ExpressionReflectionDelegateFactory.Instance;
+                return ExpressionReflectionDelegateFactory.Instance;
 #else
                 return LateBoundReflectionDelegateFactory.Instance;
 #endif

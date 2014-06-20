@@ -32,13 +32,6 @@ using System.Collections.Generic;
 
 namespace Newtonsoft.Json.Converters
 {
-#if !NET20
-    internal interface IBinary
-    {
-        byte[] ToArray();
-    }
-#endif
-
     /// <summary>
     /// Converts a binary value to and from a base 64 string value.
     /// </summary>
@@ -46,6 +39,8 @@ namespace Newtonsoft.Json.Converters
     {
 #if !NET20
         private const string BinaryTypeName = "System.Data.Linq.Binary";
+        private const string BinaryToArrayName = "ToArray";
+        private ReflectionObject _reflectionObject;
 #endif
 
         /// <summary>
@@ -72,8 +67,8 @@ namespace Newtonsoft.Json.Converters
 #if !(NET20)
             if (value.GetType().AssignableToTypeName(BinaryTypeName))
             {
-                IBinary binary = DynamicWrapper.CreateWrapper<IBinary>(value);
-                return binary.ToArray();
+                EnsureReflectionObject(value.GetType());
+                return (byte[])_reflectionObject.GetValue(value, BinaryToArrayName);
             }
 #endif
             if (value is SqlBinary)
@@ -81,6 +76,14 @@ namespace Newtonsoft.Json.Converters
 
             throw new JsonSerializationException("Unexpected value type when writing binary: {0}".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
         }
+
+#if !NET20
+        private void EnsureReflectionObject(Type t)
+        {
+            if (_reflectionObject == null)
+                _reflectionObject = ReflectionObject.Create(t, t.GetConstructor(new[] { typeof(byte[]) }), BinaryToArrayName);
+        }
+#endif
 
         /// <summary>
         /// Reads the JSON representation of the object.
@@ -122,10 +125,13 @@ namespace Newtonsoft.Json.Converters
                 throw JsonSerializationException.Create(reader, "Unexpected token parsing binary. Expected String or StartArray, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
             }
 
-
 #if !NET20
             if (t.AssignableToTypeName(BinaryTypeName))
-                return Activator.CreateInstance(t, data);
+            {
+                EnsureReflectionObject(t);
+
+                return _reflectionObject.Creator(data);
+            }
 #endif
 
             if (t == typeof(SqlBinary))
@@ -179,5 +185,4 @@ namespace Newtonsoft.Json.Converters
         }
     }
 }
-
 #endif

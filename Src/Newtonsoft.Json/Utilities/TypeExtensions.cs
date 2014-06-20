@@ -571,54 +571,5 @@ namespace Newtonsoft.Json.Utilities
             Type match;
             return type.AssignableToTypeName(fullTypeName, out match);
         }
-
-        public static MethodInfo GetGenericMethod(this Type type, string name, params Type[] parameterTypes)
-        {
-            var methods = type.GetMethods().Where(method => method.Name == name);
-
-            foreach (var method in methods)
-            {
-                if (method.HasParameters(parameterTypes))
-                    return method;
-            }
-
-            return null;
-        }
-
-        public static bool HasParameters(this MethodInfo method, params Type[] parameterTypes)
-        {
-            var methodParameters = method.GetParameters().Select(parameter => parameter.ParameterType).ToArray();
-
-            if (methodParameters.Length != parameterTypes.Length)
-                return false;
-
-            for (int i = 0; i < methodParameters.Length; i++)
-                if (methodParameters[i].ToString() != parameterTypes[i].ToString())
-                    return false;
-
-            return true;
-        }
-
-        public static IEnumerable<Type> GetAllInterfaces(this Type target)
-        {
-            foreach (var i in target.GetInterfaces())
-            {
-                yield return i;
-                foreach (var ci in i.GetInterfaces())
-                {
-                    yield return ci;
-                }
-            }
-        }
-
-        public static IEnumerable<MethodInfo> GetAllMethods(this Type target)
-        {
-            var allTypes = target.GetAllInterfaces().ToList();
-            allTypes.Add(target);
-
-            return from type in allTypes
-                   from method in type.GetMethods()
-                   select method;
-        }
     }
 }

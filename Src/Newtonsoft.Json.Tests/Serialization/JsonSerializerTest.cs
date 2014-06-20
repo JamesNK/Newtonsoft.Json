@@ -2438,7 +2438,7 @@ keyword such as type of business.""
             Assert.AreEqual("titleId", n.FidOrder[n.FidOrder.Count - 1]);
         }
 
-#if !(NET20 || NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NET20 || NETFX_CORE)
         [MetadataType(typeof(OptInClassMetadata))]
         public class OptInClass
         {
@@ -7877,6 +7877,41 @@ Parameter name: value",
             Assert.AreEqual(dt, (DateTimeOffset)v.Value);
         }
 #endif
+
+        [Test]
+        public void DeserializeInvalidOctalRootError()
+        {
+            ExceptionAssert.Throws<JsonReaderException>(
+                "Input string '020474068' is not a valid number. Path '', line 1, position 9.",
+                () => JsonConvert.DeserializeObject<string>("020474068"));
+        }
+
+        [Test]
+        public void DeserializedDerivedWithPrivate()
+        {
+            string json = @"{
+  ""DerivedProperty"": ""derived"",
+  ""BaseProperty"": ""base""
+}";
+
+            var d = JsonConvert.DeserializeObject<DerivedWithPrivate>(json);
+
+            Assert.AreEqual("base", d.BaseProperty);
+            Assert.AreEqual("derived", d.DerivedProperty);
+        }
+    }
+
+    public class DerivedWithPrivate : BaseWithPrivate
+    {
+        [JsonProperty]
+        public string DerivedProperty { get; private set; }
+    }
+
+
+    public class BaseWithPrivate
+    {
+        [JsonProperty]
+        public string BaseProperty { get; private set; }
     }
 
     public abstract class Test<T>
