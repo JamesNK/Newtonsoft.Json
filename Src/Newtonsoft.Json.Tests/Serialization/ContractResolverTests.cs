@@ -109,6 +109,35 @@ namespace Newtonsoft.Json.Tests.Serialization
     public class ContractResolverTests : TestFixtureBase
     {
         [Test]
+        public void JsonPropertyDefaultValue()
+        {
+            JsonProperty p = new JsonProperty();
+
+            Assert.AreEqual(null, p.GetResolvedDefaultValue());
+            Assert.AreEqual(null, p.DefaultValue);
+
+            p.PropertyType = typeof(int);
+
+            Assert.AreEqual(0 , p.GetResolvedDefaultValue());
+            Assert.AreEqual(null, p.DefaultValue);
+
+            p.PropertyType = typeof(DateTime);
+
+            Assert.AreEqual(new DateTime(), p.GetResolvedDefaultValue());
+            Assert.AreEqual(null, p.DefaultValue);
+
+            p.PropertyType = null;
+
+            Assert.AreEqual(null, p.GetResolvedDefaultValue());
+            Assert.AreEqual(null, p.DefaultValue);
+
+            p.PropertyType = typeof(CompareOptions);
+
+            Assert.AreEqual(CompareOptions.None, (CompareOptions)p.GetResolvedDefaultValue());
+            Assert.AreEqual(null, p.DefaultValue);
+        }
+
+        [Test]
         public void ListInterface()
         {
             var resolver = new DefaultContractResolver();
