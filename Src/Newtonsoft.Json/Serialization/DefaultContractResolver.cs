@@ -371,7 +371,7 @@ namespace Newtonsoft.Json.Serialization
             contract.MemberSerialization = JsonTypeReflector.GetObjectMemberSerialization(contract.NonNullableUnderlyingType, ignoreSerializableAttribute);
             contract.Properties.AddRange(CreateProperties(contract.NonNullableUnderlyingType, contract.MemberSerialization));
 
-            JsonObjectAttribute attribute = JsonTypeReflector.GetJsonObjectAttribute(contract.NonNullableUnderlyingType);
+            JsonObjectAttribute attribute = JsonTypeReflector.GetCachedAttribute<JsonObjectAttribute>(contract.NonNullableUnderlyingType);
             if (attribute != null)
                 contract.ItemRequired = attribute._itemRequired;
 
@@ -686,7 +686,7 @@ namespace Newtonsoft.Json.Serialization
 #endif
         private void InitializeContract(JsonContract contract)
         {
-            JsonContainerAttribute containerAttribute = JsonTypeReflector.GetJsonContainerAttribute(contract.NonNullableUnderlyingType);
+            JsonContainerAttribute containerAttribute = JsonTypeReflector.GetCachedAttribute<JsonContainerAttribute>(contract.NonNullableUnderlyingType);
             if (containerAttribute != null)
             {
                 contract.IsReference = containerAttribute._isReference;
@@ -963,18 +963,19 @@ namespace Newtonsoft.Json.Serialization
         /// <returns>A <see cref="JsonContract"/> for the given type.</returns>
         protected virtual JsonContract CreateContract(Type objectType)
         {
-            Type t = ReflectionUtils.EnsureNotNullableType(objectType);
-
             if (IsJsonPrimitiveType(objectType))
                 return CreatePrimitiveContract(objectType);
 
-            if (JsonTypeReflector.GetJsonObjectAttribute(t) != null)
+            Type t = ReflectionUtils.EnsureNotNullableType(objectType);
+            JsonContainerAttribute containerAttribute = JsonTypeReflector.GetCachedAttribute<JsonContainerAttribute>(t);
+
+            if (containerAttribute is JsonObjectAttribute)
                 return CreateObjectContract(objectType);
 
-            if (JsonTypeReflector.GetJsonArrayAttribute(t) != null)
+            if (containerAttribute is JsonArrayAttribute)
                 return CreateArrayContract(objectType);
 
-            if (JsonTypeReflector.GetJsonDictionaryAttribute(t) != null)
+            if (containerAttribute is JsonDictionaryAttribute)
                 return CreateDictionaryContract(objectType);
 
             if (t == typeof(JToken) || t.IsSubclassOf(typeof(JToken)))
@@ -1268,7 +1269,7 @@ namespace Newtonsoft.Json.Serialization
             property.ItemIsReference = (propertyAttribute != null) ? propertyAttribute._itemIsReference : null;
             property.ItemConverter =
                 (propertyAttribute != null && propertyAttribute.ItemConverterType != null)
-                    ? JsonConverterAttribute.CreateJsonConverterInstance(propertyAttribute.ItemConverterType)
+                    ? JsonTypeReflector.CreateJsonConverterInstance(propertyAttribute.ItemConverterType)
                     : null;
             property.ItemReferenceLoopHandling = (propertyAttribute != null) ? propertyAttribute._itemReferenceLoopHandling : null;
             property.ItemTypeNameHandling = (propertyAttribute != null) ? propertyAttribute._itemTypeNameHandling : null;

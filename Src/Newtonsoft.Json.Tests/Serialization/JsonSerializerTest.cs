@@ -7878,6 +7878,41 @@ Parameter name: value",
         }
 #endif
 
+        public class ErroringJsonConverter : JsonConverter
+        {
+            public ErroringJsonConverter(string s)
+            {
+            }
+
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override bool CanConvert(Type objectType)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        [JsonConverter(typeof(ErroringJsonConverter))]
+        public class ErroringTestClass
+        {
+        }
+
+        [Test]
+        public void ErrorCreatingJsonConverter()
+        {
+            ExceptionAssert.Throws<JsonException>(
+                "Error creating 'Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+ErroringJsonConverter'.",
+                () => JsonConvert.SerializeObject(new ErroringTestClass()));
+        }
+
         [Test]
         public void DeserializeInvalidOctalRootError()
         {

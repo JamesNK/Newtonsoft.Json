@@ -55,7 +55,8 @@ namespace Newtonsoft.Json.Serialization
         public const string ShouldSerializePrefix = "ShouldSerialize";
         public const string SpecifiedPostfix = "Specified";
 
-        private static readonly ThreadSafeStore<object, Type> JsonConverterTypeCache = new ThreadSafeStore<object, Type>(GetJsonConverterTypeFromAttribute);
+        private static readonly ThreadSafeStore<Type, Func<JsonConverter>> JsonConverterCreatorCache = new ThreadSafeStore<Type, Func<JsonConverter>>(GetJsonConverterCreator);
+
 #if !(NET20 || NETFX_CORE)
         private static readonly ThreadSafeStore<Type, Type> AssociatedMetadataTypesCache = new ThreadSafeStore<Type, Type>(GetAssociateMetadataTypeFromAttribute);
 
@@ -65,32 +66,10 @@ namespace Newtonsoft.Json.Serialization
         private static Type _cachedMetadataTypeAttributeType;
 #endif
 
-        public static JsonContainerAttribute GetJsonContainerAttribute(Type type)
+        public static T GetCachedAttribute<T>(object attributeProvider) where T : Attribute
         {
-            return CachedAttributeGetter<JsonContainerAttribute>.GetAttribute(type);
+            return CachedAttributeGetter<T>.GetAttribute(attributeProvider);
         }
-
-        public static JsonObjectAttribute GetJsonObjectAttribute(Type type)
-        {
-            return GetJsonContainerAttribute(type) as JsonObjectAttribute;
-        }
-
-        public static JsonArrayAttribute GetJsonArrayAttribute(Type type)
-        {
-            return GetJsonContainerAttribute(type) as JsonArrayAttribute;
-        }
-
-        public static JsonDictionaryAttribute GetJsonDictionaryAttribute(Type type)
-        {
-            return GetJsonContainerAttribute(type) as JsonDictionaryAttribute;
-        }
-
-#if !(NETFX_CORE || PORTABLE || PORTABLE40)
-        public static SerializableAttribute GetSerializableAttribute(Type type)
-        {
-            return CachedAttributeGetter<SerializableAttribute>.GetAttribute(type);
-        }
-#endif
 
 #if !NET20
         public static DataContractAttribute GetDataContractAttribute(Type type)
@@ -144,7 +123,7 @@ namespace Newtonsoft.Json.Serialization
 
         public static MemberSerialization GetObjectMemberSerialization(Type objectType, bool ignoreSerializableAttribute)
         {
-            JsonObjectAttribute objectAttribute = GetJsonObjectAttribute(objectType);
+            JsonObjectAttribute objectAttribute = GetCachedAttribute<JsonObjectAttribute>(objectType);
             if (objectAttribute != null)
                 return objectAttribute.MemberSerialization;
 
@@ -157,7 +136,7 @@ namespace Newtonsoft.Json.Serialization
 #if !(NETFX_CORE || PORTABLE40 || PORTABLE)
             if (!ignoreSerializableAttribute)
             {
-                SerializableAttribute serializableAttribute = GetSerializableAttribute(objectType);
+                SerializableAttribute serializableAttribute = GetCachedAttribute<SerializableAttribute>(objectType);
                 if (serializableAttribute != null)
                     return MemberSerialization.Fields;
             }
@@ -167,31 +146,46 @@ namespace Newtonsoft.Json.Serialization
             return MemberSerialization.OptOut;
         }
 
-        private static Type GetJsonConverterType(object attributeProvider)
-        {
-            return JsonConverterTypeCache.Get(attributeProvider);
-        }
-
-        private static Type GetJsonConverterTypeFromAttribute(object attributeProvider)
-        {
-            JsonConverterAttribute converterAttribute = GetAttribute<JsonConverterAttribute>(attributeProvider);
-            return (converterAttribute != null)
-                ? converterAttribute.ConverterType
-                : null;
-        }
-
         public static JsonConverter GetJsonConverter(object attributeProvider)
         {
-            Type converterType = GetJsonConverterType(attributeProvider);
+            JsonConverterAttribute converterAttribute = GetCachedAttribute<JsonConverterAttribute>(attributeProvider);
 
-            if (converterType != null)
+            if (converterAttribute != null)
             {
-                JsonConverter memberConverter = JsonConverterAttribute.CreateJsonConverterInstance(converterType);
-
-                return memberConverter;
+                Func<JsonConverter> creator = JsonConverterCreatorCache.Get(converterAttribute.ConverterType);
+                if (creator != null)
+                    return creator();
             }
 
             return null;
+        }
+
+        public static JsonConverter CreateJsonConverterInstance(Type converterType)
+        {
+            Func<JsonConverter> converterCreator = JsonConverterCreatorCache.Get(converterType);
+            return converterCreator();
+        }
+
+        private static Func<JsonConverter> GetJsonConverterCreator(Type converterType)
+        {
+            Func<object> defaultConstructor = (ReflectionUtils.HasDefaultConstructor(converterType, false))
+                ? ReflectionDelegateFactory.CreateDefaultConstructor<object>(converterType)
+                : null;
+
+            return () =>
+            {
+                try
+                {
+                    if (defaultConstructor == null)
+                        throw new JsonException("No parameterless constructor defined for '{0}'.".FormatWith(CultureInfo.InvariantCulture, converterType));
+
+                    return (JsonConverter)defaultConstructor();
+                }
+                catch (Exception ex)
+                {
+                    throw new JsonException("Error creating '{0}'.".FormatWith(CultureInfo.InvariantCulture, converterType), ex);
+                }
+            };
         }
 
 #if !(NETFX_CORE || PORTABLE40 || PORTABLE)
