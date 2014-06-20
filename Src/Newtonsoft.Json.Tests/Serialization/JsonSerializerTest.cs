@@ -256,17 +256,36 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void DeserializeJObjectWithComments()
         {
-            JObject o = (JObject)JsonConvert.DeserializeObject(@"{/*Test*/""A"":/* Test */true/* Test */,/* Test */""B"":/* Test */false/* Test */}");
-            Assert.AreEqual(2, o.Count);
+            string json = @"/* Test */
+            {
+                /*Test*/""A"":/* Test */true/* Test */,
+                /* Test */""B"":/* Test */false/* Test */,
+                /* Test */""C"":/* Test */[
+                    /* Test */
+                    1/* Test */
+                ]/* Test */
+            }
+            /* Test */";
+            JObject o = (JObject)JsonConvert.DeserializeObject(json);
+            Assert.AreEqual(3, o.Count);
             Assert.AreEqual(true, (bool)o["A"]);
             Assert.AreEqual(false, (bool)o["B"]);
+            Assert.AreEqual(3, o["C"].Count());
+            Assert.AreEqual(JTokenType.Comment, o["C"][0].Type);
+            Assert.AreEqual(1, (int)o["C"][1]);
+            Assert.AreEqual(JTokenType.Comment, o["C"][2].Type);
+            Assert.IsTrue(JToken.DeepEquals(o, JObject.Parse(json)));
 
-            o = (JObject)JsonConvert.DeserializeObject(@"{/* Test */}");
+            json = @"{/* Test */}";
+            o = (JObject)JsonConvert.DeserializeObject(json);
             Assert.AreEqual(0, o.Count);
+            Assert.IsTrue(JToken.DeepEquals(o, JObject.Parse(json)));
 
-            o = (JObject)JsonConvert.DeserializeObject(@"{""A"": true/* Test */}");
+            json = @"{""A"": true/* Test */}";
+            o = (JObject)JsonConvert.DeserializeObject(json);
             Assert.AreEqual(1, o.Count);
             Assert.AreEqual(true, (bool)o["A"]);
+            Assert.IsTrue(JToken.DeepEquals(o, JObject.Parse(json)));
         }
 
         public class CommentTestObject
