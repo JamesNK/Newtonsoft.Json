@@ -180,17 +180,14 @@ namespace Newtonsoft.Json.Converters
             switch (tokenType)
             {
                 case JsonToken.Integer:
-                    return typeof(long);
+                case JsonToken.Boolean:
                 case JsonToken.Float:
-                    return typeof(double);
                 case JsonToken.String:
+                case JsonToken.Date:
+                    return reader.ValueType;
                 case JsonToken.Null:
                 case JsonToken.Undefined:
                     return typeof(string);
-                case JsonToken.Boolean:
-                    return typeof(bool);
-                case JsonToken.Date:
-                    return typeof(DateTime);
                 case JsonToken.StartArray:
                     reader.Read();
                     if (reader.TokenType == JsonToken.StartObject)

@@ -57,7 +57,8 @@ namespace Newtonsoft.Json.Tests.Converters
     ],
     ""ArrayCol"": [
       0
-    ]
+    ],
+    ""DateCol"": ""2000-12-29T00:00:00Z""
   },
   {
     ""id"": 1,
@@ -69,7 +70,8 @@ namespace Newtonsoft.Json.Tests.Converters
     ],
     ""ArrayCol"": [
       1
-    ]
+    ],
+    ""DateCol"": ""2000-12-29T00:00:00Z""
   }
 ]";
 
@@ -77,7 +79,7 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.IsNotNull(deserializedDataTable);
 
             Assert.AreEqual(string.Empty, deserializedDataTable.TableName);
-            Assert.AreEqual(4, deserializedDataTable.Columns.Count);
+            Assert.AreEqual(5, deserializedDataTable.Columns.Count);
             Assert.AreEqual("id", deserializedDataTable.Columns[0].ColumnName);
             Assert.AreEqual(typeof(long), deserializedDataTable.Columns[0].DataType);
             Assert.AreEqual("item", deserializedDataTable.Columns[1].ColumnName);
@@ -86,6 +88,8 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual(typeof(DataTable), deserializedDataTable.Columns[2].DataType);
             Assert.AreEqual("ArrayCol", deserializedDataTable.Columns[3].ColumnName);
             Assert.AreEqual(typeof(long[]), deserializedDataTable.Columns[3].DataType);
+            Assert.AreEqual("DateCol", deserializedDataTable.Columns[4].ColumnName);
+            Assert.AreEqual(typeof(DateTime), deserializedDataTable.Columns[4].DataType);
 
             Assert.AreEqual(2, deserializedDataTable.Rows.Count);
 
@@ -94,13 +98,56 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual("item 0", dr1["item"]);
             Assert.AreEqual("0!", ((DataTable)dr1["DataTableCol"]).Rows[0]["NestedStringCol"]);
             Assert.AreEqual(0, ((long[])dr1["ArrayCol"])[0]);
+            Assert.AreEqual(new DateTime(2000, 12, 29, 0, 0, 0, DateTimeKind.Utc), dr1["DateCol"]);
 
             DataRow dr2 = deserializedDataTable.Rows[1];
             Assert.AreEqual(1, dr2["id"]);
             Assert.AreEqual("item 1", dr2["item"]);
             Assert.AreEqual("1!", ((DataTable)dr2["DataTableCol"]).Rows[0]["NestedStringCol"]);
             Assert.AreEqual(1, ((long[])dr2["ArrayCol"])[0]);
+            Assert.AreEqual(new DateTime(2000, 12, 29, 0, 0, 0, DateTimeKind.Utc), dr2["DateCol"]);
         }
+
+#if !NET20
+        [Test]
+        public void DeserializeParseHandling()
+        {
+            string json = @"[
+  {
+    ""DateCol"": ""2000-12-29T00:00:00Z"",
+    ""FloatCol"": 99.9999999999999999999
+  },
+  {
+    ""DateCol"": ""2000-12-29T00:00:00Z"",
+    ""FloatCol"": 99.9999999999999999999
+  }
+]";
+
+            DataTable deserializedDataTable = JsonConvert.DeserializeObject<DataTable>(json, new JsonSerializerSettings
+            {
+                DateParseHandling = DateParseHandling.DateTimeOffset,
+                FloatParseHandling = FloatParseHandling.Decimal
+            });
+            Assert.IsNotNull(deserializedDataTable);
+
+            Assert.AreEqual(string.Empty, deserializedDataTable.TableName);
+            Assert.AreEqual(2, deserializedDataTable.Columns.Count);
+            Assert.AreEqual("DateCol", deserializedDataTable.Columns[0].ColumnName);
+            Assert.AreEqual(typeof(DateTimeOffset), deserializedDataTable.Columns[0].DataType);
+            Assert.AreEqual("FloatCol", deserializedDataTable.Columns[1].ColumnName);
+            Assert.AreEqual(typeof(decimal), deserializedDataTable.Columns[1].DataType);
+
+            Assert.AreEqual(2, deserializedDataTable.Rows.Count);
+
+            DataRow dr1 = deserializedDataTable.Rows[0];
+            Assert.AreEqual(new DateTimeOffset(2000, 12, 29, 0, 0, 0, TimeSpan.Zero), dr1["DateCol"]);
+            Assert.AreEqual(99.9999999999999999999m, dr1["FloatCol"]);
+
+            DataRow dr2 = deserializedDataTable.Rows[1];
+            Assert.AreEqual(new DateTimeOffset(2000, 12, 29, 0, 0, 0, TimeSpan.Zero), dr2["DateCol"]);
+            Assert.AreEqual(99.9999999999999999999m, dr2["FloatCol"]);
+        }
+#endif
 
         [Test]
         public void Serialize()
