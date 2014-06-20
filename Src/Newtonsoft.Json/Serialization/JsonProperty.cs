@@ -39,8 +39,8 @@ namespace Newtonsoft.Json.Serialization
     {
         internal Required? _required;
         internal bool _hasExplicitDefaultValue;
-        internal object _defaultValue;
 
+        private object _defaultValue;
         private bool _hasGeneratedDefaultValue;
         private string _propertyName;
         private bool _skipPropertyNameEscape;

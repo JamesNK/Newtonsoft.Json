@@ -236,14 +236,21 @@ namespace Newtonsoft.Json.Serialization
                     if (reader.TokenType == JsonToken.PropertyName)
                     {
                         string propertyName = (string)reader.Value;
-                        if (!reader.Read())
-                            break;
+                        do
+                        {
+                            if (!reader.Read())
+                                break;
+                        } while (reader.TokenType == JsonToken.Comment);
 
                         if (CheckPropertyName(reader, propertyName))
                             continue;
 
                         writer.WritePropertyName(propertyName);
                         writer.WriteToken(reader, true, true);
+                    }
+                    else if (reader.TokenType == JsonToken.Comment)
+                    {
+                        // eat
                     }
                     else
                     {

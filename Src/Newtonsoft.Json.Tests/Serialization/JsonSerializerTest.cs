@@ -254,6 +254,37 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Test]
+        public void DeserializeJObjectWithComments()
+        {
+            JObject o = (JObject)JsonConvert.DeserializeObject(@"{/*Test*/""A"":/* Test */true/* Test */,/* Test */""B"":/* Test */false/* Test */}");
+            Assert.AreEqual(2, o.Count);
+            Assert.AreEqual(true, (bool)o["A"]);
+            Assert.AreEqual(false, (bool)o["B"]);
+
+            o = (JObject)JsonConvert.DeserializeObject(@"{/* Test */}");
+            Assert.AreEqual(0, o.Count);
+
+            o = (JObject)JsonConvert.DeserializeObject(@"{""A"": true/* Test */}");
+            Assert.AreEqual(1, o.Count);
+            Assert.AreEqual(true, (bool)o["A"]);
+        }
+
+        public class CommentTestObject
+        {
+            public bool? A { get; set; }
+        }
+
+        [Test]
+        public void DeserializeCommentTestObjectWithComments()
+        {
+            CommentTestObject o = JsonConvert.DeserializeObject<CommentTestObject>(@"{/* Test */}");
+            Assert.AreEqual(null, o.A);
+
+            o = JsonConvert.DeserializeObject<CommentTestObject>(@"{""A"": true/* Test */}");
+            Assert.AreEqual(true, o.A);
+        }
+
+        [Test]
         public void JsonSerializerProperties()
         {
             JsonSerializer serializer = new JsonSerializer();
