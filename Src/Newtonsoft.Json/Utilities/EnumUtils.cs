@@ -47,7 +47,7 @@ namespace Newtonsoft.Json.Utilities
             Type underlyingType = Enum.GetUnderlyingType(value.GetType());
 
             ulong num = Convert.ToUInt64(value, CultureInfo.InvariantCulture);
-            EnumValues<ulong> enumNameValues = GetNamesAndValues<T>();
+            IList<EnumValue<ulong>> enumNameValues = GetNamesAndValues<T>();
             IList<T> selectedFlagsValues = new List<T>();
 
             foreach (EnumValue<ulong> enumNameValue in enumNameValues)
@@ -66,7 +66,7 @@ namespace Newtonsoft.Json.Utilities
         /// Gets a dictionary of the names and values of an Enum type.
         /// </summary>
         /// <returns></returns>
-        public static EnumValues<ulong> GetNamesAndValues<T>() where T : struct
+        public static IList<EnumValue<ulong>> GetNamesAndValues<T>() where T : struct
         {
             return GetNamesAndValues<ulong>(typeof(T));
         }
@@ -76,7 +76,7 @@ namespace Newtonsoft.Json.Utilities
         /// </summary>
         /// <param name="enumType">The enum type to get names and values for.</param>
         /// <returns></returns>
-        public static EnumValues<TUnderlyingType> GetNamesAndValues<TUnderlyingType>(Type enumType) where TUnderlyingType : struct
+        public static IList<EnumValue<TUnderlyingType>> GetNamesAndValues<TUnderlyingType>(Type enumType) where TUnderlyingType : struct
         {
             if (enumType == null)
                 throw new ArgumentNullException("enumType");
@@ -86,7 +86,7 @@ namespace Newtonsoft.Json.Utilities
             IList<object> enumValues = GetValues(enumType);
             IList<string> enumNames = GetNames(enumType);
 
-            EnumValues<TUnderlyingType> nameValues = new EnumValues<TUnderlyingType>();
+            IList<EnumValue<TUnderlyingType>> nameValues = new List<EnumValue<TUnderlyingType>>();
 
             for (int i = 0; i < enumValues.Count; i++)
             {

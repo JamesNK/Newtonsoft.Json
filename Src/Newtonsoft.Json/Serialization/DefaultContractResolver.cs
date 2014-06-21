@@ -916,9 +916,9 @@ namespace Newtonsoft.Json.Serialization
             ConstructorInfo constructorInfo = contract.NonNullableUnderlyingType.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(SerializationInfo), typeof(StreamingContext) }, null);
             if (constructorInfo != null)
             {
-                MethodCall<object, object> methodCall = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(constructorInfo);
+                ObjectConstructor<object> creator = JsonTypeReflector.ReflectionDelegateFactory.CreateParametrizedConstructor(constructorInfo);
 
-                contract.ISerializableCreator = (args => methodCall(null, args));
+                contract.ISerializableCreator = creator;
             }
 
             return contract;

@@ -23,7 +23,10 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+using System.IO;
 using System.Text;
+using Newtonsoft.Json.Bson;
+using Newtonsoft.Json.Linq;
 #if !(NETFX_CORE || PORTABLE || PORTABLE40)
 using System;
 using System.Collections.Generic;
@@ -270,6 +273,47 @@ namespace Newtonsoft.Json.Tests.Converters
 
             DataTable t2 = JsonConvert.DeserializeObject<DataTable>(json, new TestDataTableConverter());
             Assert.AreEqual(t1.TableName, t2.TableName);
+        }
+
+        [Test]
+        public void RoundtripBsonBytes()
+        {
+            Guid g = new Guid("EDE9A599-A7D9-44A9-9243-7C287049DD20");
+
+            var table = new DataTable();
+            table.Columns.Add("data", typeof(byte[]));
+            table.Columns.Add("id", typeof(Guid));
+            table.Rows.Add(Encoding.UTF8.GetBytes("Hello world!"), g);
+
+            JsonSerializer serializer = new JsonSerializer();
+
+            MemoryStream ms = new MemoryStream();
+            BsonWriter bw = new BsonWriter(ms);
+
+            serializer.Serialize(bw, table);
+
+            JToken o = JToken.ReadFrom(new BsonReader(new MemoryStream(ms.ToArray())) { ReadRootValueAsArray = true });
+            Assert.AreEqual(@"[
+  {
+    ""data"": ""SGVsbG8gd29ybGQh"",
+    ""id"": ""ede9a599-a7d9-44a9-9243-7c287049dd20""
+  }
+]", o.ToString());
+
+            DataTable deserializedDataTable = serializer.Deserialize<DataTable>(new BsonReader(new MemoryStream(ms.ToArray())) { ReadRootValueAsArray = true });
+
+            Assert.AreEqual(string.Empty, deserializedDataTable.TableName);
+            Assert.AreEqual(2, deserializedDataTable.Columns.Count);
+            Assert.AreEqual("data", deserializedDataTable.Columns[0].ColumnName);
+            Assert.AreEqual(typeof(byte[]), deserializedDataTable.Columns[0].DataType);
+            Assert.AreEqual("id", deserializedDataTable.Columns[1].ColumnName);
+            Assert.AreEqual(typeof(Guid), deserializedDataTable.Columns[1].DataType);
+
+            Assert.AreEqual(1, deserializedDataTable.Rows.Count);
+
+            DataRow dr1 = deserializedDataTable.Rows[0];
+            CollectionAssert.AreEquivalent(Encoding.UTF8.GetBytes("Hello world!"), (byte[])dr1["data"]);
+            Assert.AreEqual(g, (Guid)dr1["id"]);
         }
 
         [Test]

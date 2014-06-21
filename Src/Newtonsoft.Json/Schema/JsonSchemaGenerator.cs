@@ -295,7 +295,7 @@ namespace Newtonsoft.Json.Schema
                         {
                             CurrentSchema.Enum = new List<JToken>();
 
-                            EnumValues<long> enumValues = EnumUtils.GetNamesAndValues<long>(type);
+                            IList<EnumValue<long>> enumValues = EnumUtils.GetNamesAndValues<long>(type);
                             foreach (EnumValue<long> enumValue in enumValues)
                             {
                                 JToken value = JToken.FromObject(enumValue.Value);

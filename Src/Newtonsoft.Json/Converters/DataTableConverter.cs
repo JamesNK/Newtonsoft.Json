@@ -143,7 +143,7 @@ namespace Newtonsoft.Json.Converters
 
                     dr[columnName] = nestedDt;
                 }
-                else if (column.DataType.IsArray)
+                else if (column.DataType.IsArray && column.DataType != typeof(byte[]))
                 {
                     if (reader.TokenType == JsonToken.StartArray)
                         reader.Read();
@@ -184,6 +184,7 @@ namespace Newtonsoft.Json.Converters
                 case JsonToken.Float:
                 case JsonToken.String:
                 case JsonToken.Date:
+                case JsonToken.Bytes:
                     return reader.ValueType;
                 case JsonToken.Null:
                 case JsonToken.Undefined:

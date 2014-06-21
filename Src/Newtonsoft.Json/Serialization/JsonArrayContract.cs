@@ -60,7 +60,7 @@ namespace Newtonsoft.Json.Serialization
         private readonly Type _genericCollectionDefinitionType;
 
         private Type _genericWrapperType;
-        private MethodCall<object, object> _genericWrapperCreator;
+        private ObjectConstructor<object> _genericWrapperCreator;
         private Func<object> _genericTemporaryCollectionCreator;
 
         internal bool IsArray { get; private set; }
@@ -222,10 +222,10 @@ namespace Newtonsoft.Json.Serialization
                     constructorArgument = _genericCollectionDefinitionType;
 
                 ConstructorInfo genericWrapperConstructor = _genericWrapperType.GetConstructor(new[] { constructorArgument });
-                _genericWrapperCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(genericWrapperConstructor);
+                _genericWrapperCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateParametrizedConstructor(genericWrapperConstructor);
             }
 
-            return (IWrappedCollection)_genericWrapperCreator(null, list);
+            return (IWrappedCollection)_genericWrapperCreator(list);
         }
 
         internal IList CreateTemporaryCollection()
