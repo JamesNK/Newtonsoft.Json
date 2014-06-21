@@ -5806,6 +5806,29 @@ To fix this error either change the environment to be fully trusted, change the 
             }
         }
 
+        [Test]
+        public void SerializeStaticField()
+        {
+            StaticFieldTestClass c = new StaticFieldTestClass
+            {
+                x = int.MaxValue
+            };
+            string json = JsonConvert.SerializeObject(c, Formatting.Indented);
+            
+            Assert.AreEqual(@"{
+  ""x"": 2147483647,
+  ""y"": 2
+}", json);
+
+            StaticFieldTestClass c2 = JsonConvert.DeserializeObject<StaticFieldTestClass>(@"{
+  ""x"": -1,
+  ""y"": -2
+}");
+
+            Assert.AreEqual(-1, c2.x);
+            Assert.AreEqual(-2, StaticFieldTestClass.y);
+        }
+
 #if !(NET20 || NETFX_CORE)
         [Test]
         public void DeserializeDecimalsWithCulture()
@@ -8125,5 +8148,15 @@ Parameter name: value",
         public int Age { get; set; }
         public double Height { get; set; }
         public decimal Price { get; set; }
+    }
+
+    [JsonObject(MemberSerialization.OptIn)]
+    public class StaticFieldTestClass
+    {
+        [JsonProperty]
+        public int x = 1;
+
+        [JsonProperty]
+        public static int y = 2;
     }
 }
