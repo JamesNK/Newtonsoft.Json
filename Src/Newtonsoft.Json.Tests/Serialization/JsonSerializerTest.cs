@@ -5806,27 +5806,86 @@ To fix this error either change the environment to be fully trusted, change the 
             }
         }
 
-        [Test]
-        public void SerializeStaticField()
+        public class ReflectionContractResolver : DefaultContractResolver
         {
-            StaticFieldTestClass c = new StaticFieldTestClass
+            protected override IValueProvider CreateMemberValueProvider(MemberInfo member)
+            {
+                return new ReflectionValueProvider(member);
+            }
+        }
+
+        [Test]
+        public void SerializeStaticDefault()
+        {
+            DefaultContractResolver contractResolver = new DefaultContractResolver();
+
+            StaticTestClass c = new StaticTestClass
             {
                 x = int.MaxValue
             };
-            string json = JsonConvert.SerializeObject(c, Formatting.Indented);
-            
+            StaticTestClass.y = 2;
+            StaticTestClass.z = 3;
+            string json = JsonConvert.SerializeObject(c, Formatting.Indented, new JsonSerializerSettings
+            {
+                ContractResolver = contractResolver
+            });
+
             Assert.AreEqual(@"{
   ""x"": 2147483647,
-  ""y"": 2
+  ""y"": 2,
+  ""z"": 3
 }", json);
 
-            StaticFieldTestClass c2 = JsonConvert.DeserializeObject<StaticFieldTestClass>(@"{
+            StaticTestClass c2 = JsonConvert.DeserializeObject<StaticTestClass>(@"{
   ""x"": -1,
-  ""y"": -2
-}");
+  ""y"": -2,
+  ""z"": -3
+}",
+                new JsonSerializerSettings
+                {
+                    ContractResolver = contractResolver
+                });
 
             Assert.AreEqual(-1, c2.x);
-            Assert.AreEqual(-2, StaticFieldTestClass.y);
+            Assert.AreEqual(-2, StaticTestClass.y);
+            Assert.AreEqual(-3, StaticTestClass.z);
+        }
+
+        [Test]
+        public void SerializeStaticReflection()
+        {
+            ReflectionContractResolver contractResolver = new ReflectionContractResolver();
+
+            StaticTestClass c = new StaticTestClass
+            {
+                x = int.MaxValue
+            };
+            StaticTestClass.y = 2;
+            StaticTestClass.z = 3;
+            string json = JsonConvert.SerializeObject(c, Formatting.Indented, new JsonSerializerSettings
+            {
+                ContractResolver = contractResolver
+            });
+
+            Assert.AreEqual(@"{
+  ""x"": 2147483647,
+  ""y"": 2,
+  ""z"": 3
+}", json);
+
+            StaticTestClass c2 = JsonConvert.DeserializeObject<StaticTestClass>(@"{
+  ""x"": -1,
+  ""y"": -2,
+  ""z"": -3
+}",
+                new JsonSerializerSettings
+                {
+                    ContractResolver = contractResolver
+                });
+
+            Assert.AreEqual(-1, c2.x);
+            Assert.AreEqual(-2, StaticTestClass.y);
+            Assert.AreEqual(-3, StaticTestClass.z);
         }
 
 #if !(NET20 || NETFX_CORE)
@@ -8151,12 +8210,20 @@ Parameter name: value",
     }
 
     [JsonObject(MemberSerialization.OptIn)]
-    public class StaticFieldTestClass
+    public class StaticTestClass
     {
         [JsonProperty]
         public int x = 1;
 
         [JsonProperty]
         public static int y = 2;
+
+        [JsonProperty]
+        public static int z { get; set; }
+
+        static StaticTestClass()
+        {
+            z = 3;
+        }
     }
 }
