@@ -39,10 +39,12 @@ namespace Newtonsoft.Json.Serialization
     {
         internal Required? _required;
         internal bool _hasExplicitDefaultValue;
-        internal object _defaultValue;
 
+        private object _defaultValue;
+        private bool _hasGeneratedDefaultValue;
         private string _propertyName;
         private bool _skipPropertyNameEscape;
+        private Type _propertyType;
 
         // use to cache contract during deserialization
         internal JsonContract PropertyContract { get; set; }
@@ -109,7 +111,18 @@ namespace Newtonsoft.Json.Serialization
         /// Gets or sets the type of the property.
         /// </summary>
         /// <value>The type of the property.</value>
-        public Type PropertyType { get; set; }
+        public Type PropertyType
+        {
+            get { return _propertyType; }
+            set
+            {
+                if (_propertyType != value)
+                {
+                    _propertyType = value;
+                    _hasGeneratedDefaultValue = false;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets or sets the <see cref="JsonConverter" /> for the property.
@@ -154,7 +167,13 @@ namespace Newtonsoft.Json.Serialization
         /// <value>The default value.</value>
         public object DefaultValue
         {
-            get { return _defaultValue; }
+            get
+            {
+                if (!_hasExplicitDefaultValue)
+                    return null;
+
+                return _defaultValue;
+            }
             set
             {
                 _hasExplicitDefaultValue = true;
@@ -164,8 +183,14 @@ namespace Newtonsoft.Json.Serialization
 
         internal object GetResolvedDefaultValue()
         {
-            if (!_hasExplicitDefaultValue && PropertyType != null)
-                return ReflectionUtils.GetDefaultValue(PropertyType);
+            if (_propertyType == null)
+                return null;
+
+            if (!_hasExplicitDefaultValue && !_hasGeneratedDefaultValue)
+            {
+                _defaultValue = ReflectionUtils.GetDefaultValue(PropertyType);
+                _hasGeneratedDefaultValue = true;
+            }
 
             return _defaultValue;
         }

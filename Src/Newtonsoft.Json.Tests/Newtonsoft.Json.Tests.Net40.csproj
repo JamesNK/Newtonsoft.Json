@@ -266,9 +266,9 @@
     <Compile Include="Serialization\FSharpTests.cs" />
     <Compile Include="Serialization\ImmutableCollectionsTests.cs" />
     <Compile Include="Serialization\JsonSerializerCollectionsTests.cs" />
+    <Compile Include="Serialization\MetadataPropertyHandlingTests.cs" />
     <Compile Include="Serialization\ReferenceLoopHandlingTests.cs" />
     <Compile Include="Serialization\ShouldSerializeTests.cs" />
-    <Compile Include="Serialization\SpecialPropertyHandlingTests.cs" />
     <Compile Include="Serialization\TraceWriterTests.cs" />
     <Compile Include="Serialization\WebApiIntegrationTests.cs" />
     <Compile Include="Serialization\JsonPropertyCollectionTests.cs" />
@@ -537,10 +537,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="bunny_pancake.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="large_sample.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="PoisonText.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>

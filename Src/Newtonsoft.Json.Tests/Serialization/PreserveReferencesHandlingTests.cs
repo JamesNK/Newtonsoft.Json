@@ -298,7 +298,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                         new JsonSerializerSettings
                         {
                             PreserveReferencesHandling = PreserveReferencesHandling.All,
-                            SpecialPropertyHandling = SpecialPropertyHandling.Default
+                            MetadataPropertyHandling = MetadataPropertyHandling.Default
                         });
                 });
         }
@@ -1069,7 +1069,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 "Error reading object reference '1'. Path 'Data.Prop2.MyProperty', line 9, position 20.",
                 () => JsonConvert.DeserializeObject<PropertyItemIsReferenceObject>(json, new JsonSerializerSettings
                 {
-                    SpecialPropertyHandling = SpecialPropertyHandling.Default
+                    MetadataPropertyHandling = MetadataPropertyHandling.Default
                 }));
         }
     }

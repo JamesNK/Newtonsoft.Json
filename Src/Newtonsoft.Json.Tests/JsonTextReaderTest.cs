@@ -48,6 +48,27 @@ namespace Newtonsoft.Json.Tests
     public class JsonTextReaderTest : TestFixtureBase
     {
         [Test]
+        public void ReadInvalidNonBase10Number()
+        {
+            string json = "0aq2dun13.hod";
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+            ExceptionAssert.Throws<JsonReaderException>("Input string '0a' is not a valid number. Path '', line 1, position 2.",
+                () => { reader.Read(); });
+
+            reader = new JsonTextReader(new StringReader(json));
+
+            ExceptionAssert.Throws<JsonReaderException>("Input string '0a' is not a valid decimal. Path '', line 1, position 2.",
+                () => { reader.ReadAsDecimal(); });
+
+            reader = new JsonTextReader(new StringReader(json));
+
+            ExceptionAssert.Throws<JsonReaderException>("Input string '0a' is not a valid integer. Path '', line 1, position 2.",
+                () => { reader.ReadAsInt32(); });
+        }
+
+        [Test]
         public void ThrowErrorWhenParsingUnquoteStringThatStartsWithNE()
         {
             const string json = @"{ ""ItemName"": ""value"", ""u"":netanelsalinger,""r"":9 }";

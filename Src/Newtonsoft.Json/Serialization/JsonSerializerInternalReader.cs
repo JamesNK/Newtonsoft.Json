@@ -226,7 +226,7 @@ namespace Newtonsoft.Json.Serialization
         {
             ValidationUtils.ArgumentNotNull(reader, "reader");
 
-            // this is needed because we've already read inside the object, looking for special properties
+            // this is needed because we've already read inside the object, looking for metadata properties
             using (JTokenWriter writer = new JTokenWriter())
             {
                 writer.WriteStartObject();
@@ -236,14 +236,21 @@ namespace Newtonsoft.Json.Serialization
                     if (reader.TokenType == JsonToken.PropertyName)
                     {
                         string propertyName = (string)reader.Value;
-                        if (!reader.Read())
-                            break;
+                        do
+                        {
+                            if (!reader.Read())
+                                break;
+                        } while (reader.TokenType == JsonToken.Comment);
 
                         if (CheckPropertyName(reader, propertyName))
                             continue;
 
                         writer.WritePropertyName(propertyName);
                         writer.WriteToken(reader, true, true);
+                    }
+                    else if (reader.TokenType == JsonToken.Comment)
+                    {
+                        // eat
                     }
                     else
                     {
@@ -374,8 +381,9 @@ namespace Newtonsoft.Json.Serialization
         {
             string id;
             object newValue;
+            Type resolvedObjectType = objectType;
 
-            if (Serializer.SpecialPropertyHandling == SpecialPropertyHandling.ReadAhead)
+            if (Serializer.MetadataPropertyHandling == MetadataPropertyHandling.ReadAhead)
             {
                 var tokenReader = reader as JTokenReader;
                 if (tokenReader == null)
@@ -389,13 +397,13 @@ namespace Newtonsoft.Json.Serialization
                     reader = tokenReader;
                 }
 
-                if (ReadSpecialPropertiesToken(tokenReader, ref objectType, ref contract, member, containerContract, containerMember, existingValue, out newValue, out id))
+                if (ReadMetadataPropertiesToken(tokenReader, ref resolvedObjectType, ref contract, member, containerContract, containerMember, existingValue, out newValue, out id))
                     return newValue;
             }
             else
             {
                 CheckedRead(reader);
-                if (ReadSpecialProperties(reader, ref objectType, ref contract, member, containerContract, containerMember, existingValue, out newValue, out id))
+                if (ReadMetadataProperties(reader, ref resolvedObjectType, ref contract, member, containerContract, containerMember, existingValue, out newValue, out id))
                     return newValue;
             }
 
@@ -406,16 +414,17 @@ namespace Newtonsoft.Json.Serialization
             {
                 case JsonContractType.Object:
                 {
-                    bool createdFromNonDefaultConstructor = false;
+                    bool createdFromNonDefaultCreator = false;
                     JsonObjectContract objectContract = (JsonObjectContract)contract;
                     object targetObject;
-                    if (existingValue != null)
+                    // check that if type name handling is being used that the existing value is compatible with the specified type
+                    if (existingValue != null && (resolvedObjectType == objectType || resolvedObjectType.IsAssignableFrom(existingValue.GetType())))
                         targetObject = existingValue;
                     else
-                        targetObject = CreateNewObject(reader, objectContract, member, containerMember, id, out createdFromNonDefaultConstructor);
+                        targetObject = CreateNewObject(reader, objectContract, member, containerMember, id, out createdFromNonDefaultCreator);
 
-                    // don't populate if read from non-default constructor because the object has already been read
-                    if (createdFromNonDefaultConstructor)
+                    // don't populate if read from non-default creator because the object has already been read
+                    if (createdFromNonDefaultCreator)
                         return targetObject;
 
                     return PopulateObject(targetObject, reader, objectContract, member, id);
@@ -433,7 +442,7 @@ namespace Newtonsoft.Json.Serialization
                         if (reader.TokenType == JsonToken.StartObject)
                             throw JsonSerializationException.Create(reader, "Unexpected token when deserializing primitive value: " + reader.TokenType);
 
-                        object value = CreateValueInternal(reader, objectType, primitiveContract, member, null, null, existingValue);
+                        object value = CreateValueInternal(reader, resolvedObjectType, primitiveContract, member, null, null, existingValue);
 
                         CheckedRead(reader);
                         return value;
@@ -447,10 +456,10 @@ namespace Newtonsoft.Json.Serialization
 
                     if (existingValue == null)
                     {
-                        bool createdFromNonDefaultConstructor;
-                        IDictionary dictionary = CreateNewDictionary(reader, dictionaryContract, out createdFromNonDefaultConstructor);
+                        bool createdFromNonDefaultCreator;
+                        IDictionary dictionary = CreateNewDictionary(reader, dictionaryContract, out createdFromNonDefaultCreator);
 
-                        if (createdFromNonDefaultConstructor)
+                        if (createdFromNonDefaultCreator)
                         {
                             if (id != null)
                                 throw JsonSerializationException.Create(reader, "Cannot preserve reference to readonly dictionary, or dictionary created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
@@ -461,19 +470,15 @@ namespace Newtonsoft.Json.Serialization
                             if (contract.OnErrorCallbacks.Count > 0)
                                 throw JsonSerializationException.Create(reader, "Cannot call OnError on readonly list, or dictionary created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
-                            if (dictionaryContract.ParametrizedConstructor == null)
+                            if (dictionaryContract.ParametrizedCreator == null)
                                 throw JsonSerializationException.Create(reader, "Cannot deserialize readonly or fixed size dictionary: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
                         }
 
                         PopulateDictionary(dictionary, reader, dictionaryContract, member, id);
 
-                        if (createdFromNonDefaultConstructor)
+                        if (createdFromNonDefaultCreator)
                         {
-                            ConstructorInfo constructor = dictionaryContract.ParametrizedConstructor as ConstructorInfo;
-                            if (constructor != null)
-                                return constructor.Invoke(new object[] { dictionary });
-
-                            return dictionaryContract.ParametrizedConstructor.Invoke(null, new object[] { dictionary });
+                            return dictionaryContract.ParametrizedCreator(dictionary);
                         }
                         else if (dictionary is IWrappedDictionary)
                         {
@@ -503,10 +508,10 @@ namespace Newtonsoft.Json.Serialization
 
             throw JsonSerializationException.Create(reader, @"Cannot deserialize the current JSON object (e.g. {{""name"":""value""}}) into type '{0}' because the type requires a {1} to deserialize correctly.
 To fix this error either change the JSON to a {1} or change the deserialized type so that it is a normal .NET type (e.g. not a primitive type like integer, not a collection type like an array or List<T>) that can be deserialized from a JSON object. JsonObjectAttribute can also be added to the type to force it to deserialize from a JSON object.
-".FormatWith(CultureInfo.InvariantCulture, objectType, GetExpectedDescription(contract)));
+".FormatWith(CultureInfo.InvariantCulture, resolvedObjectType, GetExpectedDescription(contract)));
         }
 
-        private bool ReadSpecialPropertiesToken(JTokenReader reader, ref Type objectType, ref JsonContract contract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerMember, object existingValue, out object newValue, out string id)
+        private bool ReadMetadataPropertiesToken(JTokenReader reader, ref Type objectType, ref JsonContract contract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerMember, object existingValue, out object newValue, out string id)
         {
             id = null;
             newValue = null;
@@ -590,7 +595,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
             return false;
         }
 
-        private bool ReadSpecialProperties(JsonReader reader, ref Type objectType, ref JsonContract contract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerMember, object existingValue, out object newValue, out string id)
+        private bool ReadMetadataProperties(JsonReader reader, ref Type objectType, ref JsonContract contract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerMember, object existingValue, out object newValue, out string id)
         {
             id = null;
             newValue = null;
@@ -601,9 +606,9 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
 
                 if (propertyName.Length > 0 && propertyName[0] == '$')
                 {
-                    // read 'special' properties
+                    // read metadata properties
                     // $type, $id, $ref, etc
-                    bool specialProperty;
+                    bool metadataProperty;
 
                     do
                     {
@@ -633,7 +638,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                             }
                             else
                             {
-                                specialProperty = true;
+                                metadataProperty = true;
                             }
                         }
                         else if (string.Equals(propertyName, JsonTypeReflector.TypePropertyName, StringComparison.Ordinal))
@@ -645,7 +650,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
 
                             CheckedRead(reader);
 
-                            specialProperty = true;
+                            metadataProperty = true;
                         }
                         else if (string.Equals(propertyName, JsonTypeReflector.IdPropertyName, StringComparison.Ordinal))
                         {
@@ -654,7 +659,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                             id = (reader.Value != null) ? reader.Value.ToString() : null;
 
                             CheckedRead(reader);
-                            specialProperty = true;
+                            metadataProperty = true;
                         }
                         else if (string.Equals(propertyName, JsonTypeReflector.ArrayValuesPropertyName, StringComparison.Ordinal))
                         {
@@ -666,10 +671,9 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                         }
                         else
                         {
-                            specialProperty = false;
+                            metadataProperty = false;
                         }
-                    } while (specialProperty
-                             && reader.TokenType == JsonToken.PropertyName);
+                    } while (metadataProperty && reader.TokenType == JsonToken.PropertyName);
                 }
             }
             return false;
@@ -748,10 +752,10 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
 
             if (existingValue == null)
             {
-                bool createdFromNonDefaultConstructor;
-                IList list = CreateNewList(reader, arrayContract, out createdFromNonDefaultConstructor);
+                bool createdFromNonDefaultCreator;
+                IList list = CreateNewList(reader, arrayContract, out createdFromNonDefaultCreator);
 
-                if (createdFromNonDefaultConstructor)
+                if (createdFromNonDefaultCreator)
                 {
                     if (id != null)
                         throw JsonSerializationException.Create(reader, "Cannot preserve reference to array or readonly list, or list created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
@@ -762,7 +766,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                     if (contract.OnErrorCallbacks.Count > 0)
                         throw JsonSerializationException.Create(reader, "Cannot call OnError on an array or readonly list, or list created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
-                    if (arrayContract.ParametrizedConstructor == null && !arrayContract.IsArray)
+                    if (arrayContract.ParametrizedCreator == null && !arrayContract.IsArray)
                         throw JsonSerializationException.Create(reader, "Cannot deserialize readonly or fixed size list: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
                 }
 
@@ -771,7 +775,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                 else
                     PopulateMultidimensionalArray(list, reader, arrayContract, member, id);
 
-                if (createdFromNonDefaultConstructor)
+                if (createdFromNonDefaultCreator)
                 {
                     if (arrayContract.IsMultidimensionalArray)
                     {
@@ -786,11 +790,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                     else
                     {
                         // call constructor that takes IEnumerable<T>
-                        ConstructorInfo constructor = arrayContract.ParametrizedConstructor as ConstructorInfo;
-                        if (constructor != null)
-                            return constructor.Invoke(new object[] { list });
-
-                        return arrayContract.ParametrizedConstructor.Invoke(null, new object[] { list });
+                        return arrayContract.ParametrizedCreator(list);
                     }
                 }
                 else if (list is IWrappedCollection)
@@ -1010,7 +1010,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
             return true;
         }
 
-        private IList CreateNewList(JsonReader reader, JsonArrayContract contract, out bool createdFromNonDefaultConstructor)
+        private IList CreateNewList(JsonReader reader, JsonArrayContract contract, out bool createdFromNonDefaultCreator)
         {
             // some types like non-generic IEnumerable can be serialized but not deserialized
             if (!contract.CanDeserialize)
@@ -1018,7 +1018,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
 
             if (contract.IsReadOnlyOrFixedSize)
             {
-                createdFromNonDefaultConstructor = true;
+                createdFromNonDefaultCreator = true;
                 IList list = contract.CreateTemporaryCollection();
 
                 if (contract.ShouldCreateWrapper)
@@ -1033,25 +1033,28 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                 if (contract.ShouldCreateWrapper)
                     list = contract.CreateWrapper(list);
 
-                createdFromNonDefaultConstructor = false;
+                createdFromNonDefaultCreator = false;
                 return (IList)list;
             }
-            else if (contract.ParametrizedConstructor != null)
+            else if (contract.ParametrizedCreator != null)
             {
-                createdFromNonDefaultConstructor = true;
+                createdFromNonDefaultCreator = true;
                 return contract.CreateTemporaryCollection();
             }
             else
             {
+                if (!contract.IsInstantiable)
+                    throw JsonSerializationException.Create(reader, "Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantiated.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+
                 throw JsonSerializationException.Create(reader, "Unable to find a constructor to use for type {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
             }
         }
 
-        private IDictionary CreateNewDictionary(JsonReader reader, JsonDictionaryContract contract, out bool createdFromNonDefaultConstructor)
+        private IDictionary CreateNewDictionary(JsonReader reader, JsonDictionaryContract contract, out bool createdFromNonDefaultCreator)
         {
             if (contract.IsReadOnlyOrFixedSize)
             {
-                createdFromNonDefaultConstructor = true;
+                createdFromNonDefaultCreator = true;
                 return contract.CreateTemporaryDictionary();
             }
             else if (contract.DefaultCreator != null && (!contract.DefaultCreatorNonPublic || Serializer._constructorHandling == ConstructorHandling.AllowNonPublicDefaultConstructor))
@@ -1061,16 +1064,19 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                 if (contract.ShouldCreateWrapper)
                     dictionary = contract.CreateWrapper(dictionary);
 
-                createdFromNonDefaultConstructor = false;
+                createdFromNonDefaultCreator = false;
                 return (IDictionary)dictionary;
             }
-            else if (contract.ParametrizedConstructor != null)
+            else if (contract.ParametrizedCreator != null)
             {
-                createdFromNonDefaultConstructor = true;
+                createdFromNonDefaultCreator = true;
                 return contract.CreateTemporaryDictionary();
             }
             else
             {
+                if (!contract.IsInstantiable)
+                    throw JsonSerializationException.Create(reader, "Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantiated.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+
                 throw JsonSerializationException.Create(reader, "Unable to find a default constructor to use for type {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
             }
         }
@@ -1121,28 +1127,35 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                         object keyValue = reader.Value;
                         if (CheckPropertyName(reader, keyValue.ToString()))
                             continue;
+
                         try
                         {
                             try
                             {
-                                object dt;
-                                // this is for correctly reading ISO and MS formatted dictionary keys
-                                if ((keyTypeCode == PrimitiveTypeCode.DateTime || keyTypeCode == PrimitiveTypeCode.DateTimeNullable)
-                                    && DateTimeUtils.TryParseDateTime(keyValue.ToString(), DateParseHandling.DateTime, reader.DateTimeZoneHandling, out dt))
+                                DateParseHandling dateParseHandling;
+                                switch (keyTypeCode)
                                 {
-                                    keyValue = dt;
-                                }
+                                    case PrimitiveTypeCode.DateTime:
+                                    case PrimitiveTypeCode.DateTimeNullable:
+                                        dateParseHandling = DateParseHandling.DateTime;
+                                        break;
 #if !NET20
-                                else if ((keyTypeCode == PrimitiveTypeCode.DateTimeOffset || keyTypeCode == PrimitiveTypeCode.DateTimeOffsetNullable)
-                                         && DateTimeUtils.TryParseDateTime(keyValue.ToString(), DateParseHandling.DateTimeOffset, reader.DateTimeZoneHandling, out dt))
-                                {
-                                    keyValue = dt;
-                                }
+                                    case PrimitiveTypeCode.DateTimeOffset:
+                                    case PrimitiveTypeCode.DateTimeOffsetNullable:
+                                        dateParseHandling = DateParseHandling.DateTimeOffset;
+                                        break;
 #endif
-                                else
-                                {
-                                    keyValue = EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract, contract.DictionaryKeyType);
+                                    default:
+                                        dateParseHandling = DateParseHandling.None;
+                                        break;
                                 }
+
+                                // this is for correctly reading ISO and MS formatted dictionary keys
+                                object dt;
+                                if (dateParseHandling != DateParseHandling.None && DateTimeUtils.TryParseDateTime(keyValue.ToString(), dateParseHandling, reader.DateTimeZoneHandling, reader.DateFormatString, reader.Culture, out dt))
+                                    keyValue = dt;
+                                else
+                                    keyValue = EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract, contract.DictionaryKeyType);
                             }
                             catch (Exception ex)
                             {
@@ -1568,9 +1581,9 @@ To fix this error either change the environment to be fully trusted, change the 
         }
 #endif
 
-        private object CreateObjectFromNonDefaultConstructor(JsonReader reader, JsonObjectContract contract, JsonProperty containerProperty, ConstructorInfo constructorInfo, string id)
+        private object CreateObjectUsingCreatorWithParameters(JsonReader reader, JsonObjectContract contract, JsonProperty containerProperty, ObjectConstructor<object> creator, string id)
         {
-            ValidationUtils.ArgumentNotNull(constructorInfo, "constructorInfo");
+            ValidationUtils.ArgumentNotNull(creator, "creator");
 
             // only need to keep a track of properies presence if they are required or a value should be defaulted if missing
             Dictionary<JsonProperty, PropertyPresence> propertiesPresence = (contract.HasRequiredOrDefaultValueProperties || HasFlag(Serializer._defaultValueHandling, DefaultValueHandling.Populate))
@@ -1580,32 +1593,40 @@ To fix this error either change the environment to be fully trusted, change the 
             Type objectType = contract.UnderlyingType;
 
             if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Info)
-                TraceWriter.Trace(TraceLevel.Info, JsonPosition.FormatMessage(reader as IJsonLineInfo, reader.Path, "Deserializing {0} using a non-default constructor '{1}'.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType, constructorInfo)), null);
+            {
+                string parameters = string.Join(", ", contract.CreatorParameters.Select(p => p.PropertyName).ToArray());
+                TraceWriter.Trace(TraceLevel.Info, JsonPosition.FormatMessage(reader as IJsonLineInfo, reader.Path, "Deserializing {0} using creator with parameters: {1}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType, parameters)), null);
+            }
 
             IDictionary<string, object> extensionData;
-            IDictionary<JsonProperty, object> propertyValues = ResolvePropertyAndConstructorValues(contract, containerProperty, reader, objectType, out extensionData);
+            IDictionary<JsonProperty, object> propertyValues = ResolvePropertyAndCreatorValues(contract, containerProperty, reader, objectType, out extensionData);
 
-            IDictionary<ParameterInfo, object> constructorParameters = constructorInfo.GetParameters().ToDictionary(p => p, p => (object)null);
+            object[] creatorParameterValues = new object[contract.CreatorParameters.Count];
             IDictionary<JsonProperty, object> remainingPropertyValues = new Dictionary<JsonProperty, object>();
 
             foreach (KeyValuePair<JsonProperty, object> propertyValue in propertyValues)
             {
-                ParameterInfo matchingConstructorParameter = constructorParameters.ForgivingCaseSensitiveFind(kv => kv.Key.Name, propertyValue.Key.UnderlyingName).Key;
-                if (matchingConstructorParameter != null)
-                    constructorParameters[matchingConstructorParameter] = propertyValue.Value;
+                JsonProperty matchingCreatorParameter = contract.CreatorParameters.ForgivingCaseSensitiveFind(p => p.PropertyName, propertyValue.Key.PropertyName);
+                if (matchingCreatorParameter != null)
+                {
+                    int i = contract.CreatorParameters.IndexOf(matchingCreatorParameter);
+                    creatorParameterValues[i] = propertyValue.Value;
+                }
                 else
+                {
                     remainingPropertyValues.Add(propertyValue);
+                }
 
                 if (propertiesPresence != null)
                 {
-                    // map from constructor property to normal property
+                    // map from creator property to normal property
                     var property = propertiesPresence.Keys.FirstOrDefault(p => p.PropertyName == propertyValue.Key.PropertyName);
                     if (property != null)
                         propertiesPresence[property] = (propertyValue.Value == null) ? PropertyPresence.Null : PropertyPresence.Value;
                 }
             }
 
-            object createdObject = constructorInfo.Invoke(constructorParameters.Values.ToArray());
+            object createdObject = creator(creatorParameterValues);
 
             if (id != null)
                 AddReference(reader, id, createdObject);
@@ -1689,7 +1710,7 @@ To fix this error either change the environment to be fully trusted, change the 
             return value;
         }
 
-        private IDictionary<JsonProperty, object> ResolvePropertyAndConstructorValues(JsonObjectContract contract, JsonProperty containerProperty, JsonReader reader, Type objectType, out IDictionary<string, object> extensionData)
+        private IDictionary<JsonProperty, object> ResolvePropertyAndCreatorValues(JsonObjectContract contract, JsonProperty containerProperty, JsonReader reader, Type objectType, out IDictionary<string, object> extensionData)
         {
             extensionData = (contract.ExtensionDataSetter != null) ? new Dictionary<string, object>() : null;
 
@@ -1704,7 +1725,7 @@ To fix this error either change the environment to be fully trusted, change the 
 
                         // attempt exact case match first
                         // then try match ignoring case
-                        JsonProperty property = contract.ConstructorParameters.GetClosestMatchProperty(memberName) ??
+                        JsonProperty property = contract.CreatorParameters.GetClosestMatchProperty(memberName) ??
                                                 contract.Properties.GetClosestMatchProperty(memberName);
 
                         if (property != null)
@@ -1813,42 +1834,44 @@ To fix this error either change the environment to be fully trusted, change the 
             return (reader.TokenType != JsonToken.None);
         }
 
-        public object CreateNewObject(JsonReader reader, JsonObjectContract objectContract, JsonProperty containerMember, JsonProperty containerProperty, string id, out bool createdFromNonDefaultConstructor)
+        public object CreateNewObject(JsonReader reader, JsonObjectContract objectContract, JsonProperty containerMember, JsonProperty containerProperty, string id, out bool createdFromNonDefaultCreator)
         {
             object newObject = null;
 
-            if (!objectContract.IsInstantiable)
-                throw JsonSerializationException.Create(reader, "Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantiated.".FormatWith(CultureInfo.InvariantCulture, objectContract.UnderlyingType));
-
-            if (objectContract.OverrideConstructor != null)
+            if (objectContract.OverrideCreator != null)
             {
-                if (objectContract.OverrideConstructor.GetParameters().Length > 0)
+                if (objectContract.CreatorParameters.Count > 0)
                 {
-                    createdFromNonDefaultConstructor = true;
-                    return CreateObjectFromNonDefaultConstructor(reader, objectContract, containerMember, objectContract.OverrideConstructor, id);
+                    createdFromNonDefaultCreator = true;
+                    return CreateObjectUsingCreatorWithParameters(reader, objectContract, containerMember, objectContract.OverrideCreator, id);
                 }
 
-                newObject = objectContract.OverrideConstructor.Invoke(null);
+                newObject = objectContract.OverrideCreator(new object[0]);
             }
             else if (objectContract.DefaultCreator != null &&
-                     (!objectContract.DefaultCreatorNonPublic || Serializer._constructorHandling == ConstructorHandling.AllowNonPublicDefaultConstructor || objectContract.ParametrizedConstructor == null))
+                     (!objectContract.DefaultCreatorNonPublic || Serializer._constructorHandling == ConstructorHandling.AllowNonPublicDefaultConstructor || objectContract.ParametrizedCreator == null))
             {
                 // use the default constructor if it is...
                 // public
                 // non-public and the user has change constructor handling settings
-                // non-public and there is no other constructor
+                // non-public and there is no other creator
                 newObject = objectContract.DefaultCreator();
             }
-            else if (objectContract.ParametrizedConstructor != null)
+            else if (objectContract.ParametrizedCreator != null)
             {
-                createdFromNonDefaultConstructor = true;
-                return CreateObjectFromNonDefaultConstructor(reader, objectContract, containerMember, objectContract.ParametrizedConstructor, id);
+                createdFromNonDefaultCreator = true;
+                return CreateObjectUsingCreatorWithParameters(reader, objectContract, containerMember, objectContract.ParametrizedCreator, id);
             }
 
             if (newObject == null)
+            {
+                if (!objectContract.IsInstantiable)
+                    throw JsonSerializationException.Create(reader, "Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantiated.".FormatWith(CultureInfo.InvariantCulture, objectContract.UnderlyingType));
+                
                 throw JsonSerializationException.Create(reader, "Unable to find a constructor to use for type {0}. A class should either have a default constructor, one constructor with arguments or a constructor marked with the JsonConstructor attribute.".FormatWith(CultureInfo.InvariantCulture, objectContract.UnderlyingType));
+            }
 
-            createdFromNonDefaultConstructor = false;
+            createdFromNonDefaultCreator = false;
             return newObject;
         }
 
@@ -1944,7 +1967,7 @@ To fix this error either change the environment to be fully trusted, change the 
 
         private bool CheckPropertyName(JsonReader reader, string memberName)
         {
-            if (Serializer.SpecialPropertyHandling == SpecialPropertyHandling.ReadAhead)
+            if (Serializer.MetadataPropertyHandling == MetadataPropertyHandling.ReadAhead)
             {
                 switch (memberName)
                 {
@@ -2004,7 +2027,7 @@ To fix this error either change the environment to be fully trusted, change the 
                                     if (property.PropertyContract == null)
                                         property.PropertyContract = GetContractSafe(property.PropertyType);
 
-                                    if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer._defaultValueHandling), DefaultValueHandling.Populate) && property.Writable)
+                                    if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer._defaultValueHandling), DefaultValueHandling.Populate) && property.Writable && !property.Ignored)
                                         property.ValueProvider.SetValue(newObject, EnsureType(reader, property.GetResolvedDefaultValue(), CultureInfo.InvariantCulture, property.PropertyContract, property.PropertyType));
                                     break;
                                 case PropertyPresence.Null:

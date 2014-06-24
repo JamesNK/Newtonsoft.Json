@@ -30,17 +30,17 @@ using System.Text;
 namespace Newtonsoft.Json
 {
     /// <summary>
-    /// Specifies special property handling options for the <see cref="JsonSerializer"/>.
+    /// Specifies metadata property handling options for the <see cref="JsonSerializer"/>.
     /// </summary>
-    public enum SpecialPropertyHandling
+    public enum MetadataPropertyHandling
     {
         /// <summary>
-        /// Read special properties located at the start of a JSON object.
+        /// Read metadata properties located at the start of a JSON object.
         /// </summary>
         Default = 0,
 
         /// <summary>
-        /// Read special properties located anywhere in a JSON object. Note that this setting will impact performance.
+        /// Read metadata properties located anywhere in a JSON object. Note that this setting will impact performance.
         /// </summary>
         ReadAhead = 1,
     }

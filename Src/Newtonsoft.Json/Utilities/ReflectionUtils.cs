@@ -429,6 +429,8 @@ namespace Newtonsoft.Json.Utilities
                     return ((PropertyInfo)member).PropertyType;
                 case MemberTypes.Event:
                     return ((EventInfo)member).EventHandlerType;
+                case MemberTypes.Method:
+                    return ((MethodInfo)member).ReturnType;
                 default:
                     throw new ArgumentException("MemberInfo must be of type FieldInfo, PropertyInfo or EventInfo", "member");
             }
@@ -672,6 +674,11 @@ namespace Newtonsoft.Json.Utilities
 #if !(NETFX_CORE || PORTABLE)
         public static T[] GetAttributes<T>(object attributeProvider, bool inherit) where T : Attribute
         {
+            return (T[])GetAttributes(attributeProvider, typeof(T), inherit);
+        }
+
+        public static Attribute[] GetAttributes(object attributeProvider, Type attributeType, bool inherit)
+        {
             ValidationUtils.ArgumentNotNull(attributeProvider, "attributeProvider");
 
             object provider = attributeProvider;
@@ -680,44 +687,50 @@ namespace Newtonsoft.Json.Utilities
             // ICustomAttributeProvider doesn't do inheritance
 
             if (provider is Type)
-                return (T[])((Type)provider).GetCustomAttributes(typeof(T), inherit);
+                return (Attribute[])((Type)provider).GetCustomAttributes(attributeType, inherit);
 
             if (provider is Assembly)
-                return (T[])Attribute.GetCustomAttributes((Assembly)provider, typeof(T));
+                return Attribute.GetCustomAttributes((Assembly)provider, attributeType);
 
             if (provider is MemberInfo)
-                return (T[])Attribute.GetCustomAttributes((MemberInfo)provider, typeof(T), inherit);
+                return Attribute.GetCustomAttributes((MemberInfo)provider, attributeType, inherit);
 
 #if !PORTABLE40
             if (provider is Module)
-                return (T[])Attribute.GetCustomAttributes((Module)provider, typeof(T), inherit);
+                return Attribute.GetCustomAttributes((Module)provider, attributeType, inherit);
 #endif
 
             if (provider is ParameterInfo)
-                return (T[])Attribute.GetCustomAttributes((ParameterInfo)provider, typeof(T), inherit);
+                return Attribute.GetCustomAttributes((ParameterInfo)provider, attributeType, inherit);
 
 #if !PORTABLE40
-            return (T[])((ICustomAttributeProvider)attributeProvider).GetCustomAttributes(typeof(T), inherit);
-#endif
+            return (Attribute[])((ICustomAttributeProvider)attributeProvider).GetCustomAttributes(attributeType, inherit);
+#else
             throw new Exception("Cannot get attributes from '{0}'.".FormatWith(CultureInfo.InvariantCulture, provider));
+#endif
         }
 #else
-        public static T[] GetAttributes<T>(object provider, bool inherit) where T : Attribute
+        public static T[] GetAttributes<T>(object attributeProvider, bool inherit) where T : Attribute
+        {
+            return GetAttributes(attributeProvider, typeof(T), inherit).Cast<T>().ToArray();
+        }
+
+        public static Attribute[] GetAttributes(object provider, Type attributeType, bool inherit)
         {
             if (provider is Type)
-                return ((Type) provider).GetTypeInfo().GetCustomAttributes<T>(inherit).ToArray();
+                return ((Type) provider).GetTypeInfo().GetCustomAttributes(attributeType, inherit).ToArray();
 
             if (provider is Assembly)
-                return ((Assembly) provider).GetCustomAttributes<T>().ToArray();
+                return ((Assembly) provider).GetCustomAttributes(attributeType).ToArray();
 
             if (provider is MemberInfo)
-                return ((MemberInfo) provider).GetCustomAttributes<T>(inherit).ToArray();
+                return ((MemberInfo) provider).GetCustomAttributes(attributeType, inherit).ToArray();
 
             if (provider is Module)
-                return ((Module) provider).GetCustomAttributes<T>().ToArray();
+                return ((Module) provider).GetCustomAttributes(attributeType).ToArray();
 
             if (provider is ParameterInfo)
-                return ((ParameterInfo) provider).GetCustomAttributes<T>(inherit).ToArray();
+                return ((ParameterInfo) provider).GetCustomAttributes(attributeType, inherit).ToArray();
 
             throw new Exception("Cannot get attributes from '{0}'.".FormatWith(CultureInfo.InvariantCulture, provider));
         }
@@ -796,6 +809,7 @@ namespace Newtonsoft.Json.Utilities
             return fieldInfos.Cast<FieldInfo>();
         }
 
+#if !(NETFX_CORE || PORTABLE)
         private static void GetChildPrivateFields(IList<MemberInfo> initialFields, Type targetType, BindingFlags bindingAttr)
         {
             // fix weirdness with private FieldInfos only being returned for the current Type
@@ -815,6 +829,7 @@ namespace Newtonsoft.Json.Utilities
                 }
             }
         }
+#endif
 
         public static IEnumerable<PropertyInfo> GetProperties(Type targetType, BindingFlags bindingAttr)
         {

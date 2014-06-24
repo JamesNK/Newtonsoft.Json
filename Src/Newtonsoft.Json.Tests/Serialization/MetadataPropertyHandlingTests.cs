@@ -1,17 +1,75 @@
-﻿using System;
+﻿#region License
+// Copyright (c) 2007 James Newton-King
+//
+// Permission is hereby granted, free of charge, to any person
+// obtaining a copy of this software and associated documentation
+// files (the "Software"), to deal in the Software without
+// restriction, including without limitation the rights to use,
+// copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following
+// conditions:
+//
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+// OTHER DEALINGS IN THE SOFTWARE.
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters;
 using System.Text;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Tests.TestObjects;
 using Newtonsoft.Json.Utilities;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
+using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
+#endif
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
     [TestFixture]
-    public class SpecialPropertyHandlingTests : TestFixtureBase
+    public class MetadataPropertyHandlingTests : TestFixtureBase
     {
+        public class User
+        {
+            public string Name { get; set; }
+        }
+
+        [Test]
+        public void Demo()
+        {
+            string json = @"{
+	            'Name': 'James',
+	            'Password': 'Password1',
+	            '$type': 'Newtonsoft.Json.Tests.Serialization.MetadataPropertyHandlingTests+User, Newtonsoft.Json.Tests'
+            }";
+
+            object o = JsonConvert.DeserializeObject(json, new JsonSerializerSettings
+            {
+	            TypeNameHandling = TypeNameHandling.All,
+	            // no longer needs to be first
+	            MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
+            });
+
+            User u = (User)o;
+
+            Console.WriteLine(u.Name);
+            // James
+        }
+
         [Test]
         public void DeserializeArraysWithPreserveObjectReferences()
         {
@@ -49,7 +107,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                         new JsonSerializerSettings
                         {
                             PreserveReferencesHandling = PreserveReferencesHandling.All,
-                            SpecialPropertyHandling = SpecialPropertyHandling.ReadAhead
+                            MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
                         });
                 });
         }
@@ -68,7 +126,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             {
                 Formatting = Formatting.Indented,
                 TypeNameHandling = TypeNameHandling.All,
-                SpecialPropertyHandling = SpecialPropertyHandling.ReadAhead
+                MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
             };
             string serializedString = JsonConvert.SerializeObject(inputContext, jsonSerializerSettings);
 
@@ -109,7 +167,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Item actual = JsonConvert.DeserializeObject<Item>(jsonString, new JsonSerializerSettings
             {
-                SpecialPropertyHandling = SpecialPropertyHandling.ReadAhead
+                MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
             });
 
             Assert.AreEqual(new Guid("d8220a4b-75b1-4b7a-8112-b7bdae956a45"), actual.SourceTypeID);
@@ -151,7 +209,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 new JsonSerializerSettings
                 {
                     PreserveReferencesHandling = PreserveReferencesHandling.All,
-                    SpecialPropertyHandling = SpecialPropertyHandling.ReadAhead
+                    MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
                 });
 
             Assert.AreEqual(3, circularList.Count);
@@ -179,7 +237,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                     JsonConvert.DeserializeObject(json, null, new JsonSerializerSettings
                     {
                         TypeNameHandling = TypeNameHandling.Objects,
-                        SpecialPropertyHandling = SpecialPropertyHandling.ReadAhead
+                        MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
                     });
                 });
         }
@@ -203,7 +261,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(json, new JsonSerializerSettings
             {
-                SpecialPropertyHandling = SpecialPropertyHandling.ReadAhead
+                MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
             });
 
             Assert.AreEqual(3, result.Count);
@@ -231,7 +289,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             List<EmployeeReference> employees = JsonConvert.DeserializeObject<List<EmployeeReference>>(json, new JsonSerializerSettings
             {
-                SpecialPropertyHandling = SpecialPropertyHandling.ReadAhead
+                MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
             });
 
             Assert.AreEqual(2, employees.Count);
@@ -263,7 +321,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             List<EmployeeReference> employees = t1.ToObject<List<EmployeeReference>>(JsonSerializer.Create(new JsonSerializerSettings
             {
-                SpecialPropertyHandling = SpecialPropertyHandling.ReadAhead
+                MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
             }));
 
             Assert.AreEqual(2, employees.Count);
@@ -307,7 +365,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             {
                 TypeNameHandling = TypeNameHandling.Objects,
                 TypeNameAssemblyFormat = FormatterAssemblyStyle.Full,
-                SpecialPropertyHandling = SpecialPropertyHandling.ReadAhead
+                MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
             });
 
             Assert.AreEqual(4, values.Count);
@@ -355,7 +413,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             TypeNameHandlingTests.TypeNameProperty deserialized = JsonConvert.DeserializeObject<TypeNameHandlingTests.TypeNameProperty>(json, new JsonSerializerSettings
             {
-                SpecialPropertyHandling = SpecialPropertyHandling.ReadAhead
+                MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
             });
             Assert.AreEqual("Name!", deserialized.Name);
             CustomAssert.IsInstanceOfType(typeof(List<int>), deserialized.Value);

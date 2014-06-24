@@ -53,6 +53,18 @@ namespace Newtonsoft.Json.Tests.Linq
     public class JValueTests : TestFixtureBase
     {
         [Test]
+        public void UndefinedTests()
+        {
+            JValue v = JValue.CreateUndefined();
+
+            Assert.AreEqual(JTokenType.Undefined, v.Type);
+            Assert.AreEqual(null, v.Value);
+
+            Assert.AreEqual("", v.ToString());
+            Assert.AreEqual("undefined", v.ToString(Formatting.None));
+        }
+
+        [Test]
         public void FloatParseHandling()
         {
             JValue v = (JValue)JToken.ReadFrom(
@@ -183,10 +195,10 @@ namespace Newtonsoft.Json.Tests.Linq
             v = new JValue("I am a string!");
             Assert.AreEqual("I am a string!", v.ToString());
 
-            v = new JValue(null, JTokenType.Null);
+            v = JValue.CreateNull();
             Assert.AreEqual("", v.ToString());
 
-            v = new JValue(null, JTokenType.Null);
+            v = JValue.CreateNull();
             Assert.AreEqual("", v.ToString(null, CultureInfo.InvariantCulture));
 
             v = new JValue(new DateTime(2000, 12, 12, 20, 59, 59, DateTimeKind.Utc), JTokenType.Date);
@@ -333,7 +345,7 @@ namespace Newtonsoft.Json.Tests.Linq
             ExceptionAssert.Throws<ArgumentException>("Can not convert Null to Int32.",
                 () =>
                 {
-                    JValue v = new JValue((object)null);
+                    JValue v = JValue.CreateNull();
                     int i = (int)v;
                 });
         }
@@ -577,7 +589,7 @@ namespace Newtonsoft.Json.Tests.Linq
         [Test]
         public void ConvertsToString_Null()
         {
-            Assert.AreEqual(string.Empty, Convert.ToString(new JValue((object)null)));
+            Assert.AreEqual(string.Empty, Convert.ToString(JValue.CreateNull()));
         }
 
         [Test]

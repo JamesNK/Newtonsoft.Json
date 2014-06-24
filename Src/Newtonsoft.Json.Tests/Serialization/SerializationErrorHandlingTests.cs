@@ -407,7 +407,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             string json = "{}";
             List<string> errors = new List<string>();
             JsonSerializer serializer = new JsonSerializer();
-            serializer.SpecialPropertyHandling = SpecialPropertyHandling.Default;
+            serializer.MetadataPropertyHandling = MetadataPropertyHandling.Default;
             serializer.Error += delegate(object sender, ErrorEventArgs args)
             {
                 errors.Add(args.ErrorContext.Path + " - " + args.ErrorContext.Member + " - " + args.ErrorContext.Error.Message);
@@ -540,7 +540,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 "{'badarray':[0,x,2],'goodarray':[0,1,2]}",
                 new JsonSerializerSettings
                 {
-                    SpecialPropertyHandling = SpecialPropertyHandling.Default,
+                    MetadataPropertyHandling = MetadataPropertyHandling.Default,
                     Error = (sender, arg) =>
                     {
                         errors.Add(arg.ErrorContext.Error.Message);
@@ -570,7 +570,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 JsonSerializer jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings
                 {
                     MaxDepth = maxDepth,
-                    SpecialPropertyHandling = SpecialPropertyHandling.Default
+                    MetadataPropertyHandling = MetadataPropertyHandling.Default
                 });
                 jsonSerializer.Error += (sender, e) =>
                 {
@@ -601,7 +601,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             const int maxDepth = 256;
             using (var jsonTextReader = new JsonTextReader(new StringReader(input)) { MaxDepth = maxDepth })
             {
-                JsonSerializer jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings { MaxDepth = maxDepth, SpecialPropertyHandling = SpecialPropertyHandling.Default });
+                JsonSerializer jsonSerializer = JsonSerializer.Create(new JsonSerializerSettings { MaxDepth = maxDepth, MetadataPropertyHandling = MetadataPropertyHandling.Default });
                 jsonSerializer.Error += (sender, e) =>
                 {
                     errors.Add(e.ErrorContext.Error.Message);
@@ -641,7 +641,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                     errors.Add(e.ErrorContext.Error.Message);
                     e.ErrorContext.Handled = true;
                 },
-                SpecialPropertyHandling = SpecialPropertyHandling.Default
+                MetadataPropertyHandling = MetadataPropertyHandling.Default
             });
             Assert.AreEqual(true, newDynamicObject.Explicit);
 

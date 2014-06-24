@@ -57,17 +57,5 @@ namespace Newtonsoft.Json
 
             _converterType = converterType;
         }
-
-        internal static JsonConverter CreateJsonConverterInstance(Type converterType)
-        {
-            try
-            {
-                return (JsonConverter)Activator.CreateInstance(converterType);
-            }
-            catch (Exception ex)
-            {
-                throw new JsonException("Error creating {0}".FormatWith(CultureInfo.InvariantCulture, converterType), ex);
-            }
-        }
     }
 }

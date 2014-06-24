@@ -70,7 +70,7 @@ namespace Newtonsoft.Json.Linq
             {
                 CheckReentrancy();
 
-                JToken newValue = value ?? new JValue((object)null);
+                JToken newValue = value ?? JValue.CreateNull();
 
                 if (_content.Count == 0)
                 {

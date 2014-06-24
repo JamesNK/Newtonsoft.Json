@@ -134,10 +134,10 @@
     <Compile Include="Linq\JTokenWriter.cs" />
     <Compile Include="Linq\JValue.cs" />
     <Compile Include="MemberSerialization.cs" />
+    <Compile Include="MetadataPropertyHandling.cs" />
     <Compile Include="MissingMemberHandling.cs" />
     <Compile Include="NullValueHandling.cs" />
     <Compile Include="ObjectCreationHandling.cs" />
-    <Compile Include="SpecialPropertyHandling.cs" />
     <Compile Include="PreserveReferencesHandling.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReferenceLoopHandling.cs" />
@@ -191,7 +191,6 @@
     <Compile Include="Serialization\JsonSerializerProxy.cs" />
     <Compile Include="Serialization\JsonStringContract.cs" />
     <Compile Include="Serialization\JsonTypeReflector.cs" />
-    <Compile Include="Serialization\LateBoundMetadataTypeAttribute.cs" />
     <Compile Include="Serialization\MemoryTraceWriter.cs" />
     <Compile Include="Serialization\ObjectConstructor.cs" />
     <Compile Include="Serialization\OnErrorAttribute.cs" />
@@ -213,7 +212,7 @@
     <Compile Include="Utilities\DynamicProxyMetaObject.cs" />
     <Compile Include="Utilities\DynamicReflectionDelegateFactory.cs" />
     <Compile Include="Utilities\DynamicUtils.cs" />
-    <Compile Include="Utilities\DynamicWrapper.cs" />
+    <Compile Include="Utilities\ReflectionObject.cs" />
     <Compile Include="Utilities\EnumUtils.cs" />
     <Compile Include="Utilities\EnumValue.cs" />
     <Compile Include="Utilities\EnumValues.cs" />

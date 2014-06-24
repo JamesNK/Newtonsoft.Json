@@ -56,7 +56,7 @@ namespace Newtonsoft.Json.Serialization
                 assembly = Assembly.LoadWithPartialName(assemblyName);
 #pragma warning restore 618,612
 #elif NETFX_CORE || PORTABLE
-        assembly = Assembly.Load(new AssemblyName(assemblyName));
+                assembly = Assembly.Load(new AssemblyName(assemblyName));
 #else
                 assembly = Assembly.Load(assemblyName);
 #endif
@@ -105,7 +105,8 @@ namespace Newtonsoft.Json.Serialization
 
             public override int GetHashCode()
             {
-                return ((AssemblyName != null) ? AssemblyName.GetHashCode() : 0) ^ ((TypeName != null) ? TypeName.GetHashCode() : 0);
+                return ((AssemblyName != null) ? AssemblyName.GetHashCode() : 0)
+                    ^ ((TypeName != null) ? TypeName.GetHashCode() : 0);
             }
 
             public override bool Equals(object obj)

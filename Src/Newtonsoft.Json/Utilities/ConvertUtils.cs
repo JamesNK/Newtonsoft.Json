@@ -160,6 +160,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
             };
 
+#if !(NETFX_CORE || PORTABLE)
         private static readonly List<TypeInformation> PrimitiveTypeCodes = new List<TypeInformation>
         {
             new TypeInformation { Type = typeof(object), TypeCode = PrimitiveTypeCode.Empty },
@@ -182,6 +183,7 @@ namespace Newtonsoft.Json.Utilities
             new TypeInformation { Type = typeof(object), TypeCode = PrimitiveTypeCode.Empty }, // no 17 in TypeCode for some reason
             new TypeInformation { Type = typeof(string), TypeCode = PrimitiveTypeCode.String }
         };
+#endif
 
         public static PrimitiveTypeCode GetTypeCode(Type t)
         {
@@ -437,6 +439,12 @@ namespace Newtonsoft.Json.Utilities
             if (initialValue is byte[] && targetType == typeof(Guid))
             {
                 value = new Guid((byte[])initialValue);
+                return ConvertResult.Success;
+            }
+
+            if (initialValue is Guid && targetType == typeof(byte[]))
+            {
+                value = ((Guid)initialValue).ToByteArray();
                 return ConvertResult.Success;
             }
 

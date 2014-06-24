@@ -29,13 +29,40 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using Newtonsoft.Json.Serialization;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
+using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
+#endif
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
     [TestFixture]
     public class ShouldSerializeTests : TestFixtureBase
     {
+        public class A
+        {
+        }
+
+        public class B
+        {
+            public A A { get; set; }
+            public virtual bool ShouldSerializeA()
+            {
+                return false;
+            }
+        }
+
+        [Test]
+        public void VirtualShouldSerializeSimple()
+        {
+            string json = JsonConvert.SerializeObject(new B());
+
+            Assert.AreEqual("{}", json);
+        }
+
         [Test]
         public void VirtualShouldSerialize()
         {
@@ -72,9 +99,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             var deserializedSetFoo = JsonConvert.DeserializeObject<Foo1>(setFooJson);
 
             Assert.AreEqual(setFoo.name, deserializedSetFoo.name);
-            Assert.NotNull(deserializedSetFoo.myBar);
+            Assert.IsNotNull(deserializedSetFoo.myBar);
             Assert.AreEqual(setFoo.myBar.name, deserializedSetFoo.myBar.name);
-            Assert.NotNull(deserializedSetFoo.myBar.myBaz);
+            Assert.IsNotNull(deserializedSetFoo.myBar.myBaz);
             Assert.AreEqual(setFoo.myBar.myBaz.Length, deserializedSetFoo.myBar.myBaz.Length);
             Assert.AreEqual(setFoo.myBar.myBaz[0].name, deserializedSetFoo.myBar.myBaz[0].name);
             Assert.IsNotNull(deserializedSetFoo.myBar.myBaz[0].myFrob[0]);
@@ -104,7 +131,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 jsonSerializer.Serialize(jsonWriter, f, typeof(Foo1));
             }
 
-            Console.Out.WriteLine("Trace output:\n{0}", traceWriter.ToString());
+            Console.WriteLine("Trace output:\n{0}", traceWriter.ToString());
 
             return sw.ToString();
         }

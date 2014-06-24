@@ -127,6 +127,7 @@ namespace Newtonsoft.Json
         private bool _hasExceededMaxDepth;
         internal DateParseHandling _dateParseHandling;
         internal FloatParseHandling _floatParseHandling;
+        private string _dateFormatString;
         private readonly List<JsonPosition> _stack;
 
         /// <summary>
@@ -191,6 +192,15 @@ namespace Newtonsoft.Json
         {
             get { return _floatParseHandling; }
             set { _floatParseHandling = value; }
+        }
+
+        /// <summary>
+        /// Get or set how custom date formatted strings are parsed when reading JSON.
+        /// </summary>
+        public string DateFormatString
+        {
+            get { return _dateFormatString; }
+            set { _dateFormatString = value; }
         }
 
         /// <summary>
@@ -440,7 +450,7 @@ namespace Newtonsoft.Json
                 }
 
                 object temp;
-                if (DateTimeUtils.TryParseDateTime(s, DateParseHandling.DateTimeOffset, DateTimeZoneHandling, out temp))
+                if (DateTimeUtils.TryParseDateTime(s, DateParseHandling.DateTimeOffset, DateTimeZoneHandling, _dateFormatString, Culture, out temp))
                 {
                     dt = (DateTimeOffset)temp;
                     SetToken(JsonToken.Date, dt, false);
@@ -503,7 +513,16 @@ namespace Newtonsoft.Json
                 return null;
 
             if (t == JsonToken.Bytes)
+            {
+                if (ValueType == typeof(Guid))
+                {
+                    byte[] data = ((Guid)Value).ToByteArray();
+                    SetToken(JsonToken.Bytes, data, false);
+                    return data;
+                }
+
                 return (byte[])Value;
+            }
 
             if (t == JsonToken.StartArray)
             {
@@ -728,7 +747,7 @@ namespace Newtonsoft.Json
                 }
 
                 object temp;
-                if (DateTimeUtils.TryParseDateTime(s, DateParseHandling.DateTime, DateTimeZoneHandling, out temp))
+                if (DateTimeUtils.TryParseDateTime(s, DateParseHandling.DateTime, DateTimeZoneHandling, _dateFormatString, Culture, out temp))
                 {
                     dt = (DateTime)temp;
                     dt = DateTimeUtils.EnsureDateTime(dt, DateTimeZoneHandling);
@@ -764,7 +783,7 @@ namespace Newtonsoft.Json
                 if (Value.ToString() == JsonTypeReflector.TypePropertyName)
                 {
                     ReadInternal();
-                    if (Value != null && Value.ToString().StartsWith("System.Byte[]"))
+                    if (Value != null && Value.ToString().StartsWith("System.Byte[]", StringComparison.Ordinal))
                     {
                         ReadInternal();
                         if (Value.ToString() == JsonTypeReflector.ValuePropertyName)

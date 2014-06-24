@@ -109,6 +109,184 @@ namespace Newtonsoft.Json.Tests.Serialization
     public class ContractResolverTests : TestFixtureBase
     {
         [Test]
+        public void JsonPropertyDefaultValue()
+        {
+            JsonProperty p = new JsonProperty();
+
+            Assert.AreEqual(null, p.GetResolvedDefaultValue());
+            Assert.AreEqual(null, p.DefaultValue);
+
+            p.PropertyType = typeof(int);
+
+            Assert.AreEqual(0 , p.GetResolvedDefaultValue());
+            Assert.AreEqual(null, p.DefaultValue);
+
+            p.PropertyType = typeof(DateTime);
+
+            Assert.AreEqual(new DateTime(), p.GetResolvedDefaultValue());
+            Assert.AreEqual(null, p.DefaultValue);
+
+            p.PropertyType = null;
+
+            Assert.AreEqual(null, p.GetResolvedDefaultValue());
+            Assert.AreEqual(null, p.DefaultValue);
+
+            p.PropertyType = typeof(CompareOptions);
+
+            Assert.AreEqual(CompareOptions.None, (CompareOptions)p.GetResolvedDefaultValue());
+            Assert.AreEqual(null, p.DefaultValue);
+        }
+
+        [Test]
+        public void ListInterface()
+        {
+            var resolver = new DefaultContractResolver();
+            var contract = (JsonArrayContract)resolver.ResolveContract(typeof(IList<int>));
+
+            Assert.IsTrue(contract.IsInstantiable);
+            Assert.AreEqual(typeof(List<int>), contract.CreatedType);
+            Assert.IsNotNull(contract.DefaultCreator);
+        }
+
+        [Test]
+        public void AbstractTestClass()
+        {
+            var resolver = new DefaultContractResolver();
+            var contract = (JsonObjectContract)resolver.ResolveContract(typeof(AbstractTestClass));
+
+            Assert.IsFalse(contract.IsInstantiable);
+            Assert.IsNull(contract.DefaultCreator);
+            Assert.IsNull(contract.OverrideCreator);
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                "Could not create an instance of type Newtonsoft.Json.Tests.Serialization.AbstractTestClass. Type is an interface or abstract class and cannot be instantiated. Path 'Value', line 1, position 7.",
+                () => JsonConvert.DeserializeObject<AbstractTestClass>(@"{Value:'Value!'}", new JsonSerializerSettings
+                {
+                    ContractResolver = resolver
+                }));
+
+            contract.DefaultCreator = () => new AbstractImplementationTestClass();
+
+            var o = JsonConvert.DeserializeObject<AbstractTestClass>(@"{Value:'Value!'}", new JsonSerializerSettings
+            {
+                ContractResolver = resolver
+            });
+
+            Assert.AreEqual("Value!", o.Value);
+        }
+
+        [Test]
+        public void AbstractListTestClass()
+        {
+            var resolver = new DefaultContractResolver();
+            var contract = (JsonArrayContract)resolver.ResolveContract(typeof(AbstractListTestClass<int>));
+
+            Assert.IsFalse(contract.IsInstantiable);
+            Assert.IsNull(contract.DefaultCreator);
+            Assert.IsNull(contract.ParametrizedCreator);
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                "Could not create an instance of type Newtonsoft.Json.Tests.Serialization.AbstractListTestClass`1[System.Int32]. Type is an interface or abstract class and cannot be instantiated. Path '', line 1, position 1.",
+                () => JsonConvert.DeserializeObject<AbstractListTestClass<int>>(@"[1,2]", new JsonSerializerSettings
+                {
+                    ContractResolver = resolver
+                }));
+
+            contract.DefaultCreator = () => new AbstractImplementationListTestClass<int>();
+
+            var l = JsonConvert.DeserializeObject<AbstractListTestClass<int>>(@"[1,2]", new JsonSerializerSettings
+            {
+                ContractResolver = resolver
+            });
+
+            Assert.AreEqual(2, l.Count);
+            Assert.AreEqual(1, l[0]);
+            Assert.AreEqual(2, l[1]);
+        }
+
+        public class CustomList<T> : List<T>
+        {   
+        }
+
+        [Test]
+        public void ListInterfaceDefaultCreator()
+        {
+            var resolver = new DefaultContractResolver();
+            var contract = (JsonArrayContract)resolver.ResolveContract(typeof(IList<int>));
+
+            Assert.IsTrue(contract.IsInstantiable);
+            Assert.IsNotNull(contract.DefaultCreator);
+
+            contract.DefaultCreator = () => new CustomList<int>();
+
+            var l = JsonConvert.DeserializeObject<IList<int>>(@"[1,2,3]", new JsonSerializerSettings
+            {
+                ContractResolver = resolver
+            });
+
+            Assert.AreEqual(typeof(CustomList<int>), l.GetType());
+            Assert.AreEqual(3, l.Count);
+            Assert.AreEqual(1, l[0]);
+            Assert.AreEqual(2, l[1]);
+            Assert.AreEqual(3, l[2]);
+        }
+
+        public class CustomDictionary<TKey, TValue> : Dictionary<TKey, TValue>
+        {
+        }
+
+        [Test]
+        public void DictionaryInterfaceDefaultCreator()
+        {
+            var resolver = new DefaultContractResolver();
+            var contract = (JsonDictionaryContract)resolver.ResolveContract(typeof(IDictionary<string, int>));
+
+            Assert.IsTrue(contract.IsInstantiable);
+            Assert.IsNotNull(contract.DefaultCreator);
+
+            contract.DefaultCreator = () => new CustomDictionary<string, int>();
+
+            var d = JsonConvert.DeserializeObject<IDictionary<string, int>>(@"{key1:1,key2:2}", new JsonSerializerSettings
+            {
+                ContractResolver = resolver
+            });
+
+            Assert.AreEqual(typeof(CustomDictionary<string, int>), d.GetType());
+            Assert.AreEqual(2, d.Count);
+            Assert.AreEqual(1, d["key1"]);
+            Assert.AreEqual(2, d["key2"]);
+        }
+
+        [Test]
+        public void AbstractDictionaryTestClass()
+        {
+            var resolver = new DefaultContractResolver();
+            var contract = (JsonDictionaryContract)resolver.ResolveContract(typeof(AbstractDictionaryTestClass<string, int>));
+
+            Assert.IsFalse(contract.IsInstantiable);
+            Assert.IsNull(contract.DefaultCreator);
+            Assert.IsNull(contract.ParametrizedCreator);
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                "Could not create an instance of type Newtonsoft.Json.Tests.Serialization.AbstractDictionaryTestClass`2[System.String,System.Int32]. Type is an interface or abstract class and cannot be instantiated. Path 'key1', line 1, position 6.",
+                () => JsonConvert.DeserializeObject<AbstractDictionaryTestClass<string, int>>(@"{key1:1,key2:2}", new JsonSerializerSettings
+                {
+                    ContractResolver = resolver
+                }));
+
+            contract.DefaultCreator = () => new AbstractImplementationDictionaryTestClass<string, int>();
+
+            var d = JsonConvert.DeserializeObject<AbstractDictionaryTestClass<string, int>>(@"{key1:1,key2:2}", new JsonSerializerSettings
+            {
+                ContractResolver = resolver
+            });
+
+            Assert.AreEqual(2, d.Count);
+            Assert.AreEqual(1, d["key1"]);
+            Assert.AreEqual(2, d["key2"]);
+        }
+
+        [Test]
         public void SerializeWithEscapedPropertyName()
         {
             string json = JsonConvert.SerializeObject(
@@ -148,6 +326,74 @@ namespace Newtonsoft.Json.Tests.Serialization
             var contract = (JsonObjectContract)resolver.ResolveContract(typeof(NumberFormatInfo));
 
             Assert.IsFalse(contract.Properties.Any(c => c.PropertyName == "InvariantInfo"));
+        }
+
+        [Test]
+        public void ParametrizedCreator()
+        {
+            var resolver = new DefaultContractResolver();
+            var contract = (JsonObjectContract)resolver.ResolveContract(typeof(PublicParametizedConstructorWithPropertyNameConflictWithAttribute));
+
+            Assert.IsNull(contract.DefaultCreator);
+            Assert.IsNotNull(contract.ParametrizedCreator);
+#pragma warning disable 618
+            Assert.AreEqual(contract.ParametrizedConstructor, typeof(PublicParametizedConstructorWithPropertyNameConflictWithAttribute).GetConstructor(new[] { typeof(string) }));
+#pragma warning restore 618
+            Assert.AreEqual(1, contract.CreatorParameters.Count);
+            Assert.AreEqual("name", contract.CreatorParameters[0].PropertyName);
+
+#pragma warning disable 618
+            contract.ParametrizedConstructor = null;
+#pragma warning restore 618
+            Assert.IsNull(contract.ParametrizedCreator);
+        }
+
+        [Test]
+        public void OverrideCreator()
+        {
+            var resolver = new DefaultContractResolver();
+            var contract = (JsonObjectContract)resolver.ResolveContract(typeof(MultipleParamatrizedConstructorsJsonConstructor));
+
+            Assert.IsNull(contract.DefaultCreator);
+            Assert.IsNotNull(contract.OverrideCreator);
+#pragma warning disable 618
+            Assert.AreEqual(contract.OverrideConstructor, typeof(MultipleParamatrizedConstructorsJsonConstructor).GetConstructor(new[] { typeof(string), typeof(int) }));
+#pragma warning restore 618
+            Assert.AreEqual(2, contract.CreatorParameters.Count);
+            Assert.AreEqual("Value", contract.CreatorParameters[0].PropertyName);
+            Assert.AreEqual("Age", contract.CreatorParameters[1].PropertyName);
+
+#pragma warning disable 618
+            contract.OverrideConstructor = null;
+#pragma warning restore 618
+            Assert.IsNull(contract.OverrideCreator);
+        }
+
+        [Test]
+        public void CustomOverrideCreator()
+        {
+            var resolver = new DefaultContractResolver();
+            var contract = (JsonObjectContract)resolver.ResolveContract(typeof(MultipleParamatrizedConstructorsJsonConstructor));
+
+            bool ensureCustomCreatorCalled = false;
+
+            contract.OverrideCreator = args =>
+            {
+                ensureCustomCreatorCalled = true;
+                return new MultipleParamatrizedConstructorsJsonConstructor((string) args[0], (int) args[1]);
+            };
+#pragma warning disable 618
+            Assert.IsNull(contract.OverrideConstructor);
+#pragma warning restore 618
+
+            var o = JsonConvert.DeserializeObject<MultipleParamatrizedConstructorsJsonConstructor>("{Value:'value!', Age:1}", new JsonSerializerSettings
+            {
+                ContractResolver = resolver
+            });
+
+            Assert.AreEqual("value!", o.Value);
+            Assert.AreEqual(1, o.Age);
+            Assert.IsTrue(ensureCustomCreatorCalled);
         }
 
         [Test]

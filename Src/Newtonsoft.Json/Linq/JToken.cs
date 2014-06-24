@@ -69,7 +69,9 @@ namespace Newtonsoft.Json.Linq
 
         private static readonly JTokenType[] BooleanTypes = new[] { JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Boolean };
         private static readonly JTokenType[] NumberTypes = new[] { JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Boolean };
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
         private static readonly JTokenType[] BigIntegerTypes = new[] { JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Boolean, JTokenType.Bytes };
+#endif
         private static readonly JTokenType[] StringTypes = new[] { JTokenType.Date, JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Boolean, JTokenType.Bytes, JTokenType.Guid, JTokenType.TimeSpan, JTokenType.Uri };
         private static readonly JTokenType[] GuidTypes = new[] { JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Guid, JTokenType.Bytes };
         private static readonly JTokenType[] TimeSpanTypes = new[] { JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.TimeSpan };
@@ -313,7 +315,8 @@ namespace Newtonsoft.Json.Linq
         {
             JToken token = this[key];
 
-            return Extensions.Convert<JToken, T>(token);
+            // null check to fix MonoTouch issue - https://github.com/dolbz/Newtonsoft.Json/commit/a24e3062846b30ee505f3271ac08862bb471b822
+            return token == null ? default(T) : Extensions.Convert<JToken, T>(token);
         }
 
         /// <summary>
@@ -1834,22 +1837,42 @@ namespace Newtonsoft.Json.Linq
                     throw JsonReaderException.Create(reader, "Error reading JToken from JsonReader.");
             }
 
-            if (reader.TokenType == JsonToken.StartObject)
-                return JObject.Load(reader);
+            IJsonLineInfo lineInfo = reader as IJsonLineInfo;
 
-            if (reader.TokenType == JsonToken.StartArray)
-                return JArray.Load(reader);
-
-            if (reader.TokenType == JsonToken.PropertyName)
-                return JProperty.Load(reader);
-
-            if (reader.TokenType == JsonToken.StartConstructor)
-                return JConstructor.Load(reader);
-
-            if (!JsonReader.IsStartToken(reader.TokenType))
-                return new JValue(reader.Value);
-
-            throw JsonReaderException.Create(reader, "Error reading JToken from JsonReader. Unexpected token: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
+            switch (reader.TokenType)
+            {
+                case JsonToken.StartObject:
+                    return JObject.Load(reader);
+                case JsonToken.StartArray:
+                    return JArray.Load(reader);
+                case JsonToken.StartConstructor:
+                    return JConstructor.Load(reader);
+                case JsonToken.PropertyName:
+                    return JProperty.Load(reader);
+                case JsonToken.String:
+                case JsonToken.Integer:
+                case JsonToken.Float:
+                case JsonToken.Date:
+                case JsonToken.Boolean:
+                case JsonToken.Bytes:
+                    JValue v = new JValue(reader.Value);
+                    v.SetLineInfo(lineInfo);
+                    return v;
+                case JsonToken.Comment:
+                    v = JValue.CreateComment(reader.Value.ToString());
+                    v.SetLineInfo(lineInfo);
+                    return v;
+                case JsonToken.Null:
+                    v = JValue.CreateNull();
+                    v.SetLineInfo(lineInfo);
+                    return v;
+                case JsonToken.Undefined:
+                    v = JValue.CreateUndefined();
+                    v.SetLineInfo(lineInfo);
+                    return v;
+                default:
+                    throw JsonReaderException.Create(reader, "Error reading JToken from JsonReader. Unexpected token: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
+            }
         }
 
         /// <summary>

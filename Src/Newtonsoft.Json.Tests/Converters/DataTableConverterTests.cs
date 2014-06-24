@@ -23,7 +23,10 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+using System.IO;
 using System.Text;
+using Newtonsoft.Json.Bson;
+using Newtonsoft.Json.Linq;
 #if !(NETFX_CORE || PORTABLE || PORTABLE40)
 using System;
 using System.Collections.Generic;
@@ -57,7 +60,8 @@ namespace Newtonsoft.Json.Tests.Converters
     ],
     ""ArrayCol"": [
       0
-    ]
+    ],
+    ""DateCol"": ""2000-12-29T00:00:00Z""
   },
   {
     ""id"": 1,
@@ -69,7 +73,8 @@ namespace Newtonsoft.Json.Tests.Converters
     ],
     ""ArrayCol"": [
       1
-    ]
+    ],
+    ""DateCol"": ""2000-12-29T00:00:00Z""
   }
 ]";
 
@@ -77,7 +82,7 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.IsNotNull(deserializedDataTable);
 
             Assert.AreEqual(string.Empty, deserializedDataTable.TableName);
-            Assert.AreEqual(4, deserializedDataTable.Columns.Count);
+            Assert.AreEqual(5, deserializedDataTable.Columns.Count);
             Assert.AreEqual("id", deserializedDataTable.Columns[0].ColumnName);
             Assert.AreEqual(typeof(long), deserializedDataTable.Columns[0].DataType);
             Assert.AreEqual("item", deserializedDataTable.Columns[1].ColumnName);
@@ -86,6 +91,8 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual(typeof(DataTable), deserializedDataTable.Columns[2].DataType);
             Assert.AreEqual("ArrayCol", deserializedDataTable.Columns[3].ColumnName);
             Assert.AreEqual(typeof(long[]), deserializedDataTable.Columns[3].DataType);
+            Assert.AreEqual("DateCol", deserializedDataTable.Columns[4].ColumnName);
+            Assert.AreEqual(typeof(DateTime), deserializedDataTable.Columns[4].DataType);
 
             Assert.AreEqual(2, deserializedDataTable.Rows.Count);
 
@@ -94,13 +101,56 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual("item 0", dr1["item"]);
             Assert.AreEqual("0!", ((DataTable)dr1["DataTableCol"]).Rows[0]["NestedStringCol"]);
             Assert.AreEqual(0, ((long[])dr1["ArrayCol"])[0]);
+            Assert.AreEqual(new DateTime(2000, 12, 29, 0, 0, 0, DateTimeKind.Utc), dr1["DateCol"]);
 
             DataRow dr2 = deserializedDataTable.Rows[1];
             Assert.AreEqual(1, dr2["id"]);
             Assert.AreEqual("item 1", dr2["item"]);
             Assert.AreEqual("1!", ((DataTable)dr2["DataTableCol"]).Rows[0]["NestedStringCol"]);
             Assert.AreEqual(1, ((long[])dr2["ArrayCol"])[0]);
+            Assert.AreEqual(new DateTime(2000, 12, 29, 0, 0, 0, DateTimeKind.Utc), dr2["DateCol"]);
         }
+
+#if !NET20
+        [Test]
+        public void DeserializeParseHandling()
+        {
+            string json = @"[
+  {
+    ""DateCol"": ""2000-12-29T00:00:00Z"",
+    ""FloatCol"": 99.9999999999999999999
+  },
+  {
+    ""DateCol"": ""2000-12-29T00:00:00Z"",
+    ""FloatCol"": 99.9999999999999999999
+  }
+]";
+
+            DataTable deserializedDataTable = JsonConvert.DeserializeObject<DataTable>(json, new JsonSerializerSettings
+            {
+                DateParseHandling = DateParseHandling.DateTimeOffset,
+                FloatParseHandling = FloatParseHandling.Decimal
+            });
+            Assert.IsNotNull(deserializedDataTable);
+
+            Assert.AreEqual(string.Empty, deserializedDataTable.TableName);
+            Assert.AreEqual(2, deserializedDataTable.Columns.Count);
+            Assert.AreEqual("DateCol", deserializedDataTable.Columns[0].ColumnName);
+            Assert.AreEqual(typeof(DateTimeOffset), deserializedDataTable.Columns[0].DataType);
+            Assert.AreEqual("FloatCol", deserializedDataTable.Columns[1].ColumnName);
+            Assert.AreEqual(typeof(decimal), deserializedDataTable.Columns[1].DataType);
+
+            Assert.AreEqual(2, deserializedDataTable.Rows.Count);
+
+            DataRow dr1 = deserializedDataTable.Rows[0];
+            Assert.AreEqual(new DateTimeOffset(2000, 12, 29, 0, 0, 0, TimeSpan.Zero), dr1["DateCol"]);
+            Assert.AreEqual(99.9999999999999999999m, dr1["FloatCol"]);
+
+            DataRow dr2 = deserializedDataTable.Rows[1];
+            Assert.AreEqual(new DateTimeOffset(2000, 12, 29, 0, 0, 0, TimeSpan.Zero), dr2["DateCol"]);
+            Assert.AreEqual(99.9999999999999999999m, dr2["FloatCol"]);
+        }
+#endif
 
         [Test]
         public void Serialize()
@@ -223,6 +273,47 @@ namespace Newtonsoft.Json.Tests.Converters
 
             DataTable t2 = JsonConvert.DeserializeObject<DataTable>(json, new TestDataTableConverter());
             Assert.AreEqual(t1.TableName, t2.TableName);
+        }
+
+        [Test]
+        public void RoundtripBsonBytes()
+        {
+            Guid g = new Guid("EDE9A599-A7D9-44A9-9243-7C287049DD20");
+
+            var table = new DataTable();
+            table.Columns.Add("data", typeof(byte[]));
+            table.Columns.Add("id", typeof(Guid));
+            table.Rows.Add(Encoding.UTF8.GetBytes("Hello world!"), g);
+
+            JsonSerializer serializer = new JsonSerializer();
+
+            MemoryStream ms = new MemoryStream();
+            BsonWriter bw = new BsonWriter(ms);
+
+            serializer.Serialize(bw, table);
+
+            JToken o = JToken.ReadFrom(new BsonReader(new MemoryStream(ms.ToArray())) { ReadRootValueAsArray = true });
+            Assert.AreEqual(@"[
+  {
+    ""data"": ""SGVsbG8gd29ybGQh"",
+    ""id"": ""ede9a599-a7d9-44a9-9243-7c287049dd20""
+  }
+]", o.ToString());
+
+            DataTable deserializedDataTable = serializer.Deserialize<DataTable>(new BsonReader(new MemoryStream(ms.ToArray())) { ReadRootValueAsArray = true });
+
+            Assert.AreEqual(string.Empty, deserializedDataTable.TableName);
+            Assert.AreEqual(2, deserializedDataTable.Columns.Count);
+            Assert.AreEqual("data", deserializedDataTable.Columns[0].ColumnName);
+            Assert.AreEqual(typeof(byte[]), deserializedDataTable.Columns[0].DataType);
+            Assert.AreEqual("id", deserializedDataTable.Columns[1].ColumnName);
+            Assert.AreEqual(typeof(Guid), deserializedDataTable.Columns[1].DataType);
+
+            Assert.AreEqual(1, deserializedDataTable.Rows.Count);
+
+            DataRow dr1 = deserializedDataTable.Rows[0];
+            CollectionAssert.AreEquivalent(Encoding.UTF8.GetBytes("Hello world!"), (byte[])dr1["data"]);
+            Assert.AreEqual(g, (Guid)dr1["id"]);
         }
 
         [Test]

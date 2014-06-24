@@ -176,7 +176,7 @@ namespace Newtonsoft.Json.Linq
             }
             else
             {
-                _value = value ?? new JValue((object)null);
+                _value = value ?? JValue.CreateNull();
             }
         }
 
@@ -246,7 +246,7 @@ namespace Newtonsoft.Json.Linq
         public override void WriteValue(string value)
         {
             base.WriteValue(value);
-            AddValue(value ?? string.Empty, JsonToken.String);
+            AddValue(value, JsonToken.String);
         }
 
         /// <summary>

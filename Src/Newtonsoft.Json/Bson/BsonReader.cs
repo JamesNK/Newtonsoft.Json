@@ -536,7 +536,14 @@ namespace Newtonsoft.Json.Bson
                     break;
                 }
                 case BsonType.Binary:
-                    SetToken(JsonToken.Bytes, ReadBinary());
+                    BsonBinaryType binaryType;
+                    byte[] data = ReadBinary(out binaryType);
+
+                    object value = (binaryType != BsonBinaryType.Uuid)
+                        ? data
+                        : (object)new Guid(data);
+
+                    SetToken(JsonToken.Bytes, value);
                     break;
                 case BsonType.Undefined:
                     SetToken(JsonToken.Undefined);
@@ -602,11 +609,11 @@ namespace Newtonsoft.Json.Bson
             }
         }
 
-        private byte[] ReadBinary()
+        private byte[] ReadBinary(out BsonBinaryType binaryType)
         {
             int dataLength = ReadInt32();
 
-            BsonBinaryType binaryType = (BsonBinaryType)ReadByte();
+            binaryType = (BsonBinaryType)ReadByte();
 
 #pragma warning disable 612,618
             // the old binary type has the data length repeated in the data for some reason

@@ -41,7 +41,6 @@ using System.Linq;
 
 namespace Newtonsoft.Json.Converters
 {
-
     #region XmlNodeWrappers
 #if !NETFX_CORE && !PORTABLE && !PORTABLE40
     internal class XmlDocumentWrapper : XmlNodeWrapper, IXmlDocument
@@ -81,7 +80,12 @@ namespace Newtonsoft.Json.Converters
 
         public IXmlNode CreateXmlDeclaration(string version, string encoding, string standalone)
         {
-            return new XmlNodeWrapper(_document.CreateXmlDeclaration(version, encoding, standalone));
+            return new XmlDeclarationWrapper(_document.CreateXmlDeclaration(version, encoding, standalone));
+        }
+
+        public IXmlNode CreateXmlDocumentType(string name, string publicId, string systemId, string internalSubset)
+        {
+            return new XmlDocumentTypeWrapper(_document.CreateDocumentType(name, publicId, systemId, null));
         }
 
         public IXmlNode CreateProcessingInstruction(string target, string data)
@@ -148,6 +152,11 @@ namespace Newtonsoft.Json.Converters
         {
             return _element.GetPrefixOfNamespace(namespaceUri);
         }
+
+        public bool IsEmpty
+        {
+            get { return _element.IsEmpty; }
+        }
     }
 
     internal class XmlDeclarationWrapper : XmlNodeWrapper, IXmlDeclaration
@@ -178,9 +187,46 @@ namespace Newtonsoft.Json.Converters
         }
     }
 
+    internal class XmlDocumentTypeWrapper : XmlNodeWrapper, IXmlDocumentType
+    {
+        private readonly XmlDocumentType _documentType;
+
+        public XmlDocumentTypeWrapper(XmlDocumentType documentType)
+            : base(documentType)
+        {
+            _documentType = documentType;
+        }
+
+        public string Name
+        {
+            get { return _documentType.Name; }
+        }
+
+        public string System
+        {
+            get { return _documentType.SystemId; }
+        }
+
+        public string Public
+        {
+            get { return _documentType.PublicId; }
+        }
+
+        public string InternalSubset
+        {
+            get { return _documentType.InternalSubset; }
+        }
+
+        public new string LocalName
+        {
+            get { return "DOCTYPE"; }
+        }
+    }
+
     internal class XmlNodeWrapper : IXmlNode
     {
         private readonly XmlNode _node;
+        private IList<IXmlNode> _childNodes;
 
         public XmlNodeWrapper(XmlNode node)
         {
@@ -204,7 +250,15 @@ namespace Newtonsoft.Json.Converters
 
         public IList<IXmlNode> ChildNodes
         {
-            get { return _node.ChildNodes.Cast<XmlNode>().Select(n => WrapNode(n)).ToList(); }
+            get
+            {
+                // childnodes is read multiple times
+                // cache results to prevent multiple reads which kills perf in large documents
+                if (_childNodes == null)
+                    _childNodes = _node.ChildNodes.Cast<XmlNode>().Select(WrapNode).ToList();
+
+                return _childNodes;
+            }
         }
 
         private IXmlNode WrapNode(XmlNode node)
@@ -212,9 +266,11 @@ namespace Newtonsoft.Json.Converters
             switch (node.NodeType)
             {
                 case XmlNodeType.Element:
-                    return new XmlElementWrapper((XmlElement)node);
+                    return new XmlElementWrapper((XmlElement) node);
                 case XmlNodeType.XmlDeclaration:
-                    return new XmlDeclarationWrapper((XmlDeclaration)node);
+                    return new XmlDeclarationWrapper((XmlDeclaration) node);
+                case XmlNodeType.DocumentType:
+                    return new XmlDocumentTypeWrapper((XmlDocumentType) node);
                 default:
                     return new XmlNodeWrapper(node);
             }
@@ -227,7 +283,7 @@ namespace Newtonsoft.Json.Converters
                 if (_node.Attributes == null)
                     return null;
 
-                return _node.Attributes.Cast<XmlAttribute>().Select(a => WrapNode(a)).ToList();
+                return _node.Attributes.Cast<XmlAttribute>().Select(WrapNode).ToList();
             }
         }
 
@@ -236,7 +292,7 @@ namespace Newtonsoft.Json.Converters
             get
             {
                 XmlNode node = (_node is XmlAttribute)
-                    ? ((XmlAttribute)_node).OwnerElement
+                    ? ((XmlAttribute) _node).OwnerElement
                     : _node.ParentNode;
 
                 if (node == null)
@@ -254,8 +310,9 @@ namespace Newtonsoft.Json.Converters
 
         public IXmlNode AppendChild(IXmlNode newChild)
         {
-            XmlNodeWrapper xmlNodeWrapper = (XmlNodeWrapper)newChild;
+            XmlNodeWrapper xmlNodeWrapper = (XmlNodeWrapper) newChild;
             _node.AppendChild(xmlNodeWrapper._node);
+            _childNodes = null;
 
             return newChild;
         }
@@ -277,6 +334,7 @@ namespace Newtonsoft.Json.Converters
         IXmlNode CreateWhitespace(string text);
         IXmlNode CreateSignificantWhitespace(string text);
         IXmlNode CreateXmlDeclaration(string version, string encoding, string standalone);
+        IXmlNode CreateXmlDocumentType(string name, string publicId, string systemId, string internalSubset);
         IXmlNode CreateProcessingInstruction(string target, string data);
         IXmlElement CreateElement(string elementName);
         IXmlElement CreateElement(string qualifiedName, string namespaceUri);
@@ -293,10 +351,19 @@ namespace Newtonsoft.Json.Converters
         string Standalone { get; set; }
     }
 
+    internal interface IXmlDocumentType : IXmlNode
+    {
+        string Name { get; }
+        string System { get; }
+        string Public { get; }
+        string InternalSubset { get; }
+    }
+
     internal interface IXmlElement : IXmlNode
     {
         void SetAttributeNode(IXmlNode attribute);
         string GetPrefixOfNamespace(string namespaceUri);
+        bool IsEmpty { get; }
     }
 
     internal interface IXmlNode
@@ -348,6 +415,42 @@ namespace Newtonsoft.Json.Converters
         }
     }
 
+    internal class XDocumentTypeWrapper : XObjectWrapper, IXmlDocumentType
+    {
+        private readonly XDocumentType _documentType;
+
+        public XDocumentTypeWrapper(XDocumentType documentType)
+            : base(documentType)
+        {
+            _documentType = documentType;
+        }
+
+        public string Name
+        {
+            get { return _documentType.Name; }
+        }
+
+        public string System
+        {
+            get { return _documentType.SystemId; }
+        }
+
+        public string Public
+        {
+            get { return _documentType.PublicId; }
+        }
+
+        public string InternalSubset
+        {
+            get { return _documentType.InternalSubset; }
+        }
+
+        public new string LocalName
+        {
+            get { return "DOCTYPE"; }
+        }
+    }
+
     internal class XDocumentWrapper : XContainerWrapper, IXmlDocument
     {
         private XDocument Document
@@ -366,7 +469,7 @@ namespace Newtonsoft.Json.Converters
             {
                 IList<IXmlNode> childNodes = base.ChildNodes;
 
-                if (Document.Declaration != null)
+                if (Document.Declaration != null && childNodes[0].NodeType != XmlNodeType.XmlDeclaration)
                     childNodes.Insert(0, new XDeclarationWrapper(Document.Declaration));
 
                 return childNodes;
@@ -401,6 +504,11 @@ namespace Newtonsoft.Json.Converters
         public IXmlNode CreateXmlDeclaration(string version, string encoding, string standalone)
         {
             return new XDeclarationWrapper(new XDeclaration(version, encoding, standalone));
+        }
+
+        public IXmlNode CreateXmlDocumentType(string name, string publicId, string systemId, string internalSubset)
+        {
+            return new XDocumentTypeWrapper(new XDocumentType(name, publicId, systemId, internalSubset));
         }
 
         public IXmlNode CreateProcessingInstruction(string target, string data)
@@ -542,6 +650,8 @@ namespace Newtonsoft.Json.Converters
 
     internal class XContainerWrapper : XObjectWrapper
     {
+        private IList<IXmlNode> _childNodes;
+
         private XContainer Container
         {
             get { return (XContainer)WrappedNode; }
@@ -554,7 +664,15 @@ namespace Newtonsoft.Json.Converters
 
         public override IList<IXmlNode> ChildNodes
         {
-            get { return Container.Nodes().Select(n => WrapNode(n)).ToList(); }
+            get
+            {
+                // childnodes is read multiple times
+                // cache results to prevent multiple reads which kills perf in large documents
+                if (_childNodes == null)
+                    _childNodes = Container.Nodes().Select(WrapNode).ToList();
+
+                return _childNodes;
+            }
         }
 
         public override IXmlNode ParentNode
@@ -584,6 +702,8 @@ namespace Newtonsoft.Json.Converters
                 return new XCommentWrapper((XComment)node);
             else if (node is XAttribute)
                 return new XAttributeWrapper((XAttribute)node);
+            else if (node is XDocumentType)
+                return new XDocumentTypeWrapper((XDocumentType)node);
             else
                 return new XObjectWrapper(node);
         }
@@ -591,6 +711,8 @@ namespace Newtonsoft.Json.Converters
         public override IXmlNode AppendChild(IXmlNode newChild)
         {
             Container.Add(newChild.WrappedNode);
+            _childNodes = null;
+
             return newChild;
         }
     }
@@ -734,6 +856,11 @@ namespace Newtonsoft.Json.Converters
         {
             return Element.GetPrefixOfNamespace(namespaceUri);
         }
+
+        public bool IsEmpty
+        {
+            get { return Element.IsEmpty; }
+        }
     }
 #endif
     #endregion
@@ -868,6 +995,8 @@ namespace Newtonsoft.Json.Converters
                     return ResolveFullName(node, manager);
                 case XmlNodeType.ProcessingInstruction:
                     return "?" + ResolveFullName(node, manager);
+                case XmlNodeType.DocumentType:
+                    return "!" + ResolveFullName(node, manager);
                 case XmlNodeType.XmlDeclaration:
                     return DeclarationName;
                 case XmlNodeType.SignificantWhitespace:
@@ -990,8 +1119,13 @@ namespace Newtonsoft.Json.Converters
                         }
                         else if (node.ChildNodes.Count == 0 && CollectionUtils.IsNullOrEmpty(node.Attributes))
                         {
+                            IXmlElement element = (IXmlElement)node;
+
                             // empty element
-                            writer.WriteNull();
+                            if (element.IsEmpty)
+                                writer.WriteNull();
+                            else
+                                writer.WriteValue(string.Empty);
                         }
                         else
                         {
@@ -1057,6 +1191,34 @@ namespace Newtonsoft.Json.Converters
 
                     writer.WriteEndObject();
                     break;
+                case XmlNodeType.DocumentType:
+                    IXmlDocumentType documentType = (IXmlDocumentType)node;
+                    writer.WritePropertyName(GetPropertyName(node, manager));
+                    writer.WriteStartObject();
+
+                    if (!string.IsNullOrEmpty(documentType.Name))
+                    {
+                        writer.WritePropertyName("@name");
+                        writer.WriteValue(documentType.Name);
+                    }
+                    if (!string.IsNullOrEmpty(documentType.Public))
+                    {
+                        writer.WritePropertyName("@public");
+                        writer.WriteValue(documentType.Public);
+                    }
+                    if (!string.IsNullOrEmpty(documentType.System))
+                    {
+                        writer.WritePropertyName("@system");
+                        writer.WriteValue(documentType.System);
+                    }
+                    if (!string.IsNullOrEmpty(documentType.InternalSubset))
+                    {
+                        writer.WritePropertyName("@internalSubset");
+                        writer.WriteValue(documentType.InternalSubset);
+                    }
+
+                    writer.WriteEndObject();
+                    break;
                 default:
                     throw new JsonSerializationException("Unexpected XmlNodeType when serializing nodes: " + node.NodeType);
             }
@@ -1099,6 +1261,9 @@ namespace Newtonsoft.Json.Converters
                     throw new JsonSerializationException("XmlNodeConverter only supports deserializing XmlDocuments");
 
                 XmlDocument d = new XmlDocument();
+                // prevent http request when resolving any DTD references
+                d.XmlResolver = null;
+
                 document = new XmlDocumentWrapper(d);
                 rootNode = document;
             }
@@ -1157,6 +1322,10 @@ namespace Newtonsoft.Json.Converters
                     {
                         CreateInstruction(reader, document, currentNode, propertyName);
                     }
+                    else if (string.Equals(propertyName, "!DOCTYPE", StringComparison.OrdinalIgnoreCase))
+                    {
+                        CreateDocumentType(reader, document, currentNode);
+                    }
                     else
                     {
                         if (reader.TokenType == JsonToken.StartArray)
@@ -1183,14 +1352,14 @@ namespace Newtonsoft.Json.Converters
 
             string elementPrefix = MiscellaneousUtils.GetPrefix(propertyName);
 
-            if (propertyName.StartsWith("@"))
+            if (propertyName.StartsWith("@", StringComparison.Ordinal))
             {
-                var attributeName = propertyName.Substring(1);
-                var attributeValue = reader.Value.ToString();
+                string attributeName = propertyName.Substring(1);
+                string attributeValue = reader.Value.ToString();
 
-                var attributePrefix = MiscellaneousUtils.GetPrefix(attributeName);
+                string attributePrefix = MiscellaneousUtils.GetPrefix(attributeName);
 
-                var attribute = (!string.IsNullOrEmpty(attributePrefix))
+                IXmlNode attribute = (!string.IsNullOrEmpty(attributePrefix))
                     ? document.CreateAttribute(attributeName, manager.LookupNamespace(attributePrefix), attributeValue)
                     : document.CreateAttribute(attributeName, attributeValue);
 
@@ -1253,6 +1422,11 @@ namespace Newtonsoft.Json.Converters
             }
             else if (reader.TokenType == JsonToken.Float)
             {
+                if (reader.Value is decimal)
+                    return XmlConvert.ToString((decimal)reader.Value);
+                if (reader.Value is float)
+                    return XmlConvert.ToString((float)reader.Value);
+                
                 return XmlConvert.ToString(Convert.ToDouble(reader.Value, CultureInfo.InvariantCulture));
             }
             else if (reader.TokenType == JsonToken.Boolean)
@@ -1261,11 +1435,16 @@ namespace Newtonsoft.Json.Converters
             }
             else if (reader.TokenType == JsonToken.Date)
             {
+#if !NET20
+                if (reader.Value is DateTimeOffset)
+                    return XmlConvert.ToString((DateTimeOffset)reader.Value);
+#endif
+
                 DateTime d = Convert.ToDateTime(reader.Value, CultureInfo.InvariantCulture);
 #if !(NETFX_CORE || PORTABLE)
                 return XmlConvert.ToString(d, DateTimeUtils.ToSerializationMode(d.Kind));
 #else
-        return XmlConvert.ToString(d);
+                return XmlConvert.ToString(d);
 #endif
             }
             else if (reader.TokenType == JsonToken.Null)
@@ -1447,6 +1626,41 @@ namespace Newtonsoft.Json.Converters
                 IXmlNode instruction = document.CreateProcessingInstruction(propertyName.Substring(1), reader.Value.ToString());
                 currentNode.AppendChild(instruction);
             }
+        }
+
+        private void CreateDocumentType(JsonReader reader, IXmlDocument document, IXmlNode currentNode)
+        {
+            string name = null;
+            string publicId = null;
+            string systemId = null;
+            string internalSubset = null;
+            while (reader.Read() && reader.TokenType != JsonToken.EndObject)
+            {
+                switch (reader.Value.ToString())
+                {
+                    case "@name":
+                        reader.Read();
+                        name = reader.Value.ToString();
+                        break;
+                    case "@public":
+                        reader.Read();
+                        publicId = reader.Value.ToString();
+                        break;
+                    case "@system":
+                        reader.Read();
+                        systemId = reader.Value.ToString();
+                        break;
+                    case "@internalSubset":
+                        reader.Read();
+                        internalSubset = reader.Value.ToString();
+                        break;
+                    default:
+                        throw new JsonSerializationException("Unexpected property name encountered while deserializing XmlDeclaration: " + reader.Value);
+                }
+            }
+
+            IXmlNode documentType = document.CreateXmlDocumentType(name, publicId, systemId, internalSubset);
+            currentNode.AppendChild(documentType);
         }
 
         private IXmlElement CreateElement(string elementName, IXmlDocument document, string elementPrefix, XmlNamespaceManager manager)

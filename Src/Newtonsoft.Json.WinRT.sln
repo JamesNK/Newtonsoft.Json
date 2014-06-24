@@ -1,6 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30324.0
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.WinRT", "Newtonsoft.Json\Newtonsoft.Json.WinRT.csproj", "{263136A2-B89B-424E-A87A-F988CAA8D032}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.Tests.WinRT", "Newtonsoft.Json.Tests\Newtonsoft.Json.Tests.WinRT.csproj", "{8D9C2E69-9FD7-4A7A-866C-739C9207CD0B}"
