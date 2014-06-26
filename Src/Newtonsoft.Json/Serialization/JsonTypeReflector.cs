@@ -94,7 +94,7 @@ namespace Newtonsoft.Json.Serialization
             // DataMemberAttribute does not have inheritance
 
             // can't override a field
-            if (memberInfo.MemberType() == MemberTypes.Field)
+            if (memberInfo.MemberType() == Newtonsoft.Json.Utilities.MemberTypes.Field)
                 return CachedAttributeGetter<DataMemberAttribute>.GetAttribute(memberInfo);
 
             // search property and then search base properties if nothing is returned and the property is virtual

@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lib", "Lib", "{F69285DD-24FB-4A60-AE8B-4C2744285D0F}"
+	ProjectSection(SolutionItems) = preProject
+		Lib\NUnit\Silverlight\nunit.framework.dll = Lib\NUnit\Silverlight\nunit.framework.dll
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.Silverlight", "Newtonsoft.Json\Newtonsoft.Json.Silverlight.csproj", "{DC3C6F3D-2CA1-4278-9B79-63770FB3EA2D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.Tests.Silverlight", "Newtonsoft.Json.Tests\Newtonsoft.Json.Tests.Silverlight.csproj", "{0D8C3C2E-62C6-4C93-9377-6F74DD6BFD93}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DC3C6F3D-2CA1-4278-9B79-63770FB3EA2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC3C6F3D-2CA1-4278-9B79-63770FB3EA2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC3C6F3D-2CA1-4278-9B79-63770FB3EA2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC3C6F3D-2CA1-4278-9B79-63770FB3EA2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D8C3C2E-62C6-4C93-9377-6F74DD6BFD93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D8C3C2E-62C6-4C93-9377-6F74DD6BFD93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D8C3C2E-62C6-4C93-9377-6F74DD6BFD93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D8C3C2E-62C6-4C93-9377-6F74DD6BFD93}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
