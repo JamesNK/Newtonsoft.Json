@@ -122,6 +122,24 @@ namespace Newtonsoft.Json.Serialization
             return property;
         }
 
+        /// <summary>
+        /// Gets the <see cref="JsonProperty"/> object that matches the obfuscated property name passed.
+        /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <returns>A matching property if found.</returns>
+        public JsonProperty GetObfuscatedProperty(string propertyName)
+        {
+            foreach (JsonProperty property in this)
+            {
+                if (string.Equals(propertyName, property.MinName))
+                {
+                    return property;
+                }
+            }
+
+            return null;
+        }
+
         private bool TryGetValue(string key, out JsonProperty item)
         {
             if (Dictionary == null)

@@ -1905,8 +1905,13 @@ To fix this error either change the environment to be fully trusted, change the 
                         {
                             // attempt exact case match first
                             // then try match ignoring case
-                            JsonProperty property = contract.Properties.GetClosestMatchProperty(memberName);
+                            JsonProperty property = null;
 
+                            if (this.Serializer.ObfuscationEnabled)
+                                property = contract.Properties.GetObfuscatedProperty(memberName);
+                            else
+                                property = contract.Properties.GetClosestMatchProperty(memberName);
+                            
                             if (property == null)
                             {
                                 if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)

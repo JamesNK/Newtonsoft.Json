@@ -129,6 +129,11 @@ namespace Newtonsoft.Json
         public bool CloseOutput { get; set; }
 
         /// <summary>
+        /// Enables JSON Obfuscation
+        /// </summary>
+        public bool ObfuscationEnabled { get; set; }
+
+        /// <summary>
         /// Gets the top.
         /// </summary>
         /// <value>The top.</value>
