@@ -236,14 +236,21 @@ namespace Newtonsoft.Json.Serialization
                     if (reader.TokenType == JsonToken.PropertyName)
                     {
                         string propertyName = (string)reader.Value;
-                        if (!reader.Read())
-                            break;
+                        do
+                        {
+                            if (!reader.Read())
+                                break;
+                        } while (reader.TokenType == JsonToken.Comment);
 
                         if (CheckPropertyName(reader, propertyName))
                             continue;
 
                         writer.WritePropertyName(propertyName);
                         writer.WriteToken(reader, true, true);
+                    }
+                    else if (reader.TokenType == JsonToken.Comment)
+                    {
+                        // eat
                     }
                     else
                     {
@@ -2020,7 +2027,7 @@ To fix this error either change the environment to be fully trusted, change the 
                                     if (property.PropertyContract == null)
                                         property.PropertyContract = GetContractSafe(property.PropertyType);
 
-                                    if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer._defaultValueHandling), DefaultValueHandling.Populate) && property.Writable)
+                                    if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer._defaultValueHandling), DefaultValueHandling.Populate) && property.Writable && !property.Ignored)
                                         property.ValueProvider.SetValue(newObject, EnsureType(reader, property.GetResolvedDefaultValue(), CultureInfo.InvariantCulture, property.PropertyContract, property.PropertyType));
                                     break;
                                 case PropertyPresence.Null:

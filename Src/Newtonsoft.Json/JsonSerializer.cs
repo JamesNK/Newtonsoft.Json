@@ -43,7 +43,6 @@ namespace Newtonsoft.Json
     /// </summary>
     public class JsonSerializer
     {
-        #region Properties_binder
         internal TypeNameHandling _typeNameHandling;
         internal FormatterAssemblyStyle _typeNameAssemblyFormat;
         internal PreserveReferencesHandling _preserveReferencesHandling;
@@ -428,7 +427,6 @@ namespace Newtonsoft.Json
         {
             return (_checkAdditionalContent != null);
         }
-        #endregion
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonSerializer"/> class.
@@ -623,8 +621,26 @@ namespace Newtonsoft.Json
             ValidationUtils.ArgumentNotNull(reader, "reader");
             ValidationUtils.ArgumentNotNull(target, "target");
 
+            // set serialization options onto reader
+            CultureInfo previousCulture;
+            DateTimeZoneHandling? previousDateTimeZoneHandling;
+            DateParseHandling? previousDateParseHandling;
+            FloatParseHandling? previousFloatParseHandling;
+            int? previousMaxDepth;
+            string previousDateFormatString;
+            SetupReader(reader, out previousCulture, out previousDateTimeZoneHandling, out previousDateParseHandling, out previousFloatParseHandling, out previousMaxDepth, out previousDateFormatString);
+
+            TraceJsonReader traceJsonReader = (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
+                ? new TraceJsonReader(reader)
+                : null;
+
             JsonSerializerInternalReader serializerReader = new JsonSerializerInternalReader(this);
-            serializerReader.Populate(reader, target);
+            serializerReader.Populate(traceJsonReader ?? reader, target);
+
+            if (traceJsonReader != null)
+                TraceWriter.Trace(TraceLevel.Verbose, "Deserialized JSON: " + Environment.NewLine + traceJsonReader.GetJson(), null);
+
+            ResetReader(reader, previousCulture, previousDateTimeZoneHandling, previousDateParseHandling, previousFloatParseHandling, previousMaxDepth, previousDateFormatString);
         }
 
         /// <summary>
@@ -678,47 +694,13 @@ namespace Newtonsoft.Json
             ValidationUtils.ArgumentNotNull(reader, "reader");
 
             // set serialization options onto reader
-            CultureInfo previousCulture = null;
-            if (_culture != null && !_culture.Equals(reader.Culture))
-            {
-                previousCulture = reader.Culture;
-                reader.Culture = _culture;
-            }
-
-            DateTimeZoneHandling? previousDateTimeZoneHandling = null;
-            if (_dateTimeZoneHandling != null && reader.DateTimeZoneHandling != _dateTimeZoneHandling)
-            {
-                previousDateTimeZoneHandling = reader.DateTimeZoneHandling;
-                reader.DateTimeZoneHandling = _dateTimeZoneHandling.Value;
-            }
-
-            DateParseHandling? previousDateParseHandling = null;
-            if (_dateParseHandling != null && reader.DateParseHandling != _dateParseHandling)
-            {
-                previousDateParseHandling = reader.DateParseHandling;
-                reader.DateParseHandling = _dateParseHandling.Value;
-            }
-
-            FloatParseHandling? previousFloatParseHandling = null;
-            if (_floatParseHandling != null && reader.FloatParseHandling != _floatParseHandling)
-            {
-                previousFloatParseHandling = reader.FloatParseHandling;
-                reader.FloatParseHandling = _floatParseHandling.Value;
-            }
-
-            int? previousMaxDepth = null;
-            if (_maxDepthSet && reader.MaxDepth != _maxDepth)
-            {
-                previousMaxDepth = reader.MaxDepth;
-                reader.MaxDepth = _maxDepth;
-            }
-
-            string previousDateFormatString = null;
-            if (_dateFormatStringSet && reader.DateFormatString != _dateFormatString)
-            {
-                previousDateFormatString = reader.DateFormatString;
-                reader.DateFormatString = _dateFormatString;
-            }
+            CultureInfo previousCulture;
+            DateTimeZoneHandling? previousDateTimeZoneHandling;
+            DateParseHandling? previousDateParseHandling;
+            FloatParseHandling? previousFloatParseHandling;
+            int? previousMaxDepth;
+            string previousDateFormatString;
+            SetupReader(reader, out previousCulture, out previousDateTimeZoneHandling, out previousDateParseHandling, out previousFloatParseHandling, out previousMaxDepth, out previousDateFormatString);
 
             TraceJsonReader traceJsonReader = (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
                 ? new TraceJsonReader(reader)
@@ -730,6 +712,76 @@ namespace Newtonsoft.Json
             if (traceJsonReader != null)
                 TraceWriter.Trace(TraceLevel.Verbose, "Deserialized JSON: " + Environment.NewLine + traceJsonReader.GetJson(), null);
 
+            ResetReader(reader, previousCulture, previousDateTimeZoneHandling, previousDateParseHandling, previousFloatParseHandling, previousMaxDepth, previousDateFormatString);
+
+            return value;
+        }
+
+        private void SetupReader(JsonReader reader, out CultureInfo previousCulture, out DateTimeZoneHandling? previousDateTimeZoneHandling, out DateParseHandling? previousDateParseHandling, out FloatParseHandling? previousFloatParseHandling, out int? previousMaxDepth, out string previousDateFormatString)
+        {
+            if (_culture != null && !_culture.Equals(reader.Culture))
+            {
+                previousCulture = reader.Culture;
+                reader.Culture = _culture;
+            }
+            else
+            {
+                previousCulture = null;
+            }
+
+            if (_dateTimeZoneHandling != null && reader.DateTimeZoneHandling != _dateTimeZoneHandling)
+            {
+                previousDateTimeZoneHandling = reader.DateTimeZoneHandling;
+                reader.DateTimeZoneHandling = _dateTimeZoneHandling.Value;
+            }
+            else
+            {
+                previousDateTimeZoneHandling = null;
+            }
+
+            if (_dateParseHandling != null && reader.DateParseHandling != _dateParseHandling)
+            {
+                previousDateParseHandling = reader.DateParseHandling;
+                reader.DateParseHandling = _dateParseHandling.Value;
+            }
+            else
+            {
+                previousDateParseHandling = null;
+            }
+
+            if (_floatParseHandling != null && reader.FloatParseHandling != _floatParseHandling)
+            {
+                previousFloatParseHandling = reader.FloatParseHandling;
+                reader.FloatParseHandling = _floatParseHandling.Value;
+            }
+            else
+            {
+                previousFloatParseHandling = null;
+            }
+
+            if (_maxDepthSet && reader.MaxDepth != _maxDepth)
+            {
+                previousMaxDepth = reader.MaxDepth;
+                reader.MaxDepth = _maxDepth;
+            }
+            else
+            {
+                previousMaxDepth = null;
+            }
+
+            if (_dateFormatStringSet && reader.DateFormatString != _dateFormatString)
+            {
+                previousDateFormatString = reader.DateFormatString;
+                reader.DateFormatString = _dateFormatString;
+            }
+            else
+            {
+                previousDateFormatString = null;
+            }
+        }
+
+        private void ResetReader(JsonReader reader, CultureInfo previousCulture, DateTimeZoneHandling? previousDateTimeZoneHandling, DateParseHandling? previousDateParseHandling, FloatParseHandling? previousFloatParseHandling, int? previousMaxDepth, string previousDateFormatString)
+        {
             // reset reader back to previous options
             if (previousCulture != null)
                 reader.Culture = previousCulture;
@@ -743,8 +795,6 @@ namespace Newtonsoft.Json
                 reader.MaxDepth = previousMaxDepth;
             if (_dateFormatStringSet)
                 reader.DateFormatString = previousDateFormatString;
-
-            return value;
         }
 
         /// <summary>

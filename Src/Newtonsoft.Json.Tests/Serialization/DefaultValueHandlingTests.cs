@@ -46,6 +46,42 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class DefaultValueHandlingTests : TestFixtureBase
     {
+        public class MyClass
+        {
+            [JsonIgnore]
+            public MyEnum Status { get; set; }
+
+            private string _data;
+            public string Data
+            {
+                get { return _data; }
+                set
+                {
+                    _data = value;
+                    if (_data != null && _data.StartsWith("Other"))
+                    {
+                        this.Status = MyEnum.Other;
+                    }
+                }
+            }
+        }
+
+        public enum MyEnum
+        {
+            Default = 0,
+            Other
+        }
+
+        [Test]
+        public void PopulateWithJsonIgnoreAttribute()
+        {
+            string json = "{\"Data\":\"Other with some more text\"}";
+
+            MyClass result = JsonConvert.DeserializeObject<MyClass>(json, new JsonSerializerSettings() { DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate });
+            
+            Assert.AreEqual(MyEnum.Other, result.Status);
+        }
+
         [Test]
         public void Include()
         {

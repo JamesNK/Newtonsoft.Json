@@ -57,24 +57,24 @@ namespace Newtonsoft.Json.Tests.Documentation
         {
             #region IsValidBasic
             string schemaJson = @"{
-        'description': 'A person',
-        'type': 'object',
-        'properties':
-        {
-          'name': {'type':'string'},
-          'hobbies': {
-            'type': 'array',
-            'items': {'type':'string'}
-          }
-        }
-      }";
+              'description': 'A person',
+              'type': 'object',
+              'properties':
+              {
+                'name': {'type':'string'},
+                'hobbies': {
+                  'type': 'array',
+                  'items': {'type':'string'}
+                }
+              }
+            }";
 
             JsonSchema schema = JsonSchema.Parse(schemaJson);
 
             JObject person = JObject.Parse(@"{
-        'name': 'James',
-        'hobbies': ['.NET', 'Blogging', 'Reading', 'Xbox', 'LOLCATS']
-      }");
+              'name': 'James',
+              'hobbies': ['.NET', 'Blogging', 'Reading', 'Xbox', 'LOLCATS']
+            }");
 
             bool valid = person.IsValid(schema);
             // true

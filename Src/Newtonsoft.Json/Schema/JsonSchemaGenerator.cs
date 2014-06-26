@@ -166,7 +166,7 @@ namespace Newtonsoft.Json.Schema
 
         private string GetTitle(Type type)
         {
-            JsonContainerAttribute containerAttribute = JsonTypeReflector.GetJsonContainerAttribute(type);
+            JsonContainerAttribute containerAttribute = JsonTypeReflector.GetCachedAttribute<JsonContainerAttribute>(type);
 
             if (containerAttribute != null && !string.IsNullOrEmpty(containerAttribute.Title))
                 return containerAttribute.Title;
@@ -176,7 +176,7 @@ namespace Newtonsoft.Json.Schema
 
         private string GetDescription(Type type)
         {
-            JsonContainerAttribute containerAttribute = JsonTypeReflector.GetJsonContainerAttribute(type);
+            JsonContainerAttribute containerAttribute = JsonTypeReflector.GetCachedAttribute<JsonContainerAttribute>(type);
 
             if (containerAttribute != null && !string.IsNullOrEmpty(containerAttribute.Description))
                 return containerAttribute.Description;
@@ -192,7 +192,7 @@ namespace Newtonsoft.Json.Schema
 
         private string GetTypeId(Type type, bool explicitOnly)
         {
-            JsonContainerAttribute containerAttribute = JsonTypeReflector.GetJsonContainerAttribute(type);
+            JsonContainerAttribute containerAttribute = JsonTypeReflector.GetCachedAttribute<JsonContainerAttribute>(type);
 
             if (containerAttribute != null && !string.IsNullOrEmpty(containerAttribute.Id))
                 return containerAttribute.Id;
@@ -278,7 +278,7 @@ namespace Newtonsoft.Json.Schema
 
                         CurrentSchema.Id = GetTypeId(type, false);
 
-                        JsonArrayAttribute arrayAttribute = JsonTypeReflector.GetJsonContainerAttribute(type) as JsonArrayAttribute;
+                        JsonArrayAttribute arrayAttribute = JsonTypeReflector.GetCachedAttribute<JsonArrayAttribute>(type);
                         bool allowNullItem = (arrayAttribute == null || arrayAttribute.AllowNullItems);
 
                         Type collectionItemType = ReflectionUtils.GetCollectionItemType(type);
@@ -295,7 +295,7 @@ namespace Newtonsoft.Json.Schema
                         {
                             CurrentSchema.Enum = new List<JToken>();
 
-                            EnumValues<long> enumValues = EnumUtils.GetNamesAndValues<long>(type);
+                            IList<EnumValue<long>> enumValues = EnumUtils.GetNamesAndValues<long>(type);
                             foreach (EnumValue<long> enumValue in enumValues)
                             {
                                 JToken value = JToken.FromObject(enumValue.Value);

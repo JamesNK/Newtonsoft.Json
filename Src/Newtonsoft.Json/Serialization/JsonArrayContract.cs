@@ -57,11 +57,10 @@ namespace Newtonsoft.Json.Serialization
         /// <value><c>true</c> if the collection type is a multidimensional array; otherwise, <c>false</c>.</value>
         public bool IsMultidimensionalArray { get; private set; }
 
-        private readonly bool _isCollectionItemTypeNullableType;
         private readonly Type _genericCollectionDefinitionType;
 
         private Type _genericWrapperType;
-        private MethodCall<object, object> _genericWrapperCreator;
+        private ObjectConstructor<object> _genericWrapperCreator;
         private Func<object> _genericTemporaryCollectionCreator;
 
         internal bool IsArray { get; private set; }
@@ -182,17 +181,16 @@ namespace Newtonsoft.Json.Serialization
 
             CanDeserialize = canDeserialize;
 
-            if (CollectionItemType != null)
-                _isCollectionItemTypeNullableType = ReflectionUtils.IsNullableType(CollectionItemType);
-
 #if (NET20 || NET35)
-            // bug in .NET 2.0 & 3.5 that List<Nullable<T>> throws an error when adding null via IList.Add(object)
-            // wrapper will handle calling Add(T) instead
-            if (_isCollectionItemTypeNullableType
-                && (ReflectionUtils.InheritsGenericDefinition(CreatedType, typeof(List<>), out tempCollectionType)
-                || (IsArray && !IsMultidimensionalArray)))
+            if (CollectionItemType != null && ReflectionUtils.IsNullableType(CollectionItemType))
             {
-                ShouldCreateWrapper = true;
+                // bug in .NET 2.0 & 3.5 that List<Nullable<T>> throws an error when adding null via IList.Add(object)
+                // wrapper will handle calling Add(T) instead
+                if (ReflectionUtils.InheritsGenericDefinition(CreatedType, typeof(List<>), out tempCollectionType)
+                    || (IsArray && !IsMultidimensionalArray))
+                {
+                    ShouldCreateWrapper = true;
+                }
             }
 #endif
 
@@ -224,10 +222,10 @@ namespace Newtonsoft.Json.Serialization
                     constructorArgument = _genericCollectionDefinitionType;
 
                 ConstructorInfo genericWrapperConstructor = _genericWrapperType.GetConstructor(new[] { constructorArgument });
-                _genericWrapperCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(genericWrapperConstructor);
+                _genericWrapperCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateParametrizedConstructor(genericWrapperConstructor);
             }
 
-            return (IWrappedCollection)_genericWrapperCreator(null, list);
+            return (IWrappedCollection)_genericWrapperCreator(list);
         }
 
         internal IList CreateTemporaryCollection()

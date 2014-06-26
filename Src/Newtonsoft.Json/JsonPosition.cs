@@ -92,7 +92,7 @@ namespace Newtonsoft.Json
         internal static string FormatMessage(IJsonLineInfo lineInfo, string path, string message)
         {
             // don't add a fullstop and space when message ends with a new line
-            if (!message.EndsWith(Environment.NewLine))
+            if (!message.EndsWith(Environment.NewLine, StringComparison.Ordinal))
             {
                 message = message.Trim();
 

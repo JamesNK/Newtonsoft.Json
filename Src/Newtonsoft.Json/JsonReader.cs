@@ -513,7 +513,16 @@ namespace Newtonsoft.Json
                 return null;
 
             if (t == JsonToken.Bytes)
+            {
+                if (ValueType == typeof(Guid))
+                {
+                    byte[] data = ((Guid)Value).ToByteArray();
+                    SetToken(JsonToken.Bytes, data, false);
+                    return data;
+                }
+
                 return (byte[])Value;
+            }
 
             if (t == JsonToken.StartArray)
             {
@@ -774,7 +783,7 @@ namespace Newtonsoft.Json
                 if (Value.ToString() == JsonTypeReflector.TypePropertyName)
                 {
                     ReadInternal();
-                    if (Value != null && Value.ToString().StartsWith("System.Byte[]"))
+                    if (Value != null && Value.ToString().StartsWith("System.Byte[]", StringComparison.Ordinal))
                     {
                         ReadInternal();
                         if (Value.ToString() == JsonTypeReflector.ValuePropertyName)

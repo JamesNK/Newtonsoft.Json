@@ -143,7 +143,7 @@ namespace Newtonsoft.Json.Converters
 
                     dr[columnName] = nestedDt;
                 }
-                else if (column.DataType.IsArray)
+                else if (column.DataType.IsArray && column.DataType != typeof(byte[]))
                 {
                     if (reader.TokenType == JsonToken.StartArray)
                         reader.Read();
@@ -180,17 +180,15 @@ namespace Newtonsoft.Json.Converters
             switch (tokenType)
             {
                 case JsonToken.Integer:
-                    return typeof(long);
+                case JsonToken.Boolean:
                 case JsonToken.Float:
-                    return typeof(double);
                 case JsonToken.String:
+                case JsonToken.Date:
+                case JsonToken.Bytes:
+                    return reader.ValueType;
                 case JsonToken.Null:
                 case JsonToken.Undefined:
                     return typeof(string);
-                case JsonToken.Boolean:
-                    return typeof(bool);
-                case JsonToken.Date:
-                    return typeof(DateTime);
                 case JsonToken.StartArray:
                     reader.Read();
                     if (reader.TokenType == JsonToken.StartObject)

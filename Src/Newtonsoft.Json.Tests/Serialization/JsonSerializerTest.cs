@@ -91,6 +91,26 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class JsonSerializerTest : TestFixtureBase
     {
+#if !NET20
+        [Test]
+        public void PopulateResetSettings()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader(@"[""2000-01-01T01:01:01+00:00""]"));
+            Assert.AreEqual(DateParseHandling.DateTime, reader.DateParseHandling);
+
+            JsonSerializer serializer = new JsonSerializer();
+            serializer.DateParseHandling = DateParseHandling.DateTimeOffset;
+
+            IList<object> l = new List<object>();
+            serializer.Populate(reader, l);
+
+            Assert.AreEqual(typeof(DateTimeOffset), l[0].GetType());
+            Assert.AreEqual(new DateTimeOffset(2000, 1, 1, 1, 1, 1, TimeSpan.Zero), l[0]);
+
+            Assert.AreEqual(DateParseHandling.DateTime, reader.DateParseHandling);
+        }
+#endif
+
         public class BaseClass
         {
             internal bool IsTransient { get; set; }
@@ -231,6 +251,56 @@ namespace Newtonsoft.Json.Tests.Serialization
             CollectionAssert.AreEqual(input.Data, deserialized.Data);
             Assert.AreEqual(input.Message, deserialized.Message);
             Assert.AreEqual(input.Result, deserialized.Result);
+        }
+
+        [Test]
+        public void DeserializeJObjectWithComments()
+        {
+            string json = @"/* Test */
+            {
+                /*Test*/""A"":/* Test */true/* Test */,
+                /* Test */""B"":/* Test */false/* Test */,
+                /* Test */""C"":/* Test */[
+                    /* Test */
+                    1/* Test */
+                ]/* Test */
+            }
+            /* Test */";
+            JObject o = (JObject)JsonConvert.DeserializeObject(json);
+            Assert.AreEqual(3, o.Count);
+            Assert.AreEqual(true, (bool)o["A"]);
+            Assert.AreEqual(false, (bool)o["B"]);
+            Assert.AreEqual(3, o["C"].Count());
+            Assert.AreEqual(JTokenType.Comment, o["C"][0].Type);
+            Assert.AreEqual(1, (int)o["C"][1]);
+            Assert.AreEqual(JTokenType.Comment, o["C"][2].Type);
+            Assert.IsTrue(JToken.DeepEquals(o, JObject.Parse(json)));
+
+            json = @"{/* Test */}";
+            o = (JObject)JsonConvert.DeserializeObject(json);
+            Assert.AreEqual(0, o.Count);
+            Assert.IsTrue(JToken.DeepEquals(o, JObject.Parse(json)));
+
+            json = @"{""A"": true/* Test */}";
+            o = (JObject)JsonConvert.DeserializeObject(json);
+            Assert.AreEqual(1, o.Count);
+            Assert.AreEqual(true, (bool)o["A"]);
+            Assert.IsTrue(JToken.DeepEquals(o, JObject.Parse(json)));
+        }
+
+        public class CommentTestObject
+        {
+            public bool? A { get; set; }
+        }
+
+        [Test]
+        public void DeserializeCommentTestObjectWithComments()
+        {
+            CommentTestObject o = JsonConvert.DeserializeObject<CommentTestObject>(@"{/* Test */}");
+            Assert.AreEqual(null, o.A);
+
+            o = JsonConvert.DeserializeObject<CommentTestObject>(@"{""A"": true/* Test */}");
+            Assert.AreEqual(true, o.A);
         }
 
         [Test]
@@ -2418,7 +2488,7 @@ keyword such as type of business.""
             Assert.AreEqual("titleId", n.FidOrder[n.FidOrder.Count - 1]);
         }
 
-#if !(NET20 || NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NET20 || NETFX_CORE)
         [MetadataType(typeof(OptInClassMetadata))]
         public class OptInClass
         {
@@ -5736,6 +5806,88 @@ To fix this error either change the environment to be fully trusted, change the 
             }
         }
 
+        public class ReflectionContractResolver : DefaultContractResolver
+        {
+            protected override IValueProvider CreateMemberValueProvider(MemberInfo member)
+            {
+                return new ReflectionValueProvider(member);
+            }
+        }
+
+        [Test]
+        public void SerializeStaticDefault()
+        {
+            DefaultContractResolver contractResolver = new DefaultContractResolver();
+
+            StaticTestClass c = new StaticTestClass
+            {
+                x = int.MaxValue
+            };
+            StaticTestClass.y = 2;
+            StaticTestClass.z = 3;
+            string json = JsonConvert.SerializeObject(c, Formatting.Indented, new JsonSerializerSettings
+            {
+                ContractResolver = contractResolver
+            });
+
+            Assert.AreEqual(@"{
+  ""x"": 2147483647,
+  ""y"": 2,
+  ""z"": 3
+}", json);
+
+            StaticTestClass c2 = JsonConvert.DeserializeObject<StaticTestClass>(@"{
+  ""x"": -1,
+  ""y"": -2,
+  ""z"": -3
+}",
+                new JsonSerializerSettings
+                {
+                    ContractResolver = contractResolver
+                });
+
+            Assert.AreEqual(-1, c2.x);
+            Assert.AreEqual(-2, StaticTestClass.y);
+            Assert.AreEqual(-3, StaticTestClass.z);
+        }
+
+        [Test]
+        public void SerializeStaticReflection()
+        {
+            ReflectionContractResolver contractResolver = new ReflectionContractResolver();
+
+            StaticTestClass c = new StaticTestClass
+            {
+                x = int.MaxValue
+            };
+            StaticTestClass.y = 2;
+            StaticTestClass.z = 3;
+            string json = JsonConvert.SerializeObject(c, Formatting.Indented, new JsonSerializerSettings
+            {
+                ContractResolver = contractResolver
+            });
+
+            Assert.AreEqual(@"{
+  ""x"": 2147483647,
+  ""y"": 2,
+  ""z"": 3
+}", json);
+
+            StaticTestClass c2 = JsonConvert.DeserializeObject<StaticTestClass>(@"{
+  ""x"": -1,
+  ""y"": -2,
+  ""z"": -3
+}",
+                new JsonSerializerSettings
+                {
+                    ContractResolver = contractResolver
+                });
+
+            Assert.AreEqual(-1, c2.x);
+            Assert.AreEqual(-2, StaticTestClass.y);
+            Assert.AreEqual(-3, StaticTestClass.z);
+        }
+
 #if !(NET20 || NETFX_CORE)
         [Test]
         public void DeserializeDecimalsWithCulture()
@@ -7857,6 +8009,76 @@ Parameter name: value",
             Assert.AreEqual(dt, (DateTimeOffset)v.Value);
         }
 #endif
+
+        public class ErroringJsonConverter : JsonConverter
+        {
+            public ErroringJsonConverter(string s)
+            {
+            }
+
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override bool CanConvert(Type objectType)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        [JsonConverter(typeof(ErroringJsonConverter))]
+        public class ErroringTestClass
+        {
+        }
+
+        [Test]
+        public void ErrorCreatingJsonConverter()
+        {
+            ExceptionAssert.Throws<JsonException>(
+                "Error creating 'Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+ErroringJsonConverter'.",
+                () => JsonConvert.SerializeObject(new ErroringTestClass()));
+        }
+
+        [Test]
+        public void DeserializeInvalidOctalRootError()
+        {
+            ExceptionAssert.Throws<JsonReaderException>(
+                "Input string '020474068' is not a valid number. Path '', line 1, position 9.",
+                () => JsonConvert.DeserializeObject<string>("020474068"));
+        }
+
+        [Test]
+        public void DeserializedDerivedWithPrivate()
+        {
+            string json = @"{
+  ""DerivedProperty"": ""derived"",
+  ""BaseProperty"": ""base""
+}";
+
+            var d = JsonConvert.DeserializeObject<DerivedWithPrivate>(json);
+
+            Assert.AreEqual("base", d.BaseProperty);
+            Assert.AreEqual("derived", d.DerivedProperty);
+        }
+    }
+
+    public class DerivedWithPrivate : BaseWithPrivate
+    {
+        [JsonProperty]
+        public string DerivedProperty { get; private set; }
+    }
+
+
+    public class BaseWithPrivate
+    {
+        [JsonProperty]
+        public string BaseProperty { get; private set; }
     }
 
     public abstract class Test<T>
@@ -7985,5 +8207,23 @@ Parameter name: value",
         public int Age { get; set; }
         public double Height { get; set; }
         public decimal Price { get; set; }
+    }
+
+    [JsonObject(MemberSerialization.OptIn)]
+    public class StaticTestClass
+    {
+        [JsonProperty]
+        public int x = 1;
+
+        [JsonProperty]
+        public static int y = 2;
+
+        [JsonProperty]
+        public static int z { get; set; }
+
+        static StaticTestClass()
+        {
+            z = 3;
+        }
     }
 }

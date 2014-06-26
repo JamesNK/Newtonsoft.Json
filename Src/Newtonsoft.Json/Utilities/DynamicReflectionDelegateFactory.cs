@@ -221,9 +221,15 @@ namespace Newtonsoft.Json.Utilities
         private void GenerateCreateGetFieldIL(FieldInfo fieldInfo, ILGenerator generator)
         {
             if (!fieldInfo.IsStatic)
+            {
                 generator.PushInstance(fieldInfo.DeclaringType);
+                generator.Emit(OpCodes.Ldfld, fieldInfo);
+            }
+            else
+            {
+                generator.Emit(OpCodes.Ldsfld, fieldInfo);
+            }
 
-            generator.Emit(OpCodes.Ldfld, fieldInfo);
             generator.BoxIfNeeded(fieldInfo.FieldType);
             generator.Return();
         }
@@ -245,7 +251,12 @@ namespace Newtonsoft.Json.Utilities
 
             generator.Emit(OpCodes.Ldarg_1);
             generator.UnboxIfNeeded(fieldInfo.FieldType);
-            generator.Emit(OpCodes.Stfld, fieldInfo);
+
+            if (!fieldInfo.IsStatic)
+                generator.Emit(OpCodes.Stfld, fieldInfo);
+            else
+                generator.Emit(OpCodes.Stsfld, fieldInfo);
+
             generator.Return();
         }
 
