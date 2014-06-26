@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Reflection;
 using System.Globalization;
@@ -57,6 +58,10 @@ namespace Newtonsoft.Json.Serialization
 #pragma warning restore 618,612
 #elif NETFX_CORE || PORTABLE
                 assembly = Assembly.Load(new AssemblyName(assemblyName));
+#elif SILVERLIGHT
+                assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.FullName.StartsWith(typeNameKey.AssemblyName, StringComparison.Ordinal));
+                if (assembly == null)
+                    assembly = Assembly.Load(assemblyName);
 #else
                 assembly = Assembly.Load(assemblyName);
 #endif
