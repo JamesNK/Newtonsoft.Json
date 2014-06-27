@@ -115,6 +115,7 @@ namespace Newtonsoft.Json
 
             ShiftBufferIfNeeded();
             ReadStringIntoBuffer(quote);
+            SetPostValueState(true);
 
             if (_readType == ReadType.ReadAsBytes)
             {
@@ -128,13 +129,13 @@ namespace Newtonsoft.Json
                     data = Convert.FromBase64CharArray(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length);
                 }
 
-                SetToken(JsonToken.Bytes, data);
+                SetToken(JsonToken.Bytes, data, false);
             }
             else if (_readType == ReadType.ReadAsString)
             {
                 string text = _stringReference.ToString();
 
-                SetToken(JsonToken.String, text);
+                SetToken(JsonToken.String, text, false);
                 _quoteChar = quote;
             }
             else
@@ -156,12 +157,12 @@ namespace Newtonsoft.Json
                     object dt;
                     if (DateTimeUtils.TryParseDateTime(text, dateParseHandling, DateTimeZoneHandling, DateFormatString, Culture, out dt))
                     {
-                        SetToken(JsonToken.Date, dt);
+                        SetToken(JsonToken.Date, dt, false);
                         return;
                     }
                 }
 
-                SetToken(JsonToken.String, text);
+                SetToken(JsonToken.String, text, false);
                 _quoteChar = quote;
             }
         }
@@ -381,8 +382,6 @@ namespace Newtonsoft.Json
                     case State.Constructor:
                     case State.ConstructorStart:
                         return ParseValue();
-                    case State.Complete:
-                        break;
                     case State.Object:
                     case State.ObjectStart:
                         return ParseObject();
@@ -405,16 +404,10 @@ namespace Newtonsoft.Json
                                 ParseComment();
                                 return true;
                             }
-                            else
-                            {
-                                throw JsonReaderException.Create(this, "Additional text encountered after finished reading JSON content: {0}.".FormatWith(CultureInfo.InvariantCulture, _chars[_charPos]));
-                            }
+                            
+                            throw JsonReaderException.Create(this, "Additional text encountered after finished reading JSON content: {0}.".FormatWith(CultureInfo.InvariantCulture, _chars[_charPos]));
                         }
                         return false;
-                    case State.Closed:
-                        break;
-                    case State.Error:
-                        break;
                     default:
                         throw JsonReaderException.Create(this, "Unexpected state: {0}.".FormatWith(CultureInfo.InvariantCulture, CurrentState));
                 }
@@ -1004,15 +997,13 @@ namespace Newtonsoft.Json
                             _charPos++;
                             break;
                         }
-                        else if (char.IsNumber(currentChar) || currentChar == '-' || currentChar == '.')
+                        if (char.IsNumber(currentChar) || currentChar == '-' || currentChar == '.')
                         {
                             ParseNumber();
                             return true;
                         }
-                        else
-                        {
-                            throw JsonReaderException.Create(this, "Unexpected character encountered while parsing value: {0}.".FormatWith(CultureInfo.InvariantCulture, currentChar));
-                        }
+
+                        throw JsonReaderException.Create(this, "Unexpected character encountered while parsing value: {0}.".FormatWith(CultureInfo.InvariantCulture, currentChar));
                 }
             }
         }
@@ -1164,6 +1155,9 @@ namespace Newtonsoft.Json
             int initialPosition = _charPos;
 
             ReadNumberIntoBuffer();
+
+            // set state to PostValue now so that if there is an error parsing the number then the reader can continue
+            SetPostValueState(true);
 
             _stringReference = new StringReference(_chars, initialPosition, _charPos - initialPosition);
 
@@ -1328,7 +1322,8 @@ namespace Newtonsoft.Json
 
             ClearRecentString();
 
-            SetToken(numberType, numberValue);
+            // index has already been updated
+            SetToken(numberType, numberValue, false);
         }
 
         private void ParseComment()

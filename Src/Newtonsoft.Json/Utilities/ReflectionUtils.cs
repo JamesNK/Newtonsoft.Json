@@ -367,21 +367,19 @@ namespace Newtonsoft.Json.Utilities
             {
                 return type.GetElementType();
             }
-            else if (ImplementsGenericDefinition(type, typeof(IEnumerable<>), out genericListType))
+            if (ImplementsGenericDefinition(type, typeof(IEnumerable<>), out genericListType))
             {
                 if (genericListType.IsGenericTypeDefinition())
                     throw new Exception("Type {0} is not a collection.".FormatWith(CultureInfo.InvariantCulture, type));
 
                 return genericListType.GetGenericArguments()[0];
             }
-            else if (typeof(IEnumerable).IsAssignableFrom(type))
+            if (typeof(IEnumerable).IsAssignableFrom(type))
             {
                 return null;
             }
-            else
-            {
-                throw new Exception("Type {0} is not a collection.".FormatWith(CultureInfo.InvariantCulture, type));
-            }
+            
+            throw new Exception("Type {0} is not a collection.".FormatWith(CultureInfo.InvariantCulture, type));
         }
 
         public static void GetDictionaryKeyValueTypes(Type dictionaryType, out Type keyType, out Type valueType)
@@ -400,16 +398,14 @@ namespace Newtonsoft.Json.Utilities
                 valueType = dictionaryGenericArguments[1];
                 return;
             }
-            else if (typeof(IDictionary).IsAssignableFrom(dictionaryType))
+            if (typeof(IDictionary).IsAssignableFrom(dictionaryType))
             {
                 keyType = null;
                 valueType = null;
                 return;
             }
-            else
-            {
-                throw new Exception("Type {0} is not a dictionary.".FormatWith(CultureInfo.InvariantCulture, dictionaryType));
-            }
+
+            throw new Exception("Type {0} is not a dictionary.".FormatWith(CultureInfo.InvariantCulture, dictionaryType));
         }
 
         /// <summary>
@@ -432,7 +428,7 @@ namespace Newtonsoft.Json.Utilities
                 case MemberTypes.Method:
                     return ((MethodInfo)member).ReturnType;
                 default:
-                    throw new ArgumentException("MemberInfo must be of type FieldInfo, PropertyInfo or EventInfo", "member");
+                    throw new ArgumentException("MemberInfo must be of type FieldInfo, PropertyInfo, EventInfo or MethodInfo", "member");
             }
         }
 

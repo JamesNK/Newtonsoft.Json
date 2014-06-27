@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using Newtonsoft.Json.Linq;
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
 using System.Numerics;
 #endif
@@ -47,6 +48,157 @@ namespace Newtonsoft.Json.Tests
     [TestFixture]
     public class JsonTextReaderTest : TestFixtureBase
     {
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+        [Test]
+        public void ReadBigInteger()
+        {
+            string json = @"{
+    ParentId: 1,
+    ChildId: 333333333333333333333333333333333333333,
+}";
+
+            JsonTextReader jsonTextReader = new JsonTextReader(new StringReader(json));
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.StartObject, jsonTextReader.TokenType);
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.PropertyName, jsonTextReader.TokenType);
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.Integer, jsonTextReader.TokenType);
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.PropertyName, jsonTextReader.TokenType);
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.Integer, jsonTextReader.TokenType);
+            Assert.AreEqual(typeof(BigInteger), jsonTextReader.ValueType);
+            Assert.AreEqual(BigInteger.Parse("333333333333333333333333333333333333333"), jsonTextReader.Value);
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.EndObject, jsonTextReader.TokenType);
+
+            Assert.IsFalse(jsonTextReader.Read());
+
+            JObject o = JObject.Parse(json);
+            var i = (BigInteger)((JValue)o["ChildId"]).Value;
+            Assert.AreEqual(BigInteger.Parse("333333333333333333333333333333333333333"), i);
+        }
+#endif
+
+        [Test]
+        public void ReadIntegerWithError()
+        {
+            string json = @"{
+    ChildId: 333333333333333333333333333333333333333
+}";
+
+            JsonTextReader jsonTextReader = new JsonTextReader(new StringReader(json));
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.StartObject, jsonTextReader.TokenType);
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.PropertyName, jsonTextReader.TokenType);
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                "JSON integer 333333333333333333333333333333333333333 is too large or small for an Int32. Path 'ChildId', line 2, position 53.",
+                () => jsonTextReader.ReadAsInt32());
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.EndObject, jsonTextReader.TokenType);
+
+            Assert.IsFalse(jsonTextReader.Read());
+        }
+
+        [Test]
+        public void ReadIntegerWithErrorInArray()
+        {
+            string json = @"[
+  333333333333333333333333333333333333333,
+  3.3,
+  ,
+  0f
+]";
+
+            JsonTextReader jsonTextReader = new JsonTextReader(new StringReader(json));
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.StartArray, jsonTextReader.TokenType);
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                "JSON integer 333333333333333333333333333333333333333 is too large or small for an Int32. Path '[0]', line 2, position 42.",
+                () => jsonTextReader.ReadAsInt32());
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                "Input string '3.3' is not a valid integer. Path '[1]', line 3, position 6.",
+                () => jsonTextReader.ReadAsInt32());
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                "Error reading integer. Unexpected token: Undefined. Path '[2]', line 4, position 3.",
+                () => jsonTextReader.ReadAsInt32());
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                "Input string '0f' is not a valid integer. Path '[3]', line 5, position 5.",
+                () => jsonTextReader.ReadAsInt32());
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.EndArray, jsonTextReader.TokenType);
+
+            Assert.IsFalse(jsonTextReader.Read());
+        }
+
+        [Test]
+        public void ReadBytesWithError()
+        {
+            string json = @"{
+    ChildId: '123'
+}";
+
+            JsonTextReader jsonTextReader = new JsonTextReader(new StringReader(json));
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.StartObject, jsonTextReader.TokenType);
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.PropertyName, jsonTextReader.TokenType);
+
+            ExceptionAssert.Throws<FormatException>(
+                "Invalid length for a Base-64 char array or string.",
+                () => jsonTextReader.ReadAsBytes());
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.EndObject, jsonTextReader.TokenType);
+
+            Assert.IsFalse(jsonTextReader.Read());
+        }
+
+        [Test]
+        public void ReadBadMSDateAsString()
+        {
+            string json = @"{
+    ChildId: '\/Date(9467082_PIE_340000-0631)\/'
+}";
+
+            JsonTextReader jsonTextReader = new JsonTextReader(new StringReader(json));
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.StartObject, jsonTextReader.TokenType);
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.PropertyName, jsonTextReader.TokenType);
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.String, jsonTextReader.TokenType);
+            Assert.AreEqual(@"/Date(9467082_PIE_340000-0631)/", jsonTextReader.Value);
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.EndObject, jsonTextReader.TokenType);
+
+            Assert.IsFalse(jsonTextReader.Read());
+        }
+
         [Test]
         public void ReadInvalidNonBase10Number()
         {

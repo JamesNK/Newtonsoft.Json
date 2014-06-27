@@ -439,7 +439,6 @@ namespace Newtonsoft.Json
             if (t == JsonToken.Null)
                 return null;
 
-            DateTimeOffset dt;
             if (t == JsonToken.String)
             {
                 string s = (string)Value;
@@ -450,6 +449,7 @@ namespace Newtonsoft.Json
                 }
 
                 object temp;
+                DateTimeOffset dt;
                 if (DateTimeUtils.TryParseDateTime(s, DateParseHandling.DateTimeOffset, DateTimeZoneHandling, _dateFormatString, Culture, out temp))
                 {
                     dt = (DateTimeOffset)temp;
@@ -587,7 +587,6 @@ namespace Newtonsoft.Json
             if (t == JsonToken.Null)
                 return null;
 
-            decimal d;
             if (t == JsonToken.String)
             {
                 string s = (string)Value;
@@ -597,6 +596,7 @@ namespace Newtonsoft.Json
                     return null;
                 }
 
+                decimal d;
                 if (decimal.TryParse(s, NumberStyles.Number, Culture, out d))
                 {
                     SetToken(JsonToken.Float, d, false);
@@ -736,7 +736,6 @@ namespace Newtonsoft.Json
             if (TokenType == JsonToken.Null)
                 return null;
 
-            DateTime dt;
             if (TokenType == JsonToken.String)
             {
                 string s = (string)Value;
@@ -746,6 +745,7 @@ namespace Newtonsoft.Json
                     return null;
                 }
 
+                DateTime dt;
                 object temp;
                 if (DateTimeUtils.TryParseDateTime(s, DateParseHandling.DateTime, DateTimeZoneHandling, _dateFormatString, Culture, out temp))
                 {
@@ -878,15 +878,20 @@ namespace Newtonsoft.Json
                 case JsonToken.String:
                 case JsonToken.Raw:
                 case JsonToken.Bytes:
-                    if (Peek() != JsonContainerType.None)
-                        _currentState = State.PostValue;
-                    else
-                        SetFinished();
-
-                    if (updateIndex)
-                        UpdateScopeWithFinishedValue();
+                    SetPostValueState(updateIndex);
                     break;
             }
+        }
+
+        internal void SetPostValueState(bool updateIndex)
+        {
+            if (Peek() != JsonContainerType.None)
+                _currentState = State.PostValue;
+            else
+                SetFinished();
+
+            if (updateIndex)
+                UpdateScopeWithFinishedValue();
         }
 
         private void UpdateScopeWithFinishedValue()

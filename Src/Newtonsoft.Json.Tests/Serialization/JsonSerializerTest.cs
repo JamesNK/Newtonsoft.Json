@@ -91,6 +91,42 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class JsonSerializerTest : TestFixtureBase
     {
+        public class Link
+        {
+            /// <summary>
+            /// The unique identifier.
+            /// </summary>
+            public int Id;
+
+            /// <summary>
+            /// The parent information identifier.
+            /// </summary>
+            public int ParentId;
+
+            /// <summary>
+            /// The child information identifier.
+            /// </summary>
+            public int ChildId;
+        }
+
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+        [Test]
+        public void ReadIntegerWithError()
+        {
+            string json = @"{
+    ParentId: 1,
+    ChildId: 333333333333333333333333333333333333333
+}";
+
+            Link l = JsonConvert.DeserializeObject<Link>(json, new JsonSerializerSettings
+            {
+                Error = (s, a) => a.ErrorContext.Handled = true
+            });
+            
+            Assert.AreEqual(0, l.ChildId);
+        }
+#endif
+
 #if !NET20
         [Test]
         public void PopulateResetSettings()
