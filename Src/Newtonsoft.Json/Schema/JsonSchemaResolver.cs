@@ -60,10 +60,10 @@ namespace Newtonsoft.Json.Schema
         /// <returns>A <see cref="JsonSchema"/> for the specified reference.</returns>
         public virtual JsonSchema GetSchema(string reference)
         {
-            JsonSchema schema = LoadedSchemas.SingleOrDefault(s => string.Equals(s.Id, reference, StringComparison.Ordinal));
+            JsonSchema schema = LoadedSchemas.SingleOrDefault(s => string.Equals(s.Location, reference, StringComparison.Ordinal));
 
             if (schema == null)
-                schema = LoadedSchemas.SingleOrDefault(s => string.Equals(s.Location, reference, StringComparison.Ordinal));
+                schema = LoadedSchemas.SingleOrDefault(s => string.Equals(s.Id, reference, StringComparison.Ordinal));
 
             return schema;
         }

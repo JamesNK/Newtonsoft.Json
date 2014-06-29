@@ -54,12 +54,19 @@ namespace Newtonsoft.Json.Tests.Schema
             string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
             string baseTestPath = Path.Combine(baseDirectory, "Schema", "Specs");
 
-            string[] testFiles = Directory.GetFiles(baseTestPath, "*.json", SearchOption.AllDirectories);
+            string[] testFiles = Directory.GetFiles(baseTestPath, "*.json", SearchOption.TopDirectoryOnly);
 
             // read through each of the *.json test files and extract the test details
             foreach (string testFile in testFiles)
             {
                 string testJson = System.IO.File.ReadAllText(testFile);
+
+                if (testFile.EndsWith("refRemote.json", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Special case: remapping of remote urls
+                    var remotesTestPath = new Uri(Path.Combine(baseTestPath, "remotes"));
+                    testJson = testJson.Replace(@"http://localhost:1234", remotesTestPath.ToString());
+                }
 
                 JArray a = JArray.Parse(testJson);
 
@@ -83,12 +90,9 @@ namespace Newtonsoft.Json.Tests.Schema
                 }
             }
 
-            specTests = specTests.Where(s => s.FileName != "dependencies.json"
-                                             && s.TestCaseDescription != "multiple disallow subschema"
-                                             && s.TestCaseDescription != "types from separate schemas are merged"
-                                             && s.TestCaseDescription != "when types includes a schema it should fully validate the schema"
-                                             && s.TestCaseDescription != "types can include schemas").ToList();
-
+            specTests = specTests.Where(s => s.TestDescription != "invalid definition schema" // Invalid schema test
+                                            && s.TestDescription != "remote ref invalid" // Invalid schema test
+                                            ).ToList();
             return specTests;
         }
     }

@@ -1,27 +1,35 @@
 [
     {
-        "description": "extends",
+        "description": "allOf",
         "schema": {
-            "properties": {"bar": {"type": "integer", "required": true}},
-            "extends": {
-                "properties": {
-                    "foo": {"type": "string", "required": true}
+            "allOf": [
+                {
+                    "properties": {
+                        "bar": {"type": "integer"}
+                    },
+                    "required": ["bar"]
+                },
+                {
+                    "properties": {
+                        "foo": {"type": "string"}
+                    },
+                    "required": ["foo"]
                 }
-            }
+            ]
         },
         "tests": [
             {
-                "description": "extends",
+                "description": "allOf",
                 "data": {"foo": "baz", "bar": 2},
                 "valid": true
             },
             {
-                "description": "mismatch extends",
+                "description": "mismatch second",
                 "data": {"foo": "baz"},
                 "valid": false
             },
             {
-                "description": "mismatch extended",
+                "description": "mismatch first",
                 "data": {"bar": 2},
                 "valid": false
             },
@@ -33,19 +41,22 @@
         ]
     },
     {
-        "description": "multiple extends",
+        "description": "allOf with base schema",
         "schema": {
-            "properties": {"bar": {"type": "integer", "required": true}},
-            "extends" : [
+            "properties": {"bar": {"type": "integer"}},
+            "required": ["bar"],
+            "allOf" : [
                 {
                     "properties": {
-                        "foo": {"type": "string", "required": true}
-                    }
+                        "foo": {"type": "string"}
+                    },
+                    "required": ["foo"]
                 },
                 {
                     "properties": {
-                        "baz": {"type": "null", "required": true}
-                    }
+                        "baz": {"type": "null"}
+                    },
+                    "required": ["baz"]
                 }
             ]
         },
@@ -56,12 +67,17 @@
                 "valid": true
             },
             {
-                "description": "mismatch first extends",
+                "description": "mismatch base schema",
+                "data": {"foo": "quux", "baz": null},
+                "valid": false
+            },
+            {
+                "description": "mismatch first allOf",
                 "data": {"bar": 2, "baz": null},
                 "valid": false
             },
             {
-                "description": "mismatch second extends",
+                "description": "mismatch second allOf",
                 "data": {"foo": "quux", "bar": 2},
                 "valid": false
             },
@@ -73,10 +89,12 @@
         ]
     },
     {
-        "description": "extends simple types",
+        "description": "allOf simple types",
         "schema": {
-            "minimum": 20,
-            "extends": {"maximum": 30}
+            "allOf": [
+                {"maximum": 30},
+                {"minimum": 20}
+            ]
         },
         "tests": [
             {
@@ -85,7 +103,7 @@
                 "valid": true
             },
             {
-                "description": "mismatch extends",
+                "description": "mismatch one",
                 "data": 35,
                 "valid": false
             }

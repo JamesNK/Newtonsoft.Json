@@ -2,7 +2,7 @@
     {
         "description": "dependencies",
         "schema": {
-            "dependencies": {"bar": "foo"}
+            "dependencies": {"bar": ["foo"]}
         },
         "tests": [
             {
@@ -86,6 +86,11 @@
             {
                 "description": "valid",
                 "data": {"foo": 1, "bar": 2},
+                "valid": true
+            },
+            {
+                "description": "no dependency",
+                "data": {"foo": "quux"},
                 "valid": true
             },
             {

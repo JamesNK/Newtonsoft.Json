@@ -64,6 +64,7 @@ namespace Newtonsoft.Json.Tests.Schema
             string json = schema.ToString();
 
             StringAssert.AreEqual(@"{
+  ""$schema"": ""http://json-schema.org/draft-04/schema#"",
   ""type"": ""object"",
   ""additionalProperties"": {
     ""type"": [
@@ -101,24 +102,27 @@ namespace Newtonsoft.Json.Tests.Schema
             string json = schema.ToString();
 
             StringAssert.AreEqual(@"{
+  ""$schema"": ""http://json-schema.org/draft-04/schema#"",
   ""description"": ""DefaultValueAttributeTestClass description!"",
   ""type"": ""object"",
   ""additionalProperties"": false,
   ""properties"": {
     ""TestField1"": {
-      ""required"": true,
       ""type"": ""integer"",
       ""default"": 21
     },
     ""TestProperty1"": {
-      ""required"": true,
       ""type"": [
         ""string"",
         ""null""
       ],
       ""default"": ""TestProperty1Value""
     }
-  }
+  },
+  ""required"": [
+    ""TestField1"",
+    ""TestProperty1""
+  ]
 }", json);
         }
 #endif
@@ -133,26 +137,29 @@ namespace Newtonsoft.Json.Tests.Schema
 
             StringAssert.AreEqual(@"{
   ""id"": ""Person"",
+  ""$schema"": ""http://json-schema.org/draft-04/schema#"",
   ""title"": ""Title!"",
   ""description"": ""JsonObjectAttribute description!"",
   ""type"": ""object"",
   ""properties"": {
     ""Name"": {
-      ""required"": true,
       ""type"": [
         ""string"",
         ""null""
       ]
     },
     ""BirthDate"": {
-      ""required"": true,
       ""type"": ""string""
     },
     ""LastModified"": {
-      ""required"": true,
       ""type"": ""string""
     }
-  }
+  },
+  ""required"": [
+    ""Name"",
+    ""BirthDate"",
+    ""LastModified""
+  ]
 }", json);
         }
 
@@ -165,52 +172,55 @@ namespace Newtonsoft.Json.Tests.Schema
             string json = schema.ToString();
 
             StringAssert.AreEqual(@"{
+  ""$schema"": ""http://json-schema.org/draft-04/schema#"",
   ""type"": ""object"",
   ""properties"": {
     ""Id"": {
-      ""required"": true,
       ""type"": ""string""
     },
     ""FName"": {
-      ""required"": true,
       ""type"": [
         ""string"",
         ""null""
       ]
     },
     ""LName"": {
-      ""required"": true,
       ""type"": [
         ""string"",
         ""null""
       ]
     },
     ""RoleId"": {
-      ""required"": true,
       ""type"": ""integer""
     },
     ""NullableRoleId"": {
-      ""required"": true,
       ""type"": [
         ""integer"",
         ""null""
       ]
     },
     ""NullRoleId"": {
-      ""required"": true,
       ""type"": [
         ""integer"",
         ""null""
       ]
     },
     ""Active"": {
-      ""required"": true,
       ""type"": [
         ""boolean"",
         ""null""
       ]
     }
-  }
+  },
+  ""required"": [
+    ""Id"",
+    ""FName"",
+    ""LName"",
+    ""RoleId"",
+    ""NullableRoleId"",
+    ""NullRoleId"",
+    ""Active""
+  ]
 }", json);
         }
 
@@ -381,7 +391,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             StringAssert.AreEqual(@"{
   ""id"": ""System.IO.DirectoryInfo"",
-  ""required"": true,
+  ""$schema"": ""http://json-schema.org/draft-04/schema#"",
   ""type"": [
     ""object"",
     ""null""
@@ -389,7 +399,6 @@ namespace Newtonsoft.Json.Tests.Schema
   ""additionalProperties"": false,
   ""properties"": {
     ""Name"": {
-      ""required"": true,
       ""type"": [
         ""string"",
         ""null""
@@ -399,52 +408,56 @@ namespace Newtonsoft.Json.Tests.Schema
       ""$ref"": ""System.IO.DirectoryInfo""
     },
     ""Exists"": {
-      ""required"": true,
       ""type"": ""boolean""
     },
     ""FullName"": {
-      ""required"": true,
       ""type"": [
         ""string"",
         ""null""
       ]
     },
     ""Extension"": {
-      ""required"": true,
       ""type"": [
         ""string"",
         ""null""
       ]
     },
     ""CreationTime"": {
-      ""required"": true,
       ""type"": ""string""
     },
     ""CreationTimeUtc"": {
-      ""required"": true,
       ""type"": ""string""
     },
     ""LastAccessTime"": {
-      ""required"": true,
       ""type"": ""string""
     },
     ""LastAccessTimeUtc"": {
-      ""required"": true,
       ""type"": ""string""
     },
     ""LastWriteTime"": {
-      ""required"": true,
       ""type"": ""string""
     },
     ""LastWriteTimeUtc"": {
-      ""required"": true,
       ""type"": ""string""
     },
     ""Attributes"": {
-      ""required"": true,
       ""type"": ""integer""
     }
-  }
+  },
+  ""required"": [
+    ""Name"",
+    ""Parent"",
+    ""Exists"",
+    ""FullName"",
+    ""Extension"",
+    ""CreationTime"",
+    ""CreationTimeUtc"",
+    ""LastAccessTime"",
+    ""LastAccessTimeUtc"",
+    ""LastWriteTime"",
+    ""LastWriteTimeUtc"",
+    ""Attributes""
+  ]
 }", json);
 
             DirectoryInfo temp = new DirectoryInfo(@"c:\temp");
@@ -485,6 +498,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             StringAssert.AreEqual(@"{
   ""id"": ""System.Version"",
+  ""$schema"": ""http://json-schema.org/draft-04/schema#"",
   ""type"": [
     ""object"",
     ""null""
@@ -492,30 +506,32 @@ namespace Newtonsoft.Json.Tests.Schema
   ""additionalProperties"": false,
   ""properties"": {
     ""major"": {
-      ""required"": true,
       ""type"": ""integer""
     },
     ""minor"": {
-      ""required"": true,
       ""type"": ""integer""
     },
     ""build"": {
-      ""required"": true,
       ""type"": ""integer""
     },
     ""revision"": {
-      ""required"": true,
       ""type"": ""integer""
     },
     ""majorRevision"": {
-      ""required"": true,
       ""type"": ""integer""
     },
     ""minorRevision"": {
-      ""required"": true,
       ""type"": ""integer""
     }
-  }
+  },
+  ""required"": [
+    ""major"",
+    ""minor"",
+    ""build"",
+    ""revision"",
+    ""majorRevision"",
+    ""minorRevision""
+  ]
 }", json);
         }
 
@@ -536,6 +552,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             StringAssert.AreEqual(@"{
   ""id"": ""System.Version"",
+  ""$schema"": ""http://json-schema.org/draft-04/schema#"",
   ""type"": [
     ""object"",
     ""null""
@@ -543,22 +560,24 @@ namespace Newtonsoft.Json.Tests.Schema
   ""additionalProperties"": false,
   ""properties"": {
     ""_Major"": {
-      ""required"": true,
       ""type"": ""integer""
     },
     ""_Minor"": {
-      ""required"": true,
       ""type"": ""integer""
     },
     ""_Build"": {
-      ""required"": true,
       ""type"": ""integer""
     },
     ""_Revision"": {
-      ""required"": true,
       ""type"": ""integer""
     }
-  }
+  },
+  ""required"": [
+    ""_Major"",
+    ""_Minor"",
+    ""_Build"",
+    ""_Revision""
+  ]
 }", json);
 
             JTokenWriter jsonWriter = new JTokenWriter();
@@ -610,10 +629,10 @@ namespace Newtonsoft.Json.Tests.Schema
             string json = schema.ToString();
 
             StringAssert.AreEqual(@"{
+  ""$schema"": ""http://json-schema.org/draft-04/schema#"",
   ""type"": ""object"",
   ""properties"": {
     ""x"": {
-      ""required"": true,
       ""type"": ""integer"",
       ""enum"": [
         0,
@@ -621,7 +640,10 @@ namespace Newtonsoft.Json.Tests.Schema
         -1
       ]
     }
-  }
+  },
+  ""required"": [
+    ""x""
+  ]
 }", json);
         }
 
@@ -649,19 +671,22 @@ namespace Newtonsoft.Json.Tests.Schema
 
             StringAssert.AreEqual(@"{
   ""id"": ""Newtonsoft.Json.Tests.TestObjects.CircularReferenceClass"",
+  ""$schema"": ""http://json-schema.org/draft-04/schema#"",
   ""type"": [
     ""object"",
     ""null""
   ],
   ""properties"": {
     ""Name"": {
-      ""required"": true,
       ""type"": ""string""
     },
     ""Child"": {
       ""$ref"": ""Newtonsoft.Json.Tests.TestObjects.CircularReferenceClass""
     }
-  }
+  },
+  ""required"": [
+    ""Name""
+  ]
 }", json);
         }
 
@@ -676,7 +701,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             StringAssert.AreEqual(@"{
   ""id"": ""Newtonsoft.Json.Tests.TestObjects.JsonPropertyWithHandlingValues"",
-  ""required"": true,
+  ""$schema"": ""http://json-schema.org/draft-04/schema#"",
   ""type"": [
     ""object"",
     ""null""
@@ -690,7 +715,6 @@ namespace Newtonsoft.Json.Tests.Schema
       ""default"": ""Default!""
     },
     ""DefaultValueHandlingIncludeProperty"": {
-      ""required"": true,
       ""type"": [
         ""string"",
         ""null""
@@ -698,7 +722,6 @@ namespace Newtonsoft.Json.Tests.Schema
       ""default"": ""Default!""
     },
     ""DefaultValueHandlingPopulateProperty"": {
-      ""required"": true,
       ""type"": [
         ""string"",
         ""null""
@@ -719,7 +742,6 @@ namespace Newtonsoft.Json.Tests.Schema
       ]
     },
     ""NullValueHandlingIncludeProperty"": {
-      ""required"": true,
       ""type"": [
         ""string"",
         ""null""
@@ -734,7 +756,15 @@ namespace Newtonsoft.Json.Tests.Schema
     ""ReferenceLoopHandlingSerializeProperty"": {
       ""$ref"": ""Newtonsoft.Json.Tests.TestObjects.JsonPropertyWithHandlingValues""
     }
-  }
+  },
+  ""required"": [
+    ""DefaultValueHandlingIncludeProperty"",
+    ""DefaultValueHandlingPopulateProperty"",
+    ""NullValueHandlingIncludeProperty"",
+    ""ReferenceLoopHandlingErrorProperty"",
+    ""ReferenceLoopHandlingIgnoreProperty"",
+    ""ReferenceLoopHandlingSerializeProperty""
+  ]
 }", json);
         }
 
@@ -747,16 +777,19 @@ namespace Newtonsoft.Json.Tests.Schema
             string json = jsonSchema.ToString();
 
             StringAssert.AreEqual(@"{
+  ""$schema"": ""http://json-schema.org/draft-04/schema#"",
   ""type"": ""object"",
   ""properties"": {
     ""Value"": {
-      ""required"": true,
       ""type"": [
         ""integer"",
         ""null""
       ]
     }
-  }
+  },
+  ""required"": [
+    ""Value""
+  ]
 }", json);
         }
 
@@ -788,7 +821,6 @@ namespace Newtonsoft.Json.Tests.Schema
   ""type"": ""object"",
   ""properties"": {
     ""y"": {
-      ""required"": true,
       ""type"": ""string"",
       ""enum"": [
         ""no"",
@@ -796,7 +828,10 @@ namespace Newtonsoft.Json.Tests.Schema
         ""desc""
       ]
     }
-  }
+  },
+  ""required"": [
+    ""y""
+  ]
 }", json);
         }
     }

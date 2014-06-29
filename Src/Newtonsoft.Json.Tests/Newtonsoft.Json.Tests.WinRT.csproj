@@ -159,8 +159,6 @@
     <Compile Include="Schema\ExtensionsTests.cs" />
     <Compile Include="Schema\JsonSchemaBuilderTests.cs" />
     <Compile Include="Schema\JsonSchemaGeneratorTests.cs" />
-    <Compile Include="Schema\JsonSchemaModelBuilderTests.cs" />
-    <Compile Include="Schema\JsonSchemaNodeTests.cs" />
     <Compile Include="Schema\JsonSchemaTests.cs" />
     <Compile Include="Serialization\CamelCasePropertyNamesContractResolverTests.cs" />
     <Compile Include="Serialization\ConstructorHandlingTests.cs" />

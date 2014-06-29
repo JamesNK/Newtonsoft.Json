@@ -124,14 +124,18 @@ namespace Newtonsoft.Json.Tests.Schema
         {
             string json = @"{
   ""description"":""Required"",
-  ""required"":true
+  ""properties"":
+  {
+    ""name"": {""type"":""string""}
+  },
+  ""required"":[""name""]
 }";
 
             JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
             JsonSchema schema = builder.Read(new JsonTextReader(new StringReader(json)));
 
             Assert.AreEqual("Required", schema.Description);
-            Assert.AreEqual(true, schema.Required);
+            Assert.AreEqual("name", schema.Required[0]);
         }
 
         [Test]
@@ -240,18 +244,18 @@ namespace Newtonsoft.Json.Tests.Schema
         }
 
         [Test]
-        public void Requires()
+        public void Dependencies()
         {
             string json = @"{
-  ""description"":""Requires"",
-  ""requires"":""PurpleMonkeyDishwasher""
+  ""description"":""Dependencies"",
+  ""dependencies"":{""PurpleMonkeyDishwasher"":""a""}
 }";
 
             JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
             JsonSchema schema = builder.Read(new JsonTextReader(new StringReader(json)));
 
-            Assert.AreEqual("Requires", schema.Description);
-            Assert.AreEqual("PurpleMonkeyDishwasher", schema.Requires);
+            Assert.AreEqual("Dependencies", schema.Description);
+            Assert.IsTrue(schema.Dependencies.ContainsKey("PurpleMonkeyDishwasher"));
         }
 
         [Test]
@@ -265,7 +269,7 @@ namespace Newtonsoft.Json.Tests.Schema
   ""maxItems"":2,
   ""minLength"":5,
   ""maxLength"":50,
-  ""divisibleBy"":3,
+  ""multipleOf"":3,
 }";
 
             JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
@@ -278,37 +282,37 @@ namespace Newtonsoft.Json.Tests.Schema
             Assert.AreEqual(2, schema.MaximumItems);
             Assert.AreEqual(5, schema.MinimumLength);
             Assert.AreEqual(50, schema.MaximumLength);
-            Assert.AreEqual(3, schema.DivisibleBy);
+            Assert.AreEqual(3, schema.MultipleOf);
         }
 
         [Test]
-        public void DisallowSingleType()
+        public void NotOfSingleType()
         {
             string json = @"{
-  ""description"":""DisallowSingleType"",
-  ""disallow"":""string""
+  ""description"":""NotSingleType"",
+  ""not"":{""type"":""string""}
 }";
 
             JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
             JsonSchema schema = builder.Read(new JsonTextReader(new StringReader(json)));
 
-            Assert.AreEqual("DisallowSingleType", schema.Description);
-            Assert.AreEqual(JsonSchemaType.String, schema.Disallow);
+            Assert.AreEqual("NotSingleType", schema.Description);
+            Assert.AreEqual(JsonSchemaType.String, schema.NotOf.Type);
         }
 
         [Test]
-        public void DisallowMultipleTypes()
+        public void NotOfMultipleTypes()
         {
             string json = @"{
-  ""description"":""DisallowMultipleTypes"",
-  ""disallow"":[""string"",""number""]
+  ""description"":""NotMultipleTypes"",
+  ""not"":{ ""type"": [""string"",""number""] }
 }";
 
             JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
             JsonSchema schema = builder.Read(new JsonTextReader(new StringReader(json)));
 
-            Assert.AreEqual("DisallowMultipleTypes", schema.Description);
-            Assert.AreEqual(JsonSchemaType.String | JsonSchemaType.Float, schema.Disallow);
+            Assert.AreEqual("NotMultipleTypes", schema.Description);
+            Assert.AreEqual(JsonSchemaType.String | JsonSchemaType.Float, schema.NotOf.Type);
         }
 
         [Test]
@@ -385,9 +389,8 @@ namespace Newtonsoft.Json.Tests.Schema
         public void UnresolvedReference()
         {
             ExceptionAssert.Throws<Exception>(() =>
-            {
-                string json = @"{
-  ""id"":""CircularReferenceArray"",
+                {
+                    string json = @"{
   ""description"":""CircularReference"",
   ""type"":[""array""],
   ""items"":{""$ref"":""MyUnresolvedReference""}

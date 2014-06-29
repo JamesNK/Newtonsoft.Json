@@ -36,7 +36,7 @@ namespace Newtonsoft.Json.Schema
         public const string RequiredPropertyName = "required";
         public const string PatternPropertiesPropertyName = "patternProperties";
         public const string AdditionalPropertiesPropertyName = "additionalProperties";
-        public const string RequiresPropertyName = "requires";
+        public const string DependenciesPropertyName = "dependencies";
         public const string MinimumPropertyName = "minimum";
         public const string MaximumPropertyName = "maximum";
         public const string ExclusiveMinimumPropertyName = "exclusiveMinimum";
@@ -53,12 +53,18 @@ namespace Newtonsoft.Json.Schema
         public const string FormatPropertyName = "format";
         public const string DefaultPropertyName = "default";
         public const string TransientPropertyName = "transient";
-        public const string DivisibleByPropertyName = "divisibleBy";
+        public const string MultipleOfPropertyName = "multipleOf";
         public const string HiddenPropertyName = "hidden";
-        public const string DisallowPropertyName = "disallow";
-        public const string ExtendsPropertyName = "extends";
+        public const string AnyOfPropertyName = "anyOf";
+        public const string AllOfPropertyName = "allOf";
+        public const string OneOfPropertyName = "oneOf";
+        public const string NotOfPropertyName = "not";
         public const string IdPropertyName = "id";
         public const string UniqueItemsPropertyName = "uniqueItems";
+        public const string MinimumPropertiesPropertyName = "minProperties";
+        public const string MaximumPropertiesPropertyName = "maxProperties";
+        public const string SchemaPropertyName = "$schema";
+        public const string SchemaPropertyValue = "http://json-schema.org/draft-04/schema#";
 
         public const string OptionValuePropertyName = "value";
         public const string OptionLabelPropertyName = "label";

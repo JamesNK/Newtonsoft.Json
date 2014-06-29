@@ -115,17 +115,19 @@ namespace Newtonsoft.Json.Tests
             //   "type": "object",
             //   "properties": {
             //     "Name": {
-            //       "required": true,
             //       "type": [
             //         "string",
             //         "null"
             //       ]
             //     },
             //     "Date": {
-            //       "required": true,
             //       "type": "string"
             //     }
             //   }
+            //   "required": [
+            //     "Name",
+            //     "Date"
+            //   ]
             // }
         }
 
