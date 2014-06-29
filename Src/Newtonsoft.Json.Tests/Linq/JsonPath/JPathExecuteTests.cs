@@ -51,6 +51,22 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
     public class JPathExecuteTests : TestFixtureBase
     {
         [Test]
+        public void SelectTokenAfterEmptyContainer()
+        {
+            string json = @"{
+    'cont': [],
+    'test': 'no one will find me'
+}";
+
+            JObject o = JObject.Parse(json);
+
+            IList<JToken> results = o.SelectTokens("$..test").ToList();
+
+            Assert.AreEqual(1, results.Count);
+            Assert.AreEqual("no one will find me", (string)results[0]);
+        }
+
+        [Test]
         public void EvaluatePropertyWithRequired()
         {
             string json = "{\"bookId\":\"1000\"}";

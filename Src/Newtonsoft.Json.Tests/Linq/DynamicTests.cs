@@ -786,6 +786,9 @@ namespace Newtonsoft.Json.Tests.Linq
 
             string newRole = newHotness.Roles[0];
             // Admin
+
+            Assert.AreEqual("Admin", oldRole);
+            Assert.AreEqual("Admin", newRole);
         }
 
         [Test]

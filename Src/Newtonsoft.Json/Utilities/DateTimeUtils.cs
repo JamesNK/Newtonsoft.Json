@@ -332,7 +332,12 @@ namespace Newtonsoft.Json.Utilities
                 value = value.Substring(0, index);
             }
 
-            long javaScriptTicks = long.Parse(value, NumberStyles.Integer, CultureInfo.InvariantCulture);
+            long javaScriptTicks;
+            if (!long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out javaScriptTicks))
+            {
+                dt = null;
+                return false;
+            }
 
             DateTime utcDateTime = ConvertJavaScriptTicksToDateTime(javaScriptTicks);
 
@@ -342,27 +347,24 @@ namespace Newtonsoft.Json.Utilities
                 dt = new DateTimeOffset(utcDateTime.Add(offset).Ticks, offset);
                 return true;
             }
-            else
 #endif
+
+            DateTime dateTime;
+            switch (kind)
             {
-                DateTime dateTime;
-
-                switch (kind)
-                {
-                    case DateTimeKind.Unspecified:
-                        dateTime = DateTime.SpecifyKind(utcDateTime.ToLocalTime(), DateTimeKind.Unspecified);
-                        break;
-                    case DateTimeKind.Local:
-                        dateTime = utcDateTime.ToLocalTime();
-                        break;
-                    default:
-                        dateTime = utcDateTime;
-                        break;
-                }
-
-                dt = EnsureDateTime(dateTime, dateTimeZoneHandling);
-                return true;
+                case DateTimeKind.Unspecified:
+                    dateTime = DateTime.SpecifyKind(utcDateTime.ToLocalTime(), DateTimeKind.Unspecified);
+                    break;
+                case DateTimeKind.Local:
+                    dateTime = utcDateTime.ToLocalTime();
+                    break;
+                default:
+                    dateTime = utcDateTime;
+                    break;
             }
+
+            dt = EnsureDateTime(dateTime, dateTimeZoneHandling);
+            return true;
         }
 
         private static bool TryParseDateExact(string text, DateParseHandling dateParseHandling, DateTimeZoneHandling dateTimeZoneHandling, string dateFormatString, CultureInfo culture, out object dt)

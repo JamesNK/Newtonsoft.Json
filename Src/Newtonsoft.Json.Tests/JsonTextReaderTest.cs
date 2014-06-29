@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using Newtonsoft.Json.Linq;
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
 using System.Numerics;
 #endif
@@ -47,6 +48,161 @@ namespace Newtonsoft.Json.Tests
     [TestFixture]
     public class JsonTextReaderTest : TestFixtureBase
     {
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+        [Test]
+        public void ReadBigInteger()
+        {
+            string json = @"{
+    ParentId: 1,
+    ChildId: 333333333333333333333333333333333333333,
+}";
+
+            JsonTextReader jsonTextReader = new JsonTextReader(new StringReader(json));
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.StartObject, jsonTextReader.TokenType);
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.PropertyName, jsonTextReader.TokenType);
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.Integer, jsonTextReader.TokenType);
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.PropertyName, jsonTextReader.TokenType);
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.Integer, jsonTextReader.TokenType);
+            Assert.AreEqual(typeof(BigInteger), jsonTextReader.ValueType);
+            Assert.AreEqual(BigInteger.Parse("333333333333333333333333333333333333333"), jsonTextReader.Value);
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.EndObject, jsonTextReader.TokenType);
+
+            Assert.IsFalse(jsonTextReader.Read());
+
+            JObject o = JObject.Parse(json);
+            var i = (BigInteger)((JValue)o["ChildId"]).Value;
+            Assert.AreEqual(BigInteger.Parse("333333333333333333333333333333333333333"), i);
+        }
+#endif
+
+        [Test]
+        public void ReadIntegerWithError()
+        {
+            string json = @"{
+    ChildId: 333333333333333333333333333333333333333
+}";
+
+            JsonTextReader jsonTextReader = new JsonTextReader(new StringReader(json));
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.StartObject, jsonTextReader.TokenType);
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.PropertyName, jsonTextReader.TokenType);
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                "JSON integer 333333333333333333333333333333333333333 is too large or small for an Int32. Path 'ChildId', line 2, position 53.",
+                () => jsonTextReader.ReadAsInt32());
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.EndObject, jsonTextReader.TokenType);
+
+            Assert.IsFalse(jsonTextReader.Read());
+        }
+
+        [Test]
+        public void ReadIntegerWithErrorInArray()
+        {
+            string json = @"[
+  333333333333333333333333333333333333333,
+  3.3,
+  ,
+  0f
+]";
+
+            JsonTextReader jsonTextReader = new JsonTextReader(new StringReader(json));
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.StartArray, jsonTextReader.TokenType);
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                "JSON integer 333333333333333333333333333333333333333 is too large or small for an Int32. Path '[0]', line 2, position 42.",
+                () => jsonTextReader.ReadAsInt32());
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                "Input string '3.3' is not a valid integer. Path '[1]', line 3, position 6.",
+                () => jsonTextReader.ReadAsInt32());
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                "Error reading integer. Unexpected token: Undefined. Path '[2]', line 4, position 3.",
+                () => jsonTextReader.ReadAsInt32());
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                "Input string '0f' is not a valid integer. Path '[3]', line 5, position 5.",
+                () => jsonTextReader.ReadAsInt32());
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.EndArray, jsonTextReader.TokenType);
+
+            Assert.IsFalse(jsonTextReader.Read());
+        }
+
+        [Test]
+        public void ReadBytesWithError()
+        {
+            string json = @"{
+    ChildId: '123'
+}";
+
+            JsonTextReader jsonTextReader = new JsonTextReader(new StringReader(json));
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.StartObject, jsonTextReader.TokenType);
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.PropertyName, jsonTextReader.TokenType);
+
+            try
+            {
+                jsonTextReader.ReadAsBytes();
+            }
+            catch (FormatException)
+            {
+            }
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.EndObject, jsonTextReader.TokenType);
+
+            Assert.IsFalse(jsonTextReader.Read());
+        }
+
+        [Test]
+        public void ReadBadMSDateAsString()
+        {
+            string json = @"{
+    ChildId: '\/Date(9467082_PIE_340000-0631)\/'
+}";
+
+            JsonTextReader jsonTextReader = new JsonTextReader(new StringReader(json));
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.StartObject, jsonTextReader.TokenType);
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.PropertyName, jsonTextReader.TokenType);
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.String, jsonTextReader.TokenType);
+            Assert.AreEqual(@"/Date(9467082_PIE_340000-0631)/", jsonTextReader.Value);
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.EndObject, jsonTextReader.TokenType);
+
+            Assert.IsFalse(jsonTextReader.Read());
+        }
+
         [Test]
         public void ReadInvalidNonBase10Number()
         {
@@ -54,17 +210,17 @@ namespace Newtonsoft.Json.Tests
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 
-            ExceptionAssert.Throws<JsonReaderException>("Input string '0a' is not a valid number. Path '', line 1, position 2.",
+            ExceptionAssert.Throws<JsonReaderException>("Unexpected character encountered while parsing number: q. Path '', line 1, position 2.",
                 () => { reader.Read(); });
 
             reader = new JsonTextReader(new StringReader(json));
 
-            ExceptionAssert.Throws<JsonReaderException>("Input string '0a' is not a valid decimal. Path '', line 1, position 2.",
+            ExceptionAssert.Throws<JsonReaderException>("Unexpected character encountered while parsing number: q. Path '', line 1, position 2.",
                 () => { reader.ReadAsDecimal(); });
 
             reader = new JsonTextReader(new StringReader(json));
 
-            ExceptionAssert.Throws<JsonReaderException>("Input string '0a' is not a valid integer. Path '', line 1, position 2.",
+            ExceptionAssert.Throws<JsonReaderException>("Unexpected character encountered while parsing number: q. Path '', line 1, position 2.",
                 () => { reader.ReadAsInt32(); });
         }
 
@@ -1254,7 +1410,7 @@ bye", reader.Value);
             ExceptionAssert.Throws<JsonReaderException>("JSON integer 9223372036854775807 is too large or small for an Int32. Path '', line 1, position 19.", () => reader.ReadAsInt32());
 
             reader = new JsonTextReader(new StringReader("9999999999999999999999999999999999999999999999999999999999999999999999999999asdasdasd"));
-            ExceptionAssert.Throws<JsonReaderException>("Input string '9999999999999999999999999999999999999999999999999999999999999999999999999999a' is not a valid integer. Path '', line 1, position 77.", () => reader.ReadAsInt32());
+            ExceptionAssert.Throws<JsonReaderException>("Unexpected character encountered while parsing number: s. Path '', line 1, position 77.", () => reader.ReadAsInt32());
 
             reader = new JsonTextReader(new StringReader("1E-06"));
             ExceptionAssert.Throws<JsonReaderException>("Input string '1E-06' is not a valid integer. Path '', line 1, position 5.", () => reader.ReadAsInt32());
@@ -1287,11 +1443,11 @@ bye", reader.Value);
             Assert.AreEqual(0, reader.ReadAsDecimal());
 
             reader = new JsonTextReader(new StringReader("9999999999999999999999999999999999999999999999999999999999999999999999999999asdasdasd"));
-            ExceptionAssert.Throws<JsonReaderException>("Input string '9999999999999999999999999999999999999999999999999999999999999999999999999999a' is not a valid decimal. Path '', line 1, position 77.", () => reader.ReadAsDecimal());
+            ExceptionAssert.Throws<JsonReaderException>("Unexpected character encountered while parsing number: s. Path '', line 1, position 77.", () => reader.ReadAsDecimal());
 
             reader = new JsonTextReader(new StringReader("9999999999999999999999999999999999999999999999999999999999999999999999999999asdasdasd"));
             reader.FloatParseHandling = Json.FloatParseHandling.Decimal;
-            ExceptionAssert.Throws<JsonReaderException>("Input string '9999999999999999999999999999999999999999999999999999999999999999999999999999a' is not a valid decimal. Path '', line 1, position 77.", () => reader.Read());
+            ExceptionAssert.Throws<JsonReaderException>("Unexpected character encountered while parsing number: s. Path '', line 1, position 77.", () => reader.Read());
 
             reader = new JsonTextReader(new StringReader("1E-06"));
             Assert.AreEqual(0.000001m, reader.ReadAsDecimal());
@@ -1329,7 +1485,7 @@ bye", reader.Value);
             Assert.AreEqual(-0.0d, reader.Value);
 
             reader = new JsonTextReader(new StringReader("9999999999999999999999999999999999999999999999999999999999999999999999999999asdasdasd"));
-            ExceptionAssert.Throws<JsonReaderException>("Input string '9999999999999999999999999999999999999999999999999999999999999999999999999999a' is not a valid number. Path '', line 1, position 77.", () => reader.Read());
+            ExceptionAssert.Throws<JsonReaderException>("Unexpected character encountered while parsing number: s. Path '', line 1, position 77.", () => reader.Read());
 
             reader = new JsonTextReader(new StringReader("1E-06"));
             Assert.IsTrue(reader.Read());
