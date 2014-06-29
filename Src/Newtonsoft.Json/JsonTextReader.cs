@@ -631,19 +631,18 @@ namespace Newtonsoft.Json
 
             while (true)
             {
-                switch (_chars[charPos++])
+                switch (_chars[charPos])
                 {
                     case '\0':
-                        if (_charsUsed == charPos - 1)
+                        _charPos = charPos;
+
+                        if (_charsUsed == charPos)
                         {
-                            charPos--;
-                            _charPos = charPos;
                             if (ReadData(true) == 0)
                                 return;
                         }
                         else
                         {
-                            _charPos = charPos - 1;
                             return;
                         }
                         break;
@@ -674,10 +673,23 @@ namespace Newtonsoft.Json
                     case '7':
                     case '8':
                     case '9':
+                        charPos++;
                         break;
                     default:
-                        _charPos = charPos - 1;
-                        return;
+                        _charPos = charPos;
+
+                        char currentChar = _chars[_charPos];
+                        if (char.IsWhiteSpace(currentChar)
+                            || currentChar == ','
+                            || currentChar == '}'
+                            || currentChar == ']'
+                            || currentChar == ')'
+                            || currentChar == '/')
+                        {
+                            return;
+                        }
+                        
+                        throw JsonReaderException.Create(this, "Unexpected character encountered while parsing number: {0}.".FormatWith(CultureInfo.InvariantCulture, currentChar));
                 }
             }
         }
