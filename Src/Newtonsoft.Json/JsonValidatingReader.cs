@@ -46,21 +46,23 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Represents a reader that provides <see cref="JsonSchema"/> validation.
     /// </summary>
+    [Obsolete("JsonValidatingReader is obsolete. Use JToken.IsValid or JsonValidator class directly")]
     public class JsonValidatingReader : JsonReader, IJsonLineInfo
     {
         private class SchemaScope
         {
             private readonly JTokenType _tokenType;
-            private readonly IList<JsonSchemaModel> _schemas;
+            private readonly IList<JsonSchema> _schemas;
             private readonly Dictionary<string, bool> _requiredProperties;
 
             public string CurrentPropertyName { get; set; }
             public int ArrayItemCount { get; set; }
+            public int ObjectPropertyCount { get; set; }
             public bool IsUniqueArray { get; set; }
             public IList<JToken> UniqueArrayItems { get; set; }
             public JTokenWriter CurrentItemWriter { get; set; }
 
-            public IList<JsonSchemaModel> Schemas
+            public IList<JsonSchema> Schemas
             {
                 get { return _schemas; }
             }
@@ -75,12 +77,12 @@ namespace Newtonsoft.Json
                 get { return _tokenType; }
             }
 
-            public SchemaScope(JTokenType tokenType, IList<JsonSchemaModel> schemas)
+            public SchemaScope(JTokenType tokenType, IList<JsonSchema> schemas)
             {
                 _tokenType = tokenType;
                 _schemas = schemas;
 
-                _requiredProperties = schemas.SelectMany<JsonSchemaModel, string>(GetRequiredProperties).Distinct().ToDictionary(p => p, p => false);
+                _requiredProperties = schemas.SelectMany<JsonSchema, string>(GetRequiredProperties).Distinct().ToDictionary(p => (string)p, p => false);
 
                 if (tokenType == JTokenType.Array && schemas.Any(s => s.UniqueItems))
                 {
@@ -89,19 +91,18 @@ namespace Newtonsoft.Json
                 }
             }
 
-            private IEnumerable<string> GetRequiredProperties(JsonSchemaModel schema)
+            private IEnumerable<string> GetRequiredProperties(JsonSchema schema)
             {
-                if (schema == null || schema.Properties == null)
+                if (schema == null || schema.Required == null)
                     return Enumerable.Empty<string>();
 
-                return schema.Properties.Where(p => p.Value.Required).Select(p => p.Key);
+                return schema.Required;
             }
         }
 
         private readonly JsonReader _reader;
         private readonly Stack<SchemaScope> _stack;
         private JsonSchema _schema;
-        private JsonSchemaModel _model;
         private SchemaScope _currentScope;
 
         /// <summary>
@@ -179,19 +180,19 @@ namespace Newtonsoft.Json
             return poppedScope;
         }
 
-        private IList<JsonSchemaModel> CurrentSchemas
+        private IList<JsonSchema> CurrentSchemas
         {
             get { return _currentScope.Schemas; }
         }
 
-        private static readonly IList<JsonSchemaModel> EmptySchemaList = new List<JsonSchemaModel>();
+        private static readonly IList<JsonSchema> EmptySchemaList = new List<JsonSchema>();
 
-        private IList<JsonSchemaModel> CurrentMemberSchemas
+        private IList<JsonSchema> CurrentMemberSchemas
         {
             get
             {
                 if (_currentScope == null)
-                    return new List<JsonSchemaModel>(new[] { _model });
+                    return new List<JsonSchema>(new[] { _schema });
 
                 if (_currentScope.Schemas == null || _currentScope.Schemas.Count == 0)
                     return EmptySchemaList;
@@ -205,18 +206,18 @@ namespace Newtonsoft.Json
                         if (_currentScope.CurrentPropertyName == null)
                             throw new JsonReaderException("CurrentPropertyName has not been set on scope.");
 
-                        IList<JsonSchemaModel> schemas = new List<JsonSchemaModel>();
+                        IList<JsonSchema> schemas = new List<JsonSchema>();
 
-                        foreach (JsonSchemaModel schema in CurrentSchemas)
+                        foreach (JsonSchema schema in CurrentSchemas)
                         {
-                            JsonSchemaModel propertySchema;
+                            JsonSchema propertySchema;
                             if (schema.Properties != null && schema.Properties.TryGetValue(_currentScope.CurrentPropertyName, out propertySchema))
                             {
                                 schemas.Add(propertySchema);
                             }
                             if (schema.PatternProperties != null)
                             {
-                                foreach (KeyValuePair<string, JsonSchemaModel> patternProperty in schema.PatternProperties)
+                                foreach (KeyValuePair<string, JsonSchema> patternProperty in schema.PatternProperties)
                                 {
                                     if (Regex.IsMatch(_currentScope.CurrentPropertyName, patternProperty.Key))
                                     {
@@ -233,9 +234,9 @@ namespace Newtonsoft.Json
                     }
                     case JTokenType.Array:
                     {
-                        IList<JsonSchemaModel> schemas = new List<JsonSchemaModel>();
+                        IList<JsonSchema> schemas = new List<JsonSchema>();
 
-                        foreach (JsonSchemaModel schema in CurrentSchemas)
+                        foreach (JsonSchema schema in CurrentSchemas)
                         {
                             if (!schema.PositionalItemsValidation)
                             {
@@ -244,14 +245,17 @@ namespace Newtonsoft.Json
                             }
                             else
                             {
-                                if (schema.Items != null && schema.Items.Count > 0)
+                                if (schema.Items != null &&
+                                    schema.Items.Count > 0 &&
+                                    schema.Items.Count > (_currentScope.ArrayItemCount - 1))
                                 {
-                                    if (schema.Items.Count > (_currentScope.ArrayItemCount - 1))
-                                        schemas.Add(schema.Items[_currentScope.ArrayItemCount - 1]);
+                                    schemas.Add(schema.Items[_currentScope.ArrayItemCount - 1]);
                                 }
-
-                                if (schema.AllowAdditionalItems && schema.AdditionalItems != null)
-                                    schemas.Add(schema.AdditionalItems);
+                                else
+                                {
+                                    if (schema.AllowAdditionalItems && schema.AdditionalItems != null)
+                                        schemas.Add(schema.AdditionalItems);
+                                }
                             }
                         }
 
@@ -265,7 +269,7 @@ namespace Newtonsoft.Json
             }
         }
 
-        private void RaiseError(string message, JsonSchemaModel schema)
+        private void RaiseError(string message, JsonSchema schema)
         {
             IJsonLineInfo lineInfo = this;
 
@@ -310,7 +314,6 @@ namespace Newtonsoft.Json
                     throw new InvalidOperationException("Cannot change schema while validating JSON.");
 
                 _schema = value;
-                _model = null;
             }
         }
 
@@ -321,42 +324,6 @@ namespace Newtonsoft.Json
         public JsonReader Reader
         {
             get { return _reader; }
-        }
-
-        private void ValidateNotDisallowed(JsonSchemaModel schema)
-        {
-            if (schema == null)
-                return;
-
-            JsonSchemaType? currentNodeType = GetCurrentNodeSchemaType();
-            if (currentNodeType != null)
-            {
-                if (JsonSchemaGenerator.HasFlag(schema.Disallow, currentNodeType.Value))
-                    RaiseError("Type {0} is disallowed.".FormatWith(CultureInfo.InvariantCulture, currentNodeType), schema);
-            }
-        }
-
-        private JsonSchemaType? GetCurrentNodeSchemaType()
-        {
-            switch (_reader.TokenType)
-            {
-                case JsonToken.StartObject:
-                    return JsonSchemaType.Object;
-                case JsonToken.StartArray:
-                    return JsonSchemaType.Array;
-                case JsonToken.Integer:
-                    return JsonSchemaType.Integer;
-                case JsonToken.Float:
-                    return JsonSchemaType.Float;
-                case JsonToken.String:
-                    return JsonSchemaType.String;
-                case JsonToken.Boolean:
-                    return JsonSchemaType.Boolean;
-                case JsonToken.Null:
-                    return JsonSchemaType.Null;
-                default:
-                    return null;
-            }
         }
 
         /// <summary>
@@ -455,12 +422,9 @@ namespace Newtonsoft.Json
 
         private void ValidateCurrentToken()
         {
-            // first time validate has been called. build model
-            if (_model == null)
+            // first time validate has been called.
+            if (_stack.Count == 0)
             {
-                JsonSchemaModelBuilder builder = new JsonSchemaModelBuilder();
-                _model = builder.Build(_schema);
-
                 if (!JsonWriter.IsStartToken(_reader.TokenType))
                     Push(new SchemaScope(JTokenType.None, CurrentMemberSchemas));
             }
@@ -469,13 +433,13 @@ namespace Newtonsoft.Json
             {
                 case JsonToken.StartObject:
                     ProcessValue();
-                    IList<JsonSchemaModel> objectSchemas = CurrentMemberSchemas.Where(ValidateObject).ToList();
+                    IList<JsonSchema> objectSchemas = CurrentMemberSchemas.Where(ValidateObject).ToList();
                     Push(new SchemaScope(JTokenType.Object, objectSchemas));
                     WriteToken(CurrentSchemas);
                     break;
                 case JsonToken.StartArray:
                     ProcessValue();
-                    IList<JsonSchemaModel> arraySchemas = CurrentMemberSchemas.Where(ValidateArray).ToList();
+                    IList<JsonSchema> arraySchemas = CurrentMemberSchemas.Where(ValidateArray).ToList();
                     Push(new SchemaScope(JTokenType.Array, arraySchemas));
                     WriteToken(CurrentSchemas);
                     break;
@@ -486,7 +450,7 @@ namespace Newtonsoft.Json
                     break;
                 case JsonToken.PropertyName:
                     WriteToken(CurrentSchemas);
-                    foreach (JsonSchemaModel schema in CurrentSchemas)
+                    foreach (JsonSchema schema in CurrentSchemas)
                     {
                         ValidatePropertyName(schema);
                     }
@@ -497,7 +461,7 @@ namespace Newtonsoft.Json
                 case JsonToken.Integer:
                     ProcessValue();
                     WriteToken(CurrentMemberSchemas);
-                    foreach (JsonSchemaModel schema in CurrentMemberSchemas)
+                    foreach (JsonSchema schema in CurrentMemberSchemas)
                     {
                         ValidateInteger(schema);
                     }
@@ -505,7 +469,7 @@ namespace Newtonsoft.Json
                 case JsonToken.Float:
                     ProcessValue();
                     WriteToken(CurrentMemberSchemas);
-                    foreach (JsonSchemaModel schema in CurrentMemberSchemas)
+                    foreach (JsonSchema schema in CurrentMemberSchemas)
                     {
                         ValidateFloat(schema);
                     }
@@ -513,7 +477,7 @@ namespace Newtonsoft.Json
                 case JsonToken.String:
                     ProcessValue();
                     WriteToken(CurrentMemberSchemas);
-                    foreach (JsonSchemaModel schema in CurrentMemberSchemas)
+                    foreach (JsonSchema schema in CurrentMemberSchemas)
                     {
                         ValidateString(schema);
                     }
@@ -521,7 +485,7 @@ namespace Newtonsoft.Json
                 case JsonToken.Boolean:
                     ProcessValue();
                     WriteToken(CurrentMemberSchemas);
-                    foreach (JsonSchemaModel schema in CurrentMemberSchemas)
+                    foreach (JsonSchema schema in CurrentMemberSchemas)
                     {
                         ValidateBoolean(schema);
                     }
@@ -529,14 +493,14 @@ namespace Newtonsoft.Json
                 case JsonToken.Null:
                     ProcessValue();
                     WriteToken(CurrentMemberSchemas);
-                    foreach (JsonSchemaModel schema in CurrentMemberSchemas)
+                    foreach (JsonSchema schema in CurrentMemberSchemas)
                     {
                         ValidateNull(schema);
                     }
                     break;
                 case JsonToken.EndObject:
                     WriteToken(CurrentSchemas);
-                    foreach (JsonSchemaModel schema in CurrentSchemas)
+                    foreach (JsonSchema schema in CurrentSchemas)
                     {
                         ValidateEndObject(schema);
                     }
@@ -544,7 +508,7 @@ namespace Newtonsoft.Json
                     break;
                 case JsonToken.EndArray:
                     WriteToken(CurrentSchemas);
-                    foreach (JsonSchemaModel schema in CurrentSchemas)
+                    foreach (JsonSchema schema in CurrentSchemas)
                     {
                         ValidateEndArray(schema);
                     }
@@ -568,7 +532,7 @@ namespace Newtonsoft.Json
             }
         }
 
-        private void WriteToken(IList<JsonSchemaModel> schemas)
+        private void WriteToken(IList<JsonSchema> schemas)
         {
             foreach (SchemaScope schemaScope in _stack)
             {
@@ -603,7 +567,7 @@ namespace Newtonsoft.Json
                         }
                         else if (schemas.Any(s => s.Enum != null))
                         {
-                            foreach (JsonSchemaModel schema in schemas)
+                            foreach (JsonSchema schema in schemas)
                             {
                                 if (schema.Enum != null)
                                 {
@@ -622,7 +586,7 @@ namespace Newtonsoft.Json
             }
         }
 
-        private void ValidateEndObject(JsonSchemaModel schema)
+        private void ValidateEndObject(JsonSchema schema)
         {
             if (schema == null)
                 return;
@@ -637,9 +601,17 @@ namespace Newtonsoft.Json
                 if (unmatchedRequiredProperties.Count > 0)
                     RaiseError("Required properties are missing from object: {0}.".FormatWith(CultureInfo.InvariantCulture, string.Join(", ", unmatchedRequiredProperties.ToArray())), schema);
             }
+
+            int objectPropertyCount = _currentScope.ObjectPropertyCount;
+
+            if (schema.MaximumProperties != null && objectPropertyCount > schema.MaximumProperties)
+                RaiseError("Property count {0} exceeds maximum count of {1}.".FormatWith(CultureInfo.InvariantCulture, objectPropertyCount, schema.MaximumProperties), schema);
+
+            if (schema.MinimumProperties != null && objectPropertyCount < schema.MinimumProperties)
+                RaiseError("Property count {0} is less than minimum count of {1}.".FormatWith(CultureInfo.InvariantCulture, objectPropertyCount, schema.MinimumProperties), schema);
         }
 
-        private void ValidateEndArray(JsonSchemaModel schema)
+        private void ValidateEndArray(JsonSchema schema)
         {
             if (schema == null)
                 return;
@@ -653,29 +625,25 @@ namespace Newtonsoft.Json
                 RaiseError("Array item count {0} is less than minimum count of {1}.".FormatWith(CultureInfo.InvariantCulture, arrayItemCount, schema.MinimumItems), schema);
         }
 
-        private void ValidateNull(JsonSchemaModel schema)
+        private void ValidateNull(JsonSchema schema)
         {
             if (schema == null)
                 return;
 
             if (!TestType(schema, JsonSchemaType.Null))
                 return;
-
-            ValidateNotDisallowed(schema);
         }
 
-        private void ValidateBoolean(JsonSchemaModel schema)
+        private void ValidateBoolean(JsonSchema schema)
         {
             if (schema == null)
                 return;
 
             if (!TestType(schema, JsonSchemaType.Boolean))
                 return;
-
-            ValidateNotDisallowed(schema);
         }
 
-        private void ValidateString(JsonSchemaModel schema)
+        private void ValidateString(JsonSchema schema)
         {
             if (schema == null)
                 return;
@@ -683,27 +651,27 @@ namespace Newtonsoft.Json
             if (!TestType(schema, JsonSchemaType.String))
                 return;
 
-            ValidateNotDisallowed(schema);
-
             string value = _reader.Value.ToString();
 
-            if (schema.MaximumLength != null && value.Length > schema.MaximumLength)
-                RaiseError("String '{0}' exceeds maximum length of {1}.".FormatWith(CultureInfo.InvariantCulture, value, schema.MaximumLength), schema);
-
-            if (schema.MinimumLength != null && value.Length < schema.MinimumLength)
-                RaiseError("String '{0}' is less than minimum length of {1}.".FormatWith(CultureInfo.InvariantCulture, value, schema.MinimumLength), schema);
-
-            if (schema.Patterns != null)
+            if (schema.MaximumLength != null || schema.MinimumLength != null)
             {
-                foreach (string pattern in schema.Patterns)
-                {
-                    if (!Regex.IsMatch(value, pattern))
-                        RaiseError("String '{0}' does not match regex pattern '{1}'.".FormatWith(CultureInfo.InvariantCulture, value, pattern), schema);
-                }
+                int[] unicodeString = StringInfo.ParseCombiningCharacters(value);
+
+                if (schema.MaximumLength != null && unicodeString.Length > schema.MaximumLength)
+                    RaiseError("String '{0}' exceeds maximum length of {1}.".FormatWith(CultureInfo.InvariantCulture, value, schema.MaximumLength), schema);
+
+                if (schema.MinimumLength != null && unicodeString.Length < schema.MinimumLength)
+                    RaiseError("String '{0}' is less than minimum length of {1}.".FormatWith(CultureInfo.InvariantCulture, value, schema.MinimumLength), schema);
+            }
+
+            if (schema.Pattern != null)
+            {
+                if (!Regex.IsMatch(value, schema.Pattern))
+                    RaiseError("String '{0}' does not match regex pattern '{1}'.".FormatWith(CultureInfo.InvariantCulture, value, schema.Pattern), schema);
             }
         }
 
-        private void ValidateInteger(JsonSchemaModel schema)
+        private void ValidateInteger(JsonSchema schema)
         {
             if (schema == null)
                 return;
@@ -711,15 +679,13 @@ namespace Newtonsoft.Json
             if (!TestType(schema, JsonSchemaType.Integer))
                 return;
 
-            ValidateNotDisallowed(schema);
-
             object value = _reader.Value;
 
             if (schema.Maximum != null)
             {
                 if (JValue.Compare(JTokenType.Integer, value, schema.Maximum) > 0)
                     RaiseError("Integer {0} exceeds maximum value of {1}.".FormatWith(CultureInfo.InvariantCulture, value, schema.Maximum), schema);
-                if (schema.ExclusiveMaximum && JValue.Compare(JTokenType.Integer, value, schema.Maximum) == 0)
+                if (schema.ExclusiveMaximum != null && (bool)schema.ExclusiveMaximum && JValue.Compare(JTokenType.Integer, value, schema.Maximum) == 0)
                     RaiseError("Integer {0} equals maximum value of {1} and exclusive maximum is true.".FormatWith(CultureInfo.InvariantCulture, value, schema.Maximum), schema);
             }
 
@@ -727,31 +693,31 @@ namespace Newtonsoft.Json
             {
                 if (JValue.Compare(JTokenType.Integer, value, schema.Minimum) < 0)
                     RaiseError("Integer {0} is less than minimum value of {1}.".FormatWith(CultureInfo.InvariantCulture, value, schema.Minimum), schema);
-                if (schema.ExclusiveMinimum && JValue.Compare(JTokenType.Integer, value, schema.Minimum) == 0)
+                if (schema.ExclusiveMinimum != null && (bool)schema.ExclusiveMinimum && JValue.Compare(JTokenType.Integer, value, schema.Minimum) == 0)
                     RaiseError("Integer {0} equals minimum value of {1} and exclusive minimum is true.".FormatWith(CultureInfo.InvariantCulture, value, schema.Minimum), schema);
             }
 
-            if (schema.DivisibleBy != null)
+            if (schema.MultipleOf != null)
             {
-                bool notDivisible;
+                bool notMultiple = false;
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
                 if (value is BigInteger)
                 {
-                    // not that this will lose any decimal point on DivisibleBy
-                    // so manually raise an error if DivisibleBy is not an integer and value is not zero
+                    // not that this will lose any decimal point on MultipleOf
+                    // so manually raise an error if MultipleOf is not an integer and value is not zero
                     BigInteger i = (BigInteger)value;
-                    bool divisibleNonInteger = !Math.Abs(schema.DivisibleBy.Value - Math.Truncate(schema.DivisibleBy.Value)).Equals(0);
-                    if (divisibleNonInteger)
-                        notDivisible = i != 0;
+                    bool multipleNonInteger = !Math.Abs(schema.MultipleOf.Value - Math.Truncate(schema.MultipleOf.Value)).Equals(0);
+                    if (multipleNonInteger)
+                        notMultiple = i != 0;
                     else
-                        notDivisible = i % new BigInteger(schema.DivisibleBy.Value) != 0;
+                        notMultiple = i % new BigInteger(schema.MultipleOf.Value) != 0;
                 }
                 else
 #endif
-                    notDivisible = !IsZero(Convert.ToInt64(value, CultureInfo.InvariantCulture) % schema.DivisibleBy.Value);
+                    notMultiple = !IsZero(Convert.ToInt64(value, CultureInfo.InvariantCulture) % schema.MultipleOf.Value);
 
-                if (notDivisible)
-                    RaiseError("Integer {0} is not evenly divisible by {1}.".FormatWith(CultureInfo.InvariantCulture, JsonConvert.ToString(value), schema.DivisibleBy), schema);
+                if (notMultiple)
+                    RaiseError("Integer {0} is not a multiple of {1}.".FormatWith(CultureInfo.InvariantCulture, JsonConvert.ToString(value), schema.MultipleOf), schema);
             }
         }
 
@@ -761,7 +727,7 @@ namespace Newtonsoft.Json
             {
                 _currentScope.ArrayItemCount++;
 
-                foreach (JsonSchemaModel currentSchema in CurrentSchemas)
+                foreach (JsonSchema currentSchema in CurrentSchemas)
                 {
                     // if there is positional validation and the array index is past the number of item validation schemas and there is no additonal items then error
                     if (currentSchema != null
@@ -775,7 +741,7 @@ namespace Newtonsoft.Json
             }
         }
 
-        private void ValidateFloat(JsonSchemaModel schema)
+        private void ValidateFloat(JsonSchema schema)
         {
             if (schema == null)
                 return;
@@ -783,15 +749,13 @@ namespace Newtonsoft.Json
             if (!TestType(schema, JsonSchemaType.Float))
                 return;
 
-            ValidateNotDisallowed(schema);
-
             double value = Convert.ToDouble(_reader.Value, CultureInfo.InvariantCulture);
 
             if (schema.Maximum != null)
             {
                 if (value > schema.Maximum)
                     RaiseError("Float {0} exceeds maximum value of {1}.".FormatWith(CultureInfo.InvariantCulture, JsonConvert.ToString(value), schema.Maximum), schema);
-                if (schema.ExclusiveMaximum && value == schema.Maximum)
+                if (schema.ExclusiveMaximum != null && (bool)schema.ExclusiveMaximum && value == schema.Maximum)
                     RaiseError("Float {0} equals maximum value of {1} and exclusive maximum is true.".FormatWith(CultureInfo.InvariantCulture, JsonConvert.ToString(value), schema.Maximum), schema);
             }
 
@@ -799,16 +763,16 @@ namespace Newtonsoft.Json
             {
                 if (value < schema.Minimum)
                     RaiseError("Float {0} is less than minimum value of {1}.".FormatWith(CultureInfo.InvariantCulture, JsonConvert.ToString(value), schema.Minimum), schema);
-                if (schema.ExclusiveMinimum && value == schema.Minimum)
+                if (schema.ExclusiveMinimum != null && (bool)schema.ExclusiveMinimum && value == schema.Minimum)
                     RaiseError("Float {0} equals minimum value of {1} and exclusive minimum is true.".FormatWith(CultureInfo.InvariantCulture, JsonConvert.ToString(value), schema.Minimum), schema);
             }
 
-            if (schema.DivisibleBy != null)
+            if (schema.MultipleOf != null)
             {
-                double remainder = FloatingPointRemainder(value, schema.DivisibleBy.Value);
+                double remainder = FloatingPointRemainder(value, schema.MultipleOf.Value);
 
                 if (!IsZero(remainder))
-                    RaiseError("Float {0} is not evenly divisible by {1}.".FormatWith(CultureInfo.InvariantCulture, JsonConvert.ToString(value), schema.DivisibleBy), schema);
+                    RaiseError("Float {0} is not a multiple of {1}.".FormatWith(CultureInfo.InvariantCulture, JsonConvert.ToString(value), schema.MultipleOf), schema);
             }
         }
 
@@ -824,7 +788,7 @@ namespace Newtonsoft.Json
             return Math.Abs(value) < 20.0 * epsilon;
         }
 
-        private void ValidatePropertyName(JsonSchemaModel schema)
+        private void ValidatePropertyName(JsonSchema schema)
         {
             if (schema == null)
                 return;
@@ -843,9 +807,10 @@ namespace Newtonsoft.Json
             }
 
             _currentScope.CurrentPropertyName = propertyName;
+            _currentScope.ObjectPropertyCount++;
         }
 
-        private bool IsPropertyDefinied(JsonSchemaModel schema, string propertyName)
+        private bool IsPropertyDefinied(JsonSchema schema, string propertyName)
         {
             if (schema.Properties != null && schema.Properties.ContainsKey(propertyName))
                 return true;
@@ -862,7 +827,7 @@ namespace Newtonsoft.Json
             return false;
         }
 
-        private bool ValidateArray(JsonSchemaModel schema)
+        private bool ValidateArray(JsonSchema schema)
         {
             if (schema == null)
                 return true;
@@ -870,7 +835,7 @@ namespace Newtonsoft.Json
             return (TestType(schema, JsonSchemaType.Array));
         }
 
-        private bool ValidateObject(JsonSchemaModel schema)
+        private bool ValidateObject(JsonSchema schema)
         {
             if (schema == null)
                 return true;
@@ -878,7 +843,7 @@ namespace Newtonsoft.Json
             return (TestType(schema, JsonSchemaType.Object));
         }
 
-        private bool TestType(JsonSchemaModel currentSchema, JsonSchemaType currentType)
+        private bool TestType(JsonSchema currentSchema, JsonSchemaType currentType)
         {
             if (!JsonSchemaGenerator.HasFlag(currentSchema.Type, currentType))
             {

@@ -105,13 +105,13 @@ namespace Newtonsoft.Json.Tests.Schema
         [Test]
         public void ValidateFailureWithOutLineInfoBecauseOfEndToken()
         {
-            JsonSchema schema = JsonSchema.Parse("{'properties':{'lol':{'required':true}}}");
+            JsonSchema schema = JsonSchema.Parse("{'required':['lol'],'properties':{'lol':{}}}");
             JObject o = JObject.Parse("{}");
 
             List<string> errors = new List<string>();
             o.Validate(schema, (sender, args) => errors.Add(args.Message));
 
-            Assert.AreEqual("Required properties are missing from object: lol.", errors[0]);
+            Assert.AreEqual("Required properties are missing from object: lol. Line 1, position 1.", errors[0]);
             Assert.AreEqual(1, errors.Count);
         }
 
@@ -295,13 +295,13 @@ namespace Newtonsoft.Json.Tests.Schema
         }
 
         [Test]
-        public void DivisibleBy_Int()
+        public void MultipleOf_Int()
         {
-            ExceptionAssert.Throws<JsonSchemaException>("Integer 10 is not evenly divisible by 3.",
+            ExceptionAssert.Throws<JsonSchemaException>("Integer 10 is not a multiple of 3.",
                 () =>
                 {
                     JsonSchema schema = new JsonSchema();
-                    schema.DivisibleBy = 3;
+                    schema.MultipleOf = 3;
 
                     JValue v = new JValue(10);
                     v.Validate(schema);
@@ -309,10 +309,10 @@ namespace Newtonsoft.Json.Tests.Schema
         }
 
         [Test]
-        public void DivisibleBy_Approx()
+        public void MultipleOf_Approx()
         {
             JsonSchema schema = new JsonSchema();
-            schema.DivisibleBy = 0.01;
+            schema.MultipleOf = 0.01;
 
             JValue v = new JValue(20.49);
             v.Validate(schema);
@@ -383,8 +383,8 @@ namespace Newtonsoft.Json.Tests.Schema
             Assert.AreEqual(4, errorMessages.Count);
             Assert.AreEqual("Non-unique array item at index 1.", errorMessages[0]);
             Assert.AreEqual("Non-unique array item at index 3.", errorMessages[1]);
-            Assert.AreEqual("Non-unique array item at index 1.", errorMessages[2]);
-            Assert.AreEqual("Non-unique array item at index 4.", errorMessages[3]);
+            Assert.AreEqual("Non-unique array item at index 4.", errorMessages[2]);
+            Assert.AreEqual("Non-unique array item at index 1.", errorMessages[3]);
         }
 
         [Test]

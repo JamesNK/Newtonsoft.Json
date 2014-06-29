@@ -3,9 +3,10 @@
         "description": "required validation",
         "schema": {
             "properties": {
-                "foo": {"required" : true},
+                "foo": {},
                 "bar": {}
-            }
+            },
+            "required": ["foo"]
         },
         "tests": [
             {
@@ -30,21 +31,6 @@
         "tests": [
             {
                 "description": "not required by default",
-                "data": {},
-                "valid": true
-            }
-        ]
-    },
-    {
-        "description": "required explicitly false validation",
-        "schema": {
-            "properties": {
-                "foo": {"required": false}
-            }
-        },
-        "tests": [
-            {
-                "description": "not required if required is false",
                 "data": {},
                 "valid": true
             }

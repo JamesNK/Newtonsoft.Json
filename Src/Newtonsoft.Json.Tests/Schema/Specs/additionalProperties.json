@@ -4,6 +4,7 @@
             "additionalProperties being false does not allow other properties",
         "schema": {
             "properties": {"foo": {}, "bar": {}},
+            "patternProperties": { "^v": {} },
             "additionalProperties": false
         },
         "tests": [
@@ -20,6 +21,11 @@
             {
                 "description": "ignores non-objects",
                 "data": [1, 2, 3],
+                "valid": true
+            },
+            {
+                "description": "patternProperties are not additional properties",
+                "data": {"foo":1, "vroom": 2},
                 "valid": true
             }
         ]

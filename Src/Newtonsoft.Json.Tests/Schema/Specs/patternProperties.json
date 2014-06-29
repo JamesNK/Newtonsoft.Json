@@ -75,5 +75,36 @@
                 "valid": false
             }
         ]
+    },
+    {
+        "description": "regexes are not anchored by default and are case sensitive",
+        "schema": {
+            "patternProperties": {
+                "[0-9]{2,}": { "type": "boolean" },
+                "X_": { "type": "string" }
+            }
+        },
+        "tests": [
+            {
+                "description": "non recognized members are ignored",
+                "data": { "answer 1": "42" },
+                "valid": true
+            },
+            {
+                "description": "recognized members are accounted for",
+                "data": { "a31b": null },
+                "valid": false
+            },
+            {
+                "description": "regexes are case sensitive",
+                "data": { "a_x_3": 3 },
+                "valid": true
+            },
+            {
+                "description": "regexes are case sensitive, 2",
+                "data": { "a_X_3": 3 },
+                "valid": false
+            }
+        ]
     }
 ]
