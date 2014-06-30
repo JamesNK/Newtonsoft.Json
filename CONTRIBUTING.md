@@ -12,11 +12,11 @@ Please read these guidelines before contributing to Json.NET:
 ## <a name="question"></a> Got a Question or Problem?
 
 If you have questions about how to use Json.NET, please read the
-[Json.NET documentation][documentation] or ask on [StackOverflow][stackoverflow], where there are
-thousands of Json.NET questions with the [json.net][stackoverflow] tag.
+[Json.NET documentation][documentation] or ask on [Stack Overflow][stackoverflow]. There are
+thousands of Json.NET questions on Stack Overflow with the [json.net][stackoverflow] tag.
 
-GitHub issues are for [reporting bugs](#issue) and [feature requests](#feature), not questions or
-help.
+GitHub issues are only for [reporting bugs](#issue) and [feature requests](#feature), not
+questions or help.
 
 
 ## <a name="issue"></a> Found an Issue?
