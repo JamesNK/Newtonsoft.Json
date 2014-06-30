@@ -53,7 +53,7 @@ large breaking changes are unlikely to be accepted
 When submitting a pull request to the [GitHub Repository][github] make sure to do the following:
 
 - Check that new and updated code follows Json.NET's existing code formatting and naming standard
-- Run Json.NET's unit tests to ensure no existing functionality has been effected
+- Run Json.NET's unit tests to ensure no existing functionality has been affected
 - Write new unit tests to test your changes. All features and fixed bugs must have tests to verify
 they work
 
