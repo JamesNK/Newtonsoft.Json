@@ -1,4 +1,2 @@
-Newtonsoft.Json
-===============
-
-Json.NET is a popular high-performance JSON framework for .NET
+[Logo](Doc/logo.jpg) Json.NET
+Serialize All The Things
