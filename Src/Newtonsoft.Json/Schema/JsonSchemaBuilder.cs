@@ -286,7 +286,9 @@ namespace Newtonsoft.Json.Schema
         {
             if (!_rootSchemas.Keys.Contains(schemaUri))
             {
-                // TODO: security checks
+                if (!_resolver.ResolveExternals)
+                    return null;
+
                 string remoteSchemaJson = _resolver.GetRemoteSchemaContents(new Uri(schemaUri));
 
                 if (string.IsNullOrEmpty(remoteSchemaJson))

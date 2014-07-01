@@ -403,6 +403,33 @@ namespace Newtonsoft.Json.Tests.Schema
         }
 
         [Test]
+        public void ExternalReference()
+        {
+            string json = @"{
+  ""$ref"": ""http://localhost:1234/subSchemas.json#/refToInteger""
+}";
+            JsonSchemaSpecTestsResolver resolver = new JsonSchemaSpecTestsResolver();
+
+            resolver.ResolveExternals = false;
+
+            ExceptionAssert.Throws<Exception>(@"Could not resolve schema reference 'http://localhost:1234/subSchemas.json#/refToInteger'.",
+            () =>
+            {
+                JsonSchemaBuilder failBuilder = new JsonSchemaBuilder(resolver);
+                JsonSchema failSchema = failBuilder.Read(new JsonTextReader(new StringReader(json)));
+            });
+
+#if !PORTABLE40
+            resolver.ResolveExternals = true;
+
+            JsonSchemaBuilder builder = new JsonSchemaBuilder(resolver);
+            JsonSchema schema = builder.Read(new JsonTextReader(new StringReader(json)));
+
+            Assert.AreEqual(JsonSchemaType.Integer, schema.Type);
+#endif
+        }
+
+        [Test]
         public void PatternProperties()
         {
             string json = @"{

@@ -537,7 +537,9 @@
     <None Include="Schema\Specs\refRemote.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Schema\Specs\remotes\draft4schema.json" />
+    <None Include="Schema\Specs\remotes\draft4schema.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Schema\Specs\remotes\folder\folderInteger.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

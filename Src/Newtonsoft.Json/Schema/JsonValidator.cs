@@ -387,7 +387,7 @@ namespace Newtonsoft.Json
             if (!TestType(source, schema, JsonSchemaType.Float))
                 return;
 
-            double value = Convert.ToDouble(source, CultureInfo.InvariantCulture);
+            double value = (double)source;
 
             if (schema.Maximum != null)
             {

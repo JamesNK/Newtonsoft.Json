@@ -159,6 +159,7 @@
     <Compile Include="Schema\ExtensionsTests.cs" />
     <Compile Include="Schema\JsonSchemaBuilderTests.cs" />
     <Compile Include="Schema\JsonSchemaGeneratorTests.cs" />
+    <Compile Include="Schema\JsonSchemaSpecTestsResolver.cs" />
     <Compile Include="Schema\JsonSchemaTests.cs" />
     <Compile Include="Serialization\CamelCasePropertyNamesContractResolverTests.cs" />
     <Compile Include="Serialization\ConstructorHandlingTests.cs" />
@@ -372,6 +373,18 @@
     <Content Include="SpaceShipV2.bson">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Schema\Specs\remotes\draft4schema.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Schema\Specs\remotes\folder\folderInteger.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Schema\Specs\remotes\integer.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Schema\Specs\remotes\subSchemas.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Collections.Immutable">
