@@ -818,6 +818,7 @@ namespace Newtonsoft.Json.Tests.Schema
             // NOTE: This fails because the enum is serialized as an integer and not a string.
             // NOTE: There should exist a way to serialize the enum as lowercase strings.
             Assert.AreEqual(@"{
+  ""$schema"": ""http://json-schema.org/draft-04/schema#"",
   ""type"": ""object"",
   ""properties"": {
     ""y"": {

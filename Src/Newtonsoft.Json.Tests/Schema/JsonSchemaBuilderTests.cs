@@ -391,6 +391,7 @@ namespace Newtonsoft.Json.Tests.Schema
             ExceptionAssert.Throws<Exception>(() =>
                 {
                     string json = @"{
+  ""id"":""CircularReference"",
   ""description"":""CircularReference"",
   ""type"":[""array""],
   ""items"":{""$ref"":""MyUnresolvedReference""}
