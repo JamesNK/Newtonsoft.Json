@@ -36,7 +36,7 @@ namespace Newtonsoft.Json.Tests.Schema
             {
                 Console.WriteLine("Running JSON Schema test " + jsonSchemaSpecTest.TestNumber + ": " + jsonSchemaSpecTest);
 
-                JsonSchema s = JsonSchema.Read(jsonSchemaSpecTest.Schema.CreateReader());
+                JsonSchema s = JsonSchema.Read(jsonSchemaSpecTest.Schema.CreateReader(), new JsonSchemaSpecTestsResolver());
 
                 IList<string> errorMessages;
                 bool v = jsonSchemaSpecTest.Data.IsValid(s, out errorMessages);

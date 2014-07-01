@@ -101,7 +101,7 @@ namespace Newtonsoft.Json.Schema
             string documentScope = "";
 
             if (documentLocation != null)
-                documentScope = Uri.UnescapeDataString(documentLocation.GetLeftPart(UriPartial.Query));
+                documentScope = documentLocation.ToString();
 
             PushScope(documentScope);
 
@@ -126,21 +126,31 @@ namespace Newtonsoft.Json.Schema
         {
             while (schema.DeferredReference != null)
             {
-                string reference = schema.DeferredReference;
+                string schemaUri;
+                string idPath;
+                bool isJsonPointer;
 
-                bool locationReference = (reference.StartsWith("#", StringComparison.Ordinal));
-                if (locationReference)
-                    reference = UnescapeReference(reference);
+                PrepareLocationReference(schema.ResolutionScope, schema.DeferredReference, out schemaUri, out idPath, out isJsonPointer);
 
-                JsonSchema resolvedSchema = _resolver.GetSchema(reference);
+                JsonSchema resolvedSchema;
 
-                if (resolvedSchema == null)
+                if (isJsonPointer)
                 {
-                    resolvedSchema = FindLocationReference(locationReference, schema.DeferredReference, schema.ResolutionScope);
+                    string reference = schemaUri + UnescapeReference(idPath);
+                    resolvedSchema = _resolver.GetSchema(reference);
 
                     if (resolvedSchema == null)
-                        throw new JsonException("Could not resolve schema reference '{0}'.".FormatWith(CultureInfo.InvariantCulture, schema.DeferredReference));
+                    {
+                        resolvedSchema = FindLocationReference(schemaUri, idPath);
+                    }
                 }
+                else
+                {
+                    resolvedSchema = _resolver.GetSchema(idPath);
+                }
+
+                if (resolvedSchema == null)
+                    throw new JsonException("Could not resolve schema reference '{0}'.".FormatWith(CultureInfo.InvariantCulture, schema.DeferredReference));
 
                 schema = resolvedSchema;
             }
@@ -210,50 +220,91 @@ namespace Newtonsoft.Json.Schema
             return schema;
         }
 
-        private JsonSchema FindLocationReference(bool locationReference, string reference, string resolutionScope)
+        private void PrepareLocationReference(string resolutionScope, string reference, out string schemaUri, out string idPath, out bool isJsonPointer)
         {
-            bool internalLocationReference = reference.StartsWith("#", StringComparison.Ordinal) &&
-                                            _rootSchemas.Keys.Contains(resolutionScope);
-
-            if (!internalLocationReference)
+            if (reference.Equals("#", StringComparison.Ordinal) ||
+                reference.StartsWith("#/", StringComparison.Ordinal))
             {
-                Uri referenceUri = new Uri(reference, UriKind.RelativeOrAbsolute);
+                // Simple base schema reference or Json pointer fragment
+                schemaUri = resolutionScope;
+                idPath = reference;
+                isJsonPointer = true;
+                return;
+            }
 
-                if (referenceUri.IsAbsoluteUri)
+            Uri referenceUri = new Uri(reference, UriKind.RelativeOrAbsolute);
+
+            if (referenceUri.IsAbsoluteUri)
+            {
+                schemaUri = Uri.UnescapeDataString(reference);
+                isJsonPointer = true;
+
+                int hashPosition = schemaUri.IndexOf("#", StringComparison.Ordinal);
+                if (hashPosition > -1)
                 {
-                    resolutionScope = Uri.UnescapeDataString(referenceUri.GetLeftPart(UriPartial.Query));
-                    reference = referenceUri.Fragment;
+                    idPath = schemaUri.Substring(hashPosition);
+                    schemaUri = schemaUri.Substring(0, hashPosition);
                 }
                 else
                 {
-                    Uri resolutionScopeUri = new Uri(resolutionScope, UriKind.RelativeOrAbsolute);
-                    Uri fullUri = new Uri(resolutionScopeUri, referenceUri);
-
-                    resolutionScope = Uri.UnescapeDataString(fullUri.GetLeftPart(UriPartial.Query));
-                    reference = fullUri.Fragment;
+                    idPath = "#";
                 }
             }
-
-            if (!_rootSchemas.Keys.Contains(resolutionScope))
+            else
             {
-                Uri remoteReference = new Uri(resolutionScope, UriKind.RelativeOrAbsolute);
+                Uri resolutionScopeUri = new Uri(resolutionScope, UriKind.RelativeOrAbsolute);
 
+                if (resolutionScopeUri.IsAbsoluteUri)
+                {
+                    // Using id scopes
+                    Uri fullUri = new Uri(resolutionScopeUri, referenceUri);
+                    schemaUri = Uri.UnescapeDataString(fullUri.ToString());
+                    isJsonPointer = true;
+
+                    int hashPosition = schemaUri.IndexOf("#", StringComparison.Ordinal);
+                    if (hashPosition > -1)
+                    {
+                        idPath = schemaUri.Substring(hashPosition);
+                        schemaUri = schemaUri.Substring(0, hashPosition);
+                    }
+                    else
+                    {
+                        idPath = "#";
+                    }
+                }
+                else
+                {
+                    // Using plain schema ids
+                    schemaUri = "";
+                    idPath = reference;
+                    isJsonPointer = false;
+                }
+            }
+        }
+
+        private JsonSchema FindLocationReference(string schemaUri, string reference)
+        {
+            if (!_rootSchemas.Keys.Contains(schemaUri))
+            {
                 // TODO: security checks
-                string remoteSchemaJson = GetUriContents(remoteReference);
+                string remoteSchemaJson = _resolver.GetRemoteSchemaContents(new Uri(schemaUri));
+
+                if (string.IsNullOrEmpty(remoteSchemaJson))
+                    return null;
 
                 using (JsonReader reader = new JsonTextReader(new StringReader(remoteSchemaJson)))
                 {
                     JToken schemaToken = JToken.ReadFrom(reader);
-                    _rootSchemas.Add(resolutionScope, schemaToken as JObject);
+                    _rootSchemas.Add(schemaUri, schemaToken as JObject);
                 }
             }
 
             bool hasPushedScope = false;
             JsonSchema foundSchema = null;
 
-            if (!resolutionScope.Equals(_currentResolutionScope, StringComparison.Ordinal))
+            if (!schemaUri.Equals(_currentResolutionScope, StringComparison.Ordinal))
             {
-                PushScope(resolutionScope);
+                PushScope(schemaUri);
                 hasPushedScope = true;
             }
 
@@ -296,31 +347,7 @@ namespace Newtonsoft.Json.Schema
 
             return foundSchema;
         }
-
-        private string GetUriContents(Uri remoteReference)
-        {
-#if NETFX_CORE
-            return System.Threading.Tasks.Task.Run(async () =>
-            {
-                System.Net.WebRequest webcall = System.Net.WebRequest.Create(remoteReference);
-                webcall.ContentType = "application/json";
-                using (System.Net.WebResponse response = await webcall.GetResponseAsync())
-                using (System.IO.StreamReader readall = new System.IO.StreamReader(response.GetResponseStream()))
-                {
-                    return readall.ReadToEnd();
-                }
-            }).Result;
-#else
-            System.Net.WebRequest webcall = System.Net.WebRequest.Create(remoteReference);
-            webcall.ContentType = "application/json";
-            using (System.Net.WebResponse response = webcall.GetResponse())
-            using (System.IO.StreamReader readall = new System.IO.StreamReader(response.GetResponseStream()))
-            {
-                return readall.ReadToEnd();
-            }
-#endif
-        }
-
+        
         private JsonSchema BuildSchema(JToken token)
         {
             JObject schemaObject = token as JObject;

@@ -216,6 +216,7 @@
     <Compile Include="Schema\JsonSchemaResolver.cs" />
     <Compile Include="Schema\JsonSchemaType.cs" />
     <Compile Include="Schema\JsonSchemaWriter.cs" />
+    <Compile Include="Schema\JsonValidator.cs" />
     <Compile Include="Schema\UndefinedSchemaIdHandling.cs" />
     <Compile Include="Schema\ValidationEventArgs.cs" />
     <Compile Include="Schema\ValidationEventHandler.cs" />

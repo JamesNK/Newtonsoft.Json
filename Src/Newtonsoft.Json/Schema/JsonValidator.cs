@@ -48,14 +48,6 @@ namespace Newtonsoft.Json
     /// </summary>
     public class JsonValidator
     {
-        //private class SchemaScope
-        //{
-        //    private IList<JsonSchemaException> _errors;
-
-        //}
-
-        //private readonly Stack<SchemaScope> _stack;
-
         /// <summary>
         /// Validates the specified <see cref="JToken"/>.
         /// </summary>
@@ -71,12 +63,6 @@ namespace Newtonsoft.Json
 
         private void ValidateToken(JToken source, JsonSchema schema)
         {
-            // first time validate has been called.
-            //if (_stack.Count == 0)
-            //{
-            //    Push(new SchemaScope(JTokenType.None, CurrentMemberSchemas));
-            //}
-
             switch (source.Type)
             {
                 case JTokenType.Object:
