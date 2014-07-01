@@ -1,22 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Newtonsoft.Json.Schema;
+using System;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using NUnit.Framework;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Schema;
 
 namespace Newtonsoft.Json.Tests.Schema
 {
     public class JsonSchemaSpecTestsResolver : JsonSchemaResolver
     {
+        public JsonSchemaSpecTestsResolver()
+        {
+            ResolveExternals = true;
+        }
+
         public override string GetRemoteSchemaContents(Uri location)
         {
             // Redirect remote calls to test path
+#if NETFX_CORE
+            string baseDirectory = Windows.ApplicationModel.Package.Current.InstalledLocation.Path;
+#else
             string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            string baseTestPath = Path.Combine(baseDirectory, "Schema", "Specs", "remotes");
+#endif
+            string baseTestPath = Path.Combine(Path.Combine(Path.Combine(baseDirectory, "Schema"), "Specs"), "remotes");
             Uri remotesTestPath = new Uri(baseTestPath);
             Uri draftTestPath = new Uri(Path.Combine(baseTestPath, "draft4schema.json"));
 

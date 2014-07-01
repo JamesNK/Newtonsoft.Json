@@ -47,6 +47,12 @@ namespace Newtonsoft.Json.Schema
         public IList<JsonSchema> LoadedSchemas { get; protected set; }
 
         /// <summary>
+        /// Gets or sets whether external schemas can be referenced and retrieved.
+        /// Do not accept schemas from untrusted sources if denial of service is a concern.
+        /// </summary>
+        public bool ResolveExternals { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="JsonSchemaResolver"/> class.
         /// </summary>
         public JsonSchemaResolver()

@@ -136,6 +136,7 @@
     <Compile Include="Linq\JsonPath\JPathExecuteTests.cs" />
     <Compile Include="Linq\JsonPath\JPathParseTests.cs" />
     <Compile Include="Linq\JsonPath\QueryExpressionTests.cs" />
+    <Compile Include="Schema\JsonSchemaSpecTestsResolver.cs" />
     <Compile Include="Serialization\ConstructorHandlingTests.cs" />
     <Compile Include="Serialization\ContractResolverTests.cs" />
     <Compile Include="Serialization\DefaultValueHandlingTests.cs" />
@@ -334,6 +335,18 @@
       <Generator>MSLinqToSQLGenerator</Generator>
       <LastGenOutput>LinqToSqlClasses.designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+    </None>
+    <None Include="Schema\Specs\remotes\draft4schema.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Schema\Specs\remotes\folder\folderInteger.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Schema\Specs\remotes\integer.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Schema\Specs\remotes\subSchemas.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>

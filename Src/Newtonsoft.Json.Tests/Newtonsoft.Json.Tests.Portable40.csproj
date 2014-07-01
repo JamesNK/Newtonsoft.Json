@@ -138,6 +138,7 @@
     <Compile Include="Linq\JsonPath\JPathExecuteTests.cs" />
     <Compile Include="Linq\JsonPath\JPathParseTests.cs" />
     <Compile Include="Linq\JsonPath\QueryExpressionTests.cs" />
+    <Compile Include="Schema\JsonSchemaSpecTestsResolver.cs" />
     <Compile Include="Serialization\ConstructorHandlingTests.cs" />
     <Compile Include="Serialization\ContractResolverTests.cs" />
     <Compile Include="Serialization\DefaultValueHandlingTests.cs" />
@@ -371,6 +372,20 @@
       <Project>{959f7f85-c98b-4876-971a-9036224578e4}</Project>
       <Name>Newtonsoft.Json.Portable40</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Schema\Specs\remotes\draft4schema.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Schema\Specs\remotes\folder\folderInteger.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Schema\Specs\remotes\integer.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Schema\Specs\remotes\subSchemas.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
