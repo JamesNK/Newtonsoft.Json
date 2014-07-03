@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autofac">
+      <HintPath>..\packages\Autofac.3.5.0\lib\net40\Autofac.dll</HintPath>
+    </Reference>
     <Reference Include="FSharp.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\FSharp.Core.4.0.0\lib\FSharp.Core.dll</HintPath>
@@ -241,6 +244,7 @@
     <Compile Include="Serialization\DynamicTests.cs" />
     <Compile Include="Serialization\EntitiesSerializationTests.cs" />
     <Compile Include="Serialization\ExtensionDataTests.cs" />
+    <Compile Include="Serialization\DependencyInjectionTests.cs" />
     <Compile Include="Serialization\FSharpTests.cs" />
     <Compile Include="Serialization\ImmutableCollectionsTests.cs" />
     <Compile Include="Serialization\JsonPropertyCollectionTests.cs" />
