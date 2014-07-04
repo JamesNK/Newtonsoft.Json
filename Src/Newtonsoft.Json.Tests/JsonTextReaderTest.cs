@@ -48,6 +48,23 @@ namespace Newtonsoft.Json.Tests
     [TestFixture]
     public class JsonTextReaderTest : TestFixtureBase
     {
+        [Test]
+        public void ReadMultilineString()
+        {
+            string json = @"""first line
+second line
+third line""";
+
+            JsonTextReader jsonTextReader = new JsonTextReader(new StringReader(json));
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.String, jsonTextReader.TokenType);
+
+            Assert.AreEqual(@"first line
+second line
+third line", jsonTextReader.Value);
+        }
+
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
         [Test]
         public void ReadBigInteger()

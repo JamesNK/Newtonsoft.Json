@@ -217,7 +217,7 @@ namespace Newtonsoft.Json.Converters
             get { return _documentType.InternalSubset; }
         }
 
-        public new string LocalName
+        public override string LocalName
         {
             get { return "DOCTYPE"; }
         }
@@ -243,7 +243,7 @@ namespace Newtonsoft.Json.Converters
             get { return _node.NodeType; }
         }
 
-        public string LocalName
+        public virtual string LocalName
         {
             get { return _node.LocalName; }
         }
@@ -261,7 +261,7 @@ namespace Newtonsoft.Json.Converters
             }
         }
 
-        private IXmlNode WrapNode(XmlNode node)
+        internal static IXmlNode WrapNode(XmlNode node)
         {
             switch (node.NodeType)
             {
@@ -445,7 +445,7 @@ namespace Newtonsoft.Json.Converters
             get { return _documentType.InternalSubset; }
         }
 
-        public new string LocalName
+        public override string LocalName
         {
             get { return "DOCTYPE"; }
         }
@@ -928,7 +928,7 @@ namespace Newtonsoft.Json.Converters
 #endif
 #if !(NETFX_CORE || PORTABLE)
             if (value is XmlNode)
-                return new XmlNodeWrapper((XmlNode)value);
+                return XmlNodeWrapper.WrapNode((XmlNode)value);
 #endif
 
             throw new ArgumentException("Value must be an XML object.", "value");

@@ -23,6 +23,11 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
+#endif
 using System.Text;
 #if !(NETFX_CORE || PORTABLE || PORTABLE40)
 using System;
@@ -115,7 +120,81 @@ namespace Newtonsoft.Json.Tests.Converters
             return node;
         }
 
+        [Test]
+        public void SerializeXmlElement()
+        {
+            string xml = @"<payload>
+    <Country>6</Country>
+    <FinancialTransactionApprovalRequestUID>79</FinancialTransactionApprovalRequestUID>
+    <TransactionStatus>Approved</TransactionStatus>
+    <StatusChangeComment></StatusChangeComment>
+    <RequestedBy>Someone</RequestedBy>
+</payload>";
+
+            var xmlDocument = new XmlDocument();
+
+            xmlDocument.LoadXml(xml);
+
+            var result = xmlDocument.FirstChild.ChildNodes.Cast<XmlNode>().ToArray();
+
+            var json = JsonConvert.SerializeObject(result, Formatting.Indented);  // <--- fails here with the cast message
+
+            Assert.AreEqual(@"[
+  {
+    ""Country"": ""6""
+  },
+  {
+    ""FinancialTransactionApprovalRequestUID"": ""79""
+  },
+  {
+    ""TransactionStatus"": ""Approved""
+  },
+  {
+    ""StatusChangeComment"": """"
+  },
+  {
+    ""RequestedBy"": ""Someone""
+  }
+]", json);
+        }
+
 #if !NET20
+        [Test]
+        public void SerializeXElement()
+        {
+            string xml = @"<payload>
+    <Country>6</Country>
+    <FinancialTransactionApprovalRequestUID>79</FinancialTransactionApprovalRequestUID>
+    <TransactionStatus>Approved</TransactionStatus>
+    <StatusChangeComment></StatusChangeComment>
+    <RequestedBy>Someone</RequestedBy>
+</payload>";
+
+            var xmlDocument = XDocument.Parse(xml);
+
+            var result = xmlDocument.Root.Nodes().ToArray();
+
+            var json = JsonConvert.SerializeObject(result, Formatting.Indented);  // <--- fails here with the cast message
+
+            Assert.AreEqual(@"[
+  {
+    ""Country"": ""6""
+  },
+  {
+    ""FinancialTransactionApprovalRequestUID"": ""79""
+  },
+  {
+    ""TransactionStatus"": ""Approved""
+  },
+  {
+    ""StatusChangeComment"": """"
+  },
+  {
+    ""RequestedBy"": ""Someone""
+  }
+]", json);
+        }
+
         public class DecimalContainer
         {
             public decimal Number { get; set; }
