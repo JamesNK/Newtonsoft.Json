@@ -110,7 +110,7 @@ namespace Newtonsoft.Json.Tests.Schema
             List<string> errors = new List<string>();
             o.Validate(schema, (sender, args) => errors.Add(args.Message));
 
-            Assert.AreEqual("Required properties are missing from object: lol. Line 1, position 1.", errors[0]);
+            Assert.AreEqual("Required properties are missing from object: lol.", errors[0]);
             Assert.AreEqual(1, errors.Count);
         }
 
@@ -377,8 +377,8 @@ namespace Newtonsoft.Json.Tests.Schema
             Assert.AreEqual(4, errorMessages.Count);
             Assert.AreEqual("Non-unique array item at index 1.", errorMessages[0]);
             Assert.AreEqual("Non-unique array item at index 3.", errorMessages[1]);
-            Assert.AreEqual("Non-unique array item at index 4.", errorMessages[2]);
-            Assert.AreEqual("Non-unique array item at index 1.", errorMessages[3]);
+            Assert.AreEqual("Non-unique array item at index 1.", errorMessages[2]);
+            Assert.AreEqual("Non-unique array item at index 4.", errorMessages[3]);
         }
 
         [Test]

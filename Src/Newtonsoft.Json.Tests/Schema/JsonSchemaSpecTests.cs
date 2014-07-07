@@ -42,7 +42,7 @@ namespace Newtonsoft.Json.Tests.Schema
                 bool v = jsonSchemaSpecTest.Data.IsValid(s, out errorMessages);
                 errorMessages = errorMessages ?? new List<string>();
 
-                Assert.AreEqual(jsonSchemaSpecTest.IsValid, v, jsonSchemaSpecTest.TestCaseDescription + " - " + jsonSchemaSpecTest.TestDescription + " - errors: " + string.Join(", ", errorMessages));
+                Assert.AreEqual(jsonSchemaSpecTest.IsValid, v, jsonSchemaSpecTest.TestCaseDescription + " - " + jsonSchemaSpecTest.TestDescription + " - errors: " + string.Join(", ", errorMessages.ToArray()));
             }
         }
 
@@ -52,7 +52,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             // get test files location relative to the test project dll
             string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            string baseTestPath = Path.Combine(baseDirectory, "Schema", "Specs");
+            string baseTestPath = Path.Combine(Path.Combine(baseDirectory, "Schema"), "Specs");
 
             string[] testFiles = Directory.GetFiles(baseTestPath, "*.json", SearchOption.TopDirectoryOnly);
 
@@ -60,13 +60,6 @@ namespace Newtonsoft.Json.Tests.Schema
             foreach (string testFile in testFiles)
             {
                 string testJson = System.IO.File.ReadAllText(testFile);
-
-                if (testFile.EndsWith("refRemote.json", StringComparison.OrdinalIgnoreCase))
-                {
-                    // Special case: remapping of remote urls
-                    var remotesTestPath = new Uri(Path.Combine(baseTestPath, "remotes"));
-                    testJson = testJson.Replace(@"http://localhost:1234", remotesTestPath.ToString());
-                }
 
                 JArray a = JArray.Parse(testJson);
 
