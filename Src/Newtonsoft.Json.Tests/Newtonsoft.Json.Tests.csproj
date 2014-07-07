@@ -195,7 +195,6 @@
     <Compile Include="JsonConvertTest.cs" />
     <Compile Include="JsonTextReaderTest.cs" />
     <Compile Include="JsonTextWriterTest.cs" />
-    <Compile Include="JsonValidatorTests.cs" />
     <Compile Include="JsonValidatingReaderTests.cs" />
     <Compile Include="LinqToSql\Department.cs" />
     <Compile Include="LinqToSql\DepartmentConverter.cs" />

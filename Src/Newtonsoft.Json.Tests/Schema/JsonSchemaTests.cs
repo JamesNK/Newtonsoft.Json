@@ -610,5 +610,48 @@ namespace Newtonsoft.Json.Tests.Schema
 
             Assert.IsTrue(json.IsValid(schema));
         }
+
+        [Test]
+        public void DeepConditionalSchema()
+        {
+            JsonSchema schema = JsonSchema.Parse(@"{
+  ""type"": ""object"",
+  ""$schema"": ""http://json-schema.org/draft-04/schema#"",
+  ""properties"": {
+    ""Level1"": {
+      ""properties"": {
+        ""Level2"": {
+          ""required"": [""Level3""]
+        }
+      }
+    }
+  },
+  ""not"": {
+    ""properties"": {
+      ""Level1"": {
+        ""properties"": {
+          ""Level2"": {
+            ""properties"": {
+              ""Level3"": {
+                ""type"": ""number""
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}");
+
+            JObject json = JObject.Parse(@"{
+        ""Level1"": {
+            ""Level2"": {
+                ""Level3"": ""abc""
+            }
+        }
+      }");
+
+            Assert.IsTrue(json.IsValid(schema));
+        }
     }
 }

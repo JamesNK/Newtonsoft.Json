@@ -52,7 +52,6 @@ namespace Newtonsoft.Json.Tests
     [TestFixture]
     public class JsonValidatingReaderTests : TestFixtureBase
     {
-#pragma warning disable 612,618
         [Test]
         public void CheckInnerReader()
         {
@@ -1519,5 +1518,4 @@ namespace Newtonsoft.Json.Tests
             Assert.AreEqual(null, validationEventArgs);
         }
     }
-#pragma warning restore 612,618
 }
