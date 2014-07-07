@@ -561,6 +561,10 @@ namespace Newtonsoft.Json.Schema
 
         private void ProcessRequired(JToken token)
         {
+            // Most common breaking change for draft v3 -> draft v4
+            if (token.Type == JTokenType.Boolean)
+                throw JsonException.Create(token, token.Path, "Expected Array token while parsing required properties, got Boolean. Possible draft v3 schema.");
+
             if (token.Type != JTokenType.Array)
                 throw JsonException.Create(token, token.Path, "Expected Array token while parsing required properties, got {0}.".FormatWith(CultureInfo.InvariantCulture, token.Type));
 
