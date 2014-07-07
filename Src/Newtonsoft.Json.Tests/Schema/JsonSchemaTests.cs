@@ -220,6 +220,150 @@ namespace Newtonsoft.Json.Tests.Schema
         }
 
         [Test]
+        public void WriteTo_AnyOf()
+        {
+            JsonSchemaResolver resolver = new JsonSchemaResolver();
+
+            string json =
+                @"{
+  ""$schema"": ""http://json-schema.org/draft-04/schema#"",
+  ""type"": ""object"",
+  ""anyOf"": [
+    {
+      ""type"": ""number""
+    }
+  ]
+}";
+
+            JsonSchema schema = JsonSchema.Parse(json, resolver);
+
+            StringWriter writer = new StringWriter();
+            JsonTextWriter jsonWriter = new JsonTextWriter(writer);
+            jsonWriter.Formatting = Formatting.Indented;
+
+            schema.WriteTo(jsonWriter, resolver);
+
+            string writtenJson = writer.ToString();
+            Assert.AreEqual(json, writtenJson);
+        }
+
+        [Test]
+        public void WriteTo_OneOf()
+        {
+            JsonSchemaResolver resolver = new JsonSchemaResolver();
+
+            string json =
+                @"{
+  ""$schema"": ""http://json-schema.org/draft-04/schema#"",
+  ""type"": ""object"",
+  ""oneOf"": [
+    {
+      ""type"": ""number""
+    }
+  ]
+}";
+
+            JsonSchema schema = JsonSchema.Parse(json, resolver);
+
+            StringWriter writer = new StringWriter();
+            JsonTextWriter jsonWriter = new JsonTextWriter(writer);
+            jsonWriter.Formatting = Formatting.Indented;
+
+            schema.WriteTo(jsonWriter, resolver);
+
+            string writtenJson = writer.ToString();
+            Assert.AreEqual(json, writtenJson);
+        }
+
+        [Test]
+        public void WriteTo_Not()
+        {
+            JsonSchemaResolver resolver = new JsonSchemaResolver();
+
+            string json =
+                @"{
+  ""$schema"": ""http://json-schema.org/draft-04/schema#"",
+  ""type"": ""object"",
+  ""not"": {
+    ""type"": ""number""
+  }
+}";
+
+            JsonSchema schema = JsonSchema.Parse(json, resolver);
+
+            StringWriter writer = new StringWriter();
+            JsonTextWriter jsonWriter = new JsonTextWriter(writer);
+            jsonWriter.Formatting = Formatting.Indented;
+
+            schema.WriteTo(jsonWriter, resolver);
+
+            string writtenJson = writer.ToString();
+            Assert.AreEqual(json, writtenJson);
+        }
+
+        [Test]
+        public void WriteTo_Dependencies()
+        {
+            JsonSchemaResolver resolver = new JsonSchemaResolver();
+
+            string json =
+                @"{
+  ""$schema"": ""http://json-schema.org/draft-04/schema#"",
+  ""type"": ""object"",
+  ""dependencies"": {
+    ""bar"": {
+      ""properties"": {
+        ""foo"": {
+          ""type"": ""integer""
+        },
+        ""bar"": {
+          ""type"": ""integer""
+        }
+      }
+    }
+  }
+}";
+
+            JsonSchema schema = JsonSchema.Parse(json, resolver);
+
+            StringWriter writer = new StringWriter();
+            JsonTextWriter jsonWriter = new JsonTextWriter(writer);
+            jsonWriter.Formatting = Formatting.Indented;
+
+            schema.WriteTo(jsonWriter, resolver);
+
+            string writtenJson = writer.ToString();
+            Assert.AreEqual(json, writtenJson);
+        }
+
+        [Test]
+        public void WriteTo_Required()
+        {
+            JsonSchemaResolver resolver = new JsonSchemaResolver();
+
+            string json =
+                @"{
+  ""$schema"": ""http://json-schema.org/draft-04/schema#"",
+  ""type"": ""object"",
+  ""required"": [
+    ""firstName"",
+    ""lastName""
+  ]
+}";
+
+            JsonSchema schema = JsonSchema.Parse(json, resolver);
+
+            StringWriter writer = new StringWriter();
+            JsonTextWriter jsonWriter = new JsonTextWriter(writer);
+            jsonWriter.Formatting = Formatting.Indented;
+
+            schema.WriteTo(jsonWriter, resolver);
+
+            string writtenJson = writer.ToString();
+            Assert.AreEqual(json, writtenJson);
+        }
+
+        [Test]
         public void WriteTo_AdditionalProperties()
         {
             StringWriter writer = new StringWriter();
@@ -476,6 +620,48 @@ namespace Newtonsoft.Json.Tests.Schema
   ""$schema"": ""http://json-schema.org/draft-04/schema#"",
   ""exclusiveMinimum"": true,
   ""exclusiveMaximum"": true
+}", json);
+        }
+
+        [Test]
+        public void WriteTo_MinimumProperties_MaximumProperties()
+        {
+            JsonSchema schema = new JsonSchema();
+            schema.MinimumProperties = 10;
+            schema.MaximumProperties = 20;
+
+            StringWriter writer = new StringWriter();
+            JsonTextWriter jsonWriter = new JsonTextWriter(writer);
+            jsonWriter.Formatting = Formatting.Indented;
+
+            schema.WriteTo(jsonWriter);
+
+            string json = writer.ToString();
+
+            Assert.AreEqual(@"{
+  ""$schema"": ""http://json-schema.org/draft-04/schema#"",
+  ""minProperties"": 10,
+  ""maxProperties"": 20
+}", json);
+        }
+
+        [Test]
+        public void WriteTo_MultipleOf()
+        {
+            JsonSchema schema = new JsonSchema();
+            schema.MultipleOf = 2.5;
+
+            StringWriter writer = new StringWriter();
+            JsonTextWriter jsonWriter = new JsonTextWriter(writer);
+            jsonWriter.Formatting = Formatting.Indented;
+
+            schema.WriteTo(jsonWriter);
+
+            string json = writer.ToString();
+
+            Assert.AreEqual(@"{
+  ""$schema"": ""http://json-schema.org/draft-04/schema#"",
+  ""multipleOf"": 2.5
 }", json);
         }
 

@@ -270,6 +270,8 @@ namespace Newtonsoft.Json.Tests.Schema
   ""minLength"":5,
   ""maxLength"":50,
   ""multipleOf"":3,
+  ""minProperties"": 10,
+  ""maxProperties"": 20
 }";
 
             JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
@@ -283,6 +285,8 @@ namespace Newtonsoft.Json.Tests.Schema
             Assert.AreEqual(5, schema.MinimumLength);
             Assert.AreEqual(50, schema.MaximumLength);
             Assert.AreEqual(3, schema.MultipleOf);
+            Assert.AreEqual(10, schema.MinimumProperties);
+            Assert.AreEqual(20, schema.MaximumProperties);
         }
 
         [Test]

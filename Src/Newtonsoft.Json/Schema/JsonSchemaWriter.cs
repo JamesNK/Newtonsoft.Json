@@ -113,7 +113,7 @@ namespace Newtonsoft.Json.Schema
                 }
             }
             WriteSchemaDictionaryIfNotNull(_writer, JsonSchemaConstants.PropertiesPropertyName, schema.Properties);
-            if (schema.Properties != null && schema.Required != null && schema.Required.Count > 0)
+            if (schema.Required != null && schema.Required.Count > 0)
             {
                 _writer.WritePropertyName(JsonSchemaConstants.RequiredPropertyName);
                 _writer.WriteStartArray();
