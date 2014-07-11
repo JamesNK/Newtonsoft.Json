@@ -133,6 +133,8 @@
     <Compile Include="Linq\JsonPath\ScanFilter.cs" />
     <Compile Include="Linq\MergeArrayHandling.cs" />
     <Compile Include="MetadataPropertyHandling.cs" />
+    <Compile Include="Schema\JsonSchemaLink.cs" />
+    <Compile Include="Schema\JsonSchemaMedia.cs" />
     <Compile Include="Serialization\DiagnosticsTraceWriter.cs" />
     <Compile Include="Serialization\ExpressionValueProvider.cs" />
     <Compile Include="Serialization\ITraceWriter.cs" />

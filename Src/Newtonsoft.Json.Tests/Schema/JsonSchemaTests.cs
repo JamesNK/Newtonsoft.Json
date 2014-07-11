@@ -839,5 +839,96 @@ namespace Newtonsoft.Json.Tests.Schema
 
             Assert.IsTrue(json.IsValid(schema));
         }
+
+        [Test]
+        public void WriteTo_Links()
+        {
+            string json = @"{
+  ""$schema"": ""http://json-schema.org/draft-04/schema#"",
+  ""title"": ""News post"",
+  ""links"": [
+    {
+      ""rel"": ""comments"",
+      ""href"": ""/{id}/comments""
+    },
+    {
+      ""rel"": ""search"",
+      ""href"": ""/{id}/comments"",
+      ""schema"": {
+        ""type"": ""object"",
+        ""properties"": {
+          ""searchTerm"": {
+            ""type"": ""string""
+          },
+          ""itemsPerPage"": {
+            ""type"": ""integer"",
+            ""minimum"": 10.0,
+            ""multipleOf"": 10.0,
+            ""default"": 20
+          }
+        },
+        ""required"": [
+          ""searchTerm""
+        ]
+      }
+    },
+    {
+      ""title"": ""Post a comment"",
+      ""rel"": ""create"",
+      ""href"": ""/{id}/comments"",
+      ""method"": ""POST"",
+      ""schema"": {
+        ""type"": ""object"",
+        ""properties"": {
+          ""message"": {
+            ""type"": ""string""
+          }
+        },
+        ""required"": [
+          ""message""
+        ]
+      }
+    },
+    {
+      ""rel"": ""icon"",
+      ""href"": ""{id}/icon"",
+      ""mediaType"": ""image/*""
+    }
+  ]
+}";
+
+            JsonSchema schema = JsonSchema.Parse(json);
+
+            StringWriter writer = new StringWriter();
+            JsonTextWriter jsonWriter = new JsonTextWriter(writer);
+            jsonWriter.Formatting = Formatting.Indented;
+            schema.WriteTo(jsonWriter);
+            string newJson = writer.ToString();
+
+            Assert.AreEqual(json, newJson);
+        }
+
+        [Test]
+        public void WriteTo_Media()
+        {
+            string json = @"{
+  ""$schema"": ""http://json-schema.org/draft-04/schema#"",
+  ""type"": ""string"",
+  ""media"": {
+    ""binaryEncoding"": ""base64"",
+    ""type"": ""image/png""
+  }
+}";
+
+            JsonSchema schema = JsonSchema.Parse(json);
+
+            StringWriter writer = new StringWriter();
+            JsonTextWriter jsonWriter = new JsonTextWriter(writer);
+            jsonWriter.Formatting = Formatting.Indented;
+            schema.WriteTo(jsonWriter);
+            string newJson = writer.ToString();
+
+            Assert.AreEqual(json, newJson);
+        }
     }
 }

@@ -522,6 +522,18 @@ namespace Newtonsoft.Json.Schema
                     case JsonSchemaConstants.MaximumPropertiesPropertyName:
                         CurrentSchema.MaximumProperties = (int)property.Value;
                         break;
+                    case JsonSchemaConstants.LinksPropertyName:
+                        ProcessLinks(property.Value);
+                        break;
+                    case JsonSchemaConstants.MediaPropertyName:
+                        ProcessMedia(property.Value);
+                        break;
+                    case JsonSchemaConstants.FragmentResolutionPropertyName:
+                        CurrentSchema.Pattern = (string)property.Value;
+                        break;
+                    case JsonSchemaConstants.PathStartPropertyName:
+                        CurrentSchema.PathStart = (string)property.Value;
+                        break;
                 }
             }
         }
@@ -694,6 +706,84 @@ namespace Newtonsoft.Json.Schema
                     return MapType((string)token);
                 default:
                     throw JsonException.Create(token, token.Path, "Expected array or JSON schema type string token, got {0}.".FormatWith(CultureInfo.InvariantCulture, token.Type));
+            }
+        }
+
+        private void ProcessLinks(JToken token)
+        {
+            if (token.Type != JTokenType.Array)
+                throw JsonException.Create(token, token.Path, "Expected Array token while parsing links values, got {0}.".FormatWith(CultureInfo.InvariantCulture, token.Type));
+
+            CurrentSchema.Links = new List<JsonSchemaLink>();
+
+            foreach (JObject linkValue in token)
+            {
+                CurrentSchema.Links.Add(ProcessLink(linkValue));
+            }
+        }
+
+        private JsonSchemaLink ProcessLink(JObject schemaObject)
+        {
+            JsonSchemaLink currentLink = new JsonSchemaLink();
+
+            foreach (KeyValuePair<string, JToken> property in schemaObject)
+            {
+                switch (property.Key)
+                {
+                    case JsonSchemaConstants.HrefPropertyName:
+                        currentLink.Href = (string)property.Value;
+                        break;
+                    case JsonSchemaConstants.RelationPropertyName:
+                        currentLink.Relation = (string)property.Value;
+                        break;
+                    case JsonSchemaConstants.TitlePropertyName:
+                        currentLink.Title = (string)property.Value;
+                        break;
+                    case JsonSchemaConstants.TargetSchemaPropertyName:
+                        currentLink.TargetSchema = BuildSchema(property.Value);
+                        break;
+                    case JsonSchemaConstants.MediaTypePropertyName:
+                        currentLink.MediaType = (string)property.Value;
+                        break;
+                    case JsonSchemaConstants.MethodPropertyName:
+                        currentLink.Method = (string)property.Value;
+                        break;
+                    case JsonSchemaConstants.EncodingTypePropertyName:
+                        currentLink.EncodingType = (string)property.Value;
+                        break;
+                    case JsonSchemaConstants.SchemaPropertyName:
+                        currentLink.Schema = BuildSchema(property.Value);
+                        break;
+                }
+            }
+
+            if (string.IsNullOrEmpty(currentLink.Href))
+                throw JsonException.Create(schemaObject, schemaObject.Path, "Missing required link property: href");
+
+            if (string.IsNullOrEmpty(currentLink.Relation))
+                throw JsonException.Create(schemaObject, schemaObject.Path, "Missing required link property: rel");
+
+            return currentLink;
+        }
+
+        private void ProcessMedia(JToken token)
+        {
+            if (token.Type != JTokenType.Object)
+                throw JsonException.Create(token, token.Path, "Expected Object token while parsing media values, got {0}.".FormatWith(CultureInfo.InvariantCulture, token.Type));
+
+            CurrentSchema.Media = new JsonSchemaMedia();
+
+            foreach (KeyValuePair<string, JToken> property in (JObject)token)
+            {
+                switch (property.Key)
+                {
+                    case JsonSchemaConstants.TypePropertyName:
+                        CurrentSchema.Media.Type = (string)property.Value;
+                        break;
+                    case JsonSchemaConstants.BinaryEncodingPropertyName:
+                        CurrentSchema.Media.BinaryEncoding = (string)property.Value;
+                        break;
+                }
             }
         }
 

@@ -46,7 +46,7 @@ namespace Newtonsoft.Json.Schema
         /// Gets or sets the title.
         /// </summary>
         public string Title { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the array of required properties.
         /// </summary>
@@ -263,6 +263,26 @@ namespace Newtonsoft.Json.Schema
         /// <value>The <see cref="JsonSchema"/> list of inlined schemas.</value>
         public IList<JsonSchema> Definitions { get; set; }
 
+        /// <summary> 
+        /// Gets or sets the List of Links 
+        /// </summary> 
+        public IList<JsonSchemaLink> Links { get; set; }
+
+        /// <summary> 
+        /// Gets or sets the Media attribute 
+        /// </summary> 
+        public JsonSchemaMedia Media { get; set; }
+
+        /// <summary>
+        /// Gets or sets the method to use for finding a schema instance within a document, given the fragment part. Default is json-pointer.
+        /// </summary>
+        public string FragmentResolution { get; set; }
+
+        /// <summary>
+        /// Gets or sets a URI that defines what the instance's URI MUST start with in order to validate
+        /// </summary>
+        public string PathStart { get; set; }
+
         internal string Location { get; set; }
         internal string ResolutionScope { get; set; }
 
@@ -285,6 +305,7 @@ namespace Newtonsoft.Json.Schema
         {
             AllowAdditionalProperties = true;
             AllowAdditionalItems = true;
+            FragmentResolution = JsonSchemaConstants.JsonPointerProtocol;
         }
 
         /// <summary>
