@@ -63,8 +63,24 @@ namespace Newtonsoft.Json.Schema
         public const string UniqueItemsPropertyName = "uniqueItems";
         public const string MinimumPropertiesPropertyName = "minProperties";
         public const string MaximumPropertiesPropertyName = "maxProperties";
-        public const string SchemaPropertyName = "$schema";
-        public const string SchemaPropertyValue = "http://json-schema.org/draft-04/schema#";
+        public const string SchemaTypePropertyName = "$schema";
+        public const string SchemaTypePropertyValue = "http://json-schema.org/draft-04/schema#";
+        public const string LinksPropertyName = "links";
+        public const string HrefPropertyName = "href";
+        public const string RelationPropertyName = "rel";
+        public const string TargetSchemaPropertyName = "targetSchema";
+        public const string MediaTypePropertyName = "mediaType";
+        public const string MethodPropertyName = "method";
+        public const string EncodingTypePropertyName = "encType";
+        public const string SchemaPropertyName = "schema";
+        public const string MediaPropertyName = "media";
+        public const string BinaryEncodingPropertyName = "binaryEncoding";
+        public const string FragmentResolutionPropertyName = "fragmentResolution";
+        public const string PathStartPropertyName = "pathStart";
+        public const string JsonContentType = "application/json";
+        public const string JsonPointerProtocol = "json-pointer";
+        public const string DefaultRequestMethod = "GET";
+        public const string SelfRelation = "self";
 
         public const string OptionValuePropertyName = "value";
         public const string OptionLabelPropertyName = "label";

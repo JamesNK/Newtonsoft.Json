@@ -143,6 +143,8 @@
     <Compile Include="Schema\JsonSchemaConstants.cs" />
     <Compile Include="Schema\JsonSchemaException.cs" />
     <Compile Include="Schema\JsonSchemaGenerator.cs" />
+    <Compile Include="Schema\JsonSchemaLink.cs" />
+    <Compile Include="Schema\JsonSchemaMedia.cs" />
     <Compile Include="Schema\JsonSchemaResolver.cs" />
     <Compile Include="Schema\JsonSchemaType.cs" />
     <Compile Include="Schema\JsonSchemaWriter.cs" />

@@ -78,7 +78,7 @@ namespace Newtonsoft.Json.Schema
             _writer.WriteStartObject();
             WritePropertyIfNotNull(_writer, JsonSchemaConstants.IdPropertyName, schema.Id);
             if (isRoot)
-                WritePropertyIfNotNull(_writer, JsonSchemaConstants.SchemaPropertyName, JsonSchemaConstants.SchemaPropertyValue);
+                WritePropertyIfNotNull(_writer, JsonSchemaConstants.SchemaTypePropertyName, JsonSchemaConstants.SchemaTypePropertyValue);
             WritePropertyIfNotNull(_writer, JsonSchemaConstants.TitlePropertyName, schema.Title);
             WritePropertyIfNotNull(_writer, JsonSchemaConstants.DescriptionPropertyName, schema.Description);
             WritePropertyIfNotNull(_writer, JsonSchemaConstants.ReadOnlyPropertyName, schema.ReadOnly);
@@ -189,6 +189,47 @@ namespace Newtonsoft.Json.Schema
                 _writer.WritePropertyName(JsonSchemaConstants.NotOfPropertyName);
                 ReferenceOrWriteSchema(schema.NotOf);
             }
+            if (schema.Links != null && schema.Links.Count > 0)
+            {
+                _writer.WritePropertyName(JsonSchemaConstants.LinksPropertyName);
+                _writer.WriteStartArray();
+                foreach (JsonSchemaLink link in schema.Links)
+                {
+                    _writer.WriteStartObject();
+                    WritePropertyIfNotNull(_writer, JsonSchemaConstants.TitlePropertyName, link.Title);
+                    WritePropertyIfNotNull(_writer, JsonSchemaConstants.RelationPropertyName, link.Relation);
+                    WritePropertyIfNotNull(_writer, JsonSchemaConstants.HrefPropertyName, link.Href);
+                    if (link.TargetSchema != null)
+                    {
+                        _writer.WritePropertyName(JsonSchemaConstants.TargetSchemaPropertyName);
+                        ReferenceOrWriteSchema(link.TargetSchema);
+                    }
+                    WritePropertyIfNotNull(_writer, JsonSchemaConstants.MediaTypePropertyName, link.MediaType);
+                    if (!JsonSchemaConstants.DefaultRequestMethod.Equals(link.Method, System.StringComparison.OrdinalIgnoreCase))
+                        WritePropertyIfNotNull(_writer, JsonSchemaConstants.MethodPropertyName, link.Method);
+                    if (!JsonSchemaConstants.JsonContentType.Equals(link.EncodingType, System.StringComparison.OrdinalIgnoreCase))
+                        WritePropertyIfNotNull(_writer, JsonSchemaConstants.EncodingTypePropertyName, link.EncodingType);
+                    if (link.Schema != null)
+                    {
+                        _writer.WritePropertyName(JsonSchemaConstants.SchemaPropertyName);
+                        ReferenceOrWriteSchema(link.Schema);
+                    }
+                    _writer.WriteEndObject();
+                }
+                _writer.WriteEndArray();
+
+            }
+            if (!JsonSchemaConstants.JsonPointerProtocol.Equals(schema.FragmentResolution, System.StringComparison.OrdinalIgnoreCase))
+                WritePropertyIfNotNull(_writer, JsonSchemaConstants.FragmentResolutionPropertyName, schema.FragmentResolution);
+            if (schema.Media != null)
+            {
+                _writer.WritePropertyName(JsonSchemaConstants.MediaPropertyName);
+                _writer.WriteStartObject();
+                WritePropertyIfNotNull(_writer, JsonSchemaConstants.BinaryEncodingPropertyName, schema.Media.BinaryEncoding);
+                WritePropertyIfNotNull(_writer, JsonSchemaConstants.TypePropertyName, schema.Media.Type);
+                _writer.WriteEndObject();
+            }
+            WritePropertyIfNotNull(_writer, JsonSchemaConstants.PathStartPropertyName, schema.PathStart);
             _writer.WriteEndObject();
         }
 
