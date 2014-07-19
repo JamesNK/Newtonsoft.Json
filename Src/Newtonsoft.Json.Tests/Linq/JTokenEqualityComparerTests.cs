@@ -24,7 +24,6 @@
 #endregion
 
 using System.Collections.Generic;
-using System.Linq;
 #if !NETFX_CORE
 using NUnit.Framework;
 #else
