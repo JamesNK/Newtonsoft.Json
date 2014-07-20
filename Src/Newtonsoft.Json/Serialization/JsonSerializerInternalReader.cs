@@ -390,6 +390,12 @@ namespace Newtonsoft.Json.Serialization
                 {
                     JToken t = JToken.ReadFrom(reader);
                     tokenReader = (JTokenReader)t.CreateReader();
+                    tokenReader.Culture = reader.Culture;
+                    tokenReader.DateFormatString = reader.DateFormatString;
+                    tokenReader.DateParseHandling = reader.DateParseHandling;
+                    tokenReader.DateTimeZoneHandling = reader.DateTimeZoneHandling;
+                    tokenReader.FloatParseHandling = reader.FloatParseHandling;
+                    tokenReader.SupportMultipleContent = reader.SupportMultipleContent;
 
                     // start
                     CheckedRead(tokenReader);
@@ -841,7 +847,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                         {
                             if (value is string)
                                 return Enum.Parse(contract.NonNullableUnderlyingType, value.ToString(), true);
-                            else if (ConvertUtils.IsInteger(primitiveContract.TypeCode))
+                            if (ConvertUtils.IsInteger(primitiveContract.TypeCode))
                                 return Enum.ToObject(contract.NonNullableUnderlyingType, value);
                         }
 

@@ -31,6 +31,7 @@ using System.ComponentModel;
 using System.Numerics;
 #endif
 using System.Text;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json.Serialization;
 using System.Reflection;
 #if NET20
@@ -766,6 +767,30 @@ namespace Newtonsoft.Json.Utilities
             }
 
             return ParseResult.Success;
+        }
+
+        public static bool TryConvertGuid(string s, out Guid g)
+        {
+#if NET20 || NET35
+            if (s == null)
+                throw new ArgumentNullException("s");
+
+            Regex format = new Regex(
+                "^[A-Fa-f0-9]{32}$|" +
+                "^({|\\()?[A-Fa-f0-9]{8}-([A-Fa-f0-9]{4}-){3}[A-Fa-f0-9]{12}(}|\\))?$|" +
+                "^({)?[0xA-Fa-f0-9]{3,10}(, {0,1}[0xA-Fa-f0-9]{3,6}){2}, {0,1}({)([0xA-Fa-f0-9]{3,4}, {0,1}){7}[0xA-Fa-f0-9]{3,4}(}})$");
+            Match match = format.Match(s);
+            if (match.Success)
+            {
+                g = new Guid(s);
+                return true;
+            }
+
+            g = Guid.Empty;
+            return false;
+#else
+            return Guid.TryParse(s, out g);
+#endif
         }
     }
 }

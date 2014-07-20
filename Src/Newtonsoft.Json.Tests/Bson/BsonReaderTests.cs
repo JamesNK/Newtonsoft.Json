@@ -1632,6 +1632,7 @@ namespace Newtonsoft.Json.Tests.Bson
             Assert.IsFalse(reader.Read());
 
             JsonSerializer serializer = new JsonSerializer();
+            serializer.MetadataPropertyHandling = MetadataPropertyHandling.Default;
             ObjectTestClass b = serializer.Deserialize<ObjectTestClass>(new BsonReader(new MemoryStream(bytes)));
             Assert.AreEqual(typeof(Guid), b.TheGuid.GetType());
             Assert.AreEqual(g, (Guid)b.TheGuid);
@@ -1665,6 +1666,39 @@ namespace Newtonsoft.Json.Tests.Bson
             Assert.IsFalse(reader.Read());
 
             JsonSerializer serializer = new JsonSerializer();
+            BytesTestClass b = serializer.Deserialize<BytesTestClass>(new BsonReader(new MemoryStream(bytes)));
+            CollectionAssert.AreEquivalent(g.ToByteArray(), b.TheGuid);
+        }
+
+        [Test]
+        public void GuidsShouldBeProperlyDeserialised_AsBytes_ReadAhead()
+        {
+            Guid g = new Guid("822C0CE6-CC42-4753-A3C3-26F0684A4B88");
+
+            MemoryStream ms = new MemoryStream();
+            BsonWriter writer = new BsonWriter(ms);
+            writer.WriteStartObject();
+            writer.WritePropertyName("TheGuid");
+            writer.WriteValue(g);
+            writer.WriteEndObject();
+            writer.Flush();
+
+            byte[] bytes = ms.ToArray();
+
+            BsonReader reader = new BsonReader(new MemoryStream(bytes));
+            Assert.IsTrue(reader.Read());
+            Assert.IsTrue(reader.Read());
+
+            CollectionAssert.AreEquivalent(g.ToByteArray(), reader.ReadAsBytes());
+            Assert.AreEqual(JsonToken.Bytes, reader.TokenType);
+            Assert.AreEqual(typeof(byte[]), reader.ValueType);
+            CollectionAssert.AreEquivalent(g.ToByteArray(), (byte[])reader.Value);
+
+            Assert.IsTrue(reader.Read());
+            Assert.IsFalse(reader.Read());
+
+            JsonSerializer serializer = new JsonSerializer();
+            serializer.MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead;
             BytesTestClass b = serializer.Deserialize<BytesTestClass>(new BsonReader(new MemoryStream(bytes)));
             CollectionAssert.AreEquivalent(g.ToByteArray(), b.TheGuid);
         }

@@ -325,7 +325,8 @@ Newtonsoft.Json Error: 0 : Error!
                 o2,
                 new JsonSerializerSettings
                 {
-                    TraceWriter = traceWriter
+                    TraceWriter = traceWriter,
+                    MetadataPropertyHandling = MetadataPropertyHandling.Default
                 });
 
             Assert.AreEqual(2, o2.IntList.Count);

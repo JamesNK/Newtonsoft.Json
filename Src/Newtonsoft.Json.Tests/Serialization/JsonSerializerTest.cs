@@ -7990,7 +7990,7 @@ Parameter name: value",
         }
 
         [Test]
-        public void DateFormatStringWithDictionaryKey()
+        public void DateFormatStringWithDictionaryKey_DateTime()
         {
             DateTime dt = new DateTime(2000, 12, 22);
             string dateFormatString = "yyyy'-pie-'MMM'-'dddd'-'dd";
@@ -8014,7 +8014,84 @@ Parameter name: value",
             Assert.AreEqual(dt, d.Keys.ElementAt(0));
         }
 
+        [Test]
+        public void DateFormatStringWithDictionaryKey_DateTime_ReadAhead()
+        {
+            DateTime dt = new DateTime(2000, 12, 22);
+            string dateFormatString = "yyyy'-pie-'MMM'-'dddd'-'dd";
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                DateFormatString = dateFormatString,
+                MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead,
+                Formatting = Formatting.Indented
+            };
+
+            string json = JsonConvert.SerializeObject(new Dictionary<DateTime, string>
+            {
+                { dt, "123" }
+            }, settings);
+
+            Assert.AreEqual(@"{
+  ""2000-pie-Dec-Friday-22"": ""123""
+}", json);
+
+            Dictionary<DateTime, string> d = JsonConvert.DeserializeObject<Dictionary<DateTime, string>>(json, settings);
+
+            Assert.AreEqual(dt, d.Keys.ElementAt(0));
+        }
+
 #if !NET20
+        [Test]
+        public void DateFormatStringWithDictionaryKey_DateTimeOffset()
+        {
+            DateTimeOffset dt = new DateTimeOffset(2000, 12, 22, 0, 0, 0, TimeSpan.Zero);
+            string dateFormatString = "yyyy'-pie-'MMM'-'dddd'-'dd'!'K";
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                DateFormatString = dateFormatString,
+                Formatting = Formatting.Indented
+            };
+
+            string json = JsonConvert.SerializeObject(new Dictionary<DateTimeOffset, string>
+            {
+                { dt, "123" }
+            }, settings);
+
+            Assert.AreEqual(@"{
+  ""2000-pie-Dec-Friday-22!+00:00"": ""123""
+}", json);
+
+            Dictionary<DateTimeOffset, string> d = JsonConvert.DeserializeObject<Dictionary<DateTimeOffset, string>>(json, settings);
+
+            Assert.AreEqual(dt, d.Keys.ElementAt(0));
+        }
+
+        [Test]
+        public void DateFormatStringWithDictionaryKey_DateTimeOffset_ReadAhead()
+        {
+            DateTimeOffset dt = new DateTimeOffset(2000, 12, 22, 0, 0, 0, TimeSpan.Zero);
+            string dateFormatString = "yyyy'-pie-'MMM'-'dddd'-'dd'!'K";
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                DateFormatString = dateFormatString,
+                MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead,
+                Formatting = Formatting.Indented
+            };
+
+            string json = JsonConvert.SerializeObject(new Dictionary<DateTimeOffset, string>
+            {
+                { dt, "123" }
+            }, settings);
+
+            Assert.AreEqual(@"{
+  ""2000-pie-Dec-Friday-22!+00:00"": ""123""
+}", json);
+
+            Dictionary<DateTimeOffset, string> d = JsonConvert.DeserializeObject<Dictionary<DateTimeOffset, string>>(json, settings);
+
+            Assert.AreEqual(dt, d.Keys.ElementAt(0));
+        }
+
         [Test]
         public void DateFormatStringWithDateTimeOffset()
         {
