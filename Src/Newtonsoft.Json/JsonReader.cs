@@ -505,20 +505,22 @@ namespace Newtonsoft.Json
             {
                 string s = (string)Value;
 
-                if (s.Length == 0)
-                    return new byte[0];
-
                 byte[] data;
 
                 Guid g;
-                if (ConvertUtils.TryConvertGuid(s, out g))
+                if (s.Length == 0)
+                {
+                    data = new byte[0];
+                }
+                else if (ConvertUtils.TryConvertGuid(s, out g))
                 {
                     data = g.ToByteArray();
-                    SetToken(JsonToken.Bytes, data, false);
-                    return data;
+                }
+                else
+                {
+                    data = Convert.FromBase64String(s);
                 }
 
-                data = Convert.FromBase64String(s);
                 SetToken(JsonToken.Bytes, data, false);
                 return data;
             }

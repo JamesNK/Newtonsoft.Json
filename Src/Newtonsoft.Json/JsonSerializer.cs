@@ -266,7 +266,7 @@ namespace Newtonsoft.Json
             get { return _metadataPropertyHandling; }
             set
             {
-                if (value < MetadataPropertyHandling.Default || value > MetadataPropertyHandling.ReadAhead)
+                if (value < MetadataPropertyHandling.Default || value > MetadataPropertyHandling.Ignore)
                     throw new ArgumentOutOfRangeException("value");
 
                 _metadataPropertyHandling = value;

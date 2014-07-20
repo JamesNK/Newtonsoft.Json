@@ -96,7 +96,9 @@ namespace Newtonsoft.Json.Serialization
                 CheckedRead(reader);
 
                 string id = null;
-                if (reader.TokenType == JsonToken.PropertyName && string.Equals(reader.Value.ToString(), JsonTypeReflector.IdPropertyName, StringComparison.Ordinal))
+                if (Serializer.MetadataPropertyHandling != MetadataPropertyHandling.Ignore
+                    && reader.TokenType == JsonToken.PropertyName
+                    && string.Equals(reader.Value.ToString(), JsonTypeReflector.IdPropertyName, StringComparison.Ordinal))
                 {
                     CheckedRead(reader);
                     id = (reader.Value != null) ? reader.Value.ToString() : null;
@@ -380,10 +382,15 @@ namespace Newtonsoft.Json.Serialization
         private object CreateObject(JsonReader reader, Type objectType, JsonContract contract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerMember, object existingValue)
         {
             string id;
-            object newValue;
             Type resolvedObjectType = objectType;
 
-            if (Serializer.MetadataPropertyHandling == MetadataPropertyHandling.ReadAhead)
+            if (Serializer.MetadataPropertyHandling == MetadataPropertyHandling.Ignore)
+            {
+                // don't look for metadata properties
+                CheckedRead(reader);
+                id = null;
+            }
+            else if (Serializer.MetadataPropertyHandling == MetadataPropertyHandling.ReadAhead)
             {
                 var tokenReader = reader as JTokenReader;
                 if (tokenReader == null)
@@ -403,12 +410,14 @@ namespace Newtonsoft.Json.Serialization
                     reader = tokenReader;
                 }
 
+                object newValue;
                 if (ReadMetadataPropertiesToken(tokenReader, ref resolvedObjectType, ref contract, member, containerContract, containerMember, existingValue, out newValue, out id))
                     return newValue;
             }
             else
             {
                 CheckedRead(reader);
+                object newValue;
                 if (ReadMetadataProperties(reader, ref resolvedObjectType, ref contract, member, containerContract, containerMember, existingValue, out newValue, out id))
                     return newValue;
             }
@@ -439,7 +448,9 @@ namespace Newtonsoft.Json.Serialization
                 {
                     JsonPrimitiveContract primitiveContract = (JsonPrimitiveContract)contract;
                     // if the content is inside $value then read past it
-                    if (reader.TokenType == JsonToken.PropertyName && string.Equals(reader.Value.ToString(), JsonTypeReflector.ValuePropertyName, StringComparison.Ordinal))
+                    if (Serializer.MetadataPropertyHandling != MetadataPropertyHandling.Ignore
+                        && reader.TokenType == JsonToken.PropertyName
+                        && string.Equals(reader.Value.ToString(), JsonTypeReflector.ValuePropertyName, StringComparison.Ordinal))
                     {
                         CheckedRead(reader);
 

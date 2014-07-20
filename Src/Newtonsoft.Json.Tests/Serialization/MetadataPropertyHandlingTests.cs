@@ -59,9 +59,9 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             object o = JsonConvert.DeserializeObject(json, new JsonSerializerSettings
             {
-	            TypeNameHandling = TypeNameHandling.All,
-	            // no longer needs to be first
-	            MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
+                TypeNameHandling = TypeNameHandling.All,
+                // no longer needs to be first
+                MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
             });
 
             User u = (User)o;
@@ -427,5 +427,152 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(5, nested[4]);
         }
 #endif
+
+        public class MetadataPropertyDisabledTestClass
+        {
+            [JsonProperty("$id")]
+            public string Id { get; set; }
+
+            [JsonProperty("$ref")]
+            public string Ref { get; set; }
+
+            [JsonProperty("$value")]
+            public string Value { get; set; }
+
+            [JsonProperty("$values")]
+            public string Values { get; set; }
+
+            [JsonProperty("$type")]
+            public string Type { get; set; }
+        }
+
+        [Test]
+        public void MetadataPropertyHandlingIgnore()
+        {
+            MetadataPropertyDisabledTestClass c1 = new MetadataPropertyDisabledTestClass
+            {
+                Id = "Id!",
+                Ref = "Ref!",
+                Type = "Type!",
+                Value = "Value!",
+                Values = "Values!"
+            };
+
+            string json = JsonConvert.SerializeObject(c1, Formatting.Indented);
+
+            Assert.AreEqual(@"{
+  ""$id"": ""Id!"",
+  ""$ref"": ""Ref!"",
+  ""$value"": ""Value!"",
+  ""$values"": ""Values!"",
+  ""$type"": ""Type!""
+}", json);
+
+            MetadataPropertyDisabledTestClass c2 = JsonConvert.DeserializeObject<MetadataPropertyDisabledTestClass>(json, new JsonSerializerSettings
+            {
+                MetadataPropertyHandling = MetadataPropertyHandling.Ignore
+            });
+
+            Assert.AreEqual("Id!", c2.Id);
+            Assert.AreEqual("Ref!", c2.Ref);
+            Assert.AreEqual("Type!", c2.Type);
+            Assert.AreEqual("Value!", c2.Value);
+            Assert.AreEqual("Values!", c2.Values);
+        }
+
+        [Test]
+        public void MetadataPropertyHandlingIgnore_EmptyObject()
+        {
+            string json = @"{}";
+
+            MetadataPropertyDisabledTestClass c = JsonConvert.DeserializeObject<MetadataPropertyDisabledTestClass>(json, new JsonSerializerSettings
+            {
+                MetadataPropertyHandling = MetadataPropertyHandling.Ignore
+            });
+
+            Assert.AreEqual(null, c.Id);
+        }
+
+        [Test]
+        public void PrimitiveType_MetadataPropertyIgnore()
+        {
+            Item actual = JsonConvert.DeserializeObject<Item>(@"{
+  ""SourceTypeID"": ""d8220a4b-75b1-4b7a-8112-b7bdae956a45"",
+  ""BrokerID"": ""951663c4-924e-4c86-a57a-7ed737501dbd"",
+  ""Latitude"": 33.657145,
+  ""Longitude"": -117.766684,
+  ""TimeStamp"": ""2000-03-01T23:59:59Z"",
+  ""Payload"": {
+    ""$type"": ""System.Byte[], mscorlib"",
+    ""$value"": ""AAECAwQFBgcICQ==""
+  }
+}",
+                new JsonSerializerSettings
+                {
+                    MetadataPropertyHandling = MetadataPropertyHandling.Ignore
+                });
+
+            Assert.AreEqual(new Guid("d8220a4b-75b1-4b7a-8112-b7bdae956a45"), actual.SourceTypeID);
+            Assert.AreEqual(new Guid("951663c4-924e-4c86-a57a-7ed737501dbd"), actual.BrokerID);
+            JObject o = (JObject)actual.Payload;
+            Assert.AreEqual("System.Byte[], mscorlib", (string)o["$type"]);
+            Assert.AreEqual("AAECAwQFBgcICQ==", (string)o["$value"]);
+        }
+
+        public class ItemWithTypedPayload
+        {
+            public double Payload { get; set; }
+        }
+
+        [Test]
+        public void PrimitiveType_MetadataPropertyIgnore_WithType()
+        {
+            ItemWithTypedPayload actual = JsonConvert.DeserializeObject<ItemWithTypedPayload>(@"{
+  ""Payload"": {
+    ""$type"": ""System.Double, mscorlib"",
+    ""$value"": ""5""
+  }
+}",
+                new JsonSerializerSettings());
+
+            Assert.AreEqual(5d, actual.Payload);
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                @"Cannot deserialize the current JSON object (e.g. {""name"":""value""}) into type 'System.Double' because the type requires a JSON primitive value (e.g. string, number, boolean, null) to deserialize correctly.
+To fix this error either change the JSON to a JSON primitive value (e.g. string, number, boolean, null) or change the deserialized type so that it is a normal .NET type (e.g. not a primitive type like integer, not a collection type like an array or List<T>) that can be deserialized from a JSON object. JsonObjectAttribute can also be added to the type to force it to deserialize from a JSON object.
+Path 'Payload.$type', line 3, position 13.",
+                () =>
+                {
+                    JsonConvert.DeserializeObject<ItemWithTypedPayload>(@"{
+  ""Payload"": {
+    ""$type"": ""System.Double, mscorlib"",
+    ""$value"": ""5""
+  }
+}",
+                        new JsonSerializerSettings
+                        {
+                            MetadataPropertyHandling = MetadataPropertyHandling.Ignore
+                        });
+                });
+        }
+
+        [Test]
+        public void DeserializeCircularReferencesWithConverter()
+        {
+            string json = @"{
+  ""$id"": ""1"",
+  ""$type"": ""CircularReferenceClass""
+}";
+
+            MetadataPropertyDisabledTestClass c = new MetadataPropertyDisabledTestClass();
+
+            JsonConvert.PopulateObject(json, c, new JsonSerializerSettings
+            {
+                MetadataPropertyHandling = MetadataPropertyHandling.Ignore
+            });
+
+            Assert.AreEqual("1", c.Id);
+            Assert.AreEqual("CircularReferenceClass", c.Type);
+        }
     }
 }
