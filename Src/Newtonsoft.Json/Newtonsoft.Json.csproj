@@ -214,7 +214,6 @@
     <Compile Include="Utilities\ReflectionObject.cs" />
     <Compile Include="Utilities\EnumUtils.cs" />
     <Compile Include="Utilities\EnumValue.cs" />
-    <Compile Include="Utilities\EnumValues.cs" />
     <Compile Include="Utilities\ExpressionReflectionDelegateFactory.cs" />
     <Compile Include="Utilities\FSharpUtils.cs" />
     <Compile Include="Utilities\ILGeneratorExtensions.cs" />

@@ -132,6 +132,22 @@ namespace Newtonsoft.Json.Tests
             SerializeTests(test);
         }
 
+        [Test]
+        public void SerializeKeyValuePair()
+        {
+            IList<KeyValuePair<string, int>> value = new List<KeyValuePair<string, int>>();
+            for (int i = 0; i < 100; i++)
+            {
+                value.Add(new KeyValuePair<string, int>("Key" + i, i));
+            }
+
+            BenchmarkSerializeMethod(SerializeMethod.JsonNet, value);
+
+            string json = JsonConvert.SerializeObject(value);
+
+            BenchmarkDeserializeMethod<IList<KeyValuePair<string, int>>>(SerializeMethod.JsonNet, json);
+        }
+
         private void SerializeTests(object value)
         {
             BenchmarkSerializeMethod(SerializeMethod.DataContractSerializer, value);

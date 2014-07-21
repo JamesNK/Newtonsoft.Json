@@ -244,7 +244,6 @@
     <Compile Include="Utilities\DictionaryWrapper.cs" />
     <Compile Include="Utilities\EnumUtils.cs" />
     <Compile Include="Utilities\EnumValue.cs" />
-    <Compile Include="Utilities\EnumValues.cs" />
     <Compile Include="Utilities\JavaScriptUtils.cs" />
     <Compile Include="JsonToken.cs" />
     <Compile Include="JsonWriter.cs" />
