@@ -2,18 +2,18 @@
     {
         "description": "additionalItems as schema",
         "schema": {
-            "items": [],
+            "items": [{}],
             "additionalItems": {"type": "integer"}
         },
         "tests": [
             {
                 "description": "additional items match schema",
-                "data": [ 1, 2, 3, 4 ],
+                "data": [ null, 2, 3, 4 ],
                 "valid": true
             },
             {
                 "description": "additional items do not match schema",
-                "data": [ 1, 2, 3, "foo" ],
+                "data": [ null, 2, 3, "foo" ],
                 "valid": false
             }
         ]
@@ -70,10 +70,10 @@
     },
     {
         "description": "additionalItems are allowed by default",
-        "schema": {"items": []},
+        "schema": {"items": [{"type": "integer"}]},
         "tests": [
             {
-                "description": "only the first items are validated",
+                "description": "only the first item is validated",
                 "data": [1, "foo", false],
                 "valid": true
             }

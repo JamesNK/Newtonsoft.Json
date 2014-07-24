@@ -31,6 +31,7 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
 #endif
+using System.IO;
 using System.Globalization;
 using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Linq;
@@ -40,15 +41,19 @@ namespace Newtonsoft.Json.Schema
     internal class JsonSchemaBuilder
     {
         private readonly IList<JsonSchema> _stack;
+        private readonly IList<string> _resolutionScopeStack;
         private readonly JsonSchemaResolver _resolver;
         private readonly IDictionary<string, JsonSchema> _documentSchemas;
         private JsonSchema _currentSchema;
-        private JObject _rootSchema;
+        private string _currentResolutionScope;
+        private IDictionary<string, JObject> _rootSchemas;
 
         public JsonSchemaBuilder(JsonSchemaResolver resolver)
         {
             _stack = new List<JsonSchema>();
+            _resolutionScopeStack = new List<string>();
             _documentSchemas = new Dictionary<string, JsonSchema>();
+            _rootSchemas = new Dictionary<string, JObject>();
             _resolver = resolver;
         }
 
@@ -60,6 +65,12 @@ namespace Newtonsoft.Json.Schema
             _documentSchemas.Add(value.Location, value);
         }
 
+        private void PushScope(string resolutionScope)
+        {
+            _currentResolutionScope = resolutionScope;
+            _resolutionScopeStack.Add(resolutionScope);
+        }
+
         private JsonSchema Pop()
         {
             JsonSchema poppedSchema = _currentSchema;
@@ -69,6 +80,12 @@ namespace Newtonsoft.Json.Schema
             return poppedSchema;
         }
 
+        private void PopScope()
+        {
+            _resolutionScopeStack.RemoveAt(_resolutionScopeStack.Count - 1);
+            _currentResolutionScope = _resolutionScopeStack.LastOrDefault();
+        }
+
         private JsonSchema CurrentSchema
         {
             get { return _currentSchema; }
@@ -76,13 +93,26 @@ namespace Newtonsoft.Json.Schema
 
         internal JsonSchema Read(JsonReader reader)
         {
+            return Read(reader, null);
+        }
+
+        internal JsonSchema Read(JsonReader reader, Uri documentLocation)
+        {
+            string documentScope = "";
+
+            if (documentLocation != null)
+                documentScope = documentLocation.ToString();
+
+            PushScope(documentScope);
+
             JToken schemaToken = JToken.ReadFrom(reader);
 
-            _rootSchema = schemaToken as JObject;
+            _rootSchemas.Add(documentScope, schemaToken as JObject);
 
             JsonSchema schema = BuildSchema(schemaToken);
+            schema = ResolveReferences(schema);
 
-            ResolveReferences(schema);
+            PopScope();
 
             return schema;
         }
@@ -94,50 +124,33 @@ namespace Newtonsoft.Json.Schema
 
         private JsonSchema ResolveReferences(JsonSchema schema)
         {
-            if (schema.DeferredReference != null)
+            while (schema.DeferredReference != null)
             {
-                string reference = schema.DeferredReference;
+                string schemaUri;
+                string idPath;
+                bool isJsonPointer;
 
-                bool locationReference = (reference.StartsWith("#", StringComparison.Ordinal));
-                if (locationReference)
-                    reference = UnescapeReference(reference);
+                PrepareLocationReference(schema.ResolutionScope, schema.DeferredReference, out schemaUri, out idPath, out isJsonPointer);
 
-                JsonSchema resolvedSchema = _resolver.GetSchema(reference);
+                JsonSchema resolvedSchema;
 
-                if (resolvedSchema == null)
+                if (isJsonPointer)
                 {
-                    if (locationReference)
-                    {
-                        string[] escapedParts = schema.DeferredReference.TrimStart('#').Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-                        JToken currentToken = _rootSchema;
-                        foreach (string escapedPart in escapedParts)
-                        {
-                            string part = UnescapeReference(escapedPart);
-
-                            if (currentToken.Type == JTokenType.Object)
-                            {
-                                currentToken = currentToken[part];
-                            }
-                            else if (currentToken.Type == JTokenType.Array || currentToken.Type == JTokenType.Constructor)
-                            {
-                                int index;
-                                if (int.TryParse(part, out index) && index >= 0 && index < currentToken.Count())
-                                    currentToken = currentToken[index];
-                                else
-                                    currentToken = null;
-                            }
-
-                            if (currentToken == null)
-                                break;
-                        }
-
-                        if (currentToken != null)
-                            resolvedSchema = BuildSchema(currentToken);
-                    }
+                    string reference = schemaUri + UnescapeReference(idPath);
+                    resolvedSchema = _resolver.GetSchema(reference);
 
                     if (resolvedSchema == null)
-                        throw new JsonException("Could not resolve schema reference '{0}'.".FormatWith(CultureInfo.InvariantCulture, schema.DeferredReference));
+                    {
+                        resolvedSchema = FindLocationReference(schemaUri, idPath);
+                    }
                 }
+                else
+                {
+                    resolvedSchema = _resolver.GetSchema(idPath);
+                }
+
+                if (resolvedSchema == null)
+                    throw new JsonException("Could not resolve schema reference '{0}'.".FormatWith(CultureInfo.InvariantCulture, schema.DeferredReference));
 
                 schema = resolvedSchema;
             }
@@ -147,13 +160,32 @@ namespace Newtonsoft.Json.Schema
 
             schema.ReferencesResolved = true;
 
-            if (schema.Extends != null)
+            if (schema.AnyOf != null)
             {
-                for (int i = 0; i < schema.Extends.Count; i++)
+                for (int i = 0; i < schema.AnyOf.Count; i++)
                 {
-                    schema.Extends[i] = ResolveReferences(schema.Extends[i]);
+                    schema.AnyOf[i] = ResolveReferences(schema.AnyOf[i]);
                 }
             }
+
+            if (schema.AllOf != null)
+            {
+                for (int i = 0; i < schema.AllOf.Count; i++)
+                {
+                    schema.AllOf[i] = ResolveReferences(schema.AllOf[i]);
+                }
+            }
+
+            if (schema.OneOf != null)
+            {
+                for (int i = 0; i < schema.OneOf.Count; i++)
+                {
+                    schema.OneOf[i] = ResolveReferences(schema.OneOf[i]);
+                }
+            }
+
+            if (schema.NotOf != null)
+                schema.NotOf = ResolveReferences(schema.NotOf);
 
             if (schema.Items != null)
             {
@@ -188,17 +220,179 @@ namespace Newtonsoft.Json.Schema
             return schema;
         }
 
+        private void PrepareLocationReference(string resolutionScope, string reference, out string schemaUri, out string idPath, out bool isJsonPointer)
+        {
+            if (reference.Equals("#", StringComparison.Ordinal) ||
+                reference.StartsWith("#/", StringComparison.Ordinal))
+            {
+                // Simple base schema reference or Json pointer fragment
+                schemaUri = resolutionScope;
+                idPath = reference;
+                isJsonPointer = true;
+                return;
+            }
+
+            Uri referenceUri = new Uri(reference, UriKind.RelativeOrAbsolute);
+
+            if (referenceUri.IsAbsoluteUri)
+            {
+                schemaUri = Uri.UnescapeDataString(reference);
+                isJsonPointer = true;
+
+                int hashPosition = schemaUri.IndexOf("#", StringComparison.Ordinal);
+                if (hashPosition > -1)
+                {
+                    idPath = schemaUri.Substring(hashPosition);
+                    schemaUri = schemaUri.Substring(0, hashPosition);
+                }
+                else
+                {
+                    idPath = "#";
+                }
+            }
+            else
+            {
+                Uri resolutionScopeUri = new Uri(resolutionScope, UriKind.RelativeOrAbsolute);
+
+                if (resolutionScopeUri.IsAbsoluteUri)
+                {
+                    // Using id scopes
+                    Uri fullUri = new Uri(resolutionScopeUri, referenceUri);
+                    schemaUri = Uri.UnescapeDataString(fullUri.ToString());
+                    isJsonPointer = true;
+
+                    int hashPosition = schemaUri.IndexOf("#", StringComparison.Ordinal);
+                    if (hashPosition > -1)
+                    {
+                        idPath = schemaUri.Substring(hashPosition);
+                        schemaUri = schemaUri.Substring(0, hashPosition);
+                    }
+                    else
+                    {
+                        idPath = "#";
+                    }
+                }
+                else
+                {
+                    // Using plain schema ids
+                    schemaUri = "";
+                    idPath = reference;
+                    isJsonPointer = false;
+                }
+            }
+        }
+
+        private JsonSchema FindLocationReference(string schemaUri, string reference)
+        {
+            if (!_rootSchemas.Keys.Contains(schemaUri))
+            {
+                if (!_resolver.ResolveExternals)
+                    return null;
+
+                string remoteSchemaJson = _resolver.GetRemoteSchemaContents(new Uri(schemaUri));
+
+                if (string.IsNullOrEmpty(remoteSchemaJson))
+                    return null;
+
+                using (JsonReader reader = new JsonTextReader(new StringReader(remoteSchemaJson)))
+                {
+                    JToken schemaToken = JToken.ReadFrom(reader);
+                    _rootSchemas.Add(schemaUri, schemaToken as JObject);
+                }
+            }
+
+            bool hasPushedScope = false;
+            JsonSchema foundSchema = null;
+
+            if (!schemaUri.Equals(_currentResolutionScope, StringComparison.Ordinal))
+            {
+                PushScope(schemaUri);
+                hasPushedScope = true;
+            }
+
+            if (string.IsNullOrEmpty(reference) || reference.Equals("#", StringComparison.Ordinal))
+            {
+                // Whole schema
+                foundSchema = BuildSchema(_rootSchemas[_currentResolutionScope]);
+            }
+            else
+            {
+                string[] escapedParts = reference.TrimStart('#').Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+                JToken currentToken = _rootSchemas[_currentResolutionScope];
+                foreach (string escapedPart in escapedParts)
+                {
+                    string part = UnescapeReference(escapedPart);
+
+                    if (currentToken.Type == JTokenType.Object)
+                    {
+                        currentToken = currentToken[part];
+                    }
+                    else if (currentToken.Type == JTokenType.Array || currentToken.Type == JTokenType.Constructor)
+                    {
+                        int index;
+                        if (int.TryParse(part, out index) && index >= 0 && index < currentToken.Count())
+                            currentToken = currentToken[index];
+                        else
+                            currentToken = null;
+                    }
+
+                    if (currentToken == null)
+                        break;
+                }
+
+                if (currentToken != null)
+                    foundSchema = BuildSchema(currentToken);
+            } 
+
+            if (hasPushedScope)
+                PopScope();
+
+            return foundSchema;
+        }
+        
         private JsonSchema BuildSchema(JToken token)
         {
             JObject schemaObject = token as JObject;
             if (schemaObject == null)
                 throw JsonException.Create(token, token.Path, "Expected object while parsing schema object, got {0}.".FormatWith(CultureInfo.InvariantCulture, token.Type));
 
+            // Check for change of scope before processing
+            JToken idToken;
+            bool hasPushedScope = false;
+            if (schemaObject.TryGetValue(JsonSchemaConstants.IdPropertyName, out idToken))
+            {
+                string subScope = (string)idToken;
+                Uri scopeUri;
+
+                hasPushedScope = true;
+
+                if (string.IsNullOrEmpty(_currentResolutionScope))
+                {
+                    PushScope(subScope);
+                }
+                else
+                {
+                    scopeUri = new Uri(_currentResolutionScope, UriKind.RelativeOrAbsolute);
+                    Uri subScopeUri = new Uri(subScope, UriKind.RelativeOrAbsolute);
+
+                    if (subScopeUri.IsAbsoluteUri)
+                    {
+                        PushScope(subScopeUri.ToString());
+                    }
+                    else
+                    {
+                        Uri combinedUri = new Uri(scopeUri, subScope);
+                        PushScope(combinedUri.ToString());
+                    }
+                }
+            }
+
             JToken referenceToken;
             if (schemaObject.TryGetValue(JsonTypeReflector.RefPropertyName, out referenceToken))
             {
                 JsonSchema deferredSchema = new JsonSchema();
                 deferredSchema.DeferredReference = (string)referenceToken;
+                deferredSchema.ResolutionScope = _currentResolutionScope;
 
                 return deferredSchema;
             }
@@ -206,7 +400,8 @@ namespace Newtonsoft.Json.Schema
             string location = token.Path.Replace(".", "/").Replace("[", "/").Replace("]", string.Empty);
             if (!string.IsNullOrEmpty(location))
                 location = "/" + location;
-            location = "#" + location;
+
+            location = _currentResolutionScope + "#" + location;
 
             JsonSchema existingSchema;
             if (_documentSchemas.TryGetValue(location, out existingSchema))
@@ -215,6 +410,9 @@ namespace Newtonsoft.Json.Schema
             Push(new JsonSchema { Location = location });
 
             ProcessSchemaProperties(schemaObject);
+
+            if (hasPushedScope)
+                PopScope();
 
             return Pop();
         }
@@ -253,10 +451,10 @@ namespace Newtonsoft.Json.Schema
                         CurrentSchema.PatternProperties = ProcessProperties(property.Value);
                         break;
                     case JsonSchemaConstants.RequiredPropertyName:
-                        CurrentSchema.Required = (bool)property.Value;
+                        ProcessRequired(property.Value);
                         break;
-                    case JsonSchemaConstants.RequiresPropertyName:
-                        CurrentSchema.Requires = (string)property.Value;
+                    case JsonSchemaConstants.DependenciesPropertyName:
+                        CurrentSchema.Dependencies = ProcessDependencies(property.Value);
                         break;
                     case JsonSchemaConstants.MinimumPropertyName:
                         CurrentSchema.Minimum = (double)property.Value;
@@ -282,11 +480,8 @@ namespace Newtonsoft.Json.Schema
                     case JsonSchemaConstants.MinimumItemsPropertyName:
                         CurrentSchema.MinimumItems = (int)property.Value;
                         break;
-                    case JsonSchemaConstants.DivisibleByPropertyName:
-                        CurrentSchema.DivisibleBy = (double)property.Value;
-                        break;
-                    case JsonSchemaConstants.DisallowPropertyName:
-                        CurrentSchema.Disallow = ProcessType(property.Value);
+                    case JsonSchemaConstants.MultipleOfPropertyName:
+                        CurrentSchema.MultipleOf = (double)property.Value;
                         break;
                     case JsonSchemaConstants.DefaultPropertyName:
                         CurrentSchema.Default = property.Value.DeepClone();
@@ -306,36 +501,61 @@ namespace Newtonsoft.Json.Schema
                     case JsonSchemaConstants.EnumPropertyName:
                         ProcessEnum(property.Value);
                         break;
-                    case JsonSchemaConstants.ExtendsPropertyName:
-                        ProcessExtends(property.Value);
+                    case JsonSchemaConstants.AnyOfPropertyName:
+                        CurrentSchema.AnyOf = ProcessSchemaGroup(property.Value);
+                        break;
+                    case JsonSchemaConstants.AllOfPropertyName:
+                        CurrentSchema.AllOf = ProcessSchemaGroup(property.Value);
+                        break;
+                    case JsonSchemaConstants.OneOfPropertyName:
+                        CurrentSchema.OneOf = ProcessSchemaGroup(property.Value);
+                        break;
+                    case JsonSchemaConstants.NotOfPropertyName:
+                        CurrentSchema.NotOf = BuildSchema(property.Value);
                         break;
                     case JsonSchemaConstants.UniqueItemsPropertyName:
                         CurrentSchema.UniqueItems = (bool)property.Value;
+                        break;
+                    case JsonSchemaConstants.MinimumPropertiesPropertyName:
+                        CurrentSchema.MinimumProperties = (int)property.Value;
+                        break;
+                    case JsonSchemaConstants.MaximumPropertiesPropertyName:
+                        CurrentSchema.MaximumProperties = (int)property.Value;
+                        break;
+                    case JsonSchemaConstants.LinksPropertyName:
+                        ProcessLinks(property.Value);
+                        break;
+                    case JsonSchemaConstants.MediaPropertyName:
+                        ProcessMedia(property.Value);
+                        break;
+                    case JsonSchemaConstants.FragmentResolutionPropertyName:
+                        CurrentSchema.Pattern = (string)property.Value;
+                        break;
+                    case JsonSchemaConstants.PathStartPropertyName:
+                        CurrentSchema.PathStart = (string)property.Value;
                         break;
                 }
             }
         }
 
-        private void ProcessExtends(JToken token)
+        private IList<JsonSchema> ProcessSchemaGroup(JToken token)
         {
+            if (token.Type != JTokenType.Array)
+                throw JsonException.Create(token, token.Path, "Expected Array token while parsing schema group, got {0}.".FormatWith(CultureInfo.InvariantCulture, token.Type));
+
             IList<JsonSchema> schemas = new List<JsonSchema>();
 
-            if (token.Type == JTokenType.Array)
+            foreach (JToken schemaObject in token)
             {
-                foreach (JToken schemaObject in token)
-                {
-                    schemas.Add(BuildSchema(schemaObject));
-                }
-            }
-            else
-            {
-                JsonSchema schema = BuildSchema(token);
-                if (schema != null)
-                    schemas.Add(schema);
+                schemas.Add(BuildSchema(schemaObject));
             }
 
             if (schemas.Count > 0)
-                CurrentSchema.Extends = schemas;
+            {
+                return schemas;
+            }
+
+            return null;
         }
 
         private void ProcessEnum(JToken token)
@@ -348,6 +568,23 @@ namespace Newtonsoft.Json.Schema
             foreach (JToken enumValue in token)
             {
                 CurrentSchema.Enum.Add(enumValue.DeepClone());
+            }
+        }
+
+        private void ProcessRequired(JToken token)
+        {
+            // Most common breaking change for draft v3 -> draft v4
+            if (token.Type == JTokenType.Boolean)
+                throw JsonException.Create(token, token.Path, "Expected Array token while parsing required properties, got Boolean. Possible draft v3 schema.");
+
+            if (token.Type != JTokenType.Array)
+                throw JsonException.Create(token, token.Path, "Expected Array token while parsing required properties, got {0}.".FormatWith(CultureInfo.InvariantCulture, token.Type));
+
+            CurrentSchema.Required = new List<string>();
+
+            foreach (JToken propValue in token)
+            {
+                CurrentSchema.Required.Add((string)propValue);
             }
         }
 
@@ -383,6 +620,47 @@ namespace Newtonsoft.Json.Schema
             }
 
             return properties;
+        }
+
+        private IDictionary<string, JsonSchema> ProcessDependencies(JToken token)
+        {
+            IDictionary<string, JsonSchema> dependencies = new Dictionary<string, JsonSchema>();
+
+            foreach (JProperty dependencyToken in token)
+            {
+                if (dependencies.ContainsKey(dependencyToken.Name))
+                    throw new JsonException("Dependency {0} has already been defined in schema.".FormatWith(CultureInfo.InvariantCulture, dependencyToken.Name));
+
+                switch (dependencyToken.Value.Type)
+                {
+                    case JTokenType.String:
+                        JsonSchema singleProperty = new JsonSchema { Type = JsonSchemaType.Object };
+                        singleProperty.Required = new List<string> { (string)dependencyToken.Value };
+                        singleProperty.Properties = new Dictionary<string, JsonSchema>();
+                        singleProperty.Properties.Add((string)dependencyToken.Value, new JsonSchema() { Type = JsonSchemaType.Any });
+                        dependencies.Add(dependencyToken.Name, singleProperty);
+                        break;
+                    case JTokenType.Array:
+                        JsonSchema multipleProperty = new JsonSchema { Type = JsonSchemaType.Object };
+                        multipleProperty.Required = new List<string>();
+                        multipleProperty.Properties = new Dictionary<string, JsonSchema>();
+                        foreach (JToken schemaToken in dependencyToken.Value)
+                        {
+                            multipleProperty.Required.Add((string)schemaToken);
+                            multipleProperty.Properties.Add((string)schemaToken, new JsonSchema() { Type = JsonSchemaType.Any });
+                        }
+                        dependencies.Add(dependencyToken.Name, multipleProperty);
+                        break;
+                    case JTokenType.Object:
+                        dependencies.Add(dependencyToken.Name, BuildSchema(dependencyToken.Value));
+                        break;
+                    default:
+                        throw JsonException.Create(token, token.Path, "Expected string, array or JSON schema object, got {0}.".FormatWith(CultureInfo.InvariantCulture, token.Type));
+
+                }
+            }
+
+            return dependencies;
         }
 
         private void ProcessItems(JToken token)
@@ -428,6 +706,84 @@ namespace Newtonsoft.Json.Schema
                     return MapType((string)token);
                 default:
                     throw JsonException.Create(token, token.Path, "Expected array or JSON schema type string token, got {0}.".FormatWith(CultureInfo.InvariantCulture, token.Type));
+            }
+        }
+
+        private void ProcessLinks(JToken token)
+        {
+            if (token.Type != JTokenType.Array)
+                throw JsonException.Create(token, token.Path, "Expected Array token while parsing links values, got {0}.".FormatWith(CultureInfo.InvariantCulture, token.Type));
+
+            CurrentSchema.Links = new List<JsonSchemaLink>();
+
+            foreach (JObject linkValue in token)
+            {
+                CurrentSchema.Links.Add(ProcessLink(linkValue));
+            }
+        }
+
+        private JsonSchemaLink ProcessLink(JObject schemaObject)
+        {
+            JsonSchemaLink currentLink = new JsonSchemaLink();
+
+            foreach (KeyValuePair<string, JToken> property in schemaObject)
+            {
+                switch (property.Key)
+                {
+                    case JsonSchemaConstants.HrefPropertyName:
+                        currentLink.Href = (string)property.Value;
+                        break;
+                    case JsonSchemaConstants.RelationPropertyName:
+                        currentLink.Relation = (string)property.Value;
+                        break;
+                    case JsonSchemaConstants.TitlePropertyName:
+                        currentLink.Title = (string)property.Value;
+                        break;
+                    case JsonSchemaConstants.TargetSchemaPropertyName:
+                        currentLink.TargetSchema = BuildSchema(property.Value);
+                        break;
+                    case JsonSchemaConstants.MediaTypePropertyName:
+                        currentLink.MediaType = (string)property.Value;
+                        break;
+                    case JsonSchemaConstants.MethodPropertyName:
+                        currentLink.Method = (string)property.Value;
+                        break;
+                    case JsonSchemaConstants.EncodingTypePropertyName:
+                        currentLink.EncodingType = (string)property.Value;
+                        break;
+                    case JsonSchemaConstants.SchemaPropertyName:
+                        currentLink.Schema = BuildSchema(property.Value);
+                        break;
+                }
+            }
+
+            if (string.IsNullOrEmpty(currentLink.Href))
+                throw JsonException.Create(schemaObject, schemaObject.Path, "Missing required link property: href");
+
+            if (string.IsNullOrEmpty(currentLink.Relation))
+                throw JsonException.Create(schemaObject, schemaObject.Path, "Missing required link property: rel");
+
+            return currentLink;
+        }
+
+        private void ProcessMedia(JToken token)
+        {
+            if (token.Type != JTokenType.Object)
+                throw JsonException.Create(token, token.Path, "Expected Object token while parsing media values, got {0}.".FormatWith(CultureInfo.InvariantCulture, token.Type));
+
+            CurrentSchema.Media = new JsonSchemaMedia();
+
+            foreach (KeyValuePair<string, JToken> property in (JObject)token)
+            {
+                switch (property.Key)
+                {
+                    case JsonSchemaConstants.TypePropertyName:
+                        CurrentSchema.Media.Type = (string)property.Value;
+                        break;
+                    case JsonSchemaConstants.BinaryEncodingPropertyName:
+                        CurrentSchema.Media.BinaryEncoding = (string)property.Value;
+                        break;
+                }
             }
         }
 

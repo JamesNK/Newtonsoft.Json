@@ -1,4 +1,4 @@
-#region License
+﻿#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -23,15 +23,21 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-using System.Collections.ObjectModel;
-
 namespace Newtonsoft.Json.Schema
 {
-    internal class JsonSchemaNodeCollection : KeyedCollection<string, JsonSchemaNode>
+    /// <summary>
+    /// An in-memory representation of a JSON Schema media.
+    /// </summary>
+    public class JsonSchemaMedia
     {
-        protected override string GetKeyForItem(JsonSchemaNode item)
-        {
-            return item.Id;
-        }
+        /// <summary>
+        /// Gets or sets a media type, as described in RFC 2046
+        /// </summary>
+        public string Type { get; set; }
+
+        /// <summary>
+        /// Gets or sets a content encoding scheme, as described in RFC 2045
+        /// </summary>
+        public string BinaryEncoding { get; set; }
     }
 }

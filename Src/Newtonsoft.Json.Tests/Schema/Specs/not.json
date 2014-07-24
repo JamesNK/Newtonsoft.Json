@@ -1,8 +1,8 @@
 [
     {
-        "description": "disallow",
+        "description": "not",
         "schema": {
-            "disallow": "integer"
+            "not": {"type": "integer"}
         },
         "tests": [
             {
@@ -18,9 +18,9 @@
         ]
     },
     {
-        "description": "multiple disallow",
+        "description": "not multiple types",
         "schema": {
-            "disallow": ["integer", "boolean"]
+            "not": {"type": ["integer", "boolean"]}
         },
         "tests": [
             {
@@ -41,18 +41,16 @@
         ]
     },
     {
-        "description": "multiple disallow subschema",
+        "description": "not more complex schema",
         "schema": {
-            "disallow":
-                ["string",
-                 {
-                    "type": "object",
-                    "properties": {
-                        "foo": {
-                            "type": "string"
-                        }
+            "not": {
+                "type": "object",
+                "properties": {
+                    "foo": {
+                        "type": "string"
                     }
-                 }]
+                }
+             }
         },
         "tests": [
             {
@@ -67,14 +65,32 @@
             },
             {
                 "description": "mismatch",
-                "data": "foo",
-                "valid": false
-            },
-            {
-                "description": "other mismatch",
                 "data": {"foo": "bar"},
                 "valid": false
             }
         ]
+    },
+    {
+        "description": "forbidden property",
+        "schema": {
+            "properties": {
+                "foo": { 
+                    "not": {}
+                }
+            }
+        },
+        "tests": [
+            {
+                "description": "property present",
+                "data": {"foo": 1, "bar": 2},
+                "valid": false
+            },
+            {
+                "description": "property absent",
+                "data": {"bar": 1, "baz": 2},
+                "valid": true
+            }
+        ]
     }
+
 ]

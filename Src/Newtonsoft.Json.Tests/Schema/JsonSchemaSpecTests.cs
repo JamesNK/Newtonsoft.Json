@@ -36,13 +36,13 @@ namespace Newtonsoft.Json.Tests.Schema
             {
                 Console.WriteLine("Running JSON Schema test " + jsonSchemaSpecTest.TestNumber + ": " + jsonSchemaSpecTest);
 
-                JsonSchema s = JsonSchema.Read(jsonSchemaSpecTest.Schema.CreateReader());
+                JsonSchema s = JsonSchema.Read(jsonSchemaSpecTest.Schema.CreateReader(), new JsonSchemaSpecTestsResolver());
 
                 IList<string> errorMessages;
                 bool v = jsonSchemaSpecTest.Data.IsValid(s, out errorMessages);
                 errorMessages = errorMessages ?? new List<string>();
 
-                Assert.AreEqual(jsonSchemaSpecTest.IsValid, v, jsonSchemaSpecTest.TestCaseDescription + " - " + jsonSchemaSpecTest.TestDescription + " - errors: " + string.Join(", ", errorMessages));
+                Assert.AreEqual(jsonSchemaSpecTest.IsValid, v, jsonSchemaSpecTest.TestCaseDescription + " - " + jsonSchemaSpecTest.TestDescription + " - errors: " + string.Join(", ", errorMessages.ToArray()));
             }
         }
 
@@ -52,9 +52,9 @@ namespace Newtonsoft.Json.Tests.Schema
 
             // get test files location relative to the test project dll
             string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            string baseTestPath = Path.Combine(baseDirectory, "Schema", "Specs");
+            string baseTestPath = Path.Combine(Path.Combine(baseDirectory, "Schema"), "Specs");
 
-            string[] testFiles = Directory.GetFiles(baseTestPath, "*.json", SearchOption.AllDirectories);
+            string[] testFiles = Directory.GetFiles(baseTestPath, "*.json", SearchOption.TopDirectoryOnly);
 
             // read through each of the *.json test files and extract the test details
             foreach (string testFile in testFiles)
@@ -83,12 +83,9 @@ namespace Newtonsoft.Json.Tests.Schema
                 }
             }
 
-            specTests = specTests.Where(s => s.FileName != "dependencies.json"
-                                             && s.TestCaseDescription != "multiple disallow subschema"
-                                             && s.TestCaseDescription != "types from separate schemas are merged"
-                                             && s.TestCaseDescription != "when types includes a schema it should fully validate the schema"
-                                             && s.TestCaseDescription != "types can include schemas").ToList();
-
+            specTests = specTests.Where(s => s.TestDescription != "invalid definition schema" // Invalid schema test
+                                            && s.TestDescription != "remote ref invalid" // Invalid schema test
+                                            ).ToList();
             return specTests;
         }
     }

@@ -258,6 +258,7 @@
     <Compile Include="Linq\JsonPath\JPathParseTests.cs" />
     <Compile Include="Linq\JsonPath\QueryExpressionTests.cs" />
     <Compile Include="Schema\JsonSchemaSpecTests.cs" />
+    <Compile Include="Schema\JsonSchemaSpecTestsResolver.cs" />
     <Compile Include="Serialization\ConstructorHandlingTests.cs" />
     <Compile Include="Serialization\ContractResolverTests.cs" />
     <Compile Include="Serialization\DefaultValueHandlingTests.cs" />
@@ -332,8 +333,6 @@
     <Compile Include="Serialization\SerializationErrorHandlingTests.cs" />
     <Compile Include="Serialization\SerializationEventAttributeTests.cs" />
     <Compile Include="Schema\ExtensionsTests.cs" />
-    <Compile Include="Schema\JsonSchemaModelBuilderTests.cs" />
-    <Compile Include="Schema\JsonSchemaNodeTests.cs" />
     <Compile Include="Serialization\CamelCasePropertyNamesContractResolverTests.cs" />
     <Compile Include="Serialization\PreserveReferencesHandlingTests.cs" />
     <Compile Include="Serialization\TypeNameHandlingTests.cs" />
@@ -465,19 +464,19 @@
     <None Include="Schema\Specs\additionalProperties.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Schema\Specs\allOf.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Schema\Specs\anyOf.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Schema\Specs\definitions.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Schema\Specs\dependencies.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Schema\Specs\disallow.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Schema\Specs\divisibleBy.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="Schema\Specs\enum.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Schema\Specs\extends.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Schema\Specs\items.json">
@@ -492,6 +491,9 @@
     <None Include="Schema\Specs\maxLength.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Schema\Specs\maxProperties.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Schema\Specs\minimum.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -499,6 +501,18 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Schema\Specs\minLength.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Schema\Specs\minProperties.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Schema\Specs\multipleOf.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Schema\Specs\not.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Schema\Specs\oneOf.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Schema\Specs\pattern.json">
@@ -511,6 +525,21 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Schema\Specs\ref.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Schema\Specs\refRemote.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Schema\Specs\remotes\draft4schema.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Schema\Specs\remotes\folder\folderInteger.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Schema\Specs\remotes\integer.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Schema\Specs\remotes\subSchemas.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Schema\Specs\required.json">

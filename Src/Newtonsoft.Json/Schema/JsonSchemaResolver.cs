@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 #endif
 
@@ -46,6 +47,12 @@ namespace Newtonsoft.Json.Schema
         public IList<JsonSchema> LoadedSchemas { get; protected set; }
 
         /// <summary>
+        /// Gets or sets whether external schemas can be referenced and retrieved.
+        /// Do not accept schemas from untrusted sources if denial of service is a concern.
+        /// </summary>
+        public bool ResolveExternals { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="JsonSchemaResolver"/> class.
         /// </summary>
         public JsonSchemaResolver()
@@ -60,12 +67,50 @@ namespace Newtonsoft.Json.Schema
         /// <returns>A <see cref="JsonSchema"/> for the specified reference.</returns>
         public virtual JsonSchema GetSchema(string reference)
         {
-            JsonSchema schema = LoadedSchemas.SingleOrDefault(s => string.Equals(s.Id, reference, StringComparison.Ordinal));
+            JsonSchema schema = LoadedSchemas.SingleOrDefault(s => string.Equals(s.Location, reference, StringComparison.Ordinal));
 
             if (schema == null)
-                schema = LoadedSchemas.SingleOrDefault(s => string.Equals(s.Location, reference, StringComparison.Ordinal));
+                schema = LoadedSchemas.SingleOrDefault(s => string.Equals(s.Id, reference, StringComparison.Ordinal));
 
             return schema;
+        }
+
+        /// <summary>
+        /// Retrieves the string contents of a remote url containing schema data
+        /// </summary>
+        /// <param name="location">The location of the contents</param>
+        /// <returns>String based Json schema</returns>
+        public virtual string GetRemoteSchemaContents(Uri location)
+        {
+            System.Net.WebRequest webcall = System.Net.WebRequest.Create(location);
+            webcall.ContentType = "application/json";
+
+#if NETFX_CORE
+            return System.Threading.Tasks.Task.Run(async () =>
+            {
+                using (System.Net.WebResponse response = await webcall.GetResponseAsync())
+                using (System.IO.StreamReader readall = new System.IO.StreamReader(response.GetResponseStream()))
+                {
+                    return readall.ReadToEnd();
+                }
+            }).Result;
+#elif PORTABLE
+            var response = System.Threading.Tasks.Task.Run(async () => await System.Threading.Tasks.Task.Factory.FromAsync<System.Net.WebResponse>
+              (webcall.BeginGetResponse, webcall.EndGetResponse, null)).Result;
+
+            using (System.IO.StreamReader readall = new System.IO.StreamReader(response.GetResponseStream()))
+            {
+                return readall.ReadToEnd();
+            }
+#elif PORTABLE40
+            return ""; // Unsupported
+#else
+            using (System.Net.WebResponse response = webcall.GetResponse())
+            using (System.IO.StreamReader readall = new System.IO.StreamReader(response.GetResponseStream()))
+            {
+                return readall.ReadToEnd();
+            }
+#endif
         }
     }
 }

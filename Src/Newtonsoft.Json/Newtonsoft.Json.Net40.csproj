@@ -131,6 +131,8 @@
     <Compile Include="Linq\JsonPath\QueryFilter.cs" />
     <Compile Include="Linq\JsonPath\ScanFilter.cs" />
     <Compile Include="MetadataPropertyHandling.cs" />
+    <Compile Include="Schema\JsonSchemaLink.cs" />
+    <Compile Include="Schema\JsonSchemaMedia.cs" />
     <Compile Include="Serialization\DiagnosticsTraceWriter.cs" />
     <Compile Include="Serialization\ExpressionValueProvider.cs" />
     <Compile Include="Serialization\ITraceWriter.cs" />
@@ -194,10 +196,6 @@
     <Compile Include="Linq\JValue.cs" />
     <Compile Include="Schema\Extensions.cs" />
     <Compile Include="Schema\JsonSchemaException.cs" />
-    <Compile Include="Schema\JsonSchemaModel.cs" />
-    <Compile Include="Schema\JsonSchemaModelBuilder.cs" />
-    <Compile Include="Schema\JsonSchemaNodeCollection.cs" />
-    <Compile Include="Schema\JsonSchemaNode.cs" />
     <Compile Include="Schema\JsonSchemaResolver.cs" />
     <Compile Include="Schema\JsonSchemaWriter.cs" />
     <Compile Include="Schema\UndefinedSchemaIdHandling.cs" />

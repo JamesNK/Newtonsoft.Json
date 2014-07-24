@@ -48,9 +48,9 @@ namespace Newtonsoft.Json.Schema
         public string Title { get; set; }
 
         /// <summary>
-        /// Gets or sets whether the object is required.
+        /// Gets or sets the array of required properties.
         /// </summary>
-        public bool? Required { get; set; }
+        public IList<string> Required { get; set; }
 
         /// <summary>
         /// Gets or sets whether the object is read only.
@@ -97,10 +97,10 @@ namespace Newtonsoft.Json.Schema
         public int? MaximumLength { get; set; }
 
         /// <summary>
-        /// Gets or sets a number that the value should be divisble by.
+        /// Gets or sets a number that the value should be multiple of.
         /// </summary>
-        /// <value>A number that the value should be divisble by.</value>
-        public double? DivisibleBy { get; set; }
+        /// <value>A number that the value should be multiple of.</value>
+        public double? MultipleOf { get; set; }
 
         /// <summary>
         /// Gets or sets the minimum.
@@ -113,6 +113,18 @@ namespace Newtonsoft.Json.Schema
         /// </summary>
         /// <value>The maximum.</value>
         public double? Maximum { get; set; }
+
+        /// <summary>
+        /// Gets or sets the minimum number of properties.
+        /// </summary>
+        /// <value>The minimum number of properties.</value>
+        public int? MinimumProperties { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum number of properties.
+        /// </summary>
+        /// <value>The maximum number of properties.</value>
+        public int? MaximumProperties { get; set; }
 
         /// <summary>
         /// Gets or sets a flag indicating whether the value can not equal the number defined by the "minimum" attribute.
@@ -198,10 +210,10 @@ namespace Newtonsoft.Json.Schema
         public bool AllowAdditionalProperties { get; set; }
 
         /// <summary>
-        /// Gets or sets the required property if this property is present.
+        /// Gets or sets the dependent properties if this property is present.
         /// </summary>
-        /// <value>The required property if this property is present.</value>
-        public string Requires { get; set; }
+        /// <value>The required properties if this property is present.</value>
+        public IDictionary<string, JsonSchema> Dependencies { get; set; }
 
         /// <summary>
         /// Gets or sets the a collection of valid enum values allowed.
@@ -210,10 +222,10 @@ namespace Newtonsoft.Json.Schema
         public IList<JToken> Enum { get; set; }
 
         /// <summary>
-        /// Gets or sets disallowed types.
+        /// Gets or sets the <see cref="JsonSchema"/> that an object must not match.
         /// </summary>
-        /// <value>The disallow types.</value>
-        public JsonSchemaType? Disallow { get; set; }
+        /// <value>The <see cref="JsonSchema"/> that an object must not match.</value>
+        public JsonSchema NotOf { get; set; }
 
         /// <summary>
         /// Gets or sets the default value.
@@ -222,10 +234,22 @@ namespace Newtonsoft.Json.Schema
         public JToken Default { get; set; }
 
         /// <summary>
-        /// Gets or sets the collection of <see cref="JsonSchema"/> that this schema extends.
+        /// Gets or sets the collection of <see cref="JsonSchema"/> that an object can match.
         /// </summary>
-        /// <value>The collection of <see cref="JsonSchema"/> that this schema extends.</value>
-        public IList<JsonSchema> Extends { get; set; }
+        /// <value>The collection of <see cref="JsonSchema"/> that an object can match.</value>
+        public IList<JsonSchema> AnyOf { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of <see cref="JsonSchema"/> that an object must match.
+        /// </summary>
+        /// <value>The collection of <see cref="JsonSchema"/> that an object must match.</value>
+        public IList<JsonSchema> AllOf { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of <see cref="JsonSchema"/> that an object must match exactly one of.
+        /// </summary>
+        /// <value>The collection of <see cref="JsonSchema"/> that an object must match exactly one of.</value>
+        public IList<JsonSchema> OneOf { get; set; }
 
         /// <summary>
         /// Gets or sets the format.
@@ -233,7 +257,34 @@ namespace Newtonsoft.Json.Schema
         /// <value>The format.</value>
         public string Format { get; set; }
 
+        /// <summary>
+        /// Gets or sets the list of <see cref="JsonSchema"/> of inlined schemas.
+        /// </summary>
+        /// <value>The <see cref="JsonSchema"/> list of inlined schemas.</value>
+        public IList<JsonSchema> Definitions { get; set; }
+
+        /// <summary> 
+        /// Gets or sets the List of Links 
+        /// </summary> 
+        public IList<JsonSchemaLink> Links { get; set; }
+
+        /// <summary> 
+        /// Gets or sets the Media attribute 
+        /// </summary> 
+        public JsonSchemaMedia Media { get; set; }
+
+        /// <summary>
+        /// Gets or sets the method to use for finding a schema instance within a document, given the fragment part. Default is json-pointer.
+        /// </summary>
+        public string FragmentResolution { get; set; }
+
+        /// <summary>
+        /// Gets or sets a URI that defines what the instance's URI MUST start with in order to validate
+        /// </summary>
+        public string PathStart { get; set; }
+
         internal string Location { get; set; }
+        internal string ResolutionScope { get; set; }
 
         private readonly string _internalId = Guid.NewGuid().ToString("N");
 
@@ -254,6 +305,7 @@ namespace Newtonsoft.Json.Schema
         {
             AllowAdditionalProperties = true;
             AllowAdditionalItems = true;
+            FragmentResolution = JsonSchemaConstants.JsonPointerProtocol;
         }
 
         /// <summary>
