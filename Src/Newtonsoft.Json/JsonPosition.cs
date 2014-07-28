@@ -60,14 +60,14 @@ namespace Newtonsoft.Json
             {
                 case JsonContainerType.Object:
                     if (sb.Length > 0)
-                        sb.Append(".");
+                        sb.Append('.');
                     sb.Append(PropertyName);
                     break;
                 case JsonContainerType.Array:
                 case JsonContainerType.Constructor:
-                    sb.Append("[");
+                    sb.Append('[');
                     sb.Append(Position);
-                    sb.Append("]");
+                    sb.Append(']');
                     break;
             }
         }
@@ -96,7 +96,7 @@ namespace Newtonsoft.Json
             {
                 message = message.Trim();
 
-                if (!message.EndsWith(".", StringComparison.Ordinal))
+                if (!message.EndsWith('.'))
                     message += ".";
 
                 message += " ";

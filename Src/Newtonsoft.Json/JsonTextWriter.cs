@@ -158,7 +158,7 @@ namespace Newtonsoft.Json
         {
             InternalWriteStart(JsonToken.StartObject, JsonContainerType.Object);
 
-            _writer.Write("{");
+            _writer.Write('{');
         }
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace Newtonsoft.Json
         {
             InternalWriteStart(JsonToken.StartArray, JsonContainerType.Array);
 
-            _writer.Write("[");
+            _writer.Write('[');
         }
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace Newtonsoft.Json
 
             _writer.Write("new ");
             _writer.Write(name);
-            _writer.Write("(");
+            _writer.Write('(');
         }
 
         /// <summary>
@@ -193,13 +193,13 @@ namespace Newtonsoft.Json
             switch (token)
             {
                 case JsonToken.EndObject:
-                    _writer.Write("}");
+                    _writer.Write('}');
                     break;
                 case JsonToken.EndArray:
-                    _writer.Write("]");
+                    _writer.Write(']');
                     break;
                 case JsonToken.EndConstructor:
-                    _writer.Write(")");
+                    _writer.Write(')');
                     break;
                 default:
                     throw JsonWriterException.Create(this, "Invalid JsonToken: " + token, null);

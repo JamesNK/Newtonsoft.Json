@@ -197,5 +197,16 @@ namespace Newtonsoft.Json.Utilities
             return (c >= 56320 && c <= 57343);
 #endif
         }
+
+        public static bool StartsWith(this string source, char value)
+        {
+            return (source.Length != 0 && source[0] == value);
+        }
+
+        public static bool EndsWith(this string source, char value)
+        {
+            int sourceLen = source.Length;
+            return (sourceLen != 0 && source[sourceLen - 1] == value);
+        }
     }
 }

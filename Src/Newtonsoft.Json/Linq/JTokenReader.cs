@@ -341,8 +341,8 @@ namespace Newtonsoft.Json.Linq
                     if (string.IsNullOrEmpty(path))
                         return _initialPath;
 
-                    if (_initialPath.EndsWith("]", StringComparison.Ordinal)
-                        || path.StartsWith("[", StringComparison.Ordinal))
+                    if (_initialPath.EndsWith(']')
+                        || path.StartsWith('['))
                         path = _initialPath + path;
                     else
                         path = _initialPath + "." + path;

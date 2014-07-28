@@ -1352,7 +1352,7 @@ namespace Newtonsoft.Json.Converters
 
             string elementPrefix = MiscellaneousUtils.GetPrefix(propertyName);
 
-            if (propertyName.StartsWith("@", StringComparison.Ordinal))
+            if (propertyName.StartsWith('@'))
             {
                 string attributeName = propertyName.Substring(1);
                 string attributeValue = reader.Value.ToString();
