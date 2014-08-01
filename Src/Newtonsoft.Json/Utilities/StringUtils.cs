@@ -155,29 +155,26 @@ namespace Newtonsoft.Json.Utilities
             if (!char.IsUpper(s[0]))
                 return s;
 
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < s.Length; i++)
-            {
-                bool hasNext = (i + 1 < s.Length);
-                if ((i == 0 || !hasNext) || char.IsUpper(s[i + 1]))
-                {
-                    char lowerCase;
+            int length = s.Length;
+            char[] chars = s.ToCharArray();
 #if !(NETFX_CORE || PORTABLE)
-                    lowerCase = char.ToLower(s[i], CultureInfo.InvariantCulture);
-#else
-                    lowerCase = char.ToLower(s[i]);
+            CultureInfo invariantCulture = CultureInfo.InvariantCulture;
 #endif
 
-                    sb.Append(lowerCase);
-                }
-                else
-                {
-                    sb.Append(s.Substring(i));
+            for (int i = 0; i < length; i++)
+            {
+                bool hasNext = (i + 1 < length);
+                if (i > 0 && hasNext && !char.IsUpper(chars[i + 1]))
                     break;
-                }
+
+#if !(NETFX_CORE || PORTABLE)
+                chars[i] = char.ToLower(chars[i], invariantCulture);
+#else
+                chars[i] = char.ToLower(chars[i]);
+#endif
             }
 
-            return sb.ToString();
+            return new string(chars);
         }
 
         public static bool IsHighSurrogate(char c)
