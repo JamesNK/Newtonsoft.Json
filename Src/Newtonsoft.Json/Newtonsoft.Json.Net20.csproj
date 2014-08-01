@@ -107,6 +107,7 @@
     <Compile Include="JsonExtensionDataAttribute.cs" />
     <Compile Include="JsonPosition.cs" />
     <Compile Include="Linq\JPropertyKeyedCollection.cs" />
+    <Compile Include="Linq\JsonMergeSettings.cs" />
     <Compile Include="Linq\JsonPath\ArrayIndexFilter.cs" />
     <Compile Include="Linq\JsonPath\ArrayMultipleIndexFilter.cs" />
     <Compile Include="Linq\JsonPath\ArraySliceFilter.cs" />
@@ -117,6 +118,7 @@
     <Compile Include="Linq\JsonPath\QueryExpression.cs" />
     <Compile Include="Linq\JsonPath\QueryFilter.cs" />
     <Compile Include="Linq\JsonPath\ScanFilter.cs" />
+    <Compile Include="Linq\MergeArrayHandling.cs" />
     <Compile Include="MetadataPropertyHandling.cs" />
     <Compile Include="SerializationBinder.cs" />
     <Compile Include="Serialization\DiagnosticsTraceWriter.cs" />

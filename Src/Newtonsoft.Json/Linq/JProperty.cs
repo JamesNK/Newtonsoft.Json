@@ -145,6 +145,16 @@ namespace Newtonsoft.Json.Linq
             return (Value == item);
         }
 
+        internal override void MergeItem(object content, JsonMergeSettings settings)
+        {
+            JProperty p = content as JProperty;
+            if (p == null)
+                return;
+
+            if (p.Value != null && p.Value.Type != JTokenType.Null)
+                Value = p.Value;
+        }
+
         internal override void ClearItems()
         {
             throw new JsonException("Cannot add or remove items from {0}.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));

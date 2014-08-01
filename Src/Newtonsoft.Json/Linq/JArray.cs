@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json.Utilities;
 using System.IO;
@@ -231,6 +232,17 @@ namespace Newtonsoft.Json.Linq
         {
             get { return GetItem(index); }
             set { SetItem(index, value); }
+        }
+
+        internal override void MergeItem(object content, JsonMergeSettings settings)
+        {
+            IEnumerable a = (IsMultiContent(content) || content is JArray)
+                ? (IEnumerable)content
+                : null;
+            if (a == null)
+                return;
+
+            MergeEnumerableContent(this, a, settings);
         }
 
         #region IList<JToken> Members

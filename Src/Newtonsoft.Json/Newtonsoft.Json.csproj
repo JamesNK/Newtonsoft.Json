@@ -112,6 +112,7 @@
     <Compile Include="Linq\JContainer.cs" />
     <Compile Include="Linq\JEnumerable.cs" />
     <Compile Include="Linq\JObject.cs" />
+    <Compile Include="Linq\JsonMergeSettings.cs" />
     <Compile Include="Linq\JsonPath\ArrayIndexFilter.cs" />
     <Compile Include="Linq\JsonPath\ArrayMultipleIndexFilter.cs" />
     <Compile Include="Linq\JsonPath\ArraySliceFilter.cs" />
@@ -132,6 +133,7 @@
     <Compile Include="Linq\JTokenType.cs" />
     <Compile Include="Linq\JTokenWriter.cs" />
     <Compile Include="Linq\JValue.cs" />
+    <Compile Include="Linq\MergeArrayHandling.cs" />
     <Compile Include="MemberSerialization.cs" />
     <Compile Include="MetadataPropertyHandling.cs" />
     <Compile Include="MissingMemberHandling.cs" />

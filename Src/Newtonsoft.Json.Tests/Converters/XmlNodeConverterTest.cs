@@ -120,6 +120,25 @@ namespace Newtonsoft.Json.Tests.Converters
             return node;
         }
 
+#if !NET20
+        public class Foo
+        {
+            public XElement Bar { get; set; }
+        }
+
+        [Test]
+        public void SerializeAndDeserializeXElement()
+        {
+            Foo foo = new Foo { Bar = null };
+            string json = JsonConvert.SerializeObject(foo);
+
+            Assert.AreEqual(@"{""Bar"":null}", json);
+            Foo foo2 = JsonConvert.DeserializeObject<Foo>(json);
+
+            Assert.IsNull(foo2.Bar);
+        }
+#endif
+
         [Test]
         public void SerializeXmlElement()
         {

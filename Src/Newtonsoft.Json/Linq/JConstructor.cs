@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
@@ -45,6 +46,17 @@ namespace Newtonsoft.Json.Linq
         protected override IList<JToken> ChildrenTokens
         {
             get { return _values; }
+        }
+
+        internal override void MergeItem(object content, JsonMergeSettings settings)
+        {
+            JConstructor c = content as JConstructor;
+            if (c == null)
+                return;
+
+            if (c.Name != null)
+                Name = c.Name;
+            MergeEnumerableContent(this, c, settings);
         }
 
         /// <summary>
