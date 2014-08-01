@@ -206,7 +206,7 @@ namespace Newtonsoft.Json.Linq
                                 JProperty property = (JProperty)current;
 
                                 if (sb.Length > 0)
-                                    sb.Append(".");
+                                    sb.Append('.');
 
                                 sb.Append(property.Name);
                                 break;
@@ -214,9 +214,9 @@ namespace Newtonsoft.Json.Linq
                             case JTokenType.Constructor:
                                 int index = ((IList<JToken>)current).IndexOf(next);
 
-                                sb.Append("[");
+                                sb.Append('[');
                                 sb.Append(index);
-                                sb.Append("]");
+                                sb.Append(']');
                                 break;
                         }
                     }
