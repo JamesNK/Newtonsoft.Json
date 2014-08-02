@@ -36,7 +36,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     public class JProperty : JContainer
     {
-        private readonly List<JToken> _content = new List<JToken>();
+        private readonly List<JToken> _content = new List<JToken>(1);
         private readonly string _name;
 
         /// <summary>
