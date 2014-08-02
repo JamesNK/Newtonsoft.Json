@@ -1040,6 +1040,25 @@ If attributes are not mentioned, default values are used in each case.
         }
 
         [Test]
+        public void JObjectCreationAndPropertyAccess()
+        {
+            TimeOperation<object>(() =>
+            {
+                for (int i = 0; i < Iterations * 100; i++)
+                {
+                    JObject test = new JObject(
+                        new JProperty("one", 1),
+                        new JProperty("two", 2));
+
+                    test["i"] = i;
+                    int j = (int)test["i"];
+                    test["j"] = j;
+                }
+                return null;
+            }, "JObjectCreationAndPropertyAccess");
+        }
+
+        [Test]
         public void NestedJToken()
         {
             Stopwatch sw;

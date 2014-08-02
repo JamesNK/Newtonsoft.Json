@@ -43,7 +43,7 @@ namespace Newtonsoft.Json.Serialization
         private object _defaultValue;
         private bool _hasGeneratedDefaultValue;
         private string _propertyName;
-        private bool _skipPropertyNameEscape;
+        internal bool _skipPropertyNameEscape;
         private Type _propertyType;
 
         // use to cache contract during deserialization
@@ -59,27 +59,7 @@ namespace Newtonsoft.Json.Serialization
             set
             {
                 _propertyName = value;
-                CalculateSkipPropertyNameEscape();
-            }
-        }
-
-        private void CalculateSkipPropertyNameEscape()
-        {
-            if (_propertyName == null)
-            {
-                _skipPropertyNameEscape = false;
-            }
-            else
-            {
-                _skipPropertyNameEscape = true;
-                foreach (char c in _propertyName)
-                {
-                    if (!char.IsLetterOrDigit(c) && c != '_' && c != '@')
-                    {
-                        _skipPropertyNameEscape = false;
-                        break;
-                    }
-                }
+                _skipPropertyNameEscape = !JavaScriptUtils.ShouldEscapeJavaScriptString(_propertyName, JavaScriptUtils.HtmlCharEscapeFlags);
             }
         }
 

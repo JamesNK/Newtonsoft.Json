@@ -71,9 +71,12 @@ namespace Newtonsoft.Json.Tests.Serialization
 
     public class EscapedPropertiesContractResolver : DefaultContractResolver
     {
+        public string PropertyPrefix { get; set; }
+        public string PropertySuffix { get; set; }
+
         protected internal override string ResolvePropertyName(string propertyName)
         {
-            return base.ResolvePropertyName(propertyName + @"-'-""-");
+            return base.ResolvePropertyName(PropertyPrefix + propertyName + PropertySuffix);
         }
     }
 
@@ -296,7 +299,10 @@ namespace Newtonsoft.Json.Tests.Serialization
                 },
                 new JsonSerializerSettings
                 {
-                    ContractResolver = new EscapedPropertiesContractResolver()
+                    ContractResolver = new EscapedPropertiesContractResolver
+                    {
+                        PropertySuffix = @"-'-""-"
+                    }
                 });
 
             Assert.AreEqual(@"{""AddressLine1-'-\""-"":""value!""}", json);
@@ -306,6 +312,94 @@ namespace Newtonsoft.Json.Tests.Serialization
             reader.Read();
 
             Assert.AreEqual(@"AddressLine1-'-""-", reader.Value);
+        }
+
+        [Test]
+        public void SerializeWithHtmlEscapedPropertyName()
+        {
+            string json = JsonConvert.SerializeObject(
+                new AddressWithDataMember
+                {
+                    AddressLine1 = "value!"
+                },
+                new JsonSerializerSettings
+                {
+                    ContractResolver = new EscapedPropertiesContractResolver
+                    {
+                        PropertyPrefix = "<b>",
+                        PropertySuffix = "</b>"
+                    },
+                    StringEscapeHandling = StringEscapeHandling.EscapeHtml
+                });
+
+            Assert.AreEqual(@"{""\u003cb\u003eAddressLine1\u003c/b\u003e"":""value!""}", json);
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+            reader.Read();
+            reader.Read();
+
+            Assert.AreEqual(@"<b>AddressLine1</b>", reader.Value);
+        }
+
+        [Test]
+        public void CalculatingPropertyNameEscapedSkipping()
+        {
+            JsonProperty p = new JsonProperty { PropertyName = "abc" };
+            Assert.IsTrue(p._skipPropertyNameEscape);
+
+            p = new JsonProperty { PropertyName = "123" };
+            Assert.IsTrue(p._skipPropertyNameEscape);
+
+            p = new JsonProperty { PropertyName = "._-" };
+            Assert.IsTrue(p._skipPropertyNameEscape);
+
+            p = new JsonProperty { PropertyName = "!@#" };
+            Assert.IsTrue(p._skipPropertyNameEscape);
+
+            p = new JsonProperty { PropertyName = "$%^" };
+            Assert.IsTrue(p._skipPropertyNameEscape);
+
+            p = new JsonProperty { PropertyName = "?*(" };
+            Assert.IsTrue(p._skipPropertyNameEscape);
+
+            p = new JsonProperty { PropertyName = ")_+" };
+            Assert.IsTrue(p._skipPropertyNameEscape);
+
+            p = new JsonProperty { PropertyName = "=:," };
+            Assert.IsTrue(p._skipPropertyNameEscape);
+
+            p = new JsonProperty { PropertyName = null };
+            Assert.IsTrue(p._skipPropertyNameEscape);
+
+            p = new JsonProperty { PropertyName = "&" };
+            Assert.IsFalse(p._skipPropertyNameEscape);
+
+            p = new JsonProperty { PropertyName = "<" };
+            Assert.IsFalse(p._skipPropertyNameEscape);
+
+            p = new JsonProperty { PropertyName = ">" };
+            Assert.IsFalse(p._skipPropertyNameEscape);
+
+            p = new JsonProperty { PropertyName = "'" };
+            Assert.IsFalse(p._skipPropertyNameEscape);
+
+            p = new JsonProperty { PropertyName = @"""" };
+            Assert.IsFalse(p._skipPropertyNameEscape);
+
+            p = new JsonProperty { PropertyName = Environment.NewLine };
+            Assert.IsFalse(p._skipPropertyNameEscape);
+
+            p = new JsonProperty { PropertyName = '\0'.ToString(CultureInfo.InvariantCulture) };
+            Assert.IsFalse(p._skipPropertyNameEscape);
+
+            p = new JsonProperty { PropertyName = '\n'.ToString(CultureInfo.InvariantCulture) };
+            Assert.IsFalse(p._skipPropertyNameEscape);
+
+            p = new JsonProperty { PropertyName = '\v'.ToString(CultureInfo.InvariantCulture) };
+            Assert.IsFalse(p._skipPropertyNameEscape);
+
+            p = new JsonProperty { PropertyName = '\u00B9'.ToString(CultureInfo.InvariantCulture) };
+            Assert.IsFalse(p._skipPropertyNameEscape);
         }
 
 #if !NET20
