@@ -389,16 +389,16 @@ namespace Newtonsoft.Json.Tests.Serialization
             p = new JsonProperty { PropertyName = Environment.NewLine };
             Assert.IsFalse(p._skipPropertyNameEscape);
 
-            p = new JsonProperty { PropertyName = '\0'.ToString(CultureInfo.InvariantCulture) };
+            p = new JsonProperty { PropertyName = "\0" };
             Assert.IsFalse(p._skipPropertyNameEscape);
 
-            p = new JsonProperty { PropertyName = '\n'.ToString(CultureInfo.InvariantCulture) };
+            p = new JsonProperty { PropertyName = "\n" };
             Assert.IsFalse(p._skipPropertyNameEscape);
 
-            p = new JsonProperty { PropertyName = '\v'.ToString(CultureInfo.InvariantCulture) };
+            p = new JsonProperty { PropertyName = "\v" };
             Assert.IsFalse(p._skipPropertyNameEscape);
 
-            p = new JsonProperty { PropertyName = '\u00B9'.ToString(CultureInfo.InvariantCulture) };
+            p = new JsonProperty { PropertyName = "\u00B9" };
             Assert.IsFalse(p._skipPropertyNameEscape);
         }
 

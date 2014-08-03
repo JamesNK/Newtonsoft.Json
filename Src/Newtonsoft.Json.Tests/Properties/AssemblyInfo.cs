@@ -75,4 +75,4 @@ using System.Security;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("6.0.0.0")]
-[assembly: AssemblyFileVersion("6.0.4.17602")]
+[assembly: AssemblyFileVersion("6.0.4.17603")]
