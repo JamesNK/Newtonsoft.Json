@@ -125,10 +125,13 @@ task Package -depends Build {
   Copy-Item -Path $docDir\readme.txt -Destination $workingDir\Package\
   Copy-Item -Path $docDir\license.txt -Destination $workingDir\Package\
 
-  robocopy $sourceDir $workingDir\Package\Source\Src /MIR /NP /XD .svn bin obj TestResults AppPackages /XF *.suo *.user | Out-Default
-  robocopy $buildDir $workingDir\Package\Source\Build /MIR /NP /XD .svn /XF runbuild.txt | Out-Default
-  robocopy $docDir $workingDir\Package\Source\Doc /MIR /NP /XD .svn | Out-Default
-  robocopy $toolsDir $workingDir\Package\Source\Tools /MIR /NP /XD .svn | Out-Default
+  # exclude package directories but keep packages\repositories.config
+  $packageDirs = gci $sourceDir\packages | where {$_.PsIsContainer} | Select -ExpandProperty Name
+
+  robocopy $sourceDir $workingDir\Package\Source\Src /MIR /NP /XD bin obj TestResults AppPackages $packageDirs /XF *.suo *.user | Out-Default
+  robocopy $buildDir $workingDir\Package\Source\Build /MIR /NP /XF runbuild.txt | Out-Default
+  robocopy $docDir $workingDir\Package\Source\Doc /MIR /NP | Out-Default
+  robocopy $toolsDir $workingDir\Package\Source\Tools /MIR /NP | Out-Default
   
   exec { .\Tools\7-zip\7za.exe a -tzip $workingDir\$zipFileName $workingDir\Package\* | Out-Default } "Error zipping"
 }
