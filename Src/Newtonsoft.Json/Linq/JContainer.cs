@@ -111,9 +111,11 @@ namespace Newtonsoft.Json.Linq
         {
             ValidationUtils.ArgumentNotNull(other, "c");
 
+            int i = 0;
             foreach (JToken child in other)
             {
-                Add(child);
+                AddInternal(i, child, false);
+                i++;
             }
         }
 

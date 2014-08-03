@@ -29,6 +29,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Serialization;
 #if !NETFX_CORE
@@ -514,6 +515,40 @@ namespace Newtonsoft.Json.Tests
             //   "buildDate": new Date(-2524568400000),
             //   "address": "221B Baker Street"
             // }
+        }
+
+        [Test]
+        public void MergeJson()
+        {
+            JObject o1 = JObject.Parse(@"{
+              'FirstName': 'John',
+              'LastName': 'Smith',
+              'Enabled': false,
+              'Roles': [ 'User' ]
+            }");
+            JObject o2 = JObject.Parse(@"{
+              'Enabled': true,
+              'Roles': [ 'User', 'Admin' ]
+            }");
+
+            o1.Merge(o2, new JsonMergeSettings
+            {
+                // union arrays together to avoid duplicates
+                MergeArrayHandling = MergeArrayHandling.Union
+            });
+
+            string json = o1.ToString();
+            // {
+            //   "FirstName": "John",
+            //   "LastName": "Smith",
+            //   "Enabled": true,
+            //   "Roles": [
+            //     "User",
+            //     "Admin"
+            //   ]
+            // }
+
+            Console.WriteLine(json);
         }
     }
 }
