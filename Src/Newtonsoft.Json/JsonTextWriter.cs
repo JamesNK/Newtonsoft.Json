@@ -44,6 +44,8 @@ namespace Newtonsoft.Json
         private readonly TextWriter _writer;
         private Base64Encoder _base64Encoder;
         private char _indentChar;
+        private const int _indentCharBufferLength = 10;
+        private char[] _indentCharBuffer;
         private int _indentation;
         private char _quoteChar;
         private bool _quoteName;
@@ -98,7 +100,10 @@ namespace Newtonsoft.Json
         public char IndentChar
         {
             get { return _indentChar; }
-            set { _indentChar = value; }
+            set { 
+                _indentChar = value;
+                UpdateIndentBuffer();
+            }
         }
 
         /// <summary>
@@ -261,11 +266,19 @@ namespace Newtonsoft.Json
                 _charEscapeFlags = JavaScriptUtils.SingleQuoteCharEscapeFlags;
         }
 
+        private void UpdateIndentBuffer()
+        {
+            _indentCharBuffer = new string(_indentChar, _indentCharBufferLength).ToCharArray();
+        }
+
         /// <summary>
         /// Writes indent characters.
         /// </summary>
         protected override void WriteIndent()
         {
+            if (_indentCharBuffer == null)
+                UpdateIndentBuffer();
+
             _writer.WriteLine();
 
             // levels of indentation multiplied by the indent count
@@ -274,9 +287,9 @@ namespace Newtonsoft.Json
             while (currentIndentCount > 0)
             {
                 // write up to a max of 10 characters at once to avoid creating too many new strings
-                int writeCount = Math.Min(currentIndentCount, 10);
+                int writeCount = Math.Min(currentIndentCount, _indentCharBufferLength);
 
-                _writer.Write(new string(_indentChar, writeCount));
+                _writer.Write(_indentCharBuffer, 0, writeCount);
 
                 currentIndentCount -= writeCount;
             }
