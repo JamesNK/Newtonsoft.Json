@@ -26,9 +26,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
-using System.Numerics;
-#endif
 using System.Text;
 using System.IO;
 using System.Xml;
@@ -1299,9 +1296,16 @@ namespace Newtonsoft.Json
 
                         if (number.Length > MaximumJavascriptIntegerCharacterLength)
                             throw JsonReaderException.Create(this, "JSON integer {0} is too large to parse.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
-
-                        numberValue = BigInteger.Parse(number, CultureInfo.InvariantCulture);
-                        numberType = JsonToken.Integer;
+                        
+                        try
+                        {
+                            numberValue = BigIntegerParse(number, CultureInfo.InvariantCulture);
+                            numberType = JsonToken.Integer;
+                        }
+                        catch (MissingMethodException)
+                        {
+                            throw JsonReaderException.Create(this, "JSON integer {0} is too large or small for an Int64, and your runtime does not support BigInteger.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
+                        }
 #else
                         throw JsonReaderException.Create(this, "JSON integer {0} is too large or small for an Int64.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
 #endif
@@ -1338,6 +1342,17 @@ namespace Newtonsoft.Json
             SetToken(numberType, numberValue, false);
         }
 
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+        // By using the BigInteger type in a separate method,
+        // the runtime can execute the ParseNumber even if 
+        // the System.Numerics.BigInteger.Parse method is
+        // missing, which happens in some versions of Mono
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        private static object BigIntegerParse(string number, CultureInfo culture)
+        {
+            return System.Numerics.BigInteger.Parse(number, culture);
+        }
+#endif
         private void ParseComment()
         {
             // should have already parsed / character before reaching this method
