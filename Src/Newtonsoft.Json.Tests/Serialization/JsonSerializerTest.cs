@@ -7893,6 +7893,18 @@ Parameter name: value",
 #endif
 
         [Test]
+        public void DuplicatePropertiesInNestedObject()
+        {
+            ExceptionAssert.Throws<ArgumentException>(
+                "Can not add property time to Newtonsoft.Json.Linq.JObject. Property with the same name already exists on object.",
+                () =>
+                {
+                    string content = @"{""result"":{""time"":1408188592,""time"":1408188593},""error"":null,""id"":""1""}";
+                    JsonConvert.DeserializeObject<JObject>(content);
+                });
+        }
+
+        [Test]
         public void RoundtripUriOriginalString()
         {
             string originalUri = "https://test.com?m=a%2bb";

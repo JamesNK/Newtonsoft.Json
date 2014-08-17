@@ -42,6 +42,13 @@ namespace Newtonsoft.Json.Tests.Converters
     public class DataSetConverterTests : TestFixtureBase
     {
         [Test]
+        public void DeserializeInvalidDataTable()
+        {
+            ExceptionAssert.Throws<JsonException>("Unexpected JSON token when reading DataTable. Expected StartArray, got Integer. Path 'pending_count', line 1, position 19.",
+                () => JsonConvert.DeserializeObject<DataSet>("{\"pending_count\":23,\"completed_count\":45}"));
+        }
+
+        [Test]
         public void SerializeAndDeserialize()
         {
             DataSet dataSet = new DataSet("dataSet");

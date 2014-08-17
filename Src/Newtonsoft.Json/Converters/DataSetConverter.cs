@@ -77,7 +77,7 @@ namespace Newtonsoft.Json.Converters
 
             DataTableConverter converter = new DataTableConverter();
 
-            reader.Read();
+            CheckedRead(reader);
 
             while (reader.TokenType == JsonToken.PropertyName)
             {
@@ -89,7 +89,7 @@ namespace Newtonsoft.Json.Converters
                 if (!exists)
                     ds.Tables.Add(dt);
 
-                reader.Read();
+                CheckedRead(reader);
             }
 
             return ds;
@@ -105,6 +105,12 @@ namespace Newtonsoft.Json.Converters
         public override bool CanConvert(Type valueType)
         {
             return typeof(DataSet).IsAssignableFrom(valueType);
+        }
+
+        private void CheckedRead(JsonReader reader)
+        {
+            if (!reader.Read())
+                throw JsonSerializationException.Create(reader, "Unexpected end when reading DataSet.");
         }
     }
 }
