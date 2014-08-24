@@ -755,5 +755,47 @@ namespace Newtonsoft.Json.Tests.Linq
   ""name"": ""Hello World""
 }", json);
         }
+
+#if !(NET20 || NET35 || PORTABLE40)
+        [Test]
+        public void EnumTests()
+        {
+            JValue v = new JValue(StringComparison.Ordinal);
+            Assert.AreEqual(JTokenType.Integer, v.Type);
+
+            string s = v.ToString();
+            Assert.AreEqual("Ordinal", s);
+
+            StringComparison e = v.ToObject<StringComparison>();
+            Assert.AreEqual(StringComparison.Ordinal, e);
+
+            dynamic d = new JValue(StringComparison.CurrentCultureIgnoreCase);
+            StringComparison e2 = (StringComparison)d;
+            Assert.AreEqual(StringComparison.CurrentCultureIgnoreCase, e2);
+
+            string s1 = d.ToString();
+            Assert.AreEqual("CurrentCultureIgnoreCase", s1);
+
+            string s2 = (string)d;
+            Assert.AreEqual("CurrentCultureIgnoreCase", s2);
+
+            d = new JValue("OrdinalIgnoreCase");
+            StringComparison e3 = (StringComparison)d;
+            Assert.AreEqual(StringComparison.OrdinalIgnoreCase, e3);
+
+            v = new JValue("ORDINAL");
+            d = v;
+            StringComparison e4 = (StringComparison)d;
+            Assert.AreEqual(StringComparison.Ordinal, e4);
+
+            StringComparison e5 = v.ToObject<StringComparison>();
+            Assert.AreEqual(StringComparison.Ordinal, e5);
+
+            v = new JValue((int)StringComparison.InvariantCultureIgnoreCase);
+            Assert.AreEqual(JTokenType.Integer, v.Type);
+            StringComparison e6 = v.ToObject<StringComparison>();
+            Assert.AreEqual(StringComparison.InvariantCultureIgnoreCase, e6);
+        }
+#endif
     }
 }

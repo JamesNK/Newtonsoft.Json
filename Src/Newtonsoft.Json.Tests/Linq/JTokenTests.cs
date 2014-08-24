@@ -444,6 +444,9 @@ namespace Newtonsoft.Json.Tests.Linq
 
             ExceptionAssert.Throws<ArgumentException>("Can not convert Date to SByte.", () => { var i = (sbyte?)new JValue(DateTime.Now); });
             ExceptionAssert.Throws<ArgumentException>("Can not convert Date to SByte.", () => { var i = (sbyte)new JValue(DateTime.Now); });
+
+            ExceptionAssert.Throws<ArgumentException>("Could not convert 'Ordinal1' to StringComparison.", () => { var i = (new JValue("Ordinal1")).ToObject<StringComparison>(); });
+            ExceptionAssert.Throws<ArgumentException>("Could not convert 'Ordinal1' to StringComparison.", () => { var i = (new JValue("Ordinal1")).ToObject<StringComparison?>(); });
         }
 
         [Test]
@@ -492,6 +495,9 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(new Guid("A34B2080-B5F0-488E-834D-45D44ECB9E5C"), (new JValue(new Guid("A34B2080-B5F0-488E-834D-45D44ECB9E5C")).ToObject(typeof(Guid))));
             Assert.AreEqual(new Guid("A34B2080-B5F0-488E-834D-45D44ECB9E5C"), (new JValue(new Guid("A34B2080-B5F0-488E-834D-45D44ECB9E5C")).ToObject(typeof(Guid?))));
             Assert.AreEqual(new Uri("http://www.google.com/"), (new JValue(new Uri("http://www.google.com/")).ToObject(typeof(Uri))));
+            Assert.AreEqual(StringComparison.Ordinal, (new JValue("Ordinal").ToObject(typeof(StringComparison))));
+            Assert.AreEqual(StringComparison.Ordinal, (new JValue("Ordinal").ToObject(typeof(StringComparison?))));
+            Assert.AreEqual(null, (JValue.CreateNull().ToObject(typeof(StringComparison?))));
         }
 
         [Test]

@@ -1701,7 +1701,21 @@ namespace Newtonsoft.Json.Linq
         {
             if (JsonConvert.DefaultSettings == null)
             {
-                PrimitiveTypeCode typeCode = ConvertUtils.GetTypeCode(objectType);
+                bool isEnum;
+                PrimitiveTypeCode typeCode = ConvertUtils.GetTypeCode(objectType, out isEnum);
+
+                if (isEnum && Type == JTokenType.String)
+                {
+                    Type enumType = objectType.IsEnum() ? objectType : Nullable.GetUnderlyingType(objectType);
+                    try
+                    {
+                        return Enum.Parse(enumType, (string)this, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ArgumentException("Could not convert '{0}' to {1}.".FormatWith(CultureInfo.InvariantCulture, (string)this, enumType.Name), ex);
+                    }
+                }
 
                 switch (typeCode)
                 {

@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(PORTABLE40 || NET20 || NET35)
+#if !(NET20 || NET35)
 using System;
 using System.Diagnostics;
 using System.Reflection;
@@ -299,5 +299,4 @@ namespace Newtonsoft.Json.Tests.Utilities
         }
     }
 }
-
 #endif

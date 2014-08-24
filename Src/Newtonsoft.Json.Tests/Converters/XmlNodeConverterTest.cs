@@ -137,7 +137,44 @@ namespace Newtonsoft.Json.Tests.Converters
 
             Assert.IsNull(foo2.Bar);
         }
+
+        [Test]
+        public void MultipleNamespacesXDocument()
+        {
+            string xml = @"<result xp_0:end=""2014-08-15 13:12:11.9184"" xp_0:start=""2014-08-15 13:11:49.3140"" xp_0:time_diff=""22604.3836"" xmlns:xp_0=""Test1"" p2:end=""2014-08-15 13:13:49.5522"" p2:start=""2014-08-15 13:13:49.0268"" p2:time_diff=""525.4646"" xmlns:p2=""Test2"" />";
+
+            XDocument d = XDocument.Parse(xml);
+
+            string json = JsonConvert.SerializeObject(d, Formatting.Indented);
+
+            Console.WriteLine(json);
+
+            XDocument doc = JsonConvert.DeserializeObject<XDocument>(json);
+
+            Console.WriteLine(doc.ToString());
+
+            Assert.AreEqual(xml, doc.ToString());
+        }
 #endif
+
+        [Test]
+        public void MultipleNamespacesXmlDocument()
+        {
+            string xml = @"<result xp_0:end=""2014-08-15 13:12:11.9184"" xp_0:start=""2014-08-15 13:11:49.3140"" xp_0:time_diff=""22604.3836"" xmlns:xp_0=""Test1"" p2:end=""2014-08-15 13:13:49.5522"" p2:start=""2014-08-15 13:13:49.0268"" p2:time_diff=""525.4646"" xmlns:p2=""Test2"" />";
+
+            XmlDocument d = new XmlDocument();
+            d.LoadXml(xml);
+
+            string json = JsonConvert.SerializeObject(d, Formatting.Indented);
+
+            Console.WriteLine(json);
+
+            XmlDocument doc = JsonConvert.DeserializeObject<XmlDocument>(json);
+
+            Console.WriteLine(doc.OuterXml);
+
+            Assert.AreEqual(xml, doc.OuterXml);
+        }
 
         [Test]
         public void SerializeXmlElement()

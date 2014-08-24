@@ -40,7 +40,6 @@ using Newtonsoft.Json.Serialization;
 using System.Text;
 #if !(NET20 || PORTABLE40)
 using System.Xml.Linq;
-
 #endif
 
 namespace Newtonsoft.Json
@@ -434,7 +433,7 @@ namespace Newtonsoft.Json
             if (value == null)
                 return Null;
 
-            PrimitiveTypeCode typeCode = ConvertUtils.GetTypeCode(value);
+            PrimitiveTypeCode typeCode = ConvertUtils.GetTypeCode(value.GetType());
 
             switch (typeCode)
             {

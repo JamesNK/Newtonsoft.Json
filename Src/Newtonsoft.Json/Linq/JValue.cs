@@ -872,7 +872,7 @@ namespace Newtonsoft.Json.Linq
                     return ReflectionUtils.IsNullable(binder.Type);
                 }
 
-                result = ConvertUtils.Convert(instance.Value, CultureInfo.InvariantCulture, binder.Type);
+                result = ConvertUtils.Convert(value, CultureInfo.InvariantCulture, binder.Type);
                 return true;
             }
 
