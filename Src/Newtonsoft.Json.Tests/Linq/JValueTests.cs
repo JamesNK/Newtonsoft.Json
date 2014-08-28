@@ -53,6 +53,18 @@ namespace Newtonsoft.Json.Tests.Linq
     public class JValueTests : TestFixtureBase
     {
         [Test]
+        public void UndefinedTests()
+        {
+            JValue v = JValue.CreateUndefined();
+
+            Assert.AreEqual(JTokenType.Undefined, v.Type);
+            Assert.AreEqual(null, v.Value);
+
+            Assert.AreEqual("", v.ToString());
+            Assert.AreEqual("undefined", v.ToString(Formatting.None));
+        }
+
+        [Test]
         public void FloatParseHandling()
         {
             JValue v = (JValue)JToken.ReadFrom(
@@ -183,10 +195,10 @@ namespace Newtonsoft.Json.Tests.Linq
             v = new JValue("I am a string!");
             Assert.AreEqual("I am a string!", v.ToString());
 
-            v = new JValue(null, JTokenType.Null);
+            v = JValue.CreateNull();
             Assert.AreEqual("", v.ToString());
 
-            v = new JValue(null, JTokenType.Null);
+            v = JValue.CreateNull();
             Assert.AreEqual("", v.ToString(null, CultureInfo.InvariantCulture));
 
             v = new JValue(new DateTime(2000, 12, 12, 20, 59, 59, DateTimeKind.Utc), JTokenType.Date);
@@ -333,7 +345,7 @@ namespace Newtonsoft.Json.Tests.Linq
             ExceptionAssert.Throws<ArgumentException>("Can not convert Null to Int32.",
                 () =>
                 {
-                    JValue v = new JValue((object)null);
+                    JValue v = JValue.CreateNull();
                     int i = (int)v;
                 });
         }
@@ -577,7 +589,7 @@ namespace Newtonsoft.Json.Tests.Linq
         [Test]
         public void ConvertsToString_Null()
         {
-            Assert.AreEqual(string.Empty, Convert.ToString(new JValue((object)null)));
+            Assert.AreEqual(string.Empty, Convert.ToString(JValue.CreateNull()));
         }
 
         [Test]
@@ -743,5 +755,47 @@ namespace Newtonsoft.Json.Tests.Linq
   ""name"": ""Hello World""
 }", json);
         }
+
+#if !(NET20 || NET35 || PORTABLE40)
+        [Test]
+        public void EnumTests()
+        {
+            JValue v = new JValue(StringComparison.Ordinal);
+            Assert.AreEqual(JTokenType.Integer, v.Type);
+
+            string s = v.ToString();
+            Assert.AreEqual("Ordinal", s);
+
+            StringComparison e = v.ToObject<StringComparison>();
+            Assert.AreEqual(StringComparison.Ordinal, e);
+
+            dynamic d = new JValue(StringComparison.CurrentCultureIgnoreCase);
+            StringComparison e2 = (StringComparison)d;
+            Assert.AreEqual(StringComparison.CurrentCultureIgnoreCase, e2);
+
+            string s1 = d.ToString();
+            Assert.AreEqual("CurrentCultureIgnoreCase", s1);
+
+            string s2 = (string)d;
+            Assert.AreEqual("CurrentCultureIgnoreCase", s2);
+
+            d = new JValue("OrdinalIgnoreCase");
+            StringComparison e3 = (StringComparison)d;
+            Assert.AreEqual(StringComparison.OrdinalIgnoreCase, e3);
+
+            v = new JValue("ORDINAL");
+            d = v;
+            StringComparison e4 = (StringComparison)d;
+            Assert.AreEqual(StringComparison.Ordinal, e4);
+
+            StringComparison e5 = v.ToObject<StringComparison>();
+            Assert.AreEqual(StringComparison.Ordinal, e5);
+
+            v = new JValue((int)StringComparison.InvariantCultureIgnoreCase);
+            Assert.AreEqual(JTokenType.Integer, v.Type);
+            StringComparison e6 = v.ToObject<StringComparison>();
+            Assert.AreEqual(StringComparison.InvariantCultureIgnoreCase, e6);
+        }
+#endif
     }
 }

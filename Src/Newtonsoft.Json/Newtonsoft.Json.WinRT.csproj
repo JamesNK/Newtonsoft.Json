@@ -183,6 +183,7 @@
     <Compile Include="Linq\JPropertyDescriptor.cs" />
     <Compile Include="Linq\JPropertyKeyedCollection.cs" />
     <Compile Include="Linq\JRaw.cs" />
+    <Compile Include="Linq\JsonMergeSettings.cs" />
     <Compile Include="Linq\JsonPath\ArrayIndexFilter.cs" />
     <Compile Include="Linq\JsonPath\ArrayMultipleIndexFilter.cs" />
     <Compile Include="Linq\JsonPath\ArraySliceFilter.cs" />
@@ -199,6 +200,7 @@
     <Compile Include="Linq\JTokenType.cs" />
     <Compile Include="Linq\JTokenWriter.cs" />
     <Compile Include="Linq\JValue.cs" />
+    <Compile Include="Linq\MergeArrayHandling.cs" />
     <Compile Include="MemberSerialization.cs" />
     <Compile Include="MissingMemberHandling.cs" />
     <Compile Include="NullValueHandling.cs" />
@@ -255,7 +257,6 @@
     <Compile Include="Serialization\JsonSerializerProxy.cs" />
     <Compile Include="Serialization\JsonStringContract.cs" />
     <Compile Include="Serialization\JsonTypeReflector.cs" />
-    <Compile Include="Serialization\LateBoundMetadataTypeAttribute.cs" />
     <Compile Include="Serialization\ObjectConstructor.cs" />
     <Compile Include="Serialization\OnErrorAttribute.cs" />
     <Compile Include="Serialization\ReflectionValueProvider.cs" />
@@ -263,6 +264,7 @@
     <Compile Include="Serialization\MemoryTraceWriter.cs" />
     <Compile Include="Serialization\TraceJsonReader.cs" />
     <Compile Include="Serialization\TraceJsonWriter.cs" />
+    <Compile Include="MetadataPropertyHandling.cs" />
     <Compile Include="StringEscapeHandling.cs" />
     <Compile Include="TraceLevel.cs" />
     <Compile Include="TypeNameHandling.cs" />
@@ -278,10 +280,8 @@
     <Compile Include="Utilities\DynamicProxyMetaObject.cs" />
     <Compile Include="Utilities\DynamicReflectionDelegateFactory.cs" />
     <Compile Include="Utilities\DynamicUtils.cs" />
-    <Compile Include="Utilities\DynamicWrapper.cs" />
     <Compile Include="Utilities\EnumUtils.cs" />
     <Compile Include="Utilities\EnumValue.cs" />
-    <Compile Include="Utilities\EnumValues.cs" />
     <Compile Include="Utilities\ExpressionReflectionDelegateFactory.cs" />
     <Compile Include="Utilities\ILGeneratorExtensions.cs" />
     <Compile Include="Utilities\ImmutableCollectionsUtils.cs" />
@@ -292,6 +292,7 @@
     <Compile Include="Utilities\MethodCall.cs" />
     <Compile Include="Utilities\MiscellaneousUtils.cs" />
     <Compile Include="Utilities\ReflectionDelegateFactory.cs" />
+    <Compile Include="Utilities\ReflectionObject.cs" />
     <Compile Include="Utilities\ReflectionUtils.cs" />
     <Compile Include="Utilities\StringBuffer.cs" />
     <Compile Include="Utilities\StringReference.cs" />

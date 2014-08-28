@@ -49,7 +49,7 @@ namespace Newtonsoft.Json.Linq
 #if !(NETFX_CORE || PORTABLE || PORTABLE40)
         , ITypedList, IBindingList
 #elif PORTABLE
-    , INotifyCollectionChanged
+        , INotifyCollectionChanged
 #endif
         , IList
 #if !(NET20 || NET35 || NETFX_CORE || PORTABLE40 || PORTABLE)
@@ -111,9 +111,11 @@ namespace Newtonsoft.Json.Linq
         {
             ValidationUtils.ArgumentNotNull(other, "c");
 
+            int i = 0;
             foreach (JToken child in other)
             {
-                Add(child);
+                AddInternal(i, child, false);
+                i++;
             }
         }
 
@@ -292,7 +294,7 @@ namespace Newtonsoft.Json.Linq
         internal JToken EnsureParentToken(JToken item, bool skipParentCheck)
         {
             if (item == null)
-                return new JValue((object)null);
+                return JValue.CreateNull();
 
             if (skipParentCheck)
                 return item;
@@ -588,7 +590,7 @@ namespace Newtonsoft.Json.Linq
             }
         }
 
-        internal JToken CreateFromContent(object content)
+        internal static JToken CreateFromContent(object content)
         {
             if (content is JToken)
                 return (JToken)content;
@@ -621,6 +623,27 @@ namespace Newtonsoft.Json.Linq
         public void RemoveAll()
         {
             ClearItems();
+        }
+
+        internal abstract void MergeItem(object content, JsonMergeSettings settings);
+
+        /// <summary>
+        /// Merge the specified content into this <see cref="JToken"/>.
+        /// </summary>
+        /// <param name="content">The content to be merged.</param>
+        public void Merge(object content)
+        {
+            MergeItem(content, new JsonMergeSettings());
+        }
+
+        /// <summary>
+        /// Merge the specified content into this <see cref="JToken"/> using <see cref="JsonMergeSettings"/>.
+        /// </summary>
+        /// <param name="content">The content to be merged.</param>
+        /// <param name="settings">The <see cref="JsonMergeSettings"/> used to merge the content.</param>
+        public void Merge(object content, JsonMergeSettings settings)
+        {
+            MergeItem(content, settings);
         }
 
         internal void ReadTokenFrom(JsonReader reader)
@@ -713,12 +736,12 @@ namespace Newtonsoft.Json.Linq
                         parent.Add(v);
                         break;
                     case JsonToken.Null:
-                        v = new JValue(null, JTokenType.Null);
+                        v = JValue.CreateNull();
                         v.SetLineInfo(lineInfo);
                         parent.Add(v);
                         break;
                     case JsonToken.Undefined:
-                        v = new JValue(null, JTokenType.Undefined);
+                        v = JValue.CreateUndefined();
                         v.SetLineInfo(lineInfo);
                         parent.Add(v);
                         break;
@@ -1007,5 +1030,86 @@ namespace Newtonsoft.Json.Linq
         }
 #endif
         #endregion
+
+        internal static void MergeEnumerableContent(JContainer target, IEnumerable content, JsonMergeSettings settings)
+        {
+            switch (settings.MergeArrayHandling)
+            {
+                case MergeArrayHandling.Concat:
+                    foreach (JToken item in content)
+                    {
+                        target.Add(item);
+                    }
+                    break;
+                case MergeArrayHandling.Union:
+#if !NET20
+                    HashSet<JToken> items = new HashSet<JToken>(target, EqualityComparer);
+
+                    foreach (JToken item in content)
+                    {
+                        if (items.Add(item))
+                        {
+                            target.Add(item);
+                        }
+                    }
+#else
+                    IDictionary<JToken, bool> items = new Dictionary<JToken, bool>(EqualityComparer);
+                    foreach (JToken t in target)
+                    {
+                        items[t] = true;
+                    }
+
+                    foreach (JToken item in content)
+                    {
+                        if (!items.ContainsKey(item))
+                        {
+                            items[item] = true;
+                            target.Add(item);
+                        }
+                    }
+#endif
+                    break;
+                case MergeArrayHandling.Replace:
+                    target.ClearItems();
+                    foreach (JToken item in content)
+                    {
+                        target.Add(item);
+                    }
+                    break;
+                case MergeArrayHandling.Merge:
+                    int i = 0;
+                    foreach (object targetItem in content)
+                    {
+                        if (i < target.Count)
+                        {
+                            JToken sourceItem = target[i];
+
+                            JContainer existingContainer = sourceItem as JContainer;
+                            if (existingContainer != null)
+                            {
+                                existingContainer.Merge(targetItem, settings);
+                            }
+                            else
+                            {
+                                if (targetItem != null)
+                                {
+                                    JToken contentValue = CreateFromContent(targetItem);
+                                    if (contentValue.Type != JTokenType.Null)
+                                        target[i] = contentValue;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            target.Add(targetItem);
+                        }
+
+                        i++;
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("settings", "Unexpected merge array handling when merging JSON.");
+            }
+        }
     }
 }

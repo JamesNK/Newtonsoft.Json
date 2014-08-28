@@ -541,6 +541,24 @@ namespace Newtonsoft.Json.Linq
             return new JValue(value, JTokenType.String);
         }
 
+        /// <summary>
+        /// Creates a <see cref="JValue"/> null value.
+        /// </summary>
+        /// <returns>A <see cref="JValue"/> null value.</returns>
+        public static JValue CreateNull()
+        {
+            return new JValue(null, JTokenType.Null);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="JValue"/> null value.
+        /// </summary>
+        /// <returns>A <see cref="JValue"/> null value.</returns>
+        public static JValue CreateUndefined()
+        {
+            return new JValue(null, JTokenType.Undefined);
+        }
+
         private static JTokenType GetValueType(JTokenType? current, object value)
         {
             if (value == null)
@@ -854,7 +872,7 @@ namespace Newtonsoft.Json.Linq
                     return ReflectionUtils.IsNullable(binder.Type);
                 }
 
-                result = ConvertUtils.Convert(instance.Value, CultureInfo.InvariantCulture, binder.Type);
+                result = ConvertUtils.Convert(value, CultureInfo.InvariantCulture, binder.Type);
                 return true;
             }
 

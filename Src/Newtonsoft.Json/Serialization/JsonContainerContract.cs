@@ -100,12 +100,12 @@ namespace Newtonsoft.Json.Serialization
         internal JsonContainerContract(Type underlyingType)
             : base(underlyingType)
         {
-            JsonContainerAttribute jsonContainerAttribute = JsonTypeReflector.GetJsonContainerAttribute(underlyingType);
+            JsonContainerAttribute jsonContainerAttribute = JsonTypeReflector.GetCachedAttribute<JsonContainerAttribute>(underlyingType);
 
             if (jsonContainerAttribute != null)
             {
                 if (jsonContainerAttribute.ItemConverterType != null)
-                    ItemConverter = JsonConverterAttribute.CreateJsonConverterInstance(jsonContainerAttribute.ItemConverterType);
+                    ItemConverter = JsonTypeReflector.CreateJsonConverterInstance(jsonContainerAttribute.ItemConverterType);
 
                 ItemIsReference = jsonContainerAttribute._itemIsReference;
                 ItemReferenceLoopHandling = jsonContainerAttribute._itemReferenceLoopHandling;

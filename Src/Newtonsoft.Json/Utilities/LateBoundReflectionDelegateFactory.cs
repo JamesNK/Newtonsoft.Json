@@ -42,6 +42,17 @@ namespace Newtonsoft.Json.Utilities
             get { return _instance; }
         }
 
+        public override ObjectConstructor<object> CreateParametrizedConstructor(MethodBase method)
+        {
+            ValidationUtils.ArgumentNotNull(method, "method");
+
+            ConstructorInfo c = method as ConstructorInfo;
+            if (c != null)
+                return c.Invoke;
+
+            return a => method.Invoke(null, a);
+        }
+
         public override MethodCall<T, object> CreateMethodCall<T>(MethodBase method)
         {
             ValidationUtils.ArgumentNotNull(method, "method");

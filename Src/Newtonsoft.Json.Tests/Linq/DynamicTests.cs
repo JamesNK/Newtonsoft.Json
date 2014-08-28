@@ -167,7 +167,7 @@ namespace Newtonsoft.Json.Tests.Linq
         public void JValueEquals()
         {
             JObject o = new JObject(
-                new JProperty("Null", new JValue(null, JTokenType.Null)),
+                new JProperty("Null", JValue.CreateNull()),
                 new JProperty("Integer", new JValue(1)),
                 new JProperty("Float", new JValue(1.1d)),
                 new JProperty("Decimal", new JValue(1.1m)),
@@ -187,7 +187,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
             Assert.IsTrue(d.Null == d.Null);
             Assert.IsTrue(d.Null == null);
-            Assert.IsTrue(d.Null == new JValue(null, JTokenType.Null));
+            Assert.IsTrue(d.Null == JValue.CreateNull());
             Assert.IsFalse(d.Null == 1);
 
             Assert.IsTrue(d.Integer == d.Integer);
@@ -276,7 +276,7 @@ namespace Newtonsoft.Json.Tests.Linq
         public void JValueAddition()
         {
             JObject o = new JObject(
-                new JProperty("Null", new JValue(null, JTokenType.Null)),
+                new JProperty("Null", JValue.CreateNull()),
                 new JProperty("Integer", new JValue(1)),
                 new JProperty("Float", new JValue(1.1d)),
                 new JProperty("Decimal", new JValue(1.1m)),
@@ -611,7 +611,7 @@ namespace Newtonsoft.Json.Tests.Linq
         public void JValueToString()
         {
             JObject o = new JObject(
-                new JProperty("Null", new JValue(null, JTokenType.Null)),
+                new JProperty("Null", JValue.CreateNull()),
                 new JProperty("Integer", new JValue(1)),
                 new JProperty("Float", new JValue(1.1)),
                 new JProperty("DateTime", new JValue(new DateTime(2000, 12, 29, 23, 51, 10, DateTimeKind.Utc))),
@@ -786,6 +786,9 @@ namespace Newtonsoft.Json.Tests.Linq
 
             string newRole = newHotness.Roles[0];
             // Admin
+
+            Assert.AreEqual("Admin", oldRole);
+            Assert.AreEqual("Admin", newRole);
         }
 
         [Test]

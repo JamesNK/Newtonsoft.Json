@@ -40,7 +40,13 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Tests.TestObjects;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
+using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
+#endif
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
@@ -1482,7 +1488,57 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(2, products.Count);
             Assert.AreEqual("Product 1", products[0].Name);
         }
+
+#if !(NET40 || NET35 || NET20 || PORTABLE40)
+        [Test]
+        public void ReadOnlyIntegerList()
+        {
+            ReadOnlyIntegerList l = new ReadOnlyIntegerList(new List<int>
+            {
+                1,
+                2,
+                3,
+                int.MaxValue
+            });
+
+            string json = JsonConvert.SerializeObject(l, Formatting.Indented);
+
+            Assert.AreEqual(@"[
+  1,
+  2,
+  3,
+  2147483647
+]", json);
+        }
+#endif
     }
+
+#if !(NET40 || NET35 || NET20 || PORTABLE40)
+    public class ReadOnlyIntegerList : IReadOnlyCollection<int>
+    {
+        private readonly List<int> _list;
+
+        public ReadOnlyIntegerList(List<int> l)
+        {
+            _list = l;
+        }
+
+        public int Count
+        {
+            get { return _list.Count; }
+        }
+
+        public IEnumerator<int> GetEnumerator()
+        {
+            return _list.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+    }
+#endif
 
     public class Array2D
     {

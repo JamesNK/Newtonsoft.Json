@@ -27,6 +27,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
+#endif
 using Newtonsoft.Json.Linq;
 #if !NETFX_CORE
 using NUnit.Framework;
@@ -122,6 +127,59 @@ namespace Newtonsoft.Json.Tests.Linq
         }
 
         [Test]
+        public void IListRemoveAt()
+        {
+            JProperty p = new JProperty("TestProperty", null);
+            IList l = p;
+
+            ExceptionAssert.Throws<JsonException>(
+                "Cannot add or remove items from Newtonsoft.Json.Linq.JProperty.",
+                () => { l.RemoveAt(0); });
+        }
+
+        [Test]
+        public void JPropertyLinq()
+        {
+            JProperty p = new JProperty("TestProperty", null);
+            IList l = p;
+
+            List<JToken> result = l.Cast<JToken>().ToList();
+            Assert.AreEqual(1, result.Count);
+        }
+
+        [Test]
+        public void JPropertyDeepEquals()
+        {
+            JProperty p1 = new JProperty("TestProperty", null);
+            JProperty p2 = new JProperty("TestProperty", null);
+
+            Assert.AreEqual(true, JToken.DeepEquals(p1, p2));
+        }
+
+        [Test]
+        public void JPropertyIndexOf()
+        {
+            JValue v = new JValue(1);
+            JProperty p1 = new JProperty("TestProperty", v);
+
+            IList l1 = p1;
+            Assert.AreEqual(0, l1.IndexOf(v));
+
+            IList<JToken> l2 = p1;
+            Assert.AreEqual(0, l2.IndexOf(v));
+        }
+
+        [Test]
+        public void JPropertyContains()
+        {
+            JValue v = new JValue(1);
+            JProperty p = new JProperty("TestProperty", v);
+
+            Assert.AreEqual(true, p.Contains(v));
+            Assert.AreEqual(false, p.Contains(new JValue(1)));
+        }
+
+        [Test]
         public void Load()
         {
             JsonReader reader = new JsonTextReader(new StringReader("{'propertyname':['value1']}"));
@@ -144,7 +202,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
             property = JProperty.Load(reader);
             Assert.AreEqual("propertyname", property.Name);
-            Assert.IsTrue(JToken.DeepEquals(new JValue(null, JTokenType.Null), property.Value));
+            Assert.IsTrue(JToken.DeepEquals(JValue.CreateNull(), property.Value));
 
             Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
         }

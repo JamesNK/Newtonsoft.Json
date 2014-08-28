@@ -53,6 +53,32 @@ namespace Newtonsoft.Json.Tests
     public class JsonTextWriterTest : TestFixtureBase
     {
         [Test]
+        public void NewLine()
+        {
+            MemoryStream ms = new MemoryStream();
+
+            using (var streamWriter = new StreamWriter(ms, new UTF8Encoding(false)) { NewLine = "\n" })
+            using (var jsonWriter = new JsonTextWriter(streamWriter)
+            {
+                CloseOutput = true,
+                Indentation = 2,
+                Formatting = Formatting.Indented
+            })
+            {
+                jsonWriter.WriteStartObject();
+                jsonWriter.WritePropertyName("prop");
+                jsonWriter.WriteValue(true);
+                jsonWriter.WriteEndObject();
+            }
+
+            byte[] data = ms.ToArray();
+
+            string json = Encoding.UTF8.GetString(data, 0, data.Length);
+
+            Assert.AreEqual(@"{" + '\n' + @"  ""prop"": true" + '\n' + "}", json);
+        }
+
+        [Test]
         public void QuoteNameAndStrings()
         {
             StringBuilder sb = new StringBuilder();

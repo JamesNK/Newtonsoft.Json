@@ -102,42 +102,49 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
         #endregion
 
-        //    #region Array
-        //    [Test]
-        //    public void SerializeArray()
-        //    {
-        //      ImmutableArray<string> l = ImmutableArray.From(new List<string>
-        //        {
-        //          "One",
-        //          "II",
-        //          "3"
-        //        });
+        #region Array
+        [Test]
+        public void SerializeArray()
+        {
+            ImmutableArray<string> l = ImmutableArray.CreateRange(new List<string>
+                {
+                  "One",
+                  "II",
+                  "3"
+                });
 
-        //      string json = JsonConvert.SerializeObject(l, Formatting.Indented);
-        //      Assert.AreEqual(@"[
-        //  ""One"",
-        //  ""II"",
-        //  ""3""
-        //]", json);
-        //    }
+            string json = JsonConvert.SerializeObject(l, Formatting.Indented);
+            Assert.AreEqual(@"[
+  ""One"",
+  ""II"",
+  ""3""
+]", json);
+        }
 
-        //    [Test]
-        //    public void DeserializeArray()
-        //    {
-        //      string json = @"[
-        //  ""One"",
-        //  ""II"",
-        //  ""3""
-        //]";
+        [Test]
+        public void DeserializeArray()
+        {
+            string json = @"[
+          ""One"",
+          ""II"",
+          ""3""
+        ]";
 
-        //      ImmutableArray<string> l = JsonConvert.DeserializeObject<ImmutableArray<string>>(json);
+            ImmutableArray<string> l = JsonConvert.DeserializeObject<ImmutableArray<string>>(json);
 
-        //      Assert.AreEqual(3, l.Length);
-        //      Assert.AreEqual("One", l[0]);
-        //      Assert.AreEqual("II", l[1]);
-        //      Assert.AreEqual("3", l[2]);
-        //    }
-        //    #endregion
+            Assert.AreEqual(3, l.Length);
+            Assert.AreEqual("One", l[0]);
+            Assert.AreEqual("II", l[1]);
+            Assert.AreEqual("3", l[2]);
+        }
+
+        [Test]
+        public void SerializeDefaultArray()
+        {
+            ExceptionAssert.Throws<NullReferenceException>("Object reference not set to an instance of an object.", () =>
+                JsonConvert.SerializeObject(default(ImmutableArray<int>), Formatting.Indented));
+        }
+        #endregion
 
         #region Queue
         [Test]

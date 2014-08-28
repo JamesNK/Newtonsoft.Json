@@ -429,6 +429,23 @@ OnSerialized_Derived
 OnSerialized_Derived_Derived", string.Join(Environment.NewLine, e.ToArray()));
         }
 #endif
+
+        [Test]
+        public void NoStreamingContextParameter()
+        {
+            ExportPostData d = new ExportPostData
+            {
+                user = "user!",
+                contract = new Contract
+                {
+                    contractName = "name!"
+                }
+            };
+
+            ExceptionAssert.Throws<JsonException>(
+                "Serialization Callback 'Void Deserialized()' in type 'Newtonsoft.Json.Tests.Serialization.Contract' must have a single parameter of type 'System.Runtime.Serialization.StreamingContext'.",
+                () => JsonConvert.SerializeObject(d, Formatting.Indented));
+        }
     }
 
     public class SerializationEventOrderTestObject
@@ -521,6 +538,36 @@ OnSerialized_Derived_Derived", string.Join(Environment.NewLine, e.ToArray()));
         internal new void OnDeserializedMethod(StreamingContext context)
         {
             Events.Add("OnDeserialized_Derived_Derived");
+        }
+    }
+
+    public class ExportPostData
+    {
+        public Contract contract { get; set; }
+        public bool includeSubItems { get; set; }
+        public string user { get; set; }
+        public string[] projects { get; set; }
+    }
+
+    public class Contract
+    {
+        public string _id { get; set; }
+        public string contractName { get; set; }
+        public string contractNumber { get; set; }
+        public string updatedBy { get; set; }
+        public DateTime updated_at { get; set; }
+
+        private bool _onDeserializedCalled;
+
+        public bool GetOnDeserializedCalled()
+        {
+            return _onDeserializedCalled;
+        }
+
+        [OnDeserialized]
+        internal void Deserialized()
+        {
+            _onDeserializedCalled = true;
         }
     }
 }

@@ -155,6 +155,40 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not add property {0} to {1}. Property with the same name already exists on object.".FormatWith(CultureInfo.InvariantCulture, newProperty.Name, GetType()));
         }
 
+        internal override void MergeItem(object content, JsonMergeSettings settings)
+        {
+            JObject o = content as JObject;
+            if (o == null)
+                return;
+
+            foreach (KeyValuePair<string, JToken> contentItem in o)
+            {
+                JProperty existingProperty = Property(contentItem.Key);
+
+                if (existingProperty == null)
+                {
+                    Add(contentItem.Key, contentItem.Value);
+                }
+                else if (contentItem.Value != null)
+                {
+                    JContainer existingContainer = existingProperty.Value as JContainer;
+                    if (existingContainer == null)
+                    {
+                        if (contentItem.Value.Type != JTokenType.Null)
+                            existingProperty.Value = contentItem.Value;
+                    }
+                    else if (existingContainer.Type != contentItem.Value.Type)
+                    {
+                        existingProperty.Value = contentItem.Value;
+                    }
+                    else
+                    {
+                        existingContainer.Merge(contentItem.Value, settings);
+                    }
+                }
+            }
+        }
+
         internal void InternalPropertyChanged(JProperty childProperty)
         {
             OnPropertyChanged(childProperty.Name);
@@ -347,11 +381,11 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Creates a <see cref="JArray"/> from an object.
+        /// Creates a <see cref="JObject"/> from an object.
         /// </summary>
-        /// <param name="o">The object that will be used to create <see cref="JArray"/>.</param>
+        /// <param name="o">The object that will be used to create <see cref="JObject"/>.</param>
         /// <param name="jsonSerializer">The <see cref="JsonSerializer"/> that will be used to read the object.</param>
-        /// <returns>A <see cref="JArray"/> with the values of the specified object</returns>
+        /// <returns>A <see cref="JObject"/> with the values of the specified object</returns>
         public new static JObject FromObject(object o, JsonSerializer jsonSerializer)
         {
             JToken token = FromObjectInternal(o, jsonSerializer);

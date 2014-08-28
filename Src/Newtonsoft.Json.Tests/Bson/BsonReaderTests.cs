@@ -150,8 +150,8 @@ namespace Newtonsoft.Json.Tests.Bson
 
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.Bytes, reader.TokenType);
-            CollectionAssert.AreEqual(g.ToByteArray(), (byte[])reader.Value);
-            Assert.AreEqual(typeof(byte[]), reader.ValueType);
+            Assert.AreEqual(g, reader.Value);
+            Assert.AreEqual(typeof(Guid), reader.ValueType);
 
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
@@ -1432,7 +1432,7 @@ namespace Newtonsoft.Json.Tests.Bson
             }
         }
 
-#if !(NET20 || NET35 || NETFX_CORE)
+#if !(NETFX_CORE)
         public void Utf8Text()
         {
             string badText = System.IO.File.ReadAllText(@"PoisonText.txt");
@@ -1602,6 +1602,115 @@ namespace Newtonsoft.Json.Tests.Bson
             Assert.IsTrue(binder.BindToNameCalled);
 #endif
             Assert.IsTrue(binder.BindToTypeCalled);
+        }
+
+        [Test]
+        public void GuidsShouldBeProperlyDeserialised()
+        {
+            Guid g = new Guid("822C0CE6-CC42-4753-A3C3-26F0684A4B88");
+
+            MemoryStream ms = new MemoryStream();
+            BsonWriter writer = new BsonWriter(ms);
+            writer.WriteStartObject();
+            writer.WritePropertyName("TheGuid");
+            writer.WriteValue(g);
+            writer.WriteEndObject();
+            writer.Flush();
+
+            byte[] bytes = ms.ToArray();
+
+            BsonReader reader = new BsonReader(new MemoryStream(bytes));
+            Assert.IsTrue(reader.Read());
+            Assert.IsTrue(reader.Read());
+            
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Bytes, reader.TokenType);
+            Assert.AreEqual(typeof(Guid), reader.ValueType);
+            Assert.AreEqual(g, (Guid)reader.Value);
+
+            Assert.IsTrue(reader.Read());
+            Assert.IsFalse(reader.Read());
+
+            JsonSerializer serializer = new JsonSerializer();
+            serializer.MetadataPropertyHandling = MetadataPropertyHandling.Default;
+            ObjectTestClass b = serializer.Deserialize<ObjectTestClass>(new BsonReader(new MemoryStream(bytes)));
+            Assert.AreEqual(typeof(Guid), b.TheGuid.GetType());
+            Assert.AreEqual(g, (Guid)b.TheGuid);
+        }
+
+        [Test]
+        public void GuidsShouldBeProperlyDeserialised_AsBytes()
+        {
+            Guid g = new Guid("822C0CE6-CC42-4753-A3C3-26F0684A4B88");
+
+            MemoryStream ms = new MemoryStream();
+            BsonWriter writer = new BsonWriter(ms);
+            writer.WriteStartObject();
+            writer.WritePropertyName("TheGuid");
+            writer.WriteValue(g);
+            writer.WriteEndObject();
+            writer.Flush();
+
+            byte[] bytes = ms.ToArray();
+
+            BsonReader reader = new BsonReader(new MemoryStream(bytes));
+            Assert.IsTrue(reader.Read());
+            Assert.IsTrue(reader.Read());
+
+            CollectionAssert.AreEquivalent(g.ToByteArray(), reader.ReadAsBytes());
+            Assert.AreEqual(JsonToken.Bytes, reader.TokenType);
+            Assert.AreEqual(typeof(byte[]), reader.ValueType);
+            CollectionAssert.AreEquivalent(g.ToByteArray(), (byte[])reader.Value);
+
+            Assert.IsTrue(reader.Read());
+            Assert.IsFalse(reader.Read());
+
+            JsonSerializer serializer = new JsonSerializer();
+            BytesTestClass b = serializer.Deserialize<BytesTestClass>(new BsonReader(new MemoryStream(bytes)));
+            CollectionAssert.AreEquivalent(g.ToByteArray(), b.TheGuid);
+        }
+
+        [Test]
+        public void GuidsShouldBeProperlyDeserialised_AsBytes_ReadAhead()
+        {
+            Guid g = new Guid("822C0CE6-CC42-4753-A3C3-26F0684A4B88");
+
+            MemoryStream ms = new MemoryStream();
+            BsonWriter writer = new BsonWriter(ms);
+            writer.WriteStartObject();
+            writer.WritePropertyName("TheGuid");
+            writer.WriteValue(g);
+            writer.WriteEndObject();
+            writer.Flush();
+
+            byte[] bytes = ms.ToArray();
+
+            BsonReader reader = new BsonReader(new MemoryStream(bytes));
+            Assert.IsTrue(reader.Read());
+            Assert.IsTrue(reader.Read());
+
+            CollectionAssert.AreEquivalent(g.ToByteArray(), reader.ReadAsBytes());
+            Assert.AreEqual(JsonToken.Bytes, reader.TokenType);
+            Assert.AreEqual(typeof(byte[]), reader.ValueType);
+            CollectionAssert.AreEquivalent(g.ToByteArray(), (byte[])reader.Value);
+
+            Assert.IsTrue(reader.Read());
+            Assert.IsFalse(reader.Read());
+
+            JsonSerializer serializer = new JsonSerializer();
+            serializer.MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead;
+            BytesTestClass b = serializer.Deserialize<BytesTestClass>(new BsonReader(new MemoryStream(bytes)));
+            CollectionAssert.AreEquivalent(g.ToByteArray(), b.TheGuid);
+        }
+
+        public class BytesTestClass
+        {
+            public byte[] TheGuid { get; set; }
+        }
+
+        public class ObjectTestClass
+        {
+            public object TheGuid { get; set; }
         }
     }
 }

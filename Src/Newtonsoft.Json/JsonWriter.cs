@@ -1226,7 +1226,7 @@ namespace Newtonsoft.Json
                     throw CreateUnsupportedTypeException(this, value);
 #endif
 
-                WriteValue(this, ConvertUtils.GetTypeCode(value), value);
+                WriteValue(this, ConvertUtils.GetTypeCode(value.GetType()), value);
             }
         }
         #endregion

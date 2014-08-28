@@ -57,17 +57,16 @@ namespace Newtonsoft.Json.Serialization
         /// <value><c>true</c> if the collection type is a multidimensional array; otherwise, <c>false</c>.</value>
         public bool IsMultidimensionalArray { get; private set; }
 
-        private readonly bool _isCollectionItemTypeNullableType;
         private readonly Type _genericCollectionDefinitionType;
 
         private Type _genericWrapperType;
-        private MethodCall<object, object> _genericWrapperCreator;
+        private ObjectConstructor<object> _genericWrapperCreator;
         private Func<object> _genericTemporaryCollectionCreator;
 
         internal bool IsArray { get; private set; }
         internal bool ShouldCreateWrapper { get; private set; }
         internal bool CanDeserialize { get; private set; }
-        internal MethodBase ParametrizedConstructor { get; private set; }
+        internal ObjectConstructor<object> ParametrizedCreator { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonArrayContract"/> class.
@@ -102,7 +101,7 @@ namespace Newtonsoft.Json.Serialization
                     CreatedType = typeof(List<object>);
 
                 if (CollectionItemType != null)
-                    ParametrizedConstructor = CollectionUtils.ResolveEnumableCollectionConstructor(underlyingType, CollectionItemType);
+                    ParametrizedCreator = CollectionUtils.ResolveEnumableCollectionConstructor(underlyingType, CollectionItemType);
 
                 IsReadOnlyOrFixedSize = ReflectionUtils.InheritsGenericDefinition(underlyingType, typeof(ReadOnlyCollection<>));
                 canDeserialize = true;
@@ -120,23 +119,23 @@ namespace Newtonsoft.Json.Serialization
                     CreatedType = typeof(HashSet<>).MakeGenericType(CollectionItemType);
 #endif
 
-                ParametrizedConstructor = CollectionUtils.ResolveEnumableCollectionConstructor(underlyingType, CollectionItemType);
+                ParametrizedCreator = CollectionUtils.ResolveEnumableCollectionConstructor(underlyingType, CollectionItemType);
                 canDeserialize = true;
                 ShouldCreateWrapper = true;
             }
 #if !(NET40 || NET35 || NET20 || PORTABLE40)
             else if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof(IReadOnlyCollection<>), out tempCollectionType))
             {
-                CollectionItemType = underlyingType.GetGenericArguments()[0];
+                CollectionItemType = tempCollectionType.GetGenericArguments()[0];
 
                 if (ReflectionUtils.IsGenericDefinition(underlyingType, typeof(IReadOnlyCollection<>))
                     || ReflectionUtils.IsGenericDefinition(underlyingType, typeof(IReadOnlyList<>)))
                     CreatedType = typeof(ReadOnlyCollection<>).MakeGenericType(CollectionItemType);
 
                 _genericCollectionDefinitionType = typeof(List<>).MakeGenericType(CollectionItemType);
-                ParametrizedConstructor = CollectionUtils.ResolveEnumableCollectionConstructor(CreatedType, CollectionItemType);
+                ParametrizedCreator = CollectionUtils.ResolveEnumableCollectionConstructor(CreatedType, CollectionItemType);
                 IsReadOnlyOrFixedSize = true;
-                canDeserialize = (ParametrizedConstructor != null);
+                canDeserialize = (ParametrizedCreator != null);
             }
 #endif
             else if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof(IEnumerable<>), out tempCollectionType))
@@ -146,13 +145,13 @@ namespace Newtonsoft.Json.Serialization
                 if (ReflectionUtils.IsGenericDefinition(UnderlyingType, typeof(IEnumerable<>)))
                     CreatedType = typeof(List<>).MakeGenericType(CollectionItemType);
 
-                ParametrizedConstructor = CollectionUtils.ResolveEnumableCollectionConstructor(underlyingType, CollectionItemType);
+                ParametrizedCreator = CollectionUtils.ResolveEnumableCollectionConstructor(underlyingType, CollectionItemType);
 
 #if !(NET35 || NET20 || NETFX_CORE)
-                if (ParametrizedConstructor == null && underlyingType.Name == FSharpUtils.FSharpListTypeName)
+                if (ParametrizedCreator == null && underlyingType.Name == FSharpUtils.FSharpListTypeName)
                 {
                     FSharpUtils.EnsureInitialized(underlyingType.Assembly());
-                    ParametrizedConstructor = FSharpUtils.CreateSeq(CollectionItemType);
+                    ParametrizedCreator = FSharpUtils.CreateSeq(CollectionItemType);
                 }
 #endif
 
@@ -170,7 +169,7 @@ namespace Newtonsoft.Json.Serialization
 
                     IsReadOnlyOrFixedSize = true;
                     ShouldCreateWrapper = true;
-                    canDeserialize = (ParametrizedConstructor != null);
+                    canDeserialize = (ParametrizedCreator != null);
                 }
             }
             else
@@ -182,27 +181,26 @@ namespace Newtonsoft.Json.Serialization
 
             CanDeserialize = canDeserialize;
 
-            if (CollectionItemType != null)
-                _isCollectionItemTypeNullableType = ReflectionUtils.IsNullableType(CollectionItemType);
-
 #if (NET20 || NET35)
-    // bug in .NET 2.0 & 3.5 that List<Nullable<T>> throws an error when adding null via IList.Add(object)
-    // wrapper will handle calling Add(T) instead
-      if (_isCollectionItemTypeNullableType
-        && (ReflectionUtils.InheritsGenericDefinition(CreatedType, typeof(List<>), out tempCollectionType)
-        || (IsArray && !IsMultidimensionalArray)))
-      {
-        ShouldCreateWrapper = true;
-      }
+            if (CollectionItemType != null && ReflectionUtils.IsNullableType(CollectionItemType))
+            {
+                // bug in .NET 2.0 & 3.5 that List<Nullable<T>> throws an error when adding null via IList.Add(object)
+                // wrapper will handle calling Add(T) instead
+                if (ReflectionUtils.InheritsGenericDefinition(CreatedType, typeof(List<>), out tempCollectionType)
+                    || (IsArray && !IsMultidimensionalArray))
+                {
+                    ShouldCreateWrapper = true;
+                }
+            }
 #endif
 
 #if !(NET20 || NET35 || NET40 || PORTABLE40)
             Type immutableCreatedType;
-            MethodBase immutableParameterizedCreator;
+            ObjectConstructor<object> immutableParameterizedCreator;
             if (ImmutableCollectionsUtils.TryBuildImmutableForArrayContract(underlyingType, CollectionItemType, out immutableCreatedType, out immutableParameterizedCreator))
             {
                 CreatedType = immutableCreatedType;
-                ParametrizedConstructor = immutableParameterizedCreator;
+                ParametrizedCreator = immutableParameterizedCreator;
                 IsReadOnlyOrFixedSize = true;
                 CanDeserialize = true;
             }
@@ -224,10 +222,10 @@ namespace Newtonsoft.Json.Serialization
                     constructorArgument = _genericCollectionDefinitionType;
 
                 ConstructorInfo genericWrapperConstructor = _genericWrapperType.GetConstructor(new[] { constructorArgument });
-                _genericWrapperCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(genericWrapperConstructor);
+                _genericWrapperCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateParametrizedConstructor(genericWrapperConstructor);
             }
 
-            return (IWrappedCollection)_genericWrapperCreator(null, list);
+            return (IWrappedCollection)_genericWrapperCreator(list);
         }
 
         internal IList CreateTemporaryCollection()

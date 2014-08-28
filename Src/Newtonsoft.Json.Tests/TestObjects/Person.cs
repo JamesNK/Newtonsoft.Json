@@ -24,6 +24,8 @@
 #endregion
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace Newtonsoft.Json.Tests.TestObjects
@@ -67,5 +69,10 @@ namespace Newtonsoft.Json.Tests.TestObjects
 
         public string Department { get; set; }
         public string JobTitle { get; set; }
+    }
+
+    public class Manager : Employee
+    {
+        public IList<Employee> Employees { get; set; }
     }
 }

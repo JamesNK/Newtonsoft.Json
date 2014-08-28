@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+using System.Xml;
 #if !(NET20 || NET35 || NETFX_CORE || PORTABLE)
 using System;
 using System.Collections;
@@ -131,6 +132,22 @@ namespace Newtonsoft.Json.Tests
             SerializeTests(test);
         }
 
+        [Test]
+        public void SerializeKeyValuePair()
+        {
+            IList<KeyValuePair<string, int>> value = new List<KeyValuePair<string, int>>();
+            for (int i = 0; i < 100; i++)
+            {
+                value.Add(new KeyValuePair<string, int>("Key" + i, i));
+            }
+
+            BenchmarkSerializeMethod(SerializeMethod.JsonNet, value);
+
+            string json = JsonConvert.SerializeObject(value);
+
+            BenchmarkDeserializeMethod<IList<KeyValuePair<string, int>>>(SerializeMethod.JsonNet, json);
+        }
+
         private void SerializeTests(object value)
         {
             BenchmarkSerializeMethod(SerializeMethod.DataContractSerializer, value);
@@ -179,6 +196,32 @@ namespace Newtonsoft.Json.Tests
 
             SerializeSize(image);
         }
+
+#if !(PORTABLE40)
+        [Test]
+        public void ConvertXmlNode()
+        {
+            XmlDocument doc = new XmlDocument();
+            using (FileStream file = System.IO.File.OpenRead("large_sample.xml"))
+            {
+                doc.Load(file);
+            }
+
+            JsonConvert.SerializeXmlNode(doc);
+        }
+
+        [Test]
+        public void ConvertXNode()
+        {
+            XDocument doc;
+            using (FileStream file = System.IO.File.OpenRead("large_sample.xml"))
+            {
+                doc = XDocument.Load(file);
+            }
+
+            JsonConvert.SerializeXNode(doc);
+        }
+#endif
 
         private T TimeOperation<T>(Func<T> operation, string name)
         {
@@ -994,6 +1037,25 @@ If attributes are not mentioned, default values are used in each case.
                 }
                 return null;
             }, "JObject.ToString");
+        }
+
+        [Test]
+        public void JObjectCreationAndPropertyAccess()
+        {
+            TimeOperation<object>(() =>
+            {
+                for (int i = 0; i < Iterations * 100; i++)
+                {
+                    JObject test = new JObject(
+                        new JProperty("one", 1),
+                        new JProperty("two", 2));
+
+                    test["i"] = i;
+                    int j = (int)test["i"];
+                    test["j"] = j;
+                }
+                return null;
+            }, "JObjectCreationAndPropertyAccess");
         }
 
         [Test]

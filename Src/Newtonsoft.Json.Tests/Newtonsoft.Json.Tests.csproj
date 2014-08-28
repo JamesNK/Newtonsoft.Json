@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autofac">
+      <HintPath>..\packages\Autofac.3.5.0\lib\net40\Autofac.dll</HintPath>
+    </Reference>
     <Reference Include="FSharp.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\FSharp.Core.4.0.0\lib\FSharp.Core.dll</HintPath>
@@ -39,9 +42,9 @@
       <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Collections.Immutable, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+    <Reference Include="System.Collections.Immutable, Version=1.1.20.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.Bcl.Immutable.1.0.27\lib\portable-net45+win8+wp8\System.Collections.Immutable.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Bcl.Immutable.1.1.20-beta\lib\portable-net45+win8\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -69,11 +72,13 @@
     <Compile Include="Converters\IsoDateTimeConverterTests.cs" />
     <Compile Include="Converters\JavaScriptDateTimeConverterTests.cs" />
     <Compile Include="Converters\JsonValueConverterTests.cs" />
+    <Compile Include="Converters\KeyValuePairConverterTests.cs" />
     <Compile Include="Converters\ObjectIdConverterTests.cs" />
     <Compile Include="Converters\RegexConverterTests.cs" />
     <Compile Include="Converters\StringEnumConverterTests.cs" />
     <Compile Include="Converters\VersionConverterTests.cs" />
     <Compile Include="Converters\XmlNodeConverterTest.cs" />
+    <Compile Include="DemoTests.cs" />
     <Compile Include="Documentation\ConditionalPropertiesTests.cs" />
     <Compile Include="Documentation\ConvertingJsonAndXmlTests.cs" />
     <Compile Include="Documentation\JsonNetVsWindowsDataJsonTests.cs" />
@@ -222,6 +227,7 @@
     <Compile Include="Linq\JTokenWriterTest.cs" />
     <Compile Include="Linq\JValueTests.cs" />
     <Compile Include="Linq\LinqToJsonTest.cs" />
+    <Compile Include="Linq\MergeTests.cs" />
     <Compile Include="PerformanceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Schema\ExtensionsTests.cs" />
@@ -235,13 +241,16 @@
     <Compile Include="Serialization\ConstructorHandlingTests.cs" />
     <Compile Include="Serialization\ContractResolverTests.cs" />
     <Compile Include="Serialization\DefaultValueHandlingTests.cs" />
+    <Compile Include="Serialization\DynamicConcreteTests.cs" />
     <Compile Include="Serialization\DynamicTests.cs" />
     <Compile Include="Serialization\EntitiesSerializationTests.cs" />
     <Compile Include="Serialization\ExtensionDataTests.cs" />
+    <Compile Include="Serialization\DependencyInjectionTests.cs" />
     <Compile Include="Serialization\FSharpTests.cs" />
     <Compile Include="Serialization\ImmutableCollectionsTests.cs" />
     <Compile Include="Serialization\JsonPropertyCollectionTests.cs" />
     <Compile Include="Serialization\JsonSerializerTest.cs" />
+    <Compile Include="Serialization\MetadataPropertyHandlingTests.cs" />
     <Compile Include="Serialization\MissingMemberHandlingTests.cs" />
     <Compile Include="Serialization\NullValueHandlingTests.cs" />
     <Compile Include="Serialization\PopulateTests.cs" />
@@ -251,7 +260,6 @@
     <Compile Include="Serialization\SerializationEventAttributeTests.cs" />
     <Compile Include="Serialization\JsonSerializerCollectionsTests.cs" />
     <Compile Include="Serialization\ShouldSerializeTests.cs" />
-    <Compile Include="Serialization\SpecialPropertyHandlingTests.cs" />
     <Compile Include="Serialization\TraceWriterTests.cs" />
     <Compile Include="Serialization\TypeNameHandlingTests.cs" />
     <Compile Include="Serialization\WebApiIntegrationTests.cs" />
@@ -484,6 +492,7 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.csproj">
@@ -493,7 +502,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="bunny_pancake.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="large_sample.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="PoisonText.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

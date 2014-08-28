@@ -221,6 +221,9 @@ namespace Newtonsoft.Json.Linq
                 JProperty p1 = (JProperty)keyAndProperty.Value;
                 JProperty p2 = (JProperty)secondValue;
 
+                if (p1.Value == null)
+                    return (p2.Value == null);
+
                 if (!p1.Value.DeepEquals(p2.Value))
                     return false;
             }

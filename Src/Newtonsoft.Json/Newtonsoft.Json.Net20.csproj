@@ -107,6 +107,7 @@
     <Compile Include="JsonExtensionDataAttribute.cs" />
     <Compile Include="JsonPosition.cs" />
     <Compile Include="Linq\JPropertyKeyedCollection.cs" />
+    <Compile Include="Linq\JsonMergeSettings.cs" />
     <Compile Include="Linq\JsonPath\ArrayIndexFilter.cs" />
     <Compile Include="Linq\JsonPath\ArrayMultipleIndexFilter.cs" />
     <Compile Include="Linq\JsonPath\ArraySliceFilter.cs" />
@@ -117,6 +118,8 @@
     <Compile Include="Linq\JsonPath\QueryExpression.cs" />
     <Compile Include="Linq\JsonPath\QueryFilter.cs" />
     <Compile Include="Linq\JsonPath\ScanFilter.cs" />
+    <Compile Include="Linq\MergeArrayHandling.cs" />
+    <Compile Include="MetadataPropertyHandling.cs" />
     <Compile Include="SerializationBinder.cs" />
     <Compile Include="Serialization\DiagnosticsTraceWriter.cs" />
     <Compile Include="Serialization\ExpressionValueProvider.cs" />
@@ -126,7 +129,6 @@
     <Compile Include="Serialization\MemoryTraceWriter.cs" />
     <Compile Include="Serialization\TraceJsonReader.cs" />
     <Compile Include="Serialization\TraceJsonWriter.cs" />
-    <Compile Include="SpecialPropertyHandling.cs" />
     <Compile Include="StringEscapeHandling.cs" />
     <Compile Include="Utilities\DateTimeParser.cs" />
     <Compile Include="Utilities\DynamicProxy.cs" />
@@ -224,17 +226,16 @@
     <Compile Include="Serialization\JsonStringContract.cs" />
     <Compile Include="Serialization\JsonTypeReflector.cs" />
     <Compile Include="Serialization\CachedAttributeGetter.cs" />
-    <Compile Include="Serialization\LateBoundMetadataTypeAttribute.cs" />
     <Compile Include="Serialization\ObjectConstructor.cs" />
     <Compile Include="Serialization\OnErrorAttribute.cs" />
     <Compile Include="Serialization\ReflectionValueProvider.cs" />
     <Compile Include="Utilities\Base64Encoder.cs" />
     <Compile Include="Utilities\DynamicReflectionDelegateFactory.cs" />
-    <Compile Include="Utilities\DynamicWrapper.cs" />
     <Compile Include="Utilities\ILGeneratorExtensions.cs" />
     <Compile Include="Utilities\LateBoundReflectionDelegateFactory.cs" />
     <Compile Include="Utilities\MethodCall.cs" />
     <Compile Include="Utilities\ReflectionDelegateFactory.cs" />
+    <Compile Include="Utilities\ReflectionObject.cs" />
     <Compile Include="Utilities\StringReference.cs" />
     <Compile Include="Utilities\ThreadSafeStore.cs" />
     <Compile Include="TypeNameHandling.cs" />
@@ -245,7 +246,6 @@
     <Compile Include="Utilities\DictionaryWrapper.cs" />
     <Compile Include="Utilities\EnumUtils.cs" />
     <Compile Include="Utilities\EnumValue.cs" />
-    <Compile Include="Utilities\EnumValues.cs" />
     <Compile Include="Utilities\JavaScriptUtils.cs" />
     <Compile Include="JsonToken.cs" />
     <Compile Include="JsonWriter.cs" />

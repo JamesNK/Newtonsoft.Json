@@ -72,6 +72,20 @@ namespace Newtonsoft.Json.Utilities
 
         private const string EscapedUnicodeText = "!";
 
+        public static bool ShouldEscapeJavaScriptString(string s, bool[] charEscapeFlags)
+        {
+            if (s == null)
+                return false;
+
+            foreach (char c in s)
+            {
+                if (c >= charEscapeFlags.Length || charEscapeFlags[c])
+                    return true;
+            }
+
+            return false;
+        }
+
         public static void WriteEscapedJavaScriptString(TextWriter writer, string s, char delimiter, bool appendDelimiters,
             bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling, ref char[] writeBuffer)
         {

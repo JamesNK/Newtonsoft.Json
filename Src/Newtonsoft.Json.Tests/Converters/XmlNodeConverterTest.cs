@@ -23,6 +23,12 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
+#endif
+using System.Text;
 #if !(NETFX_CORE || PORTABLE || PORTABLE40)
 using System;
 using System.Collections.Generic;
@@ -115,6 +121,194 @@ namespace Newtonsoft.Json.Tests.Converters
         }
 
 #if !NET20
+        public class Foo
+        {
+            public XElement Bar { get; set; }
+        }
+
+        [Test]
+        public void SerializeAndDeserializeXElement()
+        {
+            Foo foo = new Foo { Bar = null };
+            string json = JsonConvert.SerializeObject(foo);
+
+            Assert.AreEqual(@"{""Bar"":null}", json);
+            Foo foo2 = JsonConvert.DeserializeObject<Foo>(json);
+
+            Assert.IsNull(foo2.Bar);
+        }
+
+        [Test]
+        public void MultipleNamespacesXDocument()
+        {
+            string xml = @"<result xp_0:end=""2014-08-15 13:12:11.9184"" xp_0:start=""2014-08-15 13:11:49.3140"" xp_0:time_diff=""22604.3836"" xmlns:xp_0=""Test1"" p2:end=""2014-08-15 13:13:49.5522"" p2:start=""2014-08-15 13:13:49.0268"" p2:time_diff=""525.4646"" xmlns:p2=""Test2"" />";
+
+            XDocument d = XDocument.Parse(xml);
+
+            string json = JsonConvert.SerializeObject(d, Formatting.Indented);
+
+            Console.WriteLine(json);
+
+            XDocument doc = JsonConvert.DeserializeObject<XDocument>(json);
+
+            Console.WriteLine(doc.ToString());
+
+            Assert.AreEqual(xml, doc.ToString());
+        }
+#endif
+
+        [Test]
+        public void MultipleNamespacesXmlDocument()
+        {
+            string xml = @"<result xp_0:end=""2014-08-15 13:12:11.9184"" xp_0:start=""2014-08-15 13:11:49.3140"" xp_0:time_diff=""22604.3836"" xmlns:xp_0=""Test1"" p2:end=""2014-08-15 13:13:49.5522"" p2:start=""2014-08-15 13:13:49.0268"" p2:time_diff=""525.4646"" xmlns:p2=""Test2"" />";
+
+            XmlDocument d = new XmlDocument();
+            d.LoadXml(xml);
+
+            string json = JsonConvert.SerializeObject(d, Formatting.Indented);
+
+            Console.WriteLine(json);
+
+            XmlDocument doc = JsonConvert.DeserializeObject<XmlDocument>(json);
+
+            Console.WriteLine(doc.OuterXml);
+
+            Assert.AreEqual(xml, doc.OuterXml);
+        }
+
+        [Test]
+        public void SerializeXmlElement()
+        {
+            string xml = @"<payload>
+    <Country>6</Country>
+    <FinancialTransactionApprovalRequestUID>79</FinancialTransactionApprovalRequestUID>
+    <TransactionStatus>Approved</TransactionStatus>
+    <StatusChangeComment></StatusChangeComment>
+    <RequestedBy>Someone</RequestedBy>
+</payload>";
+
+            var xmlDocument = new XmlDocument();
+
+            xmlDocument.LoadXml(xml);
+
+            var result = xmlDocument.FirstChild.ChildNodes.Cast<XmlNode>().ToArray();
+
+            var json = JsonConvert.SerializeObject(result, Formatting.Indented);  // <--- fails here with the cast message
+
+            Assert.AreEqual(@"[
+  {
+    ""Country"": ""6""
+  },
+  {
+    ""FinancialTransactionApprovalRequestUID"": ""79""
+  },
+  {
+    ""TransactionStatus"": ""Approved""
+  },
+  {
+    ""StatusChangeComment"": """"
+  },
+  {
+    ""RequestedBy"": ""Someone""
+  }
+]", json);
+        }
+
+#if !NET20
+        [Test]
+        public void SerializeXElement()
+        {
+            string xml = @"<payload>
+    <Country>6</Country>
+    <FinancialTransactionApprovalRequestUID>79</FinancialTransactionApprovalRequestUID>
+    <TransactionStatus>Approved</TransactionStatus>
+    <StatusChangeComment></StatusChangeComment>
+    <RequestedBy>Someone</RequestedBy>
+</payload>";
+
+            var xmlDocument = XDocument.Parse(xml);
+
+            var result = xmlDocument.Root.Nodes().ToArray();
+
+            var json = JsonConvert.SerializeObject(result, Formatting.Indented);  // <--- fails here with the cast message
+
+            Assert.AreEqual(@"[
+  {
+    ""Country"": ""6""
+  },
+  {
+    ""FinancialTransactionApprovalRequestUID"": ""79""
+  },
+  {
+    ""TransactionStatus"": ""Approved""
+  },
+  {
+    ""StatusChangeComment"": """"
+  },
+  {
+    ""RequestedBy"": ""Someone""
+  }
+]", json);
+        }
+
+        public class DecimalContainer
+        {
+            public decimal Number { get; set; }
+        }
+
+        [Test]
+        public void FloatParseHandlingDecimal()
+        {
+            decimal d = (decimal)Math.PI + 1000000000m;
+            var x = new DecimalContainer { Number = d };
+
+            var json = JsonConvert.SerializeObject(x, Formatting.Indented);
+
+            XDocument doc1 = JsonConvert.DeserializeObject<XDocument>(json, new JsonSerializerSettings
+            {
+                Converters = { new XmlNodeConverter() },
+                FloatParseHandling = FloatParseHandling.Decimal
+            });
+
+            var xml = doc1.ToString();
+            Assert.AreEqual("<Number>1000000003.14159265358979</Number>", xml);
+
+            string json2 = JsonConvert.SerializeObject(doc1, Formatting.Indented);
+
+            DecimalContainer x2 = JsonConvert.DeserializeObject<DecimalContainer>(json2);
+
+            Assert.AreEqual(x.Number, x2.Number);
+        }
+
+        public class DateTimeOffsetContainer
+        {
+            public DateTimeOffset Date { get; set; }
+        }
+
+        [Test]
+        public void DateTimeParseHandlingOffset()
+        {
+            DateTimeOffset d = new DateTimeOffset(2012, 12, 12, 12, 44, 1, TimeSpan.FromHours(12).Add(TimeSpan.FromMinutes(34)));
+            var x = new DateTimeOffsetContainer { Date = d };
+
+            var json = JsonConvert.SerializeObject(x, Formatting.Indented);
+
+            XDocument doc1 = JsonConvert.DeserializeObject<XDocument>(json, new JsonSerializerSettings
+            {
+                Converters = { new XmlNodeConverter() },
+                DateParseHandling = DateParseHandling.DateTimeOffset
+            });
+
+            var xml = doc1.ToString();
+            Assert.AreEqual("<Date>2012-12-12T12:44:01+12:34</Date>", xml);
+
+            string json2 = JsonConvert.SerializeObject(doc1, Formatting.Indented);
+
+            DateTimeOffsetContainer x2 = JsonConvert.DeserializeObject<DateTimeOffsetContainer>(json2);
+
+            Assert.AreEqual(x.Date, x2.Date);
+        }
+
         [Test]
         public void GroupElementsOfTheSameName()
         {
@@ -144,8 +338,7 @@ namespace Newtonsoft.Json.Tests.Converters
             doc.LoadXml("<root></root>");
 
             json = JsonConvert.SerializeXmlNode(doc, Formatting.Indented, true);
-            Assert.AreEqual("null", json);
-
+            Assert.AreEqual(@"""""", json);
 
             XDocument doc1 = XDocument.Parse("<root />");
 
@@ -155,7 +348,7 @@ namespace Newtonsoft.Json.Tests.Converters
             doc1 = XDocument.Parse("<root></root>");
 
             json = JsonConvert.SerializeXNode(doc1, Formatting.Indented, true);
-            Assert.AreEqual("null", json);
+            Assert.AreEqual(@"""""", json);
         }
 
         [Test]
@@ -343,6 +536,138 @@ namespace Newtonsoft.Json.Tests.Converters
             Console.WriteLine("DocumentFragmentSerialize");
             Console.WriteLine(jsonText);
             Console.WriteLine();
+        }
+
+        [Test]
+        public void XmlDocumentTypeSerialize()
+        {
+            string xml = @"<?xml version=""1.0"" encoding=""utf-8""?><!DOCTYPE STOCKQUOTE PUBLIC ""-//W3C//DTD StockQuote 1.5//EN"" ""http://www.idontexistnopenopewhatnope123.org/dtd/stockquote_1.5.dtd""><STOCKQUOTE ROWCOUNT=""2""><RESULT><ROW><ASK>0</ASK><BID>0</BID><CHANGE>-16.310</CHANGE><COMPANYNAME>Dow Jones</COMPANYNAME><DATETIME>2014-04-17 15:50:37</DATETIME><DIVIDEND>0</DIVIDEND><EPS>0</EPS><EXCHANGE></EXCHANGE><HIGH>16460.490</HIGH><LASTDATETIME>2014-04-17 15:50:37</LASTDATETIME><LASTPRICE>16408.540</LASTPRICE><LOW>16368.140</LOW><OPEN>16424.140</OPEN><PCHANGE>-0.099</PCHANGE><PE>0</PE><PREVIOUSCLOSE>16424.850</PREVIOUSCLOSE><SHARES>0</SHARES><TICKER>DJII</TICKER><TRADES>0</TRADES><VOLUME>136188700</VOLUME><YEARHIGH>11309.000</YEARHIGH><YEARLOW>9302.280</YEARLOW><YIELD>0</YIELD></ROW><ROW><ASK>0</ASK><BID>0</BID><CHANGE>9.290</CHANGE><COMPANYNAME>NASDAQ</COMPANYNAME><DATETIME>2014-04-17 15:40:01</DATETIME><DIVIDEND>0</DIVIDEND><EPS>0</EPS><EXCHANGE></EXCHANGE><HIGH>4110.460</HIGH><LASTDATETIME>2014-04-17 15:40:01</LASTDATETIME><LASTPRICE>4095.520</LASTPRICE><LOW>4064.700</LOW><OPEN>4080.300</OPEN><PCHANGE>0.227</PCHANGE><PE>0</PE><PREVIOUSCLOSE>4086.230</PREVIOUSCLOSE><SHARES>0</SHARES><TICKER>COMP</TICKER><TRADES>0</TRADES><VOLUME>1784210100</VOLUME><YEARHIGH>4371.710</YEARHIGH><YEARLOW>3154.960</YEARLOW><YIELD>0</YIELD></ROW></RESULT><STATUS>Couldn't find ticker: SPIC?</STATUS><STATUSCODE>2</STATUSCODE></STOCKQUOTE>";
+
+            string expected = @"{
+  ""?xml"": {
+    ""@version"": ""1.0"",
+    ""@encoding"": ""utf-8""
+  },
+  ""!DOCTYPE"": {
+    ""@name"": ""STOCKQUOTE"",
+    ""@public"": ""-//W3C//DTD StockQuote 1.5//EN"",
+    ""@system"": ""http://www.idontexistnopenopewhatnope123.org/dtd/stockquote_1.5.dtd""
+  },
+  ""STOCKQUOTE"": {
+    ""@ROWCOUNT"": ""2"",
+    ""RESULT"": {
+      ""ROW"": [
+        {
+          ""ASK"": ""0"",
+          ""BID"": ""0"",
+          ""CHANGE"": ""-16.310"",
+          ""COMPANYNAME"": ""Dow Jones"",
+          ""DATETIME"": ""2014-04-17 15:50:37"",
+          ""DIVIDEND"": ""0"",
+          ""EPS"": ""0"",
+          ""EXCHANGE"": """",
+          ""HIGH"": ""16460.490"",
+          ""LASTDATETIME"": ""2014-04-17 15:50:37"",
+          ""LASTPRICE"": ""16408.540"",
+          ""LOW"": ""16368.140"",
+          ""OPEN"": ""16424.140"",
+          ""PCHANGE"": ""-0.099"",
+          ""PE"": ""0"",
+          ""PREVIOUSCLOSE"": ""16424.850"",
+          ""SHARES"": ""0"",
+          ""TICKER"": ""DJII"",
+          ""TRADES"": ""0"",
+          ""VOLUME"": ""136188700"",
+          ""YEARHIGH"": ""11309.000"",
+          ""YEARLOW"": ""9302.280"",
+          ""YIELD"": ""0""
+        },
+        {
+          ""ASK"": ""0"",
+          ""BID"": ""0"",
+          ""CHANGE"": ""9.290"",
+          ""COMPANYNAME"": ""NASDAQ"",
+          ""DATETIME"": ""2014-04-17 15:40:01"",
+          ""DIVIDEND"": ""0"",
+          ""EPS"": ""0"",
+          ""EXCHANGE"": """",
+          ""HIGH"": ""4110.460"",
+          ""LASTDATETIME"": ""2014-04-17 15:40:01"",
+          ""LASTPRICE"": ""4095.520"",
+          ""LOW"": ""4064.700"",
+          ""OPEN"": ""4080.300"",
+          ""PCHANGE"": ""0.227"",
+          ""PE"": ""0"",
+          ""PREVIOUSCLOSE"": ""4086.230"",
+          ""SHARES"": ""0"",
+          ""TICKER"": ""COMP"",
+          ""TRADES"": ""0"",
+          ""VOLUME"": ""1784210100"",
+          ""YEARHIGH"": ""4371.710"",
+          ""YEARLOW"": ""3154.960"",
+          ""YIELD"": ""0""
+        }
+      ]
+    },
+    ""STATUS"": ""Couldn't find ticker: SPIC?"",
+    ""STATUSCODE"": ""2""
+  }
+}";
+
+            XmlDocument doc1 = new XmlDocument();
+            doc1.XmlResolver = null;
+            doc1.LoadXml(xml);
+
+            string json1 = JsonConvert.SerializeXmlNode(doc1, Formatting.Indented);
+
+            Assert.AreEqual(expected, json1);
+
+            XmlDocument doc11 = JsonConvert.DeserializeXmlNode(json1);
+
+            Assert.AreEqual(xml, ToStringWithDeclaration(doc11));
+
+#if !NET20
+            XDocument doc2 = XDocument.Parse(xml);
+
+            string json2 = JsonConvert.SerializeXNode(doc2, Formatting.Indented);
+
+            Assert.AreEqual(expected, json2);
+
+            XDocument doc22 = JsonConvert.DeserializeXNode(json2);
+
+            Assert.AreEqual(xml, ToStringWithDeclaration(doc22));
+#endif
+        }
+
+        public class Utf8StringWriter : StringWriter
+        {
+            public override Encoding Encoding { get { return Encoding.UTF8; } }
+
+            public Utf8StringWriter(StringBuilder sb) : base(sb)
+            {
+            }
+        }
+
+#if !NET20
+        public static string ToStringWithDeclaration(XDocument doc, bool indent = false)
+        {
+            StringBuilder builder = new StringBuilder();
+            using (var writer = XmlWriter.Create(new Utf8StringWriter(builder), new XmlWriterSettings { Indent = indent }))
+            {
+                doc.Save(writer);
+            }
+            return builder.ToString();
+        }
+#endif
+
+        public static string ToStringWithDeclaration(XmlDocument doc, bool indent = false)
+        {
+            StringBuilder builder = new StringBuilder();
+            using (var writer = XmlWriter.Create(new Utf8StringWriter(builder), new XmlWriterSettings { Indent = indent }))
+            {
+                doc.Save(writer);
+            }
+            return builder.ToString();
         }
 
         [Test]
@@ -1025,7 +1350,7 @@ namespace Newtonsoft.Json.Tests.Converters
         }
 
         [Test]
-        public void SerializeDeserializeSpecialProperties()
+        public void SerializeDeserializeMetadataProperties()
         {
             PreserveReferencesHandlingTests.CircularDictionary circularDictionary = new PreserveReferencesHandlingTests.CircularDictionary();
             circularDictionary.Add("other", new PreserveReferencesHandlingTests.CircularDictionary { { "blah", null } });
@@ -1325,12 +1650,23 @@ namespace Newtonsoft.Json.Tests.Converters
         }
       ],
       ""C"": [
-        null,
-        null
+        """",
+        """"
       ]
     }
   }
 }", json);
+
+            XmlDocument d2 = JsonConvert.DeserializeXmlNode(json);
+
+            Assert.AreEqual(@"<?xml version=""1.0"" encoding=""utf-8""?>
+<root>
+  <A>
+    <B name=""sample"" />
+    <C></C>
+    <C></C>
+  </A>
+</root>", ToStringWithDeclaration(d2, true));
         }
 
         [Test]

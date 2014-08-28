@@ -91,6 +91,62 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class JsonSerializerTest : TestFixtureBase
     {
+        public class Link
+        {
+            /// <summary>
+            /// The unique identifier.
+            /// </summary>
+            public int Id;
+
+            /// <summary>
+            /// The parent information identifier.
+            /// </summary>
+            public int ParentId;
+
+            /// <summary>
+            /// The child information identifier.
+            /// </summary>
+            public int ChildId;
+        }
+
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+        [Test]
+        public void ReadIntegerWithError()
+        {
+            string json = @"{
+    ParentId: 1,
+    ChildId: 333333333333333333333333333333333333333
+}";
+
+            Link l = JsonConvert.DeserializeObject<Link>(json, new JsonSerializerSettings
+            {
+                Error = (s, a) => a.ErrorContext.Handled = true
+            });
+            
+            Assert.AreEqual(0, l.ChildId);
+        }
+#endif
+
+#if !NET20
+        [Test]
+        public void PopulateResetSettings()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader(@"[""2000-01-01T01:01:01+00:00""]"));
+            Assert.AreEqual(DateParseHandling.DateTime, reader.DateParseHandling);
+
+            JsonSerializer serializer = new JsonSerializer();
+            serializer.DateParseHandling = DateParseHandling.DateTimeOffset;
+
+            IList<object> l = new List<object>();
+            serializer.Populate(reader, l);
+
+            Assert.AreEqual(typeof(DateTimeOffset), l[0].GetType());
+            Assert.AreEqual(new DateTimeOffset(2000, 1, 1, 1, 1, 1, TimeSpan.Zero), l[0]);
+
+            Assert.AreEqual(DateParseHandling.DateTime, reader.DateParseHandling);
+        }
+#endif
+
         public class BaseClass
         {
             internal bool IsTransient { get; set; }
@@ -228,9 +284,59 @@ namespace Newtonsoft.Json.Tests.Serialization
             var json = JsonConvert.SerializeObject(input);
             var deserialized = JsonConvert.DeserializeObject<ResponseWithNewGenericProperty<List<int>>>(json);
 
-            Assert.AreEqual(input.Data, deserialized.Data);
+            CollectionAssert.AreEqual(input.Data, deserialized.Data);
             Assert.AreEqual(input.Message, deserialized.Message);
             Assert.AreEqual(input.Result, deserialized.Result);
+        }
+
+        [Test]
+        public void DeserializeJObjectWithComments()
+        {
+            string json = @"/* Test */
+            {
+                /*Test*/""A"":/* Test */true/* Test */,
+                /* Test */""B"":/* Test */false/* Test */,
+                /* Test */""C"":/* Test */[
+                    /* Test */
+                    1/* Test */
+                ]/* Test */
+            }
+            /* Test */";
+            JObject o = (JObject)JsonConvert.DeserializeObject(json);
+            Assert.AreEqual(3, o.Count);
+            Assert.AreEqual(true, (bool)o["A"]);
+            Assert.AreEqual(false, (bool)o["B"]);
+            Assert.AreEqual(3, o["C"].Count());
+            Assert.AreEqual(JTokenType.Comment, o["C"][0].Type);
+            Assert.AreEqual(1, (int)o["C"][1]);
+            Assert.AreEqual(JTokenType.Comment, o["C"][2].Type);
+            Assert.IsTrue(JToken.DeepEquals(o, JObject.Parse(json)));
+
+            json = @"{/* Test */}";
+            o = (JObject)JsonConvert.DeserializeObject(json);
+            Assert.AreEqual(0, o.Count);
+            Assert.IsTrue(JToken.DeepEquals(o, JObject.Parse(json)));
+
+            json = @"{""A"": true/* Test */}";
+            o = (JObject)JsonConvert.DeserializeObject(json);
+            Assert.AreEqual(1, o.Count);
+            Assert.AreEqual(true, (bool)o["A"]);
+            Assert.IsTrue(JToken.DeepEquals(o, JObject.Parse(json)));
+        }
+
+        public class CommentTestObject
+        {
+            public bool? A { get; set; }
+        }
+
+        [Test]
+        public void DeserializeCommentTestObjectWithComments()
+        {
+            CommentTestObject o = JsonConvert.DeserializeObject<CommentTestObject>(@"{/* Test */}");
+            Assert.AreEqual(null, o.A);
+
+            o = JsonConvert.DeserializeObject<CommentTestObject>(@"{""A"": true/* Test */}");
+            Assert.AreEqual(true, o.A);
         }
 
         [Test]
@@ -549,6 +655,110 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Test]
+        public void EmbedJValueStringInNewJObject()
+        {
+            string s = null;
+            var v = new JValue(s);
+            var o = JObject.FromObject(new { title = v });
+
+            JObject oo = new JObject
+            {
+                {"title", v}
+            };
+
+            string output = o.ToString();
+
+            Assert.AreEqual(null, v.Value);
+            Assert.AreEqual(JTokenType.String, v.Type);
+            
+            Assert.AreEqual(@"{
+  ""title"": null
+}", output);
+        }
+
+        // bug: the generic member (T) that hides the base member will not
+        // be used when serializing and deserializing the object,
+        // resulting in unexpected behavior during serialization and deserialization.
+
+        public class Foo1
+        {
+            public object foo { get; set; }
+        }
+
+        public class Bar1
+        {
+            public object bar { get; set; }
+        }
+
+        public class Foo1<T> : Foo1
+        {
+            public new T foo { get; set; }
+
+            public T foo2 { get; set; }
+        }
+
+        public class FooBar1 : Foo1
+        {
+            public new Bar1 foo { get; set; }
+        }
+
+        [Test]
+        public void BaseClassSerializesAsExpected()
+        {
+            var original = new Foo1 { foo = "value" };
+            var json = JsonConvert.SerializeObject(original);
+            var expectedJson = @"{""foo"":""value""}";
+            Assert.AreEqual(expectedJson, json); // passes
+        }
+
+        [Test]
+        public void BaseClassDeserializesAsExpected()
+        {
+            var json = @"{""foo"":""value""}";
+            var deserialized = JsonConvert.DeserializeObject<Foo1>(json);
+            Assert.AreEqual("value", deserialized.foo); // passes
+        }
+
+        [Test]
+        public void DerivedClassHidingBasePropertySerializesAsExpected()
+        {
+            var original = new FooBar1 { foo = new Bar1 { bar = "value" } };
+            var json = JsonConvert.SerializeObject(original);
+            var expectedJson = @"{""foo"":{""bar"":""value""}}";
+            Assert.AreEqual(expectedJson, json); // passes
+        }
+
+        [Test]
+        public void DerivedClassHidingBasePropertyDeserializesAsExpected()
+        {
+            var json = @"{""foo"":{""bar"":""value""}}";
+            var deserialized = JsonConvert.DeserializeObject<FooBar1>(json);
+            Assert.IsNotNull(deserialized.foo); // passes
+            Assert.AreEqual("value", deserialized.foo.bar); // passes
+        }
+
+        [Test]
+        public void DerivedGenericClassHidingBasePropertySerializesAsExpected()
+        {
+            var original = new Foo1<Bar1> { foo = new Bar1 { bar = "value" }, foo2 = new Bar1 { bar = "value2" } };
+            var json = JsonConvert.SerializeObject(original);
+            var expectedJson = @"{""foo"":{""bar"":""value""},""foo2"":{""bar"":""value2""}}";
+            Assert.AreEqual(expectedJson, json);
+        }
+
+        [Test]
+        public void DerivedGenericClassHidingBasePropertyDeserializesAsExpected()
+        {
+            var json = @"{""foo"":{""bar"":""value""},""foo2"":{""bar"":""value2""}}";
+            var deserialized = JsonConvert.DeserializeObject<Foo1<Bar1>>(json);
+            Assert.IsNotNull(deserialized.foo2); // passes (bug only occurs for generics that /hide/ another property)
+            Assert.AreEqual("value2", deserialized.foo2.bar); // also passes, with no issue
+            Assert.IsNotNull(deserialized.foo);
+            Assert.AreEqual("value", deserialized.foo.bar);
+        }
+
+#if !NETFX_CORE
+        [Test]
         public void ConversionOperator()
         {
             // Creating a simple dictionary that has a non-string key
@@ -573,6 +783,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Console.WriteLine("Time elapsed: " + stopWatch.ElapsedMilliseconds);
         }
+#endif
 
         internal class DictionaryKeyCast
         {
@@ -2313,7 +2524,7 @@ keyword such as type of business.""
             Assert.AreEqual("titleId", n.FidOrder[n.FidOrder.Count - 1]);
         }
 
-#if !(NET20 || NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NET20 || NETFX_CORE)
         [MetadataType(typeof(OptInClassMetadata))]
         public class OptInClass
         {
@@ -3302,7 +3513,7 @@ Path ''"));
                 () => JsonConvert.DeserializeObject<DictionaryWithNoDefaultConstructor>(json, new JsonSerializerSettings
                 {
                     PreserveReferencesHandling = PreserveReferencesHandling.All,
-                    SpecialPropertyHandling = SpecialPropertyHandling.Default
+                    MetadataPropertyHandling = MetadataPropertyHandling.Default
                 }));
         }
 
@@ -4847,53 +5058,14 @@ To fix this error either change the environment to be fully trusted, change the 
             Assert.IsTrue(deserializedResponse.Data.DeepEquals(response.Data));
         }
 
-        public abstract class Test<T>
-        {
-            public abstract T Value { get; set; }
-        }
-
-        [JsonObject(MemberSerialization.OptIn)]
-        public class DecimalTest : Test<decimal>
-        {
-            protected DecimalTest()
-            {
-            }
-
-            public DecimalTest(decimal val)
-            {
-                Value = val;
-            }
-
-            [JsonProperty]
-            public override decimal Value { get; set; }
-        }
-
         [Test]
         public void DeserializeMinValueDecimal()
         {
             var data = new DecimalTest(decimal.MinValue);
             var json = JsonConvert.SerializeObject(data);
-            var obj = JsonConvert.DeserializeObject<DecimalTest>(json, new JsonSerializerSettings { SpecialPropertyHandling = SpecialPropertyHandling.Default });
+            var obj = JsonConvert.DeserializeObject<DecimalTest>(json, new JsonSerializerSettings { MetadataPropertyHandling = MetadataPropertyHandling.Default });
 
             Assert.AreEqual(decimal.MinValue, obj.Value);
-        }
-
-        public class NonPublicConstructorWithJsonConstructor
-        {
-            public string Value { get; private set; }
-            public string Constructor { get; private set; }
-
-            [JsonConstructor]
-            private NonPublicConstructorWithJsonConstructor()
-            {
-                Constructor = "NonPublic";
-            }
-
-            public NonPublicConstructorWithJsonConstructor(string value)
-            {
-                Value = value;
-                Constructor = "Public Paramatized";
-            }
         }
 
         [Test]
@@ -4901,24 +5073,6 @@ To fix this error either change the environment to be fully trusted, change the 
         {
             NonPublicConstructorWithJsonConstructor c = JsonConvert.DeserializeObject<NonPublicConstructorWithJsonConstructor>("{}");
             Assert.AreEqual("NonPublic", c.Constructor);
-        }
-
-        public class PublicConstructorOverridenByJsonConstructor
-        {
-            public string Value { get; private set; }
-            public string Constructor { get; private set; }
-
-            public PublicConstructorOverridenByJsonConstructor()
-            {
-                Constructor = "NonPublic";
-            }
-
-            [JsonConstructor]
-            public PublicConstructorOverridenByJsonConstructor(string value)
-            {
-                Value = value;
-                Constructor = "Public Paramatized";
-            }
         }
 
         [Test]
@@ -4929,27 +5083,6 @@ To fix this error either change the environment to be fully trusted, change the 
             Assert.AreEqual("value!", c.Value);
         }
 
-        public class MultipleParamatrizedConstructorsJsonConstructor
-        {
-            public string Value { get; private set; }
-            public int Age { get; private set; }
-            public string Constructor { get; private set; }
-
-            public MultipleParamatrizedConstructorsJsonConstructor(string value)
-            {
-                Value = value;
-                Constructor = "Public Paramatized 1";
-            }
-
-            [JsonConstructor]
-            public MultipleParamatrizedConstructorsJsonConstructor(string value, int age)
-            {
-                Value = value;
-                Age = age;
-                Constructor = "Public Paramatized 2";
-            }
-        }
-
         [Test]
         public void MultipleParamatrizedConstructorsJsonConstructorTest()
         {
@@ -4957,11 +5090,6 @@ To fix this error either change the environment to be fully trusted, change the 
             Assert.AreEqual("Public Paramatized 2", c.Constructor);
             Assert.AreEqual("value!", c.Value);
             Assert.AreEqual(1, c.Age);
-        }
-
-        public class EnumerableClass
-        {
-            public IEnumerable<string> Enumerable { get; set; }
         }
 
         [Test]
@@ -4989,18 +5117,6 @@ To fix this error either change the environment to be fully trusted, change the 
             Assert.AreEqual("Three", c2.Enumerable.ElementAt(2));
         }
 
-        [JsonObject(MemberSerialization.OptIn)]
-        public class ItemBase
-        {
-            [JsonProperty]
-            public string Name { get; set; }
-        }
-
-        public class ComplexItem : ItemBase
-        {
-            public Stream Source { get; set; }
-        }
-
         [Test]
         public void SerializeAttributesOnBase()
         {
@@ -5011,14 +5127,6 @@ To fix this error either change the environment to be fully trusted, change the 
             Assert.AreEqual(@"{
   ""Name"": null
 }", json);
-        }
-
-        public class DeserializeStringConvert
-        {
-            public string Name { get; set; }
-            public int Age { get; set; }
-            public double Height { get; set; }
-            public decimal Price { get; set; }
         }
 
         [Test]
@@ -5732,6 +5840,88 @@ To fix this error either change the environment to be fully trusted, change the 
                 Assert.AreEqual("Test", newObject.Name);
                 CollectionAssert.AreEquivalent(new byte[] { 72, 63, 62, 71, 92, 55 }, newObject.Data);
             }
+        }
+
+        public class ReflectionContractResolver : DefaultContractResolver
+        {
+            protected override IValueProvider CreateMemberValueProvider(MemberInfo member)
+            {
+                return new ReflectionValueProvider(member);
+            }
+        }
+
+        [Test]
+        public void SerializeStaticDefault()
+        {
+            DefaultContractResolver contractResolver = new DefaultContractResolver();
+
+            StaticTestClass c = new StaticTestClass
+            {
+                x = int.MaxValue
+            };
+            StaticTestClass.y = 2;
+            StaticTestClass.z = 3;
+            string json = JsonConvert.SerializeObject(c, Formatting.Indented, new JsonSerializerSettings
+            {
+                ContractResolver = contractResolver
+            });
+
+            Assert.AreEqual(@"{
+  ""x"": 2147483647,
+  ""y"": 2,
+  ""z"": 3
+}", json);
+
+            StaticTestClass c2 = JsonConvert.DeserializeObject<StaticTestClass>(@"{
+  ""x"": -1,
+  ""y"": -2,
+  ""z"": -3
+}",
+                new JsonSerializerSettings
+                {
+                    ContractResolver = contractResolver
+                });
+
+            Assert.AreEqual(-1, c2.x);
+            Assert.AreEqual(-2, StaticTestClass.y);
+            Assert.AreEqual(-3, StaticTestClass.z);
+        }
+
+        [Test]
+        public void SerializeStaticReflection()
+        {
+            ReflectionContractResolver contractResolver = new ReflectionContractResolver();
+
+            StaticTestClass c = new StaticTestClass
+            {
+                x = int.MaxValue
+            };
+            StaticTestClass.y = 2;
+            StaticTestClass.z = 3;
+            string json = JsonConvert.SerializeObject(c, Formatting.Indented, new JsonSerializerSettings
+            {
+                ContractResolver = contractResolver
+            });
+
+            Assert.AreEqual(@"{
+  ""x"": 2147483647,
+  ""y"": 2,
+  ""z"": 3
+}", json);
+
+            StaticTestClass c2 = JsonConvert.DeserializeObject<StaticTestClass>(@"{
+  ""x"": -1,
+  ""y"": -2,
+  ""z"": -3
+}",
+                new JsonSerializerSettings
+                {
+                    ContractResolver = contractResolver
+                });
+
+            Assert.AreEqual(-1, c2.x);
+            Assert.AreEqual(-2, StaticTestClass.y);
+            Assert.AreEqual(-3, StaticTestClass.z);
         }
 
 #if !(NET20 || NETFX_CORE)
@@ -7703,6 +7893,18 @@ Parameter name: value",
 #endif
 
         [Test]
+        public void DuplicatePropertiesInNestedObject()
+        {
+            ExceptionAssert.Throws<ArgumentException>(
+                "Can not add property time to Newtonsoft.Json.Linq.JObject. Property with the same name already exists on object.",
+                () =>
+                {
+                    string content = @"{""result"":{""time"":1408188592,""time"":1408188593},""error"":null,""id"":""1""}";
+                    JsonConvert.DeserializeObject<JObject>(content);
+                });
+        }
+
+        [Test]
         public void RoundtripUriOriginalString()
         {
             string originalUri = "https://test.com?m=a%2bb";
@@ -7714,6 +7916,439 @@ Parameter name: value",
             Uri uriWithPlus2 = JsonConvert.DeserializeObject<Uri>(jsonWithPlus);
 
             Assert.AreEqual(originalUri, uriWithPlus2.OriginalString);
+        }
+
+        [Test]
+        public void DateFormatStringWithDateTime()
+        {
+            DateTime dt = new DateTime(2000, 12, 22);
+            string dateFormatString = "yyyy'-pie-'MMM'-'dddd'-'dd";
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                DateFormatString = dateFormatString
+            };
+
+            string json = JsonConvert.SerializeObject(dt, settings);
+
+            Assert.AreEqual(@"""2000-pie-Dec-Friday-22""", json);
+
+            DateTime dt1 = JsonConvert.DeserializeObject<DateTime>(json, settings);
+
+            Assert.AreEqual(dt, dt1);
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(json))
+            {
+                DateFormatString = dateFormatString
+            };
+            JValue v = (JValue)JToken.ReadFrom(reader);
+
+            Assert.AreEqual(JTokenType.Date, v.Type);
+            Assert.AreEqual(typeof(DateTime), v.Value.GetType());
+            Assert.AreEqual(dt, (DateTime)v.Value);
+
+            reader = new JsonTextReader(new StringReader(@"""abc"""))
+            {
+                DateFormatString = dateFormatString
+            };
+            v = (JValue)JToken.ReadFrom(reader);
+
+            Assert.AreEqual(JTokenType.String, v.Type);
+            Assert.AreEqual(typeof(string), v.Value.GetType());
+            Assert.AreEqual("abc", v.Value);
+        }
+
+        [Test]
+        public void DateFormatStringWithDateTimeAndCulture()
+        {
+            CultureInfo culture = new CultureInfo("tr-TR");
+
+            DateTime dt = new DateTime(2000, 12, 22);
+            string dateFormatString = "yyyy'-pie-'MMM'-'dddd'-'dd";
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                DateFormatString = dateFormatString,
+                Culture = culture
+            };
+
+            string json = JsonConvert.SerializeObject(dt, settings);
+
+            Assert.AreEqual(@"""2000-pie-Ara-Cuma-22""", json);
+
+            DateTime dt1 = JsonConvert.DeserializeObject<DateTime>(json, settings);
+
+            Assert.AreEqual(dt, dt1);
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(json))
+            {
+                DateFormatString = dateFormatString,
+                Culture = culture
+            };
+            JValue v = (JValue)JToken.ReadFrom(reader);
+
+            Assert.AreEqual(JTokenType.Date, v.Type);
+            Assert.AreEqual(typeof(DateTime), v.Value.GetType());
+            Assert.AreEqual(dt, (DateTime)v.Value);
+
+            reader = new JsonTextReader(new StringReader(@"""2000-pie-Dec-Friday-22"""))
+            {
+                DateFormatString = dateFormatString,
+                Culture = culture
+            };
+            v = (JValue)JToken.ReadFrom(reader);
+
+            Assert.AreEqual(JTokenType.String, v.Type);
+            Assert.AreEqual(typeof(string), v.Value.GetType());
+            Assert.AreEqual("2000-pie-Dec-Friday-22", v.Value);
+        }
+
+        [Test]
+        public void DateFormatStringWithDictionaryKey_DateTime()
+        {
+            DateTime dt = new DateTime(2000, 12, 22);
+            string dateFormatString = "yyyy'-pie-'MMM'-'dddd'-'dd";
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                DateFormatString = dateFormatString,
+                Formatting = Formatting.Indented
+            };
+
+            string json = JsonConvert.SerializeObject(new Dictionary<DateTime, string>
+            {
+                { dt, "123" }
+            }, settings);
+
+            Assert.AreEqual(@"{
+  ""2000-pie-Dec-Friday-22"": ""123""
+}", json);
+
+            Dictionary<DateTime, string> d = JsonConvert.DeserializeObject<Dictionary<DateTime, string>>(json, settings);
+
+            Assert.AreEqual(dt, d.Keys.ElementAt(0));
+        }
+
+        [Test]
+        public void DateFormatStringWithDictionaryKey_DateTime_ReadAhead()
+        {
+            DateTime dt = new DateTime(2000, 12, 22);
+            string dateFormatString = "yyyy'-pie-'MMM'-'dddd'-'dd";
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                DateFormatString = dateFormatString,
+                MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead,
+                Formatting = Formatting.Indented
+            };
+
+            string json = JsonConvert.SerializeObject(new Dictionary<DateTime, string>
+            {
+                { dt, "123" }
+            }, settings);
+
+            Assert.AreEqual(@"{
+  ""2000-pie-Dec-Friday-22"": ""123""
+}", json);
+
+            Dictionary<DateTime, string> d = JsonConvert.DeserializeObject<Dictionary<DateTime, string>>(json, settings);
+
+            Assert.AreEqual(dt, d.Keys.ElementAt(0));
+        }
+
+#if !NET20
+        [Test]
+        public void DateFormatStringWithDictionaryKey_DateTimeOffset()
+        {
+            DateTimeOffset dt = new DateTimeOffset(2000, 12, 22, 0, 0, 0, TimeSpan.Zero);
+            string dateFormatString = "yyyy'-pie-'MMM'-'dddd'-'dd'!'K";
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                DateFormatString = dateFormatString,
+                Formatting = Formatting.Indented
+            };
+
+            string json = JsonConvert.SerializeObject(new Dictionary<DateTimeOffset, string>
+            {
+                { dt, "123" }
+            }, settings);
+
+            Assert.AreEqual(@"{
+  ""2000-pie-Dec-Friday-22!+00:00"": ""123""
+}", json);
+
+            Dictionary<DateTimeOffset, string> d = JsonConvert.DeserializeObject<Dictionary<DateTimeOffset, string>>(json, settings);
+
+            Assert.AreEqual(dt, d.Keys.ElementAt(0));
+        }
+
+        [Test]
+        public void DateFormatStringWithDictionaryKey_DateTimeOffset_ReadAhead()
+        {
+            DateTimeOffset dt = new DateTimeOffset(2000, 12, 22, 0, 0, 0, TimeSpan.Zero);
+            string dateFormatString = "yyyy'-pie-'MMM'-'dddd'-'dd'!'K";
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                DateFormatString = dateFormatString,
+                MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead,
+                Formatting = Formatting.Indented
+            };
+
+            string json = JsonConvert.SerializeObject(new Dictionary<DateTimeOffset, string>
+            {
+                { dt, "123" }
+            }, settings);
+
+            Assert.AreEqual(@"{
+  ""2000-pie-Dec-Friday-22!+00:00"": ""123""
+}", json);
+
+            Dictionary<DateTimeOffset, string> d = JsonConvert.DeserializeObject<Dictionary<DateTimeOffset, string>>(json, settings);
+
+            Assert.AreEqual(dt, d.Keys.ElementAt(0));
+        }
+
+        [Test]
+        public void DateFormatStringWithDateTimeOffset()
+        {
+            DateTimeOffset dt = new DateTimeOffset(new DateTime(2000, 12, 22));
+            string dateFormatString = "yyyy'-pie-'MMM'-'dddd'-'dd";
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                DateFormatString = dateFormatString
+            };
+
+            string json = JsonConvert.SerializeObject(dt, settings);
+
+            Assert.AreEqual(@"""2000-pie-Dec-Friday-22""", json);
+
+            DateTimeOffset dt1 = JsonConvert.DeserializeObject<DateTimeOffset>(json, settings);
+
+            Assert.AreEqual(dt, dt1);
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(json))
+            {
+                DateFormatString = dateFormatString,
+                DateParseHandling = DateParseHandling.DateTimeOffset
+            };
+            JValue v = (JValue)JToken.ReadFrom(reader);
+
+            Assert.AreEqual(JTokenType.Date, v.Type);
+            Assert.AreEqual(typeof(DateTimeOffset), v.Value.GetType());
+            Assert.AreEqual(dt, (DateTimeOffset)v.Value);
+        }
+#endif
+
+        public class ErroringJsonConverter : JsonConverter
+        {
+            public ErroringJsonConverter(string s)
+            {
+            }
+
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override bool CanConvert(Type objectType)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        [JsonConverter(typeof(ErroringJsonConverter))]
+        public class ErroringTestClass
+        {
+        }
+
+        [Test]
+        public void ErrorCreatingJsonConverter()
+        {
+            ExceptionAssert.Throws<JsonException>(
+                "Error creating 'Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+ErroringJsonConverter'.",
+                () => JsonConvert.SerializeObject(new ErroringTestClass()));
+        }
+
+        [Test]
+        public void DeserializeInvalidOctalRootError()
+        {
+            ExceptionAssert.Throws<JsonReaderException>(
+                "Input string '020474068' is not a valid number. Path '', line 1, position 9.",
+                () => JsonConvert.DeserializeObject<string>("020474068"));
+        }
+
+        [Test]
+        public void DeserializedDerivedWithPrivate()
+        {
+            string json = @"{
+  ""DerivedProperty"": ""derived"",
+  ""BaseProperty"": ""base""
+}";
+
+            var d = JsonConvert.DeserializeObject<DerivedWithPrivate>(json);
+
+            Assert.AreEqual("base", d.BaseProperty);
+            Assert.AreEqual("derived", d.DerivedProperty);
+        }
+    }
+
+    public class DerivedWithPrivate : BaseWithPrivate
+    {
+        [JsonProperty]
+        public string DerivedProperty { get; private set; }
+    }
+
+
+    public class BaseWithPrivate
+    {
+        [JsonProperty]
+        public string BaseProperty { get; private set; }
+    }
+
+    public abstract class Test<T>
+    {
+        public abstract T Value { get; set; }
+    }
+
+    [JsonObject(MemberSerialization.OptIn)]
+    public class DecimalTest : Test<decimal>
+    {
+        protected DecimalTest()
+        {
+        }
+
+        public DecimalTest(decimal val)
+        {
+            Value = val;
+        }
+
+        [JsonProperty]
+        public override decimal Value { get; set; }
+    }
+
+    public class NonPublicConstructorWithJsonConstructor
+    {
+        public string Value { get; private set; }
+        public string Constructor { get; private set; }
+
+        [JsonConstructor]
+        private NonPublicConstructorWithJsonConstructor()
+        {
+            Constructor = "NonPublic";
+        }
+
+        public NonPublicConstructorWithJsonConstructor(string value)
+        {
+            Value = value;
+            Constructor = "Public Paramatized";
+        }
+    }
+
+    public abstract class AbstractTestClass
+    {
+        public string Value { get; set; }
+    }
+
+    public class AbstractImplementationTestClass : AbstractTestClass
+    {
+    }
+
+    public abstract class AbstractListTestClass<T> : List<T>
+    {
+    }
+
+    public class AbstractImplementationListTestClass<T> : AbstractListTestClass<T>
+    {
+    }
+
+    public abstract class AbstractDictionaryTestClass<TKey, TValue> : Dictionary<TKey, TValue>
+    {
+    }
+
+    public class AbstractImplementationDictionaryTestClass<TKey, TValue> : AbstractDictionaryTestClass<TKey, TValue>
+    {
+    }
+
+    public class PublicConstructorOverridenByJsonConstructor
+    {
+        public string Value { get; private set; }
+        public string Constructor { get; private set; }
+
+        public PublicConstructorOverridenByJsonConstructor()
+        {
+            Constructor = "NonPublic";
+        }
+
+        [JsonConstructor]
+        public PublicConstructorOverridenByJsonConstructor(string value)
+        {
+            Value = value;
+            Constructor = "Public Paramatized";
+        }
+    }
+
+    public class MultipleParamatrizedConstructorsJsonConstructor
+    {
+        public string Value { get; private set; }
+        public int Age { get; private set; }
+        public string Constructor { get; private set; }
+
+        public MultipleParamatrizedConstructorsJsonConstructor(string value)
+        {
+            Value = value;
+            Constructor = "Public Paramatized 1";
+        }
+
+        [JsonConstructor]
+        public MultipleParamatrizedConstructorsJsonConstructor(string value, int age)
+        {
+            Value = value;
+            Age = age;
+            Constructor = "Public Paramatized 2";
+        }
+    }
+
+    public class EnumerableClass
+    {
+        public IEnumerable<string> Enumerable { get; set; }
+    }
+
+    [JsonObject(MemberSerialization.OptIn)]
+    public class ItemBase
+    {
+        [JsonProperty]
+        public string Name { get; set; }
+    }
+
+    public class ComplexItem : ItemBase
+    {
+        public Stream Source { get; set; }
+    }
+
+    public class DeserializeStringConvert
+    {
+        public string Name { get; set; }
+        public int Age { get; set; }
+        public double Height { get; set; }
+        public decimal Price { get; set; }
+    }
+
+    [JsonObject(MemberSerialization.OptIn)]
+    public class StaticTestClass
+    {
+        [JsonProperty]
+        public int x = 1;
+
+        [JsonProperty]
+        public static int y = 2;
+
+        [JsonProperty]
+        public static int z { get; set; }
+
+        static StaticTestClass()
+        {
+            z = 3;
         }
     }
 }

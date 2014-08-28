@@ -30,6 +30,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Utilities
 {
@@ -101,7 +102,7 @@ namespace Newtonsoft.Json.Utilities
             new ImmutableCollectionTypeInfo(ImmutableDictionaryGenericTypeName, ImmutableDictionaryGenericTypeName, ImmutableDictionaryTypeName)
         };
 
-        internal static bool TryBuildImmutableForArrayContract(Type underlyingType, Type collectionItemType, out Type createdType, out MethodBase parameterizedCreator)
+        internal static bool TryBuildImmutableForArrayContract(Type underlyingType, Type collectionItemType, out Type createdType, out ObjectConstructor<object> parameterizedCreator)
         {
             if (underlyingType.IsGenericType())
             {
@@ -117,7 +118,8 @@ namespace Newtonsoft.Json.Utilities
                         if (mb != null)
                         {
                             createdType = createdTypeDefinition.MakeGenericType(collectionItemType);
-                            parameterizedCreator = mb.MakeGenericMethod(collectionItemType);
+                            MethodInfo method = mb.MakeGenericMethod(collectionItemType);
+                            parameterizedCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateParametrizedConstructor(method);
                             return true;
                         }
                     }
@@ -129,7 +131,7 @@ namespace Newtonsoft.Json.Utilities
             return false;
         }
 
-        internal static bool TryBuildImmutableForDictionaryContract(Type underlyingType, Type keyItemType, Type valueItemType, out Type createdType, out MethodBase parameterizedCreator)
+        internal static bool TryBuildImmutableForDictionaryContract(Type underlyingType, Type keyItemType, Type valueItemType, out Type createdType, out ObjectConstructor<object> parameterizedCreator)
         {
             if (underlyingType.IsGenericType())
             {
@@ -150,7 +152,8 @@ namespace Newtonsoft.Json.Utilities
                         if (mb != null)
                         {
                             createdType = createdTypeDefinition.MakeGenericType(keyItemType, valueItemType);
-                            parameterizedCreator = mb.MakeGenericMethod(keyItemType, valueItemType);
+                            MethodInfo method = mb.MakeGenericMethod(keyItemType, valueItemType);
+                            parameterizedCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateParametrizedConstructor(method);
                             return true;
                         }
                     }
@@ -163,5 +166,4 @@ namespace Newtonsoft.Json.Utilities
         }
     }
 }
-
 #endif
