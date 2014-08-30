@@ -101,7 +101,7 @@ namespace Newtonsoft.Json.Serialization
                     CreatedType = typeof(List<object>);
 
                 if (CollectionItemType != null)
-                    ParametrizedCreator = CollectionUtils.ResolveEnumableCollectionConstructor(underlyingType, CollectionItemType);
+                    ParametrizedCreator = CollectionUtils.ResolveEnumerableCollectionConstructor(underlyingType, CollectionItemType);
 
                 IsReadOnlyOrFixedSize = ReflectionUtils.InheritsGenericDefinition(underlyingType, typeof(ReadOnlyCollection<>));
                 canDeserialize = true;
@@ -119,7 +119,7 @@ namespace Newtonsoft.Json.Serialization
                     CreatedType = typeof(HashSet<>).MakeGenericType(CollectionItemType);
 #endif
 
-                ParametrizedCreator = CollectionUtils.ResolveEnumableCollectionConstructor(underlyingType, CollectionItemType);
+                ParametrizedCreator = CollectionUtils.ResolveEnumerableCollectionConstructor(underlyingType, CollectionItemType);
                 canDeserialize = true;
                 ShouldCreateWrapper = true;
             }
@@ -133,7 +133,7 @@ namespace Newtonsoft.Json.Serialization
                     CreatedType = typeof(ReadOnlyCollection<>).MakeGenericType(CollectionItemType);
 
                 _genericCollectionDefinitionType = typeof(List<>).MakeGenericType(CollectionItemType);
-                ParametrizedCreator = CollectionUtils.ResolveEnumableCollectionConstructor(CreatedType, CollectionItemType);
+                ParametrizedCreator = CollectionUtils.ResolveEnumerableCollectionConstructor(CreatedType, CollectionItemType);
                 IsReadOnlyOrFixedSize = true;
                 canDeserialize = (ParametrizedCreator != null);
             }
@@ -145,7 +145,7 @@ namespace Newtonsoft.Json.Serialization
                 if (ReflectionUtils.IsGenericDefinition(UnderlyingType, typeof(IEnumerable<>)))
                     CreatedType = typeof(List<>).MakeGenericType(CollectionItemType);
 
-                ParametrizedCreator = CollectionUtils.ResolveEnumableCollectionConstructor(underlyingType, CollectionItemType);
+                ParametrizedCreator = CollectionUtils.ResolveEnumerableCollectionConstructor(underlyingType, CollectionItemType);
 
 #if !(NET35 || NET20 || NETFX_CORE)
                 if (ParametrizedCreator == null && underlyingType.Name == FSharpUtils.FSharpListTypeName)

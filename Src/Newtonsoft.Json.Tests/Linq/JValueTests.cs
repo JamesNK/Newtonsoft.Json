@@ -791,10 +791,10 @@ namespace Newtonsoft.Json.Tests.Linq
             StringComparison e5 = v.ToObject<StringComparison>();
             Assert.AreEqual(StringComparison.Ordinal, e5);
 
-            v = new JValue((int)StringComparison.InvariantCultureIgnoreCase);
+            v = new JValue((int)StringComparison.OrdinalIgnoreCase);
             Assert.AreEqual(JTokenType.Integer, v.Type);
             StringComparison e6 = v.ToObject<StringComparison>();
-            Assert.AreEqual(StringComparison.InvariantCultureIgnoreCase, e6);
+            Assert.AreEqual(StringComparison.OrdinalIgnoreCase, e6);
         }
 #endif
     }

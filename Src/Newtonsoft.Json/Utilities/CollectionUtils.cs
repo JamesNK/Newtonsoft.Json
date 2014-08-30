@@ -102,9 +102,10 @@ namespace Newtonsoft.Json.Utilities
             return false;
         }
 
-        public static ObjectConstructor<object> ResolveEnumableCollectionConstructor(Type collectionType, Type collectionItemType)
+        public static ObjectConstructor<object> ResolveEnumerableCollectionConstructor(Type collectionType, Type collectionItemType)
         {
             Type genericEnumerable = typeof(IEnumerable<>).MakeGenericType(collectionItemType);
+            ConstructorInfo match = null;
 
             foreach (ConstructorInfo constructor in collectionType.GetConstructors(BindingFlags.Public | BindingFlags.Instance))
             {
@@ -112,10 +113,24 @@ namespace Newtonsoft.Json.Utilities
 
                 if (parameters.Count == 1)
                 {
-                    if (genericEnumerable.IsAssignableFrom(parameters[0].ParameterType))
-                        return JsonTypeReflector.ReflectionDelegateFactory.CreateParametrizedConstructor(constructor);
+                    if (genericEnumerable == parameters[0].ParameterType)
+                    {
+                        // exact match
+                        match = constructor;
+                        break;
+                    }
+
+                    // incase we can't find an exact match, use first inexact
+                    if (match == null)
+                    {
+                        if (genericEnumerable.IsAssignableFrom(parameters[0].ParameterType))
+                            match = constructor;
+                    }
                 }
             }
+
+            if (match != null)
+                return JsonTypeReflector.ReflectionDelegateFactory.CreateParametrizedConstructor(match);
 
             return null;
         }

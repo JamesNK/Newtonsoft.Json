@@ -129,6 +129,17 @@ namespace Newtonsoft.Json.Tests.Serialization
 
 #if !NET20
         [Test]
+        public void DeserializeObservableCollection()
+        {
+            ObservableCollection<string> s = JsonConvert.DeserializeObject<ObservableCollection<string>>("['1','2']");
+            Assert.AreEqual(2, s.Count);
+            Assert.AreEqual("1", s[0]);
+            Assert.AreEqual("2", s[1]);
+        }
+#endif
+
+#if !NET20
+        [Test]
         public void PopulateResetSettings()
         {
             JsonTextReader reader = new JsonTextReader(new StringReader(@"[""2000-01-01T01:01:01+00:00""]"));
