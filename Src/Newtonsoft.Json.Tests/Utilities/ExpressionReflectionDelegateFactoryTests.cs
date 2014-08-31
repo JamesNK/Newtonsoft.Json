@@ -24,6 +24,7 @@
 #endregion
 
 #if !(NET20 || NET35)
+using System.Linq;
 using System;
 using System.Diagnostics;
 using System.Reflection;
@@ -44,6 +45,47 @@ namespace Newtonsoft.Json.Tests.Utilities
     [TestFixture]
     public class ExpressionReflectionDelegateFactoryTests : TestFixtureBase
     {
+        [Test]
+        public void ConstructorWithRefString()
+        {
+            ConstructorInfo constructor = typeof(OutAndRefTestClass).GetConstructors().Single(c => c.GetParameters().Count() == 1);
+
+            var creator = ExpressionReflectionDelegateFactory.Instance.CreateParametrizedConstructor(constructor);
+
+            object[] args = new object[] { "Input" };
+            OutAndRefTestClass o = (OutAndRefTestClass)creator(args);
+            Assert.IsNotNull(o);
+            Assert.AreEqual("Input", o.Input);
+        }
+
+        [Test]
+        public void ConstructorWithRefStringAndOutBool()
+        {
+            ConstructorInfo constructor = typeof(OutAndRefTestClass).GetConstructors().Single(c => c.GetParameters().Count() == 2);
+
+            var creator = ExpressionReflectionDelegateFactory.Instance.CreateParametrizedConstructor(constructor);
+
+            object[] args = new object[] { "Input", null };
+            OutAndRefTestClass o = (OutAndRefTestClass)creator(args);
+            Assert.IsNotNull(o);
+            Assert.AreEqual("Input", o.Input);
+        }
+
+        [Test]
+        public void ConstructorWithRefStringAndRefBoolAndRefBool()
+        {
+            ConstructorInfo constructor = typeof(OutAndRefTestClass).GetConstructors().Single(c => c.GetParameters().Count() == 3);
+
+            var creator = ExpressionReflectionDelegateFactory.Instance.CreateParametrizedConstructor(constructor);
+
+            object[] args = new object[] { "Input", true, null };
+            OutAndRefTestClass o = (OutAndRefTestClass)creator(args);
+            Assert.IsNotNull(o);
+            Assert.AreEqual("Input", o.Input);
+            Assert.AreEqual(true, o.B1);
+            Assert.AreEqual(false, o.B2);
+        }
+
         [Test]
         public void DefaultConstructor()
         {

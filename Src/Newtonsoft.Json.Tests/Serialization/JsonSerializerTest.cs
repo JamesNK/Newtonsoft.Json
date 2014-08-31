@@ -127,7 +127,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 #endif
 
-#if !NET20
+#if !(NET20 || NET35)
         [Test]
         public void DeserializeObservableCollection()
         {

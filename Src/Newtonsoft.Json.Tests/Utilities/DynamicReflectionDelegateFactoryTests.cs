@@ -38,12 +38,59 @@ using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Tests.TestObjects;
 using Newtonsoft.Json.Tests.Serialization;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
+#endif
 
 namespace Newtonsoft.Json.Tests.Utilities
 {
     [TestFixture]
     public class DynamicReflectionDelegateFactoryTests : TestFixtureBase
     {
+        [Test]
+        public void ConstructorWithRefString()
+        {
+            ConstructorInfo constructor = typeof(OutAndRefTestClass).GetConstructors().Single(c => c.GetParameters().Count() == 1);
+
+            var creator = DynamicReflectionDelegateFactory.Instance.CreateParametrizedConstructor(constructor);
+
+            object[] args = new object[] { "Input" };
+            OutAndRefTestClass o = (OutAndRefTestClass)creator(args);
+            Assert.IsNotNull(o);
+            Assert.AreEqual("Input", o.Input);
+        }
+
+        [Test]
+        public void ConstructorWithRefStringAndOutBool()
+        {
+            ConstructorInfo constructor = typeof(OutAndRefTestClass).GetConstructors().Single(c => c.GetParameters().Count() == 2);
+
+            var creator = DynamicReflectionDelegateFactory.Instance.CreateParametrizedConstructor(constructor);
+
+            object[] args = new object[] { "Input", false };
+            OutAndRefTestClass o = (OutAndRefTestClass)creator(args);
+            Assert.IsNotNull(o);
+            Assert.AreEqual("Input", o.Input);
+            Assert.AreEqual(true, o.B1);
+        }
+
+        [Test]
+        public void ConstructorWithRefStringAndRefBoolAndRefBool()
+        {
+            ConstructorInfo constructor = typeof(OutAndRefTestClass).GetConstructors().Single(c => c.GetParameters().Count() == 3);
+
+            var creator = DynamicReflectionDelegateFactory.Instance.CreateParametrizedConstructor(constructor);
+
+            object[] args = new object[] { "Input", true, null };
+            OutAndRefTestClass o = (OutAndRefTestClass)creator(args);
+            Assert.IsNotNull(o);
+            Assert.AreEqual("Input", o.Input);
+            Assert.AreEqual(true, o.B1);
+            Assert.AreEqual(false, o.B2);
+        }
+
         [Test]
         public void CreateGetWithBadObjectTarget()
         {
