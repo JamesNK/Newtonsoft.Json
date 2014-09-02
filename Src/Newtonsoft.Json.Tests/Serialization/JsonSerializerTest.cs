@@ -7611,6 +7611,28 @@ Parameter name: value",
         }
 #endif
 
+        public class FooConstructor
+        {
+            [JsonProperty(PropertyName = "something_else")]
+            public readonly string Bar;
+
+            public FooConstructor(string bar)
+            {
+                if (bar == null)
+                    throw new ArgumentNullException("bar");
+
+                Bar = bar;
+            }
+        }
+
+        [Test]
+        public void DeserializeWithConstructor()
+        {
+            const string json = @"{""something_else"":""my value""}";
+            var foo = JsonConvert.DeserializeObject<FooConstructor>(json);
+            Assert.AreEqual("my value", foo.Bar);
+        }
+
         [Test]
         public void SerializeCustomReferenceResolver()
         {

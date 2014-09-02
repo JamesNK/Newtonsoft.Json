@@ -1623,7 +1623,19 @@ To fix this error either change the environment to be fully trusted, change the 
 
             foreach (KeyValuePair<JsonProperty, object> propertyValue in propertyValues)
             {
-                JsonProperty matchingCreatorParameter = contract.CreatorParameters.ForgivingCaseSensitiveFind(p => p.PropertyName, propertyValue.Key.PropertyName);
+                JsonProperty property = propertyValue.Key;
+
+                JsonProperty matchingCreatorParameter;
+                if (contract.CreatorParameters.Contains(property))
+                {
+                    matchingCreatorParameter = property;
+                }
+                else
+                {
+                    // check to see if a parameter with the same name as the underlying property name exists and match to that
+                    matchingCreatorParameter = contract.CreatorParameters.ForgivingCaseSensitiveFind(p => p.PropertyName, property.UnderlyingName);
+                }
+
                 if (matchingCreatorParameter != null)
                 {
                     int i = contract.CreatorParameters.IndexOf(matchingCreatorParameter);
@@ -1637,9 +1649,9 @@ To fix this error either change the environment to be fully trusted, change the 
                 if (propertiesPresence != null)
                 {
                     // map from creator property to normal property
-                    var property = propertiesPresence.Keys.FirstOrDefault(p => p.PropertyName == propertyValue.Key.PropertyName);
-                    if (property != null)
-                        propertiesPresence[property] = (propertyValue.Value == null) ? PropertyPresence.Null : PropertyPresence.Value;
+                    JsonProperty presenceProperty = propertiesPresence.Keys.FirstOrDefault(p => p.PropertyName == property.PropertyName);
+                    if (presenceProperty != null)
+                        propertiesPresence[presenceProperty] = (propertyValue.Value == null) ? PropertyPresence.Null : PropertyPresence.Value;
                 }
             }
 
