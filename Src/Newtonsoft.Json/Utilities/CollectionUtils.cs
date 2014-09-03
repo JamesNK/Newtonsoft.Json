@@ -102,7 +102,7 @@ namespace Newtonsoft.Json.Utilities
             return false;
         }
 
-        public static ObjectConstructor<object> ResolveEnumerableCollectionConstructor(Type collectionType, Type collectionItemType)
+        public static ConstructorInfo ResolveEnumerableCollectionConstructor(Type collectionType, Type collectionItemType)
         {
             Type genericEnumerable = typeof(IEnumerable<>).MakeGenericType(collectionItemType);
             ConstructorInfo match = null;
@@ -129,10 +129,7 @@ namespace Newtonsoft.Json.Utilities
                 }
             }
 
-            if (match != null)
-                return JsonTypeReflector.ReflectionDelegateFactory.CreateParametrizedConstructor(match);
-
-            return null;
+            return match;
         }
 
         public static bool AddDistinct<T>(this IList<T> list, T value)

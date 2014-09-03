@@ -487,7 +487,7 @@ namespace Newtonsoft.Json.Serialization
                             if (contract.OnErrorCallbacks.Count > 0)
                                 throw JsonSerializationException.Create(reader, "Cannot call OnError on readonly list, or dictionary created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
-                            if (dictionaryContract.ParametrizedCreator == null)
+                            if (!dictionaryContract.HasParametrizedCreator)
                                 throw JsonSerializationException.Create(reader, "Cannot deserialize readonly or fixed size dictionary: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
                         }
 
@@ -783,7 +783,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                     if (contract.OnErrorCallbacks.Count > 0)
                         throw JsonSerializationException.Create(reader, "Cannot call OnError on an array or readonly list, or list created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
-                    if (arrayContract.ParametrizedCreator == null && !arrayContract.IsArray)
+                    if (!arrayContract.HasParametrizedCreator && !arrayContract.IsArray)
                         throw JsonSerializationException.Create(reader, "Cannot deserialize readonly or fixed size list: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
                 }
 
@@ -1053,7 +1053,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                 createdFromNonDefaultCreator = false;
                 return (IList)list;
             }
-            else if (contract.ParametrizedCreator != null)
+            else if (contract.HasParametrizedCreator)
             {
                 createdFromNonDefaultCreator = true;
                 return contract.CreateTemporaryCollection();
@@ -1084,7 +1084,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                 createdFromNonDefaultCreator = false;
                 return (IDictionary)dictionary;
             }
-            else if (contract.ParametrizedCreator != null)
+            else if (contract.HasParametrizedCreator)
             {
                 createdFromNonDefaultCreator = true;
                 return contract.CreateTemporaryDictionary();
