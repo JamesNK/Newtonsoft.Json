@@ -186,7 +186,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Assert.IsFalse(contract.IsInstantiable);
             Assert.IsNull(contract.DefaultCreator);
-            Assert.IsNull(contract.ParametrizedCreator);
+            Assert.IsFalse(contract.HasParametrizedCreator);
 
             ExceptionAssert.Throws<JsonSerializationException>(
                 "Could not create an instance of type Newtonsoft.Json.Tests.Serialization.AbstractListTestClass`1[System.Int32]. Type is an interface or abstract class and cannot be instantiated. Path '', line 1, position 1.",
@@ -268,7 +268,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Assert.IsFalse(contract.IsInstantiable);
             Assert.IsNull(contract.DefaultCreator);
-            Assert.IsNull(contract.ParametrizedCreator);
+            Assert.IsFalse(contract.HasParametrizedCreator);
 
             ExceptionAssert.Throws<JsonSerializationException>(
                 "Could not create an instance of type Newtonsoft.Json.Tests.Serialization.AbstractDictionaryTestClass`2[System.String,System.Int32]. Type is an interface or abstract class and cannot be instantiated. Path 'key1', line 1, position 6.",

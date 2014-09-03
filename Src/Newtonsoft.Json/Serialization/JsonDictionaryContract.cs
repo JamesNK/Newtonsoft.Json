@@ -78,12 +78,7 @@ namespace Newtonsoft.Json.Serialization
             get
             {
                 if (_parametrizedCreator == null)
-                {
-                    if (_parametrizedConstructor == null)
-                        return null;
-
                     _parametrizedCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateParametrizedConstructor(_parametrizedConstructor);
-                }
 
                 return _parametrizedCreator;
             }
@@ -143,7 +138,7 @@ namespace Newtonsoft.Json.Serialization
                 _parametrizedConstructor = CollectionUtils.ResolveEnumerableCollectionConstructor(CreatedType, typeof(KeyValuePair<,>).MakeGenericType(keyType, valueType));
 
 #if !(NET35 || NET20 || NETFX_CORE)
-                if (_parametrizedConstructor == null && underlyingType.Name == FSharpUtils.FSharpMapTypeName)
+                if (!HasParametrizedCreator && underlyingType.Name == FSharpUtils.FSharpMapTypeName)
                 {
                     FSharpUtils.EnsureInitialized(underlyingType.Assembly());
                     _parametrizedCreator = FSharpUtils.CreateMap(keyType, valueType);

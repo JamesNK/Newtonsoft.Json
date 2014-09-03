@@ -75,12 +75,7 @@ namespace Newtonsoft.Json.Serialization
             get
             {
                 if (_parametrizedCreator == null)
-                {
-                    if (_parametrizedConstructor == null)
-                        return null;
-
                     _parametrizedCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateParametrizedConstructor(_parametrizedConstructor);
-                }
 
                 return _parametrizedCreator;
             }
@@ -158,7 +153,7 @@ namespace Newtonsoft.Json.Serialization
                 _genericCollectionDefinitionType = typeof(List<>).MakeGenericType(CollectionItemType);
                 _parametrizedConstructor = CollectionUtils.ResolveEnumerableCollectionConstructor(CreatedType, CollectionItemType);
                 IsReadOnlyOrFixedSize = true;
-                canDeserialize = (ParametrizedCreator != null);
+                canDeserialize = HasParametrizedCreator;
             }
 #endif
             else if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof(IEnumerable<>), out tempCollectionType))
@@ -171,7 +166,7 @@ namespace Newtonsoft.Json.Serialization
                 _parametrizedConstructor = CollectionUtils.ResolveEnumerableCollectionConstructor(underlyingType, CollectionItemType);
 
 #if !(NET35 || NET20 || NETFX_CORE)
-                if (ParametrizedCreator == null && underlyingType.Name == FSharpUtils.FSharpListTypeName)
+                if (!HasParametrizedCreator && underlyingType.Name == FSharpUtils.FSharpListTypeName)
                 {
                     FSharpUtils.EnsureInitialized(underlyingType.Assembly());
                     _parametrizedCreator = FSharpUtils.CreateSeq(CollectionItemType);
@@ -192,7 +187,7 @@ namespace Newtonsoft.Json.Serialization
 
                     IsReadOnlyOrFixedSize = true;
                     ShouldCreateWrapper = true;
-                    canDeserialize = (ParametrizedCreator != null);
+                    canDeserialize = HasParametrizedCreator;
                 }
             }
             else
