@@ -34,7 +34,31 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json = JsonConvert.SerializeObject(values, Formatting.Indented);
 
-            Console.WriteLine(json);
+            Assert.AreEqual(@"[
+  {
+    ""Key"": ""123"",
+    ""Value"": 123
+  },
+  {
+    ""Key"": ""456"",
+    ""Value"": 456
+  }
+]", json);
+
+            IList<KeyValuePair<string, int>> v2 = JsonConvert.DeserializeObject<IList<KeyValuePair<string, int>>>(json);
+
+            Assert.AreEqual(2, v2.Count);
+            Assert.AreEqual("123", v2[0].Key);
+            Assert.AreEqual(123, v2[0].Value);
+            Assert.AreEqual("456", v2[1].Key);
+            Assert.AreEqual(456, v2[1].Value);
+        }
+
+        [Test]
+        public void DeserializeUnexpectedEnd()
+        {
+            ExceptionAssert.Throws<JsonSerializationException>("Unexpected end when reading KeyValuePair. Path 'Key', line 1, position 14.",
+                () => JsonConvert.DeserializeObject<KeyValuePair<string, int>>(@"{""Key"": ""123"","));
         }
     }
 }

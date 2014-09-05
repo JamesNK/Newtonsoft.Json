@@ -24,6 +24,7 @@
 #endregion
 
 #if !(NET35 || NET20 || NETFX_CORE)
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -86,44 +87,72 @@ namespace Newtonsoft.Json.Converters
             if (reader.TokenType == JsonToken.Null)
                 return null;
 
-            IEnumerable cases = (IEnumerable)FSharpUtils.GetUnionCases(null, objectType, null);
-
-            ReadAndAssertProperty(reader, CasePropertyName);
-            ReadAndAssert(reader);
-
-            string caseName = reader.Value.ToString();
-
             object matchingCaseInfo = null;
-            foreach (object c in cases)
+            string caseName = null;
+            JArray fields = null;
+
+            // start object
+            ReadAndAssert(reader);
+
+            while (reader.TokenType == JsonToken.PropertyName)
             {
-                if ((string)FSharpUtils.GetUnionCaseInfoName(c) == caseName)
+                string propertyName = reader.Value.ToString();
+                if (string.Equals(propertyName, CasePropertyName, StringComparison.OrdinalIgnoreCase))
                 {
-                    matchingCaseInfo = c;
-                    break;
+                    ReadAndAssert(reader);
+
+                    IEnumerable cases = (IEnumerable)FSharpUtils.GetUnionCases(null, objectType, null);
+
+                    caseName = reader.Value.ToString();
+
+                    foreach (object c in cases)
+                    {
+                        if ((string)FSharpUtils.GetUnionCaseInfoName(c) == caseName)
+                        {
+                            matchingCaseInfo = c;
+                            break;
+                        }
+                    }
+
+                    if (matchingCaseInfo == null)
+                        throw JsonSerializationException.Create(reader, "No union type found with the name '{0}'.".FormatWith(CultureInfo.InvariantCulture, caseName));
                 }
-            }
+                else if (string.Equals(propertyName, FieldsPropertyName, StringComparison.OrdinalIgnoreCase))
+                {
+                    ReadAndAssert(reader);
+                    if (reader.TokenType != JsonToken.StartArray)
+                        throw JsonSerializationException.Create(reader, "Union fields must been an array.");
 
-            if (matchingCaseInfo == null)
-                throw new JsonSerializationException("No union type found with the name '{0}'.".FormatWith(CultureInfo.InvariantCulture, caseName));
+                    fields = (JArray)JToken.ReadFrom(reader);
+                }
+                else
+                {
+                    throw JsonSerializationException.Create(reader, "Unexpected property '{0}' found when reading union.".FormatWith(CultureInfo.InvariantCulture, propertyName));
+                }
 
-            ReadAndAssertProperty(reader, FieldsPropertyName);
-            // start array
-            ReadAndAssert(reader);
-            // first value
-            ReadAndAssert(reader);
-
-            PropertyInfo[] fieldProperties = (PropertyInfo[])FSharpUtils.GetUnionCaseInfoFields(matchingCaseInfo);
-            List<object> fieldValues = new List<object>();
-            foreach (PropertyInfo field in fieldProperties)
-            {
-                fieldValues.Add(serializer.Deserialize(reader, field.PropertyType));
                 ReadAndAssert(reader);
             }
 
-            // end object
-            ReadAndAssert(reader);
+            if (matchingCaseInfo == null)
+                throw JsonSerializationException.Create(reader, "No '{0}' property with union name found.".FormatWith(CultureInfo.InvariantCulture, CasePropertyName));
+            if (fields == null)
+                throw JsonSerializationException.Create(reader, "No '{0}' property with union fields found.".FormatWith(CultureInfo.InvariantCulture, FieldsPropertyName));
 
-            return FSharpUtils.MakeUnion(null, matchingCaseInfo, fieldValues.ToArray(), null);
+            PropertyInfo[] fieldProperties = (PropertyInfo[])FSharpUtils.GetUnionCaseInfoFields(matchingCaseInfo);
+
+            if (fieldProperties.Length != fields.Count)
+                throw JsonSerializationException.Create(reader, "The number of field values does not match the number of properties definied by union '{0}'.".FormatWith(CultureInfo.InvariantCulture, caseName));
+
+            object[] typedFieldValues = new object[fieldProperties.Length];
+            for (int i = 0; i < fields.Count; i++)
+            {
+                JToken t = fields[i];
+                PropertyInfo fieldProperty = fieldProperties[i];
+
+                typedFieldValues[i] = t.ToObject(fieldProperty.PropertyType);
+            }
+
+            return FSharpUtils.MakeUnion(null, matchingCaseInfo, typedFieldValues, null);
         }
 
         /// <summary>
@@ -166,18 +195,10 @@ namespace Newtonsoft.Json.Converters
             return (bool)FSharpUtils.IsUnion(null, objectType, null);
         }
 
-        private static void ReadAndAssertProperty(JsonReader reader, string propertyName)
-        {
-            ReadAndAssert(reader);
-
-            if (reader.TokenType != JsonToken.PropertyName || !string.Equals(reader.Value.ToString(), propertyName, StringComparison.OrdinalIgnoreCase))
-                throw new JsonSerializationException("Expected JSON property '{0}'.".FormatWith(CultureInfo.InvariantCulture, propertyName));
-        }
-
         private static void ReadAndAssert(JsonReader reader)
         {
             if (!reader.Read())
-                throw new JsonSerializationException("Unexpected end.");
+                throw JsonSerializationException.Create(reader, "Unexpected end when reading union.");
         }
     }
 }

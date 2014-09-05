@@ -99,19 +99,19 @@ namespace Newtonsoft.Json.Converters
             object key = null;
             object value = null;
 
-            reader.Read();
+            ReadAndAssert(reader);
 
             while (reader.TokenType == JsonToken.PropertyName)
             {
                 string propertyName = reader.Value.ToString();
                 if (string.Equals(propertyName, KeyName, StringComparison.OrdinalIgnoreCase))
                 {
-                    reader.Read();
+                    ReadAndAssert(reader);
                     key = serializer.Deserialize(reader, reflectionObject.GetType(KeyName));
                 }
                 else if (string.Equals(propertyName, ValueName, StringComparison.OrdinalIgnoreCase))
                 {
-                    reader.Read();
+                    ReadAndAssert(reader);
                     value = serializer.Deserialize(reader, reflectionObject.GetType(ValueName));
                 }
                 else
@@ -119,7 +119,7 @@ namespace Newtonsoft.Json.Converters
                     reader.Skip();
                 }
 
-                reader.Read();
+                ReadAndAssert(reader);
             }
 
             return reflectionObject.Creator(key, value);
@@ -142,6 +142,12 @@ namespace Newtonsoft.Json.Converters
                 return (t.GetGenericTypeDefinition() == typeof(KeyValuePair<,>));
 
             return false;
+        }
+
+        private static void ReadAndAssert(JsonReader reader)
+        {
+            if (!reader.Read())
+                throw JsonSerializationException.Create(reader, "Unexpected end when reading KeyValuePair.");
         }
     }
 }
