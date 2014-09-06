@@ -118,7 +118,10 @@
     <Compile Include="Bson\BsonWriterTests.cs" />
     <Compile Include="Bson\BsonReaderTests.cs" />
     <Compile Include="Converters\BinaryConverterTests.cs" />
+    <Compile Include="Converters\DiscriminatedUnionConverterTests.cs" />
     <Compile Include="Converters\ExpandoObjectConverterTests.cs" />
+    <Compile Include="Converters\JsonValueConverterTests.cs" />
+    <Compile Include="Converters\KeyValuePairConverterTests.cs" />
     <Compile Include="Converters\RegexConverterTests.cs" />
     <Compile Include="Converters\DataTableConverterTests.cs" />
     <Compile Include="Converters\DataSetConverterTests.cs" />
@@ -169,6 +172,7 @@
     <Compile Include="TestObjects\Container.cs" />
     <Compile Include="TestObjects\ContentBaseClass.cs" />
     <Compile Include="TestObjects\ContentSubClass.cs" />
+    <Compile Include="TestObjects\Currency.cs" />
     <Compile Include="TestObjects\CustomerDataSet.cs" />
     <Compile Include="TestObjects\DataContractSerializationAttributesClass.cs" />
     <Compile Include="TestObjects\DateTimeWrapper.cs" />
@@ -234,6 +238,7 @@
     <Compile Include="TestObjects\RequiredObject.cs" />
     <Compile Include="TestObjects\SearchResult.cs" />
     <Compile Include="TestObjects\SelectListItem.cs" />
+    <Compile Include="TestObjects\Shape.cs" />
     <Compile Include="TestObjects\StructTest.cs" />
     <Compile Include="TestObjects\TestComponent.cs" />
     <Compile Include="TestObjects\TestComponentSimple.cs" />

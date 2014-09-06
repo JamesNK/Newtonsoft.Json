@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.IO;
 using System.Xml;
@@ -1347,12 +1348,13 @@ namespace Newtonsoft.Json
         // the runtime can execute the ParseNumber even if 
         // the System.Numerics.BigInteger.Parse method is
         // missing, which happens in some versions of Mono
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         private static object BigIntegerParse(string number, CultureInfo culture)
         {
             return System.Numerics.BigInteger.Parse(number, culture);
         }
 #endif
+
         private void ParseComment()
         {
             // should have already parsed / character before reaching this method
