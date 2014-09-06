@@ -1,6 +1,12 @@
 using System.Reflection;
 using Newtonsoft.Json.Utilities;
+#if !NETFX_CORE
 using NUnit.Framework;
+#else
+using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
+using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
+#endif
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else

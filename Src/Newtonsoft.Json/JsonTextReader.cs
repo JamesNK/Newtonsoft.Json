@@ -1298,15 +1298,8 @@ namespace Newtonsoft.Json
                         if (number.Length > MaximumJavascriptIntegerCharacterLength)
                             throw JsonReaderException.Create(this, "JSON integer {0} is too large to parse.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
                         
-                        try
-                        {
-                            numberValue = BigIntegerParse(number, CultureInfo.InvariantCulture);
-                            numberType = JsonToken.Integer;
-                        }
-                        catch (MissingMethodException)
-                        {
-                            throw JsonReaderException.Create(this, "JSON integer {0} is too large or small for an Int64, and your runtime does not support BigInteger.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
-                        }
+                        numberValue = BigIntegerParse(number, CultureInfo.InvariantCulture);
+                        numberType = JsonToken.Integer;
 #else
                         throw JsonReaderException.Create(this, "JSON integer {0} is too large or small for an Int64.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
 #endif
