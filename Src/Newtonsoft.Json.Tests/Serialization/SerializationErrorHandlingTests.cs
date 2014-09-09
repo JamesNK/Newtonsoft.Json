@@ -66,10 +66,14 @@ namespace Newtonsoft.Json.Tests.Serialization
   }
 ]";
 
+			var possibleMsgs = new [] {
+				"[1] - Error message for member 1 = An item with the same key has already been added.",
+				"[1] - Error message for member 1 = An element with the same key already exists in the dictionary." // mono
+			};
             VersionKeyedCollection c = JsonConvert.DeserializeObject<VersionKeyedCollection>(json);
             Assert.AreEqual(1, c.Count);
             Assert.AreEqual(1, c.Messages.Count);
-            Assert.AreEqual("[1] - Error message for member 1 = An item with the same key has already been added.", c.Messages[0]);
+			Assert.IsTrue (possibleMsgs.Any (m => m == c.Messages[0]), "Expected One of: " + Environment.NewLine + string.Join (Environment.NewLine, possibleMsgs) + Environment.NewLine + "Was: " + Environment.NewLine + c.Messages[0]);
         }
 
         [Test]
@@ -302,7 +306,13 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Assert.AreEqual(3, errors.Count);
 #if !(NET20 || NET35)
-            Assert.AreEqual("[1] - 1 - The string was not recognized as a valid DateTime. There is an unknown word starting at index 0.", errors[0]);
+			var possibleErrs = new [] {
+				"[1] - 1 - The string was not recognized as a valid DateTime. There is an unknown word starting at index 0.",
+				"[1] - 1 - String was not recognized as a valid DateTime."
+			};
+
+			Assert.IsTrue(possibleErrs.Any (m => m == errors[0]), 
+				"Expected One of: " + string.Join (Environment.NewLine, possibleErrs) + Environment.NewLine + "But was: " + errors[0]);
 #else
       Assert.AreEqual("[1] - 1 - The string was not recognized as a valid DateTime. There is a unknown word starting at index 0.", errors[0]);
 #endif
