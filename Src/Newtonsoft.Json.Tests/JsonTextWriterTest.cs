@@ -261,8 +261,7 @@ namespace Newtonsoft.Json.Tests
                 jsonWriter.WriteStartArray();
                 jsonWriter.WriteValue(@"""These pretzels are making me thirsty!""");
                 jsonWriter.WriteValue("Jeff's house was burninated.");
-                jsonWriter.WriteValue(@"1. You don't talk about fight club.
-2. You don't talk about fight club.");
+                jsonWriter.WriteValue("1. You don't talk about fight club.\r\n2. You don't talk about fight club.");
                 jsonWriter.WriteValue("35% of\t statistics\n are made\r up.");
                 jsonWriter.WriteEndArray();
             }
