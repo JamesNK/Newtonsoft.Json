@@ -791,10 +791,12 @@ third line", jsonTextReader.Value);
         [Test]
         public void NullTextReader()
         {
-            ExceptionAssert.Throws<ArgumentNullException>(
-                @"Value cannot be null.
-Parameter name: reader",
-                () => { new JsonTextReader(null); });
+			ExceptionAssert.Throws<ArgumentNullException> (
+				() => { new JsonTextReader (null); },
+				new string[] { 
+					"Value cannot be null." + Environment.NewLine + "Parameter name: reader",
+					"Argument cannot be null." + Environment.NewLine + "Parameter name: reader" // Mono
+				});
         }
 
         [Test]
