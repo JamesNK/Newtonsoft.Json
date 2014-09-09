@@ -194,23 +194,23 @@ namespace Newtonsoft.Json.Tests
             }
         }
 
-		public static void Throws<TException>(Action action, params string[] possibleMessages)
-			where TException : Exception
-		{
-			try
-			{
-				action();
+        public static void Throws<TException>(Action action, params string[] possibleMessages)
+            where TException : Exception
+        {
+            try
+            {
+                action();
 
-				Assert.Fail("Exception of type {0} expected; got none exception", typeof(TException).Name);
-			}
-			catch (TException ex)
-			{
-				Assert.Contains (ex.Message, possibleMessages, "Unexpected exception message." + Environment.NewLine + "Expected One of: " + string.Join (Environment.NewLine, possibleMessages) + Environment.NewLine + "Got: " + ex.Message + Environment.NewLine + Environment.NewLine + ex);
-			}
-			catch (Exception ex)
-			{
-				throw new Exception(string.Format("Exception of type {0} expected; got exception of type {1}.", typeof(TException).Name, ex.GetType().Name), ex);
-			}
-		}
+                Assert.Fail("Exception of type {0} expected; got none exception", typeof(TException).Name);
+            }
+            catch (TException ex)
+            {
+                Assert.Contains (ex.Message, possibleMessages, "Unexpected exception message." + Environment.NewLine + "Expected One of: " + string.Join (Environment.NewLine, possibleMessages) + Environment.NewLine + "Got: " + ex.Message + Environment.NewLine + Environment.NewLine + ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format("Exception of type {0} expected; got exception of type {1}.", typeof(TException).Name, ex.GetType().Name), ex);
+            }
+        }
     }
 }

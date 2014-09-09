@@ -2975,11 +2975,11 @@ Path '', line 1, position 1.",
             string json = @"[]";
 
             ExceptionAssert.Throws<InvalidCastException>(
-				() => { JsonConvert.DeserializeObject<JObject>(json); },
-				new [] { 
-					"Unable to cast object of type 'Newtonsoft.Json.Linq.JArray' to type 'Newtonsoft.Json.Linq.JObject'.",
-					"Cannot cast from source type to destination type." // mono
-				});
+                () => { JsonConvert.DeserializeObject<JObject>(json); },
+                new [] { 
+                    "Unable to cast object of type 'Newtonsoft.Json.Linq.JArray' to type 'Newtonsoft.Json.Linq.JObject'.",
+                    "Cannot cast from source type to destination type." // mono
+                });
         }
 
         [Test]
@@ -6307,22 +6307,22 @@ To fix this error either change the environment to be fully trusted, change the 
         public void DeserializeDoubleFromNullString()
         {
             ExceptionAssert.Throws<ArgumentNullException>(
-				() => { JsonConvert.DeserializeObject<double>(null); },
-				new [] { 
-					"Value cannot be null." + Environment.NewLine + "Parameter name: value",
-					"Argument cannot be null." + Environment.NewLine + "Parameter name: value" // mono
-				});
+                () => { JsonConvert.DeserializeObject<double>(null); },
+                new [] { 
+                    "Value cannot be null." + Environment.NewLine + "Parameter name: value",
+                    "Argument cannot be null." + Environment.NewLine + "Parameter name: value" // mono
+                });
         }
 
         [Test]
         public void DeserializeFromNullString()
         {
             ExceptionAssert.Throws<ArgumentNullException>(
-				() => { JsonConvert.DeserializeObject(null); },
-				new [] { 
-					"Value cannot be null." + Environment.NewLine + "Parameter name: value",
-					"Argument cannot be null." + Environment.NewLine + "Parameter name: value" // mono
-				});
+                () => { JsonConvert.DeserializeObject(null); },
+                new [] { 
+                    "Value cannot be null." + Environment.NewLine + "Parameter name: value",
+                    "Argument cannot be null." + Environment.NewLine + "Parameter name: value" // mono
+                });
         }
 
         [Test]
