@@ -7466,6 +7466,44 @@ Parameter name: value",
         }
 #endif
 
+        [Serializable]
+        [DataContract]
+        public struct Pair<TFirst, TSecond>
+        {
+            public Pair(TFirst first, TSecond second)
+                : this()
+            {
+                this.First = first;
+                this.Second = second;
+            }
+
+            [DataMember]
+            public TFirst First { get; set; }
+
+            [DataMember]
+            public TSecond Second { get; set; }
+        }
+
+        [Test]
+        public void SerializeStructWithSerializableAndDataContract()
+        {
+            Pair<string, int> p = new Pair<string, int>("One", 2);
+
+            DefaultContractResolver r = new DefaultContractResolver();
+            r.IgnoreSerializableAttribute = false;
+
+            string json = JsonConvert.SerializeObject(p, new JsonSerializerSettings
+            {
+                ContractResolver = r
+            });
+
+            Assert.AreEqual(@"{""First"":""One"",""Second"":2}", json);
+
+            json = JsonConvert.SerializeObject(p);
+
+            Assert.AreEqual(@"{""First"":""One"",""Second"":2}", json);
+        }
+
         [Test]
         public void ReadStringFloatingPointSymbols()
         {

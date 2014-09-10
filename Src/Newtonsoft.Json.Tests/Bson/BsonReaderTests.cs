@@ -56,6 +56,19 @@ namespace Newtonsoft.Json.Tests.Bson
         private const char Euro = '\u20ac';
 
         [Test]
+        public void DeserializeLargeBsonObject()
+        {
+            byte[] data = System.IO.File.ReadAllBytes(@"SpaceShipV2.baemf");
+
+            MemoryStream ms = new MemoryStream(data);
+            BsonReader reader = new BsonReader(ms);
+
+            JObject o = (JObject)JToken.ReadFrom(reader);
+
+            Assert.AreEqual("1", (string)o["$id"]);
+        }
+
+        [Test]
         public void CloseInput()
         {
             MemoryStream ms = new MemoryStream();

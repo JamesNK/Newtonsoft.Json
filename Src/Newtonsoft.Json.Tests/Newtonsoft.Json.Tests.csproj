@@ -90,7 +90,9 @@
     <Compile Include="Documentation\Samples\Bson\DeserializeFromBson.cs" />
     <Compile Include="Documentation\Samples\Bson\DeserializeFromBsonCollection.cs" />
     <Compile Include="Documentation\Samples\Bson\SerializeToBson.cs" />
+    <Compile Include="Documentation\Samples\Json\CustomJsonWriter.cs" />
     <Compile Include="Documentation\Samples\Json\ReadJsonWithJsonTextReader.cs" />
+    <Compile Include="Documentation\Samples\Json\CustomJsonReader.cs" />
     <Compile Include="Documentation\Samples\Json\WriteJsonWithJsonTextWriter.cs" />
     <Compile Include="Documentation\Samples\Linq\Clone.cs" />
     <Compile Include="Documentation\Samples\Linq\CreateJsonAnonymousObject.cs" />
@@ -484,6 +486,9 @@
     <None Include="Schema\Specs\uniqueItems.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Content Include="SpaceShipV2.baemf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <EntityDeploy Include="FileSystemEntityModel.edmx">

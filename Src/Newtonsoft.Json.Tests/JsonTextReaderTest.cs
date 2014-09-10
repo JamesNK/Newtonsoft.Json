@@ -49,6 +49,19 @@ namespace Newtonsoft.Json.Tests
     public class JsonTextReaderTest : TestFixtureBase
     {
         [Test]
+        public void ReadSingleQuoteInsideDoubleQuoteString()
+        {
+            string json = @"{""NameOfStore"":""Forest's Bakery And Cafe""}";
+
+            JsonTextReader jsonTextReader = new JsonTextReader(new StringReader(json));
+            jsonTextReader.Read();
+            jsonTextReader.Read();
+            jsonTextReader.Read();
+
+            Assert.AreEqual(@"Forest's Bakery And Cafe", jsonTextReader.Value);
+        }
+
+        [Test]
         public void ReadMultilineString()
         {
             string json = @"""first line
