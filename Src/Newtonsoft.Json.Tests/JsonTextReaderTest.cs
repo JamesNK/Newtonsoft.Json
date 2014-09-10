@@ -357,62 +357,7 @@ third line", jsonTextReader.Value);
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.String, reader.TokenType);
 
-            Assert.AreEqual(@"#C16------------------------------
-#C12Ingredients #C20
-#C16------------------------------
-
-a piece of Leather Armor
-( ie #L ""Enhanced Leather Armor Boots"" ""85644"" )
-<img src=rdb://13264>
-
-#L ""Hacker Tool"" ""87814""
-<img src=rdb://99282>
-
-#L ""Clanalizer"" ""208313""
-<img src=rdb://156479>
-
-#C16------------------------------
-#C12Recipe #C16
-#C16------------------------------#C20
-
-Hacker Tool
-#C15+#C20
-a piece of Leather Armor
-#C15=#C20
-<img src=rdb://13264>
-a piece of Hacked Leather Armor
-( ie : #L ""Hacked Leather Armor Boots"" ""245979"" )
-#C16Skills: |  BE  |#C20
-
-#C14------------------------------#C20
-
-Clanalizer
-#C15+#C20
-a piece of Hacked Leather Armor
-#C15=#C20
-<img src=rdb://13264>
-a piece of Apocalypse Leather Armor
-( ie : #L ""Apocalypse Leather Armor Boots"" ""245966"" )
-#C16Skills: |  ??  |#C20
-
-#C16------------------------------
-#C12Details#C16
-#C16------------------------------#C20
-
-#L ""Apocalypse Leather Armor Boots"" ""245967""
-#L ""Apocalypse Leather Armor Gloves"" ""245969""
-#L ""Apocalypse Leather Armor Helmet"" ""245975""
-#L ""Apocalypse Leather Armor Pants"" ""245971""
-#L ""Apocalypse Leather Armor Sleeves"" ""245973""
-#L ""Apocalypse Leather Body Armor"" ""245965""
-
-#C16------------------------------
-#C12Comments#C16
-#C16------------------------------#C20
-
-Nice froob armor.. but ugleh!
-
-", reader.Value);
+            Assert.AreEqual("#C16------------------------------\r\n#C12Ingredients #C20\r\n#C16------------------------------\r\n\r\na piece of Leather Armor\r\n( ie #L \"Enhanced Leather Armor Boots\" \"85644\" )\r\n<img src=rdb://13264>\r\n\r\n#L \"Hacker Tool\" \"87814\"\r\n<img src=rdb://99282>\r\n\r\n#L \"Clanalizer\" \"208313\"\r\n<img src=rdb://156479>\r\n\r\n#C16------------------------------\r\n#C12Recipe #C16\r\n#C16------------------------------#C20\r\n\r\nHacker Tool\r\n#C15+#C20\r\na piece of Leather Armor\r\n#C15=#C20\r\n<img src=rdb://13264>\r\na piece of Hacked Leather Armor\r\n( ie : #L \"Hacked Leather Armor Boots\" \"245979\" )\r\n#C16Skills: |  BE  |#C20\r\n\r\n#C14------------------------------#C20\r\n\r\nClanalizer\r\n#C15+#C20\r\na piece of Hacked Leather Armor\r\n#C15=#C20\r\n<img src=rdb://13264>\r\na piece of Apocalypse Leather Armor\r\n( ie : #L \"Apocalypse Leather Armor Boots\" \"245966\" )\r\n#C16Skills: |  ??  |#C20\r\n\r\n#C16------------------------------\r\n#C12Details#C16\r\n#C16------------------------------#C20\r\n\r\n#L \"Apocalypse Leather Armor Boots\" \"245967\"\r\n#L \"Apocalypse Leather Armor Gloves\" \"245969\"\r\n#L \"Apocalypse Leather Armor Helmet\" \"245975\"\r\n#L \"Apocalypse Leather Armor Pants\" \"245971\"\r\n#L \"Apocalypse Leather Armor Sleeves\" \"245973\"\r\n#L \"Apocalypse Leather Body Armor\" \"245965\"\r\n\r\n#C16------------------------------\r\n#C12Comments#C16\r\n#C16------------------------------#C20\r\n\r\nNice froob armor.. but ugleh!\r\n\r\n", reader.Value);
         }
 
         [Test]
@@ -859,10 +804,12 @@ Nice froob armor.. but ugleh!
         [Test]
         public void NullTextReader()
         {
-            ExceptionAssert.Throws<ArgumentNullException>(
-                @"Value cannot be null.
-Parameter name: reader",
-                () => { new JsonTextReader(null); });
+            ExceptionAssert.Throws<ArgumentNullException> (
+                () => { new JsonTextReader (null); },
+                new string[] { 
+                    "Value cannot be null." + Environment.NewLine + "Parameter name: reader",
+                    "Argument cannot be null." + Environment.NewLine + "Parameter name: reader" // Mono
+                });
         }
 
         [Test]
@@ -1285,8 +1232,7 @@ Parameter name: reader",
             Assert.IsTrue(reader.Read());
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
-            Assert.AreEqual(@"hi
-bye", reader.Value);
+            Assert.AreEqual("hi\r\nbye", reader.Value);
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.Integer, reader.TokenType);
             Assert.AreEqual(1L, reader.Value);

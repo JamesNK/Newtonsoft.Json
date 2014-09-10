@@ -141,8 +141,12 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void SerializeDefaultArray()
         {
-            ExceptionAssert.Throws<NullReferenceException>("Object reference not set to an instance of an object.", () =>
-                JsonConvert.SerializeObject(default(ImmutableArray<int>), Formatting.Indented));
+            ExceptionAssert.Throws<NullReferenceException>(
+                () => JsonConvert.SerializeObject(default(ImmutableArray<int>), Formatting.Indented),
+                new [] {
+                    "Object reference not set to an instance of an object.",
+                    "Object reference not set to an instance of an object" // mono
+                });
         }
         #endregion
 
