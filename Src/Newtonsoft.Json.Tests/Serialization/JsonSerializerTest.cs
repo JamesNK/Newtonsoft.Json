@@ -7496,19 +7496,21 @@ To fix this error either change the environment to be fully trusted, change the 
         {
             Pair<string, int> p = new Pair<string, int>("One", 2);
 
+            string json = JsonConvert.SerializeObject(p);
+
+            Assert.AreEqual(@"{""First"":""One"",""Second"":2}", json);
+
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
             DefaultContractResolver r = new DefaultContractResolver();
             r.IgnoreSerializableAttribute = false;
 
-            string json = JsonConvert.SerializeObject(p, new JsonSerializerSettings
+            json = JsonConvert.SerializeObject(p, new JsonSerializerSettings
             {
                 ContractResolver = r
             });
 
             Assert.AreEqual(@"{""First"":""One"",""Second"":2}", json);
-
-            json = JsonConvert.SerializeObject(p);
-
-            Assert.AreEqual(@"{""First"":""One"",""Second"":2}", json);
+#endif
         }
 
         [Test]
