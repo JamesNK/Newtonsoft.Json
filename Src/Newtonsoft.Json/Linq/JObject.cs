@@ -818,6 +818,19 @@ namespace Newtonsoft.Json.Linq
             {
                 return instance.Properties().Select(p => p.Name);
             }
+
+            public override bool TryConvert(JObject instance, ConvertBinder binder, out object result)
+            {
+                if (binder.Type.IsInstanceOfType(instance))
+                {
+                    result = instance;
+                    return true;
+                }
+
+                // this can throw if the object can not be converted
+                result = instance.ToObject(binder.Type);
+                return true;
+            }
         }
 #endif
     }

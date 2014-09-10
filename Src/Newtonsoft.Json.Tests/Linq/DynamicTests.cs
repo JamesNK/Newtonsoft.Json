@@ -33,6 +33,7 @@ using System.Numerics;
 #endif
 using System.Text;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Tests.TestObjects;
 #if !NETFX_CORE
 using NUnit.Framework;
 #else
@@ -161,6 +162,20 @@ namespace Newtonsoft.Json.Tests.Linq
             JToken v;
             Assert.IsTrue(d.TryGetValue("ChildValue", out v));
             Assert.AreEqual("blah blah", (string)v);
+        }
+
+
+        [Test]
+        public void JObjectConvert() {
+            JObject o = new JObject(
+                new JProperty("Original", "foobar"),
+                new JProperty("Error", new JObject(new JProperty("ErrorMessage", "error!"))));
+
+            Shortie s = (dynamic)o;
+
+            Assert.AreEqual("foobar", s.Original);
+            Assert.IsNotNull(s.Error);
+            Assert.AreEqual("error!", s.Error.ErrorMessage);
         }
 
         [Test]
