@@ -342,8 +342,7 @@ namespace Newtonsoft.Json.Tests
             result = JavaScriptUtils.ToEscapedJavaScriptString("How now <brown> cow?", '"', true);
             Assert.AreEqual(@"""How now <brown> cow?""", result);
 
-            result = JavaScriptUtils.ToEscapedJavaScriptString(@"How 
-now brown cow?", '"', true);
+            result = JavaScriptUtils.ToEscapedJavaScriptString("How \r\nnow brown cow?", '"', true);
             Assert.AreEqual(@"""How \r\nnow brown cow?""", result);
 
             result = JavaScriptUtils.ToEscapedJavaScriptString("\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007", '"', true);
@@ -576,8 +575,7 @@ now brown cow?", '"', true);
         [Test]
         public void StringEscaping()
         {
-            string v = @"It's a good day
-""sunshine""";
+            string v = "It's a good day\r\n\"sunshine\"";
 
             string json = JsonConvert.ToString(v);
             Assert.AreEqual(@"""It's a good day\r\n\""sunshine\""""", json);
