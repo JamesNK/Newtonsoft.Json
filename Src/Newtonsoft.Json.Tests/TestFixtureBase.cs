@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text.RegularExpressions;
 #if NET20
 using Newtonsoft.Json.Serialization;
 #else
@@ -169,6 +170,22 @@ namespace Newtonsoft.Json.Tests
             if (!collection.Cast<object>().Any(i => i.Equals(value)))
                 throw new Exception("Value not found in collection.");
 #endif
+        }
+    }
+
+    public static class StringAssert
+    {
+        private readonly static Regex Regex = new Regex(@"\r\n|\n\r|\n|\r", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+
+        public static void AreEqual(string expected, string actual)
+        {
+            if (expected != null)
+                expected = Regex.Replace(expected, "\r\n");
+
+            if (actual != null)
+                actual = Regex.Replace(actual, "\r\n");
+
+            Assert.AreEqual(expected, actual);
         }
     }
 

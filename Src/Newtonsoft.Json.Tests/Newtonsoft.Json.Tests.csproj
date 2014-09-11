@@ -486,7 +486,7 @@
     <None Include="Schema\Specs\uniqueItems.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Content Include="SpaceShipV2.baemf">
+    <Content Include="SpaceShipV2.bson">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
