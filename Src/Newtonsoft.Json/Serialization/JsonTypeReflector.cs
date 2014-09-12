@@ -55,7 +55,7 @@ namespace Newtonsoft.Json.Serialization
         public const string ShouldSerializePrefix = "ShouldSerialize";
         public const string SpecifiedPostfix = "Specified";
 
-        private static readonly ThreadSafeStore<Type, Func<JsonConverter>> JsonConverterCreatorCache = new ThreadSafeStore<Type, Func<JsonConverter>>(GetJsonConverterCreator);
+        private static readonly ThreadSafeStore<Type, Func<object, JsonConverter>> JsonConverterCreatorCache = new ThreadSafeStore<Type, Func<object, JsonConverter>>(GetJsonConverterCreator);
 
 #if !(NET20 || NETFX_CORE)
         private static readonly ThreadSafeStore<Type, Type> AssociatedMetadataTypesCache = new ThreadSafeStore<Type, Type>(GetAssociateMetadataTypeFromAttribute);
@@ -152,9 +152,9 @@ namespace Newtonsoft.Json.Serialization
 
             if (converterAttribute != null)
             {
-                Func<JsonConverter> creator = JsonConverterCreatorCache.Get(converterAttribute.ConverterType);
+                Func<object, JsonConverter> creator = JsonConverterCreatorCache.Get(converterAttribute.ConverterType);
                 if (creator != null)
-                    return creator();
+                    return creator(attributeProvider);
             }
 
             return null;
@@ -162,20 +162,30 @@ namespace Newtonsoft.Json.Serialization
 
         public static JsonConverter CreateJsonConverterInstance(Type converterType)
         {
-            Func<JsonConverter> converterCreator = JsonConverterCreatorCache.Get(converterType);
-            return converterCreator();
+            Func<object, JsonConverter> converterCreator = JsonConverterCreatorCache.Get(converterType);
+            return converterCreator(null);
         }
 
-        private static Func<JsonConverter> GetJsonConverterCreator(Type converterType)
+        private static Func<object, JsonConverter> GetJsonConverterCreator(Type converterType)
         {
             Func<object> defaultConstructor = (ReflectionUtils.HasDefaultConstructor(converterType, false))
                 ? ReflectionDelegateFactory.CreateDefaultConstructor<object>(converterType)
                 : null;
 
-            return () =>
+            ObjectConstructor<object> parameterizedConstructor = null;
+            ConstructorInfo parameterizedConstructorInfo = converterType.GetConstructor(new Type[] { typeof(object) });
+            if (null != parameterizedConstructorInfo)
+            {
+                parameterizedConstructor = ReflectionDelegateFactory.CreateParametrizedConstructor(parameterizedConstructorInfo);
+            }
+
+            return (object attributeProvider) =>
             {
                 try
                 {
+                    if (attributeProvider != null && parameterizedConstructor != null)
+                        return (JsonConverter)parameterizedConstructor(attributeProvider);
+
                     if (defaultConstructor == null)
                         throw new JsonException("No parameterless constructor defined for '{0}'.".FormatWith(CultureInfo.InvariantCulture, converterType));
 
