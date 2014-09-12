@@ -55,6 +55,7 @@ namespace Newtonsoft.Json.Tests.Bson
     {
         private const char Euro = '\u20ac';
 
+#if !NETFX_CORE
         [Test]
         public void DeserializeLargeBsonObject()
         {
@@ -67,6 +68,7 @@ namespace Newtonsoft.Json.Tests.Bson
 
             Assert.AreEqual("1", (string)o["$id"]);
         }
+#endif
 
         [Test]
         public void CloseInput()

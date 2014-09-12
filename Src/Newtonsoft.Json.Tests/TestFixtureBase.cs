@@ -164,18 +164,23 @@ namespace Newtonsoft.Json.Tests
 
         public static void Contains(IList collection, object value)
         {
+            Contains(collection, value, null);
+        }
+
+        public static void Contains(IList collection, object value, string message)
+        {
 #if !NETFX_CORE
-            Assert.Contains(value, collection);
+            Assert.Contains(value, collection, message);
 #else
             if (!collection.Cast<object>().Any(i => i.Equals(value)))
-                throw new Exception("Value not found in collection.");
+                throw new Exception(message ?? "Value not found in collection.");
 #endif
         }
     }
 
     public static class StringAssert
     {
-        private readonly static Regex Regex = new Regex(@"\r\n|\n\r|\n|\r", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        private readonly static Regex Regex = new Regex(@"\r\n|\n\r|\n|\r", RegexOptions.CultureInvariant);
 
         public static void AreEqual(string expected, string actual)
         {
@@ -222,7 +227,8 @@ namespace Newtonsoft.Json.Tests
             }
             catch (TException ex)
             {
-                Assert.Contains (ex.Message, possibleMessages, "Unexpected exception message." + Environment.NewLine + "Expected One of: " + string.Join (Environment.NewLine, possibleMessages) + Environment.NewLine + "Got: " + ex.Message + Environment.NewLine + Environment.NewLine + ex);
+                if (possibleMessages != null && possibleMessages.Length > 0)
+                    CustomAssert.Contains(possibleMessages, ex.Message, "Unexpected exception message." + Environment.NewLine + "Expected one of: " + string.Join(Environment.NewLine, possibleMessages) + Environment.NewLine + "Got: " + ex.Message + Environment.NewLine + Environment.NewLine + ex);
             }
             catch (Exception ex)
             {

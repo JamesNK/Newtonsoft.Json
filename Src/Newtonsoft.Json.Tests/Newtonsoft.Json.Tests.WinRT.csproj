@@ -371,6 +371,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Newtonsoft.Json.Tests.WinRT_TemporaryKey.pfx" />
+    <Content Include="SpaceShipV2.bson">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Collections.Immutable">
