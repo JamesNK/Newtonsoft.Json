@@ -1,5 +1,3 @@
-* text eol=crlf
-
 *.doc  diff=astextplain
 *.DOC	diff=astextplain
 *.docx	diff=astextplain
