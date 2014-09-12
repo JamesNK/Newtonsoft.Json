@@ -2605,12 +2605,11 @@ third line", jsonTextReader.Value);
             string json = @"//comment*//*hi*/
 {//comment
 Name://comment
-true//comment after true" + StringUtils.CarriageReturn + @"
-,//comment after comma" + StringUtils.CarriageReturnLineFeed + @"
-""ExpiryDate""://comment"  + StringUtils.LineFeed + @"
-new
-" + StringUtils.LineFeed +
-                          @"Date
+true//comment after true" + StringUtils.CarriageReturn +
+@",//comment after comma" + StringUtils.CarriageReturnLineFeed + 
+@"""ExpiryDate""://comment"  + StringUtils.LineFeed + 
+@"new " + StringUtils.LineFeed +
+@"Date
 (//comment
 null//comment
 ),
@@ -2660,20 +2659,20 @@ null//comment
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.Comment, reader.TokenType);
             Assert.AreEqual("comment after comma", reader.Value);
-            Assert.AreEqual(7, reader.LineNumber);
+            Assert.AreEqual(6, reader.LineNumber);
 
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
             Assert.AreEqual("ExpiryDate", reader.Value);
-            Assert.AreEqual(8, reader.LineNumber);
+            Assert.AreEqual(6, reader.LineNumber);
 
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.Comment, reader.TokenType);
-            Assert.AreEqual(9, reader.LineNumber);
+            Assert.AreEqual(7, reader.LineNumber);
 
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.StartConstructor, reader.TokenType);
-            Assert.AreEqual(13, reader.LineNumber);
+            Assert.AreEqual(9, reader.LineNumber);
             Assert.AreEqual("Date", reader.Value);
 
             Assert.IsTrue(reader.Read());
@@ -2681,15 +2680,15 @@ null//comment
 
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.Null, reader.TokenType);
-            Assert.AreEqual(14, reader.LineNumber);
+            Assert.AreEqual(10, reader.LineNumber);
 
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.Comment, reader.TokenType);
-            Assert.AreEqual(15, reader.LineNumber);
+            Assert.AreEqual(11, reader.LineNumber);
 
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.EndConstructor, reader.TokenType);
-            Assert.AreEqual(15, reader.LineNumber);
+            Assert.AreEqual(11, reader.LineNumber);
 
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
