@@ -728,9 +728,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             JsonTextReader jReader = new JsonTextReader(new StreamReader(stream));
             JsonSerializer s = new JsonSerializer();
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                @"Unterminated string. Expected delimiter: "". Path '', line 1, position 3.",
-                () => { ErrorTestObject obj = s.Deserialize<ErrorTestObject>(jReader); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { ErrorTestObject obj = s.Deserialize<ErrorTestObject>(jReader); }, @"Unterminated string. Expected delimiter: "". Path '', line 1, position 3.");
         }
 
         public class RootThing
@@ -833,9 +831,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             string foo = "{ something: { rootSomethingElse { somethingElse: 0 } } }";
             var reader = new System.IO.StringReader(foo);
 
-            ExceptionAssert.Throws<Exception>(
-                "An error occurred.",
-                () => { serialiser.Deserialize(reader, typeof(Something)); });
+            ExceptionAssert.Throws<Exception>(() => { serialiser.Deserialize(reader, typeof(Something)); }, "An error occurred.");
         }
 
         [Test]
@@ -857,9 +853,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             
             var writer = new System.IO.StringWriter();
 
-            ExceptionAssert.Throws<Exception>(
-                "An error occurred.",
-                () => { serialiser.Serialize(writer, r); });
+            ExceptionAssert.Throws<Exception>(() => { serialiser.Serialize(writer, r); }, "An error occurred.");
         }
 
         [Test]

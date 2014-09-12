@@ -194,14 +194,12 @@ namespace Newtonsoft.Json.Tests.Linq
         [Test]
         public void DuplicatePropertyNameShouldThrow()
         {
-            ExceptionAssert.Throws<ArgumentException>(
-                "Can not add property PropertyNameValue to Newtonsoft.Json.Linq.JObject. Property with the same name already exists on object.",
-                () =>
-                {
-                    JObject o = new JObject();
-                    o.Add("PropertyNameValue", null);
-                    o.Add("PropertyNameValue", null);
-                });
+            ExceptionAssert.Throws<ArgumentException>(() =>
+            {
+                JObject o = new JObject();
+                o.Add("PropertyNameValue", null);
+                o.Add("PropertyNameValue", null);
+            }, "Can not add property PropertyNameValue to Newtonsoft.Json.Linq.JObject. Property with the same name already exists on object.");
         }
 
         [Test]
@@ -308,55 +306,47 @@ namespace Newtonsoft.Json.Tests.Linq
         [Test]
         public void GenericCollectionCopyToNullArrayShouldThrow()
         {
-            ExceptionAssert.Throws<ArgumentException>(
-                @"Value cannot be null.
-Parameter name: array",
-                () =>
-                {
-                    JObject o = new JObject();
-                    ((ICollection<KeyValuePair<string, JToken>>)o).CopyTo(null, 0);
-                });
+            ExceptionAssert.Throws<ArgumentException>(() =>
+            {
+                JObject o = new JObject();
+                ((ICollection<KeyValuePair<string, JToken>>)o).CopyTo(null, 0);
+            }, @"Value cannot be null.
+Parameter name: array");
         }
 
         [Test]
         public void GenericCollectionCopyToNegativeArrayIndexShouldThrow()
         {
-            ExceptionAssert.Throws<ArgumentOutOfRangeException>(
-                @"arrayIndex is less than 0.
-Parameter name: arrayIndex",
-                () =>
-                {
-                    JObject o = new JObject();
-                    ((ICollection<KeyValuePair<string, JToken>>)o).CopyTo(new KeyValuePair<string, JToken>[1], -1);
-                });
+            ExceptionAssert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                JObject o = new JObject();
+                ((ICollection<KeyValuePair<string, JToken>>)o).CopyTo(new KeyValuePair<string, JToken>[1], -1);
+            }, @"arrayIndex is less than 0.
+Parameter name: arrayIndex");
         }
 
         [Test]
         public void GenericCollectionCopyToArrayIndexEqualGreaterToArrayLengthShouldThrow()
         {
-            ExceptionAssert.Throws<ArgumentException>(
-                @"arrayIndex is equal to or greater than the length of array.",
-                () =>
-                {
-                    JObject o = new JObject();
-                    ((ICollection<KeyValuePair<string, JToken>>)o).CopyTo(new KeyValuePair<string, JToken>[1], 1);
-                });
+            ExceptionAssert.Throws<ArgumentException>(() =>
+            {
+                JObject o = new JObject();
+                ((ICollection<KeyValuePair<string, JToken>>)o).CopyTo(new KeyValuePair<string, JToken>[1], 1);
+            }, @"arrayIndex is equal to or greater than the length of array.");
         }
 
         [Test]
         public void GenericCollectionCopyToInsufficientArrayCapacity()
         {
-            ExceptionAssert.Throws<ArgumentException>(
-                @"The number of elements in the source JObject is greater than the available space from arrayIndex to the end of the destination array.",
-                () =>
-                {
-                    JObject o = new JObject();
-                    o.Add("PropertyNameValue", new JValue(1));
-                    o.Add("PropertyNameValue2", new JValue(2));
-                    o.Add("PropertyNameValue3", new JValue(3));
+            ExceptionAssert.Throws<ArgumentException>(() =>
+            {
+                JObject o = new JObject();
+                o.Add("PropertyNameValue", new JValue(1));
+                o.Add("PropertyNameValue2", new JValue(2));
+                o.Add("PropertyNameValue3", new JValue(3));
 
-                    ((ICollection<KeyValuePair<string, JToken>>)o).CopyTo(new KeyValuePair<string, JToken>[3], 1);
-                });
+                ((ICollection<KeyValuePair<string, JToken>>)o).CopyTo(new KeyValuePair<string, JToken>[3], 1);
+            }, @"The number of elements in the source JObject is greater than the available space from arrayIndex to the end of the destination array.");
         }
 
         [Test]
@@ -442,12 +432,11 @@ Parameter name: arrayIndex",
         [Test]
         public void Parse_ShouldThrowOnUnexpectedToken()
         {
-            ExceptionAssert.Throws<JsonReaderException>("Error reading JObject from JsonReader. Current JsonReader item is not an object: StartArray. Path '', line 1, position 1.",
-                () =>
-                {
-                    string json = @"[""prop""]";
-                    JObject.Parse(json);
-                });
+            ExceptionAssert.Throws<JsonReaderException>(() =>
+            {
+                string json = @"[""prop""]";
+                JObject.Parse(json);
+            }, "Error reading JObject from JsonReader. Current JsonReader item is not an object: StartArray. Path '', line 1, position 1.");
         }
 
         [Test]
@@ -478,12 +467,10 @@ Parameter name: arrayIndex",
         [Test]
         public void Blog()
         {
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Invalid property identifier character: ]. Path 'name', line 3, position 5.",
-                () => { JObject.Parse(@"{
+            ExceptionAssert.Throws<JsonReaderException>(() => { JObject.Parse(@"{
     ""name"": ""James"",
     ]!#$THIS IS: BAD JSON![{}}}}]
-  }"); });
+  }"); }, "Invalid property identifier character: ]. Path 'name', line 3, position 5.");
         }
 
         [Test]
@@ -890,48 +877,42 @@ Parameter name: arrayIndex",
         [Test]
         public void IListAddBadToken()
         {
-            ExceptionAssert.Throws<ArgumentException>(
-                "Can not add Newtonsoft.Json.Linq.JValue to Newtonsoft.Json.Linq.JObject.",
-                () =>
-                {
-                    JProperty p1 = new JProperty("Test1", 1);
-                    JProperty p2 = new JProperty("Test2", "Two");
-                    IList l = new JObject(p1, p2);
+            ExceptionAssert.Throws<ArgumentException>(() =>
+            {
+                JProperty p1 = new JProperty("Test1", 1);
+                JProperty p2 = new JProperty("Test2", "Two");
+                IList l = new JObject(p1, p2);
 
-                    l.Add(new JValue("Bad!"));
-                });
+                l.Add(new JValue("Bad!"));
+            }, "Can not add Newtonsoft.Json.Linq.JValue to Newtonsoft.Json.Linq.JObject.");
         }
 
         [Test]
         public void IListAddBadValue()
         {
-            ExceptionAssert.Throws<ArgumentException>(
-                "Argument is not a JToken.",
-                () =>
-                {
-                    JProperty p1 = new JProperty("Test1", 1);
-                    JProperty p2 = new JProperty("Test2", "Two");
-                    IList l = new JObject(p1, p2);
+            ExceptionAssert.Throws<ArgumentException>(() =>
+            {
+                JProperty p1 = new JProperty("Test1", 1);
+                JProperty p2 = new JProperty("Test2", "Two");
+                IList l = new JObject(p1, p2);
 
-                    l.Add("Bad!");
-                });
+                l.Add("Bad!");
+            }, "Argument is not a JToken.");
         }
 
         [Test]
         public void IListAddPropertyWithExistingName()
         {
-            ExceptionAssert.Throws<ArgumentException>(
-                "Can not add property Test2 to Newtonsoft.Json.Linq.JObject. Property with the same name already exists on object.",
-                () =>
-                {
-                    JProperty p1 = new JProperty("Test1", 1);
-                    JProperty p2 = new JProperty("Test2", "Two");
-                    IList l = new JObject(p1, p2);
+            ExceptionAssert.Throws<ArgumentException>(() =>
+            {
+                JProperty p1 = new JProperty("Test1", 1);
+                JProperty p2 = new JProperty("Test2", "Two");
+                IList l = new JObject(p1, p2);
 
-                    JProperty p3 = new JProperty("Test2", "II");
+                JProperty p3 = new JProperty("Test2", "II");
 
-                    l.Add(p3);
-                });
+                l.Add(p3);
+            }, "Can not add property Test2 to Newtonsoft.Json.Linq.JObject. Property with the same name already exists on object.");
         }
 
         [Test]
@@ -1024,34 +1005,30 @@ Parameter name: arrayIndex",
         [Test]
         public void IListSetItemAlreadyExists()
         {
-            ExceptionAssert.Throws<ArgumentException>(
-                "Can not add property Test3 to Newtonsoft.Json.Linq.JObject. Property with the same name already exists on object.",
-                () =>
-                {
-                    JProperty p1 = new JProperty("Test1", 1);
-                    JProperty p2 = new JProperty("Test2", "Two");
-                    IList l = new JObject(p1, p2);
+            ExceptionAssert.Throws<ArgumentException>(() =>
+            {
+                JProperty p1 = new JProperty("Test1", 1);
+                JProperty p2 = new JProperty("Test2", "Two");
+                IList l = new JObject(p1, p2);
 
-                    JProperty p3 = new JProperty("Test3", "III");
+                JProperty p3 = new JProperty("Test3", "III");
 
-                    l[0] = p3;
-                    l[1] = p3;
-                });
+                l[0] = p3;
+                l[1] = p3;
+            }, "Can not add property Test3 to Newtonsoft.Json.Linq.JObject. Property with the same name already exists on object.");
         }
 
         [Test]
         public void IListSetItemInvalid()
         {
-            ExceptionAssert.Throws<ArgumentException>(
-                @"Can not add Newtonsoft.Json.Linq.JValue to Newtonsoft.Json.Linq.JObject.",
-                () =>
-                {
-                    JProperty p1 = new JProperty("Test1", 1);
-                    JProperty p2 = new JProperty("Test2", "Two");
-                    IList l = new JObject(p1, p2);
+            ExceptionAssert.Throws<ArgumentException>(() =>
+            {
+                JProperty p1 = new JProperty("Test1", 1);
+                JProperty p2 = new JProperty("Test2", "Two");
+                IList l = new JObject(p1, p2);
 
-                    l[0] = new JValue(true);
-                });
+                l[0] = new JValue(true);
+            }, @"Can not add Newtonsoft.Json.Linq.JValue to Newtonsoft.Json.Linq.JObject.");
         }
 
         [Test]
@@ -1140,46 +1117,43 @@ Parameter name: arrayIndex",
         [Test]
         public void GenericListJTokenAddBadToken()
         {
-            ExceptionAssert.Throws<ArgumentException>("Can not add Newtonsoft.Json.Linq.JValue to Newtonsoft.Json.Linq.JObject.",
-                () =>
-                {
-                    JProperty p1 = new JProperty("Test1", 1);
-                    JProperty p2 = new JProperty("Test2", "Two");
-                    IList<JToken> l = new JObject(p1, p2);
+            ExceptionAssert.Throws<ArgumentException>(() =>
+            {
+                JProperty p1 = new JProperty("Test1", 1);
+                JProperty p2 = new JProperty("Test2", "Two");
+                IList<JToken> l = new JObject(p1, p2);
 
-                    l.Add(new JValue("Bad!"));
-                });
+                l.Add(new JValue("Bad!"));
+            }, "Can not add Newtonsoft.Json.Linq.JValue to Newtonsoft.Json.Linq.JObject.");
         }
 
         [Test]
         public void GenericListJTokenAddBadValue()
         {
-            ExceptionAssert.Throws<ArgumentException>("Can not add Newtonsoft.Json.Linq.JValue to Newtonsoft.Json.Linq.JObject.",
-                () =>
-                {
-                    JProperty p1 = new JProperty("Test1", 1);
-                    JProperty p2 = new JProperty("Test2", "Two");
-                    IList<JToken> l = new JObject(p1, p2);
+            ExceptionAssert.Throws<ArgumentException>(() =>
+            {
+                JProperty p1 = new JProperty("Test1", 1);
+                JProperty p2 = new JProperty("Test2", "Two");
+                IList<JToken> l = new JObject(p1, p2);
 
-                    // string is implicitly converted to JValue
-                    l.Add("Bad!");
-                });
+                // string is implicitly converted to JValue
+                l.Add("Bad!");
+            }, "Can not add Newtonsoft.Json.Linq.JValue to Newtonsoft.Json.Linq.JObject.");
         }
 
         [Test]
         public void GenericListJTokenAddPropertyWithExistingName()
         {
-            ExceptionAssert.Throws<ArgumentException>("Can not add property Test2 to Newtonsoft.Json.Linq.JObject. Property with the same name already exists on object.",
-                () =>
-                {
-                    JProperty p1 = new JProperty("Test1", 1);
-                    JProperty p2 = new JProperty("Test2", "Two");
-                    IList<JToken> l = new JObject(p1, p2);
+            ExceptionAssert.Throws<ArgumentException>(() =>
+            {
+                JProperty p1 = new JProperty("Test1", 1);
+                JProperty p2 = new JProperty("Test2", "Two");
+                IList<JToken> l = new JObject(p1, p2);
 
-                    JProperty p3 = new JProperty("Test2", "II");
+                JProperty p3 = new JProperty("Test2", "II");
 
-                    l.Add(p3);
-                });
+                l.Add(p3);
+            }, "Can not add property Test2 to Newtonsoft.Json.Linq.JObject. Property with the same name already exists on object.");
         }
 
         [Test]
@@ -1265,18 +1239,17 @@ Parameter name: arrayIndex",
         [Test]
         public void GenericListJTokenSetItemAlreadyExists()
         {
-            ExceptionAssert.Throws<ArgumentException>("Can not add property Test3 to Newtonsoft.Json.Linq.JObject. Property with the same name already exists on object.",
-                () =>
-                {
-                    JProperty p1 = new JProperty("Test1", 1);
-                    JProperty p2 = new JProperty("Test2", "Two");
-                    IList<JToken> l = new JObject(p1, p2);
+            ExceptionAssert.Throws<ArgumentException>(() =>
+            {
+                JProperty p1 = new JProperty("Test1", 1);
+                JProperty p2 = new JProperty("Test2", "Two");
+                IList<JToken> l = new JObject(p1, p2);
 
-                    JProperty p3 = new JProperty("Test3", "III");
+                JProperty p3 = new JProperty("Test3", "III");
 
-                    l[0] = p3;
-                    l[1] = p3;
-                });
+                l[0] = p3;
+                l[1] = p3;
+            }, "Can not add property Test3 to Newtonsoft.Json.Linq.JObject. Property with the same name already exists on object.");
         }
 
 #if !(NETFX_CORE || PORTABLE || PORTABLE40)
@@ -1347,25 +1320,21 @@ Parameter name: arrayIndex",
         [Test]
         public void IBindingListApplySort()
         {
-            ExceptionAssert.Throws<NotSupportedException>(
-                "Specified method is not supported.",
-                () =>
-                {
-                    IBindingList l = new JObject();
-                    l.ApplySort(null, ListSortDirection.Ascending);
-                });
+            ExceptionAssert.Throws<NotSupportedException>(() =>
+            {
+                IBindingList l = new JObject();
+                l.ApplySort(null, ListSortDirection.Ascending);
+            }, "Specified method is not supported.");
         }
 
         [Test]
         public void IBindingListRemoveSort()
         {
-            ExceptionAssert.Throws<NotSupportedException>(
-                "Specified method is not supported.",
-                () =>
-                {
-                    IBindingList l = new JObject();
-                    l.RemoveSort();
-                });
+            ExceptionAssert.Throws<NotSupportedException>(() =>
+            {
+                IBindingList l = new JObject();
+                l.RemoveSort();
+            }, "Specified method is not supported.");
         }
 
         [Test]
@@ -1379,13 +1348,11 @@ Parameter name: arrayIndex",
         [Test]
         public void IBindingListFind()
         {
-            ExceptionAssert.Throws<NotSupportedException>(
-                "Specified method is not supported.",
-                () =>
-                {
-                    IBindingList l = new JObject();
-                    l.Find(null, null);
-                });
+            ExceptionAssert.Throws<NotSupportedException>(() =>
+            {
+                IBindingList l = new JObject();
+                l.Find(null, null);
+            }, "Specified method is not supported.");
         }
 
         [Test]
@@ -1398,13 +1365,11 @@ Parameter name: arrayIndex",
         [Test]
         public void IBindingListAddNew()
         {
-            ExceptionAssert.Throws<JsonException>(
-                "Could not determine new value to add to 'Newtonsoft.Json.Linq.JObject'.",
-                () =>
-                {
-                    IBindingList l = new JObject();
-                    l.AddNew();
-                });
+            ExceptionAssert.Throws<JsonException>(() =>
+            {
+                IBindingList l = new JObject();
+                l.AddNew();
+            }, "Could not determine new value to add to 'Newtonsoft.Json.Linq.JObject'.");
         }
 
         [Test]
@@ -1579,12 +1544,11 @@ Parameter name: arrayIndex",
         [Test]
         public void SetValueWithInvalidPropertyName()
         {
-            ExceptionAssert.Throws<ArgumentException>("Set JObject values with invalid key value: 0. Object property name expected.",
-                () =>
-                {
-                    JObject o = new JObject();
-                    o[0] = new JValue(3);
-                });
+            ExceptionAssert.Throws<ArgumentException>(() =>
+            {
+                JObject o = new JObject();
+                o[0] = new JValue(3);
+            }, "Set JObject values with invalid key value: 0. Object property name expected.");
         }
 
         [Test]
@@ -1635,44 +1599,41 @@ Parameter name: arrayIndex",
         [Test]
         public void InvalidValueCastExceptionMessage()
         {
-            ExceptionAssert.Throws<ArgumentException>("Can not convert Object to String.",
-                () =>
-                {
-                    string json = @"{
+            ExceptionAssert.Throws<ArgumentException>(() =>
+            {
+                string json = @"{
   ""responseData"": {}, 
   ""responseDetails"": null, 
   ""responseStatus"": 200
 }";
 
-                    JObject o = JObject.Parse(json);
+                JObject o = JObject.Parse(json);
 
-                    string name = (string)o["responseData"];
-                });
+                string name = (string)o["responseData"];
+            }, "Can not convert Object to String.");
         }
 
         [Test]
         public void InvalidPropertyValueCastExceptionMessage()
         {
-            ExceptionAssert.Throws<ArgumentException>("Can not convert Object to String.",
-                () =>
-                {
-                    string json = @"{
+            ExceptionAssert.Throws<ArgumentException>(() =>
+            {
+                string json = @"{
   ""responseData"": {}, 
   ""responseDetails"": null, 
   ""responseStatus"": 200
 }";
 
-                    JObject o = JObject.Parse(json);
+                JObject o = JObject.Parse(json);
 
-                    string name = (string)o.Property("responseData");
-                });
+                string name = (string)o.Property("responseData");
+            }, "Can not convert Object to String.");
         }
 
         [Test]
         public void ParseIncomplete()
         {
-            ExceptionAssert.Throws<Exception>("Unexpected end of content while loading JObject. Path 'foo', line 1, position 6.",
-                () => { JObject.Parse("{ foo:"); });
+            ExceptionAssert.Throws<Exception>(() => { JObject.Parse("{ foo:"); }, "Unexpected end of content while loading JObject. Path 'foo', line 1, position 6.");
         }
 
         [Test]
@@ -1707,25 +1668,24 @@ Parameter name: arrayIndex",
         [Test]
         public void LoadFromNestedObjectIncomplete()
         {
-            ExceptionAssert.Throws<JsonReaderException>("Unexpected end of content while loading JObject. Path 'short.error.code', line 6, position 15.",
-                () =>
-                {
-                    string jsonText = @"{
+            ExceptionAssert.Throws<JsonReaderException>(() =>
+            {
+                string jsonText = @"{
   ""short"":
   {
     ""error"":
     {
       ""code"":0";
 
-                    JsonReader reader = new JsonTextReader(new StringReader(jsonText));
-                    reader.Read();
-                    reader.Read();
-                    reader.Read();
-                    reader.Read();
-                    reader.Read();
+                JsonReader reader = new JsonTextReader(new StringReader(jsonText));
+                reader.Read();
+                reader.Read();
+                reader.Read();
+                reader.Read();
+                reader.Read();
 
-                    JToken.ReadFrom(reader);
-                });
+                JToken.ReadFrom(reader);
+            }, "Unexpected end of content while loading JObject. Path 'short.error.code', line 6, position 15.");
         }
 
 #if !(NETFX_CORE || PORTABLE || PORTABLE40)
@@ -1806,10 +1766,9 @@ Parameter name: arrayIndex",
         [Test]
         public void ParseAdditionalContent()
         {
-            ExceptionAssert.Throws<JsonReaderException>("Additional text encountered after finished reading JSON content: ,. Path '', line 10, position 2.",
-                () =>
-                {
-                    string json = @"{
+            ExceptionAssert.Throws<JsonReaderException>(() =>
+            {
+                string json = @"{
 ""Name"": ""Apple"",
 ""Expiry"": new Date(1230422400000),
 ""Price"": 3.99,
@@ -1820,8 +1779,8 @@ Parameter name: arrayIndex",
 ]
 }, 987987";
 
-                    JObject o = JObject.Parse(json);
-                });
+                JObject o = JObject.Parse(json);
+            }, "Additional text encountered after finished reading JSON content: ,. Path '', line 10, position 2.");
         }
 
         [Test]

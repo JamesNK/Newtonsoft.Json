@@ -881,17 +881,13 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void NoRootObject()
         {
-            ExceptionAssert.Throws<JsonSerializationException>(
-                "XmlNodeConverter can only convert JSON that begins with an object.",
-                () => { XmlDocument newDoc = (XmlDocument)JsonConvert.DeserializeXmlNode(@"[1]"); });
+            ExceptionAssert.Throws<JsonSerializationException>(() => { XmlDocument newDoc = (XmlDocument)JsonConvert.DeserializeXmlNode(@"[1]"); }, "XmlNodeConverter can only convert JSON that begins with an object.");
         }
 
         [Test]
         public void RootObjectMultipleProperties()
         {
-            ExceptionAssert.Throws<JsonSerializationException>(
-                "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifing a DeserializeRootElementName.",
-                () => { XmlDocument newDoc = (XmlDocument)JsonConvert.DeserializeXmlNode(@"{Prop1:1,Prop2:2}"); });
+            ExceptionAssert.Throws<JsonSerializationException>(() => { XmlDocument newDoc = (XmlDocument)JsonConvert.DeserializeXmlNode(@"{Prop1:1,Prop2:2}"); }, "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifing a DeserializeRootElementName.");
         }
 
         [Test]
@@ -1007,9 +1003,7 @@ namespace Newtonsoft.Json.Tests.Converters
         {
             string json = @"{""count"": 773840,""photos"": null}";
 
-            ExceptionAssert.Throws<JsonSerializationException>(
-                "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifing a DeserializeRootElementName.",
-                () => { JsonConvert.DeserializeXmlNode(json); });
+            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeXmlNode(json); }, "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifing a DeserializeRootElementName.");
         }
 
 #if !NET20
@@ -1018,9 +1012,7 @@ namespace Newtonsoft.Json.Tests.Converters
         {
             string json = @"{""count"": 773840,""photos"": null}";
 
-            ExceptionAssert.Throws<JsonSerializationException>(
-                "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifing a DeserializeRootElementName.",
-                () => { JsonConvert.DeserializeXNode(json); });
+            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeXNode(json); }, "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifing a DeserializeRootElementName.");
         }
 #endif
 
@@ -1481,9 +1473,7 @@ namespace Newtonsoft.Json.Tests.Converters
   }
 }";
 
-            ExceptionAssert.Throws<JsonSerializationException>(
-                "XmlNodeConverter cannot convert JSON with an empty property name to XML.",
-                () => { DeserializeXmlNode(json); });
+            ExceptionAssert.Throws<JsonSerializationException>(() => { DeserializeXmlNode(json); }, "XmlNodeConverter cannot convert JSON with an empty property name to XML.");
         }
 
         [Test]

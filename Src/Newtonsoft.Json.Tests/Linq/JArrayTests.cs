@@ -127,10 +127,8 @@ namespace Newtonsoft.Json.Tests.Linq
         {
             JArray j = new JArray();
 
-            ExceptionAssert.Throws<ArgumentNullException>(
-                @"Value cannot be null.
-Parameter name: array",
-                () => { ((ICollection<JToken>)j).CopyTo(null, 0); });
+            ExceptionAssert.Throws<ArgumentNullException>(() => { ((ICollection<JToken>)j).CopyTo(null, 0); }, @"Value cannot be null.
+Parameter name: array");
         }
 
         [Test]
@@ -138,10 +136,8 @@ Parameter name: array",
         {
             JArray j = new JArray();
 
-            ExceptionAssert.Throws<ArgumentOutOfRangeException>(
-                @"arrayIndex is less than 0.
-Parameter name: arrayIndex",
-                () => { ((ICollection<JToken>)j).CopyTo(new JToken[1], -1); });
+            ExceptionAssert.Throws<ArgumentOutOfRangeException>(() => { ((ICollection<JToken>)j).CopyTo(new JToken[1], -1); }, @"arrayIndex is less than 0.
+Parameter name: arrayIndex");
         }
 
         [Test]
@@ -149,9 +145,7 @@ Parameter name: arrayIndex",
         {
             JArray j = new JArray();
 
-            ExceptionAssert.Throws<ArgumentException>(
-                @"arrayIndex is equal to or greater than the length of array.",
-                () => { ((ICollection<JToken>)j).CopyTo(new JToken[1], 1); });
+            ExceptionAssert.Throws<ArgumentException>(() => { ((ICollection<JToken>)j).CopyTo(new JToken[1], 1); }, @"arrayIndex is equal to or greater than the length of array.");
         }
 
         [Test]
@@ -162,9 +156,7 @@ Parameter name: arrayIndex",
             j.Add(new JValue(2));
             j.Add(new JValue(3));
 
-            ExceptionAssert.Throws<ArgumentException>(
-                @"The number of elements in the source JObject is greater than the available space from arrayIndex to the end of the destination array.",
-                () => { ((ICollection<JToken>)j).CopyTo(new JToken[3], 1); });
+            ExceptionAssert.Throws<ArgumentException>(() => { ((ICollection<JToken>)j).CopyTo(new JToken[3], 1); }, @"The number of elements in the source JObject is greater than the available space from arrayIndex to the end of the destination array.");
         }
 
         [Test]
@@ -240,10 +232,8 @@ Parameter name: arrayIndex",
         {
             JArray j = new JArray();
 
-            ExceptionAssert.Throws<ArgumentOutOfRangeException>(
-                @"Index is equal to or greater than Count.
-Parameter name: index",
-                () => { j.RemoveAt(0); });
+            ExceptionAssert.Throws<ArgumentOutOfRangeException>(() => { j.RemoveAt(0); }, @"Index is equal to or greater than Count.
+Parameter name: index");
         }
 
         [Test]
@@ -251,10 +241,8 @@ Parameter name: index",
         {
             JArray j = new JArray();
 
-            ExceptionAssert.Throws<ArgumentOutOfRangeException>(
-                @"Index is less than 0.
-Parameter name: index",
-                () => { j.RemoveAt(-1); });
+            ExceptionAssert.Throws<ArgumentOutOfRangeException>(() => { j.RemoveAt(-1); }, @"Index is less than 0.
+Parameter name: index");
         }
 
         [Test]
@@ -332,10 +320,8 @@ Parameter name: index",
         {
             JArray j = new JArray();
 
-            ExceptionAssert.Throws<ArgumentOutOfRangeException>(
-                @"Index was out of range. Must be non-negative and less than the size of the collection.
-Parameter name: index",
-                () => { j.Insert(-1, new JValue(1)); });
+            ExceptionAssert.Throws<ArgumentOutOfRangeException>(() => { j.Insert(-1, new JValue(1)); }, @"Index was out of range. Must be non-negative and less than the size of the collection.
+Parameter name: index");
         }
 
         [Test]
@@ -343,10 +329,8 @@ Parameter name: index",
         {
             JArray j = new JArray();
 
-            ExceptionAssert.Throws<ArgumentOutOfRangeException>(
-                @"Index must be within the bounds of the List.
-Parameter name: index",
-                () => { j.Insert(2, new JValue(1)); });
+            ExceptionAssert.Throws<ArgumentOutOfRangeException>(() => { j.Insert(2, new JValue(1)); }, @"Index must be within the bounds of the List.
+Parameter name: index");
         }
 
         [Test]
@@ -376,9 +360,7 @@ Parameter name: index",
         {
             string json = @"{""prop"":""value""}";
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Error reading JArray from JsonReader. Current JsonReader item is not an array: StartObject. Path '', line 1, position 1.",
-                () => { JArray.Parse(json); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { JArray.Parse(json); }, "Error reading JArray from JsonReader. Current JsonReader item is not an array: StartObject. Path '', line 1, position 1.");
         }
 
         public class ListItemFields
@@ -481,13 +463,11 @@ Parameter name: index",
         [Test]
         public void SetValueWithInvalidIndex()
         {
-            ExceptionAssert.Throws<ArgumentException>(
-                @"Set JArray values with invalid key value: ""badvalue"". Array position index expected.",
-                () =>
-                {
-                    JArray a = new JArray();
-                    a["badvalue"] = new JValue(3);
-                });
+            ExceptionAssert.Throws<ArgumentException>(() =>
+            {
+                JArray a = new JArray();
+                a["badvalue"] = new JValue(3);
+            }, @"Set JArray values with invalid key value: ""badvalue"". Array position index expected.");
         }
 
         [Test]
@@ -518,9 +498,7 @@ Parameter name: index",
         [Test]
         public void ParseIncomplete()
         {
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Unexpected end of content while loading JArray. Path '[0]', line 1, position 2.",
-                () => { JArray.Parse("[1"); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { JArray.Parse("[1"); }, "Unexpected end of content while loading JArray. Path '[0]', line 1, position 2.");
         }
 
         [Test]
@@ -544,9 +522,7 @@ Parameter name: index",
 ""Large""
 ], 987987";
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Additional text encountered after finished reading JSON content: ,. Path '', line 5, position 2.",
-                () => { JArray.Parse(json); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { JArray.Parse(json); }, "Additional text encountered after finished reading JSON content: ,. Path '', line 5, position 2.");
         }
 
         [Test]

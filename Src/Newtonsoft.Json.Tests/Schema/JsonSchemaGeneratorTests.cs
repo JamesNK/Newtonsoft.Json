@@ -260,12 +260,11 @@ namespace Newtonsoft.Json.Tests.Schema
         [Test]
         public void CircularReferenceError()
         {
-            ExceptionAssert.Throws<Exception>(@"Unresolved circular reference for type 'Newtonsoft.Json.Tests.TestObjects.CircularReferenceClass'. Explicitly define an Id for the type using a JsonObject/JsonArray attribute or automatically generate a type Id using the UndefinedSchemaIdHandling property.",
-                () =>
-                {
-                    JsonSchemaGenerator generator = new JsonSchemaGenerator();
-                    generator.Generate(typeof(CircularReferenceClass));
-                });
+            ExceptionAssert.Throws<Exception>(() =>
+            {
+                JsonSchemaGenerator generator = new JsonSchemaGenerator();
+                generator.Generate(typeof(CircularReferenceClass));
+            }, @"Unresolved circular reference for type 'Newtonsoft.Json.Tests.TestObjects.CircularReferenceClass'. Explicitly define an Id for the type using a JsonObject/JsonArray attribute or automatically generate a type Id using the UndefinedSchemaIdHandling property.");
         }
 
         [Test]

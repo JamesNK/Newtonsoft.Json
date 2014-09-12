@@ -104,16 +104,15 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void NamedEnumDuplicateTest()
         {
-            ExceptionAssert.Throws<Exception>("Enum name 'Third' already exists on enum 'NamedEnumDuplicate'.",
-                () =>
+            ExceptionAssert.Throws<Exception>(() =>
+            {
+                EnumContainer<NamedEnumDuplicate> c = new EnumContainer<NamedEnumDuplicate>
                 {
-                    EnumContainer<NamedEnumDuplicate> c = new EnumContainer<NamedEnumDuplicate>
-                    {
-                        Enum = NamedEnumDuplicate.First
-                    };
+                    Enum = NamedEnumDuplicate.First
+                };
 
-                    JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter());
-                });
+                JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter());
+            }, "Enum name 'Third' already exists on enum 'NamedEnumDuplicate'.");
         }
 
         [Test]
@@ -347,14 +346,12 @@ namespace Newtonsoft.Json.Tests.Converters
         {
             string json = "{ \"Value\" : \"Three\" }";
 
-            ExceptionAssert.Throws<JsonSerializationException>(
-                @"Error converting value ""Three"" to type 'Newtonsoft.Json.Tests.Converters.StringEnumConverterTests+MyEnum'. Path 'Value', line 1, position 19.",
-                () =>
-                {
-                    var serializer = new JsonSerializer();
-                    serializer.Converters.Add(new StringEnumConverter());
-                    serializer.Deserialize<Bucket>(new JsonTextReader(new StringReader(json)));
-                });
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                var serializer = new JsonSerializer();
+                serializer.Converters.Add(new StringEnumConverter());
+                serializer.Deserialize<Bucket>(new JsonTextReader(new StringReader(json)));
+            }, @"Error converting value ""Three"" to type 'Newtonsoft.Json.Tests.Converters.StringEnumConverterTests+MyEnum'. Path 'Value', line 1, position 19.");
         }
 
         public class Bucket

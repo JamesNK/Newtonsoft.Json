@@ -407,8 +407,7 @@ namespace Newtonsoft.Json.Tests
         [Test]
         public void ToStringInvalid()
         {
-            ExceptionAssert.Throws<ArgumentException>("Unsupported type: System.Version. Use the JsonSerializer class to get the object's JSON representation.",
-                () => { JsonConvert.ToString(new Version(1, 0)); });
+            ExceptionAssert.Throws<ArgumentException>(() => { JsonConvert.ToString(new Version(1, 0)); }, "Unsupported type: System.Version. Use the JsonSerializer class to get the object's JSON representation.");
         }
 
         [Test]
@@ -499,18 +498,17 @@ namespace Newtonsoft.Json.Tests
         [Test]
         public void TestInvalidStrings()
         {
-            ExceptionAssert.Throws<JsonReaderException>("Additional text encountered after finished reading JSON content: t. Path '', line 1, position 19.",
-                () =>
-                {
-                    string orig = @"this is a string ""that has quotes"" ";
+            ExceptionAssert.Throws<JsonReaderException>(() =>
+            {
+                string orig = @"this is a string ""that has quotes"" ";
 
-                    string serialized = JsonConvert.SerializeObject(orig);
+                string serialized = JsonConvert.SerializeObject(orig);
 
-                    // *** Make string invalid by stripping \" \"
-                    serialized = serialized.Replace(@"\""", "\"");
+                // *** Make string invalid by stripping \" \"
+                serialized = serialized.Replace(@"\""", "\"");
 
-                    JsonConvert.DeserializeObject<string>(serialized);
-                });
+                JsonConvert.DeserializeObject<string>(serialized);
+            }, "Additional text encountered after finished reading JSON content: t. Path '', line 1, position 19.");
         }
 
         [Test]
@@ -1029,9 +1027,7 @@ namespace Newtonsoft.Json.Tests
             Assert.AreEqual(typeof(BigInteger), v.Value.GetType());
             Assert.AreEqual(BigInteger.Parse(new String('9', 380)), (BigInteger)v.Value);
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "JSON integer " + new String('9', 381) + " is too large to parse. Path 'biginteger', line 1, position 395.",
-                () => JObject.Parse(@"{""biginteger"":" + new String('9', 381) + "}"));
+            ExceptionAssert.Throws<JsonReaderException>(() => JObject.Parse(@"{""biginteger"":" + new String('9', 381) + "}"), "JSON integer " + new String('9', 381) + " is too large to parse. Path 'biginteger', line 1, position 395.");
         }
 #endif
 

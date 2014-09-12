@@ -132,9 +132,7 @@ third line", jsonTextReader.Value);
             Assert.IsTrue(jsonTextReader.Read());
             Assert.AreEqual(JsonToken.PropertyName, jsonTextReader.TokenType);
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "JSON integer 333333333333333333333333333333333333333 is too large or small for an Int32. Path 'ChildId', line 2, position 53.",
-                () => jsonTextReader.ReadAsInt32());
+            ExceptionAssert.Throws<JsonReaderException>(() => jsonTextReader.ReadAsInt32(), "JSON integer 333333333333333333333333333333333333333 is too large or small for an Int32. Path 'ChildId', line 2, position 53.");
 
             Assert.IsTrue(jsonTextReader.Read());
             Assert.AreEqual(JsonToken.EndObject, jsonTextReader.TokenType);
@@ -157,21 +155,13 @@ third line", jsonTextReader.Value);
             Assert.IsTrue(jsonTextReader.Read());
             Assert.AreEqual(JsonToken.StartArray, jsonTextReader.TokenType);
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "JSON integer 333333333333333333333333333333333333333 is too large or small for an Int32. Path '[0]', line 2, position 42.",
-                () => jsonTextReader.ReadAsInt32());
+            ExceptionAssert.Throws<JsonReaderException>(() => jsonTextReader.ReadAsInt32(), "JSON integer 333333333333333333333333333333333333333 is too large or small for an Int32. Path '[0]', line 2, position 42.");
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Input string '3.3' is not a valid integer. Path '[1]', line 3, position 6.",
-                () => jsonTextReader.ReadAsInt32());
+            ExceptionAssert.Throws<JsonReaderException>(() => jsonTextReader.ReadAsInt32(), "Input string '3.3' is not a valid integer. Path '[1]', line 3, position 6.");
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Error reading integer. Unexpected token: Undefined. Path '[2]', line 4, position 3.",
-                () => jsonTextReader.ReadAsInt32());
+            ExceptionAssert.Throws<JsonReaderException>(() => jsonTextReader.ReadAsInt32(), "Error reading integer. Unexpected token: Undefined. Path '[2]', line 4, position 3.");
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Input string '0f' is not a valid integer. Path '[3]', line 5, position 5.",
-                () => jsonTextReader.ReadAsInt32());
+            ExceptionAssert.Throws<JsonReaderException>(() => jsonTextReader.ReadAsInt32(), "Input string '0f' is not a valid integer. Path '[3]', line 5, position 5.");
 
             Assert.IsTrue(jsonTextReader.Read());
             Assert.AreEqual(JsonToken.EndArray, jsonTextReader.TokenType);
@@ -240,18 +230,15 @@ third line", jsonTextReader.Value);
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 
-            ExceptionAssert.Throws<JsonReaderException>("Unexpected character encountered while parsing number: q. Path '', line 1, position 2.",
-                () => { reader.Read(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.Read(); }, "Unexpected character encountered while parsing number: q. Path '', line 1, position 2.");
 
             reader = new JsonTextReader(new StringReader(json));
 
-            ExceptionAssert.Throws<JsonReaderException>("Unexpected character encountered while parsing number: q. Path '', line 1, position 2.",
-                () => { reader.ReadAsDecimal(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.ReadAsDecimal(); }, "Unexpected character encountered while parsing number: q. Path '', line 1, position 2.");
 
             reader = new JsonTextReader(new StringReader(json));
 
-            ExceptionAssert.Throws<JsonReaderException>("Unexpected character encountered while parsing number: q. Path '', line 1, position 2.",
-                () => { reader.ReadAsInt32(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.ReadAsInt32(); }, "Unexpected character encountered while parsing number: q. Path '', line 1, position 2.");
         }
 
         [Test]
@@ -273,8 +260,7 @@ third line", jsonTextReader.Value);
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
 
-            ExceptionAssert.Throws<JsonReaderException>("Unexpected content while parsing JSON. Path 'u', line 1, position 27.",
-                () => { reader.Read(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.Read(); }, "Unexpected content while parsing JSON. Path 'u', line 1, position 27.");
         }
 
         [Test]
@@ -323,9 +309,7 @@ third line", jsonTextReader.Value);
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Cannot read NaN as a decimal.",
-                () => reader.Read());
+            ExceptionAssert.Throws<JsonReaderException>(() => reader.Read(), "Cannot read NaN as a decimal.");
         }
 
         [Test]
@@ -515,14 +499,12 @@ third line", jsonTextReader.Value);
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Additional text encountered after finished reading JSON content: ,. Path '', line 5, position 2.",
-                () =>
+            ExceptionAssert.Throws<JsonReaderException>(() =>
+            {
+                while (reader.Read())
                 {
-                    while (reader.Read())
-                    {
-                    }
-                });
+                }
+            }, "Additional text encountered after finished reading JSON content: ,. Path '', line 5, position 2.");
         }
 
         [Test]
@@ -554,9 +536,7 @@ third line", jsonTextReader.Value);
             reader.Read();
             Assert.AreEqual(5, reader.LineNumber);
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Additional text encountered after finished reading JSON content: c. Path '', line 5, position 2.",
-                () => { reader.Read(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.Read(); }, "Additional text encountered after finished reading JSON content: c. Path '', line 5, position 2.");
         }
 
         [Test]
@@ -583,14 +563,12 @@ third line", jsonTextReader.Value);
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Additional text encountered after finished reading JSON content: a. Path '', line 1, position 5.",
-                () =>
+            ExceptionAssert.Throws<JsonReaderException>(() =>
+            {
+                while (reader.Read())
                 {
-                    while (reader.Read())
-                    {
-                    }
-                });
+                }
+            }, "Additional text encountered after finished reading JSON content: a. Path '', line 1, position 5.");
         }
 
         [Test]
@@ -817,9 +795,7 @@ third line", jsonTextReader.Value);
         {
             JsonReader reader = new JsonTextReader(new StringReader("'hi"));
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Unterminated string. Expected delimiter: '. Path '', line 1, position 3.",
-                () => { reader.Read(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.Read(); }, "Unterminated string. Expected delimiter: '. Path '', line 1, position 3.");
         }
 
         [Test]
@@ -953,13 +929,11 @@ third line", jsonTextReader.Value);
             for (int j = 1; j < 1000; j++)
             {
                 long total = j + i;
-                ExceptionAssert.Throws<JsonReaderException>(
-                    "JSON integer " + total + " is too large or small for an Int32. Path '', line 1, position 10.",
-                    () =>
-                    {
-                        reader = new JsonTextReader(new StringReader(total.ToString(CultureInfo.InvariantCulture)));
-                        reader.ReadAsInt32();
-                    });
+                ExceptionAssert.Throws<JsonReaderException>(() =>
+                {
+                    reader = new JsonTextReader(new StringReader(total.ToString(CultureInfo.InvariantCulture)));
+                    reader.ReadAsInt32();
+                }, "JSON integer " + total + " is too large or small for an Int32. Path '', line 1, position 10.");
             }
         }
 
@@ -976,13 +950,11 @@ third line", jsonTextReader.Value);
             for (int j = 1; j < 1000; j++)
             {
                 long total = -j + i;
-                ExceptionAssert.Throws<JsonReaderException>(
-                    "JSON integer " + total + " is too large or small for an Int32. Path '', line 1, position 11.",
-                    () =>
-                    {
-                        reader = new JsonTextReader(new StringReader(total.ToString(CultureInfo.InvariantCulture)));
-                        reader.ReadAsInt32();
-                    });
+                ExceptionAssert.Throws<JsonReaderException>(() =>
+                {
+                    reader = new JsonTextReader(new StringReader(total.ToString(CultureInfo.InvariantCulture)));
+                    reader.ReadAsInt32();
+                }, "JSON integer " + total + " is too large or small for an Int32. Path '', line 1, position 11.");
             }
         }
 
@@ -1075,9 +1047,7 @@ third line", jsonTextReader.Value);
         {
             JsonReader reader = new JsonTextReader(new StringReader(@"'h\u123"));
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Unexpected end while parsing unicode character. Path '', line 1, position 4.",
-                () => { reader.Read(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.Read(); }, "Unexpected end while parsing unicode character. Path '', line 1, position 4.");
         }
 
         [Test]
@@ -1085,9 +1055,7 @@ third line", jsonTextReader.Value);
         {
             JsonReader reader = new JsonTextReader(new StringReader(@"'h\"));
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Unterminated string. Expected delimiter: '. Path '', line 1, position 3.",
-                () => { reader.Read(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.Read(); }, "Unterminated string. Expected delimiter: '. Path '', line 1, position 3.");
         }
 
         [Test]
@@ -1095,9 +1063,7 @@ third line", jsonTextReader.Value);
         {
             JsonReader reader = new JsonTextReader(new StringReader(@"true"));
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Error reading bytes. Unexpected token: Boolean. Path '', line 1, position 4.",
-                () => { reader.ReadAsBytes(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.ReadAsBytes(); }, "Error reading bytes. Unexpected token: Boolean. Path '', line 1, position 4.");
         }
 
         [Test]
@@ -1108,9 +1074,7 @@ third line", jsonTextReader.Value);
 
             JsonReader reader = new JsonTextReader(new StringReader(@"'" + Convert.ToBase64String(helloWorldData)));
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Unterminated string. Expected delimiter: '. Path '', line 1, position 17.",
-                () => { reader.ReadAsBytes(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.ReadAsBytes(); }, "Unterminated string. Expected delimiter: '. Path '', line 1, position 17.");
         }
 
         [Test]
@@ -1129,9 +1093,7 @@ third line", jsonTextReader.Value);
             JsonReader reader = new JsonTextReader(new StringReader(@"{aww"));
             Assert.IsTrue(reader.Read());
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Unexpected end while parsing unquoted property name. Path '', line 1, position 4.",
-                () => { reader.Read(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.Read(); }, "Unexpected end while parsing unquoted property name. Path '', line 1, position 4.");
         }
 
         [Test]
@@ -1383,22 +1345,22 @@ third line", jsonTextReader.Value);
             Assert.AreEqual(int.MinValue, reader.ReadAsInt32());
 
             reader = new JsonTextReader(new StringReader(long.MaxValue.ToString()));
-            ExceptionAssert.Throws<JsonReaderException>("JSON integer 9223372036854775807 is too large or small for an Int32. Path '', line 1, position 19.", () => reader.ReadAsInt32());
+            ExceptionAssert.Throws<JsonReaderException>(() => reader.ReadAsInt32(), "JSON integer 9223372036854775807 is too large or small for an Int32. Path '', line 1, position 19.");
 
             reader = new JsonTextReader(new StringReader("9999999999999999999999999999999999999999999999999999999999999999999999999999asdasdasd"));
-            ExceptionAssert.Throws<JsonReaderException>("Unexpected character encountered while parsing number: s. Path '', line 1, position 77.", () => reader.ReadAsInt32());
+            ExceptionAssert.Throws<JsonReaderException>(() => reader.ReadAsInt32(), "Unexpected character encountered while parsing number: s. Path '', line 1, position 77.");
 
             reader = new JsonTextReader(new StringReader("1E-06"));
-            ExceptionAssert.Throws<JsonReaderException>("Input string '1E-06' is not a valid integer. Path '', line 1, position 5.", () => reader.ReadAsInt32());
+            ExceptionAssert.Throws<JsonReaderException>(() => reader.ReadAsInt32(), "Input string '1E-06' is not a valid integer. Path '', line 1, position 5.");
 
             reader = new JsonTextReader(new StringReader("1.1"));
-            ExceptionAssert.Throws<JsonReaderException>("Input string '1.1' is not a valid integer. Path '', line 1, position 3.", () => reader.ReadAsInt32());
+            ExceptionAssert.Throws<JsonReaderException>(() => reader.ReadAsInt32(), "Input string '1.1' is not a valid integer. Path '', line 1, position 3.");
 
             reader = new JsonTextReader(new StringReader(""));
             Assert.AreEqual(null, reader.ReadAsInt32());
 
             reader = new JsonTextReader(new StringReader("-"));
-            ExceptionAssert.Throws<JsonReaderException>("Input string '-' is not a valid integer. Path '', line 1, position 1.", () => reader.ReadAsInt32());
+            ExceptionAssert.Throws<JsonReaderException>(() => reader.ReadAsInt32(), "Input string '-' is not a valid integer. Path '', line 1, position 1.");
         }
 
         [Test]
@@ -1419,11 +1381,11 @@ third line", jsonTextReader.Value);
             Assert.AreEqual(0, reader.ReadAsDecimal());
 
             reader = new JsonTextReader(new StringReader("9999999999999999999999999999999999999999999999999999999999999999999999999999asdasdasd"));
-            ExceptionAssert.Throws<JsonReaderException>("Unexpected character encountered while parsing number: s. Path '', line 1, position 77.", () => reader.ReadAsDecimal());
+            ExceptionAssert.Throws<JsonReaderException>(() => reader.ReadAsDecimal(), "Unexpected character encountered while parsing number: s. Path '', line 1, position 77.");
 
             reader = new JsonTextReader(new StringReader("9999999999999999999999999999999999999999999999999999999999999999999999999999asdasdasd"));
             reader.FloatParseHandling = Json.FloatParseHandling.Decimal;
-            ExceptionAssert.Throws<JsonReaderException>("Unexpected character encountered while parsing number: s. Path '', line 1, position 77.", () => reader.Read());
+            ExceptionAssert.Throws<JsonReaderException>(() => reader.Read(), "Unexpected character encountered while parsing number: s. Path '', line 1, position 77.");
 
             reader = new JsonTextReader(new StringReader("1E-06"));
             Assert.AreEqual(0.000001m, reader.ReadAsDecimal());
@@ -1432,7 +1394,7 @@ third line", jsonTextReader.Value);
             Assert.AreEqual(null, reader.ReadAsDecimal());
 
             reader = new JsonTextReader(new StringReader("-"));
-            ExceptionAssert.Throws<JsonReaderException>("Input string '-' is not a valid decimal. Path '', line 1, position 1.", () => reader.ReadAsDecimal());
+            ExceptionAssert.Throws<JsonReaderException>(() => reader.ReadAsDecimal(), "Input string '-' is not a valid decimal. Path '', line 1, position 1.");
         }
 
         [Test]
@@ -1461,7 +1423,7 @@ third line", jsonTextReader.Value);
             Assert.AreEqual(-0.0d, reader.Value);
 
             reader = new JsonTextReader(new StringReader("9999999999999999999999999999999999999999999999999999999999999999999999999999asdasdasd"));
-            ExceptionAssert.Throws<JsonReaderException>("Unexpected character encountered while parsing number: s. Path '', line 1, position 77.", () => reader.Read());
+            ExceptionAssert.Throws<JsonReaderException>(() => reader.Read(), "Unexpected character encountered while parsing number: s. Path '', line 1, position 77.");
 
             reader = new JsonTextReader(new StringReader("1E-06"));
             Assert.IsTrue(reader.Read());
@@ -1472,7 +1434,7 @@ third line", jsonTextReader.Value);
             Assert.IsFalse(reader.Read());
 
             reader = new JsonTextReader(new StringReader("-"));
-            ExceptionAssert.Throws<JsonReaderException>("Input string '-' is not a valid number. Path '', line 1, position 1.", () => reader.Read());
+            ExceptionAssert.Throws<JsonReaderException>(() => reader.Read(), "Input string '-' is not a valid number. Path '', line 1, position 1.");
         }
 
         [Test]
@@ -1723,9 +1685,7 @@ third line", jsonTextReader.Value);
             reader.Read();
             Assert.AreEqual(JsonToken.Boolean, reader.TokenType);
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                @"Invalid character after parsing property name. Expected ':' but got: "". Path 'A', line 3, position 9.",
-                () => { reader.Read(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.Read(); }, @"Invalid character after parsing property name. Expected ':' but got: "". Path 'A', line 3, position 9.");
         }
 
         [Test]
@@ -1835,9 +1795,7 @@ third line", jsonTextReader.Value);
 
             reader.Read();
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Unexpected character encountered while parsing value: }. Path '', line 1, position 1.",
-                () => { reader.Read(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.Read(); }, "Unexpected character encountered while parsing value: }. Path '', line 1, position 1.");
         }
 
         [Test]
@@ -1863,9 +1821,7 @@ third line", jsonTextReader.Value);
         {
             JsonTextReader reader = new JsonTextReader(new StringReader(@"{"));
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Unexpected end when reading bytes. Path '', line 1, position 1.",
-                () => { reader.ReadAsBytes(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.ReadAsBytes(); }, "Unexpected end when reading bytes. Path '', line 1, position 1.");
         }
 
 #if !NET20
@@ -1884,9 +1840,7 @@ third line", jsonTextReader.Value);
         {
             JsonTextReader reader = new JsonTextReader(new StringReader(@"new Date()"));
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Error reading decimal. Unexpected token: StartConstructor. Path '', line 1, position 9.",
-                () => { reader.ReadAsDecimal(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.ReadAsDecimal(); }, "Error reading decimal. Unexpected token: StartConstructor. Path '', line 1, position 9.");
         }
 
         [Test]
@@ -1894,9 +1848,7 @@ third line", jsonTextReader.Value);
         {
             JsonTextReader reader = new JsonTextReader(new StringReader(@"new Date()"));
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Error reading bytes. Unexpected token: StartConstructor. Path '', line 1, position 9.",
-                () => { reader.ReadAsBytes(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.ReadAsBytes(); }, "Error reading bytes. Unexpected token: StartConstructor. Path '', line 1, position 9.");
         }
 
 #if !NET20
@@ -1905,9 +1857,7 @@ third line", jsonTextReader.Value);
         {
             JsonTextReader reader = new JsonTextReader(new StringReader(@"new Date()"));
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Error reading date. Unexpected token: StartConstructor. Path '', line 1, position 9.",
-                () => { reader.ReadAsDateTimeOffset(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.ReadAsDateTimeOffset(); }, "Error reading date. Unexpected token: StartConstructor. Path '', line 1, position 9.");
         }
 #endif
 
@@ -1927,9 +1877,7 @@ third line", jsonTextReader.Value);
         {
             JsonTextReader reader = new JsonTextReader(new StringReader(@"[1"));
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Unexpected end when reading bytes. Path '[0]', line 1, position 2.",
-                () => { reader.ReadAsBytes(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.ReadAsBytes(); }, "Unexpected end when reading bytes. Path '[0]', line 1, position 2.");
         }
 
         [Test]
@@ -1937,9 +1885,7 @@ third line", jsonTextReader.Value);
         {
             JsonTextReader reader = new JsonTextReader(new StringReader(@"[1.0]"));
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Unexpected token when reading bytes: Float. Path '[0]', line 1, position 4.",
-                () => { reader.ReadAsBytes(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.ReadAsBytes(); }, "Unexpected token when reading bytes: Float. Path '[0]', line 1, position 4.");
         }
 
         [Test]
@@ -2048,9 +1994,7 @@ third line", jsonTextReader.Value);
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Could not convert string to DateTimeOffset: blablahbla. Path 'Offset', line 1, position 22.",
-                () => { reader.ReadAsDateTimeOffset(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.ReadAsDateTimeOffset(); }, "Could not convert string to DateTimeOffset: blablahbla. Path 'Offset', line 1, position 22.");
         }
 
         [Test]
@@ -2202,9 +2146,7 @@ third line", jsonTextReader.Value);
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Input string '1.1' is not a valid integer. Path 'Name', line 1, position 12.",
-                () => { reader.ReadAsInt32(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.ReadAsInt32(); }, "Input string '1.1' is not a valid integer. Path 'Name', line 1, position 12.");
         }
 
         [Test]
@@ -2212,9 +2154,7 @@ third line", jsonTextReader.Value);
         {
             JsonTextReader reader = new JsonTextReader(new StringReader(@"nul"));
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Error parsing null value. Path '', line 0, position 0.",
-                () => { reader.Read(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.Read(); }, "Error parsing null value. Path '', line 0, position 0.");
         }
 
         [Test]
@@ -2222,9 +2162,7 @@ third line", jsonTextReader.Value);
         {
             JsonTextReader reader = new JsonTextReader(new StringReader(@"nulz"));
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Error parsing null value. Path '', line 0, position 0.",
-                () => { reader.Read(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.Read(); }, "Error parsing null value. Path '', line 0, position 0.");
         }
 
         [Test]
@@ -2232,9 +2170,7 @@ third line", jsonTextReader.Value);
         {
             JsonTextReader reader = new JsonTextReader(new StringReader(@"nullz"));
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Error parsing null value. Path '', line 1, position 4.",
-                () => { reader.Read(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.Read(); }, "Error parsing null value. Path '', line 1, position 4.");
         }
 
         [Test]
@@ -2242,9 +2178,7 @@ third line", jsonTextReader.Value);
         {
             JsonTextReader reader = new JsonTextReader(new StringReader(@"/* sdf"));
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Unexpected end while parsing comment. Path '', line 1, position 6.",
-                () => { reader.Read(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.Read(); }, "Unexpected end while parsing comment. Path '', line 1, position 6.");
         }
 
         [Test]
@@ -2252,9 +2186,7 @@ third line", jsonTextReader.Value);
         {
             JsonTextReader reader = new JsonTextReader(new StringReader(@"/sdf"));
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Error parsing comment. Expected: *, got s. Path '', line 1, position 1.",
-                () => { reader.Read(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.Read(); }, "Error parsing comment. Expected: *, got s. Path '', line 1, position 1.");
         }
 
         [Test]
@@ -2486,9 +2418,7 @@ third line", jsonTextReader.Value);
             string json = "new Dat";
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Unexpected end while parsing constructor. Path '', line 1, position 7.",
-                () => { reader.Read(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.Read(); }, "Unexpected end while parsing constructor. Path '', line 1, position 7.");
         }
 
         [Test]
@@ -2497,9 +2427,7 @@ third line", jsonTextReader.Value);
             string json = "new Date !";
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Unexpected character while parsing constructor: !. Path '', line 1, position 9.",
-                () => { reader.Read(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.Read(); }, "Unexpected character while parsing constructor: !. Path '', line 1, position 9.");
         }
 
         [Test]
@@ -2545,9 +2473,7 @@ third line", jsonTextReader.Value);
         {
             JsonTextReader reader = new JsonTextReader(new StringReader("true/"));
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Error parsing boolean value. Path '', line 1, position 4.",
-                () => { reader.Read(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.Read(); }, "Error parsing boolean value. Path '', line 1, position 4.");
         }
 
         [Test]
@@ -2569,9 +2495,7 @@ third line", jsonTextReader.Value);
             string json = "new Date,()";
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Unexpected character while parsing constructor: ,. Path '', line 1, position 8.",
-                () => { Assert.IsTrue(reader.Read()); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { Assert.IsTrue(reader.Read()); }, "Unexpected character while parsing constructor: ,. Path '', line 1, position 8.");
         }
 
         [Test]
@@ -2834,9 +2758,7 @@ null//comment
 
             JsonTextReader reader = new JsonTextReader(new StreamReader(new SlowStream(json, new UTF8Encoding(false), 1)));
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Unexpected end while parsing comment. Path '', line 1, position 1.",
-                () => { reader.Read(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.Read(); }, "Unexpected end while parsing comment. Path '', line 1, position 1.");
         }
 
         [Test]
@@ -2896,9 +2818,7 @@ null//comment
             Assert.IsTrue(reader.Read());
             Assert.IsTrue(reader.Read());
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Additional text encountered after finished reading JSON content: }. Path '', line 1, position 2.",
-                () => { reader.Read(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.Read(); }, "Additional text encountered after finished reading JSON content: }. Path '', line 1, position 2.");
         }
 
         [Test]
@@ -2981,9 +2901,7 @@ null//comment
 
             Assert.IsTrue(reader.Read());
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "The reader's MaxDepth of 1 has been exceeded. Path '[0]', line 1, position 2.",
-                () => { Assert.IsTrue(reader.Read()); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { Assert.IsTrue(reader.Read()); }, "The reader's MaxDepth of 1 has been exceeded. Path '[0]', line 1, position 2.");
         }
 
         [Test]
@@ -2999,9 +2917,7 @@ null//comment
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(0, reader.Depth);
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "The reader's MaxDepth of 1 has been exceeded. Path '[0]', line 1, position 2.",
-                () => { Assert.IsTrue(reader.Read()); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { Assert.IsTrue(reader.Read()); }, "The reader's MaxDepth of 1 has been exceeded. Path '[0]', line 1, position 2.");
             Assert.AreEqual(1, reader.Depth);
 
             Assert.IsTrue(reader.Read());
@@ -3019,9 +2935,7 @@ null//comment
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(1, reader.Depth);
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "The reader's MaxDepth of 1 has been exceeded. Path '[1]', line 1, position 9.",
-                () => { Assert.IsTrue(reader.Read()); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { Assert.IsTrue(reader.Read()); }, "The reader's MaxDepth of 1 has been exceeded. Path '[1]', line 1, position 9.");
             Assert.AreEqual(1, reader.Depth);
 
             Assert.IsTrue(reader.Read());
@@ -3179,12 +3093,8 @@ null//comment
 
             toggleReaderError.Error = true;
 
-            ExceptionAssert.Throws<Exception>(
-                "Read error",
-                () => jsonTextReader.Read());
-            ExceptionAssert.Throws<Exception>(
-                "Read error",
-                () => jsonTextReader.Read());
+            ExceptionAssert.Throws<Exception>(() => jsonTextReader.Read(), "Read error");
+            ExceptionAssert.Throws<Exception>(() => jsonTextReader.Read(), "Read error");
 
             toggleReaderError.Error = false;
 
@@ -3193,9 +3103,7 @@ null//comment
 
             toggleReaderError.Error = true;
 
-            ExceptionAssert.Throws<Exception>(
-                "Read error",
-                () => jsonTextReader.Read());
+            ExceptionAssert.Throws<Exception>(() => jsonTextReader.Read(), "Read error");
 
             toggleReaderError.Error = false;
 
@@ -3204,15 +3112,9 @@ null//comment
 
             toggleReaderError.Error = true;
 
-            ExceptionAssert.Throws<Exception>(
-                "Read error",
-                () => jsonTextReader.Read());
-            ExceptionAssert.Throws<Exception>(
-                "Read error",
-                () => jsonTextReader.Read());
-            ExceptionAssert.Throws<Exception>(
-                "Read error",
-                () => jsonTextReader.Read());
+            ExceptionAssert.Throws<Exception>(() => jsonTextReader.Read(), "Read error");
+            ExceptionAssert.Throws<Exception>(() => jsonTextReader.Read(), "Read error");
+            ExceptionAssert.Throws<Exception>(() => jsonTextReader.Read(), "Read error");
 
             toggleReaderError.Error = false;
 

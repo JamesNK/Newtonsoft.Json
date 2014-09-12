@@ -233,12 +233,11 @@ namespace Newtonsoft.Json.Tests.Linq
         [Test]
         public void Last()
         {
-            ExceptionAssert.Throws<InvalidOperationException>("Cannot access child value on Newtonsoft.Json.Linq.JValue.",
-                () =>
-                {
-                    JValue v = new JValue(true);
-                    JToken last = v.Last;
-                });
+            ExceptionAssert.Throws<InvalidOperationException>(() =>
+            {
+                JValue v = new JValue(true);
+                JToken last = v.Last;
+            }, "Cannot access child value on Newtonsoft.Json.Linq.JValue.");
         }
 
         [Test]
@@ -252,45 +251,41 @@ namespace Newtonsoft.Json.Tests.Linq
         [Test]
         public void First()
         {
-            ExceptionAssert.Throws<InvalidOperationException>("Cannot access child value on Newtonsoft.Json.Linq.JValue.",
-                () =>
-                {
-                    JValue v = new JValue(true);
-                    JToken first = v.First;
-                });
+            ExceptionAssert.Throws<InvalidOperationException>(() =>
+            {
+                JValue v = new JValue(true);
+                JToken first = v.First;
+            }, "Cannot access child value on Newtonsoft.Json.Linq.JValue.");
         }
 
         [Test]
         public void Item()
         {
-            ExceptionAssert.Throws<InvalidOperationException>("Cannot access child value on Newtonsoft.Json.Linq.JValue.",
-                () =>
-                {
-                    JValue v = new JValue(true);
-                    JToken first = v[0];
-                });
+            ExceptionAssert.Throws<InvalidOperationException>(() =>
+            {
+                JValue v = new JValue(true);
+                JToken first = v[0];
+            }, "Cannot access child value on Newtonsoft.Json.Linq.JValue.");
         }
 
         [Test]
         public void Values()
         {
-            ExceptionAssert.Throws<InvalidOperationException>("Cannot access child value on Newtonsoft.Json.Linq.JValue.",
-                () =>
-                {
-                    JValue v = new JValue(true);
-                    v.Values<int>();
-                });
+            ExceptionAssert.Throws<InvalidOperationException>(() =>
+            {
+                JValue v = new JValue(true);
+                v.Values<int>();
+            }, "Cannot access child value on Newtonsoft.Json.Linq.JValue.");
         }
 
         [Test]
         public void RemoveParentNull()
         {
-            ExceptionAssert.Throws<InvalidOperationException>("The parent is missing.",
-                () =>
-                {
-                    JValue v = new JValue(true);
-                    v.Remove();
-                });
+            ExceptionAssert.Throws<InvalidOperationException>(() =>
+            {
+                JValue v = new JValue(true);
+                v.Remove();
+            }, "The parent is missing.");
         }
 
         [Test]
@@ -331,23 +326,21 @@ namespace Newtonsoft.Json.Tests.Linq
         [Test]
         public void SetValue()
         {
-            ExceptionAssert.Throws<InvalidOperationException>("Cannot set child value on Newtonsoft.Json.Linq.JValue.",
-                () =>
-                {
-                    JToken t = new JValue(5L);
-                    t[0] = new JValue(3);
-                });
+            ExceptionAssert.Throws<InvalidOperationException>(() =>
+            {
+                JToken t = new JValue(5L);
+                t[0] = new JValue(3);
+            }, "Cannot set child value on Newtonsoft.Json.Linq.JValue.");
         }
 
         [Test]
         public void CastNullValueToNonNullable()
         {
-            ExceptionAssert.Throws<ArgumentException>("Can not convert Null to Int32.",
-                () =>
-                {
-                    JValue v = JValue.CreateNull();
-                    int i = (int)v;
-                });
+            ExceptionAssert.Throws<ArgumentException>(() =>
+            {
+                JValue v = JValue.CreateNull();
+                int i = (int)v;
+            }, "Can not convert Null to Int32.");
         }
 
         [Test]

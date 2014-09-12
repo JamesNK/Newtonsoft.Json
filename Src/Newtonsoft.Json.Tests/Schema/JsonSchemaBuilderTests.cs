@@ -384,19 +384,18 @@ namespace Newtonsoft.Json.Tests.Schema
         [Test]
         public void UnresolvedReference()
         {
-            ExceptionAssert.Throws<Exception>(@"Could not resolve schema reference 'MyUnresolvedReference'.",
-                () =>
-                {
-                    string json = @"{
+            ExceptionAssert.Throws<Exception>(() =>
+            {
+                string json = @"{
   ""id"":""CircularReferenceArray"",
   ""description"":""CircularReference"",
   ""type"":[""array""],
   ""items"":{""$ref"":""MyUnresolvedReference""}
 }";
 
-                    JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
-                    JsonSchema schema = builder.Read(new JsonTextReader(new StringReader(json)));
-                });
+                JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
+                JsonSchema schema = builder.Read(new JsonTextReader(new StringReader(json)));
+            }, @"Could not resolve schema reference 'MyUnresolvedReference'.");
         }
 
         [Test]
@@ -597,13 +596,11 @@ namespace Newtonsoft.Json.Tests.Schema
             }
         }";
 
-            ExceptionAssert.Throws<JsonException>(
-                "Could not resolve schema reference '#/array/10'.",
-                () =>
-                {
-                    JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
-                    builder.Read(new JsonTextReader(new StringReader(json)));
-                });
+            ExceptionAssert.Throws<JsonException>(() =>
+            {
+                JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
+                builder.Read(new JsonTextReader(new StringReader(json)));
+            }, "Could not resolve schema reference '#/array/10'.");
         }
 
         [Test]
@@ -617,13 +614,11 @@ namespace Newtonsoft.Json.Tests.Schema
             }
         }";
 
-            ExceptionAssert.Throws<JsonException>(
-                "Could not resolve schema reference '#/array/-1'.",
-                () =>
-                {
-                    JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
-                    builder.Read(new JsonTextReader(new StringReader(json)));
-                });
+            ExceptionAssert.Throws<JsonException>(() =>
+            {
+                JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
+                builder.Read(new JsonTextReader(new StringReader(json)));
+            }, "Could not resolve schema reference '#/array/-1'.");
         }
 
         [Test]
@@ -637,13 +632,11 @@ namespace Newtonsoft.Json.Tests.Schema
             }
         }";
 
-            ExceptionAssert.Throws<JsonException>(
-                "Could not resolve schema reference '#/array/one'.",
-                () =>
-                {
-                    JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
-                    builder.Read(new JsonTextReader(new StringReader(json)));
-                });
+            ExceptionAssert.Throws<JsonException>(() =>
+            {
+                JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
+                builder.Read(new JsonTextReader(new StringReader(json)));
+            }, "Could not resolve schema reference '#/array/one'.");
         }
     }
 }

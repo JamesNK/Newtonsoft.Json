@@ -415,57 +415,53 @@ namespace Newtonsoft.Json.Tests.Bson
         [Test]
         public void WriteComment()
         {
-            ExceptionAssert.Throws<JsonWriterException>("Cannot write JSON comment as BSON. Path ''.",
-                () =>
-                {
-                    MemoryStream ms = new MemoryStream();
-                    BsonWriter writer = new BsonWriter(ms);
+            ExceptionAssert.Throws<JsonWriterException>(() =>
+            {
+                MemoryStream ms = new MemoryStream();
+                BsonWriter writer = new BsonWriter(ms);
 
-                    writer.WriteStartArray();
-                    writer.WriteComment("fail");
-                });
+                writer.WriteStartArray();
+                writer.WriteComment("fail");
+            }, "Cannot write JSON comment as BSON. Path ''.");
         }
 
         [Test]
         public void WriteConstructor()
         {
-            ExceptionAssert.Throws<JsonWriterException>("Cannot write JSON constructor as BSON. Path ''.",
-                () =>
-                {
-                    MemoryStream ms = new MemoryStream();
-                    BsonWriter writer = new BsonWriter(ms);
+            ExceptionAssert.Throws<JsonWriterException>(() =>
+            {
+                MemoryStream ms = new MemoryStream();
+                BsonWriter writer = new BsonWriter(ms);
 
-                    writer.WriteStartArray();
-                    writer.WriteStartConstructor("fail");
-                });
+                writer.WriteStartArray();
+                writer.WriteStartConstructor("fail");
+            }, "Cannot write JSON constructor as BSON. Path ''.");
         }
 
         [Test]
         public void WriteRaw()
         {
-            ExceptionAssert.Throws<JsonWriterException>("Cannot write raw JSON as BSON. Path ''.",
-                () =>
-                {
-                    MemoryStream ms = new MemoryStream();
-                    BsonWriter writer = new BsonWriter(ms);
+            ExceptionAssert.Throws<JsonWriterException>(() =>
+            {
+                MemoryStream ms = new MemoryStream();
+                BsonWriter writer = new BsonWriter(ms);
 
-                    writer.WriteStartArray();
-                    writer.WriteRaw("fail");
-                });
+                writer.WriteStartArray();
+                writer.WriteRaw("fail");
+            }, "Cannot write raw JSON as BSON. Path ''.");
         }
 
         [Test]
         public void WriteRawValue()
         {
-            ExceptionAssert.Throws<JsonWriterException>("Cannot write raw JSON as BSON. Path ''.",
-                () =>
-                {
-                    MemoryStream ms = new MemoryStream();
-                    BsonWriter writer = new BsonWriter(ms);
+            ExceptionAssert.Throws<JsonWriterException>(() =>
+            {
+                MemoryStream ms = new MemoryStream();
+                BsonWriter writer = new BsonWriter(ms);
 
-                    writer.WriteStartArray();
-                    writer.WriteRawValue("fail");
-                });
+                writer.WriteStartArray();
+                writer.WriteRawValue("fail");
+            }, "Cannot write raw JSON as BSON. Path ''.");
         }
 
         [Test]
@@ -689,17 +685,16 @@ namespace Newtonsoft.Json.Tests.Bson
         [Test]
         public void WriteValueOutsideOfObjectOrArray()
         {
-            ExceptionAssert.Throws<JsonWriterException>("Error writing String value. BSON must start with an Object or Array. Path ''.",
-                () =>
-                {
-                    MemoryStream stream = new MemoryStream();
+            ExceptionAssert.Throws<JsonWriterException>(() =>
+            {
+                MemoryStream stream = new MemoryStream();
 
-                    using (BsonWriter writer = new BsonWriter(stream))
-                    {
-                        writer.WriteValue("test");
-                        writer.Flush();
-                    }
-                });
+                using (BsonWriter writer = new BsonWriter(stream))
+                {
+                    writer.WriteValue("test");
+                    writer.Flush();
+                }
+            }, "Error writing String value. BSON must start with an Object or Array. Path ''.");
         }
 
         [Test]
@@ -757,11 +752,10 @@ namespace Newtonsoft.Json.Tests.Bson
 
             BsonWriter writer = new BsonWriter(ms);
 
-            ExceptionAssert.Throws<JsonWriterException>("Error writing Binary value. BSON must start with an Object or Array. Path ''.",
-                () =>
-                {
-                    serializer.Serialize(writer, b);
-                });
+            ExceptionAssert.Throws<JsonWriterException>(() =>
+            {
+                serializer.Serialize(writer, b);
+            }, "Error writing Binary value. BSON must start with an Object or Array. Path ''.");
         }
 
         public class GuidTestClass

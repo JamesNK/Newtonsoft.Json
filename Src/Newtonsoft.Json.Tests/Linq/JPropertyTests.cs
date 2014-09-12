@@ -99,9 +99,7 @@ namespace Newtonsoft.Json.Tests.Linq
             JProperty p = new JProperty("TestProperty", null);
             IList l = p;
 
-            ExceptionAssert.Throws<JsonException>(
-                "Cannot add or remove items from Newtonsoft.Json.Linq.JProperty.",
-                () => { l.Clear(); });
+            ExceptionAssert.Throws<JsonException>(() => { l.Clear(); }, "Cannot add or remove items from Newtonsoft.Json.Linq.JProperty.");
         }
 
         [Test]
@@ -110,9 +108,7 @@ namespace Newtonsoft.Json.Tests.Linq
             JProperty p = new JProperty("TestProperty", null);
             IList l = p;
 
-            ExceptionAssert.Throws<JsonException>(
-                "Newtonsoft.Json.Linq.JProperty cannot have multiple values.",
-                () => { l.Add(null); });
+            ExceptionAssert.Throws<JsonException>(() => { l.Add(null); }, "Newtonsoft.Json.Linq.JProperty cannot have multiple values.");
         }
 
         [Test]
@@ -121,9 +117,7 @@ namespace Newtonsoft.Json.Tests.Linq
             JProperty p = new JProperty("TestProperty", null);
             IList l = p;
 
-            ExceptionAssert.Throws<JsonException>(
-                "Cannot add or remove items from Newtonsoft.Json.Linq.JProperty.",
-                () => { l.Remove(p.Value); });
+            ExceptionAssert.Throws<JsonException>(() => { l.Remove(p.Value); }, "Cannot add or remove items from Newtonsoft.Json.Linq.JProperty.");
         }
 
         [Test]
@@ -132,9 +126,7 @@ namespace Newtonsoft.Json.Tests.Linq
             JProperty p = new JProperty("TestProperty", null);
             IList l = p;
 
-            ExceptionAssert.Throws<JsonException>(
-                "Cannot add or remove items from Newtonsoft.Json.Linq.JProperty.",
-                () => { l.RemoveAt(0); });
+            ExceptionAssert.Throws<JsonException>(() => { l.RemoveAt(0); }, "Cannot add or remove items from Newtonsoft.Json.Linq.JProperty.");
         }
 
         [Test]
@@ -223,9 +215,7 @@ namespace Newtonsoft.Json.Tests.Linq
         {
             IList<JToken> t = new JProperty("error", new List<string> { "one", "two" });
 
-            ExceptionAssert.Throws<JsonException>(
-                "Newtonsoft.Json.Linq.JProperty cannot have multiple values.",
-                () => { t.Add(1); });
+            ExceptionAssert.Throws<JsonException>(() => { t.Add(1); }, "Newtonsoft.Json.Linq.JProperty cannot have multiple values.");
         }
     }
 }

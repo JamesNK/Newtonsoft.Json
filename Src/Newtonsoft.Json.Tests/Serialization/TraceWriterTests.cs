@@ -360,17 +360,15 @@ Newtonsoft.Json Error: 0 : Error!
                 LevelFilter = TraceLevel.Info
             };
 
-            ExceptionAssert.Throws<Exception>(
-                "Could not convert string to integer: hi. Path 'Integer', line 1, position 15.",
-                () =>
-                {
-                    JsonConvert.DeserializeObject<IntegerTestClass>(
-                        json,
-                        new JsonSerializerSettings
-                        {
-                            TraceWriter = traceWriter
-                        });
-                });
+            ExceptionAssert.Throws<Exception>(() =>
+            {
+                JsonConvert.DeserializeObject<IntegerTestClass>(
+                    json,
+                    new JsonSerializerSettings
+                    {
+                        TraceWriter = traceWriter
+                    });
+            }, "Could not convert string to integer: hi. Path 'Integer', line 1, position 15.");
 
             Assert.AreEqual(2, traceWriter.TraceRecords.Count);
 
@@ -391,17 +389,15 @@ Newtonsoft.Json Error: 0 : Error!
                 LevelFilter = TraceLevel.Info
             };
 
-            ExceptionAssert.Throws<Exception>(
-                "Could not convert string to integer: two. Path 'IntList[1]', line 1, position 20.",
-                () =>
-                {
-                    JsonConvert.DeserializeObject<TraceTestObject>(
-                        json,
-                        new JsonSerializerSettings
-                        {
-                            TraceWriter = traceWriter
-                        });
-                });
+            ExceptionAssert.Throws<Exception>(() =>
+            {
+                JsonConvert.DeserializeObject<TraceTestObject>(
+                    json,
+                    new JsonSerializerSettings
+                    {
+                        TraceWriter = traceWriter
+                    });
+            }, "Could not convert string to integer: two. Path 'IntList[1]', line 1, position 20.");
 
             Assert.AreEqual(3, traceWriter.TraceRecords.Count);
 
@@ -609,17 +605,15 @@ Newtonsoft.Json Error: 0 : Error!
                 LevelFilter = TraceLevel.Verbose
             };
 
-            ExceptionAssert.Throws<SerializationException>(
-                "Member 'ClassName' was not found.",
-                () =>
-                {
-                    JsonConvert.DeserializeObject<Exception>(
-                        "{}",
-                        new JsonSerializerSettings
-                        {
-                            TraceWriter = traceWriter
-                        });
-                });
+            ExceptionAssert.Throws<SerializationException>(() =>
+            {
+                JsonConvert.DeserializeObject<Exception>(
+                    "{}",
+                    new JsonSerializerSettings
+                    {
+                        TraceWriter = traceWriter
+                    });
+            }, "Member 'ClassName' was not found.");
 
             Assert.IsTrue(traceWriter.TraceRecords[0].Message.StartsWith("Deserializing System.Exception using ISerializable constructor. Path ''"));
             Assert.AreEqual(TraceLevel.Info, traceWriter.TraceRecords[0].Level);

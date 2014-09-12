@@ -118,13 +118,13 @@ namespace Newtonsoft.Json.Tests.Serialization
                 sb.Append(@"{""$value"":");
             }
 
-            ExceptionAssert.Throws<JsonSerializationException>("Unexpected token when deserializing primitive value: StartObject. Path '$value', line 1, position 11.", () =>
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
             {
                 var reader = new JsonTextReader(new StringReader(sb.ToString()));
                 var ser = new JsonSerializer();
                 ser.MetadataPropertyHandling = MetadataPropertyHandling.Default;
                 ser.Deserialize<bool>(reader);
-            });
+            }, "Unexpected token when deserializing primitive value: StartObject. Path '$value', line 1, position 11.");
         }
 
         [Test]
@@ -438,15 +438,13 @@ namespace Newtonsoft.Json.Tests.Serialization
   ""Manager"": null
 }";
 
-            ExceptionAssert.Throws<JsonSerializationException>(
-                "Type specified in JSON 'Newtonsoft.Json.Tests.TestObjects.Employee' was not resolved. Path '$type', line 3, position 56.",
-                () =>
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                JsonConvert.DeserializeObject(json, null, new JsonSerializerSettings
                 {
-                    JsonConvert.DeserializeObject(json, null, new JsonSerializerSettings
-                    {
-                        TypeNameHandling = TypeNameHandling.Objects
-                    });
+                    TypeNameHandling = TypeNameHandling.Objects
                 });
+            }, "Type specified in JSON 'Newtonsoft.Json.Tests.TestObjects.Employee' was not resolved. Path '$type', line 3, position 56.");
         }
 
         public interface ICorrelatedMessage

@@ -236,18 +236,16 @@ namespace Newtonsoft.Json.Tests
         [Test]
         public void WriteValueObjectWithUnsupportedValue()
         {
-            ExceptionAssert.Throws<JsonWriterException>(
-                @"Unsupported type: System.Version. Use the JsonSerializer class to get the object's JSON representation. Path ''.",
-                () =>
+            ExceptionAssert.Throws<JsonWriterException>(() =>
+            {
+                StringWriter sw = new StringWriter();
+                using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
                 {
-                    StringWriter sw = new StringWriter();
-                    using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
-                    {
-                        jsonWriter.WriteStartArray();
-                        jsonWriter.WriteValue(new Version(1, 1, 1, 1));
-                        jsonWriter.WriteEndArray();
-                    }
-                });
+                    jsonWriter.WriteStartArray();
+                    jsonWriter.WriteValue(new Version(1, 1, 1, 1));
+                    jsonWriter.WriteEndArray();
+                }
+            }, @"Unsupported type: System.Version. Use the JsonSerializer class to get the object's JSON representation. Path ''.");
         }
 
         [Test]
@@ -823,41 +821,37 @@ namespace Newtonsoft.Json.Tests
         [Test]
         public void BadWriteEndArray()
         {
-            ExceptionAssert.Throws<JsonWriterException>(
-                "No token to close. Path ''.",
-                () =>
+            ExceptionAssert.Throws<JsonWriterException>(() =>
+            {
+                StringBuilder sb = new StringBuilder();
+                StringWriter sw = new StringWriter(sb);
+
+                using (JsonWriter jsonWriter = new JsonTextWriter(sw))
                 {
-                    StringBuilder sb = new StringBuilder();
-                    StringWriter sw = new StringWriter(sb);
+                    jsonWriter.WriteStartArray();
 
-                    using (JsonWriter jsonWriter = new JsonTextWriter(sw))
-                    {
-                        jsonWriter.WriteStartArray();
+                    jsonWriter.WriteValue(0.0);
 
-                        jsonWriter.WriteValue(0.0);
-
-                        jsonWriter.WriteEndArray();
-                        jsonWriter.WriteEndArray();
-                    }
-                });
+                    jsonWriter.WriteEndArray();
+                    jsonWriter.WriteEndArray();
+                }
+            }, "No token to close. Path ''.");
         }
 
         [Test]
         public void InvalidQuoteChar()
         {
-            ExceptionAssert.Throws<ArgumentException>(
-                @"Invalid JavaScript string quote character. Valid quote characters are ' and "".",
-                () =>
-                {
-                    StringBuilder sb = new StringBuilder();
-                    StringWriter sw = new StringWriter(sb);
+            ExceptionAssert.Throws<ArgumentException>(() =>
+            {
+                StringBuilder sb = new StringBuilder();
+                StringWriter sw = new StringWriter(sb);
 
-                    using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
-                    {
-                        jsonWriter.Formatting = Formatting.Indented;
-                        jsonWriter.QuoteChar = '*';
-                    }
-                });
+                using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
+                {
+                    jsonWriter.Formatting = Formatting.Indented;
+                    jsonWriter.QuoteChar = '*';
+                }
+            }, @"Invalid JavaScript string quote character. Valid quote characters are ' and "".");
         }
 
         [Test]
