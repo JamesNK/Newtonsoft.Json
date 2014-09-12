@@ -133,6 +133,16 @@ namespace Newtonsoft.Json.Serialization
         /// </summary>
         public ExtensionDataGetter ExtensionDataGetter { get; set; }
 
+        /// <summary>
+        /// Gets or sets the member reader.
+        /// </summary>
+        public MemberReader MemberReader { get; set; }
+
+        /// <summary>
+        /// Gets or sets the member writer.
+        /// </summary>
+        public MemberWriter MemberWriter { get; set; }
+
         private bool? _hasRequiredOrDefaultValueProperties;
         private ConstructorInfo _parametrizedConstructor;
         private ConstructorInfo _overrideConstructor;
