@@ -815,7 +815,7 @@ namespace Newtonsoft.Json.Tests.Linq
             //   "StockValue": 22050.00
             // }
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""ProductName"": ""Elbow Grease (SALE)"",
   ""Enabled"": true,
   ""Price"": 2.45,

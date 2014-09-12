@@ -399,7 +399,7 @@ namespace Newtonsoft.Json.Tests.Linq
             var jTokenWriter = new JTokenWriter();
             new JsonSerializer().Serialize(jTokenWriter, rate);
             string json = jTokenWriter.Token.ToString();
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Compoundings"": 12.166666666666666666666666667
 }", json);
         }
@@ -688,7 +688,7 @@ namespace Newtonsoft.Json.Tests.Linq
                 new JValue(1.1f)
                 );
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   ""2013-02-01T01:02:03.004+01:00"",
   5,
   1.1
@@ -744,7 +744,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
             string json = o.ToString(Formatting.Indented, new ReadOnlyStringConverter());
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""name"": ""Hello World""
 }", json);
         }

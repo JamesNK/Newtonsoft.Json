@@ -68,7 +68,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 Assert.AreEqual(null, obj.Member5);
 
                 string json = JsonConvert.SerializeObject(obj, Formatting.Indented);
-                Assert.AreEqual(@"{
+                StringAssert.AreEqual(@"{
   ""Member1"": 11,
   ""Member2"": ""This value went into the data file during serialization."",
   ""Member4"": null
@@ -115,7 +115,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(null, obj.Member4);
 
             string json = JsonConvert.SerializeObject(obj, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Member1"": 11,
   ""Member2"": ""This value went into the data file during serialization."",
   ""Member4"": null
@@ -151,7 +151,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(null, obj.Member4);
 
             string json = JsonConvert.SerializeObject(obj, Formatting.Indented);
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   -1.0,
   1.1,
   2.222222222,
@@ -189,7 +189,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(null, obj.Member4);
 
             string json = JsonConvert.SerializeObject(obj, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""1.1"": ""first"",
   ""2.222222222"": ""second"",
   ""2147483647"": ""third"",
@@ -277,7 +277,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             SerializationEventContextSubClassTestObject obj = new SerializationEventContextSubClassTestObject();
 
             string json = JsonConvert.SerializeObject(obj, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""TestMember"": ""Set!""
 }", json);
         }
@@ -307,7 +307,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                         "ContextValue")
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""TestMember"": ""Remoting ContextValue""
 }", json);
         }
@@ -367,7 +367,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             IList<string> e = c.GetEvents();
 
-            Assert.AreEqual(@"OnDeserializing
+            StringAssert.AreEqual(@"OnDeserializing
 OnDeserializing_Derived
 OnDeserialized
 OnDeserialized_Derived
@@ -386,7 +386,7 @@ OnSerialized_Derived", string.Join(Environment.NewLine, e.ToArray()));
 
             IList<string> e = c.GetEvents();
 
-            Assert.AreEqual(@"OnDeserializing
+            StringAssert.AreEqual(@"OnDeserializing
 OnDeserializing_Derived
 OnDeserializing_Derived_Derived
 OnDeserialized
@@ -415,7 +415,7 @@ OnSerialized_Derived_Derived", string.Join(Environment.NewLine, e.ToArray()));
 
             IList<string> e = c.GetEvents();
 
-            Assert.AreEqual(@"OnDeserializing
+            StringAssert.AreEqual(@"OnDeserializing
 OnDeserializing_Derived
 OnDeserializing_Derived_Derived
 OnDeserialized

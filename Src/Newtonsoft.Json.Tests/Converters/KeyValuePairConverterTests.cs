@@ -32,7 +32,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json = JsonConvert.SerializeObject(values, Formatting.Indented);
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   {
     ""Key"": ""123"",
     ""Value"": 123

@@ -184,13 +184,26 @@ namespace Newtonsoft.Json.Tests
 
         public static void AreEqual(string expected, string actual)
         {
-            if (expected != null)
-                expected = Regex.Replace(expected, "\r\n");
-
-            if (actual != null)
-                actual = Regex.Replace(actual, "\r\n");
+            expected = Normalize(expected);
+            actual = Normalize(actual);
 
             Assert.AreEqual(expected, actual);
+        }
+
+        public static bool Equals(string s1, string s2)
+        {
+            s1 = Normalize(s1);
+            s2 = Normalize(s2);
+
+            return string.Equals(s1, s2);
+        }
+
+        public static string Normalize(string s)
+        {
+            if (s != null)
+                s = Regex.Replace(s, "\r\n");
+
+            return s;
         }
     }
 
@@ -208,7 +221,20 @@ namespace Newtonsoft.Json.Tests
             catch (TException ex)
             {
                 if (possibleMessages != null && possibleMessages.Length > 0)
-                    CustomAssert.Contains(possibleMessages, ex.Message, "Unexpected exception message." + Environment.NewLine + "Expected one of: " + string.Join(Environment.NewLine, possibleMessages) + Environment.NewLine + "Got: " + ex.Message + Environment.NewLine + Environment.NewLine + ex);
+                {
+                    bool match = false;
+                    foreach (string possibleMessage in possibleMessages)
+                    {
+                        if (StringAssert.Equals(possibleMessage, ex.Message))
+                        {
+                            match = true;
+                            break;
+                        }
+                    }
+
+                    if (!match)
+                        throw new Exception("Unexpected exception message." + Environment.NewLine + "Expected one of: " + string.Join(Environment.NewLine, possibleMessages) + Environment.NewLine + "Got: " + ex.Message + Environment.NewLine + Environment.NewLine + ex);
+                }
             }
             catch (Exception ex)
             {

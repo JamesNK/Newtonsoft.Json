@@ -310,7 +310,7 @@ namespace Newtonsoft.Json.Tests
 }";
             string result = sb.ToString();
 
-            Assert.AreEqual(expected, result);
+            StringAssert.AreEqual(expected, result);
         }
 
         [Test]
@@ -349,7 +349,7 @@ namespace Newtonsoft.Json.Tests
 }";
             string result = sb.ToString();
 
-            Assert.AreEqual(expected, result);
+            StringAssert.AreEqual(expected, result);
         }
 
         [Test]
@@ -401,7 +401,7 @@ namespace Newtonsoft.Json.Tests
 }";
             string result = sb.ToString();
 
-            Assert.AreEqual(expected, result);
+            StringAssert.AreEqual(expected, result);
         }
 
         [Test]
@@ -480,7 +480,7 @@ namespace Newtonsoft.Json.Tests
 ]";
             string result = sb.ToString();
 
-            Assert.AreEqual(expected, result);
+            StringAssert.AreEqual(expected, result);
         }
 
         [Test]
@@ -528,7 +528,7 @@ namespace Newtonsoft.Json.Tests
 ]";
             string result = sb.ToString();
 
-            Assert.AreEqual(expected, result);
+            StringAssert.AreEqual(expected, result);
         }
 
         [Test]
@@ -564,7 +564,7 @@ namespace Newtonsoft.Json.Tests
 ]";
             string result = sb.ToString();
 
-            Assert.AreEqual(expected, result);
+            StringAssert.AreEqual(expected, result);
         }
 
         [Test]
@@ -601,7 +601,7 @@ namespace Newtonsoft.Json.Tests
 ]";
             string result = sb.ToString();
 
-            Assert.AreEqual(expected, result);
+            StringAssert.AreEqual(expected, result);
         }
 
         [Test]
@@ -627,7 +627,7 @@ namespace Newtonsoft.Json.Tests
 ]";
             string result = sb.ToString();
 
-            Assert.AreEqual(expected, result);
+            StringAssert.AreEqual(expected, result);
         }
 
         [Test]
@@ -655,7 +655,7 @@ namespace Newtonsoft.Json.Tests
 ]";
             string result = sb.ToString();
 
-            Assert.AreEqual(expected, result);
+            StringAssert.AreEqual(expected, result);
         }
 
         [Test]
@@ -804,7 +804,7 @@ namespace Newtonsoft.Json.Tests
 
             Console.WriteLine(sb.ToString());
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   2147483647,
   -2147483648,
   0,
@@ -887,7 +887,7 @@ _____'propertyName': NaN
 }";
             string result = sb.ToString();
 
-            Assert.AreEqual(expected, result);
+            StringAssert.AreEqual(expected, result);
         }
 
         [Test]
@@ -949,7 +949,7 @@ _____'propertyName': NaN
 ]";
             string result = sb.ToString();
 
-            Assert.AreEqual(expected, result);
+            StringAssert.AreEqual(expected, result);
         }
 
         [Test]
@@ -1003,7 +1003,7 @@ _____'propertyName': NaN
                 Assert.AreEqual("", writer.Path);
             }
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   {
     ""Property1"": [
       1,
@@ -1170,7 +1170,7 @@ _____'propertyName': NaN
 
             writer.WriteEnd();
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   '2000-01-01T01:01:01Z',
   '2000-01-01T01:01:01+00:00',
   '\/Date(946688461000)\/',
@@ -1201,7 +1201,7 @@ _____'propertyName': NaN
 
             writer.WriteEnd();
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   '2000 a.m.',
   '2000 a.m.'
 ]", sw.ToString());
@@ -1372,7 +1372,7 @@ _____'propertyName': NaN
             writer.WriteEndObject();
             Assert.AreEqual(WriteState.Start, writer.WriteState);
 
-            Assert.AreEqual(@"{{{
+            StringAssert.AreEqual(@"{{{
   ""1ytreporP"": NULL!!!
 }}}", sw.ToString());
         }
@@ -1397,7 +1397,7 @@ _____'propertyName': NaN
                     writer.Close();
                 }
 
-                Assert.AreEqual(@"{
+                StringAssert.AreEqual(@"{
   a: 1
 }", stringWriter.ToString());
             }
@@ -1435,7 +1435,7 @@ null//comment
 
             w.WriteToken(r, true);
 
-            Assert.AreEqual(@"/*comment*//*hi*/*/{/*comment*/
+            StringAssert.AreEqual(@"/*comment*//*hi*/*/{/*comment*/
   ""Name"": /*comment*/ true/*comment after true*//*comment after comma*/,
   ""ExpiryDate"": /*comment*/ new Constructor(
     /*comment*/,

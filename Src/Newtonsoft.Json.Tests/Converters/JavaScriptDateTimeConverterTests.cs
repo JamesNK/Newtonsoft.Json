@@ -139,7 +139,7 @@ namespace Newtonsoft.Json.Tests.Converters
             l1.Add(new DateTime(1983, 10, 9, 23, 10, 0, DateTimeKind.Utc));
 
             string json = JsonConvert.SerializeObject(l1, Formatting.Indented);
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   new Date(
     976651800000
   ),
@@ -163,7 +163,7 @@ namespace Newtonsoft.Json.Tests.Converters
             l1.Add("Second", new DateTime(1983, 10, 9, 23, 10, 0, DateTimeKind.Utc));
 
             string json = JsonConvert.SerializeObject(l1, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""First"": new Date(
     976651800000
   ),
@@ -188,7 +188,7 @@ namespace Newtonsoft.Json.Tests.Converters
             l1.ObjectNotHandled = new DateTime(2000, 12, 12, 20, 10, 0, DateTimeKind.Utc);
 
             string json = JsonConvert.SerializeObject(l1, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Object1"": new Date(
     976651800000
   ),

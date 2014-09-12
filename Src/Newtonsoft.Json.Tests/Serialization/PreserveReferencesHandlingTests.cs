@@ -54,7 +54,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             string json = JsonConvert.SerializeObject(circularDictionary, Formatting.Indented,
                 new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.All });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""$id"": ""1"",
   ""other"": {
     ""$id"": ""2"",
@@ -120,7 +120,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 Formatting.Indented,
                 new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   null,
   [
     null
@@ -142,7 +142,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             string json = JsonConvert.SerializeObject(circularList, Formatting.Indented,
                 new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.All });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""$id"": ""1"",
   ""$values"": [
     null,
@@ -271,7 +271,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             string json = JsonConvert.SerializeObject(circularDictionary, Formatting.Indented,
                 new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""other"": {
     ""blah"": null
   }
@@ -354,7 +354,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 Converters = new List<JsonConverter> { new CircularReferenceClassConverter() }
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""$id"": ""1"",
   ""$type"": ""CircularReferenceClass"",
   ""Name"": ""c1"",
@@ -428,7 +428,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             };
 
             string json = JsonConvert.SerializeObject(employees, Formatting.Indented);
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   {
     ""$id"": ""1"",
     ""Name"": ""Mike Manager"",
@@ -486,7 +486,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 PreserveReferencesHandling = PreserveReferencesHandling.Objects
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""$id"": ""1"",
   ""Name"": ""c1"",
   ""Child"": {
@@ -544,7 +544,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(employees, Formatting.Indented);
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   {
     ""$id"": ""1"",
     ""Name"": ""e1"",
@@ -614,7 +614,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(employees, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""One"": {
     ""$id"": ""1"",
     ""Name"": ""e1"",
@@ -841,7 +841,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             byte[] data = ms.ToArray();
             string json = Encoding.UTF8.GetString(data, 0, data.Length);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""$id"": ""1"",
   ""$values"": [
     {
@@ -879,7 +879,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             l.Add(3);
 
             string json = JsonConvert.SerializeObject(l, Formatting.Indented);
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   1,
   2,
   3
@@ -897,7 +897,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             l.Add(c1);
 
             string json = JsonConvert.SerializeObject(l, Formatting.Indented);
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   {
     ""$id"": ""1"",
     ""MyProperty"": 0
@@ -921,7 +921,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             l.Add("Third", 3);
 
             string json = JsonConvert.SerializeObject(l, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""First"": 1,
   ""Second"": 2,
   ""Third"": 3
@@ -939,7 +939,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             l.Add("Third", c1);
 
             string json = JsonConvert.SerializeObject(l, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""First"": {
     ""$id"": ""1"",
     ""MyProperty"": 0
@@ -984,7 +984,7 @@ namespace Newtonsoft.Json.Tests.Serialization
   ""String"": ""String!"",
   ""Integer"": 2147483647
 }";
-            Assert.AreEqual(expected, json);
+            StringAssert.AreEqual(expected, json);
 
             ReferenceObject referenceObject = JsonConvert.DeserializeObject<ReferenceObject>(json);
             Assert.IsNotNull(referenceObject);
@@ -1011,7 +1011,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             };
 
             string json = JsonConvert.SerializeObject(o1, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Data"": {
     ""Prop1"": {
       ""$id"": ""1"",

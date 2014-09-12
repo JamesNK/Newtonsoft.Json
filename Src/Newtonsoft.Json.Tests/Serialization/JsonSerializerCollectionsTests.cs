@@ -309,7 +309,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             CustomReadOnlyDictionary<string, int> dic = new CustomReadOnlyDictionary<string, int>(d);
 
             string json = JsonConvert.SerializeObject(dic, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""one"": 1,
   ""two"": 2
 }", json);
@@ -353,7 +353,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             CustomReadOnlyCollection<int> list = new CustomReadOnlyCollection<int>(l);
 
             string json = JsonConvert.SerializeObject(list, Formatting.Indented);
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   1,
   2,
   3
@@ -442,7 +442,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(list, Formatting.Indented);
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   {
     ""Key"": ""key1"",
     ""Value"": {
@@ -528,7 +528,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(v1, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""First"": 1,
   ""Second"": null,
   ""Third"": 3
@@ -558,7 +558,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string originalJson = JsonConvert.SerializeObject(go, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Components"": {
     ""Key!"": {}
   },
@@ -663,7 +663,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(c1, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""NonReadOnlyList"": [
     1
   ],
@@ -783,7 +783,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(aa, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Before"": ""Before!"",
   ""Coordinates"": [
     [
@@ -1088,7 +1088,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 Formatting = Formatting.Indented
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""$id"": ""1"",
   ""$values"": [
     {
@@ -1142,7 +1142,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 Formatting = Formatting.Indented
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""$type"": ""System.Collections.Generic.List`1[[Newtonsoft.Json.Tests.TestObjects.Event1[,], Newtonsoft.Json.Tests]], mscorlib"",
   ""$values"": [
     {
@@ -1281,7 +1281,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(name, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""personsName"": ""The Idiot in Next To Me"",
   ""pNumbers"": [
     {
@@ -1420,7 +1420,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             //  }
             //]
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   {
     ""Name"": ""Product 1"",
     ""ExpiryDate"": ""2000-12-29T00:00:00Z"",
@@ -1482,7 +1482,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(l, Formatting.Indented);
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   1,
   2,
   3,

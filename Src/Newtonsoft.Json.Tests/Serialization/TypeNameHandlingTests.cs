@@ -67,7 +67,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 TypeNameHandling = TypeNameHandling.Auto
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""movie"": {
     ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Movie, Newtonsoft.Json.Tests"",
     ""Name"": ""Die Hard"",
@@ -93,7 +93,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 TypeNameHandling = TypeNameHandling.Auto
             });
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   {
     ""Key"": ""movie"",
     ""Value"": {
@@ -138,7 +138,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             serializer.Serialize(new JsonTextWriter(sw) { Formatting = Formatting.Indented }, new WagePerson(), typeof(Person));
             var result = sw.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""$type"": ""Newtonsoft.Json.Tests.TestObjects.WagePerson, Newtonsoft.Json.Tests"",
   ""HourlyWage"": 0.0,
   ""Name"": null,
@@ -163,7 +163,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 TypeNameHandling = TypeNameHandling.Auto
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""$type"": ""Newtonsoft.Json.Tests.TestObjects.WagePerson, Newtonsoft.Json.Tests"",
   ""HourlyWage"": 0.0,
   ""Name"": null,
@@ -196,7 +196,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 TypeNameHandling = TypeNameHandling.Auto
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Array"": [
     {
       ""$id"": ""1"",
@@ -230,7 +230,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 TypeNameHandling = TypeNameHandling.Objects
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""$id"": ""1"",
   ""$type"": """ + employeeRef + @""",
   ""Name"": null,
@@ -308,7 +308,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
             });
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   {
     ""$id"": ""1"",
     ""$type"": """ + employeeRef + @""",
@@ -422,7 +422,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             JObject o = (JObject)JsonConvert.DeserializeObject(json);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Name"": ""Name!"",
   ""Manager"": null
 }", o.ToString());
@@ -523,7 +523,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                     TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
                 });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""$type"": """ + containerTypeName + @""",
   ""In"": {
     ""$type"": """ + productListTypeName + @""",
@@ -560,7 +560,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(typeNameProperty, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Name"": ""Name!"",
   ""Value"": {
     ""$type"": """ + typeNamePropertyRef + @""",
@@ -591,7 +591,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(typeNameProperty, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Name"": ""Name!"",
   ""Value"": {
     ""$type"": """ + listRef + @""",
@@ -688,7 +688,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             //]
 
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   {
     ""$type"": ""Customer"",
     ""Name"": ""Caroline Customer""
@@ -787,7 +787,7 @@ namespace Newtonsoft.Json.Tests.Serialization
   }
 }";
 
-            Assert.AreEqual(expected, json);
+            StringAssert.AreEqual(expected, json);
 
             StringReader sr = new StringReader(json);
 
@@ -872,7 +872,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string urlStatusTypeName = ReflectionUtils.GetTypeName(typeof(UrlStatus), FormatterAssemblyStyle.Simple, null);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""$type"": ""System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib"",
   ""First"": {
     ""$type"": """ + urlStatusTypeName + @""",
@@ -927,7 +927,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(products, Formatting.Indented, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""$type"": """ + productClassRef + @""",
   ""$values"": []
 }", json);
@@ -1007,7 +1007,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string carClassRef = ReflectionUtils.GetTypeName(typeof(Car), FormatterAssemblyStyle.Simple, null);
 
-            Assert.AreEqual(output, @"{
+            StringAssert.AreEqual(output, @"{
   ""$type"": """ + carClassRef + @""",
   ""Year"": ""2000-10-05T01:01:01Z"",
   ""Objects"": {
@@ -1103,7 +1103,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 }
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""$type"": "":::MESSAGE:::, AssemblyName"",
   ""Address"": ""jamesnk@testtown.com"",
   ""Body"": {
@@ -1146,7 +1146,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             l.Add(3);
 
             string json = JsonConvert.SerializeObject(l, Formatting.Indented);
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   1,
   2,
   3
@@ -1169,7 +1169,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             l.Add(long.MaxValue);
 
             string json = JsonConvert.SerializeObject(l, Formatting.Indented);
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   {
     ""$type"": ""Newtonsoft.Json.Tests.TestObjects.TestComponentSimple, Newtonsoft.Json.Tests"",
     ""MyProperty"": 0
@@ -1204,7 +1204,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             l.Add("Third", long.MaxValue);
 
             string json = JsonConvert.SerializeObject(l, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""First"": {
     ""$type"": ""Newtonsoft.Json.Tests.TestObjects.TestComponentSimple, Newtonsoft.Json.Tests"",
     ""MyProperty"": 1
@@ -1246,7 +1246,7 @@ namespace Newtonsoft.Json.Tests.Serialization
   ""String"": ""String!"",
   ""Integer"": 2147483647
 }";
-            Assert.AreEqual(expected, json);
+            StringAssert.AreEqual(expected, json);
 
             TypeNameObject o2 = JsonConvert.DeserializeObject<TypeNameObject>(json);
             Assert.IsNotNull(o2);
@@ -1255,7 +1255,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(1, ((TestComponentSimple)o2.Object1).MyProperty);
             CustomAssert.IsInstanceOfType(typeof(long), o2.Object2);
             CustomAssert.IsInstanceOfType(typeof(JObject), o2.ObjectNotHandled);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""MyProperty"": 2147483647
 }", o2.ObjectNotHandled.ToString());
         }
@@ -1272,7 +1272,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             };
 
             string json = JsonConvert.SerializeObject(c1, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Data"": [
     1,
     ""two"",
@@ -1312,7 +1312,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             };
 
             string json = JsonConvert.SerializeObject(c1, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Data"": [
     {
       ""$type"": ""Newtonsoft.Json.Tests.TestObjects.TestComponentSimple, Newtonsoft.Json.Tests"",
@@ -1391,7 +1391,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             };
 
             string json = JsonConvert.SerializeObject(c1, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Data"": {
     ""one"": {
       ""$type"": ""Newtonsoft.Json.Tests.TestObjects.TestComponentSimple, Newtonsoft.Json.Tests"",
@@ -1466,7 +1466,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             };
 
             string json = JsonConvert.SerializeObject(o1, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Data"": {
     ""Prop1"": {
       ""$type"": ""System.Collections.Generic.List`1[[System.Object, mscorlib]], mscorlib"",
@@ -1522,7 +1522,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             d1.Data = (DynamicDictionary)data;
 
             string json = JsonConvert.SerializeObject(d1, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Data"": {
     ""one"": {
       ""$type"": ""Newtonsoft.Json.Tests.TestObjects.TestComponentSimple, Newtonsoft.Json.Tests"",
@@ -1620,7 +1620,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(p, settings);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""c"": {
     ""$type"": ""Newtonsoft.Json.Tests.Serialization.MyChild, Newtonsoft.Json.Tests"",
     ""p"": ""string!""
@@ -1655,7 +1655,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(p, settings);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""c"": {
     ""$type"": ""Newtonsoft.Json.Tests.Serialization.MyChildList, Newtonsoft.Json.Tests"",
     ""$values"": [
@@ -1694,7 +1694,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(pp, settings);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""ParentProp"": {
     ""c"": {
       ""$type"": ""Newtonsoft.Json.Tests.Serialization.MyChild, Newtonsoft.Json.Tests"",

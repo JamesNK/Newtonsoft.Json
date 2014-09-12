@@ -58,7 +58,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 traceWriter.Trace(TraceLevel.Error, "Error!", null);
                 traceWriter.Trace(TraceLevel.Off, "Off!", null);
 
-                Assert.AreEqual(@"Newtonsoft.Json Verbose: 0 : Verbose!
+                StringAssert.AreEqual(@"Newtonsoft.Json Verbose: 0 : Verbose!
 Newtonsoft.Json Information: 0 : Info!
 Newtonsoft.Json Warning: 0 : Warning!
 Newtonsoft.Json Error: 0 : Error!
@@ -110,6 +110,9 @@ Newtonsoft.Json Error: 0 : Error!
     ""Administrator""
   ]
 }";
+
+            json = StringAssert.Normalize(json);
+            output = StringAssert.Normalize(output);
 
             Assert.IsTrue(output.Contains(json));
         }
@@ -166,6 +169,9 @@ Newtonsoft.Json Error: 0 : Error!
 
             Assert.AreEqual(1059, output.Length);
             Assert.AreEqual(7, memoryTraceWriter.GetTraceMessages().Count());
+
+            json = StringAssert.Normalize(json);
+            output = StringAssert.Normalize(output);
 
             Assert.IsTrue(output.Contains(json));
         }
@@ -745,7 +751,7 @@ Newtonsoft.Json Error: 0 : Error!
             Assert.AreEqual("IsSpecified result for property 'FavoriteNumber' on Newtonsoft.Json.Tests.Serialization.SpecifiedTestClass: False. Path 'Age'.", traceWriter.TraceRecords[4].Message);
             Assert.AreEqual("Finished serializing Newtonsoft.Json.Tests.Serialization.SpecifiedTestClass. Path ''.", traceWriter.TraceRecords[5].Message);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Age"": 27
 }", json);
 
@@ -772,7 +778,7 @@ Newtonsoft.Json Error: 0 : Error!
             c.FavoriteNumber = 23;
             json = JsonConvert.SerializeObject(c, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Name"": ""James"",
   ""Age"": 27,
   ""Weight"": 0,
@@ -870,7 +876,7 @@ Newtonsoft.Json Error: 0 : Error!
 
             Console.WriteLine(traceWriter.GetJson());
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Array"": [
     ""String!"",
     ""2000-12-12T12:12:12Z"",
@@ -1031,7 +1037,7 @@ Newtonsoft.Json Error: 0 : Error!
 
             Console.WriteLine(traceReader.GetJson());
 
-            Assert.AreEqual(json, traceReader.GetJson());
+            StringAssert.AreEqual(json, traceReader.GetJson());
         }
 #endif
     }

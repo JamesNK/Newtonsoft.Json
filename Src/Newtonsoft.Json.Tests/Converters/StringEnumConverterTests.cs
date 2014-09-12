@@ -124,7 +124,7 @@ namespace Newtonsoft.Json.Tests.Converters
             };
 
             string json = JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter());
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Enum"": ""@first""
 }", json);
 
@@ -134,7 +134,7 @@ namespace Newtonsoft.Json.Tests.Converters
             };
 
             json = JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter());
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Enum"": ""Third""
 }", json);
         }
@@ -168,7 +168,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json = JsonConvert.SerializeObject(enumClass, Formatting.Indented, new StringEnumConverter());
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""StoreColor"": ""Red"",
   ""NullableStoreColor1"": ""White"",
   ""NullableStoreColor2"": null
@@ -185,7 +185,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json = JsonConvert.SerializeObject(enumClass, Formatting.Indented, new StringEnumConverter { CamelCaseText = true });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""StoreColor"": ""red"",
   ""NullableStoreColor1"": ""darkGoldenrod"",
   ""NullableStoreColor2"": null
@@ -202,7 +202,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json = JsonConvert.SerializeObject(enumClass, Formatting.Indented, new StringEnumConverter());
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""StoreColor"": 1000,
   ""NullableStoreColor1"": 1000,
   ""NullableStoreColor2"": null
@@ -219,7 +219,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json = JsonConvert.SerializeObject(enumClass, Formatting.Indented, new StringEnumConverter());
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""StoreColor"": ""Red, White"",
   ""NullableStoreColor1"": 0,
   ""NullableStoreColor2"": ""Black, Red, White""
@@ -235,7 +235,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json = JsonConvert.SerializeObject(negativeEnumClass, Formatting.Indented, new StringEnumConverter());
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Value1"": ""Negative"",
   ""Value2"": -2147483648
 }", json);
@@ -312,7 +312,7 @@ namespace Newtonsoft.Json.Tests.Converters
             };
 
             string json = JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter { CamelCaseText = true });
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Enum"": ""first, second""
 }", json);
         }
@@ -404,7 +404,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json1 = JsonConvert.SerializeObject(lfoo, Formatting.Indented, new StringEnumConverter { CamelCaseText = true });
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   ""Bat, baz"",
   ""foo_bar"",
   ""Bat"",
@@ -427,7 +427,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json2 = JsonConvert.SerializeObject(lbar, Formatting.Indented, new StringEnumConverter { CamelCaseText = true });
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   ""foo_bar"",
   ""Bat"",
   ""baz""

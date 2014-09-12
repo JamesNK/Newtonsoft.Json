@@ -67,7 +67,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
             string output = o.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""title"": null
 }", output);
 
@@ -101,7 +101,7 @@ namespace Newtonsoft.Json.Tests.Linq
             var o = new JObject();
             o.Add(new JProperty("novalue"));
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""novalue"": null
 }", o.ToString());
         }
@@ -482,7 +482,7 @@ Parameter name: arrayIndex");
 
             string json = o.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""val1"": 1,
   ""val2"": 1
 }", json);
@@ -537,7 +537,7 @@ Parameter name: arrayIndex");
 
             string output = o.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""title"": null
 }", output);
         }
@@ -618,24 +618,12 @@ Parameter name: arrayIndex");
             JObject o = new JObject();
             o["rc"] = new JValue(200);
             o["m"] = new JValue("");
-            o["o"] = new JValue(@"<div class='s1'>
-    <div class='avatar'>                    
-        <a href='asdf'>asdf</a><br />
-        <strong>0</strong>
-    </div>
-    <div class='sl'>
-        <p>
-            444444444
-        </p>
-    </div>
-    <div class='clear'>
-    </div>                        
-</div>");
+            o["o"] = new JValue(@"<div class='s1'>" + StringUtils.CarriageReturnLineFeed + @"</div>");
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""rc"": 200,
   ""m"": """",
-  ""o"": ""<div class='s1'>\r\n    <div class='avatar'>                    \r\n        <a href='asdf'>asdf</a><br />\r\n        <strong>0</strong>\r\n    </div>\r\n    <div class='sl'>\r\n        <p>\r\n            444444444\r\n        </p>\r\n    </div>\r\n    <div class='clear'>\r\n    </div>                        \r\n</div>""
+  ""o"": ""<div class='s1'>\r\n</div>""
 }", o.ToString());
         }
 
@@ -1590,7 +1578,7 @@ Parameter name: arrayIndex");
 
             string output = o.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""title"": null
 }", output);
         }
@@ -1659,7 +1647,7 @@ Parameter name: arrayIndex");
 
             JObject o = (JObject)JToken.ReadFrom(reader);
             Assert.IsNotNull(o);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""code"": 0,
   ""msg"": ""No action taken""
 }", o.ToString(Formatting.Indented));

@@ -842,7 +842,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
             string json = a.ToString(Formatting.Indented, new IsoDateTimeConverter());
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   ""2009-02-15T00:00:00Z""
 ]", json);
 

@@ -98,7 +98,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json = JsonConvert.SerializeObject(binaryClass, Formatting.Indented, new BinaryConverter());
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Binary"": ""VGhpcyBpcyBzb21lIHRlc3QgZGF0YSEhIQ=="",
   ""NullBinary"": null
 }", json);
@@ -114,7 +114,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json = JsonConvert.SerializeObject(byteArrayClass, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""ByteArray"": ""VGhpcyBpcyBzb21lIHRlc3QgZGF0YSEhIQ=="",
   ""NullByteArray"": null
 }", json);
@@ -138,7 +138,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json = JsonConvert.SerializeObject(sqlBinaryClass, Formatting.Indented, new BinaryConverter());
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""SqlBinary"": ""VGhpcyBpcyBzb21lIHRlc3QgZGF0YSEhIQ=="",
   ""NullableSqlBinary1"": ""VGhpcyBpcyBzb21lIHRlc3QgZGF0YSEhIQ=="",
   ""NullableSqlBinary2"": null

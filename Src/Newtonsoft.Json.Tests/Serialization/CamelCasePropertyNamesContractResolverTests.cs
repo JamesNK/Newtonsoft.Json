@@ -56,7 +56,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""name"": ""Name!"",
   ""birthDate"": ""2000-11-20T23:55:44Z"",
   ""lastModified"": ""2000-11-20T23:55:44Z""
@@ -72,7 +72,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(person.Name, deserializedPerson.Name);
 
             json = JsonConvert.SerializeObject(person, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Name"": ""Name!"",
   ""BirthDate"": ""2000-11-20T23:55:44Z"",
   ""LastModified"": ""2000-11-20T23:55:44Z""
@@ -113,7 +113,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 ContractResolver = new CamelCasePropertyNamesContractResolver { DefaultMembersSearchFlags = BindingFlags.NonPublic | BindingFlags.Instance }
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""_privateString"": ""PrivateString!"",
   ""i"": 0,
   ""_internalString"": ""InternalString!""
@@ -166,7 +166,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             //  ]
             //}
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""name"": ""Widget"",
   ""expiryDate"": ""2010-12-20T18:01:00Z"",
   ""price"": 9.99,
@@ -192,7 +192,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                     ContractResolver = new CamelCasePropertyNamesContractResolver()
                 });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""explicit"": false,
   ""text"": ""Text!"",
   ""integer"": 2147483647,
@@ -217,7 +217,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                     ContractResolver = new CamelCasePropertyNamesContractResolver()
                 });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""first"": ""Value1!"",
   ""second"": ""Value2!""
 }", json);

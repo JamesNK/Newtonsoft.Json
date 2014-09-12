@@ -67,7 +67,7 @@ namespace Newtonsoft.Json.Tests
 
                 string json = JsonConvert.SerializeObject(new { test = new[] { 1, 2, 3 } });
 
-                Assert.AreEqual(@"{
+                StringAssert.AreEqual(@"{
   ""test"": [
     1,
     2,
@@ -110,7 +110,7 @@ namespace Newtonsoft.Json.Tests
                 //   "jobTitle": "Web Dude"
                 // }
 
-                Assert.AreEqual(@"{
+                StringAssert.AreEqual(@"{
   ""firstName"": ""Eric"",
   ""lastName"": ""Example"",
   ""birthDate"": ""1980-04-20T00:00:00Z"",
@@ -193,7 +193,7 @@ namespace Newtonsoft.Json.Tests
                 JsonSerializer serializer = JsonSerializer.CreateDefault();
                 serializer.Serialize(sw, l);
 
-                Assert.AreEqual(@"[
+                StringAssert.AreEqual(@"[
   1,
   2,
   3
@@ -242,7 +242,7 @@ namespace Newtonsoft.Json.Tests
                 });
                 serializer.Serialize(sw, l);
 
-                Assert.AreEqual(@"[
+                StringAssert.AreEqual(@"[
   2,
   4,
   6
@@ -252,7 +252,7 @@ namespace Newtonsoft.Json.Tests
                 serializer.Converters.Clear();
                 serializer.Serialize(sw, l);
 
-                Assert.AreEqual(@"[
+                StringAssert.AreEqual(@"[
   1,
   2,
   3
@@ -262,7 +262,7 @@ namespace Newtonsoft.Json.Tests
                 serializer = JsonSerializer.Create(new JsonSerializerSettings { Formatting = Formatting.Indented });
                 serializer.Serialize(sw, l);
 
-                Assert.AreEqual(@"[
+                StringAssert.AreEqual(@"[
   1,
   2,
   3
@@ -890,7 +890,7 @@ namespace Newtonsoft.Json.Tests
 #pragma warning restore 612,618
             task.Wait();
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   1,
   2,
   3,

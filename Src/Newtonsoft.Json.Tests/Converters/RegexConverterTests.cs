@@ -63,7 +63,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json = JsonConvert.SerializeObject(regex, Formatting.Indented, new RegexConverter());
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Pattern"": ""abc"",
   ""Options"": 513
 }", json);
@@ -80,7 +80,7 @@ namespace Newtonsoft.Json.Tests.Converters
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""pattern"": ""abc"",
   ""options"": ""ignoreCase""
 }", json);
@@ -223,7 +223,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json = JsonConvert.SerializeObject(new RegexTestClass { Regex = regex }, Formatting.Indented, new RegexConverter());
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Regex"": {
     ""Pattern"": """",
     ""Options"": 0

@@ -681,8 +681,8 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Assert.AreEqual(null, v.Value);
             Assert.AreEqual(JTokenType.String, v.Type);
-            
-            Assert.AreEqual(@"{
+
+            StringAssert.AreEqual(@"{
   ""title"": null
 }", output);
         }
@@ -954,7 +954,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = AssertSerializeDeserializeEqual(baseWith);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""JustAProperty"": ""JustAProperty2!"",
   ""Virtual"": ""Virtual2!"",
   ""VirtualWithDataMemberBase"": ""VirtualWithDataMember2!"",
@@ -984,7 +984,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Console.WriteLine(json);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""VirtualWithDataMemberBase"": ""VirtualWithDataMember2!"",
   ""VirtualSub"": ""Virtual2!"",
   ""WithDataMemberBase"": ""WithDataMember2!"",
@@ -1010,7 +1010,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = AssertSerializeDeserializeEqual(baseWith);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""JustAProperty"": ""JustAProperty2!"",
   ""JustAProperty2"": ""JustAProperty!"",
   ""Virtual"": ""Virtual2!"",
@@ -1040,7 +1040,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = AssertSerializeDeserializeEqual(baseWith);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""JustAProperty"": ""JustAProperty2!"",
   ""Virtual"": ""Virtual2!"",
   ""VirtualWithDataMemberBase"": ""VirtualWithDataMember2!"",
@@ -1215,7 +1215,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             TypedSubHashtable p = JsonConvert.DeserializeObject(value, typeof(TypedSubHashtable)) as TypedSubHashtable;
 
             Assert.AreEqual("01/24/2010 12:00:00", p.Hash["ExpiryDate"].ToString());
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   ""01/24/2010 12:00:00""
 ]", p.Hash["UntypedArray"].ToString());
         }
@@ -1671,7 +1671,7 @@ keyword such as type of business.""
 }";
 #endif
 
-            Assert.AreEqual(expected, json);
+            StringAssert.AreEqual(expected, json);
 
             ConverableMembers c = JsonConvert.DeserializeObject<ConverableMembers>(json);
             Assert.AreEqual("string", c.String);
@@ -1747,7 +1747,7 @@ keyword such as type of business.""
             TimeSpan ts = new TimeSpan(00, 23, 59, 1);
 
             string json = JsonConvert.SerializeObject(new ClassWithTimeSpan { TimeSpanField = ts }, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""TimeSpanField"": ""23:59:01""
 }", json);
 
@@ -2062,7 +2062,7 @@ keyword such as type of business.""
 
             string json = JsonConvert.SerializeObject(c, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""FirstName"": ""Bob"",
   ""MiddleName"": ""Cosmo"",
   ""LastName"": ""Smith"",
@@ -2447,7 +2447,7 @@ keyword such as type of business.""
 
             string json = JsonConvert.SerializeObject(o, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""DefaultValueHandlingIncludeProperty"": ""Default!"",
   ""DefaultValueHandlingPopulateProperty"": ""Default!"",
   ""NullValueHandlingIncludeProperty"": null,
@@ -2458,7 +2458,7 @@ keyword such as type of business.""
 
             json = JsonConvert.SerializeObject(o, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""DefaultValueHandlingIncludeProperty"": ""Default!"",
   ""DefaultValueHandlingPopulateProperty"": ""Default!"",
   ""NullValueHandlingIncludeProperty"": null
@@ -2554,7 +2554,7 @@ keyword such as type of business.""
 
             string json = JsonConvert.SerializeObject(optInClass, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Name"": ""James NK"",
   ""Age"": 26
 }", json);
@@ -2614,7 +2614,7 @@ keyword such as type of business.""
             c.NotIncluded = "Hi";
             string json = JsonConvert.SerializeObject(c, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""_name"": ""Jeff"",
   ""_age"": 26,
   ""Rank"": 10,
@@ -2771,7 +2771,7 @@ keyword such as type of business.""
 
             string json = JsonConvert.SerializeObject(content, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Children"": [
     {
       ""Children"": null,
@@ -2939,7 +2939,9 @@ Path '', line 1, position 1.");
         {
             string json = @"[]";
 
-            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeObject<DynamicDictionary>(json); }, @"Cannot deserialize the current JSON array (e.g. [1,2,3]) into type 'Newtonsoft.Json.Tests.Linq.DynamicDictionary' because the type requires a JSON object (e.g. {""name"":""value""}) to deserialize correctly.
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => { JsonConvert.DeserializeObject<DynamicDictionary>(json); },
+                @"Cannot deserialize the current JSON array (e.g. [1,2,3]) into type 'Newtonsoft.Json.Tests.Linq.DynamicDictionary' because the type requires a JSON object (e.g. {""name"":""value""}) to deserialize correctly.
 To fix this error either change the JSON to a JSON object (e.g. {""name"":""value""}) or change the deserialized type to an array or a type that implements a collection interface (e.g. ICollection, IList) like List<T> that can be deserialized from a JSON array. JsonArrayAttribute can also be added to the type to force it to deserialize from a JSON array.
 Path '', line 1, position 1.");
         }
@@ -2986,9 +2988,9 @@ Path '', line 1, position 1.");
             }
             catch (JsonSerializationException ex)
             {
-                Assert.IsTrue(ex.Message.StartsWith(@"Cannot deserialize the current JSON object (e.g. {""name"":""value""}) into type 'System.Collections.Generic.List`1[Newtonsoft.Json.Tests.TestObjects.Person]' because the type requires a JSON array (e.g. [1,2,3]) to deserialize correctly.
-To fix this error either change the JSON to a JSON array (e.g. [1,2,3]) or change the deserialized type so that it is a normal .NET type (e.g. not a primitive type like integer, not a collection type like an array or List<T>) that can be deserialized from a JSON object. JsonObjectAttribute can also be added to the type to force it to deserialize from a JSON object.
-Path ''"));
+                Assert.IsTrue(ex.Message.StartsWith(@"Cannot deserialize the current JSON object (e.g. {""name"":""value""}) into type 'System.Collections.Generic.List`1[Newtonsoft.Json.Tests.TestObjects.Person]' because the type requires a JSON array (e.g. [1,2,3]) to deserialize correctly." + Environment.NewLine +
+@"To fix this error either change the JSON to a JSON array (e.g. [1,2,3]) or change the deserialized type so that it is a normal .NET type (e.g. not a primitive type like integer, not a collection type like an array or List<T>) that can be deserialized from a JSON object. JsonObjectAttribute can also be added to the type to force it to deserialize from a JSON object." + Environment.NewLine +
+@"Path ''"));
             }
         }
 
@@ -3103,7 +3105,7 @@ Path ''"));
         {
             ConstructorReadonlyFields c1 = new ConstructorReadonlyFields("String!", int.MaxValue);
             string json = JsonConvert.SerializeObject(c1, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""A"": ""String!"",
   ""B"": 2147483647
 }", json);
@@ -3126,7 +3128,7 @@ Path ''"));
 
             string json = JsonConvert.SerializeObject(structTest, Formatting.Indented);
             Console.WriteLine(json);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""StringField"": ""StringField"",
   ""IntField"": 10,
   ""StringProperty"": ""StringProperty!"",
@@ -3149,7 +3151,7 @@ Path ''"));
             f.Bars.Add(new Bar { Id = 2 });
 
             string json = JsonConvert.SerializeObject(f, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Bars"": [
     0,
     1,
@@ -3172,7 +3174,7 @@ Path ''"));
             dictionary.Add(new Guid("C2594C02-EBA1-426A-AA87-8DD8871350B0"), 2);
 
             string json = JsonConvert.SerializeObject(dictionary, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""f60eaee0-ae47-488e-b330-59527b742d77"": 1,
   ""c2594c02-eba1-426a-aa87-8dd8871350b0"": 2
 }", json);
@@ -3187,7 +3189,7 @@ Path ''"));
 
             string json = JsonConvert.SerializeObject(dictionary, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Newtonsoft.Json.Tests.TestObjects.Person"": 1,
   ""Newtonsoft.Json.Tests.TestObjects.Person"": 2
 }", json);
@@ -3307,7 +3309,7 @@ Path ''"));
             wagePerson.Name = "Jim Bob";
 
             string json = JsonConvert.SerializeObject(personPropertyClass, Formatting.Indented);
-            Assert.AreEqual(
+            StringAssert.AreEqual(
                 @"{
   ""Person"": {
     ""HourlyWage"": 12.50,
@@ -3430,7 +3432,7 @@ Path ''"));
 
             string json = g.ToJson();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""MyProperty"": ""some value"",
   ""TheItems"": [
     {
@@ -3541,7 +3543,7 @@ Path ''"));
             B value = new B();
             string json = JsonConvert.SerializeObject(value, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""B2"": null,
   ""A1"": null,
   ""B3"": null,
@@ -3929,7 +3931,7 @@ To fix this error either change the environment to be fully trusted, change the 
             ISerializableTestObject o = new ISerializableTestObject("String!", int.MinValue, dateTimeOffset, person);
 
             string json = JsonConvert.SerializeObject(o, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""stringValue"": ""String!"",
   ""intValue"": -2147483648,
   ""dateTimeOffsetValue"": """ + dateTimeOffsetText + @""",
@@ -3986,7 +3988,7 @@ To fix this error either change the environment to be fully trusted, change the 
             {
                 DateFormatHandling = DateFormatHandling.MicrosoftDateFormat
             });
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""stringValue"": ""String!"",
   ""intValue"": -2147483648,
   ""dateTimeOffsetValue"": """ + dateTimeOffsetText + @""",
@@ -4052,7 +4054,7 @@ To fix this error either change the environment to be fully trusted, change the 
         {
             AA myA = new AA(2);
             string json = JsonConvert.SerializeObject(myA, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""AA_field1"": 2,
   ""AA_property1"": 2,
   ""AA_property2"": 2,
@@ -4062,7 +4064,7 @@ To fix this error either change the environment to be fully trusted, change the 
 
             BB myB = new BB(3, 4);
             json = JsonConvert.SerializeObject(myB, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""BB_field1"": 4,
   ""BB_field2"": 4,
   ""AA_field1"": 3,
@@ -4270,7 +4272,7 @@ To fix this error either change the environment to be fully trusted, change the 
     }
   }
 }";
-            Assert.AreEqual(expected, json);
+            StringAssert.AreEqual(expected, json);
 
             XNodeTestObject newTestObject = JsonConvert.DeserializeObject<XNodeTestObject>(json);
             Assert.AreEqual(testObject.Document.ToString(), newTestObject.Document.ToString());
@@ -4295,7 +4297,7 @@ To fix this error either change the environment to be fully trusted, change the 
     ""root"": ""hehe, root""
   }
 }";
-            Assert.AreEqual(expected, json);
+            StringAssert.AreEqual(expected, json);
 
             XmlNodeTestObject newTestObject = JsonConvert.DeserializeObject<XmlNodeTestObject>(json);
             Assert.AreEqual(testObject.Document.InnerXml, newTestObject.Document.InnerXml);
@@ -4511,7 +4513,7 @@ To fix this error either change the environment to be fully trusted, change the 
 
             string json = JsonConvert.SerializeObject(dictionary, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""First!"": ""First"",
   ""Second!"": ""Second""
 }", json);
@@ -4527,7 +4529,7 @@ To fix this error either change the environment to be fully trusted, change the 
         {
             string jsonText = JsonConvert.SerializeObject(new double?[] { 2.4, 4.3, null }, Formatting.Indented);
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   2.4,
   4.3,
   null
@@ -4560,7 +4562,7 @@ To fix this error either change the environment to be fully trusted, change the 
                 "III"
             }, Formatting.Indented);
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   ""One"",
   ""2"",
   ""III""
@@ -4648,7 +4650,7 @@ To fix this error either change the environment to be fully trusted, change the 
 
             string json = JsonConvert.SerializeObject(testStruct, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""MyInt"": 2147483647
 }", json);
 
@@ -4739,7 +4741,7 @@ To fix this error either change the environment to be fully trusted, change the 
         {
             string json = JsonConvert.SerializeObject(new DerivedEvent(), Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""event"": ""derived""
 }", json);
         }
@@ -4756,7 +4758,7 @@ To fix this error either change the environment to be fully trusted, change the 
             expando.Complex.DateTime = new DateTime(2000, 12, 20, 18, 55, 0, DateTimeKind.Utc);
 
             string json = JsonConvert.SerializeObject(expando, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Int"": 1,
   ""Decimal"": 99.9,
   ""Complex"": {
@@ -5065,7 +5067,7 @@ To fix this error either change the environment to be fully trusted, change the 
 
             string json = JsonConvert.SerializeObject(c, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Enumerable"": [
     ""One"",
     ""Two"",
@@ -5087,7 +5089,7 @@ To fix this error either change the environment to be fully trusted, change the 
 
             string json = JsonConvert.SerializeObject(i, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Name"": null
 }", json);
         }
@@ -5364,7 +5366,7 @@ To fix this error either change the environment to be fully trusted, change the 
 
             string result = JsonConvert.SerializeObject(cc, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""virtualMember"": ""2010-12-31T00:00:00Z"",
   ""newMemberWithProperty"": null
 }", result);
@@ -5390,7 +5392,7 @@ To fix this error either change the environment to be fully trusted, change the 
             c1.Categories.Add("two");
 
             string json = JsonConvert.SerializeObject(c1, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Title"": ""blah"",
   ""Categories"": [
     ""one"",
@@ -5425,7 +5427,7 @@ To fix this error either change the environment to be fully trusted, change the 
             c1.Categories.Add("two", 2);
 
             string json = JsonConvert.SerializeObject(c1, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Title"": ""blah"",
   ""Categories"": {
     ""one"": 1,
@@ -5516,7 +5518,7 @@ To fix this error either change the environment to be fully trusted, change the 
                 NonSerialized = "NonSerialized!"
             }, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""DerivedClassValue"": ""DerivedClassValue!"",
   ""BaseClassValue"": ""BaseClassValue!""
 }", json);
@@ -5527,7 +5529,7 @@ To fix this error either change the environment to be fully trusted, change the 
                 CollectionDerivedClassValue = "CollectionDerivedClassValue!"
             }, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""CollectionDerivedClassValue"": ""CollectionDerivedClassValue!"",
   ""BaseClassValue"": ""BaseClassValue!""
 }", json);
@@ -5568,7 +5570,7 @@ To fix this error either change the environment to be fully trusted, change the 
             PrivateMembersClassWithAttributes c1 = new PrivateMembersClassWithAttributes("privateString!", "internalString!", "readonlyString!");
 
             string json = JsonConvert.SerializeObject(c1, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""_privateString"": ""privateString!"",
   ""_readonlyString"": ""readonlyString!"",
   ""_internalString"": ""internalString!""
@@ -5635,7 +5637,7 @@ To fix this error either change the environment to be fully trusted, change the 
             DerivedType d = new DerivedType();
             string json = JsonConvert.SerializeObject(d, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""dinosaur"": null,
   ""dog"": null,
   ""cat"": null,
@@ -5688,7 +5690,7 @@ To fix this error either change the environment to be fully trusted, change the 
             UriGuidTimeSpanTestClass c1 = new UriGuidTimeSpanTestClass();
             string json = JsonConvert.SerializeObject(c1, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Guid"": ""00000000-0000-0000-0000-000000000000"",
   ""NullableGuid"": null,
   ""TimeSpan"": ""00:00:00"",
@@ -5717,7 +5719,7 @@ To fix this error either change the environment to be fully trusted, change the 
             };
             string json = JsonConvert.SerializeObject(c1, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Guid"": ""1924129c-f7e0-40f3-9607-9939c531395a"",
   ""NullableGuid"": ""9e9f3adf-e017-4f72-91e0-617ebe85967d"",
   ""TimeSpan"": ""1.00:00:00"",
@@ -5827,7 +5829,7 @@ To fix this error either change the environment to be fully trusted, change the 
                 ContractResolver = contractResolver
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""x"": 2147483647,
   ""y"": 2,
   ""z"": 3
@@ -5864,7 +5866,7 @@ To fix this error either change the environment to be fully trusted, change the 
                 ContractResolver = contractResolver
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""x"": 2147483647,
   ""y"": 2,
   ""z"": 3
@@ -6002,7 +6004,7 @@ To fix this error either change the environment to be fully trusted, change the 
 
             string json = JsonConvert.SerializeObject(c, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Integer"": 1,
   ""NullableInteger1"": 2,
   ""NullableInteger2"": null
@@ -6099,7 +6101,7 @@ To fix this error either change the environment to be fully trusted, change the 
 
             string jsonString = JsonConvert.SerializeObject(expected, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""SourceTypeID"": ""d8220a4b-75b1-4b7a-8112-b7bdae956a45"",
   ""BrokerID"": ""951663c4-924e-4c86-a57a-7ed737501dbd"",
   ""Latitude"": 33.657145,
@@ -6363,7 +6365,7 @@ To fix this error either change the environment to be fully trusted, change the 
                 Converters = { new MetroStringConverter() },
                 Formatting = Formatting.Indented
             });
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   "":::NAME:::"": "":::APPLE:::"",
   "":::EXPIRYDATE:::"": ""2012-04-01T00:00:00"",
   "":::PRICE:::"": 3.99,
@@ -6389,7 +6391,7 @@ To fix this error either change the environment to be fully trusted, change the 
                 Formatting = Formatting.Indented
             });
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   "":::GRAY:::"",
   "":::GRAY:::"",
   "":::GRAY:::"",
@@ -6542,7 +6544,7 @@ To fix this error either change the environment to be fully trusted, change the 
                 Formatting = Formatting.Indented
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""DefaultProperty"": null,
   ""AllowNullProperty"": null
 }", json);
@@ -6605,7 +6607,7 @@ To fix this error either change the environment to be fully trusted, change the 
 
             string json = JsonConvert.SerializeObject(dic1, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""2000-12-12T12:12:12+00:00"": 1,
   ""2013-12-12T12:12:12+00:00"": 2
 }", json);
@@ -6631,7 +6633,7 @@ To fix this error either change the environment to be fully trusted, change the 
                 DateFormatHandling = DateFormatHandling.MicrosoftDateFormat
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""\/Date(976623132000+0000)\/"": 1,
   ""\/Date(1386850332000+0000)\/"": 2
 }", json);
@@ -6655,7 +6657,7 @@ To fix this error either change the environment to be fully trusted, change the 
 
             string json = JsonConvert.SerializeObject(dic1, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""2000-12-12T12:12:12Z"": 1,
   ""2013-12-12T12:12:12Z"": 2
 }", json);
@@ -6681,7 +6683,7 @@ To fix this error either change the environment to be fully trusted, change the 
                 DateFormatHandling = DateFormatHandling.MicrosoftDateFormat
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""\/Date(976623132000)\/"": 1,
   ""\/Date(1386850332000)\/"": 2
 }", json);
@@ -6772,7 +6774,7 @@ To fix this error either change the environment to be fully trusted, change the 
             //  ]
             //}
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""EventName"": ""Blackadder III"",
   ""Venue"": ""Gryphon Theatre"",
   ""Performances"": [
@@ -6823,7 +6825,7 @@ To fix this error either change the environment to be fully trusted, change the 
             //Console.WriteLine(Encoding.UTF8.GetString(ms.ToArray()));
 
             string json = JsonConvert.SerializeObject(dataContract, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""DataMemberAttribute"": ""Value!"",
   ""IgnoreDataMemberAndDataMemberAttribute"": ""Value!""
 }", json);
@@ -6837,7 +6839,7 @@ To fix this error either change the environment to be fully trusted, change the 
             };
 
             json = JsonConvert.SerializeObject(poco, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""NoAttribute"": ""Value!"",
   ""DataMemberAttribute"": ""Value!""
 }", json);
@@ -6988,7 +6990,7 @@ To fix this error either change the environment to be fully trusted, change the 
                     ContractResolver = new CamelCasePropertyNamesContractResolver()
                 });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""key"": 123,
   ""value"": ""test value""
 }", json);
@@ -7227,7 +7229,7 @@ To fix this error either change the environment to be fully trusted, change the 
                 FloatFormatHandling = FloatFormatHandling.DefaultValue
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Object"": 0.0,
   ""Float"": 0.0,
   ""Double"": 0.0,
@@ -7252,7 +7254,7 @@ To fix this error either change the environment to be fully trusted, change the 
                 Culture = new CultureInfo("en-NZ")
             });
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   ""2000 p.m."",
   ""2000 p.m.""
 ]", json);
@@ -7272,7 +7274,7 @@ To fix this error either change the environment to be fully trusted, change the 
                 DateFormatString = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffK"
             });
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   ""2000-12-12T12:12:12.000Z"",
   ""2000-12-12T12:12:12.000+01:00""
 ]", json);
@@ -7304,7 +7306,7 @@ To fix this error either change the environment to be fully trusted, change the 
 
             string json = sw.ToString();
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   ""2000 p.m."",
   ""2000 p.m.""
 ]", json);
@@ -7346,7 +7348,7 @@ To fix this error either change the environment to be fully trusted, change the 
 
             string json = sw.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""html"": ""\u003chtml\u003e\u003c/html\u003e""
 }", json);
         }
@@ -7556,7 +7558,7 @@ To fix this error either change the environment to be fully trusted, change the 
                     }
                 });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""<Active>k__BackingField"": false,
   ""<Ja>k__BackingField"": false,
   ""<Handlungsbedarf>k__BackingField"": false,
@@ -7575,7 +7577,7 @@ To fix this error either change the environment to be fully trusted, change the 
 
             string json = JsonConvert.SerializeObject(new[] { i }, Formatting.Indented);
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   123456789999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999990
 ]", json);
         }
@@ -7634,7 +7636,7 @@ To fix this error either change the environment to be fully trusted, change the 
                 Formatting = Formatting.Indented
             });
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   {
     ""$id"": ""0b64ffdf-d155-44ad-9689-58d9adb137f3"",
     ""Name"": ""John Smith"",
@@ -7736,7 +7738,7 @@ To fix this error either change the environment to be fully trusted, change the 
             dict2.Add(consoleWriter, "Console");
 
             var text2 = JsonConvert.SerializeObject(dict2, Formatting.Indented, options);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Console Writer"": ""Console""
 }", text2);
 
@@ -7751,7 +7753,7 @@ To fix this error either change the environment to be fully trusted, change the 
             dict3.Add("Console", consoleWriter);
 
             var text3 = JsonConvert.SerializeObject(dict3, Formatting.Indented, options);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Console"": ""Console Writer""
 }", text3);
 
@@ -7888,7 +7890,7 @@ To fix this error either change the environment to be fully trusted, change the 
         {
             var c = new TestClassConvertable { Id = new ConvertibleId { Value = 1 }, X = 2 };
             var s = JsonConvert.SerializeObject(c, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Id"": ""1"",
   ""X"": 2
 }", s);
@@ -8018,7 +8020,7 @@ To fix this error either change the environment to be fully trusted, change the 
                 { dt, "123" }
             }, settings);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""2000-pie-Dec-Friday-22"": ""123""
 }", json);
 
@@ -8044,7 +8046,7 @@ To fix this error either change the environment to be fully trusted, change the 
                 { dt, "123" }
             }, settings);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""2000-pie-Dec-Friday-22"": ""123""
 }", json);
 
@@ -8070,7 +8072,7 @@ To fix this error either change the environment to be fully trusted, change the 
                 { dt, "123" }
             }, settings);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""2000-pie-Dec-Friday-22!+00:00"": ""123""
 }", json);
 
@@ -8096,7 +8098,7 @@ To fix this error either change the environment to be fully trusted, change the 
                 { dt, "123" }
             }, settings);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""2000-pie-Dec-Friday-22!+00:00"": ""123""
 }", json);
 

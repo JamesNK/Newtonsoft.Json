@@ -396,7 +396,7 @@ Parameter name: index");
 
             string result = "myOptions = " + optionValues.ToString();
 
-            Assert.AreEqual(@"myOptions = {
+            StringAssert.AreEqual(@"myOptions = {
   ""options"": [
     {
       ""text"": ""Zero text"",

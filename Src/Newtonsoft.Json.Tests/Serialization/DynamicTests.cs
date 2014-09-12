@@ -80,7 +80,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(d.ChildObject, values["ChildObject"]);
 
             string json = JsonConvert.SerializeObject(dynamicObject, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Explicit"": true,
   ""Decimal"": 99.9,
   ""Int"": 1,
@@ -125,7 +125,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             string dynamicChildObjectTypeName = ReflectionUtils.GetTypeName(typeof(DynamicChildObject), FormatterAssemblyStyle.Full, null);
             string expandoObjectTypeName = ReflectionUtils.GetTypeName(typeof(ExpandoObject), FormatterAssemblyStyle.Full, null);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""$type"": """ + expandoObjectTypeName + @""",
   ""Text"": ""Text!"",
   ""Integer"": 2147483647,
@@ -267,7 +267,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Console.WriteLine(json);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Explicit"": false,
   ""Text"": ""Text!"",
   ""Int"": 2147483647
@@ -290,7 +290,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Console.WriteLine(json);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Explicit"": false,
   ""Text"": ""Text!"",
   ""DynamicChildObject"": null,
@@ -317,7 +317,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Console.WriteLine(json);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Text"": ""Text!"",
   ""Int"": 2147483647
 }", json);

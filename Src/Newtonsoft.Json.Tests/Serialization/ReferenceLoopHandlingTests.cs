@@ -78,7 +78,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Serialize
             });
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Value"": {
     ""Value"": {
       ""Value"": {
@@ -128,7 +128,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(c, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Text"": ""Text!"",
   ""Data"": [
     {

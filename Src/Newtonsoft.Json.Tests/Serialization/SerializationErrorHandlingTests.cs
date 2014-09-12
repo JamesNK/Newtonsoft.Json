@@ -166,7 +166,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 }
             });
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   [
     [
       {
@@ -228,7 +228,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(c, Formatting.Indented);
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   {
     ""Member"": ""Value1"",
     ""ThrowError"": ""Handle this!"",
@@ -373,7 +373,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             //  "Title": "Mister Manager"
             //}
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Name"": ""George Michael Bluth"",
   ""Age"": 16,
   ""Title"": ""Mister Manager""

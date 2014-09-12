@@ -499,7 +499,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             string iPersonJson = JsonConvert.SerializeObject(employee, Formatting.Indented,
                 new JsonSerializerSettings { ContractResolver = new IPersonContractResolver() });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""FirstName"": ""Maurice"",
   ""LastName"": ""Moss"",
   ""BirthDate"": ""1977-12-30T01:01:01Z""
@@ -535,13 +535,13 @@ namespace Newtonsoft.Json.Tests.Serialization
             //   "BookPrice": 16.19
             // }
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""AuthorName"": ""Brandon Sanderson"",
   ""AuthorAge"": 34,
   ""AuthorCountry"": ""United States of America""
 }", startingWithA);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""BookName"": ""The Gathering Storm"",
   ""BookPrice"": 16.19
 }", startingWithB);
@@ -568,7 +568,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             string skipCompilerGeneratedJson = JsonConvert.SerializeObject(structTest, Formatting.Indented,
                 new JsonSerializerSettings { ContractResolver = skipCompilerGeneratedResolver });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""StringField"": ""Field"",
   ""IntField"": 1,
   ""StringProperty"": ""Property"",
@@ -584,7 +584,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             string includeCompilerGeneratedJson = JsonConvert.SerializeObject(structTest, Formatting.Indented,
                 new JsonSerializerSettings { ContractResolver = includeCompilerGeneratedResolver });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""StringField"": ""Field"",
   ""IntField"": 1,
   ""<StringProperty>k__BackingField"": ""Property"",

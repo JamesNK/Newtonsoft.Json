@@ -72,7 +72,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json = JsonConvert.SerializeObject(dataSet, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Table1"": [
     {
       ""id"": 0,
@@ -143,7 +143,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             DataSet deserializedDs = JsonConvert.DeserializeObject<DataSet>(json, new IsoDateTimeConverter());
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""FirstTable"": [
     {
       ""StringCol"": ""Item Name"",
@@ -296,7 +296,7 @@ namespace Newtonsoft.Json.Tests.Converters
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""firstTable"": [
     {
       ""stringCol"": ""Item Name"",
@@ -346,7 +346,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json = JsonConvert.SerializeObject(c, Formatting.Indented, new IsoDateTimeConverter());
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Before"": ""Before"",
   ""Set"": {
     ""FirstTable"": [
@@ -417,7 +417,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json = JsonConvert.SerializeObject(ds, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Customers"": [
     {
       ""CustomerID"": ""234""
@@ -434,7 +434,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json1 = JsonConvert.SerializeObject(ds1, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Customers"": [
     {
       ""CustomerID"": ""234""
