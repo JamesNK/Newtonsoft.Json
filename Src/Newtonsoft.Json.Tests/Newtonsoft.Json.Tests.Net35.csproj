@@ -344,7 +344,7 @@
       <LastGenOutput>LinqToSqlClasses.designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </None>
-    <Content Include="SpaceShipV2.baemf">
+    <Content Include="SpaceShipV2.bson">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
