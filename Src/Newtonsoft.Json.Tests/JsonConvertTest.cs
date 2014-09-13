@@ -1058,5 +1058,149 @@ namespace Newtonsoft.Json.Tests
         {
             public Nest A { get; set; }
         }
+
+        [Test(Description = "Verifies that parameterized JsonConverter constructors are invoked when 'params' are used in JsonConverterAttribute.")]
+        public void ParametersPassedToJsonConverterConstructor()
+        {
+            ClobberMyProperties clobber = new ClobberMyProperties { One = "Red", Two = "Green", Three = "Yellow", Four = "Black" };
+            string json = JsonConvert.SerializeObject(clobber);
+
+            Assert.AreEqual("{\"One\":\"Uno-1-Red\",\"Two\":\"Dos-2-Green\",\"Three\":\"Tres-1337-Yellow\",\"Four\":\"Black\"}", json);
+        }
+
+        public class ClobberMyProperties
+        {
+            [JsonConverter(typeof(ClobberingJsonConverter), "Uno", 1)]
+            public string One { get; set; }
+
+            [JsonConverter(typeof(ClobberingJsonConverter), "Dos", 2)]
+            public string Two { get; set; }
+
+            [JsonConverter(typeof(ClobberingJsonConverter), "Tres")]
+            public string Three { get; set; }
+
+            public string Four { get; set; }
+        }
+
+        public class ClobberingJsonConverter : JsonConverter
+        {
+            public string ClobberValueString { get; private set; }
+
+            public int ClobberValueInt { get; private set; }
+
+            public ClobberingJsonConverter(string clobberValueString, int clobberValueInt)
+            {
+                ClobberValueString = clobberValueString;
+                ClobberValueInt = clobberValueInt;
+            }
+
+            public ClobberingJsonConverter(string clobberValueString)
+            : this(clobberValueString, 1337)
+            {
+            }
+
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                writer.WriteValue(ClobberValueString + "-" + ClobberValueInt.ToString() + "-" + value.ToString());
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override bool CanConvert(Type objectType)
+            {
+                return objectType == typeof(string);
+            }
+        }
+
+        [Test]
+        public void WrongParametersPassedToJsonConvertConstructorShouldThrow()
+        {
+            IncorrectJsonConvertParameters value = new IncorrectJsonConvertParameters { One = "Boom" };
+
+            ExceptionAssert.Throws<JsonException>(() => { JsonConvert.SerializeObject(value); });
+        }
+
+        public class IncorrectJsonConvertParameters
+        {
+            /// <summary>
+            /// We deliberately use the wrong number/type of arguments for ClobberingJsonConverter to ensure an 
+            /// exception is thrown.
+            /// </summary>
+            [JsonConverter(typeof(ClobberingJsonConverter), "Uno", "Blammo")]
+            public string One { get; set; }
+        }
+
+        [Test(Description = "Uses JsonConverter and ItemConverterParameters to demonstrate custom rounding of doubles on a property-by-property basis.")]
+        public void CustomDoubleRounding()
+        {
+            var measurements = new Measurements
+            {
+                Loads = new List<double> { 23283.567554707258, 23224.849899771067, 23062.5, 22846.272519910868, 22594.281246368635 },
+                Positions = new List<double> { 57.724227689317019, 60.440934405753069, 63.444192925248643, 66.813119113482557, 70.4496501404433 },
+                Gain = 12345.67895111213
+            };
+
+            string json = JsonConvert.SerializeObject(measurements);
+
+
+            Assert.AreEqual("{\"Positions\":[57.72,60.44,63.44,66.81,70.45],\"Loads\":[23284.0,23225.0,23062.0,22846.0,22594.0],\"Gain\":12345.679}", json);
+        }
+
+        public class Measurements
+        {
+            [JsonProperty(ItemConverterType = typeof(RoundingJsonConverter))]
+            public List<double> Positions { get; set; }
+
+            [JsonProperty(ItemConverterType = typeof(RoundingJsonConverter), ItemConverterParameters = new object[] { 0, MidpointRounding.ToEven })]
+            public List<double> Loads { get; set; }
+
+            [JsonConverter(typeof(RoundingJsonConverter), 4)]
+            public double Gain { get; set; }
+        }
+
+        public class RoundingJsonConverter : JsonConverter
+        {
+            int _precision;
+            MidpointRounding _rounding;
+
+            public RoundingJsonConverter()
+                : this(2)
+            {
+            }
+
+            public RoundingJsonConverter(int precision)
+                : this(precision, MidpointRounding.AwayFromZero)
+            {
+            }
+
+            public RoundingJsonConverter(int precision, MidpointRounding rounding)
+            {
+                _precision = precision;
+                _rounding = rounding;
+            }
+
+            public override bool CanRead
+            {
+                get { return false; }
+            }
+
+            public override bool CanConvert(Type objectType)
+            {
+                return objectType == typeof(double);
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                throw new NotImplementedException();
+            }
+            
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                writer.WriteValue(Math.Round((double)value, _precision, _rounding));
+            }
+        }
     }
 }
