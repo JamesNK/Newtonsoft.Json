@@ -50,7 +50,7 @@ namespace Newtonsoft.Json
         /// The parameter list to use when constructing the JsonConverter described by ConverterType.  
         /// If null, the default constructor is used.
         /// </summary>
-        public object[] ConverterArgs { get; private set; }
+        public object[] ConverterParameters { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonConverterAttribute"/> class.
@@ -68,11 +68,11 @@ namespace Newtonsoft.Json
         /// Initializes a new instance of the <see cref="JsonConverterAttribute"/> class.
         /// </summary>
         /// <param name="converterType">Type of the converter.</param>
-        /// <param name="converterArgs">Parameter list to use when constructing the JsonConverter.  Can be null.</param>
-        public JsonConverterAttribute(Type converterType, params object[] converterArgs)
+        /// <param name="converterParameters">Parameter list to use when constructing the JsonConverter.  Can be null.</param>
+        public JsonConverterAttribute(Type converterType, params object[] converterParameters)
         : this(converterType)
         {
-            ConverterArgs = converterArgs;
+            ConverterParameters = converterParameters;
         }
     }
 }

@@ -155,7 +155,7 @@ namespace Newtonsoft.Json.Serialization
             {
                 Func<object[], JsonConverter> creator = JsonConverterCreatorCache.Get(converterAttribute.ConverterType);
                 if (creator != null)
-                    return creator(converterAttribute.ConverterArgs);
+                    return creator(converterAttribute.ConverterParameters);
             }
 
             return null;
