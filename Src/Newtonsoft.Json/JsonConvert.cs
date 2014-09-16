@@ -409,6 +409,11 @@ namespace Newtonsoft.Json
             return ToString(value, '"');
         }
 
+        public static string ToString(string value, StringEscapeHandling stringEscapeHandling)
+        {
+            return ToString(value, '"', stringEscapeHandling);
+        }
+
         /// <summary>
         /// Converts the <see cref="String"/> to its JSON string representation.
         /// </summary>
@@ -417,10 +422,15 @@ namespace Newtonsoft.Json
         /// <returns>A JSON string representation of the <see cref="String"/>.</returns>
         public static string ToString(string value, char delimiter)
         {
+            return ToString(value, delimiter, true, StringEscapeHandling.Default);
+        }
+
+        public static string ToString(string value, char delimiter, StringEscapeHandling stringEscapeHandling)
+        {
             if (delimiter != '"' && delimiter != '\'')
                 throw new ArgumentException("Delimiter must be a single or double quote.", "delimiter");
 
-            return JavaScriptUtils.ToEscapedJavaScriptString(value, delimiter, true);
+            return JavaScriptUtils.ToEscapedJavaScriptString(value, delimiter, true, stringEscapeHandling);
         }
 
         /// <summary>
