@@ -422,7 +422,7 @@ namespace Newtonsoft.Json
         /// <returns>A JSON string representation of the <see cref="String"/>.</returns>
         public static string ToString(string value, char delimiter)
         {
-            return ToString(value, delimiter, true, StringEscapeHandling.Default);
+            return ToString(value, delimiter, StringEscapeHandling.Default);
         }
 
         public static string ToString(string value, char delimiter, StringEscapeHandling stringEscapeHandling)
