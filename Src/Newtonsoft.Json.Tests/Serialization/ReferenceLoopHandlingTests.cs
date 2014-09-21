@@ -78,7 +78,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Serialize
             });
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Value"": {
     ""Value"": {
       ""Value"": {
@@ -128,7 +128,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(c, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Text"": ""Text!"",
   ""Data"": [
     {
@@ -186,9 +186,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             var settings =
                 new JsonSerializerSettings();
 
-            ExceptionAssert.Throws<JsonSerializationException>(
-                "Self referencing loop detected with type 'Newtonsoft.Json.Tests.Serialization.ReferenceLoopHandlingTests+MainClass'. Path 'Child'.",
-                () => JsonConvert.SerializeObject(main, settings));
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.SerializeObject(main, settings), "Self referencing loop detected with type 'Newtonsoft.Json.Tests.Serialization.ReferenceLoopHandlingTests+MainClass'. Path 'Child'.");
         }
 
         [Test]
@@ -247,9 +245,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             var settings = new JsonSerializerSettings();
 
-            ExceptionAssert.Throws<JsonSerializationException>(
-                "Self referencing loop detected with type 'Newtonsoft.Json.Tests.Serialization.ReferenceLoopHandlingTests+DictionaryDynamicObject'. Path 'child'.",
-                () => JsonConvert.SerializeObject(parent, settings));
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.SerializeObject(parent, settings), "Self referencing loop detected with type 'Newtonsoft.Json.Tests.Serialization.ReferenceLoopHandlingTests+DictionaryDynamicObject'. Path 'child'.");
         }
 
         [Test]

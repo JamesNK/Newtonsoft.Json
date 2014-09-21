@@ -24,6 +24,9 @@
 #endregion
 
 #if !(NET20 || NET35)
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -73,15 +76,30 @@ namespace Newtonsoft.Json.Utilities
             return compiled;
         }
 
+        private class ByRefParameter
+        {
+            public Expression Value;
+            public ParameterExpression Variable;
+            public bool IsOut;
+        }
+
         private Expression BuildMethodCall(MethodBase method, Type type, ParameterExpression targetParameterExpression, ParameterExpression argsParameterExpression)
         {
             ParameterInfo[] parametersInfo = method.GetParameters();
 
             Expression[] argsExpression = new Expression[parametersInfo.Length];
+            IList<ByRefParameter> refParameterMap = new List<ByRefParameter>();
 
             for (int i = 0; i < parametersInfo.Length; i++)
             {
-                Type parameterType = parametersInfo[i].ParameterType;
+                ParameterInfo parameter = parametersInfo[i];
+                Type parameterType = parameter.ParameterType;
+                bool isByRef = false;
+                if (parameterType.IsByRef)
+                {
+                    parameterType = parameterType.GetElementType();
+                    isByRef = true;
+                }
 
                 Expression indexExpression = Expression.Constant(i);
 
@@ -98,6 +116,19 @@ namespace Newtonsoft.Json.Utilities
                 else
                 {
                     argExpression = EnsureCastExpression(paramAccessorExpression, parameterType);
+                }
+
+                if (isByRef)
+                {
+                    ParameterExpression variable = Expression.Variable(parameterType);
+                    refParameterMap.Add(new ByRefParameter
+                    {
+                        Value = argExpression,
+                        Variable = variable,
+                        IsOut = parameter.IsOut
+                    });
+
+                    argExpression = variable;
                 }
 
                 argsExpression[i] = argExpression;
@@ -130,6 +161,23 @@ namespace Newtonsoft.Json.Utilities
             else
             {
                 callExpression = EnsureCastExpression(callExpression, type);
+            }
+
+            if (refParameterMap.Count > 0)
+            {
+                IList<ParameterExpression> variableExpressions = new List<ParameterExpression>();
+                IList<Expression> bodyExpressions = new List<Expression>();
+                foreach (ByRefParameter p in refParameterMap)
+                {
+                    if (!p.IsOut)
+                        bodyExpressions.Add(Expression.Assign(p.Variable, p.Value));
+
+                    variableExpressions.Add(p.Variable);
+                }
+
+                bodyExpressions.Add(callExpression);
+
+                callExpression = Expression.Block(variableExpressions, bodyExpressions);
             }
 
             return callExpression;

@@ -56,7 +56,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             });
 
             string json = JsonConvert.SerializeObject(l, Formatting.Indented);
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   ""One"",
   ""II"",
   ""3""
@@ -114,7 +114,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 });
 
             string json = JsonConvert.SerializeObject(l, Formatting.Indented);
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   ""One"",
   ""II"",
   ""3""
@@ -141,8 +141,12 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void SerializeDefaultArray()
         {
-            ExceptionAssert.Throws<NullReferenceException>("Object reference not set to an instance of an object.", () =>
-                JsonConvert.SerializeObject(default(ImmutableArray<int>), Formatting.Indented));
+            ExceptionAssert.Throws<NullReferenceException>(
+                () => JsonConvert.SerializeObject(default(ImmutableArray<int>), Formatting.Indented),
+                new [] {
+                    "Object reference not set to an instance of an object.",
+                    "Object reference not set to an instance of an object" // mono
+                });
         }
         #endregion
 
@@ -158,7 +162,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             });
 
             string json = JsonConvert.SerializeObject(l, Formatting.Indented);
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   ""One"",
   ""II"",
   ""3""
@@ -212,7 +216,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             });
 
             string json = JsonConvert.SerializeObject(l, Formatting.Indented);
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   ""3"",
   ""II"",
   ""One""
@@ -321,7 +325,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             });
 
             string json = JsonConvert.SerializeObject(l, Formatting.Indented);
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   ""3"",
   ""II"",
   ""One""
@@ -412,7 +416,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             });
 
             string json = JsonConvert.SerializeObject(l, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""1"": ""One"",
   ""2"": ""II"",
   ""3"": ""3""

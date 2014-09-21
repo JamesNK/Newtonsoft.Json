@@ -161,12 +161,10 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.IsNull(contract.DefaultCreator);
             Assert.IsNull(contract.OverrideCreator);
 
-            ExceptionAssert.Throws<JsonSerializationException>(
-                "Could not create an instance of type Newtonsoft.Json.Tests.Serialization.AbstractTestClass. Type is an interface or abstract class and cannot be instantiated. Path 'Value', line 1, position 7.",
-                () => JsonConvert.DeserializeObject<AbstractTestClass>(@"{Value:'Value!'}", new JsonSerializerSettings
-                {
-                    ContractResolver = resolver
-                }));
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<AbstractTestClass>(@"{Value:'Value!'}", new JsonSerializerSettings
+            {
+                ContractResolver = resolver
+            }), "Could not create an instance of type Newtonsoft.Json.Tests.Serialization.AbstractTestClass. Type is an interface or abstract class and cannot be instantiated. Path 'Value', line 1, position 7.");
 
             contract.DefaultCreator = () => new AbstractImplementationTestClass();
 
@@ -186,14 +184,12 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Assert.IsFalse(contract.IsInstantiable);
             Assert.IsNull(contract.DefaultCreator);
-            Assert.IsNull(contract.ParametrizedCreator);
+            Assert.IsFalse(contract.HasParametrizedCreator);
 
-            ExceptionAssert.Throws<JsonSerializationException>(
-                "Could not create an instance of type Newtonsoft.Json.Tests.Serialization.AbstractListTestClass`1[System.Int32]. Type is an interface or abstract class and cannot be instantiated. Path '', line 1, position 1.",
-                () => JsonConvert.DeserializeObject<AbstractListTestClass<int>>(@"[1,2]", new JsonSerializerSettings
-                {
-                    ContractResolver = resolver
-                }));
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<AbstractListTestClass<int>>(@"[1,2]", new JsonSerializerSettings
+            {
+                ContractResolver = resolver
+            }), "Could not create an instance of type Newtonsoft.Json.Tests.Serialization.AbstractListTestClass`1[System.Int32]. Type is an interface or abstract class and cannot be instantiated. Path '', line 1, position 1.");
 
             contract.DefaultCreator = () => new AbstractImplementationListTestClass<int>();
 
@@ -268,14 +264,12 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Assert.IsFalse(contract.IsInstantiable);
             Assert.IsNull(contract.DefaultCreator);
-            Assert.IsNull(contract.ParametrizedCreator);
+            Assert.IsFalse(contract.HasParametrizedCreator);
 
-            ExceptionAssert.Throws<JsonSerializationException>(
-                "Could not create an instance of type Newtonsoft.Json.Tests.Serialization.AbstractDictionaryTestClass`2[System.String,System.Int32]. Type is an interface or abstract class and cannot be instantiated. Path 'key1', line 1, position 6.",
-                () => JsonConvert.DeserializeObject<AbstractDictionaryTestClass<string, int>>(@"{key1:1,key2:2}", new JsonSerializerSettings
-                {
-                    ContractResolver = resolver
-                }));
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<AbstractDictionaryTestClass<string, int>>(@"{key1:1,key2:2}", new JsonSerializerSettings
+            {
+                ContractResolver = resolver
+            }), "Could not create an instance of type Newtonsoft.Json.Tests.Serialization.AbstractDictionaryTestClass`2[System.String,System.Int32]. Type is an interface or abstract class and cannot be instantiated. Path 'key1', line 1, position 6.");
 
             contract.DefaultCreator = () => new AbstractImplementationDictionaryTestClass<string, int>();
 
@@ -505,7 +499,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             string iPersonJson = JsonConvert.SerializeObject(employee, Formatting.Indented,
                 new JsonSerializerSettings { ContractResolver = new IPersonContractResolver() });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""FirstName"": ""Maurice"",
   ""LastName"": ""Moss"",
   ""BirthDate"": ""1977-12-30T01:01:01Z""
@@ -541,13 +535,13 @@ namespace Newtonsoft.Json.Tests.Serialization
             //   "BookPrice": 16.19
             // }
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""AuthorName"": ""Brandon Sanderson"",
   ""AuthorAge"": 34,
   ""AuthorCountry"": ""United States of America""
 }", startingWithA);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""BookName"": ""The Gathering Storm"",
   ""BookPrice"": 16.19
 }", startingWithB);
@@ -574,7 +568,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             string skipCompilerGeneratedJson = JsonConvert.SerializeObject(structTest, Formatting.Indented,
                 new JsonSerializerSettings { ContractResolver = skipCompilerGeneratedResolver });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""StringField"": ""Field"",
   ""IntField"": 1,
   ""StringProperty"": ""Property"",
@@ -590,7 +584,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             string includeCompilerGeneratedJson = JsonConvert.SerializeObject(structTest, Formatting.Indented,
                 new JsonSerializerSettings { ContractResolver = includeCompilerGeneratedResolver });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""StringField"": ""Field"",
   ""IntField"": 1,
   ""<StringProperty>k__BackingField"": ""Property"",

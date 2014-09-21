@@ -72,7 +72,7 @@ namespace Newtonsoft.Json.Tests.Converters
   ""StringProperty2"": ""StringProperty2""
 }}", version1, version2);
 
-            Assert.AreEqual(expectedJson, json);
+            StringAssert.AreEqual(expectedJson, json);
         }
 
         [Test]

@@ -44,8 +44,7 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void DeserializeInvalidDataTable()
         {
-            ExceptionAssert.Throws<JsonException>("Unexpected JSON token when reading DataTable. Expected StartArray, got Integer. Path 'pending_count', line 1, position 19.",
-                () => JsonConvert.DeserializeObject<DataSet>("{\"pending_count\":23,\"completed_count\":45}"));
+            ExceptionAssert.Throws<JsonException>(() => JsonConvert.DeserializeObject<DataSet>("{\"pending_count\":23,\"completed_count\":45}"), "Unexpected JSON token when reading DataTable. Expected StartArray, got Integer. Path 'pending_count', line 1, position 19.");
         }
 
         [Test]
@@ -73,7 +72,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json = JsonConvert.SerializeObject(dataSet, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Table1"": [
     {
       ""id"": 0,
@@ -144,7 +143,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             DataSet deserializedDs = JsonConvert.DeserializeObject<DataSet>(json, new IsoDateTimeConverter());
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""FirstTable"": [
     {
       ""StringCol"": ""Item Name"",
@@ -297,7 +296,7 @@ namespace Newtonsoft.Json.Tests.Converters
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""firstTable"": [
     {
       ""stringCol"": ""Item Name"",
@@ -347,7 +346,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json = JsonConvert.SerializeObject(c, Formatting.Indented, new IsoDateTimeConverter());
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Before"": ""Before"",
   ""Set"": {
     ""FirstTable"": [
@@ -418,7 +417,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json = JsonConvert.SerializeObject(ds, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Customers"": [
     {
       ""CustomerID"": ""234""
@@ -435,7 +434,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json1 = JsonConvert.SerializeObject(ds1, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Customers"": [
     {
       ""CustomerID"": ""234""

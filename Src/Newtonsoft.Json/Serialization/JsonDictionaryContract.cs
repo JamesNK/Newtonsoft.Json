@@ -69,7 +69,25 @@ namespace Newtonsoft.Json.Serialization
         private Func<object> _genericTemporaryDictionaryCreator;
 
         internal bool ShouldCreateWrapper { get; private set; }
-        internal ObjectConstructor<object> ParametrizedCreator { get; private set; }
+
+        private readonly ConstructorInfo _parametrizedConstructor;
+
+        private ObjectConstructor<object> _parametrizedCreator;
+        internal ObjectConstructor<object> ParametrizedCreator
+        {
+            get
+            {
+                if (_parametrizedCreator == null)
+                    _parametrizedCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateParametrizedConstructor(_parametrizedConstructor);
+
+                return _parametrizedCreator;
+            }
+        }
+
+        internal bool HasParametrizedCreator
+        {
+            get { return _parametrizedCreator != null || _parametrizedConstructor != null; }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonDictionaryContract"/> class.
@@ -117,13 +135,13 @@ namespace Newtonsoft.Json.Serialization
 
             if (keyType != null && valueType != null)
             {
-                ParametrizedCreator = CollectionUtils.ResolveEnumableCollectionConstructor(CreatedType, typeof(KeyValuePair<,>).MakeGenericType(keyType, valueType));
+                _parametrizedConstructor = CollectionUtils.ResolveEnumerableCollectionConstructor(CreatedType, typeof(KeyValuePair<,>).MakeGenericType(keyType, valueType));
 
 #if !(NET35 || NET20 || NETFX_CORE)
-                if (ParametrizedCreator == null && underlyingType.Name == FSharpUtils.FSharpMapTypeName)
+                if (!HasParametrizedCreator && underlyingType.Name == FSharpUtils.FSharpMapTypeName)
                 {
                     FSharpUtils.EnsureInitialized(underlyingType.Assembly());
-                    ParametrizedCreator = FSharpUtils.CreateMap(keyType, valueType);
+                    _parametrizedCreator = FSharpUtils.CreateMap(keyType, valueType);
                 }
 #endif
             }
@@ -153,7 +171,7 @@ namespace Newtonsoft.Json.Serialization
             if (ImmutableCollectionsUtils.TryBuildImmutableForDictionaryContract(underlyingType, DictionaryKeyType, DictionaryValueType, out immutableCreatedType, out immutableParameterizedCreator))
             {
                 CreatedType = immutableCreatedType;
-                ParametrizedCreator = immutableParameterizedCreator;
+                _parametrizedCreator = immutableParameterizedCreator;
                 IsReadOnlyOrFixedSize = true;
             }
 #endif

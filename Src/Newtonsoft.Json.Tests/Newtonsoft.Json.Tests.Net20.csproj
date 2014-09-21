@@ -81,6 +81,10 @@
     <Compile Include="Converters\CustomCreationConverterTests.cs" />
     <Compile Include="Converters\DataSetConverterTests.cs" />
     <Compile Include="Converters\DataTableConverterTests.cs" />
+    <Compile Include="Converters\DiscriminatedUnionConverterTests.cs" />
+    <Compile Include="Converters\ExpandoObjectConverterTests.cs" />
+    <Compile Include="Converters\JsonValueConverterTests.cs" />
+    <Compile Include="Converters\KeyValuePairConverterTests.cs" />
     <Compile Include="Converters\ObjectIdConverterTests.cs" />
     <Compile Include="Converters\RegexConverterTests.cs" />
     <Compile Include="Converters\StringEnumConverterTests.cs" />
@@ -122,6 +126,7 @@
     <Compile Include="TestObjects\Content.cs" />
     <Compile Include="TestObjects\ContentBaseClass.cs" />
     <Compile Include="TestObjects\ContentSubClass.cs" />
+    <Compile Include="TestObjects\Currency.cs" />
     <Compile Include="TestObjects\CustomerDataSet.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -189,6 +194,7 @@
     <Compile Include="TestObjects\SearchResult.cs" />
     <Compile Include="TestObjects\SelectListItem.cs" />
     <Compile Include="TestObjects\SetOnlyPropertyClass2.cs" />
+    <Compile Include="TestObjects\Shape.cs" />
     <Compile Include="TestObjects\StructTest.cs" />
     <Compile Include="TestObjects\SubKlass.cs" />
     <Compile Include="TestObjects\SuperKlass.cs" />
@@ -286,6 +292,7 @@
     <Compile Include="Utilities\DateTimeUtilsTests.cs" />
     <Compile Include="Utilities\DynamicReflectionDelegateFactoryTests.cs" />
     <Compile Include="Utilities\ExpressionReflectionDelegateFactoryTests.cs" />
+    <Compile Include="Utilities\LateboundReflectionDelegateFactoryTests.cs" />
     <Compile Include="Utilities\ReflectionUtilsTests.cs" />
     <Compile Include="Utilities\StringUtilsTests.cs" />
   </ItemGroup>
@@ -323,6 +330,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="PoisonText.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SpaceShipV2.bson">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

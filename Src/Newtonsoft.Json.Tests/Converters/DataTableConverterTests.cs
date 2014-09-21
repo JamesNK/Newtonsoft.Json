@@ -220,7 +220,7 @@ namespace Newtonsoft.Json.Tests.Converters
             myTable.Rows.Add(myNewRow);
 
             string json = JsonConvert.SerializeObject(myTable, Formatting.Indented);
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   {
     ""StringCol"": ""Item Name"",
     ""Int32Col"": 2147483647,
@@ -293,7 +293,7 @@ namespace Newtonsoft.Json.Tests.Converters
             serializer.Serialize(bw, table);
 
             JToken o = JToken.ReadFrom(new BsonReader(new MemoryStream(ms.ToArray())) { ReadRootValueAsArray = true });
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   {
     ""data"": ""SGVsbG8gd29ybGQh"",
     ""id"": ""ede9a599-a7d9-44a9-9243-7c287049dd20""
@@ -404,7 +404,7 @@ namespace Newtonsoft.Json.Tests.Converters
             KeyValuePair<DataTable, int> pair = new KeyValuePair<DataTable, int>(table, 1);
             string serializedpair = JsonConvert.SerializeObject(pair, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Key"": [
     {
       ""id"": 0,
@@ -430,7 +430,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json = JsonConvert.SerializeObject(dt, Formatting.Indented);
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   {
     ""CustomerID"": ""432""
   }

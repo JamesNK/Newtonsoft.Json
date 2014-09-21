@@ -68,6 +68,7 @@
     <Compile Include="Converters\CustomCreationConverterTests.cs" />
     <Compile Include="Converters\DataSetConverterTests.cs" />
     <Compile Include="Converters\DataTableConverterTests.cs" />
+    <Compile Include="Converters\DiscriminatedUnionConverterTests.cs" />
     <Compile Include="Converters\ExpandoObjectConverterTests.cs" />
     <Compile Include="Converters\IsoDateTimeConverterTests.cs" />
     <Compile Include="Converters\JavaScriptDateTimeConverterTests.cs" />
@@ -89,7 +90,9 @@
     <Compile Include="Documentation\Samples\Bson\DeserializeFromBson.cs" />
     <Compile Include="Documentation\Samples\Bson\DeserializeFromBsonCollection.cs" />
     <Compile Include="Documentation\Samples\Bson\SerializeToBson.cs" />
+    <Compile Include="Documentation\Samples\Json\CustomJsonWriter.cs" />
     <Compile Include="Documentation\Samples\Json\ReadJsonWithJsonTextReader.cs" />
+    <Compile Include="Documentation\Samples\Json\CustomJsonReader.cs" />
     <Compile Include="Documentation\Samples\Json\WriteJsonWithJsonTextWriter.cs" />
     <Compile Include="Documentation\Samples\Linq\Clone.cs" />
     <Compile Include="Documentation\Samples\Linq\CreateJsonAnonymousObject.cs" />
@@ -292,6 +295,7 @@
     <Compile Include="TestObjects\ConverableMembers.cs" />
     <Compile Include="TestObjects\ConverterPrecedenceClass.cs" />
     <Compile Include="TestObjects\ConverterPrecedenceClassConverter.cs" />
+    <Compile Include="TestObjects\Currency.cs" />
     <Compile Include="TestObjects\CustomerDataSet.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -383,6 +387,7 @@
     <Compile Include="TestObjects\SerializationEventTestObjectWithConstructor.cs" />
     <Compile Include="TestObjects\SetOnlyPropertyClass.cs" />
     <Compile Include="TestObjects\SetOnlyPropertyClass2.cs" />
+    <Compile Include="TestObjects\Shape.cs" />
     <Compile Include="TestObjects\Shortie.cs" />
     <Compile Include="TestObjects\Store.cs" />
     <Compile Include="TestObjects\StoreColor.cs" />
@@ -407,6 +412,7 @@
     <Compile Include="Utilities\DateTimeUtilsTests.cs" />
     <Compile Include="Utilities\DynamicReflectionDelegateFactoryTests.cs" />
     <Compile Include="Utilities\ExpressionReflectionDelegateFactoryTests.cs" />
+    <Compile Include="Utilities\LateboundReflectionDelegateFactoryTests.cs" />
     <Compile Include="Utilities\ReflectionUtilsTests.cs" />
     <Compile Include="Utilities\StringUtilsTests.cs" />
   </ItemGroup>
@@ -480,6 +486,9 @@
     <None Include="Schema\Specs\uniqueItems.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Content Include="SpaceShipV2.bson">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <EntityDeploy Include="FileSystemEntityModel.edmx">

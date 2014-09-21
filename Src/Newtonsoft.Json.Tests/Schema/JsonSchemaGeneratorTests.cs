@@ -63,7 +63,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             string json = schema.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""type"": ""object"",
   ""additionalProperties"": {
     ""type"": [
@@ -100,7 +100,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             string json = schema.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""description"": ""DefaultValueAttributeTestClass description!"",
   ""type"": ""object"",
   ""additionalProperties"": false,
@@ -131,7 +131,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             string json = schema.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""id"": ""Person"",
   ""title"": ""Title!"",
   ""description"": ""JsonObjectAttribute description!"",
@@ -164,7 +164,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             string json = schema.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""type"": ""object"",
   ""properties"": {
     ""Id"": {
@@ -260,12 +260,11 @@ namespace Newtonsoft.Json.Tests.Schema
         [Test]
         public void CircularReferenceError()
         {
-            ExceptionAssert.Throws<Exception>(@"Unresolved circular reference for type 'Newtonsoft.Json.Tests.TestObjects.CircularReferenceClass'. Explicitly define an Id for the type using a JsonObject/JsonArray attribute or automatically generate a type Id using the UndefinedSchemaIdHandling property.",
-                () =>
-                {
-                    JsonSchemaGenerator generator = new JsonSchemaGenerator();
-                    generator.Generate(typeof(CircularReferenceClass));
-                });
+            ExceptionAssert.Throws<Exception>(() =>
+            {
+                JsonSchemaGenerator generator = new JsonSchemaGenerator();
+                generator.Generate(typeof(CircularReferenceClass));
+            }, @"Unresolved circular reference for type 'Newtonsoft.Json.Tests.TestObjects.CircularReferenceClass'. Explicitly define an Id for the type using a JsonObject/JsonArray attribute or automatically generate a type Id using the UndefinedSchemaIdHandling property.");
         }
 
         [Test]
@@ -380,7 +379,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             string json = schema.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""id"": ""System.IO.DirectoryInfo"",
   ""required"": true,
   ""type"": [
@@ -484,7 +483,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             string json = schema.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""id"": ""System.Version"",
   ""type"": [
     ""object"",
@@ -535,7 +534,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             string json = schema.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""id"": ""System.Version"",
   ""type"": [
     ""object"",
@@ -575,7 +574,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             Assert.AreEqual(0, errors.Count);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""_Major"": 1,
   ""_Minor"": 2,
   ""_Build"": 3,
@@ -610,7 +609,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             string json = schema.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""type"": ""object"",
   ""properties"": {
     ""x"": {
@@ -648,7 +647,7 @@ namespace Newtonsoft.Json.Tests.Schema
             JsonSchema jsonSchema = jsonSchemaGenerator.Generate(typeof(CircularReferenceClass));
             string json = jsonSchema.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""id"": ""Newtonsoft.Json.Tests.TestObjects.CircularReferenceClass"",
   ""type"": [
     ""object"",
@@ -675,7 +674,7 @@ namespace Newtonsoft.Json.Tests.Schema
             JsonSchema jsonSchema = jsonSchemaGenerator.Generate(typeof(JsonPropertyWithHandlingValues));
             string json = jsonSchema.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""id"": ""Newtonsoft.Json.Tests.TestObjects.JsonPropertyWithHandlingValues"",
   ""required"": true,
   ""type"": [
@@ -747,7 +746,7 @@ namespace Newtonsoft.Json.Tests.Schema
             JsonSchema jsonSchema = jsonSchemaGenerator.Generate(typeof(NullableInt32TestClass));
             string json = jsonSchema.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""type"": ""object"",
   ""properties"": {
     ""Value"": {

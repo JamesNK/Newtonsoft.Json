@@ -66,10 +66,14 @@ namespace Newtonsoft.Json.Tests.Serialization
   }
 ]";
 
+            var possibleMsgs = new [] {
+                "[1] - Error message for member 1 = An item with the same key has already been added.",
+                "[1] - Error message for member 1 = An element with the same key already exists in the dictionary." // mono
+            };
             VersionKeyedCollection c = JsonConvert.DeserializeObject<VersionKeyedCollection>(json);
             Assert.AreEqual(1, c.Count);
             Assert.AreEqual(1, c.Messages.Count);
-            Assert.AreEqual("[1] - Error message for member 1 = An item with the same key has already been added.", c.Messages[0]);
+            Assert.IsTrue (possibleMsgs.Any (m => m == c.Messages[0]), "Expected One of: " + Environment.NewLine + string.Join (Environment.NewLine, possibleMsgs) + Environment.NewLine + "Was: " + Environment.NewLine + c.Messages[0]);
         }
 
         [Test]
@@ -162,7 +166,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 }
             });
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   [
     [
       {
@@ -224,7 +228,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(c, Formatting.Indented);
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   {
     ""Member"": ""Value1"",
     ""ThrowError"": ""Handle this!"",
@@ -302,7 +306,13 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Assert.AreEqual(3, errors.Count);
 #if !(NET20 || NET35)
-            Assert.AreEqual("[1] - 1 - The string was not recognized as a valid DateTime. There is an unknown word starting at index 0.", errors[0]);
+            var possibleErrs = new [] {
+                "[1] - 1 - The string was not recognized as a valid DateTime. There is an unknown word starting at index 0.",
+                "[1] - 1 - String was not recognized as a valid DateTime."
+            };
+
+            Assert.IsTrue(possibleErrs.Any (m => m == errors[0]), 
+                "Expected One of: " + string.Join (Environment.NewLine, possibleErrs) + Environment.NewLine + "But was: " + errors[0]);
 #else
       Assert.AreEqual("[1] - 1 - The string was not recognized as a valid DateTime. There is a unknown word starting at index 0.", errors[0]);
 #endif
@@ -363,7 +373,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             //  "Title": "Mister Manager"
             //}
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Name"": ""George Michael Bluth"",
   ""Age"": 16,
   ""Title"": ""Mister Manager""
@@ -718,9 +728,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             JsonTextReader jReader = new JsonTextReader(new StreamReader(stream));
             JsonSerializer s = new JsonSerializer();
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                @"Unterminated string. Expected delimiter: "". Path '', line 1, position 3.",
-                () => { ErrorTestObject obj = s.Deserialize<ErrorTestObject>(jReader); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { ErrorTestObject obj = s.Deserialize<ErrorTestObject>(jReader); }, @"Unterminated string. Expected delimiter: "". Path '', line 1, position 3.");
         }
 
         public class RootThing
@@ -823,9 +831,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             string foo = "{ something: { rootSomethingElse { somethingElse: 0 } } }";
             var reader = new System.IO.StringReader(foo);
 
-            ExceptionAssert.Throws<Exception>(
-                "An error occurred.",
-                () => { serialiser.Deserialize(reader, typeof(Something)); });
+            ExceptionAssert.Throws<Exception>(() => { serialiser.Deserialize(reader, typeof(Something)); }, "An error occurred.");
         }
 
         [Test]
@@ -847,9 +853,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             
             var writer = new System.IO.StringWriter();
 
-            ExceptionAssert.Throws<Exception>(
-                "An error occurred.",
-                () => { serialiser.Serialize(writer, r); });
+            ExceptionAssert.Throws<Exception>(() => { serialiser.Serialize(writer, r); }, "An error occurred.");
         }
 
         [Test]

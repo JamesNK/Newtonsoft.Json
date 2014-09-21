@@ -49,14 +49,12 @@ namespace Newtonsoft.Json.Tests.Linq
         {
             JObject json = JObject.Parse(@"{""IntList"":[1, ""two""]}");
 
-            ExceptionAssert.Throws<Exception>(
-                "Could not convert string to integer: two. Path 'IntList[1]', line 1, position 20.",
-                () =>
-                {
-                    JsonSerializer serializer = new JsonSerializer();
+            ExceptionAssert.Throws<Exception>(() =>
+            {
+                JsonSerializer serializer = new JsonSerializer();
 
-                    serializer.Deserialize<TraceTestObject>(json.CreateReader());
-                });
+                serializer.Deserialize<TraceTestObject>(json.CreateReader());
+            }, "Could not convert string to integer: two. Path 'IntList[1]', line 1, position 20.");
         }
 
 #if !NET20
@@ -152,9 +150,7 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Could not convert string to DateTimeOffset: blablahbla. Path 'Offset', line 1, position 22.",
-                () => { reader.ReadAsDateTimeOffset(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.ReadAsDateTimeOffset(); }, "Could not convert string to DateTimeOffset: blablahbla. Path 'Offset', line 1, position 22.");
         }
 
         [Test]
@@ -172,9 +168,7 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Error reading date. Unexpected token: Boolean. Path 'Offset', line 1, position 14.",
-                () => { reader.ReadAsDateTimeOffset(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.ReadAsDateTimeOffset(); }, "Error reading date. Unexpected token: Boolean. Path 'Offset', line 1, position 14.");
         }
 
         [Test]
@@ -320,27 +314,25 @@ namespace Newtonsoft.Json.Tests.Linq
         [Test]
         public void ReadBytesFailure()
         {
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Error reading bytes. Unexpected token: Integer. Path 'Test1'.",
-                () =>
+            ExceptionAssert.Throws<JsonReaderException>(() =>
+            {
+                JObject o =
+                    new JObject(
+                        new JProperty("Test1", 1)
+                        );
+
+                using (JTokenReader jsonReader = new JTokenReader(o))
                 {
-                    JObject o =
-                        new JObject(
-                            new JProperty("Test1", 1)
-                            );
+                    jsonReader.Read();
+                    Assert.AreEqual(JsonToken.StartObject, jsonReader.TokenType);
 
-                    using (JTokenReader jsonReader = new JTokenReader(o))
-                    {
-                        jsonReader.Read();
-                        Assert.AreEqual(JsonToken.StartObject, jsonReader.TokenType);
+                    jsonReader.Read();
+                    Assert.AreEqual(JsonToken.PropertyName, jsonReader.TokenType);
+                    Assert.AreEqual("Test1", jsonReader.Value);
 
-                        jsonReader.Read();
-                        Assert.AreEqual(JsonToken.PropertyName, jsonReader.TokenType);
-                        Assert.AreEqual("Test1", jsonReader.Value);
-
-                        jsonReader.ReadAsBytes();
-                    }
-                });
+                    jsonReader.ReadAsBytes();
+                }
+            }, "Error reading bytes. Unexpected token: Integer. Path 'Test1'.");
         }
 
         public class HasBytes
@@ -504,9 +496,7 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Could not convert string to integer: hi. Path 'Name', line 1, position 12.",
-                () => { reader.ReadAsInt32(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.ReadAsInt32(); }, "Could not convert string to integer: hi. Path 'Name', line 1, position 12.");
         }
 
         [Test]
@@ -524,9 +514,7 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Error reading integer. Unexpected token: Boolean. Path 'Name', line 1, position 12.",
-                () => { reader.ReadAsInt32(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.ReadAsInt32(); }, "Error reading integer. Unexpected token: Boolean. Path 'Name', line 1, position 12.");
         }
 
         [Test]
@@ -565,9 +553,7 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Could not convert string to decimal: blah. Path 'Name', line 1, position 14.",
-                () => { reader.ReadAsDecimal(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.ReadAsDecimal(); }, "Could not convert string to decimal: blah. Path 'Name', line 1, position 14.");
         }
 
         [Test]
@@ -585,9 +571,7 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Error reading decimal. Unexpected token: Boolean. Path 'Name', line 1, position 12.",
-                () => { reader.ReadAsDecimal(); });
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.ReadAsDecimal(); }, "Error reading decimal. Unexpected token: Boolean. Path 'Name', line 1, position 12.");
         }
 
         [Test]

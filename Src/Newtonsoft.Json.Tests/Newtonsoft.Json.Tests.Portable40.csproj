@@ -115,7 +115,10 @@
     <Compile Include="Bson\BsonWriterTests.cs" />
     <Compile Include="Bson\BsonReaderTests.cs" />
     <Compile Include="Converters\BinaryConverterTests.cs" />
+    <Compile Include="Converters\DiscriminatedUnionConverterTests.cs" />
     <Compile Include="Converters\ExpandoObjectConverterTests.cs" />
+    <Compile Include="Converters\JsonValueConverterTests.cs" />
+    <Compile Include="Converters\KeyValuePairConverterTests.cs" />
     <Compile Include="Converters\RegexConverterTests.cs" />
     <Compile Include="Converters\DataTableConverterTests.cs" />
     <Compile Include="Converters\DataSetConverterTests.cs" />
@@ -166,6 +169,7 @@
     <Compile Include="TestObjects\Container.cs" />
     <Compile Include="TestObjects\ContentBaseClass.cs" />
     <Compile Include="TestObjects\ContentSubClass.cs" />
+    <Compile Include="TestObjects\Currency.cs" />
     <Compile Include="TestObjects\CustomerDataSet.cs" />
     <Compile Include="TestObjects\DataContractSerializationAttributesClass.cs" />
     <Compile Include="TestObjects\DateTimeWrapper.cs" />
@@ -231,6 +235,7 @@
     <Compile Include="TestObjects\RequiredObject.cs" />
     <Compile Include="TestObjects\SearchResult.cs" />
     <Compile Include="TestObjects\SelectListItem.cs" />
+    <Compile Include="TestObjects\Shape.cs" />
     <Compile Include="TestObjects\StructTest.cs" />
     <Compile Include="TestObjects\TestComponent.cs" />
     <Compile Include="TestObjects\TestComponentSimple.cs" />
@@ -329,6 +334,7 @@
     <Compile Include="Utilities\DateTimeUtilsTests.cs" />
     <Compile Include="Utilities\DynamicReflectionDelegateFactoryTests.cs" />
     <Compile Include="Utilities\ExpressionReflectionDelegateFactoryTests.cs" />
+    <Compile Include="Utilities\LateboundReflectionDelegateFactoryTests.cs" />
     <Compile Include="Utilities\ReflectionUtilsTests.cs" />
     <Compile Include="Utilities\StringUtilsTests.cs" />
   </ItemGroup>
@@ -374,6 +380,11 @@
       <Project>{959f7f85-c98b-4876-971a-9036224578e4}</Project>
       <Name>Newtonsoft.Json.Portable40</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SpaceShipV2.bson">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

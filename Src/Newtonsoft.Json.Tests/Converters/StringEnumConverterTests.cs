@@ -104,16 +104,15 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void NamedEnumDuplicateTest()
         {
-            ExceptionAssert.Throws<Exception>("Enum name 'Third' already exists on enum 'NamedEnumDuplicate'.",
-                () =>
+            ExceptionAssert.Throws<Exception>(() =>
+            {
+                EnumContainer<NamedEnumDuplicate> c = new EnumContainer<NamedEnumDuplicate>
                 {
-                    EnumContainer<NamedEnumDuplicate> c = new EnumContainer<NamedEnumDuplicate>
-                    {
-                        Enum = NamedEnumDuplicate.First
-                    };
+                    Enum = NamedEnumDuplicate.First
+                };
 
-                    JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter());
-                });
+                JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter());
+            }, "Enum name 'Third' already exists on enum 'NamedEnumDuplicate'.");
         }
 
         [Test]
@@ -125,7 +124,7 @@ namespace Newtonsoft.Json.Tests.Converters
             };
 
             string json = JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter());
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Enum"": ""@first""
 }", json);
 
@@ -135,7 +134,7 @@ namespace Newtonsoft.Json.Tests.Converters
             };
 
             json = JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter());
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Enum"": ""Third""
 }", json);
         }
@@ -169,7 +168,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json = JsonConvert.SerializeObject(enumClass, Formatting.Indented, new StringEnumConverter());
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""StoreColor"": ""Red"",
   ""NullableStoreColor1"": ""White"",
   ""NullableStoreColor2"": null
@@ -186,7 +185,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json = JsonConvert.SerializeObject(enumClass, Formatting.Indented, new StringEnumConverter { CamelCaseText = true });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""StoreColor"": ""red"",
   ""NullableStoreColor1"": ""darkGoldenrod"",
   ""NullableStoreColor2"": null
@@ -203,7 +202,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json = JsonConvert.SerializeObject(enumClass, Formatting.Indented, new StringEnumConverter());
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""StoreColor"": 1000,
   ""NullableStoreColor1"": 1000,
   ""NullableStoreColor2"": null
@@ -220,7 +219,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json = JsonConvert.SerializeObject(enumClass, Formatting.Indented, new StringEnumConverter());
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""StoreColor"": ""Red, White"",
   ""NullableStoreColor1"": 0,
   ""NullableStoreColor2"": ""Black, Red, White""
@@ -236,7 +235,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json = JsonConvert.SerializeObject(negativeEnumClass, Formatting.Indented, new StringEnumConverter());
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Value1"": ""Negative"",
   ""Value2"": -2147483648
 }", json);
@@ -313,7 +312,7 @@ namespace Newtonsoft.Json.Tests.Converters
             };
 
             string json = JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter { CamelCaseText = true });
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Enum"": ""first, second""
 }", json);
         }
@@ -347,14 +346,12 @@ namespace Newtonsoft.Json.Tests.Converters
         {
             string json = "{ \"Value\" : \"Three\" }";
 
-            ExceptionAssert.Throws<JsonSerializationException>(
-                @"Error converting value ""Three"" to type 'Newtonsoft.Json.Tests.Converters.StringEnumConverterTests+MyEnum'. Path 'Value', line 1, position 19.",
-                () =>
-                {
-                    var serializer = new JsonSerializer();
-                    serializer.Converters.Add(new StringEnumConverter());
-                    serializer.Deserialize<Bucket>(new JsonTextReader(new StringReader(json)));
-                });
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                var serializer = new JsonSerializer();
+                serializer.Converters.Add(new StringEnumConverter());
+                serializer.Deserialize<Bucket>(new JsonTextReader(new StringReader(json)));
+            }, @"Error converting value ""Three"" to type 'Newtonsoft.Json.Tests.Converters.StringEnumConverterTests+MyEnum'. Path 'Value', line 1, position 19.");
         }
 
         public class Bucket
@@ -407,7 +404,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json1 = JsonConvert.SerializeObject(lfoo, Formatting.Indented, new StringEnumConverter { CamelCaseText = true });
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   ""Bat, baz"",
   ""foo_bar"",
   ""Bat"",
@@ -430,7 +427,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json2 = JsonConvert.SerializeObject(lbar, Formatting.Indented, new StringEnumConverter { CamelCaseText = true });
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   ""foo_bar"",
   ""Bat"",
   ""baz""

@@ -86,7 +86,7 @@ namespace Newtonsoft.Json.Tests.Schema
             third.WriteTo(jsonWriter, resolver);
 
             string writtenJson = writer.ToString();
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""id"": ""third"",
   ""type"": ""object"",
   ""additionalProperties"": false,
@@ -102,7 +102,7 @@ namespace Newtonsoft.Json.Tests.Schema
             third.WriteTo(jsonWriter1);
 
             writtenJson = writer1.ToString();
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""id"": ""third"",
   ""type"": ""object"",
   ""additionalProperties"": false,
@@ -138,7 +138,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             string newJson = s.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""type"": ""object"",
   ""additionalProperties"": {
     ""type"": ""string""
@@ -163,7 +163,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             newJson = s.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""type"": ""object"",
   ""additionalProperties"": {
     ""type"": ""string""
@@ -188,7 +188,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             newJson = s.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""type"": ""object"",
   ""additionalProperties"": {
     ""type"": ""string""
@@ -221,7 +221,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             string json = writer.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""description"": ""AdditionalProperties"",
   ""type"": [
     ""string"",
@@ -261,7 +261,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             string json = writer.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""description"": ""A person"",
   ""type"": ""object"",
   ""properties"": {
@@ -296,7 +296,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             string json = writer.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""description"": ""Type"",
   ""type"": [
     ""string"",
@@ -336,7 +336,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             string writtenJson = writer.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""id"": ""CircularReferenceArray"",
   ""description"": ""CircularReference"",
   ""type"": ""array"",
@@ -364,7 +364,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             string json = writer.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""description"": ""Type"",
   ""type"": [
     ""string"",
@@ -397,7 +397,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             string json = writer.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""description"": ""Type"",
   ""type"": [
     ""string"",
@@ -423,7 +423,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             string json = writer.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""items"": [
     {},
     {}
@@ -446,7 +446,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             string json = writer.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""exclusiveMinimum"": true,
   ""exclusiveMaximum"": true
 }", json);
@@ -469,7 +469,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             string json = writer.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""patternProperties"": {
     ""[abc]"": {}
   }
@@ -485,7 +485,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             string json = schema.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""additionalItems"": {
     ""type"": ""integer""
   }
@@ -506,7 +506,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             string json = writer.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""items"": []
 }", json);
         }
@@ -526,7 +526,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             string json = writer.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""items"": [
     {
       ""type"": ""string""
@@ -549,7 +549,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             string json = writer.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""items"": {
     ""type"": ""string""
   }

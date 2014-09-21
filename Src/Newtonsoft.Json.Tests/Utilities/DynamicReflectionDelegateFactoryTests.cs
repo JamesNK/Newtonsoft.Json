@@ -38,6 +38,11 @@ using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Tests.TestObjects;
 using Newtonsoft.Json.Tests.Serialization;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
+#endif
 
 namespace Newtonsoft.Json.Tests.Utilities
 {
@@ -45,71 +50,109 @@ namespace Newtonsoft.Json.Tests.Utilities
     public class DynamicReflectionDelegateFactoryTests : TestFixtureBase
     {
         [Test]
+        public void ConstructorWithRefString()
+        {
+            ConstructorInfo constructor = typeof(OutAndRefTestClass).GetConstructors().Single(c => c.GetParameters().Count() == 1);
+
+            var creator = DynamicReflectionDelegateFactory.Instance.CreateParametrizedConstructor(constructor);
+
+            object[] args = new object[] { "Input" };
+            OutAndRefTestClass o = (OutAndRefTestClass)creator(args);
+            Assert.IsNotNull(o);
+            Assert.AreEqual("Input", o.Input);
+        }
+
+        [Test]
+        public void ConstructorWithRefStringAndOutBool()
+        {
+            ConstructorInfo constructor = typeof(OutAndRefTestClass).GetConstructors().Single(c => c.GetParameters().Count() == 2);
+
+            var creator = DynamicReflectionDelegateFactory.Instance.CreateParametrizedConstructor(constructor);
+
+            object[] args = new object[] { "Input", false };
+            OutAndRefTestClass o = (OutAndRefTestClass)creator(args);
+            Assert.IsNotNull(o);
+            Assert.AreEqual("Input", o.Input);
+            Assert.AreEqual(true, o.B1);
+        }
+
+        [Test]
+        public void ConstructorWithRefStringAndRefBoolAndRefBool()
+        {
+            ConstructorInfo constructor = typeof(OutAndRefTestClass).GetConstructors().Single(c => c.GetParameters().Count() == 3);
+
+            var creator = DynamicReflectionDelegateFactory.Instance.CreateParametrizedConstructor(constructor);
+
+            object[] args = new object[] { "Input", true, null };
+            OutAndRefTestClass o = (OutAndRefTestClass)creator(args);
+            Assert.IsNotNull(o);
+            Assert.AreEqual("Input", o.Input);
+            Assert.AreEqual(true, o.B1);
+            Assert.AreEqual(false, o.B2);
+        }
+
+        [Test]
         public void CreateGetWithBadObjectTarget()
         {
-            ExceptionAssert.Throws<InvalidCastException>("Unable to cast object of type 'Newtonsoft.Json.Tests.TestObjects.Person' to type 'Newtonsoft.Json.Tests.TestObjects.Movie'.",
-                () =>
-                {
-                    Person p = new Person();
-                    p.Name = "Hi";
+            ExceptionAssert.Throws<InvalidCastException>(() =>
+            {
+                Person p = new Person();
+                p.Name = "Hi";
 
-                    Func<object, object> setter = DynamicReflectionDelegateFactory.Instance.CreateGet<object>(typeof(Movie).GetProperty("Name"));
+                Func<object, object> setter = DynamicReflectionDelegateFactory.Instance.CreateGet<object>(typeof(Movie).GetProperty("Name"));
 
-                    setter(p);
-                });
+                setter(p);
+            }, "Unable to cast object of type 'Newtonsoft.Json.Tests.TestObjects.Person' to type 'Newtonsoft.Json.Tests.TestObjects.Movie'.");
         }
 
         [Test]
         public void CreateSetWithBadObjectTarget()
         {
-            ExceptionAssert.Throws<InvalidCastException>("Unable to cast object of type 'Newtonsoft.Json.Tests.TestObjects.Person' to type 'Newtonsoft.Json.Tests.TestObjects.Movie'.",
-                () =>
-                {
-                    Person p = new Person();
-                    Movie m = new Movie();
+            ExceptionAssert.Throws<InvalidCastException>(() =>
+            {
+                Person p = new Person();
+                Movie m = new Movie();
 
-                    Action<object, object> setter = DynamicReflectionDelegateFactory.Instance.CreateSet<object>(typeof(Movie).GetProperty("Name"));
+                Action<object, object> setter = DynamicReflectionDelegateFactory.Instance.CreateSet<object>(typeof(Movie).GetProperty("Name"));
 
-                    setter(m, "Hi");
+                setter(m, "Hi");
 
-                    Assert.AreEqual(m.Name, "Hi");
+                Assert.AreEqual(m.Name, "Hi");
 
-                    setter(p, "Hi");
+                setter(p, "Hi");
 
-                    Assert.AreEqual(p.Name, "Hi");
-                });
+                Assert.AreEqual(p.Name, "Hi");
+            }, "Unable to cast object of type 'Newtonsoft.Json.Tests.TestObjects.Person' to type 'Newtonsoft.Json.Tests.TestObjects.Movie'.");
         }
 
         [Test]
         public void CreateSetWithBadTarget()
         {
-            ExceptionAssert.Throws<InvalidCastException>("Specified cast is not valid.",
-                () =>
-                {
-                    object structTest = new StructTest();
+            ExceptionAssert.Throws<InvalidCastException>(() =>
+            {
+                object structTest = new StructTest();
 
-                    Action<object, object> setter = DynamicReflectionDelegateFactory.Instance.CreateSet<object>(typeof(StructTest).GetProperty("StringProperty"));
+                Action<object, object> setter = DynamicReflectionDelegateFactory.Instance.CreateSet<object>(typeof(StructTest).GetProperty("StringProperty"));
 
-                    setter(structTest, "Hi");
+                setter(structTest, "Hi");
 
-                    Assert.AreEqual("Hi", ((StructTest)structTest).StringProperty);
+                Assert.AreEqual("Hi", ((StructTest)structTest).StringProperty);
 
-                    setter(new TimeSpan(), "Hi");
-                });
+                setter(new TimeSpan(), "Hi");
+            }, "Specified cast is not valid.");
         }
 
         [Test]
         public void CreateSetWithBadObjectValue()
         {
-            ExceptionAssert.Throws<InvalidCastException>("Unable to cast object of type 'System.Version' to type 'System.String'.",
-                () =>
-                {
-                    Movie m = new Movie();
+            ExceptionAssert.Throws<InvalidCastException>(() =>
+            {
+                Movie m = new Movie();
 
-                    Action<object, object> setter = DynamicReflectionDelegateFactory.Instance.CreateSet<object>(typeof(Movie).GetProperty("Name"));
+                Action<object, object> setter = DynamicReflectionDelegateFactory.Instance.CreateSet<object>(typeof(Movie).GetProperty("Name"));
 
-                    setter(m, new Version("1.1.1.1"));
-                });
+                setter(m, new Version("1.1.1.1"));
+            }, "Unable to cast object of type 'System.Version' to type 'System.String'.");
         }
 
         [Test]

@@ -104,7 +104,7 @@ namespace Newtonsoft.Json.Serialization
         }
 
         /// <summary>
-        /// Gets or sets the function used to create the object. When set this function will override <see cref="P:DefaultCreator"/>.
+        /// Gets or sets the function used to create the object. When set this function will override <see cref="JsonContract.DefaultCreator"/>.
         /// This function is called with a collection of arguments which are defined by the <see cref="CreatorParameters"/> collection.
         /// </summary>
         /// <value>The function used to create the object.</value>

@@ -133,14 +133,12 @@ namespace Newtonsoft.Json.Tests.Linq
         [Test]
         public void JObjectPropertyNameWithNonToken()
         {
-            ExceptionAssert.Throws<ArgumentException>(
-                "Could not determine JSON object type for type System.String[].",
-                () =>
-                {
-                    dynamic d = new JObject();
+            ExceptionAssert.Throws<ArgumentException>(() =>
+            {
+                dynamic d = new JObject();
 
-                    d.First = new[] { "One", "II", "3" };
-                });
+                d.First = new[] { "One", "II", "3" };
+            }, "Could not determine JSON object type for type System.String[].");
         }
 
         [Test]
@@ -817,7 +815,7 @@ namespace Newtonsoft.Json.Tests.Linq
             //   "StockValue": 22050.00
             // }
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""ProductName"": ""Elbow Grease (SALE)"",
   ""Enabled"": true,
   ""Price"": 2.45,

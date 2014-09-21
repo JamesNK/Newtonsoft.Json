@@ -127,7 +127,7 @@ namespace Newtonsoft.Json.Tests.Documentation
             // ]
             #endregion
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   {
     ""Name"": ""Joe Employee"",
     ""Manager"": {
@@ -159,7 +159,7 @@ namespace Newtonsoft.Json.Tests.Documentation
                     ContractResolver = ShouldSerializeContractResolver.Instance
                 });
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   {
     ""Name"": ""Joe Employee"",
     ""Manager"": {

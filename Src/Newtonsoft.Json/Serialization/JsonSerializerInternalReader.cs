@@ -487,7 +487,7 @@ namespace Newtonsoft.Json.Serialization
                             if (contract.OnErrorCallbacks.Count > 0)
                                 throw JsonSerializationException.Create(reader, "Cannot call OnError on readonly list, or dictionary created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
-                            if (dictionaryContract.ParametrizedCreator == null)
+                            if (!dictionaryContract.HasParametrizedCreator)
                                 throw JsonSerializationException.Create(reader, "Cannot deserialize readonly or fixed size dictionary: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
                         }
 
@@ -523,9 +523,11 @@ namespace Newtonsoft.Json.Serialization
 #endif
             }
 
-            throw JsonSerializationException.Create(reader, @"Cannot deserialize the current JSON object (e.g. {{""name"":""value""}}) into type '{0}' because the type requires a {1} to deserialize correctly.
-To fix this error either change the JSON to a {1} or change the deserialized type so that it is a normal .NET type (e.g. not a primitive type like integer, not a collection type like an array or List<T>) that can be deserialized from a JSON object. JsonObjectAttribute can also be added to the type to force it to deserialize from a JSON object.
-".FormatWith(CultureInfo.InvariantCulture, resolvedObjectType, GetExpectedDescription(contract)));
+            string message = @"Cannot deserialize the current JSON object (e.g. {{""name"":""value""}}) into type '{0}' because the type requires a {1} to deserialize correctly." + Environment.NewLine +
+                             @"To fix this error either change the JSON to a {1} or change the deserialized type so that it is a normal .NET type (e.g. not a primitive type like integer, not a collection type like an array or List<T>) that can be deserialized from a JSON object. JsonObjectAttribute can also be added to the type to force it to deserialize from a JSON object." + Environment.NewLine;
+            message = message.FormatWith(CultureInfo.InvariantCulture, resolvedObjectType, GetExpectedDescription(contract));
+
+            throw JsonSerializationException.Create(reader, message);
         }
 
         private bool ReadMetadataPropertiesToken(JTokenReader reader, ref Type objectType, ref JsonContract contract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerMember, object existingValue, out object newValue, out string id)
@@ -745,9 +747,13 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
 
             JsonArrayContract arrayContract = contract as JsonArrayContract;
             if (arrayContract == null)
-                throw JsonSerializationException.Create(reader, @"Cannot deserialize the current JSON array (e.g. [1,2,3]) into type '{0}' because the type requires a {1} to deserialize correctly.
-To fix this error either change the JSON to a {1} or change the deserialized type to an array or a type that implements a collection interface (e.g. ICollection, IList) like List<T> that can be deserialized from a JSON array. JsonArrayAttribute can also be added to the type to force it to deserialize from a JSON array.
-".FormatWith(CultureInfo.InvariantCulture, objectType, GetExpectedDescription(contract)));
+            {
+                string message = @"Cannot deserialize the current JSON array (e.g. [1,2,3]) into type '{0}' because the type requires a {1} to deserialize correctly." + Environment.NewLine +
+                                 @"To fix this error either change the JSON to a {1} or change the deserialized type to an array or a type that implements a collection interface (e.g. ICollection, IList) like List<T> that can be deserialized from a JSON array. JsonArrayAttribute can also be added to the type to force it to deserialize from a JSON array." + Environment.NewLine;
+                message = message.FormatWith(CultureInfo.InvariantCulture, objectType, GetExpectedDescription(contract));
+
+                throw JsonSerializationException.Create(reader, message);
+            }
 
             return arrayContract;
         }
@@ -783,7 +789,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                     if (contract.OnErrorCallbacks.Count > 0)
                         throw JsonSerializationException.Create(reader, "Cannot call OnError on an array or readonly list, or list created from a non-default constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
-                    if (arrayContract.ParametrizedCreator == null && !arrayContract.IsArray)
+                    if (!arrayContract.HasParametrizedCreator && !arrayContract.IsArray)
                         throw JsonSerializationException.Create(reader, "Cannot deserialize readonly or fixed size list: {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
                 }
 
@@ -1053,7 +1059,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                 createdFromNonDefaultCreator = false;
                 return (IList)list;
             }
-            else if (contract.ParametrizedCreator != null)
+            else if (contract.HasParametrizedCreator)
             {
                 createdFromNonDefaultCreator = true;
                 return contract.CreateTemporaryCollection();
@@ -1084,7 +1090,7 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
                 createdFromNonDefaultCreator = false;
                 return (IDictionary)dictionary;
             }
-            else if (contract.ParametrizedCreator != null)
+            else if (contract.HasParametrizedCreator)
             {
                 createdFromNonDefaultCreator = true;
                 return contract.CreateTemporaryDictionary();
@@ -1450,9 +1456,11 @@ To fix this error either change the JSON to a {1} or change the deserialized typ
 
             if (!JsonTypeReflector.FullyTrusted)
             {
-                throw JsonSerializationException.Create(reader, @"Type '{0}' implements ISerializable but cannot be deserialized using the ISerializable interface because the current application is not fully trusted and ISerializable can expose secure data.
-To fix this error either change the environment to be fully trusted, change the application to not deserialize the type, add JsonObjectAttribute to the type or change the JsonSerializer setting ContractResolver to use a new DefaultContractResolver with IgnoreSerializableInterface set to true.
-".FormatWith(CultureInfo.InvariantCulture, objectType));
+                string message = @"Type '{0}' implements ISerializable but cannot be deserialized using the ISerializable interface because the current application is not fully trusted and ISerializable can expose secure data." + Environment.NewLine +
+                                 @"To fix this error either change the environment to be fully trusted, change the application to not deserialize the type, add JsonObjectAttribute to the type or change the JsonSerializer setting ContractResolver to use a new DefaultContractResolver with IgnoreSerializableInterface set to true." + Environment.NewLine;
+                message = message.FormatWith(CultureInfo.InvariantCulture, objectType);
+
+                throw JsonSerializationException.Create(reader, message);
             }
 
             if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Info)
@@ -1623,7 +1631,19 @@ To fix this error either change the environment to be fully trusted, change the 
 
             foreach (KeyValuePair<JsonProperty, object> propertyValue in propertyValues)
             {
-                JsonProperty matchingCreatorParameter = contract.CreatorParameters.ForgivingCaseSensitiveFind(p => p.PropertyName, propertyValue.Key.PropertyName);
+                JsonProperty property = propertyValue.Key;
+
+                JsonProperty matchingCreatorParameter;
+                if (contract.CreatorParameters.Contains(property))
+                {
+                    matchingCreatorParameter = property;
+                }
+                else
+                {
+                    // check to see if a parameter with the same name as the underlying property name exists and match to that
+                    matchingCreatorParameter = contract.CreatorParameters.ForgivingCaseSensitiveFind(p => p.PropertyName, property.UnderlyingName);
+                }
+
                 if (matchingCreatorParameter != null)
                 {
                     int i = contract.CreatorParameters.IndexOf(matchingCreatorParameter);
@@ -1637,9 +1657,9 @@ To fix this error either change the environment to be fully trusted, change the 
                 if (propertiesPresence != null)
                 {
                     // map from creator property to normal property
-                    var property = propertiesPresence.Keys.FirstOrDefault(p => p.PropertyName == propertyValue.Key.PropertyName);
-                    if (property != null)
-                        propertiesPresence[property] = (propertyValue.Value == null) ? PropertyPresence.Null : PropertyPresence.Value;
+                    JsonProperty presenceProperty = propertiesPresence.Keys.FirstOrDefault(p => p.PropertyName == property.PropertyName);
+                    if (presenceProperty != null)
+                        propertiesPresence[presenceProperty] = (propertyValue.Value == null) ? PropertyPresence.Null : PropertyPresence.Value;
                 }
             }
 

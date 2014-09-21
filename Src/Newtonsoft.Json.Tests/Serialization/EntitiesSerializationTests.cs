@@ -123,7 +123,7 @@ namespace Newtonsoft.Json.Tests.Serialization
   }
 }";
 
-            Assert.AreEqual(expected, json);
+            StringAssert.AreEqual(expected, json);
         }
 
         [Test]
@@ -213,7 +213,7 @@ namespace Newtonsoft.Json.Tests.Serialization
   }
 }";
 
-            Assert.AreEqual(expected, json);
+            StringAssert.AreEqual(expected, json);
         }
 
         [Test]
@@ -337,7 +337,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(e, settings);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""$id"": ""1"",
   ""entitySetName"": ""Folder"",
   ""entityContainerName"": ""DataServicesTestDatabaseEntities"",
@@ -401,7 +401,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(e, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""$id"": ""1"",
   ""EntitySetName"": ""Folder"",
   ""EntityContainerName"": ""DataServicesTestDatabaseEntities"",

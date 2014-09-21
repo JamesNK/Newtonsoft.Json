@@ -65,7 +65,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(c, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Name"": ""Name!"",
   ""Key!"": ""Value!""
 }", json);
@@ -392,7 +392,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 Formatting = Formatting.Indented
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""$id"": ""1"",
   ""Name"": ""Name!"",
   ""Test"": 1,
@@ -520,7 +520,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 Formatting = Formatting.Indented
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""$type"": ""Newtonsoft.Json.Tests.Serialization.ExtensionDataTests+PublicExtensionDataAttributeTestClass, Newtonsoft.Json.Tests"",
   ""Name"": ""Name!"",
   ""Test"": {

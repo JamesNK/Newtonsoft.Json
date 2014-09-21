@@ -85,13 +85,12 @@ namespace Newtonsoft.Json.Tests.Schema
         [Test]
         public void ValidateWithOutEventHandlerFailure()
         {
-            ExceptionAssert.Throws<JsonSchemaException>(@"String 'pie' does not match regex pattern 'lol'.",
-                () =>
-                {
-                    JsonSchema schema = JsonSchema.Parse("{'pattern':'lol'}");
-                    JToken stringToken = JToken.FromObject("pie");
-                    stringToken.Validate(schema);
-                });
+            ExceptionAssert.Throws<JsonSchemaException>(() =>
+            {
+                JsonSchema schema = JsonSchema.Parse("{'pattern':'lol'}");
+                JToken stringToken = JToken.FromObject("pie");
+                stringToken.Validate(schema);
+            }, @"String 'pie' does not match regex pattern 'lol'.");
         }
 
         [Test]
@@ -237,75 +236,70 @@ namespace Newtonsoft.Json.Tests.Schema
         [Test]
         public void ExclusiveMaximum_Int()
         {
-            ExceptionAssert.Throws<JsonSchemaException>("Integer 10 equals maximum value of 10 and exclusive maximum is true.",
-                () =>
-                {
-                    JsonSchema schema = new JsonSchema();
-                    schema.Maximum = 10;
-                    schema.ExclusiveMaximum = true;
+            ExceptionAssert.Throws<JsonSchemaException>(() =>
+            {
+                JsonSchema schema = new JsonSchema();
+                schema.Maximum = 10;
+                schema.ExclusiveMaximum = true;
 
-                    JValue v = new JValue(10);
-                    v.Validate(schema);
-                });
+                JValue v = new JValue(10);
+                v.Validate(schema);
+            }, "Integer 10 equals maximum value of 10 and exclusive maximum is true.");
         }
 
         [Test]
         public void ExclusiveMaximum_Float()
         {
-            ExceptionAssert.Throws<JsonSchemaException>("Float 10.1 equals maximum value of 10.1 and exclusive maximum is true.",
-                () =>
-                {
-                    JsonSchema schema = new JsonSchema();
-                    schema.Maximum = 10.1;
-                    schema.ExclusiveMaximum = true;
+            ExceptionAssert.Throws<JsonSchemaException>(() =>
+            {
+                JsonSchema schema = new JsonSchema();
+                schema.Maximum = 10.1;
+                schema.ExclusiveMaximum = true;
 
-                    JValue v = new JValue(10.1);
-                    v.Validate(schema);
-                });
+                JValue v = new JValue(10.1);
+                v.Validate(schema);
+            }, "Float 10.1 equals maximum value of 10.1 and exclusive maximum is true.");
         }
 
         [Test]
         public void ExclusiveMinimum_Int()
         {
-            ExceptionAssert.Throws<JsonSchemaException>("Integer 10 equals minimum value of 10 and exclusive minimum is true.",
-                () =>
-                {
-                    JsonSchema schema = new JsonSchema();
-                    schema.Minimum = 10;
-                    schema.ExclusiveMinimum = true;
+            ExceptionAssert.Throws<JsonSchemaException>(() =>
+            {
+                JsonSchema schema = new JsonSchema();
+                schema.Minimum = 10;
+                schema.ExclusiveMinimum = true;
 
-                    JValue v = new JValue(10);
-                    v.Validate(schema);
-                });
+                JValue v = new JValue(10);
+                v.Validate(schema);
+            }, "Integer 10 equals minimum value of 10 and exclusive minimum is true.");
         }
 
         [Test]
         public void ExclusiveMinimum_Float()
         {
-            ExceptionAssert.Throws<JsonSchemaException>("Float 10.1 equals minimum value of 10.1 and exclusive minimum is true.",
-                () =>
-                {
-                    JsonSchema schema = new JsonSchema();
-                    schema.Minimum = 10.1;
-                    schema.ExclusiveMinimum = true;
+            ExceptionAssert.Throws<JsonSchemaException>(() =>
+            {
+                JsonSchema schema = new JsonSchema();
+                schema.Minimum = 10.1;
+                schema.ExclusiveMinimum = true;
 
-                    JValue v = new JValue(10.1);
-                    v.Validate(schema);
-                });
+                JValue v = new JValue(10.1);
+                v.Validate(schema);
+            }, "Float 10.1 equals minimum value of 10.1 and exclusive minimum is true.");
         }
 
         [Test]
         public void DivisibleBy_Int()
         {
-            ExceptionAssert.Throws<JsonSchemaException>("Integer 10 is not evenly divisible by 3.",
-                () =>
-                {
-                    JsonSchema schema = new JsonSchema();
-                    schema.DivisibleBy = 3;
+            ExceptionAssert.Throws<JsonSchemaException>(() =>
+            {
+                JsonSchema schema = new JsonSchema();
+                schema.DivisibleBy = 3;
 
-                    JValue v = new JValue(10);
-                    v.Validate(schema);
-                });
+                JValue v = new JValue(10);
+                v.Validate(schema);
+            }, "Integer 10 is not evenly divisible by 3.");
         }
 
         [Test]

@@ -230,7 +230,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json = JsonConvert.SerializeObject(initial, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Id"": ""00000001-0002-0003-0405-060708090a0b"",
   ""Year"": 2010,
   ""Company"": ""Company!"",

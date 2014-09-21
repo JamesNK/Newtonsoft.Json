@@ -80,7 +80,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(d.ChildObject, values["ChildObject"]);
 
             string json = JsonConvert.SerializeObject(dynamicObject, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Explicit"": true,
   ""Decimal"": 99.9,
   ""Int"": 1,
@@ -125,7 +125,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             string dynamicChildObjectTypeName = ReflectionUtils.GetTypeName(typeof(DynamicChildObject), FormatterAssemblyStyle.Full, null);
             string expandoObjectTypeName = ReflectionUtils.GetTypeName(typeof(ExpandoObject), FormatterAssemblyStyle.Full, null);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""$type"": """ + expandoObjectTypeName + @""",
   ""Text"": ""Text!"",
   ""Integer"": 2147483647,
@@ -155,17 +155,16 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void NoPublicDefaultConstructor()
         {
-            ExceptionAssert.Throws<JsonSerializationException>("Unable to find a default constructor to use for type System.Dynamic.DynamicObject. Path 'contributors', line 2, position 18.",
-                () =>
-                {
-                    var settings = new JsonSerializerSettings();
-                    settings.NullValueHandling = NullValueHandling.Ignore;
-                    var json = @"{
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                var settings = new JsonSerializerSettings();
+                settings.NullValueHandling = NullValueHandling.Ignore;
+                var json = @"{
   ""contributors"": null
 }";
 
-                    JsonConvert.DeserializeObject<DynamicObject>(json, settings);
-                });
+                JsonConvert.DeserializeObject<DynamicObject>(json, settings);
+            }, "Unable to find a default constructor to use for type System.Dynamic.DynamicObject. Path 'contributors', line 2, position 18.");
         }
 
         public class DictionaryDynamicObject : DynamicObject
@@ -268,7 +267,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Console.WriteLine(json);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Explicit"": false,
   ""Text"": ""Text!"",
   ""Int"": 2147483647
@@ -291,7 +290,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Console.WriteLine(json);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Explicit"": false,
   ""Text"": ""Text!"",
   ""DynamicChildObject"": null,
@@ -318,7 +317,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Console.WriteLine(json);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Text"": ""Text!"",
   ""Int"": 2147483647
 }", json);

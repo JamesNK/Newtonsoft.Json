@@ -140,11 +140,10 @@ namespace Newtonsoft.Json.Tests.Converters
 
       JsonValueConverter converter = new JsonValueConverter();
 
-      ExceptionAssert.Throws<JsonException>("Unexpected or unsupported token: Undefined. Path '', line 1, position 9.",
-      () =>
+      ExceptionAssert.Throws<JsonException>(() =>
       {
         converter.ReadJson(writer, typeof(JsonValue), null, null);
-      });
+      }, "Unexpected or unsupported token: Undefined. Path '', line 1, position 9.");
     }
 
     [Test]
@@ -156,11 +155,10 @@ namespace Newtonsoft.Json.Tests.Converters
 
       JsonValueConverter converter = new JsonValueConverter();
 
-      ExceptionAssert.Throws<JsonException>("Unexpected end. Path '', line 1, position 1.",
-      () =>
+      ExceptionAssert.Throws<JsonException>(() =>
       {
         converter.ReadJson(writer, typeof(JsonValue), null, null);
-      });
+      }, "Unexpected end. Path '', line 1, position 1.");
     }
 
     [Test]
@@ -172,11 +170,10 @@ namespace Newtonsoft.Json.Tests.Converters
 
       JsonValueConverter converter = new JsonValueConverter();
 
-      ExceptionAssert.Throws<JsonException>("Unexpected end. Path '', line 1, position 13.",
-      () =>
+      ExceptionAssert.Throws<JsonException>(() =>
       {
         converter.ReadJson(writer, typeof(JsonValue), null, null);
-      });
+      }, "Unexpected end. Path '', line 1, position 13.");
     }
 
     [Test]
@@ -188,11 +185,10 @@ namespace Newtonsoft.Json.Tests.Converters
 
       JsonValueConverter converter = new JsonValueConverter();
 
-      ExceptionAssert.Throws<JsonException>("Unexpected end. Path 'hi', line 1, position 6.",
-      () =>
+      ExceptionAssert.Throws<JsonException>(() =>
       {
         converter.ReadJson(writer, typeof(JsonValue), null, null);
-      });
+      }, "Unexpected end. Path 'hi', line 1, position 6.");
     }
 
     [Test]
@@ -204,11 +200,10 @@ namespace Newtonsoft.Json.Tests.Converters
 
       JsonValueConverter converter = new JsonValueConverter();
 
-      ExceptionAssert.Throws<JsonException>("Could not convert 'Windows.Data.Json.JsonValue' to 'Windows.Data.Json.JsonObject'. Path '', line 1, position 4.",
-      () =>
+      ExceptionAssert.Throws<JsonException>(() =>
       {
         converter.ReadJson(writer, typeof(JsonObject), null, null);
-      });
+      }, "Could not convert 'Windows.Data.Json.JsonValue' to 'Windows.Data.Json.JsonObject'. Path '', line 1, position 4.");
     }
 
     [Test]

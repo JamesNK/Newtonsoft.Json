@@ -102,12 +102,11 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void DeserializeNullToNonNullable()
         {
-            ExceptionAssert.Throws<Exception>("Cannot convert null value to System.DateTime. Path 'DateTimeField', line 1, position 38.",
-                () =>
-                {
-                    DateTimeTestClass c2 =
-                        JsonConvert.DeserializeObject<DateTimeTestClass>(@"{""PreField"":""Pre"",""DateTimeField"":null,""DateTimeOffsetField"":null,""PostField"":""Post""}", new JavaScriptDateTimeConverter());
-                });
+            ExceptionAssert.Throws<Exception>(() =>
+            {
+                DateTimeTestClass c2 =
+                    JsonConvert.DeserializeObject<DateTimeTestClass>(@"{""PreField"":""Pre"",""DateTimeField"":null,""DateTimeOffsetField"":null,""PostField"":""Post""}", new JavaScriptDateTimeConverter());
+            }, "Cannot convert null value to System.DateTime. Path 'DateTimeField', line 1, position 38.");
         }
 
         [Test]
@@ -140,7 +139,7 @@ namespace Newtonsoft.Json.Tests.Converters
             l1.Add(new DateTime(1983, 10, 9, 23, 10, 0, DateTimeKind.Utc));
 
             string json = JsonConvert.SerializeObject(l1, Formatting.Indented);
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   new Date(
     976651800000
   ),
@@ -164,7 +163,7 @@ namespace Newtonsoft.Json.Tests.Converters
             l1.Add("Second", new DateTime(1983, 10, 9, 23, 10, 0, DateTimeKind.Utc));
 
             string json = JsonConvert.SerializeObject(l1, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""First"": new Date(
     976651800000
   ),
@@ -189,7 +188,7 @@ namespace Newtonsoft.Json.Tests.Converters
             l1.ObjectNotHandled = new DateTime(2000, 12, 12, 20, 10, 0, DateTimeKind.Utc);
 
             string json = JsonConvert.SerializeObject(l1, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Object1"": new Date(
     976651800000
   ),

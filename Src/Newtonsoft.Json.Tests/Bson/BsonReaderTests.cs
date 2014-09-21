@@ -55,6 +55,21 @@ namespace Newtonsoft.Json.Tests.Bson
     {
         private const char Euro = '\u20ac';
 
+#if !NETFX_CORE
+        [Test]
+        public void DeserializeLargeBsonObject()
+        {
+            byte[] data = System.IO.File.ReadAllBytes(@"SpaceShipV2.bson");
+
+            MemoryStream ms = new MemoryStream(data);
+            BsonReader reader = new BsonReader(ms);
+
+            JObject o = (JObject)JToken.ReadFrom(reader);
+
+            Assert.AreEqual("1", (string)o["$id"]);
+        }
+#endif
+
         [Test]
         public void CloseInput()
         {
@@ -404,29 +419,27 @@ namespace Newtonsoft.Json.Tests.Bson
         [Test]
         public void ReadAsInt32BadString()
         {
-            ExceptionAssert.Throws<JsonReaderException>(
-                "Could not convert string to integer: a. Path '[0]'.",
-                () =>
-                {
-                    byte[] data = HexToBytes("20-00-00-00-02-30-00-02-00-00-00-61-00-02-31-00-02-00-00-00-62-00-02-32-00-02-00-00-00-63-00-00");
+            ExceptionAssert.Throws<JsonReaderException>(() =>
+            {
+                byte[] data = HexToBytes("20-00-00-00-02-30-00-02-00-00-00-61-00-02-31-00-02-00-00-00-62-00-02-32-00-02-00-00-00-63-00-00");
 
-                    MemoryStream ms = new MemoryStream(data);
-                    BsonReader reader = new BsonReader(ms);
+                MemoryStream ms = new MemoryStream(data);
+                BsonReader reader = new BsonReader(ms);
 
-                    Assert.AreEqual(false, reader.ReadRootValueAsArray);
-                    Assert.AreEqual(DateTimeKind.Local, reader.DateTimeKindHandling);
+                Assert.AreEqual(false, reader.ReadRootValueAsArray);
+                Assert.AreEqual(DateTimeKind.Local, reader.DateTimeKindHandling);
 
-                    reader.ReadRootValueAsArray = true;
-                    reader.DateTimeKindHandling = DateTimeKind.Utc;
+                reader.ReadRootValueAsArray = true;
+                reader.DateTimeKindHandling = DateTimeKind.Utc;
 
-                    Assert.AreEqual(true, reader.ReadRootValueAsArray);
-                    Assert.AreEqual(DateTimeKind.Utc, reader.DateTimeKindHandling);
+                Assert.AreEqual(true, reader.ReadRootValueAsArray);
+                Assert.AreEqual(DateTimeKind.Utc, reader.DateTimeKindHandling);
 
-                    Assert.IsTrue(reader.Read());
-                    Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+                Assert.IsTrue(reader.Read());
+                Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
 
-                    reader.ReadAsInt32();
-                });
+                reader.ReadAsInt32();
+            }, "Could not convert string to integer: a. Path '[0]'.");
         }
 
         [Test]
@@ -808,10 +821,7 @@ namespace Newtonsoft.Json.Tests.Bson
 
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.String, reader.TokenType);
-            Assert.AreEqual(@"for (int i = 0; i < 1000; i++)
-{
-  alert(arg1);
-}", reader.Value);
+            Assert.AreEqual("for (int i = 0; i < 1000; i++)\r\n{\r\n  alert(arg1);\r\n}", reader.Value);
 
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
@@ -1299,12 +1309,7 @@ namespace Newtonsoft.Json.Tests.Bson
 
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.String, reader.TokenType);
-            Assert.AreEqual(@"<p>I'm the Director for Research and Development for <a href=""http://www.prophoenix.com"" rel=""nofollow"">ProPhoenix</a>, a public safety software company.  This position allows me to investigate new and existing technologies and incorporate them into our product line, with the end goal being to help public safety agencies to do their jobs more effeciently and safely.</p>
-
-<p>I'm an advocate for PowerShell, as I believe it encourages administrative best practices and allows developers to provide additional access to their applications, without needing to explicity write code for each administrative feature.  Part of my advocacy for PowerShell includes <a href=""http://blog.usepowershell.com"" rel=""nofollow"">my blog</a>, appearances on various podcasts, and acting as a Community Director for <a href=""http://powershellcommunity.org"" rel=""nofollow"">PowerShellCommunity.Org</a></p>
-
-<p>I’m also a co-host of Mind of Root (a weekly audio podcast about systems administration, tech news, and topics).</p>
-", reader.Value);
+            Assert.AreEqual("<p>I'm the Director for Research and Development for <a href=\"http://www.prophoenix.com\" rel=\"nofollow\">ProPhoenix</a>, a public safety software company.  This position allows me to investigate new and existing technologies and incorporate them into our product line, with the end goal being to help public safety agencies to do their jobs more effeciently and safely.</p>\r\n\r\n<p>I'm an advocate for PowerShell, as I believe it encourages administrative best practices and allows developers to provide additional access to their applications, without needing to explicity write code for each administrative feature.  Part of my advocacy for PowerShell includes <a href=\"http://blog.usepowershell.com\" rel=\"nofollow\">my blog</a>, appearances on various podcasts, and acting as a Community Director for <a href=\"http://powershellcommunity.org\" rel=\"nofollow\">PowerShellCommunity.Org</a></p>\r\n\r\n<p>I’m also a co-host of Mind of Root (a weekly audio podcast about systems administration, tech news, and topics).</p>\r\n", reader.Value);
             Assert.AreEqual(typeof(string), reader.ValueType);
 
             Assert.IsTrue(reader.Read());

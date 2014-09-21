@@ -84,12 +84,11 @@ namespace Newtonsoft.Json.Tests.Linq
         [Test]
         public void SetValueWithInvalidIndex()
         {
-            ExceptionAssert.Throws<ArgumentException>(@"Set JConstructor values with invalid key value: ""badvalue"". Argument position index expected.",
-                () =>
-                {
-                    JConstructor c = new JConstructor();
-                    c["badvalue"] = new JValue(3);
-                });
+            ExceptionAssert.Throws<ArgumentException>(() =>
+            {
+                JConstructor c = new JConstructor();
+                c["badvalue"] = new JValue(3);
+            }, @"Set JConstructor values with invalid key value: ""badvalue"". Argument position index expected.");
         }
 
         [Test]

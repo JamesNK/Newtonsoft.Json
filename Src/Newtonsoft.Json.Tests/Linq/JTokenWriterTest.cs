@@ -145,7 +145,7 @@ namespace Newtonsoft.Json.Tests.Linq
             writer.WriteComment("fail");
             writer.WriteEndArray();
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   /*fail*/]", writer.Token.ToString());
         }
 
@@ -164,7 +164,7 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(new BigInteger(123), i.Value);
             Assert.AreEqual(JTokenType.Integer, i.Type);
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   123
 ]", writer.Token.ToString());
         }
@@ -183,7 +183,7 @@ namespace Newtonsoft.Json.Tests.Linq
             // this is a bug. write raw shouldn't be autocompleting like this
             // hard to fix without introducing Raw and RawValue token types
             // meh
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   fail,
   fail
 ]", writer.Token.ToString());
@@ -199,7 +199,7 @@ namespace Newtonsoft.Json.Tests.Linq
             writer.WriteRawValue("fail");
             writer.WriteEndArray();
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   fail,
   fail
 ]", writer.Token.ToString());

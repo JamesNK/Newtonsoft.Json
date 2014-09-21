@@ -30,7 +30,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
             string json = left.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Property1"": 1,
   ""Property2"": 2
 }", json);
@@ -52,7 +52,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
             string json = left.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Property1"": {
     ""SubProperty1"": 1,
     ""SubProperty2"": 2
@@ -77,7 +77,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
             string json = left.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Property1"": {
     ""SubProperty1"": 1
   }
@@ -101,7 +101,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
             string json = left.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Property1"": {
     ""SubProperty1"": 1,
     ""SubProperty2"": 2
@@ -171,7 +171,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
             string json = left.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Array1"": [
     {
       ""Property1"": {
@@ -222,7 +222,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
             string json = left.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Array1"": [
     {
       ""Property1"": 1
@@ -274,7 +274,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
             string json = left.ToString();
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   1,
   5,
   {
@@ -326,7 +326,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
             string json = left.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Property1"": {
     ""Nested"": true
   },
@@ -366,7 +366,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
             string json = left.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Array1"": [
     4,
     5
@@ -396,7 +396,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
             string json = left.ToString();
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   4,
   5
 ]", json);
@@ -430,7 +430,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
             string json = left.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Array1"": [
     {
       ""Property1"": 1

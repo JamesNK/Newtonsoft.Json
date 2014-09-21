@@ -64,7 +64,7 @@ namespace Newtonsoft.Json.Tests.LinqToSql
 
             string json = JsonConvert.SerializeObject(person, Formatting.Indented, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""first_name"": ""FirstName!"",
   ""LastName"": ""LastName!"",
   ""PersonId"": ""7aa027aa-c995-4986-908d-999d8063599f"",

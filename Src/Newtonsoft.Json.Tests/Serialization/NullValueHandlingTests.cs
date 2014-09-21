@@ -110,7 +110,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             //   "Description": "It's no Bad Boys"
             // }
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Name"": ""Bad Boys III"",
   ""Description"": ""It's no Bad Boys"",
   ""Classification"": null,
@@ -119,7 +119,7 @@ namespace Newtonsoft.Json.Tests.Serialization
   ""ReleaseCountries"": null
 }", included);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Name"": ""Bad Boys III"",
   ""Description"": ""It's no Bad Boys""
 }", ignored);

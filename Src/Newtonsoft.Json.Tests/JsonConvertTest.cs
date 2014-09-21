@@ -67,7 +67,7 @@ namespace Newtonsoft.Json.Tests
 
                 string json = JsonConvert.SerializeObject(new { test = new[] { 1, 2, 3 } });
 
-                Assert.AreEqual(@"{
+                StringAssert.AreEqual(@"{
   ""test"": [
     1,
     2,
@@ -110,7 +110,7 @@ namespace Newtonsoft.Json.Tests
                 //   "jobTitle": "Web Dude"
                 // }
 
-                Assert.AreEqual(@"{
+                StringAssert.AreEqual(@"{
   ""firstName"": ""Eric"",
   ""lastName"": ""Example"",
   ""birthDate"": ""1980-04-20T00:00:00Z"",
@@ -193,7 +193,7 @@ namespace Newtonsoft.Json.Tests
                 JsonSerializer serializer = JsonSerializer.CreateDefault();
                 serializer.Serialize(sw, l);
 
-                Assert.AreEqual(@"[
+                StringAssert.AreEqual(@"[
   1,
   2,
   3
@@ -242,7 +242,7 @@ namespace Newtonsoft.Json.Tests
                 });
                 serializer.Serialize(sw, l);
 
-                Assert.AreEqual(@"[
+                StringAssert.AreEqual(@"[
   2,
   4,
   6
@@ -252,7 +252,7 @@ namespace Newtonsoft.Json.Tests
                 serializer.Converters.Clear();
                 serializer.Serialize(sw, l);
 
-                Assert.AreEqual(@"[
+                StringAssert.AreEqual(@"[
   1,
   2,
   3
@@ -262,7 +262,7 @@ namespace Newtonsoft.Json.Tests
                 serializer = JsonSerializer.Create(new JsonSerializerSettings { Formatting = Formatting.Indented });
                 serializer.Serialize(sw, l);
 
-                Assert.AreEqual(@"[
+                StringAssert.AreEqual(@"[
   1,
   2,
   3
@@ -342,8 +342,7 @@ namespace Newtonsoft.Json.Tests
             result = JavaScriptUtils.ToEscapedJavaScriptString("How now <brown> cow?", '"', true);
             Assert.AreEqual(@"""How now <brown> cow?""", result);
 
-            result = JavaScriptUtils.ToEscapedJavaScriptString(@"How 
-now brown cow?", '"', true);
+            result = JavaScriptUtils.ToEscapedJavaScriptString("How \r\nnow brown cow?", '"', true);
             Assert.AreEqual(@"""How \r\nnow brown cow?""", result);
 
             result = JavaScriptUtils.ToEscapedJavaScriptString("\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007", '"', true);
@@ -408,8 +407,7 @@ now brown cow?", '"', true);
         [Test]
         public void ToStringInvalid()
         {
-            ExceptionAssert.Throws<ArgumentException>("Unsupported type: System.Version. Use the JsonSerializer class to get the object's JSON representation.",
-                () => { JsonConvert.ToString(new Version(1, 0)); });
+            ExceptionAssert.Throws<ArgumentException>(() => { JsonConvert.ToString(new Version(1, 0)); }, "Unsupported type: System.Version. Use the JsonSerializer class to get the object's JSON representation.");
         }
 
         [Test]
@@ -500,18 +498,17 @@ now brown cow?", '"', true);
         [Test]
         public void TestInvalidStrings()
         {
-            ExceptionAssert.Throws<JsonReaderException>("Additional text encountered after finished reading JSON content: t. Path '', line 1, position 19.",
-                () =>
-                {
-                    string orig = @"this is a string ""that has quotes"" ";
+            ExceptionAssert.Throws<JsonReaderException>(() =>
+            {
+                string orig = @"this is a string ""that has quotes"" ";
 
-                    string serialized = JsonConvert.SerializeObject(orig);
+                string serialized = JsonConvert.SerializeObject(orig);
 
-                    // *** Make string invalid by stripping \" \"
-                    serialized = serialized.Replace(@"\""", "\"");
+                // *** Make string invalid by stripping \" \"
+                serialized = serialized.Replace(@"\""", "\"");
 
-                    JsonConvert.DeserializeObject<string>(serialized);
-                });
+                JsonConvert.DeserializeObject<string>(serialized);
+            }, "Additional text encountered after finished reading JSON content: t. Path '', line 1, position 19.");
         }
 
         [Test]
@@ -576,8 +573,7 @@ now brown cow?", '"', true);
         [Test]
         public void StringEscaping()
         {
-            string v = @"It's a good day
-""sunshine""";
+            string v = "It's a good day\r\n\"sunshine\"";
 
             string json = JsonConvert.ToString(v);
             Assert.AreEqual(@"""It's a good day\r\n\""sunshine\""""", json);
@@ -894,7 +890,7 @@ now brown cow?", '"', true);
 #pragma warning restore 612,618
             task.Wait();
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   1,
   2,
   3,
@@ -1031,9 +1027,7 @@ now brown cow?", '"', true);
             Assert.AreEqual(typeof(BigInteger), v.Value.GetType());
             Assert.AreEqual(BigInteger.Parse(new String('9', 380)), (BigInteger)v.Value);
 
-            ExceptionAssert.Throws<JsonReaderException>(
-                "JSON integer " + new String('9', 381) + " is too large to parse. Path 'biginteger', line 1, position 395.",
-                () => JObject.Parse(@"{""biginteger"":" + new String('9', 381) + "}"));
+            ExceptionAssert.Throws<JsonReaderException>(() => JObject.Parse(@"{""biginteger"":" + new String('9', 381) + "}"), "JSON integer " + new String('9', 381) + " is too large to parse. Path 'biginteger', line 1, position 395.");
         }
 #endif
 

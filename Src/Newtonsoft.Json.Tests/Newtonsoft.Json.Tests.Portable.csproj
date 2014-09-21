@@ -118,7 +118,10 @@
     <Compile Include="Bson\BsonWriterTests.cs" />
     <Compile Include="Bson\BsonReaderTests.cs" />
     <Compile Include="Converters\BinaryConverterTests.cs" />
+    <Compile Include="Converters\DiscriminatedUnionConverterTests.cs" />
     <Compile Include="Converters\ExpandoObjectConverterTests.cs" />
+    <Compile Include="Converters\JsonValueConverterTests.cs" />
+    <Compile Include="Converters\KeyValuePairConverterTests.cs" />
     <Compile Include="Converters\RegexConverterTests.cs" />
     <Compile Include="Converters\DataTableConverterTests.cs" />
     <Compile Include="Converters\DataSetConverterTests.cs" />
@@ -126,11 +129,6 @@
     <Compile Include="Converters\ObjectIdConverterTests.cs" />
     <Compile Include="Converters\StringEnumConverterTests.cs" />
     <Compile Include="Converters\VersionConverterTests.cs" />
-    <Compile Include="FileSystemEntityModel.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>FileSystemEntityModel.edmx</DependentUpon>
-    </Compile>
     <Compile Include="JsonArrayAttributeTests.cs" />
     <Compile Include="ExceptionTests.cs" />
     <Compile Include="JsonValidatingReaderTests.cs" />
@@ -169,6 +167,7 @@
     <Compile Include="TestObjects\Container.cs" />
     <Compile Include="TestObjects\ContentBaseClass.cs" />
     <Compile Include="TestObjects\ContentSubClass.cs" />
+    <Compile Include="TestObjects\Currency.cs" />
     <Compile Include="TestObjects\CustomerDataSet.cs" />
     <Compile Include="TestObjects\DataContractSerializationAttributesClass.cs" />
     <Compile Include="TestObjects\DateTimeWrapper.cs" />
@@ -234,6 +233,7 @@
     <Compile Include="TestObjects\RequiredObject.cs" />
     <Compile Include="TestObjects\SearchResult.cs" />
     <Compile Include="TestObjects\SelectListItem.cs" />
+    <Compile Include="TestObjects\Shape.cs" />
     <Compile Include="TestObjects\StructTest.cs" />
     <Compile Include="TestObjects\TestComponent.cs" />
     <Compile Include="TestObjects\TestComponentSimple.cs" />
@@ -332,17 +332,13 @@
     <Compile Include="Utilities\ExpressionReflectionDelegateFactoryTests.cs" />
     <Compile Include="Utilities\DateTimeUtilsTests.cs" />
     <Compile Include="Utilities\DynamicReflectionDelegateFactoryTests.cs" />
+    <Compile Include="Utilities\LateboundReflectionDelegateFactoryTests.cs" />
     <Compile Include="Utilities\ReflectionUtilsTests.cs" />
     <Compile Include="Utilities\StringUtilsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
-  </ItemGroup>
-  <ItemGroup>
-    <EntityDeploy Include="FileSystemEntityModel.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>FileSystemEntityModel.Designer.cs</LastGenOutput>
-    </EntityDeploy>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="bunny_pancake.jpg">
@@ -376,8 +372,12 @@
     <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.Portable.csproj">
       <Project>{959F7F85-C98B-4876-971A-9036224578E4}</Project>
       <Name>Newtonsoft.Json.Portable</Name>
-      <Aliases>global</Aliases>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SpaceShipV2.bson">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -41,6 +41,13 @@ namespace Newtonsoft.Json.Utilities
                 generator.Emit(OpCodes.Castclass, type);
         }
 
+        public static void PushArrayInstance(this ILGenerator generator, int argsIndex, int arrayIndex)
+        {
+            generator.Emit(OpCodes.Ldarg, argsIndex);
+            generator.Emit(OpCodes.Ldc_I4, arrayIndex);
+            generator.Emit(OpCodes.Ldelem_Ref);
+        }
+
         public static void BoxIfNeeded(this ILGenerator generator, Type type)
         {
             if (type.IsValueType())

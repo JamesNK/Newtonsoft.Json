@@ -173,7 +173,7 @@ namespace Newtonsoft.Json.Utilities
 #if !(NETFX_CORE || PORTABLE)
                 chars[i] = char.ToLower(chars[i], CultureInfo.InvariantCulture);
 #else
-                chars[i] = char.ToLower(chars[i]);
+                chars[i] = char.ToLowerInvariant(chars[i]);
 #endif
             }
 

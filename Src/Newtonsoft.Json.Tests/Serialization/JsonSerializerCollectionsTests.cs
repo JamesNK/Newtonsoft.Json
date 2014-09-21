@@ -119,9 +119,7 @@ namespace Newtonsoft.Json.Tests.Serialization
   ""3""
 ]";
 
-            ExceptionAssert.Throws<JsonSerializationException>(
-                "Cannot create and populate list type Newtonsoft.Json.Tests.Serialization.JsonSerializerCollectionsTests+EnumerableClassFailure`1[System.String]. Path '', line 1, position 1.",
-                () => JsonConvert.DeserializeObject<EnumerableClassFailure<string>>(json));
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<EnumerableClassFailure<string>>(json), "Cannot create and populate list type Newtonsoft.Json.Tests.Serialization.JsonSerializerCollectionsTests+EnumerableClassFailure`1[System.String]. Path '', line 1, position 1.");
         }
 
         public class PrivateDefaultCtorList<T> : List<T>
@@ -134,10 +132,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void DeserializePrivateListCtor()
         {
-            ExceptionAssert.Throws<JsonSerializationException>(
-                "Unable to find a constructor to use for type Newtonsoft.Json.Tests.Serialization.JsonSerializerCollectionsTests+PrivateDefaultCtorList`1[System.Int32]. Path '', line 1, position 1.",
-                () => JsonConvert.DeserializeObject<PrivateDefaultCtorList<int>>("[1,2]")
-                );
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<PrivateDefaultCtorList<int>>("[1,2]"), "Unable to find a constructor to use for type Newtonsoft.Json.Tests.Serialization.JsonSerializerCollectionsTests+PrivateDefaultCtorList`1[System.Int32]. Path '', line 1, position 1.");
 
             var list = JsonConvert.DeserializeObject<PrivateDefaultCtorList<int>>("[1,2]", new JsonSerializerSettings
             {
@@ -314,7 +309,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             CustomReadOnlyDictionary<string, int> dic = new CustomReadOnlyDictionary<string, int>(d);
 
             string json = JsonConvert.SerializeObject(dic, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""one"": 1,
   ""two"": 2
 }", json);
@@ -358,7 +353,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             CustomReadOnlyCollection<int> list = new CustomReadOnlyCollection<int>(l);
 
             string json = JsonConvert.SerializeObject(list, Formatting.Indented);
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   1,
   2,
   3
@@ -447,7 +442,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(list, Formatting.Indented);
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   {
     ""Key"": ""key1"",
     ""Value"": {
@@ -533,7 +528,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(v1, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""First"": 1,
   ""Second"": null,
   ""Third"": 3
@@ -563,7 +558,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string originalJson = JsonConvert.SerializeObject(go, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Components"": {
     ""Key!"": {}
   },
@@ -621,9 +616,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             string json = @"[ null ]";
 
-            ExceptionAssert.Throws<JsonSerializationException>(
-                "Cannot convert null value to KeyValuePair. Path '[0]', line 1, position 6.",
-                () => { JsonConvert.DeserializeObject<IList<KeyValuePair<string, IList<string>>>>(json); });
+            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeObject<IList<KeyValuePair<string, IList<string>>>>(json); }, "Cannot convert null value to KeyValuePair. Path '[0]', line 1, position 6.");
         }
 
 #if !(NET40 || NET35 || NET20 || PORTABLE40)
@@ -670,7 +663,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(c1, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""NonReadOnlyList"": [
     1
   ],
@@ -790,7 +783,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(aa, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Before"": ""Before!"",
   ""Coordinates"": [
     [
@@ -939,9 +932,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             string json = @"{""Before"":""Before!"",""Coordinates"":[[1,1],[1,2,3],[2,1],[2,2]],""After"":""After!""}";
 
-            ExceptionAssert.Throws<Exception>(
-                "Cannot deserialize non-cubical array as multidimensional array.",
-                () => JsonConvert.DeserializeObject<Array2D>(json));
+            ExceptionAssert.Throws<Exception>(() => JsonConvert.DeserializeObject<Array2D>(json), "Cannot deserialize non-cubical array as multidimensional array.");
         }
 
         [Test]
@@ -949,9 +940,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             string json = @"{""Before"":""Before!"",""Coordinates"":[[1,1],[1],[2,1],[2,2]],""After"":""After!""}";
 
-            ExceptionAssert.Throws<Exception>(
-                "Cannot deserialize non-cubical array as multidimensional array.",
-                () => JsonConvert.DeserializeObject<Array2D>(json));
+            ExceptionAssert.Throws<Exception>(() => JsonConvert.DeserializeObject<Array2D>(json), "Cannot deserialize non-cubical array as multidimensional array.");
         }
 
         [Test]
@@ -979,9 +968,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             string json = @"{""Before"":""Before!"",""Coordinates"":[[[1,1,1],[1,1,2,1]],[[1,2,1],[1,2,2]],[[2,1,1],[2,1,2]],[[2,2,1],[2,2,2]]],""After"":""After!""}";
 
-            ExceptionAssert.Throws<Exception>(
-                "Cannot deserialize non-cubical array as multidimensional array.",
-                () => JsonConvert.DeserializeObject<Array3D>(json));
+            ExceptionAssert.Throws<Exception>(() => JsonConvert.DeserializeObject<Array3D>(json), "Cannot deserialize non-cubical array as multidimensional array.");
         }
 
         [Test]
@@ -989,9 +976,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             string json = @"{""Before"":""Before!"",""Coordinates"":[[[1,1,1],[1,1,2]],[[1,2,1],[1,2,2]],[[2,1,1],[2,1,2]],[[2,2,1],{}]],""After"":""After!""}";
 
-            ExceptionAssert.Throws<JsonSerializationException>(
-                "Unexpected token when deserializing multidimensional array: StartObject. Path 'Coordinates[3][1]', line 1, position 99.",
-                () => JsonConvert.DeserializeObject<Array3D>(json));
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<Array3D>(json), "Unexpected token when deserializing multidimensional array: StartObject. Path 'Coordinates[3][1]', line 1, position 99.");
         }
 
         [Test]
@@ -999,9 +984,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             string json = @"{""Before"":""Before!"",""Coordinates"":[[[1,1,1],[1,1]],[[1,2,1],[1,2,2]],[[2,1,1],[2,1,2]],[[2,2,1],[2,2,2]]],""After"":""After!""}";
 
-            ExceptionAssert.Throws<Exception>(
-                "Cannot deserialize non-cubical array as multidimensional array.",
-                () => JsonConvert.DeserializeObject<Array3D>(json));
+            ExceptionAssert.Throws<Exception>(() => JsonConvert.DeserializeObject<Array3D>(json), "Cannot deserialize non-cubical array as multidimensional array.");
         }
 
         [Test]
@@ -1040,9 +1023,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             string json = @"{""Before"":""Before!"",""Coordinates"":[/*hi*/[/*hi*/[1/*hi*/,/*hi*/1/*hi*/,1]/*hi*/,/*hi*/[1,1";
 
-            ExceptionAssert.Throws<JsonException>(
-                null,
-                () => JsonConvert.DeserializeObject<Array3D>(json));
+            ExceptionAssert.Throws<JsonException>(() => JsonConvert.DeserializeObject<Array3D>(json));
         }
 
         [Test]
@@ -1050,9 +1031,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             string json = @"{""Before"":""Before!"",""Coordinates"":[/*hi*/[/*hi*/";
 
-            ExceptionAssert.Throws<JsonException>(
-                null,
-                () => JsonConvert.DeserializeObject<Array3D>(json));
+            ExceptionAssert.Throws<JsonException>(() => JsonConvert.DeserializeObject<Array3D>(json));
         }
 
         [Test]
@@ -1109,7 +1088,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 Formatting = Formatting.Indented
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""$id"": ""1"",
   ""$values"": [
     {
@@ -1163,7 +1142,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 Formatting = Formatting.Indented
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""$type"": ""System.Collections.Generic.List`1[[Newtonsoft.Json.Tests.TestObjects.Event1[,], Newtonsoft.Json.Tests]], mscorlib"",
   ""$values"": [
     {
@@ -1302,7 +1281,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(name, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""personsName"": ""The Idiot in Next To Me"",
   ""pNumbers"": [
     {
@@ -1441,7 +1420,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             //  }
             //]
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   {
     ""Name"": ""Product 1"",
     ""ExpiryDate"": ""2000-12-29T00:00:00Z"",
@@ -1503,7 +1482,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(l, Formatting.Indented);
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   1,
   2,
   3,

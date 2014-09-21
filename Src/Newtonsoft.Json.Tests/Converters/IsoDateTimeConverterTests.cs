@@ -224,12 +224,11 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void DeserializeNullToNonNullable()
         {
-            ExceptionAssert.Throws<JsonSerializationException>("Cannot convert null value to System.DateTime. Path 'DateTimeField', line 1, position 38.",
-                () =>
-                {
-                    DateTimeTestClass c2 =
-                        JsonConvert.DeserializeObject<DateTimeTestClass>(@"{""PreField"":""Pre"",""DateTimeField"":null,""DateTimeOffsetField"":null,""PostField"":""Post""}", new IsoDateTimeConverter() { DateTimeStyles = DateTimeStyles.AssumeUniversal });
-                });
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                DateTimeTestClass c2 =
+                    JsonConvert.DeserializeObject<DateTimeTestClass>(@"{""PreField"":""Pre"",""DateTimeField"":null,""DateTimeOffsetField"":null,""PostField"":""Post""}", new IsoDateTimeConverter() { DateTimeStyles = DateTimeStyles.AssumeUniversal });
+            }, "Cannot convert null value to System.DateTime. Path 'DateTimeField', line 1, position 38.");
         }
 
         [Test]

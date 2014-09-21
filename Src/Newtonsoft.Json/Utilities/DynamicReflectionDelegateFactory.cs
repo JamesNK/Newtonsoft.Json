@@ -75,11 +75,11 @@ namespace Newtonsoft.Json.Utilities
 
             Label argsOk = generator.DefineLabel();
 
+            // throw an error if the number of argument values doesn't match method parameters
             generator.Emit(OpCodes.Ldarg, argsIndex);
             generator.Emit(OpCodes.Ldlen);
             generator.Emit(OpCodes.Ldc_I4, args.Length);
             generator.Emit(OpCodes.Beq, argsOk);
-
             generator.Emit(OpCodes.Newobj, typeof(TargetParameterCountException).GetConstructor(ReflectionUtils.EmptyTypes));
             generator.Emit(OpCodes.Throw);
 
@@ -92,15 +92,57 @@ namespace Newtonsoft.Json.Utilities
 
             for (int i = 0; i < args.Length; i++)
             {
-                Type parameterType = args[i].ParameterType;
+                ParameterInfo parameter = args[i];
+                Type parameterType = parameter.ParameterType;
 
-                generator.Emit(OpCodes.Ldarg, argsIndex);
-
-                generator.Emit(OpCodes.Ldc_I4, i);
-                generator.Emit(OpCodes.Ldelem_Ref);
-
-                if (parameterType.IsValueType())
+                if (parameterType.IsByRef)
                 {
+                    parameterType = parameterType.GetElementType();
+
+                    LocalBuilder localVariable = generator.DeclareLocal(parameterType);
+
+                    // don't need to set variable for 'out' parameter
+                    if (!parameter.IsOut)
+                    {
+                        generator.PushArrayInstance(argsIndex, i);
+
+                        if (parameterType.IsValueType())
+                        {
+                            Label skipSettingDefault = generator.DefineLabel();
+                            Label finishedProcessingParameter = generator.DefineLabel();
+
+                            // check if parameter is not null
+                            generator.Emit(OpCodes.Brtrue_S, skipSettingDefault);
+
+                            // parameter has no value, initialize to default
+                            generator.Emit(OpCodes.Ldloca_S, localVariable);
+                            generator.Emit(OpCodes.Initobj, parameterType);
+                            generator.Emit(OpCodes.Br_S, finishedProcessingParameter);
+
+                            // parameter has value, get value from array again and unbox and set to variable
+                            generator.MarkLabel(skipSettingDefault);
+                            generator.PushArrayInstance(argsIndex, i);
+                            generator.UnboxIfNeeded(parameterType);
+                            generator.Emit(OpCodes.Stloc, localVariableCount);
+
+                            // parameter finished, we out!
+                            generator.MarkLabel(finishedProcessingParameter);
+                        }
+                        else
+                        {
+                            generator.UnboxIfNeeded(parameterType);
+                            generator.Emit(OpCodes.Stloc, localVariableCount);
+                        }
+                    }
+
+                    generator.Emit(OpCodes.Ldloca_S, localVariable);
+
+                    localVariableCount++;
+                }
+                else if (parameterType.IsValueType())
+                {
+                    generator.PushArrayInstance(argsIndex, i);
+
                     // have to check that value type parameters aren't null
                     // otherwise they will error when unboxed
                     Label skipSettingDefault = generator.DefineLabel();
@@ -118,17 +160,17 @@ namespace Newtonsoft.Json.Utilities
 
                     // parameter has value, get value from array again and unbox
                     generator.MarkLabel(skipSettingDefault);
-                    generator.Emit(OpCodes.Ldarg, argsIndex);
-                    generator.Emit(OpCodes.Ldc_I4, i);
-                    generator.Emit(OpCodes.Ldelem_Ref);
+                    generator.PushArrayInstance(argsIndex, i);
                     generator.UnboxIfNeeded(parameterType);
 
                     // parameter finished, we out!
                     generator.MarkLabel(finishedProcessingParameter);
                     localVariableCount++;
                 }
-                else
+                else 
                 {
+                    generator.PushArrayInstance(argsIndex, i);
+
                     generator.UnboxIfNeeded(parameterType);
                 }
             }
@@ -283,5 +325,4 @@ namespace Newtonsoft.Json.Utilities
         }
     }
 }
-
 #endif
