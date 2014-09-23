@@ -54,6 +54,17 @@ namespace Newtonsoft.Json
         public Type ItemConverterType { get; set; }
 
         /// <summary>
+        /// The parameter list to use when constructing the JsonConverter described by ItemConverterType.
+        /// If null, the default constructor is used.
+        /// When non-null, there must be a constructor defined in the JsonConverter that exactly matches the number,
+        /// order, and type of these parameters.
+        /// </summary>
+        /// <example>
+        /// [JsonProperty(ItemConverterType = typeof(MyContainerConverter), ItemConverterParameters = new object[] { 123, "Four" })]
+        /// </example>
+        public object[] ItemConverterParameters { get; set; } 
+
+        /// <summary>
         /// Gets or sets the null value handling used when serializing this property.
         /// </summary>
         /// <value>The null value handling.</value>
