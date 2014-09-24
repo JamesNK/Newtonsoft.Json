@@ -1708,6 +1708,26 @@ namespace Newtonsoft.Json.Tests.Bson
             CollectionAssert.AreEquivalent(g.ToByteArray(), b.TheGuid);
         }
 
+        [Test]
+        public void DeserializeBsonDocumentWithString()
+        {
+            byte[] data = HexToBytes("10-00-00-00-02-62-00-04-00-00-00-61-62-63-00-00");
+            JsonSerializer serializer = new JsonSerializer();
+            JObject jObj = (JObject)serializer.Deserialize(new BsonReader(new MemoryStream(data)));
+            string stringValue = jObj.Value<string>("b");
+            Assert.AreEqual("abc", stringValue);
+        }
+
+        [Test]
+        public void DeserializeBsonDocumentWithGuid()
+        {
+            byte[] data = HexToBytes("1D-00-00-00-05-62-00-10-00-00-00-04-DF-41-E3-E2-39-EE-BB-4C-86-C0-06-A7-64-33-61-E1-00");
+            JsonSerializer serializer = new JsonSerializer();
+            JObject jObj = (JObject)serializer.Deserialize(new BsonReader(new MemoryStream(data)));
+            Guid guidValue = jObj.Value<Guid>("b");
+            Assert.AreEqual(new Guid("e2e341df-ee39-4cbb-86c0-06a7643361e1"), guidValue);
+        }
+
         public class BytesTestClass
         {
             public byte[] TheGuid { get; set; }
