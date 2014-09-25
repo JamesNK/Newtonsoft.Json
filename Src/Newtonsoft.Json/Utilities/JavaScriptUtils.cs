@@ -225,10 +225,15 @@ namespace Newtonsoft.Json.Utilities
 
         public static string ToEscapedJavaScriptString(string value, char delimiter, bool appendDelimiters)
         {
+            return ToEscapedJavaScriptString(value, delimiter, appendDelimiters, StringEscapeHandling.Default);
+        }
+
+        public static string ToEscapedJavaScriptString(string value, char delimiter, bool appendDelimiters, StringEscapeHandling stringEscapeHandling)
+        {
             using (StringWriter w = StringUtils.CreateStringWriter(StringUtils.GetLength(value) ?? 16))
             {
                 char[] buffer = null;
-                WriteEscapedJavaScriptString(w, value, delimiter, appendDelimiters, (delimiter == '"') ? DoubleQuoteCharEscapeFlags : SingleQuoteCharEscapeFlags, StringEscapeHandling.Default, ref buffer);
+                WriteEscapedJavaScriptString(w, value, delimiter, appendDelimiters, (delimiter == '"') ? DoubleQuoteCharEscapeFlags : SingleQuoteCharEscapeFlags, stringEscapeHandling, ref buffer);
                 return w.ToString();
             }
         }

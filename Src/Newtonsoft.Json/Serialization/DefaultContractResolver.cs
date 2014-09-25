@@ -1269,7 +1269,7 @@ namespace Newtonsoft.Json.Serialization
             property.ItemIsReference = (propertyAttribute != null) ? propertyAttribute._itemIsReference : null;
             property.ItemConverter =
                 (propertyAttribute != null && propertyAttribute.ItemConverterType != null)
-                    ? JsonTypeReflector.CreateJsonConverterInstance(propertyAttribute.ItemConverterType)
+                    ? JsonTypeReflector.CreateJsonConverterInstance(propertyAttribute.ItemConverterType, propertyAttribute.ItemConverterParameters)
                     : null;
             property.ItemReferenceLoopHandling = (propertyAttribute != null) ? propertyAttribute._itemReferenceLoopHandling : null;
             property.ItemTypeNameHandling = (propertyAttribute != null) ? propertyAttribute._itemTypeNameHandling : null;

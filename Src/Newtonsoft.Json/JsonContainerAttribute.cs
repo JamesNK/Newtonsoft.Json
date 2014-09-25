@@ -57,6 +57,17 @@ namespace Newtonsoft.Json
         /// <value>The collection's items converter.</value>
         public Type ItemConverterType { get; set; }
 
+        /// <summary>
+        /// The parameter list to use when constructing the JsonConverter described by ItemConverterType.
+        /// If null, the default constructor is used.
+        /// When non-null, there must be a constructor defined in the JsonConverter that exactly matches the number,
+        /// order, and type of these parameters.
+        /// </summary>
+        /// <example>
+        /// [JsonContainer(ItemConverterType = typeof(MyContainerConverter), ItemConverterParameters = new object[] { 123, "Four" })]
+        /// </example>
+        public object[] ItemConverterParameters { get; set; } 
+
         // yuck. can't set nullable properties on an attribute in C#
         // have to use this approach to get an unset default state
         internal bool? _isReference;
