@@ -581,6 +581,21 @@ namespace Newtonsoft.Json.Tests
         }
 
         [Test]
+        public void ToStringStringEscapeHandling()
+        {
+            string v = "<b>hi " + '\u20AC' + "</b>";
+
+            string json = JsonConvert.ToString(v, '"');
+            Assert.AreEqual(@"""<b>hi " + '\u20AC' + @"</b>""", json);
+
+            json = JsonConvert.ToString(v, '"', StringEscapeHandling.EscapeHtml);
+            Assert.AreEqual(@"""\u003cb\u003ehi " + '\u20AC' + @"\u003c/b\u003e""", json);
+
+            json = JsonConvert.ToString(v, '"', StringEscapeHandling.EscapeNonAscii);
+            Assert.AreEqual(@"""<b>hi \u20ac</b>""", json);
+        }
+
+        [Test]
         public void WriteDateTime()
         {
             DateTimeResult result = null;

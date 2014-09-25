@@ -182,7 +182,7 @@ namespace Newtonsoft.Json.Tests
         [Test]
         public void DeserializeLargeJson()
         {
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 5; i++)
             {
                 using (var fs = System.IO.File.OpenText("large.json"))
                 using (JsonTextReader jsonTextReader = new JsonTextReader(fs))

@@ -409,11 +409,6 @@ namespace Newtonsoft.Json
             return ToString(value, '"');
         }
 
-        public static string ToString(string value, StringEscapeHandling stringEscapeHandling)
-        {
-            return ToString(value, '"', stringEscapeHandling);
-        }
-
         /// <summary>
         /// Converts the <see cref="String"/> to its JSON string representation.
         /// </summary>
@@ -425,6 +420,13 @@ namespace Newtonsoft.Json
             return ToString(value, delimiter, StringEscapeHandling.Default);
         }
 
+        /// <summary>
+        /// Converts the <see cref="String"/> to its JSON string representation.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <param name="delimiter">The string delimiter character.</param>
+        /// <param name="stringEscapeHandling">The string escape handling.</param>
+        /// <returns>A JSON string representation of the <see cref="String"/>.</returns>
         public static string ToString(string value, char delimiter, StringEscapeHandling stringEscapeHandling)
         {
             if (delimiter != '"' && delimiter != '\'')

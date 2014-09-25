@@ -253,12 +253,7 @@ namespace Newtonsoft.Json
 
         private void UpdateCharEscapeFlags()
         {
-            if (StringEscapeHandling == StringEscapeHandling.EscapeHtml)
-                _charEscapeFlags = JavaScriptUtils.HtmlCharEscapeFlags;
-            else if (_quoteChar == '"')
-                _charEscapeFlags = JavaScriptUtils.DoubleQuoteCharEscapeFlags;
-            else
-                _charEscapeFlags = JavaScriptUtils.SingleQuoteCharEscapeFlags;
+            _charEscapeFlags = JavaScriptUtils.GetCharEscapeFlags(StringEscapeHandling, _quoteChar);
         }
 
         /// <summary>
