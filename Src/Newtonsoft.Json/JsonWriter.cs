@@ -549,7 +549,10 @@ namespace Newtonsoft.Json
                         WriteRawValue((reader.Value != null) ? reader.Value.ToString() : null);
                         break;
                     case JsonToken.Bytes:
-                        WriteValue((byte[])reader.Value);
+                        if (reader.Value is Guid)
+                            WriteValue((Guid)reader.Value);
+                        else
+                            WriteValue((byte[])reader.Value);
                         break;
                     default:
                         throw MiscellaneousUtils.CreateArgumentOutOfRangeException("TokenType", reader.TokenType, "Unexpected token type.");
