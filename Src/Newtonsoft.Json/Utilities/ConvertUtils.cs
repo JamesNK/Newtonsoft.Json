@@ -162,7 +162,7 @@ namespace Newtonsoft.Json.Utilities
             };
 
 #if !(NETFX_CORE || PORTABLE)
-        private static readonly List<TypeInformation> PrimitiveTypeCodes = new List<TypeInformation>
+        private static readonly TypeInformation[] PrimitiveTypeCodes =
         {
             new TypeInformation { Type = typeof(object), TypeCode = PrimitiveTypeCode.Empty },
             new TypeInformation { Type = typeof(object), TypeCode = PrimitiveTypeCode.Object },

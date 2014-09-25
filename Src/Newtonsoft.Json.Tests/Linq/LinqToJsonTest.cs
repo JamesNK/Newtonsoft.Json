@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 #if !NETFX_CORE
@@ -49,6 +50,44 @@ namespace Newtonsoft.Json.Tests.Linq
     [TestFixture]
     public class LinqToJsonTest : TestFixtureBase
     {
+        [Test]
+        public void EmptyJEnumerableCount()
+        {
+            JEnumerable<JToken> tokens = new JEnumerable<JToken>();
+
+            Assert.AreEqual(0, tokens.Count());
+        }
+
+        [Test]
+        public void EmptyJEnumerableAsEnumerable()
+        {
+            IEnumerable tokens = new JEnumerable<JToken>();
+
+            Assert.AreEqual(0, tokens.Cast<JToken>().Count());
+        }
+
+        [Test]
+        public void EmptyJEnumerableEquals()
+        {
+            JEnumerable<JToken> tokens1 = new JEnumerable<JToken>();
+            JEnumerable<JToken> tokens2 = new JEnumerable<JToken>();
+
+            Assert.IsTrue(tokens1.Equals(tokens2));
+
+            object o1 = new JEnumerable<JToken>();
+            object o2 = new JEnumerable<JToken>();
+
+            Assert.IsTrue(o1.Equals(o2));
+        }
+
+        [Test]
+        public void EmptyJEnumerableGetHashCode()
+        {
+            JEnumerable<JToken> tokens = new JEnumerable<JToken>();
+
+            Assert.AreEqual(0, tokens.GetHashCode());
+        }
+
         [Test]
         public void CommentsAndReadFrom()
         {

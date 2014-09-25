@@ -683,13 +683,11 @@ namespace Newtonsoft.Json
         private void EnsureWriteBuffer()
         {
             if (_writeBuffer == null)
-                _writeBuffer = new char[64];
+                _writeBuffer = new char[35]; // maximum buffer sized used when writing iso date
         }
 
         private void WriteIntegerValue(long value)
         {
-            EnsureWriteBuffer();
-
             if (value >= 0 && value <= 9)
             {
                 _writer.Write((char)('0' + value));
@@ -707,14 +705,14 @@ namespace Newtonsoft.Json
 
         private void WriteIntegerValue(ulong uvalue)
         {
-            EnsureWriteBuffer();
-
             if (uvalue <= 9)
             {
                 _writer.Write((char)('0' + uvalue));
             }
             else
             {
+                EnsureWriteBuffer();
+
                 int totalLength = MathUtils.IntLength(uvalue);
                 int length = 0;
 

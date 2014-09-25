@@ -95,7 +95,7 @@ namespace Newtonsoft.Json.Serialization
             get { return _instance; }
         }
 
-        private static readonly IList<JsonConverter> BuiltInConverters = new List<JsonConverter>
+        private static readonly JsonConverter[] BuiltInConverters =
         {
 #if !(NET20 || NETFX_CORE || PORTABLE40 || PORTABLE)
             new EntityKeyMemberConverter(),

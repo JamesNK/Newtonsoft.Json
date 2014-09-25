@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
 using System.Numerics;
@@ -1007,6 +1008,8 @@ namespace Newtonsoft.Json.Tests
             settings.DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
             var json = JsonConvert.SerializeObject(dict, settings);
 
+            Console.WriteLine(json);
+
             var newDict = new Dictionary<string, object>();
             JsonConvert.PopulateObject(json, newDict, settings);
 
@@ -1014,7 +1017,56 @@ namespace Newtonsoft.Json.Tests
 
             Assert.AreEqual(date, now);
         }
+
+        [Test]
+        public void MaximumDateTimeOffsetLength()
+        {
+            DateTimeOffset dt = new DateTimeOffset(2000, 12, 31, 20, 59, 59, new TimeSpan(0, 11, 33, 0, 0));
+            dt = dt.AddTicks(9999999);
+
+            StringWriter sw = new StringWriter();
+            JsonTextWriter writer = new JsonTextWriter(sw);
+
+            writer.WriteValue(dt);
+            writer.Flush();
+
+            Console.WriteLine(sw.ToString());
+            Console.WriteLine(sw.ToString().Length);
+        }
 #endif
+
+        [Test]
+        public void MaximumDateTimeLength()
+        {
+            DateTime dt = new DateTime(2000, 12, 31, 20, 59, 59, DateTimeKind.Local);
+            dt = dt.AddTicks(9999999);
+
+            StringWriter sw = new StringWriter();
+            JsonTextWriter writer = new JsonTextWriter(sw);
+
+            writer.WriteValue(dt);
+            writer.Flush();
+
+            Console.WriteLine(sw.ToString());
+            Console.WriteLine(sw.ToString().Length);
+        }
+
+        [Test]
+        public void MaximumDateTimeMicrosoftDateFormatLength()
+        {
+            DateTime dt = DateTime.MaxValue;
+
+            StringWriter sw = new StringWriter();
+            JsonTextWriter writer = new JsonTextWriter(sw);
+            writer.DateFormatHandling = DateFormatHandling.MicrosoftDateFormat;
+
+            writer.WriteValue(dt);
+            writer.Flush();
+
+            Console.WriteLine(sw.ToString());
+            Console.WriteLine(sw.ToString().Length);
+        }
+
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
         [Test]
@@ -1030,6 +1082,17 @@ namespace Newtonsoft.Json.Tests
             ExceptionAssert.Throws<JsonReaderException>(() => JObject.Parse(@"{""biginteger"":" + new String('9', 381) + "}"), "JSON integer " + new String('9', 381) + " is too large to parse. Path 'biginteger', line 1, position 395.");
         }
 #endif
+
+        [Test]
+        public void ParseIsoDate()
+        {
+            StringReader sr = new StringReader(@"""2014-02-14T14:25:02-13:00""");
+
+            JsonReader jsonReader = new JsonTextReader(sr);
+
+            Assert.IsTrue(jsonReader.Read());
+            Assert.AreEqual(typeof(DateTime), jsonReader.ValueType);
+        }
 
         //[Test]
         public void StackOverflowTest()

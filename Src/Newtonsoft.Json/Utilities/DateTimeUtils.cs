@@ -51,7 +51,7 @@ namespace Newtonsoft.Json.Utilities
         public static TimeSpan GetUtcOffset(this DateTime d)
         {
 #if NET20
-      return TimeZone.CurrentTimeZone.GetUtcOffset(d);
+            return TimeZone.CurrentTimeZone.GetUtcOffset(d);
 #else
             return TimeZoneInfo.Local.GetUtcOffset(d);
 #endif
@@ -323,12 +323,16 @@ namespace Newtonsoft.Json.Utilities
             if (index == -1)
                 index = value.IndexOf('-', 1);
 
+#if !NET20
             TimeSpan offset = TimeSpan.Zero;
+#endif
 
             if (index != -1)
             {
                 kind = DateTimeKind.Local;
+#if !NET20
                 offset = ReadOffset(value.Substring(index));
+#endif
                 value = value.Substring(0, index);
             }
 
@@ -395,6 +399,7 @@ namespace Newtonsoft.Json.Utilities
             return false;
         }
 
+#if !NET20
         private static TimeSpan ReadOffset(string offsetText)
         {
             bool negative = (offsetText[0] == '-');
@@ -410,6 +415,7 @@ namespace Newtonsoft.Json.Utilities
 
             return offset;
         }
+#endif
         #endregion
 
         #region Write

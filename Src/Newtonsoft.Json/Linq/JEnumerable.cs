@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+using System;
 using System.Collections.Generic;
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
@@ -38,7 +39,7 @@ namespace Newtonsoft.Json.Linq
     /// Represents a collection of <see cref="JToken"/> objects.
     /// </summary>
     /// <typeparam name="T">The type of token</typeparam>
-    public struct JEnumerable<T> : IJEnumerable<T> where T : JToken
+    public struct JEnumerable<T> : IJEnumerable<T>, IEquatable<JEnumerable<T>> where T : JToken
     {
         /// <summary>
         /// An empty collection of <see cref="JToken"/> objects.
@@ -66,6 +67,9 @@ namespace Newtonsoft.Json.Linq
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
+            if (_enumerable == null)
+                return Empty.GetEnumerator();
+
             return _enumerable.GetEnumerator();
         }
 
@@ -86,7 +90,25 @@ namespace Newtonsoft.Json.Linq
         /// <value></value>
         public IJEnumerable<JToken> this[object key]
         {
-            get { return new JEnumerable<JToken>(Extensions.Values<T, JToken>(_enumerable, key)); }
+            get
+            {
+                if (_enumerable == null)
+                    return JEnumerable<JToken>.Empty;
+
+                return new JEnumerable<JToken>(_enumerable.Values<T, JToken>(key));
+            }
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="JEnumerable{T}"/> is equal to this instance.
+        /// </summary>
+        /// <param name="other">The <see cref="JEnumerable{T}"/> to compare with this instance.</param>
+        /// <returns>
+        /// 	<c>true</c> if the specified <see cref="JEnumerable{T}"/> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+        public bool Equals(JEnumerable<T> other)
+        {
+            return Equals(_enumerable, other._enumerable);
         }
 
         /// <summary>
@@ -99,7 +121,7 @@ namespace Newtonsoft.Json.Linq
         public override bool Equals(object obj)
         {
             if (obj is JEnumerable<T>)
-                return _enumerable.Equals(((JEnumerable<T>)obj)._enumerable);
+                return Equals((JEnumerable<T>)obj);
 
             return false;
         }
@@ -112,6 +134,9 @@ namespace Newtonsoft.Json.Linq
         /// </returns>
         public override int GetHashCode()
         {
+            if (_enumerable == null)
+                return 0;
+
             return _enumerable.GetHashCode();
         }
     }
