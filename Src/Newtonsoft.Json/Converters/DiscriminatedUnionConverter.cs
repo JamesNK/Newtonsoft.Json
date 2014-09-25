@@ -65,12 +65,16 @@ namespace Newtonsoft.Json.Converters
             object info = FSharpUtils.GetUnionCaseInfo(result);
             object fields = FSharpUtils.GetUnionCaseFields(result);
             object caseName = FSharpUtils.GetUnionCaseInfoName(info);
+            object[] fieldsAsArray = fields as object[];
 
             writer.WriteStartObject();
             writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(CasePropertyName) : CasePropertyName);
             writer.WriteValue((string)caseName);
-            writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(FieldsPropertyName) : FieldsPropertyName);
-            serializer.Serialize(writer, fields);
+            if (fieldsAsArray != null && fieldsAsArray.Length > 0)
+            {
+                writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(FieldsPropertyName) : FieldsPropertyName);
+                serializer.Serialize(writer, fields);    
+            }
             writer.WriteEndObject();
         }
 
@@ -135,21 +139,26 @@ namespace Newtonsoft.Json.Converters
 
             if (matchingCaseInfo == null)
                 throw JsonSerializationException.Create(reader, "No '{0}' property with union name found.".FormatWith(CultureInfo.InvariantCulture, CasePropertyName));
-            if (fields == null)
+            
+            PropertyInfo[] fieldProperties = (PropertyInfo[])FSharpUtils.GetUnionCaseInfoFields(matchingCaseInfo);
+            object[] typedFieldValues = new object[fieldProperties.Length];
+
+            if (fieldProperties.Length > 0 && fields == null)
                 throw JsonSerializationException.Create(reader, "No '{0}' property with union fields found.".FormatWith(CultureInfo.InvariantCulture, FieldsPropertyName));
 
-            PropertyInfo[] fieldProperties = (PropertyInfo[])FSharpUtils.GetUnionCaseInfoFields(matchingCaseInfo);
-
-            if (fieldProperties.Length != fields.Count)
-                throw JsonSerializationException.Create(reader, "The number of field values does not match the number of properties definied by union '{0}'.".FormatWith(CultureInfo.InvariantCulture, caseName));
-
-            object[] typedFieldValues = new object[fieldProperties.Length];
-            for (int i = 0; i < fields.Count; i++)
+            if (fields != null)
             {
-                JToken t = fields[i];
-                PropertyInfo fieldProperty = fieldProperties[i];
+                if (fieldProperties.Length != fields.Count)
+                    throw JsonSerializationException.Create(reader, "The number of field values does not match the number of properties definied by union '{0}'.".FormatWith(CultureInfo.InvariantCulture, caseName));
 
-                typedFieldValues[i] = t.ToObject(fieldProperty.PropertyType);
+
+                for (int i = 0; i < fields.Count; i++)
+                {
+                    JToken t = fields[i];
+                    PropertyInfo fieldProperty = fieldProperties[i];
+
+                    typedFieldValues[i] = t.ToObject(fieldProperty.PropertyType);
+                }    
             }
 
             return FSharpUtils.MakeUnion(null, matchingCaseInfo, typedFieldValues, null);

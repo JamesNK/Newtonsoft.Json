@@ -42,7 +42,7 @@ namespace Newtonsoft.Json.Tests.Converters
         {
             string json = JsonConvert.SerializeObject(Currency.AUD);
 
-            Assert.AreEqual(@"{""Case"":""AUD"",""Fields"":[]}", json);
+            Assert.AreEqual(@"{""Case"":""AUD""}", json);
         }
 
         [Test]
@@ -56,10 +56,10 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void DeserializeBasicUnion()
         {
-            Currency c = JsonConvert.DeserializeObject<Currency>(@"{""Case"":""AUD"",""Fields"":[]}");
+            Currency c = JsonConvert.DeserializeObject<Currency>(@"{""Case"":""AUD""}");
             Assert.AreEqual(Currency.AUD, c);
 
-            c = JsonConvert.DeserializeObject<Currency>(@"{""Fields"":[],""Case"":""EUR""}");
+            c = JsonConvert.DeserializeObject<Currency>(@"{""Case"":""EUR""}");
             Assert.AreEqual(Currency.EUR, c);
 
             c = JsonConvert.DeserializeObject<Currency>(@"null");
@@ -94,12 +94,6 @@ namespace Newtonsoft.Json.Tests.Converters
         public void DeserializeBasicUnion_NoCaseName()
         {
             ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<Currency>(@"{""Fields"":[1]}"), "No 'Case' property with union name found. Path '', line 1, position 14.");
-        }
-
-        [Test]
-        public void DeserializeBasicUnion_NoFields()
-        {
-            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<Currency>(@"{""Case"":""AUD""}"), "No 'Fields' property with union fields found. Path '', line 1, position 14.");
         }
 
         [Test]
