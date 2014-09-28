@@ -160,7 +160,7 @@ namespace Newtonsoft.Json.Tests
             public Guid guid { get; set; }
             public bool isActive { get; set; }
             public string balance { get; set; }
-            public string picture { get; set; }
+            public Uri picture { get; set; }
             public int age { get; set; }
             public string eyeColor { get; set; }
             public string name { get; set; }
@@ -170,7 +170,7 @@ namespace Newtonsoft.Json.Tests
             public string phone { get; set; }
             public string address { get; set; }
             public string about { get; set; }
-            public string registered { get; set; }
+            public DateTime registered { get; set; }
             public double latitude { get; set; }
             public decimal longitude { get; set; }
             public List<string> tags { get; set; }
@@ -182,15 +182,9 @@ namespace Newtonsoft.Json.Tests
         [Test]
         public void DeserializeLargeJson()
         {
-            for (int i = 0; i < 5; i++)
-            {
-                using (var fs = System.IO.File.OpenText("large.json"))
-                using (JsonTextReader jsonTextReader = new JsonTextReader(fs))
-                {
-                    JsonSerializer serializer = new JsonSerializer();
-                    serializer.Deserialize<IList<RootObject>>(jsonTextReader);
-                }
-            }
+            var json = System.IO.File.ReadAllText("large.json");
+
+            BenchmarkDeserializeMethod<IList<RootObject>>(SerializeMethod.JsonNet, json, 100, false);
         }
 
         [Test]
@@ -812,15 +806,18 @@ If attributes are not mentioned, default values are used in each case.
         #endregion
 
         #region Deserialize
-        public void BenchmarkDeserializeMethod<T>(SerializeMethod method, object json)
+        public void BenchmarkDeserializeMethod<T>(SerializeMethod method, object json, int? iterations = null, bool warmUp = true)
         {
-            Deserialize<T>(method, json);
+            if (warmUp)
+                Deserialize<T>(method, json);
 
             Stopwatch timed = new Stopwatch();
             timed.Start();
 
+            iterations = iterations ?? Iterations;
+
             T value = default(T);
-            for (int x = 0; x < Iterations; x++)
+            for (int x = 0; x < iterations.Value; x++)
             {
                 value = Deserialize<T>(method, json);
             }
@@ -950,15 +947,14 @@ If attributes are not mentioned, default values are used in each case.
 
         public T DeserializeWebExtensions<T>(string json)
         {
-            JavaScriptSerializer ser = new JavaScriptSerializer();
+            JavaScriptSerializer ser = new JavaScriptSerializer { MaxJsonLength = int.MaxValue };
 
             return ser.Deserialize<T>(json);
         }
 
         public T DeserializeDataContractJson<T>(string json)
         {
-            DataContractJsonSerializer dataContractSerializer
-                = new DataContractJsonSerializer(typeof(T));
+            DataContractJsonSerializer dataContractSerializer = new DataContractJsonSerializer(typeof(T));
 
             MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
 

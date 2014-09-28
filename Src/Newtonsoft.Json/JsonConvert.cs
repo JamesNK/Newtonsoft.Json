@@ -355,15 +355,17 @@ namespace Newtonsoft.Json
 
         internal static string ToString(Guid value, char quoteChar)
         {
-            string text = null;
-
+            string text;
+            string qc;
 #if !(NETFX_CORE || PORTABLE40 || PORTABLE)
             text = value.ToString("D", CultureInfo.InvariantCulture);
+            qc = quoteChar.ToString(CultureInfo.InvariantCulture);
 #else
             text = value.ToString("D");
+            qc = quoteChar.ToString();
 #endif
 
-            return quoteChar + text + quoteChar;
+            return qc + text + qc;
         }
 
         /// <summary>

@@ -82,6 +82,60 @@ namespace Newtonsoft.Json.Tests
             }
         }
 
+        public class NameTableTestClass
+        {
+            public string Value { get; set; }
+        }
+
+        public class NameTableTestClassConverter : JsonConverter
+        {
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                reader.Read();
+                reader.Read();
+
+                JsonTextReader jsonTextReader = (JsonTextReader)reader;
+                Assert.IsNotNull(jsonTextReader.NameTable);
+
+                string s = serializer.Deserialize<string>(reader);
+                Assert.AreEqual("hi", s);
+                Assert.IsNotNull(jsonTextReader.NameTable);
+
+                NameTableTestClass o = new NameTableTestClass
+                {
+                    Value = s
+                };
+
+                return o;
+            }
+
+            public override bool CanConvert(Type objectType)
+            {
+                return objectType == typeof(NameTableTestClass);
+            }
+        }
+
+        [Test]
+        public void NameTableTest()
+        {
+            StringReader sr = new StringReader("{'property':'hi'}");
+            JsonTextReader jsonTextReader = new JsonTextReader(sr);
+
+            Assert.IsNull(jsonTextReader.NameTable);
+
+            JsonSerializer serializer = new JsonSerializer();
+            serializer.Converters.Add(new NameTableTestClassConverter());
+            NameTableTestClass o = serializer.Deserialize<NameTableTestClass>(jsonTextReader);
+
+            Assert.IsNull(jsonTextReader.NameTable);
+            Assert.AreEqual("hi", o.Value);
+        }
+
         [Test]
         public void DefaultSettings_Example()
         {

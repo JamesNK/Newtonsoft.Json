@@ -234,6 +234,7 @@
     <Compile Include="Utilities\ILGeneratorExtensions.cs" />
     <Compile Include="Utilities\LateBoundReflectionDelegateFactory.cs" />
     <Compile Include="Utilities\MethodCall.cs" />
+    <Compile Include="Utilities\PropertyNameTable.cs" />
     <Compile Include="Utilities\ReflectionDelegateFactory.cs" />
     <Compile Include="Utilities\ReflectionObject.cs" />
     <Compile Include="Utilities\StringReference.cs" />

@@ -778,6 +778,14 @@ namespace Newtonsoft.Json
             {
                 previousDateFormatString = null;
             }
+
+            JsonTextReader textReader = reader as JsonTextReader;
+            if (textReader != null)
+            {
+                DefaultContractResolver resolver = _contractResolver as DefaultContractResolver;
+                if (resolver != null)
+                    textReader.NameTable = resolver.GetState().NameTable;
+            }
         }
 
         private void ResetReader(JsonReader reader, CultureInfo previousCulture, DateTimeZoneHandling? previousDateTimeZoneHandling, DateParseHandling? previousDateParseHandling, FloatParseHandling? previousFloatParseHandling, int? previousMaxDepth, string previousDateFormatString)
@@ -795,6 +803,10 @@ namespace Newtonsoft.Json
                 reader.MaxDepth = previousMaxDepth;
             if (_dateFormatStringSet)
                 reader.DateFormatString = previousDateFormatString;
+
+            JsonTextReader textReader = reader as JsonTextReader;
+            if (textReader != null)
+                textReader.NameTable = null;
         }
 
         /// <summary>

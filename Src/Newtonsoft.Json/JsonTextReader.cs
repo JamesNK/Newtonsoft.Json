@@ -29,7 +29,6 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.IO;
-using System.Xml;
 using System.Globalization;
 using Newtonsoft.Json.Utilities;
 
@@ -65,6 +64,7 @@ namespace Newtonsoft.Json
         private bool _isEndOfFile;
         private StringBuffer _buffer;
         private StringReference _stringReference;
+        internal PropertyNameTable NameTable;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonReader"/> class with the specified <see cref="TextReader"/>.
@@ -174,7 +174,7 @@ namespace Newtonsoft.Json
 
         private void ShiftBufferIfNeeded()
         {
-            // once in the last 10% of the buffer shift the remainling content to the start to avoid
+            // once in the last 10% of the buffer shift the remaining content to the start to avoid
             // unnessesarly increasing the buffer size when reading numbers/strings
             int length = _chars.Length;
             if (length - _charPos <= length * 0.1)
@@ -844,7 +844,20 @@ namespace Newtonsoft.Json
                 throw JsonReaderException.Create(this, "Invalid property identifier character: {0}.".FormatWith(CultureInfo.InvariantCulture, _chars[_charPos]));
             }
 
-            string propertyName = _stringReference.ToString();
+            string propertyName;
+
+            if (NameTable != null)
+            {
+                propertyName = NameTable.Get(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length);
+
+                // no match in name table
+                if (propertyName == null)
+                    propertyName = _stringReference.ToString();
+            }
+            else
+            {
+                propertyName = _stringReference.ToString();
+            }
 
             EatWhitespace(false);
 

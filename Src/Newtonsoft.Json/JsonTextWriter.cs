@@ -49,6 +49,7 @@ namespace Newtonsoft.Json
         private bool _quoteName;
         private bool[] _charEscapeFlags;
         private char[] _writeBuffer;
+        private char[] _indentChars;
 
         private Base64Encoder Base64Encoder
         {
@@ -98,7 +99,14 @@ namespace Newtonsoft.Json
         public char IndentChar
         {
             get { return _indentChar; }
-            set { _indentChar = value; }
+            set
+            {
+                if (value != _indentChar)
+                {
+                    _indentChar = value;
+                    _indentChars = null;
+                }
+            }
         }
 
         /// <summary>
@@ -266,14 +274,19 @@ namespace Newtonsoft.Json
             // levels of indentation multiplied by the indent count
             int currentIndentCount = Top * _indentation;
 
-            while (currentIndentCount > 0)
+            if (currentIndentCount > 0)
             {
-                // write up to a max of 10 characters at once to avoid creating too many new strings
-                int writeCount = Math.Min(currentIndentCount, 10);
+                if (_indentChars == null)
+                    _indentChars = new string(_indentChar, 10).ToCharArray();
 
-                _writer.Write(new string(_indentChar, writeCount));
+                while (currentIndentCount > 0)
+                {
+                    int writeCount = Math.Min(currentIndentCount, 10);
 
-                currentIndentCount -= writeCount;
+                    _writer.Write(_indentChars, 0, writeCount);
+
+                    currentIndentCount -= writeCount;
+                }
             }
         }
 
@@ -620,7 +633,18 @@ namespace Newtonsoft.Json
         public override void WriteValue(Guid value)
         {
             InternalWriteValue(JsonToken.String);
-            WriteValueInternal(JsonConvert.ToString(value, _quoteChar), JsonToken.String);
+
+            string text = null;
+
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
+            text = value.ToString("D", CultureInfo.InvariantCulture);
+#else
+            text = value.ToString("D");
+#endif
+
+            _writer.Write(_quoteChar);
+            _writer.Write(text);
+            _writer.Write(_quoteChar);
         }
 
         /// <summary>
@@ -630,7 +654,17 @@ namespace Newtonsoft.Json
         public override void WriteValue(TimeSpan value)
         {
             InternalWriteValue(JsonToken.String);
-            WriteValueInternal(JsonConvert.ToString(value, _quoteChar), JsonToken.String);
+
+            string text;
+#if (NET35 || NET20)
+            text = value.ToString();
+#else
+            text = value.ToString(null, CultureInfo.InvariantCulture);
+#endif
+
+            _writer.Write(_quoteChar);
+            _writer.Write(text);
+            _writer.Write(_quoteChar);
         }
 
         /// <summary>
@@ -646,7 +680,7 @@ namespace Newtonsoft.Json
             else
             {
                 InternalWriteValue(JsonToken.String);
-                WriteValueInternal(JsonConvert.ToString(value, _quoteChar), JsonToken.String);
+                WriteEscapedString(value.OriginalString, true);
             }
         }
         #endregion
