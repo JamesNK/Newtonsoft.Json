@@ -1191,7 +1191,7 @@ namespace Newtonsoft.Json.Tests
             public Nest A { get; set; }
         }
 
-        [Test(Description = "Verifies that parameterized JsonConverter constructors are invoked when 'params' are used in JsonConverterAttribute.")]
+        [Test]
         public void ParametersPassedToJsonConverterConstructor()
         {
             ClobberMyProperties clobber = new ClobberMyProperties { One = "Red", Two = "Green", Three = "Yellow", Four = "Black" };
@@ -1265,7 +1265,7 @@ namespace Newtonsoft.Json.Tests
             public string One { get; set; }
         }
 
-        [Test(Description = "Uses JsonConverter and ItemConverterParameters to demonstrate custom rounding of doubles on a property-by-property basis.")]
+        [Test]
         public void CustomDoubleRounding()
         {
             var measurements = new Measurements

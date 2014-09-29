@@ -66,7 +66,7 @@ namespace Newtonsoft.Json.Tests
     [TestFixture]
     public class PerformanceTests : TestFixtureBase
     {
-        private const int Iterations = 100;
+        public int Iterations = 100;
         //private const int Iterations = 5000;
 
         #region Data
@@ -135,7 +135,7 @@ namespace Newtonsoft.Json.Tests
         [Test]
         public void ReadLargeJson()
         {
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 10; i++)
             {
                 using (var fs = System.IO.File.OpenText("large.json"))
                 using (JsonTextReader jsonTextReader = new JsonTextReader(fs))
@@ -808,6 +808,8 @@ If attributes are not mentioned, default values are used in each case.
         #region Deserialize
         public void BenchmarkDeserializeMethod<T>(SerializeMethod method, object json, int? iterations = null, bool warmUp = true)
         {
+            GC.Collect();
+
             if (warmUp)
                 Deserialize<T>(method, json);
 

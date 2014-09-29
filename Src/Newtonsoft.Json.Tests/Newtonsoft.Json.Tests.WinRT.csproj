@@ -370,6 +370,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="large.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Newtonsoft.Json.Tests.WinRT_TemporaryKey.pfx" />
     <Content Include="SpaceShipV2.bson">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
