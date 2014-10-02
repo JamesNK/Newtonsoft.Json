@@ -117,6 +117,7 @@ namespace Newtonsoft.Json
         // current Token data
         private JsonToken _tokenType;
         private object _value;
+        internal StringBuffer _delimitersBefore, _delimitersAfter;
         internal char _quoteChar;
         internal State _currentState;
         internal ReadType _readType;
@@ -232,6 +233,32 @@ namespace Newtonsoft.Json
         public virtual object Value
         {
             get { return _value; }
+        }
+
+        /// <summary>
+        /// Gets delimiters and whitespace placed right before current JSON token.
+        /// Currently only supported by JsonTextReader created with grabDelimiters option.
+        /// </summary>
+        public virtual string DelimitersBefore
+        {
+            get
+            {
+                if (_delimitersBefore == null) throw new NotSupportedException();
+                return _delimitersBefore.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Gets delimiters and whitespace placed right after current JSON token.
+        /// Currently only supported by JsonTextReader created with grabDelimiters option.
+        /// </summary>
+        public virtual string DelimitersAfter
+        {
+            get
+            {
+                if (_delimitersAfter == null) throw new NotSupportedException();
+                return _delimitersAfter.ToString();
+            }
         }
 
         /// <summary>

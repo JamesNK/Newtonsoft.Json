@@ -3147,6 +3147,68 @@ null//comment
 
             Assert.IsTrue(reader.Read());
         }
+
+        [TestCase("\t ")]
+        [TestCase(" ")]
+        [TestCase(" ")]
+        [TestCase("\n")]
+        [TestCase(" \r\n")]
+        [TestCase("\r\n ")]
+        public void GrabDelimiters(string whitespace)
+        {
+            string json = "_[_false_,_{_'k1'_:_'v1'_,'k2':100_}_]_".Replace("'", "\"").Replace("_", whitespace);
+
+            JsonTextReader reader = new JsonTextReader(new StreamReader(new SlowStream(json, new UTF8Encoding(false), 1)),
+                grabDelimiters: true);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+            Assert.AreEqual(whitespace, reader.DelimitersBefore);
+            Assert.IsEmpty(reader.DelimitersAfter);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Boolean, reader.TokenType);
+            Assert.AreEqual(whitespace, reader.DelimitersBefore);
+            Assert.IsEmpty(reader.DelimitersAfter);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+            Assert.AreEqual(whitespace + "," + whitespace, reader.DelimitersBefore);
+            Assert.IsEmpty(reader.DelimitersAfter);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+            Assert.AreEqual(whitespace, reader.DelimitersBefore);
+            Assert.AreEqual(whitespace + ":", reader.DelimitersAfter);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.String, reader.TokenType);
+            Assert.AreEqual(whitespace, reader.DelimitersBefore);
+            Assert.IsEmpty(reader.DelimitersAfter);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+            Assert.AreEqual(whitespace + ",", reader.DelimitersBefore);
+            Assert.AreEqual(":", reader.DelimitersAfter);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+            Assert.IsEmpty(reader.DelimitersBefore);
+            Assert.IsEmpty(reader.DelimitersAfter);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
+            Assert.AreEqual(whitespace, reader.DelimitersBefore);
+            Assert.IsEmpty(reader.DelimitersAfter);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+            Assert.AreEqual(whitespace, reader.DelimitersBefore);
+            Assert.IsEmpty(reader.DelimitersAfter);
+
+            Assert.IsFalse(reader.Read());
+            Assert.AreEqual(whitespace, reader.DelimitersAfter);
+        }
     }
 
     public class ToggleReaderError : TextReader

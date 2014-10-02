@@ -56,6 +56,7 @@ namespace Newtonsoft.Json
         private const int MaximumJavascriptIntegerCharacterLength = 380;
 
         private readonly TextReader _reader;
+        private readonly bool _grabDelimiters;
         private char[] _chars;
         private int _charsUsed;
         private int _charPos;
@@ -70,7 +71,8 @@ namespace Newtonsoft.Json
         /// Initializes a new instance of the <see cref="JsonReader"/> class with the specified <see cref="TextReader"/>.
         /// </summary>
         /// <param name="reader">The <c>TextReader</c> containing the XML data to read.</param>
-        public JsonTextReader(TextReader reader)
+        /// <param name="grabDelimiters">Grab delimiters and whitespace during parsing and allow reading it.</param>
+        public JsonTextReader(TextReader reader, bool grabDelimiters = false)
         {
             if (reader == null)
                 throw new ArgumentNullException("reader");
@@ -78,6 +80,12 @@ namespace Newtonsoft.Json
             _reader = reader;
             _lineNumber = 1;
             _chars = new char[1025];
+            if (grabDelimiters)
+            {
+                _delimitersBefore = new StringBuffer();
+                _delimitersAfter = new StringBuffer();
+                _grabDelimiters = true;
+            }
         }
 
 #if DEBUG
@@ -299,6 +307,7 @@ namespace Newtonsoft.Json
         [DebuggerStepThrough]
         public override bool Read()
         {
+            if (_grabDelimiters) { _delimitersBefore.Clear(); _delimitersAfter.Clear(); }
             _readType = ReadType.Read;
             if (!ReadInternal())
             {
@@ -742,23 +751,28 @@ namespace Newtonsoft.Json
 
                         // finished parsing
                         SetStateBasedOnCurrent();
+                        if (_grabDelimiters) _delimitersBefore.Append(currentChar);
                         return false;
                     case ' ':
                     case StringUtils.Tab:
                         // eat
                         _charPos++;
+                        if (_grabDelimiters) _delimitersBefore.Append(currentChar);
                         break;
                     case StringUtils.CarriageReturn:
                         ProcessCarriageReturn(false);
+                        if (_grabDelimiters) GrabProcessedCarriageReturn(_delimitersBefore, currentChar);
                         break;
                     case StringUtils.LineFeed:
                         ProcessLineFeed();
+                        if (_grabDelimiters) _delimitersBefore.Append(currentChar);
                         break;
                     default:
                         if (char.IsWhiteSpace(currentChar))
                         {
                             // eat
                             _charPos++;
+                            if (_grabDelimiters) _delimitersBefore.Append(currentChar);
                         }
                         else
                         {
@@ -797,20 +811,24 @@ namespace Newtonsoft.Json
                         return true;
                     case StringUtils.CarriageReturn:
                         ProcessCarriageReturn(false);
+                        if (_grabDelimiters) GrabProcessedCarriageReturn(_delimitersBefore, currentChar);
                         break;
                     case StringUtils.LineFeed:
                         ProcessLineFeed();
+                        if (_grabDelimiters) _delimitersBefore.Append(currentChar);
                         break;
                     case ' ':
                     case StringUtils.Tab:
                         // eat
                         _charPos++;
+                        if (_grabDelimiters) _delimitersBefore.Append(currentChar);
                         break;
                     default:
                         if (char.IsWhiteSpace(currentChar))
                         {
                             // eat
                             _charPos++;
+                            if (_grabDelimiters) _delimitersBefore.Append(currentChar);
                         }
                         else
                         {
@@ -865,6 +883,7 @@ namespace Newtonsoft.Json
                 throw JsonReaderException.Create(this, "Invalid character after parsing property name. Expected ':' but got: {0}.".FormatWith(CultureInfo.InvariantCulture, _chars[_charPos]));
 
             _charPos++;
+            if (_grabDelimiters) _delimitersAfter.Append(':');
 
             SetToken(JsonToken.PropertyName, propertyName);
             _quoteChar = quoteChar;
@@ -1004,20 +1023,24 @@ namespace Newtonsoft.Json
                         return true;
                     case StringUtils.CarriageReturn:
                         ProcessCarriageReturn(false);
+                        if (_grabDelimiters) GrabProcessedCarriageReturn(_delimitersBefore, currentChar);
                         break;
                     case StringUtils.LineFeed:
                         ProcessLineFeed();
+                        if (_grabDelimiters) _delimitersBefore.Append(currentChar);
                         break;
                     case ' ':
                     case StringUtils.Tab:
                         // eat
                         _charPos++;
+                        if (_grabDelimiters) _delimitersBefore.Append(currentChar);
                         break;
                     default:
                         if (char.IsWhiteSpace(currentChar))
                         {
                             // eat
                             _charPos++;
+                            if (_grabDelimiters) _delimitersBefore.Append(currentChar);
                             break;
                         }
                         if (char.IsNumber(currentChar) || currentChar == '-' || currentChar == '.')
@@ -1047,6 +1070,13 @@ namespace Newtonsoft.Json
             OnNewLine(_charPos);
         }
 
+        private void GrabProcessedCarriageReturn(StringBuffer to, char currentChar)
+        {
+            to.Append(currentChar);
+            if (_chars[_charPos - 1] == StringUtils.LineFeed)
+                to.Append(_chars[_charPos - 1]);
+        }
+
         private bool EatWhitespace(bool oneOrMore)
         {
             bool finished = false;
@@ -1070,15 +1100,18 @@ namespace Newtonsoft.Json
                         break;
                     case StringUtils.CarriageReturn:
                         ProcessCarriageReturn(false);
+                        if (_grabDelimiters) GrabProcessedCarriageReturn(_delimitersAfter, currentChar);
                         break;
                     case StringUtils.LineFeed:
                         ProcessLineFeed();
+                        if (_grabDelimiters) _delimitersAfter.Append(currentChar);
                         break;
                     default:
                         if (currentChar == ' ' || char.IsWhiteSpace(currentChar))
                         {
                             ateWhitespace = true;
                             _charPos++;
+                            if (_grabDelimiters) _delimitersAfter.Append(currentChar);
                         }
                         else
                         {
