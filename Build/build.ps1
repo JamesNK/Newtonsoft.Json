@@ -1,4 +1,4 @@
-﻿properties { 
+﻿properties {
   $zipFileName = "Json60r6.zip"
   $majorVersion = "6.0"
   $majorWithReleaseVersion = "6.0.6"
@@ -8,7 +8,7 @@
   $buildDocumentation = $false
   $buildNuGet = $true
   $treatWarningsAsErrors = $false
-  
+
   $baseDir  = resolve-path ..
   $buildDir = "$baseDir\Build"
   $sourceDir = "$baseDir\Src"
@@ -34,19 +34,19 @@ task default -depends Test
 # Ensure a clean working directory
 task Clean {
   Set-Location $baseDir
-  
+
   if (Test-Path -path $workingDir)
   {
     Write-Output "Deleting Working Directory"
-    
+
     del $workingDir -Recurse -Force
   }
-  
+
   New-Item -Path $workingDir -ItemType Directory
 }
 
 # Build each solution, optionally signed
-task Build -depends Clean { 
+task Build -depends Clean {
   Write-Host -ForegroundColor Green "Updating assembly version"
   Write-Host
   Update-AssemblyInfoFiles $sourceDir ($majorVersion + '.0.0') $version
@@ -76,18 +76,15 @@ task Package -depends Build {
   {
     $name = $build.TestsName
     $finalDir = $build.FinalDir
-    
+
     robocopy "$sourceDir\Newtonsoft.Json\bin\Release\$finalDir" $workingDir\Package\Bin\$finalDir *.dll *.pdb *.xml /NP /XO /XF *.CodeAnalysisLog.xml | Out-Default
   }
-  
+
   if ($buildNuGet)
   {
-    New-Item -Path $workingDir\NuGet -ItemType Directory    
+    New-Item -Path $workingDir\NuGet -ItemType Directory
     Copy-Item -Path "$buildDir\Newtonsoft.Json.nuspec" -Destination $workingDir\NuGet\Newtonsoft.Json.nuspec -recurse
 
-    New-Item -Path $workingDir\NuGet\tools -ItemType Directory
-    Copy-Item -Path "$buildDir\install.ps1" -Destination $workingDir\NuGet\tools\install.ps1 -recurse
-    
     foreach ($build in $builds)
     {
       if ($build.NuGetDir)
@@ -95,20 +92,20 @@ task Package -depends Build {
         $name = $build.TestsName
         $finalDir = $build.FinalDir
         $frameworkDirs = $build.NuGetDir.Split(",")
-        
+
         foreach ($frameworkDir in $frameworkDirs)
         {
           robocopy "$sourceDir\Newtonsoft.Json\bin\Release\$finalDir" $workingDir\NuGet\lib\$frameworkDir *.dll *.pdb *.xml /NP /XO /XF *.CodeAnalysisLog.xml | Out-Default
         }
       }
     }
-  
+
     robocopy $sourceDir $workingDir\NuGet\src *.cs /S /NP /XD Newtonsoft.Json.Tests obj | Out-Default
 
     exec { .\Tools\NuGet\NuGet.exe pack $workingDir\NuGet\Newtonsoft.Json.nuspec -Symbols }
     move -Path .\*.nupkg -Destination $workingDir\NuGet
   }
-  
+
   if ($buildDocumentation)
   {
     $mainBuild = $builds | where { $_.Name -eq "Newtonsoft.Json" } | select -first 1
@@ -118,10 +115,10 @@ task Package -depends Build {
 
     # Sandcastle has issues when compiling with .NET 4 MSBuild - http://shfb.codeplex.com/Thread/View.aspx?ThreadId=50652
     exec { msbuild "/t:Clean;Rebuild" /p:Configuration=Release "/p:DocumentationSourcePath=$documentationSourcePath" $docDir\doc.shfbproj | Out-Default } "Error building documentation. Check that you have Sandcastle, Sandcastle Help File Builder and HTML Help Workshop installed."
-    
+
     move -Path $workingDir\Documentation\LastBuild.log -Destination $workingDir\Documentation.log
   }
-  
+
   Copy-Item -Path $docDir\readme.txt -Destination $workingDir\Package\
   Copy-Item -Path $docDir\license.txt -Destination $workingDir\Package\
 
@@ -132,7 +129,7 @@ task Package -depends Build {
   robocopy $buildDir $workingDir\Package\Source\Build /MIR /NP /XF runbuild.txt | Out-Default
   robocopy $docDir $workingDir\Package\Source\Doc /MIR /NP | Out-Default
   robocopy $toolsDir $workingDir\Package\Source\Tools /MIR /NP | Out-Default
-  
+
   exec { .\Tools\7-zip\7za.exe a -tzip $workingDir\$zipFileName $workingDir\Package\* | Out-Default } "Error zipping"
 }
 
@@ -150,11 +147,11 @@ task Test -depends Deploy {
     {
         $finalDir = $build.FinalDir
         $framework = $build.Framework
-        
+
         Write-Host -ForegroundColor Green "Copying test assembly $name to deployed directory"
         Write-Host
         robocopy ".\Src\Newtonsoft.Json.Tests\bin\Release\$finalDir" $workingDir\Deployed\Bin\$finalDir /MIR /NP /XO /XF LinqBridge.dll | Out-Default
-        
+
         Copy-Item -Path ".\Src\Newtonsoft.Json.Tests\bin\Release\$finalDir\Newtonsoft.Json.Tests.dll" -Destination $workingDir\Deployed\Bin\$finalDir\
 
         Write-Host -ForegroundColor Green "Running tests " $name
@@ -174,17 +171,17 @@ function GetConstants($constants, $includeSigned)
 function GetVersion($majorVersion)
 {
     $now = [DateTime]::Now
-    
+
     $year = $now.Year - 2000
     $month = $now.Month
     $totalMonthsSince2000 = ($year * 12) + $month
     $day = $now.Day
     $minor = "{0}{1:00}" -f $totalMonthsSince2000, $day
-    
+
     $hour = $now.Hour
     $minute = $now.Minute
     $revision = "{0:00}{1:00}" -f $hour, $minute
-    
+
     return $majorVersion + "." + $minor
 }
 
@@ -194,13 +191,13 @@ function Update-AssemblyInfoFiles ([string] $sourceDir, [string] $assemblyVersio
     $fileVersionPattern = 'AssemblyFileVersion\("[0-9]+(\.([0-9]+|\*)){1,3}"\)'
     $assemblyVersion = 'AssemblyVersion("' + $assemblyVersionNumber + '")';
     $fileVersion = 'AssemblyFileVersion("' + $fileVersionNumber + '")';
-    
+
     Get-ChildItem -Path $sourceDir -r -filter AssemblyInfo.cs | ForEach-Object {
-        
+
         $filename = $_.Directory.ToString() + '\' + $_.Name
         Write-Host $filename
         $filename + ' -> ' + $version
-    
+
         (Get-Content $filename) | ForEach-Object {
             % {$_ -replace $assemblyVersionPattern, $assemblyVersion } |
             % {$_ -replace $fileVersionPattern, $fileVersion }
