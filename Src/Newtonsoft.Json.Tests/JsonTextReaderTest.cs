@@ -27,16 +27,20 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using Newtonsoft.Json.Linq;
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE || ASPNETCORE50)
 using System.Numerics;
 #endif
 using System.Text;
-#if !NETFX_CORE
-using NUnit.Framework;
-#else
+#if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
+#elif ASPNETCORE50
+using Xunit;
+using Test = Xunit.FactAttribute;
+using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+#else
+using NUnit.Framework;
 #endif
 using Newtonsoft.Json;
 using System.IO;
@@ -78,7 +82,7 @@ second line
 third line", jsonTextReader.Value);
         }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE || ASPNETCORE50)
         [Test]
         public void ReadBigInteger()
         {
@@ -517,7 +521,7 @@ third line", jsonTextReader.Value);
 ]content";
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
-#if DEBUG
+#if DEBUG && !NOINTERNALS
             reader.SetCharBuffer(new char[2]);
 #endif
 
@@ -586,7 +590,7 @@ third line", jsonTextReader.Value);
 
             using (JsonTextReader jsonReader = new JsonTextReader(sr))
             {
-#if DEBUG
+#if DEBUG && !NOINTERNALS
                 jsonReader.SetCharBuffer(new char[5]);
 #endif
 
@@ -904,7 +908,7 @@ third line", jsonTextReader.Value);
 ]";
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
-#if DEBUG
+#if DEBUG && !NOINTERNALS
             reader.SetCharBuffer(new char[129]);
 #endif
 
@@ -958,7 +962,7 @@ third line", jsonTextReader.Value);
             }
         }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE || ASPNETCORE50)
         [Test]
         public void ReadInt64Overflow()
         {
@@ -1019,7 +1023,7 @@ third line", jsonTextReader.Value);
 ";
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
-#if DEBUG
+#if DEBUG && !NOINTERNALS
             reader.SetCharBuffer(new char[129]);
 #endif
 
@@ -1562,7 +1566,7 @@ third line", jsonTextReader.Value);
             string json = @"[""\u003c"",""\u5f20""]";
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
-#if DEBUG
+#if DEBUG && !NOINTERNALS
             reader.SetCharBuffer(new char[2]);
 #endif
 
@@ -1894,7 +1898,7 @@ third line", jsonTextReader.Value);
             string json = @"{""Message"":""Hi,I\u0092ve send you smth""}";
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
-#if DEBUG
+#if DEBUG && !NOINTERNALS
             reader.SetCharBuffer(new char[5]);
 #endif
 
@@ -2251,7 +2255,7 @@ third line", jsonTextReader.Value);
 ]";
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
-#if DEBUG
+#if DEBUG && !NOINTERNALS
             reader.SetCharBuffer(new char[5]);
 #endif
 
@@ -2279,7 +2283,7 @@ third line", jsonTextReader.Value);
       } /*comment*/";
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
-#if DEBUG
+#if DEBUG && !NOINTERNALS
             reader.SetCharBuffer(new char[5]);
 #endif
 
@@ -2299,7 +2303,7 @@ third line", jsonTextReader.Value);
         {
             string json = "new Date\0()";
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
-#if DEBUG
+#if DEBUG && !NOINTERNALS
             reader.SetCharBuffer(new char[7]);
 #endif
 

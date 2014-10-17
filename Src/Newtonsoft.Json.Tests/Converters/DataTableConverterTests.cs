@@ -27,15 +27,19 @@ using System.IO;
 using System.Text;
 using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Linq;
-#if !(NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || ASPNETCORE50 || PORTABLE40)
 using System;
 using System.Collections.Generic;
-#if !NETFX_CORE
-using NUnit.Framework;
-#else
+#if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
+#elif ASPNETCORE50
+using Xunit;
+using Test = Xunit.FactAttribute;
+using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+#else
+using NUnit.Framework;
 #endif
 #if !NETFX_CORE
 using System.Data;
@@ -97,17 +101,17 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual(2, deserializedDataTable.Rows.Count);
 
             DataRow dr1 = deserializedDataTable.Rows[0];
-            Assert.AreEqual(0, dr1["id"]);
+            Assert.AreEqual(0L, dr1["id"]);
             Assert.AreEqual("item 0", dr1["item"]);
             Assert.AreEqual("0!", ((DataTable)dr1["DataTableCol"]).Rows[0]["NestedStringCol"]);
-            Assert.AreEqual(0, ((long[])dr1["ArrayCol"])[0]);
+            Assert.AreEqual(0L, ((long[])dr1["ArrayCol"])[0]);
             Assert.AreEqual(new DateTime(2000, 12, 29, 0, 0, 0, DateTimeKind.Utc), dr1["DateCol"]);
 
             DataRow dr2 = deserializedDataTable.Rows[1];
-            Assert.AreEqual(1, dr2["id"]);
+            Assert.AreEqual(1L, dr2["id"]);
             Assert.AreEqual("item 1", dr2["item"]);
             Assert.AreEqual("1!", ((DataTable)dr2["DataTableCol"]).Rows[0]["NestedStringCol"]);
-            Assert.AreEqual(1, ((long[])dr2["ArrayCol"])[0]);
+            Assert.AreEqual(1L, ((long[])dr2["ArrayCol"])[0]);
             Assert.AreEqual(new DateTime(2000, 12, 29, 0, 0, 0, DateTimeKind.Utc), dr2["DateCol"]);
         }
 

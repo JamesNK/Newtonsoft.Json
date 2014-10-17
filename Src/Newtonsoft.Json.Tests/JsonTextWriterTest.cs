@@ -35,13 +35,20 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Xml;
-#if !NETFX_CORE
-using NUnit.Framework;
-#else
+
+#if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
+#elif ASPNETCORE50
+using Xunit;
+using Test = Xunit.FactAttribute;
+using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+#else
+using NUnit.Framework;
 #endif
+
+
 using Newtonsoft.Json;
 using System.IO;
 using Newtonsoft.Json.Converters;
@@ -114,7 +121,7 @@ namespace Newtonsoft.Json.Tests
             Assert.IsTrue(ms.CanRead);
         }
 
-#if !(PORTABLE || NETFX_CORE)
+#if !(PORTABLE || ASPNETCORE50 || NETFX_CORE)
         [Test]
         public void WriteIConvertable()
         {
@@ -1509,7 +1516,7 @@ null//comment
         }
     }
 
-#if !(PORTABLE || NETFX_CORE)
+#if !(PORTABLE || ASPNETCORE50 || NETFX_CORE)
     public struct ConvertibleInt : IConvertible
     {
         private readonly int _value;

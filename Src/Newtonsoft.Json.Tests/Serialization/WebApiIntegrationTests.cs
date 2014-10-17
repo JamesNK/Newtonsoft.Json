@@ -30,12 +30,16 @@ using System.IO;
 using System.Linq;
 #endif
 using System.Text;
-#if !NETFX_CORE
-using NUnit.Framework;
-#else
+#if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
+#elif ASPNETCORE50
+using Xunit;
+using Test = Xunit.FactAttribute;
+using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+#else
+using NUnit.Framework;
 #endif
 #if !(NETFX_CORE || NET20)
 using System.Runtime.Serialization.Json;
@@ -59,7 +63,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 nonSerializedField = "Error"
             };
 
-#if !(NETFX_CORE || NET20 || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || NET20 || PORTABLE || ASPNETCORE50 || PORTABLE40)
             MemoryStream ms = new MemoryStream();
             DataContractJsonSerializer dataContractJsonSerializer = new DataContractJsonSerializer(typeof(SerializableType));
             dataContractJsonSerializer.WriteObject(ms, serializableType);
@@ -75,7 +79,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             {
                 ContractResolver = new DefaultContractResolver
                 {
-#if !(NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || ASPNETCORE50 || PORTABLE40)
                     IgnoreSerializableAttribute = false
 #endif
                 }
@@ -84,7 +88,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(expected, json);
         }
 
-#if !(NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || ASPNETCORE50 || PORTABLE40)
         [Test]
         public void SerializeInheritedType()
         {
@@ -114,7 +118,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
     }
 
-#if !(NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || ASPNETCORE50 || PORTABLE40)
     [Serializable]
 #else
     [JsonObject(MemberSerialization.Fields)]
@@ -138,7 +142,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             set { privateField = value; }
         }
 
-#if !(NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || ASPNETCORE50 || PORTABLE40)
         [NonSerialized]
 #else
         [JsonIgnore]

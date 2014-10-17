@@ -25,7 +25,7 @@
 
 using System;
 using System.Collections;
-#if !(NET35 || NET20 || PORTABLE || PORTABLE40)
+#if !(NET35 || NET20 || PORTABLE || ASPNETCORE50 || PORTABLE40)
 using System.Collections.Concurrent;
 #endif
 using System.Collections.Generic;
@@ -40,12 +40,16 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Tests.TestObjects;
-#if !NETFX_CORE
-using NUnit.Framework;
-#else
+#if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
+#elif ASPNETCORE50
+using Xunit;
+using Test = Xunit.FactAttribute;
+using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+#else
+using NUnit.Framework;
 #endif
 
 namespace Newtonsoft.Json.Tests.Serialization
@@ -541,7 +545,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(3, v2["Third"]);
         }
 
-#if !(NET35 || NET20 || PORTABLE || PORTABLE40)
+#if !(NET35 || NET20 || PORTABLE || ASPNETCORE50 || PORTABLE40)
         [Test]
         public void DeserializeConcurrentDictionary()
         {
@@ -1255,7 +1259,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(1, (int)((JObject)o.Data[2])["one"]);
         }
 
-#if !NETFX_CORE
+#if !(NETFX_CORE || ASPNETCORE50)
         [Test]
         public void SerializeArrayAsArrayList()
         {

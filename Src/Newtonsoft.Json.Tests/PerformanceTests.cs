@@ -23,8 +23,8 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if !(NET20 || NET35 || NETFX_CORE || PORTABLE || ASPNETCORE50)
 using System.Xml;
-#if !(NET20 || NET35 || NETFX_CORE || PORTABLE)
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -184,7 +184,7 @@ namespace Newtonsoft.Json.Tests
         {
             var json = System.IO.File.ReadAllText("large.json");
 
-            BenchmarkDeserializeMethod<IList<RootObject>>(SerializeMethod.JsonNet, json, 100, false);
+            BenchmarkDeserializeMethod<IList<RootObject>>(SerializeMethod.JsonNet, json, Iterations / 10, false);
         }
 
         [Test]

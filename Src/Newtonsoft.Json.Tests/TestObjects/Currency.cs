@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET35 || NET20 || NETFX_CORE)
+#if !(NET35 || NET20 || NETFX_CORE || ASPNETCORE50)
 using Microsoft.FSharp.Core;
 using System;
 using System.Collections;

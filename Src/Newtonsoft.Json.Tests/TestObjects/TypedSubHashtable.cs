@@ -27,7 +27,7 @@ using System.Collections;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-#if !NETFX_CORE
+#if !(NETFX_CORE || ASPNETCORE50)
     public class TypedSubHashtable
     {
         public string Name;

@@ -24,27 +24,23 @@
 #endregion
 
 #if !(NET35 || NET20 || PORTABLE40)
-
 using System;
 using System.Collections.Generic;
-#if !NET20 && !NETFX_CORE
-using System.Data.Linq;
-#endif
-#if !NETFX_CORE
-using System.Data.SqlTypes;
-#endif
 using System.Dynamic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Converters;
-#if !NETFX_CORE
-using NUnit.Framework;
-#else
+#if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
+#elif ASPNETCORE50
+using Xunit;
+using Test = Xunit.FactAttribute;
+using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+#else
+using NUnit.Framework;
 #endif
-using Newtonsoft.Json.Tests.TestObjects;
 
 namespace Newtonsoft.Json.Tests.Converters
 {

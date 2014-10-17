@@ -31,12 +31,16 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
 using Newtonsoft.Json.Utilities;
-#if !NETFX_CORE
-using NUnit.Framework;
-#else
+#if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
+#elif ASPNETCORE50
+using Xunit;
+using Test = Xunit.FactAttribute;
+using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+#else
+using NUnit.Framework;
 #endif
 using Newtonsoft.Json.Schema;
 using System.IO;
@@ -47,7 +51,6 @@ using Extensions = Newtonsoft.Json.Schema.Extensions;
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
-
 #endif
 
 namespace Newtonsoft.Json.Tests.Schema
@@ -91,7 +94,7 @@ namespace Newtonsoft.Json.Tests.Schema
             Assert.IsTrue(o.IsValid(schema));
         }
 
-#if !(NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || ASPNETCORE50 || PORTABLE40)
         [Test]
         public void Generate_DefaultValueAttributeTestClass()
         {
@@ -310,7 +313,7 @@ namespace Newtonsoft.Json.Tests.Schema
             Assert.IsTrue(v.IsValid(schema));
         }
 
-#if !(NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || ASPNETCORE50 || PORTABLE40)
         [Test]
         public void GenerateSchemaForISerializable()
         {
@@ -325,7 +328,7 @@ namespace Newtonsoft.Json.Tests.Schema
         }
 #endif
 
-#if !(NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || ASPNETCORE50 || PORTABLE40)
         [Test]
         public void GenerateSchemaForDBNull()
         {
@@ -370,7 +373,7 @@ namespace Newtonsoft.Json.Tests.Schema
             generator.UndefinedSchemaIdHandling = UndefinedSchemaIdHandling.UseTypeName;
             generator.ContractResolver = new CustomDirectoryInfoMapper
             {
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE || ASPNETCORE50)
                 IgnoreSerializableAttribute = true
 #endif
             };
@@ -454,7 +457,7 @@ namespace Newtonsoft.Json.Tests.Schema
             serializer.Converters.Add(new IsoDateTimeConverter());
             serializer.ContractResolver = new CustomDirectoryInfoMapper
             {
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE || ASPNETCORE50)
                 IgnoreSerializableInterface = true
 #endif
             };
@@ -474,7 +477,7 @@ namespace Newtonsoft.Json.Tests.Schema
             generator.UndefinedSchemaIdHandling = UndefinedSchemaIdHandling.UseTypeName;
             generator.ContractResolver = new CamelCasePropertyNamesContractResolver()
             {
-#if !(NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || ASPNETCORE50 || PORTABLE40)
                 IgnoreSerializableAttribute = true
 #endif
             };
@@ -519,7 +522,7 @@ namespace Newtonsoft.Json.Tests.Schema
 }", json);
         }
 
-#if !(NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || ASPNETCORE50 || PORTABLE40)
         [Test]
         public void GenerateSchemaSerializable()
         {
@@ -773,6 +776,7 @@ namespace Newtonsoft.Json.Tests.Schema
             public SortTypeFlagAsString y;
         }
 
+#if !ASPNETCORE50
         [Test]
         [Ignore]
         public void GenerateSchemaWithStringEnum()
@@ -799,6 +803,7 @@ namespace Newtonsoft.Json.Tests.Schema
   }
 }", json);
         }
+#endif
     }
 
     public class NullableInt32TestClass

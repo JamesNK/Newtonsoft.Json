@@ -1,11 +1,15 @@
 using System.Reflection;
 using Newtonsoft.Json.Utilities;
-#if !NETFX_CORE
-using NUnit.Framework;
-#else
+#if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
+#elif ASPNETCORE50
+using Xunit;
+using Test = Xunit.FactAttribute;
+using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+#else
+using NUnit.Framework;
 #endif
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
@@ -48,7 +52,7 @@ namespace Newtonsoft.Json.Tests.Utilities
         [Test]
         public void ConstructorWithRefString()
         {
-            ConstructorInfo constructor = typeof(OutAndRefTestClass).GetConstructors().Single(c => c.GetParameters().Count() == 1);
+            ConstructorInfo constructor = TestReflectionUtils.GetConstructors(typeof(OutAndRefTestClass)).Single(c => c.GetParameters().Count() == 1);
 
             var creator = LateBoundReflectionDelegateFactory.Instance.CreateParametrizedConstructor(constructor);
 
@@ -61,7 +65,7 @@ namespace Newtonsoft.Json.Tests.Utilities
         [Test]
         public void ConstructorWithRefStringAndOutBool()
         {
-            ConstructorInfo constructor = typeof(OutAndRefTestClass).GetConstructors().Single(c => c.GetParameters().Count() == 2);
+            ConstructorInfo constructor = TestReflectionUtils.GetConstructors(typeof(OutAndRefTestClass)).Single(c => c.GetParameters().Count() == 2);
 
             var creator = LateBoundReflectionDelegateFactory.Instance.CreateParametrizedConstructor(constructor);
 
@@ -74,7 +78,7 @@ namespace Newtonsoft.Json.Tests.Utilities
         [Test]
         public void ConstructorWithRefStringAndRefBoolAndRefBool()
         {
-            ConstructorInfo constructor = typeof(OutAndRefTestClass).GetConstructors().Single(c => c.GetParameters().Count() == 3);
+            ConstructorInfo constructor = TestReflectionUtils.GetConstructors(typeof(OutAndRefTestClass)).Single(c => c.GetParameters().Count() == 3);
 
             var creator = LateBoundReflectionDelegateFactory.Instance.CreateParametrizedConstructor(constructor);
 

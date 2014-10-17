@@ -30,12 +30,16 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-#if !NETFX_CORE
-using NUnit.Framework;
-#else
+#if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
+#elif ASPNETCORE50
+using Xunit;
+using Test = Xunit.FactAttribute;
+using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+#else
+using NUnit.Framework;
 #endif
 using Newtonsoft.Json.Linq;
 
@@ -61,6 +65,9 @@ namespace Newtonsoft.Json.Tests.Serialization
   ""II"",
   ""3""
 ]", json);
+
+            Console.WriteLine("Serialized immutable list:");
+            Console.WriteLine(json);
         }
 
         [Test]
@@ -99,6 +106,10 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual("Volibear", champions[0]);
             Assert.AreEqual("Teemo", champions[1]);
             Assert.AreEqual("Katarina", champions[2]);
+
+            Console.WriteLine("Deserialized immutable list:");
+            Console.WriteLine(string.Join(", ", champions));
+
         }
         #endregion
 

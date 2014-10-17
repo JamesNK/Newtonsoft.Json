@@ -106,12 +106,15 @@ namespace Newtonsoft.Json.Utilities
         {
             if (underlyingType.IsGenericType())
             {
-                string name = underlyingType.GetGenericTypeDefinition().FullName;
+                Type underlyingTypeDefinition = underlyingType.GetGenericTypeDefinition();
+                string name = underlyingTypeDefinition.FullName;
+
                 ImmutableCollectionTypeInfo definition = ArrayContractImmutableCollectionDefinitions.FirstOrDefault(d => d.ContractTypeName == name);
                 if (definition != null)
                 {
-                    Type createdTypeDefinition = Type.GetType(definition.CreatedTypeName + ", System.Collections.Immutable");
-                    Type builderTypeDefinition = Type.GetType(definition.BuilderTypeName + ", System.Collections.Immutable");
+                    Type createdTypeDefinition = underlyingTypeDefinition.Assembly().GetType(definition.CreatedTypeName);
+                    Type builderTypeDefinition = underlyingTypeDefinition.Assembly().GetType(definition.BuilderTypeName);
+
                     if (createdTypeDefinition != null && builderTypeDefinition != null)
                     {
                         MethodInfo mb = builderTypeDefinition.GetMethods().FirstOrDefault(m => m.Name == "CreateRange" && m.GetParameters().Length == 1);
@@ -135,12 +138,15 @@ namespace Newtonsoft.Json.Utilities
         {
             if (underlyingType.IsGenericType())
             {
-                string name = underlyingType.GetGenericTypeDefinition().FullName;
+                Type underlyingTypeDefinition = underlyingType.GetGenericTypeDefinition();
+                string name = underlyingTypeDefinition.FullName;
+
                 ImmutableCollectionTypeInfo definition = DictionaryContractImmutableCollectionDefinitions.FirstOrDefault(d => d.ContractTypeName == name);
                 if (definition != null)
                 {
-                    Type createdTypeDefinition = Type.GetType(definition.CreatedTypeName + ", System.Collections.Immutable");
-                    Type builderTypeDefinition = Type.GetType(definition.BuilderTypeName + ", System.Collections.Immutable");
+                    Type createdTypeDefinition = underlyingTypeDefinition.Assembly().GetType(definition.CreatedTypeName);
+                    Type builderTypeDefinition = underlyingTypeDefinition.Assembly().GetType(definition.BuilderTypeName); 
+                    
                     if (createdTypeDefinition != null && builderTypeDefinition != null)
                     {
                         MethodInfo mb = builderTypeDefinition.GetMethods().FirstOrDefault(m =>

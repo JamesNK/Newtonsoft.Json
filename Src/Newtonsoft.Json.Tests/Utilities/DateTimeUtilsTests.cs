@@ -28,12 +28,16 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
-#if !NETFX_CORE
-using global::NUnit.Framework;
+#if NETFX_CORE
+using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
+using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
+#elif ASPNETCORE50
+using Xunit;
+using Test = Xunit.FactAttribute;
+using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
-using global::Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-using TestFixture = global::Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
-using Test = global::Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
+using NUnit.Framework;
 #endif
 using Newtonsoft.Json.Utilities;
 
@@ -60,6 +64,20 @@ namespace Newtonsoft.Json.Tests.Utilities
 
             DateTime parsedDt = (DateTime)dt;
             Assert.AreEqual(value, parsedDt);
+        }
+
+        [Test]
+        public void FailingDateTimeParse()
+        {
+            string text = "2000-12-15T22:11:03.055+23:30";
+
+            DateTime oldDt;
+            bool success = DateTime.TryParseExact(text, "yyyy-MM-ddTHH:mm:ss.FFFFFFFK", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out oldDt);
+
+            Console.WriteLine("Success: " + success);
+            Console.WriteLine("DateTime: " + oldDt);
+
+            Assert.IsTrue(success);
         }
 
         [Test]
@@ -138,6 +156,8 @@ namespace Newtonsoft.Json.Tests.Utilities
 
         private void AssertNewDateTimeParseEqual(string text)
         {
+            Console.WriteLine("Parsing date text: " + text);
+
             object oldDt;
             TryParseDateIso(text, DateParseHandling.DateTime, DateTimeZoneHandling.RoundtripKind, out oldDt);
 

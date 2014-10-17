@@ -29,10 +29,10 @@ using System.ComponentModel;
 using System.Collections.Concurrent;
 #endif
 using System.Collections.Generic;
-#if !(NET20 || NET35 || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE || ASPNETCORE50)
 using System.Numerics;
 #endif
-#if !NET20 && !NETFX_CORE
+#if !(NET20 || NETFX_CORE || ASPNETCORE50)
 using System.ComponentModel.DataAnnotations;
 using System.Configuration;
 using System.Runtime.CompilerServices;
@@ -42,12 +42,16 @@ using System.Web.Script.Serialization;
 #endif
 using System.Text;
 using System.Text.RegularExpressions;
-#if !NETFX_CORE
-using NUnit.Framework;
-#else
+#if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
+#elif ASPNETCORE50
+using Xunit;
+using Test = Xunit.FactAttribute;
+using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+#else
+using NUnit.Framework;
 #endif
 using Newtonsoft.Json;
 using System.IO;
@@ -81,7 +85,7 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
 #endif
-#if !(NETFX_CORE)
+#if !(NETFX_CORE || ASPNETCORE50)
 using System.Drawing;
 using System.Diagnostics;
 #endif
@@ -109,7 +113,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             public int ChildId;
         }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE || ASPNETCORE50)
         [Test]
         public void ReadIntegerWithError()
         {
@@ -365,7 +369,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             serializer.ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor;
             Assert.AreEqual(ConstructorHandling.AllowNonPublicDefaultConstructor, serializer.ConstructorHandling);
 
-#if !NETFX_CORE
+#if !(NETFX_CORE || ASPNETCORE50)
             serializer.Context = new StreamingContext(StreamingContextStates.Other);
             Assert.AreEqual(new StreamingContext(StreamingContextStates.Other), serializer.Context);
 #endif
@@ -433,7 +437,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             serializer.TraceWriter = traceWriter;
             Assert.AreEqual(traceWriter, serializer.TraceWriter);
 
-#if !(PORTABLE || PORTABLE40 || NETFX_CORE || NET20)
+#if !(PORTABLE || PORTABLE40 || NETFX_CORE || NET20 || ASPNETCORE50)
             serializer.TypeNameAssemblyFormat = FormatterAssemblyStyle.Full;
             Assert.AreEqual(FormatterAssemblyStyle.Full, serializer.TypeNameAssemblyFormat);
 #endif
@@ -457,7 +461,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             settings.ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor;
             Assert.AreEqual(ConstructorHandling.AllowNonPublicDefaultConstructor, settings.ConstructorHandling);
 
-#if !NETFX_CORE
+#if !(NETFX_CORE || ASPNETCORE50)
             settings.Context = new StreamingContext(StreamingContextStates.Other);
             Assert.AreEqual(new StreamingContext(StreamingContextStates.Other), settings.Context);
 #endif
@@ -525,7 +529,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             settings.TraceWriter = traceWriter;
             Assert.AreEqual(traceWriter, settings.TraceWriter);
 
-#if !(PORTABLE || PORTABLE40 || NETFX_CORE || NET20)
+#if !(PORTABLE || PORTABLE40 || NETFX_CORE || NET20 || ASPNETCORE50)
             settings.TypeNameAssemblyFormat = FormatterAssemblyStyle.Full;
             Assert.AreEqual(FormatterAssemblyStyle.Full, settings.TypeNameAssemblyFormat);
 #endif
@@ -549,7 +553,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             serializerProxy.ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor;
             Assert.AreEqual(ConstructorHandling.AllowNonPublicDefaultConstructor, serializerProxy.ConstructorHandling);
 
-#if !NETFX_CORE
+#if !(NETFX_CORE || ASPNETCORE50)
             serializerProxy.Context = new StreamingContext(StreamingContextStates.Other);
             Assert.AreEqual(new StreamingContext(StreamingContextStates.Other), serializerProxy.Context);
 #endif
@@ -617,7 +621,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             serializerProxy.TraceWriter = traceWriter;
             Assert.AreEqual(traceWriter, serializerProxy.TraceWriter);
 
-#if !(PORTABLE || PORTABLE40 || NETFX_CORE || NET20)
+#if !(PORTABLE || PORTABLE40 || NETFX_CORE || NET20 || ASPNETCORE50)
             serializerProxy.TypeNameAssemblyFormat = FormatterAssemblyStyle.Full;
             Assert.AreEqual(FormatterAssemblyStyle.Full, serializerProxy.TypeNameAssemblyFormat);
 #endif
@@ -626,7 +630,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(TypeNameHandling.All, serializerProxy.TypeNameHandling);
         }
 
-#if !(NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40 || ASPNETCORE50)
         [Test]
         public void DeserializeISerializableIConvertible()
         {
@@ -768,7 +772,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual("value", deserialized.foo.bar);
         }
 
-#if !NETFX_CORE
+#if !(NETFX_CORE || ASPNETCORE50)
         [Test]
         public void ConversionOperator()
         {
@@ -1196,7 +1200,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(executorObject2.clientGetResultFunction, "ClientBanSubsCB");
         }
 
-#if !NETFX_CORE
+#if !(NETFX_CORE || ASPNETCORE50)
         [Test]
         public void HashtableDeserialization()
         {
@@ -1405,7 +1409,7 @@ keyword such as type of business.""
         {
             string json = @"[""vvv\/vvv\tvvv\""vvv\bvvv\nvvv\rvvv\\vvv\fvvv""]";
 
-#if !NETFX_CORE
+#if !(NETFX_CORE || ASPNETCORE50)
             JavaScriptSerializer javaScriptSerializer = new JavaScriptSerializer();
             List<string> javaScriptSerializerResult = javaScriptSerializer.Deserialize<List<string>>(json);
 #endif
@@ -1417,7 +1421,7 @@ keyword such as type of business.""
 
             Assert.AreEqual(1, jsonNetResult.Count);
             Assert.AreEqual(dataContractResult[0], jsonNetResult[0]);
-#if !NETFX_CORE
+#if !(NETFX_CORE || ASPNETCORE50)
             Assert.AreEqual(javaScriptSerializerResult[0], jsonNetResult[0]);
 #endif
         }
@@ -1636,7 +1640,7 @@ keyword such as type of business.""
             string json = JsonConvert.SerializeObject(new ConverableMembers(), Formatting.Indented);
 
             string expected = null;
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE || ASPNETCORE50)
             expected = @"{
   ""String"": ""string"",
   ""Int32"": 2147483647,
@@ -1676,7 +1680,7 @@ keyword such as type of business.""
             ConverableMembers c = JsonConvert.DeserializeObject<ConverableMembers>(json);
             Assert.AreEqual("string", c.String);
             Assert.AreEqual(double.MaxValue, c.Double);
-#if !(NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || ASPNETCORE50 || PORTABLE40)
             Assert.AreEqual(DBNull.Value, c.DBNull);
 #endif
         }
@@ -2523,7 +2527,7 @@ keyword such as type of business.""
             Assert.AreEqual("titleId", n.FidOrder[n.FidOrder.Count - 1]);
         }
 
-#if !(NET20 || NETFX_CORE)
+#if !(NET20 || NETFX_CORE || ASPNETCORE50 || PORTABLE40)
         [MetadataType(typeof(OptInClassMetadata))]
         public class OptInClass
         {
@@ -2911,7 +2915,7 @@ To fix this error either change the JSON to a JSON object (e.g. {""name"":""valu
 Path '', line 1, position 1.");
         }
 
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE || ASPNETCORE50)
         [Test]
         public void CannotDeserializeArrayIntoSerializable()
         {
@@ -3028,7 +3032,7 @@ Path '', line 1, position 1.");
                 {
                     ContractResolver = new DefaultContractResolver
                     {
-#if !(NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || ASPNETCORE50 || PORTABLE40)
                         IgnoreSerializableAttribute = true
 #endif
                     }
@@ -3045,7 +3049,7 @@ Path '', line 1, position 1.");
                 {
                     ContractResolver = new DefaultContractResolver
                     {
-#if !(NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || ASPNETCORE50 || PORTABLE40)
                         IgnoreSerializableAttribute = true
 #endif
                     }
@@ -3062,7 +3066,7 @@ Path '', line 1, position 1.");
                 {
                     ContractResolver = new DefaultContractResolver
                     {
-#if !(NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || ASPNETCORE50 || PORTABLE40)
                         IgnoreSerializableAttribute = true
 #endif
                     }
@@ -3079,7 +3083,7 @@ Path '', line 1, position 1.");
                 {
                     ContractResolver = new DefaultContractResolver
                     {
-#if !(NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || ASPNETCORE50 || PORTABLE40)
                         IgnoreSerializableAttribute = true
 #endif
                     }
@@ -3587,19 +3591,15 @@ Path '', line 1, position 1.");
             public TimeSpan TimeSpanProperty { get; set; }
             public Guid GuidProperty { get; set; }
             public Animal AnimalProperty { get; set; }
-            public Exception ExceptionProperty { get; set; }
         }
 
         [Test]
         public void DataContractJsonSerializerTest()
         {
-            Exception ex = new Exception("Blah blah blah");
-
             DataContractJsonSerializerTestClass c = new DataContractJsonSerializerTestClass();
             c.TimeSpanProperty = new TimeSpan(200, 20, 59, 30, 900);
             c.GuidProperty = new Guid("66143115-BE2A-4a59-AF0A-348E1EA15B1E");
             c.AnimalProperty = new Human() { Ethnicity = "European" };
-            c.ExceptionProperty = ex;
 
             MemoryStream ms = new MemoryStream();
             DataContractJsonSerializer serializer = new DataContractJsonSerializer(
@@ -3756,7 +3756,7 @@ Path '', line 1, position 1.");
             Assert.AreEqual("value", newModelStateDictionary["key"]);
         }
 
-#if !(NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || ASPNETCORE50 || PORTABLE40)
         public class ISerializableTestObject : ISerializable
         {
             internal string _stringValue;
@@ -4081,7 +4081,7 @@ To fix this error either change the environment to be fully trusted, change the 
 }", json);
         }
 
-#if !PORTABLE
+#if !(PORTABLE || ASPNETCORE50)
         [Test]
         public void DeserializeClassWithInheritedProtectedMember()
         {
@@ -4282,7 +4282,7 @@ To fix this error either change the environment to be fully trusted, change the 
         }
 #endif
 
-#if !(NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || ASPNETCORE50 || PORTABLE40)
         [Test]
         public void SerializeDeserializeXmlNodeProperties()
         {
@@ -4354,7 +4354,7 @@ To fix this error either change the environment to be fully trusted, change the 
 
             public override bool CanConvert(Type objectType)
             {
-                return objectType.IsAssignableFrom(typeof(Pos));
+                return objectType == typeof(Pos);
             }
         }
 
@@ -4377,7 +4377,7 @@ To fix this error either change the environment to be fully trusted, change the 
 
             public override bool CanConvert(Type objectType)
             {
-                return objectType.IsAssignableFrom(typeof(PosDouble));
+                return objectType == typeof(PosDouble);
             }
         }
 
@@ -4604,7 +4604,7 @@ To fix this error either change the environment to be fully trusted, change the 
             Assert.AreEqual(0, z[1].Prop1.Length);
         }
 
-#if !NET20 && !NETFX_CORE
+#if !(NET20 || NETFX_CORE || ASPNETCORE50)
         public class StringDictionaryTestClass
         {
             public StringDictionary StringDictionaryProperty { get; set; }
@@ -4918,7 +4918,7 @@ To fix this error either change the environment to be fully trusted, change the 
             Assert.AreEqual(meh.IDontWork, "meh");
         }
 
-#if !(NET20 || NETFX_CORE)
+#if !(NET20 || NETFX_CORE || ASPNETCORE50)
         [DataContract]
         public struct StructISerializable : ISerializable
         {
@@ -5660,7 +5660,7 @@ To fix this error either change the environment to be fully trusted, change the 
             }
         }
 
-#if !(NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || ASPNETCORE50 || PORTABLE40)
         [Test]
         public void SerializeException1()
         {
@@ -5887,7 +5887,7 @@ To fix this error either change the environment to be fully trusted, change the 
             Assert.AreEqual(-3, StaticTestClass.z);
         }
 
-#if !(NET20 || NETFX_CORE)
+#if !(NET20 || NETFX_CORE || ASPNETCORE50)
         [Test]
         public void DeserializeDecimalsWithCulture()
         {
@@ -5984,7 +5984,7 @@ To fix this error either change the environment to be fully trusted, change the 
             ExceptionAssert.Throws<JsonSerializationException>(() => { List<int> numbers = JsonConvert.DeserializeObject<List<int>>(json); }, "Error converting value {null} to type 'System.Int32'. Path '[3]', line 5, position 7.");
         }
 
-#if !(PORTABLE || NETFX_CORE)
+#if !(PORTABLE || ASPNETCORE50 || NETFX_CORE)
         public class ConvertableIntTestClass
         {
             public ConvertibleInt Integer { get; set; }
@@ -6341,7 +6341,7 @@ To fix this error either change the environment to be fully trusted, change the 
         }
 #endif
 
-#if !(NETFX_CORE)
+#if !(NETFX_CORE || ASPNETCORE50)
         [Test]
         public void MetroBlogPost()
         {
@@ -6702,7 +6702,7 @@ To fix this error either change the environment to be fully trusted, change the 
             Assert.AreEqual("", s);
         }
 
-#if !(NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || ASPNETCORE50 || PORTABLE40)
         [Test]
         public void SerializeAndDeserializeWithAttributes()
         {
@@ -6863,7 +6863,7 @@ To fix this error either change the environment to be fully trusted, change the 
             ExceptionAssert.Throws<JsonReaderException>(() => { s.Deserialize<Dictionary<string, int>>(new JsonTextReader(new StringReader(json))); }, "Additional text encountered after finished reading JSON content: {. Path '', line 1, position 7.");
         }
 
-#if !(NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || ASPNETCORE50 || PORTABLE40)
         [Test]
         public void DeserializeException()
         {
@@ -7047,7 +7047,7 @@ To fix this error either change the environment to be fully trusted, change the 
         }
 
 #if !(NET20 || NET35 || NET40 || PORTABLE40)
-#if !PORTABLE
+#if !(PORTABLE || ASPNETCORE50)
         [Test]
         public void DeserializeReadOnlyListWithBigInteger()
         {
@@ -7105,7 +7105,7 @@ To fix this error either change the environment to be fully trusted, change the 
 
             Action doStuff = () => { obj = JsonConvert.DeserializeObject<MyTuple<int>>(json); };
 
-#if !(NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || ASPNETCORE50 || PORTABLE40)
             doStuff();
             Assert.AreEqual(500, obj.Item1);
 #else
@@ -7115,7 +7115,7 @@ To fix this error either change the environment to be fully trusted, change the 
 #endif
         }
 
-#if DEBUG
+#if DEBUG && !NOINTERNALS
         [Test]
         public void SerializeCustomTupleWithSerializableAttributeInPartialTrust()
         {
@@ -7136,7 +7136,7 @@ To fix this error either change the environment to be fully trusted, change the 
         }
 #endif
 
-#if !(NETFX_CORE || PORTABLE || NET35 || NET20 || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || ASPNETCORE50 || NET35 || NET20 || PORTABLE40)
         [Test]
         public void SerializeTupleWithSerializableAttribute()
         {
@@ -7382,7 +7382,7 @@ To fix this error either change the environment to be fully trusted, change the 
         }
 #endif
 
-#if !(PORTABLE || NET35 || NET20 || PORTABLE40)
+#if !(PORTABLE || ASPNETCORE50 || NET35 || NET20 || PORTABLE40)
         [Test]
         public void ReadTooLargeInteger()
         {
@@ -7396,7 +7396,7 @@ To fix this error either change the environment to be fully trusted, change the 
         }
 #endif
 
-#if !NETFX_CORE
+#if !(NETFX_CORE || ASPNETCORE50)
         [Serializable]
 #endif
         [DataContract]
@@ -7425,7 +7425,7 @@ To fix this error either change the environment to be fully trusted, change the 
 
             Assert.AreEqual(@"{""First"":""One"",""Second"":2}", json);
 
-#if !(NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || ASPNETCORE50 || PORTABLE40)
             DefaultContractResolver r = new DefaultContractResolver();
             r.IgnoreSerializableAttribute = false;
 
@@ -7545,7 +7545,7 @@ To fix this error either change the environment to be fully trusted, change the 
             Assert.AreEqual(1234567890.123456m, d);
         }
 
-#if !(PORTABLE || NETFX_CORE || PORTABLE40)
+#if !(PORTABLE || ASPNETCORE50 || NETFX_CORE || PORTABLE40)
         [Test]
         public void DontSerializeStaticFields()
         {
@@ -7569,7 +7569,7 @@ To fix this error either change the environment to be fully trusted, change the 
         }
 #endif
 
-#if !(NET20 || NET35 || PORTABLE || PORTABLE40)
+#if !(NET20 || NET35 || PORTABLE || ASPNETCORE50 || PORTABLE40)
         [Test]
         public void SerializeBigInteger()
         {
@@ -7654,7 +7654,7 @@ To fix this error either change the environment to be fully trusted, change the 
 ]", json);
         }
 
-#if !(PORTABLE || PORTABLE40 || NETFX_CORE)
+#if !(PORTABLE || PORTABLE40 || NETFX_CORE || ASPNETCORE50)
         [Test]
         public void SerializeDictionaryWithStructKey()
         {
@@ -7707,7 +7707,7 @@ To fix this error either change the environment to be fully trusted, change the 
             Assert.AreEqual(jane, john.Spouse);
         }
 
-#if !(NETFX_CORE || NET35 || NET20 || PORTABLE || PORTABLE40)
+#if !(NETFX_CORE || NET35 || NET20 || PORTABLE || ASPNETCORE50 || PORTABLE40)
         [Test]
         public void TypeConverterOnInterface()
         {
@@ -7772,7 +7772,7 @@ To fix this error either change the environment to be fully trusted, change the 
             ParticipantEntity deserializedProduct = JsonConvert.DeserializeObject<ParticipantEntity>(json);
         }
 
-#if !(PORTABLE || NETFX_CORE)
+#if !(PORTABLE || ASPNETCORE50 || NETFX_CORE)
         public class ConvertibleId : IConvertible
         {
             public int Value;

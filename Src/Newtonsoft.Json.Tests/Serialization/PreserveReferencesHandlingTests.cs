@@ -30,13 +30,16 @@ using System.Runtime.Serialization.Formatters;
 using System.Text;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Tests.TestObjects;
-#if !NETFX_CORE
-using NUnit.Framework;
-
-#else
+#if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
+#elif ASPNETCORE50
+using Xunit;
+using Test = Xunit.FactAttribute;
+using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+#else
+using NUnit.Framework;
 #endif
 
 namespace Newtonsoft.Json.Tests.Serialization
@@ -88,7 +91,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Assert.AreEqual(2, circularDictionary.Count);
             Assert.AreEqual(1, circularDictionary["other"].Count);
-            Assert.AreEqual(circularDictionary, circularDictionary["self"]);
+            Assert.IsTrue(ReferenceEquals(circularDictionary, circularDictionary["self"]));
         }
 
         public class CircularList : List<CircularList>

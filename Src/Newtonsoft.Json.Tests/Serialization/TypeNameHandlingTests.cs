@@ -23,31 +23,35 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(PORTABLE || PORTABLE40)
-#if !(NET35 || NET20 || PORTABLE)
+#if !(PORTABLE || ASPNETCORE50 || PORTABLE40)
+#if !(NET35 || NET20 || PORTABLE || ASPNETCORE50)
 using System.Dynamic;
 #endif
 using System.Text;
 using Newtonsoft.Json.Tests.Linq;
-using global::System;
-using global::System.Collections;
-using global::System.Collections.Generic;
-using global::System.Globalization;
-using global::System.Runtime.Serialization.Formatters;
-using global::Newtonsoft.Json.Linq;
-using global::Newtonsoft.Json.Serialization;
-using global::Newtonsoft.Json.Tests.TestObjects;
-#if !NETFX_CORE
-using global::NUnit.Framework;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Runtime.Serialization.Formatters;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json.Tests.TestObjects;
+#if NETFX_CORE
+using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
+using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
+using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
+#elif ASPNETCORE50
+using Xunit;
+using Test = Xunit.FactAttribute;
+using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
-using global::Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-using TestFixture = global::Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
-using Test = global::Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
+using NUnit.Framework;
 #endif
-using global::Newtonsoft.Json.Utilities;
-using global::System.Net;
-using global::System.Runtime.Serialization;
-using global::System.IO;
+using Newtonsoft.Json.Utilities;
+using System.Net;
+using System.Runtime.Serialization;
+using System.IO;
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
@@ -259,7 +263,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual("Name!", ((EmployeeReference)employee).Name);
         }
 
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE || ASPNETCORE50)
         [Test]
         public void DeserializeTypeNameFromGacAssembly()
         {
@@ -1097,7 +1101,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 Binder = new MetroBinder(),
                 ContractResolver = new DefaultContractResolver
                 {
-#if !(NETFX_CORE || PORTABLE)
+#if !(NETFX_CORE || PORTABLE || ASPNETCORE50)
                     IgnoreSerializableAttribute = true
 #endif
                 }

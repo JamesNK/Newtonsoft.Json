@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
@@ -58,13 +59,8 @@ namespace Newtonsoft.Json.Serialization
         private static readonly ThreadSafeStore<Type, Func<object[], JsonConverter>> JsonConverterCreatorCache = 
             new ThreadSafeStore<Type, Func<object[], JsonConverter>>(GetJsonConverterCreator);
 
-#if !(NET20 || NETFX_CORE)
+#if !(NET20 || PORTABLE40 || NETFX_CORE)
         private static readonly ThreadSafeStore<Type, Type> AssociatedMetadataTypesCache = new ThreadSafeStore<Type, Type>(GetAssociateMetadataTypeFromAttribute);
-
-        private const string MetadataTypeAttributeTypeName =
-            "System.ComponentModel.DataAnnotations.MetadataTypeAttribute, System.ComponentModel.DataAnnotations, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
-
-        private static Type _cachedMetadataTypeAttributeType;
 #endif
 
         public static T GetCachedAttribute<T>(object attributeProvider) where T : Attribute
@@ -224,47 +220,38 @@ namespace Newtonsoft.Json.Serialization
         }
 #endif
 
-#if !(NET20 || NETFX_CORE)
+#if !(NET20 || PORTABLE40 || NETFX_CORE)
         private static Type GetAssociatedMetadataType(Type type)
         {
             return AssociatedMetadataTypesCache.Get(type);
         }
 
-        private static ReflectionObject _metadataTypeAttributeReflectionObject;
-
         private static Type GetAssociateMetadataTypeFromAttribute(Type type)
         {
-            Type metadataTypeAttributeType = GetMetadataTypeAttributeType();
-            if (metadataTypeAttributeType == null)
-                return null;
+            IList<CustomAttributeData> customAttributes = ReflectionUtils.GetCustomAttributeData(type);
 
-            Attribute attribute = ReflectionUtils.GetAttributes(type, metadataTypeAttributeType, true).SingleOrDefault();
-            if (attribute == null)
-                return null;
-
-            const string metadataClassTypeName = "MetadataClassType";
-
-            if (_metadataTypeAttributeReflectionObject == null)
-                _metadataTypeAttributeReflectionObject = ReflectionObject.Create(metadataTypeAttributeType, metadataClassTypeName);
-
-            return (Type)_metadataTypeAttributeReflectionObject.GetValue(attribute, metadataClassTypeName);
-        }
-
-        private static Type GetMetadataTypeAttributeType()
-        {
-            // always attempt to get the metadata type attribute type
-            // the assembly may have been loaded since last time
-            if (_cachedMetadataTypeAttributeType == null)
+            foreach (CustomAttributeData customAttributeData in customAttributes)
             {
-                Type metadataTypeAttributeType = Type.GetType(MetadataTypeAttributeTypeName);
+                Type attributeType;
 
-                if (metadataTypeAttributeType != null)
-                    _cachedMetadataTypeAttributeType = metadataTypeAttributeType;
-                else
-                    return null;
+#if (NET20 || NET35 || NET40)
+                attributeType = customAttributeData.Constructor.DeclaringType;
+#else
+                attributeType = customAttributeData.AttributeType;
+#endif
+
+                if (attributeType != null
+                    && string.Equals(attributeType.Name, "MetadataTypeAttribute", StringComparison.Ordinal)
+                    && attributeType.Assembly().GetName().Name == "System.ComponentModel.DataAnnotations")
+                {
+                    // MetadataTypeAttribute constructor takes one argument, the type we're looking for
+                    CustomAttributeTypedArgument o = customAttributeData.ConstructorArguments[0];
+
+                    return (Type)o.Value;
+                }
             }
 
-            return _cachedMetadataTypeAttributeType;
+            return null;
         }
 #endif
 
@@ -272,7 +259,7 @@ namespace Newtonsoft.Json.Serialization
         {
             T attribute;
 
-#if !(NET20 || NETFX_CORE)
+#if !(NET20 || PORTABLE40 || NETFX_CORE)
             Type metadataType = GetAssociatedMetadataType(type);
             if (metadataType != null)
             {
@@ -300,7 +287,7 @@ namespace Newtonsoft.Json.Serialization
         {
             T attribute;
 
-#if !(NET20 || NETFX_CORE)
+#if !(NET20 || PORTABLE40 || NETFX_CORE)
             Type metadataType = GetAssociatedMetadataType(memberInfo.DeclaringType);
             if (metadataType != null)
             {
