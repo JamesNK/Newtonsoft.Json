@@ -774,7 +774,6 @@ namespace Newtonsoft.Json.Tests.Schema
         }
 
         [Test]
-        [Ignore]
         public void GenerateSchemaWithStringEnum()
         {
             JsonSchemaGenerator jsonSchemaGenerator = new JsonSchemaGenerator();
@@ -782,9 +781,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             string json = schema.ToString();
 
-            // NOTE: This fails because the enum is serialized as an integer and not a string.
-            // NOTE: There should exist a way to serialize the enum as lowercase strings.
-            Assert.AreEqual(@"{
+           Assert.AreEqual(@"{
   ""type"": ""object"",
   ""properties"": {
     ""y"": {
@@ -794,6 +791,44 @@ namespace Newtonsoft.Json.Tests.Schema
         ""no"",
         ""asc"",
         ""desc""
+      ]
+    }
+  }
+}", json);
+        }
+
+        class StringEnumWithCamelCaseContractResolver : DefaultContractResolver
+        {
+            public override JsonContract ResolveContract(Type type)
+            {
+                var contract = base.ResolveContract(type);
+
+                var stringEnumConverter = contract.Converter as StringEnumConverter;
+                if (stringEnumConverter != null)
+                    stringEnumConverter.CamelCaseText = true;
+
+                return contract;
+            }
+        }
+
+        [Test]
+        public void GenerateSchemaWithStringEnumWithCamelCase()
+        {
+            JsonSchemaGenerator jsonSchemaGenerator = new JsonSchemaGenerator();
+            jsonSchemaGenerator.ContractResolver = new StringEnumWithCamelCaseContractResolver();
+            JsonSchema schema = jsonSchemaGenerator.Generate(typeof(Y));
+ 
+            string json = schema.ToString();
+            Assert.AreEqual(@"{
+  ""type"": ""object"",
+  ""properties"": {
+    ""y"": {
+      ""required"": true,
+      ""type"": ""string"",
+      ""enum"": [
+        ""No"",
+        ""Asc"",
+        ""Desc""
       ]
     }
   }
