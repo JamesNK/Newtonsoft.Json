@@ -4627,7 +4627,20 @@ To fix this error either change the environment to be fully trusted, change the 
 
             string json = JsonConvert.SerializeObject(s1, Formatting.Indented);
 
-            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeObject<StringDictionaryTestClass>(json); }, "Cannot create and populate list type " + classRef + ". Path 'StringDictionaryProperty', line 2, position 32.");
+            // .NET 4.5.3 added IDictionary<string, string> to StringDictionary
+            if (s1.StringDictionaryProperty is IDictionary<string, string>)
+            {
+                StringDictionaryTestClass d = JsonConvert.DeserializeObject<StringDictionaryTestClass>(json);
+
+                Assert.AreEqual(3, d.StringDictionaryProperty.Count);
+                Assert.AreEqual("One", d.StringDictionaryProperty["1"]);
+                Assert.AreEqual("II", d.StringDictionaryProperty["2"]);
+                Assert.AreEqual("3", d.StringDictionaryProperty["3"]);
+            }
+            else
+            {
+                ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeObject<StringDictionaryTestClass>(json); }, "Cannot create and populate list type " + classRef + ". Path 'StringDictionaryProperty', line 2, position 32.");
+            }
         }
 #endif
 
