@@ -17,13 +17,13 @@
   $releaseDir = "$baseDir\Release"
   $workingDir = "$baseDir\Working"
   $builds = @(
-    @{Name = "Newtonsoft.Json"; TestsName = "Newtonsoft.Json.Tests"; Constants=""; FinalDir="Net45"; NuGetDir = "net45"; Framework="net-4.0"; Sign=$true},
-    @{Name = "Newtonsoft.Json.Portable"; TestsName = "Newtonsoft.Json.Tests.Portable"; Constants="PORTABLE"; FinalDir="Portable"; NuGetDir = "portable-net45+wp80+win8+wpa81+aspnetcore50"; Framework="net-4.0"; Sign=$true},
-    @{Name = "Newtonsoft.Json.Portable40"; TestsName = "Newtonsoft.Json.Tests.Portable40"; Constants="PORTABLE40"; FinalDir="Portable40"; NuGetDir = "portable-net40+sl5+wp80+win8+wpa81+xamarinios10"; Framework="net-4.0"; Sign=$true},
-    @{Name = "Newtonsoft.Json.WinRT"; TestsName = $null; Constants="NETFX_CORE"; FinalDir="WinRT"; NuGetDir = "netcore45"; Framework="net-4.5"; Sign=$true},
-    @{Name = "Newtonsoft.Json.Net40"; TestsName = "Newtonsoft.Json.Tests.Net40"; Constants="NET40"; FinalDir="Net40"; NuGetDir = "net40"; Framework="net-4.0"; Sign=$true},
-    @{Name = "Newtonsoft.Json.Net35"; TestsName = "Newtonsoft.Json.Tests.Net35"; Constants="NET35"; FinalDir="Net35"; NuGetDir = "net35"; Framework="net-2.0"; Sign=$true},
-    @{Name = "Newtonsoft.Json.Net20"; TestsName = "Newtonsoft.Json.Tests.Net20"; Constants="NET20"; FinalDir="Net20"; NuGetDir = "net20"; Framework="net-2.0"; Sign=$true}
+    @{Name = "Newtonsoft.Json"; TestsName = "Newtonsoft.Json.Tests"; TestsFunction = ${function:NUnitTests}; Constants=""; FinalDir="Net45"; NuGetDir = "net45"; Framework="net-4.0"; Sign=$true},
+    @{Name = "Newtonsoft.Json.Portable"; TestsName = "Newtonsoft.Json.Tests.Portable"; TestsFunction = ${function:NUnitTests}; Constants="PORTABLE"; FinalDir="Portable"; NuGetDir = "portable-net45+wp80+win8+wpa81+aspnetcore50"; Framework="net-4.0"; Sign=$true},
+    @{Name = "Newtonsoft.Json.Portable40"; TestsName = "Newtonsoft.Json.Tests.Portable40"; TestsFunction = ${function:NUnitTests}; Constants="PORTABLE40"; FinalDir="Portable40"; NuGetDir = "portable-net40+sl5+wp80+win8+wpa81+xamarinios10"; Framework="net-4.0"; Sign=$true},
+    @{Name = "Newtonsoft.Json.WinRT"; TestsName = "Newtonsoft.Json.Tests.WinRT"; TestsFunction = ${function:WinRTTests}; Constants="NETFX_CORE"; FinalDir="WinRT"; NuGetDir = "netcore45"; Framework="net-4.5"; Sign=$true},
+    @{Name = "Newtonsoft.Json.Net40"; TestsName = "Newtonsoft.Json.Tests.Net40"; TestsFunction = ${function:NUnitTests}; Constants="NET40"; FinalDir="Net40"; NuGetDir = "net40"; Framework="net-4.0"; Sign=$true},
+    @{Name = "Newtonsoft.Json.Net35"; TestsName = "Newtonsoft.Json.Tests.Net35"; TestsFunction = ${function:NUnitTests}; Constants="NET35"; FinalDir="Net35"; NuGetDir = "net35"; Framework="net-2.0"; Sign=$true},
+    @{Name = "Newtonsoft.Json.Net20"; TestsName = "Newtonsoft.Json.Tests.Net20"; TestsFunction = ${function:NUnitTests}; Constants="NET20"; FinalDir="Net20"; NuGetDir = "net20"; Framework="net-2.0"; Sign=$true}
   )
 }
 
@@ -145,23 +145,49 @@ task Deploy -depends Package {
 task Test -depends Deploy {
   foreach ($build in $builds)
   {
-    $name = $build.TestsName
-    if ($name -ne $null)
+    if ($build.TestsFunction -ne $null)
     {
-        $finalDir = $build.FinalDir
-        $framework = $build.Framework
-        
-        Write-Host -ForegroundColor Green "Copying test assembly $name to deployed directory"
-        Write-Host
-        robocopy ".\Src\Newtonsoft.Json.Tests\bin\Release\$finalDir" $workingDir\Deployed\Bin\$finalDir /MIR /NP /XO /XF LinqBridge.dll | Out-Default
-        
-        Copy-Item -Path ".\Src\Newtonsoft.Json.Tests\bin\Release\$finalDir\Newtonsoft.Json.Tests.dll" -Destination $workingDir\Deployed\Bin\$finalDir\
-
-        Write-Host -ForegroundColor Green "Running tests " $name
-        Write-Host
-        exec { .\Tools\NUnit\nunit-console.exe "$workingDir\Deployed\Bin\$finalDir\Newtonsoft.Json.Tests.dll" /framework=$framework /xml:$workingDir\$name.xml | Out-Default } "Error running $name tests"
+      $build.TestsFunction.Invoke($build)
     }
   }
+}
+
+function WinRTTests($build)
+{
+  $name = $build.TestsName
+  $finalDir = $build.FinalDir
+  $testsName = $build.TestsName
+
+  $testCmd = "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe"
+  $outDir = "$workingDir\Deployed\Bin\$finalDir"
+
+  Write-Host -ForegroundColor Green "Packaging test assembly $name to deployed directory"
+  Write-Host
+  exec { msbuild "$sourceDir\Newtonsoft.Json.Tests\$testsName.csproj" /p:OutDir=$outDir | Out-Default }
+
+  Write-Host -ForegroundColor Green "Running MSTest tests " $name
+  Write-Host
+  exec { &($testCmd) $outDir\$testsName\AppPackages\$($testsName)_1.0.0.0_AnyCPU_Debug_Test\$($testsName)_1.0.0.0_AnyCPU_Debug.appx /InIsolation /Logger:trx | Out-Default } "Error running $name tests"
+
+  robocopy $baseDir\TestResults $workingDir /NP | Out-Default
+  del $baseDir\TestResults -Recurse -Force
+}
+
+function NUnitTests($build)
+{
+  $name = $build.TestsName
+  $finalDir = $build.FinalDir
+  $framework = $build.Framework
+
+  Write-Host -ForegroundColor Green "Copying test assembly $name to deployed directory"
+  Write-Host
+  robocopy ".\Src\Newtonsoft.Json.Tests\bin\Release\$finalDir" $workingDir\Deployed\Bin\$finalDir /MIR /NP /XO | Out-Default
+
+  Copy-Item -Path ".\Src\Newtonsoft.Json.Tests\bin\Release\$finalDir\Newtonsoft.Json.Tests.dll" -Destination $workingDir\Deployed\Bin\$finalDir\
+
+  Write-Host -ForegroundColor Green "Running NUnit tests " $name
+  Write-Host
+  exec { .\Tools\NUnit\nunit-console.exe "$workingDir\Deployed\Bin\$finalDir\Newtonsoft.Json.Tests.dll" /framework=$framework /xml:$workingDir\$name.xml | Out-Default } "Error running $name tests"
 }
 
 function GetConstants($constants, $includeSigned)
