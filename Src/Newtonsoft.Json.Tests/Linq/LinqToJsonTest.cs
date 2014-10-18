@@ -185,6 +185,55 @@ undefined
         }
 
         [Test]
+        public void EscapedPath()
+        {
+            string json = @"{
+  ""frameworks"": {
+    ""aspnetcore50"": {
+      ""dependencies"": {
+        ""System.Xml.ReaderWriter"": {
+          ""source"": ""NuGet""
+        }
+      }
+    }
+  }
+}";
+
+            JObject o = JObject.Parse(json);
+
+            JToken v1 = o["frameworks"]["aspnetcore50"]["dependencies"]["System.Xml.ReaderWriter"]["source"];
+
+            Console.WriteLine(v1.Path);
+
+            JToken v2 = o.SelectToken(v1.Path);
+
+            Assert.AreEqual(v1, v2);
+        }
+
+        [Test]
+        public void EscapedPathTests()
+        {
+            EscapedPathAssert("this has spaces", "['this has spaces']");
+            EscapedPathAssert("(RoundBraces)", "['(RoundBraces)']");
+            EscapedPathAssert("[SquareBraces]", "['[SquareBraces]']");
+            EscapedPathAssert("this.has.dots", "['this.has.dots']");
+        }
+
+        private void EscapedPathAssert(string propertyName, string expectedPath)
+        {
+            int v1 = int.MaxValue;
+            JValue value = new JValue(v1);
+
+            JObject o = new JObject(new JProperty(propertyName, value));
+
+            Assert.AreEqual(expectedPath, value.Path);
+
+            JValue selectedValue = (JValue)o.SelectToken(value.Path);
+
+            Assert.AreEqual(value, selectedValue);
+        }
+
+        [Test]
         public void ForEach()
         {
             JArray items = new JArray(new JObject(new JProperty("name", "value!")));

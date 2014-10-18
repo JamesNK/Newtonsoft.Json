@@ -188,7 +188,7 @@ namespace Newtonsoft.Json.Linq
                 IList<JToken> ancestors = Ancestors().Reverse().ToList();
                 ancestors.Add(this);
 
-                StringBuilder sb = new StringBuilder();
+                IList<JsonPosition> positions = new List<JsonPosition>();
                 for (int i = 0; i < ancestors.Count; i++)
                 {
                     JToken current = ancestors[i];
@@ -204,25 +204,19 @@ namespace Newtonsoft.Json.Linq
                         {
                             case JTokenType.Property:
                                 JProperty property = (JProperty)current;
-
-                                if (sb.Length > 0)
-                                    sb.Append('.');
-
-                                sb.Append(property.Name);
+                                positions.Add(new JsonPosition(JsonContainerType.Object) { PropertyName = property.Name });
                                 break;
                             case JTokenType.Array:
                             case JTokenType.Constructor:
                                 int index = ((IList<JToken>)current).IndexOf(next);
 
-                                sb.Append('[');
-                                sb.Append(index);
-                                sb.Append(']');
+                                positions.Add(new JsonPosition(JsonContainerType.Array) { Position = index });
                                 break;
                         }
                     }
                 }
 
-                return sb.ToString();
+                return JsonPosition.BuildPath(positions);
             }
         }
 

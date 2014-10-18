@@ -3215,7 +3215,7 @@ Path '', line 1, position 1.");
             }
             catch (JsonSerializationException ex)
             {
-                Assert.IsTrue(ex.Message.StartsWith("Could not convert string 'Newtonsoft.Json.Tests.TestObjects.Person' to dictionary key type 'Newtonsoft.Json.Tests.TestObjects.Person'. Create a TypeConverter to convert from the string to the key type object. Path 'Newtonsoft.Json.Tests.TestObjects.Person'"));
+                Assert.IsTrue(ex.Message.StartsWith("Could not convert string 'Newtonsoft.Json.Tests.TestObjects.Person' to dictionary key type 'Newtonsoft.Json.Tests.TestObjects.Person'. Create a TypeConverter to convert from the string to the key type object. Path '['Newtonsoft.Json.Tests.TestObjects.Person']'"));
             }
         }
 

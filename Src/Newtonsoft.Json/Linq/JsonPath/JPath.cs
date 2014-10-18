@@ -609,24 +609,17 @@ namespace Newtonsoft.Json.Linq.JsonPath
 
         private PathFilter ParseQuotedField(char indexerCloseChar)
         {
-            //_currentIndex++;
-            //int start = _currentIndex;
-
             List<string> fields = null;
 
             while (_currentIndex < _expression.Length)
             {
                 string field = ReadQuotedString();
 
-                //_currentIndex++;
-                //EnsureLength("Path ended with open indexer.");
                 EatWhitespace();
                 EnsureLength("Path ended with open indexer.");
 
                 if (_expression[_currentIndex] == indexerCloseChar)
                 {
-                    _currentIndex++;
-
                     if (fields != null)
                     {
                         fields.Add(field);

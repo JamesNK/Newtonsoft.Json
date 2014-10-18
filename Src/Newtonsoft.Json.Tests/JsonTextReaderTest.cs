@@ -3151,6 +3151,32 @@ null//comment
 
             Assert.IsTrue(reader.Read());
         }
+
+        [Test]
+        public void EscapedPathInExceptionMessage()
+        {
+            string json = @"{
+  ""frameworks"": {
+    ""aspnetcore50"": {
+      ""dependencies"": {
+        ""System.Xml.ReaderWriter"": {
+          ""source"": !!! !!!
+        }
+      }
+    }
+  }
+}";
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                () =>
+                {
+                    JsonTextReader reader = new JsonTextReader(new StringReader(json));
+                    while (reader.Read())
+                    {
+                    }
+                },
+                "Unexpected character encountered while parsing value: !. Path 'frameworks.aspnetcore50.dependencies.['System.Xml.ReaderWriter'].source', line 6, position 21.");
+        }
     }
 
     public class ToggleReaderError : TextReader
