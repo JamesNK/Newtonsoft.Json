@@ -173,8 +173,7 @@ function CoreClrTests($build)
   try
   {
     Set-Location "$sourceDir\Newtonsoft.Json.Tests"
-    $logPath = "$workingDir\$name.txt"
-    k --configuration Release test -parallel none | Tee-Object -file $logPath
+    k --configuration Release test -parallel none | Tee-Object -file "$workingDir\$name.txt"
   }
   finally
   {
@@ -196,10 +195,7 @@ function WinRTTests($build)
 
   Write-Host -ForegroundColor Green "Running MSTest tests " $name
   Write-Host
-  exec { &($testCmd) $outDir\$name\AppPackages\$($name)_1.0.0.0_AnyCPU_Debug_Test\$($name)_1.0.0.0_AnyCPU_Debug.appx /InIsolation /Logger:trx | Out-Default } "Error running $name tests"
-
-  robocopy $baseDir\TestResults $workingDir /NP | Out-Default
-  del $baseDir\TestResults -Recurse -Force
+  exec { &($testCmd) $outDir\$name\AppPackages\$($name)_1.0.0.0_AnyCPU_Debug_Test\$($name)_1.0.0.0_AnyCPU_Debug.appx /InIsolation | Tee-Object -file "$workingDir\$name.txt" } "Error running $name tests"
 }
 
 function NUnitTests($build)

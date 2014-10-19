@@ -2527,7 +2527,7 @@ keyword such as type of business.""
             Assert.AreEqual("titleId", n.FidOrder[n.FidOrder.Count - 1]);
         }
 
-#if !(NET20 || NETFX_CORE || ASPNETCORE50 || PORTABLE40)
+#if !(NET20 || NETFX_CORE || ASPNETCORE50)
         [MetadataType(typeof(OptInClassMetadata))]
         public class OptInClass
         {

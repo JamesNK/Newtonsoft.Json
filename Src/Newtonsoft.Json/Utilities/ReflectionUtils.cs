@@ -732,17 +732,6 @@ namespace Newtonsoft.Json.Utilities
         }
 #endif
 
-#if !PORTABLE40
-        public static IList<CustomAttributeData> GetCustomAttributeData(Type t)
-        {
-#if !(NETFX_CORE || ASPNETCORE50 || PORTABLE)
-            return CustomAttributeData.GetCustomAttributes(t);
-#else
-            return t.GetTypeInfo().CustomAttributes.ToList();
-#endif
-        }
-#endif
-
         public static void SplitFullyQualifiedTypeName(string fullyQualifiedTypeName, out string typeName, out string assemblyName)
         {
             int? assemblyDelimiterIndex = GetAssemblyDelimiterIndex(fullyQualifiedTypeName);
