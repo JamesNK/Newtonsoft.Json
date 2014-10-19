@@ -270,15 +270,15 @@ namespace Newtonsoft.Json.Tests.Linq
 
                 jsonReader.Read();
                 Assert.AreEqual(jsonReader.TokenType, JsonToken.EndArray);
-                Assert.AreEqual(0, lineInfo.LineNumber);
-                Assert.AreEqual(0, lineInfo.LinePosition);
-                Assert.AreEqual(false, lineInfo.HasLineInfo());
+                Assert.AreEqual(3, lineInfo.LineNumber);
+                Assert.AreEqual(12, lineInfo.LinePosition);
+                Assert.AreEqual(true, lineInfo.HasLineInfo());
 
                 jsonReader.Read();
                 Assert.AreEqual(jsonReader.TokenType, JsonToken.EndObject);
-                Assert.AreEqual(0, lineInfo.LineNumber);
-                Assert.AreEqual(0, lineInfo.LinePosition);
-                Assert.AreEqual(false, lineInfo.HasLineInfo());
+                Assert.AreEqual(1, lineInfo.LineNumber);
+                Assert.AreEqual(1, lineInfo.LinePosition);
+                Assert.AreEqual(true, lineInfo.HasLineInfo());
 
                 jsonReader.Read();
                 Assert.AreEqual(jsonReader.TokenType, JsonToken.None);

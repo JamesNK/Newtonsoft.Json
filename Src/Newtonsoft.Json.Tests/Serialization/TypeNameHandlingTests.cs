@@ -23,8 +23,9 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(PORTABLE || ASPNETCORE50 || PORTABLE40)
-#if !(NET35 || NET20 || PORTABLE || ASPNETCORE50)
+#if !(PORTABLE || PORTABLE40)
+using System.Collections.ObjectModel;
+#if !(NET35 || NET20)
 using System.Dynamic;
 #endif
 using System.Text;
@@ -58,6 +59,71 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class TypeNameHandlingTests : TestFixtureBase
     {
+#if !(NET20 || NET35 || NET40)
+        public class KnownAutoTypes
+        {
+            public ICollection<string> Collection { get; set; }
+            public IList<string> List { get; set; }
+            public IDictionary<string, string> Dictionary { get; set; }
+            public ISet<string> Set { get; set; }
+            public IReadOnlyCollection<string> ReadOnlyCollection { get; set; }
+            public IReadOnlyList<string> ReadOnlyList { get; set; }
+            public IReadOnlyDictionary<string, string> ReadOnlyDictionary { get; set; }
+        }
+
+        [Test]
+        public void KnownAutoTypesTest()
+        {
+            KnownAutoTypes c = new KnownAutoTypes
+            {
+                Collection = new List<string> { "Collection value!" },
+                List = new List<string> { "List value!" },
+                Dictionary = new Dictionary<string, string>
+                {
+                    { "Dictionary key!", "Dictionary value!" }
+                },
+                ReadOnlyCollection = new ReadOnlyCollection<string>(new[] { "Read Only Collection value!" }),
+                ReadOnlyList = new ReadOnlyCollection<string>(new[] { "Read Only List value!" }),
+                Set = new HashSet<string> { "Set value!" },
+                ReadOnlyDictionary = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>
+                {
+                    { "Read Only Dictionary key!", "Read Only Dictionary value!" }
+                })
+            };
+
+            string json = JsonConvert.SerializeObject(c, Formatting.Indented, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto
+            });
+
+            Console.WriteLine(json);
+
+            StringAssert.AreEqual(@"{
+  ""Collection"": [
+    ""Collection value!""
+  ],
+  ""List"": [
+    ""List value!""
+  ],
+  ""Dictionary"": {
+    ""Dictionary key!"": ""Dictionary value!""
+  },
+  ""Set"": [
+    ""Set value!""
+  ],
+  ""ReadOnlyCollection"": [
+    ""Read Only Collection value!""
+  ],
+  ""ReadOnlyList"": [
+    ""Read Only List value!""
+  ],
+  ""ReadOnlyDictionary"": {
+    ""Read Only Dictionary key!"": ""Read Only Dictionary value!""
+  }
+}", json);
+        }
+#endif
+
         [Test]
         public void DictionaryAuto()
         {
@@ -1035,7 +1101,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             CollectionAssert.AreEquivalent(data, d);
         }
 
-#if !(NETFX_CORE)
+#if !(NETFX_CORE || ASPNETCORE50)
         [Test]
         public void ISerializableTypeNameHandlingTest()
         {
@@ -1132,10 +1198,10 @@ namespace Newtonsoft.Json.Tests.Serialization
             public override void BindToName(Type serializedType, out string assemblyName, out string typeName)
             {
                 assemblyName = "AssemblyName";
-#if !NETFX_CORE
+#if !(NETFX_CORE || ASPNETCORE50)
                 typeName = ":::" + serializedType.Name.ToUpper(CultureInfo.InvariantCulture) + ":::";
 #else
-        typeName = ":::" + serializedType.Name.ToUpper() + ":::";
+                typeName = ":::" + serializedType.Name.ToUpper() + ":::";
 #endif
             }
         }
@@ -1577,7 +1643,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 #endif
 
-#if !NETFX_CORE
+#if !(NETFX_CORE || ASPNETCORE50)
         [Test]
         public void SerializeDeserialize_DictionaryContextContainsGuid_DeserializesItemAsGuid()
         {
@@ -1772,7 +1838,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 #endif
     }
 
-#if !NETFX_CORE
+#if !(NETFX_CORE || ASPNETCORE50)
     public class ParentParent
     {
         [JsonProperty(ItemTypeNameHandling = TypeNameHandling.Auto)]
@@ -1840,7 +1906,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         public int Quantity { get; set; }
     }
 
-#if !(NETFX_CORE)
+#if !(NETFX_CORE || ASPNETCORE50)
     public class SerializableWrapper
     {
         public object Content { get; set; }

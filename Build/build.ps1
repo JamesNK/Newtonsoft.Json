@@ -162,7 +162,7 @@ function CoreClrTests($build)
 
   Write-Host -ForegroundColor Green "Ensuring latest CoreCLR is installed for $name"
   Write-Host
-  #exec { & $toolsDir\Kvm\kvm.ps1 upgrade -r CoreCLR | Out-Default }
+  exec { & $toolsDir\Kvm\kvm.ps1 upgrade -r CoreCLR -NoNative | Out-Default }
 
   Write-Host -ForegroundColor Green "Restoring packages for $name"
   Write-Host

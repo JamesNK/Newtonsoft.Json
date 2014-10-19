@@ -107,18 +107,19 @@ namespace Newtonsoft.Json.Tests.Schema
         [Test]
         public void ValidateFailureWithOutLineInfoBecauseOfEndToken()
         {
+            // changed in 6.0.6 to now include line info!
             JsonSchema schema = JsonSchema.Parse("{'properties':{'lol':{'required':true}}}");
             JObject o = JObject.Parse("{}");
 
             List<string> errors = new List<string>();
             o.Validate(schema, (sender, args) => errors.Add(args.Message));
 
-            Assert.AreEqual("Required properties are missing from object: lol.", errors[0]);
+            Assert.AreEqual("Required properties are missing from object: lol. Line 1, position 1.", errors[0]);
             Assert.AreEqual(1, errors.Count);
         }
 
         [Test]
-        public void ValidateFailureWithLineInfo()
+        public void ValidateRequiredFieldsWithLineInfo()
         {
             JsonSchema schema = JsonSchema.Parse("{'properties':{'lol':{'type':'string'}}}");
             JObject o = JObject.Parse("{'lol':1}");

@@ -2360,8 +2360,26 @@ third line", jsonTextReader.Value);
         [Test]
         public void SupportMultipleContent()
         {
-            JsonTextReader reader = new JsonTextReader(new StringReader(@"1 2 ""name"" [][]null {}{} 1.1"));
+            JsonTextReader reader = new JsonTextReader(new StringReader(@"{'prop1':[1]} 1 2 ""name"" [][]null {}{} 1.1"));
             reader.SupportMultipleContent = true;
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
 
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.Integer, reader.TokenType);

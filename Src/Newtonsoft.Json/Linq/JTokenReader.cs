@@ -169,11 +169,6 @@ namespace Newtonsoft.Json.Linq
             return false;
         }
 
-        private bool IsEndElement
-        {
-            get { return (_current == _parent); }
-        }
-
         private JsonToken? GetEndToken(JContainer c)
         {
             switch (c.Type)
@@ -293,7 +288,7 @@ namespace Newtonsoft.Json.Linq
             if (CurrentState == State.Start)
                 return false;
 
-            IJsonLineInfo info = IsEndElement ? null : _current;
+            IJsonLineInfo info = _current;
             return (info != null && info.HasLineInfo());
         }
 
@@ -304,7 +299,7 @@ namespace Newtonsoft.Json.Linq
                 if (CurrentState == State.Start)
                     return 0;
 
-                IJsonLineInfo info = IsEndElement ? null : _current;
+                IJsonLineInfo info = _current;
                 if (info != null)
                     return info.LineNumber;
 
@@ -319,7 +314,7 @@ namespace Newtonsoft.Json.Linq
                 if (CurrentState == State.Start)
                     return 0;
 
-                IJsonLineInfo info = IsEndElement ? null : _current;
+                IJsonLineInfo info = _current;
                 if (info != null)
                     return info.LinePosition;
 
