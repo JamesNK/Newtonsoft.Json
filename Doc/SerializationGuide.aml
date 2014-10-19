@@ -150,7 +150,7 @@
         or DataContractAttribute on the type.</para>
         <para>Finally types can be serialized using a fields mode. All fields, both public and private, are serialized
         and properties are ignored. This can be specified by setting MemberSerialization.Fields on a type with the JsonObjectAttribute
-        or by the .NET <codeEntityReference>T:System.SerializableAttribute</codeEntity`Reference>
+        or by the .NET <codeEntityReference>T:System.SerializableAttribute</codeEntityReference>
         and setting IgnoreSerializableAttribute on DefaultContractResolver to false.</para>
       </content>
     </section>   
