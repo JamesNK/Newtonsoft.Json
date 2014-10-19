@@ -139,18 +139,18 @@
         <autoOutline /> -->
         <para>.NET types that don't fall into any other category listed below
         (i.e. aren't lists, dictionaries, dynamic, implement ISerializable, etc)
-        are serialized as JSON objects.</para>
-        <para>By default types are serialized in opt-out mode. What that means is all public fields and properties with
-        getters are automatically serialized to JSON and members that shouldn't be serialized are opted-out by placing
-        JsonIgnoreAttribute on the unwanted properties. To serialize private members the JsonPropertyAttribute can be placed on private fields and
-        properties or the DefaultMembersSearchFlags can be changed on DefaultContractResolver to change how members are
-        serialized on all types.</para>
+        are serialized as JSON objects. You can also force a type to be serialized as a JSON object by placing the
+        JsonObjectAttribute on the type.</para>
+        <para>By default a type's properties are serialized in opt-out mode. What that means is all public fields and properties with
+        getters are automatically serialized to JSON, and fields and properties that shouldn't be serialized are opted-out by placing
+        JsonIgnoreAttribute on them. To serialize private members the JsonPropertyAttribute can be placed on private fields and
+        properties.</para>
         <para>Types can also be serialized using opt-in mode. Only properties and fields that have a JsonPropertyAttribute
-        or DataMemberAttribute on them will be serialized. Opt-in mode for an object is specified using the JsonObjectAttribute
-        on the class.</para>
+        or DataMemberAttribute on them will be serialized. Opt-in mode for an object is specified by placing the JsonObjectAttribute
+        or DataContractAttribute on the type.</para>
         <para>Finally types can be serialized using a fields mode. All fields, both public and private, are serialized
-        and properties are ignored. This can be specified by setting MemberSerialization.Fields on a type with the JsonObject
-        attribute or by the .NET <codeEntityReference>T:System.SerializableAttribute</codeEntityReference>
+        and properties are ignored. This can be specified by setting MemberSerialization.Fields on a type with the JsonObjectAttribute
+        or by the .NET <codeEntityReference>T:System.SerializableAttribute</codeEntity`Reference>
         and setting IgnoreSerializableAttribute on DefaultContractResolver to false.</para>
       </content>
     </section>   
@@ -162,8 +162,8 @@
         <autoOutline /> -->
         <para> .NET lists (types that inherit from IEnumerable) and .NET arrays are converted to JSON arrays. Because JSON
         arrays only support a range of values and not properties, any additional properties and fields declared on .NET
-        collections are not serialized. In situations where a JSON array is not wanted the JsonObjectAttribute can be placed
-        on a .NET type that implements IEnumerable to force the type to be serialized as a JSON object instead.</para>
+        collections are not serialized. In situations where a type implements IEnumerable but a JSON array is not wanted then
+        the JsonObjectAttribute can be placed the type to force it to be serialized as a JSON object instead.</para>
         <para>JsonArrayAttribute has options on it to customize the JsonConverter, type name handling and reference handling
         that are applied to collection items.</para>
         <para>Note that if TypeNameHandling or PreserveReferencesHandling has been enabled for JSON arrays on the serializer
@@ -229,13 +229,16 @@
         the difference being that properties and methods can be called on a dynamic property without casting. In Json.NET
         dynamic properties are serialized and deserialized exactly the same as untyped objects: because dynamic isn't an actual
         type Json.NET falls back to deserializing the JSON as LINQ to JSON objects.</para>
-        <para>The second usage of dynamic in .NET are classes that implement
+        <para>The second usage of dynamic in .NET are types that implement
         <codeEntityReference>T:System.Dynamic.IDynamicMetaObjectProvider</codeEntityReference>. This interface lets
         the implementor create dynamic objects that intercept the property and method calls on an object and use them.
         <codeEntityReference>T:System.Dynamic.ExpandoObject</codeEntityReference>
         is a good example of a dynamic object.</para>
         <para>Dynamic objects are serialized as JSON objects. A property is written for every member name returned by
-        <codeEntityReference qualifyHint="true">M:System.Dynamic.DynamicMetaObject.GetDynamicMemberNames</codeEntityReference>.</para>
+        <codeEntityReference qualifyHint="true">M:System.Dynamic.DynamicMetaObject.GetDynamicMemberNames</codeEntityReference>.
+        A dynamic object's normal properties aren't serialized by default but can be included by placing the
+        JsonPropertyAttribute on them.
+        </para>
         <para>When deserializing dynamic objects the serializer first attempts to set JSON property values on a normal .NET
         member with the matching name. If no .NET member is found with the property name then the serializer will call
         SetMember on the dynamic object. Because there is no type information for dynamic members on a dynamic object the

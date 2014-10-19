@@ -1,9 +1,7 @@
 {
     "version": "1.0.0-*",
     "compilationOptions": {
-        "define": [
-            "NOINTERNALS"
-        ]
+        "define": []
     },
     "exclude":[
         "LinqToSql",

@@ -91,5 +91,5 @@ using System.Security;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("6.0.0.0")]
-[assembly: AssemblyFileVersion("6.0.6.17818")]
+[assembly: AssemblyFileVersion("6.0.6.17819")]
 [assembly: CLSCompliant(true)]

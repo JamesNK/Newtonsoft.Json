@@ -17,13 +17,14 @@
   $releaseDir = "$baseDir\Release"
   $workingDir = "$baseDir\Working"
   $builds = @(
-    @{Name = "Newtonsoft.Json"; TestsName = "Newtonsoft.Json.Tests"; TestsFunction = ${function:NUnitTests}; Constants=""; FinalDir="Net45"; NuGetDir = "net45"; Framework="net-4.0"; Sign=$true},
-    @{Name = "Newtonsoft.Json.Portable"; TestsName = "Newtonsoft.Json.Tests.Portable"; TestsFunction = ${function:NUnitTests}; Constants="PORTABLE"; FinalDir="Portable"; NuGetDir = "portable-net45+wp80+win8+wpa81+aspnetcore50"; Framework="net-4.0"; Sign=$true},
-    @{Name = "Newtonsoft.Json.Portable40"; TestsName = "Newtonsoft.Json.Tests.Portable40"; TestsFunction = ${function:NUnitTests}; Constants="PORTABLE40"; FinalDir="Portable40"; NuGetDir = "portable-net40+sl5+wp80+win8+wpa81+xamarinios10"; Framework="net-4.0"; Sign=$true},
-    @{Name = "Newtonsoft.Json.WinRT"; TestsName = "Newtonsoft.Json.Tests.WinRT"; TestsFunction = ${function:WinRTTests}; Constants="NETFX_CORE"; FinalDir="WinRT"; NuGetDir = "netcore45"; Framework="net-4.5"; Sign=$true},
-    @{Name = "Newtonsoft.Json.Net40"; TestsName = "Newtonsoft.Json.Tests.Net40"; TestsFunction = ${function:NUnitTests}; Constants="NET40"; FinalDir="Net40"; NuGetDir = "net40"; Framework="net-4.0"; Sign=$true},
-    @{Name = "Newtonsoft.Json.Net35"; TestsName = "Newtonsoft.Json.Tests.Net35"; TestsFunction = ${function:NUnitTests}; Constants="NET35"; FinalDir="Net35"; NuGetDir = "net35"; Framework="net-2.0"; Sign=$true},
-    @{Name = "Newtonsoft.Json.Net20"; TestsName = "Newtonsoft.Json.Tests.Net20"; TestsFunction = ${function:NUnitTests}; Constants="NET20"; FinalDir="Net20"; NuGetDir = "net20"; Framework="net-2.0"; Sign=$true}
+    @{Name = "Newtonsoft.Json"; TestsName = "Newtonsoft.Json.Tests"; TestsFunction = "NUnitTests"; Constants=""; FinalDir="Net45"; NuGetDir = "net45"; Framework="net-4.0"; Sign=$true},
+    @{Name = "Newtonsoft.Json.Portable"; TestsName = "Newtonsoft.Json.Tests.Portable"; TestsFunction = "NUnitTests"; Constants="PORTABLE"; FinalDir="Portable"; NuGetDir = "portable-net45+wp80+win8+wpa81+aspnetcore50"; Framework="net-4.0"; Sign=$true},
+    @{Name = "Newtonsoft.Json.Portable40"; TestsName = "Newtonsoft.Json.Tests.Portable40"; TestsFunction = "NUnitTests"; Constants="PORTABLE40"; FinalDir="Portable40"; NuGetDir = "portable-net40+sl5+wp80+win8+wpa81+xamarinios10"; Framework="net-4.0"; Sign=$true},
+    @{Name = $null; TestsName = "Newtonsoft.Json.Tests.AspNetCore50"; TestsFunction = "CoreClrTests"; Constants="ASPNETCORE50"; FinalDir="ASPNETCORE50"; NuGetDir = $null; Framework=$null; Sign=$null},
+    @{Name = "Newtonsoft.Json.WinRT"; TestsName = "Newtonsoft.Json.Tests.WinRT"; TestsFunction = "WinRTTests"; Constants="NETFX_CORE"; FinalDir="WinRT"; NuGetDir = "netcore45"; Framework="net-4.5"; Sign=$true},
+    @{Name = "Newtonsoft.Json.Net40"; TestsName = "Newtonsoft.Json.Tests.Net40"; TestsFunction = "NUnitTests"; Constants="NET40"; FinalDir="Net40"; NuGetDir = "net40"; Framework="net-4.0"; Sign=$true},
+    @{Name = "Newtonsoft.Json.Net35"; TestsName = "Newtonsoft.Json.Tests.Net35"; TestsFunction = "NUnitTests"; Constants="NET35"; FinalDir="Net35"; NuGetDir = "net35"; Framework="net-2.0"; Sign=$true},
+    @{Name = "Newtonsoft.Json.Net20"; TestsName = "Newtonsoft.Json.Tests.Net20"; TestsFunction = "NUnitTests"; Constants="NET20"; FinalDir="Net20"; NuGetDir = "net20"; Framework="net-2.0"; Sign=$true}
   )
 }
 
@@ -54,19 +55,22 @@ task Build -depends Clean {
   foreach ($build in $builds)
   {
     $name = $build.Name
-    $finalDir = $build.FinalDir
-    $sign = ($build.Sign -and $signAssemblies)
+    if ($name -ne $null)
+    {
+      $finalDir = $build.FinalDir
+      $sign = ($build.Sign -and $signAssemblies)
 
-    Write-Host -ForegroundColor Green "Building " $name
-    Write-Host -ForegroundColor Green "Signed " $sign
+      Write-Host -ForegroundColor Green "Building " $name
+      Write-Host -ForegroundColor Green "Signed " $sign
 
-    Write-Host
-    Write-Host "Restoring"
-    exec { .\Tools\NuGet\NuGet.exe restore ".\Src\$name.sln" | Out-Default } "Error restoring $name"
+      Write-Host
+      Write-Host "Restoring"
+      exec { .\Tools\NuGet\NuGet.exe restore ".\Src\$name.sln" | Out-Default } "Error restoring $name"
 
-    Write-Host
-    Write-Host "Building"
-    exec { msbuild "/t:Clean;Rebuild" /p:Configuration=Release "/p:Platform=Any CPU" /p:OutputPath=bin\Release\$finalDir\ /p:AssemblyOriginatorKeyFile=$signKeyPath "/p:SignAssembly=$sign" "/p:TreatWarningsAsErrors=$treatWarningsAsErrors" "/p:VisualStudioVersion=12.0" (GetConstants $build.Constants $sign) ".\Src\$name.sln" | Out-Default } "Error building $name"
+      Write-Host
+      Write-Host "Building"
+      exec { msbuild "/t:Clean;Rebuild" /p:Configuration=Release "/p:Platform=Any CPU" /p:OutputPath=bin\Release\$finalDir\ /p:AssemblyOriginatorKeyFile=$signKeyPath "/p:SignAssembly=$sign" "/p:TreatWarningsAsErrors=$treatWarningsAsErrors" "/p:VisualStudioVersion=12.0" (GetConstants $build.Constants $sign) ".\Src\$name.sln" | Out-Default } "Error building $name"
+    }
   }
 }
 
@@ -147,8 +151,34 @@ task Test -depends Deploy {
   {
     if ($build.TestsFunction -ne $null)
     {
-      $build.TestsFunction.Invoke($build)
+      & $build.TestsFunction $build
     }
+  }
+}
+
+function CoreClrTests($build)
+{
+  $name = $build.TestsName
+
+  Write-Host -ForegroundColor Green "Ensuring latest CoreCLR is installed for $name"
+  Write-Host
+  #exec { & $toolsDir\Kvm\kvm.ps1 upgrade -r CoreCLR | Out-Default }
+
+  Write-Host -ForegroundColor Green "Restoring packages for $name"
+  Write-Host
+  exec { kpm restore "$sourceDir\Newtonsoft.Json.Tests\project.json" | Out-Default }
+
+  Write-Host -ForegroundColor Green "Ensuring test project builds for $name"
+  Write-Host
+  try
+  {
+    Set-Location "$sourceDir\Newtonsoft.Json.Tests"
+    $logPath = "$workingDir\$name.txt"
+    k --configuration Release test -parallel none | Tee-Object -file $logPath
+  }
+  finally
+  {
+    Set-Location $baseDir
   }
 }
 
@@ -156,18 +186,17 @@ function WinRTTests($build)
 {
   $name = $build.TestsName
   $finalDir = $build.FinalDir
-  $testsName = $build.TestsName
 
   $testCmd = "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe"
   $outDir = "$workingDir\Deployed\Bin\$finalDir"
 
   Write-Host -ForegroundColor Green "Packaging test assembly $name to deployed directory"
   Write-Host
-  exec { msbuild "$sourceDir\Newtonsoft.Json.Tests\$testsName.csproj" /p:OutDir=$outDir | Out-Default }
+  exec { msbuild "$sourceDir\Newtonsoft.Json.Tests\$name.csproj" /p:OutDir=$outDir | Out-Default }
 
   Write-Host -ForegroundColor Green "Running MSTest tests " $name
   Write-Host
-  exec { &($testCmd) $outDir\$testsName\AppPackages\$($testsName)_1.0.0.0_AnyCPU_Debug_Test\$($testsName)_1.0.0.0_AnyCPU_Debug.appx /InIsolation /Logger:trx | Out-Default } "Error running $name tests"
+  exec { &($testCmd) $outDir\$name\AppPackages\$($name)_1.0.0.0_AnyCPU_Debug_Test\$($name)_1.0.0.0_AnyCPU_Debug.appx /InIsolation /Logger:trx | Out-Default } "Error running $name tests"
 
   robocopy $baseDir\TestResults $workingDir /NP | Out-Default
   del $baseDir\TestResults -Recurse -Force
