@@ -19,7 +19,7 @@ Json.NET is a popular high-performance JSON framework for .NET
 
 Documentation:
 
-http://james.newtonking.com/projects/json/help/
+http://james.newtonking.com/json/help/
 
 
 Versions:
@@ -42,7 +42,7 @@ Json.NET has different libraries for the various .NET Framework versions.
   Windows 8 Store
 
 -Portable45:
-  .NET 4.5, Windows Phone 8, Windows 8 Store
+  .NET 4.5, Windows Phone 8, Windows 8 Store, ASP.NET CoreCLR
 
 -Portable40:
   .NET 4.0, Windows Phone 8, Windows 8 Store, Silverlight 5, MonoTouch, MonoDroid
