@@ -107,7 +107,7 @@ task Package -depends Build {
       }
     }
   
-    robocopy $sourceDir $workingDir\NuGet\src *.cs /S /NP /XD Newtonsoft.Json.Tests obj | Out-Default
+    robocopy $sourceDir $workingDir\NuGet\src *.cs /S /NP /XD Newtonsoft.Json.Tests Newtonsoft.Json.TestConsole obj | Out-Default
 
     exec { .\Tools\NuGet\NuGet.exe pack $workingDir\NuGet\Newtonsoft.Json.nuspec -Symbols }
     move -Path .\*.nupkg -Destination $workingDir\NuGet
