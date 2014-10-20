@@ -7128,7 +7128,7 @@ To fix this error either change the environment to be fully trusted, change the 
 #endif
         }
 
-#if DEBUG && !NOINTERNALS
+#if DEBUG
         [Test]
         public void SerializeCustomTupleWithSerializableAttributeInPartialTrust()
         {
