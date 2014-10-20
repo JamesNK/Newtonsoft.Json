@@ -884,13 +884,24 @@ namespace Newtonsoft.Json.Tests
                 Assert.AreEqual('\'', jsonWriter.QuoteChar);
 
                 jsonWriter.WriteStartObject();
+
                 jsonWriter.WritePropertyName("propertyName");
                 jsonWriter.WriteValue(double.NaN);
+
+                jsonWriter.IndentChar = '?';
+                Assert.AreEqual('?', jsonWriter.IndentChar);
+                jsonWriter.Indentation = 6;
+                Assert.AreEqual(6, jsonWriter.Indentation);
+
+                jsonWriter.WritePropertyName("prop2");
+                jsonWriter.WriteValue(123);
+
                 jsonWriter.WriteEndObject();
             }
 
             string expected = @"{
-_____'propertyName': NaN
+_____'propertyName': NaN,
+??????'prop2': 123
 }";
             string result = sb.ToString();
 

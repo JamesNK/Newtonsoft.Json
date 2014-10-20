@@ -521,7 +521,7 @@ third line", jsonTextReader.Value);
 ]content";
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
-#if DEBUG && !NOINTERNALS
+#if DEBUG
             reader.SetCharBuffer(new char[2]);
 #endif
 
@@ -590,7 +590,7 @@ third line", jsonTextReader.Value);
 
             using (JsonTextReader jsonReader = new JsonTextReader(sr))
             {
-#if DEBUG && !NOINTERNALS
+#if DEBUG
                 jsonReader.SetCharBuffer(new char[5]);
 #endif
 
@@ -908,7 +908,7 @@ third line", jsonTextReader.Value);
 ]";
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
-#if DEBUG && !NOINTERNALS
+#if DEBUG
             reader.SetCharBuffer(new char[129]);
 #endif
 
@@ -1023,7 +1023,7 @@ third line", jsonTextReader.Value);
 ";
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
-#if DEBUG && !NOINTERNALS
+#if DEBUG
             reader.SetCharBuffer(new char[129]);
 #endif
 
@@ -1566,7 +1566,7 @@ third line", jsonTextReader.Value);
             string json = @"[""\u003c"",""\u5f20""]";
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
-#if DEBUG && !NOINTERNALS
+#if DEBUG
             reader.SetCharBuffer(new char[2]);
 #endif
 
@@ -1898,7 +1898,7 @@ third line", jsonTextReader.Value);
             string json = @"{""Message"":""Hi,I\u0092ve send you smth""}";
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
-#if DEBUG && !NOINTERNALS
+#if DEBUG
             reader.SetCharBuffer(new char[5]);
 #endif
 
@@ -2255,7 +2255,7 @@ third line", jsonTextReader.Value);
 ]";
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
-#if DEBUG && !NOINTERNALS
+#if DEBUG
             reader.SetCharBuffer(new char[5]);
 #endif
 
@@ -2283,7 +2283,7 @@ third line", jsonTextReader.Value);
       } /*comment*/";
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
-#if DEBUG && !NOINTERNALS
+#if DEBUG
             reader.SetCharBuffer(new char[5]);
 #endif
 
@@ -2303,7 +2303,7 @@ third line", jsonTextReader.Value);
         {
             string json = "new Date\0()";
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
-#if DEBUG && !NOINTERNALS
+#if DEBUG
             reader.SetCharBuffer(new char[7]);
 #endif
 
