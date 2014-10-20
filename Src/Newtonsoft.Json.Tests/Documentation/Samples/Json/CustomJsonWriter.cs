@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
 {
+    #region Types
     public class XmlJsonWriter : JsonWriter
     {
         private readonly XmlWriter _writer;
@@ -272,12 +273,49 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
             }
         }
     }
+    #endregion
 
     public class CustomJsonWriter
     {
         public void Example()
         {
+            #region Usage
+            var user = new
+            {
+                Name = "James",
+                Age = 30,
+                Enabled = true,
+                Roles = new[]
+                    {
+                        "Publisher",
+                        "Administrator"
+                    }
+            };
+
             StringWriter sw = new StringWriter();
+
+            using (XmlWriter xmlWriter = XmlWriter.Create(sw, new XmlWriterSettings { OmitXmlDeclaration = true }))
+            using (XmlJsonWriter writer = new XmlJsonWriter(xmlWriter))
+            {
+                writer.Formatting = Formatting.Indented;
+
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.Serialize(writer, user);
+            }
+
+            Console.WriteLine(sw.ToString());
+            //<Root type="Object">
+            //  <Name type="String">James</Name>
+            //  <Age type="Integer">30</Age>
+            //  <Enabled type="Boolean">true</Enabled>
+            //  <Roles type="Array">
+            //    <Item type="String">Publisher</Item>
+            //    <Item type="String">Administrator</Item>
+            //  </Roles>
+            //</Root>
+            #endregion
+
+            sw = new StringWriter();
 
             using (XmlWriter xmlWriter = XmlWriter.Create(sw, new XmlWriterSettings { OmitXmlDeclaration = true }))
             using (XmlJsonWriter writer = new XmlJsonWriter(xmlWriter))

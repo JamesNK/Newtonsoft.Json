@@ -19,6 +19,7 @@ using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
 {
+    #region Types
     public class XmlJsonReader : JsonReader
     {
         private readonly Stack<JTokenType> _stateStack;
@@ -217,11 +218,13 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
             return (Value != null) ? (DateTimeOffset?)Convert.ToDateTime(Value) : null;
         }
     }
+    #endregion
 
     public class CustomJsonReader
     {
         public void Example()
         {
+            #region Usage
             string xml = @"<Root type=""Object"">
               <Null type=""Null"" />
               <String type=""String"">This is a string!</String>
@@ -280,6 +283,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
                 //  "Constructor": new Date(2000, 12, 30)
                 //}
             }
+            #endregion
 
             using (XmlReader xmlReader = XmlReader.Create(new StringReader(xml), new XmlReaderSettings { IgnoreWhitespace = true }))
             using (XmlJsonReader reader = new XmlJsonReader(xmlReader))
