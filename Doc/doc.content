@@ -81,7 +81,7 @@
       <Topic id="SerializationCallbackAttributes" visible="True" title="Serialization Callback Attributes" />
       <Topic id="DataContractAndDataMember" visible="True" title="DataContract and DataMember Attributes" />
     </Topic>
-    <Topic id="68b9fad2-5436-4e35-a734-9b9d751cc3e5" visible="True" noFile="true" isExpanded="true" title="LINQ to JSON">
+    <Topic id="68b9fad2-5436-4e35-a734-9b9d751cc3e5" visible="True" noFile="true" title="LINQ to JSON">
       <Topic id="CreateJsonManually" visible="True" title="Create JSON manually" />
       <Topic id="CreateJsonCollectionInitializer" visible="True" title="Create JSON using Collection Initializers" />
       <Topic id="CreateJsonDeclaratively" visible="True" title="Create JSON declaratively with LINQ" />
@@ -93,7 +93,7 @@
       <Topic id="ParseJsonObject" visible="True" title="Parsing JSON Object using JObject.Parse" />
       <Topic id="ParseJsonAny" visible="True" title="Parsing all JSON using JToken.Parse" />
       <Topic id="DeserializeWithLinq" visible="True" title="Deserializing from JSON with LINQ" />
-      <Topic id="SerializeWithLinq" visible="True" isSelected="true" title="Serializing to JSON with LINQ" />
+      <Topic id="SerializeWithLinq" visible="True" title="Serializing to JSON with LINQ" />
       <Topic id="ModifyJson" visible="True" title="Modifying JSON" />
       <Topic id="QueryJson" visible="True" title="Querying JSON" />
       <Topic id="QueryJsonDynamic" visible="True" title="Querying JSON with dynamic" />
@@ -138,9 +138,11 @@
       <Topic id="DeserializeFromBson" visible="True" title="Deserialize from BSON" />
       <Topic id="DeserializeFromBsonCollection" visible="True" title="Deserialize a Collection from BSON" />
     </Topic>
-    <Topic id="ca145ed0-f377-4f1c-9479-d1629082fc6e" visible="True" noFile="true" title="Reading and Writing JSON">
+    <Topic id="ca145ed0-f377-4f1c-9479-d1629082fc6e" visible="True" noFile="true" isExpanded="true" title="Reading and Writing JSON">
       <Topic id="ReadJsonWithJsonTextReader" visible="True" title="Read JSON with JsonTextReader" />
       <Topic id="WriteJsonWithJsonTextWriter" visible="True" title="Write JSON with JsonTextWriter" />
+      <Topic id="CustomJsonReader" visible="True" isSelected="true" title="Custom JsonReader" />
+      <Topic id="CustomJsonWriter" visible="True" title="Custom JsonWriter" />
     </Topic>
   </Topic>
 </Topics>
