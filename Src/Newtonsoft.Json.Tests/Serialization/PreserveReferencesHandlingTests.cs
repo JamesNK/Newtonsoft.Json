@@ -1065,6 +1065,17 @@ namespace Newtonsoft.Json.Tests.Serialization
                 MetadataPropertyHandling = MetadataPropertyHandling.Default
             }), "Error reading object reference '1'. Path 'Data.Prop2.MyProperty', line 9, position 20.");
         }
+
+        [Test]
+        public void ShouldCheckForCircularReferencesUsingReferenceEquality()
+        {
+            var source = new ValueContainer
+            {
+                Value = new object()
+            };
+
+            string json = JsonConvert.SerializeObject(source, Formatting.Indented);
+        }
     }
 
     public class PropertyItemIsReferenceBody
@@ -1107,5 +1118,28 @@ namespace Newtonsoft.Json.Tests.Serialization
 
         public string String { get; set; }
         public int Integer { get; set; }
+    }
+
+    public class ValueContainer
+    {
+        public object Value;
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+
+            var otherContainer = obj as ValueContainer;
+
+            if (otherContainer != null)
+                return EqualityComparer<object>.Default.Equals(Value, otherContainer.Value);
+
+            return EqualityComparer<object>.Default.Equals(Value, obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return EqualityComparer<object>.Default.GetHashCode(Value);
+        }
     }
 }
