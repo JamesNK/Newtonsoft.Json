@@ -88,6 +88,14 @@ namespace Newtonsoft.Json.Serialization
         public ReferenceLoopHandling? ItemReferenceLoopHandling { get; set; }
 
         /// <summary>
+        /// Gets or sets the item reference compare handling.
+        /// </summary>
+        /// <value>
+        /// The item reference compare handling.
+        /// </value>
+        public ReferenceComparisonHandling? ItemReferenceComparisonHandling { get;set; } 
+
+        /// <summary>
         /// Gets or sets the collection item type name handling.
         /// </summary>
         /// <value>The type name handling.</value>
@@ -111,6 +119,7 @@ namespace Newtonsoft.Json.Serialization
                 ItemIsReference = jsonContainerAttribute._itemIsReference;
                 ItemReferenceLoopHandling = jsonContainerAttribute._itemReferenceLoopHandling;
                 ItemTypeNameHandling = jsonContainerAttribute._itemTypeNameHandling;
+                ItemReferenceComparisonHandling = jsonContainerAttribute._itemReferenceComparisonHandling;
             }
         }
     }
