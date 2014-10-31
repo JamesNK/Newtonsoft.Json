@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE || __MOBILE__)
 using System;
 using System.Data;
 using Newtonsoft.Json.Serialization;

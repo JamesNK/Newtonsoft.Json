@@ -33,7 +33,7 @@ using System.Dynamic;
 #endif
 using System.Diagnostics;
 using System.Globalization;
-#if !(PORTABLE || PORTABLE40 || NET35 || NET20)
+#if !(PORTABLE || PORTABLE40 || NET35 || NET20 || __MOBILE__)
 using System.Numerics;
 #endif
 using System.Reflection;
@@ -868,7 +868,7 @@ namespace Newtonsoft.Json.Serialization
                                 return Enum.ToObject(contract.NonNullableUnderlyingType, value);
                         }
 
-#if !(PORTABLE || PORTABLE40 || NET35 || NET20)
+#if !(PORTABLE || PORTABLE40 || NET35 || NET20 || __MOBILE__)
                         if (value is BigInteger)
                             return ConvertUtils.FromBigInteger((BigInteger)value, targetType);
 #endif

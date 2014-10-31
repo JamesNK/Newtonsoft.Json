@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET35 || NET20 || NETFX_CORE)
+#if !(NET35 || NET20 || NETFX_CORE || __MOBILE__)
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;

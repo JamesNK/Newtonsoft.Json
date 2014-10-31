@@ -112,7 +112,7 @@ namespace Newtonsoft.Json.Serialization
 #if !(PORTABLE40)
             new XmlNodeConverter(),
 #endif
-#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
+#if !(NETFX_CORE || PORTABLE40 || PORTABLE || __MOBILE__)
             new BinaryConverter(),
             new DataSetConverter(),
             new DataTableConverter(),
@@ -120,7 +120,7 @@ namespace Newtonsoft.Json.Serialization
 #if NETFX_CORE
             new JsonValueConverter(),
 #endif
-#if !(NET35 || NET20 || NETFX_CORE)
+#if !(NET35 || NET20 || NETFX_CORE || __MOBILE__)
             new DiscriminatedUnionConverter(),
 #endif
             new KeyValuePairConverter(),
@@ -280,7 +280,7 @@ namespace Newtonsoft.Json.Serialization
 
             if (memberSerialization != MemberSerialization.Fields)
             {
-#if !NET20
+#if !(NET20 || __MOBILE__)
                 DataContractAttribute dataContractAttribute = JsonTypeReflector.GetDataContractAttribute(objectType);
 #endif
 
@@ -305,7 +305,7 @@ namespace Newtonsoft.Json.Serialization
                             // or are a field if serializing just fields
                             if (JsonTypeReflector.GetAttribute<JsonPropertyAttribute>(member) != null)
                                 serializableMembers.Add(member);
-#if !NET20
+#if !(NET20 || __MOBILE__)
                             else if (dataContractAttribute != null && JsonTypeReflector.GetAttribute<DataMemberAttribute>(member) != null)
                                 serializableMembers.Add(member);
 #endif
@@ -315,7 +315,7 @@ namespace Newtonsoft.Json.Serialization
                     }
                 }
 
-#if !NET20
+#if !(NET20 || __MOBILE__)
                 Type match;
                 // don't include EntityKey on entities objects... this is a bit hacky
                 if (objectType.AssignableToTypeName("System.Data.Objects.DataClasses.EntityObject", out match))
@@ -336,7 +336,7 @@ namespace Newtonsoft.Json.Serialization
             return serializableMembers;
         }
 
-#if !NET20
+#if !(NET20 || __MOBILE__)
         private bool ShouldSerializeEntityMember(MemberInfo memberInfo)
         {
             PropertyInfo propertyInfo = memberInfo as PropertyInfo;
@@ -680,7 +680,7 @@ namespace Newtonsoft.Json.Serialization
             return JsonTypeReflector.ReflectionDelegateFactory.CreateDefaultConstructor<object>(createdType);
         }
 
-#if !NET20
+#if !(NET20 || __MOBILE__)
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.Runtime.Serialization.DataContractAttribute.#get_IsReference()")]
 #endif
         private void InitializeContract(JsonContract contract)
@@ -690,7 +690,7 @@ namespace Newtonsoft.Json.Serialization
             {
                 contract.IsReference = containerAttribute._isReference;
             }
-#if !NET20
+#if !(NET20 || __MOBILE__)
             else
             {
                 DataContractAttribute dataContractAttribute = JsonTypeReflector.GetDataContractAttribute(contract.NonNullableUnderlyingType);
@@ -729,7 +729,7 @@ namespace Newtonsoft.Json.Serialization
 
             if (onSerializing != null)
             {
-#if !(NET35 || NET20 || NETFX_CORE)
+#if !(NET35 || NET20 || NETFX_CORE || __MOBILE__)
                 if (t.Name != FSharpUtils.FSharpSetTypeName && t.Name != FSharpUtils.FSharpMapTypeName)
 #endif
                 {
@@ -752,7 +752,7 @@ namespace Newtonsoft.Json.Serialization
 
             if (onDeserialized != null)
             {
-#if !(NET35 || NET20 || NETFX_CORE)
+#if !(NET35 || NET20 || NETFX_CORE || __MOBILE__)
                 if (t.Name != FSharpUtils.FSharpSetTypeName && t.Name != FSharpUtils.FSharpMapTypeName)
 #endif
                 {
@@ -1137,7 +1137,7 @@ namespace Newtonsoft.Json.Serialization
             // warning - this method use to cause errors with Intellitrace. Retest in VS Ultimate after changes
             IValueProvider valueProvider;
 
-#if !(PORTABLE40 || PORTABLE || NETFX_CORE)
+#if !(PORTABLE40 || PORTABLE || NETFX_CORE || __MOBILE__)
             if (DynamicCodeGeneration)
                 valueProvider = new DynamicValueProvider(member);
             else
@@ -1187,7 +1187,7 @@ namespace Newtonsoft.Json.Serialization
 
         private void SetPropertySettingsFromAttributes(JsonProperty property, object attributeProvider, string name, Type declaringType, MemberSerialization memberSerialization, out bool allowNonPublicAccess)
         {
-#if !NET20
+#if !(NET20 || __MOBILE__)
             DataContractAttribute dataContractAttribute = JsonTypeReflector.GetDataContractAttribute(declaringType);
 
             MemberInfo memberInfo = attributeProvider as MemberInfo;
@@ -1206,7 +1206,7 @@ namespace Newtonsoft.Json.Serialization
             string mappedName;
             if (propertyAttribute != null && propertyAttribute.PropertyName != null)
                 mappedName = propertyAttribute.PropertyName;
-#if !NET20
+#if !(NET20 || __MOBILE__)
             else if (dataMemberAttribute != null && dataMemberAttribute.Name != null)
                 mappedName = dataMemberAttribute.Name;
 #endif
@@ -1224,7 +1224,7 @@ namespace Newtonsoft.Json.Serialization
                 property.DefaultValueHandling = propertyAttribute._defaultValueHandling;
                 hasMemberAttribute = true;
             }
-#if !NET20
+#if !(NET20 || __MOBILE__)
             else if (dataMemberAttribute != null)
             {
                 property._required = (dataMemberAttribute.IsRequired) ? Required.AllowNull : Required.Default;
@@ -1247,7 +1247,7 @@ namespace Newtonsoft.Json.Serialization
             {
                 bool hasIgnoreDataMemberAttribute = false;
 
-#if !(NET20 || NET35)
+#if !(NET20 || NET35 || __MOBILE__)
                 hasIgnoreDataMemberAttribute = (JsonTypeReflector.GetAttribute<IgnoreDataMemberAttribute>(attributeProvider) != null);
 #endif
 
@@ -1293,7 +1293,7 @@ namespace Newtonsoft.Json.Serialization
             if (memberSerialization == MemberSerialization.Fields)
                 allowNonPublicAccess = true;
 
-#if !NET20
+#if !(NET20 || __MOBILE__)
             if (dataMemberAttribute != null)
             {
                 allowNonPublicAccess = true;
