@@ -26,7 +26,8 @@ namespace Newtonsoft.Json.TestConsole
 
             //DeserializeLargeJson();
             //WriteLargeJson();
-            DeserializeJson();
+            //DeserializeJson();
+            ReadLargeJson();
 
             Console.WriteLine();
             Console.WriteLine("Finished");
@@ -60,13 +61,44 @@ namespace Newtonsoft.Json.TestConsole
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 10; i++)
             {
                 using (StreamWriter file = System.IO.File.CreateText("largewrite.json"))
                 {
                     JsonSerializer serializer = new JsonSerializer();
                     serializer.Formatting = Formatting.Indented;
                     serializer.Serialize(file, o);
+                }
+            }
+
+            sw.Stop();
+
+            Console.WriteLine("Finished. Total seconds: " + sw.Elapsed.TotalSeconds);
+        }
+
+        public static void ReadLargeJson()
+        {
+            using (var jsonFile = System.IO.File.OpenText("large.json"))
+            using (JsonTextReader jsonTextReader = new JsonTextReader(jsonFile))
+            {
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.Deserialize<IList<PerformanceTests.RootObject>>(jsonTextReader);
+            }
+
+            Console.WriteLine("Press any key to start deserialization");
+            Console.ReadKey();
+            Console.WriteLine("Deserializing...");
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            for (int i = 0; i < 10; i++)
+            {
+                using (var jsonFile = System.IO.File.OpenText("large.json"))
+                using (JsonTextReader jsonTextReader = new JsonTextReader(jsonFile))
+                {
+                    JsonSerializer serializer = new JsonSerializer();
+                    serializer.Deserialize<IList<PerformanceTests.RootObject>>(jsonTextReader);
                 }
             }
 

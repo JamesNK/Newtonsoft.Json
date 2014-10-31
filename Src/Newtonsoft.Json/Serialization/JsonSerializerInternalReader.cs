@@ -268,7 +268,15 @@ namespace Newtonsoft.Json.Serialization
         private object CreateValueInternal(JsonReader reader, Type objectType, JsonContract contract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerMember, object existingValue)
         {
             if (contract != null && contract.ContractType == JsonContractType.Linq)
-                return CreateJToken(reader, contract);
+            {
+                JToken token = CreateJToken(reader, contract);
+
+                // test to make sure token is valid when null, e.g. can't set JValue.Null to JObject proeprty
+                if (token.Type == JTokenType.Null && !contract.UnderlyingType.IsAssignableFrom(typeof(JValue)))
+                    return null;
+
+                return token;
+            }
 
             do
             {
