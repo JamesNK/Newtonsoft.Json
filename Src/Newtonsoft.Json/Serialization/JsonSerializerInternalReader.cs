@@ -207,21 +207,23 @@ namespace Newtonsoft.Json.Serialization
         {
             ValidationUtils.ArgumentNotNull(reader, "reader");
 
-            if (contract != null && contract.UnderlyingType == typeof(JRaw))
+            if (contract != null)
             {
-                return JRaw.Create(reader);
+                if (contract.UnderlyingType == typeof(JRaw))
+                    return JRaw.Create(reader);
+                if (reader.TokenType == JsonToken.Null
+                    && !(contract.UnderlyingType == typeof(JValue) || contract.UnderlyingType == typeof(JToken)))
+                    return null;
             }
-            else
-            {
-                JToken token;
-                using (JTokenWriter writer = new JTokenWriter())
-                {
-                    writer.WriteToken(reader);
-                    token = writer.Token;
-                }
 
-                return token;
+            JToken token;
+            using (JTokenWriter writer = new JTokenWriter())
+            {
+                writer.WriteToken(reader);
+                token = writer.Token;
             }
+
+            return token;
         }
 
         private JToken CreateJObject(JsonReader reader)

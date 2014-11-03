@@ -95,6 +95,61 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class JsonSerializerTest : TestFixtureBase
     {
+#if !(NETFX_CORE || ASPNETCORE50 || NET20)
+        [MetadataType(typeof(CustomerValidation))]
+        public partial class CustomerWithMetadataType
+        {
+            public System.Guid UpdatedBy_Id { get; set; }
+
+            public class CustomerValidation
+            {
+                [JsonIgnore]
+                public System.Guid UpdatedBy_Id { get; set; }
+            }
+        }
+
+        [Test]
+        public void SerializeMetadataType()
+        {
+            CustomerWithMetadataType c = new CustomerWithMetadataType();
+            c.UpdatedBy_Id = Guid.NewGuid();
+
+            string json = JsonConvert.SerializeObject(c);
+
+            Assert.AreEqual("{}", json);
+
+            CustomerWithMetadataType c2 = JsonConvert.DeserializeObject<CustomerWithMetadataType>("{'UpdatedBy_Id':'F6E0666D-13C7-4745-B486-800812C8F6DE'}");
+
+            Assert.AreEqual(Guid.Empty, c2.UpdatedBy_Id);
+        }
+#endif
+
+        public class NullTestClass
+        {
+            public JObject Value1 { get; set; }
+            public JValue Value2 { get; set; }
+            public JRaw Value3 { get; set; }
+            public JToken Value4 { get; set; }
+            public object Value5 { get; set; }
+        }
+
+        [Test]
+        public void DeserializeNullToJTokenProperty()
+        {
+            NullTestClass otc = JsonConvert.DeserializeObject<NullTestClass>(@"{
+    ""Value1"": null,
+    ""Value2"": null,
+    ""Value3"": null,
+    ""Value4"": null,
+    ""Value5"": null
+}");
+            Assert.IsNull(otc.Value1);
+            Assert.AreEqual(JTokenType.Null, otc.Value2.Type);
+            Assert.AreEqual(JTokenType.Raw, otc.Value3.Type);
+            Assert.AreEqual(JTokenType.Null, otc.Value4.Type);
+            Assert.IsNull(otc.Value5);
+        }
+
         public class Link
         {
             /// <summary>
