@@ -33,6 +33,8 @@ using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
+using Newtonsoft.Json.Schema;
+using Newtonsoft.Json.Linq;
 
 #endif
 
@@ -63,6 +65,15 @@ namespace Newtonsoft.Json.Converters
         public StringEnumConverter()
         {
             AllowIntegerValues = true;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StringEnumConverter"/> class.
+        /// </summary>
+        /// <param name="camelCaseText"><c>true</c> if the written enum text will be camel case; otherwise, <c>false</c>.</param>
+        public StringEnumConverter(bool camelCaseText) : this()
+        {
+            CamelCaseText = camelCaseText;
         }
 
         /// <summary>
@@ -234,6 +245,45 @@ namespace Newtonsoft.Json.Converters
             }
 
             return map;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="JsonSchema"/> of the JSON produced by the JsonConverter.
+        /// </summary>
+        /// <param name="objectType">The type of the object.</param>
+        /// <returns>The <see cref="JsonSchema"/> of the JSON produced by the JsonConverter.</returns>
+        public override JsonSchema GetSchema(Type objectType)
+        {
+            bool isNullable = ReflectionUtils.IsNullableType(objectType);
+            Type t = isNullable ? Nullable.GetUnderlyingType(objectType) : objectType;
+
+            if (!t.IsEnum())
+                return null;
+
+            JsonSchema schema = new JsonSchema();
+            schema.Type = JsonSchemaType.String;
+            if(isNullable)
+            {
+                schema.Type |= JsonSchemaType.Null; 
+            }
+
+            schema.Required = !isNullable;
+            schema.Enum = new List<JToken>();
+
+            BidirectionalDictionary<string, string> map = EnumMemberNamesPerType.Get(t);
+            string[] names = Enum.GetNames(t);
+
+            foreach(string name in names)
+            {
+                string resolvedName = ResolvedEnumName(map, name);
+                if (CamelCaseText)
+                    resolvedName = StringUtils.ToCamelCase(resolvedName);
+
+                schema.Enum.Add(JValue.CreateString(resolvedName));
+            }
+
+            return schema;
+
         }
     }
 }
