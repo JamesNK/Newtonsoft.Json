@@ -57,6 +57,52 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class JsonSerializerCollectionsTests : TestFixtureBase
     {
+        [Test]
+        public void MultiDObjectArray()
+        {
+            object[,] myOtherArray =
+            {
+                { new KeyValuePair<string, double>("my value", 0.8), "foobar" },
+                { true, 0.4d },
+                { 0.05f, 6 }
+            };
+
+            string myOtherArrayAsString = JsonConvert.SerializeObject(myOtherArray, Formatting.Indented);
+
+            Assert.AreEqual(@"[
+  [
+    {
+      ""Key"": ""my value"",
+      ""Value"": 0.8
+    },
+    ""foobar""
+  ],
+  [
+    true,
+    0.4
+  ],
+  [
+    0.05,
+    6
+  ]
+]", myOtherArrayAsString);
+
+            JObject o = JObject.Parse(@"{
+              ""Key"": ""my value"",
+              ""Value"": 0.8
+            }");
+
+            object[,] myOtherResult = JsonConvert.DeserializeObject<object[,]>(myOtherArrayAsString);
+            Assert.IsTrue(JToken.DeepEquals(o, (JToken)myOtherResult[0, 0]));
+            Assert.AreEqual("foobar", myOtherResult[0, 1]);
+
+            Assert.AreEqual(true, myOtherResult[1, 0]);
+            Assert.AreEqual(0.4, myOtherResult[1, 1]);
+
+            Assert.AreEqual(0.05, myOtherResult[2, 0]);
+            Assert.AreEqual(6, myOtherResult[2, 1]);
+        }
+
         public class EnumerableClass<T> : IEnumerable<T>
         {
             private readonly IList<T> _values;

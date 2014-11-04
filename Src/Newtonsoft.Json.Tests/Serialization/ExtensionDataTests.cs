@@ -144,7 +144,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Test]
-        public void Sdfsdf()
+        public void DataBagDoesNotInheritFromDictionaryClass()
         {
             Example e = new Example();
             e.Data.Add("extensionData1", new int[] { 1, 2, 3 });
