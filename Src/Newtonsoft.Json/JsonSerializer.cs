@@ -47,6 +47,7 @@ namespace Newtonsoft.Json
         internal FormatterAssemblyStyle _typeNameAssemblyFormat;
         internal PreserveReferencesHandling _preserveReferencesHandling;
         internal ReferenceLoopHandling _referenceLoopHandling;
+        internal ReferenceComparisonHandling _referenceComparisonHandling;
         internal MissingMemberHandling _missingMemberHandling;
         internal ObjectCreationHandling _objectCreationHandling;
         internal NullValueHandling _nullValueHandling;
@@ -179,6 +180,28 @@ namespace Newtonsoft.Json
                 _referenceLoopHandling = value;
             }
         }
+
+        /// <summary>
+        /// Gets or sets how object are compared for equality when detecting circular references.
+        /// </summary>
+        /// <value>
+        /// The reference comparison handling.
+        /// </value>
+        /// <exception cref="System.ArgumentOutOfRangeException">value</exception>
+        public ReferenceComparisonHandling ReferenceComparisonHandling
+        {
+            get { return _referenceComparisonHandling; }
+            set
+            {
+                if (value < ReferenceComparisonHandling.ObjectEquals || value > ReferenceComparisonHandling.ReferenceEquals)
+                    throw new ArgumentOutOfRangeException("value");
+
+                _referenceComparisonHandling = value;
+            }
+        }
+
+
+
 
         /// <summary>
         /// Get or set how missing members (e.g. JSON contains a property that isn't a member on the object) are handled during deserialization.
@@ -539,6 +562,10 @@ namespace Newtonsoft.Json
                 serializer.PreserveReferencesHandling = settings.PreserveReferencesHandling;
             if (settings._referenceLoopHandling != null)
                 serializer.ReferenceLoopHandling = settings.ReferenceLoopHandling;
+
+            if (settings.ReferenceComparisonHandling != null)
+                serializer.ReferenceComparisonHandling = settings.ReferenceComparisonHandling;
+
             if (settings._missingMemberHandling != null)
                 serializer.MissingMemberHandling = settings.MissingMemberHandling;
             if (settings._objectCreationHandling != null)

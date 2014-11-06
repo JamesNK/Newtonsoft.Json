@@ -662,6 +662,8 @@ namespace Newtonsoft.Json.Serialization
                 property.NullValueHandling = property.NullValueHandling ?? matchingMemberProperty.NullValueHandling;
                 property.DefaultValueHandling = property.DefaultValueHandling ?? matchingMemberProperty.DefaultValueHandling;
                 property.ReferenceLoopHandling = property.ReferenceLoopHandling ?? matchingMemberProperty.ReferenceLoopHandling;
+                property.ReferenceComparisonHandling = property.ReferenceComparisonHandling ?? matchingMemberProperty.ReferenceComparisonHandling;
+                
                 property.ObjectCreationHandling = property.ObjectCreationHandling ?? matchingMemberProperty.ObjectCreationHandling;
                 property.TypeNameHandling = property.TypeNameHandling ?? matchingMemberProperty.TypeNameHandling;
             }
@@ -1278,13 +1280,16 @@ namespace Newtonsoft.Json.Serialization
             property.ObjectCreationHandling = (propertyAttribute != null) ? propertyAttribute._objectCreationHandling : null;
             property.TypeNameHandling = (propertyAttribute != null) ? propertyAttribute._typeNameHandling : null;
             property.IsReference = (propertyAttribute != null) ? propertyAttribute._isReference : null;
+            property.ReferenceComparisonHandling = (propertyAttribute != null) ? propertyAttribute._referenceComparisonHandling : null;
 
             property.ItemIsReference = (propertyAttribute != null) ? propertyAttribute._itemIsReference : null;
             property.ItemConverter =
                 (propertyAttribute != null && propertyAttribute.ItemConverterType != null)
                     ? JsonTypeReflector.CreateJsonConverterInstance(propertyAttribute.ItemConverterType, propertyAttribute.ItemConverterParameters)
                     : null;
+            
             property.ItemReferenceLoopHandling = (propertyAttribute != null) ? propertyAttribute._itemReferenceLoopHandling : null;
+            property.ItemReferenceComparisonHandling = (propertyAttribute != null) ? propertyAttribute._itemReferenceComparisonHandling : null;
             property.ItemTypeNameHandling = (propertyAttribute != null) ? propertyAttribute._itemTypeNameHandling : null;
 
             allowNonPublicAccess = false;

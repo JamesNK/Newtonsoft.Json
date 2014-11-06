@@ -212,6 +212,14 @@ namespace Newtonsoft.Json.Serialization
         public ReferenceLoopHandling? ReferenceLoopHandling { get; set; }
 
         /// <summary>
+        /// Gets or sets the reference compare handling.
+        /// </summary>
+        /// <value>
+        /// The reference compare handling.
+        /// </value>
+        public ReferenceComparisonHandling? ReferenceComparisonHandling { get; set; }
+
+        /// <summary>
         /// Gets or sets the property object creation handling.
         /// </summary>
         /// <value>The object creation handling.</value>
@@ -275,6 +283,15 @@ namespace Newtonsoft.Json.Serialization
         /// </summary>
         /// <value>The collection's items reference loop handling.</value>
         public ReferenceLoopHandling? ItemReferenceLoopHandling { get; set; }
+
+        /// <summary>
+        /// Gets or sets the item reference compare handling.
+        /// </summary>
+        /// <value>
+        /// The item reference compare handling.
+        /// </value>
+        public ReferenceComparisonHandling? ItemReferenceComparisonHandling { get; set; }
+        
 
         internal void WritePropertyName(JsonWriter writer)
         {
