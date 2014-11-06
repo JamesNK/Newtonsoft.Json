@@ -240,8 +240,9 @@ namespace Newtonsoft.Json.Serialization
             {
                 Type attributeType = attribute.GetType();
 
-                if (string.Equals(attributeType.Name, "MetadataTypeAttribute", StringComparison.Ordinal)
-                    && attributeType.Assembly().FullName.StartsWith("System.ComponentModel.DataAnnotations", StringComparison.Ordinal))
+                // only test on attribute type name
+                // attribute assembly could change because of type forwarding, etc
+                if (string.Equals(attributeType.FullName, "System.ComponentModel.DataAnnotations.MetadataTypeAttribute", StringComparison.Ordinal))
                 {
                     const string metadataClassTypeName = "MetadataClassType";
 
