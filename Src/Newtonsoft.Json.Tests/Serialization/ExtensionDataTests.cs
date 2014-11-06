@@ -25,7 +25,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Tests.TestObjects;
@@ -155,10 +154,10 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Example e2 = JsonConvert.DeserializeObject<Example>(json);
 
-            JToken o1 = (JToken)e2.Data["extensionData1"];
+            JArray o1 = (JArray)e2.Data["extensionData1"];
 
             Assert.AreEqual(JTokenType.Array, o1.Type);
-            Assert.AreEqual(3, o1.Count());
+            Assert.AreEqual(3, o1.Count);
             Assert.AreEqual(1, (int)o1[0]);
             Assert.AreEqual(2, (int)o1[1]);
             Assert.AreEqual(3, (int)o1[2]);
