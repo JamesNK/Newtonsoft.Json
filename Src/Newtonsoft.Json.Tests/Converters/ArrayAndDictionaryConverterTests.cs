@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -84,17 +85,27 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void ArrayOfArrayOf()
         {
-            const string json = 
-@"[
-    ['1',['1','2',[1,3,null,{'1':1,'2':[10,20,30]}]]],
-    [['3'],['4'],[5]]
+            const string json =
+@"[//an initial comment
+    ['1',['1','2',[1,3,null,{'1':1,'2':[10,20,30]}]]],//some comment
+    [['3'],['4'],[5]], /* some arrays followed by comment */
 ]";
             var result = DeserializeToArray(json);
             var expected = new object[] { 
                 new object[]{"1",new object[]{"1","2",new object[]{ 1,3,null,new Dictionary<string,object>{{"1",1},{"2",new []{10,20,30}}}}}},
-                new object[]{new object[]{"3"},new object[]{"4"},new object[]{5}}
+                new object[]{new object[]{"3"},new object[]{"4"},new object[]{5}},
             };
             Assert.That(result, Js.IsEqualTo(expected));
+        }
+
+        [Test]
+        public void CanHandleDates()
+        {
+            const string json =
+@"[
+    [""/Date(1335205592410)/"",""2012-04-23T18:25:43.511Z""]
+]";
+            DeserializeToArray(json);
         }
     }
 }
