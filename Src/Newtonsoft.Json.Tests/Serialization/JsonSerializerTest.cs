@@ -699,6 +699,112 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(ratio.Denominator, ratio2.Denominator);
             Assert.AreEqual(ratio.Numerator, ratio2.Numerator);
         }
+
+        public class IDeserializationCallbackTestObject : ISerializable, IDeserializationCallback
+        {
+            internal string _stringValue;
+            internal int _intValue;
+            internal PersonReference _person1;
+            internal PersonReference _person2;
+            internal PersonReference _person3;
+            internal SerializationInfo _serializationInfo;
+
+            public IDeserializationCallbackTestObject(string stringValue, int intValue, PersonReference p1, PersonReference p2, PersonReference p3)
+            {
+                _stringValue = stringValue;
+                _intValue = intValue;
+                _person1 = p1;
+                _person2 = p2;
+                _person3 = p3;
+            }
+
+            protected IDeserializationCallbackTestObject(SerializationInfo info, StreamingContext context)
+            {
+                _serializationInfo = info;
+            }
+
+            public void GetObjectData(SerializationInfo info, StreamingContext context)
+            {
+                info.AddValue("stringValue", _stringValue);
+                info.AddValue("intValue", _intValue);
+                info.AddValue("person1", _person1, typeof(PersonReference));
+                info.AddValue("person2", _person2, typeof(PersonReference));
+                info.AddValue("person3", _person3, typeof(PersonReference));
+            }
+
+            void IDeserializationCallback.OnDeserialization(object sender)
+            {
+                if (_serializationInfo == null)
+                    return;
+
+                _stringValue = _serializationInfo.GetString("stringValue");
+                _intValue = _serializationInfo.GetInt32("intValue");
+                _person1 = (PersonReference) _serializationInfo.GetValue("person1", typeof(PersonReference));
+                _person2 = (PersonReference) _serializationInfo.GetValue("person2", typeof(PersonReference));
+                _person3 = (PersonReference) _serializationInfo.GetValue("person3", typeof(PersonReference));
+
+                _serializationInfo = null;
+            }
+        }
+
+        [Test]
+        public void DeserializeIDeserializationCallback()
+        {
+            var p1 = new PersonReference
+            {
+                Name = "John Smith"
+            };
+            var p2 = new PersonReference
+            {
+                Name = "Mary Sue",
+            };
+
+            p1.Spouse = p2;
+            p2.Spouse = p1;
+
+            var obj = new IDeserializationCallbackTestObject("string!", 42, p1, p2, p1);
+
+            var settings = new JsonSerializerSettings
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.All,
+                Formatting = Formatting.Indented
+            };
+
+            string json = JsonConvert.SerializeObject(obj, settings);
+
+            StringAssert.AreEqual(json, @"{
+  ""$id"": ""1"",
+  ""stringValue"": ""string!"",
+  ""intValue"": 42,
+  ""person1"": {
+    ""$id"": ""2"",
+    ""Name"": ""John Smith"",
+    ""Spouse"": {
+      ""$id"": ""3"",
+      ""Name"": ""Mary Sue"",
+      ""Spouse"": {
+        ""$ref"": ""2""
+      }
+    }
+  },
+  ""person2"": {
+    ""$ref"": ""3""
+  },
+  ""person3"": {
+    ""$ref"": ""2""
+  }
+}");
+
+            IDeserializationCallbackTestObject obj2 = JsonConvert.DeserializeObject<IDeserializationCallbackTestObject>(json);
+
+            Assert.AreEqual(obj._stringValue, obj2._stringValue);
+            Assert.AreEqual(obj._intValue, obj2._intValue);
+            Assert.AreEqual(obj._person1.Name, obj2._person1.Name);
+            Assert.AreEqual(obj._person2.Name, obj2._person2.Name);
+            Assert.AreEqual(obj._person3.Name, obj2._person3.Name);
+            Assert.AreEqual(obj2._person1, obj2._person3);
+            Assert.AreEqual(obj2._person1.Spouse, obj2._person2);
+        }
 #endif
 
         [Test]

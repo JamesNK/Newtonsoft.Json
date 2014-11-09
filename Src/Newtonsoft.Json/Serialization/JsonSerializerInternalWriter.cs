@@ -749,7 +749,12 @@ To fix this error either change the environment to be fully trusted, change the 
             {
                 JsonContract valueContract = GetContractSafe(serializationEntry.Value);
 
-                if (CheckForCircularReference(writer, serializationEntry.Value, null, valueContract, contract, member))
+                if (ShouldWriteReference(serializationEntry.Value, null, valueContract, contract, member))
+                {
+                    writer.WritePropertyName(serializationEntry.Name);
+                    WriteReference(writer, serializationEntry.Value);
+                }
+                else if (CheckForCircularReference(writer, serializationEntry.Value, null, valueContract, contract, member))
                 {
                     writer.WritePropertyName(serializationEntry.Name);
                     SerializeValue(writer, serializationEntry.Value, valueContract, null, contract, member);
