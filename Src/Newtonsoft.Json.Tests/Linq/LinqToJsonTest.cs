@@ -1186,7 +1186,7 @@ keyword such as type of business.""
 
             var json = SerializeWithNoRedundentIdProperties(dic1);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""$id"": ""1"",
   ""list1"": [
     ""A string!"",
