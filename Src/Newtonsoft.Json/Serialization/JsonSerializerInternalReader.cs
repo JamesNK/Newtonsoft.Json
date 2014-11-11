@@ -1493,14 +1493,6 @@ namespace Newtonsoft.Json.Serialization
             OnDeserializing(reader, contract, createdObject);
             OnDeserialized(reader, contract, createdObject);
 
-            // According to documentation this method is called after the entire object graph is deserialized,
-            // however doing this isn't compatible with the type of serialization model used by JSON.
-            // The creation of an object with $id would end up postponed, causing references to it in the object graph
-            // to fail. The .NET Framework shows that it's valid to call this on-demand before that point if another
-            // object depends on this one, which is what will be done here in every case.
-            if (contract.HasDeserializationCallback)
-                ((IDeserializationCallback) createdObject).OnDeserialization(null);
-
             return createdObject;
         }
 

@@ -41,12 +41,6 @@ namespace Newtonsoft.Json.Serialization
         public ObjectConstructor<object> ISerializableCreator { get; set; }
 
         /// <summary>
-        /// Gets whether the type implements IDeserializationCallback.
-        /// </summary>
-        /// <value>True if the type implements IDeserialiationCallback, otherwise false.</value>
-        public bool HasDeserializationCallback { get; private set; }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="JsonISerializableContract"/> class.
         /// </summary>
         /// <param name="underlyingType">The underlying type for the contract.</param>
@@ -54,9 +48,7 @@ namespace Newtonsoft.Json.Serialization
             : base(underlyingType)
         {
             ContractType = JsonContractType.Serializable;
-            HasDeserializationCallback = typeof(IDeserializationCallback).IsAssignableFrom(underlyingType);
         }
     }
 }
-
 #endif
