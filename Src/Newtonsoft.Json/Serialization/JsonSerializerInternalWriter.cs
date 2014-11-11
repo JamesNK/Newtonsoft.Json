@@ -752,7 +752,12 @@ namespace Newtonsoft.Json.Serialization
             {
                 JsonContract valueContract = GetContractSafe(serializationEntry.Value);
 
-                if (CheckForCircularReference(writer, serializationEntry.Value, null, valueContract, contract, member))
+                if (ShouldWriteReference(serializationEntry.Value, null, valueContract, contract, member))
+                {
+                    writer.WritePropertyName(serializationEntry.Name);
+                    WriteReference(writer, serializationEntry.Value);
+                }
+                else if (CheckForCircularReference(writer, serializationEntry.Value, null, valueContract, contract, member))
                 {
                     writer.WritePropertyName(serializationEntry.Name);
                     SerializeValue(writer, serializationEntry.Value, valueContract, null, contract, member);

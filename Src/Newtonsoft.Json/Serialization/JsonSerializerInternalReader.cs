@@ -58,9 +58,6 @@ namespace Newtonsoft.Json.Serialization
         }
 
         private JsonSerializerProxy _internalSerializer;
-#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
-        private JsonFormatterConverter _formatterConverter;
-#endif
 
         public JsonSerializerInternalReader(JsonSerializer serializer)
             : base(serializer)
@@ -192,16 +189,6 @@ namespace Newtonsoft.Json.Serialization
 
             return _internalSerializer;
         }
-
-#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
-        private JsonFormatterConverter GetFormatterConverter()
-        {
-            if (_formatterConverter == null)
-                _formatterConverter = new JsonFormatterConverter(GetInternalSerializer());
-
-            return _formatterConverter;
-        }
-#endif
 
         private JToken CreateJToken(JsonReader reader, JsonContract contract)
         {
@@ -1468,7 +1455,7 @@ namespace Newtonsoft.Json.Serialization
             if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Info)
                 TraceWriter.Trace(TraceLevel.Info, JsonPosition.FormatMessage(reader as IJsonLineInfo, reader.Path, "Deserializing {0} using ISerializable constructor.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType)), null);
 
-            SerializationInfo serializationInfo = new SerializationInfo(contract.UnderlyingType, GetFormatterConverter());
+            SerializationInfo serializationInfo = new SerializationInfo(contract.UnderlyingType, new JsonFormatterConverter(this, contract, member));
 
             bool finished = false;
             do
@@ -1479,17 +1466,7 @@ namespace Newtonsoft.Json.Serialization
                         string memberName = reader.Value.ToString();
                         if (!reader.Read())
                             throw JsonSerializationException.Create(reader, "Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
-
-                        if (reader.TokenType == JsonToken.StartObject)
-                        {
-                            // this will read any potential type names embedded in json
-                            object o = CreateObject(reader, null, null, null, contract, member, null);
-                            serializationInfo.AddValue(memberName, o);
-                        }
-                        else
-                        {
-                            serializationInfo.AddValue(memberName, JToken.ReadFrom(reader));
-                        }
+                        serializationInfo.AddValue(memberName, JToken.ReadFrom(reader));
                         break;
                     case JsonToken.Comment:
                         break;
@@ -1517,6 +1494,23 @@ namespace Newtonsoft.Json.Serialization
             OnDeserialized(reader, contract, createdObject);
 
             return createdObject;
+        }
+
+        internal object CreateISerializableItem(JToken token, Type type, JsonISerializableContract contract, JsonProperty member)
+        {
+            JsonContract itemContract = GetContractSafe(type);
+            JsonConverter itemConverter = GetConverter(itemContract, null, contract, member);
+
+            JsonReader tokenReader = token.CreateReader();
+            CheckedRead(tokenReader); // Move to first token
+
+            object result;
+            if (itemConverter != null && itemConverter.CanRead)
+                result = DeserializeConvertable(itemConverter, tokenReader, type, null);
+            else
+                result = CreateValueInternal(tokenReader, type, itemContract, null, contract, member, null);
+
+            return result;
         }
 #endif
 
