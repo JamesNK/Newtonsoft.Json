@@ -1161,5 +1161,95 @@ keyword such as type of business.""
             }, "The best overloaded method match for 'System.Collections.Generic.IDictionary<string,string>.Add(string, string)' has some invalid arguments");
         }
 #endif
+
+        [Test]
+        public void SerializeWithNoRedundentIdPropertiesTest()
+        {
+            Dictionary<string, object> dic1 = new Dictionary<string, object>();
+            Dictionary<string, object> dic2 = new Dictionary<string, object>();
+            Dictionary<string, object> dic3 = new Dictionary<string, object>();
+            List<object> list1 = new List<object>();
+            List<object> list2 = new List<object>();
+
+            dic1.Add("list1", list1);
+            dic1.Add("list2", list2);
+            dic1.Add("dic1", dic1);
+            dic1.Add("dic2", dic2);
+            dic1.Add("dic3", dic3);
+            dic1.Add("integer", 12345);
+
+            list1.Add("A string!");
+            list1.Add(dic1);
+            list1.Add(new List<object>());
+
+            dic3.Add("dic3", dic3);
+
+            var json = SerializeWithNoRedundentIdProperties(dic1);
+
+            StringAssert.AreEqual(@"{
+  ""$id"": ""1"",
+  ""list1"": [
+    ""A string!"",
+    {
+      ""$ref"": ""1""
+    },
+    []
+  ],
+  ""list2"": [],
+  ""dic1"": {
+    ""$ref"": ""1""
+  },
+  ""dic2"": {},
+  ""dic3"": {
+    ""$id"": ""3"",
+    ""dic3"": {
+      ""$ref"": ""3""
+    }
+  },
+  ""integer"": 12345
+}", json);
+        }
+
+        private static string SerializeWithNoRedundentIdProperties(object o)
+        {
+            JTokenWriter writer = new JTokenWriter();
+            JsonSerializer serializer = JsonSerializer.Create(new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented,
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects
+            });
+            serializer.Serialize(writer, o);
+
+            JToken t = writer.Token;
+
+            if (t is JContainer)
+            {
+                JContainer c = t as JContainer;
+
+                // find all the $id properties in the JSON
+                IList<JProperty> ids = c.Descendants().OfType<JProperty>().Where(d => d.Name == "$id").ToList();
+
+                if (ids.Count > 0)
+                {
+                    // find all the $ref properties in the JSON
+                    IList<JProperty> refs = c.Descendants().OfType<JProperty>().Where(d => d.Name == "$ref").ToList();
+
+                    foreach (JProperty idProperty in ids)
+                    {
+                        // check whether the $id property is used by a $ref
+                        bool idUsed = refs.Any(r => idProperty.Value.ToString() == r.Value.ToString());
+
+                        if (!idUsed)
+                        {
+                            // remove unused $id
+                            idProperty.Remove();
+                        }
+                    }
+                }
+            }
+
+            string json = t.ToString();
+            return json;
+        }
     }
 }

@@ -157,7 +157,7 @@ namespace Newtonsoft.Json.Converters
                     JToken t = fields[i];
                     PropertyInfo fieldProperty = fieldProperties[i];
 
-                    typedFieldValues[i] = t.ToObject(fieldProperty.PropertyType);
+                    typedFieldValues[i] = t.ToObject(fieldProperty.PropertyType, serializer);
                 }    
             }
 
@@ -189,7 +189,7 @@ namespace Newtonsoft.Json.Converters
             foreach (object attribute in attributes)
             {
                 Type attributeType = attribute.GetType();
-                if (attributeType.Name == "CompilationMappingAttribute")
+                if (attributeType.FullName == "Microsoft.FSharp.Core.CompilationMappingAttribute")
                 {
                     FSharpUtils.EnsureInitialized(attributeType.Assembly());
 

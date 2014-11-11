@@ -45,6 +45,124 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class ExtensionDataTests : TestFixtureBase
     {
+        public class CustomDictionary : IDictionary<string, object>
+        {
+            private readonly IDictionary<string, object> _inner = new Dictionary<string, object>();
+ 
+            public void Add(string key, object value)
+            {
+                _inner.Add(key, value);
+            }
+
+            public bool ContainsKey(string key)
+            {
+                return _inner.ContainsKey(key);
+            }
+
+            public ICollection<string> Keys
+            {
+                get { return _inner.Keys; }
+            }
+
+            public bool Remove(string key)
+            {
+                return _inner.Remove(key);
+            }
+
+            public bool TryGetValue(string key, out object value)
+            {
+                return _inner.TryGetValue(key, out value);
+            }
+
+            public ICollection<object> Values
+            {
+                get { return _inner.Values; }
+            }
+
+            public object this[string key]
+            {
+                get { return _inner[key]; }
+                set { _inner[key] = value; }
+            }
+
+            public void Add(KeyValuePair<string, object> item)
+            {
+                _inner.Add(item);
+            }
+
+            public void Clear()
+            {
+                _inner.Clear();
+            }
+
+            public bool Contains(KeyValuePair<string, object> item)
+            {
+                return _inner.Contains(item);
+            }
+
+            public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
+            {
+                _inner.CopyTo(array, arrayIndex);
+            }
+
+            public int Count
+            {
+                get { return _inner.Count; }
+            }
+
+            public bool IsReadOnly
+            {
+                get { return _inner.IsReadOnly; }
+            }
+
+            public bool Remove(KeyValuePair<string, object> item)
+            {
+                return _inner.Remove(item);
+            }
+
+            public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+            {
+                return _inner.GetEnumerator();
+            }
+
+            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+            {
+                return _inner.GetEnumerator();
+            }
+        }
+
+        public class Example
+        {
+            public Example()
+            {
+                Data = new CustomDictionary();
+            }
+
+            [JsonExtensionData]
+            public IDictionary<string, object> Data { get; private set; }
+        }
+
+        [Test]
+        public void DataBagDoesNotInheritFromDictionaryClass()
+        {
+            Example e = new Example();
+            e.Data.Add("extensionData1", new int[] { 1, 2, 3 });
+
+            string json = JsonConvert.SerializeObject(e, Formatting.Indented);
+
+            Console.WriteLine(json);
+
+            Example e2 = JsonConvert.DeserializeObject<Example>(json);
+
+            JArray o1 = (JArray)e2.Data["extensionData1"];
+
+            Assert.AreEqual(JTokenType.Array, o1.Type);
+            Assert.AreEqual(3, o1.Count);
+            Assert.AreEqual(1, (int)o1[0]);
+            Assert.AreEqual(2, (int)o1[1]);
+            Assert.AreEqual(3, (int)o1[2]);
+        }
+
         public class ExtensionDataDeserializeWithNonDefaultConstructor
         {
             public ExtensionDataDeserializeWithNonDefaultConstructor(string name)

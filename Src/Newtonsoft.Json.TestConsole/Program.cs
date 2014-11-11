@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Script.Serialization;
 using Newtonsoft.Json.Tests;
 
 namespace Newtonsoft.Json.TestConsole
@@ -28,6 +29,7 @@ namespace Newtonsoft.Json.TestConsole
             //WriteLargeJson();
             //DeserializeJson();
             ReadLargeJson();
+            //ReadLargeJsonJavaScriptSerializer();
 
             Console.WriteLine();
             Console.WriteLine("Finished");
@@ -92,7 +94,7 @@ namespace Newtonsoft.Json.TestConsole
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 5; i++)
             {
                 using (var jsonFile = System.IO.File.OpenText("large.json"))
                 using (JsonTextReader jsonTextReader = new JsonTextReader(jsonFile))
@@ -100,6 +102,35 @@ namespace Newtonsoft.Json.TestConsole
                     JsonSerializer serializer = new JsonSerializer();
                     serializer.Deserialize<IList<PerformanceTests.RootObject>>(jsonTextReader);
                 }
+            }
+
+            sw.Stop();
+
+            Console.WriteLine("Finished. Total seconds: " + sw.Elapsed.TotalSeconds);
+        }
+
+        public static void ReadLargeJsonJavaScriptSerializer()
+        {
+            string json = System.IO.File.ReadAllText("large.json");
+
+            JavaScriptSerializer s = new JavaScriptSerializer();
+            s.MaxJsonLength = int.MaxValue;
+            s.Deserialize<IList<PerformanceTests.RootObject>>(json);
+
+            Console.WriteLine("Press any key to start deserialization");
+            Console.ReadKey();
+            Console.WriteLine("Deserializing...");
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            for (int i = 0; i < 5; i++)
+            {
+                json = System.IO.File.ReadAllText("large.json");
+
+                s = new JavaScriptSerializer();
+                s.MaxJsonLength = int.MaxValue;
+                s.Deserialize<IList<PerformanceTests.RootObject>>(json);
             }
 
             sw.Stop();

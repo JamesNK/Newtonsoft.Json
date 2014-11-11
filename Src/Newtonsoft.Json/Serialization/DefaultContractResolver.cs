@@ -469,14 +469,18 @@ namespace Newtonsoft.Json.Serialization
             Type valueType = dictionaryType.GetGenericArguments()[1];
             bool isJTokenValueType = typeof(JToken).IsAssignableFrom(valueType);
 
+            Type createdType;
+
             // change type to a class if it is the base interface so it can be instantiated if needed
             if (ReflectionUtils.IsGenericDefinition(t, typeof(IDictionary<,>)))
-                t = typeof(Dictionary<,>).MakeGenericType(keyType, valueType);
+                createdType = typeof(Dictionary<,>).MakeGenericType(keyType, valueType);
+            else
+                createdType = t;
 
             MethodInfo addMethod = t.GetMethod("Add", new[] { keyType, valueType });
             Func<object, object> getExtensionDataDictionary = JsonTypeReflector.ReflectionDelegateFactory.CreateGet<object>(member);
             Action<object, object> setExtensionDataDictionary = JsonTypeReflector.ReflectionDelegateFactory.CreateSet<object>(member);
-            Func<object> createExtensionDataDictionary = JsonTypeReflector.ReflectionDelegateFactory.CreateDefaultConstructor<object>(t);
+            Func<object> createExtensionDataDictionary = JsonTypeReflector.ReflectionDelegateFactory.CreateDefaultConstructor<object>(createdType);
             MethodCall<object, object> setExtensionDataDictionaryValue = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(addMethod);
 
             ExtensionDataSetter extensionDataSetter = (o, key, value) =>

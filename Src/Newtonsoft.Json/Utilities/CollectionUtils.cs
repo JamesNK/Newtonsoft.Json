@@ -212,7 +212,7 @@ namespace Newtonsoft.Json.Utilities
             return -1;
         }
 
-        private static IList<int> GetDimensions(IList values)
+        private static IList<int> GetDimensions(IList values, int dimensionsCount)
         {
             IList<int> dimensions = new List<int>();
 
@@ -220,6 +220,11 @@ namespace Newtonsoft.Json.Utilities
             while (true)
             {
                 dimensions.Add(currentArray.Count);
+
+                // don't keep calculating dimensions for arrays inside the value array
+                if (dimensions.Count == dimensionsCount)
+                    break;
+
                 if (currentArray.Count == 0)
                     break;
 
@@ -277,7 +282,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static Array ToMultidimensionalArray(IList values, Type type, int rank)
         {
-            IList<int> dimensions = GetDimensions(values);
+            IList<int> dimensions = GetDimensions(values, rank);
 
             while (dimensions.Count < rank)
             {

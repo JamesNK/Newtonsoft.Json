@@ -37,6 +37,44 @@ namespace Newtonsoft.Json.Tests.Converters
     [TestFixture]
     public class DiscriminatedUnionConverterTests : TestFixtureBase
     {
+        public class DoubleDoubleConverter : JsonConverter
+        {
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                double d = (double)value;
+
+                writer.WriteValue(d * 2);
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                double d = (double)reader.Value;
+
+                return d / 2;
+            }
+
+            public override bool CanConvert(Type objectType)
+            {
+                return objectType == typeof(double);
+            }
+        }
+
+        [Test]
+        public void SerializeUnionWithConverter()
+        {
+            string json = JsonConvert.SerializeObject(Shape.NewRectangle(10.0, 5.0), new DoubleDoubleConverter());
+
+            Assert.AreEqual(@"{""Case"":""Rectangle"",""Fields"":[20.0,10.0]}", json);
+
+            Shape c = JsonConvert.DeserializeObject<Shape>(json, new DoubleDoubleConverter());
+            Assert.AreEqual(true, c.IsRectangle);
+
+            Shape.Rectangle r = (Shape.Rectangle)c;
+
+            Assert.AreEqual(5.0, r.length);
+            Assert.AreEqual(10.0, r.width);
+        }
+
         [Test]
         public void SerializeBasicUnion()
         {

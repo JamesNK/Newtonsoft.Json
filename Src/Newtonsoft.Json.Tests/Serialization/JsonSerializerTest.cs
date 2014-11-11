@@ -699,6 +699,122 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(ratio.Denominator, ratio2.Denominator);
             Assert.AreEqual(ratio.Numerator, ratio2.Numerator);
         }
+
+        public class PreserveReferencesCallbackTestObject : ISerializable
+        {
+            internal string _stringValue;
+            internal int _intValue;
+            internal PersonReference _person1;
+            internal PersonReference _person2;
+            internal PersonReference _person3;
+            internal PreserveReferencesCallbackTestObject _parent;
+            internal SerializationInfo _serializationInfo;
+
+            public PreserveReferencesCallbackTestObject(string stringValue, int intValue, PersonReference p1, PersonReference p2, PersonReference p3)
+            {
+                _stringValue = stringValue;
+                _intValue = intValue;
+                _person1 = p1;
+                _person2 = p2;
+                _person3 = p3;
+            }
+
+            protected PreserveReferencesCallbackTestObject(SerializationInfo info, StreamingContext context)
+            {
+                _serializationInfo = info;
+            }
+
+            public void GetObjectData(SerializationInfo info, StreamingContext context)
+            {
+                info.AddValue("stringValue", _stringValue);
+                info.AddValue("intValue", _intValue);
+                info.AddValue("person1", _person1, typeof(PersonReference));
+                info.AddValue("person2", _person2, typeof(PersonReference));
+                info.AddValue("person3", _person3, typeof(PersonReference));
+                info.AddValue("parent", _parent, typeof(PreserveReferencesCallbackTestObject));
+            }
+
+            [OnDeserialized]
+            private void OnDeserializedMethod(StreamingContext context)
+            {
+                if (_serializationInfo == null)
+                    return;
+
+                _stringValue = _serializationInfo.GetString("stringValue");
+                _intValue = _serializationInfo.GetInt32("intValue");
+                _person1 = (PersonReference)_serializationInfo.GetValue("person1", typeof(PersonReference));
+                _person2 = (PersonReference)_serializationInfo.GetValue("person2", typeof(PersonReference));
+                _person3 = (PersonReference)_serializationInfo.GetValue("person3", typeof(PersonReference));
+                _parent = (PreserveReferencesCallbackTestObject)_serializationInfo.GetValue("parent", typeof(PreserveReferencesCallbackTestObject));
+
+                _serializationInfo = null;
+            }
+        }
+
+        [Test]
+        public void PreserveReferencesCallbackTest()
+        {
+            var p1 = new PersonReference
+            {
+                Name = "John Smith"
+            };
+            var p2 = new PersonReference
+            {
+                Name = "Mary Sue",
+            };
+
+            p1.Spouse = p2;
+            p2.Spouse = p1;
+
+            var obj = new PreserveReferencesCallbackTestObject("string!", 42, p1, p2, p1);
+            obj._parent = obj;
+
+            var settings = new JsonSerializerSettings
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.All,
+                Formatting = Formatting.Indented
+            };
+
+            string json = JsonConvert.SerializeObject(obj, settings);
+
+            StringAssert.AreEqual(json, @"{
+  ""$id"": ""1"",
+  ""stringValue"": ""string!"",
+  ""intValue"": 42,
+  ""person1"": {
+    ""$id"": ""2"",
+    ""Name"": ""John Smith"",
+    ""Spouse"": {
+      ""$id"": ""3"",
+      ""Name"": ""Mary Sue"",
+      ""Spouse"": {
+        ""$ref"": ""2""
+      }
+    }
+  },
+  ""person2"": {
+    ""$ref"": ""3""
+  },
+  ""person3"": {
+    ""$ref"": ""2""
+  },
+  ""parent"": {
+    ""$ref"": ""1""
+  }
+}");
+
+            PreserveReferencesCallbackTestObject obj2 = JsonConvert.DeserializeObject<PreserveReferencesCallbackTestObject>(json);
+
+            Assert.AreEqual(obj._stringValue, obj2._stringValue);
+            Assert.AreEqual(obj._intValue, obj2._intValue);
+            Assert.AreEqual(obj._person1.Name, obj2._person1.Name);
+            Assert.AreEqual(obj._person2.Name, obj2._person2.Name);
+            Assert.AreEqual(obj._person3.Name, obj2._person3.Name);
+            Assert.AreEqual(obj2._person1, obj2._person3);
+            Assert.AreEqual(obj2._person1.Spouse, obj2._person2);
+            Assert.AreEqual(obj2._person2.Spouse, obj2._person1);
+            Assert.AreEqual(obj2._parent, obj2);
+        }
 #endif
 
         [Test]
@@ -3935,9 +4051,9 @@ Path '', line 1, position 1.");
                     JsonTypeReflector.SetFullyTrusted(false);
 
                     JsonConvert.DeserializeObject<ISerializableTestObject>("{booleanValue:true}");
-                }, @"Type 'Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+ISerializableTestObject' implements ISerializable but cannot be deserialized using the ISerializable interface because the current application is not fully trusted and ISerializable can expose secure data.
-To fix this error either change the environment to be fully trusted, change the application to not deserialize the type, add JsonObjectAttribute to the type or change the JsonSerializer setting ContractResolver to use a new DefaultContractResolver with IgnoreSerializableInterface set to true.
-Path 'booleanValue', line 1, position 14.");
+                }, @"Type 'Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+ISerializableTestObject' implements ISerializable but cannot be deserialized using the ISerializable interface because the current application is not fully trusted and ISerializable can expose secure data." + Environment.NewLine +
+                   @"To fix this error either change the environment to be fully trusted, change the application to not deserialize the type, add JsonObjectAttribute to the type or change the JsonSerializer setting ContractResolver to use a new DefaultContractResolver with IgnoreSerializableInterface set to true." + Environment.NewLine +
+                   @"Path 'booleanValue', line 1, position 14.");
             }
             finally
             {
@@ -3956,8 +4072,9 @@ Path 'booleanValue', line 1, position 14.");
                     ISerializableTestObject value = new ISerializableTestObject("string!", 0, default(DateTimeOffset), null);
 
                     JsonConvert.SerializeObject(value);
-                }, @"Type 'Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+ISerializableTestObject' implements ISerializable but cannot be serialized using the ISerializable interface because the current application is not fully trusted and ISerializable can expose secure data.
-To fix this error either change the environment to be fully trusted, change the application to not deserialize the type, add JsonObjectAttribute to the type or change the JsonSerializer setting ContractResolver to use a new DefaultContractResolver with IgnoreSerializableInterface set to true. Path ''.");
+                }, @"Type 'Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+ISerializableTestObject' implements ISerializable but cannot be serialized using the ISerializable interface because the current application is not fully trusted and ISerializable can expose secure data." + Environment.NewLine +
+                   @"To fix this error either change the environment to be fully trusted, change the application to not deserialize the type, add JsonObjectAttribute to the type or change the JsonSerializer setting ContractResolver to use a new DefaultContractResolver with IgnoreSerializableInterface set to true." + Environment.NewLine +
+                   @"Path ''.");
             }
             finally
             {

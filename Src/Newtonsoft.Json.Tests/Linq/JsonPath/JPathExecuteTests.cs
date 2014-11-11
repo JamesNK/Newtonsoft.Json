@@ -55,6 +55,52 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
     public class JPathExecuteTests : TestFixtureBase
     {
         [Test]
+        public void ParseWithEmptyArrayContent()
+        {
+            var json = @"{
+    'controls': [
+        {
+            'messages': {
+                'addSuggestion': {
+                    'en-US': 'Add'
+                }
+            }
+        },
+        {
+            'header': {
+                'controls': []
+            },
+            'controls': [
+                {
+                    'controls': [
+                        {
+                            'defaultCaption': {
+                                'en-US': 'Sort by'
+                            },
+                            'sortOptions': [
+                                {
+                                    'label': {
+                                        'en-US': 'Name'
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}";
+            JObject jToken = JObject.Parse(json);
+            IList<JToken> tokens = jToken.SelectTokens("$..en-US").ToList();
+
+            Assert.AreEqual(3, tokens.Count);
+            Assert.AreEqual("Add", (string)tokens[0]);
+            Assert.AreEqual("Sort by", (string)tokens[1]);
+            Assert.AreEqual("Name", (string)tokens[2]);
+        }
+
+        [Test]
         public void SelectTokenAfterEmptyContainer()
         {
             string json = @"{
