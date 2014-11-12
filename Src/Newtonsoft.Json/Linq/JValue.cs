@@ -31,7 +31,7 @@ using System.Globalization;
 using System.Dynamic;
 using System.Linq.Expressions;
 #endif
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE || __MOBILE__)
 using System.Numerics;
 
 #endif
@@ -215,7 +215,7 @@ namespace Newtonsoft.Json.Linq
             get { return false; }
         }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE || __MOBILE__)
         private static int CompareBigInteger(BigInteger i1, object i2)
         {
             int result = i1.CompareTo(ConvertUtils.ToBigInteger(i2));
@@ -252,7 +252,7 @@ namespace Newtonsoft.Json.Linq
             switch (valueType)
             {
                 case JTokenType.Integer:
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE || __MOBILE__)
                     if (objA is BigInteger)
                         return CompareBigInteger((BigInteger)objA, objB);
                     if (objB is BigInteger)
@@ -265,7 +265,7 @@ namespace Newtonsoft.Json.Linq
                     else
                         return Convert.ToInt64(objA, CultureInfo.InvariantCulture).CompareTo(Convert.ToInt64(objB, CultureInfo.InvariantCulture));
                 case JTokenType.Float:
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE || __MOBILE__)
                     if (objA is BigInteger)
                         return CompareBigInteger((BigInteger)objA, objB);
                     if (objB is BigInteger)
@@ -380,7 +380,7 @@ namespace Newtonsoft.Json.Linq
                 }
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE || __MOBILE__)
             if (objA is BigInteger || objB is BigInteger)
             {
                 if (objA == null || objB == null)
@@ -574,7 +574,7 @@ namespace Newtonsoft.Json.Linq
                 return JTokenType.Integer;
             else if (value is Enum)
                 return JTokenType.Integer;
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE || __MOBILE__)
             else if (value is BigInteger)
                 return JTokenType.Integer;
 #endif
@@ -676,7 +676,7 @@ namespace Newtonsoft.Json.Linq
                     writer.WriteUndefined();
                     return;
                 case JTokenType.Integer:
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE || __MOBILE__)
                     if (_value is BigInteger)
                         writer.WriteValue((BigInteger)_value);
                     else
@@ -969,7 +969,7 @@ namespace Newtonsoft.Json.Linq
             if (_value is DateTimeOffset)
                 return TypeCode.DateTime;
 #endif
-#if !(NET20 || NET35 || PORTABLE40)
+#if !(NET20 || NET35 || PORTABLE40 || __MOBILE__)
             if (_value is BigInteger)
                 return TypeCode.Object;
 #endif

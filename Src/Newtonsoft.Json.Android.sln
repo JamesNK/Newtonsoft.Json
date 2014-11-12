@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json", "Newtonsoft.Json\Newtonsoft.Json.Android.csproj", "{AA7853FF-DEE3-4834-A767-C7B2F9BEA589}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AA7853FF-DEE3-4834-A767-C7B2F9BEA589}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA7853FF-DEE3-4834-A767-C7B2F9BEA589}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA7853FF-DEE3-4834-A767-C7B2F9BEA589}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA7853FF-DEE3-4834-A767-C7B2F9BEA589}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Newtonsoft.Json\Newtonsoft.Json.Android.csproj
+	EndGlobalSection
+EndGlobal
