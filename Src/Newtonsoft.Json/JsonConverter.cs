@@ -66,8 +66,9 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Gets the <see cref="JsonSchema"/> of the JSON produced by the JsonConverter.
         /// </summary>
+        /// <param name="objectType">The type of the object.</param>
         /// <returns>The <see cref="JsonSchema"/> of the JSON produced by the JsonConverter.</returns>
-        public virtual JsonSchema GetSchema()
+        public virtual JsonSchema GetSchema(Type objectType)
         {
             return null;
         }
