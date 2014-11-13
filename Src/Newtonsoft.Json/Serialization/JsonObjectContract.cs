@@ -49,7 +49,21 @@ namespace Newtonsoft.Json.Serialization
         /// <value>
         /// 	A value indicating whether the object's properties are required.
         /// </value>
-        public Required? ItemRequired { get; set; }
+        public Required? ItemRequired
+        {
+            get { return itemRequired; }
+            set
+            {
+                itemRequired = value;
+
+                if (value != Required.Default)
+                {
+                    HasRequiredOrDefaultValueProperties = true;
+                }
+            }
+        }
+
+        internal bool HasRequiredOrDefaultValueProperties { get; private set; }
 
         /// <summary>
         /// Gets the object's properties.
@@ -133,40 +147,11 @@ namespace Newtonsoft.Json.Serialization
         /// </summary>
         public ExtensionDataGetter ExtensionDataGetter { get; set; }
 
-        private bool? _hasRequiredOrDefaultValueProperties;
         private ConstructorInfo _parametrizedConstructor;
         private ConstructorInfo _overrideConstructor;
         private ObjectConstructor<object> _overrideCreator;
         private ObjectConstructor<object> _parametrizedCreator;
-
-        internal bool HasRequiredOrDefaultValueProperties
-        {
-            get
-            {
-                if (_hasRequiredOrDefaultValueProperties == null)
-                {
-                    _hasRequiredOrDefaultValueProperties = false;
-
-                    if (ItemRequired.GetValueOrDefault(Required.Default) != Required.Default)
-                    {
-                        _hasRequiredOrDefaultValueProperties = true;
-                    }
-                    else
-                    {
-                        foreach (JsonProperty property in Properties)
-                        {
-                            if (property.Required != Required.Default || ((property.DefaultValueHandling & DefaultValueHandling.Populate) == DefaultValueHandling.Populate) && property.Writable)
-                            {
-                                _hasRequiredOrDefaultValueProperties = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                return _hasRequiredOrDefaultValueProperties.Value;
-            }
-        }
+        Required? itemRequired;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonObjectContract"/> class.
@@ -179,6 +164,17 @@ namespace Newtonsoft.Json.Serialization
 
             Properties = new JsonPropertyCollection(UnderlyingType);
             CreatorParameters = new JsonPropertyCollection(UnderlyingType);
+        }
+
+        internal void NotifyPropertiesUpdated()
+        {
+            foreach (var property in Properties)
+            {
+                if (property.Required != Required.Default || ((property.DefaultValueHandling & DefaultValueHandling.Populate) == DefaultValueHandling.Populate) && property.Writable)
+                {
+                    HasRequiredOrDefaultValueProperties = true;
+                }
+            }
         }
 
 #if !(NETFX_CORE || PORTABLE40 || PORTABLE)
@@ -194,5 +190,6 @@ namespace Newtonsoft.Json.Serialization
             return FormatterServices.GetUninitializedObject(NonNullableUnderlyingType);
         }
 #endif
+
     }
 }

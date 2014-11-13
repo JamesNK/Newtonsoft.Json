@@ -27,6 +27,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading;
 #if !(NET35 || NET20 || PORTABLE40)
 using System.ComponentModel;
 using System.Dynamic;
@@ -1913,9 +1914,20 @@ namespace Newtonsoft.Json.Serialization
             OnDeserializing(reader, contract, newObject);
 
             // only need to keep a track of properies presence if they are required or a value should be defaulted if missing
-            Dictionary<JsonProperty, PropertyPresence> propertiesPresence = (contract.HasRequiredOrDefaultValueProperties || HasFlag(Serializer._defaultValueHandling, DefaultValueHandling.Populate))
-                ? contract.Properties.ToDictionary(m => m, m => PropertyPresence.None)
-                : null;
+            Dictionary<JsonProperty, PropertyPresence> propertiesPresence;
+            if (contract.HasRequiredOrDefaultValueProperties || HasFlag(Serializer._defaultValueHandling, DefaultValueHandling.Populate))
+            {
+                propertiesPresence = contract.Properties.ToDictionary(m => m, m => PropertyPresence.None);
+            }
+            else
+            {
+                if (contract.CreatedType.Name == "Root")
+                {
+                    Console.WriteLine("HERE on " + Thread.CurrentThread.ManagedThreadId);
+                }
+
+                propertiesPresence = null;
+            }
 
             if (id != null)
                 AddReference(reader, id, newObject);
@@ -2060,8 +2072,11 @@ namespace Newtonsoft.Json.Serialization
                                     if (property.PropertyContract == null)
                                         property.PropertyContract = GetContractSafe(property.PropertyType);
 
-                                    if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer._defaultValueHandling), DefaultValueHandling.Populate) && property.Writable && !property.Ignored)
+                                    if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer._defaultValueHandling), DefaultValueHandling.Populate) && 
+                                        property.Writable && !property.Ignored)
+                                    {
                                         property.ValueProvider.SetValue(newObject, EnsureType(reader, property.GetResolvedDefaultValue(), CultureInfo.InvariantCulture, property.PropertyContract, property.PropertyType));
+                                    }
                                     break;
                                 case PropertyPresence.Null:
                                     if (resolvedRequired == Required.Always)

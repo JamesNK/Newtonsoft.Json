@@ -64,6 +64,7 @@
   <ItemGroup>
     <Compile Include="Bson\BsonReaderTests.cs" />
     <Compile Include="Bson\BsonWriterTests.cs" />
+    <Compile Include="ConcurrencyTests.cs" />
     <Compile Include="Converters\BinaryConverterTests.cs" />
     <Compile Include="Converters\CustomCreationConverterTests.cs" />
     <Compile Include="Converters\DataSetConverterTests.cs" />
