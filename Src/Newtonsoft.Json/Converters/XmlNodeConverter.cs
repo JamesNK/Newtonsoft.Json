@@ -1581,7 +1581,7 @@ namespace Newtonsoft.Json.Converters
                             finishedElement = true;
                             break;
                         case JsonToken.Comment:
-							finishedElement = true;
+                            finishedElement = true;
                             break;
                         default:
                             throw new JsonSerializationException("Unexpected JsonToken: " + reader.TokenType);
