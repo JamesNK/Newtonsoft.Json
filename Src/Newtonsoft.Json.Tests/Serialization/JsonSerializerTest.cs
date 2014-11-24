@@ -95,6 +95,24 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class JsonSerializerTest : TestFixtureBase
     {
+#if !NET20
+        public enum EnumA
+        {
+            [EnumMember(Value = "value_a")]
+            ValueA
+        }
+
+        [Test]
+        public void DeserializeEnumsByName()
+        {
+            var e1 = JsonConvert.DeserializeObject<EnumA>("'ValueA'");
+            Assert.AreEqual(EnumA.ValueA, e1);
+
+            var e2 = JsonConvert.DeserializeObject<EnumA>("'value_a'", new StringEnumConverter());
+            Assert.AreEqual(EnumA.ValueA, e2);
+        }
+#endif
+
 #if !(NETFX_CORE || ASPNETCORE50 || NET20)
         [MetadataType(typeof(CustomerValidation))]
         public partial class CustomerWithMetadataType
