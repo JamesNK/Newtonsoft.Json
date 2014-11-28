@@ -868,7 +868,7 @@ namespace Newtonsoft.Json.Linq
                 return (sbyte?)(BigInteger)v.Value;
 #endif
 
-            return (v.Value != null) ? (sbyte?)Convert.ToByte(v.Value, CultureInfo.InvariantCulture) : null;
+            return (v.Value != null) ? (sbyte?)Convert.ToSByte(v.Value, CultureInfo.InvariantCulture) : null;
         }
 
         /// <summary>
