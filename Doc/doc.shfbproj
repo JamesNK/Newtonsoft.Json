@@ -32,9 +32,9 @@
     <BuildLogFile>
     </BuildLogFile>
     <HelpFileFormat>Website</HelpFileFormat>
-    <FrameworkVersion>.NET Framework 4.5.1</FrameworkVersion>
-    <HelpTitle>Json.NET - Documentation</HelpTitle>
-    <PresentationStyle>VS2005</PresentationStyle>
+    <FrameworkVersion>.NET Framework 4.5</FrameworkVersion>
+    <HelpTitle>Json.NET Documentation</HelpTitle>
+    <PresentationStyle>VS2013</PresentationStyle>
     <NamingMethod>MemberName</NamingMethod>
     <DocumentationSourcePath>..\Src\Newtonsoft.Json\bin\Release</DocumentationSourcePath>
     <DocumentationSources>
@@ -57,12 +57,12 @@
     <ComponentConfigurations>
       <ComponentConfig id="Code Block Component" enabled="True">
         <component id="Code Block Component" type="SandcastleBuilder.Components.CodeBlockComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
-          <basePath value="{@HtmlEncProjectFolder}" />
-          <outputPaths>{@HelpFormatOutputPaths}</outputPaths>
-          <allowMissingSource value="false" />
-          <removeRegionMarkers value="false" />
-          <colorizer syntaxFile="{@SHFBFolder}Colorizer\highlight.xml" styleFile="{@SHFBFolder}Colorizer\highlight.xsl" stylesheet="{@SHFBFolder}Colorizer\highlight.css" scriptFile="{@SHFBFolder}Colorizer\highlight.js" language="cs" tabSize="0" numberLines="true" outlining="false" keepSeeTags="false" defaultTitle="true" />
-        </component>
+  <basePath value="{@HtmlEncProjectFolder}" />
+  <outputPaths>{@HelpFormatOutputPaths}</outputPaths>
+  <allowMissingSource value="false" />
+  <removeRegionMarkers value="false" />
+  <colorizer syntaxFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xml" styleFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xsl" stylesheet="{@SHFBFolder}PresentationStyles\Colorizer\highlight.css" scriptFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.js" disabled="{@DisableCodeBlockComponent}" language="cs" tabSize="0" numberLines="true" outlining="false" keepSeeTags="false" defaultTitle="true" />
+</component>
       </ComponentConfig>
     </ComponentConfigurations>
     <IndentHtml>False</IndentHtml>
@@ -71,7 +71,7 @@
     <DisableCodeBlockComponent>False</DisableCodeBlockComponent>
     <CppCommentsFixup>False</CppCommentsFixup>
     <CleanIntermediates>True</CleanIntermediates>
-    <SyntaxFilters>CSharp</SyntaxFilters>
+    <SyntaxFilters>C#</SyntaxFilters>
     <SdkLinkTarget>Blank</SdkLinkTarget>
     <Preliminary>False</Preliminary>
     <Language>en-US</Language>
@@ -84,6 +84,8 @@
       <Argument Key="logoPlacement" Value="left" />
       <Argument Key="logoAlignment" Value="left" />
     </TransformComponentArguments>
+    <MaximumGroupParts>2</MaximumGroupParts>
+    <NamespaceGrouping>False</NamespaceGrouping>
   </PropertyGroup>
   <!-- There are no properties for these two groups but they need to appear in
        order for Visual Studio to perform the build. -->
@@ -95,6 +97,7 @@
     <Content Include="donate.gif" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="icons\favicon.ico" />
     <None Include="Samples\Json\CustomJsonWriter.aml" />
     <None Include="Samples\Json\CustomJsonReader.aml" />
     <None Include="Samples\Xml\ConvertXmlToJsonForceArray.aml" />
@@ -247,12 +250,13 @@
       <ImageId>performance</ImageId>
       <AlternateText>performance</AlternateText>
     </Image>
-    <Image Include="logo.jpg">
+    <Content Include="icons\logo.jpg">
       <ImageId>logo</ImageId>
       <AlternateText>logo</AlternateText>
-    </Image>
+    </Content>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="icons\" />
     <Folder Include="Samples\Xml\" />
     <Folder Include="Samples\Schema\" />
     <Folder Include="Samples\Linq\" />

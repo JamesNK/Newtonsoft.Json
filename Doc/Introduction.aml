@@ -48,21 +48,9 @@ and write from your objects.</para>
  <content>
 
 <list class="bullet">
-  <listItem><para><externalLink>
-<linkText>Serializing and Deserializing JSON</linkText>
-<linkUri>SerializingJSON.htm</linkUri>
-<linkTarget>_self</linkTarget>
-</externalLink></para></listItem>
-  <listItem><para><externalLink>
-<linkText>LINQ to JSON</linkText>
-<linkUri>LINQtoJSON.htm</linkUri>
-<linkTarget>_self</linkTarget>
-</externalLink></para></listItem>
-  <listItem><para><externalLink>
-<linkText>Samples</linkText>
-<linkUri>Samples.htm</linkUri>
-<linkTarget>_self</linkTarget>
-</externalLink></para></listItem>
+  <listItem><para><link xlink:href="SerializingJSON" /></para></listItem>
+  <listItem><para><link xlink:href="LINQtoJSON" /></para></listItem>
+  <listItem><para><link xlink:href="Samples" /></para></listItem>
 </list>
  
  </content>
@@ -105,7 +93,7 @@ and write from your objects.</para>
 
 <section>
  <title>Donate</title>
- <content><para>Json.NET is a personal open source project. Started in 2006, I have put hundreds of hours adding, refining and tuning Json.NET with the goal to make it not just the best JSON serializer for .NET but the best serializer for any computer language. I need your
+ <content><para>Json.NET is a personal open source project. Started in 2006, I have put thousands of hours into adding, refining and tuning Json.NET with the goal to make it not just the best JSON serializer for .NET but the best serializer for any computer language. I need your
  help to achieve this.</para>
 
  <markup>
@@ -117,16 +105,16 @@ and write from your objects.</para>
 </section>
 
     <relatedTopics>
-      <externalLink>
-        <linkText>Serializing and Deserializing JSON</linkText>
-        <linkUri>SerializingJSON.htm</linkUri>
-        <linkTarget>_self</linkTarget>
-      </externalLink>
-      <externalLink>
-        <linkText>LINQ to JSON</linkText>
-        <linkUri>LINQtoJSON.htm</linkUri>
-        <linkTarget>_self</linkTarget>
-      </externalLink>
+       <externalLink>
+         <linkText>Serializing and Deserializing JSON</linkText>
+         <linkUri>SerializingJSON.htm</linkUri>
+         <linkTarget>_self</linkTarget>
+       </externalLink>
+       <externalLink>
+         <linkText>LINQ to JSON</linkText>
+         <linkUri>LINQtoJSON.htm</linkUri>
+         <linkTarget>_self</linkTarget>
+       </externalLink>
       <externalLink>
         <linkText>Samples</linkText>
         <linkUri>Samples.htm</linkUri>

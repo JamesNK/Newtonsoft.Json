@@ -14,17 +14,7 @@
       
 <alert class="note">
   <para>JsonReader and JsonWriter are low level classes and used internally by Json.NET.
-    To quickly work with JSON either the serializer -
-      <externalLink>
-        <linkText>Serializing and Deserializing JSON</linkText>
-        <linkUri>SerializingJSON.htm</linkUri>
-        <linkTarget>_self</linkTarget>
-      </externalLink>
-      or using <externalLink>
-        <linkText>LINQ to JSON</linkText>
-        <linkUri>LINQtoJSON.htm</linkUri>
-        <linkTarget>_self</linkTarget>
-      </externalLink> is recommended.
+    To quickly work with JSON either the serializer - <link xlink:href="SerializingJSON" /> or using <link xlink:href="LINQtoJSON" /> is recommended.
    </para>
 </alert>
 
