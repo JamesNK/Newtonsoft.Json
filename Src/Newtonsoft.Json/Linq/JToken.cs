@@ -1104,7 +1104,7 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="T:System.Byte[]"/>.
+        /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="Byte"/>[].
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -1554,7 +1554,7 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="T:System.Byte[]"/> to <see cref="Newtonsoft.Json.Linq.JToken"/>.
+        /// Performs an implicit conversion from <see cref="Byte"/>[] to <see cref="Newtonsoft.Json.Linq.JToken"/>.
         /// </summary>
         /// <param name="value">The value to create a <see cref="JValue"/> from.</param>
         /// <returns>The <see cref="JValue"/> initialized with the specified value.</returns>
