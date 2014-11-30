@@ -1,4 +1,4 @@
-#![Logo](Doc/logo.jpg) Json.NET#
+#![Logo](Doc/icons/logo.jpg) Json.NET#
 
 - [Homepage](http://james.newtonking.com/json)
 - [Documentation](http://james.newtonking.com/json/help)
