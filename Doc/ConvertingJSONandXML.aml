@@ -27,11 +27,7 @@
 <para>If the XML created from JSON doesn't match what you want then you will need to convert it manually.
 The best approach to do this is to load your JSON into a LINQ to JSON object like JObject or JArray and then use LINQ to create
 an XDocument. The opposite process, using LINQ with an XDocument to create a JObject or JArray, also works.
-Find out more about using LINQ to JSON with LINQ <externalLink>
-<linkText>here</linkText>
-<linkUri>QueryingLINQtoJSON.htm</linkUri>
-<linkTarget>_self</linkTarget>
-</externalLink>.</para>
+Find out more about using LINQ to JSON with LINQ <link xlink:href="QueryingLINQtoJSON">here</link>.</para>
 
 <alert class="note">
   <para>The version of Json.NET being used in your application will change what XML conversion methods are available.

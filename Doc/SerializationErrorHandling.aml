@@ -73,11 +73,7 @@
         <!-- Uncomment this to create a sub-section outline
         <autoOutline /> -->
         <para>The <codeEntityReference>T:Newtonsoft.Json.Serialization.OnErrorAttribute</codeEntityReference>
-        works much like the other <externalLink>
-<linkText>.NET serialization attributes</linkText>
-<linkUri>SerializationAttributes.htm</linkUri>
-<linkTarget>_self</linkTarget>
-</externalLink>
+        works much like the other <link xlink:href="SerializationAttributes">.NET serialization attributes</link>
         that Json.NET supports. To use it you simply place the
         attribute on a method which takes the correct parameters: a
         StreamingContext and a ErrorContext. The name of the method doesn't

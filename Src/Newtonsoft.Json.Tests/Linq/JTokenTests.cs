@@ -290,6 +290,8 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(5f, (float)(new JValue(5m)));
             Assert.AreEqual(5f, (float?)(new JValue(5m)));
             Assert.AreEqual(5, (byte)(new JValue(5)));
+            Assert.AreEqual(SByte.MinValue, (sbyte?)(new JValue(SByte.MinValue)));
+            Assert.AreEqual(SByte.MinValue, (sbyte)(new JValue(SByte.MinValue)));
 
             Assert.AreEqual(null, (sbyte?)JValue.CreateNull());
 

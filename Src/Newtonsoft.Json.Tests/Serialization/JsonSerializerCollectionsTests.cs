@@ -69,7 +69,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string myOtherArrayAsString = JsonConvert.SerializeObject(myOtherArray, Formatting.Indented);
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   [
     {
       ""Key"": ""my value"",

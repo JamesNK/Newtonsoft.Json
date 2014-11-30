@@ -442,9 +442,9 @@ namespace Newtonsoft.Json.Bson
 #endif
 
         /// <summary>
-        /// Writes a <see cref="T:Byte[]"/> value.
+        /// Writes a <see cref="Byte"/>[] value.
         /// </summary>
-        /// <param name="value">The <see cref="T:Byte[]"/> value to write.</param>
+        /// <param name="value">The <see cref="Byte"/>[] value to write.</param>
         public override void WriteValue(byte[] value)
         {
             base.WriteValue(value);
@@ -483,7 +483,7 @@ namespace Newtonsoft.Json.Bson
         #endregion
 
         /// <summary>
-        /// Writes a <see cref="T:Byte[]"/> value that represents a BSON object id.
+        /// Writes a <see cref="Byte"/>[] value that represents a BSON object id.
         /// </summary>
         /// <param name="value">The Object ID value to write.</param>
         public void WriteObjectId(byte[] value)

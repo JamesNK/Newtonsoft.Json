@@ -92,11 +92,7 @@
     <entry>
     <para><legacyBold>DateTime</legacyBold></para>
     </entry>
-    <entry><para>String (<externalLink>
-<linkText>Serializing Dates in JSON</linkText>
-<linkUri>DatesInJSON.htm</linkUri>
-<linkTarget>_self</linkTarget>
-</externalLink>)</para></entry>
+    <entry><para>String (<link xlink:href="DatesInJSON" />)</para></entry>
   </row>
   <row>
     <entry>
@@ -171,11 +167,7 @@
         $values property which will have the collection data.</para>
         <para>When deserializing if a member is typed as the interface IList&lt;T&gt; then it will be deserialized as a
         List&lt;T&gt;.</para>
-        <para>Read more about serializing collections here: <externalLink>
-<linkText>Serializing Collections</linkText>
-<linkUri>SerializingCollections.htm</linkUri>
-<linkTarget>_self</linkTarget>
-</externalLink></para>
+        <para>Read more about serializing collections here: <link xlink:href="SerializingCollections" /></para>
       </content>
     </section>   
 
@@ -197,11 +189,7 @@
         handling that are applied to collection items.</para>
         <para>When deserializing if a member is typed as the interface IDictionary&lt;TKey, TValue&gt; then it will be
         deserialized as a Dictionary&lt;TKey, TValue&gt;.</para>
-        <para>Read more about serializing collections here: <externalLink>
-<linkText>Serializing Collections</linkText>
-<linkUri>SerializingCollections.htm</linkUri>
-<linkTarget>_self</linkTarget>
-</externalLink></para>
+        <para>Read more about serializing collections here: <link xlink:href="SerializingCollections" /></para>
       </content>
     </section>
 

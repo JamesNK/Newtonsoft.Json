@@ -15,40 +15,16 @@
       <para>Select a topic below for more information:</para>
 <list class="bullet">
    <listItem>
-     <para>
-       <externalLink>
-         <linkText>Parsing JSON</linkText>
-         <linkUri>ParsingLINQtoJSON.htm</linkUri>
-         <linkTarget>_self</linkTarget>
-       </externalLink>
-     </para>
+     <para><link xlink:href="ParsingLINQtoJSON" /></para>
    </listItem>
    <listItem>
-     <para>
-       <externalLink>
-         <linkText>Creating JSON</linkText>
-         <linkUri>CreatingLINQtoJSON.htm</linkUri>
-         <linkTarget>_self</linkTarget>
-       </externalLink>
-     </para>
+     <para><link xlink:href="CreatingLINQtoJSON" /></para>
    </listItem>
    <listItem>
-     <para>
-       <externalLink>
-         <linkText>Querying JSON with LINQ</linkText>
-         <linkUri>QueryingLINQtoJSON.htm</linkUri>
-         <linkTarget>_self</linkTarget>
-       </externalLink>
-     </para>
+     <para><link xlink:href="QueryingLINQtoJSON" /></para>
    </listItem>
    <listItem>
-     <para>
-       <externalLink>
-         <linkText>Querying JSON with SelectToken</linkText>
-         <linkUri>SelectToken.htm</linkUri>
-         <linkTarget>_self</linkTarget>
-       </externalLink>
-     </para>
+     <para><link xlink:href="SelectToken" /></para>
    </listItem>
 </list>
 </content>

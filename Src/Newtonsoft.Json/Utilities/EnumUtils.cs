@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Runtime.Serialization;
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -37,6 +38,38 @@ namespace Newtonsoft.Json.Utilities
 {
     internal static class EnumUtils
     {
+        private static readonly ThreadSafeStore<Type, BidirectionalDictionary<string, string>> EnumMemberNamesPerType = new ThreadSafeStore<Type, BidirectionalDictionary<string, string>>(InitializeEnumType);
+
+        private static BidirectionalDictionary<string, string> InitializeEnumType(Type type)
+        {
+            BidirectionalDictionary<string, string> map = new BidirectionalDictionary<string, string>(
+                StringComparer.OrdinalIgnoreCase,
+                StringComparer.OrdinalIgnoreCase);
+
+            foreach (FieldInfo f in type.GetFields())
+            {
+                string n1 = f.Name;
+                string n2;
+
+#if !NET20
+                n2 = f.GetCustomAttributes(typeof(EnumMemberAttribute), true)
+                    .Cast<EnumMemberAttribute>()
+                    .Select(a => a.Value)
+                    .SingleOrDefault() ?? f.Name;
+#else
+                n2 = f.Name;
+#endif
+
+                string s;
+                if (map.TryGetBySecond(n2, out s))
+                    throw new InvalidOperationException("Enum name '{0}' already exists on enum '{1}'.".FormatWith(CultureInfo.InvariantCulture, n2, type.Name));
+
+                map.Set(n1, n2);
+            }
+
+            return map;
+        }
+
         public static IList<T> GetFlagsValues<T>(T value) where T : struct
         {
             Type enumType = typeof(T);
@@ -112,9 +145,7 @@ namespace Newtonsoft.Json.Utilities
 
             List<object> values = new List<object>();
 
-            var fields = from field in enumType.GetFields()
-                where field.IsLiteral
-                select field;
+            var fields = enumType.GetFields().Where(f => f.IsLiteral);
 
             foreach (FieldInfo field in fields)
             {
@@ -132,9 +163,7 @@ namespace Newtonsoft.Json.Utilities
 
             List<string> values = new List<string>();
 
-            var fields = from field in enumType.GetFields()
-                where field.IsLiteral
-                select field;
+            var fields = enumType.GetFields().Where(f => f.IsLiteral);
 
             foreach (FieldInfo field in fields)
             {
@@ -142,6 +171,66 @@ namespace Newtonsoft.Json.Utilities
             }
 
             return values;
+        }
+
+        public static object ParseEnumName(string enumText, bool isNullable, Type t)
+        {
+            if (enumText == string.Empty && isNullable)
+                return null;
+
+            string finalEnumText;
+
+            BidirectionalDictionary<string, string> map = EnumMemberNamesPerType.Get(t);
+            if (enumText.IndexOf(',') != -1)
+            {
+                string[] names = enumText.Split(',');
+                for (int i = 0; i < names.Length; i++)
+                {
+                    string name = names[i].Trim();
+
+                    names[i] = ResolvedEnumName(map, name);
+                }
+
+                finalEnumText = string.Join(", ", names);
+            }
+            else
+            {
+                finalEnumText = ResolvedEnumName(map, enumText);
+            }
+
+            return Enum.Parse(t, finalEnumText, true);
+        }
+
+        public static string ToEnumName(Type enumType, string enumText, bool camelCaseText)
+        {
+            BidirectionalDictionary<string, string> map = EnumMemberNamesPerType.Get(enumType);
+
+            string[] names = enumText.Split(',');
+            for (int i = 0; i < names.Length; i++)
+            {
+                string name = names[i].Trim();
+
+                string resolvedEnumName;
+                map.TryGetByFirst(name, out resolvedEnumName);
+                resolvedEnumName = resolvedEnumName ?? name;
+
+                if (camelCaseText)
+                    resolvedEnumName = StringUtils.ToCamelCase(resolvedEnumName);
+
+                names[i] = resolvedEnumName;
+            }
+
+            string finalName = string.Join(", ", names);
+
+            return finalName;
+        }
+
+        private static string ResolvedEnumName(BidirectionalDictionary<string, string> map, string enumText)
+        {
+            string resolvedEnumName;
+            map.TryGetBySecond(enumText, out resolvedEnumName);
+            resolvedEnumName = resolvedEnumName ?? enumText;
+            return resolvedEnumName;
         }
     }
 }

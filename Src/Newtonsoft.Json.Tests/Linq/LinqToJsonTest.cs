@@ -55,6 +55,26 @@ namespace Newtonsoft.Json.Tests.Linq
     public class LinqToJsonTest : TestFixtureBase
     {
         [Test]
+        public void IncompleteContainers()
+        {
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => JArray.Parse("[1,"),
+                "Unexpected end of content while loading JArray. Path '[0]', line 1, position 3.");
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => JArray.Parse("[1"),
+                "Unexpected end of content while loading JArray. Path '[0]', line 1, position 2.");
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => JObject.Parse("{'key':1,"),
+                "Unexpected end of content while loading JObject. Path 'key', line 1, position 9.");
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => JObject.Parse("{'key':1"),
+                "Unexpected end of content while loading JObject. Path 'key', line 1, position 8.");
+        }
+
+        [Test]
         public void EmptyJEnumerableCount()
         {
             JEnumerable<JToken> tokens = new JEnumerable<JToken>();
@@ -1186,7 +1206,7 @@ keyword such as type of business.""
 
             var json = SerializeWithNoRedundentIdProperties(dic1);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""$id"": ""1"",
   ""list1"": [
     ""A string!"",

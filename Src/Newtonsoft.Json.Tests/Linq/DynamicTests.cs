@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+using System.Diagnostics;
 #if !(NET35 || NET20 || PORTABLE40)
 using System;
 using System.Collections.Generic;
@@ -52,6 +53,54 @@ namespace Newtonsoft.Json.Tests.Linq
     [TestFixture]
     public class DynamicTests : TestFixtureBase
     {
+        private void UpdateValueCount(IDictionary<string, int> counts, dynamic d)
+        {
+            string s = d.ToString();
+
+            int c;
+            if (!counts.TryGetValue(s, out c))
+            {
+                c = 0;
+            }
+
+            c++;
+            counts[s] = c;
+        }
+
+        [Test]
+        public void DeserializeLargeDynamic()
+        {
+            dynamic d;
+
+            using (var jsonFile = System.IO.File.OpenText("large.json"))
+            using (JsonTextReader jsonTextReader = new JsonTextReader(jsonFile))
+            {
+                JsonSerializer serializer = new JsonSerializer();
+                d = serializer.Deserialize(jsonTextReader);
+            }
+
+            IDictionary<string, int> counts = new Dictionary<string, int>();
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            foreach (dynamic o in d)
+            {
+                foreach (dynamic friend in o.friends)
+                {
+                    UpdateValueCount(counts, friend.id);
+                    UpdateValueCount(counts, ((string) friend.name).Split(' ')[0]);
+                }
+            }
+
+            //foreach (KeyValuePair<string, int> keyValuePair in counts)
+            //{
+            //    Console.WriteLine(keyValuePair.Key + ": " + keyValuePair.Value);
+            //}
+
+            Console.WriteLine("Time (secs): " + sw.Elapsed.TotalSeconds);
+        }
+
         [Test]
         public void JObjectPropertyNames()
         {

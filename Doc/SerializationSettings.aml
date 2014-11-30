@@ -303,21 +303,9 @@ or a property's object properties or collection items using
 
  <para>To create your own custom converter inherit from the JsonConverter class. Read more about the built-in JsonConverters below:</para>
 <list class="bullet">
-  <listItem><para><externalLink>
-<linkText>Serializing Dates in JSON</linkText>
-<linkUri>DatesInJSON.htm</linkUri>
-<linkTarget>_self</linkTarget>
-</externalLink></para></listItem>
-  <listItem><para><externalLink>
-<linkText>Converting between JSON and XML</linkText>
-<linkUri>ConvertingJSONandXML.htm</linkUri>
-<linkTarget>_self</linkTarget>
-</externalLink></para></listItem>
-  <listItem><para><externalLink>
-<linkText>CustomCreationConverter</linkText>
-<linkUri>CustomCreationConverter.htm</linkUri>
-<linkTarget>_self</linkTarget>
-</externalLink></para></listItem>
+  <listItem><para><link xlink:href="DatesInJSON" /></para></listItem>
+  <listItem><para><link xlink:href="ConvertingJSONandXML" /></para></listItem>
+  <listItem><para><link xlink:href="CustomCreationConverter" /></para></listItem>
   <listItem><para><codeEntityReference>T:Newtonsoft.Json.Converters.StringEnumConverter</codeEntityReference></para></listItem>
 </list>
 
@@ -330,11 +318,7 @@ or a property's object properties or collection items using
  <content><para>Internally for every .NET type the JsonSerializer will create a contract of how the type should be serialized and deserialized,
  based on type metadata and attributes applied to the class. Specifying a custom <codeEntityReference>T:Newtonsoft.Json.Serialization.IContractResolver</codeEntityReference>
  allows the creation of contracts to be customized.</para>
- <para>Read more about Contract Resolvers here: <externalLink>
-<linkText>Contract Resolvers</linkText>
-<linkUri>ContractResolver.htm</linkUri>
-<linkTarget>_self</linkTarget>
-</externalLink></para>
+ <para>Read more about Contract Resolvers here: <link xlink:href="ContractResolver" /></para>
 </content>
 </section>
 
@@ -343,11 +327,7 @@ or a property's object properties or collection items using
  <content><para>The Json.NET serializer supports logging and debugging using the
       <codeEntityReference>T:Newtonsoft.Json.Serialization.ITraceWriter</codeEntityReference> interface.
       By assigning a trace writer you can debug what happens inside the Json.NET serializer when serializing and deserializing JSON.</para>
- <para>Read more about TraceWriters here: <externalLink>
-<linkText>Debugging with Serialization Tracing</linkText>
-<linkUri>SerializationTracing.htm</linkUri>
-<linkTarget>_self</linkTarget>
-</externalLink></para>
+ <para>Read more about TraceWriters here: <link xlink:href="SerializationTracing" /></para>
 </content>
 </section>
 
@@ -355,12 +335,7 @@ or a property's object properties or collection items using
  <title>Error</title>
  <content><para>The <codeEntityReference>E:Newtonsoft.Json.JsonSerializer.Error</codeEntityReference> event can catch errors during serialization and either handle the event and continue with
  serialization or let the error bubble up and be thrown to the application.</para>
- <para>Read more about error handling here: <externalLink>
-<linkText>Serialization Error Handling</linkText>
-<linkUri>SerializationErrorHandling.htm</linkUri>
-<linkTarget>_self</linkTarget>
-</externalLink>
-</para>
+ <para>Read more about error handling here: <link xlink:href="SerializationErrorHandling" /></para>
 </content>
 </section>
 </sections>
