@@ -95,6 +95,39 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class JsonSerializerTest : TestFixtureBase
     {
+        [Test]
+        public void IncompleteContainers()
+        {
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => JsonConvert.DeserializeObject<IList<int>>("[1,"),
+                "Unexpected end when deserializing array. Path '[0]', line 1, position 3.");
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => JsonConvert.DeserializeObject<IList<int>>("[1"),
+                "Unexpected end when deserializing array. Path '[0]', line 1, position 2.");
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => JsonConvert.DeserializeObject<IDictionary<string, int>>("{'key':1,"),
+                "Unexpected end when deserializing object. Path 'key', line 1, position 9.");
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => JsonConvert.DeserializeObject<IDictionary<string, int>>("{'key':1"),
+                "Unexpected end when deserializing object. Path 'key', line 1, position 8.");
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => JsonConvert.DeserializeObject<IncompleteTestClass>("{'key':1,"),
+                "Unexpected end when deserializing object. Path 'key', line 1, position 9.");
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => JsonConvert.DeserializeObject<IncompleteTestClass>("{'key':1"),
+                "Unexpected end when deserializing object. Path 'key', line 1, position 8.");
+        }
+
+        public class IncompleteTestClass
+        {
+            public int Key { get; set; }
+        }
+
 #if !NET20
         public enum EnumA
         {
