@@ -52,9 +52,9 @@ namespace Newtonsoft.Json.Serialization
     {
         internal enum PropertyPresence
         {
-            None,
-            Null,
-            Value
+            None = 0,
+            Null = 1,
+            Value = 2
         }
 
         private JsonSerializerProxy _internalSerializer;

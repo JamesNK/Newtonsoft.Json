@@ -37,91 +37,91 @@ namespace Newtonsoft.Json
         /// <summary>
         /// This is returned by the <see cref="JsonReader"/> if a <see cref="JsonReader.Read"/> method has not been called. 
         /// </summary>
-        None,
+        None = 0,
 
         /// <summary>
         /// An object start token.
         /// </summary>
-        StartObject,
+        StartObject = 1,
 
         /// <summary>
         /// An array start token.
         /// </summary>
-        StartArray,
+        StartArray = 2,
 
         /// <summary>
         /// A constructor start token.
         /// </summary>
-        StartConstructor,
+        StartConstructor = 3,
 
         /// <summary>
         /// An object property name.
         /// </summary>
-        PropertyName,
+        PropertyName = 4,
 
         /// <summary>
         /// A comment.
         /// </summary>
-        Comment,
+        Comment = 5,
 
         /// <summary>
         /// Raw JSON.
         /// </summary>
-        Raw,
+        Raw = 6,
 
         /// <summary>
         /// An integer.
         /// </summary>
-        Integer,
+        Integer = 7,
 
         /// <summary>
         /// A float.
         /// </summary>
-        Float,
+        Float = 8,
 
         /// <summary>
         /// A string.
         /// </summary>
-        String,
+        String = 9,
 
         /// <summary>
         /// A boolean.
         /// </summary>
-        Boolean,
+        Boolean = 10,
 
         /// <summary>
         /// A null token.
         /// </summary>
-        Null,
+        Null = 11,
 
         /// <summary>
         /// An undefined token.
         /// </summary>
-        Undefined,
+        Undefined = 12,
 
         /// <summary>
         /// An object end token.
         /// </summary>
-        EndObject,
+        EndObject = 13,
 
         /// <summary>
         /// An array end token.
         /// </summary>
-        EndArray,
+        EndArray = 14,
 
         /// <summary>
         /// A constructor end token.
         /// </summary>
-        EndConstructor,
+        EndConstructor = 15,
 
         /// <summary>
         /// A Date.
         /// </summary>
-        Date,
+        Date = 16,
 
         /// <summary>
         /// Byte data.
         /// </summary>
-        Bytes
+        Bytes = 17
     }
 }

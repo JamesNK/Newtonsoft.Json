@@ -33,16 +33,16 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Only control characters (e.g. newline) are escaped.
         /// </summary>
-        Default,
+        Default = 0,
 
         /// <summary>
         /// All non-ASCII and control characters (e.g. newline) are escaped.
         /// </summary>
-        EscapeNonAscii,
+        EscapeNonAscii = 1,
 
         /// <summary>
         /// HTML (&lt;, &gt;, &amp;, &apos;, &quot;) and control characters (e.g. newline) are escaped.
         /// </summary>
-        EscapeHtml
+        EscapeHtml = 2
     }
 }

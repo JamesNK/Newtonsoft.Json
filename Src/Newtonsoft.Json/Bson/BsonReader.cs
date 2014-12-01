@@ -61,15 +61,15 @@ namespace Newtonsoft.Json.Bson
 
         private enum BsonReaderState
         {
-            Normal,
-            ReferenceStart,
-            ReferenceRef,
-            ReferenceId,
-            CodeWScopeStart,
-            CodeWScopeCode,
-            CodeWScopeScope,
-            CodeWScopeScopeObject,
-            CodeWScopeScopeEnd
+            Normal = 0,
+            ReferenceStart = 1,
+            ReferenceRef = 2,
+            ReferenceId = 3,
+            CodeWScopeStart = 4,
+            CodeWScopeCode = 5,
+            CodeWScopeScope = 6,
+            CodeWScopeScopeObject = 7,
+            CodeWScopeScopeEnd = 8
         }
 
         private class ContainerContext

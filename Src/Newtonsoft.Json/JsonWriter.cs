@@ -47,16 +47,16 @@ namespace Newtonsoft.Json
     {
         internal enum State
         {
-            Start,
-            Property,
-            ObjectStart,
-            Object,
-            ArrayStart,
-            Array,
-            ConstructorStart,
-            Constructor,
-            Closed,
-            Error
+            Start = 0,
+            Property = 1,
+            ObjectStart = 2,
+            Object = 3,
+            ArrayStart = 4,
+            Array = 5,
+            ConstructorStart = 6,
+            Constructor = 7,
+            Closed = 8,
+            Error = 9
         }
 
         // array that gives a new state based on the current state an the token being written
