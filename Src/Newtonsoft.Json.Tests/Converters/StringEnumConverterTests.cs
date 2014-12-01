@@ -491,7 +491,7 @@ namespace Newtonsoft.Json.Tests.Converters
                     Value2 = DuplicateNameEnum2.foo_bar_NOT_USED
                 });
 
-                Console.WriteLine(Encoding.UTF8.GetString(ms.ToArray()));
+                Console.WriteLine(Encoding.UTF8.GetString(ms.ToArray(), 0, (int)ms.Length));
 
                 string xml = @"<DuplicateEnumNameTestClass xmlns=""http://schemas.datacontract.org/2004/07/Newtonsoft.Json.Tests.Converters"" xmlns:i=""http://www.w3.org/2001/XMLSchema-instance"">
     <Value>foo_bar</Value>
