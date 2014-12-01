@@ -41,12 +41,8 @@ namespace Newtonsoft.Json.Serialization
         Primitive = 3,
         String = 4,
         Dictionary = 5,
-#if !(NET35 || NET20 || PORTABLE40)
         Dynamic = 6,
-#endif
-#if !(NETFX_CORE || PORTABLE || PORTABLE40)
         Serializable = 7,
-#endif
         Linq = 8
     }
 
