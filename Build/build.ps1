@@ -8,6 +8,7 @@
   $buildDocumentation = $false
   $buildNuGet = $true
   $treatWarningsAsErrors = $false
+  $workingName = "Working"
   
   $baseDir  = resolve-path ..
   $buildDir = "$baseDir\Build"
@@ -15,7 +16,7 @@
   $toolsDir = "$baseDir\Tools"
   $docDir = "$baseDir\Doc"
   $releaseDir = "$baseDir\Release"
-  $workingDir = "$baseDir\Working"
+  $workingDir = "$baseDir\$workingName"
   $builds = @(
     @{Name = "Newtonsoft.Json"; TestsName = "Newtonsoft.Json.Tests"; TestsFunction = "NUnitTests"; Constants=""; FinalDir="Net45"; NuGetDir = "net45"; Framework="net-4.0"; Sign=$true},
     @{Name = "Newtonsoft.Json.Portable"; TestsName = "Newtonsoft.Json.Tests.Portable"; TestsFunction = "NUnitTests"; Constants="PORTABLE"; FinalDir="Portable"; NuGetDir = "portable-net45+wp80+win8+wpa81+aspnetcore50"; Framework="net-4.0"; Sign=$true},
@@ -38,7 +39,7 @@ task Clean {
   
   if (Test-Path -path $workingDir)
   {
-    Write-Output "Deleting Working Directory"
+    Write-Output "Deleting Working Directory $workingDir"
     
     del $workingDir -Recurse -Force
   }

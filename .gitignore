@@ -1,6 +1,6 @@
 [Bb]in/
 [Oo]bj/
-[Ww]orking/
+[Ww]orking*/
 Build/runbuild.txt
 Doc/doc.shfbproj_*
 TestResults/
