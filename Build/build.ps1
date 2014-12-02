@@ -8,7 +8,7 @@
   $buildDocumentation = $false
   $buildNuGet = $true
   $treatWarningsAsErrors = $false
-  $workingName = "Working"
+  $workingName = if ($workingName) {$workingName} else {"Working"}
   
   $baseDir  = resolve-path ..
   $buildDir = "$baseDir\Build"
@@ -29,7 +29,7 @@
   )
 }
 
-$framework = '4.0x86'
+framework '4.0x86'
 
 task default -depends Test
 
