@@ -54,11 +54,7 @@
 
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\ConditionalPropertiesTests.cs" region="ShouldSerializeContractResolver" title="Conditional properties with IContractResolver" />
 
-        <para>This example sets up <externalLink>
-        <linkText>conditional serialization for a property</linkText>
-        <linkUri>ConditionalProperties.htm</linkUri>
-        <linkTarget>_self</linkTarget>
-      </externalLink> using an IContractResolver. This is useful if you want to conditionally serialize a property but don't want to add additional methods to your type.</para>
+        <para>This example sets up <link xlink:href="ConditionalProperties">conditional serialization for a property</link> using an IContractResolver. This is useful if you want to conditionally serialize a property but don't want to add additional methods to your type.</para>
       </content>
     </section>
     <relatedTopics>

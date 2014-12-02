@@ -21,7 +21,7 @@
     Json.NET implements 
       <externalLink>
         <linkText>JSON Schema Draft 3</linkText>
-        <linkUri>http://tools.ietf.org/search/draft-zyp-json-schema-03/</linkUri>
+        <linkUri>https://tools.ietf.org/html/draft-zyp-json-schema-03</linkUri>
         <linkTarget>_blank</linkTarget>
       </externalLink>.
 

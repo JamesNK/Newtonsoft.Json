@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
 #if !(NET20 || NET35 || PORTABLE || ASPNETCORE50)
 using System.Numerics;
@@ -792,6 +793,20 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(JTokenType.Integer, v.Type);
             StringComparison e6 = v.ToObject<StringComparison>();
             Assert.AreEqual(StringComparison.OrdinalIgnoreCase, e6);
+
+            // does not support EnumMember. breaking change to add
+            ExceptionAssert.Throws<ArgumentException>(() =>
+            {
+                d = new JValue("value_a");
+                EnumA e7 = (EnumA)d;
+                Assert.AreEqual(EnumA.ValueA, e7);
+            }, "Requested value 'value_a' was not found.");
+        }
+
+        public enum EnumA
+        {
+            [EnumMember(Value = "value_a")]
+            ValueA
         }
 #endif
     }

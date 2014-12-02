@@ -42,11 +42,7 @@ LINQ to JSON objects or
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="JsonSerializerToStream" title="Serializing JSON to a Stream with JsonSerializer" />
 
 <para>JsonSerializer has a number of properties on it to customize how it serializes JSON. These can also be used with the methods on JsonConvert via the JsonSerializerSettings overloads.</para>
-<para>Read more about the available JsonSerializer settings here: <externalLink>
-<linkText>Serialization Settings</linkText>
-<linkUri>SerializationSettings.htm</linkUri>
-<linkTarget>_self</linkTarget>
-</externalLink></para>
+<para>Read more about the available JsonSerializer settings here: <link xlink:href="SerializationSettings" /></para>
 </content>
 </section>
     <relatedTopics>

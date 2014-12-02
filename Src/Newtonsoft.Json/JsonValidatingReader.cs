@@ -372,10 +372,10 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Reads the next JSON token from the stream as a <see cref="T:Byte[]"/>.
+        /// Reads the next JSON token from the stream as a <see cref="Byte"/>[].
         /// </summary>
         /// <returns>
-        /// A <see cref="T:Byte[]"/> or a null reference if the next JSON token is null.
+        /// A <see cref="Byte"/>[] or a null reference if the next JSON token is null.
         /// </returns>
         public override byte[] ReadAsBytes()
         {

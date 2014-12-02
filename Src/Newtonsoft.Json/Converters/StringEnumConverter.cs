@@ -33,7 +33,6 @@ using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
-
 #endif
 
 namespace Newtonsoft.Json.Converters
@@ -43,8 +42,6 @@ namespace Newtonsoft.Json.Converters
     /// </summary>
     public class StringEnumConverter : JsonConverter
     {
-        private static readonly ThreadSafeStore<Type, BidirectionalDictionary<string, string>> EnumMemberNamesPerType = new ThreadSafeStore<Type, BidirectionalDictionary<string, string>>(InitializeEnumType);
-
         /// <summary>
         /// Gets or sets a value indicating whether the written enum text should be camel case.
         /// </summary>
@@ -90,24 +87,9 @@ namespace Newtonsoft.Json.Converters
             }
             else
             {
-                BidirectionalDictionary<string, string> map = EnumMemberNamesPerType.Get(e.GetType());
+                Type enumType = e.GetType();
 
-                string[] names = enumName.Split(',');
-                for (int i = 0; i < names.Length; i++)
-                {
-                    string name = names[i].Trim();
-
-                    string resolvedEnumName;
-                    map.TryGetByFirst(name, out resolvedEnumName);
-                    resolvedEnumName = resolvedEnumName ?? name;
-
-                    if (CamelCaseText)
-                        resolvedEnumName = StringUtils.ToCamelCase(resolvedEnumName);
-
-                    names[i] = resolvedEnumName;
-                }
-
-                string finalName = string.Join(", ", names);
+                string finalName = EnumUtils.ToEnumName(enumType, enumName, CamelCaseText);
 
                 writer.WriteValue(finalName);
             }
@@ -139,30 +121,7 @@ namespace Newtonsoft.Json.Converters
                 if (reader.TokenType == JsonToken.String)
                 {
                     string enumText = reader.Value.ToString();
-                    if (enumText == string.Empty && isNullable)
-                        return null;
-
-                    string finalEnumText;
-
-                    BidirectionalDictionary<string, string> map = EnumMemberNamesPerType.Get(t);
-                    if (enumText.IndexOf(',') != -1)
-                    {
-                        string[] names = enumText.Split(',');
-                        for (int i = 0; i < names.Length; i++)
-                        {
-                            string name = names[i].Trim();
-
-                            names[i] = ResolvedEnumName(map, name);
-                        }
-
-                        finalEnumText = string.Join(", ", names);
-                    }
-                    else
-                    {
-                        finalEnumText = ResolvedEnumName(map, enumText);
-                    }
-
-                    return Enum.Parse(t, finalEnumText, true);
+                    return EnumUtils.ParseEnumName(enumText, isNullable, t);
                 }
 
                 if (reader.TokenType == JsonToken.Integer)
@@ -182,14 +141,6 @@ namespace Newtonsoft.Json.Converters
             throw JsonSerializationException.Create(reader, "Unexpected token {0} when parsing enum.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
         }
 
-        private static string ResolvedEnumName(BidirectionalDictionary<string, string> map, string enumText)
-        {
-            string resolvedEnumName;
-            map.TryGetBySecond(enumText, out resolvedEnumName);
-            resolvedEnumName = resolvedEnumName ?? enumText;
-            return resolvedEnumName;
-        }
-
         /// <summary>
         /// Determines whether this instance can convert the specified object type.
         /// </summary>
@@ -204,36 +155,6 @@ namespace Newtonsoft.Json.Converters
                 : objectType;
 
             return t.IsEnum();
-        }
-
-        private static BidirectionalDictionary<string, string> InitializeEnumType(Type type)
-        {
-            BidirectionalDictionary<string, string> map = new BidirectionalDictionary<string, string>(
-                StringComparer.OrdinalIgnoreCase,
-                StringComparer.OrdinalIgnoreCase);
-
-            foreach (FieldInfo f in type.GetFields())
-            {
-                string n1 = f.Name;
-                string n2;
-
-#if !NET20
-                n2 = f.GetCustomAttributes(typeof(EnumMemberAttribute), true)
-                    .Cast<EnumMemberAttribute>()
-                    .Select(a => a.Value)
-                    .SingleOrDefault() ?? f.Name;
-#else
-                n2 = f.Name;
-#endif
-
-                string s;
-                if (map.TryGetBySecond(n2, out s))
-                    throw new InvalidOperationException("Enum name '{0}' already exists on enum '{1}'.".FormatWith(CultureInfo.InvariantCulture, n2, type.Name));
-
-                map.Set(n1, n2);
-            }
-
-            return map;
         }
     }
 }
