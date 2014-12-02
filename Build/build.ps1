@@ -39,11 +39,12 @@ task Clean {
   
   if (Test-Path -path $workingDir)
   {
-    Write-Output "Deleting Working Directory $workingDir"
+    Write-Output "Deleting existing working directory $workingDir"
     
     del $workingDir -Recurse -Force
   }
   
+  Write-Output "Creating working directory $workingDir"
   New-Item -Path $workingDir -ItemType Directory
 }
 
