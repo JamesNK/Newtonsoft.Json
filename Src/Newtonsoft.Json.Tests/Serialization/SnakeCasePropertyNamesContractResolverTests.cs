@@ -124,9 +124,9 @@ namespace Newtonsoft.Json.Tests.Serialization
 }", json);
 
             PrivateMembersClass deserializedPrivateMembersClass = JsonConvert.DeserializeObject<PrivateMembersClass>(@"{
-  ""_privateString"": ""Private!"",
+  ""_private_string"": ""Private!"",
   ""i"": -2,
-  ""_internalString"": ""Internal!""
+  ""_internal_string"": ""Internal!""
 }", new JsonSerializerSettings
             {
                 ContractResolver = new SnakeCasePropertyNamesContractResolver { DefaultMembersSearchFlags = BindingFlags.NonPublic | BindingFlags.Instance }
