@@ -26,15 +26,15 @@
 namespace Newtonsoft.Json.Serialization
 {
     /// <summary>
-    /// Resolves member mappings for a type, snake casing property names.
+    /// Resolves member mappings for a type, snake casing property names seperating on integers as well. Example snake_1_case
     /// </summary>
-    public class SnakeCasePropertyNamesContractResolver : DefaultContractResolver
+    public class SnakeCaseIntegerSeperatedPropertyNamesContractResolver : DefaultContractResolver
     {
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="CamelCasePropertyNamesContractResolver"/> class.
         /// </summary>
-        public SnakeCasePropertyNamesContractResolver()
+        public SnakeCaseIntegerSeperatedPropertyNamesContractResolver()
             : base(true)
         {
         }
@@ -44,7 +44,7 @@ namespace Newtonsoft.Json.Serialization
         {
             var startUnderscores = System.Text.RegularExpressions.Regex.Match(propertyName, @"^_+");
             return startUnderscores + System.Text.RegularExpressions.Regex
-                .Replace(propertyName, @"([A-Z])", "_$1").ToLower().TrimStart('_');
+                .Replace(propertyName, @"([A-Z0-9])", "_$1").ToLower().TrimStart('_');
         }
-    }
+    }	
 }

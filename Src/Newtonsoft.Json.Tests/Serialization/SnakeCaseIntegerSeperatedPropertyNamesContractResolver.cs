@@ -45,7 +45,7 @@ using Newtonsoft.Json.Utilities;
 namespace Newtonsoft.Json.Tests.Serialization
 {
     [TestFixture]
-    public class SnakeCasePropertyNamesContractResolverTests : TestFixtureBase
+    public class SnakeCaseIntegerSeperatedPropertyNamesContractResolverTests : TestFixtureBase
     {
         [Test]
         public void JsonConvertSerializerSettings()
@@ -57,7 +57,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(person, Formatting.Indented, new JsonSerializerSettings
             {
-                ContractResolver = new SnakeCasePropertyNamesContractResolver()
+                ContractResolver = new SnakeCaseIntegerSeperatedPropertyNamesContractResolver()
             });
 
             StringAssert.AreEqual(@"{
@@ -68,7 +68,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Person deserializedPerson = JsonConvert.DeserializeObject<Person>(json, new JsonSerializerSettings
             {
-                ContractResolver = new SnakeCasePropertyNamesContractResolver()
+                ContractResolver = new SnakeCaseIntegerSeperatedPropertyNamesContractResolver()
             });
 
             Assert.AreEqual(person.BirthDate, deserializedPerson.BirthDate);
@@ -90,7 +90,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             ignoreAttributeOnClassTestClass.Field = int.MinValue;
 
             JsonSerializer serializer = new JsonSerializer();
-            serializer.ContractResolver = new SnakeCasePropertyNamesContractResolver();
+            serializer.ContractResolver = new SnakeCaseIntegerSeperatedPropertyNamesContractResolver();
 
             JTokenWriter writer = new JTokenWriter();
 
@@ -114,7 +114,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(privateMembersClass, Formatting.Indented, new JsonSerializerSettings
             {
-                ContractResolver = new SnakeCasePropertyNamesContractResolver { DefaultMembersSearchFlags = BindingFlags.NonPublic | BindingFlags.Instance }
+                ContractResolver = new SnakeCaseIntegerSeperatedPropertyNamesContractResolver { DefaultMembersSearchFlags = BindingFlags.NonPublic | BindingFlags.Instance }
             });
 
             StringAssert.AreEqual(@"{
@@ -129,7 +129,7 @@ namespace Newtonsoft.Json.Tests.Serialization
   ""_internal_string"": ""Internal!""
 }", new JsonSerializerSettings
             {
-                ContractResolver = new SnakeCasePropertyNamesContractResolver { DefaultMembersSearchFlags = BindingFlags.NonPublic | BindingFlags.Instance }
+                ContractResolver = new SnakeCaseIntegerSeperatedPropertyNamesContractResolver { DefaultMembersSearchFlags = BindingFlags.NonPublic | BindingFlags.Instance }
             });
 
             Assert.AreEqual("Private!", ReflectionUtils.GetMemberValue(typeof(PrivateMembersClass).GetField("_privateString", BindingFlags.Instance | BindingFlags.NonPublic), deserializedPrivateMembersClass));
@@ -156,7 +156,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 JsonConvert.SerializeObject(
                     product,
                     Formatting.Indented,
-                    new JsonSerializerSettings { ContractResolver = new SnakeCasePropertyNamesContractResolver() }
+                    new JsonSerializerSettings { ContractResolver = new SnakeCaseIntegerSeperatedPropertyNamesContractResolver() }
                     );
 
             //{
@@ -193,7 +193,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             string json = JsonConvert.SerializeObject(o, Formatting.Indented,
                 new JsonSerializerSettings
                 {
-                    ContractResolver = new SnakeCasePropertyNamesContractResolver()
+                    ContractResolver = new SnakeCaseIntegerSeperatedPropertyNamesContractResolver()
                 });
 
             StringAssert.AreEqual(@"{
@@ -207,7 +207,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 #endif
 
         [Test]
-        public void DictionarySnakeCasePropertyNames()
+        public void DictionaryCamelCasePropertyNames()
         {
             Dictionary<string, string> values = new Dictionary<string, string>
             {
@@ -218,12 +218,46 @@ namespace Newtonsoft.Json.Tests.Serialization
             string json = JsonConvert.SerializeObject(values, Formatting.Indented,
                 new JsonSerializerSettings
                 {
-                    ContractResolver = new SnakeCasePropertyNamesContractResolver()
+                    ContractResolver = new SnakeCaseIntegerSeperatedPropertyNamesContractResolver()
                 });
 
             StringAssert.AreEqual(@"{
   ""first"": ""Value1!"",
   ""second"": ""Value2!""
+}", json);
+        }
+
+
+        [Test]
+        public void IntegersPropertyNames()
+        {
+            Dictionary<string, string> values = new Dictionary<string, string>
+            {
+                { "First1", "Value1!" },
+                { "Second1", "Value2!" },
+                { "1TwoThree", "Value3!"},
+                { "One2Three", "Value4!"},
+                { "OneTwo3", "Value5!"},
+                { "One23", "Value6!"},
+                { "12Three", "Value7!"},
+                { "123", "Value8!"}
+            };
+
+            string json = JsonConvert.SerializeObject(values, Formatting.Indented,
+                new JsonSerializerSettings
+                {
+                    ContractResolver = new SnakeCaseIntegerSeperatedPropertyNamesContractResolver()
+                });
+
+            StringAssert.AreEqual(@"{
+  ""first_1"": ""Value1!"",
+  ""second_1"": ""Value2!"",
+  ""1_two_three"": ""Value3!"",
+  ""one_2_three"": ""Value4!"",
+  ""one_two_3"": ""Value5!"",
+  ""one_2_3"": ""Value6!"",
+  ""1_2_three"": ""Value7!"",
+  ""1_2_3"": ""Value8!""
 }", json);
         }
     }
