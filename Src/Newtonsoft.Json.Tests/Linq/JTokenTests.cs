@@ -25,7 +25,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Xml.Linq;
 #if !(NET20 || NET35 || PORTABLE || ASPNETCORE50)
 using System.Numerics;
 #endif
@@ -721,14 +720,6 @@ namespace Newtonsoft.Json.Tests.Linq
         [Test]
         public void DescendantsAndSelf()
         {
-            XElement e = new XElement("name");
-            e.Add(new XElement("child"));
-
-            var x = e.DescendantsAndSelf().ToList();
-            Assert.AreEqual(2, x.Count);
-            Assert.AreEqual(e, x[0]);
-            Assert.AreEqual(e.Element("child"), x[1]);
-
             JArray a =
                 new JArray(
                     5,
