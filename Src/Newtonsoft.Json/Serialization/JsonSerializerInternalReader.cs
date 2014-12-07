@@ -526,7 +526,7 @@ namespace Newtonsoft.Json.Serialization
 
             if (reader.TokenType == JsonToken.StartObject)
             {
-                JObject current = (JObject)reader._current;
+                JObject current = (JObject)reader.CurrentToken;
 
                 JToken refToken = current[JsonTypeReflector.RefPropertyName];
                 if (refToken != null)

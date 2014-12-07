@@ -272,6 +272,23 @@ namespace Newtonsoft.Json.Linq
         /// <returns>An <see cref="IEnumerable{JToken}"/> containing the descendant tokens of the <see cref="JToken"/>.</returns>
         public IEnumerable<JToken> Descendants()
         {
+            return GetDescendants(false);
+        }
+
+        /// <summary>
+        /// Returns a collection of the tokens that contain this token, and all descendant tokens of this token, in document order.
+        /// </summary>
+        /// <returns>An <see cref="IEnumerable{JToken}"/> containing this token, and all the descendant tokens of the <see cref="JToken"/>.</returns>
+        public IEnumerable<JToken> DescendantsAndSelf()
+        {
+            return GetDescendants(true);
+        }
+
+        internal IEnumerable<JToken> GetDescendants(bool self)
+        {
+            if (self)
+                yield return this;
+
             foreach (JToken o in ChildrenTokens)
             {
                 yield return o;

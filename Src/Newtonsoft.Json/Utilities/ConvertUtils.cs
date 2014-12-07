@@ -74,20 +74,16 @@ namespace Newtonsoft.Json.Utilities
         DoubleNullable = 25,
         DateTime = 26,
         DateTimeNullable = 27,
-#if !NET20
         DateTimeOffset = 28,
         DateTimeOffsetNullable = 29,
-#endif
         Decimal = 30,
         DecimalNullable = 31,
         Guid = 32,
         GuidNullable = 33,
         TimeSpan = 34,
         TimeSpanNullable = 35,
-#if !(PORTABLE || NET35 || NET20)
         BigInteger = 36,
         BigIntegerNullable = 37,
-#endif
         Uri = 38,
         String = 39,
         Bytes = 40,

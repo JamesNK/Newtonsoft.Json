@@ -213,6 +213,7 @@
     <Compile Include="LinqToSql\LinqToSqlClassesSerializationTests.cs" />
     <Compile Include="LinqToSql\Person.cs" />
     <Compile Include="LinqToSql\Role.cs" />
+    <Compile Include="Linq\AnnotationsTests.cs" />
     <Compile Include="Linq\ComponentModel\BindingTests.cs" />
     <Compile Include="Linq\ComponentModel\JPropertyDescriptorTests.cs" />
     <Compile Include="Linq\DynamicTests.cs" />

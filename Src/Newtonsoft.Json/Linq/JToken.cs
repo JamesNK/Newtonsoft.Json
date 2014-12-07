@@ -59,13 +59,15 @@ namespace Newtonsoft.Json.Linq
         , IDynamicMetaObjectProvider
 #endif
     {
+        private static JTokenEqualityComparer _equalityComparer;
+
         private JContainer _parent;
         private JToken _previous;
         private JToken _next;
-        private static JTokenEqualityComparer _equalityComparer;
+        private object _annotations;
 
-        private int? _lineNumber;
-        private int? _linePosition;
+        //private int? _lineNumber;
+        //private int? _linePosition;
 
         private static readonly JTokenType[] BooleanTypes = new[] { JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Boolean };
         private static readonly JTokenType[] NumberTypes = new[] { JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Boolean };
@@ -1923,25 +1925,50 @@ namespace Newtonsoft.Json.Linq
             SetLineInfo(lineInfo.LineNumber, lineInfo.LinePosition);
         }
 
+        private class LineInfoAnnotation
+        {
+            internal readonly int LineNumber;
+            internal readonly int LinePosition;
+
+            public LineInfoAnnotation(int lineNumber, int linePosition)
+            {
+                LineNumber = lineNumber;
+                LinePosition = linePosition;
+            }
+        }
+
         internal void SetLineInfo(int lineNumber, int linePosition)
         {
-            _lineNumber = lineNumber;
-            _linePosition = linePosition;
+            AddAnnotation(new LineInfoAnnotation(lineNumber, linePosition));
         }
 
         bool IJsonLineInfo.HasLineInfo()
         {
-            return (_lineNumber != null && _linePosition != null);
+            return (Annotation<LineInfoAnnotation>() != null);
         }
 
         int IJsonLineInfo.LineNumber
         {
-            get { return _lineNumber ?? 0; }
+            get
+            {
+                LineInfoAnnotation annotation = Annotation<LineInfoAnnotation>();
+                if (annotation != null)
+                    return annotation.LineNumber;
+
+                return 0;
+            }
         }
 
         int IJsonLineInfo.LinePosition
         {
-            get { return _linePosition ?? 0; }
+            get
+            {
+                LineInfoAnnotation annotation = Annotation<LineInfoAnnotation>();
+                if (annotation != null)
+                    return annotation.LinePosition;
+
+                return 0;
+            }
         }
 
         /// <summary>
@@ -2046,6 +2073,267 @@ namespace Newtonsoft.Json.Linq
         public JToken DeepClone()
         {
             return CloneToken();
+        }
+
+        /// <summary>
+        /// Adds an object to the annotation list of this <see cref="JToken"/>.
+        /// </summary>
+        /// <param name="annotation">The annotation to add.</param>
+        public void AddAnnotation(object annotation)
+        {
+            if (annotation == null)
+                throw new ArgumentNullException("annotation");
+
+            if (_annotations == null)
+            {
+                _annotations = (annotation is object[]) ? new [] { annotation } : annotation;
+            }
+            else
+            {
+                object[] annotations = _annotations as object[];
+                if (annotations == null)
+                {
+                    _annotations = new [] { _annotations, annotation };
+                }
+                else
+                {
+                    int index = 0;
+                    while (index < annotations.Length && annotations[index] != null)
+                    {
+                        index++;
+                    }
+                    if (index == annotations.Length)
+                    {
+                        Array.Resize(ref annotations, index * 2);
+                        _annotations = annotations;
+                    }
+                    annotations[index] = annotation;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get the first annotation object of the specified type from this <see cref="JToken"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the annotation to retrieve.</typeparam>
+        /// <returns>The first annotation object that matches the specified type, or <c>null</c> if no annotation is of the specified type.</returns>
+        public T Annotation<T>() where T : class
+        {
+            if (_annotations != null)
+            {
+                object[] annotations = _annotations as object[];
+                if (annotations == null)
+                {
+                    return (_annotations as T);
+                }
+                for (int i = 0; i < annotations.Length; i++)
+                {
+                    object annotation = annotations[i];
+                    if (annotation == null)
+                        break;
+
+                    T local = annotation as T;
+                    if (local != null)
+                        return local;
+                }
+            }
+
+            return default(T);
+        }
+
+        /// <summary>
+        /// Gets the first annotation object of the specified type from this <see cref="JToken"/>.
+        /// </summary>
+        /// <param name="type">The <see cref="Type"/> of the annotation to retrieve.</param>
+        /// <returns>The first annotation object that matches the specified type, or <c>null</c> if no annotation is of the specified type.</returns>
+        public object Annotation(Type type)
+        {
+            if (type == null)
+                throw new ArgumentNullException("type");
+
+            if (_annotations != null)
+            {
+                object[] annotations = _annotations as object[];
+                if (annotations == null)
+                {
+                    if (type.IsInstanceOfType(_annotations))
+                        return _annotations;
+                }
+                else
+                {
+                    for (int i = 0; i < annotations.Length; i++)
+                    {
+                        object o = annotations[i];
+                        if (o == null)
+                            break;
+
+                        if (type.IsInstanceOfType(o))
+                            return o;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Gets a collection of annotations of the specified type for this <see cref="JToken"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the annotations to retrieve.</typeparam>
+        /// <returns>An <see cref="IEnumerable{T}"/>  that contains the annotations for this <see cref="JToken"/>.</returns>
+        public IEnumerable<T> Annotations<T>() where T : class
+        {
+            if (_annotations == null)
+                yield break;
+
+            object[] annotations = _annotations as object[];
+            if (annotations != null)
+            {
+                for (int i = 0; i < annotations.Length; i++)
+                {
+                    object o = annotations[i];
+                    if (o == null)
+                        break;
+
+                    T casted = o as T;
+                    if (casted != null)
+                        yield return casted;
+                }
+                yield break;
+            }
+
+            T annotation = _annotations as T;
+            if (annotation == null)
+                yield break;
+
+            yield return annotation;
+        }
+
+        /// <summary>
+        /// Gets a collection of annotations of the specified type for this <see cref="JToken"/>.
+        /// </summary>
+        /// <param name="type">The <see cref="Type"/> of the annotations to retrieve.</param>
+        /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="Object"/> that contains the annotations that match the specified type for this <see cref="JToken"/>.</returns>
+        public IEnumerable<object> Annotations(Type type)
+        {
+            if (type == null)
+                throw new ArgumentNullException("type");
+
+            if (_annotations == null)
+                yield break;
+
+            object[] annotations = _annotations as object[];
+            if (annotations != null)
+            {
+                for (int i = 0; i < annotations.Length; i++)
+                {
+                    object o = annotations[i];
+                    if (o == null)
+                        break;
+
+                    if (type.IsInstanceOfType(o))
+                        yield return o;
+                }
+                yield break;
+            }
+
+            if (!type.IsInstanceOfType(_annotations))
+                yield break;
+
+            yield return _annotations;
+        }
+
+        /// <summary>
+        /// Removes the annotations of the specified type from this <see cref="JToken"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of annotations to remove.</typeparam>
+        public void RemoveAnnotations<T>() where T : class
+        {
+            if (_annotations != null)
+            {
+                object[] annotations = _annotations as object[];
+                if (annotations == null)
+                {
+                    if (_annotations is T)
+                        _annotations = null;
+                }
+                else
+                {
+                    int index = 0;
+                    int keepCount = 0;
+                    while (index < annotations.Length)
+                    {
+                        object obj2 = annotations[index];
+                        if (obj2 == null)
+                            break;
+
+                        if (!(obj2 is T))
+                            annotations[keepCount++] = obj2;
+
+                        index++;
+                    }
+
+                    if (keepCount != 0)
+                    {
+                        while (keepCount < index)
+                        {
+                            annotations[keepCount++] = null;
+                        }
+                    }
+                    else
+                    {
+                        _annotations = null;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Removes the annotations of the specified type from this <see cref="JToken"/>.
+        /// </summary>
+        /// <param name="type">The <see cref="Type"/> of annotations to remove.</param>
+        public void RemoveAnnotations(Type type)
+        {
+            if (type == null)
+                throw new ArgumentNullException("type");
+
+            if (_annotations != null)
+            {
+                object[] annotations = _annotations as object[];
+                if (annotations == null)
+                {
+                    if (type.IsInstanceOfType(_annotations))
+                        _annotations = null;
+                }
+                else
+                {
+                    int index = 0;
+                    int keepCount = 0;
+                    while (index < annotations.Length)
+                    {
+                        object o = annotations[index];
+                        if (o == null)
+                            break;
+
+                        if (!type.IsInstanceOfType(o))
+                            annotations[keepCount++] = o;
+
+                        index++;
+                    }
+
+                    if (keepCount != 0)
+                    {
+                        while (keepCount < index)
+                        {
+                            annotations[keepCount++] = null;
+                        }
+                    }
+                    else
+                    {
+                        _annotations = null;
+                    }
+                }
+            }
         }
     }
 }

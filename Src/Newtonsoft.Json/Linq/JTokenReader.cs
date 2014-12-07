@@ -29,14 +29,22 @@ using Newtonsoft.Json.Utilities;
 namespace Newtonsoft.Json.Linq
 {
     /// <summary>
-    /// Represents a reader that provides fast, non-cached, forward-only access to serialized Json data.
+    /// Represents a reader that provides fast, non-cached, forward-only access to serialized JSON data.
     /// </summary>
     public class JTokenReader : JsonReader, IJsonLineInfo
     {
         private readonly string _initialPath;
         private readonly JToken _root;
         private JToken _parent;
-        internal JToken _current;
+        private JToken _current;
+
+        /// <summary>
+        /// Gets the <see cref="JToken"/> at the reader's current position.
+        /// </summary>
+        public JToken CurrentToken
+        {
+            get { return _current; }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JTokenReader"/> class.
@@ -47,7 +55,6 @@ namespace Newtonsoft.Json.Linq
             ValidationUtils.ArgumentNotNull(token, "token");
 
             _root = token;
-            _current = token;
         }
 
         internal JTokenReader(JToken token, string initialPath)
@@ -118,6 +125,9 @@ namespace Newtonsoft.Json.Linq
         {
             if (CurrentState != State.Start)
             {
+                if (_current == null)
+                    return false;
+
                 JContainer container = _current as JContainer;
                 if (container != null && _parent != container)
                     return ReadInto(container);
@@ -125,6 +135,7 @@ namespace Newtonsoft.Json.Linq
                     return ReadOver(_current);
             }
 
+            _current = _root;
             SetToken(_current);
             return true;
         }
@@ -165,6 +176,7 @@ namespace Newtonsoft.Json.Linq
 
         private bool ReadToEnd()
         {
+            _current = null;
             SetToken(JsonToken.None);
             return false;
         }
