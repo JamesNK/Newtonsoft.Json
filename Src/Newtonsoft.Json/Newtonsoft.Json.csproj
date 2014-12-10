@@ -229,6 +229,7 @@
     <Compile Include="Utilities\MiscellaneousUtils.cs" />
     <Compile Include="Utilities\ReflectionDelegateFactory.cs" />
     <Compile Include="Utilities\ReflectionUtils.cs" />
+    <Compile Include="Utilities\SchemaInformation.cs" />
     <Compile Include="Utilities\StringBuffer.cs" />
     <Compile Include="Utilities\StringReference.cs" />
     <Compile Include="Utilities\StringUtils.cs" />

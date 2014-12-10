@@ -896,6 +896,11 @@ namespace Newtonsoft.Json.Converters
         /// <value><c>true</c> if the JSON root object is omitted; otherwise, <c>false</c>.</value>
         public bool OmitRootObject { get; set; }
 
+        /// <summary>
+        /// stores type and array information from an xml schema. 
+        /// </summary>
+        public SchemaInformation SchemaInfo { get; set; }
+
         #region Writing
         /// <summary>
         /// Writes the JSON representation of the object.
@@ -1011,11 +1016,56 @@ namespace Newtonsoft.Json.Converters
 
         private bool IsArray(IXmlNode node)
         {
-            IXmlNode jsonArrayAttribute = (node.Attributes != null)
-                ? node.Attributes.SingleOrDefault(a => a.LocalName == "Array" && a.NamespaceUri == JsonNamespaceUri)
-                : null;
+            if (null == SchemaInfo)
+            {
+                IXmlNode jsonArrayAttribute = (node.Attributes != null)
+                    ? node.Attributes.SingleOrDefault(a => a.LocalName == "Array" && a.NamespaceUri == JsonNamespaceUri)
+                    : null;
 
-            return (jsonArrayAttribute != null && XmlConvert.ToBoolean(jsonArrayAttribute.Value));
+                return (jsonArrayAttribute != null && XmlConvert.ToBoolean(jsonArrayAttribute.Value));
+            }
+            else
+            {
+                // refer xml schema for getting array information.
+                if (node.NodeType == XmlNodeType.Element)
+                {
+                    ElementInformation elementInformation = this.GetElementInformation(node);
+                    if (null != elementInformation)
+                    {
+                        return elementInformation.IsArray;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        private Type GetDataTypeFromSchemaInformation(IXmlNode node)
+        {
+            ElementInformation elementInformation = this.GetElementInformation(node);
+
+            if (null != elementInformation)
+            {
+                return elementInformation.DataType;
+            }
+            else
+            {
+                return typeof(string);
+            }
+        }
+
+        private ElementInformation GetElementInformation(IXmlNode node)
+        {
+            ElementInformation elementInformation = null;
+            SchemaInfo.TryGetValue(node.LocalName, out elementInformation);
+
+            return elementInformation;
         }
 
         private void SerializeGroupedNodes(JsonWriter writer, IXmlNode node, XmlNamespaceManager manager, bool writePropertyName)
@@ -1114,7 +1164,16 @@ namespace Newtonsoft.Json.Converters
                             && node.ChildNodes[0].NodeType == XmlNodeType.Text)
                         {
                             // write elements with a single text child as a name value pair
-                            writer.WriteValue(node.ChildNodes[0].Value);
+                            string nodeText = node.ChildNodes[0].Value;
+                            if (null == SchemaInfo)
+                            {
+                                writer.WriteValue(nodeText);
+                            }
+                            else
+                            {
+                                Type dataType = this.GetDataTypeFromSchemaInformation(node);
+                                JsonWriter.WriteValue(writer, ConvertUtils.GetTypeCode(dataType), Convert.ChangeType(nodeText, dataType, CultureInfo.InvariantCulture));
+                            }
                         }
                         else if (node.ChildNodes.Count == 0 && CollectionUtils.IsNullOrEmpty(node.Attributes))
                         {
