@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Globalization;
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
@@ -52,6 +53,13 @@ namespace Newtonsoft.Json
     /// </example>
     public static class JsonConvert
     {
+        private static readonly Dictionary<Type, JsonConverter> _registeredJsonConverters = new Dictionary<Type, JsonConverter>();
+        /// <summary>
+        /// Gets or sets pre-registered JsonConverters that automatically used by
+        /// serialization and deserialization methods.
+        /// </summary>
+        public static Dictionary<Type, JsonConverter> RegisteredJsonConverters { get { return _registeredJsonConverters; } }
+
         /// <summary>
         /// Gets or sets a function that creates default <see cref="JsonSerializerSettings"/>.
         /// Default settings are automatically used by serialization methods on <see cref="JsonConvert"/>,
@@ -634,6 +642,10 @@ namespace Newtonsoft.Json
 
         private static string SerializeObjectInternal(object value, Type type, JsonSerializer jsonSerializer)
         {
+            JsonConverter jsonConverter;
+            if (_registeredJsonConverters.TryGetValue(type, out jsonConverter) && !jsonSerializer.Converters.Contains(jsonConverter))
+                jsonSerializer.Converters.Add(jsonConverter);
+
             StringBuilder sb = new StringBuilder(256);
             StringWriter sw = new StringWriter(sb, CultureInfo.InvariantCulture);
             using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
@@ -836,6 +848,10 @@ namespace Newtonsoft.Json
             ValidationUtils.ArgumentNotNull(value, "value");
 
             JsonSerializer jsonSerializer = JsonSerializer.CreateDefault(settings);
+
+            JsonConverter jsonConverter;
+            if (_registeredJsonConverters.TryGetValue(type, out jsonConverter) && !jsonSerializer.Converters.Contains(jsonConverter))
+                jsonSerializer.Converters.Add(jsonConverter);
 
             // by default DeserializeObject should check for additional content
             if (!jsonSerializer.IsCheckAdditionalContentSet())
