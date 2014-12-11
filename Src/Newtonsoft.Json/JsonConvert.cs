@@ -105,6 +105,31 @@ namespace Newtonsoft.Json
         public static readonly string NaN = "NaN";
 
         /// <summary>
+        /// Register customized JsonConverters in advance, which can be automatically
+        /// used by serialization and deserialization methods.
+        /// </summary>
+        /// <param name="jsonConverters">The customized JsonConverters.</param>
+        /// <typeparam name="T">Type to register JsonConverters for.</typeparam>
+        public static void RegisterJsonConverters<T>(params JsonConverter[] jsonConverters)
+        {
+            RegisterJsonConverters(typeof (T), jsonConverters);
+        }
+
+        /// <summary>
+        /// Register customized JsonConverters in advance, which can be automatically
+        /// used by serialization and deserialization methods.
+        /// </summary>
+        /// <param name="type">Type to register JsonConverters for.</param>
+        /// <param name="jsonConverters">The customized JsonConverters.</param>
+        /// <exception cref="ArgumentException">The pre-registered type cannot be null.</exception>
+        public static void RegisterJsonConverters(Type type, params JsonConverter[] jsonConverters)
+        {
+            if(null == type)
+                throw new ArgumentException("The pre-registered type cannot be null.", "type");
+            _registeredJsonConverters[type] = jsonConverters;
+        }
+
+        /// <summary>
         /// Converts the <see cref="DateTime"/> to its JSON string representation.
         /// </summary>
         /// <param name="value">The value to convert.</param>
