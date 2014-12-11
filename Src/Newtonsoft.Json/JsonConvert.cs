@@ -642,9 +642,13 @@ namespace Newtonsoft.Json
 
         private static string SerializeObjectInternal(object value, Type type, JsonSerializer jsonSerializer)
         {
-            JsonConverter jsonConverter;
-            if (_registeredJsonConverters.TryGetValue(type, out jsonConverter) && !jsonSerializer.Converters.Contains(jsonConverter))
-                jsonSerializer.Converters.Add(jsonConverter);
+            if (null != type && 0 == jsonSerializer.Converters.Count)
+            {
+                JsonConverter[] jsonConverters;
+                if (_registeredJsonConverters.TryGetValue(type, out jsonConverters))
+                    for (int i = 0; i < jsonConverters.Length; i++)
+                        jsonSerializer.Converters.Insert(i, jsonConverters[i]);
+            }
 
             StringBuilder sb = new StringBuilder(256);
             StringWriter sw = new StringWriter(sb, CultureInfo.InvariantCulture);
@@ -849,9 +853,13 @@ namespace Newtonsoft.Json
 
             JsonSerializer jsonSerializer = JsonSerializer.CreateDefault(settings);
 
-            JsonConverter jsonConverter;
-            if (_registeredJsonConverters.TryGetValue(type, out jsonConverter) && !jsonSerializer.Converters.Contains(jsonConverter))
-                jsonSerializer.Converters.Add(jsonConverter);
+            if (null != type && 0 == jsonSerializer.Converters.Count)
+            {
+                JsonConverter[] jsonConverters;
+                if (_registeredJsonConverters.TryGetValue(type, out jsonConverters))
+                    for (int i = 0; i < jsonConverters.Length; i++)
+                        jsonSerializer.Converters.Insert(i, jsonConverters[i]);
+            }
 
             // by default DeserializeObject should check for additional content
             if (!jsonSerializer.IsCheckAdditionalContentSet())
