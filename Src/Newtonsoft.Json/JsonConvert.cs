@@ -53,12 +53,12 @@ namespace Newtonsoft.Json
     /// </example>
     public static class JsonConvert
     {
-        private static readonly Dictionary<Type, JsonConverter> _registeredJsonConverters = new Dictionary<Type, JsonConverter>();
+        private static readonly Dictionary<Type, JsonConverter[]> _registeredJsonConverters = new Dictionary<Type, JsonConverter[]>();
         /// <summary>
         /// Gets or sets pre-registered JsonConverters that automatically used by
         /// serialization and deserialization methods.
         /// </summary>
-        public static Dictionary<Type, JsonConverter> RegisteredJsonConverters { get { return _registeredJsonConverters; } }
+        public static Dictionary<Type, JsonConverter[]> RegisteredJsonConverters { get { return _registeredJsonConverters; } }
 
         /// <summary>
         /// Gets or sets a function that creates default <see cref="JsonSerializerSettings"/>.
