@@ -130,6 +130,27 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
+        /// Unregister JsonConverter[] for type T.
+        /// </summary>
+        /// <typeparam name="T">Type to unregister JsonConverters for.</typeparam>
+        public static void UnregisterJsonConverters<T>()
+        {
+            UnregisterJsonConverters(typeof(T));
+        }
+
+        /// <summary>
+        /// Unregister JsonConverter[] for specified type.
+        /// </summary>
+        /// <param name="type">Type to unregister JsonConverters for.</param>
+        /// <exception cref="ArgumentException">The pre-registered type cannot be null.</exception>
+        private static void UnregisterJsonConverters(Type type)
+        {
+            if (null == type)
+                throw new ArgumentException("The pre-registered type cannot be null.", "type");
+            _registeredJsonConverters.Remove(type);
+        }
+
+        /// <summary>
         /// Converts the <see cref="DateTime"/> to its JSON string representation.
         /// </summary>
         /// <param name="value">The value to convert.</param>
