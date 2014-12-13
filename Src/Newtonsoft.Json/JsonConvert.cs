@@ -688,10 +688,10 @@ namespace Newtonsoft.Json
 
         private static string SerializeObjectInternal(object value, Type type, JsonSerializer jsonSerializer)
         {
-            if (null != type && 0 == jsonSerializer.Converters.Count)
+            if (0 == jsonSerializer.Converters.Count)
             {
                 JsonConverter[] jsonConverters;
-                if (_registeredJsonConverters.TryGetValue(type, out jsonConverters))
+                if (_registeredJsonConverters.TryGetValue(value.GetType(), out jsonConverters))
                     for (int i = 0; i < jsonConverters.Length; i++)
                         jsonSerializer.Converters.Insert(i, jsonConverters[i]);
             }
