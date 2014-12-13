@@ -688,7 +688,7 @@ namespace Newtonsoft.Json
 
         private static string SerializeObjectInternal(object value, Type type, JsonSerializer jsonSerializer)
         {
-            if (0 == jsonSerializer.Converters.Count)
+            if (null != value && 0 == jsonSerializer.Converters.Count)
             {
                 JsonConverter[] jsonConverters;
                 if (_registeredJsonConverters.TryGetValue(value.GetType(), out jsonConverters))
