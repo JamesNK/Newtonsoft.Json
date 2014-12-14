@@ -1580,6 +1580,9 @@ namespace Newtonsoft.Json.Converters
                         case JsonToken.EndObject:
                             finishedElement = true;
                             break;
+                        case JsonToken.Comment:
+                            finishedElement = true;
+                            break;
                         default:
                             throw new JsonSerializationException("Unexpected JsonToken: " + reader.TokenType);
                     }

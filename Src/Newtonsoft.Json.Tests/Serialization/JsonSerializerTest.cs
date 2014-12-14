@@ -95,6 +95,57 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class JsonSerializerTest : TestFixtureBase
     {
+        [Test]
+        public void IncompleteContainers()
+        {
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => JsonConvert.DeserializeObject<IList<int>>("[1,"),
+                "Unexpected end when deserializing array. Path '[0]', line 1, position 3.");
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => JsonConvert.DeserializeObject<IList<int>>("[1"),
+                "Unexpected end when deserializing array. Path '[0]', line 1, position 2.");
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => JsonConvert.DeserializeObject<IDictionary<string, int>>("{'key':1,"),
+                "Unexpected end when deserializing object. Path 'key', line 1, position 9.");
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => JsonConvert.DeserializeObject<IDictionary<string, int>>("{'key':1"),
+                "Unexpected end when deserializing object. Path 'key', line 1, position 8.");
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => JsonConvert.DeserializeObject<IncompleteTestClass>("{'key':1,"),
+                "Unexpected end when deserializing object. Path 'key', line 1, position 9.");
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => JsonConvert.DeserializeObject<IncompleteTestClass>("{'key':1"),
+                "Unexpected end when deserializing object. Path 'key', line 1, position 8.");
+        }
+
+        public class IncompleteTestClass
+        {
+            public int Key { get; set; }
+        }
+
+#if !NET20
+        public enum EnumA
+        {
+            [EnumMember(Value = "value_a")]
+            ValueA
+        }
+
+        [Test]
+        public void DeserializeEnumsByName()
+        {
+            var e1 = JsonConvert.DeserializeObject<EnumA>("'ValueA'");
+            Assert.AreEqual(EnumA.ValueA, e1);
+
+            var e2 = JsonConvert.DeserializeObject<EnumA>("'value_a'", new StringEnumConverter());
+            Assert.AreEqual(EnumA.ValueA, e2);
+        }
+#endif
+
 #if !(NETFX_CORE || ASPNETCORE50 || NET20)
         [MetadataType(typeof(CustomerValidation))]
         public partial class CustomerWithMetadataType

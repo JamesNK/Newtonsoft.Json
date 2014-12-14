@@ -1202,7 +1202,7 @@ namespace Newtonsoft.Json.Tests.Converters
         public void SerializeComment()
         {
             string xml = @"<span class=""vevent"">
-  <a class=""url"" href=""http://www.web2con.com/"">Text</a><!-- Hi! -->
+  <a class=""url"" href=""http://www.web2con.com/""><!-- Hi --><span>Text</span></a><!-- Hi! -->
 </span>";
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(xml);
@@ -1214,8 +1214,8 @@ namespace Newtonsoft.Json.Tests.Converters
     ""@class"": ""vevent"",
     ""a"": {
       ""@class"": ""url"",
-      ""@href"": ""http://www.web2con.com/"",
-      ""#text"": ""Text""
+      ""@href"": ""http://www.web2con.com/""/* Hi */,
+      ""span"": ""Text""
     }/* Hi! */
   }
 }";
@@ -1223,7 +1223,7 @@ namespace Newtonsoft.Json.Tests.Converters
             StringAssert.AreEqual(expected, jsonText);
 
             XmlDocument newDoc = (XmlDocument)DeserializeXmlNode(jsonText);
-            Assert.AreEqual(@"<span class=""vevent""><a class=""url"" href=""http://www.web2con.com/"">Text</a><!-- Hi! --></span>", newDoc.InnerXml);
+			Assert.AreEqual(@"<span class=""vevent""><a class=""url"" href=""http://www.web2con.com/""><!-- Hi --><span>Text</span></a><!-- Hi! --></span>", newDoc.InnerXml);
         }
 
         [Test]
