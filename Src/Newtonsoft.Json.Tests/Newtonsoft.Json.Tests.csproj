@@ -426,6 +426,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
+    <Content Include="remoteSchema.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Schema\Specs\additionalItems.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

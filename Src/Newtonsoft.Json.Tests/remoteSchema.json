@@ -1,0 +1,7 @@
+﻿{
+	'properties': {
+		'jedis': {
+			'enum': ['luke', 'obi-wan', 'yoda']
+		}
+	}
+}
