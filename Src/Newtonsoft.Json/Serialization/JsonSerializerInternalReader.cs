@@ -557,7 +557,7 @@ namespace Newtonsoft.Json.Serialization
                         return true;
                     }
                 }
-                JToken typeToken = current[JsonTypeReflector.TypePropertyName];
+                JToken typeToken = current[Serializer.TypeNameProperty];
                 if (typeToken != null)
                 {
                     string qualifiedTypeName = (string)typeToken;
@@ -612,7 +612,7 @@ namespace Newtonsoft.Json.Serialization
             {
                 string propertyName = reader.Value.ToString();
 
-                if (propertyName.Length > 0 && propertyName[0] == '$')
+                if (propertyName.Length > 0 && propertyName[0] == '$' || propertyName == Serializer.TypeNameProperty)
                 {
                     // read metadata properties
                     // $type, $id, $ref, etc
@@ -649,7 +649,7 @@ namespace Newtonsoft.Json.Serialization
                                 metadataProperty = true;
                             }
                         }
-                        else if (string.Equals(propertyName, JsonTypeReflector.TypePropertyName, StringComparison.Ordinal))
+                        else if (string.Equals(propertyName, Serializer.TypeNameProperty, StringComparison.Ordinal))
                         {
                             CheckedRead(reader);
                             string qualifiedTypeName = reader.Value.ToString();
@@ -2002,14 +2002,13 @@ namespace Newtonsoft.Json.Serialization
         {
             if (Serializer.MetadataPropertyHandling == MetadataPropertyHandling.ReadAhead)
             {
-                switch (memberName)
+                if (memberName == Serializer.TypeNameProperty ||
+                    memberName == JsonTypeReflector.IdPropertyName ||
+                    memberName == JsonTypeReflector.RefPropertyName ||
+                    memberName == JsonTypeReflector.ArrayValuesPropertyName)
                 {
-                    case JsonTypeReflector.IdPropertyName:
-                    case JsonTypeReflector.RefPropertyName:
-                    case JsonTypeReflector.TypePropertyName:
-                    case JsonTypeReflector.ArrayValuesPropertyName:
-                        reader.Skip();
-                        return true;
+                    reader.Skip();
+                    return true;
                 }
             }
             return false;
