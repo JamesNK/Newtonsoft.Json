@@ -460,6 +460,14 @@ namespace Newtonsoft.Json.Utilities
 
             if (initialValue is string)
             {
+                if (targetType == typeof(Version))
+                {
+                    Version result;
+                    string input = initialValue.ToString();
+                    Version.TryParse(input, out result);
+                    value = result;
+                    return ConvertResult.Success;
+                }
                 if (targetType == typeof(Guid))
                 {
                     value = new Guid((string)initialValue);
