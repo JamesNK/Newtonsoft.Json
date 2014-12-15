@@ -44,6 +44,7 @@ namespace Newtonsoft.Json
     public class JsonSerializer
     {
         internal TypeNameHandling _typeNameHandling;
+        internal string _typeNameProperty;
         internal FormatterAssemblyStyle _typeNameAssemblyFormat;
         internal PreserveReferencesHandling _preserveReferencesHandling;
         internal ReferenceLoopHandling _referenceLoopHandling;
@@ -131,6 +132,21 @@ namespace Newtonsoft.Json
                     throw new ArgumentOutOfRangeException("value");
 
                 _typeNameHandling = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the name of the metadata property containing the type name.
+        /// </summary>
+        public string TypeNameProperty
+        {
+            get { return _typeNameProperty; }
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                    throw new ArgumentOutOfRangeException("value");
+
+                _typeNameProperty = value;
             }
         }
 
@@ -531,6 +547,8 @@ namespace Newtonsoft.Json
             // serializer specific
             if (settings._typeNameHandling != null)
                 serializer.TypeNameHandling = settings.TypeNameHandling;
+            if (settings._typeNameProperty != null)
+                serializer.TypeNameProperty = settings.TypeNameProperty;
             if (settings._metadataPropertyHandling != null)
                 serializer.MetadataPropertyHandling = settings.MetadataPropertyHandling;
             if (settings._typeNameAssemblyFormat != null)

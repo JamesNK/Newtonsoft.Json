@@ -226,6 +226,35 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Test]
+        public void SerializeRootTypeNameWithCustomTypeAttributeIfDerivedWithAuto()
+        {
+            var serializer = new JsonSerializer()
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                TypeNameProperty = "_mytype"
+            };
+            var sw = new StringWriter();
+            serializer.Serialize(new JsonTextWriter(sw) { Formatting = Formatting.Indented }, new WagePerson(), typeof(Person));
+            var result = sw.ToString();
+
+            StringAssert.AreEqual(@"{
+  ""_mytype"": ""Newtonsoft.Json.Tests.TestObjects.WagePerson, Newtonsoft.Json.Tests"",
+  ""HourlyWage"": 0.0,
+  ""Name"": null,
+  ""BirthDate"": ""0001-01-01T00:00:00"",
+  ""LastModified"": ""0001-01-01T00:00:00""
+}", result);
+
+            Assert.IsTrue(result.Contains("WagePerson"));
+            using (var rd = new JsonTextReader(new StringReader(result)))
+            {
+                var person = serializer.Deserialize<Person>(rd);
+
+                CustomAssert.IsInstanceOfType(typeof(WagePerson), person);
+            }
+        }
+
+        [Test]
         public void SerializeRootTypeNameAutoWithJsonConvert()
         {
             string json = JsonConvert.SerializeObject(new WagePerson(), typeof(object), Formatting.Indented, new JsonSerializerSettings
@@ -323,6 +352,28 @@ namespace Newtonsoft.Json.Tests.Serialization
             object employee = JsonConvert.DeserializeObject(json, null, new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Objects
+            });
+
+            CustomAssert.IsInstanceOfType(typeof(EmployeeReference), employee);
+            Assert.AreEqual("Name!", ((EmployeeReference)employee).Name);
+        }
+
+        [Test]
+        public void DeserializeTypeNameWithCustomTypeAttribute()
+        {
+            string employeeRef = ReflectionUtils.GetTypeName(typeof(EmployeeReference), FormatterAssemblyStyle.Simple, null);
+
+            string json = @"{
+  ""$id"": ""1"",
+  ""_mytype"": """ + employeeRef + @""",
+  ""Name"": ""Name!"",
+  ""Manager"": null
+}";
+
+            object employee = JsonConvert.DeserializeObject(json, null, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Objects,
+                TypeNameProperty = "_mytype"
             });
 
             CustomAssert.IsInstanceOfType(typeof(EmployeeReference), employee);

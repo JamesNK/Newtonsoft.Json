@@ -45,6 +45,7 @@ namespace Newtonsoft.Json
         internal const PreserveReferencesHandling DefaultPreserveReferencesHandling = PreserveReferencesHandling.None;
         internal const ConstructorHandling DefaultConstructorHandling = ConstructorHandling.Default;
         internal const TypeNameHandling DefaultTypeNameHandling = TypeNameHandling.None;
+        internal const string DefaultTypeNameProperty = "$type";
         internal const MetadataPropertyHandling DefaultMetadataPropertyHandling = MetadataPropertyHandling.Default;
         internal const FormatterAssemblyStyle DefaultTypeNameAssemblyFormat = FormatterAssemblyStyle.Simple;
         internal static readonly StreamingContext DefaultContext;
@@ -84,6 +85,7 @@ namespace Newtonsoft.Json
         internal StreamingContext? _context;
         internal ConstructorHandling? _constructorHandling;
         internal TypeNameHandling? _typeNameHandling;
+        internal string _typeNameProperty;
         internal MetadataPropertyHandling? _metadataPropertyHandling;
 
         /// <summary>
@@ -160,6 +162,16 @@ namespace Newtonsoft.Json
         {
             get { return _typeNameHandling ?? DefaultTypeNameHandling; }
             set { _typeNameHandling = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the name of the metadata property containing the type name.
+        /// </summary>
+        /// <value>The type name attribute.</value>
+        public string TypeNameProperty
+        {
+            get { return _typeNameProperty ?? DefaultTypeNameProperty; }
+            set { _typeNameProperty = value; }
         }
 
         /// <summary>
