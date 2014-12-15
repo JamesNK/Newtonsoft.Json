@@ -226,7 +226,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Test]
-        public void SerializeRootTypeNameWithCustomTypeAttributeIfDerivedWithAuto()
+        public void SerializeRootTypeNameWithCustomTypeNamePropertyIfDerivedWithAuto()
         {
             var serializer = new JsonSerializer()
             {
@@ -359,7 +359,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Test]
-        public void DeserializeTypeNameWithCustomTypeAttribute()
+        public void DeserializeTypeNameWithCustomTypeNameProperty()
         {
             string employeeRef = ReflectionUtils.GetTypeName(typeof(EmployeeReference), FormatterAssemblyStyle.Simple, null);
 
