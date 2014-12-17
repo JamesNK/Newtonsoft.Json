@@ -33,7 +33,7 @@ using Newtonsoft.Json.Utilities;
 namespace Newtonsoft.Json.Linq
 {
     /// <summary>
-    /// Represents a writer that provides a fast, non-cached, forward-only way of generating Json data.
+    /// Represents a writer that provides a fast, non-cached, forward-only way of generating JSON data.
     /// </summary>
     public class JTokenWriter : JsonWriter
     {
@@ -41,6 +41,15 @@ namespace Newtonsoft.Json.Linq
         private JContainer _parent;
         // used when writer is writing single value and the value has no containing parent
         private JValue _value;
+        private JToken _current;
+
+        /// <summary>
+        /// Gets the <see cref="JToken"/> at the writer's current position.
+        /// </summary>
+        public JToken CurrentToken
+        {
+            get { return _current; }
+        }
 
         /// <summary>
         /// Gets the token being writen.
@@ -109,10 +118,12 @@ namespace Newtonsoft.Json.Linq
                 _parent.AddAndSkipParentCheck(container);
 
             _parent = container;
+            _current = container;
         }
 
         private void RemoveParent()
         {
+            _current = _parent;
             _parent = _parent.Parent;
 
             if (_parent != null && _parent.Type == JTokenType.Property)
@@ -172,6 +183,7 @@ namespace Newtonsoft.Json.Linq
             if (_parent != null)
             {
                 _parent.Add(value);
+                _current = _parent.Last;
 
                 if (_parent.Type == JTokenType.Property)
                     _parent = _parent.Parent;
@@ -179,6 +191,7 @@ namespace Newtonsoft.Json.Linq
             else
             {
                 _value = value ?? JValue.CreateNull();
+                _current = _value;
             }
         }
 
