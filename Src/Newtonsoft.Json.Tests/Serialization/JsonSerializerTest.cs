@@ -8374,6 +8374,46 @@ Path '', line 1, position 1.");
         }
 #endif
 
+        [Test]
+        public void ParameterizedConstructorWithBasePrivateProperties()
+        {
+            var original = new DerivedConstructorType("Base", "Derived");
+
+            var serializerSettings = new JsonSerializerSettings();
+            var jsonCopy = JsonConvert.SerializeObject(original, serializerSettings);
+
+            Console.WriteLine(original);
+
+            var clonedObject = JsonConvert.DeserializeObject<DerivedConstructorType>(jsonCopy, serializerSettings);
+
+            Assert.AreEqual("Base", clonedObject.BaseProperty);
+            Assert.AreEqual("Derived", clonedObject.DerivedProperty);
+        }
+
+        public class DerivedConstructorType : BaseConstructorType
+        {
+            public DerivedConstructorType(string baseProperty, string derivedProperty)
+                : base(baseProperty)
+            {
+                DerivedProperty = derivedProperty;
+            }
+
+            [JsonProperty]
+            public string DerivedProperty { get; private set; }
+        }
+
+
+        public class BaseConstructorType
+        {
+            [JsonProperty]
+            public string BaseProperty { get; private set; }
+
+            public BaseConstructorType(string baseProperty)
+            {
+                BaseProperty = baseProperty;
+            }
+        }
+
         public class ErroringJsonConverter : JsonConverter
         {
             public ErroringJsonConverter(string s)

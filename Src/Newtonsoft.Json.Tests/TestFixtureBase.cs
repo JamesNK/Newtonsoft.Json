@@ -261,11 +261,14 @@ namespace Newtonsoft.Json.Tests
         protected void TestSetup()
 #endif
         {
-//#if !NETFX_CORE
+#if !NETFX_CORE
 //            CultureInfo turkey = CultureInfo.CreateSpecificCulture("tr");
 //            Thread.CurrentThread.CurrentCulture = turkey;
 //            Thread.CurrentThread.CurrentUICulture = turkey;
-//#endif
+
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+            Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+#endif
 
             JsonConvert.DefaultSettings = null;
         }

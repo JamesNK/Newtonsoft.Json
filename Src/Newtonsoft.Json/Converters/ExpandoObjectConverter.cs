@@ -79,7 +79,7 @@ namespace Newtonsoft.Json.Converters
                 case JsonToken.StartArray:
                     return ReadList(reader);
                 default:
-                    if (JsonReader.IsPrimitiveToken(reader.TokenType))
+                    if (JsonTokenUtils.IsPrimitiveToken(reader.TokenType))
                         return reader.Value;
 
                     throw JsonSerializationException.Create(reader, "Unexpected token when converting ExpandoObject: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));

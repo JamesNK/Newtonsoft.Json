@@ -462,6 +462,85 @@ namespace Newtonsoft.Json.Tests.Converters
 
             Assert.AreEqual("234", ds.Customers[0].CustomerID);
         }
+
+        [Test]
+        public void ContractResolverInsideConverter()
+        {
+            var test = new MultipleDataTablesJsonTest
+            {
+                TableWrapper1 = new DataTableWrapper { DataTableProperty = CreateDataTable(3, "Table1Col") },
+                TableWrapper2 = new DataTableWrapper { DataTableProperty = CreateDataTable(3, "Table2Col") }
+            };
+
+            string json = JsonConvert.SerializeObject(test, Formatting.Indented, new LowercaseDataTableConverter());
+
+            Assert.AreEqual(@"{
+  ""TableWrapper1"": {
+    ""DataTableProperty"": [
+      {
+        ""table1col1"": ""1"",
+        ""table1col2"": ""2"",
+        ""table1col3"": ""3""
+      }
+    ],
+    ""StringProperty"": null,
+    ""IntProperty"": 0
+  },
+  ""TableWrapper2"": {
+    ""DataTableProperty"": [
+      {
+        ""table2col1"": ""1"",
+        ""table2col2"": ""2"",
+        ""table2col3"": ""3""
+      }
+    ],
+    ""StringProperty"": null,
+    ""IntProperty"": 0
+  }
+}", json);
+        }
+
+        private static DataTable CreateDataTable(int cols, string colNamePrefix)
+        {
+            var table = new DataTable();
+            for (int i = 1; i <= cols; i++)
+            {
+                table.Columns.Add(new DataColumn() { ColumnName = colNamePrefix + i, DefaultValue = i });
+            }
+            table.Rows.Add(table.NewRow());
+            return table;
+        }
+
+        public class DataTableWrapper
+        {
+            public DataTable DataTableProperty { get; set; }
+            public String StringProperty { get; set; }
+            public Int32 IntProperty { get; set; }
+        }
+
+        public class MultipleDataTablesJsonTest
+        {
+            public DataTableWrapper TableWrapper1 { get; set; }
+            public DataTableWrapper TableWrapper2 { get; set; }
+        }
+
+        public class LowercaseDataTableConverter : DataTableConverter
+        {
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                var dataTableSerializer = new JsonSerializer { ContractResolver = new LowercaseContractResolver() };
+
+                base.WriteJson(writer, value, dataTableSerializer);
+            }
+        }
+
+        public class LowercaseContractResolver : DefaultContractResolver
+        {
+            protected internal override string ResolvePropertyName(string propertyName)
+            {
+                return propertyName.ToLower();
+            }
+        }
     }
 }
 

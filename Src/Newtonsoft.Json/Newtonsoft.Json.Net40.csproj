@@ -244,6 +244,7 @@
     <Compile Include="Utilities\FSharpUtils.cs" />
     <Compile Include="Utilities\ILGeneratorExtensions.cs" />
     <Compile Include="Utilities\ImmutableCollectionsUtils.cs" />
+    <Compile Include="Utilities\JsonTokenUtils.cs" />
     <Compile Include="Utilities\LinqBridge.cs" />
     <Compile Include="Utilities\PropertyNameTable.cs" />
     <Compile Include="Utilities\ReflectionDelegateFactory.cs" />

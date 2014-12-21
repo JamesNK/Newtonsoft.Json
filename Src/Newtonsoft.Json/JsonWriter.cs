@@ -41,7 +41,7 @@ using System.Linq;
 namespace Newtonsoft.Json
 {
     /// <summary>
-    /// Represents a writer that provides a fast, non-cached, forward-only way of generating Json data.
+    /// Represents a writer that provides a fast, non-cached, forward-only way of generating JSON data.
     /// </summary>
     public abstract class JsonWriter : IDisposable
     {
@@ -477,7 +477,7 @@ namespace Newtonsoft.Json
 
             if (reader.TokenType == JsonToken.None)
                 initialDepth = -1;
-            else if (!IsStartToken(reader.TokenType))
+            else if (!JsonTokenUtils.IsStartToken(reader.TokenType))
                 initialDepth = reader.Depth + 1;
             else
                 initialDepth = reader.Depth;
@@ -496,7 +496,7 @@ namespace Newtonsoft.Json
                     WriteTokenInternal(reader.TokenType, reader.Value);
             } while (
                 // stop if we have reached the end of the token being read
-                initialDepth - 1 < reader.Depth - (IsEndToken(reader.TokenType) ? 1 : 0)
+                initialDepth - 1 < reader.Depth - (JsonTokenUtils.IsEndToken(reader.TokenType) ? 1 : 0)
                 && writeChildren
                 && reader.Read());
         }
@@ -612,32 +612,6 @@ namespace Newtonsoft.Json
                 throw JsonWriterException.Create(this, "Unexpected token when reading date constructor. Expected EndConstructor, got " + reader.TokenType, null);
 
             WriteValue(date);
-        }
-
-        internal static bool IsEndToken(JsonToken token)
-        {
-            switch (token)
-            {
-                case JsonToken.EndObject:
-                case JsonToken.EndArray:
-                case JsonToken.EndConstructor:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        internal static bool IsStartToken(JsonToken token)
-        {
-            switch (token)
-            {
-                case JsonToken.StartObject:
-                case JsonToken.StartArray:
-                case JsonToken.StartConstructor:
-                    return true;
-                default:
-                    return false;
-            }
         }
 
         private void WriteEnd(JsonContainerType type)
