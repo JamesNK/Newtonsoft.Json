@@ -187,8 +187,7 @@ namespace Newtonsoft.Json.Linq
                 if (Parent == null)
                     return string.Empty;
 
-                IList<JToken> ancestors = Ancestors().Reverse().ToList();
-                ancestors.Add(this);
+                IList<JToken> ancestors = AncestorsAndSelf().Reverse().ToList();
 
                 IList<JsonPosition> positions = new List<JsonPosition>();
                 for (int i = 0; i < ancestors.Count; i++)
@@ -258,9 +257,23 @@ namespace Newtonsoft.Json.Linq
         /// <returns>A collection of the ancestor tokens of this token.</returns>
         public IEnumerable<JToken> Ancestors()
         {
-            for (JToken parent = Parent; parent != null; parent = parent.Parent)
+            return GetAncestors(false);
+        }
+
+        /// <summary>
+        /// Returns a collection of tokens that contain this token, and the ancestors of this token.
+        /// </summary>
+        /// <returns>A collection of tokens that contain this token, and the ancestors of this token.</returns>
+        public IEnumerable<JToken> AncestorsAndSelf()
+        {
+            return GetAncestors(true);
+        }
+
+        internal IEnumerable<JToken> GetAncestors(bool self)
+        {
+            for (JToken current = self ? this : Parent; current != null; current = current.Parent)
             {
-                yield return parent;
+                yield return current;
             }
         }
 
