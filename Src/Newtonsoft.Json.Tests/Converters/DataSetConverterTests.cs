@@ -474,7 +474,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json = JsonConvert.SerializeObject(test, Formatting.Indented, new LowercaseDataTableConverter());
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""TableWrapper1"": {
     ""DataTableProperty"": [
       {
