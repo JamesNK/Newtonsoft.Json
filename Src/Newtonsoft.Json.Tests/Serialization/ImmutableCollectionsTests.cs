@@ -152,12 +152,9 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void SerializeDefaultArray()
         {
-            ExceptionAssert.Throws<NullReferenceException>(
+            ExceptionAssert.Throws<InvalidOperationException>(
                 () => JsonConvert.SerializeObject(default(ImmutableArray<int>), Formatting.Indented),
-                new [] {
-                    "Object reference not set to an instance of an object.",
-                    "Object reference not set to an instance of an object" // mono
-                });
+                "This operation cannot be performed on a default instance of ImmutableArray<T>.  Consider initializing the array, or checking the ImmutableArray<T>.IsDefault property.");
         }
         #endregion
 

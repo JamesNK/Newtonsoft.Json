@@ -262,9 +262,9 @@ namespace Newtonsoft.Json.Tests
 #endif
         {
 #if !NETFX_CORE
-//            CultureInfo turkey = CultureInfo.CreateSpecificCulture("tr");
-//            Thread.CurrentThread.CurrentCulture = turkey;
-//            Thread.CurrentThread.CurrentUICulture = turkey;
+            //CultureInfo turkey = CultureInfo.CreateSpecificCulture("tr");
+            //Thread.CurrentThread.CurrentCulture = turkey;
+            //Thread.CurrentThread.CurrentUICulture = turkey;
 
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
