@@ -246,5 +246,29 @@ namespace Newtonsoft.Json.Tests.Linq
             Uri i = o.Annotation<Uri>();
             Assert.AreEqual(new Uri("http://www.google.com/"), i);
         }
+
+        [Test]
+        public void Example()
+        {
+            JObject o = JObject.Parse(@"{
+                'name': 'Bill G',
+                'age': 58,
+                'country': 'United States',
+                'employer': 'Microsoft'
+            }");
+
+            o.AddAnnotation(new HashSet<string>());
+            o.PropertyChanged += (sender, args) => o.Annotation<HashSet<string>>().Add(args.PropertyName);
+
+            o["age"] = 59;
+            o["employer"] = "Bill & Melinda Gates Foundation";
+
+
+            HashSet<string> changedProperties = o.Annotation<HashSet<string>>();
+            // age
+            // employer
+
+            Assert.AreEqual(2, changedProperties.Count);
+        }
     }
 }
