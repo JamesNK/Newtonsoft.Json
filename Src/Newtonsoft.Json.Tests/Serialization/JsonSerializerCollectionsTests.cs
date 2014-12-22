@@ -100,7 +100,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(0.4, myOtherResult[1, 1]);
 
             Assert.AreEqual(0.05, myOtherResult[2, 0]);
-            Assert.AreEqual(6, myOtherResult[2, 1]);
+            Assert.AreEqual(6L, myOtherResult[2, 1]);
         }
 
         public class EnumerableClass<T> : IEnumerable<T>
