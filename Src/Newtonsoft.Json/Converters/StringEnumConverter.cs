@@ -56,22 +56,22 @@ namespace Newtonsoft.Json.Converters
         /// <value><c>true</c> if integers are allowed; otherwise, <c>false</c>.</value>
         public bool AllowIntegerValues { get; set; }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="StringEnumConverter"/> class.
-		/// </summary>
-		public StringEnumConverter()
-		{
-			AllowIntegerValues = true;
-		}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StringEnumConverter"/> class.
+        /// </summary>
+        public StringEnumConverter()
+        {
+            AllowIntegerValues = true;
+        }
 
-	    /// <summary>
-	    /// Initializes a new instance of the <see cref="StringEnumConverter"/> class.
-	    /// </summary>
-	    /// <param name="camelCaseText"><c>true</c> if the written enum text will be camel case; otherwise, <c>false</c>.</param>
-	    public StringEnumConverter(bool camelCaseText) : this()
-		{
-			CamelCaseText = camelCaseText;
-		}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StringEnumConverter"/> class.
+        /// </summary>
+        /// <param name="camelCaseText"><c>true</c> if the written enum text will be camel case; otherwise, <c>false</c>.</param>
+        public StringEnumConverter(bool camelCaseText) : this()
+        {
+            CamelCaseText = camelCaseText;
+        }
 
         /// <summary>
         /// Writes the JSON representation of the object.
@@ -168,45 +168,45 @@ namespace Newtonsoft.Json.Converters
             return t.IsEnum();
         }
 
-		/// <summary>
-		/// Gets the <see cref="JsonSchema"/> of the JSON produced by the JsonConverter.
-		/// </summary>
-		/// <param name="objectType">The type of the object.</param>
-		/// <returns>The <see cref="JsonSchema"/> of the JSON produced by the JsonConverter.</returns>
-		public override JsonSchema GetSchema(Type objectType)
-		{
-			bool isNullable = ReflectionUtils.IsNullableType(objectType);
-			Type t = isNullable ? Nullable.GetUnderlyingType(objectType) : objectType;
+        /// <summary>
+        /// Gets the <see cref="JsonSchema"/> of the JSON produced by the JsonConverter.
+        /// </summary>
+        /// <param name="objectType">The type of the object.</param>
+        /// <returns>The <see cref="JsonSchema"/> of the JSON produced by the JsonConverter.</returns>
+        public override JsonSchema GetSchema(Type objectType)
+        {
+            bool isNullable = ReflectionUtils.IsNullableType(objectType);
+            Type t = isNullable ? Nullable.GetUnderlyingType(objectType) : objectType;
 
-			if (!t.IsEnum())
-			{
-				return null;
-			}
+            if (!t.IsEnum())
+            {
+                return null;
+            }
 
-			JsonSchema schema = new JsonSchema
-			{
-				Type = JsonSchemaType.String
-			};
+            JsonSchema schema = new JsonSchema
+            {
+                Type = JsonSchemaType.String
+            };
 
-			if (isNullable)
-			{
-				schema.Type |= JsonSchemaType.Null;
-			}
+            if (isNullable)
+            {
+                schema.Type |= JsonSchemaType.Null;
+            }
 
-			schema.Required = !isNullable;
-			schema.Enum = new List<JToken>();
+            schema.Required = !isNullable;
+            schema.Enum = new List<JToken>();
 
-			string[] names = Enum.GetNames(t);
+            string[] names = Enum.GetNames(t);
 
-			foreach (string name in names)
-			{
-				string finalName = EnumUtils.ToEnumName(t, name, CamelCaseText);
+            foreach (string name in names)
+            {
+                string finalName = EnumUtils.ToEnumName(t, name, CamelCaseText);
 
-				schema.Enum.Add(JValue.CreateString(finalName));
-			}
+                schema.Enum.Add(JValue.CreateString(finalName));
+            }
 
-			return schema;
+            return schema;
 
-		}
+        }
     }
 }
