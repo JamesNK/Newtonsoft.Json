@@ -76,6 +76,14 @@ namespace Newtonsoft.Json.Utilities
         {
             return type.GetTypeInfo().IsAssignableFrom(c.GetTypeInfo());
         }
+
+        public static bool IsInstanceOfType(this Type type, object o)
+        {
+            if (o == null)
+                return false;
+
+            return IsAssignableFrom(type, o.GetType());
+        }
 #endif
 
         public static MethodInfo Method(this Delegate d)

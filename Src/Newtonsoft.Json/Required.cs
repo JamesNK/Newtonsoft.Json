@@ -33,16 +33,16 @@ namespace Newtonsoft.Json
         /// <summary>
         /// The property is not required. The default state.
         /// </summary>
-        Default,
+        Default = 0,
 
         /// <summary>
         /// The property must be defined in JSON but can be a null value.
         /// </summary>
-        AllowNull,
+        AllowNull = 1,
 
         /// <summary>
         /// The property must be defined in JSON and cannot be a null value.
         /// </summary>
-        Always
+        Always = 2
     }
 }

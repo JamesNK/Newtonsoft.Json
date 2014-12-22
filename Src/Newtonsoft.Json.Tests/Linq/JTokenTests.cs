@@ -718,6 +718,27 @@ namespace Newtonsoft.Json.Tests.Linq
         }
 
         [Test]
+        public void DescendantsAndSelf()
+        {
+            JArray a =
+                new JArray(
+                    5,
+                    new JArray(1),
+                    new JArray(1, 2),
+                    new JArray(1, 2, 3)
+                    );
+
+            List<JToken> descendantsAndSelf = a.DescendantsAndSelf().ToList();
+            Assert.AreEqual(11, descendantsAndSelf.Count());
+            Assert.AreEqual(a, descendantsAndSelf[0]);
+            Assert.AreEqual(5, (int)descendantsAndSelf[1]);
+            Assert.IsTrue(JToken.DeepEquals(new JArray(1, 2, 3), descendantsAndSelf[descendantsAndSelf.Count - 4]));
+            Assert.AreEqual(1, (int)descendantsAndSelf[descendantsAndSelf.Count - 3]);
+            Assert.AreEqual(2, (int)descendantsAndSelf[descendantsAndSelf.Count - 2]);
+            Assert.AreEqual(3, (int)descendantsAndSelf[descendantsAndSelf.Count - 1]);
+        }
+
+        [Test]
         public void CreateWriter()
         {
             JArray a =

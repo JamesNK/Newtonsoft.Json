@@ -208,8 +208,6 @@ namespace Newtonsoft.Json.Tests.Linq
   ]
 }";
 
-            StringReader sr = new StringReader(input);
-
             JObject o = JObject.Parse(input);
 
             using (JTokenReader jsonReader = new JTokenReader(o))
@@ -220,12 +218,14 @@ namespace Newtonsoft.Json.Tests.Linq
                 Assert.AreEqual(0, lineInfo.LineNumber);
                 Assert.AreEqual(0, lineInfo.LinePosition);
                 Assert.AreEqual(false, lineInfo.HasLineInfo());
+                Assert.AreEqual(null, jsonReader.CurrentToken);
 
                 jsonReader.Read();
                 Assert.AreEqual(jsonReader.TokenType, JsonToken.StartObject);
                 Assert.AreEqual(1, lineInfo.LineNumber);
                 Assert.AreEqual(1, lineInfo.LinePosition);
                 Assert.AreEqual(true, lineInfo.HasLineInfo());
+                Assert.AreEqual(o, jsonReader.CurrentToken);
 
                 jsonReader.Read();
                 Assert.AreEqual(jsonReader.TokenType, JsonToken.PropertyName);
@@ -233,6 +233,7 @@ namespace Newtonsoft.Json.Tests.Linq
                 Assert.AreEqual(2, lineInfo.LineNumber);
                 Assert.AreEqual(7, lineInfo.LinePosition);
                 Assert.AreEqual(true, lineInfo.HasLineInfo());
+                Assert.AreEqual(o.Property("CPU"), jsonReader.CurrentToken);
 
                 jsonReader.Read();
                 Assert.AreEqual(jsonReader.TokenType, JsonToken.String);
@@ -240,6 +241,7 @@ namespace Newtonsoft.Json.Tests.Linq
                 Assert.AreEqual(2, lineInfo.LineNumber);
                 Assert.AreEqual(15, lineInfo.LinePosition);
                 Assert.AreEqual(true, lineInfo.HasLineInfo());
+                Assert.AreEqual(o.Property("CPU").Value, jsonReader.CurrentToken);
 
                 jsonReader.Read();
                 Assert.AreEqual(jsonReader.TokenType, JsonToken.PropertyName);
@@ -247,12 +249,14 @@ namespace Newtonsoft.Json.Tests.Linq
                 Assert.AreEqual(3, lineInfo.LineNumber);
                 Assert.AreEqual(10, lineInfo.LinePosition);
                 Assert.AreEqual(true, lineInfo.HasLineInfo());
+                Assert.AreEqual(o.Property("Drives"), jsonReader.CurrentToken);
 
                 jsonReader.Read();
                 Assert.AreEqual(jsonReader.TokenType, JsonToken.StartArray);
                 Assert.AreEqual(3, lineInfo.LineNumber);
                 Assert.AreEqual(12, lineInfo.LinePosition);
                 Assert.AreEqual(true, lineInfo.HasLineInfo());
+                Assert.AreEqual(o.Property("Drives").Value, jsonReader.CurrentToken);
 
                 jsonReader.Read();
                 Assert.AreEqual(jsonReader.TokenType, JsonToken.String);
@@ -260,6 +264,7 @@ namespace Newtonsoft.Json.Tests.Linq
                 Assert.AreEqual(4, lineInfo.LineNumber);
                 Assert.AreEqual(22, lineInfo.LinePosition);
                 Assert.AreEqual(true, lineInfo.HasLineInfo());
+                Assert.AreEqual(o["Drives"][0], jsonReader.CurrentToken);
 
                 jsonReader.Read();
                 Assert.AreEqual(jsonReader.TokenType, JsonToken.String);
@@ -267,21 +272,29 @@ namespace Newtonsoft.Json.Tests.Linq
                 Assert.AreEqual(5, lineInfo.LineNumber);
                 Assert.AreEqual(30, lineInfo.LinePosition);
                 Assert.AreEqual(true, lineInfo.HasLineInfo());
+                Assert.AreEqual(o["Drives"][1], jsonReader.CurrentToken);
 
                 jsonReader.Read();
                 Assert.AreEqual(jsonReader.TokenType, JsonToken.EndArray);
                 Assert.AreEqual(3, lineInfo.LineNumber);
                 Assert.AreEqual(12, lineInfo.LinePosition);
                 Assert.AreEqual(true, lineInfo.HasLineInfo());
+                Assert.AreEqual(o["Drives"], jsonReader.CurrentToken);
 
                 jsonReader.Read();
                 Assert.AreEqual(jsonReader.TokenType, JsonToken.EndObject);
                 Assert.AreEqual(1, lineInfo.LineNumber);
                 Assert.AreEqual(1, lineInfo.LinePosition);
                 Assert.AreEqual(true, lineInfo.HasLineInfo());
+                Assert.AreEqual(o, jsonReader.CurrentToken);
 
                 jsonReader.Read();
                 Assert.AreEqual(jsonReader.TokenType, JsonToken.None);
+                Assert.AreEqual(null, jsonReader.CurrentToken);
+
+                jsonReader.Read();
+                Assert.AreEqual(jsonReader.TokenType, JsonToken.None);
+                Assert.AreEqual(null, jsonReader.CurrentToken);
             }
         }
 
@@ -471,15 +484,18 @@ namespace Newtonsoft.Json.Tests.Linq
 
             JObject o = JObject.Parse(json);
 
-            JsonReader reader = o.CreateReader();
+            JTokenReader reader = (JTokenReader)o.CreateReader();
 
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+            Assert.AreEqual(o, reader.CurrentToken);
 
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+            Assert.AreEqual(o.Property("Name"), reader.CurrentToken);
 
             reader.ReadAsInt32();
+            Assert.AreEqual(o["Name"], reader.CurrentToken);
             Assert.AreEqual(JsonToken.Integer, reader.TokenType);
             Assert.AreEqual(typeof(int), reader.ValueType);
             Assert.AreEqual(1, reader.Value);

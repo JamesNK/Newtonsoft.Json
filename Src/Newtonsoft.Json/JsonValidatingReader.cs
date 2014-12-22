@@ -461,7 +461,7 @@ namespace Newtonsoft.Json
                 JsonSchemaModelBuilder builder = new JsonSchemaModelBuilder();
                 _model = builder.Build(_schema);
 
-                if (!JsonWriter.IsStartToken(_reader.TokenType))
+                if (!JsonTokenUtils.IsStartToken(_reader.TokenType))
                     Push(new SchemaScope(JTokenType.None, CurrentMemberSchemas));
             }
 
@@ -578,7 +578,7 @@ namespace Newtonsoft.Json
                 {
                     if (schemaScope.CurrentItemWriter == null)
                     {
-                        if (JsonWriter.IsEndToken(_reader.TokenType))
+                        if (JsonTokenUtils.IsEndToken(_reader.TokenType))
                             continue;
 
                         schemaScope.CurrentItemWriter = new JTokenWriter();

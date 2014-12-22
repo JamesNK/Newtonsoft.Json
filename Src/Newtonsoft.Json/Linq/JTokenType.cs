@@ -33,91 +33,91 @@ namespace Newtonsoft.Json.Linq
         /// <summary>
         /// No token type has been set.
         /// </summary>
-        None,
+        None = 0,
 
         /// <summary>
         /// A JSON object.
         /// </summary>
-        Object,
+        Object = 1,
 
         /// <summary>
         /// A JSON array.
         /// </summary>
-        Array,
+        Array = 2,
 
         /// <summary>
         /// A JSON constructor.
         /// </summary>
-        Constructor,
+        Constructor = 3,
 
         /// <summary>
         /// A JSON object property.
         /// </summary>
-        Property,
+        Property = 4,
 
         /// <summary>
         /// A comment.
         /// </summary>
-        Comment,
+        Comment = 5,
 
         /// <summary>
         /// An integer value.
         /// </summary>
-        Integer,
+        Integer = 6,
 
         /// <summary>
         /// A float value.
         /// </summary>
-        Float,
+        Float = 7,
 
         /// <summary>
         /// A string value.
         /// </summary>
-        String,
+        String = 8,
 
         /// <summary>
         /// A boolean value.
         /// </summary>
-        Boolean,
+        Boolean = 9,
 
         /// <summary>
         /// A null value.
         /// </summary>
-        Null,
+        Null = 10,
 
         /// <summary>
         /// An undefined value.
         /// </summary>
-        Undefined,
+        Undefined = 11,
 
         /// <summary>
         /// A date value.
         /// </summary>
-        Date,
+        Date = 12,
 
         /// <summary>
         /// A raw JSON value.
         /// </summary>
-        Raw,
+        Raw = 13,
 
         /// <summary>
         /// A collection of bytes value.
         /// </summary>
-        Bytes,
+        Bytes = 14,
 
         /// <summary>
         /// A Guid value.
         /// </summary>
-        Guid,
+        Guid = 15,
 
         /// <summary>
         /// A Uri value.
         /// </summary>
-        Uri,
+        Uri = 16,
 
         /// <summary>
         /// A TimeSpan value.
         /// </summary>
-        TimeSpan
+        TimeSpan = 17
     }
 }

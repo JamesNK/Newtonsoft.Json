@@ -220,6 +220,7 @@
     <Compile Include="Utilities\FSharpUtils.cs" />
     <Compile Include="Utilities\ILGeneratorExtensions.cs" />
     <Compile Include="Utilities\JavaScriptUtils.cs" />
+    <Compile Include="Utilities\JsonTokenUtils.cs" />
     <Compile Include="Utilities\LateBoundReflectionDelegateFactory.cs" />
     <Compile Include="Utilities\LinqBridge.cs" />
     <Compile Include="Utilities\MathUtils.cs" />

@@ -136,6 +136,7 @@
     <Compile Include="Utilities\DynamicUtils.cs" />
     <Compile Include="Utilities\ExpressionReflectionDelegateFactory.cs" />
     <Compile Include="Utilities\ImmutableCollectionsUtils.cs" />
+    <Compile Include="Utilities\JsonTokenUtils.cs" />
     <Compile Include="Utilities\LinqBridge.cs" />
     <Compile Include="Linq\JPropertyDescriptor.cs" />
     <Compile Include="Linq\JRaw.cs" />

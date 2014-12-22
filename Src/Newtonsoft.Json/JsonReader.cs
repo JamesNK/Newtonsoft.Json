@@ -39,7 +39,7 @@ using System.Linq;
 namespace Newtonsoft.Json
 {
     /// <summary>
-    /// Represents a reader that provides fast, non-cached, forward-only access to serialized Json data.
+    /// Represents a reader that provides fast, non-cached, forward-only access to serialized JSON data.
     /// </summary>
     public abstract class JsonReader : IDisposable
     {
@@ -251,7 +251,7 @@ namespace Newtonsoft.Json
             get
             {
                 int depth = _stack.Count;
-                if (IsStartToken(TokenType) || _currentPosition.Type == JsonContainerType.None)
+                if (JsonTokenUtils.IsStartToken(TokenType) || _currentPosition.Type == JsonContainerType.None)
                     return depth;
                 else
                     return depth + 1;
@@ -712,7 +712,7 @@ namespace Newtonsoft.Json
             if (t == JsonToken.Null)
                 return null;
 
-            if (IsPrimitiveToken(t))
+            if (JsonTokenUtils.IsPrimitiveToken(t))
             {
                 if (Value != null)
                 {
@@ -823,7 +823,7 @@ namespace Newtonsoft.Json
             if (TokenType == JsonToken.PropertyName)
                 Read();
 
-            if (IsStartToken(TokenType))
+            if (JsonTokenUtils.IsStartToken(TokenType))
             {
                 int depth = Depth;
 
@@ -961,37 +961,6 @@ namespace Newtonsoft.Json
                 _currentState = State.Start;
             else
                 _currentState = State.Finished;
-        }
-
-        internal static bool IsPrimitiveToken(JsonToken token)
-        {
-            switch (token)
-            {
-                case JsonToken.Integer:
-                case JsonToken.Float:
-                case JsonToken.String:
-                case JsonToken.Boolean:
-                case JsonToken.Undefined:
-                case JsonToken.Null:
-                case JsonToken.Date:
-                case JsonToken.Bytes:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        internal static bool IsStartToken(JsonToken token)
-        {
-            switch (token)
-            {
-                case JsonToken.StartObject:
-                case JsonToken.StartArray:
-                case JsonToken.StartConstructor:
-                    return true;
-                default:
-                    return false;
-            }
         }
 
         private JsonContainerType GetTypeForCloseToken(JsonToken token)

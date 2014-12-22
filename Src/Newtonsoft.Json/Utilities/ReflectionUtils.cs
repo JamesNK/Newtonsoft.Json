@@ -46,11 +46,11 @@ namespace Newtonsoft.Json.Utilities
 #if (NETFX_CORE || PORTABLE || PORTABLE40)
     internal enum MemberTypes
     {
-        Property,
-        Field,
-        Event,
-        Method,
-        Other
+        Property = 0,
+        Field = 1,
+        Event = 2,
+        Method = 3,
+        Other = 4
     }
 #endif
 

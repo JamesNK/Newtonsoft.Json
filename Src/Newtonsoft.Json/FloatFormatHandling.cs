@@ -34,17 +34,17 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Write special floating point values as strings in JSON, e.g. "NaN", "Infinity", "-Infinity".
         /// </summary>
-        String,
+        String = 0,
 
         /// <summary>
         /// Write special floating point values as symbols in JSON, e.g. NaN, Infinity, -Infinity.
         /// Note that this will produce non-valid JSON.
         /// </summary>
-        Symbol,
+        Symbol = 1,
 
         /// <summary>
         /// Write special floating point values as the property's default value in JSON, e.g. 0.0 for a <see cref="System.Double"/> property, null for a <see cref="System.Nullable{Double}"/> property.
         /// </summary>
-        DefaultValue
+        DefaultValue = 2
     }
 }

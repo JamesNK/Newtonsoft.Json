@@ -52,9 +52,9 @@ namespace Newtonsoft.Json.Serialization
     {
         internal enum PropertyPresence
         {
-            None,
-            Null,
-            Value
+            None = 0,
+            Null = 1,
+            Value = 2
         }
 
         private JsonSerializerProxy _internalSerializer;
@@ -526,7 +526,7 @@ namespace Newtonsoft.Json.Serialization
 
             if (reader.TokenType == JsonToken.StartObject)
             {
-                JObject current = (JObject)reader._current;
+                JObject current = (JObject)reader.CurrentToken;
 
                 JToken refToken = current[JsonTypeReflector.RefPropertyName];
                 if (refToken != null)
@@ -967,7 +967,7 @@ namespace Newtonsoft.Json.Serialization
             // test tokentype here because default value might not be convertable to actual type, e.g. default of "" for DateTime
             if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer._defaultValueHandling), DefaultValueHandling.Ignore)
                 && !HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer._defaultValueHandling), DefaultValueHandling.Populate)
-                && JsonReader.IsPrimitiveToken(tokenType)
+                && JsonTokenUtils.IsPrimitiveToken(tokenType)
                 && MiscellaneousUtils.ValueEquals(reader.Value, property.GetResolvedDefaultValue()))
                 return true;
 
@@ -1563,7 +1563,7 @@ namespace Newtonsoft.Json.Serialization
                             }
                             else
                             {
-                                Type t = (JsonReader.IsPrimitiveToken(reader.TokenType)) ? reader.ValueType : typeof(IDynamicMetaObjectProvider);
+                                Type t = (JsonTokenUtils.IsPrimitiveToken(reader.TokenType)) ? reader.ValueType : typeof(IDynamicMetaObjectProvider);
 
                                 JsonContract dynamicMemberContract = GetContractSafe(t);
                                 JsonConverter dynamicMemberConverter = GetConverter(dynamicMemberContract, null, null, member);

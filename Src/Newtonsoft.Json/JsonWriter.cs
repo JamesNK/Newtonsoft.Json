@@ -41,22 +41,22 @@ using System.Linq;
 namespace Newtonsoft.Json
 {
     /// <summary>
-    /// Represents a writer that provides a fast, non-cached, forward-only way of generating Json data.
+    /// Represents a writer that provides a fast, non-cached, forward-only way of generating JSON data.
     /// </summary>
     public abstract class JsonWriter : IDisposable
     {
         internal enum State
         {
-            Start,
-            Property,
-            ObjectStart,
-            Object,
-            ArrayStart,
-            Array,
-            ConstructorStart,
-            Constructor,
-            Closed,
-            Error
+            Start = 0,
+            Property = 1,
+            ObjectStart = 2,
+            Object = 3,
+            ArrayStart = 4,
+            Array = 5,
+            ConstructorStart = 6,
+            Constructor = 7,
+            Closed = 8,
+            Error = 9
         }
 
         // array that gives a new state based on the current state an the token being written
@@ -449,13 +449,35 @@ namespace Newtonsoft.Json
             WriteToken(reader, writeChildren, true);
         }
 
+        /// <summary>
+        /// Writes the <see cref="JsonToken"/> token and its value.
+        /// </summary>
+        /// <param name="token">The <see cref="JsonToken"/> to write.</param>
+        /// <param name="value">
+        /// The value to write.
+        /// A value is only required for tokens that have an associated value, e.g. the <see cref="String"/> property name for <see cref="JsonToken.PropertyName"/>.
+        /// A null value can be passed to the method for token's that don't have a value, e.g. <see cref="JsonToken.StartObject"/>.</param>
+        public void WriteToken(JsonToken token, object value)
+        {
+            WriteTokenInternal(token, value);
+        }
+
+        /// <summary>
+        /// Writes the <see cref="JsonToken"/> token.
+        /// </summary>
+        /// <param name="token">The <see cref="JsonToken"/> to write.</param>
+        public void WriteToken(JsonToken token)
+        {
+            WriteTokenInternal(token, null);
+        }
+
         internal void WriteToken(JsonReader reader, bool writeChildren, bool writeDateConstructorAsDate)
         {
             int initialDepth;
 
             if (reader.TokenType == JsonToken.None)
                 initialDepth = -1;
-            else if (!IsStartToken(reader.TokenType))
+            else if (!JsonTokenUtils.IsStartToken(reader.TokenType))
                 initialDepth = reader.Depth + 1;
             else
                 initialDepth = reader.Depth;
@@ -467,101 +489,111 @@ namespace Newtonsoft.Json
         {
             do
             {
-                switch (reader.TokenType)
-                {
-                    case JsonToken.None:
-                        // read to next
-                        break;
-                    case JsonToken.StartObject:
-                        WriteStartObject();
-                        break;
-                    case JsonToken.StartArray:
-                        WriteStartArray();
-                        break;
-                    case JsonToken.StartConstructor:
-                        string constructorName = reader.Value.ToString();
-                        // write a JValue date when the constructor is for a date
-                        if (writeDateConstructorAsDate && string.Equals(constructorName, "Date", StringComparison.Ordinal))
-                            WriteConstructorDate(reader);
-                        else
-                            WriteStartConstructor(reader.Value.ToString());
-                        break;
-                    case JsonToken.PropertyName:
-                        WritePropertyName(reader.Value.ToString());
-                        break;
-                    case JsonToken.Comment:
-                        WriteComment((reader.Value != null) ? reader.Value.ToString() : null);
-                        break;
-                    case JsonToken.Integer:
-#if !(NET20 || NET35 || PORTABLE || PORTABLE40)
-                        if (reader.Value is BigInteger)
-                        {
-                            WriteValue((BigInteger)reader.Value);
-                        }
-                        else
-#endif
-                        {
-                            WriteValue(Convert.ToInt64(reader.Value, CultureInfo.InvariantCulture));
-                        }
-                        break;
-                    case JsonToken.Float:
-                        object value = reader.Value;
-
-                        if (value is decimal)
-                            WriteValue((decimal)value);
-                        else if (value is double)
-                            WriteValue((double)value);
-                        else if (value is float)
-                            WriteValue((float)value);
-                        else
-                            WriteValue(Convert.ToDouble(value, CultureInfo.InvariantCulture));
-                        break;
-                    case JsonToken.String:
-                        WriteValue(reader.Value.ToString());
-                        break;
-                    case JsonToken.Boolean:
-                        WriteValue(Convert.ToBoolean(reader.Value, CultureInfo.InvariantCulture));
-                        break;
-                    case JsonToken.Null:
-                        WriteNull();
-                        break;
-                    case JsonToken.Undefined:
-                        WriteUndefined();
-                        break;
-                    case JsonToken.EndObject:
-                        WriteEndObject();
-                        break;
-                    case JsonToken.EndArray:
-                        WriteEndArray();
-                        break;
-                    case JsonToken.EndConstructor:
-                        WriteEndConstructor();
-                        break;
-                    case JsonToken.Date:
-#if !NET20
-                        if (reader.Value is DateTimeOffset)
-                            WriteValue((DateTimeOffset)reader.Value);
-                        else
-#endif
-                            WriteValue(Convert.ToDateTime(reader.Value, CultureInfo.InvariantCulture));
-                        break;
-                    case JsonToken.Raw:
-                        WriteRawValue((reader.Value != null) ? reader.Value.ToString() : null);
-                        break;
-                    case JsonToken.Bytes:
-                        if (reader.Value is Guid)
-                            WriteValue((Guid)reader.Value);
-                        else
-                            WriteValue((byte[])reader.Value);
-                        break;
-                    default:
-                        throw MiscellaneousUtils.CreateArgumentOutOfRangeException("TokenType", reader.TokenType, "Unexpected token type.");
-                }
+                // write a JValue date when the constructor is for a date
+                if (writeDateConstructorAsDate && reader.TokenType == JsonToken.StartConstructor && string.Equals(reader.Value.ToString(), "Date", StringComparison.Ordinal))
+                    WriteConstructorDate(reader);
+                else
+                    WriteTokenInternal(reader.TokenType, reader.Value);
             } while (
                 // stop if we have reached the end of the token being read
-                initialDepth - 1 < reader.Depth - (IsEndToken(reader.TokenType) ? 1 : 0)
+                initialDepth - 1 < reader.Depth - (JsonTokenUtils.IsEndToken(reader.TokenType) ? 1 : 0)
                 && writeChildren
                 && reader.Read());
+        }
+
+        private void WriteTokenInternal(JsonToken tokenType, object value)
+        {
+            switch (tokenType)
+            {
+                case JsonToken.None:
+                    // read to next
+                    break;
+                case JsonToken.StartObject:
+                    WriteStartObject();
+                    break;
+                case JsonToken.StartArray:
+                    WriteStartArray();
+                    break;
+                case JsonToken.StartConstructor:
+                    ValidationUtils.ArgumentNotNull(value, "value");
+                    WriteStartConstructor(value.ToString());
+                    break;
+                case JsonToken.PropertyName:
+                    ValidationUtils.ArgumentNotNull(value, "value");
+                    WritePropertyName(value.ToString());
+                    break;
+                case JsonToken.Comment:
+                    WriteComment((value != null) ? value.ToString() : null);
+                    break;
+                case JsonToken.Integer:
+                    ValidationUtils.ArgumentNotNull(value, "value");
+#if !(NET20 || NET35 || PORTABLE || PORTABLE40)
+                    if (value is BigInteger)
+                    {
+                        WriteValue((BigInteger)value);
+                    }
+                    else
+#endif
+                    {
+                        WriteValue(Convert.ToInt64(value, CultureInfo.InvariantCulture));
+                    }
+                    break;
+                case JsonToken.Float:
+                    ValidationUtils.ArgumentNotNull(value, "value");
+                    if (value is decimal)
+                        WriteValue((decimal)value);
+                    else if (value is double)
+                        WriteValue((double)value);
+                    else if (value is float)
+                        WriteValue((float)value);
+                    else
+                        WriteValue(Convert.ToDouble(value, CultureInfo.InvariantCulture));
+                    break;
+                case JsonToken.String:
+                    ValidationUtils.ArgumentNotNull(value, "value");
+                    WriteValue(value.ToString());
+                    break;
+                case JsonToken.Boolean:
+                    ValidationUtils.ArgumentNotNull(value, "value");
+                    WriteValue(Convert.ToBoolean(value, CultureInfo.InvariantCulture));
+                    break;
+                case JsonToken.Null:
+                    WriteNull();
+                    break;
+                case JsonToken.Undefined:
+                    WriteUndefined();
+                    break;
+                case JsonToken.EndObject:
+                    WriteEndObject();
+                    break;
+                case JsonToken.EndArray:
+                    WriteEndArray();
+                    break;
+                case JsonToken.EndConstructor:
+                    WriteEndConstructor();
+                    break;
+                case JsonToken.Date:
+                    ValidationUtils.ArgumentNotNull(value, "value");
+#if !NET20
+                    if (value is DateTimeOffset)
+                        WriteValue((DateTimeOffset)value);
+                    else
+#endif
+                        WriteValue(Convert.ToDateTime(value, CultureInfo.InvariantCulture));
+                    break;
+                case JsonToken.Raw:
+                    WriteRawValue((value != null) ? value.ToString() : null);
+                    break;
+                case JsonToken.Bytes:
+                    ValidationUtils.ArgumentNotNull(value, "value");
+                    if (value is Guid)
+                        WriteValue((Guid)value);
+                    else
+                        WriteValue((byte[])value);
+                    break;
+                default:
+                    throw MiscellaneousUtils.CreateArgumentOutOfRangeException("TokenType", tokenType, "Unexpected token type.");
+            }
         }
 
         private void WriteConstructorDate(JsonReader reader)
@@ -580,32 +612,6 @@ namespace Newtonsoft.Json
                 throw JsonWriterException.Create(this, "Unexpected token when reading date constructor. Expected EndConstructor, got " + reader.TokenType, null);
 
             WriteValue(date);
-        }
-
-        internal static bool IsEndToken(JsonToken token)
-        {
-            switch (token)
-            {
-                case JsonToken.EndObject:
-                case JsonToken.EndArray:
-                case JsonToken.EndConstructor:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        internal static bool IsStartToken(JsonToken token)
-        {
-            switch (token)
-            {
-                case JsonToken.StartObject:
-                case JsonToken.StartArray:
-                case JsonToken.StartConstructor:
-                    return true;
-                default:
-                    return false;
-            }
         }
 
         private void WriteEnd(JsonContainerType type)

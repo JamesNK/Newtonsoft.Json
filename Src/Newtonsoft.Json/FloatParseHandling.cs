@@ -33,11 +33,11 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Floating point numbers are parsed to <see cref="Double"/>.
         /// </summary>
-        Double,
+        Double = 0,
 
         /// <summary>
         /// Floating point numbers are parsed to <see cref="Decimal"/>.
         /// </summary>
-        Decimal
+        Decimal = 1
     }
 }

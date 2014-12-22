@@ -23,6 +23,11 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
+#endif
 #if !(PORTABLE || PORTABLE40)
 using System.Collections.ObjectModel;
 #if !(NET35 || NET20)
@@ -1836,6 +1841,55 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(1UL, item.WantedUnitID);
         }
 #endif
+
+#if !(NET20 || NET35)
+        [Test]
+        public void GenericItemTypeCollection()
+        {
+            DataType data = new DataType();
+            data.Rows.Add("key", new List<MyInterfaceImplementationType> { new MyInterfaceImplementationType() { SomeProperty = "property" } });
+            string serialized = JsonConvert.SerializeObject(data, Formatting.Indented);
+
+            StringAssert.AreEqual(@"{
+  ""Rows"": {
+    ""key"": {
+      ""$type"": ""System.Collections.Generic.List`1[[Newtonsoft.Json.Tests.Serialization.MyInterfaceImplementationType, Newtonsoft.Json.Tests]], mscorlib"",
+      ""$values"": [
+        {
+          ""SomeProperty"": ""property""
+        }
+      ]
+    }
+  }
+}", serialized);
+
+            DataType deserialized = JsonConvert.DeserializeObject<DataType>(serialized);
+
+            Assert.AreEqual("property", deserialized.Rows["key"].First().SomeProperty);
+        }
+#endif
+    }
+
+    public class DataType
+    {
+        public DataType()
+        {
+            Rows = new Dictionary<string, IEnumerable<IMyInterfaceType>>();
+        }
+
+        [JsonProperty(ItemTypeNameHandling = TypeNameHandling.Auto, TypeNameHandling = TypeNameHandling.Auto)]
+        public Dictionary<string, IEnumerable<IMyInterfaceType>> Rows { get; private set; }
+    }
+
+
+    public interface IMyInterfaceType
+    {
+        string SomeProperty { get; set; }
+    }
+
+    public class MyInterfaceImplementationType : IMyInterfaceType
+    {
+        public string SomeProperty { get; set; }
     }
 
 #if !(NETFX_CORE || ASPNETCORE50)

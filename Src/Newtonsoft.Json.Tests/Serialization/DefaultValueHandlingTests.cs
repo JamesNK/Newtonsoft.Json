@@ -368,6 +368,20 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual("fff", obj.Field1);
         }
 #endif
+
+        [Test]
+        public void PopulateTest()
+        {
+            var test = JsonConvert.DeserializeObject<PopulateWithNullJsonTest>("{\"IntValue\":null}");
+            Console.WriteLine("IntValue:{0}", test.IntValue);
+        }
+
+        public class PopulateWithNullJsonTest
+        {
+            [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate, NullValueHandling = NullValueHandling.Ignore)]
+            [DefaultValue(6)]
+            public int IntValue { get; set; }
+        }
     }
 
 #if !NET20

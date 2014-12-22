@@ -35,19 +35,15 @@ namespace Newtonsoft.Json.Serialization
 {
     internal enum JsonContractType
     {
-        None,
-        Object,
-        Array,
-        Primitive,
-        String,
-        Dictionary,
-#if !(NET35 || NET20 || PORTABLE40)
-        Dynamic,
-#endif
-#if !(NETFX_CORE || PORTABLE || PORTABLE40)
-        Serializable,
-#endif
-        Linq
+        None = 0,
+        Object = 1,
+        Array = 2,
+        Primitive = 3,
+        String = 4,
+        Dictionary = 5,
+        Dynamic = 6,
+        Serializable = 7,
+        Linq = 8
     }
 
     /// <summary>

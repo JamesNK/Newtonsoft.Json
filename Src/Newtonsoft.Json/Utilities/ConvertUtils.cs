@@ -46,52 +46,48 @@ namespace Newtonsoft.Json.Utilities
 {
     internal enum PrimitiveTypeCode
     {
-        Empty,
-        Object,
-        Char,
-        CharNullable,
-        Boolean,
-        BooleanNullable,
-        SByte,
-        SByteNullable,
-        Int16,
-        Int16Nullable,
-        UInt16,
-        UInt16Nullable,
-        Int32,
-        Int32Nullable,
-        Byte,
-        ByteNullable,
-        UInt32,
-        UInt32Nullable,
-        Int64,
-        Int64Nullable,
-        UInt64,
-        UInt64Nullable,
-        Single,
-        SingleNullable,
-        Double,
-        DoubleNullable,
-        DateTime,
-        DateTimeNullable,
-#if !NET20
-        DateTimeOffset,
-        DateTimeOffsetNullable,
-#endif
-        Decimal,
-        DecimalNullable,
-        Guid,
-        GuidNullable,
-        TimeSpan,
-        TimeSpanNullable,
-#if !(PORTABLE || NET35 || NET20)
-        BigInteger,
-        BigIntegerNullable,
-#endif
-        Uri,
-        String,
-        Bytes,
-        DBNull
+        Empty = 0,
+        Object = 1,
+        Char = 2,
+        CharNullable = 3,
+        Boolean = 4,
+        BooleanNullable = 5,
+        SByte = 6,
+        SByteNullable = 7,
+        Int16 = 8,
+        Int16Nullable = 9,
+        UInt16 = 10,
+        UInt16Nullable = 11,
+        Int32 = 12,
+        Int32Nullable = 13,
+        Byte = 14,
+        ByteNullable = 15,
+        UInt32 = 16,
+        UInt32Nullable = 17,
+        Int64 = 18,
+        Int64Nullable = 19,
+        UInt64 = 20,
+        UInt64Nullable = 21,
+        Single = 22,
+        SingleNullable = 23,
+        Double = 24,
+        DoubleNullable = 25,
+        DateTime = 26,
+        DateTimeNullable = 27,
+        DateTimeOffset = 28,
+        DateTimeOffsetNullable = 29,
+        Decimal = 30,
+        DecimalNullable = 31,
+        Guid = 32,
+        GuidNullable = 33,
+        TimeSpan = 34,
+        TimeSpanNullable = 35,
+        BigInteger = 36,
+        BigIntegerNullable = 37,
+        Uri = 38,
+        String = 39,
+        Bytes = 40,
+        DBNull = 41
     }
 
     internal class TypeInformation
@@ -102,10 +98,10 @@ namespace Newtonsoft.Json.Utilities
 
     internal enum ParseResult
     {
-        None,
-        Success,
-        Overflow,
-        Invalid
+        None = 0,
+        Success = 1,
+        Overflow = 2,
+        Invalid = 3
     }
 
     internal static class ConvertUtils
@@ -360,10 +356,10 @@ namespace Newtonsoft.Json.Utilities
         #region TryConvert
         internal enum ConvertResult
         {
-            Success,
-            CannotConvertNull,
-            NotInstantiableType,
-            NoValidConversion
+            Success = 0,
+            CannotConvertNull = 1,
+            NotInstantiableType = 2,
+            NoValidConversion = 3
         }
 
         public static object Convert(object initialValue, CultureInfo culture, Type targetType)

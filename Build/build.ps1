@@ -1,13 +1,14 @@
 ﻿properties { 
-  $zipFileName = "Json60r6.zip"
+  $zipFileName = "Json60r7.zip"
   $majorVersion = "6.0"
-  $majorWithReleaseVersion = "6.0.6"
+  $majorWithReleaseVersion = "6.0.7"
   $version = GetVersion $majorWithReleaseVersion
   $signAssemblies = $false
   $signKeyPath = "C:\Development\Releases\newtonsoft.snk"
   $buildDocumentation = $false
   $buildNuGet = $true
   $treatWarningsAsErrors = $false
+  $workingName = if ($workingName) {$workingName} else {"Working"}
   
   $baseDir  = resolve-path ..
   $buildDir = "$baseDir\Build"
@@ -15,12 +16,12 @@
   $toolsDir = "$baseDir\Tools"
   $docDir = "$baseDir\Doc"
   $releaseDir = "$baseDir\Release"
-  $workingDir = "$baseDir\Working"
+  $workingDir = "$baseDir\$workingName"
   $builds = @(
     @{Name = "Newtonsoft.Json"; TestsName = "Newtonsoft.Json.Tests"; TestsFunction = "NUnitTests"; Constants=""; FinalDir="Net45"; NuGetDir = "net45"; Framework="net-4.0"; Sign=$true},
     @{Name = "Newtonsoft.Json.Portable"; TestsName = "Newtonsoft.Json.Tests.Portable"; TestsFunction = "NUnitTests"; Constants="PORTABLE"; FinalDir="Portable"; NuGetDir = "portable-net45+wp80+win8+wpa81+aspnetcore50"; Framework="net-4.0"; Sign=$true},
     @{Name = "Newtonsoft.Json.Portable40"; TestsName = "Newtonsoft.Json.Tests.Portable40"; TestsFunction = "NUnitTests"; Constants="PORTABLE40"; FinalDir="Portable40"; NuGetDir = "portable-net40+sl5+wp80+win8+wpa81"; Framework="net-4.0"; Sign=$true},
-    @{Name = $null; TestsName = "Newtonsoft.Json.Tests.AspNetCore50"; TestsFunction = "CoreClrTests"; Constants="ASPNETCORE50"; FinalDir="ASPNETCORE50"; NuGetDir = $null; Framework=$null; Sign=$null},
+    #@{Name = $null; TestsName = "Newtonsoft.Json.Tests.AspNetCore50"; TestsFunction = "CoreClrTests"; Constants="ASPNETCORE50"; FinalDir="ASPNETCORE50"; NuGetDir = $null; Framework=$null; Sign=$null},
     @{Name = "Newtonsoft.Json.WinRT"; TestsName = "Newtonsoft.Json.Tests.WinRT"; TestsFunction = "WinRTTests"; Constants="NETFX_CORE"; FinalDir="WinRT"; NuGetDir = "netcore45"; Framework="net-4.5"; Sign=$true},
     @{Name = "Newtonsoft.Json.Net40"; TestsName = "Newtonsoft.Json.Tests.Net40"; TestsFunction = "NUnitTests"; Constants="NET40"; FinalDir="Net40"; NuGetDir = "net40"; Framework="net-4.0"; Sign=$true},
     @{Name = "Newtonsoft.Json.Net35"; TestsName = "Newtonsoft.Json.Tests.Net35"; TestsFunction = "NUnitTests"; Constants="NET35"; FinalDir="Net35"; NuGetDir = "net35"; Framework="net-2.0"; Sign=$true},
@@ -28,7 +29,7 @@
   )
 }
 
-$framework = '4.0x86'
+framework '4.0x86'
 
 task default -depends Test
 
@@ -38,11 +39,12 @@ task Clean {
   
   if (Test-Path -path $workingDir)
   {
-    Write-Output "Deleting Working Directory"
+    Write-Output "Deleting existing working directory $workingDir"
     
     del $workingDir -Recurse -Force
   }
   
+  Write-Output "Creating working directory $workingDir"
   New-Item -Path $workingDir -ItemType Directory
 }
 

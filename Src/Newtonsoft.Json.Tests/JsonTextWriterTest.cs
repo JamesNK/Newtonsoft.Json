@@ -826,6 +826,49 @@ namespace Newtonsoft.Json.Tests
         }
 
         [Test]
+        public void WriteTokenDirect()
+        {
+            StringBuilder sb = new StringBuilder();
+            StringWriter sw = new StringWriter(sb);
+
+            using (JsonWriter jsonWriter = new JsonTextWriter(sw))
+            {
+                jsonWriter.WriteToken(JsonToken.StartArray);
+                jsonWriter.WriteToken(JsonToken.Integer, 1);
+                jsonWriter.WriteToken(JsonToken.StartObject);
+                jsonWriter.WriteToken(JsonToken.PropertyName, "string");
+                jsonWriter.WriteToken(JsonToken.Integer, int.MaxValue);
+                jsonWriter.WriteToken(JsonToken.EndObject);
+                jsonWriter.WriteToken(JsonToken.EndArray);
+            }
+
+            Assert.AreEqual(@"[1,{""string"":2147483647}]", sb.ToString());
+        }
+
+        [Test]
+        public void WriteTokenDirect_BadValue()
+        {
+            StringBuilder sb = new StringBuilder();
+            StringWriter sw = new StringWriter(sb);
+
+            using (JsonWriter jsonWriter = new JsonTextWriter(sw))
+            {
+                jsonWriter.WriteToken(JsonToken.StartArray);
+
+                ExceptionAssert.Throws<FormatException>(() =>
+                {
+                    jsonWriter.WriteToken(JsonToken.Integer, "three");
+                }, "Input string was not in a correct format.");
+
+                ExceptionAssert.Throws<ArgumentNullException>(() =>
+                {
+                    jsonWriter.WriteToken(JsonToken.Integer);
+                }, @"Value cannot be null.
+Parameter name: value");
+            }
+        }
+
+        [Test]
         public void BadWriteEndArray()
         {
             ExceptionAssert.Throws<JsonWriterException>(() =>

@@ -29,10 +29,10 @@ namespace Newtonsoft.Json.Utilities
 {
     internal enum ParserTimeZone
     {
-        Unspecified,
-        Utc,
-        LocalWestOfUtc,
-        LocalEastOfUtc
+        Unspecified = 0,
+        Utc = 1,
+        LocalWestOfUtc = 2,
+        LocalEastOfUtc = 3
     }
 
     internal struct DateTimeParser

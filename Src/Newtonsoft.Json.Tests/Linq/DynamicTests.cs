@@ -67,6 +67,7 @@ namespace Newtonsoft.Json.Tests.Linq
             counts[s] = c;
         }
 
+#if !NETFX_CORE
         [Test]
         public void DeserializeLargeDynamic()
         {
@@ -100,6 +101,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
             Console.WriteLine("Time (secs): " + sw.Elapsed.TotalSeconds);
         }
+#endif
 
         [Test]
         public void JObjectPropertyNames()
