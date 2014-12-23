@@ -763,7 +763,7 @@ namespace Newtonsoft.Json.Tests.Schema
 }", json);
         }
 
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonConverter(typeof(StringEnumConverter), true)]
         public enum SortTypeFlagAsString
         {
             No = 0,
@@ -778,7 +778,6 @@ namespace Newtonsoft.Json.Tests.Schema
 
 #if !ASPNETCORE50
         [Test]
-        [Ignore]
         public void GenerateSchemaWithStringEnum()
         {
             JsonSchemaGenerator jsonSchemaGenerator = new JsonSchemaGenerator();
@@ -786,9 +785,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             string json = schema.ToString();
 
-            // NOTE: This fails because the enum is serialized as an integer and not a string.
-            // NOTE: There should exist a way to serialize the enum as lowercase strings.
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""type"": ""object"",
   ""properties"": {
     ""y"": {
