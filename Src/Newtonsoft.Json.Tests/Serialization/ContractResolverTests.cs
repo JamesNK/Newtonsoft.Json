@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Runtime.Serialization;
 #if NETFX_CORE
@@ -153,6 +154,17 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.IsTrue(contract.IsInstantiable);
             Assert.AreEqual(typeof(List<int>), contract.CreatedType);
             Assert.IsNotNull(contract.DefaultCreator);
+        }
+
+        [Test]
+        public void PropertyAttributeProvider()
+        {
+            var resolver = new DefaultContractResolver();
+            var contract = (JsonObjectContract)resolver.ResolveContract(typeof(Invoice));
+
+            JsonProperty property = contract.Properties["FollowUpDays"];
+            Assert.AreEqual(1, property.AttributeProvider.GetAttributes(false).Count);
+            Assert.AreEqual(typeof(DefaultValueAttribute), property.AttributeProvider.GetAttributes(false)[0].GetType());
         }
 
         [Test]

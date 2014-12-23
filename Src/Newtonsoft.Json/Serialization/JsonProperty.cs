@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.Reflection;
 using Newtonsoft.Json.Utilities;
 
 #if NET20
@@ -86,6 +87,12 @@ namespace Newtonsoft.Json.Serialization
         /// </summary>
         /// <value>The <see cref="IValueProvider"/> that will get and set the <see cref="JsonProperty"/> during serialization.</value>
         public IValueProvider ValueProvider { get; set; }
+
+        /// <summary>
+        /// Gets or sets the <see cref="IAttributeProvider"/> for this property.
+        /// </summary>
+        /// <value>The <see cref="IAttributeProvider"/> for this property.</value>
+        public IAttributeProvider AttributeProvider { get; set; }
 
         /// <summary>
         /// Gets or sets the type of the property.

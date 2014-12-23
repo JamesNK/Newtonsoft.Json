@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Newtonsoft.Json</id>
-    <version>6.0.7</version>
+    <version>7.0.1-beta1</version>
     <title>Json.NET</title>
     <description>Json.NET is a popular high-performance JSON framework for .NET</description>
     <authors>James Newton-King</authors>

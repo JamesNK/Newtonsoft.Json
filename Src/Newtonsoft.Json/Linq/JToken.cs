@@ -66,9 +66,6 @@ namespace Newtonsoft.Json.Linq
         private JToken _next;
         private object _annotations;
 
-        //private int? _lineNumber;
-        //private int? _linePosition;
-
         private static readonly JTokenType[] BooleanTypes = new[] { JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Boolean };
         private static readonly JTokenType[] NumberTypes = new[] { JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Boolean };
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
