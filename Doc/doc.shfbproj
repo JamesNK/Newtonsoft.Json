@@ -20,7 +20,7 @@
     <ProjectSummary>
     </ProjectSummary>
     <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, Namespace, TypeParameter, AutoDocumentDispose</MissingTags>
-    <VisibleItems>InheritedMembers, InheritedFrameworkMembers, Protected, SealedProtected</VisibleItems>
+    <VisibleItems>InheritedMembers, InheritedFrameworkMembers, Protected, SealedProtected, ProtectedInternalAsProtected</VisibleItems>
     <HtmlHelp1xCompilerPath>
     </HtmlHelp1xCompilerPath>
     <HtmlHelp2xCompilerPath>
@@ -57,12 +57,12 @@
     <ComponentConfigurations>
       <ComponentConfig id="Code Block Component" enabled="True">
         <component id="Code Block Component" type="SandcastleBuilder.Components.CodeBlockComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
-  <basePath value="{@HtmlEncProjectFolder}" />
-  <outputPaths>{@HelpFormatOutputPaths}</outputPaths>
-  <allowMissingSource value="false" />
-  <removeRegionMarkers value="false" />
-  <colorizer syntaxFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xml" styleFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xsl" stylesheet="{@SHFBFolder}PresentationStyles\Colorizer\highlight.css" scriptFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.js" disabled="{@DisableCodeBlockComponent}" language="cs" tabSize="0" numberLines="true" outlining="false" keepSeeTags="false" defaultTitle="true" />
-</component>
+          <basePath value="{@HtmlEncProjectFolder}" />
+          <outputPaths>{@HelpFormatOutputPaths}</outputPaths>
+          <allowMissingSource value="false" />
+          <removeRegionMarkers value="false" />
+          <colorizer syntaxFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xml" styleFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xsl" stylesheet="{@SHFBFolder}PresentationStyles\Colorizer\highlight.css" scriptFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.js" disabled="{@DisableCodeBlockComponent}" language="cs" tabSize="0" numberLines="true" outlining="false" keepSeeTags="false" defaultTitle="true" />
+        </component>
       </ComponentConfig>
     </ComponentConfigurations>
     <IndentHtml>False</IndentHtml>

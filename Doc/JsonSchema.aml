@@ -16,16 +16,12 @@
 
 <alert class="caution">
   <para>
-    The JSON Schema standard isn't final.
-
-    Json.NET implements 
-      <externalLink>
-        <linkText>JSON Schema Draft 3</linkText>
-        <linkUri>https://tools.ietf.org/html/draft-zyp-json-schema-03</linkUri>
+    JSON Schema validation has been moved to its own package. See <externalLink>
+        <linkText>http://www.newtonsoft.com</linkText>
+        <linkUri>http://www.newtonsoft.com</linkUri>
         <linkTarget>_blank</linkTarget>
-      </externalLink>.
-
-    There will be breaking changes to some parts of Json.NET's JSON Schema API when it is updated to implement newer drafts of JSON Schema.
+      </externalLink>
+      for more details.
   </para>
 </alert>
 

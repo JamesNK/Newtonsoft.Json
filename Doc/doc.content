@@ -29,7 +29,7 @@
   <Topic id="ConvertingJSONandXML" visible="True" title="Converting between JSON and XML" />
   <Topic id="JsonNetVsDotNetSerializers" visible="True" title="Json.NET vs .NET Serializers" />
   <Topic id="JsonNetVsWindowsDataJson" visible="True" title="Json.NET vs Windows.Data.Json" />
-  <Topic id="Samples" visible="True" isExpanded="true" title="Samples">
+  <Topic id="Samples" visible="True" isExpanded="true" isSelected="true" title="Samples">
     <Topic id="d6e185d5-c992-44fc-8d8f-d9acc2bbec2f" visible="True" noFile="true" title="Serializing JSON">
       <Topic id="SerializeObject" visible="True" title="Serialize an Object" />
       <Topic id="SerializeCollection" visible="True" title="Serialize a Collection" />
@@ -138,10 +138,10 @@
       <Topic id="DeserializeFromBson" visible="True" title="Deserialize from BSON" />
       <Topic id="DeserializeFromBsonCollection" visible="True" title="Deserialize a Collection from BSON" />
     </Topic>
-    <Topic id="ca145ed0-f377-4f1c-9479-d1629082fc6e" visible="True" noFile="true" isExpanded="true" title="Reading and Writing JSON">
+    <Topic id="ca145ed0-f377-4f1c-9479-d1629082fc6e" visible="True" noFile="true" title="Reading and Writing JSON">
       <Topic id="ReadJsonWithJsonTextReader" visible="True" title="Read JSON with JsonTextReader" />
       <Topic id="WriteJsonWithJsonTextWriter" visible="True" title="Write JSON with JsonTextWriter" />
-      <Topic id="CustomJsonReader" visible="True" isSelected="true" title="Custom JsonReader" />
+      <Topic id="CustomJsonReader" visible="True" title="Custom JsonReader" />
       <Topic id="CustomJsonWriter" visible="True" title="Custom JsonWriter" />
     </Topic>
   </Topic>

@@ -38,14 +38,19 @@ using System.IO;
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
-
 #endif
 
 namespace Newtonsoft.Json
 {
     /// <summary>
+    /// <para>
     /// Represents a reader that provides <see cref="JsonSchema"/> validation.
+    /// </para>
+    /// <note type="caution">
+    /// JSON Schema validation has been moved to its own package. See <see href="http://www.newtonsoft.com">http://www.newtonsoft.com</see> for more details.
+    /// </note>
     /// </summary>
+    [Obsolete("JSON Schema validation has been moved to its own package. See http://www.newtonsoft.com for more details.")]
     public class JsonValidatingReader : JsonReader, IJsonLineInfo
     {
         private class SchemaScope

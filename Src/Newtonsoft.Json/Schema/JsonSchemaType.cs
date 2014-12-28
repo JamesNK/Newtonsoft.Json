@@ -28,9 +28,15 @@ using System;
 namespace Newtonsoft.Json.Schema
 {
     /// <summary>
+    /// <para>
     /// The value types allowed by the <see cref="JsonSchema"/>.
+    /// </para>
+    /// <note type="caution">
+    /// JSON Schema validation has been moved to its own package. See <see href="http://www.newtonsoft.com">http://www.newtonsoft.com</see> for more details.
+    /// </note>
     /// </summary>
     [Flags]
+    [Obsolete("JSON Schema validation has been moved to its own package. See http://www.newtonsoft.com for more details.")]
     public enum JsonSchemaType
     {
         /// <summary>

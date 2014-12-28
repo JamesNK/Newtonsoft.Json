@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#pragma warning disable 618
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -775,35 +776,6 @@ namespace Newtonsoft.Json.Tests.Schema
         {
             public SortTypeFlagAsString y;
         }
-
-#if !ASPNETCORE50
-        [Test]
-        [Ignore]
-        public void GenerateSchemaWithStringEnum()
-        {
-            JsonSchemaGenerator jsonSchemaGenerator = new JsonSchemaGenerator();
-            JsonSchema schema = jsonSchemaGenerator.Generate(typeof(Y));
-
-            string json = schema.ToString();
-
-            // NOTE: This fails because the enum is serialized as an integer and not a string.
-            // NOTE: There should exist a way to serialize the enum as lowercase strings.
-            Assert.AreEqual(@"{
-  ""type"": ""object"",
-  ""properties"": {
-    ""y"": {
-      ""required"": true,
-      ""type"": ""string"",
-      ""enum"": [
-        ""no"",
-        ""asc"",
-        ""desc""
-      ]
-    }
-  }
-}", json);
-        }
-#endif
     }
 
     public class NullableInt32TestClass
@@ -875,3 +847,4 @@ namespace Newtonsoft.Json.Tests.Schema
     {
     }
 }
+#pragma warning restore 618

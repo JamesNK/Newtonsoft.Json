@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#pragma warning disable 618
 #if !(ASPNETCORE50 || NETFX_CORE)
 using System;
 using System.Collections.Generic;
@@ -120,3 +121,4 @@ namespace Newtonsoft.Json.Tests.Schema
     }
 }
 #endif
+#pragma warning restore 618

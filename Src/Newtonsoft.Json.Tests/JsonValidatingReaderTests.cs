@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#pragma warning disable 618
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -1752,3 +1753,4 @@ namespace Newtonsoft.Json.Tests
         }
     }
 }
+#pragma warning restore 618

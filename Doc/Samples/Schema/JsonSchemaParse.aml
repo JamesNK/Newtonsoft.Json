@@ -5,6 +5,16 @@
       <para>This sample parses a <codeEntityReference>T:Newtonsoft.Json.Schema.JsonSchema</codeEntityReference>
       from JSON</para>
     </introduction>
+<alert class="caution">
+  <para>
+    JSON Schema validation has been moved to its own package. See <externalLink>
+        <linkText>http://www.newtonsoft.com</linkText>
+        <linkUri>http://www.newtonsoft.com</linkUri>
+        <linkTarget>_blank</linkTarget>
+      </externalLink>
+      for more details.
+  </para>
+</alert>
     <section>
       <title>Sample</title>
       <content>
