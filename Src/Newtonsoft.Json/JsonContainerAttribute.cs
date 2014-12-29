@@ -52,6 +52,12 @@ namespace Newtonsoft.Json
         public string Description { get; set; }
 
         /// <summary>
+        /// Gest or sets the format definition
+        /// </summary>
+        /// <value>The format.</value>
+        public string Format { get; set; }
+
+        /// <summary>
         /// Gets the collection's items converter.
         /// </summary>
         /// <value>The collection's items converter.</value>

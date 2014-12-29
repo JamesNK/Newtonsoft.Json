@@ -170,6 +170,16 @@ namespace Newtonsoft.Json.Schema
             return GenerateInternal(type, (!rootSchemaNullable) ? Required.Always : Required.Default, false);
         }
 
+        private string GetFormat(Type type)
+        {
+            JsonContainerAttribute containerAttribute = JsonTypeReflector.GetCachedAttribute<JsonContainerAttribute>(type);
+
+            if (containerAttribute != null && !string.IsNullOrEmpty(containerAttribute.Format))
+                return containerAttribute.Format;
+
+            return null;
+        }
+
         private string GetTitle(Type type)
         {
             JsonContainerAttribute containerAttribute = JsonTypeReflector.GetCachedAttribute<JsonContainerAttribute>(type);
@@ -264,6 +274,7 @@ namespace Newtonsoft.Json.Schema
                 CurrentSchema.Required = true;
             CurrentSchema.Title = GetTitle(type);
             CurrentSchema.Description = GetDescription(type);
+            CurrentSchema.Format = GetFormat(type);
 
             if (converter != null)
             {
