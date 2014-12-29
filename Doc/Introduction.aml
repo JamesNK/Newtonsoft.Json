@@ -105,21 +105,9 @@ and write from your objects.</para>
 </section>
 
     <relatedTopics>
-       <externalLink>
-         <linkText>Serializing and Deserializing JSON</linkText>
-         <linkUri>SerializingJSON.htm</linkUri>
-         <linkTarget>_self</linkTarget>
-       </externalLink>
-       <externalLink>
-         <linkText>LINQ to JSON</linkText>
-         <linkUri>LINQtoJSON.htm</linkUri>
-         <linkTarget>_self</linkTarget>
-       </externalLink>
-      <externalLink>
-        <linkText>Samples</linkText>
-        <linkUri>Samples.htm</linkUri>
-        <linkTarget>_self</linkTarget>
-      </externalLink>
+       <link xlink:href="SerializingJSON" />
+       <link xlink:href="LINQtoJSON" />
+       <link xlink:href="Samples" />
     </relatedTopics>
 
   </developerConceptualDocument>

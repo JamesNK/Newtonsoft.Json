@@ -54,11 +54,7 @@
       </content>
     </section>
     <relatedTopics>
-      <externalLink>
-        <linkText>Serialization Guide</linkText>
-        <linkUri>SerializationGuide.htm</linkUri>
-        <linkTarget>_self</linkTarget>
-      </externalLink>
+      <link xlink:href="SerializationGuide" />
       <codeEntityReference>T:Newtonsoft.Json.JsonConvert</codeEntityReference>
       <codeEntityReference>T:Newtonsoft.Json.JsonSerializer</codeEntityReference>
     </relatedTopics>

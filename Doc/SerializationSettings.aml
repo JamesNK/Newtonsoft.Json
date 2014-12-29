@@ -340,21 +340,9 @@ or a property's object properties or collection items using
 </section>
 </sections>
     <relatedTopics>
-      <externalLink>
-        <linkText>Serialization Guide</linkText>
-        <linkUri>SerializationGuide.htm</linkUri>
-        <linkTarget>_self</linkTarget>
-      </externalLink>
-      <externalLink>
-        <linkText>Serialization Attributes</linkText>
-        <linkUri>SerializationAttributes.htm</linkUri>
-        <linkTarget>_self</linkTarget>
-      </externalLink>
-      <externalLink>
-        <linkText>Serializing Dates in JSON</linkText>
-        <linkUri>DatesInJSON.htm</linkUri>
-        <linkTarget>_self</linkTarget>
-      </externalLink>
+      <link xlink:href="SerializationGuide" />
+      <link xlink:href="SerializationAttributes" />
+      <link xlink:href="DatesInJSON" />
       
       <codeEntityReference>T:Newtonsoft.Json.JsonSerializer</codeEntityReference>
       <codeEntityReference>T:Newtonsoft.Json.JsonSerializerSettings</codeEntityReference>

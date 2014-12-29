@@ -16,7 +16,12 @@
         <para><legacyBold>LINQ to JSON</legacyBold> - Parsing, querying, modifying and writing JSON</para>
     </listItem>
     <listItem>
-        <para><legacyBold>JSON Schema</legacyBold> - Loading schemas and validating JSON</para>
+        <para><legacyBold>JSON Schema</legacyBold> - Loading schemas and validating JSON. Note that JSON Schema validation has been moved to its own package. See <externalLink>
+        <linkText>http://www.newtonsoft.com</linkText>
+        <linkUri>http://www.newtonsoft.com</linkUri>
+        <linkTarget>_blank</linkTarget>
+      </externalLink>
+      for more details.</para>
     </listItem>
     <listItem>
         <para><legacyBold>Converting XML</legacyBold> - Converting JSON to XML and XML to JSON</para>

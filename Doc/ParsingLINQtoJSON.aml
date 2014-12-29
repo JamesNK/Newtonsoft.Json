@@ -24,12 +24,8 @@
       </content>
     </section>
     <relatedTopics>
-      <externalLink>
-        <linkText>LINQ to JSON</linkText>
-        <linkUri>LINQtoJSON.htm</linkUri>
-        <linkTarget>_self</linkTarget>
-      </externalLink>
-
+      <link xlink:href="LINQtoJSON" />
+      
       <codeEntityReference>M:Newtonsoft.Json.Linq.JToken.Parse(System.String)</codeEntityReference>
       <codeEntityReference>M:Newtonsoft.Json.Linq.JToken.ReadFrom(Newtonsoft.Json.JsonReader)</codeEntityReference>
     </relatedTopics>

@@ -46,26 +46,10 @@ LINQ to JSON objects or
 </content>
 </section>
     <relatedTopics>
-      <externalLink>
-        <linkText>Serialization Guide</linkText>
-        <linkUri>SerializationGuide.htm</linkUri>
-        <linkTarget>_self</linkTarget>
-      </externalLink>
-      <externalLink>
-        <linkText>Serialization Settings</linkText>
-        <linkUri>SerializationSettings.htm</linkUri>
-        <linkTarget>_self</linkTarget>
-      </externalLink>
-      <externalLink>
-        <linkText>Serialization Attributes</linkText>
-        <linkUri>SerializationAttributes.htm</linkUri>
-        <linkTarget>_self</linkTarget>
-      </externalLink>
-      <externalLink>
-        <linkText>Serializing Partial JSON Fragments</linkText>
-        <linkUri>SerializingJSONFragments.htm</linkUri>
-        <linkTarget>_self</linkTarget>
-      </externalLink>
+      <link xlink:href="SerializationGuide" />
+      <link xlink:href="SerializationSettings" />
+      <link xlink:href="SerializationAttributes" />
+      <link xlink:href="SerializingJSONFragments" />
 
       <codeEntityReference>T:Newtonsoft.Json.JsonConvert</codeEntityReference>
       <codeEntityReference>T:Newtonsoft.Json.JsonSerializer</codeEntityReference>
