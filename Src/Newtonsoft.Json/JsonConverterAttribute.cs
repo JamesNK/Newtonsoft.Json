@@ -38,9 +38,9 @@ namespace Newtonsoft.Json
         private readonly Type _converterType;
 
         /// <summary>
-        /// Gets the type of the converter.
+        /// Gets the <see cref="Type"/> of the converter.
         /// </summary>
-        /// <value>The type of the converter.</value>
+        /// <value>The <see cref="Type"/> of the converter.</value>
         public Type ConverterType
         {
             get { return _converterType; }
@@ -68,7 +68,7 @@ namespace Newtonsoft.Json
         /// Initializes a new instance of the <see cref="JsonConverterAttribute"/> class.
         /// </summary>
         /// <param name="converterType">Type of the converter.</param>
-        /// <param name="converterParameters">Parameter list to use when constructing the JsonConverter.  Can be null.</param>
+        /// <param name="converterParameters">Parameter list to use when constructing the JsonConverter. Can be null.</param>
         public JsonConverterAttribute(Type converterType, params object[] converterParameters)
         : this(converterType)
         {

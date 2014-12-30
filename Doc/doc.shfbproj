@@ -36,7 +36,7 @@
     <HelpTitle>Json.NET Documentation</HelpTitle>
     <PresentationStyle>VS2013</PresentationStyle>
     <NamingMethod>MemberName</NamingMethod>
-    <DocumentationSourcePath>..\Src\Newtonsoft.Json\bin\Release</DocumentationSourcePath>
+    <DocumentationSourcePath>..\Src\Newtonsoft.Json\bin\Release\Net45</DocumentationSourcePath>
     <DocumentationSources>
       <DocumentationSource sourceFile="$(DocumentationSourcePath)\Newtonsoft.Json.dll" />
       <DocumentationSource sourceFile="$(DocumentationSourcePath)\Newtonsoft.Json.xml" />
