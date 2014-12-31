@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Globalization;
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
@@ -52,6 +53,13 @@ namespace Newtonsoft.Json
     /// </example>
     public static class JsonConvert
     {
+        private static readonly Dictionary<Type, JsonConverter[]> _registeredJsonConverters = new Dictionary<Type, JsonConverter[]>();
+        /// <summary>
+        /// Gets or sets pre-registered JsonConverters that automatically used by
+        /// serialization and deserialization methods.
+        /// </summary>
+        public static Dictionary<Type, JsonConverter[]> RegisteredJsonConverters { get { return _registeredJsonConverters; } }
+
         /// <summary>
         /// Gets or sets a function that creates default <see cref="JsonSerializerSettings"/>.
         /// Default settings are automatically used by serialization methods on <see cref="JsonConvert"/>,
@@ -95,6 +103,52 @@ namespace Newtonsoft.Json
         /// Represents JavaScript's NaN as a string. This field is read-only.
         /// </summary>
         public static readonly string NaN = "NaN";
+
+        /// <summary>
+        /// Register customized JsonConverters in advance, which can be automatically
+        /// used by serialization and deserialization methods.
+        /// </summary>
+        /// <param name="jsonConverters">The customized JsonConverters.</param>
+        /// <typeparam name="T">Type to register JsonConverters for.</typeparam>
+        public static void RegisterJsonConverters<T>(params JsonConverter[] jsonConverters)
+        {
+            RegisterJsonConverters(typeof (T), jsonConverters);
+        }
+
+        /// <summary>
+        /// Register customized JsonConverters in advance, which can be automatically
+        /// used by serialization and deserialization methods.
+        /// </summary>
+        /// <param name="type">Type to register JsonConverters for.</param>
+        /// <param name="jsonConverters">The customized JsonConverters.</param>
+        /// <exception cref="ArgumentException">The pre-registered type cannot be null.</exception>
+        public static void RegisterJsonConverters(Type type, params JsonConverter[] jsonConverters)
+        {
+            if(null == type)
+                throw new ArgumentException("The pre-registered type cannot be null.", "type");
+            _registeredJsonConverters[type] = jsonConverters;
+        }
+
+        /// <summary>
+        /// Unregister JsonConverter[] for type T.
+        /// </summary>
+        /// <typeparam name="T">Type to unregister JsonConverters for.</typeparam>
+        public static void UnregisterJsonConverters<T>()
+        {
+            UnregisterJsonConverters(typeof(T));
+        }
+
+        /// <summary>
+        /// Unregister JsonConverter[] for specified type.
+        /// </summary>
+        /// <param name="type">Type to unregister JsonConverters for.</param>
+        /// <exception cref="ArgumentException">The pre-registered type cannot be null.</exception>
+        private static void UnregisterJsonConverters(Type type)
+        {
+            if (null == type)
+                throw new ArgumentException("The pre-registered type cannot be null.", "type");
+            _registeredJsonConverters.Remove(type);
+        }
 
         /// <summary>
         /// Converts the <see cref="DateTime"/> to its JSON string representation.
@@ -532,7 +586,7 @@ namespace Newtonsoft.Json
         /// Serializes the specified object to a JSON string using a collection of <see cref="JsonConverter"/>.
         /// </summary>
         /// <param name="value">The object to serialize.</param>
-        /// <param name="converters">A collection converters used while serializing.</param>
+        /// <param name="converters">A collection of converters used while serializing. This will override the pre-registered converters.</param>
         /// <returns>A JSON string representation of the object.</returns>
         public static string SerializeObject(object value, params JsonConverter[] converters)
         {
@@ -548,7 +602,7 @@ namespace Newtonsoft.Json
         /// </summary>
         /// <param name="value">The object to serialize.</param>
         /// <param name="formatting">Indicates how the output is formatted.</param>
-        /// <param name="converters">A collection converters used while serializing.</param>
+        /// <param name="converters">A collection of converters used while serializing. This will override the pre-registered converters.</param>
         /// <returns>A JSON string representation of the object.</returns>
         public static string SerializeObject(object value, Formatting formatting, params JsonConverter[] converters)
         {
@@ -634,6 +688,14 @@ namespace Newtonsoft.Json
 
         private static string SerializeObjectInternal(object value, Type type, JsonSerializer jsonSerializer)
         {
+            if (null != value && 0 == jsonSerializer.Converters.Count)
+            {
+                JsonConverter[] jsonConverters;
+                if (_registeredJsonConverters.TryGetValue(value.GetType(), out jsonConverters))
+                    for (int i = 0; i < jsonConverters.Length; i++)
+                        jsonSerializer.Converters.Insert(i, jsonConverters[i]);
+            }
+
             StringBuilder sb = new StringBuilder(256);
             StringWriter sw = new StringWriter(sb, CultureInfo.InvariantCulture);
             using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
@@ -783,7 +845,7 @@ namespace Newtonsoft.Json
         /// </summary>
         /// <typeparam name="T">The type of the object to deserialize to.</typeparam>
         /// <param name="value">The JSON to deserialize.</param>
-        /// <param name="converters">Converters to use while deserializing.</param>
+        /// <param name="converters">Converters to use while deserializing. This will override the pre-registered converters.</param>
         /// <returns>The deserialized object from the JSON string.</returns>
         public static T DeserializeObject<T>(string value, params JsonConverter[] converters)
         {
@@ -810,7 +872,7 @@ namespace Newtonsoft.Json
         /// </summary>
         /// <param name="value">The JSON to deserialize.</param>
         /// <param name="type">The type of the object to deserialize.</param>
-        /// <param name="converters">Converters to use while deserializing.</param>
+        /// <param name="converters">Converters to use while deserializing. This will override the pre-registered converters.</param>
         /// <returns>The deserialized object from the JSON string.</returns>
         public static object DeserializeObject(string value, Type type, params JsonConverter[] converters)
         {
@@ -836,6 +898,14 @@ namespace Newtonsoft.Json
             ValidationUtils.ArgumentNotNull(value, "value");
 
             JsonSerializer jsonSerializer = JsonSerializer.CreateDefault(settings);
+
+            if (null != type && 0 == jsonSerializer.Converters.Count)
+            {
+                JsonConverter[] jsonConverters;
+                if (_registeredJsonConverters.TryGetValue(type, out jsonConverters))
+                    for (int i = 0; i < jsonConverters.Length; i++)
+                        jsonSerializer.Converters.Insert(i, jsonConverters[i]);
+            }
 
             // by default DeserializeObject should check for additional content
             if (!jsonSerializer.IsCheckAdditionalContentSet())
