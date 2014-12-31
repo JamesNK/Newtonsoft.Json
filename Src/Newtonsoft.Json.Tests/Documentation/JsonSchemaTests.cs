@@ -24,6 +24,7 @@
 #endregion
 
 #if !(NET35 || NET20 || PORTABLE || ASPNETCORE50)
+#pragma warning disable 618
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -185,5 +186,5 @@ namespace Newtonsoft.Json.Tests.Documentation
         }
     }
 }
-
+#pragma warning restore 618
 #endif
