@@ -76,6 +76,22 @@ namespace Newtonsoft.Json.Serialization
     public delegate IEnumerable<KeyValuePair<object, object>> ExtensionDataGetter(object o);
 
     /// <summary>
+    /// Reads additional members of object which can be specified at runtime.
+    /// </summary>
+    /// <param name="reader">The <see cref="JsonReader"/> to read from.</param>
+    /// <param name="obj">The existing value of object being read.</param>
+    /// <param name="serializer">The calling serializer.</param>
+    public delegate void MemberReader(JsonReader reader, object obj, JsonSerializer serializer);
+
+    /// <summary>
+    /// Writes additional members of object which can be specified at runtime.
+    /// </summary>
+    /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
+    /// <param name="value">The value.</param>
+    /// <param name="serializer">The calling serializer.</param>
+    public delegate void MemberWriter(JsonWriter writer, object obj, JsonSerializer serializer);
+
+    /// <summary>
     /// Contract details for a <see cref="Type"/> used by the <see cref="JsonSerializer"/>.
     /// </summary>
     public abstract class JsonContract

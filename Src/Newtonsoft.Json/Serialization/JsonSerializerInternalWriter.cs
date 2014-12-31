@@ -391,7 +391,7 @@ namespace Newtonsoft.Json.Serialization
             WriteObjectStart(writer, value, contract, member, collectionContract, containerProperty);
 
             int initialDepth = writer.Top;
-
+            
             for (int index = 0; index < contract.Properties.Count; index++)
             {
                 JsonProperty property = contract.Properties[index];
@@ -415,6 +415,11 @@ namespace Newtonsoft.Json.Serialization
                 }
             }
 
+            if (contract.MemberWriter != null)
+            {
+                contract.MemberWriter(writer, value, GetInternalSerializer());
+            }
+            
             if (contract.ExtensionDataGetter != null)
             {
                 IEnumerable<KeyValuePair<object, object>> extensionData = contract.ExtensionDataGetter(value);
