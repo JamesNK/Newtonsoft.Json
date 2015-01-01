@@ -680,7 +680,7 @@ namespace Newtonsoft.Json
                 if (_currentState == State.Property)
                     WriteNull();
 
-                if (_formatting == Formatting.Indented)
+                if (_formatting == Formatting.Indented || _formatting == Json.Formatting.IndentedNewLine)
                 {
                     if (_currentState != State.ObjectStart && _currentState != State.ArrayStart)
                         WriteIndent();
@@ -751,8 +751,8 @@ namespace Newtonsoft.Json
             {
                 WriteValueDelimiter();
             }
-
-            if (_formatting == Formatting.Indented)
+                        
+            if (_formatting == Formatting.Indented || _formatting == Json.Formatting.IndentedNewLine)
             {
                 if (_currentState == State.Property)
                     WriteIndentSpace();
@@ -760,6 +760,12 @@ namespace Newtonsoft.Json
                 // don't indent a property when it is the first token to be written (i.e. at the start)
                 if ((_currentState == State.Array || _currentState == State.ArrayStart || _currentState == State.Constructor || _currentState == State.ConstructorStart)
                     || (tokenBeingWritten == JsonToken.PropertyName && _currentState != State.Start))
+                    WriteIndent();
+            }
+
+            if (_formatting == Json.Formatting.IndentedNewLine && _currentState != State.Start)
+            {
+                if (tokenBeingWritten == JsonToken.StartArray || tokenBeingWritten == JsonToken.StartObject)
                     WriteIndent();
             }
 
