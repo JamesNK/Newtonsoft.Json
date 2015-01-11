@@ -252,6 +252,13 @@ namespace Newtonsoft.Json.Utilities
 
         public override Func<T, object> CreateGet<T>(FieldInfo fieldInfo)
         {
+            if (fieldInfo.IsLiteral)
+            {
+                object constantValue = fieldInfo.GetValue(null);
+                Func<T, object> getter = o => constantValue;
+                return getter;
+            }
+
             DynamicMethod dynamicMethod = CreateDynamicMethod("Get" + fieldInfo.Name, typeof(T), new[] { typeof(object) }, fieldInfo.DeclaringType);
             ILGenerator generator = dynamicMethod.GetILGenerator();
 

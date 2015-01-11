@@ -8472,6 +8472,27 @@ Path '', line 1, position 1.");
             Assert.AreEqual(typeof(DateTimeOffset), v.Value.GetType());
             Assert.AreEqual(dt, (DateTimeOffset)v.Value);
         }
+
+        [DataContract]
+        public class ConstantTestClass
+        {
+            [DataMember]
+            public const char MY_CONSTANT = '.';
+        }
+
+        [Test]
+        public void DeserializeConstantProperty()
+        {
+            ConstantTestClass c1 = new ConstantTestClass();
+
+            string json = JsonConvert.SerializeObject(c1, Formatting.Indented);
+
+            StringAssert.AreEqual(@"{
+  ""MY_CONSTANT"": "".""
+}", json);
+
+            JsonConvert.DeserializeObject<ConstantTestClass>(json);
+        }
 #endif
 
         [Test]
@@ -8610,15 +8631,15 @@ Path '', line 1, position 1.");
   ""AlternateViews"": []
 }";
 
-            System.Net.Mail.MailMessage mailMessage = JsonConvert.DeserializeObject<System.Net.Mail.MailMessage>(
-                JsonMessage,
-                new MailAddressReadConverter(),
-                new AttachmentReadConverter(),
-                new EncodingReadConverter());
-
-            Assert.AreEqual("Family tree", mailMessage.Subject);
-            Assert.AreEqual("Luke Skywalker", mailMessage.To[0].DisplayName);
-            Assert.AreEqual("skywalker family tree.jpg", mailMessage.Attachments[0].ContentDisposition.FileName);
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+                {
+                    JsonConvert.DeserializeObject<System.Net.Mail.MailMessage>(
+                        JsonMessage,
+                        new MailAddressReadConverter(),
+                        new AttachmentReadConverter(),
+                        new EncodingReadConverter());
+                },
+                "Cannot populate list type System.Net.Mime.HeaderCollection. Path 'Headers', line 26, position 15.");
         }
 
         public class MailAddressReadConverter : JsonConverter

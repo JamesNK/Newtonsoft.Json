@@ -723,5 +723,26 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(1, (int)c.ExtensionData0["first"]);
             Assert.AreEqual(2, (int)c.ExtensionData0["second"]);
         }
+
+        public class Test
+        {
+            [JsonProperty("LastActivityDate")]
+            public DateTime? LastActivityDate { get; set; }
+
+            [JsonExtensionData]
+            public Dictionary<string, object> CustomFields { get; set; }
+        }
+
+        [Test]
+        public void DeserializeNullableProperty()
+        {
+            string json = @"{ ""LastActivityDate"":null, ""CustomField1"":""Testing"" }";
+
+            var c = JsonConvert.DeserializeObject<Test>(json);
+
+            Assert.AreEqual(null, c.LastActivityDate);
+            Assert.AreEqual(1, c.CustomFields.Count);
+            Assert.AreEqual("Testing", (string)c.CustomFields["CustomField1"]);
+        }
     }
 }

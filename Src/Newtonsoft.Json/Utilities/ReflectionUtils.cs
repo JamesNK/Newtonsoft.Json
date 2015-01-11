@@ -567,11 +567,13 @@ namespace Newtonsoft.Json.Utilities
                 case MemberTypes.Field:
                     FieldInfo fieldInfo = (FieldInfo)member;
 
+                    if (fieldInfo.IsLiteral)
+                        return false;
                     if (fieldInfo.IsInitOnly && !canSetReadOnly)
                         return false;
                     if (nonPublic)
                         return true;
-                    else if (fieldInfo.IsPublic)
+                    if (fieldInfo.IsPublic)
                         return true;
                     return false;
                 case MemberTypes.Property:
@@ -691,8 +693,16 @@ namespace Newtonsoft.Json.Utilities
             if (provider is Type)
             {
                 Type t = (Type)provider;
-                object[] attributes = (attributeType != null) ? t.GetCustomAttributes(attributeType, inherit) : t.GetCustomAttributes(inherit);
-                return attributes.Cast<Attribute>().ToArray();
+                object[] a = (attributeType != null) ? t.GetCustomAttributes(attributeType, inherit) : t.GetCustomAttributes(inherit);
+                Attribute[] attributes = a.Cast<Attribute>().ToArray();
+
+#if (NET20 || NET35)
+                // ye olde .NET GetCustomAttributes doesn't respect the inherit argument
+                if (inherit && t.BaseType != null)
+                    attributes = attributes.Union(GetAttributes(t.BaseType, attributeType, inherit)).ToArray();
+#endif
+
+                return attributes;
             }
 
             if (provider is Assembly)

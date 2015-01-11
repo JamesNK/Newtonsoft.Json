@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Specialized;
 #if !(NET35 || NET20 || PORTABLE || ASPNETCORE50 || PORTABLE40)
 using System.Collections.Concurrent;
 #endif
@@ -57,6 +58,19 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class JsonSerializerCollectionsTests : TestFixtureBase
     {
+        public class NameValueCollectionTestClass
+        {
+            public NameValueCollection Collection { get; set; }
+        }
+
+        [Test]
+        public void DeserializeNameValueCollection()
+        {
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => JsonConvert.DeserializeObject<NameValueCollectionTestClass>("{Collection:[]}"),
+                "Cannot create and populate list type System.Collections.Specialized.NameValueCollection. Path 'Collection', line 1, position 13.");
+        }
+
         [Test]
         public void MultiDObjectArray()
         {
