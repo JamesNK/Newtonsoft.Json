@@ -8588,6 +8588,7 @@ Path '', line 1, position 1.");
             Assert.AreEqual("derived", d.DerivedProperty);
         }
 
+#if !NETFX_CORE
         [Test]
         public void MailMessageConverterTest()
         {
@@ -8732,6 +8733,7 @@ Path '', line 1, position 1.");
                 throw new NotImplementedException();
             }
         }
+#endif
     }
 
     public class DerivedWithPrivate : BaseWithPrivate

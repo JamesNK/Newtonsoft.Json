@@ -58,6 +58,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class JsonSerializerCollectionsTests : TestFixtureBase
     {
+#if !NETFX_CORE
         public class NameValueCollectionTestClass
         {
             public NameValueCollection Collection { get; set; }
@@ -70,6 +71,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 () => JsonConvert.DeserializeObject<NameValueCollectionTestClass>("{Collection:[]}"),
                 "Cannot create and populate list type System.Collections.Specialized.NameValueCollection. Path 'Collection', line 1, position 13.");
         }
+#endif
 
         [Test]
         public void MultiDObjectArray()
