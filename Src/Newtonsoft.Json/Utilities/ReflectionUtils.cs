@@ -670,7 +670,13 @@ namespace Newtonsoft.Json.Utilities
 #if !(NETFX_CORE || PORTABLE)
         public static T[] GetAttributes<T>(object attributeProvider, bool inherit) where T : Attribute
         {
-            return (T[])GetAttributes(attributeProvider, typeof(T), inherit);
+            Attribute[] a = GetAttributes(attributeProvider, typeof(T), inherit);
+
+            T[] attributes = a as T[];
+            if (attributes != null)
+                return attributes;
+
+            return a.Cast<T>().ToArray();
         }
 
         public static Attribute[] GetAttributes(object attributeProvider, Type attributeType, bool inherit)
@@ -686,7 +692,7 @@ namespace Newtonsoft.Json.Utilities
             {
                 Type t = (Type)provider;
                 object[] attributes = (attributeType != null) ? t.GetCustomAttributes(attributeType, inherit) : t.GetCustomAttributes(inherit);
-                return (Attribute[])attributes;
+                return attributes.Cast<Attribute>().ToArray();
             }
 
             if (provider is Assembly)

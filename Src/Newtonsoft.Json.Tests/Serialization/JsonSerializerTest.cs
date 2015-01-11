@@ -173,6 +173,106 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Assert.AreEqual(Guid.Empty, c2.UpdatedBy_Id);
         }
+
+        [Serializable]
+        public partial class FaqItem
+        {
+            public FaqItem()
+            {
+                this.Sections = new HashSet<FaqSection>();
+            }
+
+            public int FaqId { get; set; }
+            public string Name { get; set; }
+            public bool IsDeleted { get; set; }
+
+            public virtual ICollection<FaqSection> Sections { get; set; }
+        }
+
+        [MetadataType(typeof(FaqItemMetadata))]
+        partial class FaqItem
+        {
+            [JsonProperty("FullSectionsProp")]
+            public ICollection<FaqSection> FullSections
+            {
+                get { return Sections; }
+            }
+        }
+
+        public class FaqItemMetadata
+        {
+            [JsonIgnore]
+            public virtual ICollection<FaqSection> Sections { get; set; }
+        }
+
+        public class FaqSection
+        {
+        }
+
+        public class FaqItemProxy : FaqItem
+        {
+            public bool IsProxy { get; set; }
+
+            public override ICollection<FaqSection> Sections
+            {
+                get { return base.Sections; }
+                set { base.Sections = value; }
+            }
+        }
+
+        [Test]
+        public void SerializeMetadataType2()
+        {
+            FaqItem c = new FaqItem();
+            c.FaqId = 1;
+            c.Sections.Add(new FaqSection());
+
+            string json = JsonConvert.SerializeObject(c, Formatting.Indented);
+
+            Console.WriteLine(json);
+
+            StringAssert.AreEqual(@"{
+  ""FaqId"": 1,
+  ""Name"": null,
+  ""IsDeleted"": false,
+  ""FullSectionsProp"": [
+    {}
+  ]
+}", json);
+
+            FaqItem c2 = JsonConvert.DeserializeObject<FaqItem>(json);
+
+            Assert.AreEqual(1, c2.FaqId);
+            Assert.AreEqual(1, c2.Sections.Count);
+        }
+
+        [Test]
+        public void SerializeMetadataTypeInheritance()
+        {
+            FaqItemProxy c = new FaqItemProxy();
+            c.FaqId = 1;
+            c.Sections.Add(new FaqSection());
+            c.IsProxy = true;
+
+            string json = JsonConvert.SerializeObject(c, Formatting.Indented);
+
+            Console.WriteLine(json);
+
+            StringAssert.AreEqual(@"{
+  ""IsProxy"": true,
+  ""FaqId"": 1,
+  ""Name"": null,
+  ""IsDeleted"": false,
+  ""FullSectionsProp"": [
+    {}
+  ]
+}", json);
+
+            FaqItemProxy c2 = JsonConvert.DeserializeObject<FaqItemProxy>(json);
+
+            Assert.AreEqual(1, c2.FaqId);
+            Assert.AreEqual(1, c2.Sections.Count);
+        }
 #endif
 
         public class NullTestClass
@@ -8465,6 +8565,151 @@ Path '', line 1, position 1.");
 
             Assert.AreEqual("base", d.BaseProperty);
             Assert.AreEqual("derived", d.DerivedProperty);
+        }
+
+        [Test]
+        public void MailMessageConverterTest()
+        {
+            const string JsonMessage = @"{
+  ""From"": {
+    ""Address"": ""askywalker@theEmpire.gov"",
+    ""DisplayName"": ""Darth Vader""
+  },
+  ""Sender"": null,
+  ""ReplyTo"": null,
+  ""ReplyToList"": [],
+  ""To"": [
+    {
+      ""Address"": ""lskywalker@theRebellion.org"",
+      ""DisplayName"": ""Luke Skywalker""
+    }
+  ],
+  ""Bcc"": [],
+  ""CC"": [
+    {
+      ""Address"": ""lorgana@alderaan.gov"",
+      ""DisplayName"": ""Princess Leia""
+    }
+  ],
+  ""Priority"": 0,
+  ""DeliveryNotificationOptions"": 0,
+  ""Subject"": ""Family tree"",
+  ""SubjectEncoding"": null,
+  ""Headers"": [],
+  ""HeadersEncoding"": null,
+  ""Body"": ""<strong>I am your father!</strong>"",
+  ""BodyEncoding"": ""US-ASCII"",
+  ""BodyTransferEncoding"": -1,
+  ""IsBodyHtml"": true,
+  ""Attachments"": [
+    {
+      ""FileName"": ""skywalker family tree.jpg"",
+      ""ContentBase64"": ""AQIDBAU=""
+    }
+  ],
+  ""AlternateViews"": []
+}";
+
+            System.Net.Mail.MailMessage mailMessage = JsonConvert.DeserializeObject<System.Net.Mail.MailMessage>(
+                JsonMessage,
+                new MailAddressReadConverter(),
+                new AttachmentReadConverter(),
+                new EncodingReadConverter());
+
+            Assert.AreEqual("Family tree", mailMessage.Subject);
+            Assert.AreEqual("Luke Skywalker", mailMessage.To[0].DisplayName);
+            Assert.AreEqual("skywalker family tree.jpg", mailMessage.Attachments[0].ContentDisposition.FileName);
+        }
+
+        public class MailAddressReadConverter : JsonConverter
+        {
+            public override bool CanConvert(Type objectType)
+            {
+                return objectType == typeof(System.Net.Mail.MailAddress);
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                var messageJObject = serializer.Deserialize<JObject>(reader);
+                if (messageJObject == null)
+                {
+                    return null;
+                }
+
+                var address = messageJObject.GetValue("Address", StringComparison.OrdinalIgnoreCase).ToObject<string>();
+
+                JToken displayNameToken;
+                string displayName;
+                if (messageJObject.TryGetValue("DisplayName", StringComparison.OrdinalIgnoreCase, out displayNameToken)
+                    && !string.IsNullOrEmpty(displayName = displayNameToken.ToObject<string>()))
+                {
+                    return new System.Net.Mail.MailAddress(address, displayName);
+                }
+
+                return new System.Net.Mail.MailAddress(address);
+            }
+
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public class AttachmentReadConverter : JsonConverter
+        {
+            public override bool CanConvert(Type objectType)
+            {
+                return objectType == typeof(System.Net.Mail.Attachment);
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                var info = serializer.Deserialize<AttachmentInfo>(reader);
+
+                var attachment = info != null
+                    ? new System.Net.Mail.Attachment(new MemoryStream(Convert.FromBase64String(info.ContentBase64)), "application/octet-stream")
+                    {
+                        ContentDisposition = { FileName = info.FileName }
+                    }
+                    : null;
+                return attachment;
+            }
+
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                throw new NotImplementedException();
+            }
+
+            private class AttachmentInfo
+            {
+                [JsonProperty(Required = Required.Always)]
+                public string FileName { get; set; }
+
+                [JsonProperty(Required = Required.Always)]
+                public string ContentBase64 { get; set; }
+            }
+        }
+
+        public class EncodingReadConverter : JsonConverter
+        {
+            public override bool CanConvert(Type objectType)
+            {
+                return typeof(Encoding).IsAssignableFrom(objectType);
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                var encodingName = serializer.Deserialize<string>(reader);
+                if (encodingName == null)
+                    return null;
+
+                return Encoding.GetEncoding(encodingName);
+            }
+
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 

@@ -229,14 +229,9 @@ namespace Newtonsoft.Json.Serialization
 
         private static Type GetAssociateMetadataTypeFromAttribute(Type type)
         {
-            object[] customAttributes;
-#if !PORTABLE
-            customAttributes = type.GetCustomAttributes(false);
-#else
-            customAttributes = type.GetTypeInfo().GetCustomAttributes(false).Cast<object>().ToArray();
-#endif
+            Attribute[] customAttributes = ReflectionUtils.GetAttributes(type, null, true);
 
-            foreach (var attribute in customAttributes)
+            foreach (Attribute attribute in customAttributes)
             {
                 Type attributeType = attribute.GetType();
 

@@ -814,6 +814,13 @@ namespace Newtonsoft.Json.Serialization
             }
             else
             {
+                // can't populate something like an IEnumerable
+                if (!arrayContract.CanDeserialize)
+                {
+                    reader.Skip();
+                    return existingValue;
+                }
+
                 value = PopulateList((arrayContract.ShouldCreateWrapper) ? arrayContract.CreateWrapper(existingValue) : (IList)existingValue, reader, arrayContract, member, id);
             }
 
