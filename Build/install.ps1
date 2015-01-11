@@ -5,7 +5,7 @@ param($installPath, $toolsPath, $package, $project)
 
 try
 {
-  $url = "http://james.newtonking.com/json"
+  $url = "http://james.newtonking.com/json/install?version=" + $package.Version
   $dte2 = Get-Interface $dte ([EnvDTE80.DTE2])
 
   if ($dte2.ActiveWindow.Caption -eq "Package Manager Console")
@@ -46,11 +46,14 @@ try
 
     $instanceField = [NuGet.Dialog.PackageManagerWindow].GetField("CurrentInstance", [System.Reflection.BindingFlags]::Static -bor `
       [System.Reflection.BindingFlags]::NonPublic)
+
     $consoleField = [NuGet.Dialog.PackageManagerWindow].GetField("_smartOutputConsoleProvider", [System.Reflection.BindingFlags]::Instance -bor `
       [System.Reflection.BindingFlags]::NonPublic)
+
     if ($instanceField -eq $null -or $consoleField -eq $null) { return }
 
     $instance = $instanceField.GetValue($null)
+
     if ($instance -eq $null) { return }
 
     $consoleProvider = $consoleField.GetValue($instance)
@@ -86,8 +89,24 @@ try
 }
 catch
 {
-  # stop potential errors from bubbling up
-  # worst case the splash page won't open
+  try
+  {
+    $pmPane = $dte2.ToolWindows.OutputWindow.OutputWindowPanes.Item("Package Manager")
+
+    $selection = $pmPane.TextDocument.Selection
+    $selection.StartOfDocument($false)
+    $selection.EndOfDocument($true)
+
+    if ($selection.Text.StartsWith("Installing 'Newtonsoft.Json "))
+    {
+      $dte2.ItemOperations.Navigate($url) | Out-Null
+    }
+  }
+  catch
+  {
+    # stop potential errors from bubbling up
+    # worst case the splash page won't open  
+  }
 }
 
-# yolo
+# still yolo
