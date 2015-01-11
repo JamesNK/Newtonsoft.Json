@@ -666,7 +666,7 @@ namespace Newtonsoft.Json.Utilities
         {
             T[] attributes = GetAttributes<T>(attributeProvider, inherit);
 
-            return (attributes != null) ? attributes.SingleOrDefault() : null;
+            return (attributes != null) ? attributes.FirstOrDefault() : null;
         }
 
 #if !(NETFX_CORE || PORTABLE)
