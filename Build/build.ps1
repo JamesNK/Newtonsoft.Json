@@ -1,11 +1,11 @@
 ﻿properties { 
-  $zipFileName = "Json60r8.zip"
-  $majorVersion = "6.0"
-  $majorWithReleaseVersion = "6.0.8"
+  $zipFileName = "Json70r1.zip"
+  $majorVersion = "7.0"
+  $majorWithReleaseVersion = "7.0.1"
   $version = GetVersion $majorWithReleaseVersion
   $signAssemblies = $false
   $signKeyPath = "C:\Development\Releases\newtonsoft.snk"
-  $buildDocumentation = $true
+  $buildDocumentation = $false
   $buildNuGet = $true
   $treatWarningsAsErrors = $false
   $workingName = if ($workingName) {$workingName} else {"Working"}
@@ -22,7 +22,6 @@
     @{Name = "Newtonsoft.Json.Portable"; TestsName = "Newtonsoft.Json.Tests.Portable"; TestsFunction = "NUnitTests"; Constants="PORTABLE"; FinalDir="Portable"; NuGetDir = "portable-net45+wp80+win8+wpa81+aspnetcore50"; Framework="net-4.0"; Sign=$true},
     @{Name = "Newtonsoft.Json.Portable40"; TestsName = "Newtonsoft.Json.Tests.Portable40"; TestsFunction = "NUnitTests"; Constants="PORTABLE40"; FinalDir="Portable40"; NuGetDir = "portable-net40+sl5+wp80+win8+wpa81"; Framework="net-4.0"; Sign=$true},
     #@{Name = $null; TestsName = "Newtonsoft.Json.Tests.AspNetCore50"; TestsFunction = "CoreClrTests"; Constants="ASPNETCORE50"; FinalDir="ASPNETCORE50"; NuGetDir = $null; Framework=$null; Sign=$null},
-    @{Name = "Newtonsoft.Json.WinRT"; TestsName = "Newtonsoft.Json.Tests.WinRT"; TestsFunction = "WinRTTests"; Constants="NETFX_CORE"; FinalDir="WinRT"; NuGetDir = "netcore45"; Framework="net-4.5"; Sign=$true},
     @{Name = "Newtonsoft.Json.Net40"; TestsName = "Newtonsoft.Json.Tests.Net40"; TestsFunction = "NUnitTests"; Constants="NET40"; FinalDir="Net40"; NuGetDir = "net40"; Framework="net-4.0"; Sign=$true},
     @{Name = "Newtonsoft.Json.Net35"; TestsName = "Newtonsoft.Json.Tests.Net35"; TestsFunction = "NUnitTests"; Constants="NET35"; FinalDir="Net35"; NuGetDir = "net35"; Framework="net-2.0"; Sign=$true},
     @{Name = "Newtonsoft.Json.Net20"; TestsName = "Newtonsoft.Json.Tests.Net20"; TestsFunction = "NUnitTests"; Constants="NET20"; FinalDir="Net20"; NuGetDir = "net20"; Framework="net-2.0"; Sign=$true}
