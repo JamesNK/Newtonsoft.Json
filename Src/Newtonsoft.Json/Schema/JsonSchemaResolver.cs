@@ -35,8 +35,14 @@ using System.Linq;
 namespace Newtonsoft.Json.Schema
 {
     /// <summary>
+    /// <para>
     /// Resolves <see cref="JsonSchema"/> from an id.
+    /// </para>
+    /// <note type="caution">
+    /// JSON Schema validation has been moved to its own package. See <see href="http://www.newtonsoft.com">http://www.newtonsoft.com</see> for more details.
+    /// </note>
     /// </summary>
+    [Obsolete("JSON Schema validation has been moved to its own package. See http://www.newtonsoft.com for more details.")]
     public class JsonSchemaResolver
     {
         /// <summary>

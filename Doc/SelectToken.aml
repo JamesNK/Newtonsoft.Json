@@ -34,11 +34,7 @@
       </content>
     </section>
     <relatedTopics>
-      <externalLink>
-        <linkText>LINQ to JSON</linkText>
-        <linkUri>LINQtoJSON.htm</linkUri>
-        <linkTarget>_self</linkTarget>
-      </externalLink>
+      <link xlink:href="LINQtoJSON" />
 
       <codeEntityReference>Overload:Newtonsoft.Json.Linq.JToken.SelectToken</codeEntityReference>
     </relatedTopics>

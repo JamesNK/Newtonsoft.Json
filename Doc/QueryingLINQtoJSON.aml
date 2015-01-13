@@ -47,11 +47,7 @@
       </content>
     </section>
     <relatedTopics>
-      <externalLink>
-        <linkText>LINQ to JSON</linkText>
-        <linkUri>LINQtoJSON.htm</linkUri>
-        <linkTarget>_self</linkTarget>
-      </externalLink>
+      <link xlink:href="LINQtoJSON" />
 
       <codeEntityReference>P:Newtonsoft.Json.Linq.JToken.Item(System.Object)</codeEntityReference>
       <codeEntityReference>M:Newtonsoft.Json.Linq.JToken.Children</codeEntityReference>
