@@ -20,7 +20,7 @@
     <ProjectSummary>
     </ProjectSummary>
     <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, Namespace, TypeParameter, AutoDocumentDispose</MissingTags>
-    <VisibleItems>InheritedMembers, InheritedFrameworkMembers, Protected, SealedProtected</VisibleItems>
+    <VisibleItems>InheritedMembers, InheritedFrameworkMembers, Protected, SealedProtected, ProtectedInternalAsProtected</VisibleItems>
     <HtmlHelp1xCompilerPath>
     </HtmlHelp1xCompilerPath>
     <HtmlHelp2xCompilerPath>
@@ -36,7 +36,7 @@
     <HelpTitle>Json.NET Documentation</HelpTitle>
     <PresentationStyle>VS2013</PresentationStyle>
     <NamingMethod>MemberName</NamingMethod>
-    <DocumentationSourcePath>..\Src\Newtonsoft.Json\bin\Release</DocumentationSourcePath>
+    <DocumentationSourcePath>..\Src\Newtonsoft.Json\bin\Release\Net45</DocumentationSourcePath>
     <DocumentationSources>
       <DocumentationSource sourceFile="$(DocumentationSourcePath)\Newtonsoft.Json.dll" />
       <DocumentationSource sourceFile="$(DocumentationSourcePath)\Newtonsoft.Json.xml" />
@@ -47,7 +47,8 @@
       <NamespaceSummaryItem name="Newtonsoft.Json.Converters" isDocumented="True">The &lt;b&gt;Newtonsoft.Json.Converters&lt;/b&gt; namespace provides classes that inherit from &lt;a href="T_Newtonsoft_Json_JsonConverter.htm"&gt;JsonConverter&lt;/a&gt;.</NamespaceSummaryItem>
       <NamespaceSummaryItem name="Newtonsoft.Json.Linq" isDocumented="True">The &lt;b&gt;Newtonsoft.Json.Linq&lt;/b&gt; namespace provides classes that are used to implement LINQ to JSON.</NamespaceSummaryItem>
       <NamespaceSummaryItem name="Newtonsoft.Json.Linq.ComponentModel" isDocumented="True">The &lt;b&gt;Newtonsoft.Json.Linq.ComponentModel&lt;/b&gt; namespace provides classes for LINQ to JSON databinding.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Newtonsoft.Json.Schema" isDocumented="True">The &lt;b&gt;Newtonsoft.Json.Schema&lt;/b&gt; namespace provides classes that are used to implement JSON schema.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Newtonsoft.Json.Schema" isDocumented="True">&lt;para&gt;The &lt;b&gt;Newtonsoft.Json.Schema&lt;/b&gt; namespace provides classes that are used to implement JSON schema.&lt;/para&gt;
+        &lt;para&gt;&lt;b&gt;Obsolete.&lt;/b&gt; JSON Schema validation has been moved to its own package. See &lt;a href="http://www.newtonsoft.com"&gt;http://www.newtonsoft.com&lt;/a&gt; for more details.&lt;/para&gt;</NamespaceSummaryItem>
       <NamespaceSummaryItem name="Newtonsoft.Json.Serialization" isDocumented="True">The &lt;b&gt;Newtonsoft.Json.Linq&lt;/b&gt; namespace provides classes that are used when serializing and deserializing JSON.</NamespaceSummaryItem>
       <NamespaceSummaryItem name="Newtonsoft.Json.Utilities" isDocumented="False" />
       <NamespaceSummaryItem name="Newtonsoft.Json.Bson" isDocumented="True">The &lt;b&gt;Newtonsoft.Json.Linq&lt;/b&gt; namespace provides classes that are used to implement BSON.</NamespaceSummaryItem>
@@ -57,12 +58,12 @@
     <ComponentConfigurations>
       <ComponentConfig id="Code Block Component" enabled="True">
         <component id="Code Block Component" type="SandcastleBuilder.Components.CodeBlockComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
-  <basePath value="{@HtmlEncProjectFolder}" />
-  <outputPaths>{@HelpFormatOutputPaths}</outputPaths>
-  <allowMissingSource value="false" />
-  <removeRegionMarkers value="false" />
-  <colorizer syntaxFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xml" styleFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xsl" stylesheet="{@SHFBFolder}PresentationStyles\Colorizer\highlight.css" scriptFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.js" disabled="{@DisableCodeBlockComponent}" language="cs" tabSize="0" numberLines="true" outlining="false" keepSeeTags="false" defaultTitle="true" />
-</component>
+          <basePath value="{@HtmlEncProjectFolder}" />
+          <outputPaths>{@HelpFormatOutputPaths}</outputPaths>
+          <allowMissingSource value="false" />
+          <removeRegionMarkers value="false" />
+          <colorizer syntaxFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xml" styleFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xsl" stylesheet="{@SHFBFolder}PresentationStyles\Colorizer\highlight.css" scriptFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.js" disabled="{@DisableCodeBlockComponent}" language="cs" tabSize="0" numberLines="true" outlining="false" keepSeeTags="false" defaultTitle="true" />
+        </component>
       </ComponentConfig>
     </ComponentConfigurations>
     <IndentHtml>False</IndentHtml>

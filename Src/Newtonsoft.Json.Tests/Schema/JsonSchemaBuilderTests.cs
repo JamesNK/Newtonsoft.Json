@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#pragma warning disable 618
 using System;
 #if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -644,3 +645,4 @@ namespace Newtonsoft.Json.Tests.Schema
         }
     }
 }
+#pragma warning restore 618

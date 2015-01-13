@@ -40,8 +40,14 @@ using System.Linq;
 namespace Newtonsoft.Json.Schema
 {
     /// <summary>
+    /// <para>
     /// Generates a <see cref="JsonSchema"/> from a specified <see cref="Type"/>.
+    /// </para>
+    /// <note type="caution">
+    /// JSON Schema validation has been moved to its own package. See <see href="http://www.newtonsoft.com">http://www.newtonsoft.com</see> for more details.
+    /// </note>
     /// </summary>
+    [Obsolete("JSON Schema validation has been moved to its own package. See http://www.newtonsoft.com for more details.")]
     public class JsonSchemaGenerator
     {
         /// <summary>

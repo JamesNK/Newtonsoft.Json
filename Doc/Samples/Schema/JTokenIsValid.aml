@@ -6,6 +6,16 @@
       using the <codeEntityReference>M:Newtonsoft.Json.Schema.Extensions.IsValid(Newtonsoft.Json.Linq.JToken,Newtonsoft.Json.Schema.JsonSchema)</codeEntityReference>
       extension method.</para>
     </introduction>
+<alert class="caution">
+  <para>
+    JSON Schema validation has been moved to its own package. See <externalLink>
+        <linkText>http://www.newtonsoft.com</linkText>
+        <linkUri>http://www.newtonsoft.com</linkUri>
+        <linkTarget>_blank</linkTarget>
+      </externalLink>
+      for more details.
+  </para>
+</alert>
     <section>
       <title>Sample</title>
       <content>

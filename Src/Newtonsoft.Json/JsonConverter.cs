@@ -64,9 +64,15 @@ namespace Newtonsoft.Json
         public abstract bool CanConvert(Type objectType);
 
         /// <summary>
+        /// <para>
         /// Gets the <see cref="JsonSchema"/> of the JSON produced by the JsonConverter.
+        /// </para>
+        /// <note type="caution">
+        /// JSON Schema validation has been moved to its own package. See <see href="http://www.newtonsoft.com">http://www.newtonsoft.com</see> for more details.
+        /// </note>
         /// </summary>
         /// <returns>The <see cref="JsonSchema"/> of the JSON produced by the JsonConverter.</returns>
+        [Obsolete("JSON Schema validation has been moved to its own package. It is strongly recommended that you do not override GetSchema() in your own converter. It is not used by Json.NET and will be removed at some point in the future. Converter's that override GetSchema() will stop working when it is removed.")]
         public virtual JsonSchema GetSchema()
         {
             return null;

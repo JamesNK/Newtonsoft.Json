@@ -108,31 +108,6 @@ namespace Newtonsoft.Json.Tests
             public DateTime Date { get; set; }
         }
 
-        [Test]
-        public void GenerateSchema()
-        {
-            JsonSchemaGenerator generator = new JsonSchemaGenerator();
-
-            JsonSchema schema = generator.Generate(typeof(Session));
-
-            // {
-            //   "type": "object",
-            //   "properties": {
-            //     "Name": {
-            //       "required": true,
-            //       "type": [
-            //         "string",
-            //         "null"
-            //       ]
-            //     },
-            //     "Date": {
-            //       "required": true,
-            //       "type": "string"
-            //     }
-            //   }
-            // }
-        }
-
         public class HtmlColorConverter : JsonConverter
         {
             public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
