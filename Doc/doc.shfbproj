@@ -87,6 +87,7 @@
     </TransformComponentArguments>
     <MaximumGroupParts>2</MaximumGroupParts>
     <NamespaceGrouping>False</NamespaceGrouping>
+    <FooterText>&amp;lt%3ba href=&amp;quot%3b../../&amp;quot%3b&amp;gt%3bJson.NET Home&amp;lt%3b/a&amp;gt%3b</FooterText>
   </PropertyGroup>
   <!-- There are no properties for these two groups but they need to appear in
        order for Visual Studio to perform the build. -->
