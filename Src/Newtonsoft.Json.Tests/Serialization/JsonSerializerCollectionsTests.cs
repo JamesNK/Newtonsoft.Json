@@ -1556,6 +1556,19 @@ namespace Newtonsoft.Json.Tests.Serialization
 ]", json);
         }
 #endif
+
+        [Test]
+        public void EmptyStringInHashtableIsDeserialized()
+        {
+            string externalJson = @"{""$type"":""System.Collections.Hashtable, mscorlib"",""testkey"":""""}";
+
+            JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+
+            JsonConvert.SerializeObject(new Hashtable { { "testkey", "" } }, settings);
+            Hashtable deserializeTest2 = JsonConvert.DeserializeObject<Hashtable>(externalJson, settings);
+
+            Assert.AreEqual(deserializeTest2["testkey"], "");
+        }
     }
 
 #if !(NET40 || NET35 || NET20 || PORTABLE40)

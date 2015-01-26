@@ -279,7 +279,7 @@ namespace Newtonsoft.Json.Serialization
                         string s = (string)reader.Value;
 
                         // convert empty string to null automatically for nullable types
-                        if (string.IsNullOrEmpty(s) && objectType != typeof(string) && objectType != typeof(object) && contract != null && contract.IsNullable)
+                        if (string.IsNullOrEmpty(s) && objectType != null && objectType != typeof(string) && objectType != typeof(object) && contract != null && contract.IsNullable)
                             return null;
 
                         // string that needs to be returned as a byte array should be base 64 decoded
