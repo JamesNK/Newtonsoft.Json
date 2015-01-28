@@ -286,7 +286,6 @@ namespace Newtonsoft.Json.Serialization
 
                     switch (serializerReferenceLoopHandling)
                     {
-                        case ReferenceLoopHandling.Error:
                         case ReferenceLoopHandling.Ignore:
                             if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
                                 TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, writer.Path, message + ". Skipping serializing self referenced value."), null);
