@@ -267,38 +267,38 @@ namespace Newtonsoft.Json.Serialization
 
             if (_serializeStack.IndexOf(value) != -1)
             {
-				var serializerReferenceLoopHandling = referenceLoopHandling.GetValueOrDefault(Serializer._referenceLoopHandling);
+                var serializerReferenceLoopHandling = referenceLoopHandling.GetValueOrDefault(Serializer._referenceLoopHandling);
 
-				if (serializerReferenceLoopHandling == ReferenceLoopHandling.Error)
-				{
-					string message = "Self referencing loop detected in {0}.".FormatWith(CultureInfo.InvariantCulture, writer.Path);
-					if (property != null)
-						message += " Consider applying [JsonProperty(ReferenceLoopHandling = ReferenceLoopHandling.Ignore] to property {0}.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName);
+                if (serializerReferenceLoopHandling == ReferenceLoopHandling.Error)
+                {
+                    string message = "Self referencing loop detected in {0}.".FormatWith(CultureInfo.InvariantCulture, writer.Path);
+                    if (property != null)
+                        message += " Consider applying [JsonProperty(ReferenceLoopHandling = ReferenceLoopHandling.Ignore] to property {0}.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName);
 
-					throw new JsonSerializationException(message);
-				}
-				else
-				{
-					string message = "Self referencing loop detected";
-					if (property != null)
-						message += " for property '{0}'".FormatWith(CultureInfo.InvariantCulture, property.PropertyName);
-					message += " with type '{0}'.".FormatWith(CultureInfo.InvariantCulture, value.GetType());
+                    throw new JsonSerializationException(message);
+                }
+                else
+                {
+                    string message = "Self referencing loop detected";
+                    if (property != null)
+                        message += " for property '{0}'".FormatWith(CultureInfo.InvariantCulture, property.PropertyName);
+                    message += " with type '{0}'.".FormatWith(CultureInfo.InvariantCulture, value.GetType());
 
-					switch (serializerReferenceLoopHandling)
-					{
-						case ReferenceLoopHandling.Error:
-						case ReferenceLoopHandling.Ignore:
-							if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
-								TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, writer.Path, message + ". Skipping serializing self referenced value."), null);
+                    switch (serializerReferenceLoopHandling)
+                    {
+                        case ReferenceLoopHandling.Error:
+                        case ReferenceLoopHandling.Ignore:
+                            if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
+                                TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, writer.Path, message + ". Skipping serializing self referenced value."), null);
 
-							return false;
-						case ReferenceLoopHandling.Serialize:
-							if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
-								TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, writer.Path, message + ". Serializing self referenced value."), null);
+                            return false;
+                        case ReferenceLoopHandling.Serialize:
+                            if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
+                                TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, writer.Path, message + ". Serializing self referenced value."), null);
 
-							return true;
-					}
-				}
+                            return true;
+                    }
+                }
             }
 
             return true;
