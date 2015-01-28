@@ -271,9 +271,16 @@ namespace Newtonsoft.Json.Serialization
 
                 if (serializerReferenceLoopHandling == ReferenceLoopHandling.Error)
                 {
-                    string message = "Self referencing loop detected in {0}.".FormatWith(CultureInfo.InvariantCulture, writer.Path);
-                    if (property != null)
-                        message += " Consider applying [JsonProperty(ReferenceLoopHandling = ReferenceLoopHandling.Ignore] to property {0}.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName);
+                    string message;
+                    if (property == null)
+                    {
+                        message = "Self referencing loop detected with type {0}, Path: {1}".FormatWith(CultureInfo.InvariantCulture, value.GetType(), writer.Path);
+                    }
+                    else
+                    {
+                        message = "Self referencing loop detected in {0}. Consider applying [JsonProperty(ReferenceLoopHandling = ReferenceLoopHandling.Ignore] to property {1}."
+                            .FormatWith(CultureInfo.InvariantCulture, writer.Path, property.PropertyName);
+                    }
 
                     throw new JsonSerializationException(message);
                 }
