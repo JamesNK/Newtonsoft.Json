@@ -8,9 +8,9 @@
     </introduction>
 <alert class="caution">
   <para>
-    JSON Schema validation has been moved to its own package. See <externalLink>
-        <linkText>http://www.newtonsoft.com</linkText>
-        <linkUri>http://www.newtonsoft.com</linkUri>
+    <legacyBold>Obsolete.</legacyBold> JSON Schema validation has been moved to its own package. See <externalLink>
+        <linkText>http://www.newtonsoft.com/jsonschema</linkText>
+        <linkUri>http://www.newtonsoft.com/jsonschema</linkUri>
         <linkTarget>_blank</linkTarget>
       </externalLink>
       for more details.
