@@ -3,6 +3,7 @@
   $majorVersion = "7.0"
   $majorWithReleaseVersion = "7.0.1"
   $version = GetVersion $majorWithReleaseVersion
+  $packageId = "Newtonsoft.Json"
   $signAssemblies = $false
   $signKeyPath = "C:\Development\Releases\newtonsoft.snk"
   $buildDocumentation = $false
@@ -87,8 +88,19 @@ task Package -depends Build {
   
   if ($buildNuGet)
   {
-    New-Item -Path $workingDir\NuGet -ItemType Directory    
-    Copy-Item -Path "$buildDir\Newtonsoft.Json.nuspec" -Destination $workingDir\NuGet\Newtonsoft.Json.nuspec -recurse
+    New-Item -Path $workingDir\NuGet -ItemType Directory
+
+    $nuspecPath = "$workingDir\NuGet\Newtonsoft.Json.nuspec"
+    Copy-Item -Path "$buildDir\Newtonsoft.Json.nuspec" -Destination $nuspecPath -recurse
+
+    Write-Host "Building NuGet package from $nuspecPath"
+
+    $xml = [xml](Get-Content $nuspecPath)
+    Edit-XmlNodes -doc $xml -xpath "//*[local-name() = 'id']" -value $packageId
+
+    Write-Host $xml.OuterXml
+
+    $xml.save($nuspecPath)
 
     New-Item -Path $workingDir\NuGet\tools -ItemType Directory
     Copy-Item -Path "$buildDir\install.ps1" -Destination $workingDir\NuGet\tools\install.ps1 -recurse
@@ -110,7 +122,7 @@ task Package -depends Build {
   
     robocopy $sourceDir $workingDir\NuGet\src *.cs /S /NP /XD Newtonsoft.Json.Tests Newtonsoft.Json.TestConsole obj | Out-Default
 
-    exec { .\Tools\NuGet\NuGet.exe pack $workingDir\NuGet\Newtonsoft.Json.nuspec -Symbols }
+    exec { .\Tools\NuGet\NuGet.exe pack $nuspecPath -Symbols }
     move -Path .\*.nupkg -Destination $workingDir\NuGet
   }
 
@@ -261,5 +273,29 @@ function Update-AssemblyInfoFiles ([string] $sourceDir, [string] $assemblyVersio
             % {$_ -replace $assemblyVersionPattern, $assemblyVersion } |
             % {$_ -replace $fileVersionPattern, $fileVersion }
         } | Set-Content $filename
+    }
+}
+
+function Edit-XmlNodes {
+    param (
+        [xml] $doc,
+        [string] $xpath = $(throw "xpath is a required parameter"),
+        [string] $value = $(throw "value is a required parameter")
+    )
+    
+    $nodes = $doc.SelectNodes($xpath)
+    $count = $nodes.Count
+
+    Write-Host "Found $count nodes with path '$xpath'"
+    
+    foreach ($node in $nodes) {
+        if ($node -ne $null) {
+            if ($node.NodeType -eq "Element") {
+                $node.InnerXml = $value
+            }
+            else {
+                $node.Value = $value
+            }
+        }
     }
 }

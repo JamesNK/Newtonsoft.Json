@@ -29,8 +29,8 @@
   <Topic id="ConvertingJSONandXML" visible="True" title="Converting between JSON and XML" />
   <Topic id="JsonNetVsDotNetSerializers" visible="True" title="Json.NET vs .NET Serializers" />
   <Topic id="JsonNetVsWindowsDataJson" visible="True" title="Json.NET vs Windows.Data.Json" />
-  <Topic id="Samples" visible="True" isExpanded="true" isSelected="true" title="Samples">
-    <Topic id="d6e185d5-c992-44fc-8d8f-d9acc2bbec2f" visible="True" noFile="true" title="Serializing JSON">
+  <Topic id="Samples" visible="True" isExpanded="true" title="Samples">
+    <Topic id="d6e185d5-c992-44fc-8d8f-d9acc2bbec2f" visible="True" noFile="true" isExpanded="true" title="Serializing JSON">
       <Topic id="SerializeObject" visible="True" title="Serialize an Object" />
       <Topic id="SerializeCollection" visible="True" title="Serialize a Collection" />
       <Topic id="SerializeDictionary" visible="True" title="Serialize a Dictionary" />
@@ -53,7 +53,7 @@
       <Topic id="DefaultValueHandlingIgnore" visible="True" title="DefaultValueHandling setting" />
       <Topic id="DeserializeMissingMemberHandling" visible="True" title="MissingMemberHandling setting" />
       <Topic id="NullValueHandlingIgnore" visible="True" title="NullValueHandling setting" />
-      <Topic id="ReferenceLoopHandlingIgnore" visible="True" title="RefereneLoopHandling setting" />
+      <Topic id="ReferenceLoopHandlingIgnore" visible="True" isSelected="true" title="ReferenceLoopHandling setting" />
       <Topic id="PreserveReferencesHandlingObject" visible="True" title="PreserveReferencesHandling setting" />
       <Topic id="SerializeDateFormatHandling" visible="True" title="DateFormatHandling setting" />
       <Topic id="SerializeDateTimeZoneHandling" visible="True" title="DateTimeZoneHandling setting" />
