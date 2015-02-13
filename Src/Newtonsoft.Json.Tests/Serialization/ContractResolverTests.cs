@@ -162,7 +162,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             var resolver = new DefaultContractResolver();
             var contract = (JsonObjectContract)resolver.ResolveContract(typeof(Invoice));
 
-            JsonProperty property = contract.Properties["FollowUpDays"];
+            JsonProperty property = contract.Properties.GetClosestMatchProperty("FollowUpDays");
             Assert.AreEqual(1, property.AttributeProvider.GetAttributes(false).Count);
             Assert.AreEqual(typeof(DefaultValueAttribute), property.AttributeProvider.GetAttributes(false)[0].GetType());
         }
@@ -419,7 +419,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             var resolver = new DefaultContractResolver();
             var contract = (JsonObjectContract)resolver.ResolveContract(typeof(AddressWithDataMember));
 
-            Assert.AreEqual("AddressLine1", contract.Properties[0].PropertyName);
+            Assert.AreEqual("AddressLine1", contract.Properties.First().PropertyName);
         }
 #endif
 
@@ -444,7 +444,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(contract.ParametrizedConstructor, typeof(PublicParametizedConstructorWithPropertyNameConflictWithAttribute).GetConstructor(new[] { typeof(string) }));
 #pragma warning restore 618
             Assert.AreEqual(1, contract.CreatorParameters.Count);
-            Assert.AreEqual("name", contract.CreatorParameters[0].PropertyName);
+            Assert.AreEqual("name", contract.CreatorParameters.First().PropertyName);
 
 #pragma warning disable 618
             contract.ParametrizedConstructor = null;
@@ -464,8 +464,8 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(contract.OverrideConstructor, typeof(MultipleParamatrizedConstructorsJsonConstructor).GetConstructor(new[] { typeof(string), typeof(int) }));
 #pragma warning restore 618
             Assert.AreEqual(2, contract.CreatorParameters.Count);
-            Assert.AreEqual("Value", contract.CreatorParameters[0].PropertyName);
-            Assert.AreEqual("Age", contract.CreatorParameters[1].PropertyName);
+            Assert.AreEqual("Value", contract.CreatorParameters.First().PropertyName);
+            Assert.AreEqual("Age", contract.CreatorParameters.Skip(1).First().PropertyName);
 
 #pragma warning disable 618
             contract.OverrideConstructor = null;

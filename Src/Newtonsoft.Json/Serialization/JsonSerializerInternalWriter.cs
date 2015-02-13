@@ -392,9 +392,8 @@ namespace Newtonsoft.Json.Serialization
 
             int initialDepth = writer.Top;
 
-            for (int index = 0; index < contract.Properties.Count; index++)
+            foreach(var property in contract.Properties)
             {
-                JsonProperty property = contract.Properties[index];
                 try
                 {
                     object memberValue;
@@ -781,10 +780,8 @@ namespace Newtonsoft.Json.Serialization
 
             int initialDepth = writer.Top;
 
-            for (int index = 0; index < contract.Properties.Count; index++)
+            foreach(var property in contract.Properties)
             {
-                JsonProperty property = contract.Properties[index];
-
                 // only write non-dynamic properties that have an explicit attribute
                 if (property.HasMemberAttribute)
                 {

@@ -173,6 +173,12 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
+        /// Aliases for property names to be used during deserialization.
+        /// This is valuable for renaming properties.
+        /// </summary>
+        public string[] Aliases { get; set; }
+
+        /// <summary>
         /// Gets or sets whether this property's collection items are serialized as a reference.
         /// </summary>
         /// <value>Whether this property's collection items are serialized as a reference.</value>

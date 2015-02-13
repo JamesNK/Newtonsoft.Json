@@ -598,7 +598,7 @@ namespace Newtonsoft.Json.Serialization
         /// <param name="constructor">The constructor to create properties for.</param>
         /// <param name="memberProperties">The type's member properties.</param>
         /// <returns>Properties for the given <see cref="ConstructorInfo"/>.</returns>
-        protected virtual IList<JsonProperty> CreateConstructorParameters(ConstructorInfo constructor, JsonPropertyCollection memberProperties)
+        protected virtual IEnumerable<JsonProperty> CreateConstructorParameters(ConstructorInfo constructor, JsonPropertyCollection memberProperties)
         {
             var constructorParameters = constructor.GetParameters();
 
@@ -1228,6 +1228,7 @@ namespace Newtonsoft.Json.Serialization
                 property._required = propertyAttribute._required;
                 property.Order = propertyAttribute._order;
                 property.DefaultValueHandling = propertyAttribute._defaultValueHandling;
+                property.AddAliases(propertyAttribute.Aliases);
                 hasMemberAttribute = true;
             }
 #if !NET20
