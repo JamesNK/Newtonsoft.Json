@@ -614,5 +614,117 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(null, reader.ValueType);
             Assert.AreEqual(null, reader.Value);
         }
+
+        [Test]
+        public void InitialPath_PropertyBase_PropertyToken()
+        {
+            JObject o = new JObject
+            {
+                { "prop1", true }
+            };
+
+            JTokenReader reader = new JTokenReader(o, "baseprop");
+
+            Assert.AreEqual("baseprop", reader.Path);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual("baseprop", reader.Path);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual("baseprop.prop1", reader.Path);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual("baseprop.prop1", reader.Path);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual("baseprop", reader.Path);
+
+            Assert.IsFalse(reader.Read());
+            Assert.AreEqual("baseprop", reader.Path);
+        }
+
+        [Test]
+        public void InitialPath_ArrayBase_PropertyToken()
+        {
+            JObject o = new JObject
+            {
+                { "prop1", true }
+            };
+
+            JTokenReader reader = new JTokenReader(o, "[0]");
+
+            Assert.AreEqual("[0]", reader.Path);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual("[0]", reader.Path);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual("[0].prop1", reader.Path);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual("[0].prop1", reader.Path);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual("[0]", reader.Path);
+
+            Assert.IsFalse(reader.Read());
+            Assert.AreEqual("[0]", reader.Path);
+        }
+
+        [Test]
+        public void InitialPath_PropertyBase_ArrayToken()
+        {
+            JArray a = new JArray
+            {
+                1, 2
+            };
+
+            JTokenReader reader = new JTokenReader(a, "baseprop");
+
+            Assert.AreEqual("baseprop", reader.Path);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual("baseprop", reader.Path);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual("baseprop[0]", reader.Path);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual("baseprop[1]", reader.Path);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual("baseprop", reader.Path);
+
+            Assert.IsFalse(reader.Read());
+            Assert.AreEqual("baseprop", reader.Path);
+        }
+
+        [Test]
+        public void InitialPath_ArrayBase_ArrayToken()
+        {
+            JArray a = new JArray
+            {
+                1, 2
+            };
+
+            JTokenReader reader = new JTokenReader(a, "[0]");
+
+            Assert.AreEqual("[0]", reader.Path);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual("[0]", reader.Path);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual("[0][0]", reader.Path);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual("[0][1]", reader.Path);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual("[0]", reader.Path);
+
+            Assert.IsFalse(reader.Read());
+            Assert.AreEqual("[0]", reader.Path);
+        }
     }
 }

@@ -374,7 +374,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Get or set how <see cref="DateTime"/> and <see cref="DateTimeOffset"/> values are formatting when writing JSON text.
+        /// Get or set how <see cref="DateTime"/> and <see cref="DateTimeOffset"/> values are formatted when writing JSON text, and the expected date format when reading JSON text.
         /// </summary>
         public virtual string DateFormatString
         {
@@ -644,7 +644,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Deserializes the Json structure contained by the specified <see cref="JsonReader"/>.
+        /// Deserializes the JSON structure contained by the specified <see cref="JsonReader"/>.
         /// </summary>
         /// <param name="reader">The <see cref="JsonReader"/> that contains the JSON structure to deserialize.</param>
         /// <returns>The <see cref="Object"/> being deserialized.</returns>
@@ -654,7 +654,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Deserializes the Json structure contained by the specified <see cref="StringReader"/>
+        /// Deserializes the JSON structure contained by the specified <see cref="StringReader"/>
         /// into an instance of the specified type.
         /// </summary>
         /// <param name="reader">The <see cref="TextReader"/> containing the object.</param>
@@ -666,7 +666,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Deserializes the Json structure contained by the specified <see cref="JsonReader"/>
+        /// Deserializes the JSON structure contained by the specified <see cref="JsonReader"/>
         /// into an instance of the specified type.
         /// </summary>
         /// <param name="reader">The <see cref="JsonReader"/> containing the object.</param>
@@ -678,7 +678,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Deserializes the Json structure contained by the specified <see cref="JsonReader"/>
+        /// Deserializes the JSON structure contained by the specified <see cref="JsonReader"/>
         /// into an instance of the specified type.
         /// </summary>
         /// <param name="reader">The <see cref="JsonReader"/> containing the object.</param>
@@ -810,10 +810,10 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Serializes the specified <see cref="Object"/> and writes the Json structure
+        /// Serializes the specified <see cref="Object"/> and writes the JSON structure
         /// to a <c>Stream</c> using the specified <see cref="TextWriter"/>. 
         /// </summary>
-        /// <param name="textWriter">The <see cref="TextWriter"/> used to write the Json structure.</param>
+        /// <param name="textWriter">The <see cref="TextWriter"/> used to write the JSON structure.</param>
         /// <param name="value">The <see cref="Object"/> to serialize.</param>
         public void Serialize(TextWriter textWriter, object value)
         {
@@ -821,10 +821,10 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Serializes the specified <see cref="Object"/> and writes the Json structure
+        /// Serializes the specified <see cref="Object"/> and writes the JSON structure
         /// to a <c>Stream</c> using the specified <see cref="TextWriter"/>. 
         /// </summary>
-        /// <param name="jsonWriter">The <see cref="JsonWriter"/> used to write the Json structure.</param>
+        /// <param name="jsonWriter">The <see cref="JsonWriter"/> used to write the JSON structure.</param>
         /// <param name="value">The <see cref="Object"/> to serialize.</param>
         /// <param name="objectType">
         /// The type of the value being serialized.
@@ -837,10 +837,10 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Serializes the specified <see cref="Object"/> and writes the Json structure
+        /// Serializes the specified <see cref="Object"/> and writes the JSON structure
         /// to a <c>Stream</c> using the specified <see cref="TextWriter"/>. 
         /// </summary>
-        /// <param name="textWriter">The <see cref="TextWriter"/> used to write the Json structure.</param>
+        /// <param name="textWriter">The <see cref="TextWriter"/> used to write the JSON structure.</param>
         /// <param name="value">The <see cref="Object"/> to serialize.</param>
         /// <param name="objectType">
         /// The type of the value being serialized.
@@ -853,10 +853,10 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Serializes the specified <see cref="Object"/> and writes the Json structure
+        /// Serializes the specified <see cref="Object"/> and writes the JSON structure
         /// to a <c>Stream</c> using the specified <see cref="JsonWriter"/>. 
         /// </summary>
-        /// <param name="jsonWriter">The <see cref="JsonWriter"/> used to write the Json structure.</param>
+        /// <param name="jsonWriter">The <see cref="JsonWriter"/> used to write the JSON structure.</param>
         /// <param name="value">The <see cref="Object"/> to serialize.</param>
         public void Serialize(JsonWriter jsonWriter, object value)
         {

@@ -33,7 +33,7 @@ using Newtonsoft.Json.Utilities;
 namespace Newtonsoft.Json
 {
     /// <summary>
-    /// The exception thrown when an error occurs during Json serialization or deserialization.
+    /// The exception thrown when an error occurs during JSON serialization or deserialization.
     /// </summary>
 #if !(NETFX_CORE || PORTABLE40 || PORTABLE)
     [Serializable]

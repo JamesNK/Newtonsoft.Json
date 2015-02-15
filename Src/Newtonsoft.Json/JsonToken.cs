@@ -30,7 +30,7 @@ using System.Text;
 namespace Newtonsoft.Json
 {
     /// <summary>
-    /// Specifies the type of Json token.
+    /// Specifies the type of JSON token.
     /// </summary>
     public enum JsonToken
     {

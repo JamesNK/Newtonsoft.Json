@@ -353,7 +353,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Writes the beginning of a Json object.
+        /// Writes the beginning of a JSON object.
         /// </summary>
         public virtual void WriteStartObject()
         {
@@ -361,7 +361,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Writes the end of a Json object.
+        /// Writes the end of a JSON object.
         /// </summary>
         public virtual void WriteEndObject()
         {
@@ -369,7 +369,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Writes the beginning of a Json array.
+        /// Writes the beginning of a JSON array.
         /// </summary>
         public virtual void WriteStartArray()
         {
@@ -421,7 +421,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Writes the end of the current Json object or array.
+        /// Writes the end of the current JSON object or array.
         /// </summary>
         public virtual void WriteEnd()
         {

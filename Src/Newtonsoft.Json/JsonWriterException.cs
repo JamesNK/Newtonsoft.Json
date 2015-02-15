@@ -31,7 +31,7 @@ using System.Text;
 namespace Newtonsoft.Json
 {
     /// <summary>
-    /// The exception thrown when an error occurs while reading Json text.
+    /// The exception thrown when an error occurs while reading JSON text.
     /// </summary>
 #if !(NETFX_CORE || PORTABLE40 || PORTABLE)
     [Serializable]
