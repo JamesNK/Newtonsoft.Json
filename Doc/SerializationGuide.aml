@@ -18,10 +18,10 @@
         <!-- Uncomment this to create a sub-section outline
         <autoOutline /> -->
         <para>At a high level, the Json.NET serializer will convert primitive .NET values into primitive JSON values,
-        .NET arrays and collections to JSON arrays and everything else to JSON objects.</para>
-        <para>Json.NET will throw an error if it encounters incorrect JSON when deserializing a value. For example if
+        will convert .NET arrays and collections to JSON arrays, and will convert everything else to JSON objects.</para>
+        <para>Json.NET will throw an error if it encounters incorrect JSON when deserializing a value. For example, if
         the serializer encounters a JSON property with an array of values and the type of matching .NET property is not
-        a collection then an error will be thrown, and vice-versa.</para>
+        a collection, then an error will be thrown, and vice-versa.</para>
       </content>
     </section>
     <section>
@@ -134,62 +134,62 @@
         <!-- Uncomment this to create a sub-section outline
         <autoOutline /> -->
         <para>.NET types that don't fall into any other category listed below
-        (i.e. aren't lists, dictionaries, dynamic, implement ISerializable, etc)
+        (i.e. aren't lists, dictionaries, dynamic, implement ISerializable, etc.)
         are serialized as JSON objects. You can also force a type to be serialized as a JSON object by placing the
         JsonObjectAttribute on the type.</para>
-        <para>By default a type's properties are serialized in opt-out mode. What that means is all public fields and properties with
+        <para>By default a type's properties are serialized in opt-out mode. What that means is that all public fields and properties with
         getters are automatically serialized to JSON, and fields and properties that shouldn't be serialized are opted-out by placing
-        JsonIgnoreAttribute on them. To serialize private members the JsonPropertyAttribute can be placed on private fields and
+        JsonIgnoreAttribute on them. To serialize private members, the JsonPropertyAttribute can be placed on private fields and
         properties.</para>
         <para>Types can also be serialized using opt-in mode. Only properties and fields that have a JsonPropertyAttribute
         or DataMemberAttribute on them will be serialized. Opt-in mode for an object is specified by placing the JsonObjectAttribute
         or DataContractAttribute on the type.</para>
-        <para>Finally types can be serialized using a fields mode. All fields, both public and private, are serialized
+        <para>Finally, types can be serialized using a fields mode. All fields, both public and private, are serialized
         and properties are ignored. This can be specified by setting MemberSerialization.Fields on a type with the JsonObjectAttribute
-        or by the .NET <codeEntityReference>T:System.SerializableAttribute</codeEntityReference>
+        or by using the .NET <codeEntityReference>T:System.SerializableAttribute</codeEntityReference>
         and setting IgnoreSerializableAttribute on DefaultContractResolver to false.</para>
       </content>
     </section>   
 
     <section address="Lists">
-      <title>IEnumerable, Lists and Arrays</title>
+      <title>IEnumerable, Lists, and Arrays</title>
       <content>
         <!-- Uncomment this to create a sub-section outline
         <autoOutline /> -->
         <para> .NET lists (types that inherit from IEnumerable) and .NET arrays are converted to JSON arrays. Because JSON
         arrays only support a range of values and not properties, any additional properties and fields declared on .NET
-        collections are not serialized. In situations where a type implements IEnumerable but a JSON array is not wanted then
-        the JsonObjectAttribute can be placed the type to force it to be serialized as a JSON object instead.</para>
-        <para>JsonArrayAttribute has options on it to customize the JsonConverter, type name handling and reference handling
+        collections are not serialized. In situations where a type implements IEnumerable but a JSON array is not wanted, then
+        the JsonObjectAttribute can be placed on the type to force it to be serialized as a JSON object instead.</para>
+        <para>JsonArrayAttribute has options on it to customize the JsonConverter, type name handling, and reference handling
         that are applied to collection items.</para>
-        <para>Note that if TypeNameHandling or PreserveReferencesHandling has been enabled for JSON arrays on the serializer
-        then JSON arrays are wrapped it a containing object. The object will have the type name/reference properties and a
-        $values property which will have the collection data.</para>
-        <para>When deserializing if a member is typed as the interface IList&lt;T&gt; then it will be deserialized as a
+        <para>Note that if TypeNameHandling or PreserveReferencesHandling has been enabled for JSON arrays on the serializer,
+        then JSON arrays are wrapped in a containing object. The object will have the type name/reference properties and a
+        $values property, which will have the collection data.</para>
+        <para>When deserializing, if a member is typed as the interface IList&lt;T&gt;, then it will be deserialized as a
         List&lt;T&gt;.</para>
-        <para>Read more about serializing collections here: <link xlink:href="SerializingCollections" /></para>
+        <para>You can read more about serializing collections here: <link xlink:href="SerializingCollections" /></para>
       </content>
     </section>   
 
     <section address="Dictionarys">
-      <title>Dictionarys and Hashtables</title>
+      <title>Dictionaries and Hashtables</title>
       <content>
         <!-- Uncomment this to create a sub-section outline
         <autoOutline /> -->
         <para>.NET dictionaries (types that inherit from IDictionary) are converted to JSON objects. Note that only the
-        dictionary name/values will be written to the JSON object when serializing and properties on the JSON object will
+        dictionary name/values will be written to the JSON object when serializing, and properties on the JSON object will
         be added to the dictionary's name/values when deserializing. Additional members on the .NET dictionary are ignored
         during serialization.</para>
-        <para>When serializing a dictionary the keys of the dictionary are converted to strings and used as the
+        <para>When serializing a dictionary, the keys of the dictionary are converted to strings and used as the
         JSON object property names. The string written for a key can be customized by either overriding
         <codeEntityReference>M:System.Object.ToString</codeEntityReference> for the key type or by implementing a
         <codeEntityReference>T:System.ComponentModel.TypeConverter</codeEntityReference>. A TypeConverter will also
         support converting a custom string back again when deserializing a dictionary.</para>
-        <para>JsonDictionaryAttribute has options on it to customize the JsonConverter, type name handling and reference
+        <para>JsonDictionaryAttribute has options on it to customize the JsonConverter, type name handling, and reference
         handling that are applied to collection items.</para>
-        <para>When deserializing if a member is typed as the interface IDictionary&lt;TKey, TValue&gt; then it will be
+        <para>When deserializing, if a member is typed as the interface IDictionary&lt;TKey, TValue&gt; then it will be
         deserialized as a Dictionary&lt;TKey, TValue&gt;.</para>
-        <para>Read more about serializing collections here: <link xlink:href="SerializingCollections" /></para>
+        <para>You can read more about serializing collections here: <link xlink:href="SerializingCollections" /></para>
       </content>
     </section>
 
@@ -198,12 +198,12 @@
       <content>
         <!-- Uncomment this to create a sub-section outline
         <autoOutline /> -->
-        <para>.NET properties on a class that don't specify a type (i.e. they are just object) are serialized as usual. When
-        untyped properties are deserialized the serializer has no way to know what type to create (unless type name handling
+        <para>.NET properties on a class that don't specify a type (i.e. they are just <codeInline>object</codeInline>) are serialized as usual. When
+        untyped properties are deserialized, the serializer has no way of knowing what type to create (unless type name handling
         is enabled and the JSON contains the type names).</para>
-        <para>For these untyped properties the Json.NET serializer will read the JSON into LINQ to JSON objects and set them
-        to the property. JObject will be created for JSON objects, JArray will be created for JSON arrays and JValue for
-        primitive JSON values.</para>
+        <para>For these untyped properties, the Json.NET serializer will read the JSON into LINQ to JSON objects and set them
+        to the property. JObject will be created for JSON objects; JArray will be created for JSON arrays, and JValue will be
+        created for primitive JSON values.</para>
       </content>
     </section>
 
@@ -212,14 +212,14 @@
       <content>
         <!-- Uncomment this to create a sub-section outline
         <autoOutline /> -->
-        <para>There are two different usages of dynamic (introduced in .NET 4) in .NET. The first are .NET properties with a
-        type of dynamic. Dynamic proeprties behave like properties declared as object, any value can be assigned to it, but
-        the difference being that properties and methods can be called on a dynamic property without casting. In Json.NET
+        <para>There are two different usages of <codeInline>dynamic</codeInline> (introduced in .NET 4) in .NET. The first are .NET properties with a
+        type of dynamic. Dynamic properties behave like properties declared as object: any value can be assigned to it, but
+        the difference being that properties and methods can be called on a dynamic property without casting. In Json.NET,
         dynamic properties are serialized and deserialized exactly the same as untyped objects: because dynamic isn't an actual
-        type Json.NET falls back to deserializing the JSON as LINQ to JSON objects.</para>
-        <para>The second usage of dynamic in .NET are types that implement
+        type, Json.NET falls back to deserializing the JSON as LINQ to JSON objects.</para>
+        <para>The second usage of dynamic in .NET are by the types that implement
         <codeEntityReference>T:System.Dynamic.IDynamicMetaObjectProvider</codeEntityReference>. This interface lets
-        the implementor create dynamic objects that intercept the property and method calls on an object and use them.
+        the implementer create dynamic objects that intercept the property and method calls on an object and use them.
         <codeEntityReference>T:System.Dynamic.ExpandoObject</codeEntityReference>
         is a good example of a dynamic object.</para>
         <para>Dynamic objects are serialized as JSON objects. A property is written for every member name returned by
@@ -227,9 +227,9 @@
         A dynamic object's normal properties aren't serialized by default but can be included by placing the
         JsonPropertyAttribute on them.
         </para>
-        <para>When deserializing dynamic objects the serializer first attempts to set JSON property values on a normal .NET
-        member with the matching name. If no .NET member is found with the property name then the serializer will call
-        SetMember on the dynamic object. Because there is no type information for dynamic members on a dynamic object the
+        <para>When deserializing dynamic objects, the serializer first attempts to set JSON property values on a normal .NET
+        member with the matching name. If no .NET member is found with the property name, then the serializer will call
+        SetMember on the dynamic object. Because there is no type information for dynamic members on a dynamic object, the
         values assigned to them will be LINQ to JSON objects.</para>
       </content>
     </section>
@@ -239,10 +239,10 @@
       <content>
         <!-- Uncomment this to create a sub-section outline
         <autoOutline /> -->
-        <para>Types that implement ISerializable are serialized as JSON objects. When serializing only the values returned from
-        ISerializable.GetObjectData are used; members on the type are ignored. When deserializing the constructor with a
+        <para>Types that implement ISerializable are serialized as JSON objects. When serializing, only the values returned from
+        ISerializable.GetObjectData are used; members on the type are ignored. When deserializing, the constructor with a
         SerializationInfo and StreamingContext is called, passing the JSON object's values.</para>
-        <para>In situations where this behavior is not wanted the JsonObjectAttribute can be placed on a .NET type that
+        <para>In situations where this behavior is not wanted, the JsonObjectAttribute can be placed on a .NET type that
         implements ISerializable to force it to be serialized as a normal JSON object.</para>
       </content>
     </section>
@@ -252,7 +252,7 @@
       <content>
         <!-- Uncomment this to create a sub-section outline
         <autoOutline /> -->
-        <para>LINQ to JSON types (e.g. JObject, JArray) are automatically serialized and deserialized to their equivalent JSON
+        <para>LINQ to JSON types (e.g. JObject and JArray) are automatically serialized and deserialized to their equivalent JSON
         when encountered by the Json.NET serializer.</para>
       </content>
     </section>   
@@ -264,15 +264,15 @@
         <autoOutline /> -->
         <para>Serialization of values that are convertible by a <codeEntityReference>T:Newtonsoft.Json.JsonConverter</codeEntityReference>
         (i.e. CanConvert returns true for its type) is
-        completely overridden by the JsonConverter. The test to see whether a value can be converted by a JsonSerializer takes
+        completely overridden by the JsonConverter. The test to see whether a value can be converted by the JsonSerializer takes
         precedence over all other tests.</para>
         <para>JsonConverters can be defined and specified in a number of places: in an attribute on a member, in an attribute
-        on a class and added to the JsonSerializer's converters collection. The priority of which JsonConverter is used is the
-        JsonConverter defined by attribute on a member then the JsonConverter defined by an attribute on a class and finally
+        on a class, and added to the JsonSerializer's converters collection. The priority of which JsonConverter is used is the
+        JsonConverter defined by attribute on a member, then the JsonConverter defined by an attribute on a class, and finally
         any converters passed to the JsonSerializer.</para>
         
 <alert class="note">
-  <para>Because a JsonConverter creates a new value a converter will not work with readonly properties because there is no way to assign the new
+  <para>Because a JsonConverter creates a new value, a converter will not work with readonly properties because there is no way to assign the new
   value to the property. Either change the property to have a public setter or place a JsonPropertyAttribute or DataMemberAttribute on the property.</para>
 </alert>
 

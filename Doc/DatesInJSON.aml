@@ -13,7 +13,7 @@
 <linkUri>http://www.ietf.org/rfc/rfc4627.txt</linkUri>
 <linkTarget>_blank</linkTarget>
 </externalLink> itself: there is no literal
-      syntax for dates in JSON. The spec has objects, arrays, strings, integers
+      syntax for dates in JSON. The spec has objects, arrays, strings, integers,
       and floats, but it defines no standard for what a date looks like.</para>
     </introduction>
     <!-- Add one or more top-level section elements.  These are collapsible.
@@ -32,12 +32,12 @@
         <para>Prior to Json.NET 4.5 dates were written using the Microsoft
         format: <codeInline>"\/Date(1198908717056)\/"</codeInline>. If you want to use this format, or
         you want to maintain compatibility with Microsoft JSON serializers or
-        older versions of Json.NET then change the
+        older versions of Json.NET, then change the
         <codeEntityReference>T:Newtonsoft.Json.DateFormatHandling</codeEntityReference>
         setting to MicrosoftDateFormat.</para>
         <para>Json.NET also has the <codeEntityReference>T:Newtonsoft.Json.DateTimeZoneHandling</codeEntityReference>
         setting. This can be
-        used to convert DateTime's kind when serializing, e.g. set
+        used to convert a DateTime's kind when serializing. For example set
         DateTimeZoneHandling to Utc to serialize all DateTimes as UTC dates.</para>
       </content>
     </section>
@@ -68,8 +68,8 @@
 <linkUri>http://msdn.microsoft.com/en-us/library/cd9w2te4.aspx</linkUri>
 <linkTarget>_blank</linkTarget>
 </externalLink>: <codeInline>new Date(1234656000000)</codeInline></para>
-        <para>Technically this is invalid JSON according to the spec but all
-        browsers, and some JSON frameworks, including Json.NET, support it.</para>
+        <para>Technically this is invalid JSON according to the spec, but all
+        browsers and some JSON frameworks, including Json.NET, support it.</para>
       </content>
     </section>
     <section>
@@ -77,9 +77,9 @@
       <content>
       <alert class="note">
   <para>From Json.NET 4.5 and onwards dates are written using the ISO 8601
-        format by default and using this converter is unnecessary.</para>
+        format by default, and using this converter is unnecessary.</para>
 </alert>
-        <para>IsoDateTimeConverter seralizes a DateTime to an <externalLink>
+        <para>IsoDateTimeConverter serializes a DateTime to an <externalLink>
 <linkText>ISO 8601</linkText>
 <linkUri>http://en.wikipedia.org/wiki/ISO_8601</linkUri>
 <linkTarget>_blank</linkTarget>

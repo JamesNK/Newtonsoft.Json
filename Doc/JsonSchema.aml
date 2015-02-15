@@ -6,7 +6,7 @@
       and <codeEntityReference>T:Newtonsoft.Json.JsonValidatingReader</codeEntityReference> classes. It sits under
       the <codeEntityReference>N:Newtonsoft.Json.Schema</codeEntityReference> namespace.</para>
       <para>JSON Schema is used to validate the structure and
-      data types of a piece of JSON, similar to XML Schema for XML. Read more about JSON Schema at 
+      data types of a piece of JSON, similar to XML Schema for XML. You can read more about JSON Schema at 
       <externalLink>
         <linkText>json-schema.org</linkText>
         <linkUri>http://json-schema.org/</linkUri>
@@ -36,7 +36,7 @@ method with the JSON Schema.</para>
 
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\JsonSchemaTests.cs" region="IsValidBasic" title="Validate JSON with IsValid" />
 
-<para>To get validation error messages use the
+<para>To get validation error messages, use the
 <codeEntityReference>M:Newtonsoft.Json.Schema.Extensions.IsValid(Newtonsoft.Json.Linq.JToken,Newtonsoft.Json.Schema.JsonSchema,System.Collections.Generic.IList{System.String}@)</codeEntityReference>
 or
 <codeEntityReference>M:Newtonsoft.Json.Schema.Extensions.Validate(Newtonsoft.Json.Linq.JToken,Newtonsoft.Json.Schema.JsonSchema,Newtonsoft.Json.Schema.ValidationEventHandler)</codeEntityReference>
@@ -46,7 +46,7 @@ overloads.</para>
 
 <para>Internally IsValid uses <codeEntityReference>T:Newtonsoft.Json.JsonValidatingReader</codeEntityReference>
 to perform the JSON Schema validation. To skip the overhead of loading JSON into a JObject/JArray, validating
-the JSON and then deserializing the JSON into a class, JsonValidatingReader can be used with JsonSerializer to validate JSON while the object is being deserialized.</para>
+the JSON, and then deserializing the JSON into a class, JsonValidatingReader can be used with JsonSerializer to validate JSON while the object is being deserialized.</para>
 
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\JsonSchemaTests.cs" region="JsonValidatingReader" title="Validate JSON with JsonValidatingReader" />
 

@@ -8,15 +8,15 @@
     -->
     <introduction>
       <para>By default Json.NET will serialize all objects it encounters by value.
-      If a list contains two Person references, and both references point to the
-      same object then the JsonSerializer will write out all the names and values
+      If a list contains two Person references and both references point to the
+      same object, then the JsonSerializer will write out all the names and values
       for each reference.</para>
       
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="PreservingObjectReferencesOff" title="Preserve Object References Off" />
       
-      <para>In most cases this is the desired result but in certain scenarios
+      <para>In most cases this is the desired result, but in certain scenarios
       writing the second item in the list as a reference to the first is a better
-      solution. If the above JSON was deserialized now then the returned list would
+      solution. If the above JSON was deserialized now, then the returned list would
       contain two completely separate Person objects with the same values. Writing
       references by value will also cause problems on objects where a circular
       reference occurs.</para>
@@ -32,14 +32,14 @@
         
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="PreservingObjectReferencesOn" title="Preserve Object References On" />       
         
-        <para>The first Person in the list is serizlied with the addition of an
-        object Id. The second Person in JSON is now only a reference to the first.</para>
-        <para>With PreserveReferencesHandling on now only one Person object is created
+        <para>The first Person in the list is serialized with the addition of an
+        object ID. The second Person in JSON is now only a reference to the first.</para>
+        <para>With PreserveReferencesHandling on, now only one Person object is created
         on deserialization and the list contains two references to it, mirroring
         what we started with.</para>
 <alert class="note">
   <para>References cannot be preserved when a value is set via a non-default constructor.
-        With a non-default constructor child values must be created before the parent value so they can be passed into
+        With a non-default constructor, child values must be created before the parent value so they can be passed into
         the constructor, making tracking reference impossible.
         <codeEntityReference>T:System.Runtime.Serialization.ISerializable</codeEntityReference> types are an example
         of a class whose values are populated with a non-default constructor and won't work with PreserveReferencesHandling.</para>

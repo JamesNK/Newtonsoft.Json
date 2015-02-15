@@ -22,7 +22,7 @@
 </list>
 <para>
 To tell the serializer which methods should be called during the object's
-serialization lifecycle, decorate a method with the appropraite attribute
+serialization lifecycle, decorate a method with the appropriate attribute
 (<codeEntityReference>T:System.Runtime.Serialization.OnSerializingAttribute</codeEntityReference>,
 <codeEntityReference>T:System.Runtime.Serialization.OnSerializedAttribute</codeEntityReference>,
 <codeEntityReference>T:System.Runtime.Serialization.OnDeserializingAttribute</codeEntityReference>,

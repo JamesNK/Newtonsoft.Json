@@ -14,10 +14,10 @@
       <!-- <autoOutline /> -->
       <para>One of the common problems encountered when serializing .NET objects to
       JSON is that the JSON ends up containing a lot of unwanted properties and values.
-      This can be especially important when returning JSON to the client. More JSON
+      This can be especially significant when returning JSON to the client. More JSON
       means more bandwidth and a slower website.</para>
-      <para>To solve the issue of unwanted JSON Json.NET has a range of built in
-      options to fine tune what gets written from a serialized object.</para>
+      <para>To solve the issue of unwanted JSON, Json.NET has a range of built-in
+      options to fine-tune what gets written from a serialized object.</para>
     </introduction>
     <!-- Add one or more top-level section elements.  These are collapsible.
          If using <autoOutline />, add an address attribute to identify it
@@ -27,7 +27,7 @@
       <content>
         <!-- Uncomment this to create a sub-section outline
         <autoOutline /> -->
-        <para>By default Json.NET will include all of a classes public properties and fields
+        <para>By default Json.NET will include all of a class's public properties and fields
         in the JSON it creates. Adding the
         <codeEntityReference>T:Newtonsoft.Json.JsonIgnoreAttribute</codeEntityReference>
         to a property tells the serializer to always skip writing it to the JSON result.</para>
@@ -35,13 +35,13 @@
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="ReducingSerializedJsonSizeOptOut" title="Opt-out Serialization Example" />
         
         <para>If a class has many properties and you only want to serialize a small subset
-        of them then adding JsonIgnore to all the others will be tedious and error prone.
+        of them, then adding JsonIgnore to all the others will be tedious and error prone.
         The way to tackle this scenario is to add the
         <codeEntityReference>T:System.Runtime.Serialization.DataContractAttribute</codeEntityReference>
         to the class and
         <codeEntityReference>T:System.Runtime.Serialization.DataMemberAttribute</codeEntityReference>
         to the properties to serialize. This is opt-in
-        serialization, only the properties you mark up with be serialized, compared to
+        serialization - only the properties you mark up will be serialized, unlike
         opt-out serialization using JsonIgnoreAttribute.</para>
 
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="ReducingSerializedJsonSizeOptIn" title="Opt-in Serialization Example" />
@@ -53,8 +53,8 @@
         <para>JSON written by the serializer with an option of
         <codeEntityReference>T:Newtonsoft.Json.Formatting</codeEntityReference>
         set to Indented produces
-        nicely formatted, easy to read JSON that is great for readability when you are
-        developing. Formatting.None on the other hand keeps the JSON result small, skipping
+        nicely formatted, easy-to-read JSON that is great for readability when you are
+        developing. <codeInline>Formatting.None</codeInline> on the other hand keeps the JSON result small, skipping
         all unnecessary spaces and line breaks to produce the most compact and efficient
         JSON possible.</para>
       </content>
@@ -72,7 +72,7 @@
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="ReducingSerializedJsonSizeNullValueHandlingExample" title="NullValueHandling Ignore Example" />
 
         <para>NullValueHandling can also be customized on individual properties
-        using the a
+        using the
         <codeEntityReference>T:Newtonsoft.Json.JsonPropertyAttribute</codeEntityReference>.
         The JsonPropertyAttribute value of
         NullValueHandling will override the setting on the JsonSerializer for that
@@ -93,9 +93,9 @@
         <para>Json.NET also allows you to customize what the default value of an individual
         property is using the
         <codeEntityReference>T:System.ComponentModel.DefaultValueAttribute</codeEntityReference>.
-        For example if a string property called
-        Department always returns an empty string in its default state and you didn't want
-        that empty string in your JSON then placing the DefaultValueAttribute on Department
+        For example, if a string property called
+        Department always returns an empty string in its default state and you don't want
+        that empty string in your JSON, then placing the DefaultValueAttribute on Department
         with that value will mean Department is no longer written to JSON unless it has a
         value.</para>
         
@@ -103,8 +103,7 @@
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="ReducingSerializedJsonSizeDefaultValueHandlingExample" title="DefaultValueHandling Ignore Example" />
         
         <para>DefaultValueHandling can also be customized on individual properties using
-        the a
-        <codeEntityReference>T:Newtonsoft.Json.JsonPropertyAttribute</codeEntityReference>.
+        the <codeEntityReference>T:Newtonsoft.Json.JsonPropertyAttribute</codeEntityReference>.
         The JsonPropertyAttribute value of DefaultValueHandling
         will override the setting on the JsonSerializer for that property.</para>
       </content>
@@ -112,7 +111,7 @@
     <section>
       <title>IContractResolver</title>
       <content>
-        <para>For more flexibility the
+        <para>For more flexibility, the
         <codeEntityReference>T:Newtonsoft.Json.Serialization.IContractResolver</codeEntityReference>
         provides an interface to customize
         almost every aspect of how a .NET object gets serialized to JSON, including changing

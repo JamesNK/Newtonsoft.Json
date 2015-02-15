@@ -2,7 +2,7 @@
 <topic id="ReadingWritingJSON" revisionNumber="1">
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
-      <para>To manually read and write JSON Json.NET provides the
+      <para>To manually read and write JSON, Json.NET provides the
       <codeEntityReference>T:Newtonsoft.Json.JsonReader</codeEntityReference>
       and 
       <codeEntityReference>T:Newtonsoft.Json.JsonWriter</codeEntityReference> classes.</para>
@@ -13,8 +13,8 @@
       <content>
       
 <alert class="note">
-  <para>JsonReader and JsonWriter are low level classes and used internally by Json.NET.
-    To quickly work with JSON either the serializer - <link xlink:href="SerializingJSON" /> or using <link xlink:href="LINQtoJSON" /> is recommended.
+  <para>JsonReader and JsonWriter are low-level classes and are primarily for internal use by Json.NET.
+    To quickly work with JSON, either the serializer - <link xlink:href="SerializingJSON" /> - or using <link xlink:href="LINQtoJSON" /> is recommended.
    </para>
 </alert>
 
@@ -22,13 +22,13 @@
         and <codeEntityReference>T:Newtonsoft.Json.JsonTextWriter</codeEntityReference>
         are used to read and write JSON text.
         The JsonTextWriter has a number of settings on it to control how JSON is formatted
-        when it is written. These options include formatting, indention character, indent
-        count and quote character.</para>
+        when it is written. These options include formatting, indentation character, indent
+        count, and quote character.</para>
 
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\ReadingAndWritingJsonTests.cs" region="ReadingAndWritingJsonText" title="Writing JSON with JsonTextWriter" />
 
-        <para>JsonTextReader has settings on it for reading different date formats and time zones, and
-        the culture used when reading text values.</para>
+        <para>JsonTextReader has settings on it for reading different date formats, time zones, and
+        the cultures when reading text values.</para>
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\ReadingAndWritingJsonTests.cs" region="ReadingJsonText" title="Reading JSON with JsonTextReader" />
       </content>
     </section>
@@ -40,7 +40,7 @@
         read and write LINQ to JSON objects. They are located in the
         <codeEntityReference>N:Newtonsoft.Json.Linq</codeEntityReference>
         namespace. These objects allow you to use LINQ to JSON objects with objects that
-        read and write JSON such as the JsonSerializer. For example you can deserialize
+        read and write JSON, such as the JsonSerializer. For example you can deserialize
         from a LINQ to JSON object into a regular .NET object and vice versa.</para>
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\ReadingAndWritingJsonTests.cs" region="ReadingAndWritingJsonLinq" title="Deserializing with JTokenReader" />
       </content>

@@ -4,7 +4,7 @@
     <introduction>
       <para>The Json.NET serializer supports logging and debugging using the
       <codeEntityReference>T:Newtonsoft.Json.Serialization.ITraceWriter</codeEntityReference> interface.
-      By assigning a trace writer you can capture serialization messages and errors, and debug what happens inside the
+      By assigning a trace writer you can capture serialization messages and errors and debug what happens inside the
       Json.NET serializer when serializing and deserializing JSON.</para>
     </introduction>
     <section>
@@ -14,16 +14,16 @@
 
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\TraceWriterTests.cs" region="MemoryTraceWriterExample" title="Debugging serialization using MemoryTraceWriter" />
         
-        <para>Json.NET has two implementations of ITraceWriter: <codeEntityReference>T:Newtonsoft.Json.Serialization.MemoryTraceWriter</codeEntityReference>
-        which keeps messages in memory for simple debugging like the example
-        above, and <codeEntityReference>T:Newtonsoft.Json.Serialization.DiagnosticsTraceWriter</codeEntityReference> which writes messages to any
+        <para>Json.NET has two implementations of ITraceWriter: <codeEntityReference>T:Newtonsoft.Json.Serialization.MemoryTraceWriter</codeEntityReference>,
+        which keeps messages in memory for simple debugging, like the example
+        above, and <codeEntityReference>T:Newtonsoft.Json.Serialization.DiagnosticsTraceWriter</codeEntityReference>, which writes messages to any
         System.Diagnostics.TraceListeners your application is using.</para>
       </content>
     </section>
     <section>
       <title>Custom ITraceWriter</title>
       <content>
-        <para>To write messages using your existing logging framework just implement a custom version of ITraceWriter.</para>
+        <para>To write messages using your existing logging framework, just implement a custom version of ITraceWriter.</para>
 
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\TraceWriterTests.cs" region="CustomTraceWriterExample" title="Custom NLog TraceWriter" />
         

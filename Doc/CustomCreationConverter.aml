@@ -18,7 +18,7 @@
       <content>
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="CustomCreationConverterObject" title="CustomCreationConverter" />
         <para>This is an extremely simple example. A more complicated scenario
-        could involve an object factory or service locator which resolves the
+        could involve an object factory or service locator that resolves the
         object at runtime.</para>
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="CustomCreationConverterExample" title="CustomCreationConverter Example" />
       </content>

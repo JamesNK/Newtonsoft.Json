@@ -5,7 +5,7 @@
       <para>Json.NET supports converting JSON to XML and vice versa using the
       <codeEntityReference>T:Newtonsoft.Json.Converters.XmlNodeConverter</codeEntityReference>.</para>
       <para>Elements, attributes, text, comments, character data, processing instructions,
-      namespaces and the XML declaration are all preserved when converting between the two. The
+      namespaces, and the XML declaration are all preserved when converting between the two. The
       only caveat is that it is possible to lose the order of differently named nodes at the
       same level when they are grouped together into an array.</para>
     </introduction>
@@ -18,20 +18,20 @@
   <listItem><para>Attributes are prefixed with an @ and should be at the start of the object.</para></listItem>
   <listItem><para>Single child text nodes are a value directly against an element, otherwise they are accessed via #text.</para></listItem>
   <listItem><para>The XML declaration and processing instructions are prefixed with ?.</para></listItem>
-  <listItem><para>Charater data, comments, whitespace and significate whitespace nodes are accessed via
-  #cdata-section, #comment, #whitespace and #significate-whitespace respectively.</para></listItem>
+  <listItem><para>Character data, comments, whitespace and significant whitespace nodes are accessed via
+  #cdata-section, #comment, #whitespace and #significant-whitespace respectively.</para></listItem>
   <listItem><para>Multiple nodes with the same name at the same level are grouped together into an array.</para></listItem>
   <listItem><para>Empty elements are null.</para></listItem>
 </list>
 
-<para>If the XML created from JSON doesn't match what you want then you will need to convert it manually.
+<para>If the XML created from JSON doesn't match what you want, then you will need to convert it manually.
 The best approach to do this is to load your JSON into a LINQ to JSON object like JObject or JArray and then use LINQ to create
 an XDocument. The opposite process, using LINQ with an XDocument to create a JObject or JArray, also works.
-Find out more about using LINQ to JSON with LINQ <link xlink:href="QueryingLINQtoJSON">here</link>.</para>
+You can find out more about using LINQ to JSON with LINQ <link xlink:href="QueryingLINQtoJSON">here</link>.</para>
 
 <alert class="note">
   <para>The version of Json.NET being used in your application will change what XML conversion methods are available.
-  SerializeXmlNode/DeserializeXmlNode are available when the framework supports XmlDocument,
+  SerializeXmlNode/DeserializeXmlNode are available when the framework supports XmlDocument;
   SerializeXNode/DeserializeXNode are available when the framework supports XDocument.</para>
 </alert>
 
@@ -47,11 +47,11 @@ Find out more about using LINQ to JSON with LINQ <link xlink:href="QueryingLINQt
 
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\ConvertingJsonAndXmlTests.cs" region="SerializeXmlNode" title="Converting XML to JSON with SerializeXmlNode" />
 
-       <para>Because multiple nodes with a the same name at the same level are grouped together into an array
-       the convernsion process can produce different JSON depending on the number of nodes. For example if some
-       XML for a user has a single <codeInline>&lt;Role&gt;</codeInline> node then that role will be text against
+       <para>Because multiple nodes with the same name at the same level are grouped together into an array,
+       the conversion process can produce different JSON depending on the number of nodes. For example, if some
+       XML for a user has a single <codeInline>&lt;Role&gt;</codeInline> node, then that role will be text against
        a JSON <codeInline>"Role"</codeInline> property, but if the user has multiple <codeInline>&lt;Role&gt;</codeInline>
-       nodes then the role values will be placed in a JSON array.</para>
+       nodes, then the role values will be placed in a JSON array.</para>
        
        <para>To fix this situation a custom XML attribute can be added to force a JSON array to be created.</para>
 
@@ -64,10 +64,10 @@ Find out more about using LINQ to JSON with LINQ <link xlink:href="QueryingLINQt
    
        <para>The second helper method on JsonConvert is
        <codeEntityReference>Overload:Newtonsoft.Json.JsonConvert.DeserializeXmlNode</codeEntityReference>.
-       This method takes JSON text and deserializes it into a XmlNode.</para>
+       This method takes JSON text and deserializes it into an XmlNode.</para>
    
-       <para>Because valid XML must have one root element the JSON passed to DeserializeXmlNode should
-       have one property in the root JSON object. If the root JSON object has multiple properties then
+       <para>Because valid XML must have one root element, the JSON passed to DeserializeXmlNode should
+       have one property in the root JSON object. If the root JSON object has multiple properties, then
        the overload that also takes an element name should be used. A root element with that name will
        be inserted into the deserialized XmlNode.</para>
 

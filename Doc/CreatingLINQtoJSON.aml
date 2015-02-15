@@ -9,7 +9,7 @@
       <title>Manually Creating JSON</title>
       <content>
         <para>Setting values and creating objects and arrays one at a time gives you
-        total control but it is more verbose than other options.</para>
+        total control, but it is more verbose than other options.</para>
         
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateNormal" title="Creating JSON" />
       </content>
@@ -29,9 +29,9 @@
       <content>
         <para>The last option is to create a JSON object from a non-JSON type using the
         <codeEntityReference>Overload:Newtonsoft.Json.Linq.JObject.FromObject</codeEntityReference>
-        method. Internally FromObject will use the JsonSerializer to serialize the object to LINQ to JSON objects instead of text.</para>
+        method. Internally, FromObject will use the JsonSerializer to serialize the object to LINQ to JSON objects instead of text.</para>
         
-        <para>The example below is creating a JSON object from an anonymous object but any
+        <para>The example below shows creating a JSON object from an anonymous object, but any
         .NET type can be used with FromObject to create JSON.</para>
 
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateFromObject" title="Creating JSON from an Object" />

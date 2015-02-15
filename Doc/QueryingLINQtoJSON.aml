@@ -30,7 +30,7 @@
         
 <alert class="note">
         <para><codeEntityReference>M:Newtonsoft.Json.Linq.JToken.Children</codeEntityReference> returns all the children of a token. If it is a
-        JObject it will return a collection of properties to work with and if
+        JObject it will return a collection of properties to work with, and if
         it is a JArray you will get a collection of the array's values.</para>
 </alert>
 

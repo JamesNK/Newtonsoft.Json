@@ -36,7 +36,7 @@
       <content>
         <!-- Uncomment this to create a sub-section outline
         <autoOutline /> -->
-        <para>To deserialize JSON into a .NET collection just specify the collection
+        <para>To deserialize JSON into a .NET collection, just specify the collection
         type you want to deserialize to. Json.NET supports a wide range of collection
         types.</para>
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="SerializingCollectionsDeserializing" title="Deserializing Collections" />

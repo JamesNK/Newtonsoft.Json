@@ -3,7 +3,7 @@
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
       <para>Json.NET has the ability to conditionally serialize properties by placing a ShouldSerialize method on a class.
-      This funtionality is similar to the <externalLink>
+      This functionality is similar to the <externalLink>
 <linkText>XmlSerializer ShouldSerialize feature</linkText>
 <linkUri>http://msdn.microsoft.com/en-us/library/53b8022e.aspx</linkUri>
 <linkTarget>_blank</linkTarget>
@@ -12,9 +12,9 @@
     <section>
       <title>ShouldSerialize</title>
       <content>
-        <para>To conditionally serialize a property add a boolean method with the same name as the property and then prefixed the method name
+        <para>To conditionally serialize a property, add a method that returns boolean with the same name as the property and then prefix the method name
         with ShouldSerialize. The result of the method determines whether the property is serialized. If the method returns true then the
-        property will be serialized, if it returns false and the property will be skipped.</para>
+        property will be serialized, if it returns false then the property will be skipped.</para>
 
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\ConditionalPropertiesTests.cs" region="EmployeeShouldSerializeExample" title="Employee class with a ShouldSerialize method" />
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\ConditionalPropertiesTests.cs" region="ShouldSerializeClassTest" title="ShouldSerialize output" />

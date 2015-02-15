@@ -2,11 +2,11 @@
 <topic id="JsonNetVsWindowsDataJson" revisionNumber="1">
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
-      <para>Windows 8 introduces a new way to work with JSON via the <externalLink>
+      <para>Windows 8 introduced a new way to work with JSON via the <externalLink>
 <linkText>Windows.Data.Json</linkText>
 <linkUri>http://msdn.microsoft.com/en-us/library/windows/apps/xaml/br240639.aspx</linkUri>
 <linkTarget>_blank</linkTarget>
-</externalLink> namespace. Similar to LINQ to JSON in Json.NET
+</externalLink> namespace. Similar to LINQ to JSON in Json.NET,
       it defines classes that can be used to parse values, strings, objects, and arrays from
       JSON text or serialize value types into JSON text.</para>
       <para>Below is a comparison of Json.NET&apos;s LINQ to JSON to Window 8&apos;s Windows.Data.Json.</para>
@@ -17,7 +17,7 @@
 <list class="bullet">
    <listItem>
      <para>
-       Runs on .NET 2, .NET 3, .NET 4, Silverlight and Windows Phone 7
+       Runs on .NET 2, .NET 3, .NET 4, Silverlight, and Windows Phone 7
      </para>
    </listItem>
    <listItem>

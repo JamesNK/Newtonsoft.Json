@@ -3,7 +3,7 @@
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
       <para>LINQ to JSON is an API for working with JSON objects.
-      It has been designed with LINQ in mind to enable to quick querying
+      It has been designed with LINQ in mind to enable quick querying
       and creation of JSON objects. LINQ to JSON sits under the
       <codeEntityReference>N:Newtonsoft.Json.Linq</codeEntityReference>
       namespace.</para>

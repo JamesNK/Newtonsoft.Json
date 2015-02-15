@@ -22,10 +22,10 @@
         <para>LINQ to JSON for manually reading and writing JSON </para>
     </listItem>
    <listItem>
-        <para>High performance, faster than .NET's built-in JSON serializers</para>
+        <para>High performance: faster than .NET's built-in JSON serializers</para>
     </listItem>
    <listItem>
-        <para>Write indented, easy to read JSON</para>
+        <para>Write indented, easy-to-read JSON</para>
     </listItem>
    <listItem>
         <para>Convert JSON to and from XML</para>
@@ -58,15 +58,15 @@ and write from your objects.</para>
 <section>
  <title>History</title>
  <content><para>Json.NET grew out of projects I was working on in late 2005 involving JavaScript,
-            AJAX and .NET. At the time there were no libraries for working with JavaScript in
-            .NET so I made my own.</para>
+            AJAX, and .NET. At the time there were no libraries for working with JavaScript in
+            .NET, so I made my own.</para>
  <para>Starting out as a couple of static methods for escaping JavaScript strings, Json.NET
             evolved as features were added. To add support for reading JSON a major refactor
-            was required and Json.NET will split into the three major classes it still uses
-            today, JsonReader, JsonWriter and JsonSerializer.</para>
+            was required, and Json.NET was split into the three major classes it still uses
+            today: JsonReader, JsonWriter and JsonSerializer.</para>
  <para>Json.NET was first released in June 2006. Since then Json.NET has been downloaded
-            hundreds of thousands of times by developers around the world. It is used in many major open
-            source projects including <externalLink>
+            hundreds of thousands of times by developers from around the world. It is used in many major open
+            source projects, including: <externalLink>
                 <linkText>Mono</linkText>
                 <linkUri>http://www.mono-project.com/</linkUri>
                 <linkTarget>_blank</linkTarget>
@@ -77,7 +77,7 @@ and write from your objects.</para>
                 <linkUri>http://ravendb.net/</linkUri>
                 <linkTarget>_blank</linkTarget>
             </externalLink>,
-            a JSON based documentat database; <externalLink>
+            a JSON based document database; <externalLink>
                 <linkText>ASP.NET SignalR</linkText>
                 <linkUri>http://signalr.net/</linkUri>
                 <linkTarget>_blank</linkTarget>
@@ -93,7 +93,7 @@ and write from your objects.</para>
 
 <section>
  <title>Donate</title>
- <content><para>Json.NET is a personal open source project. Started in 2006, I have put thousands of hours into adding, refining and tuning Json.NET with the goal to make it not just the best JSON serializer for .NET but the best serializer for any computer language. I need your
+ <content><para>Json.NET is a personal open source project. Started in 2006, I have put thousands of hours into adding, refining, and tuning Json.NET with the goal of making it not just the best JSON serializer for .NET, but the best serializer for any computer language. I need your
  help to achieve this.</para>
 
  <markup>

@@ -16,8 +16,8 @@
       deserialization. Error handling lets you catch an error and
       choose whether to handle it and continue with serialization or
       let the error bubble up and be thrown in your application.</para>
-      <para>Error handling is defined through two methods: the Error event on
-      JsonSerializer and the OnErrorAttribute.</para>
+      <para>Error handling is defined through two methods: the <codeEntityReference>E:Newtonsoft.Json.JsonSerializer.Error</codeEntityReference> event on
+      JsonSerializer and the <codeEntityReference>T:Newtonsoft.Json.Serialization.OnErrorAttribute</codeEntityReference>.</para>
     </introduction>
     <!-- Add one or more top-level section elements.  These are collapsible.
          If using <autoOutline />, add an address attribute to identify it
@@ -30,7 +30,7 @@
         <para>The <codeEntityReference>E:Newtonsoft.Json.JsonSerializer.Error</codeEntityReference>
         event is an event handler found on <codeEntityReference>T:Newtonsoft.Json.JsonSerializer</codeEntityReference>.
         The error event is raised whenever an exception is thrown while serializing
-        or deserialing JSON. Like all settings found on JsonSerializer it can also
+        or deserializing JSON. Like all settings found on JsonSerializer, it can also
         be set on <codeEntityReference>T:Newtonsoft.Json.JsonSerializerSettings</codeEntityReference>
         and passed to the serialization methods on JsonConvert.</para>
         
@@ -38,19 +38,19 @@
 
         <para>In this example we are deserializing a JSON array to a collection
         of DateTimes. On the JsonSerializerSettings a handler has been assigned
-        to the Error event which will log the error message and mark the error
+        to the <codeInline>Error</codeInline> event which will log the error message and mark the error
         as handled.</para>
         
         <para>The result of deserializing the JSON is three successfully deserialized
-        dates and three error messages: one for the badly formatted string, "I am
-        not a date and will error!", one for the nested JSON array and one for the
+        dates and three error messages: one for the badly formatted string ("I am
+        not a date and will error!"), one for the nested JSON array, and one for the
         null value since the list doesn't allow nullable DateTimes. The event
         handler has logged these messages and Json.NET has continued on deserializing
         the JSON because the errors were marked as handled.</para>
         
         <para>One thing to note with error handling in Json.NET is that an
         unhandled error will bubble up and raise the event on each of its
-        parents, e.g. an unhandled error when serializing a collection of objects
+        parents. For example an unhandled error when serializing a collection of objects
         will be raised twice, once against the object and then again on the collection.
         This will let you handle an error either where it occurred or on one of its
         parents.</para>
@@ -58,7 +58,7 @@
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="SerializationErrorHandlingWithParent" title="Parent Error Handling" />      
 
         <para>If you aren't immediately handling an error and only want to
-        perform an action against it once then you can check to see whether the
+        perform an action against it once, then you can check to see whether the
         <codeEntityReference>T:Newtonsoft.Json.Serialization.ErrorEventArgs</codeEntityReference>'s
         CurrentObject is equal to the OriginalObject.
         OriginalObject is the object that threw the error and CurrentObject is
@@ -75,13 +75,13 @@
         <para>The <codeEntityReference>T:Newtonsoft.Json.Serialization.OnErrorAttribute</codeEntityReference>
         works much like the other <link xlink:href="SerializationAttributes">.NET serialization attributes</link>
         that Json.NET supports. To use it you simply place the
-        attribute on a method which takes the correct parameters: a
-        StreamingContext and a ErrorContext. The name of the method doesn't
+        attribute on a method that takes the correct parameters: a
+        StreamingContext and an ErrorContext. The name of the method doesn't
         matter.</para>
         
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="SerializationErrorHandlingAttributeObject" title="Serialization Error Handling Attribute" />
         
-        <para>In this example accessing the the Roles property will throw an
+        <para>In this example accessing the Roles property will throw an
         exception when no roles have been set. The HandleError method will set
         the error when serializing Roles as handled and allow Json.NET to
         continue serializing the class.</para>

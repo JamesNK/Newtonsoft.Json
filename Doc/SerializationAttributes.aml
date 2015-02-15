@@ -15,10 +15,10 @@
       <para>Attributes can be used to control how Json.NET serializes and deserializes .NET objects.</para>
       
 <list class="bullet">
-  <listItem><para><codeEntityReference>T:Newtonsoft.Json.JsonObjectAttribute</codeEntityReference> - Placed on classes to control how it should be serialized as a JSON object.</para></listItem>
-  <listItem><para><codeEntityReference>T:Newtonsoft.Json.JsonArrayAttribute</codeEntityReference> - Placed on collections to control how it should be serialized as a JSON array.</para></listItem>
-  <listItem><para><codeEntityReference>T:Newtonsoft.Json.JsonDictionaryAttribute</codeEntityReference> - Placed on dictionaries to control how it should be serialized as a JSON object.</para></listItem>
-  <listItem><para><codeEntityReference>T:Newtonsoft.Json.JsonPropertyAttribute</codeEntityReference> - Placed on fields and properties to control how it should be serialized as a property in a JSON object.</para></listItem>
+  <listItem><para><codeEntityReference>T:Newtonsoft.Json.JsonObjectAttribute</codeEntityReference> - Placed on classes to control how they should be serialized as a JSON object.</para></listItem>
+  <listItem><para><codeEntityReference>T:Newtonsoft.Json.JsonArrayAttribute</codeEntityReference> - Placed on collections to control how they should be serialized as a JSON array.</para></listItem>
+  <listItem><para><codeEntityReference>T:Newtonsoft.Json.JsonDictionaryAttribute</codeEntityReference> - Placed on dictionaries to control how they should be serialized as a JSON object.</para></listItem>
+  <listItem><para><codeEntityReference>T:Newtonsoft.Json.JsonPropertyAttribute</codeEntityReference> - Placed on fields and properties to control how they should be serialized as a property in a JSON object.</para></listItem>
   <listItem><para><codeEntityReference>T:Newtonsoft.Json.JsonConverterAttribute</codeEntityReference> - Placed on either classes or fields and properties to specify which JsonConverter should be used during serialization.</para></listItem>
 </list>
 
@@ -32,15 +32,15 @@
         <para>As well as using the built-in Json.NET attributes, Json.NET also looks for the <codeEntityReference>T:System.SerializableAttribute</codeEntityReference>
         (if IgnoreSerializableAttribute on DefaultContractResolver is set to false)
         <codeEntityReference>T:System.Runtime.Serialization.DataContractAttribute</codeEntityReference>,
-        <codeEntityReference>T:System.Runtime.Serialization.DataMemberAttribute</codeEntityReference>
+        <codeEntityReference>T:System.Runtime.Serialization.DataMemberAttribute</codeEntityReference>,
         and <codeEntityReference>T:System.NonSerializedAttribute</codeEntityReference> and attributes when determining how JSON is to be serialized and deserialized.
         </para>
 
         
 <alert class="note">
-  <para>Json.NET attributes take presidence over standard .NET serialization attributes, e.g. if both JsonPropertyAttribute
+  <para>Json.NET attributes take precedence over standard .NET serialization attributes (e.g. if both JsonPropertyAttribute
   and DataMemberAttribute are present on a property and both customize the name,
-  the name from JsonPropertyAttribute will be used.</para>
+  the name from JsonPropertyAttribute will be used).</para>
 </alert>        
 
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="SerializationAttributes" title="Serialization Attributes Example" />
@@ -58,10 +58,10 @@
         <autoOutline /> -->
         <para>The MemberSerialization flag on this attribute specifies whether member serialization is opt-in
         (a member must have the JsonProperty or DataMember attribute to be serialized), opt-out (everything is
-        serialized by default but can be ignored with the JsonIgnoreAttribute, Json.NET's default behavor) or
-        fields (all public and private fields are serialized, properties are ignored).</para>
-        <para>Json.NET serializes .NET classes that implement IEnumerable as an JSON array populated with the
-        IEnumerable values. Placing the JsonPropertyAttribute overrides this behavor and forces the serializer
+        serialized by default but can be ignored with the JsonIgnoreAttribute, Json.NET's default behavior) or
+        fields (all public and private fields are serialized and properties are ignored).</para>
+        <para>Json.NET serializes .NET classes that implement IEnumerable as a JSON array populated with the
+        IEnumerable values. Placing the JsonPropertyAttribute overrides this behavior and forces the serializer
         to serialize the class's fields and properties.</para>
         <para>The DataContractAttribute can be used as substitute for JsonObjectAttribute. The
         DataContractAttribute will default member serialization to opt-in.</para>
@@ -73,8 +73,8 @@
       <content>
         <!-- Uncomment this to create a sub-section outline
         <autoOutline /> -->
-        <para>The JsonArrayAttribute and JsonDictionaryAttributes are used to specified whether a class is serialized as that collection type.</para>
-        <para>The collection attributes have options to customize the JsonConverter, type name handling and reference handling that are applied to collection items.</para>
+        <para>The JsonArrayAttribute and JsonDictionaryAttributes are used to specify whether a class is serialized as that collection type.</para>
+        <para>The collection attributes have options to customize the JsonConverter, type name handling, and reference handling that are applied to collection items.</para>
       </content>
     </section>
         
@@ -86,14 +86,14 @@
         <para>JsonPropertyAttribute has a number of uses:</para>
         
 <list class="bullet">
-  <listItem><para>By default the JSON property will have the same name as the .NET property. This attribute allows the name to be customized.</para></listItem>
-  <listItem><para>Indicates that a property should be serialized when member serialization is set to opt-in.</para></listItem>
-  <listItem><para>Includes non-public properties in serialization and deserialization.</para></listItem>
-  <listItem><para>Customize type name, reference, null and default value handling for the property value.</para></listItem>
-  <listItem><para>Customize the property's collection items JsonConverter, type name handing and reference handling.</para></listItem>
+  <listItem><para>By default, the JSON property will have the same name as the .NET property. This attribute allows the name to be customized.</para></listItem>
+  <listItem><para>JsonPropertyAttribute indicates that a property should be serialized when member serialization is set to opt-in.</para></listItem>
+  <listItem><para>It includes non-public properties in serialization and deserialization.</para></listItem>
+  <listItem><para>It can be used to customize type name, reference, null, and default value handling for the property value.</para></listItem>
+  <listItem><para>It can be used to customize the property's collection items JsonConverter, type name handling, and reference handling.</para></listItem>
 </list>
         
-        <para> The DataMemberAttribute can be used as substitute for JsonPropertyAttribute.</para>
+        <para> The DataMemberAttribute can be used as a substitute for JsonPropertyAttribute.</para>
         
       </content>
     </section>
@@ -114,10 +114,10 @@
         <!-- Uncomment this to create a sub-section outline
         <autoOutline /> -->
         <para>The JsonConverterAttribute specifies which JsonSerializer is used to convert an object.</para>
-        <para>The attribute can be placed on a class or a member. When placed on a class the JsonConverter
+        <para>The attribute can be placed on a class or a member. When placed on a class, the JsonConverter
         specified by the attribute will be the default way of serializing that class. When the attribute is
-        on a field or property then the specified JsonConverter will always be used to serialize that value.</para>
-        <para>The priority of which JsonConverter is used is member attribute then class attribute and finally
+        on a field or property, then the specified JsonConverter will always be used to serialize that value.</para>
+        <para>The priority of which JsonConverter is used is member attribute, then class attribute, and finally
         any converters passed to the JsonSerializer.</para>
         
  <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="SerializationCallbacksObject" title="JsonConverter Attribute" />
@@ -126,7 +126,7 @@
         
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="SerializationCallbacksExample" title="JsonConverter Example" />
                 
-        <para>To apply a JsonConverter to the items in a collection use either <codeEntityReference>T:Newtonsoft.Json.JsonArrayAttribute</codeEntityReference>,
+        <para>To apply a JsonConverter to the items in a collection, use either <codeEntityReference>T:Newtonsoft.Json.JsonArrayAttribute</codeEntityReference>,
         <codeEntityReference>T:Newtonsoft.Json.JsonDictionaryAttribute</codeEntityReference> or
         <codeEntityReference>T:Newtonsoft.Json.JsonPropertyAttribute</codeEntityReference>
         and set the ItemConverterType property to the converter type you want to use.</para>

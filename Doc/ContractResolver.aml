@@ -25,7 +25,7 @@
         <para>The <codeEntityReference>T:Newtonsoft.Json.Serialization.DefaultContractResolver</codeEntityReference>
         is the default resolver used by the
         serializer. It provides many avenues of extensibility in the form of
-        virtual methods that can be overriden.</para>
+        virtual methods that can be overridden.</para>
       </content>
     </section>
     <section>
