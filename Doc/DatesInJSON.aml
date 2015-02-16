@@ -35,10 +35,15 @@
         older versions of Json.NET, then change the
         <codeEntityReference>T:Newtonsoft.Json.DateFormatHandling</codeEntityReference>
         setting to MicrosoftDateFormat.</para>
-        <para>Json.NET also has the <codeEntityReference>T:Newtonsoft.Json.DateTimeZoneHandling</codeEntityReference>
-        setting. This can be
-        used to convert a DateTime's kind when serializing. For example set
-        DateTimeZoneHandling to Utc to serialize all DateTimes as UTC dates.</para>
+        <para>The <codeEntityReference>T:Newtonsoft.Json.DateTimeZoneHandling</codeEntityReference> setting can be
+        used to convert a DateTime's <codeEntityReference>T:System.DateTimeKind</codeEntityReference> when serializing. For example set
+        DateTimeZoneHandling to Utc to serialize all DateTimes as UTC dates. Note that this setting does not effect DateTimeOffsets.</para>
+        <para>If your dates don't follow the ISO 8601 standard, then the DateFormatString setting can be used to customize the format of
+        	date strings that are read and written using .NET's <externalLink>
+<linkText>custom date and time format syntax</linkText>
+<linkUri>https://msdn.microsoft.com/en-us/library/8kb3ddd4.aspx</linkUri>
+<linkTarget>_blank</linkTarget>
+</externalLink>.</para>
       </content>
     </section>
     <section>

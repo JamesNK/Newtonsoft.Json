@@ -107,8 +107,10 @@
     <Compile Include="Documentation\Samples\Linq\DeserializeWithLinq.cs" />
     <Compile Include="Documentation\Samples\Linq\FromObject.cs" />
     <Compile Include="Documentation\Samples\Linq\JObjectProperties.cs" />
+    <Compile Include="Documentation\Samples\Linq\JTokenAnnotation.cs" />
     <Compile Include="Documentation\Samples\Linq\JValueCast.cs" />
     <Compile Include="Documentation\Samples\Linq\JValueValue.cs" />
+    <Compile Include="Documentation\Samples\Linq\MergeJson.cs" />
     <Compile Include="Documentation\Samples\Linq\ModifyJson.cs" />
     <Compile Include="Documentation\Samples\Linq\ParseJsonAny.cs" />
     <Compile Include="Documentation\Samples\Linq\ParseJsonArray.cs" />
@@ -116,7 +118,12 @@
     <Compile Include="Documentation\Samples\Linq\QueryJson.cs" />
     <Compile Include="Documentation\Samples\Linq\QueryJsonDynamic.cs" />
     <Compile Include="Documentation\Samples\Linq\QueryJsonLinq.cs" />
-    <Compile Include="Documentation\Samples\Linq\QueryJsonSelectToken.cs" />
+    <Compile Include="Documentation\Samples\Linq\QueryJsonSelectToken.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Documentation\Samples\Linq\QueryJsonSelectTokenJsonPath.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Documentation\Samples\Linq\QueryJsonSelectTokenWithLinq.cs" />
     <Compile Include="Documentation\Samples\Linq\ReadJson.cs" />
     <Compile Include="Documentation\Samples\Linq\ReadJTokenFromBson.cs" />
@@ -139,11 +146,28 @@
     <Compile Include="Documentation\Samples\Schema\SaveJsonSchemaToFile.cs" />
     <Compile Include="Documentation\Samples\Serializer\CustomContractResolver.cs" />
     <Compile Include="Documentation\Samples\Serializer\CustomJsonConverter.cs" />
-    <Compile Include="Documentation\Samples\Serializer\CustomTraceWriter.cs" />
+    <Compile Include="Documentation\Samples\Serializer\CustomTraceWriter.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Documentation\Samples\Serializer\DataContractAndDataMember.cs" />
+    <Compile Include="Documentation\Samples\Serializer\DefaultSettings.cs" />
     <Compile Include="Documentation\Samples\Serializer\DefaultValueAttributeIgnore.cs" />
     <Compile Include="Documentation\Samples\Serializer\DefaultValueHandlingIgnore.cs" />
     <Compile Include="Documentation\Samples\Serializer\DeserializeAnonymousType.cs" />
+    <Compile Include="Documentation\Samples\Serializer\DeserializeDateFormatString.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Documentation\Samples\Serializer\DeserializeExtensionData.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Documentation\Samples\Serializer\DeserializeImmutableCollections.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Documentation\Samples\Serializer\DeserializeWithDependencyInjection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Documentation\Samples\Serializer\DeserializeMetadataPropertyHandling.cs" />
+    <Compile Include="Documentation\Samples\Serializer\SerializeDateFormatString.cs" />
     <Compile Include="Documentation\Samples\Serializer\DeserializeCollection.cs" />
     <Compile Include="Documentation\Samples\Serializer\DeserializeConstructorHandling.cs" />
     <Compile Include="Documentation\Samples\Serializer\DeserializeCustomCreationConverter.cs" />
@@ -178,6 +202,12 @@
     <Compile Include="Documentation\Samples\Serializer\SerializeDateFormatHandling.cs" />
     <Compile Include="Documentation\Samples\Serializer\SerializeDateTimeZoneHandling.cs" />
     <Compile Include="Documentation\Samples\Serializer\SerializeDictionary.cs" />
+    <Compile Include="Documentation\Samples\Serializer\SerializeExtensionData.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Documentation\Samples\Serializer\SerializeImmutableCollections.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Documentation\Samples\Serializer\SerializeObject.cs" />
     <Compile Include="Documentation\Samples\Serializer\SerializeRawJson.cs" />
     <Compile Include="Documentation\Samples\Serializer\SerializeSerializationBinder.cs" />

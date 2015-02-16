@@ -100,6 +100,18 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="icons\favicon.ico" />
+    <None Include="Samples\Serializer\SerializeImmutableCollections.aml" />
+    <None Include="Samples\Serializer\SerializeExtensionData.aml" />
+    <None Include="Samples\Serializer\SerializeDateFormatString.aml" />
+    <None Include="Samples\Serializer\DeserializeWithDependencyInjection.aml" />
+    <None Include="Samples\Serializer\DeserializeMetadataPropertyHandling.aml" />
+    <None Include="Samples\Serializer\DeserializeImmutableCollections.aml" />
+    <None Include="Samples\Serializer\DeserializeExtensionData.aml" />
+    <None Include="Samples\Serializer\DeserializeDateFormatString.aml" />
+    <None Include="Samples\Serializer\DefaultSettings.aml" />
+    <None Include="Samples\Linq\QueryJsonSelectTokenJsonPath.aml" />
+    <None Include="Samples\Linq\MergeJson.aml" />
+    <None Include="Samples\Linq\JTokenAnnotation.aml" />
     <None Include="Samples\Json\CustomJsonWriter.aml" />
     <None Include="Samples\Json\CustomJsonReader.aml" />
     <None Include="Samples\Xml\ConvertXmlToJsonForceArray.aml" />

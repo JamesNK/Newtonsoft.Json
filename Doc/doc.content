@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Topics>
   <Topic id="Introduction" visible="True" isDefault="true" />
-  <Topic id="SerializingJSON" visible="True" isExpanded="true" title="Serializing and Deserializing JSON">
+  <Topic id="SerializingJSON" visible="True" title="Serializing and Deserializing JSON">
     <Topic id="SerializationSettings" visible="True" title="Serialization Settings" />
     <Topic id="SerializationGuide" visible="True" title="Serialization Guide" />
     <Topic id="SerializationAttributes" visible="True" title="Serialization Attributes" />
@@ -12,7 +12,7 @@
     <Topic id="SerializingCollections" visible="True" title="Serializing Collections" />
     <Topic id="DatesInJSON" visible="True" title="Serializing Dates in JSON" />
     <Topic id="ReducingSerializedJSONSize" visible="True" title="Reducing Serialized JSON Size" />
-    <Topic id="SerializingJSONFragments" visible="True" isSelected="true" title="Deserializing Partial JSON Fragments" />
+    <Topic id="SerializingJSONFragments" visible="True" title="Deserializing Partial JSON Fragments" />
     <Topic id="ConditionalProperties" visible="True" title="Conditional Property Serialization" />
     <Topic id="ContractResolver" visible="True" title="Serialization using ContractResolver" />
     <Topic id="SerializationTracing" visible="True" title="Debugging with Serialization Tracing" />
@@ -29,8 +29,8 @@
   <Topic id="ConvertingJSONandXML" visible="True" title="Converting between JSON and XML" />
   <Topic id="JsonNetVsDotNetSerializers" visible="True" title="Json.NET vs .NET Serializers" />
   <Topic id="JsonNetVsWindowsDataJson" visible="True" title="Json.NET vs Windows.Data.Json" />
-  <Topic id="Samples" visible="True" title="Samples">
-    <Topic id="d6e185d5-c992-44fc-8d8f-d9acc2bbec2f" visible="True" noFile="true" title="Serializing JSON">
+  <Topic id="Samples" visible="True" isExpanded="true" title="Samples">
+    <Topic id="d6e185d5-c992-44fc-8d8f-d9acc2bbec2f" visible="True" noFile="true" isExpanded="true" title="Serializing JSON">
       <Topic id="SerializeObject" visible="True" title="Serialize an Object" />
       <Topic id="SerializeCollection" visible="True" title="Serialize a Collection" />
       <Topic id="SerializeDictionary" visible="True" title="Serialize a Dictionary" />
@@ -58,6 +58,7 @@
       <Topic id="SerializeDateFormatHandling" visible="True" title="DateFormatHandling setting" />
       <Topic id="SerializeDateTimeZoneHandling" visible="True" title="DateTimeZoneHandling setting" />
       <Topic id="SerializeTypeNameHandling" visible="True" title="TypeNameHandling setting" />
+      <Topic id="DeserializeMetadataPropertyHandling" visible="True" title="MetadataPropertyHandling setting" />
       <Topic id="SerializeContractResolver" visible="True" title="ContractResolver setting" />
       <Topic id="TraceWriter" visible="True" title="TraceWriter setting" />
       <Topic id="ErrorHandlingEvent" visible="True" title="ErrorHandling setting" />
@@ -80,8 +81,16 @@
       <Topic id="DefaultValueAttributeIgnore" visible="True" title="DefaultValueAttribute" />
       <Topic id="SerializationCallbackAttributes" visible="True" title="Serialization Callback Attributes" />
       <Topic id="DataContractAndDataMember" visible="True" title="DataContract and DataMember Attributes" />
+      <Topic id="DeserializeWithDependencyInjection" visible="True" title="Deserialize with dependency injection" />
+      <Topic id="DefaultSettings" visible="True" isSelected="true" title="Serialize with DefaultSettings" />
+      <Topic id="SerializeImmutableCollections" visible="True" title="Serialize an immutable collection" />
+      <Topic id="DeserializeImmutableCollections" visible="True" title="Deserialize an immutable collection" />
+      <Topic id="SerializeExtensionData" visible="True" title="Serialize ExtensionData" />
+      <Topic id="DeserializeExtensionData" visible="True" title="Deserialize ExtensionData" />
+      <Topic id="DeserializeDateFormatString" visible="True" title="Deserialize DateFormatString" />
+      <Topic id="SerializeDateFormatString" visible="True" title="Serialize DateFormatString" />
     </Topic>
-    <Topic id="68b9fad2-5436-4e35-a734-9b9d751cc3e5" visible="True" noFile="true" title="LINQ to JSON">
+    <Topic id="68b9fad2-5436-4e35-a734-9b9d751cc3e5" visible="True" noFile="true" isExpanded="true" title="LINQ to JSON">
       <Topic id="CreateJsonManually" visible="True" title="Create JSON manually" />
       <Topic id="CreateJsonCollectionInitializer" visible="True" title="Create JSON using Collection Initializers" />
       <Topic id="CreateJsonDeclaratively" visible="True" title="Create JSON declaratively with LINQ" />
@@ -95,11 +104,13 @@
       <Topic id="DeserializeWithLinq" visible="True" title="Deserializing from JSON with LINQ" />
       <Topic id="SerializeWithLinq" visible="True" title="Serializing to JSON with LINQ" />
       <Topic id="ModifyJson" visible="True" title="Modifying JSON" />
+      <Topic id="MergeJson" visible="True" title="Merging JSON" />
       <Topic id="QueryJson" visible="True" title="Querying JSON" />
       <Topic id="QueryJsonDynamic" visible="True" title="Querying JSON with dynamic" />
       <Topic id="QueryJsonLinq" visible="True" title="Querying JSON with LINQ" />
       <Topic id="QueryJsonSelectToken" visible="True" title="Querying JSON with SelectToken" />
       <Topic id="QueryJsonSelectTokenWithLinq" visible="True" title="Querying JSON with SelectToken and LINQ" />
+      <Topic id="QueryJsonSelectTokenJsonPath" visible="True" title="Querying JSON with JSONPath" />
       <Topic id="ReadJson" visible="True" title="Read JSON from a file" />
       <Topic id="WriteToJsonFile" visible="True" title="Write JSON to a file" />
       <Topic id="ToObjectComplex" visible="True" title="Convert JSON to Collection" />
@@ -108,6 +119,7 @@
       <Topic id="JValueCast" visible="True" title="Casting JValue" />
       <Topic id="JValueValue" visible="True" title="Using JValue.Value" />
       <Topic id="JObjectProperties" visible="True" title="Using JObject.Properties" />
+      <Topic id="JTokenAnnotation" visible="True" title="Using LINQ to JSON Annotations" />
       <Topic id="DeepEquals" visible="True" title="Comparing JSON with JToken.DeepEquals" />
       <Topic id="Clone" visible="True" title="Cloning JSON with JToken.DeepClone" />
       <Topic id="ToString" visible="True" title="Write JSON text with JToken.ToString" />
