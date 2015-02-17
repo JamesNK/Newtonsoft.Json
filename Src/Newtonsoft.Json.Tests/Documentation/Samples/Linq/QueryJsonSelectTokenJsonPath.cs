@@ -87,7 +87,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             // Elbow Grease
             #endregion
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Name"": ""Acme Co"",
   ""Products"": [
     {

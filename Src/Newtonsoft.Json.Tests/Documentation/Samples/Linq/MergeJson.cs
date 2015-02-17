@@ -73,7 +73,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             // }
             #endregion
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""FirstName"": ""John"",
   ""LastName"": ""Smith"",
   ""Enabled"": true,
@@ -81,7 +81,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
     ""User"",
     ""Admin""
   ]
-}", json.ToString());
+}", json);
         }
     }
 }

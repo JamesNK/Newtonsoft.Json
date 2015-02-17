@@ -59,7 +59,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             // ]            
             #endregion
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   ""7 December, 2009"",
   ""1 January, 2010"",
   ""10 February, 2010""
