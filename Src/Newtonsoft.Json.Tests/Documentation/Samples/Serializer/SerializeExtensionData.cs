@@ -36,6 +36,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
     [TestFixture]
     public class SerializeExtensionData : TestFixtureBase
     {
+#pragma warning disable 169
         #region Types
         public class CustomerInvoice
         {
@@ -47,6 +48,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             private IDictionary<string, JToken> _additionalData;
         }
         #endregion
+#pragma warning restore 169
 
         [Test]
         public void Example()
