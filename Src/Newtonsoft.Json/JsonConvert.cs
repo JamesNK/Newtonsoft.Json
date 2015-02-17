@@ -26,6 +26,7 @@
 using System;
 using System.IO;
 using System.Globalization;
+using System.Xml.Schema;
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
 using System.Numerics;
 #endif
@@ -1003,6 +1004,27 @@ namespace Newtonsoft.Json
         public static string SerializeXmlNode(XmlNode node, Formatting formatting, bool omitRootObject)
         {
             XmlNodeConverter converter = new XmlNodeConverter { OmitRootObject = omitRootObject };
+
+            return SerializeObject(node, formatting, converter);
+        }
+
+        /// <summary>
+        /// Serializes the XML node to a JSON string using formatting and omits the root object if <paramref name="omitRootObject"/> is <c>true</c>.
+        /// </summary>
+        /// <param name="node">The node to serialize.</param>
+        /// <param name="formatting">Indicates how the output is formatted.</param>
+        /// <param name="omitRootObject">Omits writing the root object.</param>
+        /// <param name="schemaSet">Schemas to be used for serilization.</param>
+        /// <returns>A JSON string of the XmlNode.</returns>
+        public static string SerializeXmlNode(XmlNode node, Formatting formatting, bool omitRootObject, XmlSchemaSet schemaSet)
+        {
+            SchemaInformation schemaInformation = SchemaInformationFactory.CreateOrGet(schemaSet);
+
+            XmlNodeConverter converter = new XmlNodeConverter 
+            {
+                OmitRootObject = omitRootObject,
+                SchemaInfo = schemaInformation
+            };
 
             return SerializeObject(node, formatting, converter);
         }
