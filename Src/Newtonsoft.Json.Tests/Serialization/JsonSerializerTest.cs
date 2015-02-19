@@ -1757,6 +1757,33 @@ keyword such as type of business.""
         }
 
         [Test]
+        public void ValidBackslashChars()
+        {
+            //According to https://www.json.com/json-object#object-with-strings
+            var validBackslashEscapedChars = new Dictionary<char, string>()
+            {
+                {'v', "\v"}, 
+                {'b', "\b"}, 
+                {'f', "\f"}, 
+                {'n', "\n"}, 
+                {'r', "\r"}, 
+                {'t', "\t"}, 
+                {'\\', "\\"}
+            };
+
+            const string jsonTemplate = @"[""\{0}""]";
+            foreach (var escapedChar in validBackslashEscapedChars)
+            {
+                var json = string.Format(jsonTemplate, escapedChar.Key);
+                var obj = JsonConvert.DeserializeObject<List<string>>(json);
+                Assert.AreEqual(obj[0], escapedChar.Value);
+            }
+
+
+            
+        }
+
+        [Test]
         public void DateTimeTest()
         {
             List<DateTime> testDates = new List<DateTime>
