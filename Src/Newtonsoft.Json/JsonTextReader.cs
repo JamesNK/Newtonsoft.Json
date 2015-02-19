@@ -472,6 +472,10 @@ namespace Newtonsoft.Json
                                 charPos++;
                                 writeChar = '\r';
                                 break;
+                            case 'v':
+                                charPos++;
+                                writeChar = '\v';
+                                break;
                             case '\\':
                                 charPos++;
                                 writeChar = '\\';
