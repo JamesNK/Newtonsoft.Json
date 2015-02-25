@@ -8588,6 +8588,28 @@ Path '', line 1, position 1.");
             Assert.AreEqual("derived", d.DerivedProperty);
         }
 
+        [Test]
+        public void DeserializeNullableUnsignedLong()
+        {
+            NullableLongTestClass instance = new NullableLongTestClass
+            {
+                Value = ulong.MaxValue
+            };
+            string output = JsonConvert.SerializeObject(instance);
+            NullableLongTestClass result = JsonConvert.DeserializeObject<NullableLongTestClass>(output);
+
+            Assert.AreEqual(ulong.MaxValue, result.Value);
+        }
+
+        public class NullableLongTestClass
+        {
+            public ulong? Value
+            {
+                get;
+                set;
+            }
+        }
+
 #if !NETFX_CORE
         [Test]
         public void MailMessageConverterTest()

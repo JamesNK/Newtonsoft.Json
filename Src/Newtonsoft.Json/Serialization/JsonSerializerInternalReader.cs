@@ -862,7 +862,7 @@ namespace Newtonsoft.Json.Serialization
 
 #if !(PORTABLE || PORTABLE40 || NET35 || NET20)
                         if (value is BigInteger)
-                            return ConvertUtils.FromBigInteger((BigInteger)value, targetType);
+                            return ConvertUtils.FromBigInteger((BigInteger)value, contract.NonNullableUnderlyingType);
 #endif
 
                         // this won't work when converting to a custom IConvertible
