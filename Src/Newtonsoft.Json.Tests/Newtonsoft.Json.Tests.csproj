@@ -334,6 +334,7 @@
     </Compile>
     <Compile Include="TestObjects\DataContractSerializationAttributesClass.cs" />
     <Compile Include="TestObjects\DateTimeErrorObjectCollection.cs" />
+    <Compile Include="TestObjects\DateTimeOffsetWrapper.cs" />
     <Compile Include="TestObjects\DateTimeTestClass.cs" />
     <Compile Include="TestObjects\DateTimeWrapper.cs" />
     <Compile Include="TestObjects\DecimalTestClass.cs" />
