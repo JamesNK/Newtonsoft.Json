@@ -57,7 +57,9 @@ namespace Newtonsoft.Json.Tests.Serialization
         private readonly char _startingWithChar;
 
         public DynamicContractResolver(char startingWithChar)
+#pragma warning disable 612
             : base(false)
+#pragma warning restore 612
         {
             _startingWithChar = startingWithChar;
         }

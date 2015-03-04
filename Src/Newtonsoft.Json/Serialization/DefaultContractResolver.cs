@@ -94,7 +94,9 @@ namespace Newtonsoft.Json.Serialization
     /// </summary>
     public class DefaultContractResolver : IContractResolver
     {
+#pragma warning disable 612
         private static readonly IContractResolver _instance = new DefaultContractResolver(true);
+#pragma warning restore 612
 
         internal static IContractResolver Instance
         {
@@ -187,8 +189,15 @@ namespace Newtonsoft.Json.Serialization
         /// Initializes a new instance of the <see cref="DefaultContractResolver"/> class.
         /// </summary>
         public DefaultContractResolver()
-            : this(false)
         {
+#if !NETFX_CORE
+#pragma warning disable 618
+            DefaultMembersSearchFlags = BindingFlags.Public | BindingFlags.Instance;
+#pragma warning restore 618
+#endif
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
+            IgnoreSerializableAttribute = true;
+#endif
         }
 
         /// <summary>
@@ -200,17 +209,10 @@ namespace Newtonsoft.Json.Serialization
         /// happen once. This setting can cause unexpected behavior if different instances of the resolver are suppose to produce different
         /// results. When set to false it is highly recommended to reuse <see cref="DefaultContractResolver"/> instances with the <see cref="JsonSerializer"/>.
         /// </param>
+        [ObsoleteAttribute("DefaultContractResolver(bool) is obsolete. Use the parameterless constructor and cache instances of the contract resolver within your application for optimal performance.")]
         public DefaultContractResolver(bool shareCache)
+            : this()
         {
-#if !NETFX_CORE
-#pragma warning disable 618
-            DefaultMembersSearchFlags = BindingFlags.Public | BindingFlags.Instance;
-#pragma warning restore 618
-#endif
-#if !(NETFX_CORE || PORTABLE || PORTABLE40)
-            IgnoreSerializableAttribute = true;
-#endif
-
             _sharedCache = shareCache;
         }
 

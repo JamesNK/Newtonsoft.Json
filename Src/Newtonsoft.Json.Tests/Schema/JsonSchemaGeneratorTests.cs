@@ -344,7 +344,9 @@ namespace Newtonsoft.Json.Tests.Schema
         public class CustomDirectoryInfoMapper : DefaultContractResolver
         {
             public CustomDirectoryInfoMapper()
+#pragma warning disable 612
                 : base(true)
+#pragma warning restore 612
             {
             }
 

@@ -37,7 +37,9 @@ namespace Newtonsoft.Json.Serialization
         /// Initializes a new instance of the <see cref="CamelCasePropertyNamesContractResolver"/> class.
         /// </summary>
         public CamelCasePropertyNamesContractResolver()
+#pragma warning disable 612
             : base(true)
+#pragma warning restore 612
         {
         }
 

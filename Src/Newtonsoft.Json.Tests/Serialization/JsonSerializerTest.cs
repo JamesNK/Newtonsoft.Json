@@ -4167,7 +4167,7 @@ Path '', line 1, position 1.");
 
                 string json = JsonConvert.SerializeObject(value, new JsonSerializerSettings
                 {
-                    ContractResolver = new DefaultContractResolver(false)
+                    ContractResolver = new DefaultContractResolver
                     {
                         IgnoreSerializableInterface = true
                     }
@@ -4177,7 +4177,7 @@ Path '', line 1, position 1.");
 
                 value = JsonConvert.DeserializeObject<ISerializableTestObject>("{booleanValue:true}", new JsonSerializerSettings
                 {
-                    ContractResolver = new DefaultContractResolver(false)
+                    ContractResolver = new DefaultContractResolver
                     {
                         IgnoreSerializableInterface = true
                     }
@@ -7060,8 +7060,8 @@ Path '', line 1, position 1.");
             where T : class
         {
             var stringWriter = new StringWriter();
-            var serializer = new Newtonsoft.Json.JsonSerializer();
-            serializer.ContractResolver = new DefaultContractResolver(false)
+            var serializer = new JsonSerializer();
+            serializer.ContractResolver = new DefaultContractResolver
             {
                 IgnoreSerializableAttribute = false
             };
@@ -7073,9 +7073,9 @@ Path '', line 1, position 1.");
         private T Deserialize<T>(string json)
             where T : class
         {
-            var jsonReader = new Newtonsoft.Json.JsonTextReader(new StringReader(json));
-            var serializer = new Newtonsoft.Json.JsonSerializer();
-            serializer.ContractResolver = new DefaultContractResolver(false)
+            var jsonReader = new JsonTextReader(new StringReader(json));
+            var serializer = new JsonSerializer();
+            serializer.ContractResolver = new DefaultContractResolver
             {
                 IgnoreSerializableAttribute = false
             };
