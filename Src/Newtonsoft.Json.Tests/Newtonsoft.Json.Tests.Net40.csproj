@@ -273,6 +273,7 @@
     <Compile Include="Serialization\ImmutableCollectionsTests.cs" />
     <Compile Include="Serialization\JsonSerializerCollectionsTests.cs" />
     <Compile Include="Serialization\MetadataPropertyHandlingTests.cs" />
+    <Compile Include="Serialization\ReadOnlyPropertyDeserializationTests.cs" />
     <Compile Include="Serialization\ReferenceLoopHandlingTests.cs" />
     <Compile Include="Serialization\ReflectionAttributeProviderTests.cs" />
     <Compile Include="Serialization\ShouldSerializeTests.cs" />
