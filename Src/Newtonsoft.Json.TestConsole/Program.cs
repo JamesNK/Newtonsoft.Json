@@ -32,6 +32,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using Newtonsoft.Json.Tests;
+using Newtonsoft.Json.Tests.Converters;
 
 namespace Newtonsoft.Json.TestConsole
 {
@@ -53,8 +54,10 @@ namespace Newtonsoft.Json.TestConsole
             //DeserializeLargeJson();
             //WriteLargeJson();
             //DeserializeJson();
-            ReadLargeJson();
+            //ReadLargeJson();
             //ReadLargeJsonJavaScriptSerializer();
+            DiscriminatedUnionConverterTests t = new DiscriminatedUnionConverterTests();
+            t.SerializePerformance();
 
             Console.WriteLine();
             Console.WriteLine("Finished");

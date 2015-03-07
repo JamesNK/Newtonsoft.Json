@@ -44,12 +44,13 @@ namespace Newtonsoft.Json.Utilities
 
         public static Assembly FSharpCoreAssembly { get; private set; }
         public static MethodCall<object, object> IsUnion { get; private set; }
-        public static MethodCall<object, object> GetUnionFields { get; private set; }
         public static MethodCall<object, object> GetUnionCases { get; private set; }
-        public static MethodCall<object, object> MakeUnion { get; private set; }
+        public static MethodCall<object, object> PreComputeUnionTagReader { get; private set; }
+        public static MethodCall<object, object> PreComputeUnionReader { get; private set; }
+        public static MethodCall<object, object> PreComputeUnionConstructor { get; private set; }
+        public static Func<object, object> GetUnionCaseInfoDeclaringType { get; private set; }
         public static Func<object, object> GetUnionCaseInfoName { get; private set; }
-        public static Func<object, object> GetUnionCaseInfo { get; private set; }
-        public static Func<object, object> GetUnionCaseFields { get; private set; }
+        public static Func<object, object> GetUnionCaseInfoTag { get; private set; }
         public static MethodCall<object, object> GetUnionCaseInfoFields { get; private set; }
 
         public const string FSharpSetTypeName = "FSharpSet`1";
@@ -76,18 +77,15 @@ namespace Newtonsoft.Json.Utilities
 
                         Type fsharpValue = fsharpCoreAssembly.GetType("Microsoft.FSharp.Reflection.FSharpValue");
 
-                        MethodInfo getUnionFieldsMethodInfo = fsharpValue.GetMethod("GetUnionFields", BindingFlags.Public | BindingFlags.Static);
-                        GetUnionFields = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(getUnionFieldsMethodInfo);
-
-                        GetUnionCaseInfo = JsonTypeReflector.ReflectionDelegateFactory.CreateGet<object>(getUnionFieldsMethodInfo.ReturnType.GetProperty("Item1"));
-                        GetUnionCaseFields = JsonTypeReflector.ReflectionDelegateFactory.CreateGet<object>(getUnionFieldsMethodInfo.ReturnType.GetProperty("Item2"));
-
-                        MethodInfo makeUnionMethodInfo = fsharpValue.GetMethod("MakeUnion", BindingFlags.Public | BindingFlags.Static);
-                        MakeUnion = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(makeUnionMethodInfo);
+                        PreComputeUnionTagReader = CreateFSharpFuncCall(fsharpValue, "PreComputeUnionTagReader");
+                        PreComputeUnionReader = CreateFSharpFuncCall(fsharpValue, "PreComputeUnionReader");
+                        PreComputeUnionConstructor = CreateFSharpFuncCall(fsharpValue, "PreComputeUnionConstructor");
 
                         Type unionCaseInfo = fsharpCoreAssembly.GetType("Microsoft.FSharp.Reflection.UnionCaseInfo");
 
                         GetUnionCaseInfoName = JsonTypeReflector.ReflectionDelegateFactory.CreateGet<object>(unionCaseInfo.GetProperty("Name"));
+                        GetUnionCaseInfoTag = JsonTypeReflector.ReflectionDelegateFactory.CreateGet<object>(unionCaseInfo.GetProperty("Tag"));
+                        GetUnionCaseInfoDeclaringType = JsonTypeReflector.ReflectionDelegateFactory.CreateGet<object>(unionCaseInfo.GetProperty("DeclaringType"));
                         GetUnionCaseInfoFields = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(unionCaseInfo.GetMethod("GetFields"));
 
                         Type listModule = fsharpCoreAssembly.GetType("Microsoft.FSharp.Collections.ListModule");
@@ -102,6 +100,24 @@ namespace Newtonsoft.Json.Utilities
                     }
                 }
             }
+        }
+
+        private static MethodCall<object, object> CreateFSharpFuncCall(Type type, string methodName)
+        {
+            MethodInfo innerMethodInfo = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.Static);
+            MethodInfo toConvertMethodInfo = innerMethodInfo.ReturnType.GetMethod("ToConverter", BindingFlags.Public | BindingFlags.Static);
+
+            MethodCall<object, object> inner = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(innerMethodInfo);
+            MethodCall<object, object> toConvert = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(toConvertMethodInfo);
+
+            MethodCall<object, object> methodCall = (target, args) =>
+            {
+                object result = inner(target, args);
+
+                return toConvert(null, result);
+            };
+
+            return methodCall;
         }
 
         public static ObjectConstructor<object> CreateSeq(Type t)
