@@ -1376,7 +1376,7 @@ namespace Newtonsoft.Json.Converters
                     string attributePrefix = MiscellaneousUtils.GetPrefix(nameValue.Key);
 
                     IXmlNode attribute = (!string.IsNullOrEmpty(attributePrefix))
-                        ? document.CreateAttribute(nameValue.Key, manager.LookupNamespace(attributePrefix), nameValue.Value)
+                        ? document.CreateAttribute(nameValue.Key, manager.LookupNamespace(attributePrefix) ?? string.Empty, nameValue.Value)
                         : document.CreateAttribute(nameValue.Key, nameValue.Value);
 
                     element.SetAttributeNode(attribute);

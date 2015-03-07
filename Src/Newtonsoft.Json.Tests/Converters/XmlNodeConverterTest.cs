@@ -372,7 +372,45 @@ namespace Newtonsoft.Json.Tests.Converters
             var equals = XElement.DeepEquals(xmlBack, xml);
             Assert.IsTrue(equals);
         }
+
+        [Test]
+        public void DeserializeUndeclaredNamespacePrefix()
+        {
+            XmlDocument doc = JsonConvert.DeserializeXmlNode("{ A: { '@xsi:nil': true } }");
+
+            Console.WriteLine(doc.OuterXml);
+
+            XDocument xdoc = JsonConvert.DeserializeXNode("{ A: { '@xsi:nil': true } }");
+
+            Assert.AreEqual(doc.OuterXml, xdoc.ToString());
+        }
 #endif
+
+        [Test]
+        public void DeserializeMultipleRootElements()
+        {
+            string json = @"{
+    ""Id"": 1,
+     ""Email"": ""james@example.com"",
+     ""Active"": true,
+     ""CreatedDate"": ""2013-01-20T00:00:00Z"",
+     ""Roles"": [
+       ""User"",
+       ""Admin""
+     ],
+    ""Team"": {
+        ""Id"": 2,
+        ""Name"": ""Software Developers"",
+        ""Description"": ""Creators of fine software products and services.""
+    }
+}";
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () =>
+                {
+                    JsonConvert.DeserializeXmlNode(json);
+                },
+                "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifing a DeserializeRootElementName.");
+        }
 
         [Test]
         public void DocumentSerializeIndented()
