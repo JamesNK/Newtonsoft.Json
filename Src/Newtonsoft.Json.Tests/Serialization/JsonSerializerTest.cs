@@ -3930,7 +3930,7 @@ Path '', line 1, position 1.");
                 Formatting = Formatting.Indented
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""C2"": {
     ""IntProperty"": 1
   },
