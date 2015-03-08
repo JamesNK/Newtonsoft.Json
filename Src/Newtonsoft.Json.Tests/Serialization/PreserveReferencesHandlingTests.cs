@@ -95,7 +95,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 PreserveReferencesHandling = PreserveReferencesHandling.All
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""$id"": ""1"",
   ""ReadOnlyChild"": {
     ""PropertyName"": ""value?""
