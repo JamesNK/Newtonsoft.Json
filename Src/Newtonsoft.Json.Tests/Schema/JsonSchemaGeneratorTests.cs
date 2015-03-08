@@ -365,7 +365,7 @@ namespace Newtonsoft.Json.Tests.Schema
                 JsonPropertyCollection c = new JsonPropertyCollection(type);
                 c.AddRange(properties.Where(m => m.PropertyName != "Root"));
 
-                return c;
+                return c.ToList();
             }
         }
 

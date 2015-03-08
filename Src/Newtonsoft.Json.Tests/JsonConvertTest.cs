@@ -1338,5 +1338,32 @@ namespace Newtonsoft.Json.Tests
                 writer.WriteValue(Math.Round((double)value, _precision, _rounding));
             }
         }
+
+        class ForAliasTesting
+        {
+            [JsonProperty(Aliases=new[]{"V1", "V2", "Value2"})]
+            public int Value { get; set; }
+
+            public int Value2 { get; set; }
+        }
+
+        [Test]
+        public void AliasTest()
+        {
+            const string json1 = @"{""Value"":""42""}";
+            Assert.AreEqual(42, JsonConvert.DeserializeObject<ForAliasTesting>(json1).Value);
+
+            const string json2 = @"{""V1"":""42""}";
+            Assert.AreEqual(42, JsonConvert.DeserializeObject<ForAliasTesting>(json2).Value);
+
+            const string json3 = @"{""V2"":""42""}";
+            Assert.AreEqual(42, JsonConvert.DeserializeObject<ForAliasTesting>(json3).Value);
+
+            const string json4 = @"{""value"":""42""}";
+            Assert.AreEqual(42, JsonConvert.DeserializeObject<ForAliasTesting>(json4).Value);
+
+            const string json5 = @"{""Value2"":""42""}";
+            Assert.AreNotEqual(42, JsonConvert.DeserializeObject<ForAliasTesting>(json5).Value);
+        }
     }
 }

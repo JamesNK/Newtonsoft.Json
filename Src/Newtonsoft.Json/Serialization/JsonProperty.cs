@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Newtonsoft.Json.Utilities;
 
@@ -289,6 +290,23 @@ namespace Newtonsoft.Json.Serialization
                 writer.WritePropertyName(PropertyName, false);
             else
                 writer.WritePropertyName(PropertyName);
+        }
+
+        private HashSet<string> _aliases;
+        public void AddAliases(IEnumerable<string> aliases)
+        {
+            if (aliases == null) 
+                return;
+            if (_aliases == null)
+                _aliases = new HashSet<string>(aliases);
+            else
+                foreach (var alias in aliases)
+                    _aliases.Add(alias);
+        }
+
+        public bool HasAlias(string propertyName)
+        {
+            return _aliases != null && _aliases.Contains(propertyName);
         }
     }
 }

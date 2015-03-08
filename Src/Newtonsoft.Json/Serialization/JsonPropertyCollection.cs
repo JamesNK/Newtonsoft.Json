@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Collections.ObjectModel;
@@ -35,29 +36,20 @@ namespace Newtonsoft.Json.Serialization
     /// <summary>
     /// A collection of <see cref="JsonProperty"/> objects.
     /// </summary>
-    public class JsonPropertyCollection : KeyedCollection<string, JsonProperty>
+    public class JsonPropertyCollection : IEnumerable<JsonProperty>
     {
         private readonly Type _type;
+        private readonly Dictionary<string, JsonProperty> _properties;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonPropertyCollection"/> class.
         /// </summary>
         /// <param name="type">The type.</param>
         public JsonPropertyCollection(Type type)
-            : base(StringComparer.Ordinal)
         {
             ValidationUtils.ArgumentNotNull(type, "type");
             _type = type;
-        }
-
-        /// <summary>
-        /// When implemented in a derived class, extracts the key from the specified element.
-        /// </summary>
-        /// <param name="item">The element from which to extract the key.</param>
-        /// <returns>The key for the specified element.</returns>
-        protected override string GetKeyForItem(JsonProperty item)
-        {
-            return item.PropertyName;
+            _properties = new Dictionary<string, JsonProperty>(StringComparer.Ordinal);
         }
 
         /// <summary>
@@ -66,19 +58,19 @@ namespace Newtonsoft.Json.Serialization
         /// <param name="property">The property to add to the collection.</param>
         public void AddProperty(JsonProperty property)
         {
-            if (Contains(property.PropertyName))
+            if (_properties.ContainsKey(property.PropertyName))
             {
                 // don't overwrite existing property with ignored property
                 if (property.Ignored)
                     return;
 
-                JsonProperty existingProperty = this[property.PropertyName];
+                JsonProperty existingProperty = _properties[property.PropertyName];
                 bool duplicateProperty = true;
 
                 if (existingProperty.Ignored)
                 {
                     // remove ignored property so it can be replaced in collection
-                    Remove(existingProperty);
+                    _properties.Remove(existingProperty.PropertyName);
                     duplicateProperty = false;
                 }
                 else
@@ -88,7 +80,7 @@ namespace Newtonsoft.Json.Serialization
                         if (property.DeclaringType.IsSubclassOf(existingProperty.DeclaringType))
                         {
                             // current property is on a derived class and hides the existing
-                            Remove(existingProperty);
+                            _properties.Remove(existingProperty.PropertyName);
                             duplicateProperty = false;
                         }
                         if (existingProperty.DeclaringType.IsSubclassOf(property.DeclaringType))
@@ -103,7 +95,7 @@ namespace Newtonsoft.Json.Serialization
                     throw new JsonSerializationException("A member with the name '{0}' already exists on '{1}'. Use the JsonPropertyAttribute to specify another name.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName, _type));
             }
 
-            Add(property);
+            _properties[property.PropertyName] = property;
         }
 
         /// <summary>
@@ -115,51 +107,47 @@ namespace Newtonsoft.Json.Serialization
         /// <returns>A matching property if found.</returns>
         public JsonProperty GetClosestMatchProperty(string propertyName)
         {
-            JsonProperty property = GetProperty(propertyName, StringComparison.Ordinal);
-            if (property == null)
-                property = GetProperty(propertyName, StringComparison.OrdinalIgnoreCase);
+            JsonProperty property;
+            if (_properties.TryGetValue(propertyName, out property))
+                return property;
 
-            return property;
-        }
-
-        private bool TryGetValue(string key, out JsonProperty item)
-        {
-            if (Dictionary == null)
+            // if we return something from down below, we may want to cache those in their own dictionary
+            // we could put them in the main dictionary, but then we would have to use Distinct on the enumerator
+            foreach (var kvp in _properties)
             {
-                item = default(JsonProperty);
-                return false;
-            }
-
-            return Dictionary.TryGetValue(key, out item);
-        }
-
-        /// <summary>
-        /// Gets a property by property name.
-        /// </summary>
-        /// <param name="propertyName">The name of the property to get.</param>
-        /// <param name="comparisonType">Type property name string comparison.</param>
-        /// <returns>A matching property if found.</returns>
-        public JsonProperty GetProperty(string propertyName, StringComparison comparisonType)
-        {
-            // KeyedCollection has an ordinal comparer
-            if (comparisonType == StringComparison.Ordinal)
-            {
-                JsonProperty property;
-                if (TryGetValue(propertyName, out property))
-                    return property;
-
-                return null;
-            }
-
-            foreach (JsonProperty property in this)
-            {
-                if (string.Equals(propertyName, property.PropertyName, comparisonType))
+                if (kvp.Value.HasAlias(propertyName))
                 {
-                    return property;
+                    return kvp.Value;
+                }
+            }
+
+            foreach (var kvp in _properties)
+            {
+                if (kvp.Key.Equals(propertyName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return kvp.Value;
                 }
             }
 
             return null;
         }
+
+        public IEnumerator<JsonProperty> GetEnumerator()
+        {
+            return _properties.Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public void AddRange(IEnumerable<JsonProperty> properties)
+        {
+            foreach (var property in properties)
+                AddProperty(property);
+        }
+
+        public int Count { get { return _properties.Count; } }
     }
 }

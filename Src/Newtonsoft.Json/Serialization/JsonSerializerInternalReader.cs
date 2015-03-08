@@ -1645,7 +1645,7 @@ namespace Newtonsoft.Json.Serialization
 
                 if (matchingCreatorParameter != null)
                 {
-                    int i = contract.CreatorParameters.IndexOf(matchingCreatorParameter);
+                    int i = contract.CreatorParameters.IndexOf(x => x == matchingCreatorParameter);
                     creatorParameterValues[i] = propertyValue.Value;
                 }
                 else

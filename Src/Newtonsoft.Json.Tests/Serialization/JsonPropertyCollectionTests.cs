@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+using System.Linq;
 #if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
@@ -56,9 +57,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             var contract = (JsonObjectContract)resolver.ResolveContract(value.GetType());
 
             Assert.AreEqual(3, contract.Properties.Count);
-            Assert.IsTrue(contract.Properties.Contains("OverriddenProperty"), "Contract is missing property 'OverriddenProperty'");
-            Assert.IsTrue(contract.Properties.Contains("PropertyA"), "Contract is missing property 'PropertyA'");
-            Assert.IsTrue(contract.Properties.Contains("PropertyB"), "Contract is missing property 'PropertyB'");
+            Assert.IsTrue(contract.Properties.Any(x => x.PropertyName == "OverriddenProperty"), "Contract is missing property 'OverriddenProperty'");
+            Assert.IsTrue(contract.Properties.Any(x => x.PropertyName == "PropertyA"), "Contract is missing property 'PropertyA'");
+            Assert.IsTrue(contract.Properties.Any(x => x.PropertyName == "PropertyB"), "Contract is missing property 'PropertyB'");
         }
     }
 }
