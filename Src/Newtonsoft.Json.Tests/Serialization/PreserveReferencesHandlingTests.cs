@@ -47,6 +47,95 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class PreserveReferencesHandlingTests : TestFixtureBase
     {
+        public class Parent
+        {
+            public Child ReadOnlyChild
+            {
+                get { return Child1; }
+            }
+
+            public Child Child1 { get; set; }
+            public Child Child2 { get; set; }
+
+            public IList<string> ReadOnlyList
+            {
+                get { return List1; }
+            }
+
+            public IList<string> List1 { get; set; }
+            public IList<string> List2 { get; set; }
+        }
+
+        public class Child
+        {
+            public string PropertyName { get; set; }
+        }
+
+        public void SerializeReadOnlyProperty()
+        {
+            Child c = new Child
+            {
+                PropertyName = "value?"
+            };
+            IList<string> l = new List<string>
+            {
+                "value!"
+            };
+            Parent p = new Parent
+            {
+                Child1 = c,
+                Child2 = c,
+                List1 = l,
+                List2 = l
+            };
+
+            string json = JsonConvert.SerializeObject(p, new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented,
+                PreserveReferencesHandling = PreserveReferencesHandling.All
+            });
+
+            Assert.AreEqual(@"{
+  ""$id"": ""1"",
+  ""ReadOnlyChild"": {
+    ""PropertyName"": ""value?""
+  },
+  ""Child1"": {
+    ""$id"": ""2"",
+    ""PropertyName"": ""value?""
+  },
+  ""Child2"": {
+    ""$ref"": ""2""
+  },
+  ""ReadOnlyList"": [
+    ""value!""
+  ],
+  ""List1"": {
+    ""$id"": ""3"",
+    ""$values"": [
+      ""value!""
+    ]
+  },
+  ""List2"": {
+    ""$ref"": ""3""
+  }
+}", json);
+
+            Parent newP = JsonConvert.DeserializeObject<Parent>(json, new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented,
+                PreserveReferencesHandling = PreserveReferencesHandling.All
+            });
+
+            Assert.AreEqual("value?", newP.Child1.PropertyName);
+            Assert.AreEqual(newP.Child1, newP.Child2);
+            Assert.AreEqual(newP.Child1, newP.ReadOnlyChild);
+
+            Assert.AreEqual("value!", newP.List1[0]);
+            Assert.AreEqual(newP.List1, newP.List2);
+            Assert.AreEqual(newP.List1, newP.ReadOnlyList);
+        }
+
         [Test]
         public void SerializeDictionarysWithPreserveObjectReferences()
         {

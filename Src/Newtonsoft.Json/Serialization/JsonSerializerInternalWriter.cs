@@ -497,7 +497,8 @@ namespace Newtonsoft.Json.Serialization
             writer.WriteStartObject();
 
             bool isReference = ResolveIsReference(contract, member, collectionContract, containerProperty) ?? HasFlag(Serializer._preserveReferencesHandling, PreserveReferencesHandling.Objects);
-            if (isReference)
+            // don't make readonly fields the referenced value because they can't be deserialized to
+            if (isReference && (member == null || member.Writable))
             {
                 WriteReferenceIdProperty(writer, contract.UnderlyingType, value);
             }
@@ -701,6 +702,9 @@ namespace Newtonsoft.Json.Serialization
         private bool WriteStartArray(JsonWriter writer, object values, JsonArrayContract contract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
         {
             bool isReference = ResolveIsReference(contract, member, containerContract, containerProperty) ?? HasFlag(Serializer._preserveReferencesHandling, PreserveReferencesHandling.Arrays);
+            // don't make readonly fields the referenced value because they can't be deserialized to
+            isReference = (isReference && (member == null || member.Writable));
+
             bool includeTypeDetails = ShouldWriteType(TypeNameHandling.Arrays, contract, member, containerContract, containerProperty);
             bool writeMetadataObject = isReference || includeTypeDetails;
 

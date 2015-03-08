@@ -332,7 +332,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             {
                 Error = (s, a) => a.ErrorContext.Handled = true
             });
-            
+
             Assert.AreEqual(0, l.ChildId);
         }
 #endif
@@ -394,7 +394,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
         public class ChildClassVirtual : BaseClassVirtual
         {
-            public virtual new bool IsTransient { get; set; }
+            public new virtual bool IsTransient { get; set; }
         }
 
         [Test]
@@ -413,7 +413,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
         public class ResponseWithNewGenericPropertyVirtual<T> : SimpleResponse
         {
-            public virtual new T Data { get; set; }
+            public new virtual T Data { get; set; }
         }
 
         public class ResponseWithNewGenericPropertyOverride<T> : ResponseWithNewGenericPropertyVirtual<T>
@@ -1000,7 +1000,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             JObject oo = new JObject
             {
-                {"title", v}
+                { "title", v }
             };
 
             string output = o.ToString();
@@ -1711,6 +1711,7 @@ keyword such as type of business.""
         {
             ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.SerializeObject(new BadJsonPropertyClass()); }, @"A member with the name 'pie' already exists on 'Newtonsoft.Json.Tests.TestObjects.BadJsonPropertyClass'. Use the JsonPropertyAttribute to specify another name.");
         }
+
 #if !NET20
         [Test]
         public void Unicode()
@@ -3280,7 +3281,8 @@ Path '', line 1, position 1.");
 
             ExceptionAssert.Throws<InvalidCastException>(
                 () => { JsonConvert.DeserializeObject<JObject>(json); },
-                new [] { 
+                new[]
+                {
                     "Unable to cast object of type 'Newtonsoft.Json.Linq.JArray' to type 'Newtonsoft.Json.Linq.JObject'.",
                     "Cannot cast from source type to destination type." // mono
                 });
@@ -3315,8 +3317,8 @@ Path '', line 1, position 1.");
             catch (JsonSerializationException ex)
             {
                 Assert.IsTrue(ex.Message.StartsWith(@"Cannot deserialize the current JSON object (e.g. {""name"":""value""}) into type 'System.Collections.Generic.List`1[Newtonsoft.Json.Tests.TestObjects.Person]' because the type requires a JSON array (e.g. [1,2,3]) to deserialize correctly." + Environment.NewLine +
-@"To fix this error either change the JSON to a JSON array (e.g. [1,2,3]) or change the deserialized type so that it is a normal .NET type (e.g. not a primitive type like integer, not a collection type like an array or List<T>) that can be deserialized from a JSON object. JsonObjectAttribute can also be added to the type to force it to deserialize from a JSON object." + Environment.NewLine +
-@"Path ''"));
+                                                    @"To fix this error either change the JSON to a JSON array (e.g. [1,2,3]) or change the deserialized type so that it is a normal .NET type (e.g. not a primitive type like integer, not a collection type like an array or List<T>) that can be deserialized from a JSON object. JsonObjectAttribute can also be added to the type to force it to deserialize from a JSON object." + Environment.NewLine +
+                                                    @"Path ''"));
             }
         }
 
@@ -3875,6 +3877,100 @@ Path '', line 1, position 1.");
   ""B3"": null,
   ""A2"": null
 }", json);
+        }
+
+        public class DateTimeOffsetWrapper
+        {
+            public DateTimeOffset DateTimeOffsetValue { get; set; }
+
+            public DateTime DateTimeValue { get; set; }
+        }
+
+        [Test]
+        public void DeserializeDateTimeOffsetAndDateTime()
+        {
+            string jsonIsoText =
+                @"{""DateTimeOffsetValue"":""2012-02-25T19:55:50.6095676+00:00"", ""DateTimeValue"":""2012-02-25T19:55:50.6095676+00:00""}";
+
+            DateTimeOffsetWrapper cISO = JsonConvert.DeserializeObject<DateTimeOffsetWrapper>(jsonIsoText, new JsonSerializerSettings
+            {
+                DateParseHandling = DateParseHandling.DateTimeOffset,
+                Converters =
+                {
+                    new IsoDateTimeConverter()
+                }
+            });
+            DateTimeOffsetWrapper c = JsonConvert.DeserializeObject<DateTimeOffsetWrapper>(jsonIsoText, new JsonSerializerSettings
+            {
+                DateParseHandling = DateParseHandling.DateTimeOffset
+            });
+
+            Assert.AreEqual(c.DateTimeOffsetValue, cISO.DateTimeOffsetValue);
+        }
+
+        [Test]
+        public void CircularConstructorDeserialize()
+        {
+            CircularConstructor1 c1 = new CircularConstructor1(null)
+            {
+                StringProperty = "Value!"
+            };
+
+            CircularConstructor2 c2 = new CircularConstructor2(null)
+            {
+                IntProperty = 1
+            };
+
+            c1.C2 = c2;
+            c2.C1 = c1;
+
+            string json = JsonConvert.SerializeObject(c1, new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                Formatting = Formatting.Indented
+            });
+
+            Assert.AreEqual(@"{
+  ""C2"": {
+    ""IntProperty"": 1
+  },
+  ""StringProperty"": ""Value!""
+}", json);
+
+            CircularConstructor1 newC1 = JsonConvert.DeserializeObject<CircularConstructor1>(@"{
+  ""C2"": {
+    ""IntProperty"": 1,
+    ""C1"": {}
+  },
+  ""StringProperty"": ""Value!""
+}");
+
+            Assert.AreEqual("Value!", newC1.StringProperty);
+            Assert.AreEqual(1, newC1.C2.IntProperty);
+            Assert.AreEqual(null, newC1.C2.C1.StringProperty);
+            Assert.AreEqual(null, newC1.C2.C1.C2);
+        }
+
+        public class CircularConstructor1
+        {
+            public CircularConstructor2 C2 { get; internal set; }
+            public string StringProperty { get; set; }
+
+            public CircularConstructor1(CircularConstructor2 c2)
+            {
+                C2 = c2;
+            }
+        }
+
+        public class CircularConstructor2
+        {
+            public CircularConstructor1 C1 { get; internal set; }
+            public int IntProperty { get; set; }
+
+            public CircularConstructor2(CircularConstructor1 c1)
+            {
+                C1 = c1;
+            }
         }
 
         public class TestClass

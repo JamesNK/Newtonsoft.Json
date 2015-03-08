@@ -138,10 +138,10 @@ namespace Newtonsoft.Json.Converters
             {
 #if !NET20
                 if (t == typeof(DateTimeOffset))
-                    return reader.Value is DateTimeOffset ? reader.Value : new DateTimeOffset((DateTime)reader.Value);
+                    return (reader.Value is DateTimeOffset) ? reader.Value : new DateTimeOffset((DateTime)reader.Value);
 #endif
 
-                return reader.Value;
+                return (reader.Value is DateTime) ? reader.Value : ((DateTimeOffset)reader.Value).DateTime;
             }
 
             if (reader.TokenType != JsonToken.String)
