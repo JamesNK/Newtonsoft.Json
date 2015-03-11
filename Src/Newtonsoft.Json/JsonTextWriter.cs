@@ -49,6 +49,7 @@ namespace Newtonsoft.Json
         private bool _quoteName;
         private bool[] _charEscapeFlags;
         private char[] _writeBuffer;
+        private char[] _readBuffer;
         private char[] _indentChars;
 
         private Base64Encoder Base64Encoder
@@ -373,6 +374,27 @@ namespace Newtonsoft.Json
                 WriteValueInternal(JsonConvert.Null, JsonToken.Null);
             else
                 WriteEscapedString(value, true);
+        }
+
+        /// <summary>
+        /// Streams a <see cref="TextReader"/> into a JSON string.
+        /// </summary>
+        /// <param name="value">The <see cref="TextReader"/> value to read from.</param>
+        public override void WriteValue(TextReader value)
+        {
+            InternalWriteValue(JsonToken.String);
+            EnsureWriteBuffer();
+            EnsureReadBuffer();
+
+            _writer.Write(_quoteChar);
+
+            var readCount = 0;
+
+            while ( (readCount = value.Read(_readBuffer, 0, _readBuffer.Length)) > 0) {
+                JavaScriptUtils.WriteEscapedJavaScriptCharArray(_writer, ref _readBuffer, readCount, _quoteChar, false, _charEscapeFlags, StringEscapeHandling, ref _writeBuffer);
+            }
+
+            _writer.Write(_quoteChar);
         }
 
         private void WriteEscapedString(string value, bool quote)
@@ -713,6 +735,12 @@ namespace Newtonsoft.Json
         {
             if (_writeBuffer == null)
                 _writeBuffer = new char[35]; // maximum buffer sized used when writing iso date
+        }
+
+        private void EnsureReadBuffer()
+        {
+            if (_readBuffer == null)
+                _readBuffer = new char[8192];
         }
 
         private void WriteIntegerValue(long value)

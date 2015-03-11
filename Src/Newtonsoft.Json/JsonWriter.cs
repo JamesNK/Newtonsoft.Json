@@ -823,6 +823,15 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
+        /// Streams a <see cref="TextReader"/> into a JSON string.
+        /// </summary>
+        /// <param name="value">The <see cref="TextReader"/> value to read from.</param>
+        public virtual void WriteValue(TextReader value)
+        {
+            InternalWriteValue(JsonToken.String);
+        }
+
+        /// <summary>
         /// Writes a <see cref="Int32"/> value.
         /// </summary>
         /// <param name="value">The <see cref="Int32"/> value to write.</param>
