@@ -2338,6 +2338,22 @@ namespace Newtonsoft.Json.Tests.Converters
 
             Assert.AreEqual(@"<root><b xmlns=""http://www.example.com/ns"">Asd</b><c>AAA</c><test>adad</test></root>", xmlBack.OuterXml);
         }
+
+#if !(NET20 || NET35 || PORTABLE || PORTABLE40)
+        [Test]
+        public void DeserializeBigInteger()
+        {
+            var json = "{\"DocumentId\":13779965364495889899 }";
+
+            XmlDocument node = JsonConvert.DeserializeXmlNode(json);
+
+            Assert.AreEqual("<DocumentId>13779965364495889899</DocumentId>", node.OuterXml);
+
+            string json2 = JsonConvert.SerializeXmlNode(node);
+
+            Assert.AreEqual(@"{""DocumentId"":""13779965364495889899""}", json2);
+        }
+#endif
     }
 }
 #endif

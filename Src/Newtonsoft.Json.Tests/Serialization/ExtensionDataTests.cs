@@ -48,7 +48,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         public class CustomDictionary : IDictionary<string, object>
         {
             private readonly IDictionary<string, object> _inner = new Dictionary<string, object>();
- 
+
             public void Add(string key, object value)
             {
                 _inner.Add(key, value);
@@ -235,7 +235,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
 #pragma warning disable 649
-        class ExtendedObject
+        private class ExtendedObject
         {
             [JsonExtensionData]
             internal IDictionary<string, JToken> _additionalData;
@@ -743,6 +743,91 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(null, c.LastActivityDate);
             Assert.AreEqual(1, c.CustomFields.Count);
             Assert.AreEqual("Testing", (string)c.CustomFields["CustomField1"]);
+        }
+
+        public class DocNoSetter
+        {
+            private readonly JObject _content;
+
+            public DocNoSetter()
+            {
+            }
+
+            public DocNoSetter(JObject content)
+            {
+                _content = content;
+            }
+
+            [JsonProperty("_name")]
+            public string Name { get; set; }
+
+            [JsonExtensionData]
+            public JObject Content
+            {
+                get { return _content; }
+            }
+        }
+
+        [Test]
+        public void SerializeExtensionData_NoSetter()
+        {
+            string json = JsonConvert.SerializeObject(new DocNoSetter(new JObject(new JProperty("Property1", 123)))
+            {
+                Name = "documentName"
+            });
+            Assert.AreEqual(@"{""_name"":""documentName"",""Property1"":123}", json);
+        }
+
+        [Test]
+        public void SerializeExtensionData_NoSetterAndNoValue()
+        {
+            string json = JsonConvert.SerializeObject(new DocNoSetter(null)
+            {
+                Name = "documentName"
+            });
+            Assert.AreEqual(@"{""_name"":""documentName""}", json);
+        }
+
+        [Test]
+        public void DeserializeExtensionData_NoSetterAndNoExtensionData()
+        {
+            DocNoSetter doc = JsonConvert.DeserializeObject<DocNoSetter>(@"{""_name"":""documentName""}");
+
+            Assert.AreEqual("documentName", doc.Name);
+        }
+
+        [Test]
+        public void DeserializeExtensionData_NoSetterAndWithExtensionData()
+        {
+            try
+            {
+                JsonConvert.DeserializeObject<DocNoSetter>(@"{""_name"":""documentName"",""Property1"":123}");
+            }
+            catch (JsonSerializationException ex)
+            {
+                Assert.AreEqual("Error setting value in extension data for type 'Newtonsoft.Json.Tests.Serialization.ExtensionDataTests+DocNoSetter'. Path 'Property1', line 1, position 39.", ex.Message);
+                Assert.AreEqual("Cannot set value onto extension data member 'Content'. The extension data collection is null and it cannot be set.", ex.InnerException.Message);
+            }
+        }
+
+        public class DocNoGetter
+        {
+            [JsonExtensionData]
+            public JObject Content
+            {
+                set { }
+            }
+        }
+
+        [Test]
+        public void SerializeExtensionData_NoGetter()
+        {
+            ExceptionAssert.Throws<JsonException>(
+                () =>
+                {
+                    JsonConvert.SerializeObject(new DocNoGetter());
+                },
+                "Invalid extension data attribute on 'Newtonsoft.Json.Tests.Serialization.ExtensionDataTests+DocNoGetter'. Member 'Content' must have a getter.");
         }
     }
 }

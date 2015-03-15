@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+using System.Numerics;
 #if !PORTABLE40
 using System;
 using System.Collections.Generic;
@@ -1417,6 +1418,11 @@ namespace Newtonsoft.Json.Converters
             }
             else if (reader.TokenType == JsonToken.Integer)
             {
+#if !(NET20 || NET35 || PORTABLE || PORTABLE40)
+                if (reader.Value is BigInteger)
+                    return ((BigInteger)reader.Value).ToString(CultureInfo.InvariantCulture);
+#endif
+
                 return XmlConvert.ToString(Convert.ToInt64(reader.Value, CultureInfo.InvariantCulture));
             }
             else if (reader.TokenType == JsonToken.Float)

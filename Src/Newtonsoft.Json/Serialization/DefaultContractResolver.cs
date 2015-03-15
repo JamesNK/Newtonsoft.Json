@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections;
+using Newtonsoft.Json.Schema;
 #if !(NET35 || NET20 || PORTABLE || PORTABLE40)
 using System.Collections.Concurrent;
 #endif
@@ -438,6 +439,9 @@ namespace Newtonsoft.Json.Serialization
                 if (!m.IsDefined(typeof(JsonExtensionDataAttribute), false))
                     return false;
 
+                if (!ReflectionUtils.CanReadMemberValue(m, true))
+                    throw new JsonException("Invalid extension data attribute on '{0}'. Member '{1}' must have a getter.".FormatWith(CultureInfo.InvariantCulture, GetClrTypeFullName(m.DeclaringType), m.Name));
+
                 Type t = ReflectionUtils.GetMemberUnderlyingType(m);
 
                 Type dictionaryType;
@@ -479,10 +483,12 @@ namespace Newtonsoft.Json.Serialization
             else
                 createdType = t;
 
-            MethodInfo addMethod = t.GetMethod("Add", new[] { keyType, valueType });
             Func<object, object> getExtensionDataDictionary = JsonTypeReflector.ReflectionDelegateFactory.CreateGet<object>(member);
-            Action<object, object> setExtensionDataDictionary = JsonTypeReflector.ReflectionDelegateFactory.CreateSet<object>(member);
+            Action<object, object> setExtensionDataDictionary = (ReflectionUtils.CanSetMemberValue(member, true, false))
+                ? JsonTypeReflector.ReflectionDelegateFactory.CreateSet<object>(member)
+                : null;
             Func<object> createExtensionDataDictionary = JsonTypeReflector.ReflectionDelegateFactory.CreateDefaultConstructor<object>(createdType);
+            MethodInfo addMethod = t.GetMethod("Add", new[] { keyType, valueType });
             MethodCall<object, object> setExtensionDataDictionaryValue = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(addMethod);
 
             ExtensionDataSetter extensionDataSetter = (o, key, value) =>
@@ -490,6 +496,9 @@ namespace Newtonsoft.Json.Serialization
                 object dictionary = getExtensionDataDictionary(o);
                 if (dictionary == null)
                 {
+                    if (setExtensionDataDictionary == null)
+                        throw new JsonSerializationException("Cannot set value onto extension data member '{0}'. The extension data collection is null and it cannot be set.".FormatWith(CultureInfo.InvariantCulture, member.Name));
+
                     dictionary = createExtensionDataDictionary();
                     setExtensionDataDictionary(o, dictionary);
                 }
