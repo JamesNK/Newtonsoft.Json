@@ -23,8 +23,10 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-using System.Numerics;
 #if !PORTABLE40
+#if !(PORTABLE || NET20 || NET35)
+using System.Numerics;
+#endif
 using System;
 using System.Collections.Generic;
 using System.Globalization;

@@ -34,6 +34,25 @@ using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Utilities
 {
+    internal class FSharpFunction
+    {
+        private readonly object _instance;
+        private readonly MethodCall<object, object> _invoker;
+
+        public FSharpFunction(object instance, MethodCall<object, object> invoker)
+        {
+            _instance = instance;
+            _invoker = invoker;
+        }
+
+        public object Invoke(params object[] args)
+        {
+            object o = _invoker(_instance, args);
+
+            return o;
+        }
+    }
+
     internal static class FSharpUtils
     {
         private static readonly object Lock = new object();
@@ -105,19 +124,20 @@ namespace Newtonsoft.Json.Utilities
         private static MethodCall<object, object> CreateFSharpFuncCall(Type type, string methodName)
         {
             MethodInfo innerMethodInfo = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.Static);
-            MethodInfo toConvertMethodInfo = innerMethodInfo.ReturnType.GetMethod("ToConverter", BindingFlags.Public | BindingFlags.Static);
+            MethodInfo invokeFunc = innerMethodInfo.ReturnType.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Instance);
 
-            MethodCall<object, object> inner = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(innerMethodInfo);
-            MethodCall<object, object> toConvert = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(toConvertMethodInfo);
+            MethodCall<object, object> call = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(innerMethodInfo);
+            MethodCall<object, object> invoke = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(invokeFunc);
 
-            MethodCall<object, object> methodCall = (target, args) =>
+            MethodCall<object, object> createFunction = (target, args) =>
             {
-                object result = inner(target, args);
+                object result = call(target, args);
 
-                return toConvert(null, result);
+                FSharpFunction f = new FSharpFunction(result, invoke);
+                return f;
             };
 
-            return methodCall;
+            return createFunction;
         }
 
         public static ObjectConstructor<object> CreateSeq(Type t)

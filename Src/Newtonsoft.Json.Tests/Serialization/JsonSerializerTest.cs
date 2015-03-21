@@ -3879,6 +3879,7 @@ Path '', line 1, position 1.");
 }", json);
         }
 
+#if !NET20
         public class DateTimeOffsetWrapper
         {
             public DateTimeOffset DateTimeOffsetValue { get; set; }
@@ -3907,6 +3908,7 @@ Path '', line 1, position 1.");
 
             Assert.AreEqual(c.DateTimeOffsetValue, cISO.DateTimeOffsetValue);
         }
+#endif
 
         [Test]
         public void CircularConstructorDeserialize()
@@ -8684,6 +8686,7 @@ Path '', line 1, position 1.");
             Assert.AreEqual("derived", d.DerivedProperty);
         }
 
+#if !(NET20 || NET35 || PORTABLE || PORTABLE40)
         [Test]
         public void DeserializeNullableUnsignedLong()
         {
@@ -8705,6 +8708,7 @@ Path '', line 1, position 1.");
                 set;
             }
         }
+#endif
 
 #if !NETFX_CORE
         [Test]

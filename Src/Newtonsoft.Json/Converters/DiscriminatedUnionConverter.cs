@@ -49,7 +49,7 @@ namespace Newtonsoft.Json.Converters
         internal class Union
         {
             public List<UnionCase> Cases;
-            public Converter<object, int> TagReader { get; set; }
+            public FSharpFunction TagReader { get; set; }
         }
 
         internal class UnionCase
@@ -57,8 +57,8 @@ namespace Newtonsoft.Json.Converters
             public int Tag;
             public string Name;
             public PropertyInfo[] Fields;
-            public Converter<object, object[]> FieldReader;
-            public Converter<object[], object> Constructor;
+            public FSharpFunction FieldReader;
+            public FSharpFunction Constructor;
         }
         #endregion
 
@@ -86,7 +86,7 @@ namespace Newtonsoft.Json.Converters
         {
             Union u = new Union();
 
-            u.TagReader = (Converter<object, int>)FSharpUtils.PreComputeUnionTagReader(null, t, null);
+            u.TagReader = (FSharpFunction)FSharpUtils.PreComputeUnionTagReader(null, t, null);
             u.Cases = new List<UnionCase>();
 
             object[] cases = (object[])FSharpUtils.GetUnionCases(null, t, null);
@@ -97,8 +97,8 @@ namespace Newtonsoft.Json.Converters
                 unionCase.Tag = (int)FSharpUtils.GetUnionCaseInfoTag(unionCaseInfo);
                 unionCase.Name = (string)FSharpUtils.GetUnionCaseInfoName(unionCaseInfo);
                 unionCase.Fields = (PropertyInfo[])FSharpUtils.GetUnionCaseInfoFields(unionCaseInfo);
-                unionCase.FieldReader = (Converter<object, object[]>)FSharpUtils.PreComputeUnionReader(null, unionCaseInfo, null);
-                unionCase.Constructor = (Converter<object[], object>)FSharpUtils.PreComputeUnionConstructor(null, unionCaseInfo, null);
+                unionCase.FieldReader = (FSharpFunction)FSharpUtils.PreComputeUnionReader(null, unionCaseInfo, null);
+                unionCase.Constructor = (FSharpFunction)FSharpUtils.PreComputeUnionConstructor(null, unionCaseInfo, null);
 
                 u.Cases.Add(unionCase);
             }
@@ -119,7 +119,7 @@ namespace Newtonsoft.Json.Converters
             Type unionType = UnionTypeLookupCache.Get(value.GetType());
             Union union = UnionCache.Get(unionType);
 
-            int tag = union.TagReader(value);
+            int tag = (int)union.TagReader.Invoke(value);
             UnionCase caseInfo = union.Cases.Single(c => c.Tag == tag);
 
             writer.WriteStartObject();
@@ -127,10 +127,15 @@ namespace Newtonsoft.Json.Converters
             writer.WriteValue(caseInfo.Name);
             if (caseInfo.Fields != null && caseInfo.Fields.Length > 0)
             {
-                object[] fields = caseInfo.FieldReader(value);
+                object[] fields = (object[])caseInfo.FieldReader.Invoke(value);
 
                 writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(FieldsPropertyName) : FieldsPropertyName);
-                serializer.Serialize(writer, fields);
+                writer.WriteStartArray();
+                foreach (object field in fields)
+                {
+                    serializer.Serialize(writer, field);
+                }
+                writer.WriteEndArray();
             }
             writer.WriteEndObject();
         }
@@ -210,7 +215,9 @@ namespace Newtonsoft.Json.Converters
                 }    
             }
 
-            return caseInfo.Constructor(typedFieldValues);
+            object[] args = { typedFieldValues };
+
+            return caseInfo.Constructor.Invoke(args);
         }
 
         /// <summary>

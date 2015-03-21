@@ -23,11 +23,11 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if !(NET35 || NET20 || NETFX_CORE || ASPNETCORE50)
 using System.Diagnostics;
 using System.Reflection;
 using Microsoft.FSharp.Core;
 using Microsoft.FSharp.Reflection;
-#if !(NET35 || NET20 || NETFX_CORE || ASPNETCORE50)
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -282,6 +282,28 @@ namespace Newtonsoft.Json.Tests.Converters
         public void DeserializeBasicUnion_UnexpectedProperty()
         {
             ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<Currency>(@"{""Case123"":""AUD""}"), "Unexpected property 'Case123' found when reading union. Path 'Case123', line 1, position 11.");
+        }
+
+        [Test]
+        public void SerializeUnionWithTypeNameHandlingAndReferenceTracking()
+        {
+            string json = JsonConvert.SerializeObject(Shape.NewRectangle(10.0, 5.0), new JsonSerializerSettings
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.All,
+                TypeNameHandling = TypeNameHandling.All
+            });
+
+            Console.WriteLine(json);
+
+            Assert.AreEqual(@"{""Case"":""Rectangle"",""Fields"":[10.0,5.0]}", json);
+
+            Shape c = JsonConvert.DeserializeObject<Shape>(json);
+            Assert.AreEqual(true, c.IsRectangle);
+
+            Shape.Rectangle r = (Shape.Rectangle)c;
+
+            Assert.AreEqual(5.0, r.length);
+            Assert.AreEqual(10.0, r.width);
         }
     }
 }
