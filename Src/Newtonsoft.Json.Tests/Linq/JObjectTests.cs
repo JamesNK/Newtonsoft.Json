@@ -570,8 +570,8 @@ Parameter name: arrayIndex");
             string smallest = (string)sizes[0];
             // Small
 
-            Console.WriteLine(name);
-            Console.WriteLine(smallest);
+            Assert.AreEqual("Apple", name);
+            Assert.AreEqual("Small", smallest);
         }
 
         [Test]
@@ -602,12 +602,6 @@ Parameter name: arrayIndex");
                     ErrorMessage = (string)json["short"]["error"]["msg"]
                 }
             };
-
-            Console.WriteLine(shortie.Original);
-            // http://www.foo.com/
-
-            Console.WriteLine(shortie.Error.ErrorMessage);
-            // No action taken
 
             Assert.AreEqual("http://www.foo.com/", shortie.Original);
             Assert.AreEqual("krehqk", shortie.Short);
@@ -641,15 +635,13 @@ Parameter name: arrayIndex");
             moss["Department"] = new JValue("IT");
             moss["JobTitle"] = new JValue("Support");
 
-            Console.WriteLine(moss.ToString());
-            //{
-            //  "FirstName": "Maurice",
-            //  "LastName": "Moss",
-            //  "BirthDate": "\/Date(252241200000+1300)\/",
-            //  "Department": "IT",
-            //  "JobTitle": "Support"
-            //}
-
+            Assert.AreEqual(@"{
+  ""FirstName"": ""Maurice"",
+  ""LastName"": ""Moss"",
+  ""BirthDate"": ""1977-12-30T00:00:00"",
+  ""Department"": ""IT"",
+  ""JobTitle"": ""Support""
+}", moss.ToString());
 
             JObject jen = new JObject();
             jen["FirstName"] = "Jen";
@@ -658,14 +650,13 @@ Parameter name: arrayIndex");
             jen["Department"] = "IT";
             jen["JobTitle"] = "Manager";
 
-            Console.WriteLine(jen.ToString());
-            //{
-            //  "FirstName": "Jen",
-            //  "LastName": "Barber",
-            //  "BirthDate": "\/Date(258721200000+1300)\/",
-            //  "Department": "IT",
-            //  "JobTitle": "Manager"
-            //}
+            Assert.AreEqual(@"{
+  ""FirstName"": ""Jen"",
+  ""LastName"": ""Barber"",
+  ""BirthDate"": ""1978-03-15T00:00:00"",
+  ""Department"": ""IT"",
+  ""JobTitle"": ""Manager""
+}", jen.ToString());
         }
 
         [Test]

@@ -275,7 +275,7 @@ namespace Newtonsoft.Json.Tests.Converters
             //   "LastModified": "2009-04-12T20:44:55"
             // }
 
-            Console.WriteLine(jsonText);
+            Assert.AreEqual(@"{""Name"":""Keith"",""BirthDate"":""1980-03-08T00:00:00"",""LastModified"":""2009-04-12T20:44:55""}", jsonText);
         }
 
 #if !NET20

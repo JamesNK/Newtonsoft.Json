@@ -229,8 +229,6 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(c, Formatting.Indented);
 
-            Console.WriteLine(json);
-
             StringAssert.AreEqual(@"{
   ""FaqId"": 1,
   ""Name"": null,
@@ -255,8 +253,6 @@ namespace Newtonsoft.Json.Tests.Serialization
             c.IsProxy = true;
 
             string json = JsonConvert.SerializeObject(c, Formatting.Indented);
-
-            Console.WriteLine(json);
 
             StringAssert.AreEqual(@"{
   ""IsProxy"": true,
@@ -1117,8 +1113,6 @@ namespace Newtonsoft.Json.Tests.Serialization
             var stopWatch = Stopwatch.StartNew();
             var deserialize = jsonSerializer.Deserialize(new StreamReader(ms), typeof(Dictionary<DictionaryKeyCast, int>));
             stopWatch.Stop();
-
-            Console.WriteLine("Time elapsed: " + stopWatch.ElapsedMilliseconds);
         }
 #endif
 
@@ -1308,8 +1302,6 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(baseWith, Formatting.Indented);
 
-            Console.WriteLine(json);
-
             StringAssert.AreEqual(@"{
   ""VirtualWithDataMemberBase"": ""VirtualWithDataMember2!"",
   ""VirtualSub"": ""Virtual2!"",
@@ -1388,9 +1380,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             JObject jsonNetJson = JObject.Parse(JsonConvert.SerializeObject(o));
             jsonNetJson = new JObject(jsonNetJson.Properties().OrderBy(p => p.Name));
 
-            Console.WriteLine("Results for " + o.GetType().Name);
-            Console.WriteLine("DataContractJsonSerializer: " + dataContractJson);
-            Console.WriteLine("JsonDotNetSerializer      : " + jsonNetJson);
+            //Console.WriteLine("Results for " + o.GetType().Name);
+            //Console.WriteLine("DataContractJsonSerializer: " + dataContractJson);
+            //Console.WriteLine("JsonDotNetSerializer      : " + jsonNetJson);
 
             Assert.AreEqual(dataContractJson.Count, jsonNetJson.Count);
             foreach (KeyValuePair<string, JToken> property in dataContractJson)
@@ -2235,11 +2227,10 @@ keyword such as type of business.""
 
             string json = JsonConvert.SerializeObject(c, Formatting.Indented);
 
-            Console.WriteLine(json);
-            //{
-            //  "DefaultConverter": "\/Date(0)\/",
-            //  "MemberConverter": "1970-01-01T00:00:00Z"
-            //}
+            Assert.AreEqual(@"{
+  ""DefaultConverter"": ""1970-01-01T00:00:00Z"",
+  ""MemberConverter"": ""1970-01-01T00:00:00Z""
+}", json);
         }
 
         [Test]
@@ -2454,7 +2445,6 @@ keyword such as type of business.""
                 };
 
                 string json = JsonConvert.SerializeObject(requiredMembersClass);
-                Console.WriteLine(json);
             }, "Cannot write a null value for property 'FirstName'. Property requires a value. Path ''.");
         }
 
@@ -2591,9 +2581,9 @@ keyword such as type of business.""
             string javascriptJson = JsonConvert.SerializeObject(entry, new JavaScriptDateTimeConverter());
             // {"Details":"Application started.","LogDate":new Date(1234656000000)}
 
-            Console.WriteLine(defaultJson);
-            Console.WriteLine(isoJson);
-            Console.WriteLine(javascriptJson);
+            Assert.AreEqual(@"{""Details"":""Application started."",""LogDate"":""2009-02-15T00:00:00Z""}", defaultJson);
+            Assert.AreEqual(@"{""Details"":""Application started."",""LogDate"":""2009-02-15T00:00:00Z""}", isoJson);
+            Assert.AreEqual(@"{""Details"":""Application started."",""LogDate"":new Date(1234656000000)}", javascriptJson);
         }
 
         public void GenericListAndDictionaryInterfaceProperties()
@@ -3157,12 +3147,6 @@ keyword such as type of business.""
 
             Dictionary<string, string> values = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
 
-            Console.WriteLine(values.Count);
-            // 2
-
-            Console.WriteLine(values["key1"]);
-            // value1
-
             Assert.AreEqual(2, values.Count);
             Assert.AreEqual("value1", values["key1"]);
             Assert.AreEqual("value2", values["key2"]);
@@ -3455,7 +3439,7 @@ Path '', line 1, position 1.");
             };
 
             string json = JsonConvert.SerializeObject(structTest, Formatting.Indented);
-            Console.WriteLine(json);
+
             StringAssert.AreEqual(@"{
   ""StringField"": ""StringField"",
   ""IntField"": 10,
@@ -4857,7 +4841,7 @@ Path '', line 1, position 1.");
 
             string json = JsonConvert.SerializeObject(child);
 
-            Console.WriteLine(json);
+            Assert.AreEqual(@"{""_id"":2,""Name"":""Isabell"",""Father"":{""$ref"":null,""$id"":null,""blah"":""blah!""}}", json);
 
             Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
 
@@ -5700,7 +5684,10 @@ Path '', line 1, position 1.");
             //  ""nonVirtualMember"": ""NonVirtualMember!""
             //}", result);
 
-            Console.WriteLine(result);
+            Assert.AreEqual(@"{
+  ""virtualMember"": ""VirtualMember!"",
+  ""nonVirtualMember"": ""NonVirtualMember!""
+}", result);
         }
 
         [Test]
@@ -5719,7 +5706,7 @@ Path '', line 1, position 1.");
 
             string xml = Encoding.UTF8.GetString(ms.ToArray(), 0, Convert.ToInt32(ms.Length));
 
-            Console.WriteLine(xml);
+            Assert.AreEqual(@"<JsonSerializerTest.ChildDataContract xmlns=""http://schemas.datacontract.org/2004/07/Newtonsoft.Json.Tests.Serialization"" xmlns:i=""http://www.w3.org/2001/XMLSchema-instance""><nonVirtualMember>NonVirtualMember!</nonVirtualMember><virtualMember>VirtualMember!</virtualMember><NewMember i:nil=""true""/></JsonSerializerTest.ChildDataContract>", xml);
         }
 #endif
 
@@ -5768,7 +5755,6 @@ Path '', line 1, position 1.");
             };
 
             string result = JsonConvert.SerializeObject(cc);
-            Console.WriteLine(result);
             Assert.AreEqual(@"{""differentVirtualMember"":""VirtualMember!"",""nonVirtualMember"":""NonVirtualMember!""}", result);
         }
 
@@ -6908,8 +6894,11 @@ Path '', line 1, position 1.");
 
             JArray a = (JArray)JArray.ReadFrom(reader);
             JValue v = (JValue)a[0];
-            Console.WriteLine(v.Value.GetType());
-            Console.WriteLine(a.ToString());
+
+            Assert.AreEqual(typeof(string), v.Value.GetType());
+            Assert.AreEqual(@"[
+  ""2000-01-02T03:04:05+06:00""
+]", a.ToString());
         }
 
         [Test]
@@ -7907,14 +7896,10 @@ Path '', line 1, position 1.");
 
             string expected = JsonConvert.SerializeObject(dates, Formatting.Indented);
 
-            Console.WriteLine(expected);
-
             string actual = JsonConvert.SerializeObject(dates, Formatting.Indented, new JsonSerializerSettings
             {
                 DateFormatString = JsonSerializerSettings.DefaultDateFormatString
             });
-
-            Console.WriteLine(expected);
 
             Assert.AreEqual(expected, actual);
         }
@@ -8202,7 +8187,8 @@ Path '', line 1, position 1.");
             ParticipantEntity product = new ParticipantEntity();
             product.Properties = new Dictionary<string, string> { { "s", "d" } };
             string json = JsonConvert.SerializeObject(product);
-            Console.WriteLine(json);
+
+            Assert.AreEqual(@"{""pa_info"":{""s"":""d""}}", json);
             ParticipantEntity deserializedProduct = JsonConvert.DeserializeObject<ParticipantEntity>(json);
         }
 
@@ -8600,8 +8586,6 @@ Path '', line 1, position 1.");
 
             var serializerSettings = new JsonSerializerSettings();
             var jsonCopy = JsonConvert.SerializeObject(original, serializerSettings);
-
-            Console.WriteLine(original);
 
             var clonedObject = JsonConvert.DeserializeObject<DerivedConstructorType>(jsonCopy, serializerSettings);
 

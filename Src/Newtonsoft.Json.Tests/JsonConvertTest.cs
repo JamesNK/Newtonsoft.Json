@@ -1081,8 +1081,6 @@ namespace Newtonsoft.Json.Tests
             settings.DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
             var json = JsonConvert.SerializeObject(dict, settings);
 
-            Console.WriteLine(json);
-
             var newDict = new Dictionary<string, object>();
             JsonConvert.PopulateObject(json, newDict, settings);
 
@@ -1103,8 +1101,7 @@ namespace Newtonsoft.Json.Tests
             writer.WriteValue(dt);
             writer.Flush();
 
-            Console.WriteLine(sw.ToString());
-            Console.WriteLine(sw.ToString().Length);
+            Assert.AreEqual(@"""2000-12-31T20:59:59.9999999+11:33""", sw.ToString());
         }
 #endif
 
@@ -1119,9 +1116,6 @@ namespace Newtonsoft.Json.Tests
 
             writer.WriteValue(dt);
             writer.Flush();
-
-            Console.WriteLine(sw.ToString());
-            Console.WriteLine(sw.ToString().Length);
         }
 
         [Test]
@@ -1135,9 +1129,6 @@ namespace Newtonsoft.Json.Tests
 
             writer.WriteValue(dt);
             writer.Flush();
-
-            Console.WriteLine(sw.ToString());
-            Console.WriteLine(sw.ToString().Length);
         }
 
 

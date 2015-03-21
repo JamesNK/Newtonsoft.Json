@@ -71,13 +71,6 @@ namespace Newtonsoft.Json.Tests.Converters
         }
 
         [Test]
-        public void sdfs()
-        {
-            int i = Convert.ToInt32("+1");
-            Console.WriteLine(i);
-        }
-
-        [Test]
         public void SerializeNullableDateTimeClass()
         {
             NullableDateTimeTestClass t = new NullableDateTimeTestClass()

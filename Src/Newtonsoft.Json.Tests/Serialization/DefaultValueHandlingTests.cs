@@ -373,7 +373,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         public void PopulateTest()
         {
             var test = JsonConvert.DeserializeObject<PopulateWithNullJsonTest>("{\"IntValue\":null}");
-            Console.WriteLine("IntValue:{0}", test.IntValue);
+            Assert.AreEqual(0, test.IntValue);
         }
 
         public class PopulateWithNullJsonTest

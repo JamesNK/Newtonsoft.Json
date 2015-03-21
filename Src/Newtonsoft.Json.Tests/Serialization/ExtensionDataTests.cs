@@ -150,7 +150,13 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(e, Formatting.Indented);
 
-            Console.WriteLine(json);
+            Assert.AreEqual(@"{
+  ""extensionData1"": [
+    1,
+    2,
+    3
+  ]
+}", json);
 
             Example e2 = JsonConvert.DeserializeObject<Example>(json);
 

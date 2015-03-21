@@ -94,11 +94,6 @@ namespace Newtonsoft.Json.Tests.Linq
                 }
             }
 
-            //foreach (KeyValuePair<string, int> keyValuePair in counts)
-            //{
-            //    Console.WriteLine(keyValuePair.Key + ": " + keyValuePair.Value);
-            //}
-
             Console.WriteLine("Time (secs): " + sw.Elapsed.TotalSeconds);
         }
 #endif

@@ -66,9 +66,6 @@ namespace Newtonsoft.Json.Tests.Serialization
   ""II"",
   ""3""
 ]", json);
-
-            Console.WriteLine("Serialized immutable list:");
-            Console.WriteLine(json);
         }
 
         [Test]
@@ -100,17 +97,10 @@ namespace Newtonsoft.Json.Tests.Serialization
             // what sorcery is this?!
             IImmutableList<string> champions = JsonConvert.DeserializeObject<IImmutableList<string>>(json);
 
-            Console.WriteLine(champions[0]);
-            // Volibear
-
             Assert.AreEqual(3, champions.Count);
             Assert.AreEqual("Volibear", champions[0]);
             Assert.AreEqual("Teemo", champions[1]);
             Assert.AreEqual("Katarina", champions[2]);
-
-            Console.WriteLine("Deserialized immutable list:");
-            Console.WriteLine(string.Join(", ", champions));
-
         }
         #endregion
 

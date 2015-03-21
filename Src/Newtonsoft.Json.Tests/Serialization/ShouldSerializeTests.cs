@@ -135,8 +135,6 @@ namespace Newtonsoft.Json.Tests.Serialization
                 jsonSerializer.Serialize(jsonWriter, f, typeof(Foo1));
             }
 
-            Console.WriteLine("Trace output:\n{0}", traceWriter.ToString());
-
             return sw.ToString();
         }
 
@@ -190,7 +188,17 @@ namespace Newtonsoft.Json.Tests.Serialization
             //   }
             // ]
 
-            Console.WriteLine(json);
+            Assert.AreEqual(@"[
+  {
+    ""Name"": ""Joe Employee"",
+    ""Manager"": {
+      ""Name"": ""Mike Manager""
+    }
+  },
+  {
+    ""Name"": ""Mike Manager""
+  }
+]", json);
         }
 
         [Test]
@@ -322,17 +330,26 @@ namespace Newtonsoft.Json.Tests.Serialization
             //    "Name": "Martha Family Details"
             //  }
             //]
-            Console.WriteLine(json);
+
+            Assert.AreEqual(@"[
+  {
+    ""Name"": ""Joe Family Details"",
+    ""NumberOfChildren"": 4
+  },
+  {
+    ""Name"": ""Martha Family Details""
+  }
+]", json);
 
             string mikeString = "{\"Name\": \"Mike Person\"}";
             FamilyDetails mike = JsonConvert.DeserializeObject<FamilyDetails>(mikeString);
 
-            Console.WriteLine("mikeString specifies number of children: {0}", mike.NumberOfChildrenSpecified);
+            Assert.AreEqual(false, mike.NumberOfChildrenSpecified);
 
             string mikeFullDisclosureString = "{\"Name\": \"Mike Person\", \"NumberOfChildren\": \"0\"}";
             mike = JsonConvert.DeserializeObject<FamilyDetails>(mikeFullDisclosureString);
 
-            Console.WriteLine("mikeString specifies number of children: {0}", mike.NumberOfChildrenSpecified);
+            Assert.AreEqual(true, mike.NumberOfChildrenSpecified);
         }
 
         [Test]

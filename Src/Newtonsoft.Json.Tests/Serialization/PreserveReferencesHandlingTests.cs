@@ -823,19 +823,16 @@ namespace Newtonsoft.Json.Tests.Serialization
             List<Person> deserializedPeople = JsonConvert.DeserializeObject<List<Person>>(json,
                 new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects });
 
-            Console.WriteLine(deserializedPeople.Count);
-            // 2
+            Assert.AreEqual(2, deserializedPeople.Count);
 
             Person p1 = deserializedPeople[0];
             Person p2 = deserializedPeople[1];
 
-            Console.WriteLine(p1.Name);
-            // James
-            Console.WriteLine(p2.Name);
-            // James
+            Assert.AreEqual("James", p1.Name);
+            Assert.AreEqual("James", p2.Name);
 
             bool equal = Object.ReferenceEquals(p1, p2);
-            // true
+            Assert.AreEqual(true, equal);
         }
 
         [JsonObject(MemberSerialization = MemberSerialization.OptIn)]

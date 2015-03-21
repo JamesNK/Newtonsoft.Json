@@ -109,7 +109,6 @@ namespace Newtonsoft.Json.Tests.Converters
             ts.Stop();
 
             Console.WriteLine(ts.Elapsed.TotalSeconds);
-            Console.WriteLine(json);
         }
 
         [Test]
@@ -136,7 +135,6 @@ namespace Newtonsoft.Json.Tests.Converters
             ts.Stop();
 
             Console.WriteLine(ts.Elapsed.TotalSeconds);
-            Console.WriteLine(json);
         }
 
         [Test]
@@ -224,10 +222,8 @@ namespace Newtonsoft.Json.Tests.Converters
 
             object[] fields = caseInfo.FieldReader.Invoke(value);
 
-            foreach (object field in fields)
-            {
-                Console.WriteLine(field);
-            }
+            Assert.AreEqual(10, fields[0]);
+            Assert.AreEqual(5, fields[1]);
         }
 
         [Test]
@@ -242,10 +238,9 @@ namespace Newtonsoft.Json.Tests.Converters
                 10.0, 5.0
             });
 
-            Console.WriteLine(value.ToString());
-
-            Console.WriteLine(value.width);
-            Console.WriteLine(value.length);
+            Assert.AreEqual("Newtonsoft.Json.Tests.TestObjects.Shape+Rectangle", value.ToString());
+            Assert.AreEqual(10, value.width);
+            Assert.AreEqual(5, value.length);
         }
 
         [Test]
@@ -292,8 +287,6 @@ namespace Newtonsoft.Json.Tests.Converters
                 PreserveReferencesHandling = PreserveReferencesHandling.All,
                 TypeNameHandling = TypeNameHandling.All
             });
-
-            Console.WriteLine(json);
 
             Assert.AreEqual(@"{""Case"":""Rectangle"",""Fields"":[10.0,5.0]}", json);
 

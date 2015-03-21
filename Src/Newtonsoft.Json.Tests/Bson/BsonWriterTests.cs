@@ -148,7 +148,6 @@ namespace Newtonsoft.Json.Tests.Bson
             writer.WriteEnd();
 
             string bson = BytesToHex(ms.ToArray());
-            Console.WriteLine(bson);
             Assert.AreEqual("1D-00-00-00-05-30-00-10-00-00-00-04-D7-EE-21-D8-5C-4B-C9-43-8A-C2-69-28-E5-79-B7-05-00", bson);
         }
 
@@ -290,15 +289,6 @@ namespace Newtonsoft.Json.Tests.Bson
             serializer.Serialize(writer1, s1);
 
             CollectionAssert.AreEquivalent(ms.ToArray(), ms1.ToArray());
-
-            string s = JsonConvert.SerializeObject(s1);
-            byte[] textData = Encoding.UTF8.GetBytes(s);
-
-            int l1 = textData.Length;
-            int l2 = ms.ToArray().Length;
-
-            Console.WriteLine(l1);
-            Console.WriteLine(l2);
         }
 
         [Test]
@@ -740,10 +730,9 @@ namespace Newtonsoft.Json.Tests.Bson
 
             JObject o = (JObject)JObject.ReadFrom(new BsonReader(new MemoryStream(ms.ToArray())));
 
-            Console.WriteLine(o.ToString());
-            //{
-            //  "Regex": "/(hi)/iux"
-            //}
+            Assert.AreEqual(@"{
+  ""Regex"": ""/(hi)/iux""
+}", o.ToString());
         }
 
         [Test]

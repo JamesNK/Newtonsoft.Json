@@ -68,7 +68,6 @@ namespace Newtonsoft.Json.Tests.Documentation
 
         public static void WriteAllText(string path, string contents)
         {
-            Console.WriteLine(contents);
         }
 
         public static string ReadAllText(string path)

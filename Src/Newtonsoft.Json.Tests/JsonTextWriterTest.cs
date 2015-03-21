@@ -161,9 +161,6 @@ namespace Newtonsoft.Json.Tests
             string expected = @"[""@"",""\r\n\t\f\b?{\\r\\n\""'"",true,10,10.99,0.99,1E-18,0.000000000000000001,null,null,""This is a string."",null,undefined]";
             string result = sb.ToString();
 
-            Console.WriteLine("ValueFormatting");
-            Console.WriteLine(result);
-
             Assert.AreEqual(expected, result);
         }
 
@@ -273,9 +270,6 @@ namespace Newtonsoft.Json.Tests
 
             string expected = @"[""\""These pretzels are making me thirsty!\"""",""Jeff's house was burninated."",""1. You don't talk about fight club.\r\n2. You don't talk about fight club."",""35% of\t statistics\n are made\r up.""]";
             string result = sb.ToString();
-
-            Console.WriteLine("StringEscaping");
-            Console.WriteLine(result);
 
             Assert.AreEqual(expected, result);
         }
@@ -1145,11 +1139,6 @@ _____'propertyName': NaN,
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 
             Assert.AreEqual(script, reader.ReadAsString());
-
-            //Console.WriteLine(HttpUtility.HtmlEncode(script));
-
-            //System.Web.Script.Serialization.JavaScriptSerializer s = new System.Web.Script.Serialization.JavaScriptSerializer();
-            //Console.WriteLine(s.Serialize(new { html = script }));
         }
 
         [Test]
@@ -1272,15 +1261,10 @@ _____'propertyName': NaN,
         [Test]
         public void CompareNewStringEscapingWithOld()
         {
-            Console.WriteLine("Started");
-
             char c = (char)0;
 
             do
             {
-                if (c % 1000 == 0)
-                    Console.WriteLine("Position: " + (int)c);
-
                 StringWriter swNew = new StringWriter();
                 char[] buffer = null;
                 JavaScriptUtils.WriteEscapedJavaScriptString(swNew, c.ToString(), '"', true, JavaScriptUtils.DoubleQuoteCharEscapeFlags, StringEscapeHandling.Default, ref buffer);
@@ -1296,8 +1280,6 @@ _____'propertyName': NaN,
 
                 c++;
             } while (c != char.MaxValue);
-
-            Console.WriteLine("Finished");
         }
 
         private const string EscapedUnicodeText = "!";

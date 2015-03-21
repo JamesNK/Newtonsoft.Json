@@ -92,7 +92,7 @@ namespace Newtonsoft.Json.Tests
             Assert.AreEqual(0, r2.Green);
             Assert.AreEqual(0, r2.Blue);
 
-            Console.WriteLine(json);
+            Assert.AreEqual(@"""#FF0000""", json);
         }
 
         public class PersonDemo
@@ -206,13 +206,11 @@ namespace Newtonsoft.Json.Tests
             string trace = traceWriter.ToString();
             // Started serializing System.Collections.Generic.List`1[System.String].
             // Finished serializing System.Collections.Generic.List`1[System.String].
-            // 2014-05-13T13:41:53.706 Verbose Serialized JSON: 
+            // Verbose Serialized JSON: 
             // [
             //   "User",
             //   "Admin"
             // ]
-
-            Console.WriteLine(trace);
         }
 
         [Test]
@@ -234,7 +232,12 @@ namespace Newtonsoft.Json.Tests
             //   "Date": new Date(1401796800000)
             // }
 
-            Console.WriteLine(j);
+            Assert.AreEqual(@"{
+  ""Name"": ""Serialize All The Things"",
+  ""Date"": new Date(
+    1401796800000
+  )
+}", j);
         }
 
         [Test]
@@ -251,6 +254,8 @@ namespace Newtonsoft.Json.Tests
             });
             // Name = Serialize All The Things
             // Date = Tuesday, 3 June 2014
+
+            Assert.AreEqual("Serialize All The Things", s.Name);
         }
 
         [Test]
@@ -311,7 +316,23 @@ namespace Newtonsoft.Json.Tests
             //   ],
             //   "Name": "Mike Manager"
             // }
-            Console.WriteLine(json);
+
+            Assert.AreEqual(@"{
+  ""Reportees"": [
+    {
+      ""Name"": ""Arnie Admin""
+    },
+    {
+      ""Reportees"": [
+        {
+          ""Name"": ""Arnie Admin""
+        }
+      ],
+      ""Name"": ""Susan Supervisor""
+    }
+  ],
+  ""Name"": ""Mike Manager""
+}", json);
         }
 
         [Test]
@@ -352,7 +373,29 @@ namespace Newtonsoft.Json.Tests
             //     }
             //   ]
             // }
-            Console.WriteLine(json);
+
+            Assert.AreEqual(@"{
+  ""$id"": ""1"",
+  ""$type"": ""Newtonsoft.Json.Tests.DemoTests+Manager, Newtonsoft.Json.Tests"",
+  ""Reportees"": [
+    {
+      ""$id"": ""2"",
+      ""$type"": ""Newtonsoft.Json.Tests.DemoTests+Employee, Newtonsoft.Json.Tests"",
+      ""Name"": ""Arnie Admin""
+    },
+    {
+      ""$id"": ""3"",
+      ""$type"": ""Newtonsoft.Json.Tests.DemoTests+Manager, Newtonsoft.Json.Tests"",
+      ""Reportees"": [
+        {
+          ""$ref"": ""2""
+        }
+      ],
+      ""Name"": ""Susan Supervisor""
+    }
+  ],
+  ""Name"": ""Mike Manager""
+}", json);
         }
 
         [Test]
@@ -527,7 +570,15 @@ namespace Newtonsoft.Json.Tests
             //   ]
             // }
 
-            Console.WriteLine(json);
+            Assert.AreEqual(@"{
+  ""FirstName"": ""John"",
+  ""LastName"": ""Smith"",
+  ""Enabled"": true,
+  ""Roles"": [
+    ""User"",
+    ""Admin""
+  ]
+}", json);
         }
     }
 }

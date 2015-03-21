@@ -1522,16 +1522,10 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             List<Product> products = JsonConvert.DeserializeObject<List<Product>>(json);
 
-            Console.WriteLine(products.Count);
-            // 2
-
             Product p1 = products[0];
 
-            Console.WriteLine(p1.Name);
-            // Product 1
-
             Assert.AreEqual(2, products.Count);
-            Assert.AreEqual("Product 1", products[0].Name);
+            Assert.AreEqual("Product 1", p1.Name);
         }
 
 #if !(NET40 || NET35 || NET20 || PORTABLE40)

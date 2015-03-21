@@ -70,8 +70,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             User u = (User)o;
 
-            Console.WriteLine(u.Name);
-            // James
+            Assert.AreEqual(u.Name, "James");
         }
 
         [Test]
@@ -119,7 +118,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         public void SerializeDeserialize_DictionaryContextContainsGuid_DeserializesItemAsGuid()
         {
             const string contextKey = "k1";
-            var someValue = Guid.NewGuid();
+            var someValue = new Guid("5dd2dba0-20c0-49f8-a054-1fa3b0a8d774");
 
             Dictionary<string, Guid> inputContext = new Dictionary<string, Guid>();
             inputContext.Add(contextKey, someValue);
@@ -132,7 +131,10 @@ namespace Newtonsoft.Json.Tests.Serialization
             };
             string serializedString = JsonConvert.SerializeObject(inputContext, jsonSerializerSettings);
 
-            Console.WriteLine(serializedString);
+            Assert.AreEqual(@"{
+  ""$type"": ""System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Guid, mscorlib]], mscorlib"",
+  ""k1"": ""5dd2dba0-20c0-49f8-a054-1fa3b0a8d774""
+}", serializedString);
 
             var deserializedObject = (Dictionary<string, Guid>)JsonConvert.DeserializeObject(serializedString, jsonSerializerSettings);
 
@@ -257,7 +259,15 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(child, Formatting.Indented);
 
-            Console.WriteLine(json);
+            Assert.AreEqual(@"{
+  ""_id"": 2,
+  ""Name"": ""Isabell"",
+  ""Father"": {
+    ""blah"": ""blah!"",
+    ""$ref"": null,
+    ""$id"": null
+  }
+}", json);
 
             Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(json, new JsonSerializerSettings
             {

@@ -370,13 +370,6 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(person, Formatting.Indented);
 
-            Console.WriteLine(json);
-            //{
-            //  "Name": "George Michael Bluth",
-            //  "Age": 16,
-            //  "Title": "Mister Manager"
-            //}
-
             StringAssert.AreEqual(@"{
   ""Name"": ""George Michael Bluth"",
   ""Age"": 16,

@@ -1109,7 +1109,31 @@ namespace Newtonsoft.Json.Tests.Linq
 
             JArray a2 = (JArray)a.DeepClone();
 
-            Console.WriteLine(a2.ToString(Formatting.Indented));
+            Assert.AreEqual(@"[
+  5,
+  [
+    1
+  ],
+  [
+    1,
+    2
+  ],
+  [
+    1,
+    2,
+    3
+  ],
+  {
+    ""First"": ""SGk="",
+    ""Second"": 1,
+    ""Third"": null,
+    ""Fourth"": new Date(
+      12345
+    ),
+    ""Fifth"": ""Infinity"",
+    ""Sixth"": ""NaN""
+  }
+]", a2.ToString(Formatting.Indented));
 
             Assert.IsTrue(a.DeepEquals(a2));
         }

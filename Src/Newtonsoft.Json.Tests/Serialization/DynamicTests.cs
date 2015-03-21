@@ -123,7 +123,16 @@ namespace Newtonsoft.Json.Tests.Serialization
                 TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
             });
 
-            Console.WriteLine(json);
+            Assert.AreEqual(@"{
+  ""$type"": ""System.Dynamic.ExpandoObject, System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"",
+  ""Text"": ""Text!"",
+  ""Integer"": 2147483647,
+  ""DynamicChildObject"": {
+    ""$type"": ""Newtonsoft.Json.Tests.Serialization.DynamicChildObject, Newtonsoft.Json.Tests, Version=7.0.0.0, Culture=neutral, PublicKeyToken=null"",
+    ""Text"": ""Child text!"",
+    ""Integer"": -2147483648
+  }
+}", json);
 
             string dynamicChildObjectTypeName = ReflectionUtils.GetTypeName(typeof(DynamicChildObject), FormatterAssemblyStyle.Full, null);
             string expandoObjectTypeName = ReflectionUtils.GetTypeName(typeof(ExpandoObject), FormatterAssemblyStyle.Full, null);
@@ -268,8 +277,6 @@ namespace Newtonsoft.Json.Tests.Serialization
                 NullValueHandling = NullValueHandling.Ignore,
             });
 
-            Console.WriteLine(json);
-
             StringAssert.AreEqual(@"{
   ""Explicit"": false,
   ""Text"": ""Text!"",
@@ -290,8 +297,6 @@ namespace Newtonsoft.Json.Tests.Serialization
             {
                 NullValueHandling = NullValueHandling.Include,
             });
-
-            Console.WriteLine(json);
 
             StringAssert.AreEqual(@"{
   ""Explicit"": false,
@@ -317,8 +322,6 @@ namespace Newtonsoft.Json.Tests.Serialization
             {
                 DefaultValueHandling = DefaultValueHandling.Ignore,
             });
-
-            Console.WriteLine(json);
 
             StringAssert.AreEqual(@"{
   ""Text"": ""Text!"",
