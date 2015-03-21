@@ -172,6 +172,22 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual(10.0, r.width);
         }
 
+        [Test]
+        public void DeserializeUnionWithFieldsWithTypeNameHandlingAll()
+        {
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All
+            };
+            Shape c = JsonConvert.DeserializeObject<Shape>(@"{""Case"":""Rectangle"",""Fields"":{""$type"":""System.Object[], mscorlib"",""$values"":[10.0,5.0]}}", settings);
+            Assert.AreEqual(true, c.IsRectangle);
+
+            Shape.Rectangle r = (Shape.Rectangle)c;
+
+            Assert.AreEqual(5.0, r.length);
+            Assert.AreEqual(10.0, r.width);
+        }
+
         public class Union
         {
             public List<UnionCase> Cases;
@@ -270,12 +286,6 @@ namespace Newtonsoft.Json.Tests.Converters
         public void DeserializeBasicUnion_UnexpectedEnd()
         {
             ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<Currency>(@"{""Case"":"), "Unexpected end when reading union. Path 'Case', line 1, position 8.");
-        }
-
-        [Test]
-        public void DeserializeBasicUnion_FieldsObject()
-        {
-            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<Currency>(@"{""Case"":""AUD"",""Fields"":{}}"), "Union fields must been an array. Path 'Fields', line 1, position 24.");
         }
 
         [Test]

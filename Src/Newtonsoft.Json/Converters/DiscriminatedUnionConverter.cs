@@ -179,10 +179,27 @@ namespace Newtonsoft.Json.Converters
                 else if (string.Equals(propertyName, FieldsPropertyName, StringComparison.OrdinalIgnoreCase))
                 {
                     ReadAndAssert(reader);
-                    if (reader.TokenType != JsonToken.StartArray)
-                        throw JsonSerializationException.Create(reader, "Union fields must been an array.");
 
-                    fields = (JArray)JToken.ReadFrom(reader);
+                    if (reader.TokenType == JsonToken.StartArray)
+                    {
+                        fields = (JArray)JToken.ReadFrom(reader);
+                    }
+                    else if (reader.TokenType == JsonToken.StartObject)
+                    {
+                        JObject current = (JObject)JToken.ReadFrom(reader);
+                        JToken valuesToken = current[JsonTypeReflector.ArrayValuesPropertyName];
+                        if (valuesToken != null)
+                        {
+                            JsonReader listReader = valuesToken.CreateReader();
+                            if (!listReader.Read())
+                                throw JsonSerializationException.Create(reader, "Unexpected end when deserializing object.");
+
+                            fields = (JArray)JToken.ReadFrom(listReader);
+                            listReader.Skip();
+                        }
+                        else throw JsonSerializationException.Create(reader, "Union fields must expose {0} property".FormatWith(CultureInfo.InvariantCulture, JsonTypeReflector.ArrayValuesPropertyName));
+                    }
+                    else throw JsonSerializationException.Create(reader, "Union fields must been an array or object.");
                 }
                 else
                 {
