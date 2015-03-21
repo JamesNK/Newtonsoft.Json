@@ -183,10 +183,6 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.IsTrue(ReferenceEquals(circularDictionary, circularDictionary["self"]));
         }
 
-        public class CircularList : List<CircularList>
-        {
-        }
-
         [Test]
         public void SerializeCircularListsError()
         {
@@ -335,10 +331,6 @@ namespace Newtonsoft.Json.Tests.Serialization
                 JsonConvert.DeserializeObject<string[][]>(json,
                     new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.All });
             }, @"Cannot preserve reference to array or readonly list, or list created from a non-default constructor: System.String[][]. Path '$values', line 3, position 15.");
-        }
-
-        public class CircularDictionary : Dictionary<string, CircularDictionary>
-        {
         }
 
         [Test]

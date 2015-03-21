@@ -57,16 +57,20 @@ namespace Newtonsoft.Json.Serialization
             Value = 2
         }
 
+        private readonly bool _trackNullReferences;
         private JsonSerializerProxy _internalSerializer;
 
         public JsonSerializerInternalReader(JsonSerializer serializer)
             : base(serializer)
         {
+            _trackNullReferences = serializer.ReferenceResolver is JsonLocationReferenceResolver;
         }
 
         public void Populate(JsonReader reader, object target)
         {
             ValidationUtils.ArgumentNotNull(target, "target");
+
+            GetCurrentPositions = reader.GetCurrentPositions;
 
             Type objectType = target.GetType();
 
@@ -134,6 +138,8 @@ namespace Newtonsoft.Json.Serialization
         {
             if (reader == null)
                 throw new ArgumentNullException("reader");
+
+            GetCurrentPositions = reader.GetCurrentPositions;
 
             JsonContract contract = GetContractSafe(objectType);
 
@@ -1117,7 +1123,7 @@ namespace Newtonsoft.Json.Serialization
             IWrappedDictionary wrappedDictionary = dictionary as IWrappedDictionary;
             object underlyingDictionary = wrappedDictionary != null ? wrappedDictionary.UnderlyingDictionary : dictionary;
 
-            if (id != null)
+            if (id != null || _trackNullReferences)
                 AddReference(reader, id, underlyingDictionary);
 
             OnDeserializing(reader, contract, underlyingDictionary);
@@ -1217,7 +1223,7 @@ namespace Newtonsoft.Json.Serialization
         {
             int rank = contract.UnderlyingType.GetArrayRank();
 
-            if (id != null)
+            if (id != null || _trackNullReferences)
                 AddReference(reader, id, list);
 
             OnDeserializing(reader, contract, list);
@@ -1356,7 +1362,7 @@ namespace Newtonsoft.Json.Serialization
             IWrappedCollection wrappedCollection = list as IWrappedCollection;
             object underlyingList = wrappedCollection != null ? wrappedCollection.UnderlyingCollection : list;
 
-            if (id != null)
+            if (id != null || _trackNullReferences)
                 AddReference(reader, id, underlyingList);
 
             // can't populate an existing array
@@ -1489,7 +1495,7 @@ namespace Newtonsoft.Json.Serialization
 
             object createdObject = contract.ISerializableCreator(serializationInfo, Serializer._context);
 
-            if (id != null)
+            if (id != null || _trackNullReferences)
                 AddReference(reader, id, createdObject);
 
             // these are together because OnDeserializing takes an object but for an ISerializable the object is fully created in the constructor
@@ -1531,7 +1537,7 @@ namespace Newtonsoft.Json.Serialization
             else
                 throw JsonSerializationException.Create(reader, "Unable to find a default constructor to use for type {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
 
-            if (id != null)
+            if (id != null || _trackNullReferences)
                 AddReference(reader, id, newObject);
 
             OnDeserializing(reader, contract, newObject);
@@ -1664,7 +1670,7 @@ namespace Newtonsoft.Json.Serialization
 
             object createdObject = creator(creatorParameterValues);
 
-            if (id != null)
+            if (id != null || _trackNullReferences)
                 AddReference(reader, id, createdObject);
 
             OnDeserializing(reader, contract, createdObject);
@@ -1920,7 +1926,7 @@ namespace Newtonsoft.Json.Serialization
                 ? contract.Properties.ToDictionary(m => m, m => PropertyPresence.None)
                 : null;
 
-            if (id != null)
+            if (id != null || _trackNullReferences)
                 AddReference(reader, id, newObject);
 
             int initialDepth = reader.Depth;

@@ -57,6 +57,7 @@ namespace Newtonsoft.Json.Serialization
         private BidirectionalDictionary<string, object> _mappings;
         private bool _serializing;
 
+        internal Func<IEnumerable<JsonPosition>> GetCurrentPositions;
         internal readonly JsonSerializer Serializer;
         internal readonly ITraceWriter TraceWriter;
 

@@ -424,8 +424,8 @@ Newtonsoft.Json Error: 0 : Error!
         [Test]
         public void SerializeDictionarysWithPreserveObjectReferences()
         {
-            PreserveReferencesHandlingTests.CircularDictionary circularDictionary = new PreserveReferencesHandlingTests.CircularDictionary();
-            circularDictionary.Add("other", new PreserveReferencesHandlingTests.CircularDictionary { { "blah", null } });
+            CircularDictionary circularDictionary = new CircularDictionary();
+            circularDictionary.Add("other", new CircularDictionary { { "blah", null } });
             circularDictionary.Add("self", circularDictionary);
 
             InMemoryTraceWriter traceWriter = new InMemoryTraceWriter
@@ -442,9 +442,9 @@ Newtonsoft.Json Error: 0 : Error!
                     TraceWriter = traceWriter
                 });
 
-            Assert.IsTrue(traceWriter.TraceRecords.Any(r => r.Message == "Writing object reference Id '1' for Newtonsoft.Json.Tests.Serialization.PreserveReferencesHandlingTests+CircularDictionary. Path ''."));
-            Assert.IsTrue(traceWriter.TraceRecords.Any(r => r.Message == "Writing object reference Id '2' for Newtonsoft.Json.Tests.Serialization.PreserveReferencesHandlingTests+CircularDictionary. Path 'other'."));
-            Assert.IsTrue(traceWriter.TraceRecords.Any(r => r.Message == "Writing object reference to Id '1' for Newtonsoft.Json.Tests.Serialization.PreserveReferencesHandlingTests+CircularDictionary. Path 'self'."));
+            Assert.IsTrue(traceWriter.TraceRecords.Any(r => r.Message == "Writing object reference Id '1' for Newtonsoft.Json.Tests.Serialization.CircularDictionary. Path ''."));
+            Assert.IsTrue(traceWriter.TraceRecords.Any(r => r.Message == "Writing object reference Id '2' for Newtonsoft.Json.Tests.Serialization.CircularDictionary. Path 'other'."));
+            Assert.IsTrue(traceWriter.TraceRecords.Any(r => r.Message == "Writing object reference to Id '1' for Newtonsoft.Json.Tests.Serialization.CircularDictionary. Path 'self'."));
         }
 
         [Test]
@@ -466,7 +466,7 @@ Newtonsoft.Json Error: 0 : Error!
                 LevelFilter = TraceLevel.Verbose
             };
 
-            JsonConvert.DeserializeObject<PreserveReferencesHandlingTests.CircularDictionary>(json,
+            JsonConvert.DeserializeObject<CircularDictionary>(json,
                 new JsonSerializerSettings
                 {
                     PreserveReferencesHandling = PreserveReferencesHandling.All,
@@ -474,9 +474,9 @@ Newtonsoft.Json Error: 0 : Error!
                     TraceWriter = traceWriter
                 });
 
-            Assert.IsTrue(traceWriter.TraceRecords.Any(r => r.Message == "Read object reference Id '1' for Newtonsoft.Json.Tests.Serialization.PreserveReferencesHandlingTests+CircularDictionary. Path 'other', line 3, position 11."));
-            Assert.IsTrue(traceWriter.TraceRecords.Any(r => r.Message == "Read object reference Id '2' for Newtonsoft.Json.Tests.Serialization.PreserveReferencesHandlingTests+CircularDictionary. Path 'other.blah', line 5, position 12."));
-            Assert.IsTrue(traceWriter.TraceRecords.Any(r => r.Message.StartsWith("Resolved object reference '1' to Newtonsoft.Json.Tests.Serialization.PreserveReferencesHandlingTests+CircularDictionary. Path 'self'")));
+            Assert.IsTrue(traceWriter.TraceRecords.Any(r => r.Message == "Read object reference Id '1' for Newtonsoft.Json.Tests.Serialization.CircularDictionary. Path 'other', line 3, position 11."));
+            Assert.IsTrue(traceWriter.TraceRecords.Any(r => r.Message == "Read object reference Id '2' for Newtonsoft.Json.Tests.Serialization.CircularDictionary. Path 'other.blah', line 5, position 12."));
+            Assert.IsTrue(traceWriter.TraceRecords.Any(r => r.Message.StartsWith("Resolved object reference '1' to Newtonsoft.Json.Tests.Serialization.CircularDictionary. Path 'self'")));
         }
 
         [Test]

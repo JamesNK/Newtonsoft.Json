@@ -207,7 +207,7 @@ namespace Newtonsoft.Json.Tests.Serialization
   ]
 }";
 
-            PreserveReferencesHandlingTests.CircularList circularList = JsonConvert.DeserializeObject<PreserveReferencesHandlingTests.CircularList>(json,
+            CircularList circularList = JsonConvert.DeserializeObject<CircularList>(json,
                 new JsonSerializerSettings
                 {
                     PreserveReferencesHandling = PreserveReferencesHandling.All,

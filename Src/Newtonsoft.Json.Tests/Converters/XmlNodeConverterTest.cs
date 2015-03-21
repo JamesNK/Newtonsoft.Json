@@ -1376,8 +1376,8 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void SerializeDeserializeMetadataProperties()
         {
-            PreserveReferencesHandlingTests.CircularDictionary circularDictionary = new PreserveReferencesHandlingTests.CircularDictionary();
-            circularDictionary.Add("other", new PreserveReferencesHandlingTests.CircularDictionary { { "blah", null } });
+            CircularDictionary circularDictionary = new CircularDictionary();
+            circularDictionary.Add("other", new CircularDictionary { { "blah", null } });
             circularDictionary.Add("self", circularDictionary);
 
             string json = JsonConvert.SerializeObject(circularDictionary, Formatting.Indented,

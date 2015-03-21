@@ -197,16 +197,23 @@ namespace Newtonsoft.Json
                 if (_currentPosition.Type == JsonContainerType.None)
                     return string.Empty;
 
-                bool insideContainer = (_currentState != State.ArrayStart
-                                        && _currentState != State.ConstructorStart
-                                        && _currentState != State.ObjectStart);
-
-                IEnumerable<JsonPosition> positions = (!insideContainer)
-                    ? _stack
-                    : _stack.Concat(new[] { _currentPosition });
+                IEnumerable<JsonPosition> positions = GetCurrentPositions();
 
                 return JsonPosition.BuildPath(positions);
             }
+        }
+
+        internal IEnumerable<JsonPosition> GetCurrentPositions()
+        {
+            bool insideContainer = (_currentState != State.ArrayStart
+                                    && _currentState != State.ConstructorStart
+                                    && _currentState != State.ObjectStart);
+
+            IEnumerable<JsonPosition> positions = (!insideContainer)
+                ? _stack
+                : _stack.Concat(new[] { _currentPosition });
+
+            return positions;
         }
 
         private DateFormatHandling _dateFormatHandling;

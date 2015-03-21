@@ -163,6 +163,7 @@
     <Compile Include="Serialization\CachedAttributeGetter.cs" />
     <Compile Include="Serialization\CamelCasePropertyNamesContractResolver.cs" />
     <Compile Include="Serialization\DefaultContractResolver.cs" />
+    <Compile Include="Serialization\JsonLocationReferenceResolver.cs" />
     <Compile Include="Serialization\DefaultReferenceResolver.cs" />
     <Compile Include="Serialization\DefaultSerializationBinder.cs" />
     <Compile Include="Serialization\DiagnosticsTraceWriter.cs" />

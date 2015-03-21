@@ -66,6 +66,8 @@ namespace Newtonsoft.Json.Serialization
             _rootContract = (objectType != null) ? Serializer._contractResolver.ResolveContract(objectType) : null;
             _rootLevel = _serializeStack.Count + 1;
 
+            GetCurrentPositions = jsonWriter.GetCurrentPositions;
+
             JsonContract contract = GetContractSafe(value);
 
             try
@@ -500,7 +502,10 @@ namespace Newtonsoft.Json.Serialization
             // don't make readonly fields the referenced value because they can't be deserialized to
             if (isReference && (member == null || member.Writable))
             {
-                WriteReferenceIdProperty(writer, contract.UnderlyingType, value);
+                string reference = GetReference(writer, value);
+
+                if (reference != null)
+                    WriteReferenceIdProperty(writer, contract.UnderlyingType, reference);
             }
             if (ShouldWriteType(TypeNameHandling.Objects, contract, member, collectionContract, containerProperty))
             {
@@ -508,10 +513,8 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
-        private void WriteReferenceIdProperty(JsonWriter writer, Type type, object value)
+        private void WriteReferenceIdProperty(JsonWriter writer, Type type, string reference)
         {
-            string reference = GetReference(writer, value);
-
             if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
                 TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, writer.Path, "Writing object reference Id '{0}' for {1}.".FormatWith(CultureInfo.InvariantCulture, reference, type)), null);
 
@@ -706,7 +709,9 @@ namespace Newtonsoft.Json.Serialization
             isReference = (isReference && (member == null || member.Writable));
 
             bool includeTypeDetails = ShouldWriteType(TypeNameHandling.Arrays, contract, member, containerContract, containerProperty);
-            bool writeMetadataObject = isReference || includeTypeDetails;
+            string reference = (isReference) ? GetReference(writer, values) : null;
+
+            bool writeMetadataObject = reference != null || includeTypeDetails;
 
             if (writeMetadataObject)
             {
@@ -714,7 +719,7 @@ namespace Newtonsoft.Json.Serialization
 
                 if (isReference)
                 {
-                    WriteReferenceIdProperty(writer, contract.UnderlyingType, values);
+                    WriteReferenceIdProperty(writer, contract.UnderlyingType, reference);
                 }
                 if (includeTypeDetails)
                 {
