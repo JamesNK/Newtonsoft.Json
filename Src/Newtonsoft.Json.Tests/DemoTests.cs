@@ -219,7 +219,7 @@ namespace Newtonsoft.Json.Tests
             var s = new Session
             {
                 Name = "Serialize All The Things",
-                Date = new DateTime(2014, 6, 4)
+                Date = new DateTime(2014, 6, 4, 0, 0, 0, DateTimeKind.Utc)
             };
 
             string j = JsonConvert.SerializeObject(s, new JsonSerializerSettings
@@ -235,7 +235,7 @@ namespace Newtonsoft.Json.Tests
             StringAssert.AreEqual(@"{
   ""Name"": ""Serialize All The Things"",
   ""Date"": new Date(
-    1401796800000
+    1401840000000
   )
 }", j);
         }
