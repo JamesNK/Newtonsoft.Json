@@ -65,6 +65,7 @@ task Build -depends Clean {
 
       Write-Host -ForegroundColor Green "Building " $name
       Write-Host -ForegroundColor Green "Signed " $sign
+      Write-Host -ForegroundColor Green "Key " $signKeyPath
 
       Write-Host
       Write-Host "Restoring"
