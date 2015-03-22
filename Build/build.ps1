@@ -2,6 +2,7 @@
   $zipFileName = "Json70r1.zip"
   $majorVersion = "7.0"
   $majorWithReleaseVersion = "7.0.1"
+  $nugetPrelease = "beta1"
   $version = GetVersion $majorWithReleaseVersion
   $packageId = "Newtonsoft.Json"
   $signAssemblies = $false
@@ -90,15 +91,23 @@ task Package -depends Build {
   
   if ($buildNuGet)
   {
+    $nugetVersion = $majorWithReleaseVersion
+    if ($nugetPrelease -ne $null)
+    {
+      $nugetVersion = $nugetVersion + "-" + $nugetPrelease
+    }    
+
     New-Item -Path $workingDir\NuGet -ItemType Directory
 
     $nuspecPath = "$workingDir\NuGet\Newtonsoft.Json.nuspec"
     Copy-Item -Path "$buildDir\Newtonsoft.Json.nuspec" -Destination $nuspecPath -recurse
 
-    Write-Host "Building NuGet package from $nuspecPath"
+    Write-Host "Updating nuspec file at $nuspecPath" -ForegroundColor Green
+    Write-Host
 
     $xml = [xml](Get-Content $nuspecPath)
     Edit-XmlNodes -doc $xml -xpath "//*[local-name() = 'id']" -value $packageId
+    Edit-XmlNodes -doc $xml -xpath "//*[local-name() = 'version']" -value $nugetVersion
 
     Write-Host $xml.OuterXml
 
@@ -123,6 +132,9 @@ task Package -depends Build {
     }
   
     robocopy $sourceDir $workingDir\NuGet\src *.cs /S /NFL /NDL /NJS /NC /NS /NP /XD Newtonsoft.Json.Tests Newtonsoft.Json.TestConsole obj | Out-Default
+
+    Write-Host "Building NuGet package with ID $packageId and version $nugetVersion" -ForegroundColor Green
+    Write-Host
 
     exec { .\Tools\NuGet\NuGet.exe pack $nuspecPath -Symbols }
     move -Path .\*.nupkg -Destination $workingDir\NuGet
