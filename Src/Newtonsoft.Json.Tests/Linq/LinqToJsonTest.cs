@@ -922,7 +922,7 @@ keyword such as type of business.""
                 }
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""channel"": {
     ""title"": ""James Newton-King"",
     ""link"": ""http://james.newtonking.com"",

@@ -151,7 +151,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json = JsonConvert.SerializeObject(d, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""result"": {
     ""@xp_0:end"": ""2014-08-15 13:12:11.9184"",
     ""@xp_0:start"": ""2014-08-15 13:11:49.3140"",
@@ -166,7 +166,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             XDocument doc = JsonConvert.DeserializeObject<XDocument>(json);
 
-            Assert.AreEqual(xml, doc.ToString());
+            StringAssert.AreEqual(xml, doc.ToString());
         }
 #endif
 
@@ -195,7 +195,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             XmlDocument doc = JsonConvert.DeserializeObject<XmlDocument>(json);
 
-            Assert.AreEqual(xml, doc.OuterXml);
+            StringAssert.AreEqual(xml, doc.OuterXml);
         }
 
         [Test]
