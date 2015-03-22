@@ -2227,7 +2227,7 @@ keyword such as type of business.""
 
             string json = JsonConvert.SerializeObject(c, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""DefaultConverter"": ""1970-01-01T00:00:00Z"",
   ""MemberConverter"": ""1970-01-01T00:00:00Z""
 }", json);
@@ -5684,7 +5684,7 @@ Path '', line 1, position 1.");
             //  ""nonVirtualMember"": ""NonVirtualMember!""
             //}", result);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""virtualMember"": ""VirtualMember!"",
   ""nonVirtualMember"": ""NonVirtualMember!""
 }", result);
@@ -6896,7 +6896,7 @@ Path '', line 1, position 1.");
             JValue v = (JValue)a[0];
 
             Assert.AreEqual(typeof(string), v.Value.GetType());
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   ""2000-01-02T03:04:05+06:00""
 ]", a.ToString());
         }

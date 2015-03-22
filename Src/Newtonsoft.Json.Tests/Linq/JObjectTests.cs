@@ -635,7 +635,7 @@ Parameter name: arrayIndex");
             moss["Department"] = new JValue("IT");
             moss["JobTitle"] = new JValue("Support");
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""FirstName"": ""Maurice"",
   ""LastName"": ""Moss"",
   ""BirthDate"": ""1977-12-30T00:00:00"",
@@ -650,7 +650,7 @@ Parameter name: arrayIndex");
             jen["Department"] = "IT";
             jen["JobTitle"] = "Manager";
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""FirstName"": ""Jen"",
   ""LastName"": ""Barber"",
   ""BirthDate"": ""1978-03-15T00:00:00"",

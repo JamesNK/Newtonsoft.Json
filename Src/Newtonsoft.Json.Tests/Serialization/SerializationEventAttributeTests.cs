@@ -226,7 +226,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(null, obj.Member5);
 
             string json = JsonConvert.SerializeObject(obj, Formatting.Indented);
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Member1"": 11,
   ""Member2"": ""This value went into the data file during serialization."",
   ""Member4"": null

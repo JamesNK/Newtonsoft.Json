@@ -232,7 +232,7 @@ namespace Newtonsoft.Json.Tests
             //   "Date": new Date(1401796800000)
             // }
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Name"": ""Serialize All The Things"",
   ""Date"": new Date(
     1401796800000
@@ -317,7 +317,7 @@ namespace Newtonsoft.Json.Tests
             //   "Name": "Mike Manager"
             // }
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Reportees"": [
     {
       ""Name"": ""Arnie Admin""
@@ -374,7 +374,7 @@ namespace Newtonsoft.Json.Tests
             //   ]
             // }
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""$id"": ""1"",
   ""$type"": ""Newtonsoft.Json.Tests.DemoTests+Manager, Newtonsoft.Json.Tests"",
   ""Reportees"": [
@@ -570,7 +570,7 @@ namespace Newtonsoft.Json.Tests
             //   ]
             // }
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""FirstName"": ""John"",
   ""LastName"": ""Smith"",
   ""Enabled"": true,

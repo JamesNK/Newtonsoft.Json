@@ -83,7 +83,7 @@ task Package -depends Build {
     $name = $build.TestsName
     $finalDir = $build.FinalDir
     
-    robocopy "$sourceDir\Newtonsoft.Json\bin\Release\$finalDir" $workingDir\Package\Bin\$finalDir *.dll *.pdb *.xml /NP /XO /XF *.CodeAnalysisLog.xml | Out-Default
+    robocopy "$sourceDir\Newtonsoft.Json\bin\Release\$finalDir" $workingDir\Package\Bin\$finalDir *.dll *.pdb *.xml /NFL /NDL /NJS /NC /NS /NP /XO /XF *.CodeAnalysisLog.xml | Out-Default
   }
   
   if ($buildNuGet)
@@ -115,12 +115,12 @@ task Package -depends Build {
         
         foreach ($frameworkDir in $frameworkDirs)
         {
-          robocopy "$sourceDir\Newtonsoft.Json\bin\Release\$finalDir" $workingDir\NuGet\lib\$frameworkDir *.dll *.pdb *.xml /NP /XO /XF *.CodeAnalysisLog.xml | Out-Default
+          robocopy "$sourceDir\Newtonsoft.Json\bin\Release\$finalDir" $workingDir\NuGet\lib\$frameworkDir *.dll *.pdb *.xml /NFL /NDL /NJS /NC /NS /NP /XO /XF *.CodeAnalysisLog.xml | Out-Default
         }
       }
     }
   
-    robocopy $sourceDir $workingDir\NuGet\src *.cs /S /NP /XD Newtonsoft.Json.Tests Newtonsoft.Json.TestConsole obj | Out-Default
+    robocopy $sourceDir $workingDir\NuGet\src *.cs /S /NFL /NDL /NJS /NC /NS /NP /XD Newtonsoft.Json.Tests Newtonsoft.Json.TestConsole obj | Out-Default
 
     exec { .\Tools\NuGet\NuGet.exe pack $nuspecPath -Symbols }
     move -Path .\*.nupkg -Destination $workingDir\NuGet
@@ -149,10 +149,10 @@ task Package -depends Build {
   # exclude package directories but keep packages\repositories.config
   $packageDirs = gci $sourceDir\packages | where {$_.PsIsContainer} | Select -ExpandProperty Name
 
-  robocopy $sourceDir $workingDir\Package\Source\Src /MIR /NP /XD bin obj TestResults AppPackages $packageDirs /XF *.suo *.user | Out-Default
-  robocopy $buildDir $workingDir\Package\Source\Build /MIR /NP /XF runbuild.txt | Out-Default
-  robocopy $docDir $workingDir\Package\Source\Doc /MIR /NP | Out-Default
-  robocopy $toolsDir $workingDir\Package\Source\Tools /MIR /NP | Out-Default
+  robocopy $sourceDir $workingDir\Package\Source\Src /MIR /NFL /NDL /NJS /NC /NS /NP /XD bin obj TestResults AppPackages $packageDirs /XF *.suo *.user | Out-Default
+  robocopy $buildDir $workingDir\Package\Source\Build /MIR /NFL /NDL /NJS /NC /NS /NP /XF runbuild.txt | Out-Default
+  robocopy $docDir $workingDir\Package\Source\Doc /MIR /NFL /NDL /NJS /NC /NS /NP | Out-Default
+  robocopy $toolsDir $workingDir\Package\Source\Tools /MIR /NFL /NDL /NJS /NC /NS /NP | Out-Default
   
   exec { .\Tools\7-zip\7za.exe a -tzip $workingDir\$zipFileName $workingDir\Package\* | Out-Default } "Error zipping"
 }
@@ -223,7 +223,7 @@ function NUnitTests($build)
 
   Write-Host -ForegroundColor Green "Copying test assembly $name to deployed directory"
   Write-Host
-  robocopy ".\Src\Newtonsoft.Json.Tests\bin\Release\$finalDir" $workingDir\Deployed\Bin\$finalDir /MIR /NP /XO | Out-Default
+  robocopy ".\Src\Newtonsoft.Json.Tests\bin\Release\$finalDir" $workingDir\Deployed\Bin\$finalDir /MIR /NFL /NDL /NJS /NC /NS /NP /XO | Out-Default
 
   Copy-Item -Path ".\Src\Newtonsoft.Json.Tests\bin\Release\$finalDir\Newtonsoft.Json.Tests.dll" -Destination $workingDir\Deployed\Bin\$finalDir\
 

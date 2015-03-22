@@ -188,7 +188,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             //   }
             // ]
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   {
     ""Name"": ""Joe Employee"",
     ""Manager"": {
@@ -331,7 +331,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             //  }
             //]
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   {
     ""Name"": ""Joe Family Details"",
     ""NumberOfChildren"": 4

@@ -730,7 +730,7 @@ namespace Newtonsoft.Json.Tests.Bson
 
             JObject o = (JObject)JObject.ReadFrom(new BsonReader(new MemoryStream(ms.ToArray())));
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Regex"": ""/(hi)/iux""
 }", o.ToString());
         }

@@ -180,7 +180,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json = JsonConvert.SerializeObject(d, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""result"": {
     ""@xp_0:end"": ""2014-08-15 13:12:11.9184"",
     ""@xp_0:start"": ""2014-08-15 13:11:49.3140"",
@@ -897,7 +897,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string jsonText = SerializeXmlNode(doc);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""?xml"": {
     ""@version"": ""1.0"",
     ""@standalone"": ""no""

@@ -260,7 +260,7 @@ undefined
 
             foreach (JObject friend in items)
             {
-                Assert.AreEqual(@"{
+                StringAssert.AreEqual(@"{
   ""name"": ""value!""
 }", friend.ToString());
             }
@@ -715,7 +715,7 @@ keyword such as type of business.""
                                                 from c in p.Categories
                                                 select new JValue(c)))))))));
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""channel"": {
     ""title"": ""James Newton-King"",
     ""link"": ""http://james.newtonking.com"",
@@ -987,7 +987,7 @@ keyword such as type of business.""
                 }
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""channel"": {
     ""title"": ""James Newton-King"",
     ""link"": ""http://james.newtonking.com"",

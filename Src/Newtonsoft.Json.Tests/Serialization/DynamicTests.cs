@@ -123,7 +123,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""$type"": ""System.Dynamic.ExpandoObject, System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"",
   ""Text"": ""Text!"",
   ""Integer"": 2147483647,

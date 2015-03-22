@@ -131,7 +131,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             };
             string serializedString = JsonConvert.SerializeObject(inputContext, jsonSerializerSettings);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""$type"": ""System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Guid, mscorlib]], mscorlib"",
   ""k1"": ""5dd2dba0-20c0-49f8-a054-1fa3b0a8d774""
 }", serializedString);
@@ -259,7 +259,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(child, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""_id"": 2,
   ""Name"": ""Isabell"",
   ""Father"": {

@@ -1109,7 +1109,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
             JArray a2 = (JArray)a.DeepClone();
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   5,
   [
     1
