@@ -35,16 +35,17 @@ task default -depends Test
 
 # Ensure a clean working directory
 task Clean {
+  Write-Host "Setting location to $baseDir"
   Set-Location $baseDir
   
   if (Test-Path -path $workingDir)
   {
-    Write-Output "Deleting existing working directory $workingDir"
+    Write-Host "Deleting existing working directory $workingDir"
     
     del $workingDir -Recurse -Force
   }
   
-  Write-Output "Creating working directory $workingDir"
+  Write-Host "Creating working directory $workingDir"
   New-Item -Path $workingDir -ItemType Directory
 }
 
