@@ -1,4 +1,7 @@
-﻿cls
+﻿param(
+    [hashtable] $parameters = @{},
+    [hashtable] $properties = @{}
+)
 
 $path = Split-Path -Path $MyInvocation.MyCommand.Path
 
@@ -8,7 +11,7 @@ Import-Module ($path + '\..\Tools\PSake\psake.psm1')
 Try
 {
   write-host "Starting build.ps1"
-  Invoke-psake ($path + '\build.ps1') Test -framework 3.5
+  Invoke-psake ($path + '\build.ps1') -properties $properties -parameters $parameters
 
   if ($psake.build_success -eq $false)
   {

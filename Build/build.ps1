@@ -291,10 +291,12 @@ function Edit-XmlNodes {
     
     foreach ($node in $nodes) {
         if ($node -ne $null) {
-            if ($node.NodeType -eq "Element") {
+            if ($node.NodeType -eq "Element")
+            {
                 $node.InnerXml = $value
             }
-            else {
+            else
+            {
                 $node.Value = $value
             }
         }
