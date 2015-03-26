@@ -454,7 +454,51 @@ namespace Newtonsoft.Json.Tests.Converters
 
             Assert.AreEqual("432", dt[0].CustomerID);
         }
+
+		[Test]
+		public void DeserializedTypedDataTableWithConverter()
+		{
+			string json = @"{
+  ""TestTable"": [
+    {
+      ""DateTimeValue"": ""2015-11-28T00:00:00""
+    },
+    {
+      ""DateTimeValue"": null
     }
+  ]
+}";
+
+			var ds = JsonConvert.DeserializeObject<SqlTypesDataSet>(json, new SqlDateTimeConverter());
+
+			Assert.AreEqual(new System.Data.SqlTypes.SqlDateTime(2015, 11, 28), ds.TestTable[0].DateTimeValue);
+			Assert.AreEqual(System.Data.SqlTypes.SqlDateTime.Null, ds.TestTable[1].DateTimeValue);
+		}
+
+		internal class SqlDateTimeConverter : JsonConverter
+		{
+			public override bool CanConvert(Type objectType)
+			{
+				return typeof(System.Data.SqlTypes.SqlDateTime).IsAssignableFrom(objectType);
+			}
+
+			public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+			{
+				if (reader.Value == null || reader.Value == DBNull.Value)
+					return System.Data.SqlTypes.SqlDateTime.Null;
+				else
+					return new System.Data.SqlTypes.SqlDateTime((DateTime)serializer.Deserialize(reader));
+			}
+
+			public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+			{
+				if (((System.Data.SqlTypes.SqlDateTime)value).IsNull)
+					writer.WriteNull();
+				else
+					writer.WriteValue(((System.Data.SqlTypes.SqlDateTime)value).Value);
+			}
+		}
+	}
 }
 
 #endif

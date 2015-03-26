@@ -102,7 +102,7 @@ namespace Newtonsoft.Json.Converters
 
             while (reader.TokenType != JsonToken.EndArray)
             {
-                CreateRow(reader, dt);
+                CreateRow(reader, dt, serializer);
 
                 CheckedRead(reader);
             }
@@ -110,7 +110,7 @@ namespace Newtonsoft.Json.Converters
             return dt;
         }
 
-        private static void CreateRow(JsonReader reader, DataTable dt)
+        private static void CreateRow(JsonReader reader, DataTable dt, JsonSerializer serializer)
         {
             DataRow dr = dt.NewRow();
             CheckedRead(reader);
@@ -138,7 +138,7 @@ namespace Newtonsoft.Json.Converters
 
                     while (reader.TokenType != JsonToken.EndArray)
                     {
-                        CreateRow(reader, nestedDt);
+                        CreateRow(reader, nestedDt, serializer);
 
                         CheckedRead(reader);
                     }
@@ -165,7 +165,7 @@ namespace Newtonsoft.Json.Converters
                 }
                 else
                 {
-                    dr[columnName] = reader.Value ?? DBNull.Value;
+                    dr[columnName] = reader.Value != null ? serializer.Deserialize(reader, column.DataType) : DBNull.Value;
                 }
 
                 CheckedRead(reader);
