@@ -455,10 +455,11 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual("432", dt[0].CustomerID);
         }
 
-		[Test]
-		public void DeserializedTypedDataTableWithConverter()
-		{
-			string json = @"{
+#if !(NET20 || PORTABLE || PORTABLE40)
+        [Test]
+        public void DeserializedTypedDataTableWithConverter()
+        {
+            string json = @"{
   ""TestTable"": [
     {
       ""DateTimeValue"": ""2015-11-28T00:00:00""
@@ -469,36 +470,41 @@ namespace Newtonsoft.Json.Tests.Converters
   ]
 }";
 
-			var ds = JsonConvert.DeserializeObject<SqlTypesDataSet>(json, new SqlDateTimeConverter());
+            SqlTypesDataSet ds = JsonConvert.DeserializeObject<SqlTypesDataSet>(json, new SqlDateTimeConverter());
 
-			Assert.AreEqual(new System.Data.SqlTypes.SqlDateTime(2015, 11, 28), ds.TestTable[0].DateTimeValue);
-			Assert.AreEqual(System.Data.SqlTypes.SqlDateTime.Null, ds.TestTable[1].DateTimeValue);
-		}
+            Assert.AreEqual(new System.Data.SqlTypes.SqlDateTime(2015, 11, 28), ds.TestTable[0].DateTimeValue);
+            Assert.AreEqual(System.Data.SqlTypes.SqlDateTime.Null, ds.TestTable[1].DateTimeValue);
+            
+            string json2 = JsonConvert.SerializeObject(ds, Formatting.Indented, new SqlDateTimeConverter());
 
-		internal class SqlDateTimeConverter : JsonConverter
-		{
-			public override bool CanConvert(Type objectType)
-			{
-				return typeof(System.Data.SqlTypes.SqlDateTime).IsAssignableFrom(objectType);
-			}
+            Assert.AreEqual(json, json2);
+            Console.WriteLine(json2);
+        }
 
-			public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-			{
-				if (reader.Value == null || reader.Value == DBNull.Value)
-					return System.Data.SqlTypes.SqlDateTime.Null;
-				else
-					return new System.Data.SqlTypes.SqlDateTime((DateTime)serializer.Deserialize(reader));
-			}
+        internal class SqlDateTimeConverter : JsonConverter
+        {
+            public override bool CanConvert(Type objectType)
+            {
+                return typeof(System.Data.SqlTypes.SqlDateTime).IsAssignableFrom(objectType);
+            }
 
-			public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-			{
-				if (((System.Data.SqlTypes.SqlDateTime)value).IsNull)
-					writer.WriteNull();
-				else
-					writer.WriteValue(((System.Data.SqlTypes.SqlDateTime)value).Value);
-			}
-		}
-	}
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                if (reader.Value == null || reader.Value == DBNull.Value)
+                    return System.Data.SqlTypes.SqlDateTime.Null;
+                else
+                    return new System.Data.SqlTypes.SqlDateTime((DateTime)serializer.Deserialize(reader));
+            }
+
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                if (((System.Data.SqlTypes.SqlDateTime)value).IsNull)
+                    writer.WriteNull();
+                else
+                    writer.WriteValue(((System.Data.SqlTypes.SqlDateTime)value).Value);
+            }
+        }
+#endif
+    }
 }
-
 #endif
