@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="SqlTypesDataSet" targetNamespace="http://tempuri.org/SqlTypesDataSet.xsd" xmlns:mstns="http://tempuri.org/SqlTypesDataSet.xsd" xmlns="http://tempuri.org/SqlTypesDataSet.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="SqlTypesDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="SqlTypesDataSet" msprop:Generator_UserDSName="SqlTypesDataSet">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="TestTable" msprop:Generator_TableClassName="TestTableDataTable" msprop:Generator_TableVarName="tableTestTable" msprop:Generator_TablePropName="TestTable" msprop:Generator_RowDeletingName="TestTableRowDeleting" msprop:Generator_RowChangingName="TestTableRowChanging" msprop:Generator_RowEvHandlerName="TestTableRowChangeEventHandler" msprop:Generator_RowDeletedName="TestTableRowDeleted" msprop:Generator_UserTableName="TestTable" msprop:Generator_RowChangedName="TestTableRowChanged" msprop:Generator_RowEvArgName="TestTableRowChangeEvent" msprop:Generator_RowClassName="TestTableRow">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="DateTimeValue" msdata:DataType="System.Data.SqlTypes.SqlDateTime" msprop:Generator_ColumnVarNameInTable="columnDateTimeValue" msprop:Generator_ColumnPropNameInRow="DateTimeValue" msprop:Generator_ColumnPropNameInTable="DateTimeValueColumn" msprop:Generator_UserColumnName="DateTimeValue" type="xs:dateTime" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

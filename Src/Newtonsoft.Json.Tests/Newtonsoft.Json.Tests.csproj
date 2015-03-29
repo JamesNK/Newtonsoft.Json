@@ -424,6 +424,11 @@
     <Compile Include="TestObjects\SetOnlyPropertyClass2.cs" />
     <Compile Include="TestObjects\Shape.cs" />
     <Compile Include="TestObjects\Shortie.cs" />
+    <Compile Include="TestObjects\SqlTypesDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SqlTypesDataSet.xsd</DependentUpon>
+    </Compile>
     <Compile Include="TestObjects\Store.cs" />
     <Compile Include="TestObjects\StoreColor.cs" />
     <Compile Include="TestObjects\StructTest.cs" />
@@ -529,6 +534,17 @@
     <Content Include="SpaceShipV2.bson">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="TestObjects\SqlTypesDataSet.xsc">
+      <DependentUpon>SqlTypesDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="TestObjects\SqlTypesDataSet.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>SqlTypesDataSet.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="TestObjects\SqlTypesDataSet.xss">
+      <DependentUpon>SqlTypesDataSet.xsd</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <EntityDeploy Include="FileSystemEntityModel.edmx">

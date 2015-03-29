@@ -85,6 +85,7 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data.Entity">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -363,6 +364,11 @@
     <Compile Include="TestObjects\SearchResult.cs" />
     <Compile Include="TestObjects\SelectListItem.cs" />
     <Compile Include="TestObjects\Shape.cs" />
+    <Compile Include="TestObjects\SqlTypesDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SqlTypesDataSet.xsd</DependentUpon>
+    </Compile>
     <Compile Include="TestObjects\StructTest.cs" />
     <Compile Include="TestObjects\TestComponent.cs" />
     <Compile Include="TestObjects\TestComponentSimple.cs" />
@@ -540,6 +546,17 @@
     <Content Include="SpaceShipV2.bson">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="TestObjects\SqlTypesDataSet.xsc">
+      <DependentUpon>SqlTypesDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="TestObjects\SqlTypesDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>SqlTypesDataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="TestObjects\SqlTypesDataSet.xss">
+      <DependentUpon>SqlTypesDataSet.xsd</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
