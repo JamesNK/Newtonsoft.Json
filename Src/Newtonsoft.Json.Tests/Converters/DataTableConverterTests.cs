@@ -477,8 +477,7 @@ namespace Newtonsoft.Json.Tests.Converters
             
             string json2 = JsonConvert.SerializeObject(ds, Formatting.Indented, new SqlDateTimeConverter());
 
-            Assert.AreEqual(json, json2);
-            Console.WriteLine(json2);
+            StringAssert.AreEqual(json, json2);
         }
 
         internal class SqlDateTimeConverter : JsonConverter
