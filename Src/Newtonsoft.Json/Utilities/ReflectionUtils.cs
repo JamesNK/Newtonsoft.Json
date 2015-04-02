@@ -883,17 +883,15 @@ namespace Newtonsoft.Json.Utilities
         {
             ValidationUtils.ArgumentNotNull(targetType, "targetType");
 
-            List<PropertyInfo> propertyInfos;
+            List<PropertyInfo> propertyInfos = new List<PropertyInfo>(targetType.GetProperties(bindingAttr));
 
-            if (!targetType.IsInterface())
+            // GetProperties on an interface doesn't return properties from its interfaces
+            if (targetType.IsInterface())
             {
-                propertyInfos = new List<PropertyInfo>(targetType.GetProperties(bindingAttr));
-            }
-            else
-            {
-                propertyInfos = (new Type[] { targetType })
-                    .Concat(targetType.GetInterfaces())
-                    .SelectMany(i => i.GetProperties(bindingAttr)).ToList();
+                foreach (Type i in targetType.GetInterfaces())
+                {
+                    propertyInfos.AddRange(i.GetProperties(bindingAttr));
+                }
             }
 
             GetChildPrivateProperties(propertyInfos, targetType, bindingAttr);
