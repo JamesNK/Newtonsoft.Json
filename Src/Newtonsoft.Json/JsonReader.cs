@@ -129,6 +129,7 @@ namespace Newtonsoft.Json
         internal FloatParseHandling _floatParseHandling;
         private string _dateFormatString;
         private readonly List<JsonPosition> _stack;
+        private string _typeNameProperty;
 
         /// <summary>
         /// Gets the current reader state.
@@ -201,6 +202,15 @@ namespace Newtonsoft.Json
         {
             get { return _dateFormatString; }
             set { _dateFormatString = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the name of the metadata property containing the type name.
+        /// </summary>
+        public string TypeNameProperty
+        {
+            get { return _typeNameProperty ?? JsonSerializerSettings.DefaultTypeNameProperty; }
+            set { _typeNameProperty = value; }
         }
 
         /// <summary>
@@ -796,7 +806,7 @@ namespace Newtonsoft.Json
                 if (!ReadInternal())
                     throw JsonReaderException.Create(this, "Unexpected end when reading bytes.");
 
-                if (Value.ToString() == JsonTypeReflector.TypePropertyName)
+                if (Value.ToString() == TypeNameProperty)
                 {
                     ReadInternal();
                     if (Value != null && Value.ToString().StartsWith("System.Byte[]", StringComparison.Ordinal))

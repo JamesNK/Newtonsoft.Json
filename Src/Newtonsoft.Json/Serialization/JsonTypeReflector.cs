@@ -49,7 +49,6 @@ namespace Newtonsoft.Json.Serialization
 
         public const string IdPropertyName = "$id";
         public const string RefPropertyName = "$ref";
-        public const string TypePropertyName = "$type";
         public const string ValuePropertyName = "$value";
         public const string ArrayValuesPropertyName = "$values";
 

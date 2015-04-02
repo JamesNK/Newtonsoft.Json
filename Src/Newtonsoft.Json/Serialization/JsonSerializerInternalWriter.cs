@@ -526,7 +526,7 @@ namespace Newtonsoft.Json.Serialization
             if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
                 TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, writer.Path, "Writing type name '{0}' for {1}.".FormatWith(CultureInfo.InvariantCulture, typeName, type)), null);
 
-            writer.WritePropertyName(JsonTypeReflector.TypePropertyName, false);
+            writer.WritePropertyName(Serializer.TypeNameProperty, false);
             writer.WriteValue(typeName);
         }
 
