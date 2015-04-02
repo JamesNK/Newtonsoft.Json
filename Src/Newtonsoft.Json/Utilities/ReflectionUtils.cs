@@ -883,20 +883,20 @@ namespace Newtonsoft.Json.Utilities
         {
             ValidationUtils.ArgumentNotNull(targetType, "targetType");
 
-	        List<PropertyInfo> propertyInfos;
+            List<PropertyInfo> propertyInfos;
 
-			if (!targetType.IsInterface())
-			{
-				propertyInfos = new List<PropertyInfo>(targetType.GetProperties(bindingAttr));
-			}
-			else
-			{
-				propertyInfos = (new Type[] { targetType })
-					.Concat(targetType.GetInterfaces())
-					.SelectMany(i => i.GetProperties(bindingAttr)).ToList();
-			}
+            if (!targetType.IsInterface())
+            {
+                propertyInfos = new List<PropertyInfo>(targetType.GetProperties(bindingAttr));
+            }
+            else
+            {
+                propertyInfos = (new Type[] { targetType })
+                    .Concat(targetType.GetInterfaces())
+                    .SelectMany(i => i.GetProperties(bindingAttr)).ToList();
+            }
 
-			GetChildPrivateProperties(propertyInfos, targetType, bindingAttr);
+            GetChildPrivateProperties(propertyInfos, targetType, bindingAttr);
 
             // a base class private getter/setter will be inaccessable unless the property was gotten from the base class
             for (int i = 0; i < propertyInfos.Count; i++)

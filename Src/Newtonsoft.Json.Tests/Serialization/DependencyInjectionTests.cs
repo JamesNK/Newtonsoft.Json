@@ -47,10 +47,10 @@ using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
-	public interface IBase
-	{
-		DateTime CreatedOn { get; set; }	
-	}
+    public interface IBase
+    {
+        DateTime CreatedOn { get; set; }
+    }
 
     public interface ITaskRepository : IBase
     {
@@ -63,10 +63,10 @@ namespace Newtonsoft.Json.Tests.Serialization
         string Level { get; set; }
     }
 
-	public class Base : IBase
-	{
-		public DateTime CreatedOn { get; set; }
-	}
+    public class Base : IBase
+    {
+        public DateTime CreatedOn { get; set; }
+    }
 
     public class TaskRepository : Base, ITaskRepository
     {
@@ -213,7 +213,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 },
                 'Repository': {
                     'ConnectionString': 'server=.',
-					'CreatedOn': '2015-04-01 20:00'
+                    'CreatedOn': '2015-04-01 20:00'
                 },
                 'People': [
                     {
@@ -227,14 +227,14 @@ namespace Newtonsoft.Json.Tests.Serialization
                     'Name': 'Name3!'
                 }
             }", new JsonSerializerSettings
-              {
-                  ContractResolver = contractResolver
-              });
+            {
+                ContractResolver = contractResolver
+            });
 
             Assert.IsNotNull(o);
             Assert.IsNotNull(o.Logger);
             Assert.IsNotNull(o.Repository);
-			Assert.IsNotNull(o.Repository.CreatedOn);
+            Assert.IsNotNull(o.Repository.CreatedOn);
 
             Assert.AreEqual(2, count);
 
