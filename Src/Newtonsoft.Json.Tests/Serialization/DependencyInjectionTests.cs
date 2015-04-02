@@ -234,7 +234,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.IsNotNull(o);
             Assert.IsNotNull(o.Logger);
             Assert.IsNotNull(o.Repository);
-			Assert.IsNotNull(o.Repository.CreatedOn);
+			Assert.AreEqual(o.Repository.CreatedOn, DateTime.Parse("2015-04-01 20:00"));
 
             Assert.AreEqual(2, count);
 
