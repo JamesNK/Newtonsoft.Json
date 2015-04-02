@@ -893,7 +893,7 @@ namespace Newtonsoft.Json.Utilities
 			{
 				propertyInfos = (new Type[] { targetType })
 					.Concat(targetType.GetInterfaces())
-					.SelectMany(i => i.GetProperties()).ToList();
+					.SelectMany(i => i.GetProperties(bindingAttr)).ToList();
 			}
 
 			GetChildPrivateProperties(propertyInfos, targetType, bindingAttr);
