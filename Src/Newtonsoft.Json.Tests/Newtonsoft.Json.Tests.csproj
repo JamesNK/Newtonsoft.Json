@@ -93,6 +93,7 @@
     <Compile Include="Documentation\Samples\Bson\DeserializeFromBsonCollection.cs" />
     <Compile Include="Documentation\Samples\Bson\SerializeToBson.cs" />
     <Compile Include="Documentation\Samples\Json\CustomJsonWriter.cs" />
+    <Compile Include="Documentation\Samples\Json\ReadMultipleContentWithJsonReader.cs" />
     <Compile Include="Documentation\Samples\Json\ReadJsonWithJsonTextReader.cs" />
     <Compile Include="Documentation\Samples\Json\CustomJsonReader.cs" />
     <Compile Include="Documentation\Samples\Json\WriteJsonWithJsonTextWriter.cs" />

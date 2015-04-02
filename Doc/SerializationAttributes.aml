@@ -20,6 +20,7 @@
   <listItem><para><codeEntityReference>T:Newtonsoft.Json.JsonDictionaryAttribute</codeEntityReference> - Placed on dictionaries to control how they should be serialized as a JSON object.</para></listItem>
   <listItem><para><codeEntityReference>T:Newtonsoft.Json.JsonPropertyAttribute</codeEntityReference> - Placed on fields and properties to control how they should be serialized as a property in a JSON object.</para></listItem>
   <listItem><para><codeEntityReference>T:Newtonsoft.Json.JsonConverterAttribute</codeEntityReference> - Placed on either classes or fields and properties to specify which JsonConverter should be used during serialization.</para></listItem>
+  <listItem><para><codeEntityReference>T:Newtonsoft.Json.JsonExtensionDataAttribute</codeEntityReference> - Placed on a collection field or property to deserialize properties with no matching class member into the specified collection and write values during serialization.</para></listItem>
 </list>
 
     </introduction>
@@ -101,10 +102,8 @@
     <section>
       <title>JsonIgnoreAttribute</title>
       <content>
-        <!-- Uncomment this to create a sub-section outline
-        <autoOutline /> -->
         <para>Excludes a field or property from serialization.</para>
-        <para>The <codeEntityReference>T:System.NonSerializedAttribute</codeEntityReference> can be used as substitute for JsonIgnoreAttribute.</para>
+        <para>The <codeEntityReference>T:System.NonSerializedAttribute</codeEntityReference> can be used as a substitute for JsonIgnoreAttribute.</para>
       </content>
     </section>
         
@@ -132,6 +131,17 @@
         and set the ItemConverterType property to the converter type you want to use.</para>
       </content>
     </section>
+        
+    <section>
+      <title>JsonExtensionDataAttribute</title>
+      <content>
+        <para>Instructs the <codeEntityReference>T:Newtonsoft.Json.JsonSerializer</codeEntityReference> to deserialize properties with no matching class member
+        into the specified collection and write values during serialization.</para>
+        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\Serializer\DeserializeExtensionData.cs" region="Types" title="Types" />
+        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\Serializer\DeserializeExtensionData.cs" region="Usage" title="Usage" />
+      </content>
+    </section>
+    
     </sections>
     </section>
     <relatedTopics>
