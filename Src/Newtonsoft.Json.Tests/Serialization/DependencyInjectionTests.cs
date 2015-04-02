@@ -47,7 +47,12 @@ using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
-    public interface ITaskRepository
+	public interface IBase
+	{
+		DateTime CreatedOn { get; set; }	
+	}
+
+    public interface ITaskRepository : IBase
     {
         string ConnectionString { get; set; }
     }
@@ -58,7 +63,12 @@ namespace Newtonsoft.Json.Tests.Serialization
         string Level { get; set; }
     }
 
-    public class TaskRepository : ITaskRepository
+	public class Base : IBase
+	{
+		public DateTime CreatedOn { get; set; }
+	}
+
+    public class TaskRepository : Base, ITaskRepository
     {
         public string ConnectionString { get; set; }
     }
@@ -202,7 +212,8 @@ namespace Newtonsoft.Json.Tests.Serialization
                     'Level': 'Debug'
                 },
                 'Repository': {
-                    'ConnectionString': 'server=.'
+                    'ConnectionString': 'server=.',
+					'CreatedOn': '2015-04-01 20:00'
                 },
                 'People': [
                     {
@@ -223,6 +234,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.IsNotNull(o);
             Assert.IsNotNull(o.Logger);
             Assert.IsNotNull(o.Repository);
+			Assert.IsNotNull(o.Repository.CreatedOn);
 
             Assert.AreEqual(2, count);
 
