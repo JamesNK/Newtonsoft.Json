@@ -86,6 +86,25 @@ namespace Newtonsoft.Json.Tests
         }
 
         [Test]
+        public void WriteValueForStreams()
+        {
+            StringWriter sw = new StringWriter();
+            JsonTextWriter writer = new JsonTextWriter(sw) { QuoteName = false };
+
+            TextReader inputStream = new StringReader("value");
+
+            writer.WriteStartObject();
+
+            writer.WritePropertyName("name");
+            writer.WriteValue(inputStream);
+
+            writer.WriteEndObject();
+            writer.Flush();
+
+            Assert.AreEqual(@"{name:""value""}", sw.ToString());
+        }
+
+        [Test]
         public void QuoteNameAndStrings()
         {
             StringBuilder sb = new StringBuilder();
@@ -250,6 +269,31 @@ namespace Newtonsoft.Json.Tests
                     jsonWriter.WriteEndArray();
                 }
             }, @"Unsupported type: System.Version. Use the JsonSerializer class to get the object's JSON representation. Path ''.");
+        }
+
+        [Test]
+        public void StreamEscaping()
+        {
+            StringBuilder sb = new StringBuilder();
+            StringWriter sw = new StringWriter(sb);
+
+            using (JsonWriter jsonWriter = new JsonTextWriter(sw))
+            {
+                jsonWriter.WriteStartArray();
+                jsonWriter.WriteValue(new StringReader(@"""These pretzels are making me thirsty!"""));
+                jsonWriter.WriteValue(new StringReader("Jeff's house was burninated."));
+                jsonWriter.WriteValue(new StringReader("1. You don't talk about fight club.\r\n2. You don't talk about fight club."));
+                jsonWriter.WriteValue(new StringReader("35% of\t statistics\n are made\r up."));
+                jsonWriter.WriteEndArray();
+            }
+
+            string expected = @"[""\""These pretzels are making me thirsty!\"""",""Jeff's house was burninated."",""1. You don't talk about fight club.\r\n2. You don't talk about fight club."",""35% of\t statistics\n are made\r up.""]";
+            string result = sb.ToString();
+
+            Console.WriteLine("StringEscaping");
+            Console.WriteLine(result);
+
+            Assert.AreEqual(expected, result);
         }
 
         [Test]

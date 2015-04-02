@@ -100,17 +100,25 @@ namespace Newtonsoft.Json.Utilities
         public static void WriteEscapedJavaScriptString(TextWriter writer, string s, char delimiter, bool appendDelimiters,
             bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling, ref char[] writeBuffer)
         {
+            var chars = s.ToCharArray();
+            WriteEscapedJavaScriptCharArray(writer, ref chars, chars.Length, delimiter, appendDelimiters,
+                charEscapeFlags, stringEscapeHandling, ref writeBuffer);
+        }
+
+        public static void WriteEscapedJavaScriptCharArray(TextWriter writer, ref char[] stringBuffer, int sChars, char delimiter, bool appendDelimiters,
+            bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling, ref char[] writeBuffer)
+        {
             // leading delimiter
             if (appendDelimiters)
                 writer.Write(delimiter);
 
-            if (s != null)
+            if (stringBuffer != null)
             {
                 int lastWritePosition = 0;
 
-                for (int i = 0; i < s.Length; i++)
+                for (int i = 0; i < sChars; i++)
                 {
-                    var c = s[i];
+                    var c = stringBuffer[i];
 
                     if (c < charEscapeFlags.Length && !charEscapeFlags[c])
                         continue;
@@ -197,7 +205,7 @@ namespace Newtonsoft.Json.Utilities
                             writeBuffer = newBuffer;
                         }
 
-                        s.CopyTo(lastWritePosition, writeBuffer, start, length - start);
+                        Array.Copy(stringBuffer, lastWritePosition, writeBuffer, start, length - start);
 
                         // write unchanged chars before writing escaped text
                         writer.Write(writeBuffer, start, length - start);
@@ -213,16 +221,16 @@ namespace Newtonsoft.Json.Utilities
                 if (lastWritePosition == 0)
                 {
                     // no escaped text, write entire string
-                    writer.Write(s);
+                    writer.Write(stringBuffer, 0, sChars);
                 }
                 else
                 {
-                    int length = s.Length - lastWritePosition;
+                    int length = sChars - lastWritePosition;
 
                     if (writeBuffer == null || writeBuffer.Length < length)
                         writeBuffer = new char[length];
 
-                    s.CopyTo(lastWritePosition, writeBuffer, 0, length);
+                    Array.Copy(stringBuffer, lastWritePosition, writeBuffer, 0, length);
 
                     // write remaining text
                     writer.Write(writeBuffer, 0, length);
