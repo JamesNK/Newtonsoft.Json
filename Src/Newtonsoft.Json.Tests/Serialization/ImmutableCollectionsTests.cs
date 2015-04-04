@@ -46,7 +46,6 @@ using Newtonsoft.Json.Linq;
 namespace Newtonsoft.Json.Tests.Serialization
 {
     [TestFixture]
-    [Ignore]
     public class ImmutableCollectionsTests : TestFixtureBase
     {
         #region List
@@ -441,5 +440,4 @@ namespace Newtonsoft.Json.Tests.Serialization
         #endregion
     }
 }
-
 #endif

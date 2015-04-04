@@ -744,43 +744,16 @@ namespace Newtonsoft.Json.Serialization
             GetCallbackMethodsForType(t, out onSerializing, out onSerialized, out onDeserializing, out onDeserialized, out onError);
 
             if (onSerializing != null)
-            {
-#if !(NET35 || NET20 || NETFX_CORE)
-                if (t.Name != FSharpUtils.FSharpSetTypeName && t.Name != FSharpUtils.FSharpMapTypeName)
-#endif
-                {
-#if NETFX_CORE
-                    if (!t.IsGenericType() || (t.GetGenericTypeDefinition() != typeof(ConcurrentDictionary<,>)))
-                         contract.OnSerializingCallbacks.AddRange(onSerializing);
-#else
-                    contract.OnSerializingCallbacks.AddRange(onSerializing);
-#endif
-                }
-            }
+                contract.OnSerializingCallbacks.AddRange(onSerializing);
 
             if (onSerialized != null)
                 contract.OnSerializedCallbacks.AddRange(onSerialized);
 
             if (onDeserializing != null)
-            {
                 contract.OnDeserializingCallbacks.AddRange(onDeserializing);
-            }
 
             if (onDeserialized != null)
-            {
-#if !(NET35 || NET20 || NETFX_CORE)
-                if (t.Name != FSharpUtils.FSharpSetTypeName && t.Name != FSharpUtils.FSharpMapTypeName)
-#endif
-                {
-                    // ConcurrentDictionary throws an error here so don't use its OnDeserialized - http://json.codeplex.com/discussions/257093
-#if !(NET35 || NET20 || PORTABLE || PORTABLE40)
-                    if (!t.IsGenericType() || (t.GetGenericTypeDefinition() != typeof(ConcurrentDictionary<,>)))
-                        contract.OnDeserializedCallbacks.AddRange(onDeserialized);
-#else
-                    contract.OnDeserializedCallbacks.AddRange(onDeserialized);
-#endif
-                }
-            }
+                contract.OnDeserializedCallbacks.AddRange(onDeserialized);
 
             if (onError != null)
                 contract.OnErrorCallbacks.AddRange(onError);
@@ -803,6 +776,9 @@ namespace Newtonsoft.Json.Serialization
                 MethodInfo currentOnDeserialized = null;
                 MethodInfo currentOnError = null;
 
+                bool skipSerializing = ShouldSkipSerializing(baseType);
+                bool skipDeserialized = ShouldSkipDeserialized(baseType);
+
                 foreach (MethodInfo method in baseType.GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
                 {
                     // compact framework errors when getting parameters for a generic method
@@ -813,7 +789,7 @@ namespace Newtonsoft.Json.Serialization
                     Type prevAttributeType = null;
                     ParameterInfo[] parameters = method.GetParameters();
 
-                    if (IsValidCallback(method, parameters, typeof(OnSerializingAttribute), currentOnSerializing, ref prevAttributeType))
+                    if (!skipSerializing && IsValidCallback(method, parameters, typeof(OnSerializingAttribute), currentOnSerializing, ref prevAttributeType))
                     {
                         onSerializing = onSerializing ?? new List<SerializationCallback>();
                         onSerializing.Add(JsonContract.CreateSerializationCallback(method));
@@ -831,7 +807,7 @@ namespace Newtonsoft.Json.Serialization
                         onDeserializing.Add(JsonContract.CreateSerializationCallback(method));
                         currentOnDeserializing = method;
                     }
-                    if (IsValidCallback(method, parameters, typeof(OnDeserializedAttribute), currentOnDeserialized, ref prevAttributeType))
+                    if (!skipDeserialized && IsValidCallback(method, parameters, typeof(OnDeserializedAttribute), currentOnDeserialized, ref prevAttributeType))
                     {
                         onDeserialized = onDeserialized ?? new List<SerializationCallback>();
                         onDeserialized.Add(JsonContract.CreateSerializationCallback(method));
@@ -845,6 +821,35 @@ namespace Newtonsoft.Json.Serialization
                     }
                 }
             }
+        }
+
+        private static bool ShouldSkipDeserialized(Type t)
+        {
+#if !(NET35 || NET20 || PORTABLE || PORTABLE40)
+            // ConcurrentDictionary throws an error in its OnDeserialized so ignore - http://json.codeplex.com/discussions/257093
+            if (t.IsGenericType() && t.GetGenericTypeDefinition() == typeof(ConcurrentDictionary<,>))
+                return true;
+#endif
+#if !(NET35 || NET20 || NETFX_CORE)
+            if (t.Name == FSharpUtils.FSharpSetTypeName || t.Name == FSharpUtils.FSharpMapTypeName)
+                return true;
+#endif
+
+            return false;
+        }
+
+        private static bool ShouldSkipSerializing(Type t)
+        {
+#if !(NET35 || NET20 || NETFX_CORE)
+            if (t.Name == FSharpUtils.FSharpSetTypeName || t.Name == FSharpUtils.FSharpMapTypeName)
+                return true;
+#endif
+#if NETFX_CORE
+            if (t.IsGenericType() && t.GetGenericTypeDefinition() == typeof(ConcurrentDictionary<,>))
+                return true;
+#endif
+
+            return false;
         }
 
         private List<Type> GetClassHierarchyForType(Type type)

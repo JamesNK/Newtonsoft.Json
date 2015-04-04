@@ -26,6 +26,7 @@
 using System;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Runtime.Serialization;
 #if !(NET35 || NET20 || PORTABLE || DNXCORE50 || PORTABLE40)
 using System.Collections.Concurrent;
 #endif
@@ -70,6 +71,57 @@ namespace Newtonsoft.Json.Tests.Serialization
             ExceptionAssert.Throws<JsonSerializationException>(
                 () => JsonConvert.DeserializeObject<NameValueCollectionTestClass>("{Collection:[]}"),
                 "Cannot create and populate list type System.Collections.Specialized.NameValueCollection. Path 'Collection', line 1, position 13.");
+        }
+#endif
+
+#if !(NET35 || NET20 || PORTABLE || PORTABLE40)
+        public class SomeObject
+        {
+            public string Text1 { get; set; }
+        }
+
+        public class CustomConcurrentDictionary : ConcurrentDictionary<string, List<SomeObject>>
+        {
+            [OnDeserialized]
+            internal void OnDeserializedMethod(StreamingContext context)
+            {
+                ((IDictionary)this).Add("key2", new List<SomeObject>
+                {
+                    new SomeObject
+                    {
+                        Text1 = "value2"
+                    }
+                });
+            }
+        }
+
+        [Test]
+        public void SerializeCustomConcurrentDictionary()
+        {
+            IDictionary d = new CustomConcurrentDictionary();
+            d.Add("key", new List<SomeObject>
+            {
+                new SomeObject
+                {
+                    Text1 = "value1"
+                }
+            });
+
+            string json  = JsonConvert.SerializeObject(d, Formatting.Indented);
+
+            Assert.AreEqual(@"{
+  ""key"": [
+    {
+      ""Text1"": ""value1""
+    }
+  ]
+}", json);
+
+            CustomConcurrentDictionary d2 = JsonConvert.DeserializeObject<CustomConcurrentDictionary>(json);
+
+            Assert.AreEqual(2, d2.Count);
+            Assert.AreEqual("value1", d2["key"][0].Text1);
+            Assert.AreEqual("value2", d2["key2"][0].Text1);
         }
 #endif
 
