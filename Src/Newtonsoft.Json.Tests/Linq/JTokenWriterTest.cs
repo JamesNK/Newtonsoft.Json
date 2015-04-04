@@ -33,7 +33,7 @@ using System.Text;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
-#elif ASPNETCORE50
+#elif DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
@@ -124,7 +124,7 @@ namespace Newtonsoft.Json.Tests.Linq
                 jsonWriter.WriteValue("DVD read/writer");
                 Assert.AreEqual(WriteState.Array, jsonWriter.WriteState);
 
-#if !(NET20 || NET35 || PORTABLE || ASPNETCORE50 || PORTABLE40)
+#if !(NET20 || NET35 || PORTABLE || DNXCORE50 || PORTABLE40)
                 jsonWriter.WriteValue(new BigInteger(123));
                 Assert.AreEqual(WriteState.Array, jsonWriter.WriteState);
 #endif
@@ -176,7 +176,7 @@ namespace Newtonsoft.Json.Tests.Linq
                 Assert.AreEqual(WriteState.Array, jsonWriter.WriteState);
                 Assert.AreEqual(a[a.Count - 1], jsonWriter.CurrentToken);
 
-#if !(NET20 || NET35 || PORTABLE || ASPNETCORE50 || PORTABLE40)
+#if !(NET20 || NET35 || PORTABLE || DNXCORE50 || PORTABLE40)
                 jsonWriter.WriteValue(new BigInteger(123));
                 Assert.AreEqual(WriteState.Array, jsonWriter.WriteState);
                 Assert.AreEqual(a[a.Count - 1], jsonWriter.CurrentToken);
@@ -209,7 +209,7 @@ namespace Newtonsoft.Json.Tests.Linq
   /*fail*/]", writer.Token.ToString());
         }
 
-#if !(NET20 || NET35 || PORTABLE || ASPNETCORE50 || PORTABLE40)
+#if !(NET20 || NET35 || PORTABLE || DNXCORE50 || PORTABLE40)
         [Test]
         public void WriteBigInteger()
         {

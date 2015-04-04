@@ -16,7 +16,7 @@
         "test": "Xunit.KRunner"
     },
     "frameworks": {
-        "aspnetcore50": {
+        "dnxcore50": {
             "dependencies": {
                 "Microsoft.CSharp": "4.0.0-beta-*",
                 "System.Collections": "4.0.10-beta-*",

@@ -30,7 +30,7 @@ using Newtonsoft.Json.Linq.JsonPath;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
-#elif ASPNETCORE50
+#elif DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
@@ -647,11 +647,11 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
         [Test]
         public void PropertyFollowingEscapedPropertyName()
         {
-            JPath path = new JPath("frameworks.aspnetcore50.dependencies.['System.Xml.ReaderWriter'].source");
+            JPath path = new JPath("frameworks.dnxcore50.dependencies.['System.Xml.ReaderWriter'].source");
             Assert.AreEqual(5, path.Filters.Count);
 
             Assert.AreEqual("frameworks", ((FieldFilter)path.Filters[0]).Name);
-            Assert.AreEqual("aspnetcore50", ((FieldFilter)path.Filters[1]).Name);
+            Assert.AreEqual("dnxcore50", ((FieldFilter)path.Filters[1]).Name);
             Assert.AreEqual("dependencies", ((FieldFilter)path.Filters[2]).Name);
             Assert.AreEqual("System.Xml.ReaderWriter", ((FieldFilter)path.Filters[3]).Name);
             Assert.AreEqual("source", ((FieldFilter)path.Filters[4]).Name);

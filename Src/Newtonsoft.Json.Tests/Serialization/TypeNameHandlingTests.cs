@@ -47,7 +47,7 @@ using Newtonsoft.Json.Tests.TestObjects;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
-#elif ASPNETCORE50
+#elif DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
@@ -332,7 +332,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual("Name!", ((EmployeeReference)employee).Name);
         }
 
-#if !(NETFX_CORE || PORTABLE || ASPNETCORE50)
+#if !(NETFX_CORE || PORTABLE || DNXCORE50)
         [Test]
         public void DeserializeTypeNameFromGacAssembly()
         {
@@ -1104,7 +1104,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             CollectionAssert.AreEquivalent(data, d);
         }
 
-#if !(NETFX_CORE || ASPNETCORE50)
+#if !(NETFX_CORE || DNXCORE50)
         [Test]
         public void ISerializableTypeNameHandlingTest()
         {
@@ -1167,7 +1167,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 Binder = new MetroBinder(),
                 ContractResolver = new DefaultContractResolver
                 {
-#if !(NETFX_CORE || PORTABLE || ASPNETCORE50)
+#if !(NETFX_CORE || PORTABLE || DNXCORE50)
                     IgnoreSerializableAttribute = true
 #endif
                 }
@@ -1198,7 +1198,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             public override void BindToName(Type serializedType, out string assemblyName, out string typeName)
             {
                 assemblyName = "AssemblyName";
-#if !(NETFX_CORE || ASPNETCORE50)
+#if !(NETFX_CORE || DNXCORE50)
                 typeName = ":::" + serializedType.Name.ToUpper(CultureInfo.InvariantCulture) + ":::";
 #else
                 typeName = ":::" + serializedType.Name.ToUpper() + ":::";
@@ -1643,7 +1643,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 #endif
 
-#if !(NETFX_CORE || ASPNETCORE50)
+#if !(NETFX_CORE || DNXCORE50)
         [Test]
         public void SerializeDeserialize_DictionaryContextContainsGuid_DeserializesItemAsGuid()
         {
@@ -1886,7 +1886,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         public string SomeProperty { get; set; }
     }
 
-#if !(NETFX_CORE || ASPNETCORE50)
+#if !(NETFX_CORE || DNXCORE50)
     public class ParentParent
     {
         [JsonProperty(ItemTypeNameHandling = TypeNameHandling.Auto)]
@@ -1954,7 +1954,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         public int Quantity { get; set; }
     }
 
-#if !(NETFX_CORE || ASPNETCORE50)
+#if !(NETFX_CORE || DNXCORE50)
     public class SerializableWrapper
     {
         public object Content { get; set; }

@@ -31,7 +31,7 @@ using System.Globalization;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
-#elif ASPNETCORE50
+#elif DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
@@ -209,7 +209,7 @@ undefined
         {
             string json = @"{
   ""frameworks"": {
-    ""aspnetcore50"": {
+    ""dnxcore50"": {
       ""dependencies"": {
         ""System.Xml.ReaderWriter"": {
           ""source"": ""NuGet""
@@ -221,9 +221,9 @@ undefined
 
             JObject o = JObject.Parse(json);
 
-            JToken v1 = o["frameworks"]["aspnetcore50"]["dependencies"]["System.Xml.ReaderWriter"]["source"];
+            JToken v1 = o["frameworks"]["dnxcore50"]["dependencies"]["System.Xml.ReaderWriter"]["source"];
 
-            Assert.AreEqual("frameworks.aspnetcore50.dependencies.['System.Xml.ReaderWriter'].source", v1.Path);
+            Assert.AreEqual("frameworks.dnxcore50.dependencies.['System.Xml.ReaderWriter'].source", v1.Path);
 
             JToken v2 = o.SelectToken(v1.Path);
 

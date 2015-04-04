@@ -27,7 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using Newtonsoft.Json.Linq;
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE || ASPNETCORE50)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE || DNXCORE50)
 using System.Numerics;
 #endif
 using System.Text;
@@ -35,7 +35,7 @@ using System.Text;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
-#elif ASPNETCORE50
+#elif DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
@@ -82,7 +82,7 @@ second line
 third line", jsonTextReader.Value);
         }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE || ASPNETCORE50)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE || DNXCORE50)
         [Test]
         public void ReadBigInteger()
         {
@@ -961,7 +961,7 @@ third line", jsonTextReader.Value);
             }
         }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE || ASPNETCORE50)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE || DNXCORE50)
         [Test]
         public void ReadInt64Overflow()
         {
@@ -3172,7 +3172,7 @@ null//comment
         {
             string json = @"{
   ""frameworks"": {
-    ""aspnetcore50"": {
+    ""dnxcore50"": {
       ""dependencies"": {
         ""System.Xml.ReaderWriter"": {
           ""source"": !!! !!!
@@ -3190,7 +3190,7 @@ null//comment
                     {
                     }
                 },
-                "Unexpected character encountered while parsing value: !. Path 'frameworks.aspnetcore50.dependencies.['System.Xml.ReaderWriter'].source', line 6, position 21.");
+                "Unexpected character encountered while parsing value: !. Path 'frameworks.dnxcore50.dependencies.['System.Xml.ReaderWriter'].source', line 6, position 21.");
         }
     }
 

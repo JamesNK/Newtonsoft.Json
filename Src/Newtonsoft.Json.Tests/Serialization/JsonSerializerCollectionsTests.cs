@@ -26,7 +26,7 @@
 using System;
 using System.Collections;
 using System.Collections.Specialized;
-#if !(NET35 || NET20 || PORTABLE || ASPNETCORE50 || PORTABLE40)
+#if !(NET35 || NET20 || PORTABLE || DNXCORE50 || PORTABLE40)
 using System.Collections.Concurrent;
 #endif
 using System.Collections.Generic;
@@ -45,7 +45,7 @@ using Newtonsoft.Json.Tests.TestObjects;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
-#elif ASPNETCORE50
+#elif DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
@@ -607,7 +607,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(3, v2["Third"]);
         }
 
-#if !(NET35 || NET20 || PORTABLE || ASPNETCORE50 || PORTABLE40)
+#if !(NET35 || NET20 || PORTABLE || DNXCORE50 || PORTABLE40)
         [Test]
         public void DeserializeConcurrentDictionary()
         {
@@ -1321,7 +1321,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(1, (int)((JObject)o.Data[2])["one"]);
         }
 
-#if !(NETFX_CORE || ASPNETCORE50)
+#if !(NETFX_CORE || DNXCORE50)
         [Test]
         public void SerializeArrayAsArrayList()
         {

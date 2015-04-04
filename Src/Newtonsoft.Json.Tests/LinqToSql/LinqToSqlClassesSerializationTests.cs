@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(ASPNETCORE50 || NETFX_CORE || PORTABLE40 || PORTABLE40)
+#if !(DNXCORE50 || NETFX_CORE || PORTABLE40 || PORTABLE40)
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

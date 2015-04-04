@@ -28,7 +28,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using Newtonsoft.Json.Schema;
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE || ASPNETCORE50)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE || DNXCORE50)
 using System.Numerics;
 #endif
 using System.Runtime.Serialization;
@@ -47,7 +47,7 @@ using Newtonsoft.Json.Utilities;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
-#elif ASPNETCORE50
+#elif DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
@@ -539,7 +539,7 @@ namespace Newtonsoft.Json.Tests
             value = null;
             Assert.AreEqual("null", JsonConvert.ToString(value));
 
-#if !(NETFX_CORE || PORTABLE || ASPNETCORE50 || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || DNXCORE50 || PORTABLE40)
             value = DBNull.Value;
             Assert.AreEqual("null", JsonConvert.ToString(value));
 #endif
@@ -1132,7 +1132,7 @@ namespace Newtonsoft.Json.Tests
         }
 
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE || ASPNETCORE50)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE || DNXCORE50)
         [Test]
         public void IntegerLengthOverflows()
         {

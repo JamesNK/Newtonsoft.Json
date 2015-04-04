@@ -32,7 +32,7 @@ namespace Newtonsoft.Json.Tests.TestObjects
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-#if !(NETFX_CORE || ASPNETCORE50)
+#if !(NETFX_CORE || DNXCORE50)
             writer.WriteValue(":::" + value.ToString().ToUpper(CultureInfo.InvariantCulture) + ":::");
 #else
             writer.WriteValue(":::" + value.ToString().ToUpper() + ":::");
@@ -45,7 +45,7 @@ namespace Newtonsoft.Json.Tests.TestObjects
             if (s == null)
                 return null;
 
-#if !(NETFX_CORE || ASPNETCORE50)
+#if !(NETFX_CORE || DNXCORE50)
             return s.ToLower(CultureInfo.InvariantCulture).Trim(new[] { ':' });
 #else
             return s.ToLower().Trim(new[] { ':' });

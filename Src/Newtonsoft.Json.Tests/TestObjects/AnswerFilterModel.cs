@@ -33,7 +33,7 @@ using System.Linq;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-#if !(NETFX_CORE || PORTABLE || ASPNETCORE50)
+#if !(NETFX_CORE || PORTABLE || DNXCORE50)
     [Serializable]
     public class AnswerFilterModel
     {

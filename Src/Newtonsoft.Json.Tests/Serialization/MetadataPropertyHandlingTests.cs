@@ -34,7 +34,7 @@ using Newtonsoft.Json.Utilities;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
-#elif ASPNETCORE50
+#elif DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
@@ -342,7 +342,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.IsTrue(JToken.DeepEquals(t1, t2));
         }
 
-#if !(PORTABLE || ASPNETCORE50 || PORTABLE40)
+#if !(PORTABLE || DNXCORE50 || PORTABLE40)
         [Test]
         public void DeserializeGenericObjectListWithTypeName()
         {

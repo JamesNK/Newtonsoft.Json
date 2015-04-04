@@ -1,19 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <topic id="SerializationAttributes" revisionNumber="1">
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!--
-    <summary>
-      <para>Optional summary abstract</para>
-    </summary>
-    -->
+
     <introduction>
-      <!-- Uncomment this to generate an outline of the section and sub-section
-           titles.  Specify a numeric value as the inner text to limit it to
-           a specific number of sub-topics when creating the outline.  Specify
-           zero (0) to limit it to top-level sections only.  -->
-      <!-- <autoOutline /> -->
       <para>Attributes can be used to control how Json.NET serializes and deserializes .NET objects.</para>
-      
+
 <list class="bullet">
   <listItem><para><codeEntityReference>T:Newtonsoft.Json.JsonObjectAttribute</codeEntityReference> - Placed on classes to control how they should be serialized as a JSON object.</para></listItem>
   <listItem><para><codeEntityReference>T:Newtonsoft.Json.JsonArrayAttribute</codeEntityReference> - Placed on collections to control how they should be serialized as a JSON array.</para></listItem>
@@ -28,8 +19,6 @@
     <section>
       <title>Standard .NET Serialization Attributes</title>
       <content>
-        <!-- Uncomment this to create a sub-section outline
-        <autoOutline /> -->
         <para>As well as using the built-in Json.NET attributes, Json.NET also looks for the <codeEntityReference>T:System.SerializableAttribute</codeEntityReference>
         (if IgnoreSerializableAttribute on DefaultContractResolver is set to false)
         <codeEntityReference>T:System.Runtime.Serialization.DataContractAttribute</codeEntityReference>,
@@ -37,7 +26,6 @@
         and <codeEntityReference>T:System.NonSerializedAttribute</codeEntityReference> and attributes when determining how JSON is to be serialized and deserialized.
         </para>
 
-        
 <alert class="note">
   <para>Json.NET attributes take precedence over standard .NET serialization attributes (e.g. if both JsonPropertyAttribute
   and DataMemberAttribute are present on a property and both customize the name,
@@ -55,8 +43,6 @@
     <section>
       <title>JsonObjectAttribute</title>
       <content>
-        <!-- Uncomment this to create a sub-section outline
-        <autoOutline /> -->
         <para>The MemberSerialization flag on this attribute specifies whether member serialization is opt-in
         (a member must have the JsonProperty or DataMember attribute to be serialized), opt-out (everything is
         serialized by default but can be ignored with the JsonIgnoreAttribute, Json.NET's default behavior) or
@@ -72,8 +58,6 @@
     <section>
       <title>JsonArrayAttribute/JsonDictionaryAttribute</title>
       <content>
-        <!-- Uncomment this to create a sub-section outline
-        <autoOutline /> -->
         <para>The JsonArrayAttribute and JsonDictionaryAttributes are used to specify whether a class is serialized as that collection type.</para>
         <para>The collection attributes have options to customize the JsonConverter, type name handling, and reference handling that are applied to collection items.</para>
       </content>
@@ -82,8 +66,6 @@
     <section>
       <title>JsonPropertyAttribute</title>
       <content>
-        <!-- Uncomment this to create a sub-section outline
-        <autoOutline /> -->
         <para>JsonPropertyAttribute has a number of uses:</para>
         
 <list class="bullet">
@@ -110,9 +92,8 @@
     <section>
       <title>JsonConverterAttribute</title>
       <content>
-        <!-- Uncomment this to create a sub-section outline
-        <autoOutline /> -->
-        <para>The JsonConverterAttribute specifies which JsonSerializer is used to convert an object.</para>
+        <para>The <codeEntityReference>T:Newtonsoft.Json.JsonConverterAttribute</codeEntityReference> specifies which
+        <codeEntityReference>T:Newtonsoft.Json.JsonConverter</codeEntityReference> is used to convert an object.</para>
         <para>The attribute can be placed on a class or a member. When placed on a class, the JsonConverter
         specified by the attribute will be the default way of serializing that class. When the attribute is
         on a field or property, then the specified JsonConverter will always be used to serialize that value.</para>
@@ -135,8 +116,10 @@
     <section>
       <title>JsonExtensionDataAttribute</title>
       <content>
-        <para>Instructs the <codeEntityReference>T:Newtonsoft.Json.JsonSerializer</codeEntityReference> to deserialize properties with no matching class member
-        into the specified collection and write values during serialization.</para>
+        <para>The <codeEntityReference>T:Newtonsoft.Json.JsonExtensionDataAttribute</codeEntityReference> instructs the
+        <codeEntityReference>T:Newtonsoft.Json.JsonSerializer</codeEntityReference> to deserialize properties with no matching field or property
+        on the type into the specified collection. During serialization the values in this collection are written back to the instance's JSON object.</para>
+        <para>This example shows the JsonExtensionDataAttribute being applied to a field, unmatched JSON properties being added to the field's collection during deserialization.</para>
         <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\Serializer\DeserializeExtensionData.cs" region="Types" title="Types" />
         <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\Serializer\DeserializeExtensionData.cs" region="Usage" title="Usage" />
       </content>
@@ -150,6 +133,7 @@
       <codeEntityReference>T:Newtonsoft.Json.JsonDictionaryAttribute</codeEntityReference>
       <codeEntityReference>T:Newtonsoft.Json.JsonPropertyAttribute</codeEntityReference>
       <codeEntityReference>T:Newtonsoft.Json.JsonConverterAttribute</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.JsonExtensionDataAttribute</codeEntityReference>
     </relatedTopics>
   </developerConceptualDocument>
 </topic>
