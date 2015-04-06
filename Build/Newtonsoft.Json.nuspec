@@ -8,6 +8,7 @@
     <authors>James Newton-King</authors>
     <language>en-US</language>
     <projectUrl>http://www.newtonsoft.com/json</projectUrl>
+    <iconUrl>http://www.newtonsoft.com/content/images/nugeticon.png</iconUrl>
     <licenseUrl>https://raw.github.com/JamesNK/Newtonsoft.Json/master/LICENSE.md</licenseUrl>
     <tags>json</tags>
   </metadata>
