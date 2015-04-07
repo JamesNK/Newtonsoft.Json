@@ -28,11 +28,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-    public class QueryJson
+    [TestFixture]
+    public class QueryJson : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage
@@ -89,6 +92,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             Console.WriteLine(string.Join(", ", categoriesText));
             // Json.NET, CodePlex
             #endregion
+
+            Assert.AreEqual("Json.NET, CodePlex", string.Join(", ", categoriesText));
         }
     }
 }

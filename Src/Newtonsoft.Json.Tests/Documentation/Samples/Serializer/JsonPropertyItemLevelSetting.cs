@@ -27,10 +27,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class JsonPropertyItemLevelSetting
+    [TestFixture]
+    public class JsonPropertyItemLevelSetting : TestFixtureBase
     {
         #region Types
         public class Business
@@ -50,6 +52,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage
@@ -94,6 +97,24 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             //   ]
             // }
             #endregion
+
+            Assert.AreEqual(@"{
+  ""Name"": ""Acme Ltd."",
+  ""Employees"": [
+    {
+      ""$id"": ""1"",
+      ""Name"": ""George-Michael"",
+      ""Manager"": null
+    },
+    {
+      ""$id"": ""2"",
+      ""Name"": ""Maeby"",
+      ""Manager"": {
+        ""$ref"": ""1""
+      }
+    }
+  ]
+}", json);
         }
     }
 }

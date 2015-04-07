@@ -28,10 +28,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Serialization;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class TraceWriter
+    [TestFixture]
+    public class TraceWriter : TestFixtureBase
     {
         #region Types
         public class Account
@@ -41,6 +43,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage
@@ -61,7 +64,15 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             // 2013-01-21T01:36:24.422 Info Started deserializing Newtonsoft.Json.Tests.Documentation.Examples.TraceWriter+Account. Path 'FullName', line 2, position 20.
             // 2013-01-21T01:36:24.442 Verbose Could not find member 'DeletedDate' on Newtonsoft.Json.Tests.Documentation.Examples.TraceWriter+Account. Path 'DeletedDate', line 4, position 23.
             // 2013-01-21T01:36:24.447 Info Finished deserializing Newtonsoft.Json.Tests.Documentation.Examples.TraceWriter+Account. Path '', line 5, position 8.
+            // 2013-01-21T01:36:24.450 Verbose Deserialized JSON: 
+            // {
+            //   "FullName": "Dan Deleted",
+            //   "Deleted": true,
+            //   "DeletedDate": "2013-01-20T00:00:00"
+            // }
             #endregion
+
+            Assert.AreEqual(4, traceWriter.GetTraceMessages().Count());
         }
     }
 }

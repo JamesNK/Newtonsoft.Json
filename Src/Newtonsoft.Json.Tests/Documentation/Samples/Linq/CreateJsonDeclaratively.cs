@@ -28,10 +28,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-    public class CreateJsonDeclaratively
+    [TestFixture]
+    public class CreateJsonDeclaratively : TestFixtureBase
     {
         #region Types
         public class Post
@@ -45,7 +47,19 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 
         private List<Post> GetPosts()
         {
-            return null;
+            return new List<Post>
+            {
+                new Post
+                {
+                    Title = "Title!",
+                    Categories = new List<string>
+                    {
+                        "Category1"
+                    },
+                    Description = "Description!",
+                    Link = "Link!"
+                }
+            };
         }
 
         public void Example()
@@ -103,6 +117,24 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             //   }
             // }
             #endregion
+
+            Assert.AreEqual(@"{
+  ""channel"": {
+    ""title"": ""James Newton-King"",
+    ""link"": ""http://james.newtonking.com"",
+    ""description"": ""James Newton-King's blog."",
+    ""item"": [
+      {
+        ""title"": ""Title!"",
+        ""description"": ""Description!"",
+        ""link"": ""Link!"",
+        ""category"": [
+          ""Category1""
+        ]
+      }
+    ]
+  }
+}", rss.ToString());
         }
     }
 }

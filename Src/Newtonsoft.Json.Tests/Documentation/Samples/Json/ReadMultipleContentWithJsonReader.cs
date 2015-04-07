@@ -43,7 +43,8 @@ using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
 {
-    public class ReadMultipleContentWithJsonReader
+    [TestFixture]
+    public class ReadMultipleContentWithJsonReader : TestFixtureBase
     {
         #region Types
         public class Role
@@ -52,6 +53,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage

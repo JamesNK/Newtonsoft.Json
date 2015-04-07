@@ -31,6 +31,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
 {
@@ -300,8 +301,10 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
     }
     #endregion
 
-    public class CustomJsonWriter
+    [TestFixture]
+    public class CustomJsonWriter : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage

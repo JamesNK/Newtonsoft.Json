@@ -28,11 +28,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-    public class JValueCast
+    [TestFixture]
+    public class JValueCast : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage
@@ -77,6 +80,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             Console.WriteLine((dt != null) ? dt.ToString() : "{null}");
             // {null}
             #endregion
+
+            Assert.AreEqual("01/21/2013 00:00:00", s);
         }
     }
 }

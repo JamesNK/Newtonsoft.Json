@@ -29,11 +29,14 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-    public class QueryJsonDynamic
+    [TestFixture]
+    public class QueryJsonDynamic : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage
@@ -69,6 +72,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             Console.WriteLine(postDate);
             // 23/01/2013 7:30:00 p.m.
             #endregion
+
+            Assert.AreEqual("Json.NET is awesome!", title);
         }
     }
 }

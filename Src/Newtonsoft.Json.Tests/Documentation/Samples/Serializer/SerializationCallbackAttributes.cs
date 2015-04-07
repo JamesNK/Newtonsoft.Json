@@ -28,10 +28,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class SerializationCallbackAttributes
+    [TestFixture]
+    public class SerializationCallbackAttributes : TestFixtureBase
     {
         #region Types
         public class SerializationEventTestObject
@@ -86,6 +88,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage
@@ -127,6 +130,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             Console.WriteLine(obj.Member4);
             // This value was set after deserialization.
             #endregion
+
+            Assert.AreEqual("This value was set after deserialization.", obj.Member4);
         }
     }
 }

@@ -28,11 +28,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Xml
 {
-    public class ConvertXmlToJsonForceArray
+    [TestFixture]
+    public class ConvertXmlToJsonForceArray : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage
@@ -80,6 +83,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Xml
             //   }
             // }
             #endregion
+
+            Assert.AreEqual(@"{""person"":{""@id"":""1"",""name"":""Alan"",""url"":""http://www.google.com"",""role"":[""Admin""]}}", json);
         }
     }
 }

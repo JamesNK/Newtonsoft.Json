@@ -81,6 +81,31 @@ namespace Newtonsoft.Json.Tests.Linq
 #endif
 
         [Test]
+        public void ReadWithSupportMultipleContent()
+        {
+            string json = @"{ 'name': 'Admin' }{ 'name': 'Publisher' }";
+
+            IList<JObject> roles = new List<JObject>();
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+            reader.SupportMultipleContent = true;
+
+            while (true)
+            {
+                JObject role = (JObject)JToken.ReadFrom(reader);
+
+                roles.Add(role);
+
+                if (!reader.Read())
+                    break;
+            }
+
+            Assert.AreEqual(2, roles.Count);
+            Assert.AreEqual("Admin", (string)roles[0]["name"]);
+            Assert.AreEqual("Publisher", (string)roles[1]["name"]);
+        }
+
+        [Test]
         public void JObjectWithComments()
         {
             string json = @"{ /*comment2*/

@@ -28,10 +28,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class DefaultValueAttributeIgnore
+    [TestFixture]
+    public class DefaultValueAttributeIgnore : TestFixtureBase
     {
         #region Types
         public class Customer
@@ -47,6 +49,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage
@@ -69,6 +72,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             Console.WriteLine(jsonIgnoreDefaultValues);
             // {}
             #endregion
+
+            Assert.AreEqual("{}", jsonIgnoreDefaultValues);
         }
     }
 }

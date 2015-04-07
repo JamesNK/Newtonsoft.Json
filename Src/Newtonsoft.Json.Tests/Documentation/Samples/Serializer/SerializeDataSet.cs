@@ -28,10 +28,14 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
+
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class SerializeDataSet
+    [TestFixture]
+    public class SerializeDataSet : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage
@@ -71,6 +75,19 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             //   ]
             // }
             #endregion
+
+            Assert.AreEqual(@"{
+  ""Table1"": [
+    {
+      ""id"": 0,
+      ""item"": ""item 0""
+    },
+    {
+      ""id"": 1,
+      ""item"": ""item 1""
+    }
+  ]
+}", json);
         }
     }
 }

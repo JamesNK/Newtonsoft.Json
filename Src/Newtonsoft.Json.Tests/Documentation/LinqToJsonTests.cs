@@ -63,7 +63,7 @@ namespace Newtonsoft.Json.Tests.Documentation
 
         public static StreamWriter CreateText(string path)
         {
-            return null;
+            return new StreamWriter(new MemoryStream());
         }
 
         public static void WriteAllText(string path, string contents)

@@ -28,11 +28,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
 {
-    public class WriteJsonWithJsonTextWriter
+    [TestFixture]
+    public class WriteJsonWithJsonTextWriter : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage
@@ -70,6 +73,17 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
             //   ]
             // }
             #endregion
+
+            Assert.AreEqual(@"{
+  ""CPU"": ""Intel"",
+  ""PSU"": ""500W"",
+  ""Drives"": [
+    ""DVD read/writer""
+    /*(broken)*/,
+    ""500 gigabyte hard drive"",
+    ""200 gigabype hard drive""
+  ]
+}", sb.ToString());
         }
     }
 }

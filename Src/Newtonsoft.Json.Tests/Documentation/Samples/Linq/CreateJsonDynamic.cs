@@ -28,11 +28,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-    public class CreateJsonDynamic
+    [TestFixture]
+    public class CreateJsonDynamic : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage
@@ -57,6 +60,18 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             //   ]
             // }
             #endregion
+
+            Assert.AreEqual(@"{
+  ""ProductName"": ""Elbow Grease"",
+  ""Enabled"": true,
+  ""Price"": 4.90,
+  ""StockCount"": 9000,
+  ""StockValue"": 44100,
+  ""Tags"": [
+    ""Real"",
+    ""OnSale""
+  ]
+}", product.ToString());
         }
     }
 }

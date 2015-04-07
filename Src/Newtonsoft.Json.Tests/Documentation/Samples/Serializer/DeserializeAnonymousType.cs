@@ -27,11 +27,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class DeserializeAnonymousType
+    [TestFixture]
+    public class DeserializeAnonymousType : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage
@@ -49,6 +52,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             Console.WriteLine(customer2.Name);
             // Mike
             #endregion
+
+            Assert.AreEqual("Mike", customer2.Name);
         }
     }
 }

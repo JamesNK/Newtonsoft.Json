@@ -29,11 +29,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-    public class ReadJson
+    [TestFixture]
+    public class ReadJson : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage
@@ -46,6 +49,19 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
                 JObject o2 = (JObject)JToken.ReadFrom(reader);
             }
             #endregion
+        }
+
+        public static class File
+        {
+            public static StreamReader OpenText(string path)
+            {
+                return new StreamReader(new MemoryStream(Encoding.UTF8.GetBytes("{}")));
+            }
+
+            public static string ReadAllText(string path)
+            {
+                return "{}";
+            }
         }
     }
 }

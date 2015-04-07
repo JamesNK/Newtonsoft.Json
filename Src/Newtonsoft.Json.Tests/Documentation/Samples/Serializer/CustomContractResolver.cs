@@ -28,10 +28,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Serialization;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class CustomContractResolver
+    [TestFixture]
+    public class CustomContractResolver : TestFixtureBase
     {
         #region Types
         public class DynamicContractResolver : DefaultContractResolver
@@ -67,6 +69,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage
@@ -93,6 +96,10 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             //   "LastName": "Deepwater-Diver"
             // }
             #endregion
+
+            Assert.AreEqual(@"{
+  ""LastName"": ""Deepwater-Diver""
+}", startingWithL);
         }
     }
 }

@@ -28,11 +28,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-    public class QueryJsonSelectToken
+    [TestFixture]
+    public class QueryJsonSelectToken : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage
@@ -82,6 +85,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             Console.WriteLine(productName);
             // Elbow Grease
             #endregion
+
+            Assert.AreEqual("Elbow Grease", productName);
         }
     }
 }

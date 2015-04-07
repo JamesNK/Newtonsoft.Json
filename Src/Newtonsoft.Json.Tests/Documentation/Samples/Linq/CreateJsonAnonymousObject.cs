@@ -28,10 +28,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-    public class CreateJsonAnonymousObject
+    [TestFixture]
+    public class CreateJsonAnonymousObject : TestFixtureBase
     {
         #region Types
         public class Post
@@ -43,6 +45,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage
@@ -101,6 +104,25 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             //   }
             // }
             #endregion
+
+            Assert.AreEqual(@"{
+  ""channel"": {
+    ""title"": ""Star Wars"",
+    ""link"": ""http://www.starwars.com"",
+    ""description"": ""Star Wars blog."",
+    ""item"": [
+      {
+        ""title"": ""Episode VII"",
+        ""description"": ""Episode VII production"",
+        ""link"": ""episode-vii-production.aspx"",
+        ""category"": [
+          ""episode-vii"",
+          ""movie""
+        ]
+      }
+    ]
+  }
+}", o.ToString());
         }
     }
 }

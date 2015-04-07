@@ -27,11 +27,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class SerializeDateFormatHandling
+    [TestFixture]
+    public class SerializeDateFormatHandling : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage
@@ -50,6 +53,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             Console.WriteLine(jsonMsDate);
             // "\/Date(1356044400000+0100)\/"
             #endregion
+
+            Assert.IsNotNull(jsonMsDate);
         }
     }
 }

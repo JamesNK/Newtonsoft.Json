@@ -245,8 +245,10 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
     }
     #endregion
 
-    public class CustomJsonReader
+    [TestFixture]
+    public class CustomJsonReader : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage

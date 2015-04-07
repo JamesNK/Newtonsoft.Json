@@ -27,11 +27,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class DeserializeDictionary
+    [TestFixture]
+    public class DeserializeDictionary : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage
@@ -48,6 +51,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             Console.WriteLine(htmlAttributes["target"]);
             // _blank
             #endregion
+
+            Assert.AreEqual("_blank", htmlAttributes["target"]);
         }
     }
 }

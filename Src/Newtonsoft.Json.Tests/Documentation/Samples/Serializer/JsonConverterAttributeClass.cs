@@ -28,10 +28,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Converters;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class JsonConverterAttributeClass
+    [TestFixture]
+    public class JsonConverterAttributeClass : TestFixtureBase
     {
         #region Types
         public class UserConverter : JsonConverter
@@ -64,6 +66,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage
@@ -77,6 +80,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             Console.WriteLine(json);
             // "domain\\username"
             #endregion
+
+            Assert.AreEqual(@"""domain\\username""", json);
         }
     }
 }

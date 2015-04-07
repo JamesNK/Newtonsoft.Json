@@ -27,11 +27,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class SerializeDictionary
+    [TestFixture]
+    public class SerializeDictionary : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage
@@ -51,6 +54,12 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             //   "Jess": 11926
             // }
             #endregion
+
+            Assert.AreEqual(@"{
+  ""James"": 9001,
+  ""Jo"": 3474,
+  ""Jess"": 11926
+}", json);
         }
     }
 }

@@ -28,11 +28,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Xml
 {
-    public class ConvertJsonToXml
+    [TestFixture]
+    public class ConvertJsonToXml : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage
@@ -67,6 +70,18 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Xml
             //   </Team>
             // </Root>
             #endregion
+
+            Assert.AreEqual(@"<Root Id=""1"">
+  <Email>james@example.com</Email>
+  <Active>true</Active>
+  <CreatedDate>2013-01-20T00:00:00Z</CreatedDate>
+  <Roles>User</Roles>
+  <Roles>Admin</Roles>
+  <Team Id=""2"">
+    <Name>Software Developers</Name>
+    <Description>Creators of fine software products and services.</Description>
+  </Team>
+</Root>", node.ToString());
         }
     }
 }

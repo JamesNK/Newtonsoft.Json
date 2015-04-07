@@ -28,11 +28,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-    public class QueryJsonSelectTokenWithLinq
+    [TestFixture]
+    public class QueryJsonSelectTokenWithLinq : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage
@@ -83,6 +86,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             Console.WriteLine(totalPrice);
             // 149.95
             #endregion
+
+            Assert.AreEqual(149.95m, totalPrice);
         }
     }
 }

@@ -27,10 +27,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class JsonPropertyOrder
+    [TestFixture]
+    public class JsonPropertyOrder : TestFixtureBase
     {
         #region Types
         public class Account
@@ -53,6 +55,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage
@@ -78,6 +81,15 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             //   "DeletedDate": "2013-01-25T00:00:00"
             // }
             #endregion
+
+            Assert.AreEqual(@"{
+  ""FullName"": ""Aaron Account"",
+  ""EmailAddress"": ""aaron@example.com"",
+  ""CreatedDate"": ""2010-10-01T00:00:00"",
+  ""UpdatedDate"": ""2013-01-25T00:00:00"",
+  ""Deleted"": true,
+  ""DeletedDate"": ""2013-01-25T00:00:00""
+}", json);
         }
     }
 }

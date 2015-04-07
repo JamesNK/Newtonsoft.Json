@@ -28,11 +28,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
 {
-    public class ReadJsonWithJsonTextReader
+    [TestFixture]
+    public class ReadJsonWithJsonTextReader : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage

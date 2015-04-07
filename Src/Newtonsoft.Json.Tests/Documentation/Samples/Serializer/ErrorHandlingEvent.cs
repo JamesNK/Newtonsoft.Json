@@ -29,11 +29,14 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class ErrorHandlingEvent
+    [TestFixture]
+    public class ErrorHandlingEvent : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage
@@ -67,6 +70,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             // Unexpected token parsing date. Expected String, got StartArray.
             // Cannot convert null value to System.DateTime.
             #endregion
+
+            Assert.AreEqual(3, errors.Count);
         }
     }
 }

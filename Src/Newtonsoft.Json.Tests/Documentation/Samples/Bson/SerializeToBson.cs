@@ -30,10 +30,12 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Bson
 {
-    public class SerializeToBson
+    [TestFixture]
+    public class SerializeToBson : TestFixtureBase
     {
         #region Types
         public class Event
@@ -43,6 +45,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Bson
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage
@@ -64,6 +67,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Bson
             Console.WriteLine(data);
             // MQAAAAJOYW1lAA8AAABNb3ZpZSBQcmVtaWVyZQAJU3RhcnREYXRlAMDgKWE8AQAAAA==
             #endregion
+
+            Assert.AreEqual("MQAAAAJOYW1lAA8AAABNb3ZpZSBQcmVtaWVyZQAJU3RhcnREYXRlAMDgKWE8AQAAAA==", data);
         }
     }
 }

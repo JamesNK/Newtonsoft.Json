@@ -27,11 +27,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class MaxDepth
+    [TestFixture]
+    public class MaxDepth : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage

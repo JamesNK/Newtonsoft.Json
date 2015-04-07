@@ -23,19 +23,10 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
-using System.Runtime.Serialization;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
-using Autofac;
-using Newtonsoft.Json.Tests.Serialization;
-using LogService = Newtonsoft.Json.Tests.Serialization.LogManager;
+using NUnit.Framework;
 
-namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
+namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
     [TestFixture]
     public class MergeJson : TestFixtureBase

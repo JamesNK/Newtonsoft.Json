@@ -27,10 +27,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class JsonPropertyRequired
+    [TestFixture]
+    public class JsonPropertyRequired : TestFixtureBase
     {
         #region Types
         public class Videogame
@@ -43,6 +45,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage

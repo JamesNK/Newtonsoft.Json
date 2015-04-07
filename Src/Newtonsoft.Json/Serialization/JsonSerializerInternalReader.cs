@@ -381,7 +381,7 @@ namespace Newtonsoft.Json.Serialization
             }
             else if (Serializer.MetadataPropertyHandling == MetadataPropertyHandling.ReadAhead)
             {
-                var tokenReader = reader as JTokenReader;
+                JTokenReader tokenReader = reader as JTokenReader;
                 if (tokenReader == null)
                 {
                     JToken t = JToken.ReadFrom(reader);

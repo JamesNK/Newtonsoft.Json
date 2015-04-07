@@ -27,10 +27,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class PreserveReferencesHandlingObject
+    [TestFixture]
+    public class PreserveReferencesHandlingObject : TestFixtureBase
     {
         #region Types
         public class Directory
@@ -47,6 +49,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage
@@ -122,6 +125,26 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             //   ]
             // }
             #endregion
+
+            Assert.AreEqual(@"{
+  ""$id"": ""1"",
+  ""Name"": ""My Documents"",
+  ""Parent"": {
+    ""$id"": ""2"",
+    ""Name"": ""Root"",
+    ""Parent"": null,
+    ""Files"": null
+  },
+  ""Files"": [
+    {
+      ""$id"": ""3"",
+      ""Name"": ""ImportantLegalDocument.docx"",
+      ""Parent"": {
+        ""$ref"": ""1""
+      }
+    }
+  ]
+}", preserveReferenacesObjects);
         }
     }
 }

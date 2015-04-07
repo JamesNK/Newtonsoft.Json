@@ -27,10 +27,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class SerializeUnindentedJson
+    [TestFixture]
+    public class SerializeUnindentedJson : TestFixtureBase
     {
         #region Types
         public class Account
@@ -42,6 +44,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage
@@ -62,6 +65,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 
             Console.WriteLine(json);
             #endregion
+
+            Assert.AreEqual(@"{""Email"":""james@example.com"",""Active"":true,""CreatedDate"":""2013-01-20T00:00:00Z"",""Roles"":[""User"",""Admin""]}", json);
         }
     }
 }

@@ -28,10 +28,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Collections;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class JsonObjectAttributeOverrideIEnumerable
+    [TestFixture]
+    public class JsonObjectAttributeOverrideIEnumerable : TestFixtureBase
     {
         #region Types
         [JsonObject]
@@ -57,6 +59,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage
@@ -81,6 +84,14 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             //   ]
             // }
             #endregion
+
+            Assert.AreEqual(@"{
+  ""Name"": ""My Documents"",
+  ""Files"": [
+    ""ImportantLegalDocuments.docx"",
+    ""WiseFinancalAdvice.xlsx""
+  ]
+}", json);
         }
     }
 }

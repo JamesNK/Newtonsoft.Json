@@ -28,10 +28,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-    public class FromObject
+    [TestFixture]
+    public class FromObject : TestFixtureBase
     {
         #region Types
         public class Computer
@@ -42,6 +44,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage
@@ -90,6 +93,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             //   "SSD"
             // ]
             #endregion
+
+            Assert.AreEqual(@"[
+  ""DVD"",
+  ""SSD""
+]", a.ToString());
         }
     }
 }

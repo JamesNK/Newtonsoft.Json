@@ -27,10 +27,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class SerializeDateTimeZoneHandling
+    [TestFixture]
+    public class SerializeDateTimeZoneHandling : TestFixtureBase
     {
         #region Types
         public class Flight
@@ -43,6 +45,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage

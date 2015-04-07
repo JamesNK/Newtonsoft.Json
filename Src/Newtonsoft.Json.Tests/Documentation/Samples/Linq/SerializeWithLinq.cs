@@ -29,10 +29,12 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-    public class SerializeWithLinq
+    [TestFixture]
+    public class SerializeWithLinq : TestFixtureBase
     {
         #region Types
         public class BlogPost
@@ -45,6 +47,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage
@@ -57,7 +60,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
                     AuthorTwitter = "JamesNK",
                     PostedDate = new DateTime(2013, 1, 23, 19, 30, 0),
                     Body = @"<h3>Title!</h3>
-                       <p>Content!</p>"
+                             <p>Content!</p>"
                 }
             };
 
@@ -90,6 +93,18 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             //   }
             // ]
             #endregion
+
+            Assert.AreEqual(@"[
+  {
+    ""Title"": ""Json.NET is awesome!"",
+    ""Author"": {
+      ""Name"": ""James Newton-King"",
+      ""Twitter"": ""JamesNK""
+    },
+    ""Date"": ""2013-01-23T19:30:00"",
+    ""BodyHtml"": ""&lt;h3&gt;Title!&lt;/h3&gt;\r\n                             &lt;p&gt;Content!&lt;/p&gt;""
+  }
+]", blogPostsArray.ToString());
         }
     }
 }

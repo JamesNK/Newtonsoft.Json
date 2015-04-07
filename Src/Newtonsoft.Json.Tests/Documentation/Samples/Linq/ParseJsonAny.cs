@@ -28,11 +28,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-    public class ParseJsonAny
+    [TestFixture]
+    public class ParseJsonAny : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage
@@ -56,6 +59,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             Console.WriteLine(t4.Type);
             // String
             #endregion
+
+            Assert.AreEqual(JTokenType.String, t4.Type);
         }
     }
 }

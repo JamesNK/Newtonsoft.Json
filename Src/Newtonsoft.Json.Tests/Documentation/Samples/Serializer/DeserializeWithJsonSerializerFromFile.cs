@@ -28,11 +28,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 using File = System.IO.File;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class DeserializeWithJsonSerializerFromFile
+    [TestFixture]
+    public class DeserializeWithJsonSerializerFromFile : TestFixtureBase
     {
         #region Types
         public class Movie
@@ -42,6 +44,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage
@@ -55,6 +58,19 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
                 Movie movie2 = (Movie)serializer.Deserialize(file, typeof(Movie));
             }
             #endregion
+        }
+
+        public static class File
+        {
+            public static string ReadAllText(string s)
+            {
+                return "{}";
+            }
+
+            public static StreamReader OpenText(string s)
+            {
+                return new StreamReader(new MemoryStream(Encoding.UTF8.GetBytes("{}")));
+            }
         }
     }
 }

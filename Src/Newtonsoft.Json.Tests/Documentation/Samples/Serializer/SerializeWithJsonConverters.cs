@@ -28,11 +28,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Converters;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class SerializeWithJsonConverters
+    [TestFixture]
+    public class SerializeWithJsonConverters : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage
@@ -59,6 +62,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             Console.WriteLine(string.Join(", ", newStringComparsions.Select(c => c.ToString())));
             // CurrentCulture, InvariantCulture
             #endregion
+
+            Assert.AreEqual("CurrentCulture, InvariantCulture", string.Join(", ", newStringComparsions.Select(c => c.ToString())));
         }
     }
 }

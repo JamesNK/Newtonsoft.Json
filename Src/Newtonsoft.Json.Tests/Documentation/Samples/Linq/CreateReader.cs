@@ -28,11 +28,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-    public class CreateReader
+    [TestFixture]
+    public class CreateReader : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage
@@ -71,6 +74,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             // EndArray
             // EndObject
             #endregion
+
+            Assert.IsFalse(reader.Read());
         }
     }
 }

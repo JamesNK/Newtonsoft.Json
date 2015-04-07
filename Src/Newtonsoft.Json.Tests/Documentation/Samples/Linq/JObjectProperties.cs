@@ -28,11 +28,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-    public class JObjectProperties
+    [TestFixture]
+    public class JObjectProperties : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage
@@ -56,6 +59,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             // name1 - value1
             // name2 - value2
             #endregion
+
+            Assert.AreEqual(2, o.Count);
         }
     }
 }

@@ -28,11 +28,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-    public class QueryJsonLinq
+    [TestFixture]
+    public class QueryJsonLinq : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage
@@ -92,6 +95,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             //LINQ - Count: 1
             //CodePlex - Count: 1
             #endregion
+
+            Assert.AreEqual(3, categories.Count());
         }
     }
 }

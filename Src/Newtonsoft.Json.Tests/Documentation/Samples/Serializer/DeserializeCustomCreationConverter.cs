@@ -28,10 +28,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Converters;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class DeserializeCustomCreationConverter
+    [TestFixture]
+    public class DeserializeCustomCreationConverter : TestFixtureBase
     {
         #region Types
         public class Person
@@ -56,6 +58,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage
@@ -75,8 +78,10 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             Employee employee = (Employee)person;
 
             Console.WriteLine(employee.JobTitle);
-            // Capenter
+            // Carpenter
             #endregion
+
+            Assert.AreEqual("Carpenter", employee.JobTitle);
         }
     }
 }

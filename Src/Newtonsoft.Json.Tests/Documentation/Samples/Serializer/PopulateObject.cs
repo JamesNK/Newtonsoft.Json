@@ -27,10 +27,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class PopulateObject
+    [TestFixture]
+    public class PopulateObject : TestFixtureBase
     {
         #region Types
         public class Account
@@ -42,6 +44,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage
@@ -75,6 +78,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             Console.WriteLine(string.Join(", ", account.Roles));
             // User, Admin, Expired
             #endregion
+
+            Assert.AreEqual("User, Admin, Expired", string.Join(", ", account.Roles));
         }
     }
 }

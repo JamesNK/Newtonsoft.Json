@@ -29,10 +29,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Bson;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Bson
 {
-    public class DeserializeFromBson
+    [TestFixture]
+    public class DeserializeFromBson : TestFixtureBase
     {
         #region Types
         public class Event
@@ -42,6 +44,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Bson
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage

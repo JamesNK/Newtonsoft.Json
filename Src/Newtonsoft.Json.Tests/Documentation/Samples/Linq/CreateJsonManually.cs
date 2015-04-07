@@ -28,11 +28,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-    public class CreateJsonManually
+    [TestFixture]
+    public class CreateJsonManually : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage

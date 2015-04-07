@@ -29,11 +29,14 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-    public class ToString
+    [TestFixture]
+    public class ToString : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage
@@ -52,6 +55,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             Console.WriteLine(o.ToString(Formatting.None, new JavaScriptDateTimeConverter()));
             // {"string1":"value","integer2":99,"datetime3":new Date(959032800000)}
             #endregion
+
+            Assert.IsNotNull(o.ToString(Formatting.None, new JavaScriptDateTimeConverter()));
         }
     }
 }

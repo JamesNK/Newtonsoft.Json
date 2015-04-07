@@ -28,10 +28,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class DeserializeConstructorHandling
+    [TestFixture]
+    public class DeserializeConstructorHandling : TestFixtureBase
     {
         #region Types
         public class Website
@@ -52,6 +54,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage
@@ -61,7 +64,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             {
                 JsonConvert.DeserializeObject<Website>(json);
             }
-            catch (TargetInvocationException ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex);
                 // Value cannot be null.
@@ -76,6 +79,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             Console.WriteLine(website.Url);
             // http://www.google.com
             #endregion
+
+            Assert.AreEqual("http://www.google.com", website.Url);
         }
     }
 }

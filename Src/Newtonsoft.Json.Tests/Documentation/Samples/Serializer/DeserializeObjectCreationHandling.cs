@@ -27,10 +27,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class DeserializeObjectCreationHandling
+    [TestFixture]
+    public class DeserializeObjectCreationHandling : TestFixtureBase
     {
         #region Types
         public class UserViewModel
@@ -50,6 +52,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage
@@ -88,6 +91,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             // Wellington
             // Christchurch
             #endregion
+
+            Assert.AreEqual(3, model2.Offices.Count);
         }
     }
 }

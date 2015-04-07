@@ -28,11 +28,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-    public class JValueValue
+    [TestFixture]
+    public class JValueValue : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage
@@ -50,6 +53,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             Console.WriteLine(u.Value);
             // http://www.google.com/
             #endregion
+
+            Assert.AreEqual(new Uri("http://www.google.com/"), u.Value);
         }
     }
 }

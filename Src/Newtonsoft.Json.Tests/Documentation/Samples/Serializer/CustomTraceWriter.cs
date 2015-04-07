@@ -29,10 +29,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class CustomTraceWriter
+    [TestFixture]
+    public class CustomTraceWriter : TestFixtureBase
     {
         #region Types
         public class NLogTraceWriter : ITraceWriter
@@ -77,6 +79,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage
@@ -101,6 +104,13 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             //   "China"
             // ]
             #endregion
+
+            Assert.AreEqual(@"[
+  ""New Zealand"",
+  ""Australia"",
+  ""Denmark"",
+  ""China""
+]", json);
         }
     }
 }

@@ -30,11 +30,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-    public class ReadJTokenFromBson
+    [TestFixture]
+    public class ReadJTokenFromBson : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage
@@ -52,6 +55,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             Console.WriteLine(value);
             // value1
             #endregion
+
+            Assert.AreEqual("value1", value);
         }
     }
 }

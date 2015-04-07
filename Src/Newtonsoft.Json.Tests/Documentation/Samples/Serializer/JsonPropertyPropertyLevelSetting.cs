@@ -27,10 +27,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class JsonPropertyPropertyLevelSetting
+    [TestFixture]
+    public class JsonPropertyPropertyLevelSetting : TestFixtureBase
     {
         #region Types
         public class Vessel
@@ -43,6 +45,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage
@@ -60,6 +63,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             //   "Class": "Typhoon"
             // }
             #endregion
+
+            Assert.AreEqual(@"{
+  ""Name"": ""Red October"",
+  ""Class"": ""Typhoon""
+}", json);
         }
     }
 }

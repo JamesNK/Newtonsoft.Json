@@ -27,11 +27,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class DeserializeCollection
+    [TestFixture]
+    public class DeserializeCollection : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage
@@ -42,6 +45,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             Console.WriteLine(string.Join(", ", videogames));
             // Starcraft, Halo, Legend of Zelda
             #endregion
+
+            Assert.AreEqual("Starcraft, Halo, Legend of Zelda", string.Join(", ", videogames));
         }
     }
 }

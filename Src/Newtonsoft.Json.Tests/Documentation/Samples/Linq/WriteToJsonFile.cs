@@ -29,11 +29,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-    public class WriteToJsonFile
+    [TestFixture]
+    public class WriteToJsonFile : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage

@@ -27,10 +27,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class JsonObjectAttributeOptIn
+    [TestFixture]
+    public class JsonObjectAttributeOptIn : TestFixtureBase
     {
         #region Types
         [JsonObject(MemberSerialization.OptIn)]
@@ -48,6 +50,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage
@@ -66,6 +69,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             //   "Size": 51200
             // }
             #endregion
+
+            Assert.AreEqual(@"{
+  ""Name"": ""ImportantLegalDocuments.docx"",
+  ""Size"": 51200
+}", json);
         }
     }
 }

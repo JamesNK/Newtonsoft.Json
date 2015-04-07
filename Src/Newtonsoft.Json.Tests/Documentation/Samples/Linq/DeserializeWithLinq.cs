@@ -29,10 +29,12 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-    public class DeserializeWithLinq
+    [TestFixture]
+    public class DeserializeWithLinq : TestFixtureBase
     {
         #region Types
         public class BlogPost
@@ -45,6 +47,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage
@@ -76,6 +79,9 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             // <h3>Title!</h3>
             // <p>Content!</p>
             #endregion
+
+            Assert.AreEqual(@"<h3>Title!</h3>
+<p>Content!</p>", blogPosts[0].Body);
         }
     }
 }

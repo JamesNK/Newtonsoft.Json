@@ -28,10 +28,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-    public class ToObjectComplex
+    [TestFixture]
+    public class ToObjectComplex : TestFixtureBase
     {
         #region Types
         public class Person
@@ -40,6 +42,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage
@@ -66,6 +69,9 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             Console.WriteLine(person[1].Name);
             // Mike Smith
             #endregion
+
+            Assert.AreEqual("John Smith", person[0].Name);
+            Assert.AreEqual("Mike Smith", person[1].Name);
         }
     }
 }

@@ -28,11 +28,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-    public class Clone
+    [TestFixture]
+    public class Clone : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage
@@ -68,6 +71,9 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             Console.WriteLine(Object.ReferenceEquals(o1, o2));
             // false
             #endregion
+
+            Assert.IsTrue(JToken.DeepEquals(o1, o2));
+            Assert.IsFalse(Object.ReferenceEquals(o1, o2));
         }
     }
 }

@@ -27,10 +27,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class JsonPropertyName
+    [TestFixture]
+    public class JsonPropertyName : TestFixtureBase
     {
         #region Types
         public class Videogame
@@ -43,6 +45,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage
@@ -60,6 +63,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             //   "release_date": "1998-01-01T00:00:00"
             // }
             #endregion
+
+            Assert.AreEqual(@"{
+  ""name"": ""Starcraft"",
+  ""release_date"": ""1998-01-01T00:00:00""
+}", json);
         }
     }
 }

@@ -27,11 +27,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class SerializeCollection
+    [TestFixture]
+    public class SerializeCollection : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage
@@ -47,6 +50,8 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             Console.WriteLine(json);
             // ["Starcraft","Halo","Legend of Zelda"]
             #endregion
+
+            Assert.AreEqual(@"[""Starcraft"",""Halo"",""Legend of Zelda""]", json);
         }
     }
 }

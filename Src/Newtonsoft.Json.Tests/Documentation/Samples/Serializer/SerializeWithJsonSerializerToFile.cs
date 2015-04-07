@@ -28,11 +28,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using NUnit.Framework;
 using File = System.IO.File;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
-    public class SerializeWithJsonSerializerToFile
+    [TestFixture]
+    public class SerializeWithJsonSerializerToFile : TestFixtureBase
     {
         #region Types
         public class Movie
@@ -42,6 +44,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
         }
         #endregion
 
+        [Test]
         public void Example()
         {
             #region Usage

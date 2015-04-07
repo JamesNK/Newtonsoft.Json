@@ -28,11 +28,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
-    public class ParseJsonObject
+    [TestFixture]
+    public class ParseJsonObject : TestFixtureBase
     {
+        [Test]
         public void Example()
         {
             #region Usage
@@ -55,6 +58,14 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             //   ]
             // }
             #endregion
+
+            Assert.AreEqual(@"{
+  ""CPU"": ""Intel"",
+  ""Drives"": [
+    ""DVD read/writer"",
+    ""500 gigabyte hard drive""
+  ]
+}", o.ToString());
         }
     }
 }
