@@ -136,5 +136,11 @@ namespace Newtonsoft.Json.Serialization
                 return (lineInfo != null) ? lineInfo.LinePosition : 0;
             }
         }
+
+        public override bool Unbuffered
+        {
+            get { return _innerReader.Unbuffered; }
+            set { _innerReader.Unbuffered = value; }
+        }
     }
 }
