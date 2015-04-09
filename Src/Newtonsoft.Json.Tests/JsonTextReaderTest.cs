@@ -3358,7 +3358,7 @@ null//comment
             if (disposing)
             {
                 if (own)
-                    r.Dispose();
+                    r.Close();
             }
             disposed = true;
         }
