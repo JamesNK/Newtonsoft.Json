@@ -307,7 +307,7 @@ namespace Newtonsoft.Json
             _dateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
             _dateParseHandling = DateParseHandling.DateTime;
             _floatParseHandling = FloatParseHandling.Double;
-
+            
             CloseInput = true;
         }
 
@@ -1005,5 +1005,10 @@ namespace Newtonsoft.Json
             _tokenType = JsonToken.None;
             _value = null;
         }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether JsonReader shouldn't cache data from the input stream.
+        /// </summary>
+        public virtual bool Unbuffered { get; set; }
     }
 }

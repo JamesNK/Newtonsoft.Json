@@ -917,5 +917,14 @@ namespace Newtonsoft.Json
                 return (lineInfo != null) ? lineInfo.LinePosition : 0;
             }
         }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether JsonReader shouldn't cache data from the input stream.
+        /// </summary>
+        public override bool Unbuffered
+        {
+            get { return _reader.Unbuffered; }
+            set { _reader.Unbuffered = value; }
+        }
     }
 }

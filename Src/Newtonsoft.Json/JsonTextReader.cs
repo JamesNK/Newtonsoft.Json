@@ -192,7 +192,7 @@ namespace Newtonsoft.Json
 
         private int ReadData(bool append)
         {
-            return ReadData(append, 0);
+            return ReadData(append, 1);
         }
 
         private int ReadData(bool append, int charsRequired)
@@ -241,8 +241,8 @@ namespace Newtonsoft.Json
                     _charsUsed = remainingCharCount;
                 }
             }
-
-            int attemptCharReadCount = _chars.Length - _charsUsed - 1;
+            
+            int attemptCharReadCount = Unbuffered ? charsRequired : _chars.Length - _charsUsed - 1;
 
             int charsRead = _reader.Read(_chars, _charsUsed, attemptCharReadCount);
 
@@ -1633,7 +1633,7 @@ namespace Newtonsoft.Json
         /// Gets a value indicating whether the class can return line information.
         /// </summary>
         /// <returns>
-        /// 	<c>true</c> if LineNumber and LinePosition can be provided; otherwise, <c>false</c>.
+        ///     <c>true</c> if LineNumber and LinePosition can be provided; otherwise, <c>false</c>.
         /// </returns>
         public bool HasLineInfo()
         {

@@ -3192,6 +3192,25 @@ null//comment
                 },
                 "Unexpected character encountered while parsing value: !. Path 'frameworks.dnxcore50.dependencies.['System.Xml.ReaderWriter'].source', line 6, position 21.");
         }
+
+        [Test]
+        public void UnbufferedReader()
+        {
+            var ms = new MemoryStream();
+            var w = new StreamWriter(ms, Encoding.Default);
+            var objStr = @"{'key':'value'}";
+            w.Write(objStr);
+            w.Flush();
+            var testPos = ms.Position;
+            w.Write(objStr);
+            w.Flush();
+            ms.Seek(0, SeekOrigin.Begin);
+            var r = new JsonTextReader(new UnbufferedStreamReader(ms, Encoding.Default, false));
+            r.SupportMultipleContent = true;
+            r.Unbuffered = true;
+            var obj = JObject.Load(r);
+            Assert.AreEqual(ms.Position, testPos);
+        }
     }
 
     public class ToggleReaderError : TextReader
@@ -3288,6 +3307,65 @@ null//comment
         public override void Write(byte[] buffer, int offset, int count)
         {
             throw new NotSupportedException();
+        }
+    }
+
+    public class UnbufferedStreamReader : TextReader
+    {
+        private Stream stream;
+        private BinaryReader r;
+        private bool own;
+        private bool disposed = false;
+
+        public UnbufferedStreamReader(Stream stream, Encoding encoding, bool own)
+        {
+            this.stream = stream;
+            this.own = own;
+            r = new BinaryReader(stream, encoding);
+        }
+
+        public UnbufferedStreamReader(Stream stream) :
+            this(stream, Encoding.Default, true)
+        {
+        }
+
+        public bool EndOfStream
+        {
+            get
+            {
+                if (disposed)
+                    throw new ObjectDisposedException("stream");
+                if (stream.Position < stream.Length)
+                    return false;
+                return true;
+            }
+        }
+
+        public override int Read()
+        {
+            return EndOfStream ? -1 : r.ReadChar();
+        }
+
+        public override int Peek()
+        {
+            return r.PeekChar();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+            if (disposing)
+            {
+                if (own)
+                    r.Close();
+            }
+            disposed = true;
+        }
+
+        ~UnbufferedStreamReader()
+        {
+            Dispose(false);
         }
     }
 }

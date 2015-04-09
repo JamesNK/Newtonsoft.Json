@@ -304,6 +304,15 @@ namespace Newtonsoft.Json.Bson
 #endif
         }
 
+        /// <summary>
+        /// This property is not currently supported. This property always returns true.
+        /// </summary>
+        public override bool Unbuffered
+        {
+            get { return true; }
+            set { }
+        }
+
         private bool ReadCodeWScope()
         {
             switch (_bsonReaderState)
