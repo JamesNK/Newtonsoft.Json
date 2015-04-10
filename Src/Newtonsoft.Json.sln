@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.Tests", "Ne
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.TestConsole", "Newtonsoft.Json.TestConsole\Newtonsoft.Json.TestConsole.csproj", "{3CC9C2DF-CD0A-4096-BF46-B4AFDF0147D2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.Tests.AnotherAssembly", "Newtonsoft.Json.Tests.AnotherAssembly\Newtonsoft.Json.Tests.AnotherAssembly.csproj", "{18E1AADA-8E8B-4BA5-917E-3DA370D343B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{3CC9C2DF-CD0A-4096-BF46-B4AFDF0147D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3CC9C2DF-CD0A-4096-BF46-B4AFDF0147D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3CC9C2DF-CD0A-4096-BF46-B4AFDF0147D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18E1AADA-8E8B-4BA5-917E-3DA370D343B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18E1AADA-8E8B-4BA5-917E-3DA370D343B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18E1AADA-8E8B-4BA5-917E-3DA370D343B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18E1AADA-8E8B-4BA5-917E-3DA370D343B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
