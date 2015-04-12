@@ -65,7 +65,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Bson
             string data = Convert.ToBase64String(ms.ToArray());
 
             Console.WriteLine(data);
-            // MQAAAAJOYW1lAA8AAABNb3ZpZSBQcmVtaWVyZQAJU3RhcnREYXRlAMDgKWE8AQAAAA==
+            // MQAAAAJOYW1lAA8AAABNb3ZpZSBQcmVtaWVyZQAJU3RhcnREYXRlAED982M8AQAAAA==
             #endregion
 
             Assert.AreEqual("MQAAAAJOYW1lAA8AAABNb3ZpZSBQcmVtaWVyZQAJU3RhcnREYXRlAED982M8AQAAAA==", data);
