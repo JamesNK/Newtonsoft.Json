@@ -52,7 +52,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Bson
             Event e = new Event
             {
                 Name = "Movie Premiere",
-                StartDate = new DateTime(2013, 1, 22, 20, 30, 0)
+                StartDate = new DateTime(2013, 1, 22, 20, 30, 0, DateTimeKind.Utc)
             };
 
             MemoryStream ms = new MemoryStream();
@@ -68,7 +68,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Bson
             // MQAAAAJOYW1lAA8AAABNb3ZpZSBQcmVtaWVyZQAJU3RhcnREYXRlAMDgKWE8AQAAAA==
             #endregion
 
-            Assert.AreEqual("MQAAAAJOYW1lAA8AAABNb3ZpZSBQcmVtaWVyZQAJU3RhcnREYXRlAMDgKWE8AQAAAA==", data);
+            Assert.AreEqual("MQAAAAJOYW1lAA8AAABNb3ZpZSBQcmVtaWVyZQAJU3RhcnREYXRlAED982M8AQAAAA==", data);
         }
     }
 }
