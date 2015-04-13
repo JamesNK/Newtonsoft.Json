@@ -343,6 +343,7 @@
     <Compile Include="TestObjects\DefaultValueAttributeTestClass.cs" />
     <Compile Include="TestObjects\DictionaryInterfaceClass.cs" />
     <Compile Include="TestObjects\DirectoryAccount.cs" />
+    <Compile Include="TestObjects\DocumentChanged.cs" />
     <Compile Include="TestObjects\DoubleClass.cs" />
     <Compile Include="TestObjects\EmployeeReference.cs" />
     <Compile Include="TestObjects\Event.cs" />
