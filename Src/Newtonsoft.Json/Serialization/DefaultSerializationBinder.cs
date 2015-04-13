@@ -68,7 +68,10 @@ namespace Newtonsoft.Json.Serialization
                     Assembly[] loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
                     foreach (Assembly a in loadedAssemblies)
                     {
-                        if (a.FullName == assemblyName)
+                        // For some reason the above Assembly.LoadWithPartialName was returning null for already
+                        // loaded assemblies in some scenarios. The below ensures all loaded assemblies are also checked
+                        // for both full and partial name matches
+                        if (a.FullName == assemblyName || a.GetName().Name == assemblyName)
                         {
                             assembly = a;
                             break;
@@ -82,7 +85,12 @@ namespace Newtonsoft.Json.Serialization
 
                 Type type = assembly.GetType(typeName);
                 if (type == null)
-                    throw new JsonSerializationException("Could not find type '{0}' in assembly '{1}'.".FormatWith(CultureInfo.InvariantCulture, typeName, assembly.FullName));
+                {
+                    var typeAndAssembly = typeName + ", " + assemblyName;
+                    type = TypeHelpers.GetType(typeAndAssembly, true, false);
+                    if (type == null)
+                        throw new JsonSerializationException("Could not find type '{0}'.".FormatWith(CultureInfo.InvariantCulture, typeAndAssembly));
+                }
 
                 return type;
             }
