@@ -9,6 +9,8 @@ namespace Newtonsoft.Json.Linq
     {
         private MergeArrayHandling _mergeArrayHandling;
 
+        private MergeObjectHandling _mergeObjectHandling;
+
         /// <summary>
         /// Gets or sets the method used when merging JSON arrays.
         /// </summary>
@@ -22,6 +24,22 @@ namespace Newtonsoft.Json.Linq
                     throw new ArgumentOutOfRangeException("value");
                 
                 _mergeArrayHandling = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the method used when merging JSON objects.
+        /// </summary>
+        /// <value>The method used when merging JSON objects.</value>
+        public MergeObjectHandling MergetObjectHandling
+        {
+            get { return _mergeObjectHandling; }
+            set
+            {
+                if ((value | MergeObjectHandling.All) != MergeObjectHandling.All)
+                    throw new ArgumentOutOfRangeException("value");
+
+                _mergeObjectHandling = value;
             }
         }
     }

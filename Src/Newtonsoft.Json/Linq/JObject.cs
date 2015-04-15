@@ -171,11 +171,31 @@ namespace Newtonsoft.Json.Linq
                 }
                 else if (contentItem.Value != null)
                 {
+                    if (settings != null)
+                    {
+                        if (contentItem.Value.Type == JTokenType.Null)
+                        {
+                            if ((settings.MergetObjectHandling & MergeObjectHandling.Null) != 0)
+                            {
+                                existingProperty.Value = contentItem.Value;
+                            }
+                            continue;
+                        }
+
+                        if (contentItem.Value.Type == JTokenType.Undefined)
+                        {
+                            if ((settings.MergetObjectHandling & MergeObjectHandling.Undefined) != 0)
+                            {
+                                existingProperty.Remove();
+                            }
+                            continue;
+                        }
+                    }
+
                     JContainer existingContainer = existingProperty.Value as JContainer;
                     if (existingContainer == null)
                     {
-                        if (contentItem.Value.Type != JTokenType.Null)
-                            existingProperty.Value = contentItem.Value;
+                        existingProperty.Value = contentItem.Value;
                     }
                     else if (existingContainer.Type != contentItem.Value.Type)
                     {

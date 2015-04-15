@@ -569,5 +569,57 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual("name1", p.Name);
             Assert.AreEqual(0, p.Count);
         }
+
+        [Test]
+        public void MergeNullValue()
+        {
+            var source = new JObject
+            {
+                {"Property1", "value"},
+                {"Property2", new JObject()},
+                {"Property3", JValue.CreateNull()},
+                {"Property4", JValue.CreateUndefined()},
+            };
+
+            var patch = JObject.Parse("{Property1:null, Property2:null, Property3:null, Property4:null}");
+
+            source.Merge(patch, new JsonMergeSettings
+            {
+                MergetObjectHandling = MergeObjectHandling.Null,
+            });
+
+            Assert.IsNotNull(source["Property1"]);
+            Assert.AreEqual(JTokenType.Null, source["Property1"].Type);
+            Assert.IsNotNull(source["Property2"]);
+            Assert.AreEqual(JTokenType.Null, source["Property2"].Type);
+            Assert.IsNotNull(source["Property3"]);
+            Assert.AreEqual(JTokenType.Null, source["Property3"].Type);
+            Assert.IsNotNull(source["Property4"]);
+            Assert.AreEqual(JTokenType.Null, source["Property4"].Type);
+        }
+
+        [Test]
+        public void MergeUndefinedlValue()
+        {
+            var source = new JObject
+            {
+                {"Property1", "value"},
+                {"Property2", new JObject()},
+                {"Property3", JValue.CreateNull()},
+                {"Property4", JValue.CreateUndefined()},
+            };
+
+            var patch = JObject.Parse("{Property1:undefined, Property2:undefined, Property3:undefined, Property4:undefined}");
+
+            source.Merge(patch, new JsonMergeSettings
+            {
+                MergetObjectHandling = MergeObjectHandling.Undefined,
+            });
+
+            Assert.IsNull(source.Property("Property1"));
+            Assert.IsNull(source.Property("Property2"));
+            Assert.IsNull(source.Property("Property3"));
+            Assert.IsNull(source.Property("Property4"));
+        }
     }
 }
