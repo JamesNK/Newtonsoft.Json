@@ -121,6 +121,7 @@
     <Compile Include="Linq\JsonPath\QueryFilter.cs" />
     <Compile Include="Linq\JsonPath\ScanFilter.cs" />
     <Compile Include="Linq\MergeArrayHandling.cs" />
+    <Compile Include="Linq\MergeObjectHandling.cs" />
     <Compile Include="MetadataPropertyHandling.cs" />
     <Compile Include="SerializationBinder.cs" />
     <Compile Include="Serialization\DiagnosticsTraceWriter.cs" />
