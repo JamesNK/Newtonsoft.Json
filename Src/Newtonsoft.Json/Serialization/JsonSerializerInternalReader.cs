@@ -1662,6 +1662,16 @@ namespace Newtonsoft.Json.Serialization
                 }
             }
 
+            // if the contract's CreatorParameters have a default value and populate flag, then use the default value in the constructor if no property is avalable.
+            foreach (var creatorParameter in contract.CreatorParameters.Where(p => p.DefaultValueHandling.HasValue && HasFlag(p.DefaultValueHandling.Value, DefaultValueHandling.Populate)))
+            {
+                int i = contract.CreatorParameters.IndexOf(creatorParameter);
+                if (creatorParameterValues[i] == null)
+                {
+                    creatorParameterValues[i] = creatorParameter.DefaultValue;
+                }
+            }
+
             object createdObject = creator(creatorParameterValues);
 
             if (id != null)

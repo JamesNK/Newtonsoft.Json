@@ -24,7 +24,10 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
 #if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -161,6 +164,44 @@ namespace Newtonsoft.Json.Tests.Serialization
             PublicParametizedConstructorWithPropertyNameConflictWithAttribute c = JsonConvert.DeserializeObject<PublicParametizedConstructorWithPropertyNameConflictWithAttribute>(json);
             Assert.IsNotNull(c);
             Assert.AreEqual(1, c.Name);
+        }
+
+        [Test]
+        public void ConstructorParametersRespectDefaultValueTest()
+        {
+            var testObject = JsonConvert.DeserializeObject<ConstructorParametersRespectDefaultValue>("{}", new JsonSerializerSettings() { ContractResolver = ConstructorParameterDefaultStringValueContractResolver.Instance });
+        }
+
+        public class ConstructorParametersRespectDefaultValue
+        {
+            public const string DefaultValue = "Default Value";
+
+            public string Parameter1 { get; private set; }
+            public string Parameter2 { get; private set; }
+
+            public ConstructorParametersRespectDefaultValue(string parameter1, string parameter2)
+            {
+                Assert.That(parameter1 == DefaultValue);
+                Assert.That(parameter2 == DefaultValue);
+            }
+        }
+
+        public class ConstructorParameterDefaultStringValueContractResolver : DefaultContractResolver
+        {
+            public static new ConstructorParameterDefaultStringValueContractResolver Instance = new ConstructorParameterDefaultStringValueContractResolver();
+
+            protected override IList<JsonProperty> CreateConstructorParameters(ConstructorInfo constructor, JsonPropertyCollection memberProperties)
+            {
+                var properties = base.CreateConstructorParameters(constructor, memberProperties);
+
+                foreach (var property in properties.Where(p => p.PropertyType == typeof(string)))
+                {
+                    property.DefaultValue = ConstructorParametersRespectDefaultValue.DefaultValue;
+                    property.DefaultValueHandling = DefaultValueHandling.Populate;
+                }
+
+                return properties;
+            }
         }
     }
 }
