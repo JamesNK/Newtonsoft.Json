@@ -254,7 +254,7 @@ namespace Newtonsoft.Json.Schema
                         CurrentSchema.PatternProperties = ProcessProperties(property.Value);
                         break;
                     case JsonSchemaConstants.RequiredPropertyName:
-                        CurrentSchema.Required = (bool)property.Value;
+                        ProcessRequired(property.Value);
                         break;
                     case JsonSchemaConstants.RequiresPropertyName:
                         CurrentSchema.Requires = (string)property.Value;
@@ -430,6 +430,30 @@ namespace Newtonsoft.Json.Schema
                 default:
                     throw JsonException.Create(token, token.Path, "Expected array or JSON schema type string token, got {0}.".FormatWith(CultureInfo.InvariantCulture, token.Type));
             }
+        }
+
+        private void ProcessRequired(JToken token) {
+            if(token.Type == JTokenType.Boolean) {
+                CurrentSchema.Required = (bool)token;
+            }
+            else if(token.Type == JTokenType.Array) {
+                ValidateRequiredArrayToken(token);
+
+                foreach(var typeToken in token) {
+                    CurrentSchema.Properties[(string)typeToken].Required = true;
+                }
+            }
+            else {
+                throw JsonException.Create(token, token.Path, "Expected Boolean or array while processing Required token, got {0}".FormatWith(CultureInfo.InvariantCulture, token.Type));
+            }
+        }
+
+        private void ValidateRequiredArrayToken(JToken token) {
+            if(token.Count() == 0 ||
+               token.Any(x => x.Type != JTokenType.String) ||
+               token.GroupBy(x => x).All(x => x.Count() != 1) ||
+               token.Any(x => !CurrentSchema.Properties.ContainsKey((string)x)))
+                throw JsonException.Create(token, token.Path, "Expected array of valid property name strings for Required token, got {0}.".FormatWith(CultureInfo.InvariantCulture, token));
         }
 
         internal static JsonSchemaType MapType(string type)
