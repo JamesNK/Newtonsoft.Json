@@ -628,6 +628,35 @@ namespace Newtonsoft.Json.Tests.Linq
         }
 
         [Test]
+        public void Rename()
+        {
+            //Arrange
+            var map = new Dictionary<string, string>
+            {
+                {"FirstName", "fn"},
+                {"LastName", "ln"},
+            };
+            JObject o1 = JObject.Parse(@"{
+              'FirstName': 'John',
+              'LastName': 'Smith',
+              'Enabled': false,
+              'Roles': [ 'User' ]
+            }");
+
+            //Act
+            foreach (var item in map)
+            {
+                o1.SelectToken(item.Key).Rename(item.Value);
+            }
+
+            //Assert
+            foreach (var item in map)
+            {
+                Assert.IsNotNull(o1.SelectToken(item.Value));
+            }
+        }
+
+        [Test]
         public void AfterSelf()
         {
             JArray a =
