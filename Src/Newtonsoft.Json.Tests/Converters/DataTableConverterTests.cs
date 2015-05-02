@@ -425,7 +425,6 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual("item!", pair2.Key.Rows[0]["item"]);
         }
 
-
         [Test]
         public void SerializedTypedDataTable()
         {

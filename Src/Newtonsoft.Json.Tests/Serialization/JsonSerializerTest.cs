@@ -146,6 +146,161 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 #endif
 
+        public class RequiredPropertyTestClass
+        {
+            [JsonRequired]
+            internal string Name { get; set; }
+        }
+
+        [Test]
+        public void RequiredPropertyTest()
+        {
+            RequiredPropertyTestClass c1 = new RequiredPropertyTestClass();
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => JsonConvert.SerializeObject(c1),
+                "Cannot write a null value for property 'Name'. Property requires a value. Path ''.");
+
+            RequiredPropertyTestClass c2 = new RequiredPropertyTestClass
+            {
+                Name = "Name!"
+            };
+
+            string json = JsonConvert.SerializeObject(c2);
+
+            Assert.AreEqual(@"{""Name"":""Name!""}", json);
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => JsonConvert.DeserializeObject<RequiredPropertyTestClass>(@"{}"),
+                "Required property 'Name' not found in JSON. Path '', line 1, position 2.");
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => JsonConvert.DeserializeObject<RequiredPropertyTestClass>(@"{""Name"":null}"),
+                "Required property 'Name' expects a value but got null. Path '', line 1, position 13.");
+
+            RequiredPropertyTestClass c3 = JsonConvert.DeserializeObject<RequiredPropertyTestClass>(@"{""Name"":""Name!""}");
+
+            Assert.AreEqual("Name!", c3.Name);
+        }
+
+        public class RequiredPropertyConstructorTestClass
+        {
+            public RequiredPropertyConstructorTestClass(string name)
+            {
+                Name = name;
+            }
+
+            [JsonRequired]
+            internal string Name { get; set; }
+        }
+
+        [Test]
+        public void RequiredPropertyConstructorTest()
+        {
+            RequiredPropertyConstructorTestClass c1 = new RequiredPropertyConstructorTestClass(null);
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => JsonConvert.SerializeObject(c1),
+                "Cannot write a null value for property 'Name'. Property requires a value. Path ''.");
+
+            RequiredPropertyConstructorTestClass c2 = new RequiredPropertyConstructorTestClass("Name!");
+
+            string json = JsonConvert.SerializeObject(c2);
+
+            Assert.AreEqual(@"{""Name"":""Name!""}", json);
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => JsonConvert.DeserializeObject<RequiredPropertyConstructorTestClass>(@"{}"),
+                "Required property 'Name' not found in JSON. Path '', line 1, position 2.");
+
+            RequiredPropertyConstructorTestClass c3 = JsonConvert.DeserializeObject<RequiredPropertyConstructorTestClass>(@"{""Name"":""Name!""}");
+
+            Assert.AreEqual("Name!", c3.Name);
+        }
+
+        public class IgnoredPropertiesTestClass
+        {
+            [JsonIgnore]
+            public Version IgnoredProperty { get; set; }
+            [JsonIgnore]
+            public List<Version> IgnoredList { get; set; }
+            [JsonIgnore]
+            public Dictionary<string, Version> IgnoredDictionary { get; set; }
+            [JsonProperty(Required = Required.Always)]
+            public string Name { get; set; }
+        }
+
+        public class IgnoredPropertiesContractResolver : DefaultContractResolver
+        {
+            public override JsonContract ResolveContract(Type type)
+            {
+                if (type == typeof(Version))
+                    throw new Exception("Error!");
+
+                return base.ResolveContract(type);
+            }
+        }
+
+        [Test]
+        public void NeverResolveIgnoredPropertyTypes()
+        {
+            Version v = new Version(1, 2, 3, 4);
+
+            IgnoredPropertiesTestClass c1 = new IgnoredPropertiesTestClass
+            {
+                IgnoredProperty = v,
+                IgnoredList = new List<Version>
+                {
+                    v
+                },
+                IgnoredDictionary = new Dictionary<string, Version>
+                {
+                    { "Value", v }
+                },
+                Name = "Name!"
+            };
+
+            string json = JsonConvert.SerializeObject(c1, Formatting.Indented, new JsonSerializerSettings
+            {
+                ContractResolver = new IgnoredPropertiesContractResolver()
+            });
+
+            Assert.AreEqual(@"{
+  ""Name"": ""Name!""
+}", json);
+
+            string deserializeJson = @"{
+  ""IgnoredList"": [
+    {
+      ""Major"": 1,
+      ""Minor"": 2,
+      ""Build"": 3,
+      ""Revision"": 4,
+      ""MajorRevision"": 0,
+      ""MinorRevision"": 4
+    }
+  ],
+  ""IgnoredDictionary"": {
+    ""Value"": {
+      ""Major"": 1,
+      ""Minor"": 2,
+      ""Build"": 3,
+      ""Revision"": 4,
+      ""MajorRevision"": 0,
+      ""MinorRevision"": 4
+    }
+  },
+  ""Name"": ""Name!""
+}";
+
+            IgnoredPropertiesTestClass c2 = JsonConvert.DeserializeObject<IgnoredPropertiesTestClass>(deserializeJson, new JsonSerializerSettings
+            {
+                ContractResolver = new IgnoredPropertiesContractResolver()
+            });
+
+            Assert.AreEqual("Name!", c2.Name);
+        }
+
 #if !(NETFX_CORE || DNXCORE50 || NET20)
         [MetadataType(typeof(CustomerValidation))]
         public partial class CustomerWithMetadataType
@@ -721,8 +876,14 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(ReferenceLoopHandling.Ignore, settings.ReferenceLoopHandling);
 
             IdReferenceResolver referenceResolver = new IdReferenceResolver();
+#pragma warning disable 618
             settings.ReferenceResolver = referenceResolver;
             Assert.AreEqual(referenceResolver, settings.ReferenceResolver);
+#pragma warning restore 618
+            Assert.AreEqual(referenceResolver, settings.ReferenceResolverProvider());
+
+            settings.ReferenceResolverProvider = () => referenceResolver;
+            Assert.AreEqual(referenceResolver, settings.ReferenceResolverProvider());
 
             settings.StringEscapeHandling = StringEscapeHandling.EscapeNonAscii;
             Assert.AreEqual(StringEscapeHandling.EscapeNonAscii, settings.StringEscapeHandling);
@@ -8050,7 +8211,9 @@ Path '', line 1, position 1.");
 
             string json = JsonConvert.SerializeObject(people, new JsonSerializerSettings
             {
+#pragma warning disable 618
                 ReferenceResolver = new IdReferenceResolver(),
+#pragma warning restore 618
                 PreserveReferencesHandling = PreserveReferencesHandling.Objects,
                 Formatting = Formatting.Indented
             });
@@ -8112,7 +8275,45 @@ Path '', line 1, position 1.");
 
             IList<PersonReference> people = JsonConvert.DeserializeObject<IList<PersonReference>>(json, new JsonSerializerSettings
             {
+#pragma warning disable 618
                 ReferenceResolver = new IdReferenceResolver(),
+#pragma warning restore 618
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                Formatting = Formatting.Indented
+            });
+
+            Assert.AreEqual(2, people.Count);
+
+            PersonReference john = people[0];
+            PersonReference jane = people[1];
+
+            Assert.AreEqual(john, jane.Spouse);
+            Assert.AreEqual(jane, john.Spouse);
+        }
+
+        [Test]
+        public void DeserializeCustomReferenceResolver_ViaProvider()
+        {
+            string json = @"[
+  {
+    ""$id"": ""0b64ffdf-d155-44ad-9689-58d9adb137f3"",
+    ""Name"": ""John Smith"",
+    ""Spouse"": {
+      ""$id"": ""ae3c399c-058d-431d-91b0-a36c266441b9"",
+      ""Name"": ""Jane Smith"",
+      ""Spouse"": {
+        ""$ref"": ""0b64ffdf-d155-44ad-9689-58d9adb137f3""
+      }
+    }
+  },
+  {
+    ""$ref"": ""ae3c399c-058d-431d-91b0-a36c266441b9""
+  }
+]";
+
+            IList<PersonReference> people = JsonConvert.DeserializeObject<IList<PersonReference>>(json, new JsonSerializerSettings
+            {
+                ReferenceResolverProvider = () => new IdReferenceResolver(),
                 PreserveReferencesHandling = PreserveReferencesHandling.Objects,
                 Formatting = Formatting.Indented
             });

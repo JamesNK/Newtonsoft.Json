@@ -20,6 +20,9 @@ namespace Newtonsoft.Json.Serialization
             _innerWriter = innerWriter;
 
             _sw = new StringWriter(CultureInfo.InvariantCulture);
+            // prefix the message in the stringwriter to avoid concat with a potentially large JSON string
+            _sw.Write("Serialized JSON: " + Environment.NewLine);
+
             _textWriter = new JsonTextWriter(_sw);
             _textWriter.Formatting = Formatting.Indented;
             _textWriter.Culture = innerWriter.Culture;
@@ -29,7 +32,7 @@ namespace Newtonsoft.Json.Serialization
             _textWriter.FloatFormatHandling = innerWriter.FloatFormatHandling;
         }
 
-        public string GetJson()
+        public string GetSerializedJsonMessage()
         {
             return _sw.ToString();
         }

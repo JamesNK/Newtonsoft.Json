@@ -1958,10 +1958,15 @@ namespace Newtonsoft.Json.Serialization
                                 continue;
                             }
 
-                            if (property.PropertyContract == null)
-                                property.PropertyContract = GetContractSafe(property.PropertyType);
+                            JsonConverter propertyConverter = null;
 
-                            JsonConverter propertyConverter = GetConverter(property.PropertyContract, property.MemberConverter, contract, member);
+                            if (!property.Ignored)
+                            {
+                                if (property.PropertyContract == null)
+                                    property.PropertyContract = GetContractSafe(property.PropertyType);
+
+                                propertyConverter = GetConverter(property.PropertyContract, property.MemberConverter, contract, member);
+                            }
 
                             if (!ReadForType(reader, property.PropertyContract, propertyConverter != null))
                                 throw JsonSerializationException.Create(reader, "Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
@@ -2060,11 +2065,14 @@ namespace Newtonsoft.Json.Serialization
                                     if (resolvedRequired == Required.AllowNull || resolvedRequired == Required.Always)
                                         throw JsonSerializationException.Create(reader, "Required property '{0}' not found in JSON.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName));
 
-                                    if (property.PropertyContract == null)
-                                        property.PropertyContract = GetContractSafe(property.PropertyType);
+                                    if (!property.Ignored)
+                                    {
+                                        if (property.PropertyContract == null)
+                                            property.PropertyContract = GetContractSafe(property.PropertyType);
 
-                                    if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer._defaultValueHandling), DefaultValueHandling.Populate) && property.Writable && !property.Ignored)
-                                        property.ValueProvider.SetValue(newObject, EnsureType(reader, property.GetResolvedDefaultValue(), CultureInfo.InvariantCulture, property.PropertyContract, property.PropertyType));
+                                        if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer._defaultValueHandling), DefaultValueHandling.Populate) && property.Writable)
+                                            property.ValueProvider.SetValue(newObject, EnsureType(reader, property.GetResolvedDefaultValue(), CultureInfo.InvariantCulture, property.PropertyContract, property.PropertyType));
+                                    }
                                     break;
                                 case PropertyPresence.Null:
                                     if (resolvedRequired == Required.Always)

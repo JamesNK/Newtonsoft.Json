@@ -203,7 +203,23 @@ namespace Newtonsoft.Json
         /// Gets or sets the <see cref="IReferenceResolver"/> used by the serializer when resolving references.
         /// </summary>
         /// <value>The reference resolver.</value>
-        public IReferenceResolver ReferenceResolver { get; set; }
+        [ObsoleteAttribute("ReferenceResolver property is obsolete. Use the ReferenceResolverProvider property to set the IReferenceResolver: settings.ReferenceResolverProvider = () => resolver")]
+        public IReferenceResolver ReferenceResolver
+        {
+            get
+            {
+                if (ReferenceResolverProvider == null)
+                    return null;
+                return ReferenceResolverProvider();
+            }
+            set { ReferenceResolverProvider = () => value; }
+        }
+
+        /// <summary>
+        /// Gets or sets a function that creates the <see cref="IReferenceResolver"/> used by the serializer when resolving references.
+        /// </summary>
+        /// <value>A function that creates the <see cref="IReferenceResolver"/> used by the serializer when resolving references.</value>
+        public Func<IReferenceResolver> ReferenceResolverProvider { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="ITraceWriter"/> used by the serializer when writing trace messages.

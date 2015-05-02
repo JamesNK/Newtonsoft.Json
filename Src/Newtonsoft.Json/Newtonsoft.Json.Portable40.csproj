@@ -99,6 +99,7 @@
     <Compile Include="JsonPropertyAttribute.cs" />
     <Compile Include="JsonReader.cs" />
     <Compile Include="JsonReaderException.cs" />
+    <Compile Include="JsonRequiredAttribute.cs" />
     <Compile Include="JsonSerializationException.cs" />
     <Compile Include="JsonSerializer.cs" />
     <Compile Include="JsonSerializerSettings.cs" />

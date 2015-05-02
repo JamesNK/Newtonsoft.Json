@@ -308,6 +308,8 @@ namespace Newtonsoft.Json.Serialization
                             // or are a field if serializing just fields
                             if (JsonTypeReflector.GetAttribute<JsonPropertyAttribute>(member) != null)
                                 serializableMembers.Add(member);
+                            else if (JsonTypeReflector.GetAttribute<JsonRequiredAttribute>(member) != null)
+                                serializableMembers.Add(member);
 #if !NET20
                             else if (dataContractAttribute != null && JsonTypeReflector.GetAttribute<DataMemberAttribute>(member) != null)
                                 serializableMembers.Add(member);
@@ -1222,8 +1224,7 @@ namespace Newtonsoft.Json.Serialization
 #endif
 
             JsonPropertyAttribute propertyAttribute = JsonTypeReflector.GetAttribute<JsonPropertyAttribute>(attributeProvider);
-            if (propertyAttribute != null)
-                property.HasMemberAttribute = true;
+            JsonRequiredAttribute requiredAttribute = JsonTypeReflector.GetAttribute<JsonRequiredAttribute>(attributeProvider);
 
             string mappedName;
             if (propertyAttribute != null && propertyAttribute.PropertyName != null)
@@ -1255,6 +1256,13 @@ namespace Newtonsoft.Json.Serialization
                 hasMemberAttribute = true;
             }
 #endif
+            if (requiredAttribute != null)
+            {
+                property._required = Required.Always;
+                hasMemberAttribute = true;
+            }
+
+            property.HasMemberAttribute = hasMemberAttribute;
 
             bool hasJsonIgnoreAttribute =
                 JsonTypeReflector.GetAttribute<JsonIgnoreAttribute>(attributeProvider) != null
@@ -1310,18 +1318,10 @@ namespace Newtonsoft.Json.Serialization
             if ((DefaultMembersSearchFlags & BindingFlags.NonPublic) == BindingFlags.NonPublic)
                 allowNonPublicAccess = true;
 #pragma warning restore 618
-            if (propertyAttribute != null)
+            if (hasMemberAttribute)
                 allowNonPublicAccess = true;
             if (memberSerialization == MemberSerialization.Fields)
                 allowNonPublicAccess = true;
-
-#if !NET20
-            if (dataMemberAttribute != null)
-            {
-                allowNonPublicAccess = true;
-                property.HasMemberAttribute = true;
-            }
-#endif
         }
 
         private Predicate<object> CreateShouldSerializeTest(MemberInfo member)

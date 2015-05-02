@@ -559,8 +559,8 @@ namespace Newtonsoft.Json
 
             if (settings.ContractResolver != null)
                 serializer.ContractResolver = settings.ContractResolver;
-            if (settings.ReferenceResolver != null)
-                serializer.ReferenceResolver = settings.ReferenceResolver;
+            if (settings.ReferenceResolverProvider != null)
+                serializer.ReferenceResolver = settings.ReferenceResolverProvider();
             if (settings.TraceWriter != null)
                 serializer.TraceWriter = settings.TraceWriter;
             if (settings.Binder != null)
@@ -638,7 +638,7 @@ namespace Newtonsoft.Json
             serializerReader.Populate(traceJsonReader ?? reader, target);
 
             if (traceJsonReader != null)
-                TraceWriter.Trace(TraceLevel.Verbose, "Deserialized JSON: " + Environment.NewLine + traceJsonReader.GetJson(), null);
+                TraceWriter.Trace(TraceLevel.Verbose, traceJsonReader.GetDeserializedJsonMessage(), null);
 
             ResetReader(reader, previousCulture, previousDateTimeZoneHandling, previousDateParseHandling, previousFloatParseHandling, previousMaxDepth, previousDateFormatString);
         }
@@ -710,7 +710,7 @@ namespace Newtonsoft.Json
             object value = serializerReader.Deserialize(traceJsonReader ?? reader, objectType, CheckAdditionalContent);
 
             if (traceJsonReader != null)
-                TraceWriter.Trace(TraceLevel.Verbose, "Deserialized JSON: " + Environment.NewLine + traceJsonReader.GetJson(), null);
+                TraceWriter.Trace(TraceLevel.Verbose, traceJsonReader.GetDeserializedJsonMessage(), null);
 
             ResetReader(reader, previousCulture, previousDateTimeZoneHandling, previousDateParseHandling, previousFloatParseHandling, previousMaxDepth, previousDateFormatString);
 
@@ -925,7 +925,7 @@ namespace Newtonsoft.Json
             serializerWriter.Serialize(traceJsonWriter ?? jsonWriter, value, objectType);
 
             if (traceJsonWriter != null)
-                TraceWriter.Trace(TraceLevel.Verbose, "Serialized JSON: " + Environment.NewLine + traceJsonWriter.GetJson(), null);
+                TraceWriter.Trace(TraceLevel.Verbose, traceJsonWriter.GetSerializedJsonMessage(), null);
 
             // reset writer back to previous options
             if (previousFormatting != null)

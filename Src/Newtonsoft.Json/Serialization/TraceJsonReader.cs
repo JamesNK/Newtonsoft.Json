@@ -17,11 +17,14 @@ namespace Newtonsoft.Json.Serialization
             _innerReader = innerReader;
 
             _sw = new StringWriter(CultureInfo.InvariantCulture);
+            // prefix the message in the stringwriter to avoid concat with a potentially large JSON string
+            _sw.Write("Deserialized JSON: " + Environment.NewLine);
+
             _textWriter = new JsonTextWriter(_sw);
             _textWriter.Formatting = Formatting.Indented;
         }
 
-        public string GetJson()
+        public string GetDeserializedJsonMessage()
         {
             return _sw.ToString();
         }

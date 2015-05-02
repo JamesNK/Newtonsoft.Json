@@ -25,45 +25,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using NUnit.Framework;
-using System.Runtime.Serialization;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
-using Autofac;
-using Newtonsoft.Json.Tests.Serialization;
-using System.Collections.Immutable;
 
-namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
+namespace Newtonsoft.Json
 {
-    [TestFixture]
-    public class SerializeImmutableCollections : TestFixtureBase
+    /// <summary>
+    /// Instructs the <see cref="JsonSerializer"/> to always serialize the member, and require the member has a value.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
+    public sealed class JsonRequiredAttribute : Attribute
     {
-        [Test]
-        public void Example()
-        {
-            #region Usage
-            ImmutableList<string> l = ImmutableList.CreateRange(new List<string>
-            {
-                "One",
-                "II",
-                "3"
-            });
-
-            string json = JsonConvert.SerializeObject(l, Formatting.Indented);
-            // [
-            //   "One",
-            //   "II",
-            //   "3"
-            // ]
-            #endregion
-
-            StringAssert.AreEqual(@"[
-  ""One"",
-  ""II"",
-  ""3""
-]", json);
-        }
     }
 }

@@ -62,6 +62,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             };
         }
 
+        [Test]
         public void Example()
         {
             #region Usage

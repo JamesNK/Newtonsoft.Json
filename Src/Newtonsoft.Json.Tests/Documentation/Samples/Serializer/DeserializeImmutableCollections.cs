@@ -41,7 +41,6 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
     public class DeserializeImmutableCollections : TestFixtureBase
     {
         [Test]
-        [Ignore]
         public void Example()
         {
             #region Usage

@@ -876,7 +876,7 @@ Newtonsoft.Json Error: 0 : Error!
             traceWriter.Flush();
             traceWriter.Close();
 
-            StringAssert.AreEqual(@"{
+            string json = @"{
   ""Array"": [
     ""String!"",
     ""2000-12-12T12:12:12Z"",
@@ -927,7 +927,9 @@ Newtonsoft.Json Error: 0 : Error!
     )
     /*A comment*/       
   ]
-}", traceWriter.GetJson());
+}";
+
+            StringAssert.AreEqual("Serialized JSON: " + Environment.NewLine + json, traceWriter.GetSerializedJsonMessage());
         }
 
         [Test]
@@ -1035,7 +1037,7 @@ Newtonsoft.Json Error: 0 : Error!
 
             traceReader.Close();
 
-            StringAssert.AreEqual(json, traceReader.GetJson());
+            StringAssert.AreEqual("Deserialized JSON: " + Environment.NewLine + json, traceReader.GetDeserializedJsonMessage());
         }
 #endif
     }

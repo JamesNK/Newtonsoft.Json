@@ -92,6 +92,7 @@
     <Compile Include="JsonDictionaryAttribute.cs" />
     <Compile Include="JsonException.cs" />
     <Compile Include="JsonExtensionDataAttribute.cs" />
+    <Compile Include="JsonRequiredAttribute.cs" />
     <Compile Include="JsonIgnoreAttribute.cs" />
     <Compile Include="JsonObjectAttribute.cs" />
     <Compile Include="JsonPosition.cs" />
