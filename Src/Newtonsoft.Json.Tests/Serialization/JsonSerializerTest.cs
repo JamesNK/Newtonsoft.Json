@@ -95,6 +95,48 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class JsonSerializerTest : TestFixtureBase
     {
+        public class DictionaryKeyContractResolver : DefaultContractResolver
+        {
+            protected internal override string ResolveDictionaryKey(string dictionaryKey)
+            {
+                return dictionaryKey;
+            }
+
+            protected internal override string ResolvePropertyName(string propertyName)
+            {
+                return propertyName.ToUpper(CultureInfo.InvariantCulture);
+            }
+        }
+
+        [Test]
+        public void DictionaryKeyContractResolverTest()
+        {
+            var person = new
+            {
+                Name = "James",
+                Age = 1,
+                RoleNames = new Dictionary<string, bool>
+                {
+                    { "IsAdmin", true },
+                    { "IsModerator", false }
+                }
+            };
+
+            string json = JsonConvert.SerializeObject(person, Formatting.Indented, new JsonSerializerSettings
+            {
+                ContractResolver = new DictionaryKeyContractResolver()
+            });
+
+            Assert.AreEqual(@"{
+  ""NAME"": ""James"",
+  ""AGE"": 1,
+  ""ROLENAMES"": {
+    ""IsAdmin"": true,
+    ""IsModerator"": false
+  }
+}", json);
+        }
+
         [Test]
         public void IncompleteContainers()
         {

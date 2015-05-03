@@ -45,7 +45,18 @@ namespace Newtonsoft.Json.Serialization
         /// Gets or sets the property name resolver.
         /// </summary>
         /// <value>The property name resolver.</value>
-        public Func<string, string> PropertyNameResolver { get; set; }
+        [Obsolete("PropertyNameResolver is obsolete. Use DictionaryKeyResolver instead.")]
+        public Func<string, string> PropertyNameResolver
+        {
+            get { return DictionaryKeyResolver; }
+            set { DictionaryKeyResolver = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the dictionary key resolver.
+        /// </summary>
+        /// <value>The dictionary key resolver.</value>
+        public Func<string, string> DictionaryKeyResolver { get; set; }
 
         /// <summary>
         /// Gets the <see cref="Type"/> of the dictionary keys.

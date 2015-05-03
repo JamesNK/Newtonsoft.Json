@@ -880,7 +880,7 @@ namespace Newtonsoft.Json.Serialization
             JsonDictionaryContract contract = new JsonDictionaryContract(objectType);
             InitializeContract(contract);
 
-            contract.PropertyNameResolver = ResolvePropertyName;
+            contract.DictionaryKeyResolver = ResolveDictionaryKey;
 
             return contract;
         }
@@ -1360,10 +1360,20 @@ namespace Newtonsoft.Json.Serialization
         /// Resolves the name of the property.
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
-        /// <returns>Name of the property.</returns>
+        /// <returns>Resolved name of the property.</returns>
         protected internal virtual string ResolvePropertyName(string propertyName)
         {
             return propertyName;
+        }
+
+        /// <summary>
+        /// Resolves the key of the dictionary. By default <see cref="M:ResolvePropertyName"/> is used to resolve dictionary keys.
+        /// </summary>
+        /// <param name="dictionaryKey">Key of the dictionary.</param>
+        /// <returns>Resolved key of the dictionary.</returns>
+        protected internal virtual string ResolveDictionaryKey(string dictionaryKey)
+        {
+            return ResolvePropertyName(dictionaryKey);
         }
 
         /// <summary>

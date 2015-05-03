@@ -921,8 +921,8 @@ namespace Newtonsoft.Json.Serialization
                 bool escape;
                 string propertyName = GetPropertyName(writer, entry.Key, contract.KeyContract, out escape);
 
-                propertyName = (contract.PropertyNameResolver != null)
-                    ? contract.PropertyNameResolver(propertyName)
+                propertyName = (contract.DictionaryKeyResolver != null)
+                    ? contract.DictionaryKeyResolver(propertyName)
                     : propertyName;
 
                 try
