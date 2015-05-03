@@ -1361,7 +1361,7 @@ namespace Newtonsoft.Json.Serialization
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
         /// <returns>Resolved name of the property.</returns>
-        protected internal virtual string ResolvePropertyName(string propertyName)
+        protected virtual string ResolvePropertyName(string propertyName)
         {
             return propertyName;
         }
@@ -1371,7 +1371,7 @@ namespace Newtonsoft.Json.Serialization
         /// </summary>
         /// <param name="dictionaryKey">Key of the dictionary.</param>
         /// <returns>Resolved key of the dictionary.</returns>
-        protected internal virtual string ResolveDictionaryKey(string dictionaryKey)
+        protected virtual string ResolveDictionaryKey(string dictionaryKey)
         {
             return ResolvePropertyName(dictionaryKey);
         }

@@ -536,12 +536,11 @@ namespace Newtonsoft.Json.Tests.Converters
 
         public class LowercaseContractResolver : DefaultContractResolver
         {
-            protected internal override string ResolvePropertyName(string propertyName)
+            protected override string ResolvePropertyName(string propertyName)
             {
                 return propertyName.ToLower();
             }
         }
     }
 }
-
 #endif
