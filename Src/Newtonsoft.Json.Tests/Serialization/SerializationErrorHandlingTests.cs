@@ -309,17 +309,20 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(new DateTime(2000, 12, 1, 0, 0, 0, DateTimeKind.Utc), c[2]);
 
             Assert.AreEqual(3, errors.Count);
-#if !(NET20 || NET35)
             var possibleErrs = new [] {
+#if !(NET20 || NET35)
                 "[1] - 1 - The string was not recognized as a valid DateTime. There is an unknown word starting at index 0.",
                 "[1] - 1 - String was not recognized as a valid DateTime."
+#else
+                // handle typo fix in later versions of .NET
+                "[1] - 1 - The string was not recognized as a valid DateTime. There is an unknown word starting at index 0.",
+                "[1] - 1 - The string was not recognized as a valid DateTime. There is a unknown word starting at index 0."
+#endif
             };
 
             Assert.IsTrue(possibleErrs.Any (m => m == errors[0]), 
                 "Expected One of: " + string.Join (Environment.NewLine, possibleErrs) + Environment.NewLine + "But was: " + errors[0]);
-#else
-      Assert.AreEqual("[1] - 1 - The string was not recognized as a valid DateTime. There is a unknown word starting at index 0.", errors[0]);
-#endif
+
             Assert.AreEqual("[2] - 2 - Unexpected token parsing date. Expected String, got StartArray. Path '[2]', line 4, position 10.", errors[1]);
             Assert.AreEqual("[4] - 4 - Cannot convert null value to System.DateTime. Path '[4]', line 8, position 13.", errors[2]);
         }

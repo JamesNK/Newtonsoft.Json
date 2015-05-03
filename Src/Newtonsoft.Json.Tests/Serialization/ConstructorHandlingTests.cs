@@ -24,7 +24,10 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Reflection;
+using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
 #if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -36,6 +39,11 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
+#endif
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
 #endif
 
 namespace Newtonsoft.Json.Tests.Serialization
@@ -161,6 +169,80 @@ namespace Newtonsoft.Json.Tests.Serialization
             PublicParametizedConstructorWithPropertyNameConflictWithAttribute c = JsonConvert.DeserializeObject<PublicParametizedConstructorWithPropertyNameConflictWithAttribute>(json);
             Assert.IsNotNull(c);
             Assert.AreEqual(1, c.Name);
+        }
+
+        public class ConstructorParametersRespectDefaultValueAttributes
+        {
+            [DefaultValue("parameter1_default")]
+            public string Parameter1 { get; private set; }
+            [DefaultValue("parameter2_default")]
+            public string Parameter2 { get; private set; }
+            [DefaultValue("parameter3_default")]
+            public string Parameter3 { get; set; }
+            [DefaultValue("parameter4_default")]
+            public string Parameter4 { get; set; }
+
+            public ConstructorParametersRespectDefaultValueAttributes(string parameter1, string parameter2, string parameter3)
+            {
+                Parameter1 = parameter1;
+                Parameter2 = parameter2;
+                Parameter3 = parameter3;
+            }
+        }
+
+        [Test]
+        public void ConstructorParametersRespectDefaultValueTest_Attrbutes()
+        {
+            var testObject = JsonConvert.DeserializeObject<ConstructorParametersRespectDefaultValueAttributes>("{'Parameter2':'value!'}", new JsonSerializerSettings()
+            {
+                DefaultValueHandling = DefaultValueHandling.Populate
+            });
+
+            Assert.AreEqual("parameter1_default", testObject.Parameter1);
+            Assert.AreEqual("value!", testObject.Parameter2);
+            Assert.AreEqual("parameter3_default", testObject.Parameter3);
+            Assert.AreEqual("parameter4_default", testObject.Parameter4);
+        }
+
+        [Test]
+        public void ConstructorParametersRespectDefaultValueTest()
+        {
+            var testObject = JsonConvert.DeserializeObject<ConstructorParametersRespectDefaultValue>("{}", new JsonSerializerSettings() { ContractResolver = ConstructorParameterDefaultStringValueContractResolver.Instance });
+
+            Assert.AreEqual("Default Value", testObject.Parameter1);
+            Assert.AreEqual("Default Value", testObject.Parameter2);
+        }
+
+        public class ConstructorParametersRespectDefaultValue
+        {
+            public const string DefaultValue = "Default Value";
+
+            public string Parameter1 { get; private set; }
+            public string Parameter2 { get; private set; }
+
+            public ConstructorParametersRespectDefaultValue(string parameter1, string parameter2)
+            {
+                Parameter1 = parameter1;
+                Parameter2 = parameter2;
+            }
+        }
+
+        public class ConstructorParameterDefaultStringValueContractResolver : DefaultContractResolver
+        {
+            public static new ConstructorParameterDefaultStringValueContractResolver Instance = new ConstructorParameterDefaultStringValueContractResolver();
+
+            protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
+            {
+                var properties = base.CreateProperties(type, memberSerialization);
+
+                foreach (var property in properties.Where(p => p.PropertyType == typeof(string)))
+                {
+                    property.DefaultValue = ConstructorParametersRespectDefaultValue.DefaultValue;
+                    property.DefaultValueHandling = DefaultValueHandling.Populate;
+                }
+
+                return properties;
+            }
         }
     }
 }

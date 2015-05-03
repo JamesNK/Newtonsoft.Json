@@ -1662,6 +1662,34 @@ namespace Newtonsoft.Json.Serialization
                 }
             }
 
+            // handle giving default values to creator parameters
+            // this needs to happen before the call to creator
+            if (propertiesPresence != null)
+            {
+                foreach (KeyValuePair<JsonProperty, PropertyPresence> propertyPresence in propertiesPresence)
+                {
+                    JsonProperty property = propertyPresence.Key;
+                    PropertyPresence presence = propertyPresence.Value;
+
+                    if (!property.Ignored && (presence == PropertyPresence.None || presence == PropertyPresence.Null))
+                    {
+                        if (property.PropertyContract == null)
+                            property.PropertyContract = GetContractSafe(property.PropertyType);
+
+                        if (HasFlag(property.DefaultValueHandling.GetValueOrDefault(Serializer._defaultValueHandling), DefaultValueHandling.Populate))
+                        {
+                            // have to use the name because property presence doesn't use creator properties
+                            int i = contract.CreatorParameters.IndexOf(p => p.PropertyName == property.PropertyName);
+
+                            if (i != -1)
+                            {
+                                creatorParameterValues[i] = EnsureType(reader, property.GetResolvedDefaultValue(), CultureInfo.InvariantCulture, property.PropertyContract, property.PropertyType);
+                            }
+                        }
+                    }
+                }
+            }
+
             object createdObject = creator(creatorParameterValues);
 
             if (id != null)
