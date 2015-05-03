@@ -53,6 +53,35 @@ namespace Newtonsoft.Json.Tests.Linq
     [TestFixture]
     public class DynamicTests : TestFixtureBase
     {
+        [Test]
+        public void AccessPropertyValue()
+        {
+            string rawJson = @"{
+  ""task"": {
+    ""dueDate"": ""2012-12-03T00:00:00""
+  }
+}";
+
+            dynamic dyn = JsonConvert.DeserializeObject<dynamic>(rawJson);
+            DateTime dueDate = dyn.task.dueDate.Value;
+
+            Assert.AreEqual(new DateTime(2012, 12, 3, 0, 0, 0, DateTimeKind.Unspecified), dueDate);
+        }
+
+        [Test]
+        public void PropertyDoesNotEqualNull()
+        {
+            dynamic session = JsonConvert.DeserializeObject<dynamic>("{}");
+            if (session.sessionInfo != null)
+            {
+                Assert.Fail();
+            }
+            else
+            {
+                Assert.Pass();
+            }
+        }
+
         private void UpdateValueCount(IDictionary<string, int> counts, dynamic d)
         {
             string s = d.ToString();
