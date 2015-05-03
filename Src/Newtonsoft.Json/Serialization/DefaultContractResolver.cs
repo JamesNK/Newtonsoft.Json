@@ -1367,7 +1367,7 @@ namespace Newtonsoft.Json.Serialization
         }
 
         /// <summary>
-        /// Resolves the key of the dictionary. By default <see cref="M:ResolvePropertyName"/> is used to resolve dictionary keys.
+        /// Resolves the key of the dictionary. By default <see cref="ResolvePropertyName"/> is used to resolve dictionary keys.
         /// </summary>
         /// <param name="dictionaryKey">Key of the dictionary.</param>
         /// <returns>Resolved key of the dictionary.</returns>
