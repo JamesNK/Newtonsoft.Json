@@ -97,12 +97,12 @@ namespace Newtonsoft.Json.Tests.Serialization
     {
         public class DictionaryKeyContractResolver : DefaultContractResolver
         {
-            protected internal override string ResolveDictionaryKey(string dictionaryKey)
+            protected override string ResolveDictionaryKey(string dictionaryKey)
             {
                 return dictionaryKey;
             }
 
-            protected internal override string ResolvePropertyName(string propertyName)
+            protected override string ResolvePropertyName(string propertyName)
             {
                 return propertyName.ToUpper(CultureInfo.InvariantCulture);
             }

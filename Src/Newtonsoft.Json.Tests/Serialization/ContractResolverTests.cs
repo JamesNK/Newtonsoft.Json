@@ -81,7 +81,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         public string PropertyPrefix { get; set; }
         public string PropertySuffix { get; set; }
 
-        protected internal override string ResolvePropertyName(string propertyName)
+        protected override string ResolvePropertyName(string propertyName)
         {
             return base.ResolvePropertyName(PropertyPrefix + propertyName + PropertySuffix);
         }
