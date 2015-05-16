@@ -269,7 +269,7 @@ namespace Newtonsoft.Json.Serialization
             if (containerProperty != null)
             {
                 if (referenceLoopHandling == null)
-                    referenceLoopHandling = containerProperty.ItemReferenceLoopHandling;
+                referenceLoopHandling = containerProperty.ItemReferenceLoopHandling;
 
                 if(referenceComparisonHandling == null)
                     referenceComparisonHandling = containerProperty.ItemReferenceComparisonHandling;
@@ -278,7 +278,7 @@ namespace Newtonsoft.Json.Serialization
             if (containerContract != null)
             {
                 if (referenceLoopHandling == null)
-                    referenceLoopHandling = containerContract.ItemReferenceLoopHandling;
+                referenceLoopHandling = containerContract.ItemReferenceLoopHandling;
 
                 if (referenceComparisonHandling == null)
                     referenceComparisonHandling = containerContract.ItemReferenceComparisonHandling;
