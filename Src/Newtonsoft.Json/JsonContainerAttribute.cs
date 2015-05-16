@@ -110,6 +110,12 @@ namespace Newtonsoft.Json
             set { _itemReferenceLoopHandling = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the method used to compare object references when serializing the property's collection items.
+        /// </summary>
+        /// <value>
+        /// The item reference compare handling.
+        /// </value>
         public ReferenceComparisonHandling ItemReferenceComparisonHandling
         {
             get { return _itemReferenceComparisonHandling ?? default(ReferenceComparisonHandling); }

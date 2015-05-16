@@ -563,7 +563,7 @@ namespace Newtonsoft.Json
             if (settings._referenceLoopHandling != null)
                 serializer.ReferenceLoopHandling = settings.ReferenceLoopHandling;
 
-            if (settings.ReferenceComparisonHandling != null)
+            if (settings._referenceComparisonHandling != null)
                 serializer.ReferenceComparisonHandling = settings.ReferenceComparisonHandling;
 
             if (settings._missingMemberHandling != null)
