@@ -70,7 +70,14 @@ namespace Newtonsoft.Json.Serialization
 
             try
             {
-                SerializeValue(jsonWriter, value, contract, null, null, null);
+                if (ShouldWriteReference(value, null, contract, null, null))
+                {
+                    WriteReference(jsonWriter, value);
+                }
+                else
+                {
+                    SerializeValue(jsonWriter, value, contract, null, null, null);
+                }
             }
             catch (Exception ex)
             {
