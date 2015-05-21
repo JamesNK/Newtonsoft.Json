@@ -8822,6 +8822,26 @@ Path '', line 1, position 1.");
         }
 #endif
 
+        public class PrivateSetterTestClass
+        {
+            public string Value { get; private set; }
+        }
+
+        [Test]
+        public void DeserializePrivateSetterTest()
+        {
+            string json = "{'Value':'hi'}";
+            MemoryTraceWriter traceWriter = new MemoryTraceWriter { LevelFilter = TraceLevel.Warning };
+
+            PrivateSetterTestClass o = JsonConvert.DeserializeObject<PrivateSetterTestClass>(json, new JsonSerializerSettings
+            {
+                TraceWriter = traceWriter
+            });
+
+            string output = traceWriter.ToString();
+            Assert.IsTrue(output.Contains("Warning Unable to deserialize non-writable property 'Value' on Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+PrivateSetterTestClass."));
+        }
+
         [Test]
         public void ParameterizedConstructorWithBasePrivateProperties()
         {
