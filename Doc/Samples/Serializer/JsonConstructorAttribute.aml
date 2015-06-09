@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="JsonConstructorAttribute" revisionNumber="1">
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <introduction>
+      <para>This sample uses the
+      <codeEntityReference>T:Newtonsoft.Json.JsonConstructorAttribute</codeEntityReference>
+      to specify that a constrctor should be used to create a class during deserialization.</para>
+    </introduction>
+    <section>
+      <title>Sample</title>
+      <content>
+        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\Serializer\JsonConstructorAttribute.cs" region="Types" title="Types" />
+        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\Serializer\JsonConstructorAttribute.cs" region="Usage" title="Usage" />
+      </content>
+    </section>
+  </developerConceptualDocument>
+</topic>

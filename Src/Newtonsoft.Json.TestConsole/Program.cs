@@ -42,7 +42,7 @@ namespace Newtonsoft.Json.TestConsole
         {
             Console.WriteLine("Json.NET Test Console");
 
-            string version = FileVersionInfo.GetVersionInfo(typeof (JsonConvert).Assembly.Location).FileVersion;
+            string version = FileVersionInfo.GetVersionInfo(typeof(JsonConvert).Assembly.Location).FileVersion;
             Console.WriteLine("Json.NET Version: " + version);
             Console.ReadKey();
 
@@ -58,6 +58,7 @@ namespace Newtonsoft.Json.TestConsole
             //ReadLargeJsonJavaScriptSerializer();
             DiscriminatedUnionConverterTests t = new DiscriminatedUnionConverterTests();
             t.SerializePerformance();
+            t.DeserializePerformance();
 
             Console.WriteLine();
             Console.WriteLine("Finished");

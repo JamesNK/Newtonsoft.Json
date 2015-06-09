@@ -12,6 +12,7 @@
   <listItem><para><codeEntityReference>T:Newtonsoft.Json.JsonPropertyAttribute</codeEntityReference> - Placed on fields and properties to control how they should be serialized as a property in a JSON object.</para></listItem>
   <listItem><para><codeEntityReference>T:Newtonsoft.Json.JsonConverterAttribute</codeEntityReference> - Placed on either classes or fields and properties to specify which JsonConverter should be used during serialization.</para></listItem>
   <listItem><para><codeEntityReference>T:Newtonsoft.Json.JsonExtensionDataAttribute</codeEntityReference> - Placed on a collection field or property to deserialize properties with no matching class member into the specified collection and write values during serialization.</para></listItem>
+  <listItem><para><codeEntityReference>T:Newtonsoft.Json.JsonConstructorAttribute</codeEntityReference> - Placed on a constructor to specify that it should be used to create the class during deserialization.</para></listItem>
 </list>
 
     </introduction>
@@ -99,12 +100,10 @@
         on a field or property, then the specified JsonConverter will always be used to serialize that value.</para>
         <para>The priority of which JsonConverter is used is member attribute, then class attribute, and finally
         any converters passed to the JsonSerializer.</para>
-        
- <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="SerializationCallbacksObject" title="JsonConverter Attribute" />
+
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\Serializer\JsonConverterAttributeProperty.cs" region="Types" title="JsonConverterAttribute Property Example" />
        
         <para>This example shows the JsonConverterAttribute being applied to a property.</para>
-        
-<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="SerializationCallbacksExample" title="JsonConverter Example" />
                 
         <para>To apply a JsonConverter to the items in a collection, use either <codeEntityReference>T:Newtonsoft.Json.JsonArrayAttribute</codeEntityReference>,
         <codeEntityReference>T:Newtonsoft.Json.JsonDictionaryAttribute</codeEntityReference> or
@@ -122,6 +121,16 @@
         <para>This example shows the JsonExtensionDataAttribute being applied to a field, unmatched JSON properties being added to the field's collection during deserialization.</para>
         <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\Serializer\DeserializeExtensionData.cs" region="Types" title="Types" />
         <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\Serializer\DeserializeExtensionData.cs" region="Usage" title="Usage" />
+      </content>
+    </section>
+        
+    <section>
+      <title>JsonConstructorAttribute</title>
+      <content>
+        <para>The <codeEntityReference>T:Newtonsoft.Json.JsonConstructorAttribute</codeEntityReference> instructs the
+        <codeEntityReference>T:Newtonsoft.Json.JsonSerializer</codeEntityReference> to use a specific constructor when deserializing a class. It can be used to create a class using a parameterized constructor instead of the default constructor, or to pick which specific parameterized constructor to use if there are multiple.</para>
+        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\Serializer\JsonConstructorAttribute.cs" region="Types" title="Types" />
+        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\Serializer\JsonConstructorAttribute.cs" region="Usage" title="Usage" />
       </content>
     </section>
     

@@ -170,6 +170,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Documentation\Samples\Serializer\DeserializeMetadataPropertyHandling.cs" />
+    <Compile Include="Documentation\Samples\Serializer\JsonConstructorAttribute.cs" />
     <Compile Include="Documentation\Samples\Serializer\SerializeDateFormatString.cs" />
     <Compile Include="Documentation\Samples\Serializer\DeserializeCollection.cs" />
     <Compile Include="Documentation\Samples\Serializer\DeserializeConstructorHandling.cs" />

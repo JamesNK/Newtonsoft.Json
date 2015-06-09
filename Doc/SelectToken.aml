@@ -16,10 +16,8 @@
         <para>SelectToken is a method on JToken and takes a string path to a child token.
         SelectToken returns the child token or a null reference if a token couldn't be
         found at the path's location.</para>
-        <para>The path is made up of property names and array indexes separated by periods.
-        Array indexes can use either square or round brackets. Both of the following are
-        valid paths and are equivalent to each other: <codeInline>Manufacturers[0].Name</codeInline>
-        and <codeInline>Manufacturers(0).Name</codeInline>.</para>
+        <para>The path is made up of property names and array indexes separated by periods,
+        e.g. <codeInline>Manufacturers[0].Name</codeInline>.</para>
 
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="SelectTokenComplex" title="SelectToken Example" />
       </content>

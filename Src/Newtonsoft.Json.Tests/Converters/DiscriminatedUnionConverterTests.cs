@@ -101,7 +101,7 @@ namespace Newtonsoft.Json.Tests.Converters
             Stopwatch ts = new Stopwatch();
             ts.Start();
 
-            for (int i = 0; i < 2000; i++)
+            for (int i = 0; i < 10000; i++)
             {
                 JsonConvert.SerializeObject(values);
             }
@@ -127,7 +127,7 @@ namespace Newtonsoft.Json.Tests.Converters
             Stopwatch ts = new Stopwatch();
             ts.Start();
 
-            for (int i = 0; i < 2000; i++)
+            for (int i = 0; i < 10000; i++)
             {
                 JsonConvert.DeserializeObject<List<Shape>>(json);
             }
