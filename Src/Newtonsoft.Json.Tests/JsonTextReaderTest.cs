@@ -53,6 +53,47 @@ namespace Newtonsoft.Json.Tests
     public class JsonTextReaderTest : TestFixtureBase
     {
         [Test]
+        public void ReadCommentInsideArray()
+        {
+            string json = @"{
+    ""projects"": [
+        ""src"",
+        //""
+        ""test""
+    ]
+}";
+
+            JsonTextReader jsonTextReader = new JsonTextReader(new StringReader(json));
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.StartObject, jsonTextReader.TokenType);
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.PropertyName, jsonTextReader.TokenType);
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.StartArray, jsonTextReader.TokenType);
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.String, jsonTextReader.TokenType);
+            Assert.AreEqual("src", jsonTextReader.Value);
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.Comment, jsonTextReader.TokenType);
+            Assert.AreEqual(@"""", jsonTextReader.Value);
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.String, jsonTextReader.TokenType);
+            Assert.AreEqual("test", jsonTextReader.Value);
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.EndArray, jsonTextReader.TokenType);
+
+            Assert.IsTrue(jsonTextReader.Read());
+            Assert.AreEqual(JsonToken.EndObject, jsonTextReader.TokenType);
+        }
+
+
+        [Test]
         public void ReadSingleQuoteInsideDoubleQuoteString()
         {
             string json = @"{""NameOfStore"":""Forest's Bakery And Cafe""}";
