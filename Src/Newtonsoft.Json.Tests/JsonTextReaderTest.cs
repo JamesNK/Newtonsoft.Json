@@ -92,6 +92,21 @@ namespace Newtonsoft.Json.Tests
             Assert.AreEqual(JsonToken.EndObject, jsonTextReader.TokenType);
         }
 
+        [Test]
+        public void ReadAsBytes_Base64AndGuid()
+        {
+            JsonTextReader jsonTextReader = new JsonTextReader(new StringReader("'AAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA'"));
+            byte[] data = jsonTextReader.ReadAsBytes();
+            byte[] expected = Convert.FromBase64String("AAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA");
+
+            CollectionAssert.AreEqual(expected, data);
+
+            jsonTextReader = new JsonTextReader(new StringReader("'AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAABAAAA'"));
+            data = jsonTextReader.ReadAsBytes();
+            expected = Guid.Parse("AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAABAAAA").ToByteArray();
+
+            CollectionAssert.AreEqual(expected, data);
+        }
 
         [Test]
         public void ReadSingleQuoteInsideDoubleQuoteString()

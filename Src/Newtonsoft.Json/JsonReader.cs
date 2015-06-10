@@ -500,7 +500,8 @@ namespace Newtonsoft.Json
                 return data;
             }
 
-            // attempt to convert possible base 64 string to bytes
+            // attempt to convert possible base 64 or GUID string to bytes
+            // GUID has to have format 00000000-0000-0000-0000-000000000000
             if (t == JsonToken.String)
             {
                 string s = (string)Value;

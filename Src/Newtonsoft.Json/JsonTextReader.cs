@@ -117,10 +117,15 @@ namespace Newtonsoft.Json
 
             if (_readType == ReadType.ReadAsBytes)
             {
+                Guid g;
                 byte[] data;
                 if (_stringReference.Length == 0)
                 {
                     data = new byte[0];
+                }
+                else if (_stringReference.Length == 36 && ConvertUtils.TryConvertGuid(_stringReference.ToString(), out g))
+                {
+                    data = g.ToByteArray();
                 }
                 else
                 {

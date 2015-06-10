@@ -55,6 +55,22 @@ namespace Newtonsoft.Json.Tests.Linq
     public class LinqToJsonTest : TestFixtureBase
     {
         [Test]
+        public void ToObject_Base64AndGuid()
+        {
+            JObject o = JObject.Parse("{'responseArray':'AAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA'}");
+            byte[] data = o["responseArray"].ToObject<byte[]>();
+            byte[] expected = Convert.FromBase64String("AAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA");
+
+            CollectionAssert.AreEqual(expected, data);
+
+            o = JObject.Parse("{'responseArray':'AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAABAAAA'}");
+            data = o["responseArray"].ToObject<byte[]>();
+            expected = Guid.Parse("AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAABAAAA").ToByteArray();
+
+            CollectionAssert.AreEqual(expected, data);
+        }
+
+        [Test]
         public void IncompleteContainers()
         {
             ExceptionAssert.Throws<JsonReaderException>(

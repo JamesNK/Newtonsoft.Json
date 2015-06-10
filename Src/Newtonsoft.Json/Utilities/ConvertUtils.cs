@@ -776,14 +776,12 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool TryConvertGuid(string s, out Guid g)
         {
+            // GUID has to have format 00000000-0000-0000-0000-000000000000
 #if NET20 || NET35
             if (s == null)
                 throw new ArgumentNullException("s");
 
-            Regex format = new Regex(
-                "^[A-Fa-f0-9]{32}$|" +
-                "^({|\\()?[A-Fa-f0-9]{8}-([A-Fa-f0-9]{4}-){3}[A-Fa-f0-9]{12}(}|\\))?$|" +
-                "^({)?[0xA-Fa-f0-9]{3,10}(, {0,1}[0xA-Fa-f0-9]{3,6}){2}, {0,1}({)([0xA-Fa-f0-9]{3,4}, {0,1}){7}[0xA-Fa-f0-9]{3,4}(}})$");
+            Regex format = new Regex("^[A-Fa-f0-9]{8}-([A-Fa-f0-9]{4}-){3}[A-Fa-f0-9]{12}$");
             Match match = format.Match(s);
             if (match.Success)
             {
@@ -794,7 +792,7 @@ namespace Newtonsoft.Json.Utilities
             g = Guid.Empty;
             return false;
 #else
-            return Guid.TryParse(s, out g);
+            return Guid.TryParseExact(s, "D", out g);
 #endif
         }
     }
