@@ -676,11 +676,17 @@ namespace Newtonsoft.Json.Linq
                     writer.WriteUndefined();
                     return;
                 case JTokenType.Integer:
+                    if (_value is int)
+                        writer.WriteValue((int)_value);
+                    else if (_value is long)
+                        writer.WriteValue((long)_value);
+                    else if (_value is ulong)
+                        writer.WriteValue((ulong)_value);
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
-                    if (_value is BigInteger)
+                    else if (_value is BigInteger)
                         writer.WriteValue((BigInteger)_value);
-                    else
 #endif
+                    else
                         writer.WriteValue(Convert.ToInt64(_value, CultureInfo.InvariantCulture));
                     return;
                 case JTokenType.Float:

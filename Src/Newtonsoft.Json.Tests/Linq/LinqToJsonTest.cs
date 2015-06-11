@@ -54,6 +54,38 @@ namespace Newtonsoft.Json.Tests.Linq
     [TestFixture]
     public class LinqToJsonTest : TestFixtureBase
     {
+        public class TestClass_ULong
+        {
+            public ulong Value { get; set; }
+        }
+
+        [Test]
+        public void FromObject_ULongMaxValue()
+        {
+            TestClass_ULong instance = new TestClass_ULong { Value = ulong.MaxValue };
+            JObject output = JObject.FromObject(instance);
+
+            StringAssert.AreEqual(@"{
+  ""Value"": 18446744073709551615
+}", output.ToString());
+        }
+
+        public class TestClass_Byte
+        {
+            public byte Value { get; set; }
+        }
+
+        [Test]
+        public void FromObject_ByteMaxValue()
+        {
+            TestClass_Byte instance = new TestClass_Byte { Value = byte.MaxValue };
+            JObject output = JObject.FromObject(instance);
+
+            StringAssert.AreEqual(@"{
+  ""Value"": 255
+}", output.ToString());
+        }
+
         [Test]
         public void ToObject_Base64AndGuid()
         {
