@@ -65,7 +65,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
             o = JObject.Parse("{'responseArray':'AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAABAAAA'}");
             data = o["responseArray"].ToObject<byte[]>();
-            expected = Guid.Parse("AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAABAAAA").ToByteArray();
+            expected = new Guid("AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAABAAAA").ToByteArray();
 
             CollectionAssert.AreEqual(expected, data);
         }

@@ -103,7 +103,7 @@ namespace Newtonsoft.Json.Tests
 
             jsonTextReader = new JsonTextReader(new StringReader("'AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAABAAAA'"));
             data = jsonTextReader.ReadAsBytes();
-            expected = Guid.Parse("AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAABAAAA").ToByteArray();
+            expected = new Guid("AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAABAAAA").ToByteArray();
 
             CollectionAssert.AreEqual(expected, data);
         }
