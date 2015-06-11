@@ -48,6 +48,9 @@ namespace Newtonsoft.Json.Serialization
 {
     internal class JsonSerializerInternalWriter : JsonSerializerInternalBase
     {
+        private static Func<object, object, bool> ObjectEqualsComparison = (left, right) => left.Equals(right);
+        private static Func<object, object, bool> ObjectReferenceComparison = (left, right) => object.ReferenceEquals(left,right);
+
         private JsonContract _rootContract;
         private int _rootLevel;
         private readonly List<object> _serializeStack = new List<object>();
@@ -262,17 +265,43 @@ namespace Newtonsoft.Json.Serialization
                 return true;
 
             ReferenceLoopHandling? referenceLoopHandling = null;
+            ReferenceComparisonHandling? referenceComparisonHandling = null;
 
             if (property != null)
+            {
                 referenceLoopHandling = property.ReferenceLoopHandling;
+                referenceComparisonHandling = property.ReferenceComparisonHandling;
+            }
 
-            if (referenceLoopHandling == null && containerProperty != null)
+            if (containerProperty != null)
+            {
+                if (referenceLoopHandling == null)
                 referenceLoopHandling = containerProperty.ItemReferenceLoopHandling;
 
-            if (referenceLoopHandling == null && containerContract != null)
+                if(referenceComparisonHandling == null)
+                    referenceComparisonHandling = containerProperty.ItemReferenceComparisonHandling;
+            }
+
+            if (containerContract != null)
+            {
+                if (referenceLoopHandling == null)
                 referenceLoopHandling = containerContract.ItemReferenceLoopHandling;
 
-            if (_serializeStack.IndexOf(value) != -1)
+                if (referenceComparisonHandling == null)
+                    referenceComparisonHandling = containerContract.ItemReferenceComparisonHandling;
+            }
+
+            if(referenceComparisonHandling == null)
+            {
+                referenceComparisonHandling = Serializer._referenceComparisonHandling;
+            }
+
+            var referenceCompareMethod = 
+                !referenceComparisonHandling.HasValue || referenceComparisonHandling == ReferenceComparisonHandling.ObjectEquals ? 
+                ObjectEqualsComparison : 
+                ObjectReferenceComparison;
+            
+            if (_serializeStack.IndexOf(itemOnStack => referenceCompareMethod(itemOnStack, value)) != -1)
             {
                 string message = "Self referencing loop detected";
                 if (property != null)

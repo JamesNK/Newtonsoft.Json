@@ -73,6 +73,7 @@ namespace Newtonsoft.Json
         internal bool? _isReference;
         internal bool? _itemIsReference;
         internal ReferenceLoopHandling? _itemReferenceLoopHandling;
+        internal ReferenceComparisonHandling? _itemReferenceComparisonHandling;
         internal TypeNameHandling? _itemTypeNameHandling;
 
         /// <summary>
@@ -107,6 +108,18 @@ namespace Newtonsoft.Json
         {
             get { return _itemReferenceLoopHandling ?? default(ReferenceLoopHandling); }
             set { _itemReferenceLoopHandling = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the method used to compare object references when serializing the property's collection items.
+        /// </summary>
+        /// <value>
+        /// The item reference compare handling.
+        /// </value>
+        public ReferenceComparisonHandling ItemReferenceComparisonHandling
+        {
+            get { return _itemReferenceComparisonHandling ?? default(ReferenceComparisonHandling); }
+            set { _itemReferenceComparisonHandling = value; }
         }
 
         /// <summary>
