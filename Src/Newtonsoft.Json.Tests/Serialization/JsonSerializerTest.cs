@@ -95,6 +95,21 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class JsonSerializerTest : TestFixtureBase
     {
+        [Test]
+        public void CoercedEmptyStringWithRequired()
+        {
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                JsonConvert.DeserializeObject<Binding>("{requiredProperty:''}");
+            }, "Required property 'RequiredProperty' expects a value but got null. Path '', line 1, position 21.");
+        }
+
+        public class Binding
+        {
+            [JsonProperty(Required = Required.Always)]
+            public Binding RequiredProperty { get; set; }
+        }
+
         public class DictionaryKeyContractResolver : DefaultContractResolver
         {
             protected override string ResolveDictionaryKey(string dictionaryKey)

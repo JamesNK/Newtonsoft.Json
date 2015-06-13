@@ -279,7 +279,7 @@ namespace Newtonsoft.Json.Serialization
                         string s = (string)reader.Value;
 
                         // convert empty string to null automatically for nullable types
-                        if (string.IsNullOrEmpty(s) && objectType != null && objectType != typeof(string) && objectType != typeof(object) && contract != null && contract.IsNullable)
+                        if (CoerceEmptyStringToNull(objectType, contract, s))
                             return null;
 
                         // string that needs to be returned as a byte array should be base 64 decoded
@@ -310,6 +310,11 @@ namespace Newtonsoft.Json.Serialization
             } while (reader.Read());
 
             throw JsonSerializationException.Create(reader, "Unexpected end when deserializing object.");
+        }
+
+        private static bool CoerceEmptyStringToNull(Type objectType, JsonContract contract, string s)
+        {
+            return string.IsNullOrEmpty(s) && objectType != null && objectType != typeof(string) && objectType != typeof(object) && contract != null && contract.IsNullable;
         }
 
         internal string GetExpectedDescription(JsonContract contract)
@@ -1804,9 +1809,6 @@ namespace Newtonsoft.Json.Serialization
 
                             if (!property.Ignored)
                             {
-                                if (property.PropertyContract == null)
-                                    property.PropertyContract = GetContractSafe(property.PropertyType);
-
                                 object propertyValue;
                                 if (propertyConverter != null && propertyConverter.CanRead)
                                     propertyValue = DeserializeConvertable(propertyConverter, reader, property.PropertyType, null);
@@ -1986,15 +1988,13 @@ namespace Newtonsoft.Json.Serialization
                                 continue;
                             }
 
+                            if (property.PropertyContract == null)
+                                property.PropertyContract = GetContractSafe(property.PropertyType);
+
                             JsonConverter propertyConverter = null;
 
                             if (!property.Ignored)
-                            {
-                                if (property.PropertyContract == null)
-                                    property.PropertyContract = GetContractSafe(property.PropertyType);
-
                                 propertyConverter = GetConverter(property.PropertyContract, property.MemberConverter, contract, member);
-                            }
 
                             if (!ReadForType(reader, property.PropertyContract, propertyConverter != null))
                                 throw JsonSerializationException.Create(reader, "Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
@@ -2124,9 +2124,24 @@ namespace Newtonsoft.Json.Serialization
         {
             if (property != null && requiredProperties != null)
             {
-                requiredProperties[property] = (reader.TokenType == JsonToken.Null || reader.TokenType == JsonToken.Undefined)
-                    ? PropertyPresence.Null
-                    : PropertyPresence.Value;
+                PropertyPresence propertyPresence;
+                switch (reader.TokenType)
+                {
+                    case JsonToken.String:
+                        propertyPresence = (CoerceEmptyStringToNull(property.PropertyType, property.PropertyContract, (string)reader.Value))
+                            ? PropertyPresence.Null
+                            : PropertyPresence.Value;
+                      break;
+                    case JsonToken.Null:
+                    case JsonToken.Undefined:
+                        propertyPresence = PropertyPresence.Null;
+                        break;
+                    default:
+                        propertyPresence = PropertyPresence.Value;
+                        break;
+                }
+
+                requiredProperties[property] = propertyPresence;
             }
         }
 
