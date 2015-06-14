@@ -55,7 +55,6 @@ namespace Newtonsoft.Json.Serialization
 
         private ErrorContext _currentErrorContext;
         private BidirectionalDictionary<string, object> _mappings;
-        private bool _serializing;
 
         internal readonly JsonSerializer Serializer;
         internal readonly ITraceWriter TraceWriter;
@@ -66,9 +65,6 @@ namespace Newtonsoft.Json.Serialization
 
             Serializer = serializer;
             TraceWriter = serializer.TraceWriter;
-
-            // kind of a hack but meh. might clean this up later
-            _serializing = (GetType() == typeof(JsonSerializerInternalWriter));
         }
 
         internal BidirectionalDictionary<string, object> DefaultReferenceMappings
@@ -116,7 +112,8 @@ namespace Newtonsoft.Json.Serialization
                 // only write error once
                 errorContext.Traced = true;
 
-                string message = (_serializing) ? "Error serializing" : "Error deserializing";
+                // kind of a hack but meh. might clean this up later
+                string message = (GetType() == typeof(JsonSerializerInternalWriter)) ? "Error serializing" : "Error deserializing";
                 if (contract != null)
                     message += " " + contract.UnderlyingType;
                 message += ". " + ex.Message;
