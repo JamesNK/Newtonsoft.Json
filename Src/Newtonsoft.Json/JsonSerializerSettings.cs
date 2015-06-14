@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.Serialization.Formatters;
@@ -198,6 +199,12 @@ namespace Newtonsoft.Json
         /// </summary>
         /// <value>The contract resolver.</value>
         public IContractResolver ContractResolver { get; set; }
+
+        /// <summary>
+        /// Gets or sets the equality comparer used by the serializer when comparing references.
+        /// </summary>
+        /// <value>The equality comparer.</value>
+        public IEqualityComparer EqualityComparer { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="IReferenceResolver"/> used by the serializer when resolving references.

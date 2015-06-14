@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Globalization;
 using System.Runtime.Serialization.Formatters;
 using Newtonsoft.Json.Utilities;
@@ -53,6 +54,12 @@ namespace Newtonsoft.Json.Serialization
         {
             get { return _serializer.TraceWriter; }
             set { _serializer.TraceWriter = value; }
+        }
+
+        public override IEqualityComparer EqualityComparer
+        {
+            get { return _serializer.EqualityComparer; }
+            set { _serializer.EqualityComparer = value; }
         }
 
         public override JsonConverterCollection Converters
