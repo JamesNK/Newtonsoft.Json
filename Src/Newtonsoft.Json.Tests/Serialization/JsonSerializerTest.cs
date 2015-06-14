@@ -96,12 +96,51 @@ namespace Newtonsoft.Json.Tests.Serialization
     public class JsonSerializerTest : TestFixtureBase
     {
         [Test]
+        public void CaseInsensitiveRequiredPropertyConstructorCreation()
+        {
+            FooRequired foo1 = new FooRequired(new[] { "A", "B", "C" });
+            string json = JsonConvert.SerializeObject(foo1);
+
+            StringAssert.AreEqual(@"{""Bars"":[""A"",""B"",""C""]}", json);
+
+            FooRequired foo2 = JsonConvert.DeserializeObject<FooRequired>(json);
+            Assert.AreEqual(foo1.Bars.Count, foo2.Bars.Count);
+            Assert.AreEqual(foo1.Bars[0], foo2.Bars[0]);
+            Assert.AreEqual(foo1.Bars[1], foo2.Bars[1]);
+            Assert.AreEqual(foo1.Bars[2], foo2.Bars[2]);
+        }
+
+        public class FooRequired
+        {
+            [JsonProperty(Required = Required.Always)]
+            public List<string> Bars { get; private set; }
+
+            public FooRequired(IEnumerable<string> bars)
+            {
+                Bars = new List<string>();
+                if (bars != null)
+                {
+                    Bars.AddRange(bars);
+                }
+            }
+        }
+
+        [Test]
         public void CoercedEmptyStringWithRequired()
         {
             ExceptionAssert.Throws<JsonSerializationException>(() =>
             {
                 JsonConvert.DeserializeObject<Binding>("{requiredProperty:''}");
             }, "Required property 'RequiredProperty' expects a value but got null. Path '', line 1, position 21.");
+        }
+
+        [Test]
+        public void CoercedEmptyStringWithRequiredConstructor()
+        {
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                JsonConvert.DeserializeObject<FooRequired>("{Bars:''}");
+            }, "Required property 'Bars' expects a value but got null. Path '', line 1, position 9.");
         }
 
         public class Binding

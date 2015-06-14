@@ -1661,9 +1661,28 @@ namespace Newtonsoft.Json.Serialization
                 if (propertiesPresence != null)
                 {
                     // map from creator property to normal property
-                    JsonProperty presenceProperty = propertiesPresence.Keys.FirstOrDefault(p => p.PropertyName == property.PropertyName);
+                    JsonProperty presenceProperty = propertiesPresence.Keys.ForgivingCaseSensitiveFind(p => p.PropertyName, property.PropertyName);
                     if (presenceProperty != null)
-                        propertiesPresence[presenceProperty] = (propertyValue.Value == null) ? PropertyPresence.Null : PropertyPresence.Value;
+                    {
+                        object v = propertyValue.Value;
+                        PropertyPresence propertyPresence;
+                        if (v == null)
+                        {
+                            propertyPresence = PropertyPresence.Null;
+                        }
+                        else if (v is string)
+                        {
+                            propertyPresence = CoerceEmptyStringToNull(property.PropertyType, property.PropertyContract, (string)v)
+                                ? PropertyPresence.Null
+                                : PropertyPresence.Value;
+                        }
+                        else
+                        {
+                            propertyPresence = PropertyPresence.Value;
+                        }
+
+                        propertiesPresence[presenceProperty] = propertyPresence;
+                    }
                 }
             }
 
