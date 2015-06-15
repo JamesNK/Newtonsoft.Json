@@ -932,8 +932,8 @@ namespace Newtonsoft.Json.Tests.Serialization
             settings.Culture = new CultureInfo("en-nz");
             Assert.AreEqual("en-NZ", settings.Culture.ToString());
 
-            settings.EqualityComparer = EqualityComparer<object>.Default;
-            Assert.AreEqual(EqualityComparer<object>.Default, settings.EqualityComparer);
+            settings.ReferenceLoopEqualityComparer = EqualityComparer<object>.Default;
+            Assert.AreEqual(EqualityComparer<object>.Default, settings.ReferenceLoopEqualityComparer);
 
             settings.DateFormatHandling = DateFormatHandling.MicrosoftDateFormat;
             Assert.AreEqual(DateFormatHandling.MicrosoftDateFormat, settings.DateFormatHandling);

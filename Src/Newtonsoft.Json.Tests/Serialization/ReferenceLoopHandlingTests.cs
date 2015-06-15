@@ -290,7 +290,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(account, new JsonSerializerSettings
             {
-                EqualityComparer = new ReferenceEqualsEqualityComparer(),
+                ReferenceLoopEqualityComparer = new ReferenceEqualsEqualityComparer(),
                 Formatting = Formatting.Indented
             });
 
