@@ -51,7 +51,6 @@ namespace Newtonsoft.Json.Serialization
         private JsonContract _rootContract;
         private int _rootLevel;
         private readonly List<object> _serializeStack = new List<object>();
-        private JsonSerializerProxy _internalSerializer;
 
         public JsonSerializerInternalWriter(JsonSerializer serializer)
             : base(serializer)
@@ -104,10 +103,10 @@ namespace Newtonsoft.Json.Serialization
 
         private JsonSerializerProxy GetInternalSerializer()
         {
-            if (_internalSerializer == null)
-                _internalSerializer = new JsonSerializerProxy(this);
+            if (InternalSerializer == null)
+                InternalSerializer = new JsonSerializerProxy(this);
 
-            return _internalSerializer;
+            return InternalSerializer;
         }
 
         private JsonContract GetContractSafe(object value)

@@ -58,6 +58,7 @@ namespace Newtonsoft.Json.Serialization
 
         internal readonly JsonSerializer Serializer;
         internal readonly ITraceWriter TraceWriter;
+        protected JsonSerializerProxy InternalSerializer;
 
         protected JsonSerializerInternalBase(JsonSerializer serializer)
         {

@@ -57,8 +57,6 @@ namespace Newtonsoft.Json.Serialization
             Value = 2
         }
 
-        private JsonSerializerProxy _internalSerializer;
-
         public JsonSerializerInternalReader(JsonSerializer serializer)
             : base(serializer)
         {
@@ -184,10 +182,10 @@ namespace Newtonsoft.Json.Serialization
 
         private JsonSerializerProxy GetInternalSerializer()
         {
-            if (_internalSerializer == null)
-                _internalSerializer = new JsonSerializerProxy(this);
+            if (InternalSerializer == null)
+                InternalSerializer = new JsonSerializerProxy(this);
 
-            return _internalSerializer;
+            return InternalSerializer;
         }
 
         private JToken CreateJToken(JsonReader reader, JsonContract contract)
