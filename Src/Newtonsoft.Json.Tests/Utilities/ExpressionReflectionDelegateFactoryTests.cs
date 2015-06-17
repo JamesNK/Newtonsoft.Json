@@ -24,7 +24,7 @@
 #endregion
 
 using System.Collections.Generic;
-#if !(NET20 || NET35)
+#if !(PORTABLE40 || NET20 || NET35)
 using System.Linq;
 using System;
 using System.Diagnostics;
