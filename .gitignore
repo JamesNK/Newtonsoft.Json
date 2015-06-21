@@ -11,6 +11,8 @@ AppPackages/
 _ReSharper.*
 *.ReSharper.user
 *.resharper.user
+project.lock.json
+*.xproj
 
 #NuGet
 packages
