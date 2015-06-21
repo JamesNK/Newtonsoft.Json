@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -128,10 +129,10 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
                         switch (_valueType)
                         {
                             case JTokenType.Integer:
-                                SetToken(JsonToken.Integer, Convert.ToInt64(_reader.Value));
+                                SetToken(JsonToken.Integer, Convert.ToInt64(_reader.Value, CultureInfo.InvariantCulture));
                                 break;
                             case JTokenType.Float:
-                                SetToken(JsonToken.Float, Convert.ToDouble(_reader.Value));
+                                SetToken(JsonToken.Float, Convert.ToDouble(_reader.Value, CultureInfo.InvariantCulture));
                                 break;
                             case JTokenType.String:
                             case JTokenType.Uri:
@@ -140,10 +141,10 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
                                 SetToken(JsonToken.String, _reader.Value);
                                 break;
                             case JTokenType.Boolean:
-                                SetToken(JsonToken.Boolean, Convert.ToBoolean(_reader.Value));
+                                SetToken(JsonToken.Boolean, Convert.ToBoolean(_reader.Value, CultureInfo.InvariantCulture));
                                 break;
                             case JTokenType.Date:
-                                SetToken(JsonToken.Date, Convert.ToDateTime(_reader.Value));
+                                SetToken(JsonToken.Date, Convert.ToDateTime(_reader.Value, CultureInfo.InvariantCulture));
                                 break;
                             case JTokenType.Bytes:
                                 SetToken(JsonToken.Bytes, Convert.FromBase64String(_reader.Value));
