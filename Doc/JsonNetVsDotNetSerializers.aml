@@ -29,7 +29,7 @@
     <entry><para><markup><img src="../cross.png" /></markup></para></entry>
   </row>
   <row>
-    <entry><para>Supports JSON Schema</para></entry>
+    <entry><para>Supports JSONPath</para></entry>
     <entry><para><markup><img src="../tick.png" /></markup></para></entry>
     <entry><para><markup><img src="../cross.png" /></markup></para></entry>
     <entry><para><markup><img src="../cross.png" /></markup></para></entry>
@@ -53,6 +53,12 @@
     <entry><para><markup><img src="../tick.png" /></markup></para></entry>
   </row>
   <row>
+    <entry><para>Supports .NET 4.5</para></entry>
+    <entry><para><markup><img src="../tick.png" /></markup></para></entry>
+    <entry><para><markup><img src="../tick.png" /></markup></para></entry>
+    <entry><para><markup><img src="../tick.png" /></markup></para></entry>
+  </row>
+  <row>
     <entry><para>Supports Silverlight</para></entry>
     <entry><para><markup><img src="../tick.png" /></markup></para></entry>
     <entry><para><markup><img src="../tick.png" /></markup></para></entry>
@@ -65,7 +71,13 @@
     <entry><para><markup><img src="../cross.png" /></markup></para></entry>
   </row>
   <row>
-    <entry><para>Supports WinRT</para></entry>
+    <entry><para>Supports Windows Store</para></entry>
+    <entry><para><markup><img src="../tick.png" /></markup></para></entry>
+    <entry><para><markup><img src="../tick.png" /></markup></para></entry>
+    <entry><para><markup><img src="../cross.png" /></markup></para></entry>
+  </row>
+  <row>
+    <entry><para>Supports Xamarin</para></entry>
     <entry><para><markup><img src="../tick.png" /></markup></para></entry>
     <entry><para><markup><img src="../tick.png" /></markup></para></entry>
     <entry><para><markup><img src="../cross.png" /></markup></para></entry>
@@ -436,7 +448,43 @@
     <entry><para><markup><img src="../cross.png" /></markup></para></entry>
     <entry><para><markup><img src="../cross.png" /></markup></para></entry>
   </row>
-</table>  
+  <row>
+    <entry><para>Diagnostic tracing</para></entry>
+    <entry><para><markup><img src="../tick.png" /></markup></para></entry>
+    <entry><para><markup><img src="../tick.png" /></markup></para></entry>
+    <entry><para><markup><img src="../cross.png" /></markup></para></entry>
+  </row>
+  <row>
+    <entry><para>Serializes read-only and immutable collections</para></entry>
+    <entry><para><markup><img src="../tick.png" /></markup></para></entry>
+    <entry><para><markup><img src="../cross.png" /></markup></para></entry>
+    <entry><para><markup><img src="../cross.png" /></markup></para></entry>
+  </row>
+  <row>
+    <entry><para>Supports serialization extension data</para></entry>
+    <entry><para><markup><img src="../tick.png" /></markup></para></entry>
+    <entry><para><markup><img src="../tick.png" /></markup></para></entry>
+    <entry><para><markup><img src="../cross.png" /></markup></para></entry>
+  </row>
+  <row>
+    <entry><para>Serializes F# discriminated unions</para></entry>
+    <entry><para><markup><img src="../tick.png" /></markup></para></entry>
+    <entry><para><markup><img src="../cross.png" /></markup></para></entry>
+    <entry><para><markup><img src="../cross.png" /></markup></para></entry>
+  </row>
+  <row>
+    <entry><para>Serializes F# collections</para></entry>
+    <entry><para><markup><img src="../tick.png" /></markup></para></entry>
+    <entry><para><markup><img src="../cross.png" /></markup></para></entry>
+    <entry><para><markup><img src="../cross.png" /></markup></para></entry>
+  </row>
+  <row>
+    <entry><para>Supports merging JSON</para></entry>
+    <entry><para><markup><img src="../tick.png" /></markup></para></entry>
+    <entry><para><markup><img src="../cross.png" /></markup></para></entry>
+    <entry><para><markup><img src="../cross.png" /></markup></para></entry>
+  </row>
+</table>
       </content>
     </section>
     <section>
