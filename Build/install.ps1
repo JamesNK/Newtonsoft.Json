@@ -5,7 +5,7 @@ param($installPath, $toolsPath, $package, $project)
 
 try
 {
-  $url = "http://james.newtonking.com/json/install?version=" + $package.Version
+  $url = "http://www.newtonsoft.com/json/install?version=" + $package.Version
   $dte2 = Get-Interface $dte ([EnvDTE80.DTE2])
 
   if ($dte2.ActiveWindow.Caption -eq "Package Manager Console")
@@ -97,7 +97,7 @@ catch
     $selection.StartOfDocument($false)
     $selection.EndOfDocument($true)
 
-    if ($selection.Text.StartsWith("Installing 'Newtonsoft.Json "))
+    if ($selection.Text.StartsWith("Attempting to gather dependencies information for package 'Newtonsoft.Json." + $package.Version + "'"))
     {
       $dte2.ItemOperations.Navigate($url) | Out-Null
     }
