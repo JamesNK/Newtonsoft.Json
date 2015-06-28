@@ -50,7 +50,11 @@ namespace Newtonsoft.Json
         internal const FormatterAssemblyStyle DefaultTypeNameAssemblyFormat = FormatterAssemblyStyle.Simple;
         internal static readonly StreamingContext DefaultContext;
 
+#if DEBUG
+        internal const Formatting DefaultFormatting = Formatting.Indented;
+#else
         internal const Formatting DefaultFormatting = Formatting.None;
+#endif
         internal const DateFormatHandling DefaultDateFormatHandling = DateFormatHandling.IsoDateFormat;
         internal const DateTimeZoneHandling DefaultDateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
         internal const DateParseHandling DefaultDateParseHandling = DateParseHandling.DateTime;
