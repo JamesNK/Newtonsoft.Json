@@ -868,6 +868,11 @@ namespace Newtonsoft.Json.Serialization
                             return ConvertUtils.FromBigInteger((BigInteger)value, contract.NonNullableUnderlyingType);
 #endif
 
+
+                        if (Serializer.NumericConversionHandling != NumericConversionHandling.AllowQuotes
+                            && !ConvertUtils.IsSameBasicType(valueType, contract.NonNullableUnderlyingType))
+                            throw new FormatException();
+                        
                         // this won't work when converting to a custom IConvertible
                         return Convert.ChangeType(value, contract.NonNullableUnderlyingType, culture);
                     }
@@ -959,7 +964,9 @@ namespace Newtonsoft.Json.Serialization
                 {
                     propertyContract = GetContractSafe(currentValue.GetType());
 
-                    useExistingValue = (!propertyContract.IsReadOnlyOrFixedSize && !propertyContract.UnderlyingType.IsValueType());
+                    bool doNotReplaceEmptyArray = !property.PropertyType.IsArray && (property.EmptyArrayHandling ?? Serializer.EmptyArrayHandling) == EmptyArrayHandling.Ignore;
+
+                    useExistingValue = (!propertyContract.IsReadOnlyOrFixedSize && !propertyContract.UnderlyingType.IsValueType() && doNotReplaceEmptyArray);
                 }
             }
 
@@ -1555,7 +1562,7 @@ namespace Newtonsoft.Json.Serialization
                                 throw JsonSerializationException.Create(reader, "Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
 
                             // first attempt to find a settable property, otherwise fall back to a dynamic set without type
-                            JsonProperty property = contract.Properties.GetClosestMatchProperty(memberName);
+                            JsonProperty property = contract.Properties.GetClosestMatchProperty(memberName, Serializer.MemberNameCaseHandling);
 
                             if (property != null && property.Writable && !property.Ignored)
                             {
@@ -1811,8 +1818,8 @@ namespace Newtonsoft.Json.Serialization
 
                         // attempt exact case match first
                         // then try match ignoring case
-                        JsonProperty property = contract.CreatorParameters.GetClosestMatchProperty(memberName) ??
-                                                contract.Properties.GetClosestMatchProperty(memberName);
+                        JsonProperty property = contract.CreatorParameters.GetClosestMatchProperty(memberName, Serializer.MemberNameCaseHandling) ??
+                                                contract.Properties.GetClosestMatchProperty(memberName, Serializer.MemberNameCaseHandling);
 
                         if (property != null)
                         {
@@ -1879,6 +1886,12 @@ namespace Newtonsoft.Json.Serialization
                 return reader.Read();
 
             ReadType t = (contract != null) ? contract.InternalReadType : ReadType.Read;
+
+            if (Serializer.NumericConversionHandling == NumericConversionHandling.ProhibitQuotes
+                && (t == ReadType.ReadAsInt32 || t == ReadType.ReadAsDecimal))
+            {
+                t = ReadType.Read;
+            }
 
             switch (t)
             {
@@ -1988,7 +2001,7 @@ namespace Newtonsoft.Json.Serialization
                         {
                             // attempt exact case match first
                             // then try match ignoring case
-                            JsonProperty property = contract.Properties.GetClosestMatchProperty(memberName);
+                            JsonProperty property = contract.Properties.GetClosestMatchProperty(memberName, Serializer.MemberNameCaseHandling);
 
                             if (property == null)
                             {

@@ -46,6 +46,7 @@ namespace Newtonsoft.Json
         internal bool? _itemIsReference;
         internal ReferenceLoopHandling? _itemReferenceLoopHandling;
         internal TypeNameHandling? _itemTypeNameHandling;
+        internal EmptyArrayHandling? _emptyArrayHandling;
 
         /// <summary>
         /// Gets or sets the converter used when serializing the property's collection items.
@@ -180,6 +181,15 @@ namespace Newtonsoft.Json
         {
             get { return _itemIsReference ?? default(bool); }
             set { _itemIsReference = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets whether to ignore empty arrays       
+        /// </summary>
+        public EmptyArrayHandling EmptyArrayHandling
+        {
+            get { return _emptyArrayHandling ?? default(EmptyArrayHandling); }
+            set { _emptyArrayHandling = value; }
         }
 
         /// <summary>

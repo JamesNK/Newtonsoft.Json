@@ -201,6 +201,11 @@ namespace Newtonsoft.Json.Serialization
         public bool? IsReference { get; set; }
 
         /// <summary>
+        /// Gets or sets the property of empty array handling.
+        /// </summary>
+        public EmptyArrayHandling? EmptyArrayHandling { get; set; }
+
+        /// <summary>
         /// Gets or sets the property null value handling.
         /// </summary>
         /// <value>The null value handling.</value>

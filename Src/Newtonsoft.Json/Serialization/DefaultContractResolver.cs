@@ -1304,6 +1304,7 @@ namespace Newtonsoft.Json.Serialization
             property.ObjectCreationHandling = (propertyAttribute != null) ? propertyAttribute._objectCreationHandling : null;
             property.TypeNameHandling = (propertyAttribute != null) ? propertyAttribute._typeNameHandling : null;
             property.IsReference = (propertyAttribute != null) ? propertyAttribute._isReference : null;
+            property.EmptyArrayHandling = (propertyAttribute != null) ? propertyAttribute._emptyArrayHandling : null;
 
             property.ItemIsReference = (propertyAttribute != null) ? propertyAttribute._itemIsReference : null;
             property.ItemConverter =
