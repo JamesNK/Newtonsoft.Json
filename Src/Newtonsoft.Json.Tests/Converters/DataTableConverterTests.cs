@@ -454,6 +454,41 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual("432", dt[0].CustomerID);
         }
 
+        public class DataTableTestClass
+        {
+            public DataTable Table { get; set; }
+        }
+
+        [Test]
+        public void SerializeNull()
+        {
+            DataTableTestClass c1 = new DataTableTestClass
+            {
+                Table = null
+            };
+
+            string json = JsonConvert.SerializeObject(c1, Formatting.Indented);
+
+            StringAssert.AreEqual(@"{
+  ""Table"": null
+}", json);
+
+            DataTableTestClass c2 = JsonConvert.DeserializeObject<DataTableTestClass>(json);
+
+            Assert.AreEqual(null, c2.Table);
+        }
+
+        [Test]
+        public void SerializeNullRoot()
+        {
+            string json = JsonConvert.SerializeObject(null, typeof(DataTable), new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented
+            });
+
+            StringAssert.AreEqual(@"null", json);
+        }
+
 #if !(NET20 || PORTABLE || PORTABLE40)
         [Test]
         public void DeserializedTypedDataTableWithConverter()

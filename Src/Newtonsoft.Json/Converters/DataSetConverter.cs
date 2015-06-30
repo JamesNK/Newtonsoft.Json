@@ -70,6 +70,11 @@ namespace Newtonsoft.Json.Converters
         /// <returns>The object value.</returns>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
+            if (reader.TokenType == JsonToken.Null)
+            {
+                return null;
+            }
+
             // handle typed datasets
             DataSet ds = (objectType == typeof(DataSet))
                 ? new DataSet()
@@ -87,7 +92,9 @@ namespace Newtonsoft.Json.Converters
                 dt = (DataTable)converter.ReadJson(reader, typeof(DataTable), dt, serializer);
 
                 if (!exists)
+                {
                     ds.Tables.Add(dt);
+                }
 
                 CheckedRead(reader);
             }
@@ -110,9 +117,10 @@ namespace Newtonsoft.Json.Converters
         private void CheckedRead(JsonReader reader)
         {
             if (!reader.Read())
+            {
                 throw JsonSerializationException.Create(reader, "Unexpected end when reading DataSet.");
+            }
         }
     }
 }
-
 #endif

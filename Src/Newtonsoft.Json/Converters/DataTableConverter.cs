@@ -80,6 +80,11 @@ namespace Newtonsoft.Json.Converters
         /// <returns>The object value.</returns>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
+            if (reader.TokenType == JsonToken.Null)
+            {
+                return null;
+            }
+
             DataTable dt = existingValue as DataTable;
 
             if (dt == null)
@@ -90,15 +95,24 @@ namespace Newtonsoft.Json.Converters
                     : (DataTable)Activator.CreateInstance(objectType);
             }
 
+            // DataTable is inside a DataSet
+            // populate the name from the property name
             if (reader.TokenType == JsonToken.PropertyName)
             {
                 dt.TableName = (string)reader.Value;
 
                 CheckedRead(reader);
+
+                if (reader.TokenType == JsonToken.Null)
+                {
+                    return dt;
+                }
             }
 
             if (reader.TokenType != JsonToken.StartArray)
+            {
                 throw JsonSerializationException.Create(reader, "Unexpected JSON token when reading DataTable. Expected StartArray, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
+            }
 
             CheckedRead(reader);
 
@@ -134,7 +148,9 @@ namespace Newtonsoft.Json.Converters
                 if (column.DataType == typeof(DataTable))
                 {
                     if (reader.TokenType == JsonToken.StartArray)
+                    {
                         CheckedRead(reader);
+                    }
 
                     DataTable nestedDt = new DataTable();
 
@@ -150,7 +166,9 @@ namespace Newtonsoft.Json.Converters
                 else if (column.DataType.IsArray && column.DataType != typeof(byte[]))
                 {
                     if (reader.TokenType == JsonToken.StartArray)
+                    {
                         CheckedRead(reader);
+                    }
 
                     List<object> o = new List<object>();
 
@@ -196,7 +214,9 @@ namespace Newtonsoft.Json.Converters
                 case JsonToken.StartArray:
                     CheckedRead(reader);
                     if (reader.TokenType == JsonToken.StartObject)
-                        return typeof(DataTable); // nested datatable
+                    {
+                        return typeof (DataTable); // nested datatable
+                    }
 
                     Type arrayType = GetColumnDataType(reader);
                     return arrayType.MakeArrayType();
@@ -208,7 +228,9 @@ namespace Newtonsoft.Json.Converters
         private static void CheckedRead(JsonReader reader)
         {
             if (!reader.Read())
+            {
                 throw JsonSerializationException.Create(reader, "Unexpected end when reading DataTable.");
+            }
         }
 
         /// <summary>

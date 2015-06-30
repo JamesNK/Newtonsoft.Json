@@ -106,6 +106,53 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual(2, dt.Rows.Count);
         }
 
+        public class DataSetTestClass
+        {
+            public DataSet Set { get; set; }
+        }
+
+        [Test]
+        public void SerializeNull()
+        {
+            DataSetTestClass c1 = new DataSetTestClass
+            {
+                Set = null
+            };
+
+            string json = JsonConvert.SerializeObject(c1, Formatting.Indented);
+
+            StringAssert.AreEqual(@"{
+  ""Set"": null
+}", json);
+
+            DataSetTestClass c2 = JsonConvert.DeserializeObject<DataSetTestClass>(json);
+
+            Assert.AreEqual(null, c2.Set);
+        }
+
+        [Test]
+        public void SerializeNullRoot()
+        {
+            string json = JsonConvert.SerializeObject(null, typeof(DataSet), new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented
+            });
+
+            StringAssert.AreEqual(@"null", json);
+        }
+
+        [Test]
+        public void DeserializeNullTable()
+        {
+            string json = @"{
+  ""TableName"": null
+}";
+
+            DataSet ds = JsonConvert.DeserializeObject<DataSet>(json);
+
+            Assert.AreEqual(true, ds.Tables.Contains("TableName"));
+        }
+
         [Test]
         public void SerializeMultiTableDataSet()
         {
