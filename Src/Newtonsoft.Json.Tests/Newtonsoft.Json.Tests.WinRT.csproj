@@ -179,6 +179,9 @@
     <Compile Include="Serialization\JsonSerializerTest.cs" />
     <Compile Include="Serialization\MissingMemberHandlingTests.cs" />
     <Compile Include="Serialization\NullValueHandlingTests.cs" />
+    <Compile Include="Serialization\MemberNameCaseHandlingTests.cs" />
+    <Compile Include="Serialization\NumericConversionHandlingTests.cs" />
+    <Compile Include="Serialization\EmptyArrayHandlingTests.cs" />
     <Compile Include="Serialization\PopulateTests.cs" />
     <Compile Include="Serialization\PreserveReferencesHandlingTests.cs" />
     <Compile Include="Serialization\ReferenceLoopHandlingTests.cs" />

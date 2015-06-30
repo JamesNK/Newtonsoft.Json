@@ -161,6 +161,9 @@
     <Compile Include="Serialization\WebApiIntegrationTests.cs" />
     <Compile Include="Serialization\JsonPropertyCollectionTests.cs" />
     <Compile Include="Serialization\NullValueHandlingTests.cs" />
+    <Compile Include="Serialization\MemberNameCaseHandlingTests.cs" />
+    <Compile Include="Serialization\NumericConversionHandlingTests.cs" />
+    <Compile Include="Serialization\EmptyArrayHandlingTests.cs" />
     <Compile Include="TestObjects\Aa.cs" />
     <Compile Include="TestObjects\AnswerFilterModel.cs" />
     <Compile Include="TestObjects\Antworten.cs" />

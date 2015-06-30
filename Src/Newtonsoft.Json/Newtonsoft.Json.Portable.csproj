@@ -135,6 +135,9 @@
     <Compile Include="Linq\MergeArrayHandling.cs" />
     <Compile Include="MemberSerialization.cs" />
     <Compile Include="MetadataPropertyHandling.cs" />
+    <Compile Include="EmptyArrayHandling.cs" />
+    <Compile Include="MemberNameCaseHandling.cs" />
+    <Compile Include="NumericConversionHandling.cs" />	
     <Compile Include="MissingMemberHandling.cs" />
     <Compile Include="NullValueHandling.cs" />
     <Compile Include="ObjectCreationHandling.cs" />

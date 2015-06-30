@@ -141,6 +141,9 @@
     <Compile Include="MemberSerialization.cs" />
     <Compile Include="MetadataPropertyHandling.cs" />
     <Compile Include="MissingMemberHandling.cs" />
+    <Compile Include="EmptyArrayHandling.cs" />
+    <Compile Include="MemberNameCaseHandling.cs" />
+    <Compile Include="NumericConversionHandling.cs" />
     <Compile Include="NullValueHandling.cs" />
     <Compile Include="ObjectCreationHandling.cs" />
     <Compile Include="PreserveReferencesHandling.cs" />
