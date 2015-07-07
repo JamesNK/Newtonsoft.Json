@@ -8820,7 +8820,6 @@ Path '', line 1, position 1.");
 
             JsonConvert.DeserializeObject<ConstantTestClass>(json);
         }
-#endif
 
         public class PrivateSetterTestClass
         {
@@ -8841,6 +8840,7 @@ Path '', line 1, position 1.");
             string output = traceWriter.ToString();
             Assert.IsTrue(output.Contains("Warning Unable to deserialize non-writable property 'Value' on Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+PrivateSetterTestClass."));
         }
+#endif
 
         [Test]
         public void ParameterizedConstructorWithBasePrivateProperties()
