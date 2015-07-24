@@ -126,6 +126,62 @@ namespace Newtonsoft.Json.Tests.Serialization
 #endif
 
         [Test]
+        public void NonZeroBasedArray()
+        {
+            var onebasedArray = Array.CreateInstance(typeof(string), new[] { 3 }, new[] { 2 });
+
+            for (var i = onebasedArray.GetLowerBound(0); i <= onebasedArray.GetUpperBound(0); i++)
+            {
+                onebasedArray.SetValue(i.ToString(CultureInfo.InvariantCulture), new[] { i, });
+            }
+
+            string output = JsonConvert.SerializeObject(onebasedArray, Formatting.Indented);
+
+            StringAssert.AreEqual(@"[
+  ""2"",
+  ""3"",
+  ""4""
+]", output);
+        }
+
+        [Test]
+        public void NonZeroBasedMultiArray()
+        {
+            // lets create a two dimensional array, each rank is 1-based of with a capacity of 4.
+            var onebasedArray = Array.CreateInstance(typeof(string), new[] { 3, 3 }, new[] { 1, 2 });
+
+            // Iterate of the array elements and assign a random double
+            for (var i = onebasedArray.GetLowerBound(0); i <= onebasedArray.GetUpperBound(0); i++)
+            {
+                for (var j = onebasedArray.GetLowerBound(1); j <= onebasedArray.GetUpperBound(1); j++)
+                {
+                    onebasedArray.SetValue(i + "_" + j, new[] { i, j });
+                }
+            }
+
+            // Now lets try and serialize the Array
+            string output = JsonConvert.SerializeObject(onebasedArray, Formatting.Indented);
+
+            StringAssert.AreEqual(@"[
+  [
+    ""1_2"",
+    ""1_3"",
+    ""1_4""
+  ],
+  [
+    ""2_2"",
+    ""2_3"",
+    ""2_4""
+  ],
+  [
+    ""3_2"",
+    ""3_3"",
+    ""3_4""
+  ]
+]", output);
+        }
+
+        [Test]
         public void MultiDObjectArray()
         {
             object[,] myOtherArray =

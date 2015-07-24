@@ -667,7 +667,7 @@ namespace Newtonsoft.Json.Serialization
 
             writer.WriteStartArray();
 
-            for (int i = 0; i < values.GetLength(dimension); i++)
+            for (int i = values.GetLowerBound(dimension); i <= values.GetUpperBound(dimension); i++)
             {
                 newIndices[dimension] = i;
                 bool isTopLevel = (newIndices.Length == values.Rank);
