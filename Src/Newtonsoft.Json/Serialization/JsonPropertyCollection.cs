@@ -112,11 +112,12 @@ namespace Newtonsoft.Json.Serialization
         /// a case insensitive match.
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
+        /// <param name="memberNameCaseHandling">case sensitivity options</param>
         /// <returns>A matching property if found.</returns>
-        public JsonProperty GetClosestMatchProperty(string propertyName)
+        public JsonProperty GetClosestMatchProperty(string propertyName, MemberNameCaseHandling memberNameCaseHandling = MemberNameCaseHandling.CaseInsensitive)
         {
             JsonProperty property = GetProperty(propertyName, StringComparison.Ordinal);
-            if (property == null)
+            if (property == null && memberNameCaseHandling == MemberNameCaseHandling.CaseInsensitive)
                 property = GetProperty(propertyName, StringComparison.OrdinalIgnoreCase);
 
             return property;

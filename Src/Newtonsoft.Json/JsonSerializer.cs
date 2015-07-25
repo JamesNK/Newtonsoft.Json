@@ -29,11 +29,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
-using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
-using System.Runtime.Serialization;
 using ErrorEventArgs = Newtonsoft.Json.Serialization.ErrorEventArgs;
 
 namespace Newtonsoft.Json
@@ -44,6 +43,9 @@ namespace Newtonsoft.Json
     /// </summary>
     public class JsonSerializer
     {
+        internal MemberNameCaseHandling _memberNameCaseHandling;
+        internal NumericConversionHandling _numericConversionHandling;
+        internal EmptyArrayHandling _emptyArrayHandling;
         internal TypeNameHandling _typeNameHandling;
         internal FormatterAssemblyStyle _typeNameAssemblyFormat;
         internal PreserveReferencesHandling _preserveReferencesHandling;
@@ -129,6 +131,51 @@ namespace Newtonsoft.Json
         {
             get { return _equalityComparer; }
             set { _equalityComparer = value; }
+        }
+
+		 /// <summary>
+        /// Gets or sets whether class members are looked up using case sensitive or insensitive manner.
+        /// </summary>
+        public virtual MemberNameCaseHandling MemberNameCaseHandling
+        {
+            get { return _memberNameCaseHandling; }
+            set
+            {
+                if (value < MemberNameCaseHandling.CaseInsensitive || value > MemberNameCaseHandling.CaseSensitive)
+                    throw new ArgumentOutOfRangeException("value");
+
+                _memberNameCaseHandling = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets whether the deserializer attempts to convert basic types (e.g. the string "2" to an integer field)
+        /// </summary>
+        public virtual NumericConversionHandling NumericConversionHandling
+        {
+            get { return _numericConversionHandling; }
+            set
+            {
+                if (value < NumericConversionHandling.AllowQuotes || value > NumericConversionHandling.ProhibitQuotes)
+                    throw new ArgumentOutOfRangeException("value");
+
+                _numericConversionHandling = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets whether the deserializer replaces lists with default values
+        /// </summary>
+        public virtual EmptyArrayHandling EmptyArrayHandling
+        {
+            get { return _emptyArrayHandling; }
+            set
+            {
+                if (value < EmptyArrayHandling.Ignore || value > EmptyArrayHandling.Set)
+                    throw new ArgumentOutOfRangeException("value");
+
+                _emptyArrayHandling = value;
+            }
         }
 
         /// <summary>
@@ -454,6 +501,10 @@ namespace Newtonsoft.Json
             _constructorHandling = JsonSerializerSettings.DefaultConstructorHandling;
             _typeNameHandling = JsonSerializerSettings.DefaultTypeNameHandling;
             _metadataPropertyHandling = JsonSerializerSettings.DefaultMetadataPropertyHandling;
+            _memberNameCaseHandling = JsonSerializerSettings.DefaultMemberNameCaseHandling;
+            _numericConversionHandling = JsonSerializerSettings.DefaultNumericConversionHandling;
+            _emptyArrayHandling = JsonSerializerSettings.DefaultEmptyArrayHandling;
+
             _context = JsonSerializerSettings.DefaultContext;
             _binder = DefaultSerializationBinder.Instance;
 
@@ -541,6 +592,12 @@ namespace Newtonsoft.Json
             }
 
             // serializer specific
+            if (settings._memberNameCaseHandling != null)
+                serializer.MemberNameCaseHandling = settings.MemberNameCaseHandling;
+            if (settings._numericConversionHandling != null)
+                serializer.NumericConversionHandling = settings.NumericConversionHandling;
+            if (settings._emptyArrayHandling != null)
+                serializer.EmptyArrayHandling = settings.EmptyArrayHandling;
             if (settings._typeNameHandling != null)
                 serializer.TypeNameHandling = settings.TypeNameHandling;
             if (settings._metadataPropertyHandling != null)

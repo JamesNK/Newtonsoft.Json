@@ -38,6 +38,9 @@ namespace Newtonsoft.Json
     /// </summary>
     public class JsonSerializerSettings
     {
+        internal const MemberNameCaseHandling DefaultMemberNameCaseHandling = MemberNameCaseHandling.CaseInsensitive;
+        internal const NumericConversionHandling DefaultNumericConversionHandling = NumericConversionHandling.AllowQuotes;
+        internal const EmptyArrayHandling DefaultEmptyArrayHandling = EmptyArrayHandling.Ignore;
         internal const ReferenceLoopHandling DefaultReferenceLoopHandling = ReferenceLoopHandling.Error;
         internal const MissingMemberHandling DefaultMissingMemberHandling = MissingMemberHandling.Ignore;
         internal const NullValueHandling DefaultNullValueHandling = NullValueHandling.Include;
@@ -86,6 +89,9 @@ namespace Newtonsoft.Json
         internal ConstructorHandling? _constructorHandling;
         internal TypeNameHandling? _typeNameHandling;
         internal MetadataPropertyHandling? _metadataPropertyHandling;
+        internal NumericConversionHandling? _numericConversionHandling;
+        internal MemberNameCaseHandling? _memberNameCaseHandling;
+        internal EmptyArrayHandling? _emptyArrayHandling;
 
         /// <summary>
         /// Gets or sets how reference loops (e.g. a class referencing itself) is handled.
@@ -191,6 +197,36 @@ namespace Newtonsoft.Json
         {
             get { return _constructorHandling ?? DefaultConstructorHandling; }
             set { _constructorHandling = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets whether class members are matched using case sensitive or insensitive manner.
+        /// </summary>
+        /// <value>the member name case handling</value>
+        public MemberNameCaseHandling MemberNameCaseHandling
+        {
+            get { return _memberNameCaseHandling ?? DefaultMemberNameCaseHandling; }
+            set { _memberNameCaseHandling = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets whether the deserializer attempts to convert basic types (e.g. the string "2" to an integer field)
+        /// </summary>
+        /// <value>the numeric conversion handling.</value>
+        public NumericConversionHandling NumericConversionHandling
+        {
+            get { return _numericConversionHandling ?? DefaultNumericConversionHandling; }
+            set { _numericConversionHandling = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets whether this list will be deserialized in case it's got default values.
+        /// </summary>
+        /// <value>the empty array handling</value>
+        public EmptyArrayHandling EmptyArrayHandling
+        {
+            get { return _emptyArrayHandling ?? DefaultEmptyArrayHandling; }
+            set { _emptyArrayHandling = value; }
         }
 
         /// <summary>

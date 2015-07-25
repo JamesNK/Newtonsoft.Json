@@ -267,6 +267,9 @@
     <Compile Include="Serialization\TraceJsonReader.cs" />
     <Compile Include="Serialization\TraceJsonWriter.cs" />
     <Compile Include="MetadataPropertyHandling.cs" />
+    <Compile Include="EmptyArrayHandling.cs" />
+    <Compile Include="MemberNameCaseHandling.cs" />
+    <Compile Include="NumericConversionHandling.cs" />	
     <Compile Include="StringEscapeHandling.cs" />
     <Compile Include="TraceLevel.cs" />
     <Compile Include="TypeNameHandling.cs" />

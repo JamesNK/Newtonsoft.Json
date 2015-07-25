@@ -137,9 +137,12 @@
     <Compile Include="Linq\JTokenWriter.cs" />
     <Compile Include="Linq\JValue.cs" />
     <Compile Include="Linq\MergeArrayHandling.cs" />
+    <Compile Include="MemberNameCaseHandling.cs" />
     <Compile Include="MemberSerialization.cs" />
+    <Compile Include="NumericConversionHandling.cs" />
     <Compile Include="MetadataPropertyHandling.cs" />
     <Compile Include="MissingMemberHandling.cs" />
+    <Compile Include="EmptyArrayHandling.cs" />
     <Compile Include="NullValueHandling.cs" />
     <Compile Include="ObjectCreationHandling.cs" />
     <Compile Include="PreserveReferencesHandling.cs" />

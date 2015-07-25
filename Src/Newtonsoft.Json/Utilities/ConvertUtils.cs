@@ -628,7 +628,12 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsInteger(object value)
         {
-            switch (GetTypeCode(value.GetType()))
+            return IsInteger(GetTypeCode(value.GetType()));
+        }
+
+        private static bool IsInteger(PrimitiveTypeCode tc)
+        {
+            switch (tc)
             {
                 case PrimitiveTypeCode.SByte:
                 case PrimitiveTypeCode.Byte:
@@ -638,6 +643,24 @@ namespace Newtonsoft.Json.Utilities
                 case PrimitiveTypeCode.UInt32:
                 case PrimitiveTypeCode.Int64:
                 case PrimitiveTypeCode.UInt64:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public static bool IsFloat(object value)
+        {
+            return IsFloat(GetTypeCode(value.GetType()));
+        }
+
+        private static bool IsFloat(PrimitiveTypeCode tc)
+        {
+            switch (tc)
+            {
+                case PrimitiveTypeCode.Single:
+                case PrimitiveTypeCode.Double:
+                case PrimitiveTypeCode.Decimal:
                     return true;
                 default:
                     return false;
@@ -794,6 +817,15 @@ namespace Newtonsoft.Json.Utilities
 #else
             return Guid.TryParseExact(s, "D", out g);
 #endif
+        }
+
+        public static bool IsSameBasicType(Type t1, Type t2)
+        {
+            PrimitiveTypeCode tc1 = GetTypeCode(t1);
+            PrimitiveTypeCode tc2 = GetTypeCode(t2);
+            return (tc1 == tc2 && tc1 >= PrimitiveTypeCode.Boolean)
+                   || (IsInteger(tc1) && IsInteger(tc2))
+                   || (IsFloat(tc1) && IsFloat(tc2));
         }
     }
 }
