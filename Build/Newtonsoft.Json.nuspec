@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>Newtonsoft.Json</id>
@@ -11,5 +11,31 @@
     <iconUrl>http://www.newtonsoft.com/content/images/nugeticon.png</iconUrl>
     <licenseUrl>https://raw.github.com/JamesNK/Newtonsoft.Json/master/LICENSE.md</licenseUrl>
     <tags>json</tags>
+    <dependencies>
+      <group targetFramework="dotnet">
+        <dependency id="Microsoft.CSharp" version="4.0.0" />
+        <dependency id="System.Collections" version="4.0.0" />
+        <dependency id="System.Diagnostics.Debug" version="4.0.0" />
+        <dependency id="System.Diagnostics.Tools" version="4.0.0" />
+        <dependency id="System.Dynamic.Runtime" version="4.0.0" />
+        <dependency id="System.Globalization" version="4.0.0" />
+        <dependency id="System.IO" version="4.0.0" />
+        <dependency id="System.Linq" version="4.0.0" />
+        <dependency id="System.Linq.Expressions" version="4.0.0" />
+        <dependency id="System.ObjectModel" version="4.0.0" />
+        <dependency id="System.Reflection" version="4.0.0" />
+        <dependency id="System.Reflection.Extensions" version="4.0.0" />
+        <dependency id="System.Runtime" version="4.0.0" />
+        <dependency id="System.Runtime.Extensions" version="4.0.0" />
+        <dependency id="System.Runtime.Serialization.Primitives" version="4.0.0" />
+        <dependency id="System.Text.Encoding" version="4.0.0" />
+        <dependency id="System.Text.Encoding.Extensions" version="4.0.0" />
+        <dependency id="System.Text.RegularExpressions" version="4.0.0" />
+        <dependency id="System.Threading" version="4.0.0" />
+        <dependency id="System.Threading.Tasks" version="4.0.0" />
+        <dependency id="System.Xml.ReaderWriter" version="4.0.0" />
+        <dependency id="System.Xml.XDocument" version="4.0.0" />
+      </group>
+    </dependencies>
   </metadata>
 </package>
