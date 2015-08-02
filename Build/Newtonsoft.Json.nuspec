@@ -11,7 +11,9 @@
     <iconUrl>http://www.newtonsoft.com/content/images/nugeticon.png</iconUrl>
     <licenseUrl>https://raw.github.com/JamesNK/Newtonsoft.Json/master/LICENSE.md</licenseUrl>
     <tags>json</tags>
-    <dependencies>
+    <dependencies>      
+      <group targetFramework="net2" />
+      <group targetFramework="portable-net40+sl5+wp80+win8+wpa81" />
       <group targetFramework="dotnet">
         <dependency id="Microsoft.CSharp" version="4.0.0" />
         <dependency id="System.Collections" version="4.0.0" />
