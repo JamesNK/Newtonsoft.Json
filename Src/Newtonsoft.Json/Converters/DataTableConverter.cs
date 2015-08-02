@@ -23,10 +23,10 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if !(DOTNET || PORTABLE40 || PORTABLE)
 using System.Collections.Generic;
 using System.Globalization;
 using Newtonsoft.Json.Utilities;
-#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
 using System;
 using System.Data;
 using Newtonsoft.Json.Serialization;

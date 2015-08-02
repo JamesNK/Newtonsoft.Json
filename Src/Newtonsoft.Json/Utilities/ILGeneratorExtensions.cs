@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(PORTABLE40 || PORTABLE || NETFX_CORE)
+#if !(DOTNET || PORTABLE40 || PORTABLE)
 using System;
 using System.Reflection.Emit;
 using System.Reflection;

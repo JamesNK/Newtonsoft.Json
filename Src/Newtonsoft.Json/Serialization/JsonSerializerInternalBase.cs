@@ -43,13 +43,8 @@ namespace Newtonsoft.Json.Serialization
 
             int IEqualityComparer<object>.GetHashCode(object obj)
             {
-#if !(NETFX_CORE)
                 // put objects in a bucket based on their reference
                 return RuntimeHelpers.GetHashCode(obj);
-#else
-                // put all objects in the same bucket so ReferenceEquals is called on all
-                return -1;
-#endif
             }
         }
 

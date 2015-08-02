@@ -67,20 +67,6 @@ namespace Newtonsoft.Json.Tests.Utilities
         }
 
         [Test]
-        public void FailingDateTimeParse()
-        {
-            string text = "2000-12-15T22:11:03.055+23:30";
-
-            DateTime oldDt;
-            bool success = DateTime.TryParseExact(text, "yyyy-MM-ddTHH:mm:ss.FFFFFFFK", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out oldDt);
-
-            Console.WriteLine("Success: " + success);
-            Console.WriteLine("DateTime: " + oldDt);
-
-            Assert.IsTrue(success);
-        }
-
-        [Test]
         public void NewDateTimeParse()
         {
             AssertNewDateTimeParseEqual("999x-12-31T23:59:59");
@@ -102,32 +88,24 @@ namespace Newtonsoft.Json.Tests.Utilities
             AssertNewDateTimeParseEqual("2000-12-15T22:11:03.055Z");
             AssertNewDateTimeParseEqual("2000-12-15T22:11:03.055");
             AssertNewDateTimeParseEqual("2000-12-15T22:11:03.055+00:00");
-            AssertNewDateTimeParseEqual("2000-12-15T22:11:03.055+23:30");
-            AssertNewDateTimeParseEqual("2000-12-15T22:11:03.055-23:30");
             AssertNewDateTimeParseEqual("2000-12-15T22:11:03.055+11:30");
             AssertNewDateTimeParseEqual("2000-12-15T22:11:03.055-11:30");
 
             AssertNewDateTimeParseEqual("2000-12-15T22:11:03Z");
             AssertNewDateTimeParseEqual("2000-12-15T22:11:03");
             AssertNewDateTimeParseEqual("2000-12-15T22:11:03+00:00");
-            AssertNewDateTimeParseEqual("2000-12-15T22:11:03+23:30");
-            AssertNewDateTimeParseEqual("2000-12-15T22:11:03-23:30");
             AssertNewDateTimeParseEqual("2000-12-15T22:11:03+11:30");
             AssertNewDateTimeParseEqual("2000-12-15T22:11:03-11:30");
 
             AssertNewDateTimeParseEqual("0001-01-01T00:00:00Z");
             AssertNewDateTimeParseEqual("0001-01-01T00:00:00"); // this is DateTime.MinDate
             //AssertNewDateTimeParseEqual("0001-01-01T00:00:00+00:00"); // when the timezone is negative then this breaks
-            //AssertNewDateTimeParseEqual("0001-01-01T00:00:00+23:30"); // I don't know why a different value is returned from DateTime.TryParse, I think it is a bug in .NET
-            AssertNewDateTimeParseEqual("0001-01-01T00:00:00-23:30");
             //AssertNewDateTimeParseEqual("0001-01-01T00:00:00+11:30"); // when the timezone is negative then this breaks
             AssertNewDateTimeParseEqual("0001-01-01T00:00:00-12:00");
 
             AssertNewDateTimeParseEqual("9999-12-31T23:59:59.9999999Z");
             AssertNewDateTimeParseEqual("9999-12-31T23:59:59.9999999"); // this is DateTime.MaxDate
             AssertNewDateTimeParseEqual("9999-12-31T23:59:59.9999999+00:00", DateTime.MaxValue); // DateTime.TryParse fails instead of returning MaxDate in some timezones
-            AssertNewDateTimeParseEqual("9999-12-31T23:59:59.9999999+23:30");
-            AssertNewDateTimeParseEqual("9999-12-31T23:59:59.9999999-23:30", DateTime.MaxValue); // DateTime.TryParse fails instead of returning MaxDate in some timezones
             AssertNewDateTimeParseEqual("9999-12-31T23:59:59.9999999+11:30", DateTime.MaxValue); // DateTime.TryParse fails instead of returning MaxDate in some timezones
             AssertNewDateTimeParseEqual("9999-12-31T23:59:59.9999999-11:30", DateTime.MaxValue); // DateTime.TryParse fails instead of returning MaxDate in some timezones
         }

@@ -23,8 +23,8 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if !(NET35 || NET20)
 using System.Threading;
-#if !(NET35 || NET20 || NETFX_CORE)
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -112,7 +112,7 @@ namespace Newtonsoft.Json.Utilities
 
                         _mapType = fsharpCoreAssembly.GetType("Microsoft.FSharp.Collections.FSharpMap`2");
 
-#if !(NETFX_CORE || PORTABLE)
+#if !(DOTNET || PORTABLE)
                         Thread.MemoryBarrier();
 #endif
                         _initialized = true;

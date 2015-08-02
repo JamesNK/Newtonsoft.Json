@@ -29,7 +29,7 @@ using System.ComponentModel;
 using System.Collections.Concurrent;
 #endif
 using System.Collections.Generic;
-#if !(NET20 || NET35 || PORTABLE || DNXCORE50)
+#if !(NET20 || NET35 || PORTABLE)
 using System.Numerics;
 #endif
 #if !(NET20 || NETFX_CORE || DNXCORE50)
@@ -59,6 +59,7 @@ using System.Collections;
 using System.Xml;
 using System.Xml.Serialization;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Converters;
@@ -87,7 +88,6 @@ using System.Linq;
 #endif
 #if !(NETFX_CORE || DNXCORE50)
 using System.Drawing;
-using System.Diagnostics;
 #endif
 
 namespace Newtonsoft.Json.Tests.Serialization
@@ -158,7 +158,11 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             protected override string ResolvePropertyName(string propertyName)
             {
+#if DNXCORE50
+                return propertyName.ToUpperInvariant();
+#else
                 return propertyName.ToUpper(CultureInfo.InvariantCulture);
+#endif
             }
         }
 
@@ -566,7 +570,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             public int ChildId;
         }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE || DNXCORE50)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
         [Test]
         public void ReadIntegerWithError()
         {
@@ -1356,7 +1360,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual("value", deserialized.foo.bar);
         }
 
-#if !(NETFX_CORE || DNXCORE50)
+#if !(NETFX_CORE)
         [Test]
         public void ConversionOperator()
         {
@@ -1442,7 +1446,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         // ignore hiding members compiler warning
-#pragma warning disable 108,114
+#pragma warning disable 108, 114
         [DataContract]
         public class BaseWithContract
         {
@@ -1520,7 +1524,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             [DataMember(Name = "VirtualWithDataMemberSub")]
             public virtual string VirtualWithDataMember { get; set; }
         }
-#pragma warning restore 108,114
+#pragma warning restore 108, 114
 
         [Test]
         public void SubWithoutContractNewPropertiesTest()
@@ -4752,7 +4756,7 @@ Path '', line 1, position 1.");
 }", json);
         }
 
-#if !(PORTABLE || DNXCORE50)
+#if !(PORTABLE)
         [Test]
         public void DeserializeClassWithInheritedProtectedMember()
         {
@@ -6670,7 +6674,7 @@ Path '', line 1, position 1.");
             ExceptionAssert.Throws<JsonSerializationException>(() => { List<int> numbers = JsonConvert.DeserializeObject<List<int>>(json); }, "Error converting value {null} to type 'System.Int32'. Path '[3]', line 5, position 7.");
         }
 
-#if !(PORTABLE || DNXCORE50 || NETFX_CORE)
+#if !(PORTABLE || NETFX_CORE)
         public class ConvertableIntTestClass
         {
             public ConvertibleInt Integer { get; set; }
@@ -7736,7 +7740,7 @@ Path '', line 1, position 1.");
         }
 
 #if !(NET20 || NET35 || NET40 || PORTABLE40)
-#if !(PORTABLE || DNXCORE50)
+#if !PORTABLE
         [Test]
         public void DeserializeReadOnlyListWithBigInteger()
         {
@@ -7825,7 +7829,7 @@ Path '', line 1, position 1.");
         }
 #endif
 
-#if !(NETFX_CORE || PORTABLE || DNXCORE50 || NET35 || NET20 || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || NET35 || NET20 || PORTABLE40 || DNXCORE50)
         [Test]
         public void SerializeTupleWithSerializableAttribute()
         {
@@ -8071,7 +8075,7 @@ Path '', line 1, position 1.");
         }
 #endif
 
-#if !(PORTABLE || DNXCORE50 || NET35 || NET20 || PORTABLE40)
+#if !(PORTABLE || NET35 || NET20 || PORTABLE40)
         [Test]
         public void ReadTooLargeInteger()
         {
@@ -8254,7 +8258,7 @@ Path '', line 1, position 1.");
         }
 #endif
 
-#if !(NET20 || NET35 || PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(NET20 || NET35 || PORTABLE || PORTABLE40)
         [Test]
         public void SerializeBigInteger()
         {
@@ -8432,7 +8436,7 @@ Path '', line 1, position 1.");
             Assert.AreEqual(jane, john.Spouse);
         }
 
-#if !(NETFX_CORE || NET35 || NET20 || PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(NETFX_CORE || NET35 || NET20 || PORTABLE || PORTABLE40)
         [Test]
         public void TypeConverterOnInterface()
         {
@@ -8498,7 +8502,7 @@ Path '', line 1, position 1.");
             ParticipantEntity deserializedProduct = JsonConvert.DeserializeObject<ParticipantEntity>(json);
         }
 
-#if !(PORTABLE || DNXCORE50 || NETFX_CORE)
+#if !(PORTABLE || NETFX_CORE)
         public class ConvertibleId : IConvertible
         {
             public int Value;
@@ -9000,7 +9004,7 @@ Path '', line 1, position 1.");
         }
 #endif
 
-#if !NETFX_CORE
+#if !(NETFX_CORE || DNXCORE50)
         [Test]
         public void MailMessageConverterTest()
         {

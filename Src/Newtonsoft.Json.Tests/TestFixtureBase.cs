@@ -144,6 +144,10 @@ namespace Newtonsoft.Json.Tests
             XAssert.True(false, message);
         }
 
+        public static void Pass()
+        {
+        }
+
         public static void IsTrue(bool condition, string message = null)
         {
             XAssert.True(condition);
@@ -261,7 +265,7 @@ namespace Newtonsoft.Json.Tests
         protected void TestSetup()
 #endif
         {
-#if !NETFX_CORE
+#if !(NETFX_CORE || DNXCORE50)
             //CultureInfo turkey = CultureInfo.CreateSpecificCulture("tr");
             //Thread.CurrentThread.CurrentCulture = turkey;
             //Thread.CurrentThread.CurrentUICulture = turkey;

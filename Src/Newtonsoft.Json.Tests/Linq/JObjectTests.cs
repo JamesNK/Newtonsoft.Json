@@ -27,7 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-#if !(NET20 || NET35 || PORTABLE || DNXCORE50)
+#if !(NET20 || NET35 || PORTABLE)
 using System.Numerics;
 #endif
 using Newtonsoft.Json.Serialization;
@@ -717,7 +717,7 @@ Parameter name: arrayIndex");
             Assert.AreEqual(p4, l[1]);
         }
 
-#if !(NET20 || NETFX_CORE || PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(NET20 || PORTABLE || PORTABLE40)
         [Test]
         public void PropertyChanging()
         {

@@ -43,7 +43,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Utilities
 {
-#if (NETFX_CORE || PORTABLE || PORTABLE40)
+#if (DOTNET || PORTABLE || PORTABLE40)
     internal enum MemberTypes
     {
         Property = 0,
@@ -54,7 +54,7 @@ namespace Newtonsoft.Json.Utilities
     }
 #endif
 
-#if NETFX_CORE || PORTABLE
+#if PORTABLE
     [Flags]
     internal enum BindingFlags
     {
@@ -87,7 +87,7 @@ namespace Newtonsoft.Json.Utilities
 
         static ReflectionUtils()
         {
-#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
+#if !(PORTABLE40 || PORTABLE)
             EmptyTypes = Type.EmptyTypes;
 #else
             EmptyTypes = new Type[0];
@@ -669,7 +669,7 @@ namespace Newtonsoft.Json.Utilities
             return (attributes != null) ? attributes.FirstOrDefault() : null;
         }
 
-#if !(NETFX_CORE || PORTABLE)
+#if !(DOTNET || PORTABLE)
         public static T[] GetAttributes<T>(object attributeProvider, bool inherit) where T : Attribute
         {
             Attribute[] a = GetAttributes(attributeProvider, typeof(T), inherit);
@@ -848,7 +848,7 @@ namespace Newtonsoft.Json.Utilities
             ValidationUtils.ArgumentNotNull(targetType, "targetType");
 
             List<MemberInfo> fieldInfos = new List<MemberInfo>(targetType.GetFields(bindingAttr));
-#if !(NETFX_CORE || PORTABLE)
+#if !PORTABLE
             // Type.GetFields doesn't return inherited private fields
             // manually find private fields from base class
             GetChildPrivateFields(fieldInfos, targetType, bindingAttr);
@@ -857,7 +857,7 @@ namespace Newtonsoft.Json.Utilities
             return fieldInfos.Cast<FieldInfo>();
         }
 
-#if !(NETFX_CORE || PORTABLE)
+#if !PORTABLE
         private static void GetChildPrivateFields(IList<MemberInfo> initialFields, Type targetType, BindingFlags bindingAttr)
         {
             // fix weirdness with private FieldInfos only being returned for the current Type

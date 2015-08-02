@@ -36,7 +36,8 @@ namespace Newtonsoft.Json.Utilities
 {
     internal static class TypeExtensions
     {
-#if NETFX_CORE || PORTABLE
+#if DOTNET || PORTABLE
+#if !DOTNET
         private static BindingFlags DefaultFlags = BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance;
 
         public static MethodInfo GetGetMethod(this PropertyInfo propertyInfo)
@@ -66,29 +67,32 @@ namespace Newtonsoft.Json.Utilities
 
             return null;
         }
+#endif
 
         public static bool IsSubclassOf(this Type type, Type c)
         {
             return type.GetTypeInfo().IsSubclassOf(c);
         }
 
+#if !DOTNET
         public static bool IsAssignableFrom(this Type type, Type c)
         {
             return type.GetTypeInfo().IsAssignableFrom(c.GetTypeInfo());
         }
+#endif
 
         public static bool IsInstanceOfType(this Type type, object o)
         {
             if (o == null)
                 return false;
 
-            return IsAssignableFrom(type, o.GetType());
+            return type.IsAssignableFrom(o.GetType());
         }
 #endif
 
         public static MethodInfo Method(this Delegate d)
         {
-#if !(NETFX_CORE || PORTABLE)
+#if !(DOTNET || PORTABLE)
             return d.Method;
 #else
             return d.GetMethodInfo();
@@ -97,7 +101,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static MemberTypes MemberType(this MemberInfo memberInfo)
         {
-#if !(NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(DOTNET || PORTABLE || PORTABLE40)
             return memberInfo.MemberType;
 #else
             if (memberInfo is PropertyInfo)
@@ -115,7 +119,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool ContainsGenericParameters(this Type type)
         {
-#if !(NETFX_CORE || PORTABLE)
+#if !(DOTNET || PORTABLE)
             return type.ContainsGenericParameters;
 #else
             return type.GetTypeInfo().ContainsGenericParameters;
@@ -124,7 +128,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsInterface(this Type type)
         {
-#if !(NETFX_CORE || PORTABLE)
+#if !(DOTNET || PORTABLE)
             return type.IsInterface;
 #else
             return type.GetTypeInfo().IsInterface;
@@ -133,7 +137,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsGenericType(this Type type)
         {
-#if !(NETFX_CORE || PORTABLE)
+#if !(DOTNET || PORTABLE)
             return type.IsGenericType;
 #else
             return type.GetTypeInfo().IsGenericType;
@@ -142,7 +146,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsGenericTypeDefinition(this Type type)
         {
-#if !(NETFX_CORE || PORTABLE)
+#if !(DOTNET || PORTABLE)
             return type.IsGenericTypeDefinition;
 #else
             return type.GetTypeInfo().IsGenericTypeDefinition;
@@ -151,7 +155,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static Type BaseType(this Type type)
         {
-#if !(NETFX_CORE || PORTABLE)
+#if !(DOTNET || PORTABLE)
             return type.BaseType;
 #else
             return type.GetTypeInfo().BaseType;
@@ -160,7 +164,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static Assembly Assembly(this Type type)
         {
-#if !(NETFX_CORE || PORTABLE)
+#if !(DOTNET || PORTABLE)
             return type.Assembly;
 #else
             return type.GetTypeInfo().Assembly;
@@ -169,7 +173,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsEnum(this Type type)
         {
-#if !(NETFX_CORE || PORTABLE)
+#if !(DOTNET || PORTABLE)
             return type.IsEnum;
 #else
             return type.GetTypeInfo().IsEnum;
@@ -178,7 +182,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsClass(this Type type)
         {
-#if !(NETFX_CORE || PORTABLE)
+#if !(DOTNET || PORTABLE)
             return type.IsClass;
 #else
             return type.GetTypeInfo().IsClass;
@@ -187,17 +191,17 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsSealed(this Type type)
         {
-#if !(NETFX_CORE || PORTABLE)
+#if !(DOTNET || PORTABLE)
             return type.IsSealed;
 #else
             return type.GetTypeInfo().IsSealed;
 #endif
         }
 
-#if PORTABLE40
+#if (PORTABLE40 || DOTNET || PORTABLE)
         public static PropertyInfo GetProperty(this Type type, string name, BindingFlags bindingFlags, object placeholder1, Type propertyType, IList<Type> indexParameters, object placeholder2)
         {
-            IList<PropertyInfo> propertyInfos = type.GetProperties(bindingFlags);
+            IEnumerable<PropertyInfo> propertyInfos = type.GetProperties(bindingFlags);
 
             return propertyInfos.Where(p =>
             {
@@ -217,10 +221,8 @@ namespace Newtonsoft.Json.Utilities
 
         public static IEnumerable<MemberInfo> GetMember(this Type type, string name, MemberTypes memberType, BindingFlags bindingFlags)
         {
-            return type.GetMembers(bindingFlags).Where(m =>
+            return type.GetMember(name, bindingFlags).Where(m =>
             {
-                if (name != null && name != m.Name)
-                    return false;
                 if (m.MemberType() != memberType)
                     return false;
 
@@ -229,19 +231,20 @@ namespace Newtonsoft.Json.Utilities
         }
 #endif
 
-#if (NETFX_CORE || PORTABLE)
+#if (DOTNET || PORTABLE)
         public static MethodInfo GetBaseDefinition(this MethodInfo method)
         {
             return method.GetRuntimeBaseDefinition();
         }
 #endif
 
-#if (NETFX_CORE || PORTABLE)
+#if (DOTNET || PORTABLE)
         public static bool IsDefined(this Type type, Type attributeType, bool inherit)
         {
             return type.GetTypeInfo().CustomAttributes.Any(a => a.AttributeType == attributeType);
         }
 
+#if !DOTNET
         public static MethodInfo GetMethod(this Type type, string name)
         {
             return type.GetMethod(name, DefaultFlags);
@@ -274,39 +277,6 @@ namespace Newtonsoft.Json.Utilities
 
                                                                     return m.GetParameters().Select(p => p.ParameterType).SequenceEqual(parameterTypes);
                                                                 }).SingleOrDefault();
-        }
-
-        public static PropertyInfo GetProperty(this Type type, string name, BindingFlags bindingFlags, object placeholder1, Type propertyType, IList<Type> indexParameters, object placeholder2)
-        {
-            return type.GetTypeInfo().DeclaredProperties.Where(p =>
-                                                                   {
-                                                                       if (name != null && name != p.Name)
-                                                                           return false;
-                                                                       if (propertyType != null && propertyType != p.PropertyType)
-                                                                           return false;
-                                                                       if (indexParameters != null)
-                                                                       {
-                                                                           if (!p.GetIndexParameters().Select(ip => ip.ParameterType).SequenceEqual(indexParameters))
-                                                                               return false;
-                                                                       }
-
-                                                                       return true;
-                                                                   }).SingleOrDefault();
-        }
-
-        public static IEnumerable<MemberInfo> GetMember(this Type type, string name, MemberTypes memberType, BindingFlags bindingFlags)
-        {
-            return type.GetTypeInfo().GetMembersRecursive().Where(m =>
-                                                                      {
-                                                                          if (name != null && name != m.Name)
-                                                                              return false;
-                                                                          if (m.MemberType() != memberType)
-                                                                              return false;
-                                                                          if (!TestAccessibility(m, bindingFlags))
-                                                                              return false;
-
-                                                                          return true;
-                                                                      });
         }
 
         public static IEnumerable<ConstructorInfo> GetConstructors(this Type type)
@@ -518,10 +488,11 @@ namespace Newtonsoft.Json.Utilities
             return type.GetTypeInfo().DeclaredMethods;
         }
 #endif
+#endif
 
         public static bool IsAbstract(this Type type)
         {
-#if !(NETFX_CORE || PORTABLE)
+#if !(DOTNET || PORTABLE)
             return type.IsAbstract;
 #else
             return type.GetTypeInfo().IsAbstract;
@@ -530,7 +501,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsVisible(this Type type)
         {
-#if !(NETFX_CORE || PORTABLE)
+#if !(DOTNET || PORTABLE)
             return type.IsVisible;
 #else
             return type.GetTypeInfo().IsVisible;
@@ -539,7 +510,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsValueType(this Type type)
         {
-#if !(NETFX_CORE || PORTABLE)
+#if !(DOTNET || PORTABLE)
             return type.IsValueType;
 #else
             return type.GetTypeInfo().IsValueType;

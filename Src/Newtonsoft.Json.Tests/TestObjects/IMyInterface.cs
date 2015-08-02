@@ -28,15 +28,17 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Text;
+using System.Reflection;
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
 #endif
+using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-#if !(NETFX_CORE || NET35 || NET20 || PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(NETFX_CORE || NET35 || NET20 || PORTABLE || PORTABLE40)
     [TypeConverter(typeof(MyInterfaceConverter))]
     internal interface IMyInterface
     {
@@ -121,9 +123,9 @@ namespace Newtonsoft.Json.Tests.TestObjects
     {
         private TypeConverter GetConverter(Type type)
         {
-            var converters = type.GetCustomAttributes(typeof(TypeConverterAttribute), true).Union(
+            var converters = ReflectionUtils.GetAttributes(type, typeof(TypeConverterAttribute), true).Union(
                 from t in type.GetInterfaces()
-                from c in t.GetCustomAttributes(typeof(TypeConverterAttribute), true)
+                from c in ReflectionUtils.GetAttributes(t, typeof(TypeConverterAttribute), true)
                 select c).Distinct();
 
             return
@@ -135,7 +137,6 @@ namespace Newtonsoft.Json.Tests.TestObjects
                  select converter)
                     .FirstOrDefault();
         }
-
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {

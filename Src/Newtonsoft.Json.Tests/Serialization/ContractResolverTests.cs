@@ -49,6 +49,7 @@ using Newtonsoft.Json.Tests.TestObjects;
 using System.Reflection;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
+using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
@@ -565,7 +566,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 }", startingWithB);
         }
 
-#if !(NETFX_CORE || PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
 #pragma warning disable 618
         [Test]
         public void SerializeCompilerGeneratedMembers()
@@ -602,14 +603,12 @@ namespace Newtonsoft.Json.Tests.Serialization
             string includeCompilerGeneratedJson = JsonConvert.SerializeObject(structTest, Formatting.Indented,
                 new JsonSerializerSettings { ContractResolver = includeCompilerGeneratedResolver });
 
-            StringAssert.AreEqual(@"{
-  ""StringField"": ""Field"",
-  ""IntField"": 1,
-  ""<StringProperty>k__BackingField"": ""Property"",
-  ""<IntProperty>k__BackingField"": 2,
-  ""StringProperty"": ""Property"",
-  ""IntProperty"": 2
-}", includeCompilerGeneratedJson);
+            JObject o = JObject.Parse(includeCompilerGeneratedJson);
+
+            Console.WriteLine(includeCompilerGeneratedJson);
+
+            Assert.AreEqual("Property", (string)o["<StringProperty>k__BackingField"]);
+            Assert.AreEqual(2, (int)o["<IntProperty>k__BackingField"]);
         }
 #pragma warning restore 618
 #endif

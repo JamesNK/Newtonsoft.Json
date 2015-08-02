@@ -13,6 +13,9 @@ _ReSharper.*
 *.resharper.user
 project.lock.json
 *.xproj
+.vs/
+*.props
+*.targets
 
 #NuGet
 packages

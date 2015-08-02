@@ -121,7 +121,7 @@ namespace Newtonsoft.Json.Tests
             Assert.IsTrue(ms.CanRead);
         }
 
-#if !(PORTABLE || DNXCORE50 || NETFX_CORE)
+#if !(PORTABLE)
         [Test]
         public void WriteIConvertable()
         {
@@ -1552,7 +1552,7 @@ null//comment
         }
     }
 
-#if !(PORTABLE || DNXCORE50 || NETFX_CORE)
+#if !(PORTABLE || NETFX_CORE)
     public struct ConvertibleInt : IConvertible
     {
         private readonly int _value;

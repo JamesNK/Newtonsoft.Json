@@ -36,8 +36,8 @@ using System.Security;
 [assembly: AssemblyTitle("Json.NET Portable .NET 4.0")]
 #elif PORTABLE
 [assembly: AssemblyTitle("Json.NET Portable")]
-#elif NETFX_CORE
-[assembly: AssemblyTitle("Json.NET WinRT")]
+#elif DOTNET
+[assembly: AssemblyTitle("Json.NET .NET Platform")]
 #elif NET20
 [assembly: AssemblyTitle("Json.NET .NET 2.0")]
 [assembly: AllowPartiallyTrustedCallers]
@@ -92,5 +92,5 @@ using System.Security;
 // by using the '*' as shown below:
 
 [assembly: AssemblyVersion("7.0.0.0")]
-[assembly: AssemblyFileVersion("7.0.1.18621")]
+[assembly: AssemblyFileVersion("7.0.2.18802")]
 [assembly: CLSCompliant(true)]

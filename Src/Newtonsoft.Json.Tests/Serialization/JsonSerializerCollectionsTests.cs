@@ -27,7 +27,7 @@ using System;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Runtime.Serialization;
-#if !(NET35 || NET20 || PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(NET35 || NET20 || PORTABLE || PORTABLE40)
 using System.Collections.Concurrent;
 #endif
 using System.Collections.Generic;
@@ -59,7 +59,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class JsonSerializerCollectionsTests : TestFixtureBase
     {
-#if !NETFX_CORE
+#if !(NETFX_CORE || DNXCORE50)
         public class NameValueCollectionTestClass
         {
             public NameValueCollection Collection { get; set; }
@@ -715,7 +715,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(3, v2["Third"]);
         }
 
-#if !(NET35 || NET20 || PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(NET35 || NET20 || PORTABLE || PORTABLE40)
         [Test]
         public void DeserializeConcurrentDictionary()
         {
@@ -1659,6 +1659,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 #endif
 
+#if !DNXCORE50
         [Test]
         public void EmptyStringInHashtableIsDeserialized()
         {
@@ -1671,6 +1672,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Assert.AreEqual(deserializeTest2["testkey"], "");
         }
+#endif
     }
 
 #if !(NET40 || NET35 || NET20 || PORTABLE40)

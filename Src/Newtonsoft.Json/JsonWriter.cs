@@ -1396,13 +1396,13 @@ namespace Newtonsoft.Json
                 case PrimitiveTypeCode.Bytes:
                     writer.WriteValue((byte[])value);
                     break;
-#if !(PORTABLE || NETFX_CORE)
+#if !(PORTABLE || DOTNET)
                 case PrimitiveTypeCode.DBNull:
                     writer.WriteNull();
                     break;
 #endif
                 default:
-#if !(PORTABLE || NETFX_CORE)
+#if !PORTABLE
                     if (value is IConvertible)
                     {
                         // the value is a non-standard IConvertible

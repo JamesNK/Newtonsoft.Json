@@ -1,5 +1,5 @@
 ﻿
-#if PocketPC || NETFX_CORE || PORTABLE40 || PORTABLE
+#if DOTNET || PORTABLE40 || PORTABLE
 
 namespace System.Runtime.Serialization.Formatters
 {

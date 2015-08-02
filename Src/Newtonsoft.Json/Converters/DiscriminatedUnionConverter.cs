@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET35 || NET20 || NETFX_CORE)
+#if !(NET35 || NET20)
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
@@ -45,7 +45,7 @@ namespace Newtonsoft.Json.Converters
     /// </summary>
     public class DiscriminatedUnionConverter : JsonConverter
     {
-        #region UnionDefinition
+#region UnionDefinition
         internal class Union
         {
             public List<UnionCase> Cases;
@@ -60,7 +60,7 @@ namespace Newtonsoft.Json.Converters
             public FSharpFunction FieldReader;
             public FSharpFunction Constructor;
         }
-        #endregion
+#endregion
 
         private const string CasePropertyName = "Case";
         private const string FieldsPropertyName = "Fields";
@@ -235,7 +235,7 @@ namespace Newtonsoft.Json.Converters
             // all fsharp objects have CompilationMappingAttribute
             // get the fsharp assembly from the attribute and initialize latebound methods
             object[] attributes;
-#if !(NETFX_CORE || PORTABLE)
+#if !(DOTNET || PORTABLE)
             attributes = objectType.GetCustomAttributes(true);
 #else
             attributes = objectType.GetTypeInfo().GetCustomAttributes(true).ToArray();

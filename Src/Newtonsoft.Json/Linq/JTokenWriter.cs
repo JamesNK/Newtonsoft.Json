@@ -365,7 +365,7 @@ namespace Newtonsoft.Json.Linq
         {
             base.WriteValue(value);
             string s = null;
-#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
+#if !(DOTNET || PORTABLE40 || PORTABLE)
             s = value.ToString(CultureInfo.InvariantCulture);
 #else
             s = value.ToString();

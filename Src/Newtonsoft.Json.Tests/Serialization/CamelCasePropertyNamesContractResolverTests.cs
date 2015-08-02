@@ -105,7 +105,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             string json = o.ToString();
         }
 
-#if !(NETFX_CORE || PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || PORTABLE40)
 #pragma warning disable 618
         [Test]
         public void MemberSearchFlags()

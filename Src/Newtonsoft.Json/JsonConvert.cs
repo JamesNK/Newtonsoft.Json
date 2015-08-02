@@ -357,7 +357,7 @@ namespace Newtonsoft.Json
         {
             string text;
             string qc;
-#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
+#if !(DOTNET || PORTABLE40 || PORTABLE)
             text = value.ToString("D", CultureInfo.InvariantCulture);
             qc = quoteChar.ToString(CultureInfo.InvariantCulture);
 #else
@@ -481,7 +481,7 @@ namespace Newtonsoft.Json
                     return ToString((DateTime)value);
                 case PrimitiveTypeCode.Decimal:
                     return ToString((decimal)value);
-#if !(NETFX_CORE || PORTABLE)
+#if !(DOTNET || PORTABLE)
                 case PrimitiveTypeCode.DBNull:
                     return Null;
 #endif
@@ -969,7 +969,7 @@ namespace Newtonsoft.Json
         }
 #endif
 
-#if !(PORTABLE40 || PORTABLE || NETFX_CORE)
+#if !(PORTABLE40 || PORTABLE || DOTNET)
         /// <summary>
         /// Serializes the XML node to a JSON string.
         /// </summary>

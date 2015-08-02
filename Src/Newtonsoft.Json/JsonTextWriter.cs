@@ -152,11 +152,13 @@ namespace Newtonsoft.Json
             base.Close();
 
             if (CloseOutput && _writer != null)
-#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
+            {
+#if !(DOTNET || PORTABLE40 || PORTABLE)
                 _writer.Close();
 #else
                 _writer.Dispose();
 #endif
+            }
         }
 
         /// <summary>
@@ -636,7 +638,7 @@ namespace Newtonsoft.Json
 
             string text = null;
 
-#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
+#if !(DOTNET || PORTABLE40 || PORTABLE)
             text = value.ToString("D", CultureInfo.InvariantCulture);
 #else
             text = value.ToString("D");
