@@ -13,6 +13,7 @@
     <tags>json</tags>
     <dependencies>      
       <group targetFramework="net2" />
+      <group targetFramework="sl5" />
       <group targetFramework="portable-net40+sl5+wp80+win8+wpa81" />
       <group targetFramework="dotnet">
         <dependency id="Microsoft.CSharp" version="4.0.0" />
