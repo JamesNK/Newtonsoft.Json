@@ -343,7 +343,7 @@ function Update-Project {
   $file = switch($sign) { $true { $signKeyPath } default { $null } }
 
   $json = (Get-Content $projectPath) -join "`n" | ConvertFrom-Json
-  $options = @{"warningsAsErrors" = $true; "optimize" = $true; "keyFile" = $file; "define" = ((GetConstants "dotnet" $sign) -split ";") }
+  $options = @{"warningsAsErrors" = $true; "keyFile" = $file; "define" = ((GetConstants "dotnet" $sign) -split ";") }
   Add-Member -InputObject $json -MemberType NoteProperty -Name "compilationOptions" -Value $options -Force
 
   ConvertTo-Json $json -Depth 10 | Set-Content $projectPath
