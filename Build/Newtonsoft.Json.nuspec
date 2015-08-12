@@ -12,6 +12,13 @@
     <licenseUrl>https://raw.github.com/JamesNK/Newtonsoft.Json/master/LICENSE.md</licenseUrl>
     <tags>json</tags>
     <dependencies>
+      <group targetFramework="net45" />
+      <group targetFramework="wp8" />
+      <group targetFramework="win8" />
+      <group targetFramework="wpa81" />
+      <group targetFramework="xamarin.ios" />
+      <group targetFramework="monotouch" />
+      <group targetFramework="monoandroid" />
       <group targetFramework=".NETPlatform5.0">
         <dependency id="Microsoft.CSharp" version="4.0.0" />
         <dependency id="System.Collections" version="4.0.10" />
