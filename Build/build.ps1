@@ -194,10 +194,10 @@ function MSBuildBuild($build)
   $finalDir = $build.FinalDir
 
   Write-Host
-  Write-Host "Restoring"
+  Write-Host "Restoring $workingSourceDir\$name.sln"
   [Environment]::SetEnvironmentVariable("EnableNuGetPackageRestore", "true", "Process")
   exec { .\Tools\NuGet\NuGet.exe update -self }
-  exec { .\Tools\NuGet\NuGet.exe restore "$workingSourceDir\$name.sln" | Out-Default } "Error restoring $name"
+  exec { .\Tools\NuGet\NuGet.exe restore "$workingSourceDir\$name.sln" -verbosity detailed | Out-Default } "Error restoring $name"
 
   $constants = GetConstants $build.Constants $signAssemblies
 
