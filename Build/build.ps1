@@ -210,6 +210,7 @@ function DnxBuild($build)
 {
   $name = $build.Name
 
+  exec { dnvm install 1.0.0-beta6 | Out-Default }
   exec { dnvm use 1.0.0-beta6 -r clr | Out-Default }
 
   Write-Host -ForegroundColor Green "Restoring packages for $name"
