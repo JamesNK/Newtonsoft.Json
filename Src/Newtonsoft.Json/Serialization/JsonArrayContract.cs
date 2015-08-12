@@ -41,14 +41,14 @@ using System.Linq;
 namespace Newtonsoft.Json.Serialization
 {
     /// <summary>
-    /// Contract details for a <see cref="Type"/> used by the <see cref="JsonSerializer"/>.
+    /// Contract details for a <see cref="System.Type"/> used by the <see cref="JsonSerializer"/>.
     /// </summary>
     public class JsonArrayContract : JsonContainerContract
     {
         /// <summary>
-        /// Gets the <see cref="Type"/> of the collection items.
+        /// Gets the <see cref="System.Type"/> of the collection items.
         /// </summary>
-        /// <value>The <see cref="Type"/> of the collection items.</value>
+        /// <value>The <see cref="System.Type"/> of the collection items.</value>
         public Type CollectionItemType { get; private set; }
 
         /// <summary>

@@ -91,7 +91,7 @@ namespace Newtonsoft.Json.Serialization
     }
 
     /// <summary>
-    /// Used by <see cref="JsonSerializer"/> to resolves a <see cref="JsonContract"/> for a given <see cref="Type"/>.
+    /// Used by <see cref="JsonSerializer"/> to resolves a <see cref="JsonContract"/> for a given <see cref="System.Type"/>.
     /// </summary>
     public class DefaultContractResolver : IContractResolver
     {

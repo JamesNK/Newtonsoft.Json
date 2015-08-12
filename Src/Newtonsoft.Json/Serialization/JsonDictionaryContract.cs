@@ -37,7 +37,7 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 namespace Newtonsoft.Json.Serialization
 {
     /// <summary>
-    /// Contract details for a <see cref="Type"/> used by the <see cref="JsonSerializer"/>.
+    /// Contract details for a <see cref="System.Type"/> used by the <see cref="JsonSerializer"/>.
     /// </summary>
     public class JsonDictionaryContract : JsonContainerContract
     {
@@ -59,15 +59,15 @@ namespace Newtonsoft.Json.Serialization
         public Func<string, string> DictionaryKeyResolver { get; set; }
 
         /// <summary>
-        /// Gets the <see cref="Type"/> of the dictionary keys.
+        /// Gets the <see cref="System.Type"/> of the dictionary keys.
         /// </summary>
-        /// <value>The <see cref="Type"/> of the dictionary keys.</value>
+        /// <value>The <see cref="System.Type"/> of the dictionary keys.</value>
         public Type DictionaryKeyType { get; private set; }
 
         /// <summary>
-        /// Gets the <see cref="Type"/> of the dictionary values.
+        /// Gets the <see cref="System.Type"/> of the dictionary values.
         /// </summary>
-        /// <value>The <see cref="Type"/> of the dictionary values.</value>
+        /// <value>The <see cref="System.Type"/> of the dictionary values.</value>
         public Type DictionaryValueType { get; private set; }
 
         internal JsonContract KeyContract { get; set; }

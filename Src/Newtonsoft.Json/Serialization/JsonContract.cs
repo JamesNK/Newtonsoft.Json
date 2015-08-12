@@ -76,7 +76,7 @@ namespace Newtonsoft.Json.Serialization
     public delegate IEnumerable<KeyValuePair<object, object>> ExtensionDataGetter(object o);
 
     /// <summary>
-    /// Contract details for a <see cref="Type"/> used by the <see cref="JsonSerializer"/>.
+    /// Contract details for a <see cref="System.Type"/> used by the <see cref="JsonSerializer"/>.
     /// </summary>
     public abstract class JsonContract
     {

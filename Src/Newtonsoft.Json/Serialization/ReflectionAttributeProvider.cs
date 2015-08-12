@@ -31,7 +31,7 @@ using Newtonsoft.Json.Utilities;
 namespace Newtonsoft.Json.Serialization
 {
     /// <summary>
-    /// Provides methods to get attributes from a <see cref="Type"/>, <see cref="MemberInfo"/>, <see cref="ParameterInfo"/> or <see cref="Assembly"/>.
+    /// Provides methods to get attributes from a <see cref="System.Type"/>, <see cref="MemberInfo"/>, <see cref="ParameterInfo"/> or <see cref="Assembly"/>.
     /// </summary>
     public class ReflectionAttributeProvider : IAttributeProvider
     {
@@ -40,7 +40,7 @@ namespace Newtonsoft.Json.Serialization
         /// <summary>
         /// Initializes a new instance of the <see cref="ReflectionAttributeProvider"/> class.
         /// </summary>
-        /// <param name="attributeProvider">The instance to get attributes for. This parameter should be a <see cref="Type"/>, <see cref="MemberInfo"/>, <see cref="ParameterInfo"/> or <see cref="Assembly"/>.</param>
+        /// <param name="attributeProvider">The instance to get attributes for. This parameter should be a <see cref="System.Type"/>, <see cref="MemberInfo"/>, <see cref="ParameterInfo"/> or <see cref="Assembly"/>.</param>
         public ReflectionAttributeProvider(object attributeProvider)
         {
             ValidationUtils.ArgumentNotNull(attributeProvider, "attributeProvider");
