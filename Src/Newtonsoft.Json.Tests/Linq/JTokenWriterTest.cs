@@ -266,6 +266,28 @@ namespace Newtonsoft.Json.Tests.Linq
         }
 
         [Test]
+        public void WriteDuplicatePropertyName()
+        {
+            JTokenWriter writer = new JTokenWriter();
+
+            writer.WriteStartObject();
+
+            writer.WritePropertyName("prop1");
+            writer.WriteStartObject();
+            writer.WriteEndObject();
+
+            writer.WritePropertyName("prop1");
+            writer.WriteStartArray();
+            writer.WriteEndArray();
+
+            writer.WriteEndObject();
+
+            StringAssert.AreEqual(@"{
+  ""prop1"": []
+}", writer.Token.ToString());
+        }
+
+        [Test]
         public void DateTimeZoneHandling()
         {
             JTokenWriter writer = new JTokenWriter

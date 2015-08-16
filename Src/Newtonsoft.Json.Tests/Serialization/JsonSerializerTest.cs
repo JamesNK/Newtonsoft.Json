@@ -8630,11 +8630,11 @@ Path '', line 1, position 1.");
         [Test]
         public void DuplicatePropertiesInNestedObject()
         {
-            ExceptionAssert.Throws<ArgumentException>(() =>
-            {
-                string content = @"{""result"":{""time"":1408188592,""time"":1408188593},""error"":null,""id"":""1""}";
-                JsonConvert.DeserializeObject<JObject>(content);
-            }, "Can not add property time to Newtonsoft.Json.Linq.JObject. Property with the same name already exists on object.");
+            string content = @"{""result"":{""time"":1408188592,""time"":1408188593},""error"":null,""id"":""1""}";
+            JObject o = JsonConvert.DeserializeObject<JObject>(content);
+            int time = (int)o["result"]["time"];
+
+            Assert.AreEqual(1408188593, time);
         }
 
         [Test]
