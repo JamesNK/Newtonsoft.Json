@@ -23,6 +23,8 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if !(NET20 || NET35)
+
 using System;
 using System.Collections.Generic;
 #if NET20
@@ -86,3 +88,5 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
         }
     }
 }
+
+#endif
