@@ -26,9 +26,19 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
 using System.Linq;
+#endif
 using System.Text;
+#if DNXCORE50
+using Xunit;
+using Test = Xunit.FactAttribute;
+using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+#else
 using NUnit.Framework;
+#endif
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
@@ -70,13 +80,13 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
               ]
             }");
 
-            IList<string> storeNames = o.SelectToken("Stores").Select(s => (string)s).ToList();
+            string[] storeNames = o.SelectToken("Stores").Select(s => (string)s).ToArray();
 
             Console.WriteLine(string.Join(", ", storeNames));
             // Lambton Quay, Willis Street
 
-            IList<string> firstProductNames = o["Manufacturers"].Select(m => (string)m.SelectToken("Products[1].Name"))
-                .Where(n => n != null).ToList();
+            string[] firstProductNames = o["Manufacturers"].Select(m => (string)m.SelectToken("Products[1].Name"))
+                .Where(n => n != null).ToArray();
 
             Console.WriteLine(string.Join(", ", firstProductNames));
             // Headlight Fluid

@@ -63,7 +63,7 @@ using System.Diagnostics;
 using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Converters;
-#if !NET20
+#if !(NET20 || NET35)
 using System.Runtime.Serialization.Json;
 #endif
 using Newtonsoft.Json.Serialization;
@@ -1409,7 +1409,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             }
         }
 
-#if !NET20
+#if !(NET20 || NET35)
         [DataContract]
         public class BaseDataContractWithHidden
         {
@@ -1750,7 +1750,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string jsonText = JsonConvert.SerializeObject(testDictionary);
 
-#if !NET20
+#if !(NET20 || NET35)
             MemoryStream ms = new MemoryStream();
             DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(Dictionary<string, object>));
             serializer.WriteObject(ms, testDictionary);
@@ -1974,7 +1974,15 @@ keyword such as type of business.""
             ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.SerializeObject(new BadJsonPropertyClass()); }, @"A member with the name 'pie' already exists on 'Newtonsoft.Json.Tests.TestObjects.BadJsonPropertyClass'. Use the JsonPropertyAttribute to specify another name.");
         }
 
-#if !NET20
+        [Test]
+        public void InvalidBackslash()
+        {
+            string json = @"[""vvv\jvvv""]";
+
+            ExceptionAssert.Throws<JsonReaderException>(() => { JsonConvert.DeserializeObject<List<string>>(json); }, @"Bad JSON escape sequence: \j. Path '', line 1, position 7.");
+        }
+
+#if !(NET20 || NET35)
         [Test]
         public void Unicode()
         {
@@ -2009,14 +2017,6 @@ keyword such as type of business.""
 #if !(NETFX_CORE || DNXCORE50)
             Assert.AreEqual(javaScriptSerializerResult[0], jsonNetResult[0]);
 #endif
-        }
-
-        [Test]
-        public void InvalidBackslash()
-        {
-            string json = @"[""vvv\jvvv""]";
-
-            ExceptionAssert.Throws<JsonReaderException>(() => { JsonConvert.DeserializeObject<List<string>>(json); }, @"Bad JSON escape sequence: \j. Path '', line 1, position 7.");
         }
 
         [Test]
@@ -4259,7 +4259,7 @@ Path '', line 1, position 1.");
             public string Ethnicity { get; set; }
         }
 
-#if !NET20
+#if !(NET20 || NET35)
         public class DataContractJsonSerializerTestClass
         {
             public TimeSpan TimeSpanProperty { get; set; }

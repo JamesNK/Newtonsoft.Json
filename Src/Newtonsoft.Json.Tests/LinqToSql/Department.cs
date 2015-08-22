@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if !(DNXCORE50 || NET20)
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -41,3 +42,4 @@ namespace Newtonsoft.Json.Tests.LinqToSql
         }
     }
 }
+#endif

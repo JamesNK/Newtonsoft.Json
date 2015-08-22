@@ -27,15 +27,22 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Xml;
 using Newtonsoft.Json.Linq;
+#if DNXCORE50
+using Xunit;
+using Test = Xunit.FactAttribute;
+using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+#else
 using NUnit.Framework;
+#endif
+
+#if !(DNXCORE50 || NET20)
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
 {
-    #region Types
+#region Types
     public class XmlJsonWriter : JsonWriter
     {
         private readonly XmlWriter _writer;
@@ -299,7 +306,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
             }
         }
     }
-    #endregion
+#endregion
 
     [TestFixture]
     public class CustomJsonWriter : TestFixtureBase
@@ -307,7 +314,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
         [Test]
         public void Example()
         {
-            #region Usage
+#region Usage
             var user = new
             {
                 Name = "James",
@@ -341,7 +348,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
             //    <Item type="String">Administrator</Item>
             //  </Roles>
             //</Root>
-            #endregion
+#endregion
 
             sw = new StringWriter();
 
@@ -444,3 +451,5 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
         }
     }
 }
+
+#endif

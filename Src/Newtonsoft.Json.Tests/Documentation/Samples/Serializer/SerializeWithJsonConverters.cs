@@ -25,10 +25,20 @@
 
 using System;
 using System.Collections.Generic;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
 using System.Linq;
+#endif
 using System.Text;
 using Newtonsoft.Json.Converters;
+#if DNXCORE50
+using Xunit;
+using Test = Xunit.FactAttribute;
+using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+#else
 using NUnit.Framework;
+#endif
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
@@ -42,28 +52,28 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             List<StringComparison> stringComparisons = new List<StringComparison>
             {
                 StringComparison.CurrentCulture,
-                StringComparison.InvariantCulture
+                StringComparison.Ordinal
             };
 
             string jsonWithoutConverter = JsonConvert.SerializeObject(stringComparisons);
 
             Console.WriteLine(jsonWithoutConverter);
-            // [0,2]
+            // [0,4]
 
             string jsonWithConverter = JsonConvert.SerializeObject(stringComparisons, new StringEnumConverter());
 
             Console.WriteLine(jsonWithConverter);
-            // ["CurrentCulture","InvariantCulture"]
+            // ["CurrentCulture","Ordinal"]
 
             List<StringComparison> newStringComparsions = JsonConvert.DeserializeObject<List<StringComparison>>(
                 jsonWithConverter,
                 new StringEnumConverter());
 
-            Console.WriteLine(string.Join(", ", newStringComparsions.Select(c => c.ToString())));
-            // CurrentCulture, InvariantCulture
+            Console.WriteLine(string.Join(", ", newStringComparsions.Select(c => c.ToString()).ToArray()));
+            // CurrentCulture, Ordinal
             #endregion
 
-            Assert.AreEqual("CurrentCulture, InvariantCulture", string.Join(", ", newStringComparsions.Select(c => c.ToString())));
+            Assert.AreEqual("CurrentCulture, Ordinal", string.Join(", ", newStringComparsions.Select(c => c.ToString()).ToArray()));
         }
     }
 }

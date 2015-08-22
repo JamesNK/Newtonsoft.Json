@@ -221,5 +221,28 @@ namespace Newtonsoft.Json.Tests.Linq
 
             ExceptionAssert.Throws<JsonException>(() => { t.Add(1); }, "Newtonsoft.Json.Linq.JProperty cannot have multiple values.");
         }
+
+        [Test]
+        public void NullParent()
+        {
+            var json = @"{
+                ""prop1"": {
+                    ""foo"": ""bar""
+                },
+            }";
+
+            var obj = JsonConvert.DeserializeObject<JObject>(json);
+
+            var property = obj.Property("prop1");
+            var value = property.Value;
+
+            // remove value so it has no parent
+            property.Value = null;
+
+            property.Remove();
+            obj.Add(new JProperty("prop2", value));
+
+            Assert.AreEqual(((JProperty)value.Parent).Name, "prop2");
+        }
     }
 }

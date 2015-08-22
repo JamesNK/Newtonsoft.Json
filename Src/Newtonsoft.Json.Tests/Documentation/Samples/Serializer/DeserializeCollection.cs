@@ -25,9 +25,19 @@
 
 using System;
 using System.Collections.Generic;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
 using System.Linq;
+#endif
 using System.Text;
+#if DNXCORE50
+using Xunit;
+using Test = Xunit.FactAttribute;
+using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+#else
 using NUnit.Framework;
+#endif
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
@@ -42,11 +52,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 
             List<string> videogames = JsonConvert.DeserializeObject<List<string>>(json);
 
-            Console.WriteLine(string.Join(", ", videogames));
+            Console.WriteLine(string.Join(", ", videogames.ToArray()));
             // Starcraft, Halo, Legend of Zelda
             #endregion
 
-            Assert.AreEqual("Starcraft, Halo, Legend of Zelda", string.Join(", ", videogames));
+            Assert.AreEqual("Starcraft, Halo, Legend of Zelda", string.Join(", ", videogames.ToArray()));
         }
     }
 }

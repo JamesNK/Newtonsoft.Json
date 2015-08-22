@@ -26,9 +26,19 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
 using System.Linq;
+#endif
 using System.Text;
+#if DNXCORE50
+using Xunit;
+using Test = Xunit.FactAttribute;
+using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+#else
 using NUnit.Framework;
+#endif
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
@@ -87,7 +97,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             //   "CodePlex"
             // ]
 
-            IList<string> categoriesText = categories.Select(c => (string)c).ToList();
+            string[] categoriesText = categories.Select(c => (string)c).ToArray();
 
             Console.WriteLine(string.Join(", ", categoriesText));
             // Json.NET, CodePlex

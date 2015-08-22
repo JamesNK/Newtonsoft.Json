@@ -25,9 +25,19 @@
 
 using System;
 using System.Collections.Generic;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
 using System.Linq;
+#endif
 using System.Text;
+#if DNXCORE50
+using Xunit;
+using Test = Xunit.FactAttribute;
+using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+#else
 using NUnit.Framework;
+#endif
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
@@ -40,7 +50,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             public string Email { get; set; }
             public bool Active { get; set; }
             public DateTime CreatedDate { get; set; }
-            public IList<string> Roles { get; set; }
+            public List<string> Roles { get; set; }
         }
         #endregion
 
@@ -75,11 +85,11 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             Console.WriteLine(account.Active);
             // false
 
-            Console.WriteLine(string.Join(", ", account.Roles));
+            Console.WriteLine(string.Join(", ", account.Roles.ToArray()));
             // User, Admin, Expired
             #endregion
 
-            Assert.AreEqual("User, Admin, Expired", string.Join(", ", account.Roles));
+            Assert.AreEqual("User, Admin, Expired", string.Join(", ", account.Roles.ToArray()));
         }
     }
 }

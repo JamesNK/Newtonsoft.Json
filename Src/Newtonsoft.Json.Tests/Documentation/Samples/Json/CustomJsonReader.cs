@@ -27,15 +27,10 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Xml;
 using Newtonsoft.Json.Linq;
-#if NETFX_CORE
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
-using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
-#elif DNXCORE50
+#if DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
@@ -43,9 +38,11 @@ using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 using NUnit.Framework;
 #endif
 
+#if !(DNXCORE50 || NET20)
+
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
 {
-    #region Types
+#region Types
     public class XmlJsonReader : JsonReader
     {
         private readonly Stack<JTokenType> _stateStack;
@@ -244,7 +241,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
             return (Value != null) ? (DateTimeOffset?)Convert.ToDateTime(Value) : null;
         }
     }
-    #endregion
+#endregion
 
     [TestFixture]
     public class CustomJsonReader : TestFixtureBase
@@ -252,7 +249,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
         [Test]
         public void Example()
         {
-            #region Usage
+#region Usage
             string xml = @"<Root type=""Object"">
               <Null type=""Null"" />
               <String type=""String"">This is a string!</String>
@@ -311,7 +308,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
                 //  "Constructor": new Date(2000, 12, 30)
                 //}
             }
-            #endregion
+#endregion
 
             using (XmlReader xmlReader = XmlReader.Create(new StringReader(xml), new XmlReaderSettings { IgnoreWhitespace = true }))
             using (XmlJsonReader reader = new XmlJsonReader(xmlReader))
@@ -484,3 +481,5 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
         }
     }
 }
+
+#endif

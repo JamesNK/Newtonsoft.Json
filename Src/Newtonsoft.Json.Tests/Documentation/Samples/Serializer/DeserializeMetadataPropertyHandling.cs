@@ -24,11 +24,16 @@
 #endregion
 
 using Newtonsoft.Json.Serialization;
+#if DNXCORE50
+using Xunit;
+using Test = Xunit.FactAttribute;
+using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+#else
 using NUnit.Framework;
+#endif
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
 using User = Newtonsoft.Json.Tests.Serialization.MetadataPropertyHandlingTests.User;
 

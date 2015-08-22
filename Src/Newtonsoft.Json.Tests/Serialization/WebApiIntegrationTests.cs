@@ -41,7 +41,7 @@ using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
 #endif
-#if !(NETFX_CORE || NET20)
+#if !(NETFX_CORE || NET20 || NET35)
 using System.Runtime.Serialization.Json;
 #endif
 using Newtonsoft.Json.Serialization;
@@ -63,7 +63,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 nonSerializedField = "Error"
             };
 
-#if !(NETFX_CORE || NET20 || PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(NETFX_CORE || NET20 || NET35 || PORTABLE || DNXCORE50 || PORTABLE40)
             MemoryStream ms = new MemoryStream();
             DataContractJsonSerializer dataContractJsonSerializer = new DataContractJsonSerializer(typeof(SerializableType));
             dataContractJsonSerializer.WriteObject(ms, serializableType);

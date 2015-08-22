@@ -210,8 +210,8 @@ function DnxBuild($build)
 {
   $name = $build.Name
 
-  exec { dnvm install 1.0.0-beta6 | Out-Default }
-  exec { dnvm use 1.0.0-beta6 -r clr | Out-Default }
+  exec { dnvm install 1.0.0-beta8-15120 -u | Out-Default }
+  exec { dnvm use 1.0.0-beta8-15120 -r clr | Out-Default }
 
   Write-Host -ForegroundColor Green "Restoring packages for $name"
   Write-Host
@@ -228,7 +228,7 @@ function DnxTests($build)
   #Write-Host
   #exec { & $toolsDir\Kvm\kvm.ps1 upgrade -r CoreCLR -NoNative | Out-Default }
 
-  exec { dnvm use 1.0.0-beta6 -r coreclr | Out-Default }
+  exec { dnvm use 1.0.0-beta8-15120 -r coreclr | Out-Default }
 
   Write-Host -ForegroundColor Green "Restoring packages for $name"
   Write-Host
@@ -240,7 +240,7 @@ function DnxTests($build)
   try
   {
     Set-Location "$workingSourceDir\Newtonsoft.Json.Tests"
-    exec { dnx "$workingSourceDir\Newtonsoft.Json.Tests\project.json" --configuration Release test | Out-Default }
+    exec { dnx -p "$workingSourceDir\Newtonsoft.Json.Tests\project.json" --configuration Release test | Out-Default }
   }
   finally
   {

@@ -1,24 +1,96 @@
 {
   "version": "1.0.0-*",
   "exclude": [
-    "LinqToSql",
-    "Documentation",
-    "**/*.Designer.cs"
   ],
   "dependencies": {
-    "Newtonsoft.Json": "",
-    "System.Collections.Immutable": "1.1.37"
+    "Newtonsoft.Json": ""
   },
   "commands": {
     "test": "xunit.runner.dnx -parallel none"
   },
   "frameworks": {
+    "net45": {
+      "frameworkAssemblies": {
+        "System.Collections": "",
+        "System.ComponentModel.DataAnnotations": "",
+        "System.Data": "",
+        "System.Data.DataSetExtensions": "",
+        "System.Data.Entity": "",
+        "System.Data.Linq": "",
+        "System.Drawing": "",
+        "System.Numerics": "",
+        "System.Runtime": "",
+        "System.Runtime.Serialization": "",
+        "System.Web": "",
+        "System.Web.Extensions": "",
+        "System.Xml": "",
+        "System.Xml.Linq": ""
+      },
+      "dependencies": {
+        "Autofac": "3.5.0",
+        "FSharp.Core": "4.0.0.1",
+        "NUnit": "2.6.4",
+        "System.Collections.Immutable": "1.1.37"
+      }
+    },
+    "net40": {
+      "frameworkAssemblies": {
+        "System.Collections": "",
+        "System.ComponentModel.DataAnnotations": "",
+        "System.Data": "",
+        "System.Data.DataSetExtensions": "",
+        "System.Data.Entity": "",
+        "System.Data.Linq": "",
+        "System.Drawing": "",
+        "System.Numerics": "",
+        "System.Runtime": "",
+        "System.Runtime.Serialization": "",
+        "System.Web": "",
+        "System.Web.Extensions": "",
+        "System.Xml": "",
+        "System.Xml.Linq": ""
+      },
+      "dependencies": {
+        "Autofac": "3.5.0",
+        "FSharp.Core": "4.0.0.1",
+        "NUnit": "2.6.4"
+      }
+    },
+    "net35": {
+      "frameworkAssemblies": {
+        "System.ComponentModel.DataAnnotations": "",
+        "System.Core": "",
+        "System.Data": "",
+        "System.Data.DataSetExtensions": "",
+        "System.Data.Entity": "",
+        "System.Data.Linq": "",
+        "System.Drawing": "",
+        "System.Runtime.Serialization": "",
+        "System.Web": "",
+        "System.Web.Extensions": "",
+        "System.Xml": "",
+        "System.Xml.Linq": ""
+      },
+      "dependencies": {
+        "NUnit": "2.6.4"
+      }
+    },
+    "net20": {
+      "frameworkAssemblies": {
+        "System.Data": "",
+        "System.Drawing": "",
+        "System.Web": "",
+        "System.Xml": ""
+      },
+      "dependencies": {
+        "NUnit": "2.6.4"
+      }
+    },
     "dnxcore50": {
       "dependencies": {
-        "xunit": "2.1.0-*",
-        "xunit.runner.dnx": "2.1.0-*",
         "Microsoft.CSharp": "4.0.0",
         "System.Collections": "4.0.10",
+        "System.Collections.Immutable": "1.1.37",
         "System.ComponentModel.TypeConverter": "4.0.0",
         "System.Diagnostics.Debug": "4.0.10",
         "System.Dynamic.Runtime": "4.0.10",
@@ -26,24 +98,26 @@
         "System.IO": "4.0.10",
         "System.Linq": "4.0.0",
         "System.Linq.Expressions": "4.0.10",
+        "System.Reflection.Emit.ILGeneration": "4.0.0",
         "System.Reflection.Extensions": "4.0.0",
         "System.Reflection.TypeExtensions": "4.0.0",
         "System.Runtime": "4.0.20",
         "System.Runtime.Extensions": "4.0.10",
-        "System.Runtime.Serialization.Primitives": "4.0.10",
         "System.Runtime.Numerics": "4.0.0",
         "System.Runtime.Serialization.Json": "4.0.0",
+        "System.Runtime.Serialization.Primitives": "4.0.10",
         "System.Runtime.Serialization.Xml": "4.0.10",
-        "System.Reflection.Emit.ILGeneration": "4.0.0",
         "System.Text.Encoding": "4.0.10",
-        "System.Text.RegularExpressions": "4.0.10",
-        "System.Text.Encoding.Extensions": "4.0.10",
         "System.Text.Encoding.CodePages": "4.0.0",
+        "System.Text.Encoding.Extensions": "4.0.10",
+        "System.Text.RegularExpressions": "4.0.10",
         "System.Threading": "4.0.10",
+        "System.Xml.ReaderWriter": "4.0.10",
         "System.Xml.XDocument": "4.0.10",
         "System.Xml.XmlDocument": "4.0.0",
         "System.Xml.XmlSerializer": "4.0.10",
-        "System.Xml.ReaderWriter": "4.0.10"
+        "xunit": "2.1.0-*",
+        "xunit.runner.dnx": "2.1.0-*"
       }
     }
   }

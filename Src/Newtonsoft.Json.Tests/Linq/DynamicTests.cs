@@ -82,6 +82,7 @@ namespace Newtonsoft.Json.Tests.Linq
             }
         }
 
+#if !NETFX_CORE
         private void UpdateValueCount(IDictionary<string, int> counts, dynamic d)
         {
             string s = d.ToString();
@@ -96,7 +97,6 @@ namespace Newtonsoft.Json.Tests.Linq
             counts[s] = c;
         }
 
-#if !NETFX_CORE
         [Test]
         public void DeserializeLargeDynamic()
         {

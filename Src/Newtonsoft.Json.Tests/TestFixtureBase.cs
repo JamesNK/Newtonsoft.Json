@@ -29,7 +29,7 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
-#if NET20
+#if (NET20 || NET35)
 using Newtonsoft.Json.Serialization;
 #else
 using System.Runtime.Serialization.Json;
@@ -196,7 +196,7 @@ namespace Newtonsoft.Json.Tests
     [TestFixture]
     public abstract class TestFixtureBase
     {
-#if !NET20
+#if !(NET20 || NET35)
         protected string GetDataContractJsonSerializeResult(object o)
         {
             MemoryStream ms = new MemoryStream();

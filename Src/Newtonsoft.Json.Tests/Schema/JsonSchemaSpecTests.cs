@@ -28,7 +28,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
 using System.Linq;
+#endif
 using System.Reflection;
 using System.Text;
 using NUnit.Framework;
@@ -61,9 +65,9 @@ namespace Newtonsoft.Json.Tests.Schema
         {
             JsonSchema s = JsonSchema.Read(jsonSchemaSpecTest.Schema.CreateReader());
 
-            IList<string> errorMessages;
-            bool v = jsonSchemaSpecTest.Data.IsValid(s, out errorMessages);
-            errorMessages = errorMessages ?? new List<string>();
+            IList<string> e;
+            bool v = jsonSchemaSpecTest.Data.IsValid(s, out e);
+            string[] errorMessages = ((e != null) ? e.ToArray() : null) ?? new string[0];
 
             Assert.AreEqual(jsonSchemaSpecTest.IsValid, v, jsonSchemaSpecTest.TestCaseDescription + " - " + jsonSchemaSpecTest.TestDescription + " - errors: " + string.Join(", ", errorMessages));
         }
@@ -74,7 +78,7 @@ namespace Newtonsoft.Json.Tests.Schema
 
             // get test files location relative to the test project dll
             string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            string baseTestPath = Path.Combine(baseDirectory, "Schema", "Specs");
+            string baseTestPath = Path.Combine(baseDirectory, Path.Combine("Schema", "Specs"));
 
             string[] testFiles = Directory.GetFiles(baseTestPath, "*.json", SearchOption.AllDirectories);
 

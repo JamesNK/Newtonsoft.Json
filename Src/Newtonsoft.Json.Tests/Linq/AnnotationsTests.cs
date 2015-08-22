@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
 using System.Linq;
+#endif
 using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 #if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -257,6 +260,7 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(new Uri("http://www.google.com/"), i);
         }
 
+#if !NET20
         [Test]
         public void Example()
         {
@@ -280,5 +284,6 @@ namespace Newtonsoft.Json.Tests.Linq
 
             Assert.AreEqual(2, changedProperties.Count);
         }
+#endif
     }
 }
