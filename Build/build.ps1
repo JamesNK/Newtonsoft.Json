@@ -210,15 +210,26 @@ function DnxBuild($build)
 {
   $name = $build.Name
 
-  exec { dnvm install 1.0.0-beta8-15120 -u | Out-Default }
+  exec { dnvm install 1.0.0-beta8-15120 -r clr -u | Out-Default }
   exec { dnvm use 1.0.0-beta8-15120 -r clr | Out-Default }
 
   Write-Host -ForegroundColor Green "Restoring packages for $name"
   Write-Host
-  exec { dnu restore "$workingSourceDir\Newtonsoft.Json\project.json" | Out-Default }
+  exec {
+    try {
+      dnu restore "$workingSourceDir\Newtonsoft.Json\project.json" | Out-Default
+      Write-Host "Restore last exit code: $lastexitcode"
+    }
+    catch [System.Management.Automation.RemoteException]
+    {
+      Write-Host "Restore last exit code: $lastexitcode"
+      Write-Host ("Restore exception: " + $_.ToString())
+      $global:lastexitcode = 0
+      $lastexitcode = 0
+    }
+  }
 
   exec { dnu build "$workingSourceDir\Newtonsoft.Json\project.json" --configuration Release | Out-Default }
-  exec { dnu build "$workingSourceDir\Newtonsoft.Json.Tests\project.json" --configuration Release | Out-Default }
 }
 
 function DnxTests($build)
@@ -229,11 +240,24 @@ function DnxTests($build)
   #Write-Host
   #exec { & $toolsDir\Kvm\kvm.ps1 upgrade -r CoreCLR -NoNative | Out-Default }
 
+  exec { dnvm install 1.0.0-beta8-15120 -r coreclr -u | Out-Default }
   exec { dnvm use 1.0.0-beta8-15120 -r coreclr | Out-Default }
 
   Write-Host -ForegroundColor Green "Restoring packages for $name"
   Write-Host
-  exec { dnu restore "$workingSourceDir\Newtonsoft.Json.Tests\project.json" | Out-Default }
+  exec {
+    try {
+      dnu restore "$workingSourceDir\Newtonsoft.Json.Tests\project.json" | Out-Default
+      Write-Host "Restore last exit code: $lastexitcode"
+    }
+    catch [System.Management.Automation.RemoteException]
+    {
+      Write-Host "Restore last exit code: $lastexitcode"
+      Write-Host ("Restore exception: " + $_.ToString())
+      $global:lastexitcode = 0
+      $lastexitcode = 0
+    }
+  }
 
   Write-Host -ForegroundColor Green "Ensuring test project builds for $name"
   Write-Host

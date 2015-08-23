@@ -43,7 +43,7 @@
         "System.Xml": ""
       }
     },
-    "net45+win+wp80+wpa81": {
+    ".NETPortable,Version=v4.5,Profile=Profile259": {
       "compilationOptions": {
         "define": [ "PORTABLE" ]
       },
