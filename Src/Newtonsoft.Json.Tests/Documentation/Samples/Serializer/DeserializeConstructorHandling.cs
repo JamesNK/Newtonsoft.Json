@@ -71,7 +71,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Console.WriteLine(ex.Message);
                 // Value cannot be null.
                 // Parameter name: website
             }

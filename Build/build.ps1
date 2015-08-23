@@ -218,6 +218,7 @@ function DnxBuild($build)
   exec { dnu restore "$workingSourceDir\Newtonsoft.Json\project.json" | Out-Default }
 
   exec { dnu build "$workingSourceDir\Newtonsoft.Json\project.json" --configuration Release | Out-Default }
+  exec { dnu build "$workingSourceDir\Newtonsoft.Json.Tests\project.json" --configuration Release | Out-Default }
 }
 
 function DnxTests($build)
