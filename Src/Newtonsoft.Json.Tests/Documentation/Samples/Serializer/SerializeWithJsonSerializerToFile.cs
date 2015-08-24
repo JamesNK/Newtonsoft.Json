@@ -34,7 +34,6 @@ using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
 #endif
-using File = System.IO.File;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
@@ -69,6 +68,18 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
                 serializer.Serialize(file, movie);
             }
             #endregion
+        }
+
+        public static class File
+        {
+            public static StreamWriter CreateText(string path)
+            {
+                return new StreamWriter(new MemoryStream());
+            }
+
+            public static void WriteAllText(string s1, string s2)
+            {
+            }
         }
     }
 }

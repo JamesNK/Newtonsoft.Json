@@ -60,5 +60,17 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             }
             #endregion
         }
+
+        public static class File
+        {
+            public static StreamWriter CreateText(string path)
+            {
+                return new StreamWriter(new MemoryStream());
+            }
+
+            public static void WriteAllText(string s1, string s2)
+            {
+            }
+        }
     }
 }
