@@ -227,6 +227,29 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Test]
+        public void PrivateJsonConstructorArrayObject()
+        {
+            var resolver = new DefaultContractResolver();
+            var contract = (JsonArrayContract)resolver.ResolveContract(typeof(PrivateJsonConstructorArrayObject));
+
+            Assert.IsTrue(contract.IsInstantiable);
+            Assert.IsTrue(contract.CanDeserialize);
+            Assert.IsTrue(contract.HasParametrizedCreator);
+
+            var o = JsonConvert.DeserializeObject<PrivateJsonConstructorArrayObject>("[0,1,2]", new JsonSerializerSettings
+            {
+                ContractResolver = resolver
+            });
+
+            int i = 0;
+            foreach (var item in o)
+            {
+                Assert.AreEqual(i, item);
+                ++i;
+            }
+        }
+
+        [Test]
         public void ListInterfaceDefaultCreator()
         {
             var resolver = new DefaultContractResolver();

@@ -401,6 +401,7 @@
     <Compile Include="TestObjects\PrivateConstructorWithPublicParametizedConstructorTestClass.cs" />
     <Compile Include="TestObjects\PrivateImplementationAClass.cs" />
     <Compile Include="TestObjects\PrivateImplementationBClass.cs" />
+    <Compile Include="TestObjects\PrivateJsonConstructorArrayObject.cs" />
     <Compile Include="TestObjects\PrivateMembersClass.cs" />
     <Compile Include="TestObjects\Product.cs" />
     <Compile Include="TestObjects\ProductCollection.cs" />
