@@ -11,6 +11,7 @@
   $buildNuGet = $true
   $treatWarningsAsErrors = $false
   $workingName = if ($workingName) {$workingName} else {"Working"}
+  $dnvmVersion = "1.0.0-beta8-15530"
   
   $baseDir  = resolve-path ..
   $buildDir = "$baseDir\Build"
@@ -93,7 +94,7 @@ task Package -depends Build {
     if ($nugetPrelease -ne $null)
     {
       $nugetVersion = $nugetVersion + "-" + $nugetPrelease
-    }    
+    }
 
     New-Item -Path $workingDir\NuGet -ItemType Directory
 
@@ -210,8 +211,8 @@ function DnxBuild($build)
 {
   $name = $build.Name
 
-  exec { dnvm install 1.0.0-beta8-15120 -r clr -u | Out-Default }
-  exec { dnvm use 1.0.0-beta8-15120 -r clr | Out-Default }
+  exec { dnvm install $dnvmVersion -r clr -u | Out-Default }
+  exec { dnvm use $dnvmVersion -r clr | Out-Default }
 
   Write-Host -ForegroundColor Green "Restoring packages for $name"
   Write-Host
@@ -240,8 +241,8 @@ function DnxTests($build)
   #Write-Host
   #exec { & $toolsDir\Kvm\kvm.ps1 upgrade -r CoreCLR -NoNative | Out-Default }
 
-  exec { dnvm install 1.0.0-beta8-15120 -r coreclr -u | Out-Default }
-  exec { dnvm use 1.0.0-beta8-15120 -r coreclr | Out-Default }
+  exec { dnvm install $dnvmVersion -r coreclr -u | Out-Default }
+  exec { dnvm use $dnvmVersion -r coreclr | Out-Default }
 
   Write-Host -ForegroundColor Green "Restoring packages for $name"
   Write-Host
