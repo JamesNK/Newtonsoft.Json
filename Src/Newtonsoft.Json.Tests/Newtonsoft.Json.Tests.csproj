@@ -456,6 +456,7 @@
     <Compile Include="Utilities\ExpressionReflectionDelegateFactoryTests.cs" />
     <Compile Include="Utilities\LateboundReflectionDelegateFactoryTests.cs" />
     <Compile Include="Utilities\ReflectionUtilsTests.cs" />
+    <Compile Include="Utilities\ConvertUtilsTests.cs" />
     <Compile Include="Utilities\StringUtilsTests.cs" />
   </ItemGroup>
   <ItemGroup>

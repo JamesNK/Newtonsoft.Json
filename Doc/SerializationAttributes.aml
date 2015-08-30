@@ -49,10 +49,11 @@
         serialized by default but can be ignored with the JsonIgnoreAttribute, Json.NET's default behavior) or
         fields (all public and private fields are serialized and properties are ignored).</para>
         <para>Json.NET serializes .NET classes that implement IEnumerable as a JSON array populated with the
-        IEnumerable values. Placing the JsonPropertyAttribute overrides this behavior and forces the serializer
-        to serialize the class's fields and properties.</para>
-        <para>The DataContractAttribute can be used as substitute for JsonObjectAttribute. The
-        DataContractAttribute will default member serialization to opt-in.</para>
+        IEnumerable values. Placing the <codeEntityReference>T:Newtonsoft.Json.JsonObjectAttribute</codeEntityReference>
+        overrides this behavior and forces the serializer to serialize the class's fields and properties.</para>
+        <para>The <codeEntityReference>T:System.Runtime.Serialization.DataContractAttribute</codeEntityReference>
+        can be used as substitute for JsonObjectAttribute. The DataContractAttribute will default member
+        serialization to opt-in.</para>
       </content>
     </section>
         

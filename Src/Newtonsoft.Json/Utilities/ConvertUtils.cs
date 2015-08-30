@@ -665,6 +665,21 @@ namespace Newtonsoft.Json.Utilities
 
             int end = start + length;
 
+            // Int32.MaxValue and MinValue are 10 chars
+            if (length > 10)
+            {
+                // invalid result takes precedence over overflow
+                for (int i = start; i < end; i++)
+                {
+                    int c = chars[i] - '0';
+
+                    if (c < 0 || c > 9)
+                        return ParseResult.Invalid;
+                }
+
+                return ParseResult.Overflow;
+            }
+
             for (int i = start; i < end; i++)
             {
                 int c = chars[i] - '0';
@@ -729,6 +744,21 @@ namespace Newtonsoft.Json.Utilities
             }
 
             int end = start + length;
+
+            // Int64.MaxValue and MinValue are 19 chars
+            if (length > 19)
+            {
+                // invalid result takes precedence over overflow
+                for (int i = start; i < end; i++)
+                {
+                    int c = chars[i] - '0';
+
+                    if (c < 0 || c > 9)
+                        return ParseResult.Invalid;
+                }
+
+                return ParseResult.Overflow;
+            }
 
             for (int i = start; i < end; i++)
             {

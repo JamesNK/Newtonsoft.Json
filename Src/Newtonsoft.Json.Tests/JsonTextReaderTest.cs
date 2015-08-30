@@ -3248,6 +3248,55 @@ null//comment
                 },
                 "Unexpected character encountered while parsing value: !. Path 'frameworks.dnxcore50.dependencies.['System.Xml.ReaderWriter'].source', line 6, position 21.");
         }
+
+        [Test]
+        [Ignore("Fix this next major version")]
+        public void LinePositionOnNewLine()
+        {
+            string json1 = "{'a':'bc'}";
+
+            JsonTextReader r = new JsonTextReader(new StringReader(json1));
+
+            Assert.IsTrue(r.Read());
+            Assert.AreEqual(1, r.LineNumber);
+            Assert.AreEqual(1, r.LinePosition);
+
+            Assert.IsTrue(r.Read());
+            Assert.AreEqual(1, r.LineNumber);
+            Assert.AreEqual(5, r.LinePosition);
+
+            Assert.IsTrue(r.Read());
+            Assert.AreEqual(1, r.LineNumber);
+            Assert.AreEqual(9, r.LinePosition);
+
+            Assert.IsTrue(r.Read());
+            Assert.AreEqual(1, r.LineNumber);
+            Assert.AreEqual(10, r.LinePosition);
+
+            Assert.IsFalse(r.Read());
+
+            string json2 = "\n{'a':'bc'}";
+
+            r = new JsonTextReader(new StringReader(json2));
+
+            Assert.IsTrue(r.Read());
+            Assert.AreEqual(2, r.LineNumber);
+            Assert.AreEqual(1, r.LinePosition);
+
+            Assert.IsTrue(r.Read());
+            Assert.AreEqual(2, r.LineNumber);
+            Assert.AreEqual(5, r.LinePosition);
+
+            Assert.IsTrue(r.Read());
+            Assert.AreEqual(2, r.LineNumber);
+            Assert.AreEqual(9, r.LinePosition);
+
+            Assert.IsTrue(r.Read());
+            Assert.AreEqual(2, r.LineNumber);
+            Assert.AreEqual(10, r.LinePosition);
+
+            Assert.IsFalse(r.Read());
+        }
     }
 
     public class ToggleReaderError : TextReader
