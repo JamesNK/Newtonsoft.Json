@@ -179,6 +179,7 @@
     <Compile Include="TestObjects\PrivateConstructorWithPublicParametizedConstructorTestClass.cs" />
     <Compile Include="TestObjects\PrivateImplementationAClass.cs" />
     <Compile Include="TestObjects\PrivateImplementationBClass.cs" />
+    <Compile Include="TestObjects\PrivateJsonConstructorArrayObject.cs" />
     <Compile Include="TestObjects\PropertyCase.cs" />
     <Compile Include="TestObjects\PropertyItemConverter.cs" />
     <Compile Include="TestObjects\PublicParametizedConstructorRequiringConverterTestClass.cs" />
