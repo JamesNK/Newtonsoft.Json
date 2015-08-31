@@ -335,6 +335,7 @@
     <Compile Include="TestObjects\WidgetId1.cs" />
     <Compile Include="TestObjects\WidgetIdJsonConverter.cs" />
     <Compile Include="TestObjects\WithEnums.cs" />
+    <Compile Include="Utilities\ConvertUtilsTests.cs" />
     <Compile Include="Utilities\ExpressionReflectionDelegateFactoryTests.cs" />
     <Compile Include="Utilities\DateTimeUtilsTests.cs" />
     <Compile Include="Utilities\DynamicReflectionDelegateFactoryTests.cs" />
