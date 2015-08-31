@@ -2005,6 +2005,15 @@ namespace Newtonsoft.Json.Serialization
                                 continue;
                             }
 
+                            if (!ShouldDeSerialize(reader, property, newObject))
+                            {
+                                if (!reader.Read())
+                                    break;
+
+                                SetExtensionData(contract, member, reader, memberName, newObject);
+                                continue;
+                            }
+
                             if (property.PropertyContract == null)
                                 property.PropertyContract = GetContractSafe(property.PropertyType);
 
@@ -2050,7 +2059,19 @@ namespace Newtonsoft.Json.Serialization
             OnDeserialized(reader, contract, newObject);
             return newObject;
         }
+        //reader, contract, member, id
+        private bool ShouldDeSerialize(JsonReader reader, JsonProperty property, object target)
+        {
+            if (property.ShouldDeSerialize == null)
+                return true;
 
+            bool shouldDeSerialize = property.ShouldDeSerialize(target);
+
+            if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
+                TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, reader.Path, "ShouldDeSerialize result for property '{0}' on {1}: {2}".FormatWith(CultureInfo.InvariantCulture, property.PropertyName, property.DeclaringType, shouldDeSerialize)), null);
+
+            return shouldDeSerialize;
+        }
         private bool CheckPropertyName(JsonReader reader, string memberName)
         {
             if (Serializer.MetadataPropertyHandling == MetadataPropertyHandling.ReadAhead)
