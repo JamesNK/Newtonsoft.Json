@@ -181,6 +181,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 }", strJsonMainClass);
         }
 
+#if !(PORTABLE || PORTABLE40 || NET20 || NET35)
         [Test]
         public void LargeIntegerAsString()
         {
@@ -195,6 +196,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             public string Blah { get; set; }
         }
+#endif
 
         [Test]
         public void CaseInsensitiveRequiredPropertyConstructorCreation()

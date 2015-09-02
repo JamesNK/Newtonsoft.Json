@@ -3249,6 +3249,7 @@ null//comment
                 "Unexpected character encountered while parsing value: !. Path 'frameworks.dnxcore50.dependencies.['System.Xml.ReaderWriter'].source', line 6, position 21.");
         }
 
+#if !DNXCORE50
         [Test]
         [Ignore("Fix this next major version")]
         public void LinePositionOnNewLine()
@@ -3297,6 +3298,7 @@ null//comment
 
             Assert.IsFalse(r.Read());
         }
+#endif
     }
 
     public class ToggleReaderError : TextReader
