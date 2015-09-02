@@ -184,15 +184,11 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void LargeIntegerAsString()
         {
-            Console.WriteLine("Sending in: \n43443333222211111117");
             var largeBrokenNumber = JsonConvert.DeserializeObject<Foo64>("{\"Blah\": 43443333222211111117 }");
-            Console.WriteLine(largeBrokenNumber.Blah);
+            Assert.AreEqual("43443333222211111117", largeBrokenNumber.Blah);
 
-            Console.WriteLine();
-
-            Console.WriteLine("Sending in: \n53443333222211111117");
             var largeOddWorkingNumber = JsonConvert.DeserializeObject<Foo64>("{\"Blah\": 53443333222211111117 }");
-            Console.WriteLine(largeOddWorkingNumber.Blah);
+            Assert.AreEqual("53443333222211111117", largeOddWorkingNumber.Blah);
         }
 
         public class Foo64
