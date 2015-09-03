@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <topic id="SerializationAttributes" revisionNumber="1">
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
 
@@ -60,7 +60,9 @@
     <section>
       <title>JsonArrayAttribute/JsonDictionaryAttribute</title>
       <content>
-        <para>The JsonArrayAttribute and JsonDictionaryAttributes are used to specify whether a class is serialized as that collection type.</para>
+        <para>The <codeEntityReference>T:Newtonsoft.Json.JsonArrayAttribute</codeEntityReference> and
+        <codeEntityReference>T:Newtonsoft.Json.JsonDictionaryAttribute</codeEntityReference> are used to specify
+        whether a class is serialized as that collection type.</para>
         <para>The collection attributes have options to customize the JsonConverter, type name handling, and reference handling that are applied to collection items.</para>
       </content>
     </section>

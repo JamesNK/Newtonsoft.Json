@@ -99,7 +99,11 @@ catch
 
     if ($selection.Text.StartsWith("Attempting to gather dependencies information for package 'Newtonsoft.Json." + $package.Version + "'"))
     {
-      $dte2.ItemOperations.Navigate($url) | Out-Null
+      # don't show on upgrade
+      if (!$selection.Text.Contains("Removed package"))
+      {
+        $dte2.ItemOperations.Navigate($url) | Out-Null
+      }
     }
   }
   catch

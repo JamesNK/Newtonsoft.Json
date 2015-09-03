@@ -1,0 +1,11 @@
+﻿{
+  "dependencies": {
+    "NUnit": "2.6.2"
+  },
+  "frameworks": {
+    "net35": {}
+  },
+  "runtimes": {
+    "win-anycpu": {}
+  }
+}
