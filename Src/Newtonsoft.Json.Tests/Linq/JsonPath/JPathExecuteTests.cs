@@ -746,7 +746,7 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
             IList<object> values = new List<object>
             {
                 "ff2dc672-6e15-4aa2-afb0-18f4f69596ad",
-                Guid.Parse("ff2dc672-6e15-4aa2-afb0-18f4f69596ad"),
+                new Guid("ff2dc672-6e15-4aa2-afb0-18f4f69596ad"),
                 "http://localhost",
                 new Uri("http://localhost"),
                 "2000-12-05T05:07:59Z",
