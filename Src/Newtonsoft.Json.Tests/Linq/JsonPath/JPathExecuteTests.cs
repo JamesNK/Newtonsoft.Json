@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 #if !(PORTABLE || PORTABLE40 || NET35 || NET20)
 using System.Numerics;
 #endif
@@ -739,6 +740,55 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
             Assert.AreEqual(1L, v.Value);
         }
 
+        [Test]
+        public void QueryAgainstNonStringValues()
+        {
+            IList<object> values = new List<object>
+            {
+                "ff2dc672-6e15-4aa2-afb0-18f4f69596ad",
+                Guid.Parse("ff2dc672-6e15-4aa2-afb0-18f4f69596ad"),
+                "http://localhost",
+                new Uri("http://localhost"),
+                "2000-12-05T05:07:59Z",
+                new DateTime(2000, 12, 5, 5, 7, 59, DateTimeKind.Utc),
+#if !NET20
+                "2000-12-05T05:07:59-10:00",
+                new DateTimeOffset(2000, 12, 5, 5, 7, 59, -TimeSpan.FromHours(10)),
+#endif
+                "SGVsbG8gd29ybGQ=",
+                Encoding.UTF8.GetBytes("Hello world"),
+                "365.23:59:59",
+                new TimeSpan(365, 23, 59, 59)
+            };
+
+            JObject o = new JObject(
+                new JProperty("prop",
+                    new JArray(
+                        values.Select(v => new JObject(new JProperty("childProp", v)))
+                    )
+                )
+            );
+
+            IList<JToken> t = o.SelectTokens("$.prop[?(@.childProp =='ff2dc672-6e15-4aa2-afb0-18f4f69596ad')]").ToList();
+            Assert.AreEqual(2, t.Count);
+
+            t = o.SelectTokens("$.prop[?(@.childProp =='http://localhost')]").ToList();
+            Assert.AreEqual(2, t.Count);
+
+            t = o.SelectTokens("$.prop[?(@.childProp =='2000-12-05T05:07:59Z')]").ToList();
+            Assert.AreEqual(2, t.Count);
+
+#if !NET20
+            t = o.SelectTokens("$.prop[?(@.childProp =='2000-12-05T05:07:59-10:00')]").ToList();
+            Assert.AreEqual(2, t.Count);
+#endif
+
+            t = o.SelectTokens("$.prop[?(@.childProp =='SGVsbG8gd29ybGQ=')]").ToList();
+            Assert.AreEqual(2, t.Count);
+
+            t = o.SelectTokens("$.prop[?(@.childProp =='365.23:59:59')]").ToList();
+            Assert.AreEqual(2, t.Count);
+        }
 
         [Test]
         public void Example()
