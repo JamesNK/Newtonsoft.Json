@@ -666,7 +666,9 @@ namespace Newtonsoft.Json.Utilities
             int end = start + length;
 
             // Int32.MaxValue and MinValue are 10 chars
-            if (length > 10)
+            // Or is 10 chars and start is greater than two
+            // Need to improve this!
+            if (length > 10 || (length == 10 && chars[start] - '0' > 2))
             {
                 // invalid result takes precedence over overflow
                 for (int i = start; i < end; i++)

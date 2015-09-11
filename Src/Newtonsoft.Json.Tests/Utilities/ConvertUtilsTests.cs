@@ -23,6 +23,8 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+using System;
+using System.Globalization;
 #if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
@@ -65,8 +67,6 @@ namespace Newtonsoft.Json.Tests.Utilities
                 Assert.AreEqual(ParseResult.Overflow, result);
             }
 
-
-
             c = "-9223372036854775808".ToCharArray();
             result = ConvertUtils.Int64TryParse(c, 0, c.Length, out l);
             Assert.AreEqual(ParseResult.Success, result);
@@ -101,15 +101,6 @@ namespace Newtonsoft.Json.Tests.Utilities
             result = ConvertUtils.Int32TryParse(c, 0, c.Length, out i);
             Assert.AreEqual(ParseResult.Overflow, result);
 
-            for (int j = 2; j < 10; j++)
-            {
-                c = ("2" + j + "47483647").ToCharArray();
-                result = ConvertUtils.Int32TryParse(c, 0, c.Length, out i);
-                Assert.AreEqual(ParseResult.Overflow, result);
-            }
-
-
-
             c = "-2147483648".ToCharArray();
             result = ConvertUtils.Int32TryParse(c, 0, c.Length, out i);
             Assert.AreEqual(ParseResult.Success, result);
@@ -119,11 +110,30 @@ namespace Newtonsoft.Json.Tests.Utilities
             result = ConvertUtils.Int32TryParse(c, 0, c.Length, out i);
             Assert.AreEqual(ParseResult.Overflow, result);
 
-            for (int j = 3; j < 10; j++)
+            for (int j = 2; j < 10; j++)
             {
-                c = ("-2" + j + "47483648").ToCharArray();
-                result = ConvertUtils.Int32TryParse(c, 0, c.Length, out i);
-                Assert.AreEqual(ParseResult.Overflow, result);
+                for (int k = 2; k < 10; k++)
+                {
+                    string t = j.ToString(CultureInfo.InvariantCulture) + k.ToString(CultureInfo.InvariantCulture) + "47483647";
+
+                    c = t.ToCharArray();
+                    result = ConvertUtils.Int32TryParse(c, 0, c.Length, out i);
+
+                    Assert.AreEqual(ParseResult.Overflow, result);
+                }
+            }
+
+            for (int j = 2; j < 10; j++)
+            {
+                for (int k = 2; k < 10; k++)
+                {
+                    string t = "-" + j.ToString(CultureInfo.InvariantCulture) + k.ToString(CultureInfo.InvariantCulture) + "47483648";
+
+                    c = t.ToCharArray();
+                    result = ConvertUtils.Int32TryParse(c, 0, c.Length, out i);
+
+                    Assert.AreEqual(ParseResult.Overflow, result);
+                }
             }
         }
     }
