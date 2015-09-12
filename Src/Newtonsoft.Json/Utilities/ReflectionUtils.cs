@@ -589,7 +589,7 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
-        public static List<MemberInfo> GetFieldsAndProperties(Type type, BindingFlags bindingAttr)
+        public static IEnumerable<MemberInfo> GetFieldsAndProperties(Type type, BindingFlags bindingAttr)
         {
             List<MemberInfo> targetMembers = new List<MemberInfo>();
 
@@ -600,36 +600,24 @@ namespace Newtonsoft.Json.Utilities
             // http://social.msdn.microsoft.com/Forums/en-US/b5abbfee-e292-4a64-8907-4e3f0fb90cd9/reflection-overriden-abstract-generic-properties?forum=netfxbcl
             // filter members to only return the override on the topmost class
             // update: I think this is fixed in .NET 3.5 SP1 - leave this in for now...
-            List<MemberInfo> distinctMembers = new List<MemberInfo>(targetMembers.Count);
 
             foreach (var groupedMember in targetMembers.GroupBy(m => m.Name))
             {
-                int count = groupedMember.Count();
-                IList<MemberInfo> members = groupedMember.ToList();
-
-                if (count == 1)
+                bool yielded = false;
+                foreach (MemberInfo memberInfo in groupedMember)
                 {
-                    distinctMembers.Add(members.First());
-                }
-                else
-                {
-                    IList<MemberInfo> resolvedMembers = new List<MemberInfo>();
-                    foreach (MemberInfo memberInfo in members)
+                    // this is a bit hacky
+                    // if the hiding property is hiding a base property and it is virtual
+                    // then this ensures the derived property gets used
+                    if (!yielded)
                     {
-                        // this is a bit hacky
-                        // if the hiding property is hiding a base property and it is virtual
-                        // then this ensures the derived property gets used
-                        if (resolvedMembers.Count == 0)
-                            resolvedMembers.Add(memberInfo);
-                        else if (!IsOverridenGenericMember(memberInfo, bindingAttr) || memberInfo.Name == "Item")
-                            resolvedMembers.Add(memberInfo);
+                        yield return memberInfo;
+                        yielded = true;
                     }
-
-                    distinctMembers.AddRange(resolvedMembers);
+                    else if (!IsOverridenGenericMember(memberInfo, bindingAttr) || memberInfo.Name == "Item")
+                        yield return memberInfo;
                 }
             }
-
-            return distinctMembers;
         }
 
         private static bool IsOverridenGenericMember(MemberInfo memberInfo, BindingFlags bindingAttr)
