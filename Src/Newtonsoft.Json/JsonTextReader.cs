@@ -407,7 +407,7 @@ namespace Newtonsoft.Json
                                 ParseComment();
                                 return true;
                             }
-                            
+
                             throw JsonReaderException.Create(this, "Additional text encountered after finished reading JSON content: {0}.".FormatWith(CultureInfo.InvariantCulture, _chars[_charPos]));
                         }
                         return false;
@@ -418,6 +418,111 @@ namespace Newtonsoft.Json
         }
 
         private void ReadStringIntoBuffer(char quote)
+        {
+            if (quote == '"' || quote == '\'')
+            {
+                ReadQuoteStringIntoBuffer(quote);
+            }
+            else if (quote == '$')
+            {
+                ReadDollarStringIntoBuffer(quote);
+            }
+            else
+            {
+                throw new Exception("Unexcepted quote. quote=" + quote);
+            }
+        }
+
+        enum DlState
+        {
+            None, FirstDollar, InString, ThirdDollar, Complete
+        }
+
+        private void ReadDollarStringIntoBuffer(char quote)
+        {
+            _charPos--;
+
+            var currentPos = _charPos;
+            DlState _state = DlState.None;
+
+            string tag = null;
+            int firstDollarIndex = currentPos;
+            int thirdDollarIndex = currentPos;
+            while (true)
+            {
+                char c = _chars[currentPos];
+                switch (c)
+                {
+                    case '\0':
+                        if (_charsUsed == currentPos)
+                        {
+                            currentPos--;
+
+                            if (ReadData(true) == 0)
+                            {
+                                _charPos = currentPos;
+                                throw JsonReaderException.Create(this, "Unterminated string. Expected delimiter: {0}.".FormatWith(CultureInfo.InvariantCulture, quote));
+                            }
+                        }
+                        break;
+                    case '$':
+                        switch (_state)
+                        {
+                            case DlState.None:
+                                firstDollarIndex = currentPos;
+                                _state = DlState.FirstDollar;
+                                break;
+                            case DlState.FirstDollar:
+                                tag = new string(_chars, firstDollarIndex + 1, currentPos - firstDollarIndex - 1);
+                                _state = DlState.InString;
+                                break;
+                            case DlState.InString:
+                                thirdDollarIndex = currentPos;
+                                _state = DlState.ThirdDollar;
+                                break;
+                            case DlState.ThirdDollar:
+                                {
+                                    bool match = false;
+                                    if (currentPos - thirdDollarIndex - 1 == tag.Length)
+                                    {
+                                        var testTag = new string(_chars, thirdDollarIndex + 1, currentPos - thirdDollarIndex - 1);
+                                        if (testTag == tag)
+                                        {
+                                            match = true;
+                                        }
+                                    }
+                                    if (match)
+                                    {
+                                        var start = firstDollarIndex + tag.Length + 2;
+                                        _stringReference = new StringReference(_chars, start, thirdDollarIndex - start);
+                                        _state = DlState.Complete;
+                                        currentPos++;
+                                        _charPos = currentPos;
+                                        return;
+                                    }
+                                    else
+                                    {
+                                        thirdDollarIndex = currentPos;
+                                    }
+                                }
+
+                                break;
+                            case DlState.Complete:
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    default:
+                        break;
+                }//end switch
+
+                currentPos++;
+            }
+        }
+
+
+        private void ReadQuoteStringIntoBuffer(char quote)
         {
             int charPos = _charPos;
             int initialPosition = _charPos;
@@ -691,7 +796,7 @@ namespace Newtonsoft.Json
                         {
                             return;
                         }
-                        
+
                         throw JsonReaderException.Create(this, "Unexpected character encountered while parsing number: {0}.".FormatWith(CultureInfo.InvariantCulture, currentChar));
                 }
             }
@@ -831,7 +936,7 @@ namespace Newtonsoft.Json
             char firstChar = _chars[_charPos];
             char quoteChar;
 
-            if (firstChar == '"' || firstChar == '\'')
+            if (firstChar == '"' || firstChar == '\'' || firstChar == '$')
             {
                 _charPos++;
                 quoteChar = firstChar;
@@ -867,7 +972,10 @@ namespace Newtonsoft.Json
             EatWhitespace(false);
 
             if (_chars[_charPos] != ':')
+            {
+                Debugger.Break();
                 throw JsonReaderException.Create(this, "Invalid character after parsing property name. Expected ':' but got: {0}.".FormatWith(CultureInfo.InvariantCulture, _chars[_charPos]));
+            }
 
             _charPos++;
 
@@ -943,6 +1051,7 @@ namespace Newtonsoft.Json
                         break;
                     case '"':
                     case '\'':
+                    case '$':
                         ParseString(currentChar);
                         return true;
                     case 't':
@@ -1315,7 +1424,7 @@ namespace Newtonsoft.Json
 
                         if (number.Length > MaximumJavascriptIntegerCharacterLength)
                             throw JsonReaderException.Create(this, "JSON integer {0} is too large to parse.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
-                        
+
                         numberValue = BigIntegerParse(number, CultureInfo.InvariantCulture);
                         numberType = JsonToken.Integer;
 #else

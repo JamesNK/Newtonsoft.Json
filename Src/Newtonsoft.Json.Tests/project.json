@@ -3,7 +3,7 @@
   "exclude": [
   ],
   "dependencies": {
-    "Newtonsoft.Json": ""
+    "Newtonsoft.Json": "*"
   },
   "commands": {
     "test": "xunit.runner.dnx -parallel none"
