@@ -51,6 +51,8 @@ namespace Newtonsoft.Json
         private char[] _writeBuffer;
         private char[] _indentChars;
 
+        public string DollarTag;
+
         private Base64Encoder Base64Encoder
         {
             get
@@ -373,6 +375,11 @@ namespace Newtonsoft.Json
 
             if (value == null)
                 WriteValueInternal(JsonConvert.Null, JsonToken.Null);
+            else if (this.DollarTag != null)
+            {
+                _writer.Write("$" + this.DollarTag + "$" + value + "$" + this.DollarTag + "$");
+                this.DollarTag = null;
+            }
             else
                 WriteEscapedString(value, true);
         }

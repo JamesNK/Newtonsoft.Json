@@ -182,6 +182,8 @@ namespace Newtonsoft.Json
             set { _itemIsReference = value; }
         }
 
+        public string DollarTag { get;  set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonPropertyAttribute"/> class.
         /// </summary>

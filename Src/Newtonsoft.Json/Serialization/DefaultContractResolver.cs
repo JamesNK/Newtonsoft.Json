@@ -1241,6 +1241,7 @@ namespace Newtonsoft.Json.Serialization
                 property._required = propertyAttribute._required;
                 property.Order = propertyAttribute._order;
                 property.DefaultValueHandling = propertyAttribute._defaultValueHandling;
+                property.DollarTag = propertyAttribute.DollarTag;
                 hasMemberAttribute = true;
             }
 #if !NET20

@@ -136,6 +136,15 @@ namespace Newtonsoft.Json.Serialization
                 }
             }
 
+
+            if (member.DollarTag != null)
+            {
+                var jtw = writer as JsonTextWriter;
+                if (jtw != null)
+                {
+                    jtw.DollarTag = member.DollarTag;
+                }
+            }
             JsonWriter.WriteValue(writer, contract.TypeCode, value);
         }
 
@@ -147,7 +156,7 @@ namespace Newtonsoft.Json.Serialization
                 return;
             }
 
-            JsonConverter converter = 
+            JsonConverter converter =
                 ((member != null) ? member.Converter : null) ??
                 ((containerProperty != null) ? containerProperty.ItemConverter : null) ??
                 ((containerContract != null) ? containerContract.ItemConverter : null) ??
