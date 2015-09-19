@@ -231,8 +231,14 @@ namespace Newtonsoft.Json.Bson
             int baseSize = (includeSize)
                 ? 5 // size bytes + terminator
                 : 1; // terminator
-
-            return baseSize + stringByteCount;
+            try
+            {
+                return checked(baseSize + stringByteCount);
+            }
+            catch (OverflowException e)
+            {
+                throw ThrowOnOverflow(e);
+            }
         }
 
         private int CalculateSize(BsonToken t)
@@ -244,15 +250,25 @@ namespace Newtonsoft.Json.Bson
                     BsonObject value = (BsonObject)t;
 
                     int bases = 4;
-                    foreach (BsonProperty p in value)
+                    try
                     {
-                        int size = 1;
-                        size += CalculateSize(p.Name);
-                        size += CalculateSize(p.Value);
+                        checked
+                        {
+                            foreach (BsonProperty p in value)
+                            {
+                                int size = 1;
+                                size += CalculateSize(p.Name);
+                                size += CalculateSize(p.Value);
 
-                        bases += size;
+                                bases += size;
+                            }
+                            bases += 1;
+                        }
                     }
-                    bases += 1;
+                    catch (OverflowException e)
+                    {
+                        throw ThrowOnOverflow(e);
+                    }
                     value.CalculatedSize = bases;
                     return bases;
                 }
@@ -262,14 +278,24 @@ namespace Newtonsoft.Json.Bson
 
                     int size = 4;
                     ulong index = 0;
-                    foreach (BsonToken c in value)
+                    try
                     {
-                        size += 1;
-                        size += CalculateSize(MathUtils.IntLength(index));
-                        size += CalculateSize(c);
-                        index++;
+                        checked
+                        {
+                            foreach (BsonToken c in value)
+                            {
+                                size += 1;
+                                size += CalculateSize(MathUtils.IntLength(index));
+                                size += CalculateSize(c);
+                                index++;
+                            }
+                            size += 1;
+                        }
                     }
-                    size += 1;
+                    catch (OverflowException e)
+                    {
+                        throw ThrowOnOverflow(e);
+                    }
                     value.CalculatedSize = size;
 
                     return value.CalculatedSize;
@@ -320,6 +346,11 @@ namespace Newtonsoft.Json.Bson
                 default:
                     throw new ArgumentOutOfRangeException("t", "Unexpected token when writing BSON: {0}".FormatWith(CultureInfo.InvariantCulture, t.Type));
             }
+        }
+
+        private static InvalidOperationException ThrowOnOverflow(Exception e)
+        {
+            return new InvalidOperationException("Size calculation resulted in overflow. BSON values cannot be greater than Int32.MaxValue bytes.", e);
         }
     }
 }
