@@ -32,7 +32,7 @@ namespace Newtonsoft.Json
     /// </summary>
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property | AttributeTargets.Parameter, AllowMultiple = false)]
     public sealed class JsonPropertyAttribute : Attribute
-    {
+    { 
         // yuck. can't set nullable properties on an attribute in C#
         // have to use this approach to get an unset default state
         internal NullValueHandling? _nullValueHandling;
@@ -46,6 +46,7 @@ namespace Newtonsoft.Json
         internal bool? _itemIsReference;
         internal ReferenceLoopHandling? _itemReferenceLoopHandling;
         internal TypeNameHandling? _itemTypeNameHandling;
+        internal string _dollarTag;
 
         /// <summary>
         /// Gets or sets the converter used when serializing the property's collection items.
@@ -180,6 +181,21 @@ namespace Newtonsoft.Json
         {
             get { return _itemIsReference ?? default(bool); }
             set { _itemIsReference = value; }
+        }
+
+        /// <summary>
+        /// DollarTag
+        /// </summary>
+        public string DollarTag
+        {
+            get { return _dollarTag; }
+            set
+            {
+                if (value.Contains("$"))
+                    throw new ArgumentException(@"Invalid DollarTag. Can't contain $.");
+
+                _dollarTag = value;
+            }
         }
 
         /// <summary>

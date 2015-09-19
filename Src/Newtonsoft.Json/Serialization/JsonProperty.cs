@@ -283,6 +283,11 @@ namespace Newtonsoft.Json.Serialization
         /// <value>The collection's items reference loop handling.</value>
         public ReferenceLoopHandling? ItemReferenceLoopHandling { get; set; }
 
+        /// <summary>
+        /// DollarTag
+        /// </summary>
+        public string DollarTag { get; set; }
+
         internal void WritePropertyName(JsonWriter writer)
         {
             if (_skipPropertyNameEscape)

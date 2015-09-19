@@ -296,9 +296,7 @@
     <Compile Include="TestObjects\ContentBaseClass.cs" />
     <Compile Include="TestObjects\ContentSubClass.cs" />
     <Compile Include="TestObjects\Currency.cs" />
-    <Compile Include="TestObjects\CustomerDataSet.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="TestObjects\CustomerDataSet.cs" />
     <Compile Include="TestObjects\DataContractSerializationAttributesClass.cs" />
     <Compile Include="TestObjects\DateTimeWrapper.cs" />
     <Compile Include="TestObjects\DecimalTestClass.cs" />

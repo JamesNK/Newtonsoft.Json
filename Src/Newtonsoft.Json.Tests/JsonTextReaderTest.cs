@@ -122,6 +122,46 @@ namespace Newtonsoft.Json.Tests
         }
 
         [Test]
+        public void ReadDollarQuoteString()
+        {
+            string json = @"{""NameOfStore"":$$Forest's Bakery And Cafe$$}";
+
+            JsonTextReader jsonTextReader = new JsonTextReader(new StringReader(json));
+            jsonTextReader.Read();
+            jsonTextReader.Read();
+            jsonTextReader.Read();
+
+            Assert.AreEqual(@"Forest's Bakery And Cafe", jsonTextReader.Value);
+        }
+
+        [Test]
+        public void ReadDollarQuoteStringWithTag()
+        {
+            string json = @"{""NameOfStore"":$tag$Forest's Bakery And Cafe$tag$}";
+
+            JsonTextReader jsonTextReader = new JsonTextReader(new StringReader(json));
+            jsonTextReader.Read();
+            jsonTextReader.Read();
+            jsonTextReader.Read();
+
+            Assert.AreEqual(@"Forest's Bakery And Cafe", jsonTextReader.Value);
+        } 
+
+        [Test]
+        public void ReadDollarQuotePropertyWithTag()
+        {
+            string json = @"{$pp$Name'Of""Store$pp$:$tag$Forest's Bakery And Cafe$tag$}";
+
+            JsonTextReader jsonTextReader = new JsonTextReader(new StringReader(json));
+            jsonTextReader.Read();           
+            jsonTextReader.Read();
+            Assert.AreEqual(@"Name'Of""Store", jsonTextReader.Value );
+            jsonTextReader.Read();
+
+            Assert.AreEqual(@"Forest's Bakery And Cafe", jsonTextReader.Value);
+        }
+
+        [Test]
         public void ReadMultilineString()
         {
             string json = @"""first line
