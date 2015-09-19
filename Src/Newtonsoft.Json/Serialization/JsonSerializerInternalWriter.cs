@@ -137,7 +137,7 @@ namespace Newtonsoft.Json.Serialization
             }
 
 
-            if (member.DollarTag != null)
+            if (member!=null && member.DollarTag != null)
             {
                 var jtw = writer as JsonTextWriter;
                 if (jtw != null)
