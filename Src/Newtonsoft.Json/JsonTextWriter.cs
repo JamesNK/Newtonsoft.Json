@@ -377,7 +377,25 @@ namespace Newtonsoft.Json
                 WriteValueInternal(JsonConvert.Null, JsonToken.Null);
             else if (this.DollarTag != null)
             {
-                _writer.Write("$" + this.DollarTag + "$" + value + "$" + this.DollarTag + "$");
+                var fullTag = "$" + this.DollarTag + "$";
+                int maxTry = 10;
+                for (int i = 0; i < maxTry; i++)
+                {
+                    if (!value.Contains(fullTag))
+                    {
+                        break;
+                    }
+
+                    if (i < maxTry - 1)
+                    {
+                        fullTag = "$" + this.DollarTag + i + "$";
+                    }
+                    else
+                    {
+                        fullTag = "$" + Guid.NewGuid().ToString("N") + "$";
+                    }
+                }
+                _writer.Write(fullTag + value + fullTag);
                 this.DollarTag = null;
             }
             else
