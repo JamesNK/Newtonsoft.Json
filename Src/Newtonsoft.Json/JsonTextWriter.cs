@@ -46,12 +46,11 @@ namespace Newtonsoft.Json
         private char _indentChar;
         private int _indentation;
         private char _quoteChar;
+        private string _dollarTag;
         private bool _quoteName;
         private bool[] _charEscapeFlags;
         private char[] _writeBuffer;
         private char[] _indentChars;
-
-        public string DollarTag;
 
         private Base64Encoder Base64Encoder
         {
@@ -92,6 +91,26 @@ namespace Newtonsoft.Json
 
                 _quoteChar = value;
                 UpdateCharEscapeFlags();
+            }
+        }
+
+        /// <summary>
+        /// TempDollarTag
+        /// </summary>
+        public string TempDollarTag { get; set; }
+
+        /// <summary>
+        /// DollarTag
+        /// </summary>         
+        public string DollarTag
+        {
+            get { return _dollarTag; }
+            set
+            {
+                if (value != null && value.Contains("$"))
+                    throw new ArgumentException(@"Invalid DollarTag. Can't contain $.");
+
+                _dollarTag = value;
             }
         }
 
@@ -375,9 +394,13 @@ namespace Newtonsoft.Json
 
             if (value == null)
                 WriteValueInternal(JsonConvert.Null, JsonToken.Null);
-            else if (this.DollarTag != null)
+            else if (this.DollarTag != null || this.TempDollarTag != null)
             {
-                var fullTag = "$" + this.DollarTag + "$";
+                if (this.TempDollarTag == null)
+                {
+                    this.TempDollarTag = this.DollarTag;
+                }
+                var fullTag = "$" + this.TempDollarTag + "$";
                 int maxTry = 10;
                 for (int i = 0; i < maxTry; i++)
                 {
@@ -388,7 +411,7 @@ namespace Newtonsoft.Json
 
                     if (i < maxTry - 1)
                     {
-                        fullTag = "$" + this.DollarTag + i + "$";
+                        fullTag = "$" + this.TempDollarTag + i + "$";
                     }
                     else
                     {
@@ -396,7 +419,7 @@ namespace Newtonsoft.Json
                     }
                 }
                 _writer.Write(fullTag + value + fullTag);
-                this.DollarTag = null;
+                this.TempDollarTag = null;
             }
             else
                 WriteEscapedString(value, true);

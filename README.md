@@ -42,7 +42,7 @@ A dollar-quoted string that follows a keyword or identifier must be separated fr
       {
         "IntervalSecondsForCheck": "60",
         "Start": "2014-09-21T05:00:00+08:00",
-        "LastActiveTime": "2014-09-25T06:12:58.8958167+08:00",
+   property     "LastActiveTime": "2014-09-25T06:12:58.8958167+08:00",
         "Interval": "1.00:00:00",
         "Message": $tag$
 hi, !@#$%^&*()_+{}:"|<>?,./;'[]\-=
@@ -61,3 +61,20 @@ $tag$
   }   
 }
 ```
+
+###A example of serialize a property by "Dollar-Quoted String"
+```c
+    public class Test1
+    {
+        [JsonProperty(DollarTag="aa")]
+        public string Name { get; set; }
+    }
+```
+
+###A example of write all string by "Dollar-Quoted String"
+```c
+    jsonTextWriter.DollarTag = null;   //don't use "Dollar-Quoted String"
+    jsonTextWriter.DollarTag = "";     //use "Dollar-Quoted String" by $$
+	jsonTextWriter.DollarTag = "tag";  //use "Dollar-Quoted String" by $tag$
+```
+	

@@ -142,7 +142,7 @@ namespace Newtonsoft.Json.Serialization
                 var jtw = writer as JsonTextWriter;
                 if (jtw != null)
                 {
-                    jtw.DollarTag = member.DollarTag;
+                    jtw.TempDollarTag = member.DollarTag;
                 }
             }
             JsonWriter.WriteValue(writer, contract.TypeCode, value);
