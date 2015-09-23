@@ -50,7 +50,7 @@ namespace Newtonsoft.Json.Serialization
         /// <returns>The property name camel cased.</returns>
         protected override string ResolvePropertyName(string propertyName)
         {
-            // lower case the first letter of the passed in name
+            // lower case the first letter (or more) of the passed in name
             return StringUtils.ToCamelCase(propertyName);
         }
     }

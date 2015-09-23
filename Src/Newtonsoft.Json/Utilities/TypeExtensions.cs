@@ -550,5 +550,22 @@ namespace Newtonsoft.Json.Utilities
             Type match;
             return type.AssignableToTypeName(fullTypeName, out match);
         }
+
+        public static bool ImplementInterface(this Type type, Type interfaceType)
+        {
+            for (Type currentType = type; currentType != null; currentType = currentType.BaseType())
+            {
+                IEnumerable<Type> interfaces = currentType.GetInterfaces();
+                foreach (Type i in interfaces)
+                {
+                    if (i == interfaceType || (i != null && i.ImplementInterface(interfaceType)))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
     }
 }

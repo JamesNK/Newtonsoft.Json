@@ -701,6 +701,22 @@ namespace Newtonsoft.Json.Tests.Linq
         }
 #endif
 
+        [Test]
+        public void ToStringUri()
+        {
+            JArray a = new JArray(
+                new JValue(new Uri("http://james.newtonking.com")),
+                new JValue(new Uri("http://james.newtonking.com/install?v=7.0.1"))
+                );
+
+            Console.WriteLine(a.ToString());
+
+            StringAssert.AreEqual(@"[
+  ""http://james.newtonking.com"",
+  ""http://james.newtonking.com/install?v=7.0.1""
+]", a.ToString());
+        }
+
 #if !NET20
         [Test]
         public void ParseIsoTimeZones()

@@ -225,36 +225,12 @@ namespace Newtonsoft.Json.Serialization
             base.WriteWhitespace(ws);
         }
 
-        //protected override void WriteValueDelimiter()
-        //{
-        //  _textWriter.WriteValueDelimiter();
-        //  _innerWriter.WriteValueDelimiter();
-        //  base.WriteValueDelimiter();
-        //}
-
-        //protected override void WriteIndent()
-        //{
-        //  base.WriteIndent();
-        //}
-
         public override void WriteComment(string text)
         {
             _textWriter.WriteComment(text);
             _innerWriter.WriteComment(text);
             base.WriteComment(text);
         }
-
-        //public override void WriteEnd()
-        //{
-        //  _textWriter.WriteEnd();
-        //  _innerWriter.WriteEnd();
-        //  base.WriteEnd();
-        //}
-
-        //protected override void WriteEnd(JsonToken token)
-        //{
-        //  base.WriteEnd(token);
-        //}
 
         public override void WriteStartArray()
         {
@@ -314,26 +290,21 @@ namespace Newtonsoft.Json.Serialization
             base.WriteEndObject();
         }
 
+        public override void WriteRawValue(string json)
+        {
+            _textWriter.WriteRawValue(json);
+            _innerWriter.WriteRawValue(json);
+
+            // calling base method will write json twice
+            InternalWriteValue(JsonToken.Undefined);
+        }
+
         public override void WriteRaw(string json)
         {
             _textWriter.WriteRaw(json);
             _innerWriter.WriteRaw(json);
             base.WriteRaw(json);
         }
-
-        public override void WriteRawValue(string json)
-        {
-            _textWriter.WriteRawValue(json);
-            _innerWriter.WriteRawValue(json);
-            base.WriteRawValue(json);
-        }
-
-        //protected override void WriteIndentSpace()
-        //{
-        //  _textWriter.WriteIndentSpace();
-        //  _innerWriter.WriteIndentSpace();
-        //  base.WriteIndentSpace();
-        //}
 
         public override void Close()
         {

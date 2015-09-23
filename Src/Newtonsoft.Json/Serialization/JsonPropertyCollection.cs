@@ -85,13 +85,15 @@ namespace Newtonsoft.Json.Serialization
                 {
                     if (property.DeclaringType != null && existingProperty.DeclaringType != null)
                     {
-                        if (property.DeclaringType.IsSubclassOf(existingProperty.DeclaringType))
+                        if (property.DeclaringType.IsSubclassOf(existingProperty.DeclaringType)
+                            || (existingProperty.DeclaringType.IsInterface() && property.DeclaringType.ImplementInterface(existingProperty.DeclaringType)))
                         {
                             // current property is on a derived class and hides the existing
                             Remove(existingProperty);
                             duplicateProperty = false;
                         }
-                        if (existingProperty.DeclaringType.IsSubclassOf(property.DeclaringType))
+                        if (existingProperty.DeclaringType.IsSubclassOf(property.DeclaringType)
+                            || (property.DeclaringType.IsInterface() && existingProperty.DeclaringType.ImplementInterface(property.DeclaringType)))
                         {
                             // current property is hidden by the existing so don't add it
                             return;

@@ -27,7 +27,7 @@
         "System.Xml.Linq": ""
       },
       "dependencies": {
-        "Autofac": "3.5.0",
+        "Autofac": "4.0.0-beta7-130",
         "FSharp.Core": "4.0.0.1",
         "NUnit": "2.6.4",
         "System.Collections.Immutable": "1.1.37"
@@ -51,7 +51,6 @@
         "System.Xml.Linq": ""
       },
       "dependencies": {
-        "Autofac": "3.5.0",
         "FSharp.Core": "4.0.0.1",
         "NUnit": "2.6.4"
       }

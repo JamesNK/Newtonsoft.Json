@@ -1235,7 +1235,7 @@ keyword such as type of business.""
   ""NullableGuid"": ""9e9f3adf-e017-4f72-91e0-617ebe85967d"",
   ""TimeSpan"": ""1.00:00:00"",
   ""NullableTimeSpan"": ""01:00:00"",
-  ""Uri"": ""http://testuri.com/""
+  ""Uri"": ""http://testuri.com""
 }", o.ToString());
 
             UriGuidTimeSpanTestClass c2 = o.ToObject<UriGuidTimeSpanTestClass>();
@@ -1244,6 +1244,10 @@ keyword such as type of business.""
             Assert.AreEqual(c1.TimeSpan, c2.TimeSpan);
             Assert.AreEqual(c1.NullableTimeSpan, c2.NullableTimeSpan);
             Assert.AreEqual(c1.Uri, c2.Uri);
+
+            string j = JsonConvert.SerializeObject(c1, Formatting.Indented);
+
+            StringAssert.AreEqual(j, o.ToString());
         }
 
         [Test]

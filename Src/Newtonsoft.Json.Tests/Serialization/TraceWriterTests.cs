@@ -77,6 +77,54 @@ Newtonsoft.Json Error: 0 : Error!
 #endif
 
         [Test]
+        public void WriteJRaw()
+        {
+            ITraceWriter traceWriter = new MemoryTraceWriter();
+
+            JRaw settings = new JRaw("$('#element')");
+            string json = JsonConvert.SerializeObject(settings, new JsonSerializerSettings
+            {
+                TraceWriter = traceWriter
+            });
+
+            Assert.AreEqual("$('#element')", json);
+
+            Assert.IsTrue(traceWriter.ToString().EndsWith("Verbose Serialized JSON: " + Environment.NewLine + "$('#element')", StringComparison.Ordinal));
+        }
+
+        [Test]
+        public void WriteJRawInArray()
+        {
+            ITraceWriter traceWriter = new MemoryTraceWriter();
+
+            List<JRaw> raws = new List<JRaw>
+            {
+                new JRaw("$('#element')"),
+                new JRaw("$('#element')"),
+                new JRaw("$('#element')")
+            };
+
+            string json = JsonConvert.SerializeObject(raws, new JsonSerializerSettings
+            {
+                TraceWriter = traceWriter,
+                Formatting = Formatting.Indented
+            });
+
+            StringAssert.AreEqual(@"[
+  $('#element'),
+  $('#element'),
+  $('#element')
+]", json);
+
+            Assert.IsTrue(traceWriter.ToString().EndsWith(@"Verbose Serialized JSON: 
+[
+  $('#element'),
+  $('#element'),
+  $('#element')
+]", StringComparison.Ordinal));
+        }
+
+        [Test]
         public void MemoryTraceWriterSerializeTest()
         {
             Staff staff = new Staff();
@@ -863,7 +911,7 @@ Newtonsoft.Json Error: 0 : Error!
             traceWriter.WriteValue(new Uri("http://www.google.com/"));
             traceWriter.WriteValue(Encoding.UTF8.GetBytes("String!"));
             traceWriter.WriteRawValue("[1],");
-            traceWriter.WriteRaw("[1]");
+            traceWriter.WriteRaw("[2]");
             traceWriter.WriteNull();
             traceWriter.WriteUndefined();
             traceWriter.WriteStartConstructor("ctor");
@@ -919,7 +967,7 @@ Newtonsoft.Json Error: 0 : Error!
     ""00000000-0000-0000-0000-000000000000"",
     ""http://www.google.com/"",
     ""U3RyaW5nIQ=="",
-    [1],[1],[1],
+    [1],[2],
     null,
     undefined,
     new ctor(
