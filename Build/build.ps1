@@ -11,6 +11,7 @@
   $buildNuGet = $true
   $treatWarningsAsErrors = $false
   $workingName = if ($workingName) {$workingName} else {"Working"}
+  $dnvmVersion = "1.0.0-beta8-15618"
   
   $baseDir  = resolve-path ..
   $buildDir = "$baseDir\Build"
@@ -55,7 +56,7 @@ task Clean {
 task Build -depends Clean { 
 
   Write-Host "Copying source to working source directory $workingSourceDir"
-  robocopy $sourceDir $workingSourceDir /MIR /NP /XD bin obj TestResults AppPackages $packageDirs /XF *.suo *.user | Out-Default
+  robocopy $sourceDir $workingSourceDir /MIR /NP /XD bin obj TestResults AppPackages $packageDirs /XF *.suo *.user *.project.lock.json | Out-Default
 
   Write-Host -ForegroundColor Green "Updating assembly version"
   Write-Host
@@ -93,7 +94,7 @@ task Package -depends Build {
     if ($nugetPrelease -ne $null)
     {
       $nugetVersion = $nugetVersion + "-" + $nugetPrelease
-    }    
+    }
 
     New-Item -Path $workingDir\NuGet -ItemType Directory
 
@@ -129,7 +130,7 @@ task Package -depends Build {
       }
     }
   
-    robocopy $workingSourceDir $workingDir\NuGet\src *.cs /S /NFL /NDL /NJS /NC /NS /NP /XD Newtonsoft.Json.Tests Newtonsoft.Json.TestConsole obj | Out-Default
+    robocopy $workingSourceDir $workingDir\NuGet\src *.cs /S /NFL /NDL /NJS /NC /NS /NP /XD Newtonsoft.Json.Tests Newtonsoft.Json.TestConsole obj .vs artifacts | Out-Default
 
     Write-Host "Building NuGet package with ID $packageId and version $nugetVersion" -ForegroundColor Green
     Write-Host
@@ -194,30 +195,31 @@ function MSBuildBuild($build)
   $finalDir = $build.FinalDir
 
   Write-Host
-  Write-Host "Restoring $workingSourceDir\$name.sln"
+  Write-Host "Restoring $workingSourceDir\$name.sln" -ForegroundColor Green
   [Environment]::SetEnvironmentVariable("EnableNuGetPackageRestore", "true", "Process")
   exec { .\Tools\NuGet\NuGet.exe update -self }
-  exec { .\Tools\NuGet\NuGet.exe restore "$workingSourceDir\$name.sln" -verbosity detailed | Out-Default } "Error restoring $name"
+  exec { .\Tools\NuGet\NuGet.exe restore "$workingSourceDir\$name.sln" -verbosity detailed -configfile $workingSourceDir\nuget.config | Out-Default } "Error restoring $name"
 
   $constants = GetConstants $build.Constants $signAssemblies
 
   Write-Host
-  Write-Host "Building"
-  exec { msbuild "/t:Clean;Rebuild" /p:Configuration=Release "/p:Platform=Any CPU" /p:OutputPath=bin\Release\$finalDir\ /p:AssemblyOriginatorKeyFile=$signKeyPath "/p:SignAssembly=$signAssemblies" "/p:TreatWarningsAsErrors=$treatWarningsAsErrors" "/p:VisualStudioVersion=14.0" /p:DefineConstants=`"$constants`" "$workingSourceDir\$name.sln" | Out-Default } "Error building $name"
+  Write-Host "Building $workingSourceDir\$name.sln" -ForegroundColor Green
+  exec { msbuild "/t:Clean;Rebuild" /p:Configuration=Release "/p:CopyNuGetImplementations=true" "/p:Platform=Any CPU" "/p:PlatformTarget=AnyCPU" /p:OutputPath=bin\Release\$finalDir\ /p:AssemblyOriginatorKeyFile=$signKeyPath "/p:SignAssembly=$signAssemblies" "/p:TreatWarningsAsErrors=$treatWarningsAsErrors" "/p:VisualStudioVersion=14.0" /p:DefineConstants=`"$constants`" "$workingSourceDir\$name.sln" | Out-Default } "Error building $name"
 }
 
 function DnxBuild($build)
 {
   $name = $build.Name
+  $projectPath = "$workingSourceDir\Newtonsoft.Json\project.json"
 
-  exec { dnvm install 1.0.0-beta8-15120 -r clr -u | Out-Default }
-  exec { dnvm use 1.0.0-beta8-15120 -r clr | Out-Default }
+  exec { dnvm install $dnvmVersion -r clr -u | Out-Default }
+  exec { dnvm use $dnvmVersion -r clr | Out-Default }
 
   Write-Host -ForegroundColor Green "Restoring packages for $name"
   Write-Host
   exec {
     try {
-      dnu restore "$workingSourceDir\Newtonsoft.Json\project.json" | Out-Default
+      dnu restore $projectPath | Out-Default
       Write-Host "Restore last exit code: $lastexitcode"
     }
     catch [System.Management.Automation.RemoteException]
@@ -229,7 +231,8 @@ function DnxBuild($build)
     }
   }
 
-  exec { dnu build "$workingSourceDir\Newtonsoft.Json\project.json" --configuration Release | Out-Default }
+  Write-Host -ForegroundColor Green "Building $projectPath"
+  exec { dnu build $projectPath --configuration Release | Out-Default }
 }
 
 function DnxTests($build)
@@ -240,8 +243,8 @@ function DnxTests($build)
   #Write-Host
   #exec { & $toolsDir\Kvm\kvm.ps1 upgrade -r CoreCLR -NoNative | Out-Default }
 
-  exec { dnvm install 1.0.0-beta8-15120 -r coreclr -u | Out-Default }
-  exec { dnvm use 1.0.0-beta8-15120 -r coreclr | Out-Default }
+  exec { dnvm install $dnvmVersion -r coreclr -u | Out-Default }
+  exec { dnvm use $dnvmVersion -r coreclr | Out-Default }
 
   Write-Host -ForegroundColor Green "Restoring packages for $name"
   Write-Host
@@ -265,7 +268,7 @@ function DnxTests($build)
   try
   {
     Set-Location "$workingSourceDir\Newtonsoft.Json.Tests"
-    exec { dnx -p "$workingSourceDir\Newtonsoft.Json.Tests\project.json" --configuration Release test | Out-Default }
+    exec { dnx --configuration Release test | Out-Default }
   }
   finally
   {

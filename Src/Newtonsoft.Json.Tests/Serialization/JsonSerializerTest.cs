@@ -95,6 +95,109 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class JsonSerializerTest : TestFixtureBase
     {
+        public interface ISubclassBase
+        {
+            int ID { get; set; }
+            string Name { get; set; }
+            bool P1 { get; }
+        }
+        public interface ISubclass : ISubclassBase
+        {
+            new bool P1 { get; set; }
+            int P2 { get; set; }
+        }
+        public interface IMainClass
+        {
+            int ID { get; set; }
+            string Name { get; set; }
+            ISubclass Subclass { get; set; }
+        }
+
+        public class Subclass : ISubclass
+        {
+            public int ID { get; set; }
+            public string Name { get; set; }
+            public bool P1 { get; set; }
+            public int P2 { get; set; }
+        }
+        public class MainClass : IMainClass
+        {
+            public int ID { get; set; }
+            public string Name { get; set; }
+            public ISubclass Subclass { get; set; }
+        }
+
+        public class MyFactory
+        {
+            public static ISubclass InstantiateSubclass()
+            {
+                return new Subclass
+                {
+                    ID = 123,
+                    Name = "ABC",
+                    P1 = true,
+                    P2 = 44
+                };
+            }
+            public static IMainClass InstantiateManiClass()
+            {
+                return new MainClass
+                {
+                    ID = 567,
+                    Name = "XYZ",
+                    Subclass = InstantiateSubclass()
+                };
+            }
+        }
+
+        [Test]
+        public void SerializeInterfaceWithHiddenProperties()
+        {
+            var mySubclass = MyFactory.InstantiateSubclass();
+            var myMainClass = MyFactory.InstantiateManiClass();
+
+            //Class implementing interface with hidden members - flat object. 
+            var strJsonSubclass = JsonConvert.SerializeObject(mySubclass, Formatting.Indented);
+
+            StringAssert.AreEqual(@"{
+  ""ID"": 123,
+  ""Name"": ""ABC"",
+  ""P1"": true,
+  ""P2"": 44
+}", strJsonSubclass);
+
+            //Class implementing interface with hidden members - member of another class. 
+            var strJsonMainClass = JsonConvert.SerializeObject(myMainClass, Formatting.Indented);
+
+            StringAssert.AreEqual(@"{
+  ""ID"": 567,
+  ""Name"": ""XYZ"",
+  ""Subclass"": {
+    ""ID"": 123,
+    ""Name"": ""ABC"",
+    ""P1"": true,
+    ""P2"": 44
+  }
+}", strJsonMainClass);
+        }
+
+#if !(PORTABLE || PORTABLE40 || NET20 || NET35)
+        [Test]
+        public void LargeIntegerAsString()
+        {
+            var largeBrokenNumber = JsonConvert.DeserializeObject<Foo64>("{\"Blah\": 43443333222211111117 }");
+            Assert.AreEqual("43443333222211111117", largeBrokenNumber.Blah);
+
+            var largeOddWorkingNumber = JsonConvert.DeserializeObject<Foo64>("{\"Blah\": 53443333222211111117 }");
+            Assert.AreEqual("53443333222211111117", largeOddWorkingNumber.Blah);
+        }
+
+        public class Foo64
+        {
+            public string Blah { get; set; }
+        }
+#endif
+
         [Test]
         public void CaseInsensitiveRequiredPropertyConstructorCreation()
         {

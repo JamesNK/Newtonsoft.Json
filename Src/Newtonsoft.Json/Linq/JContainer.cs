@@ -227,7 +227,11 @@ namespace Newtonsoft.Json.Linq
         /// </value>
         public override JToken First
         {
-            get { return ChildrenTokens.FirstOrDefault(); }
+            get
+            {
+                IList<JToken> children = ChildrenTokens;
+                return (children.Count > 0) ? children[0] : null;
+            }
         }
 
         /// <summary>
@@ -238,7 +242,12 @@ namespace Newtonsoft.Json.Linq
         /// </value>
         public override JToken Last
         {
-            get { return ChildrenTokens.LastOrDefault(); }
+            get
+            {
+                IList<JToken> children = ChildrenTokens;
+                int count = children.Count;
+                return (count > 0) ? children[count - 1] : null;
+            }
         }
 
         /// <summary>
@@ -349,16 +358,18 @@ namespace Newtonsoft.Json.Linq
 
         internal virtual void InsertItem(int index, JToken item, bool skipParentCheck)
         {
-            if (index > ChildrenTokens.Count)
+            IList<JToken> children = ChildrenTokens;
+
+            if (index > children.Count)
                 throw new ArgumentOutOfRangeException("index", "Index must be within the bounds of the List.");
 
             CheckReentrancy();
 
             item = EnsureParentToken(item, skipParentCheck);
 
-            JToken previous = (index == 0) ? null : ChildrenTokens[index - 1];
+            JToken previous = (index == 0) ? null : children[index - 1];
             // haven't inserted new token yet so next token is still at the inserting index
-            JToken next = (index == ChildrenTokens.Count) ? null : ChildrenTokens[index];
+            JToken next = (index == children.Count) ? null : children[index];
 
             ValidateToken(item, null);
 
@@ -372,7 +383,7 @@ namespace Newtonsoft.Json.Linq
             if (next != null)
                 next.Previous = item;
 
-            ChildrenTokens.Insert(index, item);
+            children.Insert(index, item);
 
 #if !(DOTNET || PORTABLE40 || PORTABLE)
             if (_listChanged != null)
@@ -386,16 +397,18 @@ namespace Newtonsoft.Json.Linq
 
         internal virtual void RemoveItemAt(int index)
         {
+            IList<JToken> children = ChildrenTokens;
+
             if (index < 0)
                 throw new ArgumentOutOfRangeException("index", "Index is less than 0.");
-            if (index >= ChildrenTokens.Count)
+            if (index >= children.Count)
                 throw new ArgumentOutOfRangeException("index", "Index is equal to or greater than Count.");
 
             CheckReentrancy();
 
-            JToken item = ChildrenTokens[index];
-            JToken previous = (index == 0) ? null : ChildrenTokens[index - 1];
-            JToken next = (index == ChildrenTokens.Count - 1) ? null : ChildrenTokens[index + 1];
+            JToken item = children[index];
+            JToken previous = (index == 0) ? null : children[index - 1];
+            JToken next = (index == children.Count - 1) ? null : children[index + 1];
 
             if (previous != null)
                 previous.Next = next;
@@ -406,7 +419,7 @@ namespace Newtonsoft.Json.Linq
             item.Previous = null;
             item.Next = null;
 
-            ChildrenTokens.RemoveAt(index);
+            children.RemoveAt(index);
 
 #if !(DOTNET || PORTABLE40 || PORTABLE)
             if (_listChanged != null)
@@ -437,12 +450,14 @@ namespace Newtonsoft.Json.Linq
 
         internal virtual void SetItem(int index, JToken item)
         {
+            IList<JToken> children = ChildrenTokens;
+
             if (index < 0)
                 throw new ArgumentOutOfRangeException("index", "Index is less than 0.");
-            if (index >= ChildrenTokens.Count)
+            if (index >= children.Count)
                 throw new ArgumentOutOfRangeException("index", "Index is equal to or greater than Count.");
 
-            JToken existing = ChildrenTokens[index];
+            JToken existing = children[index];
 
             if (IsTokenUnchanged(existing, item))
                 return;
@@ -453,8 +468,8 @@ namespace Newtonsoft.Json.Linq
 
             ValidateToken(item, existing);
 
-            JToken previous = (index == 0) ? null : ChildrenTokens[index - 1];
-            JToken next = (index == ChildrenTokens.Count - 1) ? null : ChildrenTokens[index + 1];
+            JToken previous = (index == 0) ? null : children[index - 1];
+            JToken next = (index == children.Count - 1) ? null : children[index + 1];
 
             item.Parent = this;
 
@@ -466,7 +481,7 @@ namespace Newtonsoft.Json.Linq
             if (next != null)
                 next.Previous = item;
 
-            ChildrenTokens[index] = item;
+            children[index] = item;
 
             existing.Parent = null;
             existing.Previous = null;
@@ -486,14 +501,16 @@ namespace Newtonsoft.Json.Linq
         {
             CheckReentrancy();
 
-            foreach (JToken item in ChildrenTokens)
+            IList<JToken> children = ChildrenTokens;
+
+            foreach (JToken item in children)
             {
                 item.Parent = null;
                 item.Previous = null;
                 item.Next = null;
             }
 
-            ChildrenTokens.Clear();
+            children.Clear();
 
 #if !(DOTNET || PORTABLE40 || PORTABLE)
             if (_listChanged != null)

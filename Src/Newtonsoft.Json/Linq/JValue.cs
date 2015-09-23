@@ -717,9 +717,11 @@ namespace Newtonsoft.Json.Linq
                     writer.WriteValue((byte[])_value);
                     return;
                 case JTokenType.Guid:
-                case JTokenType.Uri:
                 case JTokenType.TimeSpan:
                     writer.WriteValue((_value != null) ? _value.ToString() : null);
+                    return;
+                case JTokenType.Uri:
+                    writer.WriteValue((_value != null) ? ((Uri) _value).OriginalString : null);
                     return;
             }
 
