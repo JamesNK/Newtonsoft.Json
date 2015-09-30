@@ -223,6 +223,7 @@
     <Compile Include="TestObjects\ObjectArrayPropertyTest.cs" />
     <Compile Include="TestObjects\PrivateImplementationAClass.cs" />
     <Compile Include="TestObjects\PrivateImplementationBClass.cs" />
+    <Compile Include="TestObjects\PrivateJsonConstructorArrayObject.cs" />
     <Compile Include="TestObjects\PropertyItemConverter.cs" />
     <Compile Include="TestObjects\PublicParametizedConstructorRequiringConverterTestClass.cs" />
     <Compile Include="TestObjects\PublicParametizedConstructorTestClass.cs" />

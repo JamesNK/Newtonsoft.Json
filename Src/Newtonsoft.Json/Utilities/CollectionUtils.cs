@@ -107,24 +107,27 @@ namespace Newtonsoft.Json.Utilities
             Type genericEnumerable = typeof(IEnumerable<>).MakeGenericType(collectionItemType);
             ConstructorInfo match = null;
 
-            foreach (ConstructorInfo constructor in collectionType.GetConstructors(BindingFlags.Public | BindingFlags.Instance))
+            foreach (ConstructorInfo constructor in collectionType.GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
             {
-                IList<ParameterInfo> parameters = constructor.GetParameters();
-
-                if (parameters.Count == 1)
+                if (constructor.IsPublic || constructor.IsDefined(typeof(JsonConstructorAttribute), true))
                 {
-                    if (genericEnumerable == parameters[0].ParameterType)
-                    {
-                        // exact match
-                        match = constructor;
-                        break;
-                    }
+                    IList<ParameterInfo> parameters = constructor.GetParameters();
 
-                    // incase we can't find an exact match, use first inexact
-                    if (match == null)
+                    if (parameters.Count == 1)
                     {
-                        if (genericEnumerable.IsAssignableFrom(parameters[0].ParameterType))
+                        if (genericEnumerable == parameters[0].ParameterType)
+                        {
+                            // exact match
                             match = constructor;
+                            break;
+                        }
+
+                        // incase we can't find an exact match, use first inexact
+                        if (match == null)
+                        {
+                            if (genericEnumerable.IsAssignableFrom(parameters[0].ParameterType))
+                                match = constructor;
+                        }
                     }
                 }
             }
