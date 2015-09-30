@@ -212,7 +212,7 @@ namespace Newtonsoft.Json.Serialization
             }
 #endif
 
-#if !(NET20 || NET35 || NET40 || PORTABLE40)
+#if !(NET20 || NET35 || NET40)
             Type immutableCreatedType;
             ObjectConstructor<object> immutableParameterizedCreator;
             if (ImmutableCollectionsUtils.TryBuildImmutableForArrayContract(underlyingType, CollectionItemType, out immutableCreatedType, out immutableParameterizedCreator))
