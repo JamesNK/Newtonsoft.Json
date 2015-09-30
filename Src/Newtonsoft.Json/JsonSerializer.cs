@@ -575,8 +575,8 @@ namespace Newtonsoft.Json
                 serializer.ReferenceResolver = settings.ReferenceResolverProvider();
             if (settings.TraceWriter != null)
                 serializer.TraceWriter = settings.TraceWriter;
-            if (settings.EqualityComparer != null)
-                serializer.EqualityComparer = settings.EqualityComparer;
+            if (settings.ReferenceLoopEqualityComparer != null)
+                serializer.EqualityComparer = settings.ReferenceLoopEqualityComparer;
             if (settings.Binder != null)
                 serializer.Binder = settings.Binder;
 

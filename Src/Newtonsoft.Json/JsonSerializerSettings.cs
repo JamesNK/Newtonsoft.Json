@@ -201,10 +201,10 @@ namespace Newtonsoft.Json
         public IContractResolver ContractResolver { get; set; }
 
         /// <summary>
-        /// Gets or sets the equality comparer used by the serializer when comparing references.
+        /// Gets or sets the equality comparer used by the serializer when comparing references during loop detection.
         /// </summary>
         /// <value>The equality comparer.</value>
-        public IEqualityComparer EqualityComparer { get; set; }
+        public IEqualityComparer ReferenceLoopEqualityComparer { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="IReferenceResolver"/> used by the serializer when resolving references.
