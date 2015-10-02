@@ -109,6 +109,7 @@
     <Compile Include="Documentation\Samples\Linq\QueryJsonSelectToken.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Documentation\Samples\Linq\QueryJsonSelectTokenEscaped.cs" />
     <Compile Include="Documentation\Samples\Linq\QueryJsonSelectTokenJsonPath.cs">
       <SubType>Code</SubType>
     </Compile>

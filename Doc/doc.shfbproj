@@ -100,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="icons\favicon.ico" />
+    <None Include="Samples\Linq\QueryJsonSelectTokenEscaped.aml" />
     <None Include="Samples\Serializer\JsonConstructorAttribute.aml" />
     <None Include="Samples\Json\ReadMultipleContentWithJsonReader.aml" />
     <None Include="Samples\Serializer\SerializeImmutableCollections.aml" />
