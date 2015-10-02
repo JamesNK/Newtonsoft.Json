@@ -70,8 +70,13 @@ namespace Newtonsoft.Json.Serialization
 
             JsonContract contract = Serializer._contractResolver.ResolveContract(objectType);
 
-            if (reader.TokenType == JsonToken.None)
-                reader.Read();
+            while (reader.TokenType == JsonToken.None || reader.TokenType == JsonToken.Comment)
+            {
+                if (!reader.Read())
+                {
+                    throw JsonSerializationException.Create(reader, "No JSON content found.");
+                }
+            }
 
             if (reader.TokenType == JsonToken.StartArray)
             {

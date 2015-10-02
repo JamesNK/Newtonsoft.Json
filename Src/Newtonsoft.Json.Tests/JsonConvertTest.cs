@@ -60,6 +60,64 @@ namespace Newtonsoft.Json.Tests
     [TestFixture]
     public class JsonConvertTest : TestFixtureBase
     {
+        public class PopulateTestObject
+        {
+            public decimal Prop { get; set; }
+        }
+
+        [Test]
+        public void PopulateObjectWithHeaderComment()
+        {
+            string json = @"// file header
+{
+  ""prop"": 1.0
+}";
+
+            PopulateTestObject o = new PopulateTestObject();
+            JsonConvert.PopulateObject(json, o);
+
+            Assert.AreEqual(1m, o.Prop);
+        }
+
+        [Test]
+        public void PopulateObjectWithMultipleHeaderComment()
+        {
+            string json = @"// file header
+// another file header?
+{
+  ""prop"": 1.0
+}";
+
+            PopulateTestObject o = new PopulateTestObject();
+            JsonConvert.PopulateObject(json, o);
+
+            Assert.AreEqual(1m, o.Prop);
+        }
+
+        [Test]
+        public void PopulateObjectWithNoContent()
+        {
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                string json = @"";
+
+                PopulateTestObject o = new PopulateTestObject();
+                JsonConvert.PopulateObject(json, o);
+            }, "No JSON content found. Path '', line 0, position 0.");
+        }
+
+        [Test]
+        public void PopulateObjectWithOnlyComment()
+        {
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                string json = @"// file header";
+
+                PopulateTestObject o = new PopulateTestObject();
+                JsonConvert.PopulateObject(json, o);
+            }, "No JSON content found. Path '', line 1, position 14.");
+        }
+
         [Test]
         public void DefaultSettings()
         {

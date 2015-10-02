@@ -427,7 +427,7 @@ namespace Newtonsoft.Json.Tests.Converters
                 {
                     JsonConvert.DeserializeXmlNode(json);
                 },
-                "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifing a DeserializeRootElementName.");
+                "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifing a DeserializeRootElementName. Path 'Email', line 3, position 14.");
         }
 
         [Test]
@@ -944,7 +944,9 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void RootObjectMultipleProperties()
         {
-            ExceptionAssert.Throws<JsonSerializationException>(() => { XmlDocument newDoc = (XmlDocument)JsonConvert.DeserializeXmlNode(@"{Prop1:1,Prop2:2}"); }, "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifing a DeserializeRootElementName.");
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => { XmlDocument newDoc = (XmlDocument)JsonConvert.DeserializeXmlNode(@"{Prop1:1,Prop2:2}"); },
+                "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifing a DeserializeRootElementName. Path 'Prop2', line 1, position 15.");
         }
 
         [Test]
@@ -1060,7 +1062,9 @@ namespace Newtonsoft.Json.Tests.Converters
         {
             string json = @"{""count"": 773840,""photos"": null}";
 
-            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeXmlNode(json); }, "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifing a DeserializeRootElementName.");
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => { JsonConvert.DeserializeXmlNode(json); },
+                "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifing a DeserializeRootElementName. Path 'photos', line 1, position 26.");
         }
 
 #if !NET20
@@ -1069,7 +1073,9 @@ namespace Newtonsoft.Json.Tests.Converters
         {
             string json = @"{""count"": 773840,""photos"": null}";
 
-            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeXNode(json); }, "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifing a DeserializeRootElementName.");
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => { JsonConvert.DeserializeXNode(json); },
+                "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifing a DeserializeRootElementName. Path 'photos', line 1, position 26.");
         }
 #endif
 
@@ -1437,6 +1443,162 @@ namespace Newtonsoft.Json.Tests.Converters
         }
 
         [Test]
+        public void SerializeDeserializeMetadataArray()
+        {
+            string json = @"{
+  ""$id"": ""1"",
+  ""$values"": [
+    ""1"",
+    ""2"",
+    ""3"",
+    ""4"",
+    ""5""
+  ]
+}";
+
+            XmlNode node = JsonConvert.DeserializeXmlNode(json, "root");
+            string xml = GetIndentedInnerXml(node);
+
+            StringAssert.AreEqual(@"<?xml version=""1.0"" encoding=""utf-16""?>
+<root xmlns:json=""http://james.newtonking.com/projects/json"" json:id=""1"">
+  <values xmlns=""http://james.newtonking.com/projects/json"">1</values>
+  <values xmlns=""http://james.newtonking.com/projects/json"">2</values>
+  <values xmlns=""http://james.newtonking.com/projects/json"">3</values>
+  <values xmlns=""http://james.newtonking.com/projects/json"">4</values>
+  <values xmlns=""http://james.newtonking.com/projects/json"">5</values>
+</root>", xml);
+
+            string newJson = JsonConvert.SerializeXmlNode(node, Formatting.Indented, true);
+
+            StringAssert.AreEqual(json, newJson);
+        }
+
+        [Test]
+        public void SerializeDeserializeMetadataArrayNoId()
+        {
+            string json = @"{
+  ""$values"": [
+    ""1"",
+    ""2"",
+    ""3"",
+    ""4"",
+    ""5""
+  ]
+}";
+
+            XmlNode node = JsonConvert.DeserializeXmlNode(json, "root");
+            string xml = GetIndentedInnerXml(node);
+
+            StringAssert.AreEqual(@"<?xml version=""1.0"" encoding=""utf-16""?>
+<root xmlns:json=""http://james.newtonking.com/projects/json"">
+  <values xmlns=""http://james.newtonking.com/projects/json"">1</values>
+  <values xmlns=""http://james.newtonking.com/projects/json"">2</values>
+  <values xmlns=""http://james.newtonking.com/projects/json"">3</values>
+  <values xmlns=""http://james.newtonking.com/projects/json"">4</values>
+  <values xmlns=""http://james.newtonking.com/projects/json"">5</values>
+</root>", xml);
+
+            string newJson = JsonConvert.SerializeXmlNode(node, Formatting.Indented, true);
+
+            Console.WriteLine(newJson);
+
+            StringAssert.AreEqual(json, newJson);
+        }
+
+        [Test]
+        public void SerializeDeserializeMetadataArrayWithIdLast()
+        {
+            string json = @"{
+  ""$values"": [
+    ""1"",
+    ""2"",
+    ""3"",
+    ""4"",
+    ""5""
+  ],
+  ""$id"": ""1""
+}";
+
+            XmlNode node = JsonConvert.DeserializeXmlNode(json, "root");
+            string xml = GetIndentedInnerXml(node);
+
+            StringAssert.AreEqual(@"<?xml version=""1.0"" encoding=""utf-16""?>
+<root xmlns:json=""http://james.newtonking.com/projects/json"" json:id=""1"">
+  <values xmlns=""http://james.newtonking.com/projects/json"">1</values>
+  <values xmlns=""http://james.newtonking.com/projects/json"">2</values>
+  <values xmlns=""http://james.newtonking.com/projects/json"">3</values>
+  <values xmlns=""http://james.newtonking.com/projects/json"">4</values>
+  <values xmlns=""http://james.newtonking.com/projects/json"">5</values>
+</root>", xml);
+
+            string newJson = JsonConvert.SerializeXmlNode(node, Formatting.Indented, true);
+
+            StringAssert.AreEqual(@"{
+  ""$id"": ""1"",
+  ""$values"": [
+    ""1"",
+    ""2"",
+    ""3"",
+    ""4"",
+    ""5""
+  ]
+}", newJson);
+        }
+
+        [Test]
+        public void SerializeMetadataPropertyWithBadValue()
+        {
+            string json = @"{
+  ""$id"": []
+}";
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => { JsonConvert.DeserializeXmlNode(json, "root"); },
+                "Unexpected JsonToken: StartArray. Path '$id', line 2, position 11.");
+        }
+
+        [Test]
+        public void SerializeDeserializeMetadataWithNullValue()
+        {
+            string json = @"{
+  ""$id"": null
+}";
+
+            XmlNode node = JsonConvert.DeserializeXmlNode(json, "root");
+            string xml = GetIndentedInnerXml(node);
+
+            StringAssert.AreEqual(@"<?xml version=""1.0"" encoding=""utf-16""?>
+<root xmlns:json=""http://james.newtonking.com/projects/json"" json:id="""" />", xml);
+
+            string newJson = JsonConvert.SerializeXmlNode(node, Formatting.Indented, true);
+
+            StringAssert.AreEqual(@"{
+  ""$id"": """"
+}", newJson);
+        }
+
+        [Test]
+        public void SerializeDeserializeMetadataArrayNull()
+        {
+            string json = @"{
+  ""$id"": ""1"",
+  ""$values"": null
+}";
+
+            XmlNode node = JsonConvert.DeserializeXmlNode(json, "root");
+            string xml = GetIndentedInnerXml(node);
+
+            StringAssert.AreEqual(@"<?xml version=""1.0"" encoding=""utf-16""?>
+<root xmlns:json=""http://james.newtonking.com/projects/json"" json:id=""1"">
+  <values xmlns=""http://james.newtonking.com/projects/json"" />
+</root>", xml);
+
+            string newJson = JsonConvert.SerializeXmlNode(node, Formatting.Indented, true);
+
+            StringAssert.AreEqual(json, newJson);
+        }
+
+        [Test]
         public void EmptyPropertyName()
         {
             string json = @"{
@@ -1518,7 +1680,9 @@ namespace Newtonsoft.Json.Tests.Converters
   }
 }";
 
-            ExceptionAssert.Throws<JsonSerializationException>(() => { DeserializeXmlNode(json); }, "XmlNodeConverter cannot convert JSON with an empty property name to XML.");
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => { DeserializeXmlNode(json); },
+                "XmlNodeConverter cannot convert JSON with an empty property name to XML. Path '8452309520V2.', line 3, position 10.");
         }
 
         [Test]
