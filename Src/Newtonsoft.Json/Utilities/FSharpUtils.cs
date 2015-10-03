@@ -144,7 +144,7 @@ namespace Newtonsoft.Json.Utilities
         {
             MethodInfo seqType = _ofSeq.MakeGenericMethod(t);
 
-            return JsonTypeReflector.ReflectionDelegateFactory.CreateParametrizedConstructor(seqType);
+            return JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(seqType);
         }
 
         public static ObjectConstructor<object> CreateMap(Type keyType, Type valueType)
@@ -160,7 +160,7 @@ namespace Newtonsoft.Json.Utilities
         {
             Type genericMapType = _mapType.MakeGenericType(typeof(TKey), typeof(TValue));
             ConstructorInfo ctor = genericMapType.GetConstructor(new[] { typeof(IEnumerable<Tuple<TKey, TValue>>) });
-            ObjectConstructor<object> ctorDelegate = JsonTypeReflector.ReflectionDelegateFactory.CreateParametrizedConstructor(ctor);
+            ObjectConstructor<object> ctorDelegate = JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(ctor);
 
             ObjectConstructor<object> creator = args =>
             {

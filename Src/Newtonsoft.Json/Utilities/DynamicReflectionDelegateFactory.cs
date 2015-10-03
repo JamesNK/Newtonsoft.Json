@@ -49,7 +49,7 @@ namespace Newtonsoft.Json.Utilities
             return dynamicMethod;
         }
 
-        public override ObjectConstructor<object> CreateParametrizedConstructor(MethodBase method)
+        public override ObjectConstructor<object> CreateParameterizedConstructor(MethodBase method)
         {
             DynamicMethod dynamicMethod = CreateDynamicMethod(method.ToString(), typeof(object), new[] { typeof(object[]) }, method.DeclaringType);
             ILGenerator generator = dynamicMethod.GetILGenerator();

@@ -398,7 +398,7 @@ namespace Newtonsoft.Json.Serialization
                 }
                 else if (contract.DefaultCreator == null || contract.DefaultCreatorNonPublic)
                 {
-                    ConstructorInfo constructor = GetParametrizedConstructor(contract.NonNullableUnderlyingType);
+                    ConstructorInfo constructor = GetParameterizedConstructor(contract.NonNullableUnderlyingType);
                     if (constructor != null)
                     {
 #pragma warning disable 618
@@ -511,7 +511,7 @@ namespace Newtonsoft.Json.Serialization
 
             Type enumerableWrapper = typeof(DictionaryEnumerator<,>).MakeGenericType(keyType, valueType);
             ConstructorInfo constructors = enumerableWrapper.GetConstructors().First();
-            ObjectConstructor<object> createEnumerableWrapper = JsonTypeReflector.ReflectionDelegateFactory.CreateParametrizedConstructor(constructors);
+            ObjectConstructor<object> createEnumerableWrapper = JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(constructors);
 
             ExtensionDataGetter extensionDataGetter = o =>
             {
@@ -591,7 +591,7 @@ namespace Newtonsoft.Json.Serialization
             return null;
         }
 
-        private ConstructorInfo GetParametrizedConstructor(Type objectType)
+        private ConstructorInfo GetParameterizedConstructor(Type objectType)
         {
             IList<ConstructorInfo> constructors = objectType.GetConstructors(BindingFlags.Public | BindingFlags.Instance).ToList();
 
@@ -878,6 +878,31 @@ namespace Newtonsoft.Json.Serialization
 
             contract.DictionaryKeyResolver = ResolveDictionaryKey;
 
+            ConstructorInfo overrideConstructor = GetAttributeConstructor(contract.NonNullableUnderlyingType);
+
+            if (overrideConstructor != null)
+            {
+                ParameterInfo[] parameters = overrideConstructor.GetParameters();
+                Type expectedParameterType = (contract.DictionaryKeyType != null && contract.DictionaryValueType != null)
+                    ? typeof(IEnumerable<>).MakeGenericType(typeof(KeyValuePair<,>).MakeGenericType(contract.DictionaryKeyType, contract.DictionaryValueType))
+                    : typeof(IDictionary);
+
+                if (parameters.Length == 0)
+                {
+                    contract.HasParameterizedCreator = false;
+                }
+                else if (parameters.Length == 1 && expectedParameterType.IsAssignableFrom(parameters[0].ParameterType))
+                {
+                    contract.HasParameterizedCreator = true;
+                }
+                else
+                {
+                    throw new JsonException("Constructor for '{0}' must have no parameters or a single parameter that implements '{1}'.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType, expectedParameterType));
+                }
+
+                contract.OverrideCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(overrideConstructor);
+            }
+
             return contract;
         }
 
@@ -890,6 +915,31 @@ namespace Newtonsoft.Json.Serialization
         {
             JsonArrayContract contract = new JsonArrayContract(objectType);
             InitializeContract(contract);
+
+            ConstructorInfo overrideConstructor = GetAttributeConstructor(contract.NonNullableUnderlyingType);
+
+            if (overrideConstructor != null)
+            {
+                ParameterInfo[] parameters = overrideConstructor.GetParameters();
+                Type expectedParameterType = (contract.CollectionItemType != null)
+                    ? typeof(IEnumerable<>).MakeGenericType(contract.CollectionItemType)
+                    : typeof(IEnumerable);
+
+                if (parameters.Length == 0)
+                {
+                    contract.HasParameterizedCreator = false;
+                }
+                else if (parameters.Length == 1 && expectedParameterType.IsAssignableFrom(parameters[0].ParameterType))
+                {
+                    contract.HasParameterizedCreator = true;
+                }
+                else
+                {
+                    throw new JsonException("Constructor for '{0}' must have no parameters or a single parameter that implements '{1}'.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType, expectedParameterType));
+                }
+
+                contract.OverrideCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(overrideConstructor);
+            }
 
             return contract;
         }
@@ -934,7 +984,7 @@ namespace Newtonsoft.Json.Serialization
             ConstructorInfo constructorInfo = contract.NonNullableUnderlyingType.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(SerializationInfo), typeof(StreamingContext) }, null);
             if (constructorInfo != null)
             {
-                ObjectConstructor<object> creator = JsonTypeReflector.ReflectionDelegateFactory.CreateParametrizedConstructor(constructorInfo);
+                ObjectConstructor<object> creator = JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(constructorInfo);
 
                 contract.ISerializableCreator = creator;
             }

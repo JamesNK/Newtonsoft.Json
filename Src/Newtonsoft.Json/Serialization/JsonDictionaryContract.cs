@@ -81,23 +81,41 @@ namespace Newtonsoft.Json.Serialization
 
         internal bool ShouldCreateWrapper { get; private set; }
 
-        private readonly ConstructorInfo _parametrizedConstructor;
+        private readonly ConstructorInfo _parameterizedConstructor;
 
-        private ObjectConstructor<object> _parametrizedCreator;
-        internal ObjectConstructor<object> ParametrizedCreator
+        private ObjectConstructor<object> _overrideCreator;
+        private ObjectConstructor<object> _parameterizedCreator;
+
+        internal ObjectConstructor<object> ParameterizedCreator
         {
             get
             {
-                if (_parametrizedCreator == null)
-                    _parametrizedCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateParametrizedConstructor(_parametrizedConstructor);
+                if (_parameterizedCreator == null)
+                    _parameterizedCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(_parameterizedConstructor);
 
-                return _parametrizedCreator;
+                return _parameterizedCreator;
             }
         }
 
-        internal bool HasParametrizedCreator
+        /// <summary>
+        /// Gets or sets the function used to create the object. When set this function will override <see cref="JsonContract.DefaultCreator"/>.
+        /// </summary>
+        /// <value>The function used to create the object.</value>
+        public ObjectConstructor<object> OverrideCreator
         {
-            get { return _parametrizedCreator != null || _parametrizedConstructor != null; }
+            get { return _overrideCreator; }
+            set { _overrideCreator = value; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the creator has a parameter with the dictionary values.
+        /// </summary>
+        /// <value><c>true</c> if the creator has a parameter with the dictionary values; otherwise, <c>false</c>.</value>
+        public bool HasParameterizedCreator { get; set; }
+
+        internal bool HasParameterizedCreatorInternal
+        {
+            get { return (HasParameterizedCreator || _parameterizedCreator != null || _parameterizedConstructor != null); }
         }
 
         /// <summary>
@@ -146,13 +164,13 @@ namespace Newtonsoft.Json.Serialization
 
             if (keyType != null && valueType != null)
             {
-                _parametrizedConstructor = CollectionUtils.ResolveEnumerableCollectionConstructor(CreatedType, typeof(KeyValuePair<,>).MakeGenericType(keyType, valueType));
+                _parameterizedConstructor = CollectionUtils.ResolveEnumerableCollectionConstructor(CreatedType, typeof(KeyValuePair<,>).MakeGenericType(keyType, valueType));
 
 #if !(NET35 || NET20)
-                if (!HasParametrizedCreator && underlyingType.Name == FSharpUtils.FSharpMapTypeName)
+                if (!HasParameterizedCreatorInternal && underlyingType.Name == FSharpUtils.FSharpMapTypeName)
                 {
                     FSharpUtils.EnsureInitialized(underlyingType.Assembly());
-                    _parametrizedCreator = FSharpUtils.CreateMap(keyType, valueType);
+                    _parameterizedCreator = FSharpUtils.CreateMap(keyType, valueType);
                 }
 #endif
             }
@@ -182,7 +200,7 @@ namespace Newtonsoft.Json.Serialization
             if (ImmutableCollectionsUtils.TryBuildImmutableForDictionaryContract(underlyingType, DictionaryKeyType, DictionaryValueType, out immutableCreatedType, out immutableParameterizedCreator))
             {
                 CreatedType = immutableCreatedType;
-                _parametrizedCreator = immutableParameterizedCreator;
+                _parameterizedCreator = immutableParameterizedCreator;
                 IsReadOnlyOrFixedSize = true;
             }
 #endif
@@ -195,7 +213,7 @@ namespace Newtonsoft.Json.Serialization
                 _genericWrapperType = typeof(DictionaryWrapper<,>).MakeGenericType(DictionaryKeyType, DictionaryValueType);
 
                 ConstructorInfo genericWrapperConstructor = _genericWrapperType.GetConstructor(new[] { _genericCollectionDefinitionType });
-                _genericWrapperCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateParametrizedConstructor(genericWrapperConstructor);
+                _genericWrapperCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(genericWrapperConstructor);
             }
 
             return (IWrappedDictionary)_genericWrapperCreator(dictionary);
@@ -205,7 +223,7 @@ namespace Newtonsoft.Json.Serialization
         {
             if (_genericTemporaryDictionaryCreator == null)
             {
-                Type temporaryDictionaryType = typeof(Dictionary<,>).MakeGenericType(DictionaryKeyType, DictionaryValueType);
+                Type temporaryDictionaryType = typeof(Dictionary<,>).MakeGenericType(DictionaryKeyType ?? typeof(object), DictionaryValueType ?? typeof(object));
 
                 _genericTemporaryDictionaryCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateDefaultConstructor<object>(temporaryDictionaryType);
             }

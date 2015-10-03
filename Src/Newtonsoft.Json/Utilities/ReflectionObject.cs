@@ -84,7 +84,7 @@ namespace Newtonsoft.Json.Utilities
 
             if (creator != null)
             {
-                d.Creator = delegateFactory.CreateParametrizedConstructor(creator);
+                d.Creator = delegateFactory.CreateParameterizedConstructor(creator);
             }
             else
             {

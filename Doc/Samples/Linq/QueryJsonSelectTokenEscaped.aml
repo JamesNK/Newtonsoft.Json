@@ -2,7 +2,7 @@
 <topic id="QueryJsonSelectTokenEscaped" revisionNumber="1">
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
-      <para>This sample loads JSON with properties that required escaped queries using <codeEntityReference>M:Newtonsoft.Json.Linq.JToken.SelectToken(System.String)</codeEntityReference>.</para>
+      <para>This sample loads JSON with properties that need to be escaped when queried with <codeEntityReference>M:Newtonsoft.Json.Linq.JToken.SelectToken(System.String)</codeEntityReference>.</para>
     </introduction>
     <section>
       <title>Sample</title>

@@ -43,7 +43,7 @@ namespace Newtonsoft.Json.Utilities
             get { return _instance; }
         }
 
-        public override ObjectConstructor<object> CreateParametrizedConstructor(MethodBase method)
+        public override ObjectConstructor<object> CreateParameterizedConstructor(MethodBase method)
         {
             ValidationUtils.ArgumentNotNull(method, "method");
 

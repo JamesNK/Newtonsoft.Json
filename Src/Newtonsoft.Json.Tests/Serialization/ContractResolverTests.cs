@@ -203,7 +203,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Assert.IsFalse(contract.IsInstantiable);
             Assert.IsNull(contract.DefaultCreator);
-            Assert.IsFalse(contract.HasParametrizedCreator);
+            Assert.IsFalse(contract.HasParameterizedCreatorInternal);
 
             ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<AbstractListTestClass<int>>(@"[1,2]", new JsonSerializerSettings
             {
@@ -283,7 +283,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Assert.IsFalse(contract.IsInstantiable);
             Assert.IsNull(contract.DefaultCreator);
-            Assert.IsFalse(contract.HasParametrizedCreator);
+            Assert.IsFalse(contract.HasParameterizedCreatorInternal);
 
             ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<AbstractDictionaryTestClass<string, int>>(@"{key1:1,key2:2}", new JsonSerializerSettings
             {
@@ -436,13 +436,13 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Test]
-        public void ParametrizedCreator()
+        public void ParameterizedCreator()
         {
             var resolver = new DefaultContractResolver();
             var contract = (JsonObjectContract)resolver.ResolveContract(typeof(PublicParametizedConstructorWithPropertyNameConflictWithAttribute));
 
             Assert.IsNull(contract.DefaultCreator);
-            Assert.IsNotNull(contract.ParametrizedCreator);
+            Assert.IsNotNull(contract.ParameterizedCreator);
 #pragma warning disable 618
             Assert.AreEqual(contract.ParametrizedConstructor, typeof(PublicParametizedConstructorWithPropertyNameConflictWithAttribute).GetConstructor(new[] { typeof(string) }));
 #pragma warning restore 618
@@ -452,7 +452,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 #pragma warning disable 618
             contract.ParametrizedConstructor = null;
 #pragma warning restore 618
-            Assert.IsNull(contract.ParametrizedCreator);
+            Assert.IsNull(contract.ParameterizedCreator);
         }
 
         [Test]

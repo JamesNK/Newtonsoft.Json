@@ -146,6 +146,7 @@
       <codeEntityReference>T:Newtonsoft.Json.JsonPropertyAttribute</codeEntityReference>
       <codeEntityReference>T:Newtonsoft.Json.JsonConverterAttribute</codeEntityReference>
       <codeEntityReference>T:Newtonsoft.Json.JsonExtensionDataAttribute</codeEntityReference>
+      <codeEntityReference>T:Newtonsoft.Json.JsonConstructorAttribute</codeEntityReference>
     </relatedTopics>
   </developerConceptualDocument>
 </topic>

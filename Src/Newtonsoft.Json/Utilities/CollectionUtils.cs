@@ -124,7 +124,9 @@ namespace Newtonsoft.Json.Utilities
                     if (match == null)
                     {
                         if (genericEnumerable.IsAssignableFrom(parameters[0].ParameterType))
+                        {
                             match = constructor;
+                        }
                     }
                 }
             }

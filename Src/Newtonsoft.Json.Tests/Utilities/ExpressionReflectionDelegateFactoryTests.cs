@@ -55,7 +55,7 @@ namespace Newtonsoft.Json.Tests.Utilities
         {
             ConstructorInfo constructor = TestReflectionUtils.GetConstructors(typeof(OutAndRefTestClass)).Single(c => c.GetParameters().Count() == 1);
 
-            var creator = ExpressionReflectionDelegateFactory.Instance.CreateParametrizedConstructor(constructor);
+            var creator = ExpressionReflectionDelegateFactory.Instance.CreateParameterizedConstructor(constructor);
 
             object[] args = new object[] { "Input" };
             OutAndRefTestClass o = (OutAndRefTestClass)creator(args);
@@ -68,7 +68,7 @@ namespace Newtonsoft.Json.Tests.Utilities
         {
             ConstructorInfo constructor = TestReflectionUtils.GetConstructors(typeof(OutAndRefTestClass)).Single(c => c.GetParameters().Count() == 2);
 
-            var creator = ExpressionReflectionDelegateFactory.Instance.CreateParametrizedConstructor(constructor);
+            var creator = ExpressionReflectionDelegateFactory.Instance.CreateParameterizedConstructor(constructor);
 
             object[] args = new object[] { "Input", null };
             OutAndRefTestClass o = (OutAndRefTestClass)creator(args);
@@ -81,7 +81,7 @@ namespace Newtonsoft.Json.Tests.Utilities
         {
             ConstructorInfo constructor = TestReflectionUtils.GetConstructors(typeof(OutAndRefTestClass)).Single(c => c.GetParameters().Count() == 3);
 
-            var creator = ExpressionReflectionDelegateFactory.Instance.CreateParametrizedConstructor(constructor);
+            var creator = ExpressionReflectionDelegateFactory.Instance.CreateParameterizedConstructor(constructor);
 
             object[] args = new object[] { "Input", true, null };
             OutAndRefTestClass o = (OutAndRefTestClass)creator(args);
