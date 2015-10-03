@@ -323,8 +323,8 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.IsTrue(possibleErrs.Any (m => m == errors[0]), 
                 "Expected One of: " + string.Join (Environment.NewLine, possibleErrs) + Environment.NewLine + "But was: " + errors[0]);
 
-            Assert.AreEqual("[2] - 2 - Unexpected token parsing date. Expected String, got StartArray. Path '[2]', line 4, position 10.", errors[1]);
-            Assert.AreEqual("[4] - 4 - Cannot convert null value to System.DateTime. Path '[4]', line 8, position 13.", errors[2]);
+            Assert.AreEqual("[2] - 2 - Unexpected token parsing date. Expected String, got StartArray. Path '[2]', line 4, position 9.", errors[1]);
+            Assert.AreEqual("[4] - 4 - Cannot convert null value to System.DateTime. Path '[4]', line 8, position 12.", errors[2]);
         }
 
         [Test]
@@ -662,8 +662,8 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(123, d.ChildObject.Integer);
 
             Assert.AreEqual(2, errors.Count);
-            Assert.AreEqual(@"Unexpected end when deserializing object. Path 'ChildObject.Integer', line 6, position 19.", errors[0]);
-            Assert.AreEqual(@"Unexpected end when deserializing object. Path 'ChildObject.Integer', line 6, position 19.", errors[1]);
+            Assert.AreEqual(@"Unexpected end when deserializing object. Path 'ChildObject.Integer', line 6, position 18.", errors[0]);
+            Assert.AreEqual(@"Unexpected end when deserializing object. Path 'ChildObject.Integer', line 6, position 18.", errors[1]);
         }
 #endif
 

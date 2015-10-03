@@ -526,7 +526,7 @@ Parameter name: index");
 ""Large""
 ], 987987";
 
-            ExceptionAssert.Throws<JsonReaderException>(() => { JArray.Parse(json); }, "Additional text encountered after finished reading JSON content: ,. Path '', line 5, position 2.");
+            ExceptionAssert.Throws<JsonReaderException>(() => { JArray.Parse(json); }, "Additional text encountered after finished reading JSON content: ,. Path '', line 5, position 1.");
         }
 
         [Test]

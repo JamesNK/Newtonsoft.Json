@@ -66,7 +66,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             //  ]
             //}
 
-            ExceptionAssert.Throws<JsonSerializationException>(() => { ProductShort deserializedProductShort = (ProductShort)JsonConvert.DeserializeObject(output, typeof(ProductShort), new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error }); }, @"Could not find member 'Price' on object of type 'ProductShort'. Path 'Price', line 4, position 11.");
+            ExceptionAssert.Throws<JsonSerializationException>(() => { ProductShort deserializedProductShort = (ProductShort)JsonConvert.DeserializeObject(output, typeof(ProductShort), new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error }); }, @"Could not find member 'Price' on object of type 'ProductShort'. Path 'Price', line 4, position 10.");
         }
 
         [Test]

@@ -104,7 +104,7 @@ namespace Newtonsoft.Json
         private void OnNewLine(int pos)
         {
             _lineNumber++;
-            _lineStartPos = pos - 1;
+            _lineStartPos = pos;
         }
 
         private void ParseString(char quote)
@@ -1657,7 +1657,7 @@ namespace Newtonsoft.Json
         {
             get
             {
-                if (CurrentState == State.Start && LinePosition == 0)
+                if (CurrentState == State.Start && LinePosition == 0 && TokenType != JsonToken.Comment)
                     return 0;
 
                 return _lineNumber;

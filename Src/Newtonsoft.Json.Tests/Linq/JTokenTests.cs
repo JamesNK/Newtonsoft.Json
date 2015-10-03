@@ -1200,7 +1200,7 @@ namespace Newtonsoft.Json.Tests.Linq
 ],";
 
                 JToken.Parse(json);
-            }, "Additional text encountered after finished reading JSON content: ,. Path '', line 5, position 2.");
+            }, "Additional text encountered after finished reading JSON content: ,. Path '', line 5, position 1.");
         }
 
         [Test]

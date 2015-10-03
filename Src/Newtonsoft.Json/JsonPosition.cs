@@ -61,9 +61,6 @@ namespace Newtonsoft.Json
             switch (Type)
             {
                 case JsonContainerType.Object:
-                    if (sb.Length > 0)
-                        sb.Append('.');
-
                     string propertyName = PropertyName;
                     if (propertyName.IndexOfAny(SpecialCharacters) != -1)
                     {
@@ -73,6 +70,9 @@ namespace Newtonsoft.Json
                     }
                     else
                     {
+                        if (sb.Length > 0)
+                            sb.Append('.');
+
                         sb.Append(propertyName);
                     }
                     break;

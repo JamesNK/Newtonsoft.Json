@@ -499,7 +499,7 @@ Parameter name: arrayIndex");
             ExceptionAssert.Throws<JsonReaderException>(() => { JObject.Parse(@"{
     ""name"": ""James"",
     ]!#$THIS IS: BAD JSON![{}}}}]
-  }"); }, "Invalid property identifier character: ]. Path 'name', line 3, position 5.");
+  }"); }, "Invalid property identifier character: ]. Path 'name', line 3, position 4.");
         }
 
         [Test]
@@ -1693,7 +1693,7 @@ Parameter name: arrayIndex");
                 reader.Read();
 
                 JToken.ReadFrom(reader);
-            }, "Unexpected end of content while loading JObject. Path 'short.error.code', line 6, position 15.");
+            }, "Unexpected end of content while loading JObject. Path 'short.error.code', line 6, position 14.");
         }
 
 #if !(NETFX_CORE || PORTABLE || DNXCORE50 || PORTABLE40)
@@ -1788,7 +1788,7 @@ Parameter name: arrayIndex");
 }, 987987";
 
                 JObject o = JObject.Parse(json);
-            }, "Additional text encountered after finished reading JSON content: ,. Path '', line 10, position 2.");
+            }, "Additional text encountered after finished reading JSON content: ,. Path '', line 10, position 1.");
         }
 
         [Test]

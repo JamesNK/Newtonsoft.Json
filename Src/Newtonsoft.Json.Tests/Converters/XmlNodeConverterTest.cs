@@ -427,7 +427,7 @@ namespace Newtonsoft.Json.Tests.Converters
                 {
                     JsonConvert.DeserializeXmlNode(json);
                 },
-                "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifing a DeserializeRootElementName. Path 'Email', line 3, position 14.");
+                "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifing a DeserializeRootElementName. Path 'Email', line 3, position 13.");
         }
 
         [Test]
@@ -1554,7 +1554,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             ExceptionAssert.Throws<JsonSerializationException>(
                 () => { JsonConvert.DeserializeXmlNode(json, "root"); },
-                "Unexpected JsonToken: StartArray. Path '$id', line 2, position 11.");
+                "Unexpected JsonToken: StartArray. Path '$id', line 2, position 10.");
         }
 
         [Test]
@@ -1682,7 +1682,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             ExceptionAssert.Throws<JsonSerializationException>(
                 () => { DeserializeXmlNode(json); },
-                "XmlNodeConverter cannot convert JSON with an empty property name to XML. Path '8452309520V2.', line 3, position 10.");
+                "XmlNodeConverter cannot convert JSON with an empty property name to XML. Path '8452309520V2.', line 3, position 9.");
         }
 
         [Test]

@@ -5175,7 +5175,7 @@ Path '', line 1, position 1.");
 
             var json = JsonConvert.SerializeObject(child, Formatting.Indented);
 
-            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeObject<Dictionary<string, object>>(json); }, "Additional content found in JSON reference object. A JSON reference object should only have a $ref property. Path 'Father.$id', line 6, position 11.");
+            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeObject<Dictionary<string, object>>(json); }, "Additional content found in JSON reference object. A JSON reference object should only have a $ref property. Path 'Father.$id', line 6, position 10.");
         }
 
         [Test]
@@ -5196,7 +5196,7 @@ Path '', line 1, position 1.");
 
                 var json = JsonConvert.SerializeObject(child, Formatting.Indented);
                 JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
-            }, "JSON reference $ref property must have a string or null value. Path 'Father.$ref', line 5, position 14.");
+            }, "JSON reference $ref property must have a string or null value. Path 'Father.$ref', line 5, position 13.");
         }
 
         [Test]
@@ -5417,7 +5417,7 @@ Path '', line 1, position 1.");
             }
             else
             {
-                ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeObject<StringDictionaryTestClass>(json); }, "Cannot create and populate list type " + classRef + ". Path 'StringDictionaryProperty', line 2, position 32.");
+                ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeObject<StringDictionaryTestClass>(json); }, "Cannot create and populate list type " + classRef + ". Path 'StringDictionaryProperty', line 2, position 31.");
             }
         }
 #endif
@@ -6774,7 +6774,7 @@ Path '', line 1, position 1.");
   null
 ]";
 
-            ExceptionAssert.Throws<JsonSerializationException>(() => { List<int> numbers = JsonConvert.DeserializeObject<List<int>>(json); }, "Error converting value {null} to type 'System.Int32'. Path '[3]', line 5, position 7.");
+            ExceptionAssert.Throws<JsonSerializationException>(() => { List<int> numbers = JsonConvert.DeserializeObject<List<int>>(json); }, "Error converting value {null} to type 'System.Int32'. Path '[3]', line 5, position 6.");
         }
 
 #if !(PORTABLE || NETFX_CORE)
@@ -6813,7 +6813,7 @@ Path '', line 1, position 1.");
   ""NullableInteger2"": null
 }";
 
-            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<ConvertableIntTestClass>(json), "Error converting value 1 to type 'Newtonsoft.Json.Tests.ConvertibleInt'. Path 'Integer', line 2, position 15.");
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<ConvertableIntTestClass>(json), "Error converting value 1 to type 'Newtonsoft.Json.Tests.ConvertibleInt'. Path 'Integer', line 2, position 14.");
         }
 #endif
 
@@ -6850,7 +6850,7 @@ Path '', line 1, position 1.");
 }";
 
                 JsonConvert.DeserializeObject<TestObjects.MyClass>(json);
-            }, "Error reading integer. Unexpected token: Boolean. Path 'PreProperty', line 2, position 22.");
+            }, "Error reading integer. Unexpected token: Boolean. Path 'PreProperty', line 2, position 21.");
         }
 
         [Test]
@@ -9159,7 +9159,7 @@ Path '', line 1, position 1.");
                         new AttachmentReadConverter(),
                         new EncodingReadConverter());
                 },
-                "Cannot populate list type System.Net.Mime.HeaderCollection. Path 'Headers', line 26, position 15.");
+                "Cannot populate list type System.Net.Mime.HeaderCollection. Path 'Headers', line 26, position 14.");
         }
 
         public class MailAddressReadConverter : JsonConverter

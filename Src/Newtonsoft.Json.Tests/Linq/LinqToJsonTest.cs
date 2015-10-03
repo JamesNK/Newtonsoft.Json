@@ -197,7 +197,7 @@ namespace Newtonsoft.Json.Tests.Linq
             IJsonLineInfo lineInfo = v;
             Assert.AreEqual(true, lineInfo.HasLineInfo());
             Assert.AreEqual(3, lineInfo.LineNumber);
-            Assert.AreEqual(1, lineInfo.LinePosition);
+            Assert.AreEqual(0, lineInfo.LinePosition);
         }
 
         [Test]
@@ -219,7 +219,7 @@ undefined
             IJsonLineInfo lineInfo = v;
             Assert.AreEqual(true, lineInfo.HasLineInfo());
             Assert.AreEqual(2, lineInfo.LineNumber);
-            Assert.AreEqual(10, lineInfo.LinePosition);
+            Assert.AreEqual(9, lineInfo.LinePosition);
         }
 
         [Test]
@@ -271,7 +271,7 @@ undefined
 
             JToken v1 = o["frameworks"]["dnxcore50"]["dependencies"]["System.Xml.ReaderWriter"]["source"];
 
-            Assert.AreEqual("frameworks.dnxcore50.dependencies.['System.Xml.ReaderWriter'].source", v1.Path);
+            Assert.AreEqual("frameworks.dnxcore50.dependencies['System.Xml.ReaderWriter'].source", v1.Path);
 
             JToken v2 = o.SelectToken(v1.Path);
 
