@@ -60,6 +60,18 @@ namespace Newtonsoft.Json.Tests
     [TestFixture]
     public class JsonConvertTest : TestFixtureBase
     {
+        [Test]
+        public void ToStringEnsureEscapedArrayLength()
+        {
+            const char nonAsciiChar = (char)257;
+            const char escapableNonQuoteAsciiChar = '\0';
+
+            string value = nonAsciiChar + @"\" + escapableNonQuoteAsciiChar;
+
+            string convertedValue = JsonConvert.ToString((object)value);
+            Assert.AreEqual(@"""" + nonAsciiChar + @"\\\u0000""", convertedValue);
+        }
+
         public class PopulateTestObject
         {
             public decimal Prop { get; set; }

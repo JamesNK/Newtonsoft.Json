@@ -45,6 +45,8 @@ namespace Newtonsoft.Json.Utilities
         internal static readonly bool[] DoubleQuoteCharEscapeFlags = new bool[128];
         internal static readonly bool[] HtmlCharEscapeFlags = new bool[128];
 
+        private const int UnicodeTextLength = 6;
+
         static JavaScriptUtils()
         {
             IList<char> escapeChars = new List<char>
@@ -159,8 +161,8 @@ namespace Newtonsoft.Json.Utilities
                                 }
                                 else
                                 {
-                                    if (writeBuffer == null)
-                                        writeBuffer = new char[6];
+                                    if (writeBuffer == null || writeBuffer.Length < UnicodeTextLength)
+                                        writeBuffer = new char[UnicodeTextLength];
 
                                     StringUtils.ToCharAsUnicode(c, writeBuffer);
 
@@ -182,8 +184,8 @@ namespace Newtonsoft.Json.Utilities
 
                     if (i > lastWritePosition)
                     {
-                        int length = i - lastWritePosition + ((isEscapedUnicodeText) ? 6 : 0);
-                        int start = (isEscapedUnicodeText) ? 6 : 0;
+                        int length = i - lastWritePosition + ((isEscapedUnicodeText) ? UnicodeTextLength : 0);
+                        int start = (isEscapedUnicodeText) ? UnicodeTextLength : 0;
 
                         if (writeBuffer == null || writeBuffer.Length < length)
                         {
@@ -192,7 +194,7 @@ namespace Newtonsoft.Json.Utilities
                             // the unicode text is already in the buffer
                             // copy it over when creating new buffer
                             if (isEscapedUnicodeText)
-                                Array.Copy(writeBuffer, newBuffer, 6);
+                                Array.Copy(writeBuffer, newBuffer, UnicodeTextLength);
 
                             writeBuffer = newBuffer;
                         }
@@ -207,7 +209,7 @@ namespace Newtonsoft.Json.Utilities
                     if (!isEscapedUnicodeText)
                         writer.Write(escapedValue);
                     else
-                        writer.Write(writeBuffer, 0, 6);
+                        writer.Write(writeBuffer, 0, UnicodeTextLength);
                 }
 
                 if (lastWritePosition == 0)
