@@ -434,7 +434,7 @@ namespace Newtonsoft.Json
         /// <param name="reader">The <see cref="JsonReader"/> to read the token from.</param>
         public void WriteToken(JsonReader reader)
         {
-            WriteToken(reader, true, true);
+            WriteToken(reader, true, true, true);
         }
 
         /// <summary>
@@ -446,7 +446,7 @@ namespace Newtonsoft.Json
         {
             ValidationUtils.ArgumentNotNull(reader, "reader");
 
-            WriteToken(reader, writeChildren, true);
+            WriteToken(reader, writeChildren, true, true);
         }
 
         /// <summary>
@@ -471,7 +471,7 @@ namespace Newtonsoft.Json
             WriteTokenInternal(token, null);
         }
 
-        internal void WriteToken(JsonReader reader, bool writeChildren, bool writeDateConstructorAsDate)
+        internal void WriteToken(JsonReader reader, bool writeChildren, bool writeDateConstructorAsDate, bool writeComments)
         {
             int initialDepth;
 
@@ -482,18 +482,25 @@ namespace Newtonsoft.Json
             else
                 initialDepth = reader.Depth;
 
-            WriteToken(reader, initialDepth, writeChildren, writeDateConstructorAsDate);
+            WriteToken(reader, initialDepth, writeChildren, writeDateConstructorAsDate, writeComments);
         }
 
-        internal void WriteToken(JsonReader reader, int initialDepth, bool writeChildren, bool writeDateConstructorAsDate)
+        internal void WriteToken(JsonReader reader, int initialDepth, bool writeChildren, bool writeDateConstructorAsDate, bool writeComments)
         {
             do
             {
                 // write a JValue date when the constructor is for a date
                 if (writeDateConstructorAsDate && reader.TokenType == JsonToken.StartConstructor && string.Equals(reader.Value.ToString(), "Date", StringComparison.Ordinal))
+                {
                     WriteConstructorDate(reader);
+                }
                 else
-                    WriteTokenInternal(reader.TokenType, reader.Value);
+                {
+                    if (reader.TokenType != JsonToken.Comment || writeComments)
+                    {
+                        WriteTokenInternal(reader.TokenType, reader.Value);
+                    }
+                }
             } while (
                 // stop if we have reached the end of the token being read
                 initialDepth - 1 < reader.Depth - (JsonTokenUtils.IsEndToken(reader.TokenType) ? 1 : 0)

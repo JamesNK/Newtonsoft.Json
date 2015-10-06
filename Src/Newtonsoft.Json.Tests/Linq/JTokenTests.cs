@@ -1240,5 +1240,21 @@ namespace Newtonsoft.Json.Tests.Linq
 
             Assert.AreEqual("[0]", a[0].Path);
         }
+
+        [Test]
+        public void Parse_NoComments()
+        {
+            string json = "{'prop':[1,2/*comment*/,3]}";
+
+            JToken o = JToken.Parse(json, new JsonLoadSettings
+            {
+                CommentHandling = CommentHandling.Ignore
+            });
+
+            Assert.AreEqual(3, o["prop"].Count());
+            Assert.AreEqual(1, (int)o["prop"][0]);
+            Assert.AreEqual(2, (int)o["prop"][1]);
+            Assert.AreEqual(3, (int)o["prop"][2]);
+        }
     }
 }

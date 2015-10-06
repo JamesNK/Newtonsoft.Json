@@ -1977,5 +1977,21 @@ Parameter name: arrayIndex");
 
             Assert.AreEqual(@"{""foo"":""bar"",""name"":""Daniel Wertheim"",""birthDate"":""0001-01-01T00:00:00"",""lastModified"":""0001-01-01T00:00:00""}", json);
         }
+
+        [Test]
+        public void Parse_NoComments()
+        {
+            string json = "{'prop':[1,2/*comment*/,3]}";
+
+            JObject o = JObject.Parse(json, new JsonLoadSettings
+            {
+                CommentHandling = CommentHandling.Ignore
+            });
+
+            Assert.AreEqual(3, o["prop"].Count());
+            Assert.AreEqual(1, (int)o["prop"][0]);
+            Assert.AreEqual(2, (int)o["prop"][1]);
+            Assert.AreEqual(3, (int)o["prop"][2]);
+        }
     }
 }

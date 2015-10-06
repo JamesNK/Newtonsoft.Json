@@ -193,6 +193,18 @@ namespace Newtonsoft.Json.Linq
         /// <returns>A <see cref="JConstructor"/> that contains the JSON that was read from the specified <see cref="JsonReader"/>.</returns>
         public new static JConstructor Load(JsonReader reader)
         {
+            return Load(reader, null);
+        }
+
+        /// <summary>
+        /// Loads an <see cref="JConstructor"/> from a <see cref="JsonReader"/>. 
+        /// </summary>
+        /// <param name="reader">A <see cref="JsonReader"/> that will be read for the content of the <see cref="JConstructor"/>.</param>
+        /// <param name="settings">The <see cref="JsonLoadSettings"/> used to load the JSON.
+        /// If this is null, default load settings will be used.</param>
+        /// <returns>A <see cref="JConstructor"/> that contains the JSON that was read from the specified <see cref="JsonReader"/>.</returns>
+        public new static JConstructor Load(JsonReader reader, JsonLoadSettings settings)
+        {
             if (reader.TokenType == JsonToken.None)
             {
                 if (!reader.Read())
@@ -210,7 +222,7 @@ namespace Newtonsoft.Json.Linq
             JConstructor c = new JConstructor((string)reader.Value);
             c.SetLineInfo(reader as IJsonLineInfo);
 
-            c.ReadTokenFrom(reader);
+            c.ReadTokenFrom(reader, settings);
 
             return c;
         }

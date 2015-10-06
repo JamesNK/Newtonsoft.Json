@@ -881,10 +881,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(3, o.Count);
             Assert.AreEqual(true, (bool)o["A"]);
             Assert.AreEqual(false, (bool)o["B"]);
-            Assert.AreEqual(3, o["C"].Count());
-            Assert.AreEqual(JTokenType.Comment, o["C"][0].Type);
-            Assert.AreEqual(1, (int)o["C"][1]);
-            Assert.AreEqual(JTokenType.Comment, o["C"][2].Type);
+            Assert.AreEqual(1, o["C"].Count());
+            Assert.AreEqual(1, (int)o["C"][0]);
+
             Assert.IsTrue(JToken.DeepEquals(o, JObject.Parse(json)));
 
             json = @"{/* Test */}";

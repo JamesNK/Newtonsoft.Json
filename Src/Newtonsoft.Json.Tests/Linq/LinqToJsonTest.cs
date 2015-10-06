@@ -171,11 +171,32 @@ namespace Newtonsoft.Json.Tests.Linq
 ]");
 
             JsonTextReader jsonReader = new JsonTextReader(textReader);
-            JArray a = (JArray)JToken.ReadFrom(jsonReader);
+            JArray a = (JArray)JToken.ReadFrom(jsonReader, new JsonLoadSettings
+            {
+                CommentHandling = CommentHandling.Load
+            });
 
             Assert.AreEqual(4, a.Count);
             Assert.AreEqual(JTokenType.Comment, a[0].Type);
             Assert.AreEqual(" hi", ((JValue)a[0]).Value);
+        }
+
+        [Test]
+        public void CommentsAndReadFrom_IgnoreComments()
+        {
+            StringReader textReader = new StringReader(@"[
+    // hi
+    1,
+    2,
+    3
+]");
+
+            JsonTextReader jsonReader = new JsonTextReader(textReader);
+            JArray a = (JArray)JToken.ReadFrom(jsonReader);
+
+            Assert.AreEqual(3, a.Count);
+            Assert.AreEqual(JTokenType.Integer, a[0].Type);
+            Assert.AreEqual(1, ((JValue)a[0]).Value);
         }
 
         [Test]
@@ -190,7 +211,10 @@ namespace Newtonsoft.Json.Tests.Linq
 ]");
 
             JsonTextReader jsonReader = new JsonTextReader(textReader);
-            JValue v = (JValue)JToken.ReadFrom(jsonReader);
+            JValue v = (JValue)JToken.ReadFrom(jsonReader, new JsonLoadSettings
+            {
+                CommentHandling = CommentHandling.Load
+            });
 
             Assert.AreEqual(JTokenType.Comment, v.Type);
 
@@ -198,6 +222,31 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(true, lineInfo.HasLineInfo());
             Assert.AreEqual(3, lineInfo.LineNumber);
             Assert.AreEqual(0, lineInfo.LinePosition);
+        }
+
+        [Test]
+        public void StartingCommentAndReadFrom_IgnoreComments()
+        {
+            StringReader textReader = new StringReader(@"
+// hi
+[
+    1,
+    2,
+    3
+]");
+
+            JsonTextReader jsonReader = new JsonTextReader(textReader);
+            JArray a = (JArray)JToken.ReadFrom(jsonReader, new JsonLoadSettings
+            {
+                CommentHandling = CommentHandling.Ignore
+            });
+
+            Assert.AreEqual(JTokenType.Array, a.Type);
+
+            IJsonLineInfo lineInfo = a;
+            Assert.AreEqual(true, lineInfo.HasLineInfo());
+            Assert.AreEqual(3, lineInfo.LineNumber);
+            Assert.AreEqual(1, lineInfo.LinePosition);
         }
 
         [Test]

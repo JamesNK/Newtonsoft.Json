@@ -678,14 +678,14 @@ namespace Newtonsoft.Json.Linq
             MergeItem(content, settings);
         }
 
-        internal void ReadTokenFrom(JsonReader reader)
+        internal void ReadTokenFrom(JsonReader reader, JsonLoadSettings options)
         {
             int startDepth = reader.Depth;
 
             if (!reader.Read())
                 throw JsonReaderException.Create(reader, "Error reading {0} from JsonReader.".FormatWith(CultureInfo.InvariantCulture, GetType().Name));
 
-            ReadContentFrom(reader);
+            ReadContentFrom(reader, options);
 
             int endDepth = reader.Depth;
 
@@ -693,7 +693,7 @@ namespace Newtonsoft.Json.Linq
                 throw JsonReaderException.Create(reader, "Unexpected end of content while loading {0}.".FormatWith(CultureInfo.InvariantCulture, GetType().Name));
         }
 
-        internal void ReadContentFrom(JsonReader r)
+        internal void ReadContentFrom(JsonReader r, JsonLoadSettings options)
         {
             ValidationUtils.ArgumentNotNull(r, "r");
             IJsonLineInfo lineInfo = r as IJsonLineInfo;
@@ -763,9 +763,12 @@ namespace Newtonsoft.Json.Linq
                         parent.Add(v);
                         break;
                     case JsonToken.Comment:
-                        v = JValue.CreateComment(r.Value.ToString());
-                        v.SetLineInfo(lineInfo);
-                        parent.Add(v);
+                        if (options != null && options.CommentHandling == CommentHandling.Load)
+                        {
+                            v = JValue.CreateComment(r.Value.ToString());
+                            v.SetLineInfo(lineInfo);
+                            parent.Add(v);
+                        }
                         break;
                     case JsonToken.Null:
                         v = JValue.CreateNull();

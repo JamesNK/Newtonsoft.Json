@@ -330,6 +330,18 @@ namespace Newtonsoft.Json.Linq
         /// <returns>A <see cref="JProperty"/> that contains the JSON that was read from the specified <see cref="JsonReader"/>.</returns>
         public new static JProperty Load(JsonReader reader)
         {
+            return Load(reader, null);
+        }
+
+        /// <summary>
+        /// Loads an <see cref="JProperty"/> from a <see cref="JsonReader"/>. 
+        /// </summary>
+        /// <param name="reader">A <see cref="JsonReader"/> that will be read for the content of the <see cref="JProperty"/>.</param>
+        /// <param name="settings">The <see cref="JsonLoadSettings"/> used to load the JSON.
+        /// If this is null, default load settings will be used.</param>
+        /// <returns>A <see cref="JProperty"/> that contains the JSON that was read from the specified <see cref="JsonReader"/>.</returns>
+        public new static JProperty Load(JsonReader reader, JsonLoadSettings settings)
+        {
             if (reader.TokenType == JsonToken.None)
             {
                 if (!reader.Read())
@@ -347,7 +359,7 @@ namespace Newtonsoft.Json.Linq
             JProperty p = new JProperty((string)reader.Value);
             p.SetLineInfo(reader as IJsonLineInfo);
 
-            p.ReadTokenFrom(reader);
+            p.ReadTokenFrom(reader, settings);
 
             return p;
         }

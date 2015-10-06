@@ -240,7 +240,7 @@ namespace Newtonsoft.Json.Serialization
                             continue;
 
                         writer.WritePropertyName(propertyName);
-                        writer.WriteToken(reader, true, true);
+                        writer.WriteToken(reader, true, true, false);
                     }
                     else if (reader.TokenType == JsonToken.Comment)
                     {

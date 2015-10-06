@@ -108,6 +108,7 @@
     <Compile Include="JsonValidatingReader.cs" />
     <Compile Include="JsonWriter.cs" />
     <Compile Include="JsonWriterException.cs" />
+    <Compile Include="Linq\CommentHandling.cs" />
     <Compile Include="Linq\Extensions.cs" />
     <Compile Include="Linq\IJEnumerable.cs" />
     <Compile Include="Linq\JArray.cs" />
@@ -136,6 +137,7 @@
     <Compile Include="Linq\JTokenType.cs" />
     <Compile Include="Linq\JTokenWriter.cs" />
     <Compile Include="Linq\JValue.cs" />
+    <Compile Include="Linq\JsonLoadSettings.cs" />
     <Compile Include="Linq\MergeArrayHandling.cs" />
     <Compile Include="MemberSerialization.cs" />
     <Compile Include="MetadataPropertyHandling.cs" />

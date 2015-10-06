@@ -109,6 +109,7 @@
     <Compile Include="JsonValidatingReader.cs" />
     <Compile Include="JsonWriter.cs" />
     <Compile Include="JsonWriterException.cs" />
+    <Compile Include="Linq\CommentHandling.cs" />
     <Compile Include="Linq\Extensions.cs" />
     <Compile Include="Linq\IJEnumerable.cs" />
     <Compile Include="Linq\JArray.cs" />
@@ -120,6 +121,7 @@
     <Compile Include="Linq\JPropertyDescriptor.cs" />
     <Compile Include="Linq\JPropertyKeyedCollection.cs" />
     <Compile Include="Linq\JRaw.cs" />
+    <Compile Include="Linq\JsonLoadSettings.cs" />
     <Compile Include="Linq\JsonMergeSettings.cs" />
     <Compile Include="Linq\JsonPath\ArrayIndexFilter.cs" />
     <Compile Include="Linq\JsonPath\ArrayMultipleIndexFilter.cs" />

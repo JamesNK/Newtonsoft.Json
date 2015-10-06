@@ -112,6 +112,18 @@ namespace Newtonsoft.Json.Linq
         /// <returns>A <see cref="JArray"/> that contains the JSON that was read from the specified <see cref="JsonReader"/>.</returns>
         public new static JArray Load(JsonReader reader)
         {
+            return Load(reader, null);
+        }
+
+        /// <summary>
+        /// Loads an <see cref="JArray"/> from a <see cref="JsonReader"/>. 
+        /// </summary>
+        /// <param name="reader">A <see cref="JsonReader"/> that will be read for the content of the <see cref="JArray"/>.</param>
+        /// <param name="settings">The <see cref="JsonLoadSettings"/> used to load the JSON.
+        /// If this is null, default load settings will be used.</param>
+        /// <returns>A <see cref="JArray"/> that contains the JSON that was read from the specified <see cref="JsonReader"/>.</returns>
+        public new static JArray Load(JsonReader reader, JsonLoadSettings settings)
+        {
             if (reader.TokenType == JsonToken.None)
             {
                 if (!reader.Read())
@@ -129,7 +141,7 @@ namespace Newtonsoft.Json.Linq
             JArray a = new JArray();
             a.SetLineInfo(reader as IJsonLineInfo);
 
-            a.ReadTokenFrom(reader);
+            a.ReadTokenFrom(reader, settings);
 
             return a;
         }
@@ -144,9 +156,24 @@ namespace Newtonsoft.Json.Linq
         /// </example>
         public new static JArray Parse(string json)
         {
+            return Parse(json, null);
+        }
+
+        /// <summary>
+        /// Load a <see cref="JArray"/> from a string that contains JSON.
+        /// </summary>
+        /// <param name="json">A <see cref="String"/> that contains JSON.</param>
+        /// <param name="settings">The <see cref="JsonLoadSettings"/> used to load the JSON.
+        /// If this is null, default load settings will be used.</param>
+        /// <returns>A <see cref="JArray"/> populated from the string that contains JSON.</returns>
+        /// <example>
+        ///   <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateParseArray" title="Parsing a JSON Array from Text" />
+        /// </example>
+        public new static JArray Parse(string json, JsonLoadSettings settings)
+        {
             using (JsonReader reader = new JsonTextReader(new StringReader(json)))
             {
-                JArray a = Load(reader);
+                JArray a = Load(reader, settings);
 
                 if (reader.Read() && reader.TokenType != JsonToken.Comment)
                     throw JsonReaderException.Create(reader, "Additional text found in JSON string after parsing content.");

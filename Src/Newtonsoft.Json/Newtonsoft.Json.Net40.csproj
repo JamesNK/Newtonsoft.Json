@@ -123,7 +123,9 @@
     <Compile Include="JsonExtensionDataAttribute.cs" />
     <Compile Include="JsonPosition.cs" />
     <Compile Include="JsonRequiredAttribute.cs" />
+    <Compile Include="Linq\CommentHandling.cs" />
     <Compile Include="Linq\JPropertyKeyedCollection.cs" />
+    <Compile Include="Linq\JsonLoadSettings.cs" />
     <Compile Include="Linq\JsonMergeSettings.cs" />
     <Compile Include="Linq\JsonPath\ArrayIndexFilter.cs" />
     <Compile Include="Linq\JsonPath\ArrayMultipleIndexFilter.cs" />
