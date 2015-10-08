@@ -518,7 +518,7 @@ namespace Newtonsoft.Json.Serialization
 #if !(DOTNET || PORTABLE40 || PORTABLE)
                 case JsonContractType.Serializable:
                     JsonISerializableContract serializableContract = (JsonISerializableContract)contract;
-                    return CreateISerializable(reader, serializableContract, member, id);
+                    return CreateISerializable(reader, serializableContract, member, id); // NOTE!!!
 #endif
             }
 
@@ -1533,10 +1533,10 @@ namespace Newtonsoft.Json.Serialization
             if (!finished)
                 ThrowUnexpectedEndException(reader, contract, serializationInfo, "Unexpected end when deserializing object.");
 
-            if (contract.ISerializableCreator == null)
+            if (contract.ISerializableCreator == null) 
                 throw JsonSerializationException.Create(reader, "ISerializable type '{0}' does not have a valid constructor. To correctly implement ISerializable a constructor that takes SerializationInfo and StreamingContext parameters should be present.".FormatWith(CultureInfo.InvariantCulture, objectType));
 
-            object createdObject = contract.ISerializableCreator(serializationInfo, Serializer._context);
+			object createdObject = contract.ISerializableCreator(serializationInfo, Serializer._context); // !!!
 
             if (id != null)
                 AddReference(reader, id, createdObject);
@@ -1560,7 +1560,7 @@ namespace Newtonsoft.Json.Serialization
             if (itemConverter != null && itemConverter.CanRead)
                 result = DeserializeConvertable(itemConverter, tokenReader, type, null);
             else
-                result = CreateValueInternal(tokenReader, type, itemContract, null, contract, member, null);
+                result = CreateValueInternal(tokenReader, type, itemContract, null, contract, member, null); //!!!
 
             return result;
         }

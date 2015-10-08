@@ -47,6 +47,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\DataDwarf\DwarfDB\DwarfDB\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bson\BsonReaderTests.cs" />
@@ -557,7 +560,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.csproj">
-      <Project>{eeea67f9-9089-481d-a4dc-0966dec9fd7d}</Project>
+      <Project>{EEEA67F9-9089-481D-A4DC-0966DEC9FD7D}</Project>
       <Name>Newtonsoft.Json</Name>
     </ProjectReference>
   </ItemGroup>
