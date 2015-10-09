@@ -50,14 +50,10 @@ namespace Newtonsoft.Json.Serialization
 
         private T GetTokenValue<T>(object value)
         {
-            ValidationUtils.ArgumentNotNull(value, "value"); 
+            ValidationUtils.ArgumentNotNull(value, "value");
 
-			#if (!__MonoCS__)
-			JValue v = (JValue)value;// !!! An error for Mono 4.0 is here!!
-			#else
-			JValue v = new JValue( value );
-			#endif
-			return (T)System.Convert.ChangeType(v.Value, typeof(T), CultureInfo.InvariantCulture);
+            JValue v = (JValue)value;
+            return (T)System.Convert.ChangeType(v.Value, typeof(T), CultureInfo.InvariantCulture);
         }
 
         public object Convert(object value, Type type)
@@ -138,7 +134,7 @@ namespace Newtonsoft.Json.Serialization
 
         public string ToString(object value)
         {
-            return GetTokenValue<string>(value); // !!!
+            return GetTokenValue<string>(value);
         }
 
         public ushort ToUInt16(object value)
