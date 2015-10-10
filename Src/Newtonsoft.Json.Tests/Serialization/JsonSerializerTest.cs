@@ -865,6 +865,29 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Test]
+        public void DeserializeVersionString()
+        {
+            string json = "['1.2.3.4']";
+            List<Version> deserialized = JsonConvert.DeserializeObject<List<Version>>(json);
+
+            Assert.AreEqual(1, deserialized[0].Major);
+            Assert.AreEqual(2, deserialized[0].Minor);
+            Assert.AreEqual(3, deserialized[0].Build);
+            Assert.AreEqual(4, deserialized[0].Revision);
+        }
+
+        [Test]
+        public void DeserializeVersionString_Fail()
+        {
+            string json = "['1.2.3.4444444444444444444444']";
+
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                JsonConvert.DeserializeObject<List<Version>>(json);
+            }, @"Error converting value ""1.2.3.4444444444444444444444"" to type 'System.Version'. Path '[0]', line 1, position 31.");
+        }
+
+        [Test]
         public void DeserializeJObjectWithComments()
         {
             string json = @"/* Test */
