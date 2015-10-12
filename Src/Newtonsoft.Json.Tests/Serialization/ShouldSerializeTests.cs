@@ -27,7 +27,14 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
+#endif
+using System.Reflection;
 using System.Text;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 #if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -386,6 +393,45 @@ namespace Newtonsoft.Json.Tests.Serialization
 }", json);
         }
 
+        [Test]
+        public void ShouldDeserialize_True()
+        {
+            string json = @"{'HasName':true,'Name':'Name!'}";
+
+            MemoryTraceWriter traceWriter = new MemoryTraceWriter();
+            ShouldDeserializeTestClass c = JsonConvert.DeserializeObject<ShouldDeserializeTestClass>(json, new JsonSerializerSettings
+            {
+                ContractResolver = ShouldDeserializeContractResolver.Instance,
+                TraceWriter = traceWriter
+            });
+
+            Assert.AreEqual(null, c.ExtensionData);
+            Assert.AreEqual(true, c.HasName);
+            Assert.AreEqual("Name!", c.Name);
+
+            Assert.IsTrue(traceWriter.GetTraceMessages().Any(m => m.EndsWith("Verbose ShouldDeserialize result for property 'Name' on Newtonsoft.Json.Tests.Serialization.ShouldDeserializeTestClass: True. Path 'Name'.")));
+        }
+
+        [Test]
+        public void ShouldDeserialize_False()
+        {
+            string json = @"{'HasName':false,'Name':'Name!'}";
+
+            MemoryTraceWriter traceWriter = new MemoryTraceWriter();
+            ShouldDeserializeTestClass c = JsonConvert.DeserializeObject<ShouldDeserializeTestClass>(json, new JsonSerializerSettings
+            {
+                ContractResolver = ShouldDeserializeContractResolver.Instance,
+                TraceWriter = traceWriter
+            });
+
+            Assert.AreEqual(1, c.ExtensionData.Count);
+            Assert.AreEqual("Name!", (string)c.ExtensionData["Name"]);
+            Assert.AreEqual(false, c.HasName);
+            Assert.AreEqual(null, c.Name);
+
+            Assert.IsTrue(traceWriter.GetTraceMessages().Any(m => m.EndsWith("Verbose ShouldDeserialize result for property 'Name' on Newtonsoft.Json.Tests.Serialization.ShouldDeserializeTestClass: False. Path 'Name'.")));
+        }
+
         public class Employee
         {
             public string Name { get; set; }
@@ -586,6 +632,41 @@ namespace Newtonsoft.Json.Tests.Serialization
         public virtual bool ShouldSerializename()
         {
             return (name != null);
+        }
+    }
+
+    public class ShouldDeserializeContractResolver : DefaultContractResolver
+    {
+        public static new readonly ShouldDeserializeContractResolver Instance = new ShouldDeserializeContractResolver();
+
+        protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+        {
+            JsonProperty property = base.CreateProperty(member, memberSerialization);
+
+            MethodInfo shouldDeserializeMethodInfo = member.DeclaringType.GetMethod("ShouldDeserialize" + member.Name);
+
+            if (shouldDeserializeMethodInfo != null)
+            {
+                property.ShouldDeserialize = o =>
+                {
+                    return (bool)shouldDeserializeMethodInfo.Invoke(o, null);
+                };
+            }
+
+            return property;
+        }
+    }
+
+    public class ShouldDeserializeTestClass
+    {
+        [JsonExtensionData]
+        public IDictionary<string, JToken> ExtensionData { get; set; } 
+        public bool HasName { get; set; }
+        public string Name { get; set; }
+
+        public bool ShouldDeserializeName()
+        {
+            return HasName;
         }
     }
 }
