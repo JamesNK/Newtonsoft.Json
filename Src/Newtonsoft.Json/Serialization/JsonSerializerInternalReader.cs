@@ -2051,7 +2051,7 @@ namespace Newtonsoft.Json.Serialization
                                 continue;
                             }
 
-                            if (!ShouldDeSerialize(reader, property, newObject))
+                            if (!ShouldDeserialize(reader, property, newObject))
                             {
                                 if (!reader.Read())
                                     break;
@@ -2105,19 +2105,22 @@ namespace Newtonsoft.Json.Serialization
             OnDeserialized(reader, contract, newObject);
             return newObject;
         }
-        //reader, contract, member, id
-        private bool ShouldDeSerialize(JsonReader reader, JsonProperty property, object target)
+
+        private bool ShouldDeserialize(JsonReader reader, JsonProperty property, object target)
         {
-            if (property.ShouldDeSerialize == null)
+            if (property.ShouldDeserialize == null)
                 return true;
 
-            bool shouldDeSerialize = property.ShouldDeSerialize(target);
+            bool shouldDeserialize = property.ShouldDeserialize(target);
 
             if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
-                TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, reader.Path, "ShouldDeSerialize result for property '{0}' on {1}: {2}".FormatWith(CultureInfo.InvariantCulture, property.PropertyName, property.DeclaringType, shouldDeSerialize)), null);
+            {
+                TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, reader.Path, "ShouldDeserialize result for property '{0}' on {1}: {2}".FormatWith(CultureInfo.InvariantCulture, property.PropertyName, property.DeclaringType, shouldDeserialize)), null);
+            }
 
-            return shouldDeSerialize;
+            return shouldDeserialize;
         }
+
         private bool CheckPropertyName(JsonReader reader, string memberName)
         {
             if (Serializer.MetadataPropertyHandling == MetadataPropertyHandling.ReadAhead)
