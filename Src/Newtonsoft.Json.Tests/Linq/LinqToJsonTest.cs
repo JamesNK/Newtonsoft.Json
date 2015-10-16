@@ -196,7 +196,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
             Assert.AreEqual(3, a.Count);
             Assert.AreEqual(JTokenType.Integer, a[0].Type);
-            Assert.AreEqual(1, ((JValue)a[0]).Value);
+            Assert.AreEqual(1L, ((JValue)a[0]).Value);
         }
 
         [Test]
