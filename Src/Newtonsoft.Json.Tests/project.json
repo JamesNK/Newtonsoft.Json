@@ -116,7 +116,7 @@
         "System.Xml.XmlDocument": "4.0.0",
         "System.Xml.XmlSerializer": "4.0.10",
         "xunit": "2.1.0-*",
-        "xunit.runner.dnx": "2.1.0-*"
+        "xunit.runner.dnx": "2.1.0-beta6-build191"
       }
     }
   }
