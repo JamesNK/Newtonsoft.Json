@@ -1,7 +1,7 @@
 ﻿properties { 
-  $zipFileName = "Json70r2.zip"
-  $majorVersion = "7.0"
-  $majorWithReleaseVersion = "7.0.2"
+  $zipFileName = "Json80r1.zip"
+  $majorVersion = "8.0"
+  $majorWithReleaseVersion = "8.0.1"
   $nugetPrelease = "beta1"
   $version = GetVersion $majorWithReleaseVersion
   $packageId = "Newtonsoft.Json"
@@ -22,9 +22,9 @@
   $workingDir = "$baseDir\$workingName"
   $workingSourceDir = "$workingDir\Src"
   $builds = @(
-    @{Name = "Newtonsoft.Json.Dotnet"; TestsName = "Newtonsoft.Json.Tests.Dotnet"; BuildFunction = "DnxBuild"; TestsFunction = "DnxTests"; Constants="dotnet"; FinalDir="Dotnet"; NuGetDir = "dotnet"; Framework=$null},
+    @{Name = "Newtonsoft.Json.Dotnet"; TestsName = "Newtonsoft.Json.Tests.Dotnet"; BuildFunction = "DnxBuild"; TestsFunction = "DnxTests"; Constants="dotnet"; FinalDir=$null; NuGetDir = $null; Framework=$null},
     @{Name = "Newtonsoft.Json"; TestsName = "Newtonsoft.Json.Tests"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; Constants=""; FinalDir="Net45"; NuGetDir = "net45"; Framework="net-4.0"},
-    @{Name = "Newtonsoft.Json.Portable"; TestsName = "Newtonsoft.Json.Tests.Portable"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; Constants="PORTABLE"; FinalDir="Portable"; NuGetDir = "portable-net45+wp80+win8+wpa81"; Framework="net-4.0"},
+    @{Name = "Newtonsoft.Json.Portable"; TestsName = "Newtonsoft.Json.Tests.Portable"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; Constants="PORTABLE"; FinalDir="Portable"; NuGetDir = "portable-net45+wp80+win8+wpa81+dnxcore50"; Framework="net-4.0"},
     @{Name = "Newtonsoft.Json.Portable40"; TestsName = "Newtonsoft.Json.Tests.Portable40"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; Constants="PORTABLE40"; FinalDir="Portable40"; NuGetDir = "portable-net40+sl5+wp80+win8+wpa81"; Framework="net-4.0"},
     @{Name = "Newtonsoft.Json.Net40"; TestsName = "Newtonsoft.Json.Tests.Net40"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; Constants="NET40"; FinalDir="Net40"; NuGetDir = "net40"; Framework="net-4.0"},
     @{Name = "Newtonsoft.Json.Net35"; TestsName = "Newtonsoft.Json.Tests.Net35"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; Constants="NET35"; FinalDir="Net35"; NuGetDir = "net35"; Framework="net-2.0"},
@@ -56,7 +56,7 @@ task Clean {
 task Build -depends Clean { 
 
   Write-Host "Copying source to working source directory $workingSourceDir"
-  robocopy $sourceDir $workingSourceDir /MIR /NP /XD bin obj TestResults AppPackages $packageDirs .vs /XF *.suo *.user project.lock.json *.project.lock.json | Out-Default
+  robocopy $sourceDir $workingSourceDir /MIR /NP /XD bin obj TestResults AppPackages $packageDirs .vs /XF *.suo *.user *.lock.json | Out-Default
 
   Write-Host -ForegroundColor Green "Updating assembly version"
   Write-Host
@@ -214,19 +214,7 @@ function DnxBuild($build)
 
   Write-Host -ForegroundColor Green "Restoring packages for $name"
   Write-Host
-  exec {
-    try {
-      dnu restore $projectPath | Out-Default
-      Write-Host "Restore last exit code: $lastexitcode"
-    }
-    catch [System.Management.Automation.RemoteException]
-    {
-      Write-Host "Restore last exit code: $lastexitcode"
-      Write-Host ("Restore exception: " + $_.ToString())
-      $global:lastexitcode = 0
-      $lastexitcode = 0
-    }
-  }
+  exec { dnu restore $projectPath | Out-Default }
 
   Write-Host -ForegroundColor Green "Building $projectPath"
   exec { dnu build $projectPath --configuration Release | Out-Default }
@@ -245,19 +233,7 @@ function DnxTests($build)
 
   Write-Host -ForegroundColor Green "Restoring packages for $name"
   Write-Host
-  exec {
-    try {
-      dnu restore "$workingSourceDir\Newtonsoft.Json.Tests\project.json" | Out-Default
-      Write-Host "Restore last exit code: $lastexitcode"
-    }
-    catch [System.Management.Automation.RemoteException]
-    {
-      Write-Host "Restore last exit code: $lastexitcode"
-      Write-Host ("Restore exception: " + $_.ToString())
-      $global:lastexitcode = 0
-      $lastexitcode = 0
-    }
-  }
+  exec { dnu restore "$workingSourceDir\Newtonsoft.Json.Tests\project.json" | Out-Default }
 
   Write-Host -ForegroundColor Green "Ensuring test project builds for $name"
   Write-Host

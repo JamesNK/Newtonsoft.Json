@@ -658,6 +658,11 @@ namespace Newtonsoft.Json.Tests.Linq
             v = new JValue(new BigInteger(3));
             Assert.AreEqual(TypeCode.Object, v.GetTypeCode());
 #endif
+
+#if !(NET20)
+            v = new JValue(new DateTimeOffset(2000, 12, 12, 12, 12, 12, TimeSpan.Zero));
+            Assert.AreEqual(TypeCode.Object, v.GetTypeCode());
+#endif
         }
 
         [Test]

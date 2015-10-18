@@ -114,13 +114,21 @@ namespace Newtonsoft.Json.Tests.Linq
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
+            int count = 0;
             foreach (dynamic o in d)
             {
+                if (count > 10)
+                {
+                    break;
+                }
+
                 foreach (dynamic friend in o.friends)
                 {
                     UpdateValueCount(counts, friend.id);
                     UpdateValueCount(counts, ((string) friend.name).Split(' ')[0]);
                 }
+
+                count++;
             }
 
             Console.WriteLine("Time (secs): " + sw.Elapsed.TotalSeconds);

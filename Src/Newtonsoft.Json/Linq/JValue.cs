@@ -973,15 +973,6 @@ namespace Newtonsoft.Json.Linq
             if (_value == null)
                 return TypeCode.Empty;
 
-#if !NET20
-            if (_value is DateTimeOffset)
-                return TypeCode.DateTime;
-#endif
-#if !(NET20 || NET35 || PORTABLE40)
-            if (_value is BigInteger)
-                return TypeCode.Object;
-#endif
-
             IConvertible convertable = _value as IConvertible;
             
             if (convertable == null)
