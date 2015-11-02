@@ -130,7 +130,11 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void SerializeFormattedDateTimeNewZealandCulture()
         {
-            IsoDateTimeConverter converter = new IsoDateTimeConverter() { DateTimeFormat = "F", Culture = CultureInfo.GetCultureInfo("en-NZ") };
+            CultureInfo culture = new CultureInfo("en-NZ");
+            culture.DateTimeFormat.AMDesignator = "a.m.";
+            culture.DateTimeFormat.PMDesignator = "p.m.";
+
+            IsoDateTimeConverter converter = new IsoDateTimeConverter() { DateTimeFormat = "F", Culture = culture };
 
             DateTime d = new DateTime(2000, 12, 15, 22, 11, 3, 0, DateTimeKind.Utc);
             string result;

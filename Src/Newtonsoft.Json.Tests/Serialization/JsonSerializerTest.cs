@@ -8060,6 +8060,10 @@ Path '', line 1, position 1.");
         [Test]
         public void DateFormatString()
         {
+            CultureInfo culture = new CultureInfo("en-NZ");
+            culture.DateTimeFormat.AMDesignator = "a.m.";
+            culture.DateTimeFormat.PMDesignator = "p.m.";
+
             IList<object> dates = new List<object>
             {
                 new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Utc),
@@ -8069,7 +8073,7 @@ Path '', line 1, position 1.");
             string json = JsonConvert.SerializeObject(dates, Formatting.Indented, new JsonSerializerSettings
             {
                 DateFormatString = "yyyy tt",
-                Culture = new CultureInfo("en-NZ")
+                Culture = culture
             });
 
             StringAssert.AreEqual(@"[
@@ -8101,6 +8105,10 @@ Path '', line 1, position 1.");
         [Test]
         public void JsonSerializerDateFormatString()
         {
+            CultureInfo culture = new CultureInfo("en-NZ");
+            culture.DateTimeFormat.AMDesignator = "a.m.";
+            culture.DateTimeFormat.PMDesignator = "p.m.";
+
             IList<object> dates = new List<object>
             {
                 new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Utc),
@@ -8113,7 +8121,7 @@ Path '', line 1, position 1.");
             JsonSerializer serializer = JsonSerializer.Create(new JsonSerializerSettings
             {
                 DateFormatString = "yyyy tt",
-                Culture = new CultureInfo("en-NZ"),
+                Culture = culture,
                 Formatting = Formatting.Indented
             });
             serializer.Serialize(jsonWriter, dates);

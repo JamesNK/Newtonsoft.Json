@@ -1237,11 +1237,15 @@ _____'propertyName': NaN,
         [Test]
         public void Culture()
         {
+            CultureInfo culture = new CultureInfo("en-NZ");
+            culture.DateTimeFormat.AMDesignator = "a.m.";
+            culture.DateTimeFormat.PMDesignator = "p.m.";
+
             StringWriter sw = new StringWriter();
             JsonTextWriter writer = new JsonTextWriter(sw);
             writer.Formatting = Formatting.Indented;
             writer.DateFormatString = "yyyy tt";
-            writer.Culture = new CultureInfo("en-NZ");
+            writer.Culture = culture;
             writer.QuoteChar = '\'';
 
             writer.WriteStartArray();
