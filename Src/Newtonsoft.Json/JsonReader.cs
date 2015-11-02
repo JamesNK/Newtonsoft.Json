@@ -38,6 +38,11 @@ using System.Linq;
 
 namespace Newtonsoft.Json
 {
+    internal interface IHasStringReference
+    {
+        StringReference GetStringReference();
+    }
+
     /// <summary>
     /// Represents a reader that provides fast, non-cached, forward-only access to serialized JSON data.
     /// </summary>
@@ -115,8 +120,8 @@ namespace Newtonsoft.Json
         }
 
         // current Token data
-        private JsonToken _tokenType;
-        private object _value;
+        internal JsonToken _tokenType;
+        internal object _value;
         internal char _quoteChar;
         internal State _currentState;
         internal ReadType _readType;
@@ -392,7 +397,7 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Reads the next JSON token from the stream as a <see cref="Nullable{DateTime}"/>.
         /// </summary>
-        /// <returns>A <see cref="String"/>. This method will return <c>null</c> at the end of an array.</returns>
+        /// <returns>A <see cref="Nullable{DateTime}"/>. This method will return <c>null</c> at the end of an array.</returns>
         public abstract DateTime? ReadAsDateTime();
 
 #if !NET20
@@ -402,6 +407,15 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Nullable{DateTimeOffset}"/>. This method will return <c>null</c> at the end of an array.</returns>
         public abstract DateTimeOffset? ReadAsDateTimeOffset();
 #endif
+
+        /// <summary>
+        /// Reads the next JSON token from the stream as a <see cref="Nullable{Double}"/>.
+        /// </summary>
+        /// <returns>A <see cref="Nullable{Double}"/>. This method will return <c>null</c> at the end of an array.</returns>
+        public virtual double? ReadAsDouble()
+        {
+            return ReadAsDoubleInternal();
+        }
 
         internal virtual bool ReadInternal()
         {
@@ -431,11 +445,18 @@ namespace Newtonsoft.Json
             if (t == JsonToken.Date)
             {
                 if (Value is DateTime)
+                {
                     SetToken(JsonToken.Date, new DateTimeOffset((DateTime)Value), false);
+                }
 
                 return (DateTimeOffset)Value;
             }
 
+            return ConvertToDateTimeOffset(t);
+        }
+
+        internal DateTimeOffset? ConvertToDateTimeOffset(JsonToken t)
+        {
             if (t == JsonToken.Null)
                 return null;
 
@@ -448,11 +469,9 @@ namespace Newtonsoft.Json
                     return null;
                 }
 
-                object temp;
                 DateTimeOffset dt;
-                if (DateTimeUtils.TryParseDateTime(s, DateParseHandling.DateTimeOffset, DateTimeZoneHandling, _dateFormatString, Culture, out temp))
+                if (DateTimeUtils.TryParseDateTimeOffset(new StringReference(s.ToCharArray(), 0, s.Length), _dateFormatString, Culture, out dt))
                 {
-                    dt = (DateTimeOffset)temp;
                     SetToken(JsonToken.Date, dt, false);
                     return dt;
                 }
@@ -462,7 +481,7 @@ namespace Newtonsoft.Json
                     SetToken(JsonToken.Date, dt, false);
                     return dt;
                 }
-                
+
                 throw JsonReaderException.Create(this, "Could not convert string to DateTimeOffset: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
             }
 
@@ -472,6 +491,74 @@ namespace Newtonsoft.Json
             throw JsonReaderException.Create(this, "Error reading date. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, t));
         }
 #endif
+
+        internal double? ReadAsDoubleInternal()
+        {
+            _readType = ReadType.ReadAsDouble;
+
+            JsonToken t;
+
+            do
+            {
+                if (!ReadInternal())
+                {
+                    SetToken(JsonToken.None);
+                    return null;
+                }
+                else
+                {
+                    t = TokenType;
+                }
+            } while (t == JsonToken.Comment);
+
+            return ConvertToDouble(t);
+        }
+
+        internal double? ConvertToDouble(JsonToken t)
+        {
+            if (t == JsonToken.Integer || t == JsonToken.Float)
+            {
+                if (!(Value is double))
+                {
+                    SetToken(JsonToken.Integer, Convert.ToDouble(Value, CultureInfo.InvariantCulture), false);
+                }
+
+                return (double)Value;
+            }
+
+            if (t == JsonToken.Null)
+            {
+                return null;
+            }
+
+            double d;
+            if (t == JsonToken.String)
+            {
+                string s = (string)Value;
+                if (string.IsNullOrEmpty(s))
+                {
+                    SetToken(JsonToken.Null);
+                    return null;
+                }
+
+                if (double.TryParse(s, NumberStyles.Float | NumberStyles.AllowThousands, Culture, out d))
+                {
+                    SetToken(JsonToken.Float, d, false);
+                    return d;
+                }
+                else
+                {
+                    throw JsonReaderException.Create(this, "Could not convert string to double: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
+                }
+            }
+
+            if (t == JsonToken.EndArray)
+            {
+                return null;
+            }
+
+            throw JsonReaderException.Create(this, "Error reading double. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+        }
 
         internal byte[] ReadAsBytesInternal()
         {
@@ -763,10 +850,8 @@ namespace Newtonsoft.Json
                 }
 
                 DateTime dt;
-                object temp;
-                if (DateTimeUtils.TryParseDateTime(s, DateParseHandling.DateTime, DateTimeZoneHandling, _dateFormatString, Culture, out temp))
+                if (DateTimeUtils.TryParseDateTime(new StringReference(s.ToCharArray(), 0, s.Length), DateTimeZoneHandling, _dateFormatString, Culture, out dt))
                 {
-                    dt = (DateTime)temp;
                     dt = DateTimeUtils.EnsureDateTime(dt, DateTimeZoneHandling);
                     SetToken(JsonToken.Date, dt, false);
                     return dt;

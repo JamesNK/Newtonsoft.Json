@@ -43,8 +43,9 @@ namespace Newtonsoft.Json
         ReadAsDecimal,
         ReadAsDateTime,
 #if !NET20
-        ReadAsDateTimeOffset
+        ReadAsDateTimeOffset,
 #endif
+        ReadAsDouble
     }
 
     /// <summary>
@@ -64,6 +65,14 @@ namespace Newtonsoft.Json
         private bool _isEndOfFile;
         private StringBuffer _buffer;
         private StringReference _stringReference;
+
+        private DateTime _valueDateTime;
+        private DateTimeOffset _valueDateTimeOffset;
+        private long _valueLong;
+        private decimal _valueDecimal;
+        private double _valueDouble;
+        private bool _valueBoolean;
+
         internal PropertyNameTable NameTable;
 
         /// <summary>
@@ -136,36 +145,54 @@ namespace Newtonsoft.Json
             }
             else if (_readType == ReadType.ReadAsString)
             {
-                string text = _stringReference.ToString();
-
-                SetToken(JsonToken.String, text, false);
+                SetToken(JsonToken.String, null, false);
                 _quoteChar = quote;
             }
             else
             {
-                string text = _stringReference.ToString();
-
                 if (_dateParseHandling != DateParseHandling.None)
                 {
                     DateParseHandling dateParseHandling;
                     if (_readType == ReadType.ReadAsDateTime)
+                    {
                         dateParseHandling = DateParseHandling.DateTime;
+                    }
 #if !NET20
                     else if (_readType == ReadType.ReadAsDateTimeOffset)
+                    {
                         dateParseHandling = DateParseHandling.DateTimeOffset;
+                    }
 #endif
                     else
-                        dateParseHandling = _dateParseHandling;
-
-                    object dt;
-                    if (DateTimeUtils.TryParseDateTime(text, dateParseHandling, DateTimeZoneHandling, DateFormatString, Culture, out dt))
                     {
-                        SetToken(JsonToken.Date, dt, false);
-                        return;
+                        dateParseHandling = _dateParseHandling;
                     }
+
+                    if (dateParseHandling == DateParseHandling.DateTime)
+                    {
+                        DateTime dt;
+                        if (DateTimeUtils.TryParseDateTime(_stringReference, DateTimeZoneHandling, DateFormatString, Culture, out dt))
+                        {
+                            _valueDateTime = dt;
+                            SetToken(JsonToken.Date, null, false);
+                            return;
+                        }
+                    }
+#if !NET20
+                    else
+                    {
+                        DateTimeOffset dt;
+                        if (DateTimeUtils.TryParseDateTimeOffset(_stringReference, DateFormatString, Culture, out dt))
+                        {
+                            _valueDateTimeOffset = dt;
+                            SetToken(JsonToken.Date, null, false);
+                            return;
+                        }
+                    }
+#endif
                 }
 
-                SetToken(JsonToken.String, text, false);
+                SetToken(JsonToken.String, null, false);
                 _quoteChar = quote;
             }
         }
@@ -368,9 +395,58 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="DateTimeOffset"/>. This method will return <c>null</c> at the end of an array.</returns>
         public override DateTimeOffset? ReadAsDateTimeOffset()
         {
-            return ReadAsDateTimeOffsetInternal();
+            _readType = ReadType.ReadAsDateTimeOffset;
+
+            JsonToken t;
+
+            do
+            {
+                if (!ReadInternal())
+                {
+                    SetToken(JsonToken.None);
+                    return null;
+                }
+                else
+                {
+                    t = TokenType;
+                }
+            } while (t == JsonToken.Comment);
+
+            if (t == JsonToken.Date)
+            {
+                return _valueDateTimeOffset;
+            }
+
+            return ConvertToDateTimeOffset(t);
         }
 #endif
+
+        public override double? ReadAsDouble()
+        {
+            _readType = ReadType.ReadAsDouble;
+
+            JsonToken t;
+
+            do
+            {
+                if (!ReadInternal())
+                {
+                    SetToken(JsonToken.None);
+                    return null;
+                }
+                else
+                {
+                    t = TokenType;
+                }
+            } while (t == JsonToken.Comment);
+
+            if (t == JsonToken.Float)
+            {
+                return _valueDouble;
+            }
+
+            return ConvertToDouble(t);
+        }
 
         internal override bool ReadInternal()
         {
@@ -701,8 +777,6 @@ namespace Newtonsoft.Json
         {
             if (_buffer != null)
                 _buffer.Position = 0;
-
-            _stringReference = new StringReference();
         }
 
         private bool ParsePostValue()
@@ -854,10 +928,10 @@ namespace Newtonsoft.Json
             if (NameTable != null)
             {
                 propertyName = NameTable.Get(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length);
-
-                // no match in name table
                 if (propertyName == null)
+                {
                     propertyName = _stringReference.ToString();
+                }
             }
             else
             {
@@ -1156,7 +1230,6 @@ namespace Newtonsoft.Json
                 }
 
                 _stringReference = new StringReference(_chars, initialPosition, endPosition - initialPosition);
-                string constructorName = _stringReference.ToString();
 
                 EatWhitespace(false);
 
@@ -1167,7 +1240,7 @@ namespace Newtonsoft.Json
 
                 ClearRecentString();
 
-                SetToken(JsonToken.StartConstructor, constructorName);
+                SetToken(JsonToken.StartConstructor, null);
             }
             else
             {
@@ -1189,7 +1262,6 @@ namespace Newtonsoft.Json
 
             _stringReference = new StringReference(_chars, initialPosition, _charPos - initialPosition);
 
-            object numberValue;
             JsonToken numberType;
 
             bool singleDigit = (char.IsDigit(firstChar) && _stringReference.Length == 1);
@@ -1203,7 +1275,7 @@ namespace Newtonsoft.Json
                 if (singleDigit)
                 {
                     // digit char values start at 48
-                    numberValue = firstChar - 48;
+                    _valueLong = firstChar - 48;
                 }
                 else if (nonBase10)
                 {
@@ -1215,7 +1287,7 @@ namespace Newtonsoft.Json
                             ? Convert.ToInt32(number, 16)
                             : Convert.ToInt32(number, 8);
 
-                        numberValue = integer;
+                        _valueLong = integer;
                     }
                     catch (Exception ex)
                     {
@@ -1227,11 +1299,17 @@ namespace Newtonsoft.Json
                     int value;
                     ParseResult parseResult = ConvertUtils.Int32TryParse(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length, out value);
                     if (parseResult == ParseResult.Success)
-                        numberValue = value;
+                    {
+                        _valueLong = value;
+                    }
                     else if (parseResult == ParseResult.Overflow)
+                    {
                         throw JsonReaderException.Create(this, "JSON integer {0} is too large or small for an Int32.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
+                    }
                     else
+                    {
                         throw JsonReaderException.Create(this, "Input string '{0}' is not a valid integer.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
+                    }
                 }
 
                 numberType = JsonToken.Integer;
@@ -1241,7 +1319,7 @@ namespace Newtonsoft.Json
                 if (singleDigit)
                 {
                     // digit char values start at 48
-                    numberValue = (decimal)firstChar - 48;
+                    _valueDecimal = (decimal)firstChar - 48;
                 }
                 else if (nonBase10)
                 {
@@ -1254,7 +1332,7 @@ namespace Newtonsoft.Json
                             ? Convert.ToInt64(number, 16)
                             : Convert.ToInt64(number, 8);
 
-                        numberValue = Convert.ToDecimal(integer);
+                        _valueDecimal = Convert.ToDecimal(integer);
                     }
                     catch (Exception ex)
                     {
@@ -1267,9 +1345,13 @@ namespace Newtonsoft.Json
 
                     decimal value;
                     if (decimal.TryParse(number, NumberStyles.Number | NumberStyles.AllowExponent, CultureInfo.InvariantCulture, out value))
-                        numberValue = value;
+                    {
+                        _valueDecimal = value;
+                    }
                     else
+                    {
                         throw JsonReaderException.Create(this, "Input string '{0}' is not a valid decimal.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
+                    }
                 }
 
                 numberType = JsonToken.Float;
@@ -1279,7 +1361,7 @@ namespace Newtonsoft.Json
                 if (singleDigit)
                 {
                     // digit char values start at 48
-                    numberValue = (long)firstChar - 48;
+                    _valueLong = (long)firstChar - 48;
                     numberType = JsonToken.Integer;
                 }
                 else if (nonBase10)
@@ -1288,7 +1370,7 @@ namespace Newtonsoft.Json
 
                     try
                     {
-                        numberValue = number.StartsWith("0x", StringComparison.OrdinalIgnoreCase)
+                        _valueLong = number.StartsWith("0x", StringComparison.OrdinalIgnoreCase)
                             ? Convert.ToInt64(number, 16)
                             : Convert.ToInt64(number, 8);
                     }
@@ -1305,7 +1387,7 @@ namespace Newtonsoft.Json
                     ParseResult parseResult = ConvertUtils.Int64TryParse(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length, out value);
                     if (parseResult == ParseResult.Success)
                     {
-                        numberValue = value;
+                        _valueLong = value;
                         numberType = JsonToken.Integer;
                     }
                     else if (parseResult == ParseResult.Overflow)
@@ -1314,10 +1396,16 @@ namespace Newtonsoft.Json
                         string number = _stringReference.ToString();
 
                         if (number.Length > MaximumJavascriptIntegerCharacterLength)
+                        {
                             throw JsonReaderException.Create(this, "JSON integer {0} is too large to parse.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
-                        
-                        numberValue = BigIntegerParse(number, CultureInfo.InvariantCulture);
-                        numberType = JsonToken.Integer;
+                        }
+
+                        ClearRecentString();
+
+                        // index has already been updated
+                        SetToken(JsonToken.Integer, BigIntegerParse(number, CultureInfo.InvariantCulture), false);
+
+                        return;
 #else
                         throw JsonReaderException.Create(this, "JSON integer {0} is too large or small for an Int64.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
 #endif
@@ -1330,17 +1418,25 @@ namespace Newtonsoft.Json
                         {
                             decimal d;
                             if (decimal.TryParse(number, NumberStyles.Number | NumberStyles.AllowExponent, CultureInfo.InvariantCulture, out d))
-                                numberValue = d;
+                            {
+                                _valueDecimal = d;
+                            }
                             else
+                            {
                                 throw JsonReaderException.Create(this, "Input string '{0}' is not a valid decimal.".FormatWith(CultureInfo.InvariantCulture, number));
+                            }
                         }
                         else
                         {
                             double d;
                             if (double.TryParse(number, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out d))
-                                numberValue = d;
+                            {
+                                _valueDouble = d;
+                            }
                             else
+                            {
                                 throw JsonReaderException.Create(this, "Input string '{0}' is not a valid number.".FormatWith(CultureInfo.InvariantCulture, number));
+                            }
                         }
 
                         numberType = JsonToken.Float;
@@ -1351,7 +1447,7 @@ namespace Newtonsoft.Json
             ClearRecentString();
 
             // index has already been updated
-            SetToken(numberType, numberValue, false);
+            SetToken(numberType, null, false);
         }
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
@@ -1449,7 +1545,7 @@ namespace Newtonsoft.Json
                 }
             }
 
-            SetToken(JsonToken.Comment, _stringReference.ToString());
+            SetToken(JsonToken.Comment);
 
             ClearRecentString();
         }
@@ -1527,7 +1623,8 @@ namespace Newtonsoft.Json
             // or the text ends
             if (MatchValueWithTrailingSeparator(JsonConvert.True))
             {
-                SetToken(JsonToken.Boolean, true);
+                _valueBoolean = true;
+                SetToken(JsonToken.Boolean);
             }
             else
             {
@@ -1563,7 +1660,8 @@ namespace Newtonsoft.Json
         {
             if (MatchValueWithTrailingSeparator(JsonConvert.False))
             {
-                SetToken(JsonToken.Boolean, false);
+                _valueBoolean = false;
+                SetToken(JsonToken.Boolean);
             }
             else
             {
@@ -1578,7 +1676,8 @@ namespace Newtonsoft.Json
                 if (_floatParseHandling == FloatParseHandling.Decimal)
                     throw new JsonReaderException("Cannot read -Infinity as a decimal.");
 
-                SetToken(JsonToken.Float, double.NegativeInfinity);
+                _valueDouble = double.NegativeInfinity;
+                SetToken(JsonToken.Float);
             }
             else
             {
@@ -1593,7 +1692,8 @@ namespace Newtonsoft.Json
                 if (_floatParseHandling == FloatParseHandling.Decimal)
                     throw new JsonReaderException("Cannot read Infinity as a decimal.");
 
-                SetToken(JsonToken.Float, double.PositiveInfinity);
+                _valueDouble = double.PositiveInfinity;
+                SetToken(JsonToken.Float);
             }
             else
             {
@@ -1608,7 +1708,8 @@ namespace Newtonsoft.Json
                 if (_floatParseHandling == FloatParseHandling.Decimal)
                     throw new JsonReaderException("Cannot read NaN as a decimal.");
 
-                SetToken(JsonToken.Float, double.NaN);
+                _valueDouble = double.NaN;
+                SetToken(JsonToken.Float);
             }
             else
             {
@@ -1633,7 +1734,9 @@ namespace Newtonsoft.Json
             }
 
             if (_buffer != null)
+            {
                 _buffer.Clear();
+            }
         }
 
         /// <summary>
@@ -1658,7 +1761,9 @@ namespace Newtonsoft.Json
             get
             {
                 if (CurrentState == State.Start && LinePosition == 0 && TokenType != JsonToken.Comment)
+                {
                     return 0;
+                }
 
                 return _lineNumber;
             }
@@ -1673,6 +1778,61 @@ namespace Newtonsoft.Json
         public int LinePosition
         {
             get { return _charPos - _lineStartPos; }
+        }
+
+        public override Type ValueType
+        {
+            get
+            {
+                object v = (_value ?? Value);
+                return (v != null) ? v.GetType() : null;
+            }
+        }
+
+        public override object Value
+        {
+            get
+            {
+                if (_value == null)
+                {
+                    switch (_tokenType)
+                    {
+                        case JsonToken.Comment:
+                        case JsonToken.String:
+                        case JsonToken.StartConstructor:
+                            _value = _stringReference.ToString();
+                            break;
+                        case JsonToken.Integer:
+                            _value = _valueLong;
+                            break;
+                        case JsonToken.Float:
+                            if (_floatParseHandling == FloatParseHandling.Double)
+                            {
+                                _value = _valueDouble;
+                            }
+                            else
+                            {
+                                _value = _valueDecimal;
+                            }
+                            break;
+                        case JsonToken.Boolean:
+                            _value = _valueBoolean;
+                            break;
+                        case JsonToken.Date:
+                            if (_dateParseHandling == DateParseHandling.DateTime)
+                            {
+                                _value = _valueDateTime;
+                            }
+                            else
+                            {
+                                _value = _valueDateTimeOffset;
+                            }
+                            break;
+                    }
+                }
+
+                return _value;
+            }
         }
     }
 }

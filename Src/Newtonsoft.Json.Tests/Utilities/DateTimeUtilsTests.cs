@@ -53,16 +53,20 @@ namespace Newtonsoft.Json.Tests.Utilities
             RoundtripDateIso(DateTime.MaxValue);
         }
 
+        private static StringReference CreateStringReference(string s)
+        {
+            return new StringReference(s.ToCharArray(), 0, s.Length);
+        }
+
         private static void RoundtripDateIso(DateTime value)
         {
             StringWriter sw = new StringWriter();
             DateTimeUtils.WriteDateTimeString(sw, value, DateFormatHandling.IsoDateFormat, null, CultureInfo.InvariantCulture);
             string minDateText = sw.ToString();
 
-            object dt;
-            DateTimeUtils.TryParseDateIso(minDateText, DateParseHandling.DateTime, DateTimeZoneHandling.RoundtripKind, out dt);
+            DateTime parsedDt;
+            DateTimeUtils.TryParseDateTimeIso(CreateStringReference(minDateText), DateTimeZoneHandling.RoundtripKind, out parsedDt);
 
-            DateTime parsedDt = (DateTime)dt;
             Assert.AreEqual(value, parsedDt);
         }
 
@@ -118,8 +122,12 @@ namespace Newtonsoft.Json.Tests.Utilities
                 oldDate = oldDt;
             }
 
-            object newDt;
-            DateTimeUtils.TryParseDateIso(text, DateParseHandling.DateTime, DateTimeZoneHandling.RoundtripKind, out newDt);
+            object newDt = null;
+            DateTime temp;
+            if (DateTimeUtils.TryParseDateTimeIso(CreateStringReference(text), DateTimeZoneHandling.RoundtripKind, out temp))
+            {
+                newDt = temp;
+            }
 
             if (!Equals(oldDate, newDt))
             {
@@ -175,17 +183,26 @@ namespace Newtonsoft.Json.Tests.Utilities
         private void AssertNewDateTimeOffsetParseEqual(string text)
         {
             object oldDt;
-            object newDt;
+            object newDt = null;
+
             TryParseDateIso(text, DateParseHandling.DateTimeOffset, DateTimeZoneHandling.Unspecified, out oldDt);
-            DateTimeUtils.TryParseDateIso(text, DateParseHandling.DateTimeOffset, DateTimeZoneHandling.Unspecified, out newDt);
+
+            DateTimeOffset temp;
+            if (DateTimeUtils.TryParseDateTimeOffsetIso(CreateStringReference(text), out temp))
+            {
+                newDt = temp;
+            }
 
             if (!Equals(oldDt, newDt))
             {
+                long? oldTicks = oldDt != null ? (long?)((DateTime)oldDt).Ticks : null;
+                long? newTicks = newDt != null ? (long?)((DateTime)newDt).Ticks : null;
+
                 Assert.AreEqual(oldDt, newDt, "DateTimeOffset parse not equal. Text: '{0}' Old ticks: {1} New ticks: {2}".FormatWith(
                     CultureInfo.InvariantCulture,
                     text,
-                    ((DateTime)oldDt).Ticks,
-                    ((DateTime)newDt).Ticks));
+                    oldTicks,
+                    newTicks));
             }
         }
 #endif

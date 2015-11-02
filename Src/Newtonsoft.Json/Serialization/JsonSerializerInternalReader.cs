@@ -1190,36 +1190,51 @@ namespace Newtonsoft.Json.Serialization
                     case JsonToken.PropertyName:
                         object keyValue = reader.Value;
                         if (CheckPropertyName(reader, keyValue.ToString()))
+                        {
                             continue;
+                        }
 
                         try
                         {
                             try
                             {
-                                DateParseHandling dateParseHandling;
+                                // this is for correctly reading ISO and MS formatted dictionary keys
                                 switch (keyTypeCode)
                                 {
                                     case PrimitiveTypeCode.DateTime:
                                     case PrimitiveTypeCode.DateTimeNullable:
-                                        dateParseHandling = DateParseHandling.DateTime;
+                                    {
+                                        DateTime dt;
+                                        if (DateTimeUtils.TryParseDateTime(keyValue.ToString(), reader.DateTimeZoneHandling, reader.DateFormatString, reader.Culture, out dt))
+                                        {
+                                            keyValue = dt;
+                                        }
+                                        else
+                                        {
+                                            keyValue = EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract, contract.DictionaryKeyType);
+                                        }
                                         break;
+                                    }
 #if !NET20
                                     case PrimitiveTypeCode.DateTimeOffset:
                                     case PrimitiveTypeCode.DateTimeOffsetNullable:
-                                        dateParseHandling = DateParseHandling.DateTimeOffset;
+                                    {
+                                        DateTimeOffset dt;
+                                        if (DateTimeUtils.TryParseDateTimeOffset(keyValue.ToString(), reader.DateFormatString, reader.Culture, out dt))
+                                        {
+                                            keyValue = dt;
+                                        }
+                                        else
+                                        {
+                                            keyValue = EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract, contract.DictionaryKeyType);
+                                        }
                                         break;
+                                    }
 #endif
                                     default:
-                                        dateParseHandling = DateParseHandling.None;
+                                        keyValue = EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract, contract.DictionaryKeyType);
                                         break;
                                 }
-
-                                // this is for correctly reading ISO and MS formatted dictionary keys
-                                object dt;
-                                if (dateParseHandling != DateParseHandling.None && DateTimeUtils.TryParseDateTime(keyValue.ToString(), dateParseHandling, reader.DateTimeZoneHandling, reader.DateFormatString, reader.Culture, out dt))
-                                    keyValue = dt;
-                                else
-                                    keyValue = EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract, contract.DictionaryKeyType);
                             }
                             catch (Exception ex)
                             {

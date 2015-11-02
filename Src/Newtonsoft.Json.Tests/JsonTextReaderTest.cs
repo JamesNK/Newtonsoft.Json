@@ -128,6 +128,7 @@ namespace Newtonsoft.Json.Tests
             Assert.AreEqual(4, jsonTextReader.LineNumber);
             Assert.AreEqual(1, jsonTextReader.LinePosition);
         }
+
         [Test]
         public void ReadCommentInsideArray()
         {

@@ -44,6 +44,10 @@ namespace Newtonsoft.Json.TestConsole
 
             string version = FileVersionInfo.GetVersionInfo(typeof(JsonConvert).Assembly.Location).FileVersion;
             Console.WriteLine("Json.NET Version: " + version);
+            Console.WriteLine("Press any key to start");
+
+            ReadLargeJsonFromStream();
+
             Console.ReadKey();
 
             Console.WriteLine("Doing stuff...");
@@ -56,9 +60,11 @@ namespace Newtonsoft.Json.TestConsole
             //DeserializeJson();
             //ReadLargeJson();
             //ReadLargeJsonJavaScriptSerializer();
-            DiscriminatedUnionConverterTests t = new DiscriminatedUnionConverterTests();
-            t.SerializePerformance();
-            t.DeserializePerformance();
+            //DiscriminatedUnionConverterTests t = new DiscriminatedUnionConverterTests();
+            //t.SerializePerformance();
+            //t.DeserializePerformance();
+
+            ReadLargeJsonFromStream();
 
             Console.WriteLine();
             Console.WriteLine("Finished");
@@ -107,7 +113,19 @@ namespace Newtonsoft.Json.TestConsole
             Console.WriteLine("Finished. Total seconds: " + sw.Elapsed.TotalSeconds);
         }
 
-        public static void ReadLargeJson()
+        public static void ReadLargeJsonFromStream()
+        {
+            using (var jsonFile = System.IO.File.OpenText("large.json"))
+            using (JsonTextReader jsonTextReader = new JsonTextReader(jsonFile))
+            {
+                while (jsonTextReader.Read())
+                {
+                    // read
+                }
+            }
+        }
+
+        public static void DeserializeLargeJsonFromStream()
         {
             using (var jsonFile = System.IO.File.OpenText("large.json"))
             using (JsonTextReader jsonTextReader = new JsonTextReader(jsonFile))
