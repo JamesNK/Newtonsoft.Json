@@ -173,7 +173,15 @@ namespace Newtonsoft.Json
         public DateTimeZoneHandling DateTimeZoneHandling
         {
             get { return _dateTimeZoneHandling; }
-            set { _dateTimeZoneHandling = value; }
+            set
+            {
+                if (value < DateTimeZoneHandling.Local || value > DateTimeZoneHandling.RoundtripKind)
+                {
+                    throw new ArgumentOutOfRangeException("value");
+                }
+
+                _dateTimeZoneHandling = value;
+            }
         }
 
         /// <summary>
@@ -182,7 +190,21 @@ namespace Newtonsoft.Json
         public DateParseHandling DateParseHandling
         {
             get { return _dateParseHandling; }
-            set { _dateParseHandling = value; }
+            set
+            {
+                if (value < DateParseHandling.None ||
+#if !NET20
+                    value > DateParseHandling.DateTimeOffset
+#else
+                    value > DateParseHandling.DateTime
+#endif
+                    )
+                {
+                    throw new ArgumentOutOfRangeException("value");
+                }
+
+                _dateParseHandling = value;
+            }
         }
 
         /// <summary>
@@ -191,7 +213,15 @@ namespace Newtonsoft.Json
         public FloatParseHandling FloatParseHandling
         {
             get { return _floatParseHandling; }
-            set { _floatParseHandling = value; }
+            set
+            {
+                if (value < FloatParseHandling.Double || value > FloatParseHandling.Decimal)
+                {
+                    throw new ArgumentOutOfRangeException("value");
+                }
+
+                _floatParseHandling = value;
+            }
         }
 
         /// <summary>

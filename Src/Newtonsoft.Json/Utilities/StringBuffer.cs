@@ -30,12 +30,10 @@ namespace Newtonsoft.Json.Utilities
     /// <summary>
     /// Builds a string. Unlike StringBuilder this class lets you reuse it's internal buffer.
     /// </summary>
-    internal class StringBuffer
+    internal struct StringBuffer
     {
         private char[] _buffer;
         private int _position;
-
-        private static readonly char[] EmptyBuffer = new char[0];
 
         public int Position
         {
@@ -43,47 +41,64 @@ namespace Newtonsoft.Json.Utilities
             set { _position = value; }
         }
 
-        public StringBuffer()
+        public bool IsEmpty
         {
-            _buffer = EmptyBuffer;
+            get { return _buffer == null; }
         }
 
-        public StringBuffer(int initalSize)
+        public StringBuffer(IJsonBufferPool<char> bufferPool, int initalSize) : this(BufferUtils.RentBuffer(bufferPool, initalSize))
         {
-            _buffer = new char[initalSize];
         }
 
-        public void Append(char value)
+        private StringBuffer(char[] buffer)
+        {
+            _buffer = buffer;
+            _position = 0;
+        }
+
+        public void Append(IJsonBufferPool<char> bufferPool, char value)
         {
             // test if the buffer array is large enough to take the value
             if (_position == _buffer.Length)
-                EnsureSize(1);
+            {
+                EnsureSize(bufferPool, 1);
+            }
 
             // set value and increment poisition
             _buffer[_position++] = value;
         }
 
-        public void Append(char[] buffer, int startIndex, int count)
+        public void Append(IJsonBufferPool<char> bufferPool, char[] buffer, int startIndex, int count)
         {
             if (_position + count >= _buffer.Length)
-                EnsureSize(count);
+            {
+                EnsureSize(bufferPool, count);
+            }
 
             Array.Copy(buffer, startIndex, _buffer, _position, count);
 
             _position += count;
         }
 
-        public void Clear()
+        public void Clear(IJsonBufferPool<char> bufferPool)
         {
-            _buffer = EmptyBuffer;
+            if (_buffer != null)
+            {
+                BufferUtils.ReturnBuffer(bufferPool, ref _buffer);
+                _buffer = null;
+            }
             _position = 0;
         }
 
-        private void EnsureSize(int appendLength)
+        private void EnsureSize(IJsonBufferPool<char> bufferPool, int appendLength)
         {
-            char[] newBuffer = new char[(_position + appendLength) * 2];
+            char[] newBuffer = BufferUtils.RentBuffer(bufferPool, (_position + appendLength) * 2);
 
-            Array.Copy(_buffer, newBuffer, _position);
+            if (_buffer != null)
+            {
+                Array.Copy(_buffer, newBuffer, _position);
+                BufferUtils.ReturnBuffer(bufferPool, ref _buffer);
+            }
 
             _buffer = newBuffer;
         }
@@ -99,9 +114,9 @@ namespace Newtonsoft.Json.Utilities
             return new string(_buffer, start, length);
         }
 
-        public char[] GetInternalBuffer()
+        public char[] InternalBuffer
         {
-            return _buffer;
+            get { return _buffer; }
         }
     }
 }

@@ -1271,7 +1271,7 @@ _____'propertyName': NaN,
             {
                 StringWriter swNew = new StringWriter();
                 char[] buffer = null;
-                JavaScriptUtils.WriteEscapedJavaScriptString(swNew, c.ToString(), '"', true, JavaScriptUtils.DoubleQuoteCharEscapeFlags, StringEscapeHandling.Default, ref buffer);
+                JavaScriptUtils.WriteEscapedJavaScriptString(swNew, c.ToString(), '"', true, JavaScriptUtils.DoubleQuoteCharEscapeFlags, StringEscapeHandling.Default, null, ref buffer);
 
                 StringWriter swOld = new StringWriter();
                 WriteEscapedJavaScriptStringOld(swOld, c.ToString(), '"', true);

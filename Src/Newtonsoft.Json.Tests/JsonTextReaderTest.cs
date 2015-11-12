@@ -44,6 +44,11 @@ using NUnit.Framework;
 #endif
 using Newtonsoft.Json;
 using System.IO;
+#if NET20
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
+#endif
 using System.Xml;
 using Newtonsoft.Json.Utilities;
 
@@ -1166,6 +1171,74 @@ third line", jsonTextReader.Value);
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
             Assert.AreEqual("type", reader.Value);
+        }
+
+        public class FakeBufferPool : IJsonBufferPool<char>
+        {
+            public readonly IList<char[]> FreeBuffers = new List<char[]>();
+            public readonly IList<char[]> UsedBuffers = new List<char[]>();
+
+            public char[] RentBuffer(int minSize)
+            {
+                char[] buffer = FreeBuffers.FirstOrDefault(b => b.Length >= minSize);
+                if (buffer != null)
+                {
+                    FreeBuffers.Remove(buffer);
+                    UsedBuffers.Add(buffer);
+
+                    return buffer;
+                }
+
+                buffer = new char[minSize];
+                UsedBuffers.Add(buffer);
+
+                return buffer;
+            }
+
+            public void ReturnBuffer(ref char[] buffer)
+            {
+                UsedBuffers.Remove(buffer);
+                if (!FreeBuffers.Contains(buffer))
+                {
+                    FreeBuffers.Add(buffer);
+                }
+
+                buffer = null;
+            }
+        }
+
+        [Test]
+        public void BufferTest()
+        {
+            string json = @"{
+              ""CPU"": ""Intel"",
+              ""Description"": ""Amazing!\nBuy now!"",
+              ""Drives"": [
+                ""DVD read/writer"",
+                ""500 gigabyte hard drive""
+              ]
+            }";
+
+            FakeBufferPool bufferPool = new FakeBufferPool();
+
+            for (int i = 0; i < 1000; i++)
+            {
+                using (JsonTextReader reader = new JsonTextReader(new StringReader(json)))
+                {
+                    reader.BufferPool = bufferPool;
+
+                    while (reader.Read())
+                    {
+                    }
+                }
+
+                if ((i + 1) % 100 == 0)
+                {
+                    Console.WriteLine("Allocated buffers: " + bufferPool.FreeBuffers.Count);
+                }
+            }
+
+            Assert.AreEqual(2, bufferPool.FreeBuffers.Count);
         }
 
         [Test]

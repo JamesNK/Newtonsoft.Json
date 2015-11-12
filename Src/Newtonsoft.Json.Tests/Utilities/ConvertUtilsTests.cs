@@ -136,5 +136,60 @@ namespace Newtonsoft.Json.Tests.Utilities
                 }
             }
         }
+
+        [Test]
+        public void HexParse()
+        {
+            HexParseSame("0000");
+            HexParseSame("1234");
+            HexParseSame("4321");
+            HexParseSame("abcd");
+            HexParseSame("dcba");
+            HexParseSame("ffff");
+            HexParseSame("ABCD");
+            HexParseSame("DCBA");
+            HexParseSame("FFFF");
+        }
+
+        [Test]
+        public void HexParseOffset()
+        {
+            int value = ConvertUtils.HexTextToInt("!0000".ToCharArray(), 1, 5);
+            Assert.AreEqual(0, value);
+        }
+
+        [Test]
+        public void HexParseError()
+        {
+            ExceptionAssert.Throws<FormatException>(() =>
+            {
+                ConvertUtils.HexTextToInt("-100".ToCharArray(), 0, 4);
+            }, "Invalid hex character: -");
+            ExceptionAssert.Throws<FormatException>(() =>
+            {
+                ConvertUtils.HexTextToInt("000g".ToCharArray(), 0, 4);
+            }, "Invalid hex character: g");
+            ExceptionAssert.Throws<FormatException>(() =>
+            {
+                ConvertUtils.HexTextToInt(" ssd".ToCharArray(), 0, 4);
+            }, "Invalid hex character:  ");
+            ExceptionAssert.Throws<FormatException>(() =>
+            {
+                ConvertUtils.HexTextToInt("000:".ToCharArray(), 0, 4);
+            }, "Invalid hex character: :");
+            ExceptionAssert.Throws<FormatException>(() =>
+            {
+                ConvertUtils.HexTextToInt("000G".ToCharArray(), 0, 4);
+            }, "Invalid hex character: G");
+        }
+
+        private void HexParseSame(string text)
+        {
+            int v1 = int.Parse(text, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+
+            int v2 = ConvertUtils.HexTextToInt(text.ToCharArray(), 0, 4);
+
+            Assert.AreEqual(v1, v2, "Invalid result when parsing hex text: " + text);
+        }
     }
 }

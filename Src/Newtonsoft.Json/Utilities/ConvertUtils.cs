@@ -858,5 +858,35 @@ namespace Newtonsoft.Json.Utilities
             return Guid.TryParseExact(s, "D", out g);
 #endif
         }
+
+        public static int HexTextToInt(char[] text, int start, int end)
+        {
+            int value = 0;
+            for (int i = start; i < end; i++)
+            {
+                value += HexCharToInt(text[i]) << ((end - 1 - i) * 4);
+            }
+            return value;
+        }
+
+        private static int HexCharToInt(char ch)
+        {
+            if (ch <= 57 && ch >= 48)
+            {
+                return ch - 48;
+            }
+
+            if (ch <= 70 && ch >= 65)
+            {
+                return ch - 55;
+            }
+
+            if (ch <= 102 && ch >= 97)
+            {
+                return ch - 87;
+            }
+
+            throw new FormatException("Invalid hex character: " + ch);
+        }
     }
 }

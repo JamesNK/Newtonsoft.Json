@@ -54,7 +54,6 @@ namespace Newtonsoft.Json
     {
         private const char UnicodeReplacementChar = '\uFFFD';
         private const int MaximumJavascriptIntegerCharacterLength = 380;
-
         private readonly TextReader _reader;
         private char[] _chars;
         private int _charsUsed;
@@ -62,8 +61,9 @@ namespace Newtonsoft.Json
         private int _lineStartPos;
         private int _lineNumber;
         private bool _isEndOfFile;
-        private StringBuffer _buffer;
+        private StringBuffer _stringBuffer;
         private StringReference _stringReference;
+        private IJsonBufferPool<char> _bufferPool;
         internal PropertyNameTable NameTable;
 
         /// <summary>
@@ -77,7 +77,6 @@ namespace Newtonsoft.Json
 
             _reader = reader;
             _lineNumber = 1;
-            _chars = new char[1025];
         }
 
 #if DEBUG
@@ -87,18 +86,29 @@ namespace Newtonsoft.Json
         }
 #endif
 
-        private StringBuffer GetBuffer()
+        /// <summary>
+        /// Gets or sets the reader's character buffer pool.
+        /// </summary>
+        public IJsonBufferPool<char> BufferPool
         {
-            if (_buffer == null)
+            get { return _bufferPool; }
+            set
             {
-                _buffer = new StringBuffer(1025);
-            }
-            else
-            {
-                _buffer.Position = 0;
-            }
+                if (value == null)
+                {
+                    throw new ArgumentNullException("value");
+                }
 
-            return _buffer;
+                _bufferPool = value;
+            }
+        }
+
+        private void EnsureBufferNotEmpty()
+        {
+            if (_stringBuffer.IsEmpty)
+            {
+                _stringBuffer = new StringBuffer(_bufferPool, 1025);
+            }
         }
 
         private void OnNewLine(int pos)
@@ -214,9 +224,11 @@ namespace Newtonsoft.Json
                     int newArrayLength = Math.Max(_chars.Length * 2, _charsUsed + charsRequired + 1);
 
                     // increase the size of the buffer
-                    char[] dst = new char[newArrayLength];
+                    char[] dst = BufferUtils.RentBuffer(_bufferPool, newArrayLength);
 
                     BlockCopyChars(_chars, 0, dst, 0, _chars.Length);
+
+                    BufferUtils.ReturnBuffer(_bufferPool, ref _chars);
 
                     _chars = dst;
                 }
@@ -227,10 +239,12 @@ namespace Newtonsoft.Json
                     if (remainingCharCount + charsRequired + 1 >= _chars.Length)
                     {
                         // the remaining count plus the required is bigger than the current buffer size
-                        char[] dst = new char[remainingCharCount + charsRequired + 1];
+                        char[] dst = BufferUtils.RentBuffer(_bufferPool, remainingCharCount + charsRequired + 1);
 
                         if (remainingCharCount > 0)
                             BlockCopyChars(_chars, _charPos, dst, 0, remainingCharCount);
+
+                        BufferUtils.ReturnBuffer(_bufferPool, ref _chars);
 
                         _chars = dst;
                     }
@@ -374,6 +388,11 @@ namespace Newtonsoft.Json
 
         internal override bool ReadInternal()
         {
+            if (_chars == null)
+            {
+                _chars = BufferUtils.RentBuffer(_bufferPool, 1024);
+            }
+
             while (true)
             {
                 switch (_currentState)
@@ -422,7 +441,7 @@ namespace Newtonsoft.Json
             int charPos = _charPos;
             int initialPosition = _charPos;
             int lastWritePosition = _charPos;
-            StringBuffer buffer = null;
+            _stringBuffer.Position = 0;
 
             while (true)
             {
@@ -530,10 +549,9 @@ namespace Newtonsoft.Json
                                                 highSurrogate = UnicodeReplacementChar;
                                             }
 
-                                            if (buffer == null)
-                                                buffer = GetBuffer();
+                                            EnsureBufferNotEmpty();
 
-                                            WriteCharToBuffer(buffer, highSurrogate, lastWritePosition, escapeStartPos);
+                                            WriteCharToBuffer(highSurrogate, lastWritePosition, escapeStartPos);
                                             lastWritePosition = _charPos;
                                         }
                                         else
@@ -553,10 +571,8 @@ namespace Newtonsoft.Json
                                 throw JsonReaderException.Create(this, "Bad JSON escape sequence: {0}.".FormatWith(CultureInfo.InvariantCulture, @"\" + currentChar));
                         }
 
-                        if (buffer == null)
-                            buffer = GetBuffer();
-
-                        WriteCharToBuffer(buffer, writeChar, lastWritePosition, escapeStartPos);
+                        EnsureBufferNotEmpty();
+                        WriteCharToBuffer(writeChar, lastWritePosition, escapeStartPos);
 
                         lastWritePosition = charPos;
                         break;
@@ -582,13 +598,14 @@ namespace Newtonsoft.Json
                             }
                             else
                             {
-                                if (buffer == null)
-                                    buffer = GetBuffer();
+                                EnsureBufferNotEmpty();
 
                                 if (charPos > lastWritePosition)
-                                    buffer.Append(_chars, lastWritePosition, charPos - lastWritePosition);
+                                {
+                                    _stringBuffer.Append(_bufferPool, _chars, lastWritePosition, charPos - lastWritePosition);
+                                }
 
-                                _stringReference = new StringReference(buffer.GetInternalBuffer(), 0, buffer.Position);
+                                _stringReference = new StringReference(_stringBuffer.InternalBuffer, 0, _stringBuffer.Position);
                             }
 
                             charPos++;
@@ -600,14 +617,14 @@ namespace Newtonsoft.Json
             }
         }
 
-        private void WriteCharToBuffer(StringBuffer buffer, char writeChar, int lastWritePosition, int writeToPosition)
+        private void WriteCharToBuffer(char writeChar, int lastWritePosition, int writeToPosition)
         {
             if (writeToPosition > lastWritePosition)
             {
-                buffer.Append(_chars, lastWritePosition, writeToPosition - lastWritePosition);
+                _stringBuffer.Append(_bufferPool, _chars, lastWritePosition, writeToPosition - lastWritePosition);
             }
 
-            buffer.Append(writeChar);
+            _stringBuffer.Append(_bufferPool, writeChar);
         }
 
         private char ParseUnicode()
@@ -615,8 +632,7 @@ namespace Newtonsoft.Json
             char writeChar;
             if (EnsureChars(4, true))
             {
-                string hexValues = new string(_chars, _charPos, 4);
-                char hexChar = Convert.ToChar(int.Parse(hexValues, NumberStyles.HexNumber, NumberFormatInfo.InvariantInfo));
+                char hexChar = Convert.ToChar(ConvertUtils.HexTextToInt(_chars, _charPos, _charPos + 4));
                 writeChar = hexChar;
 
                 _charPos += 4;
@@ -699,9 +715,7 @@ namespace Newtonsoft.Json
 
         private void ClearRecentString()
         {
-            if (_buffer != null)
-                _buffer.Position = 0;
-
+            _stringBuffer.Position = 0;
             _stringReference = new StringReference();
         }
 
@@ -1623,6 +1637,11 @@ namespace Newtonsoft.Json
         {
             base.Close();
 
+            if (_chars != null)
+            {
+                BufferUtils.ReturnBuffer(_bufferPool, ref _chars);
+            }
+
             if (CloseInput && _reader != null)
             {
 #if !(DOTNET || PORTABLE40 || PORTABLE)
@@ -1632,8 +1651,7 @@ namespace Newtonsoft.Json
 #endif
             }
 
-            if (_buffer != null)
-                _buffer.Clear();
+            _stringBuffer.Clear(_bufferPool);
         }
 
         /// <summary>

@@ -222,7 +222,15 @@ namespace Newtonsoft.Json
         public Formatting Formatting
         {
             get { return _formatting; }
-            set { _formatting = value; }
+            set
+            {
+                if (value < Formatting.None || value > Formatting.Indented)
+                {
+                    throw new ArgumentOutOfRangeException("value");
+                }
+
+                _formatting = value;
+            }
         }
 
         /// <summary>
@@ -231,7 +239,15 @@ namespace Newtonsoft.Json
         public DateFormatHandling DateFormatHandling
         {
             get { return _dateFormatHandling; }
-            set { _dateFormatHandling = value; }
+            set
+            {
+                if (value < DateFormatHandling.IsoDateFormat || value > DateFormatHandling.MicrosoftDateFormat)
+                {
+                    throw new ArgumentOutOfRangeException("value");
+                }
+
+                _dateFormatHandling = value;
+            }
         }
 
         /// <summary>
@@ -240,7 +256,15 @@ namespace Newtonsoft.Json
         public DateTimeZoneHandling DateTimeZoneHandling
         {
             get { return _dateTimeZoneHandling; }
-            set { _dateTimeZoneHandling = value; }
+            set
+            {
+                if (value < DateTimeZoneHandling.Local || value > DateTimeZoneHandling.RoundtripKind)
+                {
+                    throw new ArgumentOutOfRangeException("value");
+                }
+
+                _dateTimeZoneHandling = value;
+            }
         }
 
         /// <summary>
@@ -251,6 +275,11 @@ namespace Newtonsoft.Json
             get { return _stringEscapeHandling; }
             set
             {
+                if (value < StringEscapeHandling.Default || value > StringEscapeHandling.EscapeHtml)
+                {
+                    throw new ArgumentOutOfRangeException("value");
+                }
+
                 _stringEscapeHandling = value;
                 OnStringEscapeHandlingChanged();
             }
@@ -269,7 +298,15 @@ namespace Newtonsoft.Json
         public FloatFormatHandling FloatFormatHandling
         {
             get { return _floatFormatHandling; }
-            set { _floatFormatHandling = value; }
+            set
+            {
+                if (value < FloatFormatHandling.String || value > FloatFormatHandling.DefaultValue)
+                {
+                    throw new ArgumentOutOfRangeException("value");
+                }
+
+                _floatFormatHandling = value;
+            }
         }
 
         /// <summary>
