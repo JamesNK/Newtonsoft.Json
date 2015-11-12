@@ -216,10 +216,18 @@ namespace Newtonsoft.Json
             get
             {
                 if (ReferenceResolverProvider == null)
+                {
                     return null;
+                }
+
                 return ReferenceResolverProvider();
             }
-            set { ReferenceResolverProvider = () => value; }
+            set
+            {
+                ReferenceResolverProvider = (value != null)
+                    ? () => value
+                    : (Func<IReferenceResolver>)null;
+            }
         }
 
         /// <summary>

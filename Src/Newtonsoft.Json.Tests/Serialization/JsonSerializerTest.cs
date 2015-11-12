@@ -8478,6 +8478,57 @@ Path '', line 1, position 1.");
 ]", json);
         }
 
+        [Test]
+        public void NullReferenceResolver()
+        {
+            PersonReference john = new PersonReference
+            {
+                Id = new Guid("0B64FFDF-D155-44AD-9689-58D9ADB137F3"),
+                Name = "John Smith"
+            };
+
+            PersonReference jane = new PersonReference
+            {
+                Id = new Guid("AE3C399C-058D-431D-91B0-A36C266441B9"),
+                Name = "Jane Smith"
+            };
+
+            john.Spouse = jane;
+            jane.Spouse = john;
+
+            IList<PersonReference> people = new List<PersonReference>
+            {
+                john,
+                jane
+            };
+
+            string json = JsonConvert.SerializeObject(people, new JsonSerializerSettings
+            {
+#pragma warning disable 618
+                ReferenceResolver = null,
+#pragma warning restore 618
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                Formatting = Formatting.Indented
+            });
+
+            StringAssert.AreEqual(@"[
+  {
+    ""$id"": ""1"",
+    ""Name"": ""John Smith"",
+    ""Spouse"": {
+      ""$id"": ""2"",
+      ""Name"": ""Jane Smith"",
+      ""Spouse"": {
+        ""$ref"": ""1""
+      }
+    }
+  },
+  {
+    ""$ref"": ""2""
+  }
+]", json);
+        }
+
 #if !(PORTABLE || PORTABLE40 || NETFX_CORE || DNXCORE50)
         [Test]
         public void SerializeDictionaryWithStructKey()
