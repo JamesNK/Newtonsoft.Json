@@ -1180,7 +1180,7 @@ namespace Newtonsoft.Json.Serialization
                 contract.ItemContract = GetContractSafe(contract.DictionaryValueType);
 
             JsonConverter dictionaryValueConverter = contract.ItemConverter ?? GetConverter(contract.ItemContract, null, contract, containerProperty);
-            PrimitiveTypeCode keyTypeCode = (contract.KeyContract is JsonPrimitiveContract) ? ((JsonPrimitiveContract)contract.KeyContract).TypeCode : PrimitiveTypeCode.Empty;
+            PrimitiveTypeCode keyTypeCode = (contract.KeyContract is JsonPrimitiveContract) ? ((JsonPrimitiveContract) contract.KeyContract).TypeCode : PrimitiveTypeCode.Empty;
 
             bool finished = false;
             do
@@ -1196,30 +1196,43 @@ namespace Newtonsoft.Json.Serialization
                         {
                             try
                             {
-                                DateParseHandling dateParseHandling;
+                                // this is for correctly reading ISO and MS formatted dictionary keys
                                 switch (keyTypeCode)
                                 {
                                     case PrimitiveTypeCode.DateTime:
                                     case PrimitiveTypeCode.DateTimeNullable:
-                                        dateParseHandling = DateParseHandling.DateTime;
+                                    {
+                                        DateTime dt;
+                                        if (DateTimeUtils.TryParseDateTime(keyValue.ToString(), reader.DateTimeZoneHandling, reader.DateFormatString, reader.Culture, out dt))
+                                        {
+                                            keyValue = dt;
+                                        }
+                                        else
+                                        {
+                                            keyValue = EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract, contract.DictionaryKeyType);
+                                        }
                                         break;
+                                    }
 #if !NET20
                                     case PrimitiveTypeCode.DateTimeOffset:
                                     case PrimitiveTypeCode.DateTimeOffsetNullable:
-                                        dateParseHandling = DateParseHandling.DateTimeOffset;
+                                    {
+                                        DateTimeOffset dt;
+                                        if (DateTimeUtils.TryParseDateTimeOffset(keyValue.ToString(), reader.DateFormatString, reader.Culture, out dt))
+                                        {
+                                            keyValue = dt;
+                                        }
+                                        else
+                                        {
+                                            keyValue = EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract, contract.DictionaryKeyType);
+                                        }
                                         break;
+                                    }
 #endif
                                     default:
-                                        dateParseHandling = DateParseHandling.None;
+                                        keyValue = EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract, contract.DictionaryKeyType);
                                         break;
                                 }
-
-                                // this is for correctly reading ISO and MS formatted dictionary keys
-                                object dt;
-                                if (dateParseHandling != DateParseHandling.None && DateTimeUtils.TryParseDateTime(keyValue.ToString(), dateParseHandling, reader.DateTimeZoneHandling, reader.DateFormatString, reader.Culture, out dt))
-                                    keyValue = dt;
-                                else
-                                    keyValue = EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract, contract.DictionaryKeyType);
                             }
                             catch (Exception ex)
                             {
@@ -1227,7 +1240,9 @@ namespace Newtonsoft.Json.Serialization
                             }
 
                             if (!ReadForType(reader, contract.ItemContract, dictionaryValueConverter != null))
+                            {
                                 throw JsonSerializationException.Create(reader, "Unexpected end when deserializing object.");
+                            }
 
                             object itemValue;
                             if (dictionaryValueConverter != null && dictionaryValueConverter.CanRead)

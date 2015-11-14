@@ -980,9 +980,11 @@ namespace Newtonsoft.Json.Serialization
                 JsonPrimitiveContract primitiveContract = (JsonPrimitiveContract)contract;
                 if (primitiveContract.TypeCode == PrimitiveTypeCode.DateTime || primitiveContract.TypeCode == PrimitiveTypeCode.DateTimeNullable)
                 {
+                    DateTime dt = DateTimeUtils.EnsureDateTime((DateTime)name, writer.DateTimeZoneHandling);
+
                     escape = false;
                     StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
-                    DateTimeUtils.WriteDateTimeString(sw, (DateTime)name, writer.DateFormatHandling, writer.DateFormatString, writer.Culture);
+                    DateTimeUtils.WriteDateTimeString(sw, dt, writer.DateFormatHandling, writer.DateFormatString, writer.Culture);
                     return sw.ToString();
                 }
 #if !NET20

@@ -422,7 +422,7 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Reads the next JSON token from the stream as a <see cref="Nullable{DateTime}"/>.
         /// </summary>
-        /// <returns>A <see cref="String"/>. This method will return <c>null</c> at the end of an array.</returns>
+        /// <returns>A <see cref="Nullable{DateTime}"/>. This method will return <c>null</c> at the end of an array.</returns>
         public abstract DateTime? ReadAsDateTime();
 
 #if !NET20
@@ -478,11 +478,9 @@ namespace Newtonsoft.Json
                     return null;
                 }
 
-                object temp;
                 DateTimeOffset dt;
-                if (DateTimeUtils.TryParseDateTime(s, DateParseHandling.DateTimeOffset, DateTimeZoneHandling, _dateFormatString, Culture, out temp))
+                if (DateTimeUtils.TryParseDateTimeOffset(s, _dateFormatString, Culture, out dt))
                 {
-                    dt = (DateTimeOffset)temp;
                     SetToken(JsonToken.Date, dt, false);
                     return dt;
                 }
@@ -793,10 +791,8 @@ namespace Newtonsoft.Json
                 }
 
                 DateTime dt;
-                object temp;
-                if (DateTimeUtils.TryParseDateTime(s, DateParseHandling.DateTime, DateTimeZoneHandling, _dateFormatString, Culture, out temp))
+                if (DateTimeUtils.TryParseDateTime(s, DateTimeZoneHandling, _dateFormatString, Culture, out dt))
                 {
-                    dt = (DateTime)temp;
                     dt = DateTimeUtils.EnsureDateTime(dt, DateTimeZoneHandling);
                     SetToken(JsonToken.Date, dt, false);
                     return dt;

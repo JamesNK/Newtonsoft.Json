@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using Newtonsoft.Json.Linq;
@@ -1175,8 +1176,8 @@ third line", jsonTextReader.Value);
 
         public class FakeBufferPool : IJsonBufferPool<char>
         {
-            public readonly IList<char[]> FreeBuffers = new List<char[]>();
-            public readonly IList<char[]> UsedBuffers = new List<char[]>();
+            public readonly List<char[]> FreeBuffers = new List<char[]>();
+            public readonly List<char[]> UsedBuffers = new List<char[]>();
 
             public char[] RentBuffer(int minSize)
             {
@@ -1197,10 +1198,12 @@ third line", jsonTextReader.Value);
 
             public void ReturnBuffer(ref char[] buffer)
             {
-                UsedBuffers.Remove(buffer);
-                if (!FreeBuffers.Contains(buffer))
+                if (UsedBuffers.Remove(buffer))
                 {
                     FreeBuffers.Add(buffer);
+
+                    // smallest first so the first buffer large enough is rented
+                    FreeBuffers.Sort((b1, b2) => Comparer<int>.Default.Compare(b1.Length, b2.Length));
                 }
 
                 buffer = null;
@@ -1215,7 +1218,8 @@ third line", jsonTextReader.Value);
               ""Description"": ""Amazing!\nBuy now!"",
               ""Drives"": [
                 ""DVD read/writer"",
-                ""500 gigabyte hard drive""
+                ""500 gigabyte hard drive"",
+                ""Amazing Drive" + new string('!', 9000) + @"""
               ]
             }";
 
@@ -1238,7 +1242,8 @@ third line", jsonTextReader.Value);
                 }
             }
 
-            Assert.AreEqual(2, bufferPool.FreeBuffers.Count);
+            Assert.AreEqual(0, bufferPool.UsedBuffers.Count);
+            Assert.AreEqual(6, bufferPool.FreeBuffers.Count);
         }
 
         [Test]

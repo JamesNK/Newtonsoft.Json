@@ -67,8 +67,8 @@ namespace Newtonsoft.Json.Utilities
         public int ZoneMinute;
         public ParserTimeZone Zone;
 
-        private string _text;
-        private int _length;
+        private char[] _text;
+        private int _end;
 
         private static readonly int[] Power10;
 
@@ -88,13 +88,15 @@ namespace Newtonsoft.Json.Utilities
 
         private const short MaxFractionDigits = 7;
 
-        public bool Parse(string text)
+        public bool Parse(char[] text, int startIndex, int length)
         {
             _text = text;
-            _length = text.Length;
+            _end = startIndex + length;
 
-            if (ParseDate(0) && ParseChar(Lzyyyy_MM_dd, 'T') && ParseTimeAndZoneAndWhitespace(Lzyyyy_MM_ddT))
+            if (ParseDate(startIndex) && ParseChar(Lzyyyy_MM_dd + startIndex, 'T') && ParseTimeAndZoneAndWhitespace(Lzyyyy_MM_ddT + startIndex))
+            {
                 return true;
+            }
 
             return false;
         }
@@ -138,11 +140,13 @@ namespace Newtonsoft.Json.Utilities
                 Fraction = 0;
                 int numberOfDigits = 0;
 
-                while (++start < _length && numberOfDigits < MaxFractionDigits)
+                while (++start < _end && numberOfDigits < MaxFractionDigits)
                 {
                     int digit = _text[start] - '0';
                     if (digit < 0 || digit > 9)
+                    {
                         break;
+                    }
 
                     Fraction = (Fraction * 10) + digit;
 
@@ -152,7 +156,9 @@ namespace Newtonsoft.Json.Utilities
                 if (numberOfDigits < MaxFractionDigits)
                 {
                     if (numberOfDigits == 0)
+                    {
                         return false;
+                    }
 
                     Fraction *= Power10[MaxFractionDigits - numberOfDigits];
                 }
@@ -162,7 +168,7 @@ namespace Newtonsoft.Json.Utilities
 
         private bool ParseZone(int start)
         {
-            if (start < _length)
+            if (start < _end)
             {
                 char ch = _text[start];
                 if (ch == 'Z' || ch == 'z')
@@ -172,7 +178,7 @@ namespace Newtonsoft.Json.Utilities
                 }
                 else
                 {
-                    if (start + 2 < _length
+                    if (start + 2 < _end
                         && Parse2Digit(start + Lz_, out ZoneHour)
                         && ZoneHour <= 99)
                     {
@@ -190,13 +196,13 @@ namespace Newtonsoft.Json.Utilities
                         }
                     }
 
-                    if (start < _length)
+                    if (start < _end)
                     {
                         if (ParseChar(start, ':'))
                         {
                             start += 1;
 
-                            if (start + 1 < _length
+                            if (start + 1 < _end
                                 && Parse2Digit(start, out ZoneMinute)
                                 && ZoneMinute <= 99)
                             {
@@ -205,7 +211,7 @@ namespace Newtonsoft.Json.Utilities
                         }
                         else
                         {
-                            if (start + 1 < _length
+                            if (start + 1 < _end
                                 && Parse2Digit(start, out ZoneMinute)
                                 && ZoneMinute <= 99)
                             {
@@ -216,12 +222,12 @@ namespace Newtonsoft.Json.Utilities
                 }
             }
 
-            return (start == _length);
+            return (start == _end);
         }
 
         private bool Parse4Digit(int start, out int num)
         {
-            if (start + 3 < _length)
+            if (start + 3 < _end)
             {
                 int digit1 = _text[start] - '0';
                 int digit2 = _text[start + 1] - '0';
@@ -242,7 +248,7 @@ namespace Newtonsoft.Json.Utilities
 
         private bool Parse2Digit(int start, out int num)
         {
-            if (start + 1 < _length)
+            if (start + 1 < _end)
             {
                 int digit1 = _text[start] - '0';
                 int digit2 = _text[start + 1] - '0';
@@ -259,7 +265,7 @@ namespace Newtonsoft.Json.Utilities
 
         private bool ParseChar(int start, char ch)
         {
-            return (start < _length && _text[start] == ch);
+            return (start < _end && _text[start] == ch);
         }
     }
 }

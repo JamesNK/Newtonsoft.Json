@@ -7488,6 +7488,34 @@ Path '', line 1, position 1.");
         }
 
         [Test]
+        public void DateTimeDictionaryKey_DateTime_Iso_Local()
+        {
+            IDictionary<DateTime, int> dic1 = new Dictionary<DateTime, int>
+            {
+                { new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Utc), 1 },
+                { new DateTime(2013, 12, 12, 12, 12, 12, DateTimeKind.Utc), 2 }
+            };
+
+            string json = JsonConvert.SerializeObject(dic1, Formatting.Indented, new JsonSerializerSettings
+            {
+                DateTimeZoneHandling = DateTimeZoneHandling.Local
+            });
+
+            JObject o = JObject.Parse(json);
+            Assert.IsFalse(o.Properties().ElementAt(0).Name.Contains("Z"));
+            Assert.IsFalse(o.Properties().ElementAt(1).Name.Contains("Z"));
+
+            IDictionary<DateTime, int> dic2 = JsonConvert.DeserializeObject<IDictionary<DateTime, int>>(json, new JsonSerializerSettings
+            {
+                DateTimeZoneHandling = DateTimeZoneHandling.Utc
+            });
+
+            Assert.AreEqual(2, dic2.Count);
+            Assert.AreEqual(1, dic2[new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Utc)]);
+            Assert.AreEqual(2, dic2[new DateTime(2013, 12, 12, 12, 12, 12, DateTimeKind.Utc)]);
+        }
+
+        [Test]
         public void DateTimeDictionaryKey_DateTime_MS()
         {
             IDictionary<DateTime, int> dic1 = new Dictionary<DateTime, int>

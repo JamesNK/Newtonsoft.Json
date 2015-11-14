@@ -52,13 +52,10 @@ namespace Newtonsoft.Json.TestConsole
             //t.DeserializeLargeJson();
 
             //DeserializeLargeJson();
-            //WriteLargeJson();
+            WriteLargeJson();
             //DeserializeJson();
             //ReadLargeJson();
             //ReadLargeJsonJavaScriptSerializer();
-            DiscriminatedUnionConverterTests t = new DiscriminatedUnionConverterTests();
-            t.SerializePerformance();
-            t.DeserializePerformance();
 
             Console.WriteLine();
             Console.WriteLine("Finished");

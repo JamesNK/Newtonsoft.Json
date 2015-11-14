@@ -48,7 +48,8 @@ namespace Newtonsoft.Json.Utilities
                 return new char[minSize];
             }
 
-            return bufferPool.RentBuffer(minSize);
+            char[] buffer = bufferPool.RentBuffer(minSize);
+            return buffer;
         }
 
         public static void ReturnBuffer(IJsonBufferPool<char> bufferPool, ref char[] buffer)
@@ -236,7 +237,9 @@ namespace Newtonsoft.Json.Utilities
                             // the unicode text is already in the buffer
                             // copy it over when creating new buffer
                             if (isEscapedUnicodeText)
+                            {
                                 Array.Copy(writeBuffer, newBuffer, UnicodeTextLength);
+                            }
 
                             BufferUtils.ReturnBuffer(bufferPool, ref writeBuffer);
 

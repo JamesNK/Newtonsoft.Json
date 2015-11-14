@@ -60,6 +60,50 @@ namespace Newtonsoft.Json.Tests
     public class JsonTextWriterTest : TestFixtureBase
     {
         [Test]
+        public void BufferTest()
+        {
+            JsonTextReaderTest.FakeBufferPool bufferPool = new JsonTextReaderTest.FakeBufferPool();
+
+            string longString = new string('A', 2000);
+            string longEscapedString = "Hello!" + new string('!', 50) + new string('\n', 1000) + "Good bye!";
+            string longerEscapedString = "Hello!" + new string('!', 2000) + new string('\n', 1000) + "Good bye!";
+
+            for (int i = 0; i < 1000; i++)
+            {
+                StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
+
+                using (JsonTextWriter writer = new JsonTextWriter(sw))
+                {
+                    writer.BufferPool = bufferPool;
+
+                    writer.WriteStartObject();
+
+                    writer.WritePropertyName("Prop1");
+                    writer.WriteValue(new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Utc));
+
+                    writer.WritePropertyName("Prop2");
+                    writer.WriteValue(longString);
+
+                    writer.WritePropertyName("Prop3");
+                    writer.WriteValue(longEscapedString);
+
+                    writer.WritePropertyName("Prop4");
+                    writer.WriteValue(longerEscapedString);
+
+                    writer.WriteEndObject();
+                }
+
+                if ((i + 1) % 100 == 0)
+                {
+                    Console.WriteLine("Allocated buffers: " + bufferPool.FreeBuffers.Count);
+                }
+            }
+
+            Assert.AreEqual(0, bufferPool.UsedBuffers.Count);
+            Assert.AreEqual(3, bufferPool.FreeBuffers.Count);
+        }
+
+        [Test]
         public void NewLine()
         {
             MemoryStream ms = new MemoryStream();
