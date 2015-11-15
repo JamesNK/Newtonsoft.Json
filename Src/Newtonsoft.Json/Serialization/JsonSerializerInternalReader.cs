@@ -2193,7 +2193,9 @@ namespace Newtonsoft.Json.Serialization
                             {
                                 case PropertyPresence.None:
                                     if (resolvedRequired == Required.AllowNull || resolvedRequired == Required.Always)
+                                    {
                                         throw JsonSerializationException.Create(reader, "Required property '{0}' not found in JSON.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName));
+                                    }
 
                                     if (!property.Ignored)
                                     {
@@ -2206,7 +2208,13 @@ namespace Newtonsoft.Json.Serialization
                                     break;
                                 case PropertyPresence.Null:
                                     if (resolvedRequired == Required.Always)
+                                    {
                                         throw JsonSerializationException.Create(reader, "Required property '{0}' expects a value but got null.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName));
+                                    }
+                                    if (resolvedRequired == Required.DisallowNull)
+                                    {
+                                        throw JsonSerializationException.Create(reader, "Required property '{0}' expects a non-null value.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName));
+                                    }
                                     break;
                             }
                         }

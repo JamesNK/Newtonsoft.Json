@@ -490,7 +490,13 @@ namespace Newtonsoft.Json.Serialization
                         JsonObjectContract objectContract = contract as JsonObjectContract;
                         Required resolvedRequired = property._required ?? ((objectContract != null) ? objectContract.ItemRequired : null) ?? Required.Default;
                         if (resolvedRequired == Required.Always)
+                        {
                             throw JsonSerializationException.Create(null, writer.ContainerPath, "Cannot write a null value for property '{0}'. Property requires a value.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName), null);
+                        }
+                        if (resolvedRequired == Required.DisallowNull)
+                        {
+                            throw JsonSerializationException.Create(null, writer.ContainerPath, "Cannot write a null value for property '{0}'. Property requires a non-null value.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName), null);
+                        }
                     }
 
                     return true;

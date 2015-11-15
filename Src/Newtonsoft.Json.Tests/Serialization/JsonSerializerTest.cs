@@ -238,6 +238,22 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Test]
+        public void CoercedEmptyStringWithRequired_DisallowNull()
+        {
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                JsonConvert.DeserializeObject<Binding_DisallowNull>("{requiredProperty:''}");
+            }, "Required property 'RequiredProperty' expects a non-null value. Path '', line 1, position 21.");
+        }
+
+        [Test]
+        public void DisallowNull_NoValue()
+        {
+            Binding_DisallowNull o = JsonConvert.DeserializeObject<Binding_DisallowNull>("{}");
+            Assert.IsNull(o.RequiredProperty);
+        }
+
+        [Test]
         public void CoercedEmptyStringWithRequiredConstructor()
         {
             ExceptionAssert.Throws<JsonSerializationException>(() =>
@@ -250,6 +266,46 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             [JsonProperty(Required = Required.Always)]
             public Binding RequiredProperty { get; set; }
+        }
+
+        public class Binding_DisallowNull
+        {
+            [JsonProperty(Required = Required.DisallowNull)]
+            public Binding RequiredProperty { get; set; }
+        }
+
+        [Test]
+        public void Serialize_Required_DisallowedNull()
+        {
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                JsonConvert.SerializeObject(new Binding_DisallowNull());
+            }, "Cannot write a null value for property 'RequiredProperty'. Property requires a non-null value. Path ''.");
+        }
+
+        [Test]
+        public void Serialize_Required_DisallowedNull_NullValueHandlingIgnore()
+        {
+            string json = JsonConvert.SerializeObject(new Binding_DisallowNull(), new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            });
+            Assert.AreEqual("{}", json);
+        }
+
+        [JsonObject(ItemRequired = Required.DisallowNull)]
+        public class DictionaryWithNoNull
+        {
+            public string Name { get; set; }
+        }
+
+        [Test]
+        public void Serialize_ItemRequired_DisallowedNull()
+        {
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                JsonConvert.SerializeObject(new DictionaryWithNoNull());
+            }, "Cannot write a null value for property 'Name'. Property requires a non-null value. Path ''.");
         }
 
         public class DictionaryKeyContractResolver : DefaultContractResolver
