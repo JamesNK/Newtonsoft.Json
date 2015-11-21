@@ -128,7 +128,7 @@ namespace Newtonsoft.Json
         internal DateParseHandling _dateParseHandling;
         internal FloatParseHandling _floatParseHandling;
         private string _dateFormatString;
-        private readonly List<JsonPosition> _stack;
+        private List<JsonPosition> _stack;
 
         /// <summary>
         /// Gets the current reader state.
@@ -280,11 +280,15 @@ namespace Newtonsoft.Json
         {
             get
             {
-                int depth = _stack.Count;
+                int depth = (_stack != null) ? _stack.Count : 0;
                 if (JsonTokenUtils.IsStartToken(TokenType) || _currentPosition.Type == JsonContainerType.None)
+                {
                     return depth;
+                }
                 else
+                {
                     return depth + 1;
+                }
             }
         }
 
@@ -302,11 +306,9 @@ namespace Newtonsoft.Json
                                         && _currentState != State.ConstructorStart
                                         && _currentState != State.ObjectStart);
 
-                IEnumerable<JsonPosition> positions = (!insideContainer)
-                    ? _stack
-                    : _stack.Concat(new[] { _currentPosition });
+                JsonPosition? current = insideContainer ? (JsonPosition?)_currentPosition : null;
 
-                return JsonPosition.BuildPath(positions);
+                return JsonPosition.BuildPath(_stack, current);
             }
         }
 
@@ -321,8 +323,10 @@ namespace Newtonsoft.Json
 
         internal JsonPosition GetPosition(int depth)
         {
-            if (depth < _stack.Count)
+            if (_stack != null && depth < _stack.Count)
+            {
                 return _stack[depth];
+            }
 
             return _currentPosition;
         }
@@ -333,7 +337,6 @@ namespace Newtonsoft.Json
         protected JsonReader()
         {
             _currentState = State.Start;
-            _stack = new List<JsonPosition>(4);
             _dateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
             _dateParseHandling = DateParseHandling.DateTime;
             _floatParseHandling = FloatParseHandling.Double;
@@ -351,6 +354,11 @@ namespace Newtonsoft.Json
             }
             else
             {
+                if (_stack == null)
+                {
+                    _stack = new List<JsonPosition>();
+                }
+
                 _stack.Add(_currentPosition);
                 _currentPosition = new JsonPosition(value);
 
@@ -366,7 +374,7 @@ namespace Newtonsoft.Json
         private JsonContainerType Pop()
         {
             JsonPosition oldPosition;
-            if (_stack.Count > 0)
+            if (_stack != null && _stack.Count > 0)
             {
                 oldPosition = _currentPosition;
                 _currentPosition = _stack[_stack.Count - 1];
@@ -379,7 +387,9 @@ namespace Newtonsoft.Json
             }
 
             if (_maxDepth != null && Depth <= _maxDepth)
+            {
                 _hasExceededMaxDepth = false;
+            }
 
             return oldPosition.Type;
         }

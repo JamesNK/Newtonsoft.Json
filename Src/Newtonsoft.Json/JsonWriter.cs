@@ -113,7 +113,7 @@ namespace Newtonsoft.Json
             StateArray = BuildStateArray();
         }
 
-        private readonly List<JsonPosition> _stack;
+        private List<JsonPosition> _stack;
         private JsonPosition _currentPosition;
         private State _currentState;
         private Formatting _formatting;
@@ -136,9 +136,11 @@ namespace Newtonsoft.Json
         {
             get
             {
-                int depth = _stack.Count;
+                int depth = (_stack != null) ? _stack.Count : 0;
                 if (Peek() != JsonContainerType.None)
+                {
                     depth++;
+                }
 
                 return depth;
             }
@@ -180,10 +182,12 @@ namespace Newtonsoft.Json
         {
             get
             {
-                if (_currentPosition.Type == JsonContainerType.None)
+                if (_currentPosition.Type == JsonContainerType.None || _stack == null)
+                {
                     return string.Empty;
+                }
 
-                return JsonPosition.BuildPath(_stack);
+                return JsonPosition.BuildPath(_stack, null);
             }
         }
 
@@ -195,17 +199,17 @@ namespace Newtonsoft.Json
             get
             {
                 if (_currentPosition.Type == JsonContainerType.None)
+                {
                     return string.Empty;
+                }
 
                 bool insideContainer = (_currentState != State.ArrayStart
                                         && _currentState != State.ConstructorStart
                                         && _currentState != State.ObjectStart);
 
-                IEnumerable<JsonPosition> positions = (!insideContainer)
-                    ? _stack
-                    : _stack.Concat(new[] { _currentPosition });
+                JsonPosition? current = insideContainer ? (JsonPosition?) _currentPosition : null;
 
-                return JsonPosition.BuildPath(positions);
+                return JsonPosition.BuildPath(_stack, current);
             }
         }
 
@@ -332,7 +336,6 @@ namespace Newtonsoft.Json
         /// </summary>
         protected JsonWriter()
         {
-            _stack = new List<JsonPosition>(4);
             _currentState = State.Start;
             _formatting = Formatting.None;
             _dateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
@@ -349,7 +352,14 @@ namespace Newtonsoft.Json
         private void Push(JsonContainerType value)
         {
             if (_currentPosition.Type != JsonContainerType.None)
+            {
+                if (_stack == null)
+                {
+                    _stack = new List<JsonPosition>();
+                }
+
                 _stack.Add(_currentPosition);
+            }
 
             _currentPosition = new JsonPosition(value);
         }
@@ -358,7 +368,7 @@ namespace Newtonsoft.Json
         {
             JsonPosition oldPosition = _currentPosition;
 
-            if (_stack.Count > 0)
+            if (_stack != null && _stack.Count > 0)
             {
                 _currentPosition = _stack[_stack.Count - 1];
                 _stack.RemoveAt(_stack.Count - 1);

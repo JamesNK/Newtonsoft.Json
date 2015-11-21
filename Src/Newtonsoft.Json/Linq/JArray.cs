@@ -139,7 +139,7 @@ namespace Newtonsoft.Json.Linq
                 throw JsonReaderException.Create(reader, "Error reading JArray from JsonReader. Current JsonReader item is not an array: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
 
             JArray a = new JArray();
-            a.SetLineInfo(reader as IJsonLineInfo);
+            a.SetLineInfo(reader as IJsonLineInfo, settings);
 
             a.ReadTokenFrom(reader, settings);
 

@@ -560,5 +560,21 @@ Parameter name: index");
             Assert.AreEqual(2, (int)a[1]);
             Assert.AreEqual(3, (int)a[2]);
         }
+
+        [Test]
+        public void Parse_LineInfo()
+        {
+            string json = "[1,2,3]";
+
+            JArray a = JArray.Parse(json, new JsonLoadSettings
+            {
+                LineInfoHandling = LineInfoHandling.Load
+            });
+
+            Assert.AreEqual(false, ((IJsonLineInfo)a).HasLineInfo());
+            Assert.AreEqual(false, ((IJsonLineInfo)a[0]).HasLineInfo());
+            Assert.AreEqual(false, ((IJsonLineInfo)a[1]).HasLineInfo());
+            Assert.AreEqual(false, ((IJsonLineInfo)a[2]).HasLineInfo());
+        }
     }
 }

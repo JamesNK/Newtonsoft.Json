@@ -56,6 +56,20 @@ namespace Newtonsoft.Json
             PropertyName = null;
         }
 
+        internal int CalculateLength()
+        {
+            switch (Type)
+            {
+                case JsonContainerType.Object:
+                    return PropertyName.Length + 5;
+                case JsonContainerType.Array:
+                case JsonContainerType.Constructor:
+                    return MathUtils.IntLength((ulong)Position) + 2;
+                default:
+                    throw new ArgumentOutOfRangeException("Type");
+            }
+        }
+
         internal void WriteTo(StringBuilder sb)
         {
             switch (Type)
@@ -71,7 +85,9 @@ namespace Newtonsoft.Json
                     else
                     {
                         if (sb.Length > 0)
+                        {
                             sb.Append('.');
+                        }
 
                         sb.Append(propertyName);
                     }
@@ -90,13 +106,32 @@ namespace Newtonsoft.Json
             return (type == JsonContainerType.Array || type == JsonContainerType.Constructor);
         }
 
-        internal static string BuildPath(IEnumerable<JsonPosition> positions)
+        internal static string BuildPath(List<JsonPosition> positions, JsonPosition? currentPosition)
         {
-            StringBuilder sb = new StringBuilder();
-
-            foreach (JsonPosition state in positions)
+            int capacity = 0;
+            if (positions != null)
             {
-                state.WriteTo(sb);
+                for (int i = 0; i < positions.Count; i++)
+                {
+                    capacity += positions[i].CalculateLength();
+                }
+            }
+            if (currentPosition != null)
+            {
+                capacity += currentPosition.Value.CalculateLength();
+            }
+
+            StringBuilder sb = new StringBuilder(capacity);
+            if (positions != null)
+            {
+                foreach (JsonPosition state in positions)
+                {
+                    state.WriteTo(sb);
+                }
+            }
+            if (currentPosition != null)
+            {
+                currentPosition.Value.WriteTo(sb);
             }
 
             return sb.ToString();

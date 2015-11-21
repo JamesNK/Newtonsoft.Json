@@ -186,15 +186,19 @@ namespace Newtonsoft.Json.Linq
 
                 IList<JToken> ancestors = AncestorsAndSelf().Reverse().ToList();
 
-                IList<JsonPosition> positions = new List<JsonPosition>();
+                List<JsonPosition> positions = new List<JsonPosition>();
                 for (int i = 0; i < ancestors.Count; i++)
                 {
                     JToken current = ancestors[i];
                     JToken next = null;
                     if (i + 1 < ancestors.Count)
+                    {
                         next = ancestors[i + 1];
+                    }
                     else if (ancestors[i].Type == JTokenType.Property)
+                    {
                         next = ancestors[i];
+                    }
 
                     if (next != null)
                     {
@@ -214,7 +218,7 @@ namespace Newtonsoft.Json.Linq
                     }
                 }
 
-                return JsonPosition.BuildPath(positions);
+                return JsonPosition.BuildPath(positions, null);
             }
         }
 
@@ -1894,7 +1898,7 @@ namespace Newtonsoft.Json.Linq
                     case JsonToken.Boolean:
                     case JsonToken.Bytes:
                         JValue v = new JValue(reader.Value);
-                        v.SetLineInfo(lineInfo);
+                        v.SetLineInfo(lineInfo, settings);
                         return v;
                     case JsonToken.Comment:
                         if (settings != null && settings.CommentHandling == CommentHandling.Ignore)
@@ -1906,15 +1910,15 @@ namespace Newtonsoft.Json.Linq
                         }
 
                         v = JValue.CreateComment(reader.Value.ToString());
-                        v.SetLineInfo(lineInfo);
+                        v.SetLineInfo(lineInfo, settings);
                         return v;
                     case JsonToken.Null:
                         v = JValue.CreateNull();
-                        v.SetLineInfo(lineInfo);
+                        v.SetLineInfo(lineInfo, settings);
                         return v;
                     case JsonToken.Undefined:
                         v = JValue.CreateUndefined();
-                        v.SetLineInfo(lineInfo);
+                        v.SetLineInfo(lineInfo, settings);
                         return v;
                     default:
                         throw JsonReaderException.Create(reader, "Error reading JToken from JsonReader. Unexpected token: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
@@ -1982,10 +1986,17 @@ namespace Newtonsoft.Json.Linq
             return Load(reader, null);
         }
 
-        internal void SetLineInfo(IJsonLineInfo lineInfo)
+        internal void SetLineInfo(IJsonLineInfo lineInfo, JsonLoadSettings settings)
         {
-            if (lineInfo == null || !lineInfo.HasLineInfo())
+            if (settings != null && settings.LineInfoHandling == LineInfoHandling.Load)
+            {
                 return;
+            }
+
+            if (lineInfo == null || !lineInfo.HasLineInfo())
+            {
+                return;
+            }
 
             SetLineInfo(lineInfo.LineNumber, lineInfo.LinePosition);
         }

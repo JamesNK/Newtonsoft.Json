@@ -357,7 +357,7 @@ namespace Newtonsoft.Json.Linq
                 throw JsonReaderException.Create(reader, "Error reading JProperty from JsonReader. Current JsonReader item is not a property: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
 
             JProperty p = new JProperty((string)reader.Value);
-            p.SetLineInfo(reader as IJsonLineInfo);
+            p.SetLineInfo(reader as IJsonLineInfo, settings);
 
             p.ReadTokenFrom(reader, settings);
 
