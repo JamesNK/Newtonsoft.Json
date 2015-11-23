@@ -70,6 +70,31 @@ namespace Newtonsoft.Json.Tests.Linq
         }
 
         [Test]
+        public void ToObjectEnum()
+        {
+            StringComparison? v = new JValue("OrdinalIgnoreCase").ToObject<StringComparison?>();
+            Assert.AreEqual(StringComparison.OrdinalIgnoreCase, v.Value);
+
+            v = JValue.CreateNull().ToObject<StringComparison?>();
+            Assert.AreEqual(null, v);
+
+            v = new JValue(5).ToObject<StringComparison?>();
+            Assert.AreEqual(StringComparison.OrdinalIgnoreCase, v.Value);
+
+            v = new JValue(20).ToObject<StringComparison?>();
+            Assert.AreEqual((StringComparison)20, v.Value);
+
+            v = new JValue(20).ToObject<StringComparison>();
+            Assert.AreEqual((StringComparison)20, v.Value);
+
+            v = JsonConvert.DeserializeObject<StringComparison?>("20");
+            Assert.AreEqual((StringComparison)20, v.Value);
+
+            v = JsonConvert.DeserializeObject<StringComparison>("20");
+            Assert.AreEqual((StringComparison)20, v.Value);
+        }
+
+        [Test]
         public void FloatParseHandling()
         {
             JValue v = (JValue)JToken.ReadFrom(

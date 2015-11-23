@@ -1714,16 +1714,25 @@ namespace Newtonsoft.Json.Linq
                 bool isEnum;
                 PrimitiveTypeCode typeCode = ConvertUtils.GetTypeCode(objectType, out isEnum);
 
-                if (isEnum && Type == JTokenType.String)
+                if (isEnum)
                 {
-                    Type enumType = objectType.IsEnum() ? objectType : Nullable.GetUnderlyingType(objectType);
-                    try
+                    if (Type == JTokenType.String)
                     {
-                        return Enum.Parse(enumType, (string)this, true);
+                        Type enumType = objectType.IsEnum() ? objectType : Nullable.GetUnderlyingType(objectType);
+                        try
+                        {
+                            return Enum.Parse(enumType, (string) this, true);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new ArgumentException("Could not convert '{0}' to {1}.".FormatWith(CultureInfo.InvariantCulture, (string) this, enumType.Name), ex);
+                        }
                     }
-                    catch (Exception ex)
+
+                    if (Type == JTokenType.Integer)
                     {
-                        throw new ArgumentException("Could not convert '{0}' to {1}.".FormatWith(CultureInfo.InvariantCulture, (string)this, enumType.Name), ex);
+                        Type enumType = objectType.IsEnum() ? objectType : Nullable.GetUnderlyingType(objectType);
+                        return Enum.ToObject(enumType, ((JValue) this).Value);
                     }
                 }
 
