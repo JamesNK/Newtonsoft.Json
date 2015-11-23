@@ -925,7 +925,7 @@ keyword such as type of business.""
             {
                 JArray a = new JArray();
                 Assert.AreEqual(null, a["purple"]);
-            }, @"Accessed JArray values with invalid key value: ""purple"". Array position index expected.");
+            }, @"Accessed JArray values with invalid key value: ""purple"". Int32 array index expected.");
         }
 
         [Test]

@@ -236,7 +236,9 @@ namespace Newtonsoft.Json.Linq
                 ValidationUtils.ArgumentNotNull(key, "o");
 
                 if (!(key is int))
-                    throw new ArgumentException("Accessed JArray values with invalid key value: {0}. Array position index expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
+                {
+                    throw new ArgumentException("Accessed JArray values with invalid key value: {0}. Int32 array index expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
+                }
 
                 return GetItem((int)key);
             }
@@ -245,7 +247,9 @@ namespace Newtonsoft.Json.Linq
                 ValidationUtils.ArgumentNotNull(key, "o");
 
                 if (!(key is int))
-                    throw new ArgumentException("Set JArray values with invalid key value: {0}. Array position index expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
+                {
+                    throw new ArgumentException("Set JArray values with invalid key value: {0}. Int32 array index expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
+                }
 
                 SetItem((int)key, value);
             }

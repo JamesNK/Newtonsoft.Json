@@ -471,7 +471,7 @@ Parameter name: index");
             {
                 JArray a = new JArray();
                 a["badvalue"] = new JValue(3);
-            }, @"Set JArray values with invalid key value: ""badvalue"". Array position index expected.");
+            }, @"Set JArray values with invalid key value: ""badvalue"". Int32 array index expected.");
         }
 
         [Test]
