@@ -1411,7 +1411,11 @@ namespace Newtonsoft.Json.Converters
                 || reader.TokenType == JsonToken.Boolean
                 || reader.TokenType == JsonToken.Date)
             {
-                element.AppendChild(document.CreateTextNode(ConvertTokenToXmlValue(reader)));
+                string text = ConvertTokenToXmlValue(reader);
+                if (text != null)
+                {
+                    element.AppendChild(document.CreateTextNode(text));
+                }
             }
             else if (reader.TokenType == JsonToken.Null)
             {
@@ -1446,7 +1450,7 @@ namespace Newtonsoft.Json.Converters
         {
             if (reader.TokenType == JsonToken.String)
             {
-                return reader.Value.ToString();
+                return (reader.Value != null) ? reader.Value.ToString() : null;
             }
             else if (reader.TokenType == JsonToken.Integer)
             {
