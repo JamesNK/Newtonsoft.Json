@@ -123,13 +123,14 @@ namespace Newtonsoft.Json.Utilities
         private bool ParseTime(ref int start)
         {
             if (!(Parse2Digit(start, out Hour)
-                  && Hour < 24
+                  && Hour <= 24
                   && ParseChar(start + LzHH, ':')
                   && Parse2Digit(start + LzHH_, out Minute)
                   && Minute < 60
                   && ParseChar(start + LzHH_mm, ':')
                   && Parse2Digit(start + LzHH_mm_, out Second)
-                  && Second < 60))
+                  && Second < 60
+                  && (Hour != 24 || (Minute == 0 && Second == 0)))) // hour can be 24 if minute/second is zero)
             {
                 return false;
             }
@@ -161,6 +162,11 @@ namespace Newtonsoft.Json.Utilities
                     }
 
                     Fraction *= Power10[MaxFractionDigits - numberOfDigits];
+                }
+
+                if (Hour == 24 && Fraction != 0)
+                {
+                    return false;
                 }
             }
             return true;

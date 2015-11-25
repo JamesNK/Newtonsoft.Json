@@ -354,7 +354,7 @@ namespace Newtonsoft.Json.Linq
             }
 
             JObject o = new JObject();
-            o.SetLineInfo(reader as IJsonLineInfo);
+            o.SetLineInfo(reader as IJsonLineInfo, settings);
 
             o.ReadTokenFrom(reader, settings);
 

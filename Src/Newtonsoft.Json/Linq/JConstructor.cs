@@ -220,7 +220,7 @@ namespace Newtonsoft.Json.Linq
                 throw JsonReaderException.Create(reader, "Error reading JConstructor from JsonReader. Current JsonReader item is not a constructor: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
 
             JConstructor c = new JConstructor((string)reader.Value);
-            c.SetLineInfo(reader as IJsonLineInfo);
+            c.SetLineInfo(reader as IJsonLineInfo, settings);
 
             c.ReadTokenFrom(reader, settings);
 

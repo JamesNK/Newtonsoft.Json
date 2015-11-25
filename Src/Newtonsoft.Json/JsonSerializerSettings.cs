@@ -138,7 +138,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Gets or sets a collection <see cref="JsonConverter"/> that will be used during serialization.
+        /// Gets or sets a <see cref="JsonConverter"/> collection that will be used during serialization.
         /// </summary>
         /// <value>The converters.</value>
         public IList<JsonConverter> Converters { get; set; }

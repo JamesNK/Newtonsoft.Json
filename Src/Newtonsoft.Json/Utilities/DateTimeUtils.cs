@@ -206,8 +206,7 @@ namespace Newtonsoft.Json.Utilities
                 return false;
             }
 
-            DateTime d = new DateTime(dateTimeParser.Year, dateTimeParser.Month, dateTimeParser.Day, dateTimeParser.Hour, dateTimeParser.Minute, dateTimeParser.Second);
-            d = d.AddTicks(dateTimeParser.Fraction);
+            DateTime d = CreateDateTime(dateTimeParser);
 
             long ticks;
 
@@ -269,8 +268,7 @@ namespace Newtonsoft.Json.Utilities
                 return false;
             }
 
-            DateTime d = new DateTime(dateTimeParser.Year, dateTimeParser.Month, dateTimeParser.Day, dateTimeParser.Hour, dateTimeParser.Minute, dateTimeParser.Second);
-            d = d.AddTicks(dateTimeParser.Fraction);
+            DateTime d = CreateDateTime(dateTimeParser);
 
             TimeSpan offset;
 
@@ -301,6 +299,29 @@ namespace Newtonsoft.Json.Utilities
             return true;
         }
 #endif
+
+        private static DateTime CreateDateTime(DateTimeParser dateTimeParser)
+        {
+            bool is24Hour;
+            if (dateTimeParser.Hour == 24)
+            {
+                is24Hour = true;
+                dateTimeParser.Hour = 0;
+            }
+            else
+            {
+                is24Hour = false;
+            }
+
+            DateTime d = new DateTime(dateTimeParser.Year, dateTimeParser.Month, dateTimeParser.Day, dateTimeParser.Hour, dateTimeParser.Minute, dateTimeParser.Second);
+            d = d.AddTicks(dateTimeParser.Fraction);
+
+            if (is24Hour)
+            {
+                d = d.AddDays(1);
+            }
+            return d;
+        }
 
         internal static bool TryParseDateTime(StringReference s, DateTimeZoneHandling dateTimeZoneHandling, string dateFormatString, CultureInfo culture, out DateTime dt)
         {

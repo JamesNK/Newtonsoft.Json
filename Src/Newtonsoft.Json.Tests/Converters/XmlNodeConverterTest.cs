@@ -125,6 +125,29 @@ namespace Newtonsoft.Json.Tests.Converters
         }
 
 #if !NET20
+        public class MyModel
+        {
+            public string MyProperty { get; set; }
+        }
+
+        [Test]
+        public void ConvertNullString()
+        {
+            JObject json = new JObject();
+            json["Prop1"] = (string)null;
+            json["Prop2"] = new MyModel().MyProperty;
+
+            var xmlNodeConverter = new XmlNodeConverter { DeserializeRootElementName = "object" };
+            var jsonSerializerSettings = new JsonSerializerSettings { Converters = new JsonConverter[] { xmlNodeConverter } };
+            var jsonSerializer = JsonSerializer.CreateDefault(jsonSerializerSettings);
+            XDocument d = json.ToObject<XDocument>(jsonSerializer);
+
+            StringAssert.Equals(@"<object>
+  <Prop1 />
+  <Prop2 />
+</object>", d.ToString());
+        }
+
         public class Foo
         {
             public XElement Bar { get; set; }

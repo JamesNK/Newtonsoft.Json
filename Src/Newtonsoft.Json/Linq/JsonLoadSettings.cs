@@ -8,6 +8,7 @@ namespace Newtonsoft.Json.Linq
     public class JsonLoadSettings
     {
         private CommentHandling _commentHandling;
+        private LineInfoHandling _lineInfoHandling;
 
         /// <summary>
         /// Gets or sets how JSON comments are handled when loading JSON.
@@ -24,6 +25,24 @@ namespace Newtonsoft.Json.Linq
                 }
 
                 _commentHandling = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets how JSON line info is handled when loading JSON.
+        /// </summary>
+        /// <value>The JSON line info handling.</value>
+        public LineInfoHandling LineInfoHandling
+        {
+            get { return _lineInfoHandling; }
+            set
+            {
+                if (value < LineInfoHandling.Ignore || value > LineInfoHandling.Load)
+                {
+                    throw new ArgumentOutOfRangeException("value");
+                }
+
+                _lineInfoHandling = value;
             }
         }
     }

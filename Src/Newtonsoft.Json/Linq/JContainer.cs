@@ -693,7 +693,7 @@ namespace Newtonsoft.Json.Linq
                 throw JsonReaderException.Create(reader, "Unexpected end of content while loading {0}.".FormatWith(CultureInfo.InvariantCulture, GetType().Name));
         }
 
-        internal void ReadContentFrom(JsonReader r, JsonLoadSettings options)
+        internal void ReadContentFrom(JsonReader r, JsonLoadSettings settings)
         {
             ValidationUtils.ArgumentNotNull(r, "r");
             IJsonLineInfo lineInfo = r as IJsonLineInfo;
@@ -717,7 +717,7 @@ namespace Newtonsoft.Json.Linq
                         break;
                     case JsonToken.StartArray:
                         JArray a = new JArray();
-                        a.SetLineInfo(lineInfo);
+                        a.SetLineInfo(lineInfo, settings);
                         parent.Add(a);
                         parent = a;
                         break;
@@ -730,7 +730,7 @@ namespace Newtonsoft.Json.Linq
                         break;
                     case JsonToken.StartObject:
                         JObject o = new JObject();
-                        o.SetLineInfo(lineInfo);
+                        o.SetLineInfo(lineInfo, settings);
                         parent.Add(o);
                         parent = o;
                         break;
@@ -742,7 +742,7 @@ namespace Newtonsoft.Json.Linq
                         break;
                     case JsonToken.StartConstructor:
                         JConstructor constructor = new JConstructor(r.Value.ToString());
-                        constructor.SetLineInfo(lineInfo);
+                        constructor.SetLineInfo(lineInfo, settings);
                         parent.Add(constructor);
                         parent = constructor;
                         break;
@@ -759,31 +759,31 @@ namespace Newtonsoft.Json.Linq
                     case JsonToken.Boolean:
                     case JsonToken.Bytes:
                         JValue v = new JValue(r.Value);
-                        v.SetLineInfo(lineInfo);
+                        v.SetLineInfo(lineInfo, settings);
                         parent.Add(v);
                         break;
                     case JsonToken.Comment:
-                        if (options != null && options.CommentHandling == CommentHandling.Load)
+                        if (settings != null && settings.CommentHandling == CommentHandling.Load)
                         {
                             v = JValue.CreateComment(r.Value.ToString());
-                            v.SetLineInfo(lineInfo);
+                            v.SetLineInfo(lineInfo, settings);
                             parent.Add(v);
                         }
                         break;
                     case JsonToken.Null:
                         v = JValue.CreateNull();
-                        v.SetLineInfo(lineInfo);
+                        v.SetLineInfo(lineInfo, settings);
                         parent.Add(v);
                         break;
                     case JsonToken.Undefined:
                         v = JValue.CreateUndefined();
-                        v.SetLineInfo(lineInfo);
+                        v.SetLineInfo(lineInfo, settings);
                         parent.Add(v);
                         break;
                     case JsonToken.PropertyName:
                         string propertyName = r.Value.ToString();
                         JProperty property = new JProperty(propertyName);
-                        property.SetLineInfo(lineInfo);
+                        property.SetLineInfo(lineInfo, settings);
                         JObject parentObject = (JObject)parent;
                         // handle multiple properties with the same name in JSON
                         JProperty existingPropertyWithName = parentObject.Property(propertyName);
