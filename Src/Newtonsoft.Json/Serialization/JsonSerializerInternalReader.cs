@@ -978,7 +978,12 @@ namespace Newtonsoft.Json.Serialization
             }
 
             if (!property.Writable && !useExistingValue)
+            {
+                if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Warning)
+                    TraceWriter.Trace(TraceLevel.Warning, JsonPosition.FormatMessage(reader as IJsonLineInfo, reader.Path, "Unable to deserialize non-writable property '{0}' on {1}.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName, property.DeclaringType)), null);
+
                 return true;
+            }
 
             // test tokentype here because null might not be convertable to some types, e.g. ignoring null when applied to DateTime
             if (property.NullValueHandling.GetValueOrDefault(Serializer._nullValueHandling) == NullValueHandling.Ignore && tokenType == JsonToken.Null)
