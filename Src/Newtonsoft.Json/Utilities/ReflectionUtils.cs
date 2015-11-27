@@ -967,7 +967,7 @@ namespace Newtonsoft.Json.Utilities
                             int index = initialProperties.IndexOf(p => p.Name == subTypeProperty.Name
                                                                        && p.IsVirtual()
                                                                        && p.GetBaseDefinition() != null
-                                                                       && p.GetBaseDefinition().DeclaringType.IsAssignableFrom(subTypeProperty.DeclaringType));
+                                                                       && p.GetBaseDefinition().DeclaringType.IsAssignableFrom(subTypeProperty.GetBaseDefinition().DeclaringType));
 
                             if (index == -1)
                                 initialProperties.Add(subTypeProperty);
