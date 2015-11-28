@@ -68,7 +68,7 @@ namespace Newtonsoft.Json.Serialization
                     Assembly[] loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
                     foreach (Assembly a in loadedAssemblies)
                     {
-                        if (a.FullName == assemblyName)
+                        if (a.FullName == assemblyName || a.GetName().Name == assemblyName)
                         {
                             assembly = a;
                             break;
