@@ -277,25 +277,43 @@ namespace Newtonsoft.Json.Serialization
 
             if (exists)
             {
-                string message = "Self referencing loop detected";
-                if (property != null)
-                    message += " for property '{0}'".FormatWith(CultureInfo.InvariantCulture, property.PropertyName);
-                message += " with type '{0}'.".FormatWith(CultureInfo.InvariantCulture, value.GetType());
+                var serializerReferenceLoopHandling = referenceLoopHandling.GetValueOrDefault(Serializer._referenceLoopHandling);
 
-                switch (referenceLoopHandling.GetValueOrDefault(Serializer._referenceLoopHandling))
+                if (serializerReferenceLoopHandling == ReferenceLoopHandling.Error)
                 {
-                    case ReferenceLoopHandling.Error:
-                        throw JsonSerializationException.Create(null, writer.ContainerPath, message, null);
-                    case ReferenceLoopHandling.Ignore:
-                        if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
-                            TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, writer.Path, message + ". Skipping serializing self referenced value."), null);
+                    string message;
+                    if (property == null)
+                    {
+                        message = "Self referencing loop detected with type {0}, Path: {1}".FormatWith(CultureInfo.InvariantCulture, value.GetType(), writer.Path);
+                    }
+                    else
+                    {
+                        message = "Self referencing loop detected in {0}. Consider applying [JsonProperty(ReferenceLoopHandling = ReferenceLoopHandling.Ignore] to property {1}."
+                            .FormatWith(CultureInfo.InvariantCulture, writer.Path, property.PropertyName);
+                    }
 
-                        return false;
-                    case ReferenceLoopHandling.Serialize:
-                        if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
-                            TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, writer.Path, message + ". Serializing self referenced value."), null);
+                    throw new JsonSerializationException(message);
+                }
+                else
+                {
+                    string message = "Self referencing loop detected";
+                    if (property != null)
+                        message += " for property '{0}'".FormatWith(CultureInfo.InvariantCulture, property.PropertyName);
+                    message += " with type '{0}'.".FormatWith(CultureInfo.InvariantCulture, value.GetType());
 
-                        return true;
+                    switch (serializerReferenceLoopHandling)
+                    {
+                        case ReferenceLoopHandling.Ignore:
+                            if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
+                                TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, writer.Path, message + ". Skipping serializing self referenced value."), null);
+
+                            return false;
+                        case ReferenceLoopHandling.Serialize:
+                            if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
+                                TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, writer.Path, message + ". Serializing self referenced value."), null);
+
+                            return true;
+                    }
                 }
             }
 

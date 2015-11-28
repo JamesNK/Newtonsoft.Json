@@ -3285,7 +3285,7 @@ keyword such as type of business.""
                 o.ReferenceLoopHandlingErrorProperty = o;
 
                 JsonConvert.SerializeObject(o, Formatting.Indented, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
-            }, "Self referencing loop detected for property 'ReferenceLoopHandlingErrorProperty' with type '" + classRef + "'. Path ''.");
+            }, "Self referencing loop detected in NullValueHandlingIncludeProperty. Consider applying [JsonProperty(ReferenceLoopHandling = ReferenceLoopHandling.Ignore] to property ReferenceLoopHandlingErrorProperty.");
         }
 
         [Test]
