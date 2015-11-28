@@ -2554,6 +2554,33 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual(@"{""DocumentId"":""13779965364495889899""}", json2);
         }
 #endif
+
+        [Test]
+        public void SerializeEmptyNodeAndOmitRoot()
+        {
+            string xmlString = @"<myemptynode />";
+
+            XmlDocument xml = new XmlDocument();
+            xml.LoadXml(xmlString);
+
+            string json = JsonConvert.SerializeXmlNode(xml, Formatting.Indented, true);
+
+            Assert.AreEqual("null", json);
+        }
+
+#if !NET20
+        [Test]
+        public void SerializeEmptyNodeAndOmitRoot_XElement()
+        {
+            string xmlString = @"<myemptynode />";
+
+            var xml = XElement.Parse(xmlString);
+
+            string json = JsonConvert.SerializeXNode(xml, Formatting.Indented, true);
+
+            Assert.AreEqual("null", json);
+        }
+#endif
     }
 }
 #endif
