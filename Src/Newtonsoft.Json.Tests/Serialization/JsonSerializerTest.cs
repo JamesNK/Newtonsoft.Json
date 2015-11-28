@@ -262,6 +262,23 @@ namespace Newtonsoft.Json.Tests.Serialization
             }, "Required property 'Bars' expects a value but got null. Path '', line 1, position 9.");
         }
 
+        public class IgnoredProperty
+        {
+            [JsonIgnore]
+            [JsonProperty(Required = Required.Always)]
+            public string StringProp1 { get; set; }
+            [JsonIgnore]
+            public string StringProp2 { get; set; }
+        }
+
+        [Test]
+        public void NoErrorWhenValueDoesNotMatchIgnoredProperty()
+        {
+            IgnoredProperty p = JsonConvert.DeserializeObject<IgnoredProperty>("{'StringProp1':[1,2,3],'StringProp2':{}}");
+            Assert.IsNull(p.StringProp1);
+            Assert.IsNull(p.StringProp2);
+        }
+
         public class Binding
         {
             [JsonProperty(Required = Required.Always)]
