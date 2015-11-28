@@ -482,7 +482,7 @@ namespace Newtonsoft.Json.Utilities
             {
                 kind = DateTimeKind.Local;
 
-                if (!TryReadOffset(text, index, out offset))
+                if (!TryReadOffset(text, index + text.StartIndex, out offset))
                 {
                     ticks = 0;
                     return false;
@@ -494,7 +494,7 @@ namespace Newtonsoft.Json.Utilities
                 index = text.Length - 2;
             }
 
-            return (ConvertUtils.Int64TryParse(text.Chars, 6, index - 6, out ticks) == ParseResult.Success);
+            return (ConvertUtils.Int64TryParse(text.Chars, 6 + text.StartIndex, index - 6, out ticks) == ParseResult.Success);
         }
 
         private static bool TryParseDateTimeMicrosoft(StringReference text, DateTimeZoneHandling dateTimeZoneHandling, out DateTime dt)

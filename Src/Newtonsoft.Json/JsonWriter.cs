@@ -1286,7 +1286,9 @@ namespace Newtonsoft.Json
                 // this is here because adding a WriteValue(BigInteger) to JsonWriter will
                 // mean the user has to add a reference to System.Numerics.dll
                 if (value is BigInteger)
+                {
                     throw CreateUnsupportedTypeException(this, value);
+                }
 #endif
 
                 WriteValue(this, ConvertUtils.GetTypeCode(value.GetType()), value);

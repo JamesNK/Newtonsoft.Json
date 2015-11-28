@@ -198,6 +198,18 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 #endif
 
+#if !NET20
+        [Test]
+        public void DeserializeMSDateTimeOffset()
+        {
+            DateTimeOffset d = JsonConvert.DeserializeObject<DateTimeOffset>(@"""/Date(1418924498000+0800)/""");
+            long initialTicks = DateTimeUtils.ConvertDateTimeToJavaScriptTicks(d.DateTime, d.Offset);
+
+            Assert.AreEqual(1418924498000, initialTicks);
+            Assert.AreEqual(8, d.Offset.Hours);
+        }
+#endif
+
         [Test]
         public void CaseInsensitiveRequiredPropertyConstructorCreation()
         {
