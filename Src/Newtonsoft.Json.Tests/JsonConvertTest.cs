@@ -1399,5 +1399,16 @@ namespace Newtonsoft.Json.Tests
                 writer.WriteValue(Math.Round((double)value, _precision, _rounding));
             }
         }
+
+        [Test]
+        public void GenericBaseClassSerialization()
+        {
+            string json = JsonConvert.SerializeObject (new NonGenericChildClass ());
+            Assert.AreEqual ("{\"Data\":null}", json);
+        }
+
+        public class GenericBaseClass<O, T> { public virtual T Data { get; set; } }
+        public class GenericIntermediateClass<O> : GenericBaseClass<O, string> { public override string Data { get; set; } }
+        public class NonGenericChildClass : GenericIntermediateClass<int> { }
     }
 }
